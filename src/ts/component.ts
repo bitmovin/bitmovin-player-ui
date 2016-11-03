@@ -1,3 +1,5 @@
+import {Guid} from "./guid";
+
 /**
  * Base configuration interface with common options for all kinds of components.
  */
@@ -18,6 +20,14 @@ export abstract class Component {
     constructor(config: ComponentConfig) {
         console.log(this);
         console.log(config);
+
+        if(!config.id) {
+            config.id = 'id-' + Guid.next();
+        }
+
+        if(!config.cssClass) {
+            config.cssClass = '';
+        }
     }
 
     /**
