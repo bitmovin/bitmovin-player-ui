@@ -1,4 +1,5 @@
 import {ComponentConfig, Component} from "./component";
+import {DOM} from "./dom";
 
 export interface ContainerConfig extends ComponentConfig {
     components?: Component[];

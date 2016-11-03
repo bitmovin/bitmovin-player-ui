@@ -1,5 +1,6 @@
 import {Button} from "./button";
 import {Container} from "./container";
+import {DOM} from "./dom";
 
 import jquery = require("jquery");
 DOM.setJQuery(jquery);

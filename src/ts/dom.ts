@@ -1,4 +1,4 @@
-module DOM {
+export module DOM {
 
     var jq: JQueryStatic = null;
 

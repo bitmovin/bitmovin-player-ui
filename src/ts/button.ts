@@ -1,4 +1,5 @@
 import {ComponentConfig, Component} from "./component";
+import {DOM} from "./dom";
 
 /**
  * Configuration interface for a button component.
