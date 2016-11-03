@@ -25,7 +25,7 @@ export class Button extends Component {
 
     toHtml(): string {
         var buttonElement = DOM.JQuery(`<button id="${this.config.id}" class="${this.config.cssClass}">`);
-        return buttonElement.prop('outerHTML');;
+        return buttonElement.prop('outerHTML');
     }
 
 }
