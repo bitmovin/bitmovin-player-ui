@@ -1,2 +1,11 @@
+.player-wrapper {
+  text-align: center; }
+  .player-wrapper .player {
+    display: inline-block;
+    border: 2px solid gray;
+    background-color: #cdcdcd;
+    width: 16em;
+    height: 9em; }
+
 html {
   font-size: 3em; }

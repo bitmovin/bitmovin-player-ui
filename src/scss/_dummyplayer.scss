@@ -1,0 +1,11 @@
+.player-wrapper {
+  text-align: center;
+
+  .player {
+    display: inline-block;
+    border: 2px solid gray;
+    background-color: lighten(gray, 30%);
+    width: 16em;
+    height: 9em;
+  }
+}
