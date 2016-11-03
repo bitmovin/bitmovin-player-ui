@@ -13,7 +13,7 @@ export interface ComponentConfig {
     cssClass?: string; // "class" is a reserved keyword, so we need to make the name more complicated
 }
 
-export class Component {
+export abstract class Component {
 
     constructor(config: ComponentConfig) {
         console.log(this);
