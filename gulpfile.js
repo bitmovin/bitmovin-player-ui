@@ -27,7 +27,7 @@ var browserifyInstance = browserify({
 })
     .plugin(tsify);
 
-gulp.task("copy-html", function () {
+gulp.task("html", function () {
     return gulp.src(paths.source.html)
         .pipe(gulp.dest(paths.target.html));
 });
@@ -45,11 +45,11 @@ gulp.task('sass', function () {
         .pipe(gulp.dest(paths.target.css));
 });
 
-gulp.task("default", ["copy-html", "browserify", "sass"]);
+gulp.task("default", ["html", "browserify", "sass"]);
 
 gulp.task("watch", function () {
     // Watch for changed html files
-    gulp.watch(paths.source.html, ['copy-html']);
+    gulp.watch(paths.source.html, ['html']);
 
     // Watch SASS files
     gulp.watch(paths.source.sass, ['sass']);
