@@ -1,0 +1,19 @@
+{
+  "name": "bitdash-controls",
+  "version": "0.0.1",
+  "description": "Bitmovin Player Default UI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitmovin/bitdash-controls.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bitmovin/bitdash-controls/issues"
+  },
+  "homepage": "https://github.com/bitmovin/bitdash-controls#readme"
+}
