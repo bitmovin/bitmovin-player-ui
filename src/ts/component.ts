@@ -20,4 +20,9 @@ export abstract class Component {
         console.log(config);
     }
 
+    /**
+     * Generate HTML markup for this component.
+     */
+    abstract toHtml(): string;
+
 }
