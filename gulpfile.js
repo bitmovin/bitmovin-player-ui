@@ -3,6 +3,7 @@ var browserify = require("browserify");
 var source = require('vinyl-source-stream');
 var tsify = require("tsify");
 var watchify = require("watchify");
+var sass = require('gulp-sass');
 var paths = {
     pages: ['src/*.html']
 };
@@ -28,11 +29,20 @@ gulp.task("browserify", function () {
         .pipe(gulp.dest("dist"));
 });
 
-gulp.task("default", ["copy-html", "browserify"]);
+gulp.task('sass', function() {
+    gulp.src('./src/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task("default", ["copy-html", "browserify", "sass"]);
 
 gulp.task("watch", function () {
     // Watch for changed html files
     gulp.watch('src/*.html', ['copy-html']);
+
+    // Watch SASS files
+    gulp.watch('./src/*.scss', ['sass']);
 
     // Watch files for changes through Browserify with Watchify
     return browserifyInstance
