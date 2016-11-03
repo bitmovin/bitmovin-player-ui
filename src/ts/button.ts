@@ -1,6 +1,12 @@
 import {ComponentConfig, Component} from "./component";
 
+/**
+ * Configuration interface for a button component.
+ */
 export interface ButtonConfig extends ComponentConfig {
+    /**
+     * The text on the button.
+     */
     text?: string;
 }
 

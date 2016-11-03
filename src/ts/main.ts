@@ -8,4 +8,4 @@ function showHello(divName: string, name: string) {
 
 showHello("greeting", "TypeScript");
 
-var test2 = new Button({ id: 'testid', text: 'blubbblubb' });
+var test2 = new Button({ id: 'testid', text: 'blubb' });
