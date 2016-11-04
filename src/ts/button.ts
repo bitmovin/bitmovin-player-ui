@@ -24,7 +24,7 @@ export class Button extends Component {
     }
 
     toDomElement(): JQuery {
-        var buttonElement = DOM.JQuery(`<button>${this.config.text}</button>`, {
+        var buttonElement = DOM.JQuery(`<button type="button">${this.config.text}</button>`, {
             id: this.config.id,
             class: this.config.cssClass
         });
