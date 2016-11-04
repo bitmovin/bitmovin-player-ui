@@ -3,8 +3,14 @@
 .ui-wrapper {
   @extend .ui-container;
 
+  // Fit into player frame
   width: 100%;
   height: 100%;
-  position: relative;
+  position: absolute;
+  top: 0;
+
   font-size: 1em;
+
+  // render UI above player
+  z-index: 9999;
 }

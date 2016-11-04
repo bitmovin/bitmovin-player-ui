@@ -1,4 +1,3 @@
-@import 'dummyplayer';
 @import 'container';
 @import 'wrapper';
 @import 'controlbar';
@@ -6,5 +5,8 @@
 
 html {
   margin: 1em;
-  font-size: 3em;
+}
+
+#player {
+  position: relative;
 }

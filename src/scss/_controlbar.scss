@@ -3,8 +3,10 @@
 .ui-controlbar {
   @extend .ui-container;
 
+  // Align to bottom
   position: absolute;
   bottom: 0;
   width: 100%;
+
   background-color: aquamarine;
 }
