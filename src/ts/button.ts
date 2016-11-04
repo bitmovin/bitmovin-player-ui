@@ -24,10 +24,11 @@ export class Button extends Component {
     }
 
     toDomElement(): JQuery {
-        var buttonElement = DOM.JQuery(`<button type="button">${this.config.text}</button>`, {
-            id: this.config.id,
-            class: this.config.cssClass
-        });
+        var buttonElement = DOM.JQuery(`<button>`, {
+            'type': 'button',
+            'id': this.config.id,
+            'class': this.config.cssClass
+        }).html(this.config.text);
 
         return buttonElement;
     }
