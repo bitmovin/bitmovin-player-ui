@@ -17,14 +17,17 @@ export class Button extends Component {
 
     constructor(config: ButtonConfig) {
         super(config);
-        console.log(this);
-        console.log(config);
 
-        this.config = config;
+        this.config = this.mergeConfig(config, {
+            cssClass: 'ui-container'
+        });
     }
 
     toHtml(): string {
-        var buttonElement = DOM.JQuery(`<button id="${this.config.id}" class="${this.config.cssClass}">`);
+        var buttonElement = DOM.JQuery(`<button>`, {
+            id: this.config.id,
+            class: this.config.cssClass
+        });
         return buttonElement.prop('outerHTML');
     }
 

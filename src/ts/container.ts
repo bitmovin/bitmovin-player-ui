@@ -11,7 +11,10 @@ export class Container extends Component {
 
     constructor(config: ContainerConfig) {
         super(config);
-        this.config = config;
+
+        this.config = this.mergeConfig(config, {
+            cssClass: 'ui-container'
+        });
     }
 
     addComponent(component: Component) {
@@ -23,7 +26,10 @@ export class Container extends Component {
     }
 
     toHtml(): string {
-        var containerElement = DOM.JQuery(`<div id="${this.config.id}" class="${this.config.cssClass}">`);
+        var containerElement = DOM.JQuery(`<div>`, {
+            id: this.config.id,
+            class: this.config.cssClass
+        });
 
         for (let component of this.config.components) {
             console.log('bbb');
