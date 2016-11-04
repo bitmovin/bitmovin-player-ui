@@ -1,5 +1,6 @@
 import {ComponentConfig, Component} from "./component";
 import {DOM} from "./dom";
+import {ArrayUtils} from "./utils";
 
 export interface ContainerConfig extends ComponentConfig {
     /**

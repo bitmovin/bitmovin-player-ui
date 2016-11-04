@@ -1,4 +1,4 @@
-module ArrayUtils {
+export module ArrayUtils {
     /**
      * Removes an item from an array.
      * @param array
