@@ -45,7 +45,15 @@ export abstract class Component<Config extends ComponentConfig> {
     /**
      * Generate DOM element for this component. This element can then be added to the HTML document.
      */
-    abstract toDomElement(): JQuery;
+    protected abstract toDomElement(): JQuery;
+
+    getDomElement(): JQuery {
+        if(!this.element) {
+            this.element = this.toDomElement();
+        }
+
+        return this.element;
+    }
 
     /**
      * Merges config values into a default config and returns the merged config.

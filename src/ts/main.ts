@@ -32,12 +32,12 @@ var conf = {
 
 player.setup(conf).then(function() {
     // When player is loaded, add UI
-    DOM.JQuery('#player').append(ui.toDomElement());
+    DOM.JQuery('#player').append(ui.getDomElement());
 
-    DOM.JQuery('#b1').click(function() {
+    button1.getDomElement().click(function() {
         player.play();
     });
-    DOM.JQuery('#b2').click(function() {
+    button2.getDomElement().click(function() {
         player.pause();
     });
 }, function() {

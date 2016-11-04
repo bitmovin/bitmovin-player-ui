@@ -21,7 +21,7 @@ export class Button extends Component<ButtonConfig> {
         });
     }
 
-    toDomElement(): JQuery {
+    protected toDomElement(): JQuery {
         var buttonElement = DOM.JQuery(`<button>`, {
             'type': 'button',
             'id': this.config.id,

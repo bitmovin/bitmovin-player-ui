@@ -33,14 +33,14 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
         ArrayUtils.remove(this.config.components, component);
     }
 
-    toDomElement(): JQuery {
+    protected toDomElement(): JQuery {
         var containerElement = DOM.JQuery(`<${this.config.tag}>`, {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
 
         for (let component of this.config.components) {
-            containerElement.append(component.toDomElement());
+            containerElement.append(component.getDomElement());
         }
 
         return containerElement;
