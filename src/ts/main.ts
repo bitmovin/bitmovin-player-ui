@@ -2,6 +2,7 @@ import {Button} from "./button";
 import {Wrapper} from "./wrapper";
 import {DOM} from "./dom";
 import {ControlBar} from "./controlbar";
+import {UIManager} from "./uimanager";
 
 // Setup JQuery
 // NOTE do not use the jquery object directly, only use it through DOM
@@ -32,11 +33,12 @@ var conf = {
 
 player.setup(conf).then(function() {
     // When player is loaded, add UI
-    DOM.JQuery('#player').append(ui.getDomElement());
+    new UIManager(player, ui);
 
     button1.getDomElement().click(function() {
         player.play();
     });
+
     button2.getDomElement().click(function() {
         player.pause();
     });
