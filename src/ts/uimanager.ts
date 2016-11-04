@@ -5,6 +5,8 @@ import {Container, ContainerConfig} from "./container";
 import {PlaybackToggleButton} from "./playbacktogglebutton";
 import {FullscreenToggleButton} from "./fullscreentogglebutton";
 
+declare var bitmovin: any;
+
 export class UIManager {
 
     private player: any;
@@ -27,12 +29,21 @@ export class UIManager {
             let playbackToggleButton = <PlaybackToggleButton> component;
             let p = this.player;
 
+            let playbackStateHandler = function() {
+                if (p.isPlaying()) {
+                    playbackToggleButton.play();
+                } else {
+                    playbackToggleButton.pause();
+                }
+            };
+
+            p.addEventHandler(bitmovin.player.EVENT.ON_PLAY, playbackStateHandler);
+            p.addEventHandler(bitmovin.player.EVENT.ON_PAUSE, playbackStateHandler);
+
             playbackToggleButton.getDomElement().on('click', function () {
                 if (p.isPlaying()) {
-                    playbackToggleButton.pause();
                     p.pause();
                 } else {
-                    playbackToggleButton.play();
                     p.play();
                 }
             })
@@ -41,12 +52,21 @@ export class UIManager {
             let fullscreenToggleButton = <FullscreenToggleButton> component;
             let p = this.player;
 
+            let fullscreenStateHandler = function() {
+                if (p.isFullscreen()) {
+                    fullscreenToggleButton.fullscreen();
+                } else {
+                    fullscreenToggleButton.window();
+                }
+            };
+
+            p.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, fullscreenStateHandler);
+            p.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, fullscreenStateHandler);
+
             fullscreenToggleButton.getDomElement().on('click', function () {
                 if (p.isFullscreen()) {
-                    fullscreenToggleButton.window();
                     p.exitFullscreen();
                 } else {
-                    fullscreenToggleButton.fullscreen();
                     p.enterFullscreen();
                 }
             })
