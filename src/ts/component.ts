@@ -46,7 +46,7 @@ export abstract class Component {
      * @param defaults
      * @returns {ComponentConfig}
      */
-    protected mergeConfig(config: ComponentConfig, defaults: ComponentConfig): ComponentConfig {
+    protected mergeConfig<T extends ComponentConfig>(config: T, defaults: T): T {
         // Extend default config with supplied config
         DOM.JQuery().extend(defaults, config);
 

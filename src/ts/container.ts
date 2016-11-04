@@ -2,6 +2,14 @@ import {ComponentConfig, Component} from "./component";
 import {DOM} from "./dom";
 
 export interface ContainerConfig extends ComponentConfig {
+    /**
+     * The HTML tag name of the container, 'div' by default.
+     */
+    tag?: string;
+
+    /**
+     * Child components of the container.
+     */
     components?: Component[];
 }
 
@@ -13,6 +21,7 @@ export class Container extends Component {
         super(config);
 
         this.config = this.mergeConfig(config, {
+            tag: 'div',
             cssClass: 'ui-container'
         });
     }
@@ -26,7 +35,7 @@ export class Container extends Component {
     }
 
     toHtml(): string {
-        var containerElement = DOM.JQuery(`<div>`, {
+        var containerElement = DOM.JQuery(`<${this.config.tag}>`, {
             id: this.config.id,
             class: this.config.cssClass
         });
