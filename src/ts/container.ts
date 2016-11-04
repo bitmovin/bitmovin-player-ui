@@ -37,7 +37,7 @@ export class Container extends Component {
     toDomElement(): JQuery {
         var containerElement = DOM.JQuery(`<${this.config.tag}>`, {
             'id': this.config.id,
-            'class': this.config.cssClass
+            'class': this.getCssClasses()
         });
 
         for (let component of this.config.components) {

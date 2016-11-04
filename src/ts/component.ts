@@ -14,9 +14,19 @@ export interface ComponentConfig {
      * The CSS classes of the component.
      */
     cssClass?: string; // "class" is a reserved keyword, so we need to make the name more complicated
+
+    /**
+     * Additional CSS classes of the component.
+     */
+    cssClasses?: string[];
 }
 
 export abstract class Component {
+
+    /**
+     * Configuration object of this component.
+     */
+    private config: ComponentConfig;
 
     /**
      * JQuery reference to the component's DOM element.
@@ -54,4 +64,11 @@ export abstract class Component {
         return defaults;
     }
 
+    /**
+     * Returns an array of all CSS classes of the component.
+     * @returns {string[]}
+     */
+    protected getCssClasses() : string[] {
+        return [this.config.cssClass].concat(this.config.cssClasses);
+    }
 }
