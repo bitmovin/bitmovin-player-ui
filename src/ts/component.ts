@@ -21,19 +21,19 @@ export interface ComponentConfig {
     cssClasses?: string[];
 }
 
-export abstract class Component {
+export abstract class Component<Config extends ComponentConfig> {
 
     /**
      * Configuration object of this component.
      */
-    private config: ComponentConfig;
+    protected config: Config;
 
     /**
      * JQuery reference to the component's DOM element.
      */
     private element: JQuery;
 
-    constructor(config: ComponentConfig) {
+    constructor(config: Config) {
         console.log(this);
         console.log(config);
 
@@ -56,7 +56,7 @@ export abstract class Component {
      * @param defaults
      * @returns {ComponentConfig}
      */
-    protected mergeConfig<T extends ComponentConfig>(config: T, defaults: T): T {
+    protected mergeConfig<T extends Config>(config: T, defaults: T): T {
         // Extend default config with supplied config
         DOM.JQuery().extend(defaults, config);
 

@@ -10,12 +10,10 @@ export interface ContainerConfig extends ComponentConfig {
     /**
      * Child components of the container.
      */
-    components?: Component[];
+    components?: Component<ComponentConfig>[];
 }
 
-export class Container extends Component {
-
-    private config: ContainerConfig;
+export class Container extends Component<ContainerConfig> {
 
     constructor(config: ContainerConfig) {
         super(config);
@@ -26,11 +24,11 @@ export class Container extends Component {
         });
     }
 
-    addComponent(component: Component) {
+    addComponent(component: Component<ComponentConfig>) {
         this.config.components.push(component);
     }
 
-    removeComponent(component: Component) {
+    removeComponent(component: Component<ComponentConfig>) {
         ArrayUtils.remove(this.config.components, component);
     }
 
