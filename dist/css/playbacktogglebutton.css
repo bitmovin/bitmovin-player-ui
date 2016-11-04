@@ -1,0 +1,10 @@
+.ui-button, .ui-playbacktogglebutton {
+  font-size: 1em;
+  margin: 0.1em; }
+
+.ui-playbacktogglebutton {
+  background-color: gray; }
+  .ui-playbacktogglebutton .playing {
+    background-color: green; }
+  .ui-playbacktogglebutton .paused {
+    background-color: red; }

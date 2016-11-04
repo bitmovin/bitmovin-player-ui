@@ -1,0 +1,15 @@
+@import "button";
+
+.ui-playbacktogglebutton {
+  @extend .ui-button;
+
+  background-color: gray;
+
+  &.playing {
+    background-color: green;
+  }
+
+  &.paused {
+    background-color: red;
+  }
+}

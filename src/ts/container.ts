@@ -25,12 +25,28 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
         });
     }
 
+    /**
+     * Adds a child component to the container.
+     * @param component
+     */
     addComponent(component: Component<ComponentConfig>) {
         this.config.components.push(component);
     }
 
+    /**
+     * Removes a child component from the container.
+     * @param component
+     */
     removeComponent(component: Component<ComponentConfig>) {
         ArrayUtils.remove(this.config.components, component);
+    }
+
+    /**
+     * Gets an array of all child components in this container.
+     * @returns {Component<ComponentConfig>[]}
+     */
+    getComponents() : Component<ComponentConfig>[] {
+        return this.config.components;
     }
 
     protected toDomElement(): JQuery {

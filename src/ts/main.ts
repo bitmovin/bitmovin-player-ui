@@ -3,6 +3,7 @@ import {Wrapper} from "./wrapper";
 import {DOM} from "./dom";
 import {ControlBar} from "./controlbar";
 import {UIManager} from "./uimanager";
+import {PlaybackToggleButton} from "./playbacktogglebutton";
 
 // Setup JQuery
 // NOTE do not use the jquery object directly, only use it through DOM
@@ -13,7 +14,8 @@ DOM.setJQuery(jquery);
 // Build UI
 var button1 = new Button({id: 'b1', text: 'Play'});
 var button2 = new Button({id: 'b2', text: 'Pause'});
-var controlBar = new ControlBar({components: [button1, button2]});
+var playbackToggleButton = new PlaybackToggleButton({text: 'Play/Pause'});
+var controlBar = new ControlBar({components: [button1, button2, playbackToggleButton]});
 var ui = new Wrapper({ components: [controlBar]});
 console.log(ui);
 
