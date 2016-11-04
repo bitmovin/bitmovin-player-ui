@@ -17,7 +17,7 @@ export class Button extends Component<ButtonConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-container'
+            cssClass: 'ui-button'
         });
     }
 
