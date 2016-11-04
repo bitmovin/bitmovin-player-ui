@@ -13,7 +13,7 @@ export interface ContainerConfig extends ComponentConfig {
     components?: Component<ComponentConfig>[];
 }
 
-export class Container extends Component<ContainerConfig> {
+export class Container<Config extends ContainerConfig> extends Component<ContainerConfig> {
 
     constructor(config: ContainerConfig) {
         super(config);
