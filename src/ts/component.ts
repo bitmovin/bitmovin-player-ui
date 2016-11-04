@@ -65,10 +65,15 @@ export abstract class Component<Config extends ComponentConfig> {
     }
 
     /**
-     * Returns an array of all CSS classes of the component.
-     * @returns {string[]}
+     * Returns a string of all CSS classes of the component.
+     * @returns {string}
      */
-    protected getCssClasses() : string[] {
-        return [this.config.cssClass].concat(this.config.cssClasses);
+    protected getCssClasses() : string {
+        // Merge all CSS classes into single array
+        let flattenedArray = [this.config.cssClass].concat(this.config.cssClasses);
+        // Join array values into a string
+        let flattenedString = flattenedArray.join(' ');
+        // Return trimmed string to prevent whitespace at the end from the join operation
+        return flattenedString.trim();
     }
 }
