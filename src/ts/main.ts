@@ -23,6 +23,9 @@ var conf = {
     key: 'YOUR KEY HERE',
     source: {
         dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
+    },
+    style: {
+        ux: false
     }
 };
 
