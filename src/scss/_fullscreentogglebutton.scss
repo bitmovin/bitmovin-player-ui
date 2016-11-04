@@ -1,0 +1,15 @@
+@import "button";
+
+.ui-fullscreentogglebutton {
+  @extend .ui-button;
+
+  background-color: gray;
+
+  &.fullscreen {
+    background-color: green;
+  }
+
+  &.window {
+    background-color: red;
+  }
+}

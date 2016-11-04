@@ -9,13 +9,15 @@ import {PlaybackToggleButton} from "./playbacktogglebutton";
 // NOTE do not use the jquery object directly, only use it through DOM
 // TODO find a way around this hacky setup
 import jquery = require("jquery");
+import {FullscreenToggleButton} from "./fullscreentogglebutton";
 DOM.setJQuery(jquery);
 
 // Build UI
 var button1 = new Button({id: 'b1', text: 'Play'});
 var button2 = new Button({id: 'b2', text: 'Pause'});
 var playbackToggleButton = new PlaybackToggleButton({text: 'Play/Pause'});
-var controlBar = new ControlBar({components: [button1, button2, playbackToggleButton]});
+var fullscreenToggleButton = new FullscreenToggleButton({text: 'Fullscreen'});
+var controlBar = new ControlBar({components: [button1, button2, playbackToggleButton, fullscreenToggleButton]});
 var ui = new Wrapper({ components: [controlBar]});
 console.log(ui);
 

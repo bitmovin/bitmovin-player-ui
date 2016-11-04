@@ -21,11 +21,11 @@
   width: 100%;
   background-color: aquamarine; }
 
-.ui-button, .ui-playbacktogglebutton {
+.ui-button, .ui-playbacktogglebutton, .ui-fullscreentogglebutton {
   font-size: 1em;
   margin: 0.1em; }
 
-.ui-button, .ui-playbacktogglebutton {
+.ui-button, .ui-playbacktogglebutton, .ui-fullscreentogglebutton {
   font-size: 1em;
   margin: 0.1em; }
 
@@ -34,4 +34,15 @@
   .ui-playbacktogglebutton.playing {
     background-color: green; }
   .ui-playbacktogglebutton.paused {
+    background-color: red; }
+
+.ui-button, .ui-playbacktogglebutton, .ui-fullscreentogglebutton {
+  font-size: 1em;
+  margin: 0.1em; }
+
+.ui-fullscreentogglebutton {
+  background-color: gray; }
+  .ui-fullscreentogglebutton.fullscreen {
+    background-color: green; }
+  .ui-fullscreentogglebutton.window {
     background-color: red; }

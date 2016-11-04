@@ -3,6 +3,7 @@ import {DOM} from "./dom";
 import {Component, ComponentConfig} from "./component";
 import {Container, ContainerConfig} from "./container";
 import {PlaybackToggleButton} from "./playbacktogglebutton";
+import {FullscreenToggleButton} from "./fullscreentogglebutton";
 
 export class UIManager {
 
@@ -33,6 +34,20 @@ export class UIManager {
                 } else {
                     playbackToggleButton.play();
                     p.play();
+                }
+            })
+        }
+        else if (component instanceof FullscreenToggleButton) {
+            let fullscreenToggleButton = <FullscreenToggleButton> component;
+            let p = this.player;
+
+            fullscreenToggleButton.getDomElement().on('click', function () {
+                if (p.isFullscreen()) {
+                    fullscreenToggleButton.window();
+                    p.exitFullscreen();
+                } else {
+                    fullscreenToggleButton.fullscreen();
+                    p.enterFullscreen();
                 }
             })
         }
