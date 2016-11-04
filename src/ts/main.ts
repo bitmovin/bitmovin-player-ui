@@ -29,6 +29,13 @@ var conf = {
 player.setup(conf).then(function() {
     // When player is loaded, add UI
     DOM.JQuery('#player').append(container.toDomElement());
+
+    DOM.JQuery('#b1').click(function() {
+        player.play();
+    });
+    DOM.JQuery('#b2').click(function() {
+        player.pause();
+    });
 }, function() {
     // Error
 });
