@@ -20,9 +20,9 @@ declare var bitmovin: any;
 var player = window.bitmovin.player('player');
 
 var conf = {
-    key:              'YOUR KEY HERE',
+    key: 'YOUR KEY HERE',
     source: {
-        dash:           'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
+        dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
     }
 };
 
