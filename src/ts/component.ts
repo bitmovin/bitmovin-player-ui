@@ -33,9 +33,9 @@ export abstract class Component {
     }
 
     /**
-     * Generate HTML markup for this component.
+     * Generate DOM element for this component. This element can then be added to the HTML document.
      */
-    abstract toHtml(): string;
+    abstract toDomElement(): JQuery;
 
     /**
      * Merges config values into a default config and returns the merged config.

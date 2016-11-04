@@ -23,12 +23,13 @@ export class Button extends Component {
         });
     }
 
-    toHtml(): string {
+    toDomElement(): JQuery {
         var buttonElement = DOM.JQuery(`<button>`, {
             id: this.config.id,
             class: this.config.cssClass
         });
-        return buttonElement.prop('outerHTML');
+
+        return buttonElement;
     }
 
 }

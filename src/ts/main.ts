@@ -10,4 +10,5 @@ var button2 = new Button({id: 'b2', text: 'bla'});
 
 var container = new Container({components: [button1, button2]});
 console.log(container);
-console.log(container.toHtml());
+
+DOM.JQuery('#player').append(container.toDomElement());

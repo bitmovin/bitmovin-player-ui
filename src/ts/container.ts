@@ -34,19 +34,16 @@ export class Container extends Component {
         ArrayUtils.remove(this.config.components, component);
     }
 
-    toHtml(): string {
+    toDomElement(): JQuery {
         var containerElement = DOM.JQuery(`<${this.config.tag}>`, {
             id: this.config.id,
             class: this.config.cssClass
         });
 
         for (let component of this.config.components) {
-            console.log('bbb');
-            console.log(component);
-            // TODO avoid component -> htmlstring -> jqueryobject -> htmlstring conversion
-            containerElement.append(DOM.JQuery(component.toHtml()));
+            containerElement.append(component.toDomElement());
         }
 
-        return containerElement.prop('outerHTML');
+        return containerElement;
     }
 }
