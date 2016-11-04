@@ -11,8 +11,8 @@ DOM.setJQuery(jquery);
 // Build UI
 var button1 = new Button({id: 'b1', text: 'blubb'});
 var button2 = new Button({id: 'b2', text: 'bla'});
-
-var container = new Container({components: [button1, button2]});
+var controlBar = new Container({cssClass: 'ui-controlbar', components: [button1, button2]});
+var container = new Container({cssClass: 'ui-wrapper', components: [controlBar]});
 console.log(container);
 
 // Add UI to player

@@ -7,6 +7,30 @@
     width: 16em;
     height: 9em; }
 
+.ui-container, .ui-wrapper, .ui-controlbar {
+  font-size: 1em; }
+
+.ui-container, .ui-wrapper, .ui-controlbar {
+  font-size: 1em; }
+
+.ui-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  font-size: 1em; }
+
+.ui-container, .ui-wrapper, .ui-controlbar {
+  font-size: 1em; }
+
+.ui-controlbar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: aquamarine; }
+
+.ui-button {
+  font-size: 1em; }
+
 html {
   margin: 1em;
   font-size: 3em; }

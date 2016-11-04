@@ -1,0 +1,10 @@
+@import 'container';
+
+.ui-controlbar {
+  @extend .ui-container;
+
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: aquamarine;
+}
