@@ -26,55 +26,67 @@ export class UIManager {
 
     private configureControls(component: Component<ComponentConfig>) {
         if (component instanceof PlaybackToggleButton) {
-            let playbackToggleButton = <PlaybackToggleButton> component;
-            let p = this.player;
-
-            let playbackStateHandler = function() {
-                if (p.isPlaying()) {
-                    playbackToggleButton.play();
-                } else {
-                    playbackToggleButton.pause();
-                }
-            };
-
-            p.addEventHandler(bitmovin.player.EVENT.ON_PLAY, playbackStateHandler);
-            p.addEventHandler(bitmovin.player.EVENT.ON_PAUSE, playbackStateHandler);
-
-            playbackToggleButton.getDomElement().on('click', function () {
-                if (p.isPlaying()) {
-                    p.pause();
-                } else {
-                    p.play();
-                }
-            })
+            this.configurePlaybackToggleButton(component);
         }
         else if (component instanceof FullscreenToggleButton) {
-            let fullscreenToggleButton = <FullscreenToggleButton> component;
-            let p = this.player;
-
-            let fullscreenStateHandler = function() {
-                if (p.isFullscreen()) {
-                    fullscreenToggleButton.fullscreen();
-                } else {
-                    fullscreenToggleButton.window();
-                }
-            };
-
-            p.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, fullscreenStateHandler);
-            p.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, fullscreenStateHandler);
-
-            fullscreenToggleButton.getDomElement().on('click', function () {
-                if (p.isFullscreen()) {
-                    p.exitFullscreen();
-                } else {
-                    p.enterFullscreen();
-                }
-            })
+            this.configureFullscreenToggleButton(component);
         }
         else if (component instanceof Container) {
             for (let childComponent of component.getComponents()) {
                 this.configureControls(childComponent);
             }
         }
+    }
+
+    private configurePlaybackToggleButton(playbackToggleButton: PlaybackToggleButton) {
+        // Get a local reference to the player for use inside event handlers in a different scope
+        let p = this.player;
+
+        // Handler to update button state based on player state
+        let playbackStateHandler = function () {
+            if (p.isPlaying()) {
+                playbackToggleButton.play();
+            } else {
+                playbackToggleButton.pause();
+            }
+        };
+
+        // Call handler upon these events
+        p.addEventHandler(bitmovin.player.EVENT.ON_PLAY, playbackStateHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_PAUSE, playbackStateHandler);
+
+        // Control player by button events
+        // When a button event triggers a player API call, events are fired which in turn call the event handler
+        // above that updated the button state.
+        playbackToggleButton.getDomElement().on('click', function () {
+            if (p.isPlaying()) {
+                p.pause();
+            } else {
+                p.play();
+            }
+        });
+    }
+
+    private configureFullscreenToggleButton(fullscreenToggleButton: FullscreenToggleButton) {
+        let p = this.player;
+
+        let fullscreenStateHandler = function () {
+            if (p.isFullscreen()) {
+                fullscreenToggleButton.fullscreen();
+            } else {
+                fullscreenToggleButton.window();
+            }
+        };
+
+        p.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, fullscreenStateHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, fullscreenStateHandler);
+
+        fullscreenToggleButton.getDomElement().on('click', function () {
+            if (p.isFullscreen()) {
+                p.exitFullscreen();
+            } else {
+                p.enterFullscreen();
+            }
+        });
     }
 }
