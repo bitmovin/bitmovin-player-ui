@@ -28,8 +28,7 @@ var browserifyInstance = browserify({
     entries: paths.source.ts,
     cache: {},
     packageCache: {}
-})
-    .plugin(tsify);
+}).plugin(tsify);
 
 gulp.task('clean', del.bind(null, [paths.target.html]));
 
