@@ -8,6 +8,7 @@ var autoprefixer = require('gulp-autoprefixer');
 var sourcemaps = require('gulp-sourcemaps');
 var del = require('del');
 var runSequence = require('run-sequence');
+var browserSync = require('browser-sync');
 
 var paths = {
     source: {
@@ -41,7 +42,8 @@ gulp.task('browserify', function () {
     return browserifyInstance
         .bundle()
         .pipe(source('bundle.js'))
-        .pipe(gulp.dest(paths.target.js));
+        .pipe(gulp.dest(paths.target.js))
+        .pipe(browserSync.reload({stream: true}));
 });
 
 gulp.task('sass', function () {
@@ -50,7 +52,8 @@ gulp.task('sass', function () {
         .pipe(sass().on('error', sass.logError))
         .pipe(autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(paths.target.css));
+        .pipe(gulp.dest(paths.target.css))
+        .pipe(browserSync.reload({stream: true}));
 });
 
 gulp.task('build', function(callback) {
@@ -78,4 +81,20 @@ gulp.task('watch', function () {
             gulp.start('browserify');
         })
         .bundle();
+});
+
+gulp.task('serve', function () {
+    runSequence(['build'], function () {
+        browserSync({
+            notify: false,
+            port: 9000,
+            server: {
+                baseDir: [paths.target.html]
+            }
+        });
+
+        gulp.watch(paths.source.sass, ['sass']);
+        gulp.watch(paths.source.html, ['html']).on('change', browserSync.reload);
+        gulp.watch(paths.source.ts, ['browserify']);
+    });
 });
