@@ -14,7 +14,7 @@ var button1 = new Button<ButtonConfig>({id: 'b1', text: 'Play'});
 var button2 = new Button<ButtonConfig>({id: 'b2', text: 'Pause'});
 var playbackToggleButton = new PlaybackToggleButton({text: 'Play/Pause'});
 var fullscreenToggleButton = new FullscreenToggleButton({text: 'Fullscreen'});
-var vrToggleButton = new VRToggleButton({text: 'Fullscreen'});
+var vrToggleButton = new VRToggleButton({text: 'VR'});
 var controlBar = new ControlBar({components: [button1, button2, playbackToggleButton, fullscreenToggleButton, vrToggleButton]});
 var ui = new Wrapper({ components: [controlBar]});
 console.log(ui);
