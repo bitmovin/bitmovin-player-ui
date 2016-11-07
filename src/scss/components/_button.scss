@@ -3,4 +3,9 @@
   margin: 0.1em;
   background-repeat: no-repeat;
   background-position: center;
+  min-width: 2em;
+
+  .label {
+    //visibility: hidden;
+  }
 }

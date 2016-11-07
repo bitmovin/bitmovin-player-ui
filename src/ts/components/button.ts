@@ -26,7 +26,9 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
             'type': 'button',
             'id': this.config.id,
             'class': this.getCssClasses()
-        }).html(this.config.text);
+        }).append(DOM.JQuery(`<span>`, {
+            'class': 'label'
+        }).html(this.config.text));
 
         return buttonElement;
     }
