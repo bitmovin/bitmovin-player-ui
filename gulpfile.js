@@ -15,7 +15,8 @@ var paths = {
     source: {
         html: ['./src/html/*.html'],
         ts: ['./src/ts/main.ts'],
-        sass: ['./src/scss/*.scss']
+        tsWatch: ['./src/ts/**/*.ts'],
+        sass: ['./src/scss/**/*.scss']
     },
     target: {
         html: './dist',
@@ -104,6 +105,6 @@ gulp.task('serve', function () {
 
         gulp.watch(paths.source.sass, ['sass']);
         gulp.watch(paths.source.html, ['html']).on('change', browserSync.reload);
-        gulp.watch(paths.source.ts, ['browserify']);
+        gulp.watch(paths.source.tsWatch, ['browserify']);
     });
 });
