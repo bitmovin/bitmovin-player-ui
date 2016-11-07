@@ -12,9 +12,9 @@ import {VRToggleButton} from "./components/vrtogglebutton";
 // Build UI
 var button1 = new Button<ButtonConfig>({id: 'b1', text: 'Play'});
 var button2 = new Button<ButtonConfig>({id: 'b2', text: 'Pause'});
-var playbackToggleButton = new PlaybackToggleButton({});
-var fullscreenToggleButton = new FullscreenToggleButton({});
-var vrToggleButton = new VRToggleButton({});
+var playbackToggleButton = new PlaybackToggleButton();
+var fullscreenToggleButton = new FullscreenToggleButton();
+var vrToggleButton = new VRToggleButton();
 var controlBar = new ControlBar({components: [button1, button2, playbackToggleButton, fullscreenToggleButton, vrToggleButton]});
 var ui = new Wrapper({ components: [controlBar]});
 console.log(ui);
