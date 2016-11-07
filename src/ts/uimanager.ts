@@ -4,6 +4,7 @@ import {Component, ComponentConfig} from "./components/component";
 import {Container, ContainerConfig} from "./components/container";
 import {PlaybackToggleButton} from "./components/playbacktogglebutton";
 import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
+import {VRToggleButton} from "./components/vrtogglebutton";
 
 declare var bitmovin: any;
 
@@ -30,6 +31,9 @@ export class UIManager {
         }
         else if (component instanceof FullscreenToggleButton) {
             this.configureFullscreenToggleButton(component);
+        }
+        else if (component instanceof VRToggleButton) {
+            this.configureVRToggleButton(component);
         }
         else if (component instanceof Container) {
             for (let childComponent of component.getComponents()) {
@@ -86,6 +90,29 @@ export class UIManager {
                 p.exitFullscreen();
             } else {
                 p.enterFullscreen();
+            }
+        });
+    }
+
+    private configureVRToggleButton(vrToggleButton: VRToggleButton) {
+        let p = this.player;
+
+        let vrStateHandler = function () {
+            if (p.getVRStatus().isStereo) {
+                vrToggleButton.on();
+            } else {
+                vrToggleButton.off();
+            }
+        };
+
+        p.addEventHandler(bitmovin.player.EVENT.ON_VR_MODE_CHANGED, vrStateHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_VR_STEREO_CHANGED, vrStateHandler);
+
+        vrToggleButton.getDomElement().on('click', function () {
+            if (p.getVRStatus().isStereo) {
+                p.setVRStereo(false);
+            } else {
+                p.setVRStereo(true);
             }
         });
     }
