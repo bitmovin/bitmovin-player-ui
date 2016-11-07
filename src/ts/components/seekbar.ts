@@ -32,6 +32,10 @@ export class SeekBar extends Component<SeekBarConfig> {
             'class': this.getCssClasses()
         });
 
+        var seekBar = DOM.JQuery(`<div>`, {
+            'class': 'seekbar'
+        });
+
         // Indicator that shows the buffer fill level
         var seekBarBufferLevel = DOM.JQuery(`<div>`, {
             'class': 'seekbar-bufferlevel'
@@ -50,9 +54,14 @@ export class SeekBar extends Component<SeekBarConfig> {
         });
         this._seekBarSeekPosition = seekBarSeekPosition;
 
-        seekBarContainer.append(seekBarBufferLevel, seekBarPlaybackPosition, seekBarSeekPosition);
+        seekBar.append(seekBarBufferLevel, seekBarPlaybackPosition, seekBarSeekPosition);
+        seekBarContainer.append(seekBar);
 
         return seekBarContainer;
+    }
+
+    getSeekBar() : JQuery {
+        return this.getDomElement().children('.seekbar');
     }
 
     setPlaybackPosition(percent: number) {

@@ -173,8 +173,8 @@ export class UIManager {
 
         // Get the offset of an event within the seekbar
         let getHorizontalMouseOffset = function (e: JQueryEventObject) {
-            let elementOffsetPx = seekBar.getDomElement().offset().left;
-            let widthPx = seekBar.getDomElement().width();
+            let elementOffsetPx = seekBar.getSeekBar().offset().left;
+            let widthPx = seekBar.getSeekBar().width();
             let offsetPx = e.pageX - elementOffsetPx;
             let offset = 1 / widthPx * offsetPx;
 
@@ -189,19 +189,19 @@ export class UIManager {
         };
 
         // Seek to target time when seekbar is clicked
-        seekBar.getDomElement().on('click', function (e) {
+        seekBar.getSeekBar().on('click', function (e) {
             let targetTime = p.getDuration() * getHorizontalMouseOffset(e);
             p.seek(targetTime);
         });
 
         // Display seek target indicator when mouse moves over seekbar
-        seekBar.getDomElement().on('mousemove', function (e) {
+        seekBar.getSeekBar().on('mousemove', function (e) {
             let offset = getHorizontalMouseOffset(e);
             seekBar.setSeekPosition(100 * offset);
         });
 
         // Hide seek target indicator when mouse leaves seekbar
-        seekBar.getDomElement().on('mouseleave', function (e) {
+        seekBar.getSeekBar().on('mouseleave', function (e) {
             seekBar.setSeekPosition(0);
         });
     }

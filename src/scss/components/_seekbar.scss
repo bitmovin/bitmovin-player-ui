@@ -2,32 +2,36 @@
 
 .ui-seekbar {
   font-size: 1em;
-  background-color: lighten($controlbar-background-color, 10%);
   height: 1em;
-  position: relative;
   margin: 0.2em;
-  overflow-x: hidden;
 
-  %bar {
-    margin: 0.2em;
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-  }
 
-  .seekbar-bufferlevel {
-    @extend %bar;
-    background-color: transparentize(white, 0.8);
-  }
+  .seekbar {
+    position: relative;
+    overflow-x: hidden;
+    height: 100%;
+    background-color: lighten($controlbar-background-color, 10%);
 
-  .seekbar-seekposition {
-    @extend %bar;
-    background-color: transparentize(black, 0.8);
-  }
+    %bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
 
-  .seekbar-playbackposition {
-    @extend %bar;
-    border-right: 0.3em solid white;
+    .seekbar-bufferlevel {
+      @extend %bar;
+      background-color: transparentize(white, 0.8);
+    }
+
+    .seekbar-seekposition {
+      @extend %bar;
+      background-color: transparentize(black, 0.8);
+    }
+
+    .seekbar-playbackposition {
+      @extend %bar;
+      border-right: 0.3em solid white;
+    }
   }
 }
