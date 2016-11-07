@@ -169,8 +169,11 @@ export class UIManager {
             }
         };
 
-        p.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED , playbackPositionHandler);
-        p.addEventHandler(bitmovin.player.EVENT.ON_STOP_BUFFERING , playbackPositionHandler);
+        // Update seekbar upon these events
+        p.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackPositionHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_STOP_BUFFERING, playbackPositionHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler);
 
         // Get the offset of an event within the seekbar
         let getHorizontalMouseOffset = function (e: JQueryEventObject) {
