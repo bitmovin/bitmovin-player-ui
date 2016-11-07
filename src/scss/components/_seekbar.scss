@@ -18,18 +18,15 @@
   .seekbar-bufferlevel {
     @extend %bar;
     background-color: aquamarine;
-    width: 60%;
   }
 
   .seekbar-seekposition {
     @extend %bar;
-    background-color: aqua;
-    width: 30%;
+    background-color: transparentize(aqua, 0.5);
   }
 
   .seekbar-playbackposition {
     @extend %bar;
     background-color: blueviolet;
-    width: 50%;
   }
 }

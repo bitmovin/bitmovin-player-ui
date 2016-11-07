@@ -155,6 +155,7 @@ export class UIManager {
     private configureSeekBar(seekBar: SeekBar) {
         let p = this.player;
 
+        // Update playback and buffer positions
         let playbackPositionHandler = function () {
             if(p.getDuration() == Infinity) {
                 if(console) console.log("LIVE stream, seeking disabled");
@@ -170,21 +171,37 @@ export class UIManager {
         p.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED , playbackPositionHandler);
         p.addEventHandler(bitmovin.player.EVENT.ON_STOP_BUFFERING , playbackPositionHandler);
 
-        seekBar.getDomElement().on('click', function (e) {
-            let widthPx = DOM.JQuery(this).width();
+        // Get the offset of an event within the seekbar
+        let getHorizontalMouseOffset = function (e: JQueryEventObject) {
+            let widthPx = seekBar.getDomElement().width();
             let offsetPx = e.pageX;
             let offset = 1 / widthPx * offsetPx;
-            let targetTime = p.getDuration() * offset;
 
             console.log({
                 widthPx: widthPx,
                 offsetPx: offsetPx,
                 duration: p.getDuration(),
                 offset: offset,
-                targetTime: targetTime
             });
 
+            return offset;
+        };
+
+        // Seek to target time when seekbar is clicked
+        seekBar.getDomElement().on('click', function (e) {
+            let targetTime = p.getDuration() * getHorizontalMouseOffset(e);
             p.seek(targetTime);
+        });
+
+        // Display seek target indicator when mouse moves over seekbar
+        seekBar.getDomElement().on('mousemove', function (e) {
+            let offset = getHorizontalMouseOffset(e);
+            seekBar.setSeekPosition(100 * offset);
+        });
+
+        // Hide seek target indicator when mouse leaves seekbar
+        seekBar.getDomElement().on('mouseleave', function (e) {
+            seekBar.setSeekPosition(0);
         });
     }
 }
