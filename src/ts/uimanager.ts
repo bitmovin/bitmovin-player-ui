@@ -6,6 +6,7 @@ import {PlaybackToggleButton} from "./components/playbacktogglebutton";
 import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
 import {VRToggleButton} from "./components/vrtogglebutton";
 import {VolumeToggleButton} from "./components/volumetogglebutton";
+import {SeekBar} from "./components/seekbar";
 
 declare var bitmovin: any;
 
@@ -38,6 +39,9 @@ export class UIManager {
         }
         else if (component instanceof VolumeToggleButton) {
             this.configureVolumeToggleButton(component);
+        }
+        else if (component instanceof SeekBar) {
+            this.configureSeekBar(component);
         }
         else if (component instanceof Container) {
             for (let childComponent of component.getComponents()) {
@@ -145,6 +149,42 @@ export class UIManager {
             } else {
                 p.mute();
             }
+        });
+    }
+
+    private configureSeekBar(seekBar: SeekBar) {
+        let p = this.player;
+
+        let playbackPositionHandler = function () {
+            if(p.getDuration() == Infinity) {
+                if(console) console.log("LIVE stream, seeking disabled");
+            } else {
+                let playbackPositionPercentage = 100 / p.getDuration() * p.getCurrentTime();
+                seekBar.setPlaybackPosition(playbackPositionPercentage);
+
+                let bufferPercentage = 100 / p.getDuration() * p.getVideoBufferLength();
+                seekBar.setBufferPosition(playbackPositionPercentage + bufferPercentage);
+            }
+        };
+
+        p.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED , playbackPositionHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_STOP_BUFFERING , playbackPositionHandler);
+
+        seekBar.getDomElement().on('click', function (e) {
+            let widthPx = DOM.JQuery(this).width();
+            let offsetPx = e.pageX;
+            let offset = 1 / widthPx * offsetPx;
+            let targetTime = p.getDuration() * offset;
+
+            console.log({
+                widthPx: widthPx,
+                offsetPx: offsetPx,
+                duration: p.getDuration(),
+                offset: offset,
+                targetTime: targetTime
+            });
+
+            p.seek(targetTime);
         });
     }
 }

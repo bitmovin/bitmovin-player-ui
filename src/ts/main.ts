@@ -9,6 +9,7 @@ import {PlaybackToggleButton} from "./components/playbacktogglebutton";
 import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
 import {VRToggleButton} from "./components/vrtogglebutton";
 import {VolumeToggleButton} from "./components/volumetogglebutton";
+import {SeekBar} from "./components/seekbar";
 
 // Build UI
 var button1 = new Button<ButtonConfig>({id: 'b1', text: 'Play'});
@@ -17,8 +18,9 @@ var playbackToggleButton = new PlaybackToggleButton();
 var fullscreenToggleButton = new FullscreenToggleButton();
 var vrToggleButton = new VRToggleButton();
 var volumeToggleButton = new VolumeToggleButton();
+var seekBar = new SeekBar();
 var controlBar = new ControlBar({components: [button1, button2, playbackToggleButton,
-    fullscreenToggleButton, vrToggleButton, volumeToggleButton]});
+    fullscreenToggleButton, vrToggleButton, volumeToggleButton, seekBar]});
 var ui = new Wrapper({ components: [controlBar]});
 console.log(ui);
 

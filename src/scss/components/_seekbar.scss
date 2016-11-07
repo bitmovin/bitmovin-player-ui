@@ -1,0 +1,35 @@
+@import "../variables";
+
+.ui-seekbar {
+  font-size: 1em;
+  background-color: lighten($controlbar-background-color, 40%);
+  height: 1em;
+  position: relative;
+  margin: 0.2em;
+
+  %bar {
+    margin: 0.2em;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+  }
+
+  .seekbar-bufferlevel {
+    @extend %bar;
+    background-color: aquamarine;
+    width: 60%;
+  }
+
+  .seekbar-seekposition {
+    @extend %bar;
+    background-color: aqua;
+    width: 30%;
+  }
+
+  .seekbar-playbackposition {
+    @extend %bar;
+    background-color: blueviolet;
+    width: 50%;
+  }
+}
