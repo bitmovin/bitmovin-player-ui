@@ -178,12 +178,12 @@ export class UIManager {
             let offsetPx = e.pageX - elementOffsetPx;
             let offset = 1 / widthPx * offsetPx;
 
-            console.log({
-                widthPx: widthPx,
-                offsetPx: offsetPx,
-                duration: p.getDuration(),
-                offset: offset,
-            });
+            // console.log({
+            //     widthPx: widthPx,
+            //     offsetPx: offsetPx,
+            //     duration: p.getDuration(),
+            //     offset: offset,
+            // });
 
             return offset;
         };
