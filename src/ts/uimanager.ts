@@ -66,7 +66,7 @@ export class UIManager {
         // Call handler upon these events
         p.addEventHandler(bitmovin.player.EVENT.ON_PLAY, playbackStateHandler);
         p.addEventHandler(bitmovin.player.EVENT.ON_PAUSE, playbackStateHandler);
-        p.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED , playbackStateHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler); // when playback finishes, player turns to paused mode
 
         // Control player by button events
         // When a button event triggers a player API call, events are fired which in turn call the event handler
@@ -170,10 +170,10 @@ export class UIManager {
         };
 
         // Update seekbar upon these events
-        p.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackPositionHandler);
-        p.addEventHandler(bitmovin.player.EVENT.ON_STOP_BUFFERING, playbackPositionHandler);
-        p.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler);
-        p.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackPositionHandler); // update playback position when it changes
+        p.addEventHandler(bitmovin.player.EVENT.ON_STOP_BUFFERING, playbackPositionHandler); // update bufferlevel when buffering is complete
+        p.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler); // update playback position when a seek has finished
+        p.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler); // update bufferlevel when a segment has been downloaded
 
         p.addEventHandler(bitmovin.player.EVENT.ON_SEEK, function () {
             seekBar.setSeeking(true);
