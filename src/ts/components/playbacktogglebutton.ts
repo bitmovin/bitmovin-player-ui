@@ -6,7 +6,8 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-playbacktogglebutton'
+            cssClass: 'ui-playbacktogglebutton',
+            text: 'Play/Pause'
         });
     }
 
