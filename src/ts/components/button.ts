@@ -11,7 +11,7 @@ export interface ButtonConfig extends ComponentConfig {
     text?: string;
 }
 
-export class Button extends Component<ButtonConfig> {
+export class Button<Config extends ButtonConfig> extends Component<ButtonConfig> {
 
     constructor(config: ButtonConfig) {
         super(config);

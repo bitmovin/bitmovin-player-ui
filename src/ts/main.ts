@@ -2,15 +2,15 @@ import {DOM} from "./dom";
 import jquery = require("jquery");
 DOM.setJQuery(jquery); // TODO find a way around this hacky setup
 import {UIManager} from "./uimanager";
-import {Button} from "./components/button";
+import {Button, ButtonConfig} from "./components/button";
 import {Wrapper} from "./components/wrapper";
 import {ControlBar} from "./components/controlbar";
 import {PlaybackToggleButton} from "./components/playbacktogglebutton";
 import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
 
 // Build UI
-var button1 = new Button({id: 'b1', text: 'Play'});
-var button2 = new Button({id: 'b2', text: 'Pause'});
+var button1 = new Button<ButtonConfig>({id: 'b1', text: 'Play'});
+var button2 = new Button<ButtonConfig>({id: 'b2', text: 'Pause'});
 var playbackToggleButton = new PlaybackToggleButton({text: 'Play/Pause'});
 var fullscreenToggleButton = new FullscreenToggleButton({text: 'Fullscreen'});
 var controlBar = new ControlBar({components: [button1, button2, playbackToggleButton, fullscreenToggleButton]});

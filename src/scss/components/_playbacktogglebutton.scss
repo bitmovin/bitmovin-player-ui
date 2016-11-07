@@ -3,13 +3,19 @@
 .ui-playbacktogglebutton {
   @extend .ui-button;
 
-  background-color: gray;
-
-  &.playing {
-    background-color: green;
+  background-image: url('../../assets/images/components/normal/play.png');
+  &:hover {
+    background-image: url('../../assets/images/components/hover/play.png');
   }
 
-  &.paused {
+  &.on {
+    background-image: url('../../assets/images/components/normal/pause.png');
+    &:hover {
+      background-image: url('../../assets/images/components/hover/pause.png');
+    }
+  }
+
+  &.off {
     background-color: red;
   }
 }

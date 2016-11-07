@@ -5,11 +5,11 @@
 
   background-color: gray;
 
-  &.fullscreen {
+  &.on {
     background-color: green;
   }
 
-  &.window {
+  &.off {
     background-color: red;
   }
 }

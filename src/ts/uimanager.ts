@@ -45,9 +45,9 @@ export class UIManager {
         // Handler to update button state based on player state
         let playbackStateHandler = function () {
             if (p.isPlaying()) {
-                playbackToggleButton.play();
+                playbackToggleButton.on();
             } else {
-                playbackToggleButton.pause();
+                playbackToggleButton.off();
             }
         };
 
@@ -72,9 +72,9 @@ export class UIManager {
 
         let fullscreenStateHandler = function () {
             if (p.isFullscreen()) {
-                fullscreenToggleButton.fullscreen();
+                fullscreenToggleButton.on();
             } else {
-                fullscreenToggleButton.window();
+                fullscreenToggleButton.off();
             }
         };
 
