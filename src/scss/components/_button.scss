@@ -6,9 +6,10 @@
   background-repeat: no-repeat;
   background-position: center;
   min-width: 2em;
+  height: 1em;
 
   .label {
-    //visibility: hidden;
+    display: none;
     color: white;
     font-size: 0.8em;
   }
