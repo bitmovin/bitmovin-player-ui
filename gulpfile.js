@@ -4,12 +4,14 @@ var source = require('vinyl-source-stream');
 var tsify = require('tsify');
 var watchify = require('watchify');
 var sass = require('gulp-sass');
-var autoprefixer = require('gulp-autoprefixer');
 var sourcemaps = require('gulp-sourcemaps');
 var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 var cssBase64 = require('gulp-css-base64');
+var postcss = require('gulp-postcss');
+var postcssSVG = require('postcss-svg');
+var autoprefixer = require('autoprefixer');
 
 var paths = {
     source: {
@@ -53,10 +55,15 @@ gulp.task('browserify', function () {
 
 // Compiles SASS stylesheets to CSS stylesheets in the target directory, adds autoprefixes and creates sourcemaps
 gulp.task('sass', function () {
+    var processors = [
+        autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}),
+        postcssSVG()
+    ];
+
     gulp.src(paths.source.sass)
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
-        .pipe(autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
+        .pipe(postcss(processors))
         .pipe(cssBase64())
         .pipe(sourcemaps.write())
         .pipe(gulp.dest(paths.target.css))

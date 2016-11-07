@@ -3,17 +3,17 @@
 .ui-vrtogglebutton {
   @extend .ui-button;
 
-  background-image: url('../../assets/images/components/normal/stereo.svg');
-  fill: #969696;
+  // svg() usage: http://pavliko.github.io/postcss-svg/
+  background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #969696');
 
   &:hover {
-    fill: #c8c8c8;
+    background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #c8c8c8;');
   }
 
   &.on {
-    fill: #0294c6;
+    background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #0294c6;');
     &:hover {
-      fill: #2eabe2;
+      background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #2eabe2;');
     }
   }
 
