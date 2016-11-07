@@ -1,15 +1,15 @@
-import {Button} from "./button";
-import {Wrapper} from "./wrapper";
+import {Button} from "./components/button";
+import {Wrapper} from "./components/wrapper";
 import {DOM} from "./dom";
-import {ControlBar} from "./controlbar";
+import {ControlBar} from "./components/controlbar";
 import {UIManager} from "./uimanager";
-import {PlaybackToggleButton} from "./playbacktogglebutton";
+import {PlaybackToggleButton} from "./components/playbacktogglebutton";
 
 // Setup JQuery
 // NOTE do not use the jquery object directly, only use it through DOM
 // TODO find a way around this hacky setup
 import jquery = require("jquery");
-import {FullscreenToggleButton} from "./fullscreentogglebutton";
+import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
 DOM.setJQuery(jquery);
 
 // Build UI

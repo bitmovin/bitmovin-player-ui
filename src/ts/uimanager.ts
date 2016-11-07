@@ -1,9 +1,9 @@
-import {Wrapper} from "./wrapper";
+import {Wrapper} from "./components/wrapper";
 import {DOM} from "./dom";
-import {Component, ComponentConfig} from "./component";
-import {Container, ContainerConfig} from "./container";
-import {PlaybackToggleButton} from "./playbacktogglebutton";
-import {FullscreenToggleButton} from "./fullscreentogglebutton";
+import {Component, ComponentConfig} from "./components/component";
+import {Container, ContainerConfig} from "./components/container";
+import {PlaybackToggleButton} from "./components/playbacktogglebutton";
+import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
 
 declare var bitmovin: any;
 

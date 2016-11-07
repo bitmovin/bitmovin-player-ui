@@ -1,15 +1,15 @@
-@import "button";
+@import "components/_button";
 
-.ui-fullscreentogglebutton {
+.ui-playbacktogglebutton {
   @extend .ui-button;
 
   background-color: gray;
 
-  &.fullscreen {
+  &.playing {
     background-color: green;
   }
 
-  &.window {
+  &.paused {
     background-color: red;
   }
 }

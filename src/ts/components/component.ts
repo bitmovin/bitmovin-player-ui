@@ -1,5 +1,5 @@
-import {Guid} from "./guid";
-import {DOM} from "./dom";
+import {Guid} from "../guid";
+import {DOM} from "../dom";
 
 /**
  * Base configuration interface with common options for all kinds of components.
