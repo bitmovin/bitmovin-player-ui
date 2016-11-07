@@ -6,6 +6,8 @@ var watchify = require("watchify");
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var sourcemaps = require('gulp-sourcemaps');
+var del = require('del');
+var runSequence = require('run-sequence');
 
 var paths = {
     source: {
@@ -29,6 +31,8 @@ var browserifyInstance = browserify({
 })
     .plugin(tsify);
 
+gulp.task('clean', del.bind(null, [paths.target.html]));
+
 gulp.task("html", function () {
     return gulp.src(paths.source.html)
         .pipe(gulp.dest(paths.target.html));
@@ -50,7 +54,15 @@ gulp.task('sass', function () {
         .pipe(gulp.dest(paths.target.css));
 });
 
-gulp.task("default", ["html", "browserify", "sass"]);
+gulp.task('build', function(callback) {
+    // First run 'clean', then the other tasks
+    // TODO remove runSequence on Gulp 4.0 and use built in serial execution instead
+    runSequence('clean',
+        ["html", "browserify", "sass"],
+        callback);
+});
+
+gulp.task("default", ["build"]);
 
 gulp.task("watch", function () {
     // Watch for changed html files
