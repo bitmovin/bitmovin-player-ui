@@ -1,8 +1,8 @@
-var gulp = require("gulp");
-var browserify = require("browserify");
+var gulp = require('gulp');
+var browserify = require('browserify');
 var source = require('vinyl-source-stream');
-var tsify = require("tsify");
-var watchify = require("watchify");
+var tsify = require('tsify');
+var watchify = require('watchify');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var sourcemaps = require('gulp-sourcemaps');
@@ -33,12 +33,12 @@ var browserifyInstance = browserify({
 
 gulp.task('clean', del.bind(null, [paths.target.html]));
 
-gulp.task("html", function () {
+gulp.task('html', function () {
     return gulp.src(paths.source.html)
         .pipe(gulp.dest(paths.target.html));
 });
 
-gulp.task("browserify", function () {
+gulp.task('browserify', function () {
     return browserifyInstance
         .bundle()
         .pipe(source('bundle.js'))
@@ -58,13 +58,13 @@ gulp.task('build', function(callback) {
     // First run 'clean', then the other tasks
     // TODO remove runSequence on Gulp 4.0 and use built in serial execution instead
     runSequence('clean',
-        ["html", "browserify", "sass"],
+        ['html', 'browserify', 'sass'],
         callback);
 });
 
-gulp.task("default", ["build"]);
+gulp.task('default', ['build']);
 
-gulp.task("watch", function () {
+gulp.task('watch', function () {
     // Watch for changed html files
     gulp.watch(paths.source.html, ['html']);
 
@@ -76,7 +76,7 @@ gulp.task("watch", function () {
         .plugin(watchify)
         // When a file has changed, rerun the browserify task to create an updated bundle
         .on('update', function () {
-            gulp.start("browserify");
+            gulp.start('browserify');
         })
         .bundle();
 });
