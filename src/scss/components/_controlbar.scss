@@ -1,4 +1,5 @@
 @import 'container';
+@import '../variables';
 
 .ui-controlbar {
   @extend .ui-container;
@@ -8,5 +9,5 @@
   bottom: 0;
   width: 100%;
 
-  background-color: aquamarine;
+  background-color: $controlbar-background-color;
 }

@@ -1,11 +1,15 @@
 .ui-button {
   font-size: 1em;
-  margin: 0.1em;
+  margin: 0.2em;
+  border: none;
+  background-color: transparent;
   background-repeat: no-repeat;
   background-position: center;
   min-width: 2em;
 
   .label {
     //visibility: hidden;
+    color: white;
+    font-size: 0.8em;
   }
 }
