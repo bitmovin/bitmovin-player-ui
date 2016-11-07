@@ -175,6 +175,13 @@ export class UIManager {
         p.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler);
         p.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler);
 
+        p.addEventHandler(bitmovin.player.EVENT.ON_SEEK, function () {
+            seekBar.setSeeking(true);
+        });
+        p.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, function () {
+            seekBar.setSeeking(false);
+        });
+
         // Get the offset of an event within the seekbar
         let getHorizontalMouseOffset = function (e: JQueryEventObject) {
             let elementOffsetPx = seekBar.getSeekBar().offset().left;
