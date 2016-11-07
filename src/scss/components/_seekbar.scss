@@ -22,6 +22,7 @@
     .seekbar-bufferlevel {
       @extend %bar;
       background-color: transparentize(white, 0.8);
+      transition: width 0.3s linear;
     }
 
     .seekbar-seekposition {
@@ -32,6 +33,17 @@
     .seekbar-playbackposition {
       @extend %bar;
       border-right: 0.3em solid white;
+      transition: width 0.1s linear;
+    }
+  }
+
+  // disable animations during seeks
+  &.seeking {
+    .seekbar {
+      .seekbar-bufferlevel,
+      .seekbar-playbackposition {
+        transition: none;
+      }
     }
   }
 }
