@@ -173,8 +173,9 @@ export class UIManager {
 
         // Get the offset of an event within the seekbar
         let getHorizontalMouseOffset = function (e: JQueryEventObject) {
+            let elementOffsetPx = seekBar.getDomElement().offset().left;
             let widthPx = seekBar.getDomElement().width();
-            let offsetPx = e.pageX;
+            let offsetPx = e.pageX - elementOffsetPx;
             let offset = 1 / widthPx * offsetPx;
 
             console.log({
