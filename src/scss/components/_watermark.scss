@@ -1,0 +1,19 @@
+@import "button";
+
+.ui-watermark {
+  @extend .ui-button;
+
+  background-image: url('../../assets/images/components/normal/bitmovin-logo.png');
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 26px;
+  margin: 1em;
+  opacity: 0.8;
+
+  &:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+}
