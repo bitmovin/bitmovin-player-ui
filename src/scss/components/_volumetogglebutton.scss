@@ -1,0 +1,17 @@
+@import "button";
+
+.ui-volumetogglebutton {
+  @extend .ui-button;
+
+  background-image: url('../../assets/images/components/normal/volume_high.png');
+  &:hover {
+    background-image: url('../../assets/images/components/hover/volume_high.png');
+  }
+
+  &.on {
+    background-image: url('../../assets/images/components/normal/volume_muted.png');
+    &:hover {
+      background-image: url('../../assets/images/components/hover/volume_muted.png');
+    }
+  }
+}

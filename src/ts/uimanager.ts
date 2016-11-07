@@ -5,6 +5,7 @@ import {Container, ContainerConfig} from "./components/container";
 import {PlaybackToggleButton} from "./components/playbacktogglebutton";
 import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
 import {VRToggleButton} from "./components/vrtogglebutton";
+import {VolumeToggleButton} from "./components/volumetogglebutton";
 
 declare var bitmovin: any;
 
@@ -34,6 +35,9 @@ export class UIManager {
         }
         else if (component instanceof VRToggleButton) {
             this.configureVRToggleButton(component);
+        }
+        else if (component instanceof VolumeToggleButton) {
+            this.configureVolumeToggleButton(component);
         }
         else if (component instanceof Container) {
             for (let childComponent of component.getComponents()) {
@@ -117,6 +121,29 @@ export class UIManager {
                 } else {
                     p.setVRStereo(true);
                 }
+            }
+        });
+    }
+
+    private configureVolumeToggleButton(volumeToggleButton: VolumeToggleButton) {
+        let p = this.player;
+
+        let muteStateHandler = function () {
+            if (p.isMuted()) {
+                volumeToggleButton.on();
+            } else {
+                volumeToggleButton.off();
+            }
+        };
+
+        p.addEventHandler(bitmovin.player.EVENT.ON_MUTE, muteStateHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_UNMUTE, muteStateHandler);
+
+        volumeToggleButton.getDomElement().on('click', function () {
+            if (p.isMuted()) {
+                p.unmute();
+            } else {
+                p.mute();
             }
         });
     }
