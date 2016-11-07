@@ -66,6 +66,7 @@ export class UIManager {
         // Call handler upon these events
         p.addEventHandler(bitmovin.player.EVENT.ON_PLAY, playbackStateHandler);
         p.addEventHandler(bitmovin.player.EVENT.ON_PAUSE, playbackStateHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED , playbackStateHandler);
 
         // Control player by button events
         // When a button event triggers a player API call, events are fired which in turn call the event handler
