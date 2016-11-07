@@ -9,6 +9,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
+var cssBase64 = require('gulp-css-base64');
 
 var paths = {
     source: {
@@ -55,6 +56,7 @@ gulp.task('sass', function () {
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         .pipe(autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
+        .pipe(cssBase64())
         .pipe(sourcemaps.write())
         .pipe(gulp.dest(paths.target.css))
         .pipe(browserSync.reload({stream: true}));
