@@ -31,13 +31,16 @@ var browserifyInstance = browserify({
     packageCache: {}
 }).plugin(tsify);
 
+// Deletes the target directory containing all generated files
 gulp.task('clean', del.bind(null, [paths.target.html]));
 
+// Copies html files to the target directory
 gulp.task('html', function () {
     return gulp.src(paths.source.html)
         .pipe(gulp.dest(paths.target.html));
 });
 
+// Compiles JS and TypeScript to JS in the target directory
 gulp.task('browserify', function () {
     return browserifyInstance
         .bundle()
@@ -46,6 +49,7 @@ gulp.task('browserify', function () {
         .pipe(browserSync.reload({stream: true}));
 });
 
+// Compiles SASS stylesheets to CSS stylesheets in the target directory, adds autoprefixes and creates sourcemaps
 gulp.task('sass', function () {
     gulp.src(paths.source.sass)
         .pipe(sourcemaps.init())
@@ -56,6 +60,7 @@ gulp.task('sass', function () {
         .pipe(browserSync.reload({stream: true}));
 });
 
+// Builds the complete project from the sources into the target directory
 gulp.task('build', function(callback) {
     // First run 'clean', then the other tasks
     // TODO remove runSequence on Gulp 4.0 and use built in serial execution instead
@@ -66,6 +71,7 @@ gulp.task('build', function(callback) {
 
 gulp.task('default', ['build']);
 
+// Watches files for changes and runs their build tasks
 gulp.task('watch', function () {
     // Watch for changed html files
     gulp.watch(paths.source.html, ['html']);
@@ -83,6 +89,7 @@ gulp.task('watch', function () {
         .bundle();
 });
 
+// Serves the project in the browser and updates it automatically on changes
 gulp.task('serve', function () {
     runSequence(['build'], function () {
         browserSync({
