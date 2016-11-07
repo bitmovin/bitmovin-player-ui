@@ -8,8 +8,8 @@
   top: 0;
   right: 0;
   width: 200px;
-  height: 26px;
-  margin: 1em;
+  height: 26px !important; // TODO fix this hack, remove !important; for some reason, these values do not overwrite the imported ones from button if not forced
+  margin: 1em !important; // TODO see above
   opacity: 0.8;
 
   &:hover {

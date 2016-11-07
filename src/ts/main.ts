@@ -10,6 +10,7 @@ import {VRToggleButton} from "./components/vrtogglebutton";
 import {VolumeToggleButton} from "./components/volumetogglebutton";
 import {SeekBar} from "./components/seekbar";
 import {Watermark} from "./components/watermark";
+import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 
 // Build UI
 var playbackToggleButton = new PlaybackToggleButton();
@@ -19,7 +20,8 @@ var volumeToggleButton = new VolumeToggleButton();
 var seekBar = new SeekBar();
 var controlBar = new ControlBar({components: [playbackToggleButton, fullscreenToggleButton, vrToggleButton, volumeToggleButton, seekBar]});
 var watermark = new Watermark();
-var ui = new Wrapper({ components: [controlBar, watermark]});
+var hugePlaybackToggleButton = new HugePlaybackToggleButton();
+var ui = new Wrapper({ components: [hugePlaybackToggleButton, controlBar, watermark]});
 console.log(ui);
 
 declare var window: any;
