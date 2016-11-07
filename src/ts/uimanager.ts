@@ -109,10 +109,14 @@ export class UIManager {
         p.addEventHandler(bitmovin.player.EVENT.ON_VR_STEREO_CHANGED, vrStateHandler);
 
         vrToggleButton.getDomElement().on('click', function () {
-            if (p.getVRStatus().isStereo) {
-                p.setVRStereo(false);
+            if(p.getVRStatus().contentType == 'none') {
+                if(console) console.log('No VR content');
             } else {
-                p.setVRStereo(true);
+                if (p.getVRStatus().isStereo) {
+                    p.setVRStereo(false);
+                } else {
+                    p.setVRStereo(true);
+                }
             }
         });
     }
