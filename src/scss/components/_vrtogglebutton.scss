@@ -1,19 +1,20 @@
 @import "_button";
+@import "../variables";
 
 .ui-vrtogglebutton {
   @extend .ui-button;
 
   // svg() usage: http://pavliko.github.io/postcss-svg/
-  background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #969696');
+  background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color}');
 
   &:hover {
-    background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #c8c8c8;');
+    background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-hover}');
   }
 
   &.on {
-    background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #0294c6;');
+    background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active}');
     &:hover {
-      background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #2eabe2;');
+      background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active-hover}');
     }
   }
 }
