@@ -14,6 +14,8 @@ export interface SeekBarConfig extends ComponentConfig {
  */
 export class SeekBar extends Component<SeekBarConfig> {
 
+    private static readonly CLASS_SEEKING = "seeking";
+
     private _seekBarPlaybackPosition: JQuery;
     private _seekBarBufferPosition: JQuery;
     private _seekBarSeekPosition: JQuery;
@@ -74,5 +76,17 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     setSeekPosition(percent: number) {
         this._seekBarSeekPosition.css({'width': percent + '%'});
+    }
+
+    setSeeking(seeking: boolean) {
+        if (seeking) {
+            this.getDomElement().addClass(SeekBar.CLASS_SEEKING);
+        } else {
+            this.getDomElement().removeClass(SeekBar.CLASS_SEEKING);
+        }
+    }
+
+    isSeeking(): boolean {
+        return this.getDomElement().hasClass(SeekBar.CLASS_SEEKING);
     }
 }
