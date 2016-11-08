@@ -234,5 +234,8 @@ export class UIManager {
 
         p.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
         p.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackTimeHandler);
+
+        // Init time display (when the UI is initialized, it's too late for the ON_READY event)
+        playbackTimeHandler();
     }
 }
