@@ -8,6 +8,7 @@ import {VRToggleButton} from "./components/vrtogglebutton";
 import {VolumeToggleButton} from "./components/volumetogglebutton";
 import {SeekBar} from "./components/seekbar";
 import {PlaybackTimeLabel} from "./components/playbacktimelabel";
+import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 
 declare var bitmovin: any;
 
@@ -29,7 +30,10 @@ export class UIManager {
     }
 
     private configureControls(component: Component<ComponentConfig>) {
-        if (component instanceof PlaybackToggleButton) {
+        if (component instanceof HugePlaybackToggleButton) {
+            this.configureHugePlaybackToggleButton(component);
+        }
+        else if (component instanceof PlaybackToggleButton) {
             this.configurePlaybackToggleButton(component);
         }
         else if (component instanceof FullscreenToggleButton) {
@@ -237,5 +241,19 @@ export class UIManager {
 
         // Init time display (when the UI is initialized, it's too late for the ON_READY event)
         playbackTimeHandler();
+    }
+
+    private configureHugePlaybackToggleButton(hugePlaybackToggleButton: HugePlaybackToggleButton) {
+        this.configurePlaybackToggleButton(hugePlaybackToggleButton);
+
+        let p = this.player;
+
+        hugePlaybackToggleButton.getDomElement().on('dblclick', function () {
+            if (p.isFullscreen()) {
+                p.exitFullscreen();
+            } else {
+                p.enterFullscreen();
+            }
+        });
     }
 }

@@ -3,19 +3,61 @@
 .ui-hugeplaybacktogglebutton {
   @extend .ui-button;
 
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+      visibility: visible;
+    }
+    to {
+      opacity: 0;
+      transform: scale(2);
+      visibility: hidden;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: scale(2);
+      visibility: visible;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   position: absolute;
   top: 0;
   margin: 0;
   width: 100%;
   height: 100%;
   cursor: default;
+  overflow: hidden; // hide overflow from scale animation
 
-  background-image: url('../../assets/images/components/normal/play_overlay.png');
-  &:hover {
-    background-image: url('../../assets/images/components/hover/play_overlay.png');
+  .image {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    background-image: url('../../assets/images/components/normal/play_overlay.png');
+    &:hover {
+      background-image: url('../../assets/images/components/hover/play_overlay.png');
+    }
   }
 
   &.on {
-    background-image: none;
+    .image {
+      visibility: hidden;
+      transition: visibility 0s 2s;
+      animation: fade-out 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19); // http://easings.net/de#easeInCubic
+    }
+  }
+
+  &.off {
+    .image {
+      visibility: visible;
+      animation: fade-in 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19); // http://easings.net/de#easeInCubic
+    }
   }
 }
