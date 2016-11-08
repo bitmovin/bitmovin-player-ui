@@ -20,11 +20,13 @@ var vrToggleButton = new VRToggleButton();
 var volumeToggleButton = new VolumeToggleButton();
 var timeLabel = new PlaybackTimeLabel();
 var seekBar = new SeekBar();
-var controlBar = new ControlBar({components: [playbackToggleButton, fullscreenToggleButton, vrToggleButton,
-    volumeToggleButton, timeLabel, seekBar]});
+var controlBar = new ControlBar({
+    components: [playbackToggleButton, seekBar, timeLabel,
+        vrToggleButton, volumeToggleButton, fullscreenToggleButton]
+});
 var watermark = new Watermark();
 var hugePlaybackToggleButton = new HugePlaybackToggleButton();
-var ui = new Wrapper({ components: [hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
+var ui = new Wrapper({components: [hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
 console.log(ui);
 
 declare var window: any;
