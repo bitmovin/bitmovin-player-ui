@@ -55,9 +55,15 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
             'class': this.getCssClasses()
         });
 
+        var innerContainer = DOM.JQuery(`<${this.config.tag}>`, {
+            'class': 'container'
+        });
+
         for (let component of this.config.components) {
-            containerElement.append(component.getDomElement());
+            innerContainer.append(component.getDomElement());
         }
+
+        containerElement.append(innerContainer);
 
         return containerElement;
     }
