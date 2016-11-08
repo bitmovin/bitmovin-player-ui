@@ -48,6 +48,7 @@ gulp.task('html', function () {
 gulp.task('browserify', function () {
     return browserifyInstance
         .bundle()
+        .on('error', console.error.bind(console)) // catch error to not break watch/serve tasks on error
         .pipe(source('bundle.js'))
         // TODO add uglify for prod build
         .pipe(gulp.dest(paths.target.js))
