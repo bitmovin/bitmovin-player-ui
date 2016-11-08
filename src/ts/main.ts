@@ -11,6 +11,7 @@ import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 import {Container, ContainerConfig} from "./components/container";
 import {Label} from "./components/label";
+import {SettingsToggleButton} from "./components/settingstogglebutton";
 
 // Build UI
 var playbackToggleButton = new PlaybackToggleButton();
@@ -19,13 +20,21 @@ var vrToggleButton = new VRToggleButton();
 var volumeToggleButton = new VolumeToggleButton();
 var timeLabel = new PlaybackTimeLabel();
 var seekBar = new SeekBar();
+var settingsToggleButton = new SettingsToggleButton();
 
-var controlPanelContainer = new Container<ContainerConfig>({cssClass: 'ui-settings-panel', components: [new Label({text: 'Video Quality'})]});
-
+// TODO create controlpanel component
+var controlPanelContainer = new Container<ContainerConfig>({
+    cssClass: 'ui-settings-panel',
+    components: [new Label({text: 'Video Quality'})]
+});
+// TODO setup in UI manager
+settingsToggleButton.getDomElement().on('click', function() {
+    controlPanelContainer.toggleHidden();
+});
 
 var controlBar = new ControlBar({
     components: [controlPanelContainer, playbackToggleButton, seekBar, timeLabel,
-        vrToggleButton, volumeToggleButton, fullscreenToggleButton]
+        vrToggleButton, volumeToggleButton, settingsToggleButton, fullscreenToggleButton]
 });
 var watermark = new Watermark();
 var hugePlaybackToggleButton = new HugePlaybackToggleButton();

@@ -54,10 +54,12 @@ export abstract class Component<Config extends ComponentConfig> {
             config.id = 'id-' + Guid.next();
         }
 
-        this._hidden = config.hidden;
+        if(config.hidden) {
+            this._hidden = config.hidden;
 
-        if(this._hidden) {
-            this.hide();
+            if (this._hidden) {
+                this.hide();
+            }
         }
     }
 

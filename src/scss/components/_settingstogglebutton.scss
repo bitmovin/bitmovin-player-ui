@@ -1,0 +1,15 @@
+.ui-settingstogglebutton {
+  @extend .ui-button;
+
+  background-image: url('../../assets/images/components/normal/settings.png');
+  &:hover {
+    background-image: url('../../assets/images/components/hover/settings.png');
+  }
+
+  &.on {
+    background-image: url('../../assets/images/components/normal/settings.png');
+    &:hover {
+      background-image: url('../../assets/images/components/hover/settings.png');
+    }
+  }
+}

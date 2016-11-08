@@ -8,5 +8,16 @@
   right: 0;
   background-color: $controlbar-background-color;
   margin: 0 !important;
-  padding: 0.5em;
+  padding: 0;
+  overflow: hidden;
+
+  // Animate show
+  max-height: 100%;
+  transition: max-height .2s ease-in;
+
+  // Animate hide
+  &.hidden {
+    max-height: 0;
+    transition: max-height .2s ease-out;
+  }
 }
