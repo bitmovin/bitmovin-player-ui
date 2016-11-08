@@ -11,7 +11,7 @@
     position: relative;
     overflow-x: hidden;
     height: 100%;
-    background-color: lighten($controlbar-background-color, 10%);
+    //background-color: lighten($controlbar-background-color, 10%);
 
     %bar {
       position: absolute;
@@ -20,15 +20,24 @@
       bottom: 0;
     }
 
+    .seekbar-backdrop {
+      @extend %bar;
+      background-color: lighten($controlbar-background-color, 20%);
+      margin: 0.3em 0 0.3em 0;
+      width: 100%;
+    }
+
     .seekbar-bufferlevel {
       @extend %bar;
-      background-color: transparentize(white, 0.8);
+      background-color: $button-image-color-active;
       transition: width 0.3s linear;
+      margin: 0.3em 0 0.3em 0;
     }
 
     .seekbar-seekposition {
       @extend %bar;
-      background-color: transparentize(black, 0.8);
+      background-color: transparentize(white, 0.8);
+      margin: 0.3em 0 0.3em 0;
     }
 
     .seekbar-playbackposition {

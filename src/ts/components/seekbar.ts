@@ -19,6 +19,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     private _seekBarPlaybackPosition: JQuery;
     private _seekBarBufferPosition: JQuery;
     private _seekBarSeekPosition: JQuery;
+    private _seekBarBackdrop: JQuery;
 
     constructor(config: SeekBarConfig = {}) {
         super(config);
@@ -56,7 +57,13 @@ export class SeekBar extends Component<SeekBarConfig> {
         });
         this._seekBarSeekPosition = seekBarSeekPosition;
 
-        seekBar.append(seekBarBufferLevel, seekBarPlaybackPosition, seekBarSeekPosition);
+        // Indicator that shows the full seekbar
+        var seekBarBackdrop = DOM.JQuery(`<div>`, {
+            'class': 'seekbar-backdrop'
+        });
+        this._seekBarBackdrop = seekBarBackdrop;
+
+        seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition, seekBarPlaybackPosition);
         seekBarContainer.append(seekBar);
 
         return seekBarContainer;
