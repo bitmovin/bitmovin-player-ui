@@ -372,11 +372,20 @@ class EventDispatcher<Sender, Args> {
     constructor() {
     }
 
+    /**
+     * Subscribes an event listener to this event dispatcher.
+     * @param listener the listener to add
+     */
     subscribe(listener: EventListener<Sender, Args>) {
         this._listeners.push(listener);
     }
 
-    unsubscribe(listener: EventListener<Sender, Args>) : boolean {
+    /**
+     * Unsubscribes a subscribed event listener from this dispatcher.
+     * @param listener the listener to remove
+     * @returns {boolean} true if the listener was successfully unsubscribed, false if it isn't subscribed on this dispatcher
+     */
+    unsubscribe(listener: EventListener<Sender, Args>): boolean {
         // Iterate through listeners, compare with parameter, and remove if found
         for (let i = 0; i < this._listeners.length; i++) {
             let subscribedListener = this._listeners[i];
@@ -389,6 +398,11 @@ class EventDispatcher<Sender, Args> {
         return false;
     }
 
+    /**
+     * Dispatches an event to all subscribed listeners.
+     * @param sender the source of the event
+     * @param args the arguments for the event
+     */
     dispatch(sender: Sender, args: Args) {
         // Call every listener
         for (let listener of this._listeners) {
