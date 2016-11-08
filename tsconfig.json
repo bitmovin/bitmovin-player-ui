@@ -1,8 +1,6 @@
 {
   "files": [
-    "src/ts/main.ts",
-    "src/ts/utils.ts",
-    "src/ts/dom.ts"
+    "src/ts/main.ts"
   ],
   "compilerOptions": {
     "noImplicitAny": true,
