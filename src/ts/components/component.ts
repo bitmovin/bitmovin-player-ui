@@ -84,4 +84,8 @@ export abstract class Component<Config extends ComponentConfig> {
         // Return trimmed string to prevent whitespace at the end from the join operation
         return flattenedString.trim();
     }
+
+    public getConfig(): Config {
+        return this.config;
+    }
 }

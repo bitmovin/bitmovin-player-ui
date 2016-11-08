@@ -9,7 +9,7 @@ import {VolumeToggleButton} from "./components/volumetogglebutton";
 import {SeekBar} from "./components/seekbar";
 import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
-import {ControlBar} from "./components/controlbar";
+import {ControlBar, ControlBarConfig} from "./components/controlbar";
 
 declare var bitmovin: any;
 
@@ -20,7 +20,13 @@ export class UIManager {
 
     // TODO make these accessible from outside, might be helpful to to have UI API events too
     private events = {
+        /**
+         * Fires when the mouse enters the UI area.
+         */
         onMouseEnter: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+        /**
+         * Fires when the mouse leaves the UI area.
+         */
         onMouseLeave: new EventDispatcher<Component<ComponentConfig>, NoArgs>()
     };
 
@@ -329,6 +335,7 @@ export class UIManager {
 
     private configureWrapper(wrapper: Wrapper) {
         let self = this;
+        // Fire UI events from DOM events
         wrapper.getDomElement().on('mouseleave', function () {
             self.events.onMouseLeave.dispatch(wrapper, null);
         });
@@ -344,7 +351,7 @@ export class UIManager {
         this.events.onMouseLeave.subscribe(function(sender, args) {
             setTimeout(function () {
                 controlBar.getDomElement().hide();
-            }, 5000);
+            }, (<ControlBarConfig>controlBar.getConfig()).hideDelay); // TODO fix generics to spare these damn casts... is that even possible in TS?
         });
     }
 }
