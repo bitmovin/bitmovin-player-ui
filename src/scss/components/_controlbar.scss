@@ -20,11 +20,11 @@
     > * {
       // Overwrite margins to make them all equal
       // Outside margins come from the wrapping container, this is just the spacing between controls
-      margin: 0 0.5em 0 0 !important;
+      margin: 0 0.5em 0 0;
 
       &:last-child {
         // Remove spacing from last control
-        margin: 0 !important;
+        margin: 0;
       }
     }
   }

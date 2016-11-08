@@ -9,6 +9,8 @@ import {SeekBar} from "./components/seekbar";
 import {Watermark} from "./components/watermark";
 import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 import {PlaybackTimeLabel} from "./components/playbacktimelabel";
+import {Container, ContainerConfig} from "./components/container";
+import {Label} from "./components/label";
 
 // Build UI
 var playbackToggleButton = new PlaybackToggleButton();
@@ -17,8 +19,12 @@ var vrToggleButton = new VRToggleButton();
 var volumeToggleButton = new VolumeToggleButton();
 var timeLabel = new PlaybackTimeLabel();
 var seekBar = new SeekBar();
+
+var controlPanelContainer = new Container<ContainerConfig>({cssClass: 'ui-settings-panel', components: [new Label({text: 'Video Quality'})]});
+
+
 var controlBar = new ControlBar({
-    components: [playbackToggleButton, seekBar, timeLabel,
+    components: [controlPanelContainer, playbackToggleButton, seekBar, timeLabel,
         vrToggleButton, volumeToggleButton, fullscreenToggleButton]
 });
 var watermark = new Watermark();

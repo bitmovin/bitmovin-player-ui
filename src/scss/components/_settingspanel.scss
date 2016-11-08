@@ -1,0 +1,12 @@
+@import "container";
+
+.ui-settings-panel {
+  @extend .ui-container;
+
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background-color: $controlbar-background-color;
+  margin: 0 !important;
+  padding: 0.5em;
+}
