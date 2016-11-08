@@ -34,7 +34,7 @@ export class UIManager {
             this.configureHugePlaybackToggleButton(component);
         }
         else if (component instanceof PlaybackToggleButton) {
-            this.configurePlaybackToggleButton(component);
+            this.configurePlaybackToggleButton(component, true);
         }
         else if (component instanceof FullscreenToggleButton) {
             this.configureFullscreenToggleButton(component);
@@ -58,7 +58,7 @@ export class UIManager {
         }
     }
 
-    private configurePlaybackToggleButton(playbackToggleButton: PlaybackToggleButton) {
+    private configurePlaybackToggleButton(playbackToggleButton: PlaybackToggleButton, handleClickEvent: boolean) {
         // Get a local reference to the player for use inside event handlers in a different scope
         let p = this.player;
 
@@ -76,16 +76,18 @@ export class UIManager {
         p.addEventHandler(bitmovin.player.EVENT.ON_PAUSE, playbackStateHandler);
         p.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler); // when playback finishes, player turns to paused mode
 
-        // Control player by button events
-        // When a button event triggers a player API call, events are fired which in turn call the event handler
-        // above that updated the button state.
-        playbackToggleButton.getDomElement().on('click', function () {
-            if (p.isPlaying()) {
-                p.pause();
-            } else {
-                p.play();
-            }
-        });
+        if(handleClickEvent) {
+            // Control player by button events
+            // When a button event triggers a player API call, events are fired which in turn call the event handler
+            // above that updated the button state.
+            playbackToggleButton.getDomElement().on('click', function () {
+                if (p.isPlaying()) {
+                    p.pause();
+                } else {
+                    p.play();
+                }
+            });
+        }
     }
 
     private configureFullscreenToggleButton(fullscreenToggleButton: FullscreenToggleButton) {
@@ -244,16 +246,70 @@ export class UIManager {
     }
 
     private configureHugePlaybackToggleButton(hugePlaybackToggleButton: HugePlaybackToggleButton) {
-        this.configurePlaybackToggleButton(hugePlaybackToggleButton);
+        // Update button sate trough API events
+        this.configurePlaybackToggleButton(hugePlaybackToggleButton, false);
 
         let p = this.player;
 
-        hugePlaybackToggleButton.getDomElement().on('dblclick', function () {
+        let togglePlayback = function () {
+            if (p.isPlaying()) {
+                p.pause();
+            } else {
+                p.play();
+            }
+        };
+
+        let toggleFullscreen = function () {
             if (p.isFullscreen()) {
                 p.exitFullscreen();
             } else {
                 p.enterFullscreen();
             }
+        };
+
+        let clickTime = 0;
+        let doubleClickTime = 0;
+
+        /*
+         * YouTube-style toggle button handling
+         *
+         * The goal is to prevent a short pause or playback interval between a click, that toggles playback, and a
+         * double click, that toggles fullscreen. In this naive approach, the first click would e.g. start playback,
+         * the second click would be detected as double click and toggle to fullscreen, and as second normal click stop
+         * playback, which results is a short playback interval with max length of the double click detection
+         * period (usually 500ms).
+         *
+         * To solve this issue, we defer handling of the first click for 200ms, which is almost unnoticeable to the user,
+         * and just toggle playback if no second click (double click) has been registered during this period. If a double
+         * click is registered, we just toggle the fullscreen. In the first 200ms, undesired playback changes thus cannot
+         * happen. If a double click is registered within 500ms, we undo the playback change and switch fullscreen mode.
+         * In the end, this method basically introduces a 200ms observing interval in which playback changes are prevented
+         * if a double click happens.
+         */
+        hugePlaybackToggleButton.getDomElement().on('click', function () {
+            let now = Date.now();
+
+            if(now - clickTime < 200) {
+                // We have a double click inside the 200ms interval, just toggle fullscreen mode
+                toggleFullscreen();
+                doubleClickTime = now;
+                return;
+            } else if(now - clickTime < 500) {
+                // We have a double click inside the 500ms interval, undo playback toggle and toggle fullscreen mode
+                toggleFullscreen();
+                togglePlayback();
+                doubleClickTime = now;
+                return;
+            }
+
+            clickTime = now;
+
+            setTimeout(function () {
+                if(Date.now() - doubleClickTime > 200) {
+                    // No double click detected, so we toggle playback and wait what happens next
+                    togglePlayback();
+                }
+            }, 200);
         });
     }
 }
