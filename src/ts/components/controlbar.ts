@@ -16,6 +16,8 @@ export interface ControlBarConfig extends ContainerConfig {
 
 export class ControlBar extends Container<ControlBarConfig> {
 
+    private static readonly CLASS_HIDDEN = "hidden";
+
     private _hidden: boolean;
 
     constructor(config: ControlBarConfig) {
@@ -37,11 +39,11 @@ export class ControlBar extends Container<ControlBarConfig> {
 
     hide() {
         this._hidden = true;
-        this.getDomElement().hide();
+        this.getDomElement().addClass(ControlBar.CLASS_HIDDEN);
     }
 
     show() {
-        this.getDomElement().show();
+        this.getDomElement().removeClass(ControlBar.CLASS_HIDDEN);
         this._hidden = false;
     }
 
