@@ -7,6 +7,7 @@ import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
 import {VRToggleButton} from "./components/vrtogglebutton";
 import {VolumeToggleButton} from "./components/volumetogglebutton";
 import {SeekBar} from "./components/seekbar";
+import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 
 declare var bitmovin: any;
 
@@ -42,6 +43,9 @@ export class UIManager {
         }
         else if (component instanceof SeekBar) {
             this.configureSeekBar(component);
+        }
+        else if (component instanceof PlaybackTimeLabel) {
+            this.configurePlaybackTimeLabel(component);
         }
         else if (component instanceof Container) {
             for (let childComponent of component.getComponents()) {
@@ -215,5 +219,20 @@ export class UIManager {
         seekBar.getSeekBar().on('mouseleave', function (e) {
             seekBar.setSeekPosition(0);
         });
+    }
+
+    private configurePlaybackTimeLabel(playbackTimeLabel: PlaybackTimeLabel) {
+        let p = this.player;
+
+        let playbackTimeHandler = function () {
+            if(p.getDuration() == Infinity) {
+                playbackTimeLabel.setText('Live');
+            } else {
+                playbackTimeLabel.setTime(p.getCurrentTime(), p.getDuration());
+            }
+        };
+
+        p.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackTimeHandler);
     }
 }

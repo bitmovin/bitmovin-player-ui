@@ -11,14 +11,17 @@ import {VolumeToggleButton} from "./components/volumetogglebutton";
 import {SeekBar} from "./components/seekbar";
 import {Watermark} from "./components/watermark";
 import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
+import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 
 // Build UI
 var playbackToggleButton = new PlaybackToggleButton();
 var fullscreenToggleButton = new FullscreenToggleButton();
 var vrToggleButton = new VRToggleButton();
 var volumeToggleButton = new VolumeToggleButton();
+var timeLabel = new PlaybackTimeLabel();
 var seekBar = new SeekBar();
-var controlBar = new ControlBar({components: [playbackToggleButton, fullscreenToggleButton, vrToggleButton, volumeToggleButton, seekBar]});
+var controlBar = new ControlBar({components: [playbackToggleButton, fullscreenToggleButton, vrToggleButton,
+    volumeToggleButton, timeLabel, seekBar]});
 var watermark = new Watermark();
 var hugePlaybackToggleButton = new HugePlaybackToggleButton();
 var ui = new Wrapper({ components: [hugePlaybackToggleButton, controlBar, watermark]});
