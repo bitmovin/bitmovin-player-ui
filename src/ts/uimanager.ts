@@ -9,6 +9,7 @@ import {VolumeToggleButton} from "./components/volumetogglebutton";
 import {SeekBar} from "./components/seekbar";
 import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
+import {ControlBar} from "./components/controlbar";
 
 declare var bitmovin: any;
 
@@ -16,6 +17,12 @@ export class UIManager {
 
     private player: any;
     private ui: Component<ComponentConfig>;
+
+    // TODO make these accessible from outside, might be helpful to to have UI API events too
+    private events = {
+        onMouseEnter: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+        onMouseLeave: new EventDispatcher<Component<ComponentConfig>, NoArgs>()
+    };
 
     constructor(player: any, ui: Wrapper) {
         this.player = player;
@@ -52,6 +59,13 @@ export class UIManager {
             this.configurePlaybackTimeLabel(component);
         }
         else if (component instanceof Container) {
+            if(component instanceof Wrapper) {
+                this.configureWrapper(component);
+            }
+            else if(component instanceof ControlBar) {
+                this.configureControlBar(component);
+            }
+
             for (let childComponent of component.getComponents()) {
                 this.configureControls(childComponent);
             }
@@ -289,12 +303,12 @@ export class UIManager {
         hugePlaybackToggleButton.getDomElement().on('click', function () {
             let now = Date.now();
 
-            if(now - clickTime < 200) {
+            if (now - clickTime < 200) {
                 // We have a double click inside the 200ms interval, just toggle fullscreen mode
                 toggleFullscreen();
                 doubleClickTime = now;
                 return;
-            } else if(now - clickTime < 500) {
+            } else if (now - clickTime < 500) {
                 // We have a double click inside the 500ms interval, undo playback toggle and toggle fullscreen mode
                 toggleFullscreen();
                 togglePlayback();
@@ -305,13 +319,35 @@ export class UIManager {
             clickTime = now;
 
             setTimeout(function () {
-                if(Date.now() - doubleClickTime > 200) {
+                if (Date.now() - doubleClickTime > 200) {
                     // No double click detected, so we toggle playback and wait what happens next
                     togglePlayback();
                 }
             }, 200);
         });
     }
+
+    private configureWrapper(wrapper: Wrapper) {
+        let self = this;
+        wrapper.getDomElement().on('mouseleave', function () {
+            self.events.onMouseLeave.dispatch(wrapper, null);
+        });
+        wrapper.getDomElement().on('mouseenter', function () {
+            self.events.onMouseEnter.dispatch(wrapper, null);
+        });
+    }
+
+    private configureControlBar(controlBar : ControlBar) {
+        this.events.onMouseEnter.subscribe(function(sender, args) {
+            controlBar.getDomElement().show();
+        });
+        this.events.onMouseLeave.subscribe(function(sender, args) {
+            setTimeout(function () {
+                controlBar.getDomElement().hide();
+            }, 5000);
+        });
+    }
+}
 
 /**
  * Function interface for event listeners on the {@link EventDispatcher}.
