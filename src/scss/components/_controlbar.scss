@@ -10,10 +10,22 @@
   width: 100%;
 
   background-color: $controlbar-background-color;
-  display: flex;
-  justify-content: space-around;
 
-  > * {
-    margin: 0.5em !important;
+  > .container {
+    display: flex;
+    justify-content: space-around;
+    margin: 0.5em;
+
+    // Evenly distribute controls
+    > * {
+      // Overwrite margins to make them all equal
+      // Outside margins come from the wrapping container, this is just the spacing between controls
+      margin: 0 0.5em 0 0 !important;
+
+      &:last-child {
+        // Remove spacing from last control
+        margin: 0 !important;
+      }
+    }
   }
 }
