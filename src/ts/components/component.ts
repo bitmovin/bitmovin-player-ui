@@ -19,9 +19,17 @@ export interface ComponentConfig {
      * Additional CSS classes of the component.
      */
     cssClasses?: string[];
+
+    /**
+     * Specifies if the control bar should be hidden at startup.
+     * Default: true
+     */
+    hidden?: boolean;
 }
 
 export abstract class Component<Config extends ComponentConfig> {
+
+    private static readonly CLASS_HIDDEN = "hidden";
 
     /**
      * Configuration object of this component.
@@ -31,7 +39,12 @@ export abstract class Component<Config extends ComponentConfig> {
     /**
      * JQuery reference to the component's DOM element.
      */
-    private element: JQuery;
+    private _element: JQuery;
+
+    /**
+     * Flag that keeps track of the hidden state.
+     */
+    private _hidden: boolean;
 
     constructor(config: Config) {
         console.log(this);
@@ -39,6 +52,12 @@ export abstract class Component<Config extends ComponentConfig> {
 
         if(!config.id) {
             config.id = 'id-' + Guid.next();
+        }
+
+        this._hidden = config.hidden;
+
+        if(this._hidden) {
+            this.hide();
         }
     }
 
@@ -48,11 +67,11 @@ export abstract class Component<Config extends ComponentConfig> {
     protected abstract toDomElement(): JQuery;
 
     getDomElement(): JQuery {
-        if(!this.element) {
-            this.element = this.toDomElement();
+        if(!this._element) {
+            this._element = this.toDomElement();
         }
 
-        return this.element;
+        return this._element;
     }
 
     /**
@@ -87,5 +106,31 @@ export abstract class Component<Config extends ComponentConfig> {
 
     public getConfig(): Config {
         return this.config;
+    }
+
+    hide() {
+        this._hidden = true;
+        this.getDomElement().addClass(Component.CLASS_HIDDEN);
+    }
+
+    show() {
+        this.getDomElement().removeClass(Component.CLASS_HIDDEN);
+        this._hidden = false;
+    }
+
+    isHidden(): boolean {
+        return this._hidden;
+    }
+
+    isShown(): boolean {
+        return !this.isHidden();
+    }
+
+    toggleHidden() {
+        if(this.isHidden()) {
+            this.show();
+        } else {
+            this.hide();
+        }
     }
 }
