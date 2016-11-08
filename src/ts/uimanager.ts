@@ -312,4 +312,51 @@ export class UIManager {
             }, 200);
         });
     }
+
+/**
+ * Function interface for event listeners on the {@link EventDispatcher}.
+ */
+interface EventListener<Sender, Args> {
+    (sender: Sender, args: Args) : void
+}
+
+/**
+ * Empty type for creating {@link EventDispatcher event dispatchers} that do not carry any arguments.
+ */
+interface NoArgs {
+}
+
+/**
+ * Event dispatcher to subscribe and trigger events. Each event should have it's own dispatcher.
+ */
+class EventDispatcher<Sender, Args> {
+
+    private _listeners: EventListener<Sender, Args>[] = [];
+
+    constructor() {
+    }
+
+    subscribe(listener: EventListener<Sender, Args>) {
+        this._listeners.push(listener);
+    }
+
+    unsubscribe(listener: EventListener<Sender, Args>) : boolean {
+        // Iterate through listeners, compare with parameter, and remove if found
+        for (let i = 0; i < this._listeners.length; i++) {
+            let subscribedListener = this._listeners[i];
+            if (subscribedListener == listener) {
+                this._listeners.splice(i, 1);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    dispatch(sender: Sender, args: Args) {
+        // Call every listener
+        for (let listener of this._listeners) {
+            listener(sender, args);
+        }
+    }
 }
