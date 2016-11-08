@@ -24,7 +24,7 @@ var controlBar = new ControlBar({components: [playbackToggleButton, fullscreenTo
     volumeToggleButton, timeLabel, seekBar]});
 var watermark = new Watermark();
 var hugePlaybackToggleButton = new HugePlaybackToggleButton();
-var ui = new Wrapper({ components: [hugePlaybackToggleButton, controlBar, watermark]});
+var ui = new Wrapper({ components: [hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
 console.log(ui);
 
 declare var window: any;

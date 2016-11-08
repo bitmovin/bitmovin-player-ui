@@ -1,12 +1,18 @@
-@import 'components/container';
-@import 'components/wrapper';
-@import 'components/controlbar';
-@import 'components/button';
-@import 'components/playbacktogglebutton';
-@import 'components/fullscreentogglebutton';
-@import 'components/vrtogglebutton';
-@import 'components/volumetogglebutton';
-@import 'components/seekbar';
-@import 'components/watermark';
-@import 'components/hugeplaybacktogglebutton';
-@import 'components/label';
+.ui-skin-default {
+  @import 'components/container';
+  @import 'components/wrapper';
+  @import 'components/controlbar';
+  @import 'components/button';
+  @import 'components/playbacktogglebutton';
+  @import 'components/fullscreentogglebutton';
+  @import 'components/vrtogglebutton';
+  @import 'components/volumetogglebutton';
+  @import 'components/seekbar';
+  @import 'components/watermark';
+  @import 'components/hugeplaybacktogglebutton';
+  @import 'components/label';
+
+  font-family: $font-family;
+  font-size: $font-size;
+  color: $font-color;
+}
