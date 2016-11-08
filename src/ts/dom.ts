@@ -16,3 +16,6 @@ export module DOM {
         this.jq = jquery;
     }
 }
+
+import jquery = require("jquery");
+DOM.setJQuery(jquery);
