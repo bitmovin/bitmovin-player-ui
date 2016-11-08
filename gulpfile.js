@@ -49,6 +49,7 @@ gulp.task('browserify', function () {
     return browserifyInstance
         .bundle()
         .pipe(source('bundle.js'))
+        // TODO add uglify for prod build
         .pipe(gulp.dest(paths.target.js))
         .pipe(browserSync.reload({stream: true}));
 });
@@ -58,6 +59,7 @@ gulp.task('sass', function () {
     var processors = [
         autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}),
         postcssSVG()
+        // TODO add nanocss for prod build (css minifier)
     ];
 
     gulp.src(paths.source.sass)
