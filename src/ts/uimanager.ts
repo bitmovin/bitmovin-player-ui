@@ -25,6 +25,10 @@ export class UIManager {
          */
         onMouseEnter: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
         /**
+         * Fires when the mouse moves inside the UI area.
+         */
+        onMouseMove: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+        /**
          * Fires when the mouse leaves the UI area.
          */
         onMouseLeave: new EventDispatcher<Component<ComponentConfig>, NoArgs>()
@@ -342,16 +346,43 @@ export class UIManager {
         wrapper.getDomElement().on('mouseenter', function () {
             self.events.onMouseEnter.dispatch(wrapper, null);
         });
+        wrapper.getDomElement().on('mousemove', function () {
+            self.events.onMouseMove.dispatch(wrapper, null);
+        });
     }
 
+    private _controlBarHideDelayTimeoutHandle: number;
+
     private configureControlBar(controlBar : ControlBar) {
-        this.events.onMouseEnter.subscribe(function(sender, args) {
-            controlBar.getDomElement().show();
-        });
-        this.events.onMouseLeave.subscribe(function(sender, args) {
-            setTimeout(function () {
-                controlBar.getDomElement().hide();
+        let self = this;
+
+        // Clears the hide timeout if active
+        let clearHideTimeout = function () {
+            clearTimeout(self._controlBarHideDelayTimeoutHandle);
+        };
+
+        // Activates the hide timeout and clears a previous timeout if active
+        let setHideTimeout = function () {
+            clearHideTimeout();
+            self._controlBarHideDelayTimeoutHandle = setTimeout(function () {
+                controlBar.hide();
             }, (<ControlBarConfig>controlBar.getConfig()).hideDelay); // TODO fix generics to spare these damn casts... is that even possible in TS?
+        };
+
+        self.events.onMouseEnter.subscribe(function(sender, args) {
+            controlBar.show(); // show control bar when the mouse enters the UI
+
+            // Clear timeout to avoid hiding the control bar if the mouse moves back into the UI during the timeout period
+            clearHideTimeout();
+        });
+        self.events.onMouseMove.subscribe(function(sender, args) {
+            if(controlBar.isHidden()) {
+                controlBar.show();
+            }
+            setHideTimeout(); // hide the control bar if mouse does not move during the timeout time
+        });
+        self.events.onMouseLeave.subscribe(function(sender, args) {
+            setHideTimeout(); // hide control bar some time after the mouse left the UI
         });
     }
 }
