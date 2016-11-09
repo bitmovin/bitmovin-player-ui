@@ -49,7 +49,7 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
     }
 
     protected onClickEvent() {
-        this.events.onClick.dispatch(this, null);
+        this.events.onClick.dispatch(this);
     }
 
     get onClick() : Event<Button<Config>, NoArgs> {

@@ -32,7 +32,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     }
 
     protected onClickEvent() {
-        this.events.onClick.dispatch(this, this._on);
+        this.events.onClick.dispatch(this);
     }
 
     on() {

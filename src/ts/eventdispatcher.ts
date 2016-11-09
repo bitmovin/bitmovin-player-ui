@@ -57,7 +57,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
      * @param sender the source of the event
      * @param args the arguments for the event
      */
-    dispatch(sender: Sender, args: Args) {
+    dispatch(sender: Sender, args: Args = null) {
         // Call every listener
         for (let listener of this._listeners) {
             listener(sender, args);
