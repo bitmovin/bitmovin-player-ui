@@ -15,7 +15,8 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
     protected toDomElement(): JQuery {
         let selectElement = DOM.JQuery('<select>', {
-            'id': this.config.id
+            'id': this.config.id,
+            'class': this.getCssClasses()
         });
 
         this.selectElement = selectElement;

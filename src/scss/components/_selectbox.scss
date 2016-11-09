@@ -1,0 +1,12 @@
+select.ui-selectbox {
+  cursor: pointer;
+  border: 1px solid gray;
+  background-color: darken(white, 10%);
+  color: lighten(black, 30%);
+  padding: 0.3em;
+  font-size: 0.8em;
+
+  option {
+    // nothing yet
+  }
+}

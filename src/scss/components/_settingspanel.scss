@@ -20,4 +20,10 @@
     max-height: 0;
     transition: max-height .2s ease-out;
   }
+
+  .container {
+    > * {
+      margin: 0.5em;
+    }
+  }
 }

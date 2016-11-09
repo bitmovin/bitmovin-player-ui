@@ -6,6 +6,7 @@ export class SettingsPanel extends Container<ContainerConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
+            tag: 'div', // TODO find out why this is undefined if not set here (this should be set by the superclass, but isn't!)
             cssClass: 'ui-settings-panel'
         });
 
