@@ -11,8 +11,6 @@ import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 import {Label} from "./components/label";
 import {SettingsToggleButton} from "./components/settingstogglebutton";
-import {SelectBox} from "./components/selectbox";
-import {ListItemCollection} from "./components/listselector";
 import {SettingsPanel} from "./components/settingspanel";
 import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
 
@@ -24,11 +22,8 @@ var volumeToggleButton = new VolumeToggleButton();
 var timeLabel = new PlaybackTimeLabel();
 var seekBar = new SeekBar();
 
-var selectBoxItems: ListItemCollection = {};
-selectBoxItems['value1'] = 'Value 1';
-selectBoxItems['value2'] = 'Value 2';
 var settingsPanel = new SettingsPanel({
-    components: [new Label({text: 'Video Quality'}), new SelectBox({items: selectBoxItems}), new VideoQualitySelectBox()],
+    components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox()],
     hidden: true
 });
 var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
