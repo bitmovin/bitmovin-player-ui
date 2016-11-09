@@ -81,6 +81,11 @@ export abstract class Component<Config extends ComponentConfig> {
         return this.element;
     }
 
+    protected refreshDomElement(): JQuery {
+        this.element = null;
+        return this.getDomElement();
+    }
+
     /**
      * Merges config values into a default config and returns the merged config.
      * The merged config is default config instance extended with the config values, so take care that the supplied
