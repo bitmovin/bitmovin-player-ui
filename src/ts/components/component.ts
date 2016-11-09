@@ -39,12 +39,12 @@ export abstract class Component<Config extends ComponentConfig> {
     /**
      * JQuery reference to the component's DOM element.
      */
-    private _element: JQuery;
+    private element: JQuery;
 
     /**
      * Flag that keeps track of the hidden state.
      */
-    private _hidden: boolean;
+    private hidden: boolean;
 
     constructor(config: Config) {
         console.log(this);
@@ -59,7 +59,7 @@ export abstract class Component<Config extends ComponentConfig> {
         }
 
         this.config = config;
-        this._hidden = config.hidden;
+        this.hidden = config.hidden;
     }
 
     /**
@@ -68,11 +68,11 @@ export abstract class Component<Config extends ComponentConfig> {
     protected abstract toDomElement(): JQuery;
 
     getDomElement(): JQuery {
-        if(!this._element) {
-            this._element = this.toDomElement();
+        if(!this.element) {
+            this.element = this.toDomElement();
         }
 
-        return this._element;
+        return this.element;
     }
 
     /**
@@ -110,17 +110,17 @@ export abstract class Component<Config extends ComponentConfig> {
     }
 
     hide() {
-        this._hidden = true;
+        this.hidden = true;
         this.getDomElement().addClass(Component.CLASS_HIDDEN);
     }
 
     show() {
         this.getDomElement().removeClass(Component.CLASS_HIDDEN);
-        this._hidden = false;
+        this.hidden = false;
     }
 
     isHidden(): boolean {
-        return this._hidden;
+        return this.hidden;
     }
 
     isShown(): boolean {

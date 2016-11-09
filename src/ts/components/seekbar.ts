@@ -16,10 +16,10 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     private static readonly CLASS_SEEKING = "seeking";
 
-    private _seekBarPlaybackPosition: JQuery;
-    private _seekBarBufferPosition: JQuery;
-    private _seekBarSeekPosition: JQuery;
-    private _seekBarBackdrop: JQuery;
+    private seekBarPlaybackPosition: JQuery;
+    private seekBarBufferPosition: JQuery;
+    private seekBarSeekPosition: JQuery;
+    private seekBarBackdrop: JQuery;
 
     constructor(config: SeekBarConfig = {}) {
         super(config);
@@ -43,25 +43,25 @@ export class SeekBar extends Component<SeekBarConfig> {
         var seekBarBufferLevel = DOM.JQuery(`<div>`, {
             'class': 'seekbar-bufferlevel'
         });
-        this._seekBarBufferPosition = seekBarBufferLevel;
+        this.seekBarBufferPosition = seekBarBufferLevel;
 
         // Indicator that shows the current playback position
         var seekBarPlaybackPosition = DOM.JQuery(`<div>`, {
             'class': 'seekbar-playbackposition'
         });
-        this._seekBarPlaybackPosition = seekBarPlaybackPosition;
+        this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
         // Indicator that show where a seek will go to
         var seekBarSeekPosition = DOM.JQuery(`<div>`, {
             'class': 'seekbar-seekposition'
         });
-        this._seekBarSeekPosition = seekBarSeekPosition;
+        this.seekBarSeekPosition = seekBarSeekPosition;
 
         // Indicator that shows the full seekbar
         var seekBarBackdrop = DOM.JQuery(`<div>`, {
             'class': 'seekbar-backdrop'
         });
-        this._seekBarBackdrop = seekBarBackdrop;
+        this.seekBarBackdrop = seekBarBackdrop;
 
         seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition, seekBarPlaybackPosition);
         seekBarContainer.append(seekBar);
@@ -74,15 +74,15 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     setPlaybackPosition(percent: number) {
-        this._seekBarPlaybackPosition.css({'width': percent + '%'});
+        this.seekBarPlaybackPosition.css({'width': percent + '%'});
     }
 
     setBufferPosition(percent: number) {
-        this._seekBarBufferPosition.css({'width': percent + '%'});
+        this.seekBarBufferPosition.css({'width': percent + '%'});
     }
 
     setSeekPosition(percent: number) {
-        this._seekBarSeekPosition.css({'width': percent + '%'});
+        this.seekBarSeekPosition.css({'width': percent + '%'});
     }
 
     setSeeking(seeking: boolean) {

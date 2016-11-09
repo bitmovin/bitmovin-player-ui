@@ -15,7 +15,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     private static readonly CLASS_ON = "on";
     private static readonly CLASS_OFF = "off";
 
-    private _on: boolean;
+    private onState: boolean;
 
     constructor(config: ToggleButtonConfig) {
         super(config);
@@ -36,13 +36,13 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     }
 
     on() {
-        this._on = true;
+        this.onState = true;
         this.getDomElement().removeClass(ToggleButton.CLASS_OFF);
         this.getDomElement().addClass(ToggleButton.CLASS_ON);
     }
 
     off() {
-        this._on = false;
+        this.onState = false;
         this.getDomElement().removeClass(ToggleButton.CLASS_ON);
         this.getDomElement().addClass(ToggleButton.CLASS_OFF);
     }
@@ -56,7 +56,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     }
 
     isOn(): boolean {
-        return this._on;
+        return this.onState;
     }
 
     isOff(): boolean {

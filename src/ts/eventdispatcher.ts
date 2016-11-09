@@ -21,7 +21,7 @@ export interface Event<Sender, Args> {
  */
 export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
 
-    private _listeners: EventListener<Sender, Args>[] = [];
+    private listeners: EventListener<Sender, Args>[] = [];
 
     constructor() {
     }
@@ -31,7 +31,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
      * @param listener the listener to add
      */
     subscribe(listener: EventListener<Sender, Args>) {
-        this._listeners.push(listener);
+        this.listeners.push(listener);
     }
 
     /**
@@ -41,10 +41,10 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
      */
     unsubscribe(listener: EventListener<Sender, Args>): boolean {
         // Iterate through listeners, compare with parameter, and remove if found
-        for (let i = 0; i < this._listeners.length; i++) {
-            let subscribedListener = this._listeners[i];
+        for (let i = 0; i < this.listeners.length; i++) {
+            let subscribedListener = this.listeners[i];
             if (subscribedListener == listener) {
-                this._listeners.splice(i, 1);
+                this.listeners.splice(i, 1);
                 return true;
             }
         }
@@ -59,7 +59,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
      */
     dispatch(sender: Sender, args: Args = null) {
         // Call every listener
-        for (let listener of this._listeners) {
+        for (let listener of this.listeners) {
             listener(sender, args);
         }
     }

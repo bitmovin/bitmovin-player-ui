@@ -1,8 +1,8 @@
 export module Guid {
 
-    let _guid = 1;
+    let guid = 1;
 
     export function next() {
-        return _guid++;
+        return guid++;
     }
 }
