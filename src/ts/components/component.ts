@@ -21,8 +21,8 @@ export interface ComponentConfig {
     cssClasses?: string[];
 
     /**
-     * Specifies if the control bar should be hidden at startup.
-     * Default: true
+     * Specifies if the component should be hidden at startup.
+     * Default: false
      */
     hidden?: boolean;
 }
@@ -54,13 +54,12 @@ export abstract class Component<Config extends ComponentConfig> {
             config.id = 'id-' + Guid.next();
         }
 
-        if(config.hidden) {
-            this._hidden = config.hidden;
-
-            if (this._hidden) {
-                this.hide();
-            }
+        if(!config.hidden) {
+            config.hidden = false;
         }
+
+        this.config = config;
+        this._hidden = config.hidden;
     }
 
     /**

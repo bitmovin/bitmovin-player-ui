@@ -25,7 +25,8 @@ var settingsToggleButton = new SettingsToggleButton();
 // TODO create controlpanel component
 var controlPanelContainer = new Container<ContainerConfig>({
     cssClass: 'ui-settings-panel',
-    components: [new Label({text: 'Video Quality'})]
+    components: [new Label({text: 'Video Quality'})],
+    hidden: true
 });
 // TODO setup in UI manager
 settingsToggleButton.getDomElement().on('click', function() {
