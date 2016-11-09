@@ -10,6 +10,7 @@ import {SeekBar} from "./components/seekbar";
 import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 import {ControlBar, ControlBarConfig} from "./components/controlbar";
+import {NoArgs, EventDispatcher} from "./eventdispatcher";
 
 declare var bitmovin: any;
 
@@ -384,67 +385,5 @@ export class UIManager {
         self.events.onMouseLeave.subscribe(function(sender, args) {
             setHideTimeout(); // hide control bar some time after the mouse left the UI
         });
-    }
-}
-
-/**
- * Function interface for event listeners on the {@link EventDispatcher}.
- */
-interface EventListener<Sender, Args> {
-    (sender: Sender, args: Args) : void
-}
-
-/**
- * Empty type for creating {@link EventDispatcher event dispatchers} that do not carry any arguments.
- */
-interface NoArgs {
-}
-
-/**
- * Event dispatcher to subscribe and trigger events. Each event should have it's own dispatcher.
- */
-class EventDispatcher<Sender, Args> {
-
-    private _listeners: EventListener<Sender, Args>[] = [];
-
-    constructor() {
-    }
-
-    /**
-     * Subscribes an event listener to this event dispatcher.
-     * @param listener the listener to add
-     */
-    subscribe(listener: EventListener<Sender, Args>) {
-        this._listeners.push(listener);
-    }
-
-    /**
-     * Unsubscribes a subscribed event listener from this dispatcher.
-     * @param listener the listener to remove
-     * @returns {boolean} true if the listener was successfully unsubscribed, false if it isn't subscribed on this dispatcher
-     */
-    unsubscribe(listener: EventListener<Sender, Args>): boolean {
-        // Iterate through listeners, compare with parameter, and remove if found
-        for (let i = 0; i < this._listeners.length; i++) {
-            let subscribedListener = this._listeners[i];
-            if (subscribedListener == listener) {
-                this._listeners.splice(i, 1);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Dispatches an event to all subscribed listeners.
-     * @param sender the source of the event
-     * @param args the arguments for the event
-     */
-    dispatch(sender: Sender, args: Args) {
-        // Call every listener
-        for (let listener of this._listeners) {
-            listener(sender, args);
-        }
     }
 }
