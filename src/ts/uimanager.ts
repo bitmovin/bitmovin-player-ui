@@ -13,6 +13,7 @@ import {ControlBar, ControlBarConfig} from "./components/controlbar";
 import {NoArgs, EventDispatcher} from "./eventdispatcher";
 import {SettingsToggleButton, SettingsToggleButtonConfig} from "./components/settingstogglebutton";
 import {SettingsPanel} from "./components/settingspanel";
+import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
 
 declare var bitmovin: any;
 
@@ -73,6 +74,9 @@ export class UIManager {
         }
         else if (component instanceof PlaybackTimeLabel) {
             this.configurePlaybackTimeLabel(component);
+        }
+        else if (component instanceof VideoQualitySelectBox) {
+            this.configureVideoQualitySelectBox(component);
         }
         else if (component instanceof Container) {
             if(component instanceof Wrapper) {
@@ -396,5 +400,25 @@ export class UIManager {
         settingsToggleButton.onClick.subscribe(function(sender: SettingsToggleButton) {
             (<SettingsToggleButtonConfig>sender.getConfig()).settingsPanel.toggleHidden();
         });
+    }
+
+    private configureVideoQualitySelectBox(videoQualitySelectBox: VideoQualitySelectBox) {
+        let p = this.player;
+        let videoQualities = p.getAvailableVideoQualities();
+
+        // Add entry for automatic quality switching (default setting)
+        videoQualitySelectBox.addItem("auto", "auto");
+
+        // Add video qualities
+        for(let videoQuality of videoQualities) {
+            videoQualitySelectBox.addItem(videoQuality.id, videoQuality.label);
+        }
+
+        videoQualitySelectBox.onItemSelected.subscribe(function(sender: VideoQualitySelectBox, value: string) {
+            p.setVideoQuality(value);
+        });
+
+        // TODO update videoQualitySelectBox when video quality is changed from outside (through the API)
+        // TODO implement ON_VIDEO_QUALITY_CHANGED event in player API
     }
 }

@@ -14,6 +14,7 @@ import {SettingsToggleButton} from "./components/settingstogglebutton";
 import {SelectBox} from "./components/selectbox";
 import {ListItemCollection} from "./components/listselector";
 import {SettingsPanel} from "./components/settingspanel";
+import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
 
 // Build UI
 var playbackToggleButton = new PlaybackToggleButton();
@@ -27,7 +28,7 @@ var selectBoxItems: ListItemCollection = {};
 selectBoxItems['value1'] = 'Value 1';
 selectBoxItems['value2'] = 'Value 2';
 var settingsPanel = new SettingsPanel({
-    components: [new Label({text: 'Video Quality'}), new SelectBox({items: selectBoxItems})],
+    components: [new Label({text: 'Video Quality'}), new SelectBox({items: selectBoxItems}), new VideoQualitySelectBox()],
     hidden: true
 });
 var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
