@@ -3,7 +3,9 @@ import {DOM} from "../dom";
 
 export class SelectBox extends ListSelector<ListSelectorConfig> {
 
-    constructor(config: ListSelectorConfig) {
+    private selectElement: JQuery;
+
+    constructor(config: ListSelectorConfig = {}) {
         super(config);
 
         this.config = this.mergeConfig(config, {
@@ -16,15 +18,51 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
             'id': this.config.id
         });
 
-        for(let value in this.config.items) {
-            let label = this.config.items[value];
+        this.selectElement = selectElement;
+        this.updateDomItems();
+
+        let self = this;
+        selectElement.on('change', function () {
+            let value = DOM.JQuery(this).val();
+            self.onItemSelectedEvent(value, false);
+        });
+
+        return selectElement;
+    }
+
+    protected updateDomItems(selectedValue: string = null) {
+        // Delete all children
+        this.selectElement.empty();
+
+        // Add updated children
+        for (let value in this.items) {
+            let label = this.items[value];
             let optionElement = DOM.JQuery('<option>', {
                 'value': value
             }).html(label);
 
-            selectElement.append(optionElement);
-        }
+            if (value == selectedValue) {
+                optionElement.attr('selected', 'selected');
+            }
 
-        return selectElement;
+            this.selectElement.append(optionElement);
+        }
+    }
+
+    protected onItemAddedEvent(value: string) {
+        super.onItemAddedEvent(value);
+        this.updateDomItems();
+    }
+
+    protected onItemRemovedEvent(value: string) {
+        super.onItemRemovedEvent(value);
+        this.updateDomItems();
+    }
+
+    protected onItemSelectedEvent(value: string, updateDomItems: boolean = true) {
+        super.onItemSelectedEvent(value);
+        if (updateDomItems) {
+            this.updateDomItems();
+        }
     }
 }
