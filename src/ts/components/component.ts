@@ -1,5 +1,6 @@
 import {Guid} from "../guid";
 import {DOM} from "../dom";
+import {EventDispatcher, NoArgs, Event} from "../eventdispatcher";
 
 /**
  * Base configuration interface with common options for all kinds of components.
@@ -45,6 +46,11 @@ export abstract class Component<Config extends ComponentConfig> {
      * Flag that keeps track of the hidden state.
      */
     private hidden: boolean;
+
+    protected componentEvents = {
+        onShow: new EventDispatcher<Component<Config>, NoArgs>(),
+        onHide: new EventDispatcher<Component<Config>, NoArgs>()
+    };
 
     constructor(config: Config) {
         console.log(this);
@@ -112,11 +118,13 @@ export abstract class Component<Config extends ComponentConfig> {
     hide() {
         this.hidden = true;
         this.getDomElement().addClass(Component.CLASS_HIDDEN);
+        this.onHideEvent();
     }
 
     show() {
         this.getDomElement().removeClass(Component.CLASS_HIDDEN);
         this.hidden = false;
+        this.onShowEvent();
     }
 
     isHidden(): boolean {
@@ -133,5 +141,21 @@ export abstract class Component<Config extends ComponentConfig> {
         } else {
             this.hide();
         }
+    }
+
+    protected onShowEvent() {
+        this.componentEvents.onShow.dispatch(this);
+    }
+
+    protected onHideEvent() {
+        this.componentEvents.onHide.dispatch(this);
+    }
+
+    get onShow(): Event<Component<Config>, NoArgs> {
+        return this.componentEvents.onShow;
+    }
+
+    get onHide(): Event<Component<Config>, NoArgs> {
+        return this.componentEvents.onHide;
     }
 }

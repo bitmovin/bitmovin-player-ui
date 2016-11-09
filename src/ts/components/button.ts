@@ -14,7 +14,7 @@ export interface ButtonConfig extends ComponentConfig {
 
 export class Button<Config extends ButtonConfig> extends Component<ButtonConfig> {
 
-    protected events = {
+    protected buttonEvents = {
         onClick: new EventDispatcher<Button<Config>, NoArgs>()
     };
 
@@ -49,10 +49,10 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
     }
 
     protected onClickEvent() {
-        this.events.onClick.dispatch(this);
+        this.buttonEvents.onClick.dispatch(this);
     }
 
     get onClick() : Event<Button<Config>, NoArgs> {
-        return this.events.onClick;
+        return this.buttonEvents.onClick;
     }
 }
