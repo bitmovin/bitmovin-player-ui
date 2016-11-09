@@ -11,6 +11,8 @@ import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 import {ControlBar, ControlBarConfig} from "./components/controlbar";
 import {NoArgs, EventDispatcher} from "./eventdispatcher";
+import {SettingsToggleButton, SettingsToggleButtonConfig} from "./components/settingstogglebutton";
+import {SettingsPanel} from "./components/settingspanel";
 
 declare var bitmovin: any;
 
@@ -62,6 +64,9 @@ export class UIManager {
         }
         else if (component instanceof VolumeToggleButton) {
             this.configureVolumeToggleButton(component);
+        }
+        else if (component instanceof SettingsToggleButton) {
+            this.configureSettingsToggleButton(component);
         }
         else if (component instanceof SeekBar) {
             this.configureSeekBar(component);
@@ -384,6 +389,12 @@ export class UIManager {
         });
         self.events.onMouseLeave.subscribe(function(sender, args) {
             setHideTimeout(); // hide control bar some time after the mouse left the UI
+        });
+    }
+
+    private configureSettingsToggleButton(settingsToggleButton: SettingsToggleButton) {
+        settingsToggleButton.onClick.subscribe(function(sender: SettingsToggleButton) {
+            (<SettingsToggleButtonConfig>sender.getConfig()).settingsPanel.toggleHidden();
         });
     }
 }

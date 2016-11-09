@@ -9,7 +9,6 @@ import {SeekBar} from "./components/seekbar";
 import {Watermark} from "./components/watermark";
 import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 import {PlaybackTimeLabel} from "./components/playbacktimelabel";
-import {Container, ContainerConfig} from "./components/container";
 import {Label} from "./components/label";
 import {SettingsToggleButton} from "./components/settingstogglebutton";
 import {SelectBox} from "./components/selectbox";
@@ -27,16 +26,11 @@ var seekBar = new SeekBar();
 var selectBoxItems: ListItemCollection = {};
 selectBoxItems['value1'] = 'Value 1';
 selectBoxItems['value2'] = 'Value 2';
-// TODO create controlpanel component
 var settingsPanel = new SettingsPanel({
     components: [new Label({text: 'Video Quality'}), new SelectBox({items: selectBoxItems})],
     hidden: true
 });
 var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
-// TODO setup in UI manager
-settingsToggleButton.onClick.subscribe(function() {
-    settingsPanel.toggleHidden();
-});
 
 var controlBar = new ControlBar({
     components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
