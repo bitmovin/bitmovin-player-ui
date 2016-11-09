@@ -12,6 +12,8 @@ import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 import {Container, ContainerConfig} from "./components/container";
 import {Label} from "./components/label";
 import {SettingsToggleButton} from "./components/settingstogglebutton";
+import {SelectBox} from "./components/selectbox";
+import {ListItemCollection} from "./components/listselector";
 
 // Build UI
 var playbackToggleButton = new PlaybackToggleButton();
@@ -22,10 +24,13 @@ var timeLabel = new PlaybackTimeLabel();
 var seekBar = new SeekBar();
 var settingsToggleButton = new SettingsToggleButton();
 
+var selectBoxItems: ListItemCollection = {};
+selectBoxItems['value1'] = 'Value 1';
+selectBoxItems['value2'] = 'Value 2';
 // TODO create controlpanel component
 var controlPanelContainer = new Container<ContainerConfig>({
     cssClass: 'ui-settings-panel',
-    components: [new Label({text: 'Video Quality'})],
+    components: [new Label({text: 'Video Quality'}), new SelectBox({items: selectBoxItems})],
     hidden: true
 });
 // TODO setup in UI manager
