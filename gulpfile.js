@@ -35,6 +35,8 @@ var browserifyInstance = browserify({
     packageCache: {}
 }).plugin(tsify);
 
+var catchBrowserifyErrors = false;
+
 // Deletes the target directory containing all generated files
 gulp.task('clean', del.bind(null, [paths.target.html]));
 
@@ -46,9 +48,14 @@ gulp.task('html', function () {
 
 // Compiles JS and TypeScript to JS in the target directory
 gulp.task('browserify', function () {
-    return browserifyInstance
-        .bundle()
-        .on('error', console.error.bind(console)) // catch error to not break watch/serve tasks on error
+    var browserifyBundle = browserifyInstance.bundle();
+
+    if(catchBrowserifyErrors) {
+        // catch error to not break watch/serve tasks on error
+        browserifyBundle.on('error', console.error.bind(console));
+    }
+
+    browserifyBundle
         .pipe(source('bundle.js'))
         // TODO add uglify for prod build
         .pipe(gulp.dest(paths.target.js))
@@ -93,6 +100,7 @@ gulp.task('watch', function () {
     gulp.watch(paths.source.sass, ['sass']);
 
     // Watch files for changes through Browserify with Watchify
+    catchBrowserifyErrors = true;
     return browserifyInstance
         .plugin(watchify)
         // When a file has changed, rerun the browserify task to create an updated bundle
@@ -115,6 +123,7 @@ gulp.task('serve', function () {
 
         gulp.watch(paths.source.sass, ['sass']);
         gulp.watch(paths.source.html, ['html']).on('change', browserSync.reload);
+        catchBrowserifyErrors = true;
         gulp.watch(paths.source.tsWatch, ['browserify']);
     });
 });
