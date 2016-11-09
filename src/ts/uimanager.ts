@@ -105,7 +105,7 @@ export class UIManager {
             // Control player by button events
             // When a button event triggers a player API call, events are fired which in turn call the event handler
             // above that updated the button state.
-            playbackToggleButton.getDomElement().on('click', function () {
+            playbackToggleButton.onClick.subscribe(function () {
                 if (p.isPlaying()) {
                     p.pause();
                 } else {
@@ -129,7 +129,7 @@ export class UIManager {
         p.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, fullscreenStateHandler);
         p.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, fullscreenStateHandler);
 
-        fullscreenToggleButton.getDomElement().on('click', function () {
+        fullscreenToggleButton.onClick.subscribe(function () {
             if (p.isFullscreen()) {
                 p.exitFullscreen();
             } else {
@@ -152,7 +152,7 @@ export class UIManager {
         p.addEventHandler(bitmovin.player.EVENT.ON_VR_MODE_CHANGED, vrStateHandler);
         p.addEventHandler(bitmovin.player.EVENT.ON_VR_STEREO_CHANGED, vrStateHandler);
 
-        vrToggleButton.getDomElement().on('click', function () {
+        vrToggleButton.onClick.subscribe(function () {
             if(p.getVRStatus().contentType == 'none') {
                 if(console) console.log('No VR content');
             } else {
@@ -179,7 +179,7 @@ export class UIManager {
         p.addEventHandler(bitmovin.player.EVENT.ON_MUTE, muteStateHandler);
         p.addEventHandler(bitmovin.player.EVENT.ON_UNMUTE, muteStateHandler);
 
-        volumeToggleButton.getDomElement().on('click', function () {
+        volumeToggleButton.onClick.subscribe(function () {
             if (p.isMuted()) {
                 p.unmute();
             } else {
@@ -311,7 +311,7 @@ export class UIManager {
          * In the end, this method basically introduces a 200ms observing interval in which playback changes are prevented
          * if a double click happens.
          */
-        hugePlaybackToggleButton.getDomElement().on('click', function () {
+        hugePlaybackToggleButton.onClick.subscribe(function () {
             let now = Date.now();
 
             if (now - clickTime < 200) {

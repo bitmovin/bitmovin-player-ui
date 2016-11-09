@@ -1,5 +1,6 @@
 import {ComponentConfig, Component} from "./component";
 import {DOM} from "../dom";
+import {EventDispatcher, NoArgs, Event} from "../eventdispatcher";
 
 /**
  * Configuration interface for a button component.
@@ -12,6 +13,10 @@ export interface ButtonConfig extends ComponentConfig {
 }
 
 export class Button<Config extends ButtonConfig> extends Component<ButtonConfig> {
+
+    protected events = {
+        onClick: new EventDispatcher<Button<Config>, NoArgs>()
+    };
 
     constructor(config: ButtonConfig) {
         super(config);
@@ -35,7 +40,19 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
             'class': 'label'
         }).html(this.config.text));
 
+        let self = this;
+        buttonElement.on('click', function() {
+            self.onClickEvent();
+        });
+
         return buttonElement;
     }
 
+    protected onClickEvent() {
+        this.events.onClick.dispatch(this, null);
+    }
+
+    get onClick() : Event<Button<Config>, NoArgs> {
+        return this.events.onClick;
+    }
 }

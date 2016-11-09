@@ -11,10 +11,15 @@ export interface EventListener<Sender, Args> {
 export interface NoArgs {
 }
 
+export interface Event<Sender, Args> {
+    subscribe(listener: EventListener<Sender, Args>): void;
+    unsubscribe(listener: EventListener<Sender, Args>): boolean;
+}
+
 /**
  * Event dispatcher to subscribe and trigger events. Each event should have it's own dispatcher.
  */
-export class EventDispatcher<Sender, Args> {
+export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
 
     private _listeners: EventListener<Sender, Args>[] = [];
 

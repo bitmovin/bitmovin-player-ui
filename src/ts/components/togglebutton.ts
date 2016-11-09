@@ -31,6 +31,10 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
         return buttonElement;
     }
 
+    protected onClickEvent() {
+        this.events.onClick.dispatch(this, this._on);
+    }
+
     on() {
         this._on = true;
         this.getDomElement().removeClass(ToggleButton.CLASS_OFF);
