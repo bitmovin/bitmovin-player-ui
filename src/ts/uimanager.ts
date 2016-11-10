@@ -53,7 +53,7 @@ export class UIManager {
     }
 
     private configureControls(component: Component<ComponentConfig>) {
-        if (component instanceof HugePlaybackToggleButton) {
+        if (component instanceof HugePlaybackToggleButton) { // must come before PlaybackButton (because it's a subclass)
             this.configureHugePlaybackToggleButton(component);
         }
         else if (component instanceof PlaybackToggleButton) {
