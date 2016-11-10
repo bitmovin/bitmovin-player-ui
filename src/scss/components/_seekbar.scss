@@ -40,8 +40,13 @@
 
     .seekbar-playbackposition {
       @extend %bar;
-      border-right: 0.3em solid white;
       transition: width 0.1s linear;
+
+      // position marker
+      $position-marker-width: 0.3em;
+      border-right: $position-marker-width solid white;
+      // offset position marker to center it on mouse pointer and make it visible on both the leftmost and rightmost timeline positions
+      margin-left: -$position-marker-width / 2;
     }
   }
 
