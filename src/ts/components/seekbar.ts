@@ -1,6 +1,6 @@
 import {Component, ComponentConfig} from "./component";
 import {DOM} from "../dom";
-import {Event, EventDispatcher} from "../eventdispatcher";
+import {Event, EventDispatcher, NoArgs} from "../eventdispatcher";
 
 /**
  * Configuration interface for the SeekBar component.
@@ -24,7 +24,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     private seekBarBackdrop: JQuery;
 
     protected seekBarEvents = {
-        onSeek: new EventDispatcher<SeekBar, number>()
+        onSeek: new EventDispatcher<SeekBar, NoArgs>(), // Fired when a seek starts
+        onSeeked: new EventDispatcher<SeekBar, number>() // Fired when a seek is finished
     };
 
     constructor(config: SeekBarConfig = {}) {
@@ -78,6 +79,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         let mouseMoveHandler = function (e: JQueryEventObject) {
             let offset = self.getHorizontalMouseOffset(e);
             self.setSeekPosition(100 * offset);
+            self.setPlaybackPosition(100 * offset);
         };
         let mouseUpHandler = function (e: JQueryEventObject) {
             e.preventDefault();
@@ -96,8 +98,10 @@ export class SeekBar extends Component<SeekBarConfig> {
                 targetPercentage = 100;
             }
 
-            // Fire seek event
-            self.onSeekEvent(targetPercentage);
+            self.setSeeking(false);
+
+            // Fire seeked event
+            self.onSeekedEvent(targetPercentage);
         };
 
         // A seek always start with a mousedown directly on the seekbar. To track a seek also outside the seekbar
@@ -107,6 +111,11 @@ export class SeekBar extends Component<SeekBarConfig> {
         seekBar.on('mousedown', function (e: JQueryEventObject) {
             // Prevent selection of DOM elements
             e.preventDefault();
+
+            self.setSeeking(true);
+
+            // Fire seeked event
+            self.onSeekEvent();
 
             // Add handler to track the seek operation over the whole document
             DOM.JQuery(document).on('mousemove', mouseMoveHandler);
@@ -169,11 +178,19 @@ export class SeekBar extends Component<SeekBarConfig> {
         return this.getDomElement().hasClass(SeekBar.CLASS_SEEKING);
     }
 
-    protected onSeekEvent(percentage: number) {
-        this.seekBarEvents.onSeek.dispatch(this, percentage);
+    protected onSeekEvent() {
+        this.seekBarEvents.onSeek.dispatch(this);
     }
 
-    get onSeek(): Event<SeekBar, number> {
+    protected onSeekedEvent(percentage: number) {
+        this.seekBarEvents.onSeeked.dispatch(this, percentage);
+    }
+
+    get onSeek(): Event<SeekBar, NoArgs> {
         return this.seekBarEvents.onSeek;
+    }
+
+    get onSeeked(): Event<SeekBar, number> {
+        return this.seekBarEvents.onSeeked;
     }
 }

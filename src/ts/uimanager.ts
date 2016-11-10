@@ -39,7 +39,15 @@ export class UIManager {
         /**
          * Fires when the mouse leaves the UI area.
          */
-        onMouseLeave: new EventDispatcher<Component<ComponentConfig>, NoArgs>()
+        onMouseLeave: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+        /**
+         * Fires when a seek starts.
+         */
+        onSeek: new EventDispatcher<SeekBar, NoArgs>(),
+        /**
+         * Fires when a seek is finished.
+         */
+        onSeeked: new EventDispatcher<SeekBar, NoArgs>()
     };
 
     constructor(player: any, ui: Wrapper) {
@@ -105,9 +113,16 @@ export class UIManager {
     private configurePlaybackToggleButton(playbackToggleButton: PlaybackToggleButton, handleClickEvent: boolean) {
         // Get a local reference to the player for use inside event handlers in a different scope
         let p = this.player;
+        let isSeeking = false;
 
         // Handler to update button state based on player state
         let playbackStateHandler = function () {
+            // If the UI is currently seeking, playback is temporarily stopped but the buttons should
+            // not reflect that and stay as-is (e.g indicate playback while seeking).
+            if(isSeeking) {
+                return;
+            }
+
             if (p.isPlaying()) {
                 playbackToggleButton.on();
             } else {
@@ -132,6 +147,14 @@ export class UIManager {
                 }
             });
         }
+
+        // Track UI seeking status
+        this.events.onSeek.subscribe(function () {
+            isSeeking = true;
+        });
+        this.events.onSeeked.subscribe(function () {
+            isSeeking = false;
+        });
     }
 
     private configureFullscreenToggleButton(fullscreenToggleButton: FullscreenToggleButton) {
@@ -224,6 +247,7 @@ export class UIManager {
     }
 
     private configureSeekBar(seekBar: SeekBar) {
+        let self = this;
         let p = this.player;
 
         // Update playback and buffer positions
@@ -252,8 +276,29 @@ export class UIManager {
             seekBar.setSeeking(false);
         });
 
-        seekBar.onSeek.subscribe(function(sender, percentage) {
-           p.seek(p.getDuration() * (percentage / 100));
+        let isPlaying = false;
+        seekBar.onSeek.subscribe(function(sender) {
+            // Notify UI manager of started seek
+            self.events.onSeek.dispatch(sender);
+
+            // Save current playback state
+            isPlaying = p.isPlaying();
+
+            // Pause playback while seeking
+            if(isPlaying) {
+                p.pause();
+            }
+        });
+        seekBar.onSeeked.subscribe(function(sender, percentage) {
+            p.seek(p.getDuration() * (percentage / 100));
+
+            // Continue playback after seek if player was playing when seek started
+            if(isPlaying) {
+                p.play();
+            }
+
+            // Notify UI manager of finished seek
+            self.events.onSeeked.dispatch(sender);
         });
     }
 
