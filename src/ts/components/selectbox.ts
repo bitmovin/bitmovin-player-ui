@@ -52,18 +52,18 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
     protected onItemAddedEvent(value: string) {
         super.onItemAddedEvent(value);
-        this.updateDomItems();
+        this.updateDomItems(this.selectedItem);
     }
 
     protected onItemRemovedEvent(value: string) {
         super.onItemRemovedEvent(value);
-        this.updateDomItems();
+        this.updateDomItems(this.selectedItem);
     }
 
     protected onItemSelectedEvent(value: string, updateDomItems: boolean = true) {
         super.onItemSelectedEvent(value);
         if (updateDomItems) {
-            this.updateDomItems();
+            this.updateDomItems(value);
         }
     }
 }
