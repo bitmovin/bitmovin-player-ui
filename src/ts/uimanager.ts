@@ -14,6 +14,8 @@ import {NoArgs, EventDispatcher} from "./eventdispatcher";
 import {SettingsToggleButton, SettingsToggleButtonConfig} from "./components/settingstogglebutton";
 import {SettingsPanel} from "./components/settingspanel";
 import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
+import {Watermark} from "./components/watermark";
+import {Label} from "./components/label";
 
 declare var bitmovin: any;
 
@@ -436,5 +438,39 @@ export class UIManager {
 
         // TODO update videoQualitySelectBox when video quality is changed from outside (through the API)
         // TODO implement ON_VIDEO_QUALITY_CHANGED event in player API
+    }
+
+    static Factory = class {
+        static buildDefaultUI(player: any): UIManager {
+            let ui = UIManager.Factory.assembleDefaultUI();
+            let manager = new UIManager(player, ui);
+            return manager;
+        }
+
+        private static assembleDefaultUI(): Wrapper {
+            var playbackToggleButton = new PlaybackToggleButton();
+            var fullscreenToggleButton = new FullscreenToggleButton();
+            var vrToggleButton = new VRToggleButton();
+            var volumeToggleButton = new VolumeToggleButton();
+            var timeLabel = new PlaybackTimeLabel();
+            var seekBar = new SeekBar();
+
+            var settingsPanel = new SettingsPanel({
+                components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox()],
+                hidden: true
+            });
+            var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
+
+            var controlBar = new ControlBar({
+                components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
+                    vrToggleButton, volumeToggleButton, settingsToggleButton, fullscreenToggleButton]
+            });
+            var watermark = new Watermark();
+            var hugePlaybackToggleButton = new HugePlaybackToggleButton();
+            var ui = new Wrapper({components: [hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
+            console.log(ui);
+
+            return ui;
+        }
     }
 }
