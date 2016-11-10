@@ -150,11 +150,21 @@ export class UIManager {
     private configureVRToggleButton(vrToggleButton: VRToggleButton) {
         let p = this.player;
 
+        let isVRStereoAvailable = function () {
+            return p.getVRStatus().contentType != 'none';
+        };
+
         let vrStateHandler = function () {
-            if (p.getVRStatus().isStereo) {
-                vrToggleButton.on();
+            if(isVRStereoAvailable()) {
+                vrToggleButton.show(); // show button in case it is hidden
+
+                if (p.getVRStatus().isStereo) {
+                    vrToggleButton.on();
+                } else {
+                    vrToggleButton.off();
+                }
             } else {
-                vrToggleButton.off();
+                vrToggleButton.hide(); // hide button if no stereo mode available
             }
         };
 
@@ -162,7 +172,7 @@ export class UIManager {
         p.addEventHandler(bitmovin.player.EVENT.ON_VR_STEREO_CHANGED, vrStateHandler);
 
         vrToggleButton.onClick.subscribe(function () {
-            if(p.getVRStatus().contentType == 'none') {
+            if(!isVRStereoAvailable()) {
                 if(console) console.log('No VR content');
             } else {
                 if (p.getVRStatus().isStereo) {
@@ -172,6 +182,12 @@ export class UIManager {
                 }
             }
         });
+
+        // Hide stereo button if no VR video is configured
+        // TODO when getVRStatus() is fixed in player, check if it makes more sense to hide the button by default and show it only in a VR mode (to avoid that it might be visible for a moment)
+        if (!isVRStereoAvailable()) {
+            vrToggleButton.hide();
+        }
     }
 
     private configureVolumeToggleButton(volumeToggleButton: VolumeToggleButton) {
