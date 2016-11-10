@@ -430,6 +430,7 @@ export class UIManager {
 
     private configureControlBar(controlBar : ControlBar) {
         let self = this;
+        let isSeeking = false;
 
         // Clears the hide timeout if active
         let clearHideTimeout = function () {
@@ -454,10 +455,27 @@ export class UIManager {
             if(controlBar.isHidden()) {
                 controlBar.show();
             }
+            if(isSeeking) {
+                // Don't create/update timeout while seeking
+                return;
+            }
             setHideTimeout(); // hide the control bar if mouse does not move during the timeout time
         });
         self.events.onMouseLeave.subscribe(function(sender, args) {
+            if(isSeeking) {
+                // Don't create/update timeout while seeking
+                return;
+            }
+
             setHideTimeout(); // hide control bar some time after the mouse left the UI
+        });
+        self.events.onSeek.subscribe(function() {
+            clearHideTimeout(); // DOn't hide control bar while a seek is in progress
+            isSeeking = true;
+        });
+        self.events.onSeeked.subscribe(function() {
+            isSeeking = false;
+            setHideTimeout(); // hide control bar some time after a seek has finished
         });
     }
 
