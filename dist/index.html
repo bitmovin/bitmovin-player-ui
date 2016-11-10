@@ -13,6 +13,33 @@
 </div>
 
 <script src="//bitmovin-a.akamaihd.net/bitmovin-player/stable/6/bitmovinplayer.min.js"></script>
-<script src="js/bundle.js"></script>
+<script src="js/bitmovin-playerui.js"></script>
+<script type="text/javascript">
+
+    var player = bitmovin.player('player');
+
+    var conf = {
+        key: 'YOUR KEY HERE',
+        source: {
+            dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
+
+            // dash: 'https://bitmovin-a.akamaihd.net/content/playhouse-vr/mpds/105560.mpd',
+            // vr: {
+            //     contentType: 'single'
+            // }
+        },
+        style: {
+            ux: false
+        }
+    };
+
+    player.setup(conf).then(function () {
+        // Add UI to loaded player
+        bitmovin.playerui.UIManager.Factory.buildDefaultUI(player);
+    }, function () {
+        // Error
+    });
+
+</script>
 </body>
 </html>

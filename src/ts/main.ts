@@ -1,27 +1,49 @@
 import {UIManager} from "./uimanager";
+import {Button} from "./components/button";
+import {ControlBar} from "./components/controlbar";
+import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
+import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
+import {PlaybackTimeLabel} from "./components/playbacktimelabel";
+import {PlaybackToggleButton} from "./components/playbacktogglebutton";
+import {SeekBar} from "./components/seekbar";
+import {SelectBox} from "./components/selectbox";
+import {SettingsPanel} from "./components/settingspanel";
+import {SettingsToggleButton} from "./components/settingstogglebutton";
+import {ToggleButton} from "./components/togglebutton";
+import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
+import {VolumeToggleButton} from "./components/volumetogglebutton";
+import {VRToggleButton} from "./components/vrtogglebutton";
+import {Watermark} from "./components/watermark";
+import {Wrapper} from "./components/wrapper";
+import {Container} from "./components/container";
+import {Label} from "./components/label";
 
-declare var window: any;
-declare var bitmovin: any;
-var player = window.bitmovin.player('player');
+// Expose classes to window
+// Inspired by https://keestalkstech.com/2016/08/support-both-node-js-and-browser-js-in-one-typescript-file/
+// TODO find out how TS/Browserify can compile the classes to plain JS without the module wrapper we don't need to expose classes to the window scope manually here
+(function () {
 
-var conf = {
-    key: 'YOUR KEY HERE',
-    source: {
-        dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
+    let exportables = [
+        // Management
+        UIManager,
+        // Components
+        Button, Container, ControlBar, FullscreenToggleButton, HugePlaybackToggleButton, Label, PlaybackTimeLabel,
+        PlaybackToggleButton, SeekBar, SelectBox, SettingsPanel, SettingsToggleButton, ToggleButton,
+        VideoQualitySelectBox, VolumeToggleButton, VRToggleButton, Watermark, Wrapper
+    ];
 
-        // dash: 'https://bitmovin-a.akamaihd.net/content/playhouse-vr/mpds/105560.mpd',
-        // vr: {
-        //     contentType: 'single'
-        // }
-    },
-    style: {
-        ux: false
+    (window as any)['bitmovin']['playerui'] = {};
+    let uiscope = (window as any)['bitmovin']['playerui'];
+
+    if (window) {
+        exportables.forEach(exp => uiscope[nameof(exp)] = exp);
     }
-};
 
-player.setup(conf).then(function() {
-    // Add UI to loaded player
-    UIManager.Factory.buildDefaultUI(player);
-}, function() {
-    // Error
-});
+    function nameof(fn: any): string {
+        return typeof fn === 'undefined' ? '' : fn.name ? fn.name : (() => {
+            let result = /^function\s+([\w\$]+)\s*\(/.exec(fn.toString());
+            return !result ? '' : result[1];
+        })();
+    }
+
+} ());

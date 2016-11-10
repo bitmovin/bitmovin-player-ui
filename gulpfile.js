@@ -56,7 +56,7 @@ gulp.task('browserify', function () {
     }
 
     browserifyBundle
-        .pipe(source('bundle.js'))
+        .pipe(source('bitmovin-playerui.js'))
         // TODO add uglify for prod build
         .pipe(gulp.dest(paths.target.js))
         .pipe(browserSync.reload({stream: true}));
