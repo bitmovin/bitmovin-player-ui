@@ -16,6 +16,7 @@ import {SettingsPanel} from "./components/settingspanel";
 import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
 import {Watermark} from "./components/watermark";
 import {Label} from "./components/label";
+import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
 
 declare var bitmovin: any;
 
@@ -79,6 +80,9 @@ export class UIManager {
         }
         else if (component instanceof VideoQualitySelectBox) {
             this.configureVideoQualitySelectBox(component);
+        }
+        else if (component instanceof AudioQualitySelectBox) {
+            this.configureAudioQualitySelectBox(component);
         }
         else if (component instanceof Container) {
             if(component instanceof Wrapper) {
@@ -451,6 +455,26 @@ export class UIManager {
         // TODO implement ON_VIDEO_QUALITY_CHANGED event in player API
     }
 
+    private configureAudioQualitySelectBox(audioQualitySelectBox: AudioQualitySelectBox) {
+        let p = this.player;
+        let audioQualities = p.getAvailableAudioQualities();
+
+        // Add entry for automatic quality switching (default setting)
+        audioQualitySelectBox.addItem("auto", "auto");
+
+        // Add audio qualities
+        for(let audioQuality of audioQualities) {
+            audioQualitySelectBox.addItem(audioQuality.id, audioQuality.label);
+        }
+
+        audioQualitySelectBox.onItemSelected.subscribe(function(sender: AudioQualitySelectBox, value: string) {
+            p.setAudioQuality(value);
+        });
+
+        // TODO update audioQualitySelectBox when audio quality is changed from outside (through the API)
+        // TODO implement ON_AUDIO_QUALITY_CHANGED event in player API
+    }
+
     static Factory = class {
         static buildDefaultUI(player: any): UIManager {
             let ui = UIManager.Factory.assembleDefaultUI();
@@ -467,7 +491,7 @@ export class UIManager {
             var seekBar = new SeekBar();
 
             var settingsPanel = new SettingsPanel({
-                components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox()],
+                components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox(), new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()],
                 hidden: true
             });
             var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
