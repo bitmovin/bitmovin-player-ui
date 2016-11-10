@@ -18,6 +18,7 @@ import {Wrapper} from "./components/wrapper";
 import {Container} from "./components/container";
 import {Label} from "./components/label";
 import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
+import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
 
 // Expose classes to window
 // Inspired by https://keestalkstech.com/2016/08/support-both-node-js-and-browser-js-in-one-typescript-file/
@@ -30,7 +31,7 @@ import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
         // Components
         Button, Container, ControlBar, FullscreenToggleButton, HugePlaybackToggleButton, Label, PlaybackTimeLabel,
         PlaybackToggleButton, SeekBar, SelectBox, SettingsPanel, SettingsToggleButton, ToggleButton,
-        VideoQualitySelectBox, VolumeToggleButton, VRToggleButton, Watermark, Wrapper, AudioQualitySelectBox
+        VideoQualitySelectBox, VolumeToggleButton, VRToggleButton, Watermark, Wrapper, AudioQualitySelectBox, AudioTrackSelectBox
     ];
 
     (window as any)['bitmovin']['playerui'] = {};

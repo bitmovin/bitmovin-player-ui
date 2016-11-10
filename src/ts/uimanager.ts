@@ -17,6 +17,7 @@ import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
 import {Watermark} from "./components/watermark";
 import {Label} from "./components/label";
 import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
+import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
 
 declare var bitmovin: any;
 
@@ -83,6 +84,9 @@ export class UIManager {
         }
         else if (component instanceof AudioQualitySelectBox) {
             this.configureAudioQualitySelectBox(component);
+        }
+        else if (component instanceof AudioTrackSelectBox) {
+            this.configureAudioTrackSelectBox(component);
         }
         else if (component instanceof Container) {
             if(component instanceof Wrapper) {
@@ -457,22 +461,52 @@ export class UIManager {
 
     private configureAudioQualitySelectBox(audioQualitySelectBox: AudioQualitySelectBox) {
         let p = this.player;
-        let audioQualities = p.getAvailableAudioQualities();
 
-        // Add entry for automatic quality switching (default setting)
-        audioQualitySelectBox.addItem("auto", "auto");
 
-        // Add audio qualities
-        for(let audioQuality of audioQualities) {
-            audioQualitySelectBox.addItem(audioQuality.id, audioQuality.label);
-        }
+        let updateAudioQualities = function () {
+            let audioQualities = p.getAvailableAudioQualities();
+
+            audioQualitySelectBox.clearItems();
+
+            // Add entry for automatic quality switching (default setting)
+            audioQualitySelectBox.addItem("auto", "auto");
+
+            // Add audio qualities
+            for(let audioQuality of audioQualities) {
+                audioQualitySelectBox.addItem(audioQuality.id, audioQuality.label);
+            }
+        };
 
         audioQualitySelectBox.onItemSelected.subscribe(function(sender: AudioQualitySelectBox, value: string) {
             p.setAudioQuality(value);
         });
 
+        p.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGE, updateAudioQualities);
         // TODO update audioQualitySelectBox when audio quality is changed from outside (through the API)
         // TODO implement ON_AUDIO_QUALITY_CHANGED event in player API
+
+        updateAudioQualities();
+    }
+
+    private configureAudioTrackSelectBox(audioTrackSelectBox: AudioTrackSelectBox) {
+        let p = this.player;
+        let audioTracks = p.getAvailableAudio();
+
+        // Add audio qualities
+        for(let audioTrack of audioTracks) {
+            audioTrackSelectBox.addItem(audioTrack.id, audioTrack.label);
+        }
+
+        audioTrackSelectBox.onItemSelected.subscribe(function(sender: AudioTrackSelectBox, value: string) {
+            p.setAudio(value);
+        });
+
+        let audioTrackHandler = function () {
+            let currentAudioTrack = p.getAudio();
+            audioTrackSelectBox.selectItem(currentAudioTrack.id);
+        };
+
+        p.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGE, audioTrackHandler);
     }
 
     static Factory = class {
@@ -491,7 +525,9 @@ export class UIManager {
             var seekBar = new SeekBar();
 
             var settingsPanel = new SettingsPanel({
-                components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox(), new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()],
+                components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox(),
+                    new Label({text: 'Audio Track'}), new AudioTrackSelectBox(),
+                    new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()],
                 hidden: true
             });
             var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
