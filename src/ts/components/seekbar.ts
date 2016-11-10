@@ -1,5 +1,6 @@
 import {Component, ComponentConfig} from "./component";
 import {DOM} from "../dom";
+import {Event, EventDispatcher} from "../eventdispatcher";
 
 /**
  * Configuration interface for the SeekBar component.
@@ -16,10 +17,15 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     private static readonly CLASS_SEEKING = "seeking";
 
+    private seekBar: JQuery;
     private seekBarPlaybackPosition: JQuery;
     private seekBarBufferPosition: JQuery;
     private seekBarSeekPosition: JQuery;
     private seekBarBackdrop: JQuery;
+
+    protected seekBarEvents = {
+        onSeek: new EventDispatcher<SeekBar, number>()
+    };
 
     constructor(config: SeekBarConfig = {}) {
         super(config);
@@ -38,6 +44,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         var seekBar = DOM.JQuery(`<div>`, {
             'class': 'seekbar'
         });
+        this.seekBar = seekBar;
 
         // Indicator that shows the buffer fill level
         var seekBarBufferLevel = DOM.JQuery(`<div>`, {
@@ -64,13 +71,45 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.seekBarBackdrop = seekBarBackdrop;
 
         seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition, seekBarPlaybackPosition);
+
+        let self = this;
+
+        // Seek to target time when seekbar is clicked
+        seekBar.on('click', function (e: JQueryEventObject) {
+            let targetPercentage = 100 * self.getHorizontalMouseOffset(e);
+            self.onSeekEvent(targetPercentage);
+        });
+
+        // Display seek target indicator when mouse moves over seekbar
+        seekBar.on('mousemove', function (e: JQueryEventObject) {
+            let offset = self.getHorizontalMouseOffset(e);
+            self.setSeekPosition(100 * offset);
+        });
+
+        // Hide seek target indicator when mouse leaves seekbar
+        seekBar.on('mouseleave', function (e: JQueryEventObject) {
+            self.setSeekPosition(0);
+        });
+
         seekBarContainer.append(seekBar);
 
         return seekBarContainer;
     }
 
-    getSeekBar() : JQuery {
-        return this.getDomElement().children('.seekbar');
+    private getHorizontalMouseOffset(e: JQueryEventObject): number {
+        let elementOffsetPx = this.seekBar.offset().left;
+        let widthPx = this.seekBar.width();
+        let offsetPx = e.pageX - elementOffsetPx;
+        let offset = 1 / widthPx * offsetPx;
+
+        // console.log({
+        //     widthPx: widthPx,
+        //     offsetPx: offsetPx,
+        //     duration: p.getDuration(),
+        //     offset: offset,
+        // });
+
+        return offset;
     }
 
     setPlaybackPosition(percent: number) {
@@ -95,5 +134,13 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     isSeeking(): boolean {
         return this.getDomElement().hasClass(SeekBar.CLASS_SEEKING);
+    }
+
+    protected onSeekEvent(percentage: number) {
+        this.seekBarEvents.onSeek.dispatch(this, percentage);
+    }
+
+    get onSeek(): Event<SeekBar, number> {
+        return this.seekBarEvents.onSeek;
     }
 }
