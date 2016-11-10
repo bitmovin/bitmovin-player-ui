@@ -46,12 +46,18 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
         this.onState = true;
         this.getDomElement().removeClass(ToggleButton.CLASS_OFF);
         this.getDomElement().addClass(ToggleButton.CLASS_ON);
+
+        this.onToggleEvent();
+        this.onToggleOnEvent();
     }
 
     off() {
         this.onState = false;
         this.getDomElement().removeClass(ToggleButton.CLASS_ON);
         this.getDomElement().addClass(ToggleButton.CLASS_OFF);
+
+        this.onToggleEvent();
+        this.onToggleOffEvent();
     }
 
     toggle() {
@@ -60,6 +66,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
         } else {
             this.on();
         }
+        this.onToggleEvent();
     }
 
     isOn(): boolean {
