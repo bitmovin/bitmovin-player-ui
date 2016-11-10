@@ -249,12 +249,19 @@ export class UIManager {
     private configureSeekBar(seekBar: SeekBar) {
         let self = this;
         let p = this.player;
+        let isPlaying = false;
+        let isSeeking = false;
 
         // Update playback and buffer positions
         let playbackPositionHandler = function () {
             if(p.getDuration() == Infinity) {
                 if(console) console.log("LIVE stream, seeking disabled");
             } else {
+                if(isSeeking) {
+                    // We caught a seek preview seek, do not update the seekbar
+                    return;
+                }
+
                 let playbackPositionPercentage = 100 / p.getDuration() * p.getCurrentTime();
                 seekBar.setPlaybackPosition(playbackPositionPercentage);
 
@@ -276,8 +283,9 @@ export class UIManager {
             seekBar.setSeeking(false);
         });
 
-        let isPlaying = false;
         seekBar.onSeek.subscribe(function(sender) {
+            isSeeking = true; // track seeking status so we can catch events from seek preview seeks
+
             // Notify UI manager of started seek
             self.events.onSeek.dispatch(sender);
 
@@ -289,11 +297,16 @@ export class UIManager {
                 p.pause();
             }
         });
-        seekBar.onSeeked.subscribe(function(sender, percentage) {
+        seekBar.onSeekPreview.subscribe(function (sender, percentage) {
+            p.seek(p.getDuration() * (percentage / 100));
+        });
+        seekBar.onSeeked.subscribe(function (sender, percentage) {
+            isSeeking = false;
+
             p.seek(p.getDuration() * (percentage / 100));
 
             // Continue playback after seek if player was playing when seek started
-            if(isPlaying) {
+            if (isPlaying) {
                 p.play();
             }
 

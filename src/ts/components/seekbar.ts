@@ -24,8 +24,18 @@ export class SeekBar extends Component<SeekBarConfig> {
     private seekBarBackdrop: JQuery;
 
     protected seekBarEvents = {
-        onSeek: new EventDispatcher<SeekBar, NoArgs>(), // Fired when a seek starts
-        onSeeked: new EventDispatcher<SeekBar, number>() // Fired when a seek is finished
+        /**
+         * Fired when a scrubbing seek operation is started.
+         */
+        onSeek: new EventDispatcher<SeekBar, NoArgs>(),
+        /**
+         * Fired during a scrubbing seek to indicate that the seek preview (i.e. the video frame) should be updated.
+         */
+        onSeekPreview: new EventDispatcher<SeekBar, number>(),
+        /**
+         * Fired when a scrubbing seek has finished or when a direct seek is issued.
+         */
+        onSeeked: new EventDispatcher<SeekBar, number>()
     };
 
     constructor(config: SeekBarConfig = {}) {
@@ -75,11 +85,23 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         let self = this;
 
+        // While a seek operation is in progress and the users moves the seek position around the seekbar, we issue
+        // regular seeks to keep the picture in sync with the playback position (this makes seeking to a desired position
+        // much easier).
+        let lastSeekTime = 0; // tracks the time of the last seek while seeking
+        let seekInterval = 100; // the interval between seek updates
+
         // Define handler functions so we can attach/remove them later
         let mouseMoveHandler = function (e: JQueryEventObject) {
-            let offset = self.getHorizontalMouseOffset(e);
-            self.setSeekPosition(100 * offset);
-            self.setPlaybackPosition(100 * offset);
+            let targetPercentage = 100 * self.getHorizontalMouseOffset(e);
+            self.setSeekPosition(targetPercentage);
+            self.setPlaybackPosition(targetPercentage);
+
+            // When the seek update interval has passed, issue a seek preview and reset the time
+            if(Date.now() - lastSeekTime > seekInterval) {
+                self.onSeekPreviewEvent(targetPercentage);
+                lastSeekTime = Date.now();
+            }
         };
         let mouseUpHandler = function (e: JQueryEventObject) {
             e.preventDefault();
@@ -122,7 +144,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             DOM.JQuery(document).on('mouseup', mouseUpHandler);
         });
 
-        // Display seek target indicator when mouse moves over seekbar
+        // Display seek target indicator when mouse hovers over seekbar
         seekBar.on('mousemove', function (e: JQueryEventObject) {
             let offset = self.getHorizontalMouseOffset(e);
             self.setSeekPosition(100 * offset);
@@ -166,6 +188,11 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.seekBarSeekPosition.css({'width': percent + '%'});
     }
 
+    /**
+     * Puts the seekbar into or out of seeking mode by adding/removing a class to the DOM element. This can be used
+     * to adjust the styling while seeking.
+     * @param seeking set to true if entering seek mode, false if exiting seek mode
+     */
     setSeeking(seeking: boolean) {
         if (seeking) {
             this.getDomElement().addClass(SeekBar.CLASS_SEEKING);
@@ -182,12 +209,20 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.seekBarEvents.onSeek.dispatch(this);
     }
 
+    protected onSeekPreviewEvent(percentage: number) {
+        this.seekBarEvents.onSeekPreview.dispatch(this, percentage);
+    }
+
     protected onSeekedEvent(percentage: number) {
         this.seekBarEvents.onSeeked.dispatch(this, percentage);
     }
 
     get onSeek(): Event<SeekBar, NoArgs> {
         return this.seekBarEvents.onSeek;
+    }
+
+    get onSeekPreview(): Event<SeekBar, number> {
+        return this.seekBarEvents.onSeekPreview;
     }
 
     get onSeeked(): Event<SeekBar, number> {
