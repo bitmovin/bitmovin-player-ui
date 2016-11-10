@@ -298,7 +298,7 @@ export class UIManager {
     }
 
     private configureHugePlaybackToggleButton(hugePlaybackToggleButton: HugePlaybackToggleButton) {
-        // Update button sate trough API events
+        // Update button state through API events
         this.configurePlaybackToggleButton(hugePlaybackToggleButton, false);
 
         let p = this.player;
