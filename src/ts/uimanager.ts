@@ -363,6 +363,17 @@ export class UIManager {
                 }
             }, 200);
         });
+
+        // Hide the huge playback button during VR playback to let mouse events pass through and navigate the VR viewport
+        hugePlaybackToggleButton.onToggle.subscribe(function() {
+            if(p.getVRStatus().contentType != 'none') {
+                if (p.isPlaying()) {
+                    hugePlaybackToggleButton.hide();
+                } else {
+                    hugePlaybackToggleButton.show();
+                }
+            }
+        });
     }
 
     private configureWrapper(wrapper: Wrapper) {
