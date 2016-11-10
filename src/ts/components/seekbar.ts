@@ -74,10 +74,43 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         let self = this;
 
-        // Seek to target time when seekbar is clicked
-        seekBar.on('click', function (e: JQueryEventObject) {
+        // Define handler functions so we can attach/remove them later
+        let mouseMoveHandler = function (e: JQueryEventObject) {
+            let offset = self.getHorizontalMouseOffset(e);
+            self.setSeekPosition(100 * offset);
+        };
+        let mouseUpHandler = function (e: JQueryEventObject) {
+            e.preventDefault();
+
+            // Remove handlers, seek operation is finished
+            DOM.JQuery(document).off('mousemove', mouseMoveHandler);
+            DOM.JQuery(document).off('mouseup', mouseUpHandler);
+
             let targetPercentage = 100 * self.getHorizontalMouseOffset(e);
+
+            // Sanitize seek target
+            // Since we track mouse moves over the whole document, the target can be outside the seek range
+            if(targetPercentage < 0) {
+                targetPercentage = 0;
+            } else if(targetPercentage > 100) {
+                targetPercentage = 100;
+            }
+
+            // Fire seek event
             self.onSeekEvent(targetPercentage);
+        };
+
+        // A seek always start with a mousedown directly on the seekbar. To track a seek also outside the seekbar
+        // (so the user does not need to take care that the mouse always stays on the seekbar), we attach the mousemove
+        // and mouseup handlers to the whole document. A seek is triggered when the user lifts the mouse key.
+        // A seek mouse gesture is thus basically a click with a long time frame between down and up events.
+        seekBar.on('mousedown', function (e: JQueryEventObject) {
+            // Prevent selection of DOM elements
+            e.preventDefault();
+
+            // Add handler to track the seek operation over the whole document
+            DOM.JQuery(document).on('mousemove', mouseMoveHandler);
+            DOM.JQuery(document).on('mouseup', mouseUpHandler);
         });
 
         // Display seek target indicator when mouse moves over seekbar
