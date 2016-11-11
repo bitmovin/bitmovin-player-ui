@@ -11,4 +11,11 @@
 
   // render UI above player
   z-index: 9999;
+
+  // Do not catch pointer events, pass them through
+  pointer-events: none;
+
+  * {
+    pointer-events: auto;
+  }
 }
