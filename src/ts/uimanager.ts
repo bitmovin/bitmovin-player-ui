@@ -18,6 +18,7 @@ import {Watermark} from "./components/watermark";
 import {Label} from "./components/label";
 import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
 import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
+import {SeekBarLabel} from "./components/seekbarlabel";
 
 declare var bitmovin: any;
 
@@ -44,6 +45,10 @@ export class UIManager {
          * Fires when a seek starts.
          */
         onSeek: new EventDispatcher<SeekBar, NoArgs>(),
+        /**
+         * Fires when the seek timeline is scrubbed.
+         */
+        onSeekPreview: new EventDispatcher<SeekBar, number>(),
         /**
          * Fires when a seek is finished.
          */
@@ -83,6 +88,9 @@ export class UIManager {
         }
         else if (component instanceof SeekBar) {
             this.configureSeekBar(component);
+        }
+        else if (component instanceof SeekBarLabel) {
+            this.configureSeekBarLabel(component);
         }
         else if (component instanceof PlaybackTimeLabel) {
             this.configurePlaybackTimeLabel(component);
@@ -303,6 +311,9 @@ export class UIManager {
         });
         seekBar.onSeekPreview.subscribe(function (sender, percentage) {
             p.seek(p.getDuration() * (percentage / 100));
+
+            // Notify UI manager of seek preview
+            self.events.onSeekPreview.dispatch(sender, percentage);
         });
         seekBar.onSeeked.subscribe(function (sender, percentage) {
             isSeeking = false;
@@ -327,6 +338,21 @@ export class UIManager {
 
             // Notify UI manager of finished seek
             self.events.onSeeked.dispatch(sender);
+        });
+
+        if(seekBar.hasLabel()) {
+            // Configure a seekbar label that is internal to the seekbar)
+            this.configureSeekBarLabel(seekBar.getLabel());
+        }
+    }
+
+    private configureSeekBarLabel(seekBarLabel: SeekBarLabel) {
+        let p = this.player;
+
+        this.events.onSeekPreview.subscribe(function (sender, percentage) {
+            let time = p.getDuration() * (percentage / 100);
+            seekBarLabel.setTime(time);
+            seekBarLabel.setThumbnail(p.getThumb(time));
         });
     }
 
@@ -581,7 +607,8 @@ export class UIManager {
             var vrToggleButton = new VRToggleButton();
             var volumeToggleButton = new VolumeToggleButton();
             var timeLabel = new PlaybackTimeLabel();
-            var seekBar = new SeekBar();
+            var seekBarLabel = new SeekBarLabel();
+            var seekBar = new SeekBar({label: seekBarLabel});
 
             var settingsPanel = new SettingsPanel({
                 components: [

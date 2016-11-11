@@ -1,12 +1,13 @@
 import {Component, ComponentConfig} from "./component";
 import {DOM} from "../dom";
 import {Event, EventDispatcher, NoArgs} from "../eventdispatcher";
+import {SeekBarLabel} from "./seekbarlabel";
 
 /**
  * Configuration interface for the SeekBar component.
  */
 export interface SeekBarConfig extends ComponentConfig {
-
+    label?: SeekBarLabel;
 }
 
 /**
@@ -22,6 +23,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     private seekBarBufferPosition: JQuery;
     private seekBarSeekPosition: JQuery;
     private seekBarBackdrop: JQuery;
+
+    private label: SeekBarLabel;
 
     protected seekBarEvents = {
         /**
@@ -44,6 +47,8 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.config = this.mergeConfig(config, {
             cssClass: 'ui-seekbar'
         });
+
+        this.label = this.config.label;
     }
 
     protected toDomElement(): JQuery {
@@ -157,6 +162,10 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         seekBarContainer.append(seekBar);
 
+        if(this.label) {
+            seekBarContainer.append(this.label.getDomElement());
+        }
+
         return seekBarContainer;
     }
 
@@ -205,11 +214,25 @@ export class SeekBar extends Component<SeekBarConfig> {
         return this.getDomElement().hasClass(SeekBar.CLASS_SEEKING);
     }
 
+    hasLabel(): boolean {
+        return this.label != null;
+    }
+
+    getLabel(): SeekBarLabel {
+        return this.label;
+    }
+
     protected onSeekEvent() {
         this.seekBarEvents.onSeek.dispatch(this);
     }
 
     protected onSeekPreviewEvent(percentage: number) {
+        if(this.label) {
+            this.label.setText(percentage + "");
+            this.label.getDomElement().css({
+                "left": percentage + "%"
+            });
+        }
         this.seekBarEvents.onSeekPreview.dispatch(this, percentage);
     }
 

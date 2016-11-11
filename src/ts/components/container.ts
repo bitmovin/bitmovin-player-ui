@@ -16,7 +16,8 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
 
         this.config = this.mergeConfig(config, {
             tag: 'div',
-            cssClass: 'ui-container'
+            cssClass: 'ui-container',
+            components: []
         });
 
         // Hide is config desires it. This can't be done in the base component because it requires the DOM element

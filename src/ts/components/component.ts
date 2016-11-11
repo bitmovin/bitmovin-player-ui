@@ -57,13 +57,14 @@ export class Component<Config extends ComponentConfig> {
         onHide: new EventDispatcher<Component<Config>, NoArgs>()
     };
 
-    constructor(config: ComponentConfig) {
+    constructor(config: ComponentConfig = {}) {
         console.log(this);
         console.log(config);
 
         this.config = <Config>this.mergeConfig(config, {
             tag: 'div',
             id: 'ui-id-' + Guid.next(),
+            cssClass: 'ui-component',
             hidden: false
         });
 

@@ -1,0 +1,13 @@
+.ui-seekbar-label {
+  text-align: center;
+  position: absolute;
+  left: 0%;
+  bottom: 100%;
+  margin-bottom: 1em;
+
+
+  > .container {
+    background-color: $controlbar-background-color;
+    padding: 0.5em;
+  }
+}
