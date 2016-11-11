@@ -18,16 +18,31 @@
 
     var player = bitmovin.player('player');
 
+    var sources = {
+        default: {
+            dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
+        },
+        vr: {
+            dash: 'https://bitmovin-a.akamaihd.net/content/playhouse-vr/mpds/105560.mpd',
+            vr: {
+                contentType: 'single'
+            }
+        },
+        posterAndThumbnails: {
+            dash: '//bitdash-a.akamaihd.net/content/MI201109210084_1/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd',
+            hls: '//bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8',
+            progressive: '//bitdash-a.akamaihd.net/content/MI201109210084_1/MI201109210084_mpeg-4_hd_high_1080p25_10mbits.mp4',
+            poster: '//bitdash-a.akamaihd.net/content/art-of-motion_drm/art-of-motion_poster.jpg',
+            tracks: [{
+                file: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.vtt',
+                kind: 'thumbnails'
+            }], userId: "demo_html5_vts", videoId: "art-of-motion"
+        }
+    };
+
     var conf = {
         key: 'YOUR KEY HERE',
-        source: {
-            dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
-
-            // dash: 'https://bitmovin-a.akamaihd.net/content/playhouse-vr/mpds/105560.mpd',
-            // vr: {
-            //     contentType: 'single'
-            // }
-        },
+        source: sources.posterAndThumbnails,
         style: {
             ux: false
         }
