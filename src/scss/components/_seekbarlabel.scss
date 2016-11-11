@@ -13,6 +13,15 @@
     // Center container on left edge to get it centered over timeline position
     margin-left: -50%;
     margin-right: 50%;
+
+    .thumbnail {
+      margin-bottom: 0.3em;
+    }
+
+    .label {
+      margin: 0.5em;
+      line-height: 0.8em;
+    }
   }
 
   // Fade in/out on show/hide

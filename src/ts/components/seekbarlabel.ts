@@ -45,11 +45,13 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
         if (thumbnail == null) {
             thumbnailElement.css({
-                "background-image": "none"
+                "background-image": "none",
+                "display": "none"
             });
         }
         else {
             thumbnailElement.css({
+                "display": "inherit",
                 "background-image": `url(${thumbnail.url})`,
                 "width": thumbnail.w + "px",
                 "height": thumbnail.h + "px",
