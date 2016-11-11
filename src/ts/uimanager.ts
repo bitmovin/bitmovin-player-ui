@@ -310,13 +310,15 @@ export class UIManager {
             }
         });
         seekBar.onSeekPreview.subscribe(function (sender: SeekBar, args: SeekPreviewEventArgs) {
-            if(args.scrubbing) {
-                p.seek(p.getDuration() * (args.position / 100));
-            }
-
             // Notify UI manager of seek preview
             self.events.onSeekPreview.dispatch(sender, args.position);
         });
+        seekBar.onSeekPreview.subscribeRateLimited(function (sender: SeekBar, args: SeekPreviewEventArgs) {
+            // Rate-limited scrubbing seek
+            if(args.scrubbing) {
+                p.seek(p.getDuration() * (args.position / 100));
+            }
+        }, 200);
         seekBar.onSeeked.subscribe(function (sender, percentage) {
             isSeeking = false;
 

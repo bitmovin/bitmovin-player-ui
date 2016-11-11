@@ -101,23 +101,12 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         let self = this;
 
-        // While a seek operation is in progress and the users moves the seek position around the seekbar, we issue
-        // regular seeks to keep the picture in sync with the playback position (this makes seeking to a desired position
-        // much easier).
-        let lastSeekTime = 0; // tracks the time of the last seek while seeking
-        let seekInterval = 100; // the interval between seek updates
-
         // Define handler functions so we can attach/remove them later
         let mouseMoveHandler = function (e: JQueryEventObject) {
             let targetPercentage = 100 * self.getHorizontalMouseOffset(e);
             self.setSeekPosition(targetPercentage);
             self.setPlaybackPosition(targetPercentage);
-
-            // When the seek update interval has passed, issue a seek preview and reset the time
-            if(Date.now() - lastSeekTime > seekInterval) {
-                self.onSeekPreviewEvent(targetPercentage, true);
-                lastSeekTime = Date.now();
-            }
+            self.onSeekPreviewEvent(targetPercentage, true);
         };
         let mouseUpHandler = function (e: JQueryEventObject) {
             e.preventDefault();
