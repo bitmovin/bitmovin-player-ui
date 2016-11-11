@@ -10,6 +10,17 @@ export interface SeekBarConfig extends ComponentConfig {
     label?: SeekBarLabel;
 }
 
+export interface SeekPreviewEventArgs extends NoArgs {
+    /**
+     * Tells if the seek preview event comes from a scrubbing seek.
+     */
+    scrubbing: boolean;
+    /**
+     * The timeline position in percent where the event originates.
+     */
+    position: number;
+}
+
 /**
  * SeekBar component that can be used to seek the stream and
  * that displays the current playback position and buffer fill level.
@@ -34,7 +45,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         /**
          * Fired during a scrubbing seek to indicate that the seek preview (i.e. the video frame) should be updated.
          */
-        onSeekPreview: new EventDispatcher<SeekBar, number>(),
+        onSeekPreview: new EventDispatcher<SeekBar, SeekPreviewEventArgs>(),
         /**
          * Fired when a scrubbing seek has finished or when a direct seek is issued.
          */
@@ -104,7 +115,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
             // When the seek update interval has passed, issue a seek preview and reset the time
             if(Date.now() - lastSeekTime > seekInterval) {
-                self.onSeekPreviewEvent(targetPercentage);
+                self.onSeekPreviewEvent(targetPercentage, true);
                 lastSeekTime = Date.now();
             }
         };
@@ -151,8 +162,9 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Display seek target indicator when mouse hovers over seekbar
         seekBar.on('mousemove', function (e: JQueryEventObject) {
-            let offset = self.getHorizontalMouseOffset(e);
-            self.setSeekPosition(100 * offset);
+            let position = 100 * self.getHorizontalMouseOffset(e);
+            self.setSeekPosition(position);
+            self.onSeekPreviewEvent(position, false);
         });
 
         // Hide seek target indicator when mouse leaves seekbar
@@ -226,14 +238,14 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.seekBarEvents.onSeek.dispatch(this);
     }
 
-    protected onSeekPreviewEvent(percentage: number) {
+    protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
         if(this.label) {
             this.label.setText(percentage + "");
             this.label.getDomElement().css({
                 "left": percentage + "%"
             });
         }
-        this.seekBarEvents.onSeekPreview.dispatch(this, percentage);
+        this.seekBarEvents.onSeekPreview.dispatch(this, {scrubbing: scrubbing, position: percentage});
     }
 
     protected onSeekedEvent(percentage: number) {
@@ -244,7 +256,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         return this.seekBarEvents.onSeek;
     }
 
-    get onSeekPreview(): Event<SeekBar, number> {
+    get onSeekPreview(): Event<SeekBar, SeekPreviewEventArgs> {
         return this.seekBarEvents.onSeekPreview;
     }
 

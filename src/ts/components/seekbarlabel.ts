@@ -36,7 +36,6 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     }
 
     setThumbnail(thumbnail: any = null) {
-        console.log(thumbnail);
         let thumbnailElement = this.thumbnail.getDomElement();
 
         if (thumbnail == null) {

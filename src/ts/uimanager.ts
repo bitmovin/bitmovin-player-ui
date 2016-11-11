@@ -6,7 +6,7 @@ import {PlaybackToggleButton} from "./components/playbacktogglebutton";
 import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
 import {VRToggleButton} from "./components/vrtogglebutton";
 import {VolumeToggleButton} from "./components/volumetogglebutton";
-import {SeekBar} from "./components/seekbar";
+import {SeekBar, SeekPreviewEventArgs} from "./components/seekbar";
 import {PlaybackTimeLabel} from "./components/playbacktimelabel";
 import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 import {ControlBar, ControlBarConfig} from "./components/controlbar";
@@ -309,11 +309,13 @@ export class UIManager {
                 p.pause();
             }
         });
-        seekBar.onSeekPreview.subscribe(function (sender, percentage) {
-            p.seek(p.getDuration() * (percentage / 100));
+        seekBar.onSeekPreview.subscribe(function (sender: SeekBar, args: SeekPreviewEventArgs) {
+            if(args.scrubbing) {
+                p.seek(p.getDuration() * (args.position / 100));
+            }
 
             // Notify UI manager of seek preview
-            self.events.onSeekPreview.dispatch(sender, percentage);
+            self.events.onSeekPreview.dispatch(sender, args.position);
         });
         seekBar.onSeeked.subscribe(function (sender, percentage) {
             isSeeking = false;
