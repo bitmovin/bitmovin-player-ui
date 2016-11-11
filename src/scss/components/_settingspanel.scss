@@ -11,19 +11,37 @@
   padding: 0;
   overflow: hidden;
 
-  // Animate show
-  max-height: 100%;
-  transition: max-height .2s ease-in;
+  > .container {
+    margin: -0.5em;
+    padding: 0.5em;
 
-  // Animate hide
-  &.hidden {
-    max-height: 0;
-    transition: max-height .2s ease-out;
-  }
-
-  .container {
     > * {
       margin: 0.5em;
     }
+
+    // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
+    // Animate show
+    max-height: 10em;
+    transition: max-height .2s ease-in;
+
+    // A "line" in the panel: a container holding a label + control
+    .container > * {
+      // Labels
+      &:first-child {
+        width: 8em;
+        display: inline-block;
+      }
+
+      // Controls (e.g. selectbox)
+      &:last-child {
+        width: 12em;
+      }
+    }
+  }
+
+  &.hidden > .container {
+    // Animate hide
+    max-height: 0;
+    transition: max-height .2s ease-out;
   }
 }

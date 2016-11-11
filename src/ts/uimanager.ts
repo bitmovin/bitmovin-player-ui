@@ -586,9 +586,12 @@ export class UIManager {
             var seekBar = new SeekBar();
 
             var settingsPanel = new SettingsPanel({
-                components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox(),
-                    new Label({text: 'Audio Track'}), new AudioTrackSelectBox(),
-                    new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()],
+                components: [
+                    // TODO handle the containers internally in the settings panel? Will it always be two items per row?
+                    new Container({components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox()]}),
+                    new Container({components: [new Label({text: 'Audio Track'}), new AudioTrackSelectBox()]}),
+                    new Container({components: [new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()]})
+                ],
                 hidden: true
             });
             var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
