@@ -429,15 +429,14 @@ export class UIManager {
 
     private configureWrapper(wrapper: Wrapper) {
         let self = this;
-        // Fire UI events from DOM events
-        wrapper.getDomElement().on('mouseleave', function () {
-            self.events.onMouseLeave.dispatch(wrapper);
+        wrapper.onMouseEnter.subscribe(function (sender) {
+            self.events.onMouseEnter.dispatch(sender);
         });
-        wrapper.getDomElement().on('mouseenter', function () {
-            self.events.onMouseEnter.dispatch(wrapper);
+        wrapper.onMouseMove.subscribe(function (sender) {
+            self.events.onMouseMove.dispatch(sender);
         });
-        wrapper.getDomElement().on('mousemove', function () {
-            self.events.onMouseMove.dispatch(wrapper);
+        wrapper.onMouseLeave.subscribe(function (sender) {
+            self.events.onMouseLeave.dispatch(sender);
         });
     }
 

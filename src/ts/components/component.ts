@@ -1,6 +1,7 @@
 import {Guid} from "../guid";
 import {DOM} from "../dom";
 import {EventDispatcher, NoArgs, Event} from "../eventdispatcher";
+import {UIManager} from "../uimanager";
 
 /**
  * Base configuration interface with common options for all kinds of components.
@@ -84,6 +85,10 @@ export abstract class Component<Config extends ComponentConfig> {
     protected refreshDomElement(): JQuery {
         this.element = null;
         return this.getDomElement();
+    }
+
+    configure(player, uimanager: UIManager) {
+
     }
 
     /**
