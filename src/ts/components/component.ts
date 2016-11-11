@@ -8,6 +8,10 @@ import {UIManager} from "../uimanager";
  */
 export interface ComponentConfig {
     /**
+     * The HTML tag name of the component, 'div' by default.
+     */
+    tag?: string;
+    /**
      * The HTML ID of the component.
      */
     id?: string;
@@ -29,7 +33,7 @@ export interface ComponentConfig {
     hidden?: boolean;
 }
 
-export abstract class Component<Config extends ComponentConfig> {
+export class Component<Config extends ComponentConfig> {
 
     private static readonly CLASS_HIDDEN = "hidden";
 
@@ -53,26 +57,29 @@ export abstract class Component<Config extends ComponentConfig> {
         onHide: new EventDispatcher<Component<Config>, NoArgs>()
     };
 
-    constructor(config: Config) {
+    constructor(config: ComponentConfig) {
         console.log(this);
         console.log(config);
 
-        if(!config.id) {
-            config.id = 'id-' + Guid.next();
-        }
+        this.config = <Config>this.mergeConfig(config, {
+            tag: 'div',
+            id: 'ui-id-' + Guid.next(),
+            hidden: false
+        });
 
-        if(!config.hidden) {
-            config.hidden = false;
-        }
-
-        this.config = config;
-        this.hidden = config.hidden;
+        this.hidden = this.config.hidden;
     }
 
     /**
      * Generate DOM element for this component. This element can then be added to the HTML document.
      */
-    protected abstract toDomElement(): JQuery;
+    protected toDomElement(): JQuery {
+        var element = DOM.JQuery(`<${this.config.tag}>`, {
+            'id': this.config.id,
+            'class': this.getCssClasses()
+        });
+        return element;
+    }
 
     getDomElement(): JQuery {
         if(!this.element) {
@@ -96,7 +103,7 @@ export abstract class Component<Config extends ComponentConfig> {
      * @param defaults
      * @returns {ComponentConfig}
      */
-    protected mergeConfig<T extends Config>(config: T, defaults: T): T {
+    protected mergeConfig<Config>(config: Config, defaults: Config): Config {
         // Extend default config with supplied config
         DOM.JQuery().extend(defaults, config);
 

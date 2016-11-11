@@ -4,11 +4,6 @@ import {ArrayUtils} from "../utils";
 
 export interface ContainerConfig extends ComponentConfig {
     /**
-     * The HTML tag name of the container, 'div' by default.
-     */
-    tag?: string;
-
-    /**
      * Child components of the container.
      */
     components?: Component<ComponentConfig>[];
