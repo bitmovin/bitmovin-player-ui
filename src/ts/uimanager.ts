@@ -440,21 +440,20 @@ export class UIManager {
         });
     }
 
-    private _controlBarHideDelayTimeoutHandle: number;
-
     private configureControlBar(controlBar : ControlBar) {
         let self = this;
         let isSeeking = false;
+        let controlBarHideDelayTimeoutHandle = 0;
 
         // Clears the hide timeout if active
         let clearHideTimeout = function () {
-            clearTimeout(self._controlBarHideDelayTimeoutHandle);
+            clearTimeout(controlBarHideDelayTimeoutHandle);
         };
 
         // Activates the hide timeout and clears a previous timeout if active
         let setHideTimeout = function () {
             clearHideTimeout();
-            self._controlBarHideDelayTimeoutHandle = setTimeout(function () {
+            controlBarHideDelayTimeoutHandle = setTimeout(function () {
                 controlBar.hide();
             }, (<ControlBarConfig>controlBar.getConfig()).hideDelay); // TODO fix generics to spare these damn casts... is that even possible in TS?
         };
