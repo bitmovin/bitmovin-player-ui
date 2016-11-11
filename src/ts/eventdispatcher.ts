@@ -13,6 +13,7 @@ export interface NoArgs {
 
 export interface Event<Sender, Args> {
     subscribe(listener: EventListener<Sender, Args>): void;
+    subscribeRateLimited(listener: EventListener<Sender, Args>, rateMs: number): void;
     unsubscribe(listener: EventListener<Sender, Args>): boolean;
 }
 
@@ -21,7 +22,7 @@ export interface Event<Sender, Args> {
  */
 export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
 
-    private listeners: EventListener<Sender, Args>[] = [];
+    private listeners: EventListenerWrapper<Sender, Args>[] = [];
 
     constructor() {
     }
@@ -31,7 +32,11 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
      * @param listener the listener to add
      */
     subscribe(listener: EventListener<Sender, Args>) {
-        this.listeners.push(listener);
+        this.listeners.push(new EventListenerWrapper(listener));
+    }
+
+    subscribeRateLimited(listener: EventListener<Sender, Args>, rateMs: number) {
+        this.listeners.push(new RateLimitedEventListenerWrapper(listener, rateMs));
     }
 
     /**
@@ -43,7 +48,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
         // Iterate through listeners, compare with parameter, and remove if found
         for (let i = 0; i < this.listeners.length; i++) {
             let subscribedListener = this.listeners[i];
-            if (subscribedListener == listener) {
+            if (subscribedListener.listener == listener) {
                 this.listeners.splice(i, 1);
                 return true;
             }
@@ -60,7 +65,55 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
     dispatch(sender: Sender, args: Args = null) {
         // Call every listener
         for (let listener of this.listeners) {
-            listener(sender, args);
+            listener.fire(sender, args);
         }
+    }
+}
+
+class EventListenerWrapper<Sender, Args> {
+
+    private eventListener: EventListener<Sender, Args>;
+
+    constructor(listener: EventListener<Sender, Args>) {
+        this.eventListener = listener;
+    }
+
+    get listener(): EventListener<Sender, Args> {
+        return this.eventListener;
+    }
+
+    fire(sender: Sender, args: Args) {
+        this.eventListener(sender, args);
+    }
+}
+
+class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper<Sender, Args> {
+
+    private rateMs: number;
+    private rateLimitingEventListener: EventListener<Sender, Args>;
+
+    private lastFireTime: number;
+
+    constructor(listener: EventListener<Sender, Args>, rateMs: number) {
+        super(listener); // sets the event listener sink
+
+        this.rateMs = rateMs;
+        this.lastFireTime = 0;
+
+        let self = this;
+        this.rateLimitingEventListener = function(sender: Sender, args: Args) {
+            if(Date.now() - this.lastFireTime > this.rateMs) {
+                this.fireSuper(sender, args);
+                this.lastFireTime = Date.now();
+            }
+        };
+    }
+
+    private fireSuper(sender: Sender, args: Args) {
+        super.fire(sender, args);
+    }
+
+    fire(sender: Sender, args: Args) {
+        this.rateLimitingEventListener(sender, args);
     }
 }
