@@ -165,11 +165,19 @@ export class SeekBar extends Component<SeekBarConfig> {
             let position = 100 * self.getHorizontalMouseOffset(e);
             self.setSeekPosition(position);
             self.onSeekPreviewEvent(position, false);
+
+            if(self.hasLabel() && self.getLabel().isHidden()) {
+                self.getLabel().show();
+            }
         });
 
         // Hide seek target indicator when mouse leaves seekbar
         seekBar.on('mouseleave', function (e: JQueryEventObject) {
             self.setSeekPosition(0);
+
+            if(self.hasLabel()) {
+                self.getLabel().hide();
+            }
         });
 
         seekBarContainer.append(seekBar);

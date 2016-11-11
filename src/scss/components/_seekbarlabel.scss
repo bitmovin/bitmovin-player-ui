@@ -6,7 +6,6 @@
   margin-bottom: 1em;
   pointer-events: none;
 
-
   > .container {
     background-color: $controlbar-background-color;
     padding: 0.5em;
@@ -14,5 +13,14 @@
     // Center container on left edge to get it centered over timeline position
     margin-left: -50%;
     margin-right: 50%;
+  }
+
+  // Fade in/out on show/hide
+  opacity: 1;
+  transition: opacity .3s;
+
+  &.hidden {
+    opacity: 0;
+    transition: opacity .3s;
   }
 }

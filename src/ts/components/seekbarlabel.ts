@@ -23,7 +23,8 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         this.config = this.mergeConfig(config, {
             tag: 'div',
             cssClass: 'ui-seekbar-label',
-            components: [this.thumbnail, this.label]
+            components: [this.thumbnail, this.label],
+            hidden: true
         });
     }
 
