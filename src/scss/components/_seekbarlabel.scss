@@ -4,10 +4,15 @@
   left: 0%;
   bottom: 100%;
   margin-bottom: 1em;
+  pointer-events: none;
 
 
   > .container {
     background-color: $controlbar-background-color;
     padding: 0.5em;
+
+    // Center container on left edge to get it centered over timeline position
+    margin-left: -50%;
+    margin-right: 50%;
   }
 }
