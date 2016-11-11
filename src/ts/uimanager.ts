@@ -249,11 +249,15 @@ export class UIManager {
     private configureSeekBar(seekBar: SeekBar) {
         let self = this;
         let p = this.player;
+        let playbackNotInitialized = true;
         let isPlaying = false;
         let isSeeking = false;
 
         // Update playback and buffer positions
         let playbackPositionHandler = function () {
+            // Once this handler os called, playback has been started and we set the flag to false
+            playbackNotInitialized = false;
+
             if(p.getDuration() == Infinity) {
                 if(console) console.log("LIVE stream, seeking disabled");
             } else {
@@ -303,6 +307,17 @@ export class UIManager {
         seekBar.onSeeked.subscribe(function (sender, percentage) {
             isSeeking = false;
 
+            // If playback has not been started before, we need to call play to in it the playback engine for the
+            // seek to work. We call pause() immediately afterwards because we actually do not want to play back anything.
+            // The flag serves to call play/pause only on the first seek before playback has started, instead of every
+            // time a seek is issued.
+            if(playbackNotInitialized) {
+                playbackNotInitialized = false;
+                p.play();
+                p.pause();
+            }
+
+            // Do the seek
             p.seek(p.getDuration() * (percentage / 100));
 
             // Continue playback after seek if player was playing when seek started
