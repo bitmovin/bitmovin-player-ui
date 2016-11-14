@@ -7,7 +7,14 @@ import {SeekBarLabel} from "./seekbarlabel";
  * Configuration interface for the SeekBar component.
  */
 export interface SeekBarConfig extends ComponentConfig {
+    /**
+     * The label above the seek position.
+     */
     label?: SeekBarLabel;
+    /**
+     * Bar will be vertical instead of horizontal if set to true.
+     */
+    vertical?: boolean;
 }
 
 export interface SeekPreviewEventArgs extends NoArgs {
@@ -71,6 +78,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     protected toDomElement(): JQuery {
+        if(this.config.vertical) {
+            this.config.cssClasses.push('vertical');
+        }
+
         var seekBarContainer = DOM.JQuery(`<div>`, {
             'id': this.config.id,
             'class': this.getCssClasses()
@@ -111,7 +122,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Define handler functions so we can attach/remove them later
         let mouseMoveHandler = function (e: JQueryEventObject) {
-            let targetPercentage = 100 * self.getHorizontalMouseOffset(e);
+            let targetPercentage = 100 * self.getMouseOffset(e);
             self.setSeekPosition(targetPercentage);
             self.setPlaybackPosition(targetPercentage);
             self.onSeekPreviewEvent(targetPercentage, true);
@@ -123,7 +134,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             DOM.JQuery(document).off('mousemove', mouseMoveHandler);
             DOM.JQuery(document).off('mouseup', mouseUpHandler);
 
-            let targetPercentage = 100 * self.getHorizontalMouseOffset(e);
+            let targetPercentage = 100 * self.getMouseOffset(e);
 
             self.setSeeking(false);
 
@@ -151,7 +162,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Display seek target indicator when mouse hovers over seekbar
         seekBar.on('mousemove', function (e: JQueryEventObject) {
-            let position = 100 * self.getHorizontalMouseOffset(e);
+            let position = 100 * self.getMouseOffset(e);
             self.setSeekPosition(position);
             self.onSeekPreviewEvent(position, false);
 
@@ -184,19 +195,32 @@ export class SeekBar extends Component<SeekBarConfig> {
         let offsetPx = e.pageX - elementOffsetPx;
         let offset = 1 / widthPx * offsetPx;
 
-        // console.log({
-        //     widthPx: widthPx,
-        //     offsetPx: offsetPx,
-        //     duration: p.getDuration(),
-        //     offset: offset,
-        // });
+        return this.sanitizeOffset(offset);
+    }
 
-        // Sanitize offset
-        // Since we track mouse moves over the whole document, the target can be outside the seek range, and we need
-        // to limit it to the [0, 1] range.
-        if(offset < 0) {
+    private getVerticalMouseOffset(e: JQueryEventObject): number {
+        let elementOffsetPx = this.seekBar.offset().top;
+        let widthPx = this.seekBar.height();
+        let offsetPx = e.pageY - elementOffsetPx;
+        let offset = 1 / widthPx * offsetPx;
+
+        return 1 - this.sanitizeOffset(offset);
+    }
+
+    private getMouseOffset(e: JQueryEventObject): number {
+        if (this.config.vertical) {
+            return this.getVerticalMouseOffset(e);
+        } else {
+            return this.getHorizontalMouseOffset(e);
+        }
+    }
+
+    private sanitizeOffset(offset: number) {
+        // Since we track mouse moves over the whole document, the target can be outside the seek range,
+        // and we need to limit it to the [0, 1] range.
+        if (offset < 0) {
             offset = 0;
-        } else if(offset > 1) {
+        } else if (offset > 1) {
             offset = 1;
         }
 
@@ -204,15 +228,20 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     setPlaybackPosition(percent: number) {
-        this.seekBarPlaybackPosition.css({'width': percent + '%'});
+        this.setPosition(this.seekBarPlaybackPosition, percent);
     }
 
     setBufferPosition(percent: number) {
-        this.seekBarBufferPosition.css({'width': percent + '%'});
+        this.setPosition(this.seekBarBufferPosition, percent);
     }
 
     setSeekPosition(percent: number) {
-        this.seekBarSeekPosition.css({'width': percent + '%'});
+        this.setPosition(this.seekBarSeekPosition, percent);
+    }
+
+    private setPosition(element: JQuery, percent: number) {
+        let style = this.config.vertical ? {'height': percent + '%'} : {'width': percent + '%'};
+        element.css(style);
     }
 
     /**

@@ -7,7 +7,8 @@ export class VolumeControlBar extends SeekBar {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-volumecontrolbar'
+            cssClass: 'ui-volumecontrolbar',
+            vertical: true
         }, this.config);
     }
 }

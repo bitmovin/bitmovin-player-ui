@@ -290,6 +290,9 @@ export class UIManager {
                 p.setVolume(args.position);
             }
         });
+        volumeControlBar.onSeeked.subscribe(function (sender, percentage) {
+            p.setVolume(percentage);
+        });
 
         // Init volume bar
         volumeChangeHandler();
