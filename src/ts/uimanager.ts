@@ -276,7 +276,6 @@ export class UIManager {
         p.addEventHandler(bitmovin.player.EVENT.ON_UNMUTE, volumeChangeHandler);
 
         volumeControlBar.onSeekPreview.subscribe(function (sender, args) {
-            console.log(args);
             if(args.scrubbing) {
                 p.setVolume(args.position);
             }
