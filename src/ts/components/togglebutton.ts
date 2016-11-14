@@ -29,7 +29,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
 
         this.config = this.mergeConfig(config, {
             cssClass: 'ui-togglebutton'
-        });
+        }, this.config);
     }
 
     protected toDomElement(): JQuery {

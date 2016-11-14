@@ -21,11 +21,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         this.thumbnail = new Component({cssClasses: ['thumbnail']});
 
         this.config = this.mergeConfig(config, {
-            tag: 'div',
             cssClass: 'ui-seekbar-label',
             components: [this.thumbnail, this.label],
             hidden: true
-        });
+        }, this.config);
 
         if(this.config.hidden) { // TODO fix this hack! Hiding should be done at a central place for all elements
             this.hide();

@@ -8,6 +8,6 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
         this.config = this.mergeConfig(config, {
             cssClass: 'ui-fullscreentogglebutton',
             text: 'Fullscreen'
-        });
+        }, this.config);
     }
 }

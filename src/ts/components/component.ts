@@ -65,8 +65,9 @@ export class Component<Config extends ComponentConfig> {
             tag: 'div',
             id: 'ui-id-' + Guid.next(),
             cssClass: 'ui-component',
+            cssClasses: [],
             hidden: false
-        });
+        }, {});
 
         this.hidden = this.config.hidden;
     }
@@ -104,12 +105,12 @@ export class Component<Config extends ComponentConfig> {
      * @param defaults
      * @returns {ComponentConfig}
      */
-    protected mergeConfig<Config>(config: Config, defaults: Config): Config {
+    protected mergeConfig<Config>(config: Config, defaults: Config, base: Config): Config {
         // Extend default config with supplied config
-        DOM.JQuery().extend(defaults, config);
+        let merged = DOM.JQuery().extend({}, base, defaults, config);
 
         // Return the extended config
-        return defaults;
+        return merged;
     }
 
     /**

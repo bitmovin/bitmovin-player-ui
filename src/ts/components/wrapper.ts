@@ -17,9 +17,8 @@ export class Wrapper extends Container<WrapperConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            tag: 'div',
             cssClass: 'ui-wrapper'
-        });
+        }, this.config);
     }
 
 

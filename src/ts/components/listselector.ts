@@ -27,7 +27,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
         this.config = this.mergeConfig(config, {
             items: {},
             cssClass: 'ui-listselector'
-        });
+        }, this.config);
 
         this.items = this.config.items;
     }

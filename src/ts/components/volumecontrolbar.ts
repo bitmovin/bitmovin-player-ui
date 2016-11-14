@@ -8,6 +8,6 @@ export class VolumeControlBar extends SeekBar {
 
         this.config = this.mergeConfig(config, {
             cssClass: 'ui-volumecontrolbar'
-        });
+        }, this.config);
     }
 }

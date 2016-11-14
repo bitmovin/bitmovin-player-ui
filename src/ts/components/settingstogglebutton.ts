@@ -14,6 +14,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
             cssClass: 'ui-settingstogglebutton',
             text: 'Settings',
             settingsPanel: null
-        });
+        }, <SettingsToggleButtonConfig>this.config);
     }
 }

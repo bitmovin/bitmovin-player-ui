@@ -18,7 +18,7 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
 
         this.config = this.mergeConfig(config, {
             cssClass: 'ui-label'
-        });
+        }, this.config);
     }
 
     protected toDomElement(): JQuery {

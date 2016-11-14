@@ -10,7 +10,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
         this.config = this.mergeConfig(config, {
             cssClass: 'ui-selectbox'
-        });
+        }, this.config);
     }
 
     protected toDomElement(): JQuery {

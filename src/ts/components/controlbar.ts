@@ -14,10 +14,9 @@ export class ControlBar extends Container<ControlBarConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            tag: 'div',
             cssClass: 'ui-controlbar',
             hidden: true,
             hideDelay: 5000
-        });
+        }, <ControlBarConfig>this.config);
     }
 }

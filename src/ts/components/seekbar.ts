@@ -57,7 +57,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         this.config = this.mergeConfig(config, {
             cssClass: 'ui-seekbar'
-        });
+        }, this.config);
 
         this.label = this.config.label;
     }

@@ -6,9 +6,8 @@ export class SettingsPanel extends Container<ContainerConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            tag: 'div',
             cssClass: 'ui-settings-panel'
-        });
+        }, this.config);
 
         // We need to refresh the DOM element here, because it's already been created by the superclass
         // when setting the hidden state.
