@@ -19,6 +19,7 @@ import {Label} from "./components/label";
 import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
 import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
 import {SeekBarLabel} from "./components/seekbarlabel";
+import {VolumeControlBar} from "./components/volumecontrolbar";
 
 declare var bitmovin: any;
 
@@ -85,6 +86,9 @@ export class UIManager {
         }
         else if (component instanceof SettingsToggleButton) {
             this.configureSettingsToggleButton(component);
+        }
+        else if (component instanceof VolumeControlBar) { // must come before SeekBar (superclass)
+            this.configureVolumeControlBar(component);
         }
         else if (component instanceof SeekBar) {
             this.configureSeekBar(component);
@@ -252,6 +256,34 @@ export class UIManager {
                 p.mute();
             }
         });
+    }
+
+    private configureVolumeControlBar(volumeControlBar: VolumeControlBar) {
+        let p = this.player;
+
+        let volumeChangeHandler = function () {
+            if(p.isMuted()) {
+                volumeControlBar.setPlaybackPosition(0);
+                volumeControlBar.setBufferPosition(0);
+            } else {
+                volumeControlBar.setPlaybackPosition(p.getVolume());
+                volumeControlBar.setBufferPosition(p.getVolume());
+            }
+        };
+
+        p.addEventHandler(bitmovin.player.EVENT.ON_VOLUME_CHANGE, volumeChangeHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_MUTE, volumeChangeHandler);
+        p.addEventHandler(bitmovin.player.EVENT.ON_UNMUTE, volumeChangeHandler);
+
+        volumeControlBar.onSeekPreview.subscribe(function (sender, args) {
+            console.log(args);
+            if(args.scrubbing) {
+                p.setVolume(args.position);
+            }
+        });
+
+        // Init volume bar
+        volumeChangeHandler();
     }
 
     private configureSeekBar(seekBar: SeekBar) {
@@ -613,6 +645,7 @@ export class UIManager {
             var timeLabel = new PlaybackTimeLabel();
             var seekBarLabel = new SeekBarLabel();
             var seekBar = new SeekBar({label: seekBarLabel});
+            var volumeControlBar = new VolumeControlBar();
 
             var settingsPanel = new SettingsPanel({
                 components: [
@@ -627,7 +660,7 @@ export class UIManager {
 
             var controlBar = new ControlBar({
                 components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
-                    vrToggleButton, volumeToggleButton, settingsToggleButton, fullscreenToggleButton]
+                    vrToggleButton, volumeToggleButton, volumeControlBar, settingsToggleButton, fullscreenToggleButton]
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();

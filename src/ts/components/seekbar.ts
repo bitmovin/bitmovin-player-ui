@@ -117,14 +117,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
             let targetPercentage = 100 * self.getHorizontalMouseOffset(e);
 
-            // Sanitize seek target
-            // Since we track mouse moves over the whole document, the target can be outside the seek range
-            if(targetPercentage < 0) {
-                targetPercentage = 0;
-            } else if(targetPercentage > 100) {
-                targetPercentage = 100;
-            }
-
             self.setSeeking(false);
 
             // Fire seeked event
@@ -190,6 +182,15 @@ export class SeekBar extends Component<SeekBarConfig> {
         //     duration: p.getDuration(),
         //     offset: offset,
         // });
+
+        // Sanitize offset
+        // Since we track mouse moves over the whole document, the target can be outside the seek range, and we need
+        // to limit it to the [0, 1] range.
+        if(offset < 0) {
+            offset = 0;
+        } else if(offset > 1) {
+            offset = 1;
+        }
 
         return offset;
     }
