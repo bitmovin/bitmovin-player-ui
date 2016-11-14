@@ -25,10 +25,6 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
             components: [this.thumbnail, this.label],
             hidden: true
         }, this.config);
-
-        if(this.config.hidden) { // TODO fix this hack! Hiding should be done at a central place for all elements
-            this.hide();
-        }
     }
 
     setText(text: string) {

@@ -62,6 +62,14 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.label = this.config.label;
     }
 
+    initialize(): void {
+        super.initialize();
+
+        if(this.hasLabel()) {
+            this.getLabel().initialize();
+        }
+    }
+
     protected toDomElement(): JQuery {
         var seekBarContainer = DOM.JQuery(`<div>`, {
             'id': this.config.id,

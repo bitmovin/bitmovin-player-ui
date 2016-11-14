@@ -18,12 +18,6 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
             cssClass: 'ui-container',
             components: []
         }, this.config);
-
-        // Hide is config desires it. This can't be done in the base component because it requires the DOM element
-        // which cannot be constructed until the constructor of the subclass has setup the config.
-        if (this.isHidden()) {
-            this.hide();
-        }
     }
 
     /**

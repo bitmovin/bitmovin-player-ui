@@ -16,6 +16,10 @@ export class Watermark extends Button<WatermarkConfig> {
             cssClass: 'ui-watermark',
             url: 'http://bitmovin.com'
         }, <WatermarkConfig>this.config);
+    }
+
+    initialize(): void {
+        super.initialize();
 
         if (this.getUrl()) {
             let element = this.getDomElement();

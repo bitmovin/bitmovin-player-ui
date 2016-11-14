@@ -24,11 +24,6 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
         this.config = this.mergeConfig(config, {
             cssClass: 'ui-button'
         }, this.config);
-
-        /** See comment in {@link Container#constructor}. */
-        if (this.isHidden()) {
-            this.hide();
-        }
     }
 
     protected toDomElement(): JQuery {

@@ -68,8 +68,21 @@ export class Component<Config extends ComponentConfig> {
             cssClasses: [],
             hidden: false
         }, {});
+    }
 
+    /**
+     * Initializes the component, e.g. by applying config settings. This method must not be called directly by users.
+     *
+     * This method is automatically called by the {@link UIManager}. If the component is an inner component of
+     * some component, and thus managed internally and never directly exposed to the UIManager, this method must
+     * be called from the managing component's {@link #initialize} method.
+     */
+    initialize(): void {
         this.hidden = this.config.hidden;
+
+        if (this.isHidden()) {
+            this.hide();
+        }
     }
 
     /**
