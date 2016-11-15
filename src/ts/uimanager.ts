@@ -23,7 +23,7 @@ import {VolumeControlBar} from "./components/volumecontrolbar";
 
 export class UIManager {
 
-    private player: any;
+    private player: bitmovin.player.Player;
     private ui: Component<ComponentConfig>;
 
     // TODO make these accessible from outside, might be helpful to to have UI API events too
@@ -54,7 +54,7 @@ export class UIManager {
         onSeeked: new EventDispatcher<SeekBar, NoArgs>()
     };
 
-    constructor(player: any, ui: Wrapper) {
+    constructor(player: bitmovin.player.Player, ui: Wrapper) {
         this.player = player;
         this.ui = ui;
 
