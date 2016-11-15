@@ -1,9 +1,11 @@
 declare namespace bitmovin {
 
+    function player(htmlElementID: string): player.Player;
+
     namespace player {
 
         interface PlayerEventCallback {
-            (): void;
+            (data?: any): void;
         }
 
         interface ViewingDirection {
@@ -38,12 +40,12 @@ declare namespace bitmovin {
             label: string;
         }
 
+        interface AudioQuality extends Quality {
+        }
+
         interface VideoQuality extends Quality {
             width: number;
             height: number;
-        }
-
-        interface AudioQuality extends Quality {
         }
 
         interface AudioTrack {
@@ -52,88 +54,132 @@ declare namespace bitmovin {
             label: string;
         }
 
+        interface SkipMessage {
+            countdown: string;
+            skip: string;
+        }
+
+        interface ScheduleAdOptions {
+            timeOffset?: any;
+            persistent?: boolean;
+            adMessage?: string;
+            skipMessage?: SkipMessage;
+            style?: Object;
+            skip?: Object;
+        }
+
+        interface SupportedTech {
+            player: string;
+            streaming: string;
+        }
+
+        interface Subtitle {
+            id: string;
+            lang: string;
+            label: string;
+        }
+
+        interface Snapshot {
+            width: number;
+            height: number;
+            data: String;
+        }
+
+        interface DownloadedData {
+            bitrate: number;
+            id: string;
+            isAuto: boolean;
+        }
+
+        interface DownloadedAudioData extends DownloadedData {
+        }
+
+        interface DownloadedVideoData extends DownloadedData {
+            width: number
+            height: number;
+        }
+
         interface Player {
             addEventHandler(eventType: EVENT, callback: PlayerEventCallback): Player;
-            //addMetadata
-            //addSubtitle
-            //castStop
-            //castVideo
-            //castVideo
-            //clearQueryParameters
-            //destroy
+            addMetadata(metadataType: string, metadata: any): void;
+            addSubtitle(url: string, subtitleTrackID: string, kind: string, lang: string, label? : string): Player;
+            castStop(): Player;
+            castVideo(): Player;
+            clearQueryParameters(): Player;
+            destroy(): void;
             enterFullscreen(): void;
             exitFullscreen(): void;
             getAudio(): AudioTrack;
-            //getAudioBufferLength
+            getAudioBufferLength(): number;
             getAvailableAudio(): AudioTrack[];
             getAvailableAudioQualities(): AudioQuality[];
-            //getAvailableImpressionServers
-            //getAvailableLicenseServers
-            //getAvailableSubtitles
+            getAvailableImpressionServers(): string[];
+            getAvailableLicenseServers(): string[];
+            getAvailableSubtitles(): Subtitle[];
             getAvailableVideoQualities(): VideoQuality[];
             getConfig(getMergedConfig?: boolean): any;
             getCurrentTime(): number;
-            //getDownloadedAudioData
-            //getDownloadedVideoData
-            //getDroppedFrames
+            getDownloadedAudioData(): DownloadedAudioData;
+            getDownloadedVideoData(): DownloadedVideoData;
+            getDroppedFrames(): number;
             getDuration(): number;
-            //getFigure
-            //getManifest
-            //getMaxTimeShift
-            //getPlaybackAudioData
-            //getPlaybackSpeed
-            //getPlaybackVideoData
-            //getPlayerType
-            //getSnapshot
-            //getStreamType
-            //getSubtitle
-            //getSupportedDRM
-            //getSupportedTech
+            getFigure(): HTMLElement;
+            getManifest(): Object;
+            getMaxTimeShift(): number;
+            getPlaybackAudioData(): AudioQuality;
+            getPlaybackSpeed(): number;
+            getPlaybackVideoData(): VideoQuality;
+            getPlayerType(): string;
+            getSnapshot(type?: string, quality?: number): Snapshot;
+            getStreamType(): string;
+            getSubtitle(): Subtitle;
+            getSupportedDRM(): Promise<string[]>;
+            getSupportedTech(): SupportedTech[];
             getThumb(time: number): Thumbnail;
-            //getTimeShift
-            //getTotalStalledTime
-            //getVersion
+            getTimeShift(): number;
+            getTotalStalledTime(): number;
+            getVersion(): string;
             getVideoBufferLength(): number;
             getVolume(): number;
             getVRStatus(): VRStatus;
-            //hasEnded
-            //isAd
-            //isCastAvailable
-            //isCasting
-            //isDRMSupported
+            hasEnded(): boolean;
+            isAd(): boolean;
+            isCastAvailable(): boolean;
+            isCasting(): boolean;
+            isDRMSupported(drmSystem: string): Promise<string>;
             isFullscreen(): boolean;
-            //isLive
+            isLive(): boolean;
             isMuted(): boolean;
-            //isPaused
+            isPaused(): boolean;
             isPlaying(): boolean;
-            //isReady
-            //isSetup
-            //isStalled
-            //load
+            isReady(): boolean;
+            isSetup(): boolean;
+            isStalled(): boolean;
+            load(source: Object, forceTechnology?: boolean, disableSeeking?: boolean): void;
             mute(): Player;
             pause(): Player;
             play(): Player;
-            //removeEventHandler
-            //removeSubtitle
-            //scheduleAd
+            removeEventHandler(eventType: EVENT, callback: PlayerEventCallback): Player;
+            removeSubtitle(subtitleTrackID: string): Player;
+            scheduleAd(adManifestUrl: string, adType: string, options?: ScheduleAdOptions): void;
             seek(time: number): boolean;
             setAudio(trackID: string): Player;
             setAudioQuality(audioQualityID: string): Player;
-            //setAuthentication
-            //setLastSegment
-            //setPlaybackSpeed
-            //setPosterImage
-            //setQueryParameters
-            //setSkin
-            //setSubtitle
-            //setup
-            //setVideoElement
+            setAuthentication(customData: any): void;
+            setLastSegment(lastSegmentNum: number): Player;
+            setPlaybackSpeed(speed: number): void;
+            setPosterImage(url: string, keepPersistent: boolean): void;
+            setQueryParameters(queryParameters: Object): Player;
+            setSkin(param: string | Object): Promise<void>;
+            setSubtitle(trackID: string): Player;
+            setup(userConfig: any, forceTechnology?: string): Promise<Player>;
+            setVideoElement(videoElement: HTMLElement): void;
             setVideoQuality(videoQualityID: string): Player;
             setVolume(volume: number): Player;
             setVRStereo(enableStereo: boolean): boolean;
-            //skipAd
-            //timeShift
-            //unload
+            skipAd(): void;
+            timeShift(offset: number): Player;
+            unload(): Player;
             unmute(): Player;
         }
 
