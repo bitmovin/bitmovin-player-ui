@@ -2,6 +2,7 @@ import {Component, ComponentConfig} from "./component";
 import {DOM} from "../dom";
 import {Event, EventDispatcher, NoArgs} from "../eventdispatcher";
 import {SeekBarLabel} from "./seekbarlabel";
+import {UIManager} from "../uimanager";
 
 /**
  * Configuration interface for the SeekBar component.
@@ -74,6 +75,101 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         if(this.hasLabel()) {
             this.getLabel().initialize();
+        }
+    }
+
+    configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        let self = this;
+        let playbackNotInitialized = true;
+        let isPlaying = false;
+        let isSeeking = false;
+
+        // Update playback and buffer positions
+        let playbackPositionHandler = function () {
+            // Once this handler os called, playback has been started and we set the flag to false
+            playbackNotInitialized = false;
+
+            if(player.getDuration() == Infinity) {
+                if(console) console.log("LIVE stream, seeking disabled");
+            } else {
+                if(isSeeking) {
+                    // We caught a seek preview seek, do not update the seekbar
+                    return;
+                }
+
+                let playbackPositionPercentage = 100 / player.getDuration() * player.getCurrentTime();
+                self.setPlaybackPosition(playbackPositionPercentage);
+
+                let bufferPercentage = 100 / player.getDuration() * player.getVideoBufferLength();
+                self.setBufferPosition(playbackPositionPercentage + bufferPercentage);
+            }
+        };
+
+        // Update seekbar upon these events
+        player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackPositionHandler); // update playback position when it changes
+        player.addEventHandler(bitmovin.player.EVENT.ON_STOP_BUFFERING, playbackPositionHandler); // update bufferlevel when buffering is complete
+        player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler); // update playback position when a seek has finished
+        player.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler); // update bufferlevel when a segment has been downloaded
+
+        player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, function () {
+            self.setSeeking(true);
+        });
+        player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, function () {
+            self.setSeeking(false);
+        });
+
+        self.onSeek.subscribe(function(sender) {
+            isSeeking = true; // track seeking status so we can catch events from seek preview seeks
+
+            // Notify UI manager of started seek
+            uimanager.events.onSeek.dispatch(sender);
+
+            // Save current playback state
+            isPlaying = player.isPlaying();
+
+            // Pause playback while seeking
+            if(isPlaying) {
+                player.pause();
+            }
+        });
+        self.onSeekPreview.subscribe(function (sender: SeekBar, args: SeekPreviewEventArgs) {
+            // Notify UI manager of seek preview
+            uimanager.events.onSeekPreview.dispatch(sender, args.position);
+        });
+        self.onSeekPreview.subscribeRateLimited(function (sender: SeekBar, args: SeekPreviewEventArgs) {
+            // Rate-limited scrubbing seek
+            if(args.scrubbing) {
+                player.seek(player.getDuration() * (args.position / 100));
+            }
+        }, 200);
+        self.onSeeked.subscribe(function (sender, percentage) {
+            isSeeking = false;
+
+            // If playback has not been started before, we need to call play to in it the playback engine for the
+            // seek to work. We call pause() immediately afterwards because we actually do not want to play back anything.
+            // The flag serves to call play/pause only on the first seek before playback has started, instead of every
+            // time a seek is issued.
+            if(playbackNotInitialized) {
+                playbackNotInitialized = false;
+                player.play();
+                player.pause();
+            }
+
+            // Do the seek
+            player.seek(player.getDuration() * (percentage / 100));
+
+            // Continue playback after seek if player was playing when seek started
+            if (isPlaying) {
+                player.play();
+            }
+
+            // Notify UI manager of finished seek
+            uimanager.events.onSeeked.dispatch(sender);
+        });
+
+        if(self.hasLabel()) {
+            // Configure a seekbar label that is internal to the seekbar)
+            self.getLabel().configure(player, uimanager);
         }
     }
 

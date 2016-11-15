@@ -85,6 +85,10 @@ export class Component<Config extends ComponentConfig> {
         }
     }
 
+    configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        // nothing to do here; overwrite in subclasses
+    }
+
     /**
      * Generate DOM element for this component. This element can then be added to the HTML document.
      */

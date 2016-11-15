@@ -1,6 +1,7 @@
 import {Container, ContainerConfig} from "./container";
 import {Label, LabelConfig} from "./label";
 import {Component, ComponentConfig} from "./component";
+import {UIManager} from "../uimanager";
 declare var require: any;
 
 export interface SeekBarLabelConfig extends ContainerConfig {
@@ -27,6 +28,16 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         }, this.config);
     }
 
+    configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        let self = this;
+
+        uimanager.events.onSeekPreview.subscribe(function (sender, percentage) {
+            let time = player.getDuration() * (percentage / 100);
+            self.setTime(time);
+            self.setThumbnail(player.getThumb(time));
+        });
+    }
+
     setText(text: string) {
         this.label.setText(text);
     }
@@ -35,7 +46,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         this.setText(this.numeral(seconds).format('00:00:00'));
     }
 
-    setThumbnail(thumbnail: any = null) {
+    setThumbnail(thumbnail: bitmovin.player.Thumbnail = null) {
         let thumbnailElement = this.thumbnail.getDomElement();
 
         if (thumbnail == null) {

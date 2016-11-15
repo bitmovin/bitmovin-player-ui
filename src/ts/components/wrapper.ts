@@ -1,5 +1,6 @@
 import {ContainerConfig, Container} from "./container";
 import {NoArgs, EventDispatcher, Event} from "../eventdispatcher";
+import {UIManager} from "../uimanager";
 
 export interface WrapperConfig extends ContainerConfig {
     // nothing to add
@@ -21,6 +22,19 @@ export class Wrapper extends Container<WrapperConfig> {
         }, this.config);
     }
 
+    configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        let self = this;
+
+        self.onMouseEnter.subscribe(function (sender) {
+            uimanager.events.onMouseEnter.dispatch(sender);
+        });
+        self.onMouseMove.subscribe(function (sender) {
+            uimanager.events.onMouseMove.dispatch(sender);
+        });
+        self.onMouseLeave.subscribe(function (sender) {
+            uimanager.events.onMouseLeave.dispatch(sender);
+        });
+    }
 
     protected toDomElement(): JQuery {
         let self = this;
