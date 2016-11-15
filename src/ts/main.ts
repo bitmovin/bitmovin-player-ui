@@ -1,3 +1,4 @@
+/// <reference path="player.d.ts" />
 import {UIManager} from "./uimanager";
 import {Button} from "./components/button";
 import {ControlBar} from "./components/controlbar";
