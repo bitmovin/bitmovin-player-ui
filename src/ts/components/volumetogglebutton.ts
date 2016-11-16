@@ -13,7 +13,6 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
         }, this.config);
     }
 
-
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
 
