@@ -23,6 +23,7 @@ import {VolumeSlider} from "./components/volumeslider";
 import {SubtitleSelectBox} from "./components/subtitleselectbox";
 import {SubtitleFrame} from "./components/subtitleframe";
 import {VolumeControlButton} from "./components/volumecontrolbutton";
+import {CastToggleButton} from "./components/casttogglebutton";
 
 export class UIManager {
 
@@ -95,6 +96,7 @@ export class UIManager {
             var seekBarLabel = new SeekBarLabel();
             var seekBar = new SeekBar({label: seekBarLabel});
             var volumeControlButton = new VolumeControlButton();
+            var castToggleButton = new CastToggleButton();
 
             var settingsPanel = new SettingsPanel({
                 components: [
@@ -110,7 +112,7 @@ export class UIManager {
 
             var controlBar = new ControlBar({
                 components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
-                    vrToggleButton, volumeControlButton, settingsToggleButton, fullscreenToggleButton]
+                    vrToggleButton, volumeControlButton, settingsToggleButton, castToggleButton, fullscreenToggleButton]
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
@@ -130,6 +132,7 @@ export class UIManager {
             var seekBar = new SeekBar({label: seekBarLabel});
             var volumeSlider = new VolumeSlider();
             var volumeControlButton = new VolumeControlButton();
+            var castToggleButton = new CastToggleButton();
 
             var settingsPanel = new SettingsPanel({
                 components: [
@@ -145,7 +148,8 @@ export class UIManager {
 
             var controlBar = new ControlBar({
                 components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
-                    vrToggleButton, volumeToggleButton, volumeSlider, volumeControlButton, new VolumeControlButton({vertical: false}), settingsToggleButton, fullscreenToggleButton]
+                    vrToggleButton, volumeToggleButton, volumeSlider, volumeControlButton, new VolumeControlButton({vertical: false}),
+                    settingsToggleButton, castToggleButton, fullscreenToggleButton]
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
