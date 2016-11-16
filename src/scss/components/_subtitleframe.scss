@@ -1,0 +1,24 @@
+.ui-subtitle-frame {
+  @extend .ui-container;
+
+  position: absolute;
+  top: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  .ui-subtitle-label {
+    position: absolute;
+    bottom: 3em;
+    left: 3em;
+    right: 3em;
+    font-size: 1.2em;
+    color: white;
+    text-align: center;
+
+    // Shift shadow in all 8 directions to get a homogeneous stroke around the text (works only for 1px width)
+    text-shadow: -1px -1px 0px black, 0px -1px 0px black, 1px -1px 0px black, -1px 0px 0px black,
+      1px 0px 0px black, -1px 1px 0px black, 0px 1px 0px black, 1px 1px 0px black;
+  }
+}

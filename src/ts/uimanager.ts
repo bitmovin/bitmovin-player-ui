@@ -21,6 +21,7 @@ import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
 import {SeekBarLabel} from "./components/seekbarlabel";
 import {VolumeControlBar} from "./components/volumecontrolbar";
 import {SubtitleSelectBox} from "./components/subtitleselectbox";
+import {SubtitleFrame} from "./components/subtitleframe";
 
 export class UIManager {
 
@@ -113,7 +114,7 @@ export class UIManager {
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
-            var ui = new Wrapper({components: [hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
+            var ui = new Wrapper({components: [new SubtitleFrame(), hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
             console.log(ui);
 
             return ui;

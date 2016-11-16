@@ -84,6 +84,14 @@ declare namespace bitmovin {
             subtitleId: string;
         }
 
+        interface SubtitleCueEvent extends PlayerEvent {
+            start: number;
+            end: number;
+            text: string;
+            region?: string;
+            regionStyle?: string;
+        }
+
         interface PlayerEventCallback {
             (event: PlayerEvent): void;
         }
