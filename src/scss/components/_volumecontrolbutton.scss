@@ -25,7 +25,7 @@
     max-height: 6em;
     transition: max-height .2s ease-in;
 
-    &.hidden.vertical {
+    &.hidden {
       max-height: 0;
       transition: max-height .2s ease-out;
     }

@@ -12,6 +12,11 @@ export interface VolumeControlButtonConfig extends ContainerConfig {
      * Default: 500ms
      */
     hideDelay?: number;
+    /**
+     * Specifies if the volume slider should be vertically or horizontally aligned.
+     * Default: true
+     */
+    vertical?: boolean;
 }
 
 export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
@@ -24,7 +29,7 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
 
         this.volumeToggleButton = new VolumeToggleButton();
         this.volumeSlider = new VolumeSlider({
-            vertical: true,
+            vertical: config.vertical != null ? config.vertical : true,
             hidden: true
         });
 

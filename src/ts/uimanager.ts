@@ -145,7 +145,7 @@ export class UIManager {
 
             var controlBar = new ControlBar({
                 components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
-                    vrToggleButton, volumeToggleButton, volumeSlider, volumeControlButton, settingsToggleButton, fullscreenToggleButton]
+                    vrToggleButton, volumeToggleButton, volumeSlider, volumeControlButton, new VolumeControlButton({vertical: false}), settingsToggleButton, fullscreenToggleButton]
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
