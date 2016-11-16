@@ -42,7 +42,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
                 'value': value
             }).html(label);
 
-            if (value == selectedValue) {
+            if (value == selectedValue + "") { // convert selectedValue to string to catch "null"/null case
                 optionElement.attr('selected', 'selected');
             }
 

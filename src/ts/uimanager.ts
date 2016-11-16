@@ -20,6 +20,7 @@ import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
 import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
 import {SeekBarLabel} from "./components/seekbarlabel";
 import {VolumeControlBar} from "./components/volumecontrolbar";
+import {SubtitleSelectBox} from "./components/subtitleselectbox";
 
 export class UIManager {
 
@@ -99,7 +100,8 @@ export class UIManager {
                     // TODO handle the containers internally in the settings panel? Will it always be two items per row?
                     new Container({components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox()]}),
                     new Container({components: [new Label({text: 'Audio Track'}), new AudioTrackSelectBox()]}),
-                    new Container({components: [new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()]})
+                    new Container({components: [new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()]}),
+                    new Container({components: [new Label({text: 'Subtitles'}), new SubtitleSelectBox()]})
                 ],
                 hidden: true
             });

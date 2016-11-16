@@ -4,8 +4,27 @@ declare namespace bitmovin {
 
     namespace player {
 
+        interface PlayerEvent {
+            timestamp: number;
+            type: EVENT;
+        }
+
+        interface SubtitleChangedEvent extends PlayerEvent {
+            time: number;
+            sourceSubtitle: Subtitle;
+            targetSubtitle: Subtitle;
+        }
+
+        interface SubtitleAddedEvent extends PlayerEvent {
+            subtitle: Subtitle;
+        }
+
+        interface SubtitleRemovedEvent extends PlayerEvent {
+            subtitleId: string;
+        }
+
         interface PlayerEventCallback {
-            (data?: any): void;
+            (event: PlayerEvent): void;
         }
 
         interface ViewingDirection {
@@ -77,6 +96,7 @@ declare namespace bitmovin {
             id: string;
             lang: string;
             label: string;
+            url: string;
         }
 
         interface Snapshot {
