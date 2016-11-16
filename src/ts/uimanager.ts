@@ -19,7 +19,7 @@ import {Label} from "./components/label";
 import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
 import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
 import {SeekBarLabel} from "./components/seekbarlabel";
-import {VolumeControlBar} from "./components/volumecontrolbar";
+import {VolumeSlider} from "./components/volumeslider";
 import {SubtitleSelectBox} from "./components/subtitleselectbox";
 import {SubtitleFrame} from "./components/subtitleframe";
 
@@ -94,7 +94,7 @@ export class UIManager {
             var timeLabel = new PlaybackTimeLabel();
             var seekBarLabel = new SeekBarLabel();
             var seekBar = new SeekBar({label: seekBarLabel});
-            var volumeControlBar = new VolumeControlBar();
+            var volumeSlider = new VolumeSlider();
 
             var settingsPanel = new SettingsPanel({
                 components: [
@@ -110,7 +110,7 @@ export class UIManager {
 
             var controlBar = new ControlBar({
                 components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
-                    vrToggleButton, volumeToggleButton, volumeControlBar, settingsToggleButton, fullscreenToggleButton]
+                    vrToggleButton, volumeToggleButton, volumeSlider, settingsToggleButton, fullscreenToggleButton]
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();

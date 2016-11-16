@@ -1,13 +1,13 @@
 import {SeekBar, SeekBarConfig} from "./seekbar";
 import {UIManager} from "../uimanager";
 
-export class VolumeControlBar extends SeekBar {
+export class VolumeSlider extends SeekBar {
 
     constructor(config: SeekBarConfig = {}) {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-volumecontrolbar',
+            cssClass: 'ui-volumeslider',
             vertical: true
         }, this.config);
     }
