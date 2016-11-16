@@ -92,6 +92,11 @@ declare namespace bitmovin {
             regionStyle?: string;
         }
 
+        interface VolumeChangeEvent extends PlayerEvent {
+            sourceVolume: number;
+            targetVolume: number;
+        }
+
         interface PlayerEventCallback {
             (event: PlayerEvent): void;
         }

@@ -6,6 +6,13 @@
     background-image: url('../../assets/images/components/hover/volume_high.png');
   }
 
+  &.low {
+    background-image: url('../../assets/images/components/normal/volume_low.png');
+    &:hover {
+      background-image: url('../../assets/images/components/hover/volume_low.png');
+    }
+  }
+
   &.on {
     background-image: url('../../assets/images/components/normal/volume_muted.png');
     &:hover {
