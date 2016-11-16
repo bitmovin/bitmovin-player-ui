@@ -22,6 +22,7 @@ import {SeekBarLabel} from "./components/seekbarlabel";
 import {VolumeSlider} from "./components/volumeslider";
 import {SubtitleSelectBox} from "./components/subtitleselectbox";
 import {SubtitleFrame} from "./components/subtitleframe";
+import {VolumeControlButton} from "./components/volumecontrolbutton";
 
 export class UIManager {
 
@@ -81,7 +82,7 @@ export class UIManager {
 
     static Factory = class {
         static buildDefaultUI(player: any): UIManager {
-            let ui = UIManager.Factory.assembleDefaultUI();
+            let ui = UIManager.Factory.assembleTestUI();
             let manager = new UIManager(player, ui);
             return manager;
         }
@@ -90,11 +91,10 @@ export class UIManager {
             var playbackToggleButton = new PlaybackToggleButton();
             var fullscreenToggleButton = new FullscreenToggleButton();
             var vrToggleButton = new VRToggleButton();
-            var volumeToggleButton = new VolumeToggleButton();
             var timeLabel = new PlaybackTimeLabel();
             var seekBarLabel = new SeekBarLabel();
             var seekBar = new SeekBar({label: seekBarLabel});
-            var volumeSlider = new VolumeSlider();
+            var volumeControlButton = new VolumeControlButton();
 
             var settingsPanel = new SettingsPanel({
                 components: [
@@ -110,7 +110,42 @@ export class UIManager {
 
             var controlBar = new ControlBar({
                 components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
-                    vrToggleButton, volumeToggleButton, volumeSlider, settingsToggleButton, fullscreenToggleButton]
+                    vrToggleButton, volumeControlButton, settingsToggleButton, fullscreenToggleButton]
+            });
+            var watermark = new Watermark();
+            var hugePlaybackToggleButton = new HugePlaybackToggleButton();
+            var ui = new Wrapper({components: [new SubtitleFrame(), hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
+            console.log(ui);
+
+            return ui;
+        }
+
+        private static assembleTestUI(): Wrapper {
+            var playbackToggleButton = new PlaybackToggleButton();
+            var fullscreenToggleButton = new FullscreenToggleButton();
+            var vrToggleButton = new VRToggleButton();
+            var volumeToggleButton = new VolumeToggleButton();
+            var timeLabel = new PlaybackTimeLabel();
+            var seekBarLabel = new SeekBarLabel();
+            var seekBar = new SeekBar({label: seekBarLabel});
+            var volumeSlider = new VolumeSlider();
+            var volumeControlButton = new VolumeControlButton();
+
+            var settingsPanel = new SettingsPanel({
+                components: [
+                    // TODO handle the containers internally in the settings panel? Will it always be two items per row?
+                    new Container({components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox()]}),
+                    new Container({components: [new Label({text: 'Audio Track'}), new AudioTrackSelectBox()]}),
+                    new Container({components: [new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()]}),
+                    new Container({components: [new Label({text: 'Subtitles'}), new SubtitleSelectBox()]})
+                ],
+                hidden: true
+            });
+            var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
+
+            var controlBar = new ControlBar({
+                components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
+                    vrToggleButton, volumeToggleButton, volumeSlider, volumeControlButton, settingsToggleButton, fullscreenToggleButton]
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();

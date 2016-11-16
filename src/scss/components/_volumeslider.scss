@@ -1,15 +1,5 @@
 .ui-volumeslider {
   @extend .ui-seekbar;
 
-  width: 1em;
-  height: 5em;
-
-  position: absolute;
-  bottom: 100%;
-  background-color: $controlbar-background-color;
-  padding: 0.5em 0.3em;
-
-  .seekbar {
-    overflow-y: hidden;
-  }
+  //
 }

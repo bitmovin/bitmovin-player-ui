@@ -1,0 +1,33 @@
+.ui-volumecontrolbutton {
+  @extend .ui-container;
+
+  position: relative;
+
+  .ui-volumeslider {
+    width: 1.5em;
+    height: 6em;
+
+    position: absolute;
+    bottom: 100%;
+    background-color: $controlbar-background-color;
+
+    .seekbar {
+      position: absolute;
+      top: 0.5em;
+      right: 0.3em;
+      bottom: 0.5em;
+      left: 0.3em;
+      overflow: hidden;
+      width: auto;
+      height: auto;
+    }
+
+    max-height: 6em;
+    transition: max-height .2s ease-in;
+
+    &.hidden.vertical {
+      max-height: 0;
+      transition: max-height .2s ease-out;
+    }
+  }
+}
