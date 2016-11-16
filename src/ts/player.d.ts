@@ -181,5 +181,22 @@ declare namespace bitmovin {
             unload(): Player;
             unmute(): Player;
         }
+
+        namespace VR {
+            enum CONTENT_TYPE {
+                /**
+                 * A single equirectangular video typically used for 2D VR/360 content.
+                 */
+                SINGLE,
+                /**
+                 * Two equirectangular videos for 3D content in top-and-bottom position.
+                 */
+                TAB,
+                /**
+                 *  Two equirectangular videos for 3D content in side-by-side position.
+                 */
+                SBS
+            }
+        }
     }
 }
