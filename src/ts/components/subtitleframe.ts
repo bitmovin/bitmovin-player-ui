@@ -22,8 +22,6 @@ export class SubtitleFrame extends Container<ContainerConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
-        this.subtitleLabel.configure(player, uimanager);
-
         let self = this;
 
         player.addEventHandler(bitmovin.player.EVENT.ON_CUE_ENTER, function (event: SubtitleCueEvent) {
