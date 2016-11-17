@@ -24,6 +24,7 @@ import {SubtitleSelectBox} from "./components/subtitleselectbox";
 import {SubtitleFrame} from "./components/subtitleframe";
 import {VolumeControlButton} from "./components/volumecontrolbutton";
 import {CastToggleButton} from "./components/casttogglebutton";
+import {CastStatusFrame} from "./components/caststatusframe";
 
 export class UIManager {
 
@@ -116,7 +117,8 @@ export class UIManager {
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
-            var ui = new Wrapper({components: [new SubtitleFrame(), hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
+            var ui = new Wrapper({components: [new SubtitleFrame(), new CastStatusFrame(),
+                hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
             console.log(ui);
 
             return ui;
@@ -153,7 +155,8 @@ export class UIManager {
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
-            var ui = new Wrapper({components: [new SubtitleFrame(), hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
+            var ui = new Wrapper({components: [new SubtitleFrame(), new CastStatusFrame(),
+                hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
             console.log(ui);
 
             return ui;

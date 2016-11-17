@@ -97,6 +97,25 @@ declare namespace bitmovin {
             targetVolume: number;
         }
 
+        interface CastStartedEvent extends PlayerEvent {
+        }
+
+        interface CastWaitingForDeviceEvent extends PlayerEvent {
+            castPayload: {
+                currentTime: number;
+                deviceName: string;
+                timestamp: number;
+                type: string;
+            }
+        }
+
+        interface CastLaunchedEvent extends PlayerEvent {
+            resuming: boolean;
+        }
+
+        interface CastStoppedEvent extends PlayerEvent {
+        }
+
         interface PlayerEventCallback {
             (event: PlayerEvent): void;
         }
