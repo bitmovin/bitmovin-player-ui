@@ -7,6 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
+/// <reference path="player-config.d.ts" />
 /// <reference path="player-events.d.ts" />
 
 declare namespace bitmovin {
@@ -180,7 +181,7 @@ declare namespace bitmovin {
             setQueryParameters(queryParameters: Object): Player;
             setSkin(param: string | Object): Promise<void>;
             setSubtitle(trackID: string): Player;
-            setup(userConfig: any, forceTechnology?: string): Promise<Player>;
+            setup(userConfig: Config, forceTechnology?: string): Promise<Player>;
             setVideoElement(videoElement: HTMLElement): void;
             setVideoQuality(videoQualityID: string): Player;
             setVolume(volume: number): Player;

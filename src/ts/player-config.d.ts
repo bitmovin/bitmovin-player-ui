@@ -469,20 +469,9 @@ declare namespace bitmovin {
             showErrors?: boolean;
         }
 
-        interface EventConfigMap {
-            [event: string]: PlayerEventCallback;
-        }
-
         interface ContextMenuEntry {
             name: string;
             url: string;
-        }
-
-        interface QueryParameters {
-            /**
-             * key -> value mapping
-             */
-            [key: string]: string;
         }
 
         interface TweaksConfig {
@@ -529,7 +518,7 @@ declare namespace bitmovin {
              * subtitle files, …). Query_parameters should be an object with key value pairs, where the keys are
              * used as parameter name and the values as parameter values.
              */
-            query_parameters?: QueryParameters;
+            query_parameters?: { [key: string]: string; };
         }
 
         interface CastConfig {
@@ -558,10 +547,6 @@ declare namespace bitmovin {
             maxSelectableVideoBitrate?: number | string;
         }
 
-        interface AdaptationPlatformConfig {
-            bitrates: AdaptationBitrateConfig;
-        }
-
         interface AdaptationConfig {
             /**
              * Limits the automatically selected quality to the player size, so the player won’t select quality
@@ -583,11 +568,15 @@ declare namespace bitmovin {
              * This behavior can be disabled by setting this option to false (default is true).
              */
             disableDownloadCancelling?: boolean;
-            desktop?: AdaptationPlatformConfig;
-            mobile?: AdaptationPlatformConfig;
+            desktop?: {
+                bitrates: AdaptationBitrateConfig
+            };
+            mobile?: {
+                bitrates: AdaptationBitrateConfig
+            };
         }
 
-        interface AdvertisingScheduleEntry {
+        interface AdvertisingScheduleItem {
             /**
              * Specifies which ad client to use, like e.g., VAST or VPAID.
              */
@@ -602,11 +591,7 @@ declare namespace bitmovin {
             tag: string;
         }
 
-        interface AdvertisingSchedule {
-            [name: string]: AdvertisingScheduleEntry;
-        }
-
-        interface AdvertisingConfig extends AdvertisingScheduleEntry {
+        interface AdvertisingConfig extends AdvertisingScheduleItem {
             /**
              * Mandatory. Specifies which ad client to use, like e.g., VAST or VPAID.
              */
@@ -634,7 +619,7 @@ declare namespace bitmovin {
              * Contains one or more ad breaks. Each ad break defines when an ad shall be played and must contain
              * an offset and a tag property.
              */
-            schedule?: AdvertisingSchedule;
+            schedule?: { [name: string]: AdvertisingScheduleItem; };
         }
 
         interface LocationConfig {
@@ -700,7 +685,7 @@ declare namespace bitmovin {
             /**
              * A list of callback functions for events.
              */
-            events?: EventConfigMap;
+            events?: { [event: string]: PlayerEventCallback; };
             /**
              * Tweaks. Use these values only if you know what you are doing.
              */
