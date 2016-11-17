@@ -11,6 +11,7 @@ import {ToggleButtonConfig} from "./togglebutton";
 import {PlaybackToggleButton} from "./playbacktogglebutton";
 import {DOM} from "../dom";
 import {UIManager} from "../uimanager";
+import PlayerEvent = bitmovin.player.PlayerEvent;
 
 export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
@@ -101,6 +102,20 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
                 }
             }
         });
+
+        // Hide button while initializing a Cast session
+        let castInitializationHandler = function (event: PlayerEvent) {
+            if(event.type == bitmovin.player.EVENT.ON_CAST_START) {
+                // Hide button when session is being initialized
+                self.hide();
+            } else {
+                // Show button when session is established or initialization was aborted
+                self.show();
+            }
+        };
+        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_START, castInitializationHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_LAUNCHED, castInitializationHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOP, castInitializationHandler);
     }
 
     protected toDomElement(): JQuery {
