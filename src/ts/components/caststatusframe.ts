@@ -23,22 +23,26 @@ export class CastStatusFrame extends Container<ContainerConfig> {
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
-        let activeCastDevice = null;
+        let castDeviceName = "unknown";
 
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_START, function (event) {
+            // Show Cast status when a session is being started
             self.show();
             self.statusLabel.setText("Select a Cast device");
         });
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_WAITING_FOR_DEVICE, function (event: CastWaitingForDeviceEvent) {
-            self.statusLabel.setText(`Connecting to <strong>${event.castPayload.deviceName}</strong>...`);
-            activeCastDevice = event.castPayload;
+            // Get device name and update status text while connecting
+            castDeviceName = event.castPayload.deviceName;
+            self.statusLabel.setText(`Connecting to <strong>${castDeviceName}</strong>...`);
         });
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_LAUNCHED, function (event: CastLaunchedEvent) {
-            if(activeCastDevice) {
-                self.statusLabel.setText(`Playing on <strong>${activeCastDevice.deviceName}</strong>`);
-            }
+            // Session is started or resumed
+            // For cases when a session is resumed, we do not receive the previous events and therefore show the status panel here too
+            self.show();
+            self.statusLabel.setText(`Playing on <strong>${castDeviceName}</strong>`);
         });
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOP, function (event: CastStoppedEvent) {
+            // Cast session gone, hide the status panel
             self.hide();
         });
     }
