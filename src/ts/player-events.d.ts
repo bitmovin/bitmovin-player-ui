@@ -11,6 +11,11 @@ declare namespace bitmovin {
 
     namespace player {
 
+        /**
+         * The list of events that are exposed by the player API.
+         * Events can be subscribed to through {@link Player#addEventHandler}.
+         * TODO rename enum to Event (camel case)
+         */
         enum EVENT {
             ON_AD_CLICKED,
             ON_AD_ERROR,
