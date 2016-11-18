@@ -60,7 +60,7 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
         });
 
         var innerContainer = DOM.JQuery(`<${this.config.tag}>`, {
-            'class': 'container'
+            'class': 'container-wrapper'
         });
 
         for (let component of this.config.components) {

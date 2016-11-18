@@ -12,17 +12,58 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Bitmovin Player UI Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <link rel="stylesheet" href="css/demo.css">
     <link rel="stylesheet" href="css/bitmovin-playerui.css">
 </head>
 <body>
 
-<div class="player-wrapper">
-    <div class="player" id="player"></div>
+<div class="container">
+    <div class="player-wrapper">
+        <div class="player" id="player"></div>
+    </div>
+
+    <br>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Playground</h3>
+        </div>
+        <div class="panel-body">
+
+            <h4>Player Config</h4>
+
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="config-source" class="col-sm-4 control-label">Video Source</label>
+                    <div class="col-sm-4">
+                        <select class="form-control" id="config-source"></select>
+                    </div>
+                    <span class="col-sm-4 help-block">The video source to load into the player.</span>
+                </div>
+            </form>
+
+            <h4>Playback Control</h4>
+
+            <div id="playback-controls"></div>
+
+            <h4>Actions</h4>
+
+            <button type="button" class="btn btn-primary" id="btn-action-subtitle-add">Add subtitle</button>
+            <button type="button" class="btn btn-primary" id="btn-action-subtitle-remove">Remove subtitle</button>
+
+            <h4>Output</h4>
+
+            <div class="well"><samp id="function-call-output"></samp></div>
+
+        </div>
+    </div>
 </div>
 
 <script src="//bitmovin-a.akamaihd.net/bitmovin-player/stable/6/bitmovinplayer.min.js"></script>
 <script src="js/bitmovin-playerui.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
 
     var player = bitmovin.player('player');
@@ -70,6 +111,34 @@
         bitmovin.playerui.UIManager.Factory.buildDefaultUI(player);
     }, function () {
         // Error
+    });
+
+    $.each(sources, function (key, value) {
+        $('#config-source').append($("<option></option>").attr("value", key).text(key));
+    });
+    $('#config-source').change(function () {
+        player.unload();
+        player.load(sources[$(this).val()]);
+    });
+
+    var printResult = function(result) {
+        $("#function-call-output").html(result+"");
+    };
+
+    var playbackControls = ["play", "pause", "mute", "unmute", "enterFullscreen", "exitFullscreen", "castVideo", "castStop", "isPlaying", "isPaused"];
+    $.each(playbackControls, function (key, name) {
+        var button = $('<button class="btn btn-primary"><code>' + name + '</code></button>');
+        $('#playback-controls').append(button);
+        button.click(function () {
+            printResult(player[name]());
+        });
+    });
+
+    $("#btn-action-subtitle-add").click(function() {
+        printResult(player.addSubtitle("http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt", "test", "subtitle", "ru", "Test Subtitle"));
+    });
+    $("#btn-action-subtitle-remove").click(function() {
+        printResult(player.removeSubtitle("test"));
     });
 
 </script>
