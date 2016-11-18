@@ -46,12 +46,17 @@
                 file: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.vtt',
                 kind: 'thumbnails'
             }], userId: "demo_html5_vts", videoId: "art-of-motion"
+        },
+        live: {
+            dash: '//bitlivedemo-a.akamaihd.net/mpds/stream.php?streamkey=bitcodin',
+            hls: '//bitlivedemo-a.akamaihd.net/m3u8s/bitcodin.m3u8',
+            poster: '//bitdash-a.akamaihd.net/content/tos/poster_tos.jpg'
         }
     };
 
     var conf = {
         key: 'YOUR KEY HERE',
-        source: sources.posterAndThumbnails,
+        source: sources.live,
         style: {
             ux: false
         },
