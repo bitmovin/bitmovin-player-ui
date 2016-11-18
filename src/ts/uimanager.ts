@@ -21,7 +21,7 @@ import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 import {ControlBar} from "./components/controlbar";
 import {NoArgs, EventDispatcher} from "./eventdispatcher";
 import {SettingsToggleButton} from "./components/settingstogglebutton";
-import {SettingsPanel} from "./components/settingspanel";
+import {SettingsPanel, SettingsPanelItem} from "./components/settingspanel";
 import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
 import {Watermark} from "./components/watermark";
 import {Label} from "./components/label";
@@ -110,11 +110,10 @@ export class UIManager {
 
             var settingsPanel = new SettingsPanel({
                 components: [
-                    // TODO handle the containers internally in the settings panel? Will it always be two items per row?
-                    new Container({components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox()]}),
-                    new Container({components: [new Label({text: 'Audio Track'}), new AudioTrackSelectBox()]}),
-                    new Container({components: [new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()]}),
-                    new Container({components: [new Label({text: 'Subtitles'}), new SubtitleSelectBox()]})
+                    new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
+                    new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
+                    new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+                    new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
                 ],
                 hidden: true
             });
@@ -147,11 +146,10 @@ export class UIManager {
 
             var settingsPanel = new SettingsPanel({
                 components: [
-                    // TODO handle the containers internally in the settings panel? Will it always be two items per row?
-                    new Container({components: [new Label({text: 'Video Quality'}), new VideoQualitySelectBox()]}),
-                    new Container({components: [new Label({text: 'Audio Track'}), new AudioTrackSelectBox()]}),
-                    new Container({components: [new Label({text: 'Audio Quality'}), new AudioQualitySelectBox()]}),
-                    new Container({components: [new Label({text: 'Subtitles'}), new SubtitleSelectBox()]})
+                    new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
+                    new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
+                    new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+                    new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
                 ],
                 hidden: true
             });

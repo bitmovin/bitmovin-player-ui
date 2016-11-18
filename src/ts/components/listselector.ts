@@ -85,6 +85,10 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
         }
     }
 
+    itemCount(): number {
+        return Object.keys(this.items).length;
+    }
+
     protected onItemAddedEvent(value: string) {
         this.listSelectorEvents.onItemAdded.dispatch(this, value);
     }

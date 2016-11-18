@@ -53,4 +53,10 @@
     max-height: 0;
     transition: max-height .2s ease-out;
   }
+
+  .ui-settings-panel-entry {
+    &.hidden {
+      display: none;
+    }
+  }
 }
