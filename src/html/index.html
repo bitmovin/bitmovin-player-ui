@@ -50,8 +50,8 @@
 
             <h5>Actions</h5>
 
-            <button type="button" class="btn btn-primary" id="btn-action-subtitle-add">Add subtitle</button>
-            <button type="button" class="btn btn-primary" id="btn-action-subtitle-remove">Remove subtitle</button>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-action-subtitle-add">Add subtitle</button>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-action-subtitle-remove">Remove subtitle</button>
 
             <h5>Output</h5>
 
@@ -144,7 +144,7 @@
         }
     }
     $.each(playbackControls, function (key, name) {
-        var button = $('<a class="btn btn-primary"><code>' + name + '</code></a>');
+        var button = $('<a class="btn btn-primary btn-sm"><code>' + name + '</code></a>');
         $('#playback-controls').append(button);
         button.click(function () {
             printResult(player[name]());
