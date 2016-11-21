@@ -97,7 +97,7 @@
 
     var conf = {
         key: 'YOUR KEY HERE',
-        source: sources.live,
+        source: sources.default,
         style: {
             ux: false
         },
@@ -121,23 +121,28 @@
         player.load(sources[$(this).val()]);
     });
 
-    var printResult = function(result) {
-        $("#function-call-output").html(result+"");
+    var printResult = function (result) {
+        $("#function-call-output").html(JSON.stringify(result, null, 2));
     };
 
-    var playbackControls = ["play", "pause", "mute", "unmute", "enterFullscreen", "exitFullscreen", "castVideo", "castStop", "isPlaying", "isPaused"];
+    var playbackControls = [];
+    for (var member in player) {
+        if (typeof player[member] == "function") {
+            playbackControls.push(member);
+        }
+    }
     $.each(playbackControls, function (key, name) {
-        var button = $('<button class="btn btn-primary"><code>' + name + '</code></button>');
+        var button = $('<a class="btn btn-primary"><code>' + name + '</code></a>');
         $('#playback-controls').append(button);
         button.click(function () {
             printResult(player[name]());
         });
     });
 
-    $("#btn-action-subtitle-add").click(function() {
+    $("#btn-action-subtitle-add").click(function () {
         printResult(player.addSubtitle("http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt", "test", "subtitle", "ru", "Test Subtitle"));
     });
-    $("#btn-action-subtitle-remove").click(function() {
+    $("#btn-action-subtitle-remove").click(function () {
         printResult(player.removeSubtitle("test"));
     });
 
