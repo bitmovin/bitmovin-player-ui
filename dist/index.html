@@ -147,8 +147,8 @@
         }
     }
     $.each(playbackControls, function (key, name) {
-        var button = $('<a class="btn btn-primary btn-sm"><code>' + name + '</code></a>');
-        $('#playback-controls').append(button);
+        var button = $('<button class="btn btn-primary btn-sm">' + name + '</button>');
+        $('#playback-controls').append(button).append(" ");
         button.click(function () {
             printResult(player[name]());
         });
