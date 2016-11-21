@@ -12,8 +12,7 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Bitmovin Player UI Demo</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
     <link rel="stylesheet" href="css/demo.css">
     <link rel="stylesheet" href="css/bitmovin-playerui.css">
 </head>
@@ -26,25 +25,23 @@
 
     <br>
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Playground</h3>
-        </div>
-        <div class="panel-body">
+    <div class="card">
+        <h3 class="card-header">Playground</h3>
 
-            <h4>Player Config</h4>
+        <div class="card-block">
+            <h4 class="card-title">Player Config</h4>
 
-            <form class="form-horizontal">
-                <div class="form-group">
-                    <label for="config-source" class="col-sm-4 control-label">Video Source</label>
-                    <div class="col-sm-4">
-                        <select class="form-control" id="config-source"></select>
-                    </div>
-                    <span class="col-sm-4 help-block">The video source to load into the player.</span>
+            <div class="form-group row">
+                <label for="config-source" class="col-sm-4 form-control-label">Video Source</label>
+                <div class="col-sm-4">
+                    <select class="form-control" id="config-source"></select>
                 </div>
-            </form>
+                <span class="col-sm-4 form-text">The video source to load into the player.</span>
+            </div>
+        </div>
 
-            <h4>Playback Control</h4>
+        <div class="card-block">
+            <h4 class="card-title">Playback Control</h4>
 
             <div id="playback-controls"></div>
 
@@ -55,21 +52,21 @@
 
             <h5>Output</h5>
 
-            <div class="well"><samp id="function-call-output"></samp></div>
-
-            <h4>Various</h4>
-
-            <form class="form-horizontal">
-                <div class="form-group">
-                    <label for="config-various-allevents" class="col-sm-4 control-label">Listen to all events</label>
-                    <div class="col-sm-4">
-                        <input type="checkbox" id="config-various-allevents">
-                    </div>
-                    <span class="col-sm-4 help-block">Logs all fired events to the console</span>
-                </div>
-            </form>
-
+            <div class="card card-block"><samp id="function-call-output"></samp></div>
         </div>
+
+        <div class="card-block">
+            <h4 class="card-title">Various</h4>
+
+            <div class="form-group row">
+                <label for="config-various-allevents" class="col-sm-4 form-control-label">Listen to all events</label>
+                <div class="col-sm-4">
+                    <input type="checkbox" id="config-various-allevents">
+                </div>
+                <span class="col-sm-4 form-text">Logs all fired events to the console</span>
+            </div>
+        </div>
+
     </div>
 </div>
 
