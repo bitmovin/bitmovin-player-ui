@@ -119,8 +119,9 @@
     player.setup(conf).then(function () {
         // Add UI to loaded player
         bitmovin.playerui.UIManager.Factory.buildDefaultUI(player);
-    }, function () {
-        // Error
+    }, function (errorEvent) {
+        // Play setup failed, and there's no player UI yet to display the error in
+        console.log(errorEvent);
     });
 
     $.each(sources, function (key, value) {

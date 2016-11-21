@@ -34,6 +34,7 @@ import {SubtitleOverlay} from "./components/subtitleoverlay";
 import {VolumeControlButton} from "./components/volumecontrolbutton";
 import {CastToggleButton} from "./components/casttogglebutton";
 import {CastStatusOverlay} from "./components/caststatusoverlay";
+import {ErrorMessageOverlay} from "./components/errormessageoverlay";
 
 export class UIManager {
 
@@ -126,7 +127,7 @@ export class UIManager {
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
             var ui = new Wrapper({components: [new SubtitleOverlay(), new CastStatusOverlay(),
-                hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
+                hugePlaybackToggleButton, controlBar, watermark, new ErrorMessageOverlay()], cssClasses: ['ui-skin-default']});
             console.log(ui);
 
             return ui;
@@ -163,7 +164,7 @@ export class UIManager {
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
             var ui = new Wrapper({components: [new SubtitleOverlay(), new CastStatusOverlay(),
-                hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
+                hugePlaybackToggleButton, controlBar, watermark, new ErrorMessageOverlay()], cssClasses: ['ui-skin-default']});
             console.log(ui);
 
             return ui;

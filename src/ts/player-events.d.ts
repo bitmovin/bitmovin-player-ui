@@ -130,6 +130,11 @@ declare namespace bitmovin {
         interface CastStoppedEvent extends PlayerEvent {
         }
 
+        interface ErrorEvent extends PlayerEvent {
+            code: number;
+            message: string;
+        }
+
         interface PlayerEventCallback {
             (event: PlayerEvent): void;
         }
