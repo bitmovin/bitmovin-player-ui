@@ -31,4 +31,8 @@
     top: 50%;
     margin-top: -1em;
   }
+
+  &.hidden {
+    display: none;
+  }
 }
