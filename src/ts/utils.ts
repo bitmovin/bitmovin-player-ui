@@ -9,7 +9,7 @@
 
 export module ArrayUtils {
     /**
-     * Removes an item from an array.
+     * Removes an itemConfig from an array.
      * @param array
      * @param item
      * @returns {any}

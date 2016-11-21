@@ -20,6 +20,8 @@ export interface ContainerConfig extends ComponentConfig {
 
 export class Container<Config extends ContainerConfig> extends Component<ContainerConfig> {
 
+    private innerContainerElement: JQuery;
+
     constructor(config: ContainerConfig) {
         super(config);
 
@@ -53,6 +55,14 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
         return this.config.components;
     }
 
+    protected updateComponents(): void {
+        this.innerContainerElement.empty();
+
+        for (let component of this.config.components) {
+            this.innerContainerElement.append(component.getDomElement());
+        }
+    }
+
     protected toDomElement(): JQuery {
         var containerElement = DOM.JQuery(`<${this.config.tag}>`, {
             'id': this.config.id,
@@ -62,10 +72,9 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
         var innerContainer = DOM.JQuery(`<${this.config.tag}>`, {
             'class': 'container-wrapper'
         });
+        this.innerContainerElement = innerContainer;
 
-        for (let component of this.config.components) {
-            innerContainer.append(component.getDomElement());
-        }
+        this.updateComponents();
 
         containerElement.append(innerContainer);
 

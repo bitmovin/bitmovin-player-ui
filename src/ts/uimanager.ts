@@ -37,16 +37,20 @@ import {CastStatusOverlay} from "./components/caststatusoverlay";
 import {ErrorMessageOverlay} from "./components/errormessageoverlay";
 import {TitleBar} from "./components/titlebar";
 import Player = bitmovin.player.Player;
+import {RecommendationOverlay} from "./components/recommendationoverlay";
+
+export interface UIRecommendationConfig {
+    title: string;
+    url: string;
+    thumbnail?: string;
+    duration?: number;
+}
 
 export interface UIConfig {
     metadata?: {
         title?: string
     };
-    recommendations?: {
-        title: string,
-        url: string,
-        length?: number,
-    }[];
+    recommendations?: UIRecommendationConfig[];
 }
 
 export class UIManager {
@@ -183,7 +187,7 @@ export class UIManager {
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
             var ui = new Wrapper({components: [new SubtitleOverlay(), new CastStatusOverlay(),
-                hugePlaybackToggleButton, controlBar, watermark, new TitleBar(), new ErrorMessageOverlay()], cssClasses: ['ui-skin-default']});
+                hugePlaybackToggleButton, controlBar, watermark, new RecommendationOverlay(), new TitleBar(), new ErrorMessageOverlay()], cssClasses: ['ui-skin-default']});
             console.log(ui);
 
             return ui;

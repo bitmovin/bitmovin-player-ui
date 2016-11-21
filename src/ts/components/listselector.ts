@@ -62,7 +62,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
 
     selectItem(value: string): boolean {
         if(value == this.selectedItem) {
-            // item is already selected, suppress any further action
+            // itemConfig is already selected, suppress any further action
             return true;
         }
 
