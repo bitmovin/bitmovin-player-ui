@@ -1,0 +1,31 @@
+/*!
+ *  Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+
+.ui-titlebar {
+  @extend .ui-container;
+
+  // Align to top
+  position: absolute;
+  top: 0;
+  width: 100%;
+
+  background-color: $controlbar-background-color;
+  padding: 0.5em;
+  color: white;
+
+  // Show/hide animation
+  opacity: 1;
+  transition: opacity 1.3s;
+  &.hidden {
+    opacity: 0;
+    transition: opacity 1.3s;
+  }
+}

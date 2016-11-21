@@ -35,11 +35,25 @@ import {VolumeControlButton} from "./components/volumecontrolbutton";
 import {CastToggleButton} from "./components/casttogglebutton";
 import {CastStatusOverlay} from "./components/caststatusoverlay";
 import {ErrorMessageOverlay} from "./components/errormessageoverlay";
+import {TitleBar} from "./components/titlebar";
+import Player = bitmovin.player.Player;
+
+export interface UIConfig {
+    metadata?: {
+        title?: string
+    };
+    recommendations?: {
+        title: string,
+        url: string,
+        length?: number,
+    }[];
+}
 
 export class UIManager {
 
     private player: bitmovin.player.Player;
     private ui: Component<ComponentConfig>;
+    private config: UIConfig;
 
     // TODO make these accessible from outside, might be helpful to to have UI API events too
     public events = {
@@ -69,9 +83,10 @@ export class UIManager {
         onSeeked: new EventDispatcher<SeekBar, NoArgs>()
     };
 
-    constructor(player: bitmovin.player.Player, ui: Wrapper) {
+    constructor(player: Player, ui: Wrapper, config: UIConfig = {}) {
         this.player = player;
         this.ui = ui;
+        this.config = config;
 
         let playerId = player.getFigure().parentElement.id;
 
@@ -79,6 +94,10 @@ export class UIManager {
         DOM.JQuery(`#${playerId}`).append(ui.getDomElement());
 
         this.configureControls(ui);
+    }
+
+    getConfig(): UIConfig {
+        return this.config;
     }
 
     private configureControls(component: Component<ComponentConfig>) {
@@ -93,9 +112,9 @@ export class UIManager {
     }
 
     static Factory = class {
-        static buildDefaultUI(player: any): UIManager {
+        static buildDefaultUI(player: Player, config: UIConfig = {}): UIManager {
             let ui = UIManager.Factory.assembleTestUI();
-            let manager = new UIManager(player, ui);
+            let manager = new UIManager(player, ui, config);
             return manager;
         }
 
@@ -164,7 +183,7 @@ export class UIManager {
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
             var ui = new Wrapper({components: [new SubtitleOverlay(), new CastStatusOverlay(),
-                hugePlaybackToggleButton, controlBar, watermark, new ErrorMessageOverlay()], cssClasses: ['ui-skin-default']});
+                hugePlaybackToggleButton, controlBar, watermark, new TitleBar(), new ErrorMessageOverlay()], cssClasses: ['ui-skin-default']});
             console.log(ui);
 
             return ui;
