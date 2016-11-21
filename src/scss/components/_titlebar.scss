@@ -23,9 +23,9 @@
 
   // Show/hide animation
   opacity: 1;
-  transition: opacity 1.3s;
+  transition: opacity .3s;
   &.hidden {
     opacity: 0;
-    transition: opacity 1.3s;
+    transition: opacity .3s;
   }
 }
