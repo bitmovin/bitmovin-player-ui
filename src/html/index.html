@@ -48,14 +48,26 @@
 
             <div id="playback-controls"></div>
 
-            <h4>Actions</h4>
+            <h5>Actions</h5>
 
             <button type="button" class="btn btn-primary" id="btn-action-subtitle-add">Add subtitle</button>
             <button type="button" class="btn btn-primary" id="btn-action-subtitle-remove">Remove subtitle</button>
 
-            <h4>Output</h4>
+            <h5>Output</h5>
 
             <div class="well"><samp id="function-call-output"></samp></div>
+
+            <h4>Various</h4>
+
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="config-various-allevents" class="col-sm-4 control-label">Listen to all events</label>
+                    <div class="col-sm-4">
+                        <input type="checkbox" id="config-various-allevents">
+                    </div>
+                    <span class="col-sm-4 help-block">Logs all fired events to the console</span>
+                </div>
+            </form>
 
         </div>
     </div>
@@ -144,6 +156,20 @@
     });
     $("#btn-action-subtitle-remove").click(function () {
         printResult(player.removeSubtitle("test"));
+    });
+
+    var allEventsListener = function (event) {
+        console.log(event);
+    };
+    $('#config-various-allevents').change(function () {
+        var checked = $(this).prop('checked');
+        for (var event in bitmovin.player.EVENT) {
+            if(checked) {
+                player.addEventHandler(bitmovin.player.EVENT[event], allEventsListener);
+            } else {
+                player.removeEventHandler(bitmovin.player.EVENT[event], allEventsListener);
+            }
+        }
     });
 
 </script>
