@@ -98,14 +98,25 @@ export class SeekBar extends Component<SeekBarConfig> {
             // Once this handler os called, playback has been started and we set the flag to false
             playbackNotInitialized = false;
 
-            if(player.getDuration() == Infinity) {
-                if(console) console.log("LIVE stream, seeking disabled");
-            } else {
-                if(isSeeking) {
-                    // We caught a seek preview seek, do not update the seekbar
-                    return;
+            if(isSeeking) {
+                // We caught a seek preview seek, do not update the seekbar
+                return;
+            }
+
+            if (player.isLive()) {
+                if (player.getMaxTimeShift() == 0) {
+                    // This case must be explicitly handled to avoid division by zero
+                    self.setPlaybackPosition(100);
+                }
+                else {
+                    let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
+                    self.setPlaybackPosition(playbackPositionPercentage);
                 }
 
+                // Always show full buffer for live streams
+                self.setBufferPosition(100);
+            }
+            else {
                 let playbackPositionPercentage = 100 / player.getDuration() * player.getCurrentTime();
                 self.setPlaybackPosition(playbackPositionPercentage);
 
@@ -114,10 +125,16 @@ export class SeekBar extends Component<SeekBarConfig> {
             }
         };
 
+        player.addEventHandler(bitmovin.player.EVENT.ON_READY, function () {
+            // Reset flag when a new source is loaded
+            playbackNotInitialized = true;
+        });
+
         // Update seekbar upon these events
         player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackPositionHandler); // update playback position when it changes
         player.addEventHandler(bitmovin.player.EVENT.ON_STOP_BUFFERING, playbackPositionHandler); // update bufferlevel when buffering is complete
         player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler); // update playback position when a seek has finished
+        player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, playbackPositionHandler); // update playback position when a timeshift has finished
         player.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler); // update bufferlevel when a segment has been downloaded
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, playbackPositionHandler); // update playback position of Cast playback
 
@@ -127,7 +144,20 @@ export class SeekBar extends Component<SeekBarConfig> {
         player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, function () {
             self.setSeeking(false);
         });
+        player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, function () {
+            self.setSeeking(true);
+        });
+        player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, function () {
+            self.setSeeking(false);
+        });
 
+        let seek = function (percentage) {
+            if(player.isLive()) {
+                player.timeShift(player.getMaxTimeShift() - (player.getMaxTimeShift() * (percentage / 100)));
+            } else {
+                player.seek(player.getDuration() * (percentage / 100));
+            }
+        };
         self.onSeek.subscribe(function(sender) {
             isSeeking = true; // track seeking status so we can catch events from seek preview seeks
 
@@ -149,7 +179,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         self.onSeekPreview.subscribeRateLimited(function (sender: SeekBar, args: SeekPreviewEventArgs) {
             // Rate-limited scrubbing seek
             if(args.scrubbing) {
-                player.seek(player.getDuration() * (args.position / 100));
+                seek(args.position);
             }
         }, 200);
         self.onSeeked.subscribe(function (sender, percentage) {
@@ -166,7 +196,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             }
 
             // Do the seek
-            player.seek(player.getDuration() * (percentage / 100));
+            seek(percentage);
 
             // Continue playback after seek if player was playing when seek started
             if (isPlaying) {

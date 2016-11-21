@@ -41,9 +41,14 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         let self = this;
 
         uimanager.events.onSeekPreview.subscribe(function (sender, percentage) {
-            let time = player.getDuration() * (percentage / 100);
-            self.setTime(time);
-            self.setThumbnail(player.getThumb(time));
+            if(player.isLive()) {
+                let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (percentage / 100);
+                self.setTime(time);
+            } else {
+                let time = player.getDuration() * (percentage / 100);
+                self.setTime(time);
+                self.setThumbnail(player.getThumb(time));
+            }
         });
     }
 
@@ -52,7 +57,12 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     }
 
     setTime(seconds: number) {
-        this.setText(this.numeral(seconds).format('00:00:00'));
+        if(seconds < 0) {
+            // Numeral does not handle negative time so we need to take care of that here
+            this.setText("-" + this.numeral(-seconds).format('00:00:00'));
+        } else {
+            this.setText(this.numeral(seconds).format('00:00:00'));
+        }
     }
 
     setThumbnail(thumbnail: bitmovin.player.Thumbnail = null) {
