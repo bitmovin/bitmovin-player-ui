@@ -14,7 +14,7 @@ import CastWaitingForDeviceEvent = bitmovin.player.CastWaitingForDeviceEvent;
 import CastLaunchedEvent = bitmovin.player.CastLaunchedEvent;
 import CastStoppedEvent = bitmovin.player.CastStoppedEvent;
 
-export class CastStatusFrame extends Container<ContainerConfig> {
+export class CastStatusOverlay extends Container<ContainerConfig> {
 
     private statusLabel: Label<LabelConfig>;
 
@@ -24,7 +24,7 @@ export class CastStatusFrame extends Container<ContainerConfig> {
         this.statusLabel = new Label<LabelConfig>({cssClass: 'ui-cast-status-label'});
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-cast-status-frame',
+            cssClass: 'ui-cast-status-overlay',
             components: [this.statusLabel],
             hidden: true
         }, this.config);

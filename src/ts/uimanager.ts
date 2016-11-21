@@ -30,10 +30,10 @@ import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
 import {SeekBarLabel} from "./components/seekbarlabel";
 import {VolumeSlider} from "./components/volumeslider";
 import {SubtitleSelectBox} from "./components/subtitleselectbox";
-import {SubtitleFrame} from "./components/subtitleframe";
+import {SubtitleOverlay} from "./components/subtitleoverlay";
 import {VolumeControlButton} from "./components/volumecontrolbutton";
 import {CastToggleButton} from "./components/casttogglebutton";
-import {CastStatusFrame} from "./components/caststatusframe";
+import {CastStatusOverlay} from "./components/caststatusoverlay";
 
 export class UIManager {
 
@@ -125,7 +125,7 @@ export class UIManager {
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
-            var ui = new Wrapper({components: [new SubtitleFrame(), new CastStatusFrame(),
+            var ui = new Wrapper({components: [new SubtitleOverlay(), new CastStatusOverlay(),
                 hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
             console.log(ui);
 
@@ -162,7 +162,7 @@ export class UIManager {
             });
             var watermark = new Watermark();
             var hugePlaybackToggleButton = new HugePlaybackToggleButton();
-            var ui = new Wrapper({components: [new SubtitleFrame(), new CastStatusFrame(),
+            var ui = new Wrapper({components: [new SubtitleOverlay(), new CastStatusOverlay(),
                 hugePlaybackToggleButton, controlBar, watermark], cssClasses: ['ui-skin-default']});
             console.log(ui);
 

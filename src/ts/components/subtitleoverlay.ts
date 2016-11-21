@@ -12,7 +12,7 @@ import {UIManager} from "../uimanager";
 import SubtitleCueEvent = bitmovin.player.SubtitleCueEvent;
 import {Label, LabelConfig} from "./label";
 
-export class SubtitleFrame extends Container<ContainerConfig> {
+export class SubtitleOverlay extends Container<ContainerConfig> {
 
     /**
      * Inner label that renders the subtitle text
@@ -25,7 +25,7 @@ export class SubtitleFrame extends Container<ContainerConfig> {
         this.subtitleLabel = new Label<LabelConfig>({cssClass: 'ui-subtitle-label'});
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-subtitle-frame',
+            cssClass: 'ui-subtitle-overlay',
             components: [this.subtitleLabel]
         }, this.config);
     }
