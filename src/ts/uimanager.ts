@@ -123,15 +123,6 @@ export class UIManager {
         }
 
         private static assembleDefaultUI(): Wrapper {
-            var playbackToggleButton = new PlaybackToggleButton();
-            var fullscreenToggleButton = new FullscreenToggleButton();
-            var vrToggleButton = new VRToggleButton();
-            var timeLabel = new PlaybackTimeLabel();
-            var seekBarLabel = new SeekBarLabel();
-            var seekBar = new SeekBar({label: seekBarLabel});
-            var volumeControlButton = new VolumeControlButton();
-            var castToggleButton = new CastToggleButton();
-
             var settingsPanel = new SettingsPanel({
                 components: [
                     new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -141,33 +132,40 @@ export class UIManager {
                 ],
                 hidden: true
             });
-            var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
 
             var controlBar = new ControlBar({
-                components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
-                    vrToggleButton, volumeControlButton, settingsToggleButton, castToggleButton, fullscreenToggleButton]
+                components: [
+                    settingsPanel,
+                    new PlaybackToggleButton(),
+                    new SeekBar({label: new SeekBarLabel()}),
+                    new PlaybackTimeLabel(),
+                    new VRToggleButton(),
+                    new VolumeControlButton(),
+                    new SettingsToggleButton({settingsPanel: settingsPanel}),
+                    new CastToggleButton(),
+                    new FullscreenToggleButton()
+                ]
             });
-            var watermark = new Watermark();
-            var hugePlaybackToggleButton = new HugePlaybackToggleButton();
-            var ui = new Wrapper({components: [new SubtitleOverlay(), new CastStatusOverlay(),
-                hugePlaybackToggleButton, controlBar, watermark, new ErrorMessageOverlay()], cssClasses: ['ui-skin-default']});
+
+            var ui = new Wrapper({
+                components: [
+                    new SubtitleOverlay(),
+                    new CastStatusOverlay(),
+                    new HugePlaybackToggleButton(),
+                    new Watermark(),
+                    new RecommendationOverlay(),
+                    controlBar,
+                    new TitleBar(),
+                    new ErrorMessageOverlay()
+                ], cssClasses: ['ui-skin-default']
+            });
+
             console.log(ui);
 
             return ui;
         }
 
         private static assembleTestUI(): Wrapper {
-            var playbackToggleButton = new PlaybackToggleButton();
-            var fullscreenToggleButton = new FullscreenToggleButton();
-            var vrToggleButton = new VRToggleButton();
-            var volumeToggleButton = new VolumeToggleButton();
-            var timeLabel = new PlaybackTimeLabel();
-            var seekBarLabel = new SeekBarLabel();
-            var seekBar = new SeekBar({label: seekBarLabel});
-            var volumeSlider = new VolumeSlider();
-            var volumeControlButton = new VolumeControlButton();
-            var castToggleButton = new CastToggleButton();
-
             var settingsPanel = new SettingsPanel({
                 components: [
                     new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -177,17 +175,36 @@ export class UIManager {
                 ],
                 hidden: true
             });
-            var settingsToggleButton = new SettingsToggleButton({settingsPanel: settingsPanel});
 
             var controlBar = new ControlBar({
-                components: [settingsPanel, playbackToggleButton, seekBar, timeLabel,
-                    vrToggleButton, volumeToggleButton, volumeSlider, volumeControlButton, new VolumeControlButton({vertical: false}),
-                    settingsToggleButton, castToggleButton, fullscreenToggleButton]
+                components: [settingsPanel,
+                    new PlaybackToggleButton(),
+                    new SeekBar({label: new SeekBarLabel()}),
+                    new PlaybackTimeLabel(),
+                    new VRToggleButton(),
+                    new VolumeToggleButton(),
+                    new VolumeSlider(),
+                    new VolumeControlButton(),
+                    new VolumeControlButton({vertical: false}),
+                    new SettingsToggleButton({settingsPanel: settingsPanel}),
+                    new CastToggleButton(),
+                    new FullscreenToggleButton()
+                ]
             });
-            var watermark = new Watermark();
-            var hugePlaybackToggleButton = new HugePlaybackToggleButton();
-            var ui = new Wrapper({components: [new SubtitleOverlay(), new CastStatusOverlay(),
-                hugePlaybackToggleButton, controlBar, watermark, new RecommendationOverlay(), new TitleBar(), new ErrorMessageOverlay()], cssClasses: ['ui-skin-default']});
+
+            var ui = new Wrapper({
+                components: [
+                    new SubtitleOverlay(),
+                    new CastStatusOverlay(),
+                    new HugePlaybackToggleButton(),
+                    new Watermark(),
+                    new RecommendationOverlay(),
+                    controlBar,
+                    new TitleBar(),
+                    new ErrorMessageOverlay()
+                ], cssClasses: ['ui-skin-default']
+            });
+
             console.log(ui);
 
             return ui;
