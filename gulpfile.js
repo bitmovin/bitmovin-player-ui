@@ -21,6 +21,10 @@ var cssBase64 = require('gulp-css-base64');
 var postcss = require('gulp-postcss');
 var postcssSVG = require('postcss-svg');
 var autoprefixer = require('autoprefixer');
+var cssnano = require('cssnano');
+var uglify = require('gulp-uglify');
+var gif = require('gulp-if');
+var buffer = require('vinyl-buffer');
 
 var paths = {
     source: {
@@ -45,6 +49,7 @@ var browserifyInstance = browserify({
 }).plugin(tsify);
 
 var catchBrowserifyErrors = false;
+var production = false;
 
 // Deletes the target directory containing all generated files
 gulp.task('clean', del.bind(null, [paths.target.html]));
@@ -66,7 +71,8 @@ gulp.task('browserify', function () {
 
     browserifyBundle
         .pipe(source('bitmovin-playerui.js'))
-        // TODO add uglify for prod build
+        .pipe(buffer())
+        .pipe(gif(production, uglify()))
         .pipe(gulp.dest(paths.target.js))
         .pipe(browserSync.reload({stream: true}));
 });
@@ -76,8 +82,10 @@ gulp.task('sass', function () {
     var processors = [
         autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}),
         postcssSVG()
-        // TODO add nanocss for prod build (css minifier)
     ];
+    if(production) {
+        processors.push(cssnano());
+    }
 
     gulp.src(paths.source.sass)
         .pipe(sourcemaps.init())
@@ -96,6 +104,11 @@ gulp.task('build', function(callback) {
     runSequence('clean',
         ['html', 'browserify', 'sass'],
         callback);
+});
+
+gulp.task('build-prod', function(callback) {
+    production = true;
+    runSequence('build', callback);
 });
 
 gulp.task('default', ['build']);
