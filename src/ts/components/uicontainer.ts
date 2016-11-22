@@ -11,19 +11,19 @@ import {ContainerConfig, Container} from "./container";
 import {NoArgs, EventDispatcher, Event} from "../eventdispatcher";
 import {UIManager} from "../uimanager";
 
-export interface WrapperConfig extends ContainerConfig {
+export interface UIContainerConfig extends ContainerConfig {
     // nothing to add
 }
 
-export class Wrapper extends Container<WrapperConfig> {
+export class UIContainer extends Container<UIContainerConfig> {
 
     protected wrapperEvents = {
-        onMouseEnter: new EventDispatcher<Wrapper, NoArgs>(),
-        onMouseMove: new EventDispatcher<Wrapper, NoArgs>(),
-        onMouseLeave: new EventDispatcher<Wrapper, NoArgs>()
+        onMouseEnter: new EventDispatcher<UIContainer, NoArgs>(),
+        onMouseMove: new EventDispatcher<UIContainer, NoArgs>(),
+        onMouseLeave: new EventDispatcher<UIContainer, NoArgs>()
     };
 
-    constructor(config: WrapperConfig) {
+    constructor(config: UIContainerConfig) {
         super(config);
 
         this.config = this.mergeConfig(config, {
@@ -74,15 +74,15 @@ export class Wrapper extends Container<WrapperConfig> {
         this.wrapperEvents.onMouseLeave.dispatch(this);
     }
 
-    get onMouseEnter(): Event<Wrapper, NoArgs> {
+    get onMouseEnter(): Event<UIContainer, NoArgs> {
         return this.wrapperEvents.onMouseEnter;
     }
 
-    get onMouseMove(): Event<Wrapper, NoArgs> {
+    get onMouseMove(): Event<UIContainer, NoArgs> {
         return this.wrapperEvents.onMouseMove;
     }
 
-    get onMouseLeave(): Event<Wrapper, NoArgs> {
+    get onMouseLeave(): Event<UIContainer, NoArgs> {
         return this.wrapperEvents.onMouseLeave;
     }
 }

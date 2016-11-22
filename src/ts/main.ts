@@ -25,7 +25,7 @@ import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
 import {VolumeToggleButton} from "./components/volumetogglebutton";
 import {VRToggleButton} from "./components/vrtogglebutton";
 import {Watermark} from "./components/watermark";
-import {Wrapper} from "./components/wrapper";
+import {UIContainer} from "./components/uicontainer";
 import {Container} from "./components/container";
 import {Label} from "./components/label";
 import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
@@ -42,7 +42,7 @@ import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
         // Components
         Button, Container, ControlBar, FullscreenToggleButton, HugePlaybackToggleButton, Label, PlaybackTimeLabel,
         PlaybackToggleButton, SeekBar, SelectBox, SettingsPanel, SettingsToggleButton, ToggleButton,
-        VideoQualitySelectBox, VolumeToggleButton, VRToggleButton, Watermark, Wrapper, AudioQualitySelectBox, AudioTrackSelectBox
+        VideoQualitySelectBox, VolumeToggleButton, VRToggleButton, Watermark, UIContainer, AudioQualitySelectBox, AudioTrackSelectBox
     ];
 
     (window as any)['bitmovin']['playerui'] = {};

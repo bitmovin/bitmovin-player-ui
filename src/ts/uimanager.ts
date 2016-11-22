@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-import {Wrapper} from "./components/wrapper";
+import {UIContainer} from "./components/uicontainer";
 import {DOM} from "./dom";
 import {Component, ComponentConfig} from "./components/component";
 import {Container} from "./components/container";
@@ -87,7 +87,7 @@ export class UIManager {
         onSeeked: new EventDispatcher<SeekBar, NoArgs>()
     };
 
-    constructor(player: Player, ui: Wrapper, config: UIConfig = {}) {
+    constructor(player: Player, ui: UIContainer, config: UIConfig = {}) {
         this.player = player;
         this.ui = ui;
         this.config = config;
@@ -122,7 +122,7 @@ export class UIManager {
             return manager;
         }
 
-        private static assembleDefaultUI(): Wrapper {
+        private static assembleDefaultUI(): UIContainer {
             var settingsPanel = new SettingsPanel({
                 components: [
                     new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -147,7 +147,7 @@ export class UIManager {
                 ]
             });
 
-            var ui = new Wrapper({
+            var ui = new UIContainer({
                 components: [
                     new SubtitleOverlay(),
                     new CastStatusOverlay(),
@@ -165,7 +165,7 @@ export class UIManager {
             return ui;
         }
 
-        private static assembleTestUI(): Wrapper {
+        private static assembleTestUI(): UIContainer {
             var settingsPanel = new SettingsPanel({
                 components: [
                     new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -192,7 +192,7 @@ export class UIManager {
                 ]
             });
 
-            var ui = new Wrapper({
+            var ui = new UIContainer({
                 components: [
                     new SubtitleOverlay(),
                     new CastStatusOverlay(),
