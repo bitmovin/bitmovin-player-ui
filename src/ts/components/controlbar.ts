@@ -48,13 +48,13 @@ export class ControlBar extends Container<ControlBarConfig> {
             }, (<ControlBarConfig>self.getConfig()).hideDelay); // TODO fix generics to spare these damn casts... is that even possible in TS?
         };
 
-        uimanager.events.onMouseEnter.subscribe(function (sender, args) {
+        uimanager.onMouseEnter.subscribe(function (sender, args) {
             self.show(); // show control bar when the mouse enters the UI
 
             // Clear timeout to avoid hiding the control bar if the mouse moves back into the UI during the timeout period
             clearHideTimeout();
         });
-        uimanager.events.onMouseMove.subscribe(function (sender, args) {
+        uimanager.onMouseMove.subscribe(function (sender, args) {
             if (self.isHidden()) {
                 self.show();
             }
@@ -64,7 +64,7 @@ export class ControlBar extends Container<ControlBarConfig> {
             }
             setHideTimeout(); // hide the control bar if mouse does not move during the timeout time
         });
-        uimanager.events.onMouseLeave.subscribe(function (sender, args) {
+        uimanager.onMouseLeave.subscribe(function (sender, args) {
             if (isSeeking) {
                 // Don't create/update timeout while seeking
                 return;
@@ -72,11 +72,11 @@ export class ControlBar extends Container<ControlBarConfig> {
 
             setHideTimeout(); // hide control bar some time after the mouse left the UI
         });
-        uimanager.events.onSeek.subscribe(function () {
+        uimanager.onSeek.subscribe(function () {
             clearHideTimeout(); // DOn't hide control bar while a seek is in progress
             isSeeking = true;
         });
-        uimanager.events.onSeeked.subscribe(function () {
+        uimanager.onSeeked.subscribe(function () {
             isSeeking = false;
             setHideTimeout(); // hide control bar some time after a seek has finished
         });

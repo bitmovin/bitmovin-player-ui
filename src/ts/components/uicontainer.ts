@@ -35,13 +35,13 @@ export class UIContainer extends Container<UIContainerConfig> {
         let self = this;
 
         self.onMouseEnter.subscribe(function (sender) {
-            uimanager.events.onMouseEnter.dispatch(sender);
+            uimanager.onMouseEnter.dispatch(sender);
         });
         self.onMouseMove.subscribe(function (sender) {
-            uimanager.events.onMouseMove.dispatch(sender);
+            uimanager.onMouseMove.dispatch(sender);
         });
         self.onMouseLeave.subscribe(function (sender) {
-            uimanager.events.onMouseLeave.dispatch(sender);
+            uimanager.onMouseLeave.dispatch(sender);
         });
     }
 

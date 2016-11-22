@@ -40,7 +40,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
 
-        uimanager.events.onSeekPreview.subscribe(function (sender, percentage) {
+        uimanager.onSeekPreview.subscribe(function (sender, percentage) {
             if (player.isLive()) {
                 let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (percentage / 100);
                 self.setTime(time);

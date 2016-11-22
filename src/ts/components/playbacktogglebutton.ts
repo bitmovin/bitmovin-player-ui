@@ -72,10 +72,10 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         }
 
         // Track UI seeking status
-        uimanager.events.onSeek.subscribe(function () {
+        uimanager.onSeek.subscribe(function () {
             isSeeking = true;
         });
-        uimanager.events.onSeeked.subscribe(function () {
+        uimanager.onSeeked.subscribe(function () {
             isSeeking = false;
         });
     }

@@ -162,7 +162,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             isSeeking = true; // track seeking status so we can catch events from seek preview seeks
 
             // Notify UI manager of started seek
-            uimanager.events.onSeek.dispatch(sender);
+            uimanager.onSeek.dispatch(sender);
 
             // Save current playback state
             isPlaying = player.isPlaying();
@@ -174,7 +174,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         });
         self.onSeekPreview.subscribe(function (sender: SeekBar, args: SeekPreviewEventArgs) {
             // Notify UI manager of seek preview
-            uimanager.events.onSeekPreview.dispatch(sender, args.position);
+            uimanager.onSeekPreview.dispatch(sender, args.position);
         });
         self.onSeekPreview.subscribeRateLimited(function (sender: SeekBar, args: SeekPreviewEventArgs) {
             // Rate-limited scrubbing seek
@@ -204,7 +204,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             }
 
             // Notify UI manager of finished seek
-            uimanager.events.onSeeked.dispatch(sender);
+            uimanager.onSeeked.dispatch(sender);
         });
 
         if (self.hasLabel()) {

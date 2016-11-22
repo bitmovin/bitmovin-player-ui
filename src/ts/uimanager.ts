@@ -59,8 +59,7 @@ export class UIManager {
     private ui: Component<ComponentConfig>;
     private config: UIConfig;
 
-    // TODO make these accessible from outside, might be helpful to to have UI API events too
-    public events = {
+    private events = {
         /**
          * Fires when the mouse enters the UI area.
          */
@@ -113,6 +112,30 @@ export class UIManager {
                 this.configureControls(childComponent);
             }
         }
+    }
+
+    get onMouseEnter(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
+        return this.events.onMouseEnter;
+    }
+
+    get onMouseMove(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
+        return this.events.onMouseMove;
+    }
+
+    get onMouseLeave(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
+        return this.events.onMouseLeave;
+    }
+
+    get onSeek(): EventDispatcher<SeekBar, NoArgs> {
+        return this.events.onSeek;
+    }
+
+    get onSeekPreview(): EventDispatcher<SeekBar, number> {
+        return this.events.onSeekPreview;
+    }
+
+    get onSeeked(): EventDispatcher<SeekBar, NoArgs> {
+        return this.events.onSeeked;
     }
 
     static Factory = class {
