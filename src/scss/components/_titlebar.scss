@@ -18,8 +18,11 @@
   width: 100%;
 
   background-color: $controlbar-background-color;
-  padding: 0.5em;
   color: white;
+
+  > .container-wrapper {
+    padding: 0.5em;
+  }
 
   @include hiddenAnimated();
 }
