@@ -30,6 +30,16 @@ import {Container} from "./components/container";
 import {Label} from "./components/label";
 import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
 import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
+import {CastStatusOverlay} from "./components/caststatusoverlay";
+import {CastToggleButton} from "./components/casttogglebutton";
+import {Component} from "./components/component";
+import {ErrorMessageOverlay} from "./components/errormessageoverlay";
+import {RecommendationOverlay} from "./components/recommendationoverlay";
+import {SeekBarLabel} from "./components/seekbarlabel";
+import {SubtitleOverlay} from "./components/subtitleoverlay";
+import {SubtitleSelectBox} from "./components/subtitleselectbox";
+import {TitleBar} from "./components/titlebar";
+import {VolumeControlButton} from "./components/volumecontrolbutton";
 
 // Expose classes to window
 // Inspired by https://keestalkstech.com/2016/08/support-both-node-js-and-browser-js-in-one-typescript-file/
@@ -40,9 +50,36 @@ import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
         // Management
         UIManager,
         // Components
-        Button, Container, ControlBar, FullscreenToggleButton, HugePlaybackToggleButton, Label, PlaybackTimeLabel,
-        PlaybackToggleButton, SeekBar, SelectBox, SettingsPanel, SettingsToggleButton, ToggleButton,
-        VideoQualitySelectBox, VolumeToggleButton, VRToggleButton, Watermark, UIContainer, AudioQualitySelectBox, AudioTrackSelectBox
+        AudioQualitySelectBox,
+        AudioTrackSelectBox,
+        Button,
+        CastStatusOverlay,
+        CastToggleButton,
+        Component,
+        Container,
+        ControlBar,
+        ErrorMessageOverlay,
+        FullscreenToggleButton,
+        HugePlaybackToggleButton,
+        Label,
+        PlaybackTimeLabel,
+        PlaybackToggleButton,
+        RecommendationOverlay,
+        SeekBar,
+        SeekBarLabel,
+        SelectBox,
+        SettingsPanel,
+        SettingsToggleButton,
+        SubtitleOverlay,
+        SubtitleSelectBox,
+        TitleBar,
+        ToggleButton,
+        UIContainer,
+        VideoQualitySelectBox,
+        VolumeControlButton,
+        VolumeToggleButton,
+        VRToggleButton,
+        Watermark,
     ];
 
     (window as any)['bitmovin']['playerui'] = {};
