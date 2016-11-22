@@ -56,7 +56,7 @@
   &.on {
     .image {
       visibility: hidden;
-      transition: visibility 0s 2s;
+      transition: visibility 0s $animation-duration;
       animation: fade-out $animation-duration cubic-bezier(0.55, 0.055, 0.675, 0.19); // http://easings.net/de#easeInCubic
     }
   }
