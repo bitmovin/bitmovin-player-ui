@@ -23,7 +23,5 @@
     color: white;
   }
 
-  &.hidden {
-    display: none;
-  }
+  @include hidden();
 }

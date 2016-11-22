@@ -31,7 +31,7 @@
     // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
     // Animate show
     max-height: 10em;
-    transition: max-height .2s ease-in;
+    transition: max-height $animation-duration ease-in;
 
     // A "line" in the panel: a container holding a label + control
     .container-wrapper > * {
@@ -51,7 +51,7 @@
   &.hidden > .container-wrapper {
     // Animate hide
     max-height: 0;
-    transition: max-height .2s ease-out;
+    transition: max-height $animation-duration ease-out;
   }
 
   .ui-settings-panel-entry {

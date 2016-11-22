@@ -21,14 +21,7 @@
 
   background-color: $controlbar-background-color;
 
-  // Show/hide animation
-  opacity: 1;
-  transition: opacity .3s;
-  &.hidden {
-    opacity: 0;
-    transition: opacity .3s;
-    display: none;
-  }
+  @include hiddenAnimated($animation-duration * 2);
 
   // H/V center items in the middle of the overlay
   display: table;

@@ -57,14 +57,14 @@
     .image {
       visibility: hidden;
       transition: visibility 0s 2s;
-      animation: fade-out 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19); // http://easings.net/de#easeInCubic
+      animation: fade-out $animation-duration cubic-bezier(0.55, 0.055, 0.675, 0.19); // http://easings.net/de#easeInCubic
     }
   }
 
   &.off {
     .image {
       visibility: visible;
-      animation: fade-in 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19); // http://easings.net/de#easeInCubic
+      animation: fade-in $animation-duration cubic-bezier(0.55, 0.055, 0.675, 0.19); // http://easings.net/de#easeInCubic
     }
   }
 }

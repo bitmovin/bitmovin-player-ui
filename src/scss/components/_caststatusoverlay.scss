@@ -22,13 +22,7 @@
   // Disable input events
   pointer-events: none;
 
-  // Hide/show animation
-  opacity: 1;
-  transition: opacity 0.15s ease-in;
-  &.hidden {
-    opacity: 0;
-    transition: opacity 0.15s ease-out;
-  }
+  @include hiddenAnimated();
 
   .ui-cast-status-label {
     margin: 0 2em;

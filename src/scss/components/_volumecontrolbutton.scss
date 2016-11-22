@@ -32,11 +32,11 @@
     }
 
     max-height: 6em;
-    transition: max-height .2s ease-in;
+    transition: max-height $animation-duration/2 ease-in;
 
     &.hidden {
       max-height: 0;
-      transition: max-height .2s ease-out;
+      transition: max-height $animation-duration/2 ease-out;
     }
   }
 }

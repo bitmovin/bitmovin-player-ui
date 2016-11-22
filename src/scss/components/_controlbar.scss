@@ -37,13 +37,7 @@
     }
   }
 
-  opacity: 1;
-  transition: opacity .3s;
-
-  &.hidden {
-    opacity: 0;
-    transition: opacity .3s;
-  }
+  @include hiddenAnimated();
 
   .ui-label {
     font-size: 0.8em;

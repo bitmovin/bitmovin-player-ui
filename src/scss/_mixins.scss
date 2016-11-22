@@ -1,0 +1,26 @@
+/*!
+ *  Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@mixin hidden() {
+  &.hidden {
+    display: none;
+  }
+}
+
+@mixin hiddenAnimated($duration: $animation-duration) {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity $duration, visibility 0s;
+
+  &.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity $duration, visibility $duration;
+  }
+}

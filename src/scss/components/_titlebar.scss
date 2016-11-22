@@ -21,11 +21,5 @@
   padding: 0.5em;
   color: white;
 
-  // Show/hide animation
-  opacity: 1;
-  transition: opacity .3s;
-  &.hidden {
-    opacity: 0;
-    transition: opacity .3s;
-  }
+  @include hiddenAnimated();
 }

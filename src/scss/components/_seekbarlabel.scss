@@ -33,12 +33,5 @@
     }
   }
 
-  // Fade in/out on show/hide
-  opacity: 1;
-  transition: opacity .3s;
-
-  &.hidden {
-    opacity: 0;
-    transition: opacity .3s;
-  }
+  @include hiddenAnimated();
 }
