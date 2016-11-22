@@ -21,9 +21,8 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
         }, this.config);
     }
 
-
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
-        let self = this
+        let self = this;
 
         let isVRConfigured = function () {
             // VR availability cannot be checked through getVRStatus() because it is asynchronously populated and not

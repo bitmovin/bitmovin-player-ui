@@ -17,7 +17,7 @@ export interface UIContainerConfig extends ContainerConfig {
 
 export class UIContainer extends Container<UIContainerConfig> {
 
-    protected wrapperEvents = {
+    private uiContainerEvents = {
         onMouseEnter: new EventDispatcher<UIContainer, NoArgs>(),
         onMouseMove: new EventDispatcher<UIContainer, NoArgs>(),
         onMouseLeave: new EventDispatcher<UIContainer, NoArgs>()
@@ -63,26 +63,26 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     protected onMouseEnterEvent() {
-        this.wrapperEvents.onMouseEnter.dispatch(this);
+        this.uiContainerEvents.onMouseEnter.dispatch(this);
     }
 
     protected onMouseMoveEvent() {
-        this.wrapperEvents.onMouseMove.dispatch(this);
+        this.uiContainerEvents.onMouseMove.dispatch(this);
     }
 
     protected onMouseLeaveEvent() {
-        this.wrapperEvents.onMouseLeave.dispatch(this);
+        this.uiContainerEvents.onMouseLeave.dispatch(this);
     }
 
     get onMouseEnter(): Event<UIContainer, NoArgs> {
-        return this.wrapperEvents.onMouseEnter;
+        return this.uiContainerEvents.onMouseEnter;
     }
 
     get onMouseMove(): Event<UIContainer, NoArgs> {
-        return this.wrapperEvents.onMouseMove;
+        return this.uiContainerEvents.onMouseMove;
     }
 
     get onMouseLeave(): Event<UIContainer, NoArgs> {
-        return this.wrapperEvents.onMouseLeave;
+        return this.uiContainerEvents.onMouseLeave;
     }
 }

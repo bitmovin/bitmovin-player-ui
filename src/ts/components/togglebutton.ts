@@ -27,7 +27,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
 
     private onState: boolean;
 
-    protected toggleButtonEvents = {
+    private toggleButtonEvents = {
         onToggle: new EventDispatcher<ToggleButton<Config>, NoArgs>(),
         onToggleOn: new EventDispatcher<ToggleButton<Config>, NoArgs>(),
         onToggleOff: new EventDispatcher<ToggleButton<Config>, NoArgs>()

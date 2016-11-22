@@ -24,7 +24,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     protected items: ListItemCollection;
     protected selectedItem: string;
 
-    protected listSelectorEvents = {
+    private listSelectorEvents = {
         onItemAdded: new EventDispatcher<ListSelector<Config>, string>(),
         onItemRemoved: new EventDispatcher<ListSelector<Config>, string>(),
         onItemSelected: new EventDispatcher<ListSelector<Config>, string>()

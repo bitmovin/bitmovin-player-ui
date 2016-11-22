@@ -54,7 +54,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     private label: SeekBarLabel;
 
-    protected seekBarEvents = {
+    private seekBarEvents = {
         /**
          * Fired when a scrubbing seek operation is started.
          */

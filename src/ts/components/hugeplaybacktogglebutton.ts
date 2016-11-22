@@ -24,7 +24,6 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         }, this.config);
     }
 
-
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         // Update button state through API events
         super.configure(player, uimanager, false);

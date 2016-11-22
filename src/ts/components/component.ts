@@ -61,7 +61,7 @@ export class Component<Config extends ComponentConfig> {
      */
     private hidden: boolean;
 
-    protected componentEvents = {
+    private componentEvents = {
         onShow: new EventDispatcher<Component<Config>, NoArgs>(),
         onHide: new EventDispatcher<Component<Config>, NoArgs>()
     };

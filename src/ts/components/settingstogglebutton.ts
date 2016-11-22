@@ -27,7 +27,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
         }, <SettingsToggleButtonConfig>this.config);
     }
 
-
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         this.onClick.subscribe(function(sender: SettingsToggleButton) {
             (<SettingsToggleButtonConfig>sender.getConfig()).settingsPanel.toggleHidden();
