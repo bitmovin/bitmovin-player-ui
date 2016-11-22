@@ -14,14 +14,58 @@ import {UIManager} from "../uimanager";
 import {VideoQualitySelectBox} from "./videoqualityselectbox";
 import {AudioQualitySelectBox} from "./audioqualityselectbox";
 
-export class SettingsPanel extends Container<ContainerConfig> {
+export interface SettingsPanelConfig extends ContainerConfig {
+    /**
+     * The delay in milliseconds after which the settings panel will be hidden when there is no user interaction.
+     * Set to -1 to disable automatic hiding.
+     * Default: 3 seconds
+     */
+    hideDelay?: number;
+}
 
-    constructor(config: ContainerConfig) {
+export class SettingsPanel extends Container<SettingsPanelConfig> {
+
+    constructor(config: SettingsPanelConfig) {
         super(config);
 
-        this.config = this.mergeConfig(config, {
-            cssClass: 'ui-settings-panel'
+        this.config = this.mergeConfig<SettingsPanelConfig>(config, {
+            cssClass: 'ui-settings-panel',
+            hideDelay: 3000
         }, this.config);
+    }
+
+    configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        let self = this;
+
+        if((<SettingsPanelConfig>self.config).hideDelay > -1) {
+            let hideDelayTimeoutHandle = 0;
+
+            // Clears the hide timeout if active
+            let clearHideTimeout = function () {
+                clearTimeout(hideDelayTimeoutHandle);
+            };
+
+            // Activates the hide timeout and clears a previous timeout if active
+            let setHideTimeout = function () {
+                clearHideTimeout();
+                hideDelayTimeoutHandle = setTimeout(function () {
+                    self.hide();
+                }, (<SettingsPanelConfig>self.getConfig()).hideDelay); // TODO fix generics to spare these damn casts... is that even possible in TS?
+            };
+
+            self.onShow.subscribe(function () {
+                // Activate timeout when shown
+                setHideTimeout();
+            });
+            self.getDomElement().on('mousemove', function () {
+                // Reset timeout on interaction
+                setHideTimeout();
+            });
+            self.onHide.subscribe(function () {
+                // Clear timeout when hidden from outside
+                clearHideTimeout();
+            })
+        }
     }
 }
 
@@ -62,8 +106,8 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
             }
         };
 
-        this.setting.onItemAdded.subscribe(handleConfigItemChanged);
-        this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
+        self.setting.onItemAdded.subscribe(handleConfigItemChanged);
+        self.setting.onItemRemoved.subscribe(handleConfigItemChanged);
 
         // Initialize hidden state
         handleConfigItemChanged();
