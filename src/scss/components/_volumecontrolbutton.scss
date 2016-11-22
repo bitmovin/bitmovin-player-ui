@@ -12,6 +12,8 @@
 
   position: relative;
 
+  line-height: 0; // Fix layout for Firefox: removes spurious space in the container
+
   .ui-volumeslider {
     width: 1.5em;
     height: 6em;
