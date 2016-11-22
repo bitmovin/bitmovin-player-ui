@@ -23,10 +23,13 @@ export class SubtitleSelectBox extends SelectBox {
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
 
-        // Add initial subtitles
-        for (let subtitle of player.getAvailableSubtitles()) {
-            self.addItem(subtitle.id, subtitle.label);
-        }
+        let updateSubtitles = function () {
+            self.clearItems();
+
+            for (let subtitle of player.getAvailableSubtitles()) {
+                self.addItem(subtitle.id, subtitle.label);
+            }
+        };
 
         self.onItemSelected.subscribe(function (sender: SubtitleSelectBox, value: string) {
             player.setSubtitle(value == "null" ? null : value);
@@ -42,5 +45,11 @@ export class SubtitleSelectBox extends SelectBox {
         player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_REMOVED, function (event: SubtitleRemovedEvent) {
             self.removeItem(event.subtitleId);
         });
+
+        player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateSubtitles); // Update subtitles when source goes away
+        player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateSubtitles); // Update subtitles when a new source is loaded
+
+        // Populate subtitles at startup
+        updateSubtitles();
     }
 }

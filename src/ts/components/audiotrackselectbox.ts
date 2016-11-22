@@ -19,12 +19,17 @@ export class AudioTrackSelectBox extends SelectBox {
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
-        let audioTracks = player.getAvailableAudio();
 
-        // Add audio qualities
-        for (let audioTrack of audioTracks) {
-            self.addItem(audioTrack.id, audioTrack.label);
-        }
+        let updateAudioTracks = function () {
+            let audioTracks = player.getAvailableAudio();
+
+            self.clearItems();
+
+            // Add audio tracks
+            for (let audioTrack of audioTracks) {
+                self.addItem(audioTrack.id, audioTrack.label);
+            }
+        };
 
         self.onItemSelected.subscribe(function (sender: AudioTrackSelectBox, value: string) {
             player.setAudio(value);
@@ -35,6 +40,11 @@ export class AudioTrackSelectBox extends SelectBox {
             self.selectItem(currentAudioTrack.id);
         };
 
-        player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGE, audioTrackHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGE, audioTrackHandler); // Update selection when selected track has changed
+        player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateAudioTracks); // Update tracks when source goes away
+        player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateAudioTracks); // Update tracks when a new source is loaded
+
+        // Populate tracks at startup
+        updateAudioTracks();
     }
 }
