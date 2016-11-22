@@ -25,11 +25,11 @@ export class VideoQualitySelectBox extends SelectBox {
         self.addItem("auto", "auto");
 
         // Add video qualities
-        for(let videoQuality of videoQualities) {
+        for (let videoQuality of videoQualities) {
             self.addItem(videoQuality.id, videoQuality.label);
         }
 
-        self.onItemSelected.subscribe(function(sender: VideoQualitySelectBox, value: string) {
+        self.onItemSelected.subscribe(function (sender: VideoQualitySelectBox, value: string) {
             player.setVideoQuality(value);
         });
 

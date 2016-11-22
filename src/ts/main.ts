@@ -59,4 +59,4 @@ import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
         })();
     }
 
-} ());
+}());

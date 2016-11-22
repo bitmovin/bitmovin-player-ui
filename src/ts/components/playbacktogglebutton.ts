@@ -30,13 +30,13 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         let playbackStateHandler = function (event: PlayerEvent) {
             // If the UI is currently seeking, playback is temporarily stopped but the buttons should
             // not reflect that and stay as-is (e.g indicate playback while seeking).
-            if(isSeeking) {
+            if (isSeeking) {
                 return;
             }
 
             // TODO replace this hack with a sole player.isPlaying() call once issue #1203 is fixed
             let isPlaying = player.isPlaying();
-            if(player.isCasting() &&
+            if (player.isCasting() &&
                 (event.type == bitmovin.player.EVENT.ON_PLAY || event.type == bitmovin.player.EVENT.ON_PLAY
                 || event.type == bitmovin.player.EVENT.ON_CAST_PLAYING || event.type == bitmovin.player.EVENT.ON_CAST_PAUSE)) {
                 isPlaying = !isPlaying;
@@ -58,7 +58,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PAUSE, playbackStateHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PLAYBACK_FINISHED, playbackStateHandler);
 
-        if(handleClickEvent) {
+        if (handleClickEvent) {
             // Control player by button events
             // When a button event triggers a player API call, events are fired which in turn call the event handler
             // above that updated the button state.

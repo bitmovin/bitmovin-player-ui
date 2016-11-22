@@ -46,7 +46,7 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
 
         player.addEventHandler(bitmovin.player.EVENT.ON_VOLUME_CHANGE, function (event: VolumeChangeEvent) {
             // Toggle low class to display low volume icon below 50% volume
-            if(event.targetVolume < 50) {
+            if (event.targetVolume < 50) {
                 self.getDomElement().addClass("low");
             } else {
                 self.getDomElement().removeClass("low");

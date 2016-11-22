@@ -11,7 +11,7 @@
  * Function interface for event listeners on the {@link EventDispatcher}.
  */
 export interface EventListener<Sender, Args> {
-    (sender: Sender, args: Args) : void
+    (sender: Sender, args: Args): void
 }
 
 /**
@@ -110,8 +110,8 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
         this.lastFireTime = 0;
 
         let self = this;
-        this.rateLimitingEventListener = function(sender: Sender, args: Args) {
-            if(Date.now() - this.lastFireTime > this.rateMs) {
+        this.rateLimitingEventListener = function (sender: Sender, args: Args) {
+            if (Date.now() - this.lastFireTime > this.rateMs) {
                 this.fireSuper(sender, args);
                 this.lastFireTime = Date.now();
             }

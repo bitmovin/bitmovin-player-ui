@@ -110,7 +110,7 @@ export class Component<Config extends ComponentConfig> {
     }
 
     getDomElement(): JQuery {
-        if(!this.element) {
+        if (!this.element) {
             this.element = this.toDomElement();
         }
 
@@ -143,7 +143,7 @@ export class Component<Config extends ComponentConfig> {
      * Returns a string of all CSS classes of the component.
      * @returns {string}
      */
-    protected getCssClasses() : string {
+    protected getCssClasses(): string {
         // Merge all CSS classes into single array
         let flattenedArray = [this.config.cssClass].concat(this.config.cssClasses);
         // Join array values into a string
@@ -177,7 +177,7 @@ export class Component<Config extends ComponentConfig> {
     }
 
     toggleHidden() {
-        if(this.isHidden()) {
+        if (this.isHidden()) {
             this.show();
         } else {
             this.hide();

@@ -45,7 +45,7 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
         }).html(this.config.text));
 
         let self = this;
-        buttonElement.on('click', function() {
+        buttonElement.on('click', function () {
             self.onClickEvent();
         });
 
@@ -56,7 +56,7 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
         this.buttonEvents.onClick.dispatch(this);
     }
 
-    get onClick() : Event<Button<Config>, NoArgs> {
+    get onClick(): Event<Button<Config>, NoArgs> {
         return this.buttonEvents.onClick;
     }
 }

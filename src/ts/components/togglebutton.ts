@@ -70,7 +70,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     }
 
     toggle() {
-        if(this.isOn()) {
+        if (this.isOn()) {
             this.off();
         } else {
             this.on();

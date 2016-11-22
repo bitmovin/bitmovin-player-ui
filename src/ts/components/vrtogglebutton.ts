@@ -37,7 +37,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
         };
 
         let vrStateHandler = function () {
-            if(isVRConfigured() && isVRStereoAvailable()) {
+            if (isVRConfigured() && isVRStereoAvailable()) {
                 self.show(); // show button in case it is hidden
 
                 if (player.getVRStatus().isStereo) {
@@ -55,8 +55,8 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
         player.addEventHandler(bitmovin.player.EVENT.ON_VR_ERROR, vrStateHandler);
 
         self.onClick.subscribe(function () {
-            if(!isVRStereoAvailable()) {
-                if(console) console.log('No VR content');
+            if (!isVRStereoAvailable()) {
+                if (console) console.log('No VR content');
             } else {
                 if (player.getVRStatus().isStereo) {
                     player.setVRStereo(false);

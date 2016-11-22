@@ -40,7 +40,7 @@ export class TitleBar extends Container<TitleBarConfig> {
         let self = this;
         let hideDelayTimeoutHandle = 0;
 
-        if(uimanager.getConfig() && uimanager.getConfig().metadata) {
+        if (uimanager.getConfig() && uimanager.getConfig().metadata) {
             self.label.setText(uimanager.getConfig().metadata.title);
         } else {
             // Cancel configuration if there is no metadata to display
@@ -61,19 +61,19 @@ export class TitleBar extends Container<TitleBarConfig> {
             }, (<TitleBarConfig>self.getConfig()).hideDelay); // TODO fix generics to spare these damn casts... is that even possible in TS?
         };
 
-        uimanager.events.onMouseEnter.subscribe(function(sender, args) {
+        uimanager.events.onMouseEnter.subscribe(function (sender, args) {
             self.show(); // show control bar when the mouse enters the UI
 
             // Clear timeout to avoid hiding the bar if the mouse moves back into the UI during the timeout period
             clearHideTimeout();
         });
-        uimanager.events.onMouseMove.subscribe(function(sender, args) {
-            if(self.isHidden()) {
+        uimanager.events.onMouseMove.subscribe(function (sender, args) {
+            if (self.isHidden()) {
                 self.show();
             }
             setHideTimeout(); // hide the bar if mouse does not move during the timeout time
         });
-        uimanager.events.onMouseLeave.subscribe(function(sender, args) {
+        uimanager.events.onMouseLeave.subscribe(function (sender, args) {
             setHideTimeout(); // hide bar some time after the mouse left the UI
         });
     }

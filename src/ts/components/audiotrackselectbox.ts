@@ -22,11 +22,11 @@ export class AudioTrackSelectBox extends SelectBox {
         let audioTracks = player.getAvailableAudio();
 
         // Add audio qualities
-        for(let audioTrack of audioTracks) {
+        for (let audioTrack of audioTracks) {
             self.addItem(audioTrack.id, audioTrack.label);
         }
 
-        self.onItemSelected.subscribe(function(sender: AudioTrackSelectBox, value: string) {
+        self.onItemSelected.subscribe(function (sender: AudioTrackSelectBox, value: string) {
             player.setAudio(value);
         });
 

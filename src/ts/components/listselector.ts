@@ -51,7 +51,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     }
 
     removeItem(value: string): boolean {
-        if(this.hasItem(value)) {
+        if (this.hasItem(value)) {
             delete this.items[value];
             this.onItemRemovedEvent(value);
             return true;
@@ -61,12 +61,12 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     }
 
     selectItem(value: string): boolean {
-        if(value == this.selectedItem) {
+        if (value == this.selectedItem) {
             // itemConfig is already selected, suppress any further action
             return true;
         }
 
-        if(this.items[value] != null) {
+        if (this.items[value] != null) {
             this.selectedItem = value;
             this.onItemSelectedEvent(value);
             return true;
@@ -80,7 +80,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
         this.items = {}; // clear items
 
         // fire events
-        for(let value in items) {
+        for (let value in items) {
             this.onItemRemovedEvent(value);
         }
     }

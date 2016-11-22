@@ -51,7 +51,7 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
      * Gets an array of all child components in this container.
      * @returns {Component<ComponentConfig>[]}
      */
-    getComponents() : Component<ComponentConfig>[] {
+    getComponents(): Component<ComponentConfig>[] {
         return this.config.components;
     }
 

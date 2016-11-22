@@ -351,7 +351,7 @@ declare namespace bitmovin {
              * @param lang The language of the new track.
              * @param label The text used to represent the track to a user (e.g. in the UI).
              */
-            addSubtitle(url: string, subtitleTrackID: string, kind: string, lang: string, label? : string): Player;
+            addSubtitle(url: string, subtitleTrackID: string, kind: string, lang: string, label?: string): Player;
             /**
              * Stops a running Cast session (i.e. {@link #isCasting} returns true). Has no effect if {@link #isCasting} returns false.
              */

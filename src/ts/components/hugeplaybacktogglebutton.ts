@@ -92,8 +92,8 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         });
 
         // Hide the huge playback button during VR playback to let mouse events pass through and navigate the VR viewport
-        self.onToggle.subscribe(function() {
-            if(player.getVRStatus().contentType != 'none') {
+        self.onToggle.subscribe(function () {
+            if (player.getVRStatus().contentType != 'none') {
                 if (player.isPlaying()) {
                     self.hide();
                 } else {
@@ -104,7 +104,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
         // Hide button while initializing a Cast session
         let castInitializationHandler = function (event: PlayerEvent) {
-            if(event.type == bitmovin.player.EVENT.ON_CAST_START) {
+            if (event.type == bitmovin.player.EVENT.ON_CAST_START) {
                 // Hide button when session is being initialized
                 self.hide();
             } else {

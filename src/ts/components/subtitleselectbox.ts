@@ -24,11 +24,11 @@ export class SubtitleSelectBox extends SelectBox {
         let self = this;
 
         // Add initial subtitles
-        for(let subtitle of player.getAvailableSubtitles()) {
+        for (let subtitle of player.getAvailableSubtitles()) {
             self.addItem(subtitle.id, subtitle.label);
         }
 
-        self.onItemSelected.subscribe(function(sender: SubtitleSelectBox, value: string) {
+        self.onItemSelected.subscribe(function (sender: SubtitleSelectBox, value: string) {
             player.setSubtitle(value == "null" ? null : value);
         });
 

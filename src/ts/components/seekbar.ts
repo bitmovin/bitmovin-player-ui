@@ -82,7 +82,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     initialize(): void {
         super.initialize();
 
-        if(this.hasLabel()) {
+        if (this.hasLabel()) {
             this.getLabel().initialize();
         }
     }
@@ -98,7 +98,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             // Once this handler os called, playback has been started and we set the flag to false
             playbackNotInitialized = false;
 
-            if(isSeeking) {
+            if (isSeeking) {
                 // We caught a seek preview seek, do not update the seekbar
                 return;
             }
@@ -152,13 +152,13 @@ export class SeekBar extends Component<SeekBarConfig> {
         });
 
         let seek = function (percentage: number) {
-            if(player.isLive()) {
+            if (player.isLive()) {
                 player.timeShift(player.getMaxTimeShift() - (player.getMaxTimeShift() * (percentage / 100)));
             } else {
                 player.seek(player.getDuration() * (percentage / 100));
             }
         };
-        self.onSeek.subscribe(function(sender) {
+        self.onSeek.subscribe(function (sender) {
             isSeeking = true; // track seeking status so we can catch events from seek preview seeks
 
             // Notify UI manager of started seek
@@ -168,7 +168,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             isPlaying = player.isPlaying();
 
             // Pause playback while seeking
-            if(isPlaying) {
+            if (isPlaying) {
                 player.pause();
             }
         });
@@ -178,7 +178,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         });
         self.onSeekPreview.subscribeRateLimited(function (sender: SeekBar, args: SeekPreviewEventArgs) {
             // Rate-limited scrubbing seek
-            if(args.scrubbing) {
+            if (args.scrubbing) {
                 seek(args.position);
             }
         }, 200);
@@ -189,7 +189,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             // seek to work. We call pause() immediately afterwards because we actually do not want to play back anything.
             // The flag serves to call play/pause only on the first seek before playback has started, instead of every
             // time a seek is issued.
-            if(playbackNotInitialized) {
+            if (playbackNotInitialized) {
                 playbackNotInitialized = false;
                 player.play();
                 player.pause();
@@ -207,14 +207,14 @@ export class SeekBar extends Component<SeekBarConfig> {
             uimanager.events.onSeeked.dispatch(sender);
         });
 
-        if(self.hasLabel()) {
+        if (self.hasLabel()) {
             // Configure a seekbar label that is internal to the seekbar)
             self.getLabel().configure(player, uimanager);
         }
     }
 
     protected toDomElement(): JQuery {
-        if(this.config.vertical) {
+        if (this.config.vertical) {
             this.config.cssClasses.push('vertical');
         }
 
@@ -302,7 +302,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             self.setSeekPosition(position);
             self.onSeekPreviewEvent(position, false);
 
-            if(self.hasLabel() && self.getLabel().isHidden()) {
+            if (self.hasLabel() && self.getLabel().isHidden()) {
                 self.getLabel().show();
             }
         });
@@ -311,14 +311,14 @@ export class SeekBar extends Component<SeekBarConfig> {
         seekBar.on('mouseleave', function (e: JQueryEventObject) {
             self.setSeekPosition(0);
 
-            if(self.hasLabel()) {
+            if (self.hasLabel()) {
                 self.getLabel().hide();
             }
         });
 
         seekBarContainer.append(seekBar);
 
-        if(this.label) {
+        if (this.label) {
             seekBarContainer.append(this.label.getDomElement());
         }
 
@@ -410,7 +410,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
-        if(this.label) {
+        if (this.label) {
             this.label.setText(percentage + "");
             this.label.getDomElement().css({
                 "left": percentage + "%"

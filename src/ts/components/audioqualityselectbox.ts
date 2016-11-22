@@ -29,12 +29,12 @@ export class AudioQualitySelectBox extends SelectBox {
             self.addItem("auto", "auto");
 
             // Add audio qualities
-            for(let audioQuality of audioQualities) {
+            for (let audioQuality of audioQualities) {
                 self.addItem(audioQuality.id, audioQuality.label);
             }
         };
 
-        self.onItemSelected.subscribe(function(sender: AudioQualitySelectBox, value: string) {
+        self.onItemSelected.subscribe(function (sender: AudioQualitySelectBox, value: string) {
             player.setAudioQuality(value);
         });
 

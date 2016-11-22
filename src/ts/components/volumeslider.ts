@@ -24,7 +24,7 @@ export class VolumeSlider extends SeekBar {
         let self = this;
 
         let volumeChangeHandler = function () {
-            if(player.isMuted()) {
+            if (player.isMuted()) {
                 self.setPlaybackPosition(0);
                 self.setBufferPosition(0);
             } else {
@@ -39,7 +39,7 @@ export class VolumeSlider extends SeekBar {
         player.addEventHandler(bitmovin.player.EVENT.ON_UNMUTE, volumeChangeHandler);
 
         this.onSeekPreview.subscribe(function (sender, args) {
-            if(args.scrubbing) {
+            if (args.scrubbing) {
                 player.setVolume(args.position);
             }
         });

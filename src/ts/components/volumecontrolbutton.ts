@@ -104,7 +104,7 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
         });
         volumeSlider.onSeeked.subscribe(function () {
             // When a slide operation is done and the slider not hovered (mouse outside slider), hide slider delayed
-            if(!volumeSliderHovered) {
+            if (!volumeSliderHovered) {
                 setHideTimeout();
             }
         });

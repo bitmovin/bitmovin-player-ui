@@ -50,12 +50,12 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
             // By default, at least two items must be available, else a selection is not possible
             let minItemsToDisplay = 2;
             // Audio/video quality select boxes contain an additional "auto" mode, which in combination with a single available quality also does not make sense
-            if(self.setting instanceof VideoQualitySelectBox || self.setting instanceof AudioQualitySelectBox) {
+            if (self.setting instanceof VideoQualitySelectBox || self.setting instanceof AudioQualitySelectBox) {
                 minItemsToDisplay = 3;
             }
 
             // Hide the setting if no meaningful choice is available
-            if(self.setting.itemCount() < minItemsToDisplay) {
+            if (self.setting.itemCount() < minItemsToDisplay) {
                 self.hide();
             } else {
                 self.show();
