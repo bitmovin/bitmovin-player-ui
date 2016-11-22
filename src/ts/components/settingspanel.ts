@@ -13,6 +13,7 @@ import {Label, LabelConfig} from "./label";
 import {UIManager} from "../uimanager";
 import {VideoQualitySelectBox} from "./videoqualityselectbox";
 import {AudioQualitySelectBox} from "./audioqualityselectbox";
+import {Timeout} from "../timeout";
 
 export interface SettingsPanelConfig extends ContainerConfig {
     /**
@@ -37,33 +38,22 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
 
-        if((<SettingsPanelConfig>self.config).hideDelay > -1) {
-            let hideDelayTimeoutHandle = 0;
-
-            // Clears the hide timeout if active
-            let clearHideTimeout = function () {
-                clearTimeout(hideDelayTimeoutHandle);
-            };
-
-            // Activates the hide timeout and clears a previous timeout if active
-            let setHideTimeout = function () {
-                clearHideTimeout();
-                hideDelayTimeoutHandle = setTimeout(function () {
-                    self.hide();
-                }, (<SettingsPanelConfig>self.getConfig()).hideDelay); // TODO fix generics to spare these damn casts... is that even possible in TS?
-            };
+        if ((<SettingsPanelConfig>self.config).hideDelay > -1) {
+            let timeout = new Timeout((<SettingsPanelConfig>this.config).hideDelay, function () {
+                self.hide();
+            });
 
             self.onShow.subscribe(function () {
                 // Activate timeout when shown
-                setHideTimeout();
+                timeout.start();
             });
             self.getDomElement().on('mousemove', function () {
                 // Reset timeout on interaction
-                setHideTimeout();
+                timeout.reset()
             });
             self.onHide.subscribe(function () {
                 // Clear timeout when hidden from outside
-                clearHideTimeout();
+                timeout.clear();
             })
         }
     }

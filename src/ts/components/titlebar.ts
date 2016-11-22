@@ -10,6 +10,7 @@
 import {Container, ContainerConfig} from "./container";
 import {UIManager} from "../uimanager";
 import {LabelConfig, Label} from "./label";
+import {Timeout} from "../timeout";
 
 export interface TitleBarConfig extends ContainerConfig {
     /**
@@ -38,7 +39,6 @@ export class TitleBar extends Container<TitleBarConfig> {
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
-        let hideDelayTimeoutHandle = 0;
 
         if (uimanager.getConfig() && uimanager.getConfig().metadata) {
             self.label.setText(uimanager.getConfig().metadata.title);
@@ -48,33 +48,24 @@ export class TitleBar extends Container<TitleBarConfig> {
             return;
         }
 
-        // Clears the hide timeout if active
-        let clearHideTimeout = function () {
-            clearTimeout(hideDelayTimeoutHandle);
-        };
-
-        // Activates the hide timeout and clears a previous timeout if active
-        let setHideTimeout = function () {
-            clearHideTimeout();
-            hideDelayTimeoutHandle = setTimeout(function () {
-                self.hide();
-            }, (<TitleBarConfig>self.getConfig()).hideDelay); // TODO fix generics to spare these damn casts... is that even possible in TS?
-        };
+        let timeout = new Timeout((<TitleBarConfig>self.getConfig()).hideDelay, function () {
+            self.hide();
+        });
 
         uimanager.onMouseEnter.subscribe(function (sender, args) {
             self.show(); // show control bar when the mouse enters the UI
 
             // Clear timeout to avoid hiding the bar if the mouse moves back into the UI during the timeout period
-            clearHideTimeout();
+            timeout.clear();
         });
         uimanager.onMouseMove.subscribe(function (sender, args) {
             if (self.isHidden()) {
                 self.show();
             }
-            setHideTimeout(); // hide the bar if mouse does not move during the timeout time
+            timeout.reset(); // hide the bar if mouse does not move during the timeout time
         });
         uimanager.onMouseLeave.subscribe(function (sender, args) {
-            setHideTimeout(); // hide bar some time after the mouse left the UI
+            timeout.reset(); // hide bar some time after the mouse left the UI
         });
     }
 }
