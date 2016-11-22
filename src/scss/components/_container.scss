@@ -8,5 +8,7 @@
  */
 
 .ui-container {
+  @extend .ui-component;
+
   font-size: 1em;
 }

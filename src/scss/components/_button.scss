@@ -8,6 +8,8 @@
  */
 
 .ui-button {
+  @extend .ui-component;
+
   font-size: 1em;
   padding: 0;
   border: none;

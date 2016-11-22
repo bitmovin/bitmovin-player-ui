@@ -9,6 +9,7 @@
 
 .ui-skin-default {
   @import 'mixins';
+  @import 'components/component';
   @import 'components/container';
   @import 'components/wrapper';
   @import 'components/controlbar';

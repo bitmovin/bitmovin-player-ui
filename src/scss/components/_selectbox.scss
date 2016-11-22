@@ -8,6 +8,8 @@
  */
 
 select.ui-selectbox {
+  @extend .ui-component;
+
   cursor: pointer;
   border: 1px solid gray;
   background-color: darken(white, 10%);

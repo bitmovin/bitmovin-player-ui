@@ -8,6 +8,8 @@
  */
 
 .ui-seekbar {
+  @extend .ui-component;
+
   font-size: 1em;
   height: 1em;
   margin: 0.2em;

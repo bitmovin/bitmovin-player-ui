@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *  Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
  *
  * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
  *
@@ -7,8 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-label {
-  @extend .ui-component;
-
-  white-space: nowrap;
+.ui-component {
+  /*! placeholder to avoid removal of empty selector */
+  //outline: 1px solid red;
 }
