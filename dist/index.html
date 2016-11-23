@@ -156,18 +156,51 @@
         $("#function-call-output").html(JSON.stringify(result, null, 2));
     };
 
-    var playbackControls = [];
+    // Collect all API methods of the player object
+    var apiMethods = [];
     for (var member in player) {
         if (typeof player[member] == "function") {
-            playbackControls.push(member);
+            apiMethods.push(member);
         }
     }
-    $.each(playbackControls, function (key, name) {
-        var button = $('<button class="btn btn-primary btn-sm">' + name + '</button>');
+
+    // Define custom parameters for testing API methods that take parameters
+    var apiMethodParameters = {
+        "setVolume": [0, 50, 100, function () { return player.getVolume() + 10; }],
+        "seek": [0, function () { return player.getCurrentTime() + 60; }, function () { return player.getCurrentTime() - 60; }]
+    };
+
+    var addApiMethodButton = function (method, parameter) {
+        var button = $('<button class="btn btn-primary btn-sm">' + method + '(' + (typeof parameter == 'undefined' ? '' : parameter) + ')' + '</button>');
         $('#playback-controls').append(button).append(" ");
         button.click(function () {
-            printResult(player[name]());
+            var p = parameter;
+            if (typeof parameter == "function") {
+                // The parameter is a function, evaluate it first
+                p = parameter();
+            }
+            printResult(player[method](p));
         });
+    };
+
+    // Create buttons for all API methods and method/parameter combinations
+    $.each(apiMethods, function (key, method) {
+        if (apiMethodParameters.hasOwnProperty(method)) {
+            // We found custom parameter(s)
+            var parameters = apiMethodParameters[method];
+            if ($.isArray(parameters)) {
+                // There are multiple parameters in an array, add a call for each parameter
+                $.each(parameters, function (key, parameter) {
+                    addApiMethodButton(method, parameter);
+                });
+            } else {
+                // Just a single parameter, add the call
+                addApiMethodButton(method, parameters);
+            }
+        } else {
+            // No parameters defined, add a simple parameterless method call
+            addApiMethodButton(method);
+        }
     });
 
     $("#btn-action-subtitle-add").click(function () {
