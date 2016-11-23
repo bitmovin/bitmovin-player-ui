@@ -78,7 +78,20 @@
     var player = bitmovin.player('player');
 
     var sources = {
-        default: {
+        fullyFeatured: {
+            dash: '//bitdash-a.akamaihd.net/content/sintel/sintel.mpd',
+            hls: '//bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+            progressive: [
+                {url: '//bitdash-a.akamaihd.net/content/sintel/Sintel.mp4', type: 'video/mp4'},
+                {url: '//bitdash-a.akamaihd.net/content/sintel/Sintel.webm', type: 'video/webm'}
+            ],
+            poster: '//bitdash-a.akamaihd.net/content/sintel/poster.png',
+            tracks: [{
+                file: '//bitdash-a.akamaihd.net/content/sintel/sprite/sprite.vtt',
+                kind: 'thumbnails'
+            }]
+        },
+        basicDash: {
             dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
         },
         vr: {
@@ -107,7 +120,7 @@
 
     var conf = {
         key: 'YOUR KEY HERE',
-        source: sources.default,
+        source: sources.fullyFeatured,
         style: {
             ux: false
         },
