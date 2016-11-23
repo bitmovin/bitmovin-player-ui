@@ -27,7 +27,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-wrapper'
+            cssClass: 'ui-uicontainer'
         }, this.config);
     }
 
