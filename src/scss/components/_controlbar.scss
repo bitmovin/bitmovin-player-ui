@@ -43,3 +43,17 @@
     font-size: 0.8em;
   }
 }
+
+// IE9 compatibility: fallback for missing flexbox support
+&.no-flexbox .ui-controlbar {
+  > .container-wrapper {
+    display: table;
+    border-spacing: 0.5em 0;
+
+    > * {
+      display: table-cell;
+      vertical-align: middle;
+      @include hidden(); // Add hidden here too, else it is overwritten by display: table-cell
+    }
+  }
+}

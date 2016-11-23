@@ -59,6 +59,14 @@ export class UIContainer extends Container<UIContainerConfig> {
             self.onMouseLeaveEvent();
         });
 
+        // Detect flexbox support (not supported in IE9)
+        console.log(document);
+        if(document && typeof document.createElement("p").style.flex !== "undefined") {
+            container.addClass("flexbox");
+        } else {
+            container.addClass("no-flexbox");
+        }
+
         return container;
     }
 
