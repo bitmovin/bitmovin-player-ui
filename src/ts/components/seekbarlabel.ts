@@ -80,7 +80,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
                 "background-image": `url(${thumbnail.url})`,
                 "width": thumbnail.w + "px",
                 "height": thumbnail.h + "px",
-                "background-position": `${thumbnail.x}px ${thumbnail.y}px`
+                "background-position": `-${thumbnail.x}px -${thumbnail.y}px`
             });
         }
     }
