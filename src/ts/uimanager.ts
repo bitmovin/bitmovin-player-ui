@@ -8,7 +8,7 @@
  */
 
 import {UIContainer} from "./components/uicontainer";
-import {DOM} from "./dom";
+import {DOM2} from "./dom";
 import {Component, ComponentConfig} from "./components/component";
 import {Container} from "./components/container";
 import {PlaybackToggleButton} from "./components/playbacktogglebutton";
@@ -94,7 +94,7 @@ export class UIManager {
         let playerId = player.getFigure().parentElement.id;
 
         // Add UI elements to player
-        DOM.JQuery(`#${playerId}`).append(ui.getDomElement());
+        new DOM2(`#${playerId}`).append(ui.getDomElement());
 
         this.configureControls(ui);
     }

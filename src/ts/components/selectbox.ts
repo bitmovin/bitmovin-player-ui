@@ -8,11 +8,11 @@
  */
 
 import {ListSelector, ListSelectorConfig} from "./listselector";
-import {DOM} from "../dom";
+import {DOM2} from "../dom";
 
 export class SelectBox extends ListSelector<ListSelectorConfig> {
 
-    private selectElement: JQuery;
+    private selectElement: DOM2;
 
     constructor(config: ListSelectorConfig = {}) {
         super(config);
@@ -22,8 +22,8 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
         }, this.config);
     }
 
-    protected toDomElement(): JQuery {
-        let selectElement = DOM.JQuery('<select>', {
+    protected toDomElement(): DOM2 {
+        let selectElement = new DOM2('select', {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
@@ -33,7 +33,8 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
         let self = this;
         selectElement.on('change', function () {
-            let value = DOM.JQuery(this).val();
+            // TODO DOM2 check what "this" is and see how to access the actual HTMLElement
+            let value = new DOM2(this).val();
             self.onItemSelectedEvent(value, false);
         });
 
@@ -47,7 +48,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
         // Add updated children
         for (let value in this.items) {
             let label = this.items[value];
-            let optionElement = DOM.JQuery('<option>', {
+            let optionElement = new DOM2('option', {
                 'value': value
             }).html(label);
 

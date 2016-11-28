@@ -8,7 +8,7 @@
  */
 
 import {ComponentConfig, Component} from "./component";
-import {DOM} from "../dom";
+import {DOM2} from "../dom";
 import {EventDispatcher, NoArgs, Event} from "../eventdispatcher";
 
 /**
@@ -35,12 +35,12 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
         }, this.config);
     }
 
-    protected toDomElement(): JQuery {
-        var buttonElement = DOM.JQuery(`<button>`, {
+    protected toDomElement(): DOM2 {
+        var buttonElement = new DOM2('button', {
             'type': 'button',
             'id': this.config.id,
             'class': this.getCssClasses()
-        }).append(DOM.JQuery(`<span>`, {
+        }).append(new DOM2('span', {
             'class': 'label'
         }).html(this.config.text));
 

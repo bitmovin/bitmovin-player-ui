@@ -8,7 +8,7 @@
  */
 
 import {ComponentConfig, Component} from "./component";
-import {DOM} from "../dom";
+import {DOM2} from "../dom";
 import {ArrayUtils} from "../utils";
 
 export interface ContainerConfig extends ComponentConfig {
@@ -20,7 +20,7 @@ export interface ContainerConfig extends ComponentConfig {
 
 export class Container<Config extends ContainerConfig> extends Component<ContainerConfig> {
 
-    private innerContainerElement: JQuery;
+    private innerContainerElement: DOM2;
 
     constructor(config: ContainerConfig) {
         super(config);
@@ -63,13 +63,13 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
         }
     }
 
-    protected toDomElement(): JQuery {
-        var containerElement = DOM.JQuery(`<${this.config.tag}>`, {
+    protected toDomElement(): DOM2 {
+        var containerElement = new DOM2(this.config.tag, {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
 
-        var innerContainer = DOM.JQuery(`<${this.config.tag}>`, {
+        var innerContainer = new DOM2(this.config.tag, {
             'class': 'container-wrapper'
         });
         this.innerContainerElement = innerContainer;

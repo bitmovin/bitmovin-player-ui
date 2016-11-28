@@ -1,6 +1,15 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
 import {ContainerConfig, Container} from "./container";
 import {Component, ComponentConfig} from "./component";
-import {DOM} from "../dom";
+import {DOM2} from "../dom";
 import {UIManager, UIRecommendationConfig} from "../uimanager";
 import {StringUtils} from "../utils";
 
@@ -54,26 +63,26 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
         }, this.config);
     }
 
-    protected toDomElement(): JQuery {
+    protected toDomElement(): DOM2 {
         let config = (<RecommendationItemConfig>this.config).itemConfig; // TODO fix generics and get rid of cast
 
-        var itemElement = DOM.JQuery(`<a></a>`, {
+        let itemElement = new DOM2('a', {
             'id': this.config.id,
             'class': this.getCssClasses(),
             'href': config.url
         });
 
-        var bgElement = DOM.JQuery(`<div>`, {
+        let bgElement = new DOM2('div', {
             'class': 'thumbnail'
         }).css({"background-image": `url(${config.thumbnail})`});
         itemElement.append(bgElement);
 
-        var titleElement = DOM.JQuery(`<span>`, {
+        let titleElement = new DOM2('span', {
             'class': 'title'
         }).html(config.title);
         itemElement.append(titleElement);
 
-        var timeElement = DOM.JQuery(`<span>`, {
+        let timeElement = new DOM2('span', {
             'class': 'duration'
         }).html(StringUtils.secondsToTime(config.duration));
         itemElement.append(timeElement);

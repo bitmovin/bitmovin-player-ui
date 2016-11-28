@@ -8,7 +8,7 @@
  */
 
 import {Guid} from "../guid";
-import {DOM} from "../dom";
+import {DOM2} from "../dom";
 import {EventDispatcher, NoArgs, Event} from "../eventdispatcher";
 import {UIManager} from "../uimanager";
 
@@ -54,7 +54,7 @@ export class Component<Config extends ComponentConfig> {
     /**
      * JQuery reference to the component's DOM element.
      */
-    private element: JQuery;
+    private element: DOM2;
 
     /**
      * Flag that keeps track of the hidden state.
@@ -101,15 +101,15 @@ export class Component<Config extends ComponentConfig> {
     /**
      * Generate DOM element for this component. This element can then be added to the HTML document.
      */
-    protected toDomElement(): JQuery {
-        var element = DOM.JQuery(`<${this.config.tag}>`, {
+    protected toDomElement(): DOM2 {
+        var element = new DOM2(this.config.tag, {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
         return element;
     }
 
-    getDomElement(): JQuery {
+    getDomElement(): DOM2 {
         if (!this.element) {
             this.element = this.toDomElement();
         }
@@ -117,7 +117,7 @@ export class Component<Config extends ComponentConfig> {
         return this.element;
     }
 
-    protected refreshDomElement(): JQuery {
+    protected refreshDomElement(): DOM2 {
         this.element = null;
         return this.getDomElement();
     }
@@ -133,7 +133,7 @@ export class Component<Config extends ComponentConfig> {
      */
     protected mergeConfig<Config>(config: Config, defaults: Config, base: Config): Config {
         // Extend default config with supplied config
-        let merged = DOM.JQuery().extend({}, base, defaults, config);
+        let merged = Object.assign({}, base, defaults, config);
 
         // Return the extended config
         return merged;

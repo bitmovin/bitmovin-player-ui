@@ -9,6 +9,7 @@
 
 import {Button, ButtonConfig} from "./button";
 import {NoArgs, EventDispatcher, Event} from "../eventdispatcher";
+import {DOM2} from "../dom";
 
 /**
  * Configuration interface for a toggle button component.
@@ -41,7 +42,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
         }, this.config);
     }
 
-    protected toDomElement(): JQuery {
+    protected toDomElement(): DOM2 {
         var buttonElement = super.toDomElement();
 
         return buttonElement;

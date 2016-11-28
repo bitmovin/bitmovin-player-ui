@@ -8,8 +8,8 @@
  */
 
 import {Component, ComponentConfig} from "./component";
-import {DOM} from "../dom";
-import {Event, EventDispatcher, NoArgs} from "../eventdispatcher";
+import {DOM2} from "../dom";
+import {Event as DispatcherEvent, EventDispatcher, NoArgs} from "../eventdispatcher";
 import {SeekBarLabel} from "./seekbarlabel";
 import {UIManager} from "../uimanager";
 
@@ -46,11 +46,11 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     private static readonly CLASS_SEEKING = "seeking";
 
-    private seekBar: JQuery;
-    private seekBarPlaybackPosition: JQuery;
-    private seekBarBufferPosition: JQuery;
-    private seekBarSeekPosition: JQuery;
-    private seekBarBackdrop: JQuery;
+    private seekBar: DOM2;
+    private seekBarPlaybackPosition: DOM2;
+    private seekBarBufferPosition: DOM2;
+    private seekBarSeekPosition: DOM2;
+    private seekBarBackdrop: DOM2;
 
     private label: SeekBarLabel;
 
@@ -213,41 +213,41 @@ export class SeekBar extends Component<SeekBarConfig> {
         }
     }
 
-    protected toDomElement(): JQuery {
+    protected toDomElement(): DOM2 {
         if (this.config.vertical) {
             this.config.cssClasses.push('vertical');
         }
 
-        var seekBarContainer = DOM.JQuery(`<div>`, {
+        var seekBarContainer = new DOM2('div', {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
 
-        var seekBar = DOM.JQuery(`<div>`, {
+        var seekBar = new DOM2('div', {
             'class': 'seekbar'
         });
         this.seekBar = seekBar;
 
         // Indicator that shows the buffer fill level
-        var seekBarBufferLevel = DOM.JQuery(`<div>`, {
+        var seekBarBufferLevel = new DOM2('div', {
             'class': 'seekbar-bufferlevel'
         });
         this.seekBarBufferPosition = seekBarBufferLevel;
 
         // Indicator that shows the current playback position
-        var seekBarPlaybackPosition = DOM.JQuery(`<div>`, {
+        var seekBarPlaybackPosition = new DOM2('div', {
             'class': 'seekbar-playbackposition'
         });
         this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
         // Indicator that show where a seek will go to
-        var seekBarSeekPosition = DOM.JQuery(`<div>`, {
+        var seekBarSeekPosition = new DOM2('div', {
             'class': 'seekbar-seekposition'
         });
         this.seekBarSeekPosition = seekBarSeekPosition;
 
         // Indicator that shows the full seekbar
-        var seekBarBackdrop = DOM.JQuery(`<div>`, {
+        var seekBarBackdrop = new DOM2('div', {
             'class': 'seekbar-backdrop'
         });
         this.seekBarBackdrop = seekBarBackdrop;
@@ -257,18 +257,18 @@ export class SeekBar extends Component<SeekBarConfig> {
         let self = this;
 
         // Define handler functions so we can attach/remove them later
-        let mouseMoveHandler = function (e: JQueryEventObject) {
+        let mouseMoveHandler = function (e: MouseEvent) {
             let targetPercentage = 100 * self.getMouseOffset(e);
             self.setSeekPosition(targetPercentage);
             self.setPlaybackPosition(targetPercentage);
             self.onSeekPreviewEvent(targetPercentage, true);
         };
-        let mouseUpHandler = function (e: JQueryEventObject) {
+        let mouseUpHandler = function (e: MouseEvent) {
             e.preventDefault();
 
             // Remove handlers, seek operation is finished
-            DOM.JQuery(document).off('mousemove', mouseMoveHandler);
-            DOM.JQuery(document).off('mouseup', mouseUpHandler);
+            new DOM2(document).off('mousemove', mouseMoveHandler);
+            new DOM2(document).off('mouseup', mouseUpHandler);
 
             let targetPercentage = 100 * self.getMouseOffset(e);
 
@@ -282,7 +282,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         // (so the user does not need to take care that the mouse always stays on the seekbar), we attach the mousemove
         // and mouseup handlers to the whole document. A seek is triggered when the user lifts the mouse key.
         // A seek mouse gesture is thus basically a click with a long time frame between down and up events.
-        seekBar.on('mousedown', function (e: JQueryEventObject) {
+        seekBar.on('mousedown', function (e: MouseEvent) {
             // Prevent selection of DOM elements
             e.preventDefault();
 
@@ -292,12 +292,12 @@ export class SeekBar extends Component<SeekBarConfig> {
             self.onSeekEvent();
 
             // Add handler to track the seek operation over the whole document
-            DOM.JQuery(document).on('mousemove', mouseMoveHandler);
-            DOM.JQuery(document).on('mouseup', mouseUpHandler);
+            new DOM2(document).on('mousemove', mouseMoveHandler);
+            new DOM2(document).on('mouseup', mouseUpHandler);
         });
 
         // Display seek target indicator when mouse hovers over seekbar
-        seekBar.on('mousemove', function (e: JQueryEventObject) {
+        seekBar.on('mousemove', function (e: MouseEvent) {
             let position = 100 * self.getMouseOffset(e);
             self.setSeekPosition(position);
             self.onSeekPreviewEvent(position, false);
@@ -308,7 +308,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         });
 
         // Hide seek target indicator when mouse leaves seekbar
-        seekBar.on('mouseleave', function (e: JQueryEventObject) {
+        seekBar.on('mouseleave', function (e: MouseEvent) {
             self.setSeekPosition(0);
 
             if (self.hasLabel()) {
@@ -325,7 +325,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         return seekBarContainer;
     }
 
-    private getHorizontalMouseOffset(e: JQueryEventObject): number {
+    private getHorizontalMouseOffset(e: MouseEvent): number {
         let elementOffsetPx = this.seekBar.offset().left;
         let widthPx = this.seekBar.width();
         let offsetPx = e.pageX - elementOffsetPx;
@@ -334,7 +334,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         return this.sanitizeOffset(offset);
     }
 
-    private getVerticalMouseOffset(e: JQueryEventObject): number {
+    private getVerticalMouseOffset(e: MouseEvent): number {
         let elementOffsetPx = this.seekBar.offset().top;
         let widthPx = this.seekBar.height();
         let offsetPx = e.pageY - elementOffsetPx;
@@ -343,7 +343,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         return 1 - this.sanitizeOffset(offset);
     }
 
-    private getMouseOffset(e: JQueryEventObject): number {
+    private getMouseOffset(e: MouseEvent): number {
         if (this.config.vertical) {
             return this.getVerticalMouseOffset(e);
         } else {
@@ -375,7 +375,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.setPosition(this.seekBarSeekPosition, percent);
     }
 
-    private setPosition(element: JQuery, percent: number) {
+    private setPosition(element: DOM2, percent: number) {
         let style = this.config.vertical ? {'height': percent + '%'} : {'width': percent + '%'};
         element.css(style);
     }
@@ -423,15 +423,15 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.seekBarEvents.onSeeked.dispatch(this, percentage);
     }
 
-    get onSeek(): Event<SeekBar, NoArgs> {
+    get onSeek(): DispatcherEvent<SeekBar, NoArgs> {
         return this.seekBarEvents.onSeek;
     }
 
-    get onSeekPreview(): Event<SeekBar, SeekPreviewEventArgs> {
+    get onSeekPreview(): DispatcherEvent<SeekBar, SeekPreviewEventArgs> {
         return this.seekBarEvents.onSeekPreview;
     }
 
-    get onSeeked(): Event<SeekBar, number> {
+    get onSeeked(): DispatcherEvent<SeekBar, number> {
         return this.seekBarEvents.onSeeked;
     }
 }
