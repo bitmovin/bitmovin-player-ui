@@ -41,8 +41,10 @@ export class AudioQualitySelectBox extends SelectBox {
         player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGE, updateAudioQualities); // Update qualities when audio track has changed
         player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateAudioQualities); // Update qualities when source goes away
         player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateAudioQualities); // Update qualities when a new source is loaded
-        // TODO update audioQualitySelectBox when audio quality is changed from outside (through the API)
-        // TODO implement ON_AUDIO_QUALITY_CHANGED event in player API
+        player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_DOWNLOAD_QUALITY_CHANGE, function () {
+            let data = player.getDownloadedAudioData();
+            self.selectItem(data.isAuto ? "auto" : data.id);
+        }); // Update quality selection when quality is changed (from outside)
 
         // Populate qualities at startup
         updateAudioQualities();
