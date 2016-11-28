@@ -2,8 +2,7 @@ import {ContainerConfig, Container} from "./container";
 import {Component, ComponentConfig} from "./component";
 import {DOM} from "../dom";
 import {UIManager, UIRecommendationConfig} from "../uimanager";
-
-declare var require: any;
+import {StringUtils} from "../utils";
 
 export class RecommendationOverlay extends Container<ContainerConfig> {
 
@@ -46,8 +45,6 @@ interface RecommendationItemConfig extends ComponentConfig {
 
 class RecommendationItem extends Component<RecommendationItemConfig> {
 
-    private numeral = require('numeral');
-
     constructor(config: RecommendationItemConfig) {
         super(config);
 
@@ -78,7 +75,7 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
 
         var timeElement = DOM.JQuery(`<span>`, {
             'class': 'duration'
-        }).html(this.numeral(config.duration).format('00:00:00'));
+        }).html(StringUtils.secondsToTime(config.duration));
         itemElement.append(timeElement);
 
         return itemElement;

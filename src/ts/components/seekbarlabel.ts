@@ -11,15 +11,13 @@ import {Container, ContainerConfig} from "./container";
 import {Label, LabelConfig} from "./label";
 import {Component, ComponentConfig} from "./component";
 import {UIManager} from "../uimanager";
-declare var require: any;
+import {StringUtils} from "../utils";
 
 export interface SeekBarLabelConfig extends ContainerConfig {
 
 }
 
 export class SeekBarLabel extends Container<SeekBarLabelConfig> {
-
-    private numeral = require('numeral');
 
     private label: Label<LabelConfig>;
     private thumbnail: Component<ComponentConfig>;
@@ -57,12 +55,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     }
 
     setTime(seconds: number) {
-        if (seconds < 0) {
-            // Numeral does not handle negative time so we need to take care of that here
-            this.setText("-" + this.numeral(-seconds).format('00:00:00'));
-        } else {
-            this.setText(this.numeral(seconds).format('00:00:00'));
-        }
+        this.setText(StringUtils.secondsToTime(seconds));
     }
 
     setThumbnail(thumbnail: bitmovin.player.Thumbnail = null) {
