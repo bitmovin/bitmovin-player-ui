@@ -75,6 +75,10 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
         return false;
     }
 
+    getSelectedItem(): string {
+        return this.selectedItem;
+    }
+
     clearItems() {
         let items = this.items; // local copy for iteration after clear
         this.items = {}; // clear items
