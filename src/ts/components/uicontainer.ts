@@ -10,7 +10,7 @@
 import {ContainerConfig, Container} from "./container";
 import {NoArgs, EventDispatcher, Event} from "../eventdispatcher";
 import {UIManager} from "../uimanager";
-import {DOM2} from "../dom";
+import {DOM} from "../dom";
 
 export interface UIContainerConfig extends ContainerConfig {
     // nothing to add
@@ -46,7 +46,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         });
     }
 
-    protected toDomElement(): DOM2 {
+    protected toDomElement(): DOM {
         let self = this;
         let container = super.toDomElement();
 

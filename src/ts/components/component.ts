@@ -8,7 +8,7 @@
  */
 
 import {Guid} from "../guid";
-import {DOM2} from "../dom";
+import {DOM} from "../dom";
 import {EventDispatcher, NoArgs, Event} from "../eventdispatcher";
 import {UIManager} from "../uimanager";
 
@@ -54,7 +54,7 @@ export class Component<Config extends ComponentConfig> {
     /**
      * JQuery reference to the component's DOM element.
      */
-    private element: DOM2;
+    private element: DOM;
 
     /**
      * Flag that keeps track of the hidden state.
@@ -101,15 +101,15 @@ export class Component<Config extends ComponentConfig> {
     /**
      * Generate DOM element for this component. This element can then be added to the HTML document.
      */
-    protected toDomElement(): DOM2 {
-        var element = new DOM2(this.config.tag, {
+    protected toDomElement(): DOM {
+        var element = new DOM(this.config.tag, {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
         return element;
     }
 
-    getDomElement(): DOM2 {
+    getDomElement(): DOM {
         if (!this.element) {
             this.element = this.toDomElement();
         }
@@ -117,7 +117,7 @@ export class Component<Config extends ComponentConfig> {
         return this.element;
     }
 
-    protected refreshDomElement(): DOM2 {
+    protected refreshDomElement(): DOM {
         this.element = null;
         return this.getDomElement();
     }

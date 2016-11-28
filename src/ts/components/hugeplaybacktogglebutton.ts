@@ -9,7 +9,7 @@
 
 import {ToggleButtonConfig} from "./togglebutton";
 import {PlaybackToggleButton} from "./playbacktogglebutton";
-import {DOM2} from "../dom";
+import {DOM} from "../dom";
 import {UIManager} from "../uimanager";
 import PlayerEvent = bitmovin.player.PlayerEvent;
 
@@ -117,14 +117,14 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOP, castInitializationHandler);
     }
 
-    protected toDomElement(): DOM2 {
+    protected toDomElement(): DOM {
         var buttonElement = super.toDomElement();
 
         // Add child that contains the play button image
         // Setting the image directly on the button does not work together with scaling animations, because the button
         // can cover the whole video player are and scaling would extend it beyond. By adding an inner element, confined
         // to the size if the image, it can scale inside the player without overshooting.
-        buttonElement.append(new DOM2('div', {
+        buttonElement.append(new DOM('div', {
             'class': 'image'
         }));
 

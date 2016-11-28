@@ -8,7 +8,7 @@
  */
 
 import {ComponentConfig, Component} from "./component";
-import {DOM2} from "../dom";
+import {DOM} from "../dom";
 
 /**
  * Configuration interface for a label component.
@@ -30,8 +30,8 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
         }, this.config);
     }
 
-    protected toDomElement(): DOM2 {
-        var labelElement = new DOM2('span', {
+    protected toDomElement(): DOM {
+        var labelElement = new DOM('span', {
             'id': this.config.id,
             'class': this.getCssClasses()
         }).html(this.config.text);

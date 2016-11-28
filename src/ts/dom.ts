@@ -15,7 +15,7 @@ export interface Offset {
 /**
  * Simple DOM manipulation and DOM element event handling modeled after jQuery (as replacement for jQuery).
  */
-export class DOM2 {
+export class DOM {
 
     private document: Document;
     private elements: HTMLElement[];
@@ -69,8 +69,8 @@ export class DOM2 {
     }
 
     html(): string;
-    html(content: string): DOM2;
-    html(content?: string): string | DOM2 {
+    html(content: string): DOM;
+    html(content?: string): string | DOM {
         if(arguments.length > 0) {
             if(content == undefined) {
                 content = null;
@@ -87,7 +87,7 @@ export class DOM2 {
         }
     }
 
-    empty(): DOM2 {
+    empty(): DOM {
         this.forEach(function (element) {
             element.innerHTML = '';
         });
@@ -106,7 +106,7 @@ export class DOM2 {
         }
     }
 
-    attr(attribute: string, value: string): DOM2 {
+    attr(attribute: string, value: string): DOM {
         this.forEach(function (element) {
             element.setAttribute(attribute, value);
         });
@@ -114,8 +114,8 @@ export class DOM2 {
     }
 
     data(dataAttribute: string): string | null;
-    data(dataAttribute: string, value: string): DOM2;
-    data(dataAttribute: string, value?: string): string | null | DOM2 {
+    data(dataAttribute: string, value: string): DOM;
+    data(dataAttribute: string, value?: string): string | null | DOM {
         // TODO port to dataset: https://www.w3.org/TR/html5/dom.html#dom-dataset
         if(value) {
             this.forEach(function (element) {
@@ -128,7 +128,7 @@ export class DOM2 {
         }
     }
 
-    append(...childElements: DOM2[]): DOM2 {
+    append(...childElements: DOM[]): DOM {
         this.forEach(function (element) {
             childElements.forEach(function (childElement) {
                 childElement.elements.forEach(function (_, index) {
@@ -161,7 +161,7 @@ export class DOM2 {
 
     // TODO define handler signature
     // TODO support multiple eventNames (array or string)
-    on(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM2 {
+    on(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
         if(this.elements == null) {
             this.document.addEventListener(eventName, eventHandler);
         }
@@ -176,7 +176,7 @@ export class DOM2 {
 
     // TODO define handler signature
     // TODO support multiple eventNames (array or string)
-    off(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM2 {
+    off(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
         if(this.elements == null) {
             this.document.removeEventListener(eventName, eventHandler);
         }
@@ -189,7 +189,7 @@ export class DOM2 {
         return this;
     }
 
-    addClass(className: string): DOM2 {
+    addClass(className: string): DOM {
         this.forEach(function (element) {
             if (element.classList) {
                 element.classList.add(className);
@@ -202,7 +202,7 @@ export class DOM2 {
         return this;
     }
 
-    removeClass(className: string): DOM2 {
+    removeClass(className: string): DOM {
         this.forEach(function (element) {
             if (element.classList) {
                 element.classList.remove(className);
@@ -227,9 +227,9 @@ export class DOM2 {
     }
 
     css(ruleName: string): string | null;
-    css(ruleName: string, value: string): DOM2;
-    css(ruleValueCollection: {[ruleName: string]: string}): DOM2;
-    css(ruleNameOrCollection: string | {[ruleName: string]: string}, value?: string): string | null | DOM2 {
+    css(ruleName: string, value: string): DOM;
+    css(ruleValueCollection: {[ruleName: string]: string}): DOM;
+    css(ruleNameOrCollection: string | {[ruleName: string]: string}, value?: string): string | null | DOM {
         if(typeof ruleNameOrCollection === "string") {
             let ruleName = ruleNameOrCollection;
 

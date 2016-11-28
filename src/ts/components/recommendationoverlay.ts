@@ -9,7 +9,7 @@
 
 import {ContainerConfig, Container} from "./container";
 import {Component, ComponentConfig} from "./component";
-import {DOM2} from "../dom";
+import {DOM} from "../dom";
 import {UIManager, UIRecommendationConfig} from "../uimanager";
 import {StringUtils} from "../utils";
 
@@ -63,26 +63,26 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
         }, this.config);
     }
 
-    protected toDomElement(): DOM2 {
+    protected toDomElement(): DOM {
         let config = (<RecommendationItemConfig>this.config).itemConfig; // TODO fix generics and get rid of cast
 
-        let itemElement = new DOM2('a', {
+        let itemElement = new DOM('a', {
             'id': this.config.id,
             'class': this.getCssClasses(),
             'href': config.url
         });
 
-        let bgElement = new DOM2('div', {
+        let bgElement = new DOM('div', {
             'class': 'thumbnail'
         }).css({"background-image": `url(${config.thumbnail})`});
         itemElement.append(bgElement);
 
-        let titleElement = new DOM2('span', {
+        let titleElement = new DOM('span', {
             'class': 'title'
         }).html(config.title);
         itemElement.append(titleElement);
 
-        let timeElement = new DOM2('span', {
+        let timeElement = new DOM('span', {
             'class': 'duration'
         }).html(StringUtils.secondsToTime(config.duration));
         itemElement.append(timeElement);

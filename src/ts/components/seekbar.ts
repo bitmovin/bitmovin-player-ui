@@ -8,7 +8,7 @@
  */
 
 import {Component, ComponentConfig} from "./component";
-import {DOM2} from "../dom";
+import {DOM} from "../dom";
 import {Event as DispatcherEvent, EventDispatcher, NoArgs} from "../eventdispatcher";
 import {SeekBarLabel} from "./seekbarlabel";
 import {UIManager} from "../uimanager";
@@ -46,11 +46,11 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     private static readonly CLASS_SEEKING = "seeking";
 
-    private seekBar: DOM2;
-    private seekBarPlaybackPosition: DOM2;
-    private seekBarBufferPosition: DOM2;
-    private seekBarSeekPosition: DOM2;
-    private seekBarBackdrop: DOM2;
+    private seekBar: DOM;
+    private seekBarPlaybackPosition: DOM;
+    private seekBarBufferPosition: DOM;
+    private seekBarSeekPosition: DOM;
+    private seekBarBackdrop: DOM;
 
     private label: SeekBarLabel;
 
@@ -213,41 +213,41 @@ export class SeekBar extends Component<SeekBarConfig> {
         }
     }
 
-    protected toDomElement(): DOM2 {
+    protected toDomElement(): DOM {
         if (this.config.vertical) {
             this.config.cssClasses.push('vertical');
         }
 
-        var seekBarContainer = new DOM2('div', {
+        var seekBarContainer = new DOM('div', {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
 
-        var seekBar = new DOM2('div', {
+        var seekBar = new DOM('div', {
             'class': 'seekbar'
         });
         this.seekBar = seekBar;
 
         // Indicator that shows the buffer fill level
-        var seekBarBufferLevel = new DOM2('div', {
+        var seekBarBufferLevel = new DOM('div', {
             'class': 'seekbar-bufferlevel'
         });
         this.seekBarBufferPosition = seekBarBufferLevel;
 
         // Indicator that shows the current playback position
-        var seekBarPlaybackPosition = new DOM2('div', {
+        var seekBarPlaybackPosition = new DOM('div', {
             'class': 'seekbar-playbackposition'
         });
         this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
         // Indicator that show where a seek will go to
-        var seekBarSeekPosition = new DOM2('div', {
+        var seekBarSeekPosition = new DOM('div', {
             'class': 'seekbar-seekposition'
         });
         this.seekBarSeekPosition = seekBarSeekPosition;
 
         // Indicator that shows the full seekbar
-        var seekBarBackdrop = new DOM2('div', {
+        var seekBarBackdrop = new DOM('div', {
             'class': 'seekbar-backdrop'
         });
         this.seekBarBackdrop = seekBarBackdrop;
@@ -267,8 +267,8 @@ export class SeekBar extends Component<SeekBarConfig> {
             e.preventDefault();
 
             // Remove handlers, seek operation is finished
-            new DOM2(document).off('mousemove', mouseMoveHandler);
-            new DOM2(document).off('mouseup', mouseUpHandler);
+            new DOM(document).off('mousemove', mouseMoveHandler);
+            new DOM(document).off('mouseup', mouseUpHandler);
 
             let targetPercentage = 100 * self.getMouseOffset(e);
 
@@ -292,8 +292,8 @@ export class SeekBar extends Component<SeekBarConfig> {
             self.onSeekEvent();
 
             // Add handler to track the seek operation over the whole document
-            new DOM2(document).on('mousemove', mouseMoveHandler);
-            new DOM2(document).on('mouseup', mouseUpHandler);
+            new DOM(document).on('mousemove', mouseMoveHandler);
+            new DOM(document).on('mouseup', mouseUpHandler);
         });
 
         // Display seek target indicator when mouse hovers over seekbar
@@ -375,7 +375,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.setPosition(this.seekBarSeekPosition, percent);
     }
 
-    private setPosition(element: DOM2, percent: number) {
+    private setPosition(element: DOM, percent: number) {
         let style = this.config.vertical ? {'height': percent + '%'} : {'width': percent + '%'};
         element.css(style);
     }
