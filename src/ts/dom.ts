@@ -29,17 +29,17 @@ export class DOM {
     constructor(something: string | HTMLElement | Document, attributes?: { [name: string]: string }) {
         this.document = document; // Set the global document to the local document field
 
-        if(something instanceof HTMLElement) {
+        if (something instanceof HTMLElement) {
             var element = something;
             this.elements = [element];
         }
-        else if(something instanceof Document) {
+        else if (something instanceof Document) {
             // When a document is passed in, we do not do anything with it, but by setting this.elements to null
             // we give the event handling method a means to detect if the events should be registered on the document
             // instead of elements.
             this.elements = null;
         }
-        else if(attributes) {
+        else if (attributes) {
             let tagName = something;
             let element = document.createElement(tagName);
 
@@ -65,7 +65,7 @@ export class DOM {
      * @param handler the handler to execute an operation on an element
      */
     private forEach(handler: (element: HTMLElement) => void): void {
-        this.elements.forEach(function(element) {
+        this.elements.forEach(function (element) {
             handler(element);
         });
     }
@@ -73,20 +73,29 @@ export class DOM {
     html(): string;
     html(content: string): DOM;
     html(content?: string): string | DOM {
-        if(arguments.length > 0) {
-            if(content == undefined) {
-                content = null;
-            }
-
-            this.forEach(function (element) {
-                element.innerHTML = content;
-            });
-
-            return this;
+        if (arguments.length > 0) {
+            return this.setHtml(content);
         }
         else {
-            return this.elements[0].innerHTML;
+            return this.getHtml();
         }
+    }
+
+    private getHtml(): string | null {
+        return this.elements[0].innerHTML;
+    }
+
+    private setHtml(content: string): DOM {
+        if (content == undefined) {
+            // Set undefined explicitly to null to avoid innerHTML getting set to "undefined"
+            content = null;
+        }
+
+        this.forEach(function (element) {
+            element.innerHTML = content;
+        });
+
+        return this;
     }
 
     empty(): DOM {
@@ -108,7 +117,22 @@ export class DOM {
         }
     }
 
-    attr(attribute: string, value: string): DOM {
+    attr(attribute: string): string | null;
+    attr(attribute: string, value: string): DOM;
+    attr(attribute: string, value?: string): string | null | DOM {
+        if (arguments.length > 1) {
+            return this.setAttr(attribute, value);
+        }
+        else {
+            return this.getAttr(attribute);
+        }
+    }
+
+    private getAttr(attribute: string): string | null {
+        return this.elements[0].getAttribute(attribute);
+    }
+
+    private setAttr(attribute: string, value: string): DOM {
         this.forEach(function (element) {
             element.setAttribute(attribute, value);
         });
@@ -118,16 +142,25 @@ export class DOM {
     data(dataAttribute: string): string | null;
     data(dataAttribute: string, value: string): DOM;
     data(dataAttribute: string, value?: string): string | null | DOM {
-        // TODO port to dataset: https://www.w3.org/TR/html5/dom.html#dom-dataset
-        if(value) {
-            this.forEach(function (element) {
-                element.setAttribute("data-" + dataAttribute, value);
-            });
-            return this;
+        if (arguments.length > 1) {
+            return this.setData(dataAttribute, value);
         }
         else {
-            return this.elements[0].getAttribute("data-" + dataAttribute);
+            return this.getData(dataAttribute);
         }
+    }
+
+    private getData(dataAttribute: string): string | null {
+        // TODO port to dataset API: https://www.w3.org/TR/html5/dom.html#dom-dataset
+        return this.elements[0].getAttribute("data-" + dataAttribute);
+    }
+
+    private setData(dataAttribute: string, value: string): DOM {
+        // TODO port to dataset API: https://www.w3.org/TR/html5/dom.html#dom-dataset
+        this.forEach(function (element) {
+            element.setAttribute("data-" + dataAttribute, value);
+        });
+        return this;
     }
 
     append(...childElements: DOM[]): DOM {
@@ -161,10 +194,9 @@ export class DOM {
         return this.elements[0].offsetHeight;
     }
 
-    // TODO define handler signature
     // TODO support multiple eventNames (array or string)
     on(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
-        if(this.elements == null) {
+        if (this.elements == null) {
             this.document.addEventListener(eventName, eventHandler);
         }
         else {
@@ -176,10 +208,9 @@ export class DOM {
         return this;
     }
 
-    // TODO define handler signature
     // TODO support multiple eventNames (array or string)
     off(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
-        if(this.elements == null) {
+        if (this.elements == null) {
             this.document.removeEventListener(eventName, eventHandler);
         }
         else {
@@ -232,30 +263,40 @@ export class DOM {
     css(ruleName: string, value: string): DOM;
     css(ruleValueCollection: {[ruleName: string]: string}): DOM;
     css(ruleNameOrCollection: string | {[ruleName: string]: string}, value?: string): string | null | DOM {
-        if(typeof ruleNameOrCollection === "string") {
+        if (typeof ruleNameOrCollection === "string") {
             let ruleName = ruleNameOrCollection;
 
-            if(value) {
-                this.forEach(function (element) {
-                    // <any> cast to resolve TS7015: http://stackoverflow.com/a/36627114/370252
-                   element.style[<any>ruleName] = value;
-                });
-                return this;
+            if (arguments.length == 2) {
+                return this.setCss(ruleName, value);
             }
             else {
-                return getComputedStyle(this.elements[0])[<any>ruleName];
-
+                return this.getCss(ruleName);
             }
         }
         else {
             let ruleValueCollection = ruleNameOrCollection;
-
-            this.forEach(function (element) {
-                // http://stackoverflow.com/a/34490573/370252
-                Object.assign(element.style, ruleValueCollection);
-            });
-
-            return this;
+            return this.setCssCollection(ruleValueCollection);
         }
+    }
+
+    private getCss(ruleName: string): string | null {
+        return getComputedStyle(this.elements[0])[<any>ruleName];
+    }
+
+    private setCss(ruleName: string, value: string): DOM {
+        this.forEach(function (element) {
+            // <any> cast to resolve TS7015: http://stackoverflow.com/a/36627114/370252
+            element.style[<any>ruleName] = value;
+        });
+        return this;
+    }
+
+    private setCssCollection(ruleValueCollection: {[ruleName: string]: string}): DOM {
+        this.forEach(function (element) {
+            // http://stackoverflow.com/a/34490573/370252
+            Object.assign(element.style, ruleValueCollection);
+        });
+
+        return this;
     }
 }
