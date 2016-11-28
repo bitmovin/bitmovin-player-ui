@@ -9,7 +9,7 @@
 
 import {Component, ComponentConfig} from "./component";
 import {DOM} from "../dom";
-import {Event as DispatcherEvent, EventDispatcher, NoArgs} from "../eventdispatcher";
+import {Event, EventDispatcher, NoArgs} from "../eventdispatcher";
 import {SeekBarLabel} from "./seekbarlabel";
 import {UIManager} from "../uimanager";
 
@@ -423,15 +423,15 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.seekBarEvents.onSeeked.dispatch(this, percentage);
     }
 
-    get onSeek(): DispatcherEvent<SeekBar, NoArgs> {
+    get onSeek(): Event<SeekBar, NoArgs> {
         return this.seekBarEvents.onSeek;
     }
 
-    get onSeekPreview(): DispatcherEvent<SeekBar, SeekPreviewEventArgs> {
+    get onSeekPreview(): Event<SeekBar, SeekPreviewEventArgs> {
         return this.seekBarEvents.onSeekPreview;
     }
 
-    get onSeeked(): DispatcherEvent<SeekBar, number> {
+    get onSeeked(): Event<SeekBar, number> {
         return this.seekBarEvents.onSeeked;
     }
 }
