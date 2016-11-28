@@ -14,6 +14,8 @@ export interface Offset {
 
 /**
  * Simple DOM manipulation and DOM element event handling modeled after jQuery (as replacement for jQuery).
+ *
+ * Built with the help of: http://youmightnotneedjquery.com/
  */
 export class DOM {
 
