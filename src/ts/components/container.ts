@@ -18,8 +18,30 @@ export interface ContainerConfig extends ComponentConfig {
     components?: Component<ComponentConfig>[];
 }
 
+/**
+ * A container component that can contain a collection of child components.
+ * Components can be added at construction time through the {@link ContainerConfig#components} setting, or later
+ * through the {@link Container#addComponent} method. The UIManager automatically takes care of all components, i.e. it
+ * initializes and configures them automatically.
+ *
+ * In the DOM, the container consists of an outer <div> (that can be configured by the config) and an inner wrapper
+ * <div> that contains the components. This double-<div>-structure is often required to achieve many advanced effects
+ * in CSS and/or JS, e.g. animations and certain formatting with absolute positioning.
+ *
+ * DOM example:
+ * <code>
+ *     <div class="ui-container">
+ *         <div class="container-wrapper">
+ *             ... child components ...
+ *         </div>
+ *     </div>
+ * </code>
+ */
 export class Container<Config extends ContainerConfig> extends Component<ContainerConfig> {
 
+    /**
+     * A reference to the inner element that contains the components of the container.
+     */
     private innerContainerElement: DOM;
 
     constructor(config: ContainerConfig) {
@@ -33,7 +55,7 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
 
     /**
      * Adds a child component to the container.
-     * @param component
+     * @param component the component to add
      */
     addComponent(component: Component<ComponentConfig>) {
         this.config.components.push(component);
@@ -41,10 +63,11 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
 
     /**
      * Removes a child component from the container.
-     * @param component
+     * @param component the component to remove
+     * @returns {boolean} true if the component has been removed, false if it is not contained in this container
      */
-    removeComponent(component: Component<ComponentConfig>) {
-        ArrayUtils.remove(this.config.components, component);
+    removeComponent(component: Component<ComponentConfig>): boolean {
+        return ArrayUtils.remove(this.config.components, component) != null;
     }
 
     /**
@@ -55,6 +78,9 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
         return this.config.components;
     }
 
+    /**
+     * Updates the DOM of the container with the current components.
+     */
     protected updateComponents(): void {
         this.innerContainerElement.empty();
 
@@ -64,11 +90,13 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
     }
 
     protected toDomElement(): DOM {
+        // Create the container element (the outer <div>)
         let containerElement = new DOM(this.config.tag, {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
 
+        // Create the inner container element (the inner <div>) that will contain the components
         let innerContainer = new DOM(this.config.tag, {
             'class': 'container-wrapper'
         });
