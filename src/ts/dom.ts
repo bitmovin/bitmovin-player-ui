@@ -194,30 +194,38 @@ export class DOM {
         return this.elements[0].offsetHeight;
     }
 
-    // TODO support multiple eventNames (array or string)
     on(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
-        if (this.elements == null) {
-            this.document.addEventListener(eventName, eventHandler);
-        }
-        else {
-            this.forEach(function (element) {
-                element.addEventListener(eventName, eventHandler);
-            });
-        }
+        let events = eventName.split(" ");
+        let self = this;
+
+        events.forEach(function (event) {
+            if (self.elements == null) {
+                self.document.addEventListener(event, eventHandler);
+            }
+            else {
+                self.forEach(function (element) {
+                    element.addEventListener(event, eventHandler);
+                });
+            }
+        });
 
         return this;
     }
 
-    // TODO support multiple eventNames (array or string)
     off(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
-        if (this.elements == null) {
-            this.document.removeEventListener(eventName, eventHandler);
-        }
-        else {
-            this.forEach(function (element) {
-                element.removeEventListener(eventName, eventHandler);
-            });
-        }
+        let events = eventName.split(" ");
+        let self = this;
+
+        events.forEach(function (event) {
+            if (self.elements == null) {
+                self.document.removeEventListener(event, eventHandler);
+            }
+            else {
+                self.forEach(function (element) {
+                    element.removeEventListener(event, eventHandler);
+                });
+            }
+        });
 
         return this;
     }

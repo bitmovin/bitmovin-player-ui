@@ -2664,28 +2664,34 @@ var DOM = (function () {
         // TODO check if this is the same as jQuery's height() (probably not)
         return this.elements[0].offsetHeight;
     };
-    // TODO support multiple eventNames (array or string)
     DOM.prototype.on = function (eventName, eventHandler) {
-        if (this.elements == null) {
-            this.document.addEventListener(eventName, eventHandler);
-        }
-        else {
-            this.forEach(function (element) {
-                element.addEventListener(eventName, eventHandler);
-            });
-        }
+        var events = eventName.split(" ");
+        var self = this;
+        events.forEach(function (event) {
+            if (self.elements == null) {
+                self.document.addEventListener(event, eventHandler);
+            }
+            else {
+                self.forEach(function (element) {
+                    element.addEventListener(event, eventHandler);
+                });
+            }
+        });
         return this;
     };
-    // TODO support multiple eventNames (array or string)
     DOM.prototype.off = function (eventName, eventHandler) {
-        if (this.elements == null) {
-            this.document.removeEventListener(eventName, eventHandler);
-        }
-        else {
-            this.forEach(function (element) {
-                element.removeEventListener(eventName, eventHandler);
-            });
-        }
+        var events = eventName.split(" ");
+        var self = this;
+        events.forEach(function (event) {
+            if (self.elements == null) {
+                self.document.removeEventListener(event, eventHandler);
+            }
+            else {
+                self.forEach(function (element) {
+                    element.removeEventListener(event, eventHandler);
+                });
+            }
+        });
         return this;
     };
     DOM.prototype.addClass = function (className) {
