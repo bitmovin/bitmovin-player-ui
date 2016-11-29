@@ -13,20 +13,23 @@ import {EventDispatcher, NoArgs, Event} from "../eventdispatcher";
 import {UIManager} from "../uimanager";
 
 /**
- * Base configuration interface with common options for all kinds of components.
+ * Base configuration interface for a component.
+ * Should be extended by components that want to add additional configuration options.
  */
 export interface ComponentConfig {
     /**
-     * The HTML tag name of the component, 'div' by default.
+     * The HTML tag name of the component.
+     * Default: 'div'
      */
     tag?: string;
     /**
      * The HTML ID of the component.
+     * Default: automatically generated with pattern "ui-id-{guid}".
      */
     id?: string;
 
     /**
-     * The CSS classes of the component.
+     * The CSS classes of the component. This is usually the class from where the component takes its styling.
      */
     cssClass?: string; // "class" is a reserved keyword, so we need to make the name more complicated
 
@@ -42,8 +45,16 @@ export interface ComponentConfig {
     hidden?: boolean;
 }
 
+/**
+ * The base class of the UI framework.
+ * Each component must extend this class and optionally the config interface.
+ */
 export class Component<Config extends ComponentConfig> {
 
+    /**
+     * The classname that is attached to the element when it is in the hidden state.
+     * @type {string}
+     */
     private static readonly CLASS_HIDDEN = "hidden";
 
     /**
@@ -52,7 +63,7 @@ export class Component<Config extends ComponentConfig> {
     protected config: Config;
 
     /**
-     * JQuery reference to the component's DOM element.
+     * The component's DOM element.
      */
     private element: DOM;
 
@@ -124,10 +135,16 @@ export class Component<Config extends ComponentConfig> {
         onHide: new EventDispatcher<Component<Config>, NoArgs>()
     };
 
+    /**
+     * Constructs a component with an optionally supplied config. All subclasses must call the constructor of their
+     * superclass and then merge their configuration into the component's configuration.
+     * @param config the configuration for the component
+     */
     constructor(config: ComponentConfig = {}) {
         console.log(this);
         console.log(config);
 
+        // Create the configuration for this component
         this.config = <Config>this.mergeConfig(config, {
             tag: 'div',
             id: 'ui-id-' + Guid.next(),
@@ -138,26 +155,41 @@ export class Component<Config extends ComponentConfig> {
     }
 
     /**
-     * Initializes the component, e.g. by applying config settings. This method must not be called directly by users.
+     * Initializes the component, e.g. by applying config settings.
+     * This method must not be called from outside the UI framework.
      *
      * This method is automatically called by the {@link UIManager}. If the component is an inner component of
-     * some component, and thus managed internally and never directly exposed to the UIManager, this method must
-     * be called from the managing component's {@link #initialize} method.
+     * some component, and thus encapsulated abd managed internally and never directly exposed to the UIManager,
+     * this method must be called from the managing component's {@link #initialize} method.
      */
     initialize(): void {
         this.hidden = this.config.hidden;
 
+        // Hide the component at initialization if it is configured to be hidden
         if (this.isHidden()) {
             this.hide();
         }
     }
 
+    /**
+     * Configures the component for the supplied Player and UIManager. This is the place where all the magic happens,
+     * where components typically subscribe and react to events (on their DOM element, the Player, or the UIManager),
+     * and basically everything that makes them interactive.
+     * This method is called only once, when the UIManager initializes the UI.
+     *
+     * Subclasses usually overwrite this method to add their own functionality.
+     *
+     * @param player the player which this component controls
+     * @param uimanager the UIManager that manages this component
+     */
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         // nothing to do here; overwrite in subclasses
     }
 
     /**
-     * Generate DOM element for this component. This element can then be added to the HTML document.
+     * Generate the DOM element for this component.
+     *
+     * Subclasses usually overwrite this method to extend or replace the DOM element with their own design.
      */
     protected toDomElement(): DOM {
         let element = new DOM(this.config.tag, {
@@ -167,6 +199,13 @@ export class Component<Config extends ComponentConfig> {
         return element;
     }
 
+    /**
+     * Returns the DOM element of this component. Creates the DOM element if it does not yet exist.
+     *
+     * Should not be overwritten by subclasses.
+     *
+     * @returns {DOM}
+     */
     getDomElement(): DOM {
         if (!this.element) {
             this.element = this.toDomElement();
@@ -176,13 +215,12 @@ export class Component<Config extends ComponentConfig> {
     }
 
     /**
-     * Merges config values into a default config and returns the merged config.
-     * The merged config is default config instance extended with the config values, so take care that the supplied
-     * defaults config will be changed by this method and returned for the convenience of chaining.
+     * Merges a configuration with a default configuration and a base configuration from the superclass.
      *
-     * @param config
-     * @param defaults
-     * @returns {ComponentConfig}
+     * @param config the configuration settings for the components, as usually passed to the constructor
+     * @param defaults a default configuration for settings that are not passed with the configuration
+     * @param base configuration inherited from a superclass
+     * @returns {Config}
      */
     protected mergeConfig<Config>(config: Config, defaults: Config, base: Config): Config {
         // Extend default config with supplied config
@@ -193,7 +231,8 @@ export class Component<Config extends ComponentConfig> {
     }
 
     /**
-     * Returns a string of all CSS classes of the component.
+     * Helper method that returns a string of all CSS classes of the component.
+     *
      * @returns {string}
      */
     protected getCssClasses(): string {
@@ -205,30 +244,52 @@ export class Component<Config extends ComponentConfig> {
         return flattenedString.trim();
     }
 
+    /**
+     * Returns the configuration object of the component.
+     * @returns {Config}
+     */
     public getConfig(): Config {
         return this.config;
     }
 
+    /**
+     * Hides the component.
+     * This method basically transfers the component into the hidden state. Actual hiding is done via CSS.
+     */
     hide() {
         this.hidden = true;
         this.getDomElement().addClass(Component.CLASS_HIDDEN);
         this.onHideEvent();
     }
 
+    /**
+     * Shows the component.
+     */
     show() {
         this.getDomElement().removeClass(Component.CLASS_HIDDEN);
         this.hidden = false;
         this.onShowEvent();
     }
 
+    /**
+     * Determines if the component is hidden.
+     * @returns {boolean} true if the component is hidden, else false
+     */
     isHidden(): boolean {
         return this.hidden;
     }
 
+    /**
+     * Determines if the component is shown.
+     * @returns {boolean} true if the component is visible, else false
+     */
     isShown(): boolean {
         return !this.isHidden();
     }
 
+    /**
+     * Toggles the hidden state by hiding the component if it is shown, or showing it if hidden.
+     */
     toggleHidden() {
         if (this.isHidden()) {
             this.show();
@@ -237,18 +298,36 @@ export class Component<Config extends ComponentConfig> {
         }
     }
 
+    /**
+     * Fires the onShow event.
+     * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
+     */
     protected onShowEvent() {
         this.componentEvents.onShow.dispatch(this);
     }
 
+    /**
+     * Fires the onHide event.
+     * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
+     */
     protected onHideEvent() {
         this.componentEvents.onHide.dispatch(this);
     }
 
+    /**
+     * Gets the event that is fired when the component is showing.
+     * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
+     * @returns {Event<Sender, Args>}
+     */
     get onShow(): Event<Component<Config>, NoArgs> {
         return this.componentEvents.onShow.getEvent();
     }
 
+    /**
+     * Gets the event that is fired when the component is hiding.
+     * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
+     * @returns {Event<Sender, Args>}
+     */
     get onHide(): Event<Component<Config>, NoArgs> {
         return this.componentEvents.onHide.getEvent();
     }
