@@ -25,6 +25,7 @@ var cssnano = require('cssnano');
 var uglify = require('gulp-uglify');
 var gif = require('gulp-if');
 var buffer = require('vinyl-buffer');
+var rename = require('gulp-rename');
 
 var paths = {
     source: {
@@ -65,36 +66,48 @@ gulp.task('browserify', function () {
     var browserifyBundle = browserifyInstance.bundle();
 
     if(catchBrowserifyErrors) {
-        // catch error to not break watch/serve tasks on error
+        // Normally an error breaks a running task. For permanent tasks like watch/serve, we want the task to
+        // stay alive and ignore errors, so we catch them here and print them to the console.
         browserifyBundle.on('error', console.error.bind(console));
     }
 
-    browserifyBundle
+    // Compile output JS file
+    var stream = browserifyBundle
         .pipe(source('bitmovin-playerui.js'))
         .pipe(buffer())
-        .pipe(gif(production, uglify()))
-        .pipe(gulp.dest(paths.target.js))
-        .pipe(browserSync.reload({stream: true}));
+        .pipe(gulp.dest(paths.target.js));
+
+    if (production) {
+        // Minify JS
+        stream.pipe(uglify())
+            .pipe(rename({extname: '.min.js'}))
+            .pipe(gulp.dest(paths.target.js));
+    }
+
+    stream.pipe(browserSync.reload({stream: true}));
 });
 
 // Compiles SASS stylesheets to CSS stylesheets in the target directory, adds autoprefixes and creates sourcemaps
 gulp.task('sass', function () {
-    var processors = [
-        autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}),
-        postcssSVG()
-    ];
-    if(production) {
-        processors.push(cssnano());
-    }
-
-    gulp.src(paths.source.sass)
+    var stream = gulp.src(paths.source.sass)
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
-        .pipe(postcss(processors))
+        .pipe(postcss([
+            autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}),
+            postcssSVG()
+        ]))
         .pipe(cssBase64())
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(paths.target.css))
-        .pipe(browserSync.reload({stream: true}));
+        .pipe(gulp.dest(paths.target.css));
+
+    if (production) {
+        // Minify CSS
+        stream.pipe(postcss([cssnano()]))
+            .pipe(rename({extname: '.min.css'}))
+            .pipe(gulp.dest(paths.target.css));
+    }
+
+    stream.pipe(browserSync.reload({stream: true}));
 });
 
 // Builds the complete project from the sources into the target directory
