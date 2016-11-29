@@ -36,7 +36,7 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
     }
 
     protected toDomElement(): DOM {
-        var buttonElement = new DOM('button', {
+        let buttonElement = new DOM('button', {
             'type': 'button',
             'id': this.config.id,
             'class': this.getCssClasses()

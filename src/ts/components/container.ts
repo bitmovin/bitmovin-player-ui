@@ -64,12 +64,12 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
     }
 
     protected toDomElement(): DOM {
-        var containerElement = new DOM(this.config.tag, {
+        let containerElement = new DOM(this.config.tag, {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
 
-        var innerContainer = new DOM(this.config.tag, {
+        let innerContainer = new DOM(this.config.tag, {
             'class': 'container-wrapper'
         });
         this.innerContainerElement = innerContainer;
