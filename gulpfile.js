@@ -8,24 +8,32 @@
  */
 
 var gulp = require('gulp');
-var browserify = require('browserify');
-var source = require('vinyl-source-stream');
-var tsify = require('tsify');
-var watchify = require('watchify');
+
+// Gulp plugins
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
-var del = require('del');
-var runSequence = require('run-sequence');
-var browserSync = require('browser-sync');
 var cssBase64 = require('gulp-css-base64');
 var postcss = require('gulp-postcss');
+var uglify = require('gulp-uglify');
+var gif = require('gulp-if');
+var rename = require('gulp-rename');
+
+// PostCSS plugins
 var postcssSVG = require('postcss-svg');
 var autoprefixer = require('autoprefixer');
 var cssnano = require('cssnano');
-var uglify = require('gulp-uglify');
-var gif = require('gulp-if');
+
+// Browserify
+var browserify = require('browserify');
+var tsify = require('tsify');
+var watchify = require('watchify');
+var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var rename = require('gulp-rename');
+
+// Various stuff
+var del = require('del');
+var runSequence = require('run-sequence');
+var browserSync = require('browser-sync');
 
 var paths = {
     source: {
