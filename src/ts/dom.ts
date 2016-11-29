@@ -15,16 +15,43 @@ export interface Offset {
 /**
  * Simple DOM manipulation and DOM element event handling modeled after jQuery (as replacement for jQuery).
  *
+ * Like jQuery, DOM operates on single elements and lists of elements. For example: creating an element returns a DOM
+ * instance with a single element, selecting elements returns a DOM instance with zero, one, or many elements. Similar
+ * to jQuery, setters usually affect all elements, while getters operate on only the first element.
+ * Also similar to jQuery, most methods (except getters) return the DOM instance facilitating easy chaining of method calls.
+ *
  * Built with the help of: http://youmightnotneedjquery.com/
  */
 export class DOM {
 
     private document: Document;
+
+    /**
+     * The list of elements that the instance wraps. Take care that not all methods can operate on the whole list,
+     * getters usually just work on the first element.
+     */
     private elements: HTMLElement[];
 
+    /**
+     * Creates a DOM element.
+     * @param tagName the tag name of the DOM element
+     * @param attributes a list of attributes of the element
+     */
     constructor(tagName: string, attributes: { [name: string]: string });
+    /**
+     * Selects all elements from the DOM that match the specified selector.
+     * @param selector the selector to match DOM elements with
+     */
     constructor(selector: string);
+    /**
+     * Wraps a plain HTMLElement with a DOM instance.
+     * @param element the HTMLElement to wrap with DOM
+     */
     constructor(element: HTMLElement);
+    /**
+     * Wraps the document with a DOM instance. Useful to attach event listeners to the document.
+     * @param document the document to wrap
+     */
     constructor(document: Document);
     constructor(something: string | HTMLElement | Document, attributes?: { [name: string]: string }) {
         this.document = document; // Set the global document to the local document field
@@ -70,7 +97,14 @@ export class DOM {
         });
     }
 
+    /**
+     * Returns a string of the inner HTML content of the first element.
+     */
     html(): string;
+    /**
+     * Sets the inner HTML content of all elements.
+     * @param content a string of plain text or HTML markup
+     */
     html(content: string): DOM;
     html(content?: string): string | DOM {
         if (arguments.length > 0) {
@@ -98,6 +132,10 @@ export class DOM {
         return this;
     }
 
+    /**
+     * Clears the inner HTML of all elements (deletes all children).
+     * @returns {DOM}
+     */
     empty(): DOM {
         this.forEach(function (element) {
             element.innerHTML = '';
@@ -105,6 +143,10 @@ export class DOM {
         return this;
     }
 
+    /**
+     * Returns the current value of the first form element, e.g. the selected value of a select box or the text if an input field.
+     * @returns {string} the value of a form element
+     */
     val(): string {
         let element = this.elements[0];
 
@@ -117,7 +159,16 @@ export class DOM {
         }
     }
 
+    /**
+     * Returns the value of an attribute on the first element.
+     * @param attribute
+     */
     attr(attribute: string): string | null;
+    /**
+     * Sets an attribute on all elements.
+     * @param attribute the name of the attribute
+     * @param value the value of the attribute
+     */
     attr(attribute: string, value: string): DOM;
     attr(attribute: string, value?: string): string | null | DOM {
         if (arguments.length > 1) {
@@ -139,7 +190,16 @@ export class DOM {
         return this;
     }
 
+    /**
+     * Returns the value of a data element on the first element.
+     * @param dataAttribute the name of the data attribute without the "data-" prefix
+     */
     data(dataAttribute: string): string | null;
+    /**
+     * Sets a data attribute on all elements.
+     * @param dataAttribute the name of the data attribute without the "data-" prefix
+     * @param value the value of the data attribute
+     */
     data(dataAttribute: string, value: string): DOM;
     data(dataAttribute: string, value?: string): string | null | DOM {
         if (arguments.length > 1) {
@@ -161,6 +221,11 @@ export class DOM {
         return this;
     }
 
+    /**
+     * Appends one or more DOM elements as children to all elements.
+     * @param childElements the chrild elements to append
+     * @returns {DOM}
+     */
     append(...childElements: DOM[]): DOM {
         this.forEach(function (element) {
             childElements.forEach(function (childElement) {
@@ -172,6 +237,10 @@ export class DOM {
         return this;
     }
 
+    /**
+     * Returns the offset of the first element from the document's top left corner.
+     * @returns {Offset}
+     */
     offset(): Offset {
         let element = this.elements[0];
         let rect = element.getBoundingClientRect();
@@ -195,16 +264,30 @@ export class DOM {
         };
     }
 
+    /**
+     * Returns the width of the first element.
+     * @returns {number} the width of the first element
+     */
     width(): number {
         // TODO check if this is the same as jQuery's width() (probably not)
         return this.elements[0].offsetWidth;
     }
 
+    /**
+     * Returns the height of the first element.
+     * @returns {number} the height of the first element
+     */
     height(): number {
         // TODO check if this is the same as jQuery's height() (probably not)
         return this.elements[0].offsetHeight;
     }
 
+    /**
+     * Attaches an event handler to one or more events on all elements.
+     * @param eventName the event name (or multiple names separated by space) to listen to
+     * @param eventHandler the event handler to call when the event fires
+     * @returns {DOM}
+     */
     on(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
         let events = eventName.split(" ");
         let self = this;
@@ -223,6 +306,12 @@ export class DOM {
         return this;
     }
 
+    /**
+     * Removes an event handler from one or more events on all elements.
+     * @param eventName the event name (or multiple names separated by space) to remove the handler from
+     * @param eventHandler the event handler to remove
+     * @returns {DOM}
+     */
     off(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
         let events = eventName.split(" ");
         let self = this;
@@ -241,6 +330,11 @@ export class DOM {
         return this;
     }
 
+    /**
+     * Adds the specified class(es) to all elements.
+     * @param className the class(es) to add, multiple classes separated by space
+     * @returns {DOM}
+     */
     addClass(className: string): DOM {
         this.forEach(function (element) {
             if (element.classList) {
@@ -254,6 +348,11 @@ export class DOM {
         return this;
     }
 
+    /**
+     * Removed the specified class(es) from all elements.
+     * @param className the class(es) to remove, multiple classes separated by space
+     * @returns {DOM}
+     */
     removeClass(className: string): DOM {
         this.forEach(function (element) {
             if (element.classList) {
@@ -267,45 +366,69 @@ export class DOM {
         return this;
     }
 
+    /**
+     * Checks if any of the elements has the specified class.
+     * @param className the class name to check
+     * @returns {boolean} true if one of the elements has the class attached, else if no element has it attached
+     */
     hasClass(className: string): boolean {
-        let element = this.elements[0];
-
-        if (element.classList) {
-            return element.classList.contains(className);
-        }
-        else {
-            return new RegExp('(^| )' + className + '( |$)', 'gi').test(element.className);
-        }
-    }
-
-    css(ruleName: string): string | null;
-    css(ruleName: string, value: string): DOM;
-    css(ruleValueCollection: {[ruleName: string]: string}): DOM;
-    css(ruleNameOrCollection: string | {[ruleName: string]: string}, value?: string): string | null | DOM {
-        if (typeof ruleNameOrCollection === "string") {
-            let ruleName = ruleNameOrCollection;
-
-            if (arguments.length == 2) {
-                return this.setCss(ruleName, value);
+        this.forEach(function (element) {
+            if (element.classList) {
+                if(element.classList.contains(className)) {
+                    return true;
+                }
             }
             else {
-                return this.getCss(ruleName);
+                if (new RegExp('(^| )' + className + '( |$)', 'gi').test(element.className)) {
+                    return true;
+                }
+            }
+        });
+
+        return false;
+    }
+
+    /**
+     * Returns the value of a CSS property of the first element.
+     * @param propertyName the name of the CSS property to retrieve the value of
+     */
+    css(propertyName: string): string | null;
+    /**
+     * Sets the value of a CSS property on all elements.
+     * @param propertyName the name of the CSS property to set the value for
+     * @param value the value to set for the given CSS property
+     */
+    css(propertyName: string, value: string): DOM;
+    /**
+     * Sets a collection of CSS properties and their values on all elements.
+     * @param propertyValueCollection an object containing pairs of property names and their values
+     */
+    css(propertyValueCollection: {[propertyName: string]: string}): DOM;
+    css(propertyNameOrCollection: string | {[propertyName: string]: string}, value?: string): string | null | DOM {
+        if (typeof propertyNameOrCollection === "string") {
+            let propertyName = propertyNameOrCollection;
+
+            if (arguments.length == 2) {
+                return this.setCss(propertyName, value);
+            }
+            else {
+                return this.getCss(propertyName);
             }
         }
         else {
-            let ruleValueCollection = ruleNameOrCollection;
-            return this.setCssCollection(ruleValueCollection);
+            let propertyValueCollection = propertyNameOrCollection;
+            return this.setCssCollection(propertyValueCollection);
         }
     }
 
-    private getCss(ruleName: string): string | null {
-        return getComputedStyle(this.elements[0])[<any>ruleName];
+    private getCss(propertyName: string): string | null {
+        return getComputedStyle(this.elements[0])[<any>propertyName];
     }
 
-    private setCss(ruleName: string, value: string): DOM {
+    private setCss(propertyName: string, value: string): DOM {
         this.forEach(function (element) {
             // <any> cast to resolve TS7015: http://stackoverflow.com/a/36627114/370252
-            element.style[<any>ruleName] = value;
+            element.style[<any>propertyName] = value;
         });
         return this;
     }
