@@ -33,7 +33,6 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
         let self = this;
         selectElement.on('change', function () {
-            // TODO DOM check what "this" is and see how to access the actual HTMLElement
             let value = new DOM(this).val();
             self.onItemSelectedEvent(value, false);
         });
