@@ -106,14 +106,14 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     }
 
     get onItemAdded(): Event<ListSelector<Config>, string> {
-        return this.listSelectorEvents.onItemAdded;
+        return this.listSelectorEvents.onItemAdded.getEvent();
     }
 
     get onItemRemoved(): Event<ListSelector<Config>, string> {
-        return this.listSelectorEvents.onItemRemoved;
+        return this.listSelectorEvents.onItemRemoved.getEvent();
     }
 
     get onItemSelected(): Event<ListSelector<Config>, string> {
-        return this.listSelectorEvents.onItemSelected;
+        return this.listSelectorEvents.onItemSelected.getEvent();
     }
 }

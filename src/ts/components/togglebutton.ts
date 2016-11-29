@@ -100,14 +100,14 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     }
 
     get onToggle(): Event<ToggleButton<Config>, NoArgs> {
-        return this.toggleButtonEvents.onToggle;
+        return this.toggleButtonEvents.onToggle.getEvent();
     }
 
     get onToggleOn(): Event<ToggleButton<Config>, NoArgs> {
-        return this.toggleButtonEvents.onToggleOn;
+        return this.toggleButtonEvents.onToggleOn.getEvent();
     }
 
     get onToggleOff(): Event<ToggleButton<Config>, NoArgs> {
-        return this.toggleButtonEvents.onToggleOff;
+        return this.toggleButtonEvents.onToggleOff.getEvent();
     }
 }

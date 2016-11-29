@@ -98,6 +98,16 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
             listener.fire(sender, args);
         }
     }
+
+    /**
+     * Returns the event that this dispatcher manages and on which listeners can subscribe and unsubscribe event handlers.
+     * @returns {Event}
+     */
+    getEvent(): Event<Sender, Args> {
+        // For now, just case the event dispatcher to the event interface. At some point in the future when the
+        // codebase grows, it might make sense to split the dispatcher into separate dispatcher and event classes.
+        return <Event<Sender, Args>>this;
+    }
 }
 
 /**

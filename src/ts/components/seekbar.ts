@@ -424,14 +424,14 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     get onSeek(): Event<SeekBar, NoArgs> {
-        return this.seekBarEvents.onSeek;
+        return this.seekBarEvents.onSeek.getEvent();
     }
 
     get onSeekPreview(): Event<SeekBar, SeekPreviewEventArgs> {
-        return this.seekBarEvents.onSeekPreview;
+        return this.seekBarEvents.onSeekPreview.getEvent();
     }
 
     get onSeeked(): Event<SeekBar, number> {
-        return this.seekBarEvents.onSeeked;
+        return this.seekBarEvents.onSeeked.getEvent();
     }
 }

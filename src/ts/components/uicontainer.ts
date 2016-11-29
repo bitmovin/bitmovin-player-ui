@@ -84,14 +84,14 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     get onMouseEnter(): Event<UIContainer, NoArgs> {
-        return this.uiContainerEvents.onMouseEnter;
+        return this.uiContainerEvents.onMouseEnter.getEvent();
     }
 
     get onMouseMove(): Event<UIContainer, NoArgs> {
-        return this.uiContainerEvents.onMouseMove;
+        return this.uiContainerEvents.onMouseMove.getEvent();
     }
 
     get onMouseLeave(): Event<UIContainer, NoArgs> {
-        return this.uiContainerEvents.onMouseLeave;
+        return this.uiContainerEvents.onMouseLeave.getEvent();
     }
 }
