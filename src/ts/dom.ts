@@ -178,9 +178,22 @@ export class DOM {
         let element = this.elements[0];
         let rect = element.getBoundingClientRect();
 
+        // Workaround for document.body.scrollTop always 0 in IE9, IE11, Firefox
+        // http://stackoverflow.com/a/11102215/370252
+        let scrollTop = typeof window.pageYOffset != 'undefined' ?
+            window.pageYOffset : document.documentElement.scrollTop ?
+            document.documentElement.scrollTop : document.body.scrollTop ?
+            document.body.scrollTop : 0;
+
+        // Workaround for document.body.scrollLeft always 0 in IE9, IE11, Firefox
+        let scrollLeft = typeof window.pageXOffset != 'undefined' ?
+            window.pageXOffset : document.documentElement.scrollLeft ?
+            document.documentElement.scrollLeft : document.body.scrollLeft ?
+            document.body.scrollLeft : 0;
+
         return {
-            top: rect.top + document.body.scrollTop,
-            left: rect.left + document.body.scrollLeft
+            top: rect.top + scrollTop,
+            left: rect.left + scrollLeft
         };
     }
 
