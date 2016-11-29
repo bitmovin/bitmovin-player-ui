@@ -3362,10 +3362,10 @@ exports.UIManager = UIManager;
 var ArrayUtils;
 (function (ArrayUtils) {
     /**
-     * Removes an itemConfig from an array.
-     * @param array
-     * @param item
-     * @returns {any}
+     * Removes an item from an array.
+     * @param array the array that may contain the item to remove
+     * @param item the item to remove from the array
+     * @returns {any} the removed item or null if it wasn't part of the array
      */
     function remove(array, item) {
         var index = array.indexOf(item);
