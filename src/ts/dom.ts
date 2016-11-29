@@ -151,12 +151,10 @@ export class DOM {
     }
 
     private getData(dataAttribute: string): string | null {
-        // TODO port to dataset API: https://www.w3.org/TR/html5/dom.html#dom-dataset
         return this.elements[0].getAttribute("data-" + dataAttribute);
     }
 
     private setData(dataAttribute: string, value: string): DOM {
-        // TODO port to dataset API: https://www.w3.org/TR/html5/dom.html#dom-dataset
         this.forEach(function (element) {
             element.setAttribute("data-" + dataAttribute, value);
         });
