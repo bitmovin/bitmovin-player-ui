@@ -7,6 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
+import {ArrayUtils} from "./utils";
 /**
  * Function interface for event listeners on the {@link EventDispatcher}.
  */
@@ -78,7 +79,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
         for (let i = 0; i < this.listeners.length; i++) {
             let subscribedListener = this.listeners[i];
             if (subscribedListener.listener == listener) {
-                this.listeners.splice(i, 1);
+                ArrayUtils.remove(this.listeners, subscribedListener);
                 return true;
             }
         }
