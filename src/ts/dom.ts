@@ -86,9 +86,9 @@ export class DOM {
     }
 
     private setHtml(content: string): DOM {
-        if (content == undefined) {
-            // Set undefined explicitly to null to avoid innerHTML getting set to "undefined"
-            content = null;
+        if (content == undefined || content == null) {
+            // Set to empty string to avoid innerHTML getting set to "undefined" (all browsers) or "null" (IE9)
+            content = "";
         }
 
         this.forEach(function (element) {
