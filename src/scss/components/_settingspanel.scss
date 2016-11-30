@@ -18,7 +18,6 @@
 
   background-color: $controlbar-background-color;
   bottom: 100%;
-  margin: 0 !important;
   overflow: hidden;
   padding: 0;
   position: absolute;
@@ -52,4 +51,9 @@
       display: none;
     }
   }
+}
+
+// Remove margin inherited from controlbar
+.container-wrapper > .ui-settings-panel {
+  margin: 0;
 }
