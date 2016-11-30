@@ -22,7 +22,7 @@
 }
 
 .ui-recommendation-overlay {
-  @extend .ui-container;
+  @extend %ui-container;
   @extend %center-items-in-overlay;
 
   @include layout-cover;

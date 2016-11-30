@@ -11,7 +11,7 @@
 @import '../mixins';
 
 .ui-cast-status-overlay {
-  @extend .ui-container;
+  @extend %ui-container;
 
   @include layout-cover;
   @include hidden-animated;

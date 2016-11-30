@@ -9,8 +9,8 @@
 
 @import '../variables';
 
-.ui-seekbar {
-  @extend .ui-component;
+%ui-seekbar {
+  @extend %ui-component;
 
   font-size: 1em;
   height: 1em;
@@ -123,4 +123,8 @@
       }
     }
   }
+}
+
+.ui-seekbar {
+  @extend %ui-seekbar;
 }

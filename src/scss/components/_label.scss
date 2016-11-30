@@ -7,8 +7,12 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-label {
-  @extend .ui-component;
+%ui-label {
+  @extend %ui-component;
 
   white-space: nowrap;
+}
+
+.ui-label {
+  @extend %ui-label;
 }

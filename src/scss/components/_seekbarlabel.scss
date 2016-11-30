@@ -10,7 +10,7 @@
 @import '../variables';
 
 .ui-seekbar-label {
-  @extend .ui-container;
+  @extend %ui-container;
 
   @include hidden-animated;
 

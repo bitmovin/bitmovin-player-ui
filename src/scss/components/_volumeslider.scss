@@ -8,7 +8,7 @@
  */
 
 .ui-volumeslider {
-  @extend .ui-seekbar;
+  @extend %ui-seekbar;
 
   //
 }

@@ -11,7 +11,7 @@
 @import '../mixins';
 
 .ui-settings-panel {
-  @extend .ui-container;
+  @extend %ui-container;
 
   // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
   @include animate-slide-in-from-bottom(10em, $animation-duration, '> .container-wrapper');

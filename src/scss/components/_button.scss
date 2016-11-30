@@ -9,8 +9,8 @@
 
 @import '../variables';
 
-.ui-button {
-  @extend .ui-component;
+%ui-button {
+  @extend %ui-component;
 
   background-color: transparent;
   background-position: center;
@@ -28,4 +28,8 @@
   }
 
   @include hidden;
+}
+
+.ui-button {
+  @extend %ui-button;
 }

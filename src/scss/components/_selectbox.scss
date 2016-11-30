@@ -10,7 +10,7 @@
 @import '../variables';
 
 .ui-selectbox {
-  @extend .ui-component;
+  @extend %ui-component;
 
   background-color: darken($color-white, 10%);
   border: 1px solid $color-gray;

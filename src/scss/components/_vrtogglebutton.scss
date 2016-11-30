@@ -10,7 +10,7 @@
 @import '../variables';
 
 .ui-vrtogglebutton {
-  @extend .ui-button;
+  @extend %ui-button;
 
   // svg() usage: http://pavliko.github.io/postcss-svg/
   background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color}');

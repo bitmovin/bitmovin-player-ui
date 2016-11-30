@@ -11,7 +11,7 @@
 @import '../mixins';
 
 .ui-volumecontrolbutton {
-  @extend .ui-container;
+  @extend %ui-container;
 
   line-height: 0; // Fix layout for Firefox: removes spurious space in the container
   position: relative;

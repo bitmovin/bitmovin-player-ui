@@ -11,7 +11,7 @@
 @import '../mixins';
 
 &.ui-uicontainer {
-  @extend .ui-container;
+  @extend %ui-container;
 
   @include layout-cover;
 

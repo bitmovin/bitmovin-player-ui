@@ -11,7 +11,7 @@
 @import '../mixins';
 
 .ui-controlbar {
-  @extend .ui-container;
+  @extend %ui-container;
 
   @include layout-align-bottom;
 

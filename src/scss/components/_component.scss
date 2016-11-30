@@ -7,7 +7,11 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-component {
+%ui-component {
   /*! placeholder to avoid removal of empty selector */
   //outline: 1px solid red;
+}
+
+.ui-component {
+  @extend %ui-component;
 }

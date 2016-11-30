@@ -8,7 +8,7 @@
  */
 
 .ui-settingstogglebutton {
-  @extend .ui-button;
+  @extend %ui-button;
 
   background-image: url('../../assets/images/components/normal/settings.png');
 

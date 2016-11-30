@@ -7,8 +7,12 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-container {
-  @extend .ui-component;
+%ui-container {
+  @extend %ui-component;
 
   font-size: 1em;
+}
+
+.ui-container {
+  @extend %ui-container;
 }
