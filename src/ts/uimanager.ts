@@ -143,6 +143,47 @@ export class UIManager {
             return UIManager.Factory.buildLegacyUI(player, config);
         }
 
+        static buildModernUI(player: Player, config: UIConfig = {}): UIManager {
+            let settingsPanel = new SettingsPanel({
+                components: [
+                    new SettingsPanelItem("Video Quality", new VideoQualitySelectBox()),
+                    new SettingsPanelItem("Audio Track", new AudioTrackSelectBox()),
+                    new SettingsPanelItem("Audio Quality", new AudioQualitySelectBox()),
+                    new SettingsPanelItem("Subtitles", new SubtitleSelectBox())
+                ],
+                hidden: true
+            });
+
+            let controlBar = new ControlBar({
+                components: [
+                    settingsPanel,
+                    new PlaybackToggleButton(),
+                    new SeekBar({label: new SeekBarLabel()}),
+                    new PlaybackTimeLabel(),
+                    new VRToggleButton(),
+                    new VolumeControlButton(),
+                    new SettingsToggleButton({settingsPanel: settingsPanel}),
+                    new CastToggleButton(),
+                    new FullscreenToggleButton()
+                ]
+            });
+
+            let ui = new UIContainer({
+                components: [
+                    new SubtitleOverlay(),
+                    new CastStatusOverlay(),
+                    new HugePlaybackToggleButton(),
+                    new Watermark(),
+                    new RecommendationOverlay(),
+                    controlBar,
+                    new TitleBar(),
+                    new ErrorMessageOverlay()
+                ], cssClasses: ["ui-skin-modern"]
+            });
+
+            return new UIManager(player, ui, config);
+        }
+
         static buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
             let settingsPanel = new SettingsPanel({
                 components: [
