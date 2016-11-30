@@ -180,7 +180,7 @@ export class UIManager {
                     controlBar,
                     new TitleBar(),
                     new ErrorMessageOverlay()
-                ], cssClasses: ["ui-skin-default"]
+                ], cssClasses: ["ui-skin-legacy"]
             });
 
             console.log(ui);
@@ -225,7 +225,7 @@ export class UIManager {
                     controlBar,
                     new TitleBar(),
                     new ErrorMessageOverlay()
-                ], cssClasses: ["ui-skin-default"]
+                ], cssClasses: ["ui-skin-legacy"]
             });
 
             console.log(ui);
