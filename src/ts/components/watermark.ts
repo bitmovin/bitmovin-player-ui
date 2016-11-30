@@ -9,6 +9,9 @@
 
 import {Button, ButtonConfig} from "./button";
 
+/**
+ * Configuration interface for a {@link Watermark}.
+ */
 export interface WatermarkConfig extends ButtonConfig {
     /**
      * The url to open when the watermark is clicked. Set to null to disable the click handler.
@@ -16,6 +19,9 @@ export interface WatermarkConfig extends ButtonConfig {
     url?: string;
 }
 
+/**
+ * A watermark overlay with a clickable logo.
+ */
 export class Watermark extends Button<WatermarkConfig> {
 
     constructor(config: WatermarkConfig = {}) {
@@ -39,6 +45,10 @@ export class Watermark extends Button<WatermarkConfig> {
         }
     }
 
+    /**
+     * Gets the URL that should be followed when the watermark is clicked.
+     * @returns {string} the watermark URL
+     */
     getUrl(): string {
         return (<WatermarkConfig>this.config).url;
     }

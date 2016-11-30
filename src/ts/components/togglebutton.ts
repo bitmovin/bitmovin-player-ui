@@ -21,6 +21,9 @@ export interface ToggleButtonConfig extends ButtonConfig {
     text?: string;
 }
 
+/**
+ * A button that can be toggled between "on" and "off" states.
+ */
 export class ToggleButton<Config extends ToggleButtonConfig> extends Button<ToggleButtonConfig> {
 
     private static readonly CLASS_ON = "on";
@@ -42,49 +45,67 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
         }, this.config);
     }
 
-    protected toDomElement(): DOM {
-        var buttonElement = super.toDomElement();
-
-        return buttonElement;
-    }
-
-    protected onClickEvent() {
-        this.buttonEvents.onClick.dispatch(this);
-    }
-
+    /**
+     * Toggles the button to the "on" state.
+     */
     on() {
-        this.onState = true;
-        this.getDomElement().removeClass(ToggleButton.CLASS_OFF);
-        this.getDomElement().addClass(ToggleButton.CLASS_ON);
+        if(this.isOff()) {
+            this.onState = true;
+            this.getDomElement().removeClass(ToggleButton.CLASS_OFF);
+            this.getDomElement().addClass(ToggleButton.CLASS_ON);
 
-        this.onToggleEvent();
-        this.onToggleOnEvent();
+            this.onToggleEvent();
+            this.onToggleOnEvent();
+        }
     }
 
+    /**
+     * Toggles the button to the "off" state.
+     */
     off() {
-        this.onState = false;
-        this.getDomElement().removeClass(ToggleButton.CLASS_ON);
-        this.getDomElement().addClass(ToggleButton.CLASS_OFF);
+        if(this.isOn()) {
+            this.onState = false;
+            this.getDomElement().removeClass(ToggleButton.CLASS_ON);
+            this.getDomElement().addClass(ToggleButton.CLASS_OFF);
 
-        this.onToggleEvent();
-        this.onToggleOffEvent();
+            this.onToggleEvent();
+            this.onToggleOffEvent();
+        }
     }
 
+    /**
+     * Toggle the button "on" if it is "off", or "off" if it is "on".
+     */
     toggle() {
         if (this.isOn()) {
             this.off();
         } else {
             this.on();
         }
-        this.onToggleEvent();
     }
 
+    /**
+     * Checks if the toggle button is in the "on" state.
+     * @returns {boolean} true if button is "on", false if "off"
+     */
     isOn(): boolean {
         return this.onState;
     }
 
+    /**
+     * Checks if the toggle button is in the "off" state.
+     * @returns {boolean} true if button is "off", false if "on"
+     */
     isOff(): boolean {
         return !this.isOn();
+    }
+
+    protected onClickEvent() {
+        super.onClickEvent();
+
+        // Fire the toggle event together with the click event
+        // (they are technically the same, only the semantics are different)
+        this.onToggleEvent();
     }
 
     protected onToggleEvent() {
@@ -99,14 +120,26 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
         this.toggleButtonEvents.onToggleOff.dispatch(this);
     }
 
+    /**
+     * Gets the event that is fired when the button is toggled.
+     * @returns {Event<Sender, Args>}
+     */
     get onToggle(): Event<ToggleButton<Config>, NoArgs> {
         return this.toggleButtonEvents.onToggle.getEvent();
     }
 
+    /**
+     * Gets the event that is fired when the button is toggled "on".
+     * @returns {Event<Sender, Args>}
+     */
     get onToggleOn(): Event<ToggleButton<Config>, NoArgs> {
         return this.toggleButtonEvents.onToggleOn.getEvent();
     }
 
+    /**
+     * Gets the event that is fired when the button is toggled "off".
+     * @returns {Event<Sender, Args>}
+     */
     get onToggleOff(): Event<ToggleButton<Config>, NoArgs> {
         return this.toggleButtonEvents.onToggleOff.getEvent();
     }

@@ -12,7 +12,7 @@ import {DOM} from "../dom";
 import {EventDispatcher, NoArgs, Event} from "../eventdispatcher";
 
 /**
- * Configuration interface for a button component.
+ * Configuration interface for a {@link Button} component.
  */
 export interface ButtonConfig extends ComponentConfig {
     /**
@@ -21,9 +21,12 @@ export interface ButtonConfig extends ComponentConfig {
     text?: string;
 }
 
+/**
+ * A simple clickable button.
+ */
 export class Button<Config extends ButtonConfig> extends Component<ButtonConfig> {
 
-    protected buttonEvents = {
+    private buttonEvents = {
         onClick: new EventDispatcher<Button<Config>, NoArgs>()
     };
 
@@ -36,6 +39,9 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
     }
 
     protected toDomElement(): DOM {
+        let self = this;
+
+        // Create the button element with the text label
         let buttonElement = new DOM('button', {
             'type': 'button',
             'id': this.config.id,
@@ -44,7 +50,7 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
             'class': 'label'
         }).html(this.config.text));
 
-        let self = this;
+        // Listen for the click event on the button element and trigger the corresponding event on the button component
         buttonElement.on('click', function () {
             self.onClickEvent();
         });
@@ -56,7 +62,11 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
         this.buttonEvents.onClick.dispatch(this);
     }
 
+    /**
+     * Gets the event that is fired when the button is clicked.
+     * @returns {Event<Sender, Args>}
+     */
     get onClick(): Event<Button<Config>, NoArgs> {
-        return this.buttonEvents.onClick;
+        return this.buttonEvents.onClick.getEvent();
     }
 }

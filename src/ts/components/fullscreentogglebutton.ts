@@ -10,6 +10,9 @@
 import {ToggleButton, ToggleButtonConfig} from "./togglebutton";
 import {UIManager} from "../uimanager";
 
+/**
+ * A button that toggles the player between windowed and fullscreen view.
+ */
 export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     constructor(config: ToggleButtonConfig = {}) {

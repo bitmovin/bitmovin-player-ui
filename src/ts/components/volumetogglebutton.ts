@@ -11,6 +11,9 @@ import {ToggleButton, ToggleButtonConfig} from "./togglebutton";
 import {UIManager} from "../uimanager";
 import VolumeChangeEvent = bitmovin.player.VolumeChangeEvent;
 
+/**
+ * A button that toggles audio muting.
+ */
 export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     constructor(config: ToggleButtonConfig = {}) {

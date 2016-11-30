@@ -10,6 +10,9 @@
 import {ToggleButton, ToggleButtonConfig} from "./togglebutton";
 import {UIManager} from "../uimanager";
 
+/**
+ * A button that toggles casting to a Cast receiver.
+ */
 export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     constructor(config: ToggleButtonConfig = {}) {

@@ -15,15 +15,21 @@ import {VideoQualitySelectBox} from "./videoqualityselectbox";
 import {AudioQualitySelectBox} from "./audioqualityselectbox";
 import {Timeout} from "../timeout";
 
+/**
+ * Configuration interface for a {@link SettingsPanel}.
+ */
 export interface SettingsPanelConfig extends ContainerConfig {
     /**
      * The delay in milliseconds after which the settings panel will be hidden when there is no user interaction.
      * Set to -1 to disable automatic hiding.
-     * Default: 3 seconds
+     * Default: 3 seconds (3000)
      */
     hideDelay?: number;
 }
 
+/**
+ * A panel containing a list of {@link SettingsPanelItem items} that represent labelled settings.
+ */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     constructor(config: SettingsPanelConfig) {
@@ -59,6 +65,10 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }
 }
 
+/**
+ * An item for a {@link SettingsPanel}, containing a {@link Label} and a component that configures a setting.
+ * Supported setting components: {@link SelectBox}
+ */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
     private label: Label<LabelConfig>;

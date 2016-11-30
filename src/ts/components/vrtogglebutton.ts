@@ -10,6 +10,9 @@
 import {ToggleButton, ToggleButtonConfig} from "./togglebutton";
 import {UIManager} from "../uimanager";
 
+/**
+ * A button that toggles the video view between normal/mono and VR/stereo.
+ */
 export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     constructor(config: ToggleButtonConfig = {}) {

@@ -11,10 +11,19 @@ import {ToggleButton, ToggleButtonConfig} from "./togglebutton";
 import {SettingsPanel} from "./settingspanel";
 import {UIManager} from "../uimanager";
 
+/**
+ * Configuration interface for the {@link SettingsToggleButton}.
+ */
 export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
+    /**
+     * The settings panel whose visibility the button should toggle.
+     */
     settingsPanel: SettingsPanel;
 }
 
+/**
+ * A button that toggles visibility of a settings panel.
+ */
 export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfig> {
 
     constructor(config: SettingsToggleButtonConfig) {

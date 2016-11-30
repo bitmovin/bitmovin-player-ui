@@ -11,6 +11,9 @@ import {ComponentConfig, Component} from "./component";
 import {DOM} from "../dom";
 import {ArrayUtils} from "../utils";
 
+/**
+ * Configuration interface for a {@link Container}.
+ */
 export interface ContainerConfig extends ComponentConfig {
     /**
      * Child components of the container.

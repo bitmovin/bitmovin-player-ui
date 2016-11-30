@@ -10,11 +10,17 @@
 import {Component, ComponentConfig} from "./component";
 import {EventDispatcher, Event} from "../eventdispatcher";
 
+/**
+ * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.
+ */
 export interface ListItemCollection {
-    // value -> label mapping
-    [value: string]: string;
+    // key -> label mapping
+    [key: string]: string;
 }
 
+/**
+ * Configuration interface for a {@link ListSelector}.
+ */
 export interface ListSelectorConfig extends ComponentConfig {
     items?: ListItemCollection;
 }
@@ -41,78 +47,121 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
         this.items = this.config.items;
     }
 
-    hasItem(value: string): boolean {
-        return this.items[value] != null;
+    /**
+     * Checks if the specified item is part of this selector.
+     * @param key the key of the item to check
+     * @returns {boolean} true if the item is part of this selector, else false
+     */
+    hasItem(key: string): boolean {
+        return this.items[key] != null;
     }
 
-    addItem(value: string, label: string) {
-        this.items[value] = label;
-        this.onItemAddedEvent(value);
+    /**
+     * Adds an item to this selector by appending it to the end of the list of items.
+     * @param key the key  of the item to add
+     * @param label the (human-readable) label of the item to add
+     */
+    addItem(key: string, label: string) {
+        this.items[key] = label;
+        this.onItemAddedEvent(key);
     }
 
-    removeItem(value: string): boolean {
-        if (this.hasItem(value)) {
-            delete this.items[value];
-            this.onItemRemovedEvent(value);
+    /**
+     * Removes an item from this selector.
+     * @param key the key of the item to remove
+     * @returns {boolean} true if removal was successful, false if the item is not part of this selector
+     */
+    removeItem(key: string): boolean {
+        if (this.hasItem(key)) {
+            delete this.items[key];
+            this.onItemRemovedEvent(key);
             return true;
         }
 
         return false;
     }
 
-    selectItem(value: string): boolean {
-        if (value == this.selectedItem) {
+    /**
+     * Selects an item from the items in this selector.
+     * @param key the key of the item to select
+     * @returns {boolean} true is the selection was successful, false if the selected item is not part of the selector
+     */
+    selectItem(key: string): boolean {
+        if (key == this.selectedItem) {
             // itemConfig is already selected, suppress any further action
             return true;
         }
 
-        if (this.items[value] != null) {
-            this.selectedItem = value;
-            this.onItemSelectedEvent(value);
+        if (this.items[key] != null) {
+            this.selectedItem = key;
+            this.onItemSelectedEvent(key);
             return true;
         }
 
         return false;
     }
 
-    getSelectedItem(): string {
+    /**
+     * Returns the key of the selected item.
+     * @returns {string} the key of the selected item or null if no item is selected
+     */
+    getSelectedItem(): string | null {
         return this.selectedItem;
     }
 
+    /**
+     * Removes all items from this selector.
+     */
     clearItems() {
         let items = this.items; // local copy for iteration after clear
         this.items = {}; // clear items
 
         // fire events
-        for (let value in items) {
-            this.onItemRemovedEvent(value);
+        for (let key in items) {
+            this.onItemRemovedEvent(key);
         }
     }
 
+    /**
+     * Returns the number of items in this selector.
+     * @returns {number}
+     */
     itemCount(): number {
         return Object.keys(this.items).length;
     }
 
-    protected onItemAddedEvent(value: string) {
-        this.listSelectorEvents.onItemAdded.dispatch(this, value);
+    protected onItemAddedEvent(key: string) {
+        this.listSelectorEvents.onItemAdded.dispatch(this, key);
     }
 
-    protected onItemRemovedEvent(value: string) {
-        this.listSelectorEvents.onItemRemoved.dispatch(this, value);
+    protected onItemRemovedEvent(key: string) {
+        this.listSelectorEvents.onItemRemoved.dispatch(this, key);
     }
 
-    protected onItemSelectedEvent(value: string) {
-        this.listSelectorEvents.onItemSelected.dispatch(this, value);
+    protected onItemSelectedEvent(key: string) {
+        this.listSelectorEvents.onItemSelected.dispatch(this, key);
     }
 
+    /**
+     * Gets the event that is fired when an item is added to the list of items.
+     * @returns {Event<Sender, Args>}
+     */
     get onItemAdded(): Event<ListSelector<Config>, string> {
         return this.listSelectorEvents.onItemAdded.getEvent();
     }
 
+    /**
+     * Gets the event that is fired when an item is removed from the list of items.
+     * @returns {Event<Sender, Args>}
+     */
     get onItemRemoved(): Event<ListSelector<Config>, string> {
         return this.listSelectorEvents.onItemRemoved.getEvent();
     }
 
+    /**
+     * Gets the event that is fired when an item is selected from the list of items.
+     * @returns {Event<Sender, Args>}
+     */
     get onItemSelected(): Event<ListSelector<Config>, string> {
         return this.listSelectorEvents.onItemSelected.getEvent();
     }

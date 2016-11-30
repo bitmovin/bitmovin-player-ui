@@ -13,6 +13,9 @@ import {DOM} from "../dom";
 import {UIManager, UIRecommendationConfig} from "../uimanager";
 import {StringUtils} from "../utils";
 
+/**
+ * Overlays the player and displays recommended videos.
+ */
 export class RecommendationOverlay extends Container<ContainerConfig> {
 
     constructor(config: ContainerConfig = {}) {
@@ -48,10 +51,16 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     }
 }
 
+/**
+ * Configuration interface for the {@link RecommendationItem}
+ */
 interface RecommendationItemConfig extends ComponentConfig {
     itemConfig: UIRecommendationConfig;
 }
 
+/**
+ * An item of the {@link RecommendationOverlay}. Used only internally in {@link RecommendationOverlay}.
+ */
 class RecommendationItem extends Component<RecommendationItemConfig> {
 
     constructor(config: RecommendationItemConfig) {

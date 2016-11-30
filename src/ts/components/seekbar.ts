@@ -14,7 +14,7 @@ import {SeekBarLabel} from "./seekbarlabel";
 import {UIManager} from "../uimanager";
 
 /**
- * Configuration interface for the SeekBar component.
+ * Configuration interface for the {@link SeekBar} component.
  */
 export interface SeekBarConfig extends ComponentConfig {
     /**
@@ -27,23 +27,34 @@ export interface SeekBarConfig extends ComponentConfig {
     vertical?: boolean;
 }
 
+/**
+ * Event argument interface for a seek preview event.
+ */
 export interface SeekPreviewEventArgs extends NoArgs {
     /**
-     * Tells if the seek preview event comes from a scrubbing seek.
+     * Tells if the seek preview event comes from a scrubbing.
      */
     scrubbing: boolean;
     /**
-     * The timeline position in percent where the event originates.
+     * The timeline position in percent where the event originates from.
      */
     position: number;
 }
 
 /**
- * SeekBar component that can be used to seek the stream and
- * that displays the current playback position and buffer fill level.
+ * A seek bar to seek within the player's media. It displays the purrent playback position, amount of buffed data, seek
+ * target, and keeps status about an ongoing seek.
+ *
+ * The seek bar displays different "bars":
+ *  - the playback position, i.e. the position in the media at which the player current playback pointer is positioned
+ *  - the buffer position, which usually is the playback position plus the time span that is already buffered ahead
+ *  - the seek position, used to preview to where in the timeline a seek will jump to
  */
 export class SeekBar extends Component<SeekBarConfig> {
 
+    /**
+     * The CSS class that is added to the DOM element while the seek bar is in "seeking" state.
+     */
     private static readonly CLASS_SEEKING = "seeking";
 
     private seekBar: DOM;
@@ -218,36 +229,36 @@ export class SeekBar extends Component<SeekBarConfig> {
             this.config.cssClasses.push('vertical');
         }
 
-        var seekBarContainer = new DOM('div', {
+        let seekBarContainer = new DOM('div', {
             'id': this.config.id,
             'class': this.getCssClasses()
         });
 
-        var seekBar = new DOM('div', {
+        let seekBar = new DOM('div', {
             'class': 'seekbar'
         });
         this.seekBar = seekBar;
 
         // Indicator that shows the buffer fill level
-        var seekBarBufferLevel = new DOM('div', {
+        let seekBarBufferLevel = new DOM('div', {
             'class': 'seekbar-bufferlevel'
         });
         this.seekBarBufferPosition = seekBarBufferLevel;
 
         // Indicator that shows the current playback position
-        var seekBarPlaybackPosition = new DOM('div', {
+        let seekBarPlaybackPosition = new DOM('div', {
             'class': 'seekbar-playbackposition'
         });
         this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
         // Indicator that show where a seek will go to
-        var seekBarSeekPosition = new DOM('div', {
+        let seekBarSeekPosition = new DOM('div', {
             'class': 'seekbar-seekposition'
         });
         this.seekBarSeekPosition = seekBarSeekPosition;
 
         // Indicator that shows the full seekbar
-        var seekBarBackdrop = new DOM('div', {
+        let seekBarBackdrop = new DOM('div', {
             'class': 'seekbar-backdrop'
         });
         this.seekBarBackdrop = seekBarBackdrop;
@@ -325,6 +336,11 @@ export class SeekBar extends Component<SeekBarConfig> {
         return seekBarContainer;
     }
 
+    /**
+     * Gets the horizontal mouse offset from the left edge of the seek bar.
+     * @param e the event to calculate the offset from
+     * @returns {number} a number in the range of [0, 1], where 0 is the left edge and 1 is the right edge
+     */
     private getHorizontalMouseOffset(e: MouseEvent): number {
         let elementOffsetPx = this.seekBar.offset().left;
         let widthPx = this.seekBar.width();
@@ -334,6 +350,11 @@ export class SeekBar extends Component<SeekBarConfig> {
         return this.sanitizeOffset(offset);
     }
 
+    /**
+     * Gets the vertical mouse offset from the bottom edge of the seek bar.
+     * @param e the event to calculate the offset from
+     * @returns {number} a number in the range of [0, 1], where 0 is the bottom edge and 1 is the top edge
+     */
     private getVerticalMouseOffset(e: MouseEvent): number {
         let elementOffsetPx = this.seekBar.offset().top;
         let widthPx = this.seekBar.height();
@@ -343,6 +364,13 @@ export class SeekBar extends Component<SeekBarConfig> {
         return 1 - this.sanitizeOffset(offset);
     }
 
+    /**
+     * Gets the mouse offset for the current configuration (horizontal or vertical).
+     * @param e the event to calculate the offset from
+     * @returns {number} a number in the range of [0, 1]
+     * @see #getHorizontalMouseOffset
+     * @see #getVerticalMouseOffset
+     */
     private getMouseOffset(e: MouseEvent): number {
         if (this.config.vertical) {
             return this.getVerticalMouseOffset(e);
@@ -351,6 +379,16 @@ export class SeekBar extends Component<SeekBarConfig> {
         }
     }
 
+    /**
+     * Sanitizes the mouse offset to the range of [0, 1].
+     *
+     * When tracking the mouse outside the seek bar, the offset can be outside the desired range and this method
+     * limits it to the desired range. E.g. a mouse event left of the left edge of a seek bar yields an offset below
+     * zero, but to display the seek target on the seek bar, we need to limit it to zero.
+     *
+     * @param offset the offset to sanitize
+     * @returns {number} the sanitized offset.
+     */
     private sanitizeOffset(offset: number) {
         // Since we track mouse moves over the whole document, the target can be outside the seek range,
         // and we need to limit it to the [0, 1] range.
@@ -363,27 +401,45 @@ export class SeekBar extends Component<SeekBarConfig> {
         return offset;
     }
 
+    /**
+     * Sets the position of the playback position indicator.
+     * @param percent a number between 0 and 100 as returned by the player
+     */
     setPlaybackPosition(percent: number) {
         this.setPosition(this.seekBarPlaybackPosition, percent);
     }
 
+    /**
+     * Sets the position until which media is buffered.
+     * @param percent a number between 0 and 100
+     */
     setBufferPosition(percent: number) {
         this.setPosition(this.seekBarBufferPosition, percent);
     }
 
+    /**
+     * Sets the position where a seek, if executed, would jump to.
+     * @param percent a number between 0 and 100
+     */
     setSeekPosition(percent: number) {
         this.setPosition(this.seekBarSeekPosition, percent);
     }
 
+    /**
+     * Set the actual position (width or height) of a DOM element that represent a bar in the seek bar.
+     * @param element the element to set the position for
+     * @param percent a number between 0 and 100
+     */
     private setPosition(element: DOM, percent: number) {
         let style = this.config.vertical ? {'height': percent + '%'} : {'width': percent + '%'};
         element.css(style);
     }
 
     /**
-     * Puts the seekbar into or out of seeking mode by adding/removing a class to the DOM element. This can be used
+     * Puts the seek bar into or out of seeking state by adding/removing a class to the DOM element. This can be used
      * to adjust the styling while seeking.
-     * @param seeking set to true if entering seek mode, false if exiting seek mode
+     *
+     * @param seeking should be true when entering seek state, false when exiting the seek state
      */
     setSeeking(seeking: boolean) {
         if (seeking) {
@@ -393,15 +449,27 @@ export class SeekBar extends Component<SeekBarConfig> {
         }
     }
 
+    /**
+     * Checks if the seek bar is currently in the seek state.
+     * @returns {boolean} true if in seek state, else false
+     */
     isSeeking(): boolean {
         return this.getDomElement().hasClass(SeekBar.CLASS_SEEKING);
     }
 
+    /**
+     * Checks if the seek bar has a {@link SeekBarLabel}.
+     * @returns {boolean} true if the seek bar has a label, else false
+     */
     hasLabel(): boolean {
         return this.label != null;
     }
 
-    getLabel(): SeekBarLabel {
+    /**
+     * Gets the label of this seek bar.
+     * @returns {SeekBarLabel} the label if this seek bar has a label, else null
+     */
+    getLabel(): SeekBarLabel | null {
         return this.label;
     }
 
@@ -423,14 +491,28 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.seekBarEvents.onSeeked.dispatch(this, percentage);
     }
 
+    /**
+     * Gets the event that is fired when a scrubbing seek operation is started.
+     * @returns {Event<SeekBar, NoArgs>}
+     */
     get onSeek(): Event<SeekBar, NoArgs> {
         return this.seekBarEvents.onSeek.getEvent();
     }
 
+    /**
+     * Gets the event that is fired during a scrubbing seek (to indicate that the seek preview, i.e. the video frame,
+     * should be updated), or during a normal seek preview when the seek bar is hovered (and the seek target,
+     * i.e. the seek bar label, should be updated).
+     * @returns {Event<SeekBar, SeekPreviewEventArgs>}
+     */
     get onSeekPreview(): Event<SeekBar, SeekPreviewEventArgs> {
         return this.seekBarEvents.onSeekPreview.getEvent();
     }
 
+    /**
+     * Gets the event that is fired when a scrubbing seek has finished or when a direct seek is issued.
+     * @returns {Event<SeekBar, number>}
+     */
     get onSeeked(): Event<SeekBar, number> {
         return this.seekBarEvents.onSeeked.getEvent();
     }

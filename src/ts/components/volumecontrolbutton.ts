@@ -13,6 +13,9 @@ import {VolumeToggleButton} from "./volumetogglebutton";
 import {UIManager} from "../uimanager";
 import {Timeout} from "../timeout";
 
+/**
+ * Configuration interface for a {@link VolumeControlButton}.
+ */
 export interface VolumeControlButtonConfig extends ContainerConfig {
     /**
      * The delay after which the volume slider will be hidden when there is no user interaction.
@@ -29,6 +32,10 @@ export interface VolumeControlButtonConfig extends ContainerConfig {
     vertical?: boolean;
 }
 
+/**
+ * A composite volume control that consists of and internally manages a volume control button that can be used
+ * for muting, and a (depending on the CSS style, e.g. slide-out) volume control bar.
+ */
 export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
 
     private volumeToggleButton: VolumeToggleButton;
@@ -54,7 +61,6 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
         let self = this;
         let volumeToggleButton = this.getVolumeToggleButton();
         let volumeSlider = this.getVolumeSlider();
-        let volumeSliderHideDelayTimeoutHandle = 0;
 
         let timeout = new Timeout((<VolumeControlButtonConfig>self.getConfig()).hideDelay, function () {
             volumeSlider.hide();
@@ -102,10 +108,18 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
         });
     }
 
+    /**
+     * Provides access to the internally managed volume toggle button.
+     * @returns {VolumeToggleButton}
+     */
     getVolumeToggleButton(): VolumeToggleButton {
         return this.volumeToggleButton;
     }
 
+    /**
+     * Provides access to the internally managed volume silder.
+     * @returns {VolumeSlider}
+     */
     getVolumeSlider(): VolumeSlider {
         return this.volumeSlider;
     }

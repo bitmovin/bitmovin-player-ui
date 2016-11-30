@@ -13,6 +13,9 @@ import {DOM} from "../dom";
 import {UIManager} from "../uimanager";
 import PlayerEvent = bitmovin.player.PlayerEvent;
 
+/**
+ * A button that overlays the video and toggles between playback and pause.
+ */
 export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     constructor(config: ToggleButtonConfig = {}) {

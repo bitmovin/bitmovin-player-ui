@@ -12,6 +12,9 @@ import {UIManager} from "../uimanager";
 import SubtitleCueEvent = bitmovin.player.SubtitleCueEvent;
 import {Label, LabelConfig} from "./label";
 
+/**
+ * Overlays the player to display subtitles.
+ */
 export class SubtitleOverlay extends Container<ContainerConfig> {
 
     /**

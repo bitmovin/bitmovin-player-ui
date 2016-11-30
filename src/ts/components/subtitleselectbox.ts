@@ -14,6 +14,9 @@ import SubtitleAddedEvent = bitmovin.player.SubtitleAddedEvent;
 import SubtitleChangedEvent = bitmovin.player.SubtitleChangedEvent;
 import SubtitleRemovedEvent = bitmovin.player.SubtitleRemovedEvent;
 
+/**
+ * A select box providing a selection between available subtitle and caption tracks.
+ */
 export class SubtitleSelectBox extends SelectBox {
 
     constructor(config: ListSelectorConfig = {}) {

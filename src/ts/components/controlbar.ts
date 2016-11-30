@@ -11,14 +11,20 @@ import {ContainerConfig, Container} from "./container";
 import {UIManager} from "../uimanager";
 import {Timeout} from "../timeout";
 
+/**
+ * Configuration interface for the {@link ControlBar}.
+ */
 export interface ControlBarConfig extends ContainerConfig {
     /**
-     * The delay after which the control bar will be hidden when there is no user interaction.
-     * Default: 5 seconds
+     * The delay in milliseconds after which the control bar will be hidden when there is no user interaction.
+     * Default: 5 seconds (5000)
      */
     hideDelay?: number;
 }
 
+/**
+ * A container for main player control components, e.g. play toggle button, seek bar, volume control, fullscreen toggle button.
+ */
 export class ControlBar extends Container<ControlBarConfig> {
 
     constructor(config: ControlBarConfig) {

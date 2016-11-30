@@ -13,10 +13,16 @@ import {Component, ComponentConfig} from "./component";
 import {UIManager} from "../uimanager";
 import {StringUtils} from "../utils";
 
+/**
+ * Configuration interface for a {@link SeekBarLabel}.
+ */
 export interface SeekBarLabelConfig extends ContainerConfig {
-
+    // nothing yet
 }
 
+/**
+ * A label for a {@link SeekBar} that can display the seek target time and a thumbnail.
+ */
 export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
     private label: Label<LabelConfig>;
@@ -50,14 +56,26 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         });
     }
 
+    /**
+     * Sets arbitrary text on the label.
+     * @param text the text to show on the label
+     */
     setText(text: string) {
         this.label.setText(text);
     }
 
+    /**
+     * Sets a time to be displayed on the label.
+     * @param seconds the time in seconds to display on the label
+     */
     setTime(seconds: number) {
         this.setText(StringUtils.secondsToTime(seconds));
     }
 
+    /**
+     * Sets or removes a thumbnail on the label.
+     * @param thumbnail the thumbnail to display on the label or null to remove a displayed thumbnail
+     */
     setThumbnail(thumbnail: bitmovin.player.Thumbnail = null) {
         let thumbnailElement = this.thumbnail.getDomElement();
 

@@ -10,6 +10,9 @@
 import {SeekBar, SeekBarConfig} from "./seekbar";
 import {UIManager} from "../uimanager";
 
+/**
+ * A simple volume slider component to adjust the player's volume setting.
+ */
 export class VolumeSlider extends SeekBar {
 
     constructor(config: SeekBarConfig = {}) {

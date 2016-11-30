@@ -11,6 +11,9 @@ import {SelectBox} from "./selectbox";
 import {ListSelectorConfig} from "./listselector";
 import {UIManager} from "../uimanager";
 
+/**
+ * A select box providing a selection between "auto" and the available video qualities.
+ */
 export class VideoQualitySelectBox extends SelectBox {
 
     constructor(config: ListSelectorConfig = {}) {

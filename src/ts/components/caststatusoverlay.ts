@@ -14,6 +14,9 @@ import CastWaitingForDeviceEvent = bitmovin.player.CastWaitingForDeviceEvent;
 import CastLaunchedEvent = bitmovin.player.CastLaunchedEvent;
 import CastStoppedEvent = bitmovin.player.CastStoppedEvent;
 
+/**
+ * Overlays the player and displays the status of a Cast session.
+ */
 export class CastStatusOverlay extends Container<ContainerConfig> {
 
     private statusLabel: Label<LabelConfig>;

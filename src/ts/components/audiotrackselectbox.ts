@@ -11,6 +11,9 @@ import {SelectBox} from "./selectbox";
 import {ListSelectorConfig} from "./listselector";
 import {UIManager} from "../uimanager";
 
+/**
+ * A select box providing a selection between available audio tracks (e.g. different languages).
+ */
 export class AudioTrackSelectBox extends SelectBox {
 
     constructor(config: ListSelectorConfig = {}) {

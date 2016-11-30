@@ -11,6 +11,9 @@ import {ToggleButton, ToggleButtonConfig} from "./togglebutton";
 import {UIManager} from "../uimanager";
 import PlayerEvent = bitmovin.player.PlayerEvent;
 
+/**
+ * A button that toggles between playback and pause.
+ */
 export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     constructor(config: ToggleButtonConfig = {}) {

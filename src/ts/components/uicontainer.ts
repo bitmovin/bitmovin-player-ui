@@ -12,10 +12,16 @@ import {NoArgs, EventDispatcher, Event} from "../eventdispatcher";
 import {UIManager} from "../uimanager";
 import {DOM} from "../dom";
 
+/**
+ * Configuration interface for a {@link UIContainer}.
+ */
 export interface UIContainerConfig extends ContainerConfig {
     // nothing to add
 }
 
+/**
+ * The base container that contains all of the UI. The UIContainer is passed to the {@link UIManager} to build and setup the UI.
+ */
 export class UIContainer extends Container<UIContainerConfig> {
 
     private uiContainerEvents = {
@@ -83,14 +89,26 @@ export class UIContainer extends Container<UIContainerConfig> {
         this.uiContainerEvents.onMouseLeave.dispatch(this);
     }
 
+    /**
+     * Gets the event that is fired when the mouse enters the UI.
+     * @returns {Event<Sender, Args>}
+     */
     get onMouseEnter(): Event<UIContainer, NoArgs> {
         return this.uiContainerEvents.onMouseEnter.getEvent();
     }
 
+    /**
+     * Gets the event that is fired when the mouse moves within UI.
+     * @returns {Event<Sender, Args>}
+     */
     get onMouseMove(): Event<UIContainer, NoArgs> {
         return this.uiContainerEvents.onMouseMove.getEvent();
     }
 
+    /**
+     * Gets the event that is fired when the mouse leaves the UI.
+     * @returns {Event<Sender, Args>}
+     */
     get onMouseLeave(): Event<UIContainer, NoArgs> {
         return this.uiContainerEvents.onMouseLeave.getEvent();
     }

@@ -40,6 +40,11 @@ export class PlaybackTimeLabel extends Label<LabelConfig> {
         playbackTimeHandler();
     }
 
+    /**
+     * Sets the current playback time and total duration.
+     * @param playbackSeconds the current playback time in seconds
+     * @param durationSeconds the total duration in seconds
+     */
     setTime(playbackSeconds: number, durationSeconds: number) {
         this.setText(`${StringUtils.secondsToTime(playbackSeconds)} / ${StringUtils.secondsToTime(durationSeconds)}`);
     }

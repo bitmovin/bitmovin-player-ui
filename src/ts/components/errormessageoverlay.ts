@@ -12,6 +12,9 @@ import {Label, LabelConfig} from "./label";
 import {UIManager} from "../uimanager";
 import ErrorEvent = bitmovin.player.ErrorEvent;
 
+/**
+ * Overlays the player and displays error messages.
+ */
 export class ErrorMessageOverlay extends Container<ContainerConfig> {
 
     private errorLabel: Label<LabelConfig>;

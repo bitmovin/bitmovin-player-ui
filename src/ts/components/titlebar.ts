@@ -12,14 +12,20 @@ import {UIManager} from "../uimanager";
 import {LabelConfig, Label} from "./label";
 import {Timeout} from "../timeout";
 
+/**
+ * Configuration interface for a {@link TitleBar}.
+ */
 export interface TitleBarConfig extends ContainerConfig {
     /**
-     * The delay after which the title bar will be hidden when there is no user interaction.
-     * Default: 5 seconds
+     * The delay in milliseconds after which the title bar will be hidden when there is no user interaction.
+     * Default: 5 seconds (5000)
      */
     hideDelay?: number;
 }
 
+/**
+ * Displays a title bar containing a label with the title of the video.
+ */
 export class TitleBar extends Container<TitleBarConfig> {
 
     private label: Label<LabelConfig>;
