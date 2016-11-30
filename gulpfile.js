@@ -17,6 +17,8 @@ var postcss = require('gulp-postcss');
 var uglify = require('gulp-uglify');
 var gif = require('gulp-if');
 var rename = require('gulp-rename');
+var tslint = require('gulp-tslint');
+var sassLint = require('gulp-sass-lint');
 
 // PostCSS plugins
 var postcssSVG = require('postcss-svg');
@@ -62,6 +64,33 @@ var production = false;
 
 // Deletes the target directory containing all generated files
 gulp.task('clean', del.bind(null, [paths.target.html]));
+
+// TypeScript linting
+gulp.task('lint-ts', function () {
+    return gulp.src(paths.source.tsWatch)
+        .pipe(tslint({
+            formatter: "verbose"
+        }))
+        .pipe(tslint.report({
+            // Print just the number of errors (instead of printing all errors again)
+            summarizeFailureOutput: true
+        }))
+});
+
+// Sass/SCSS linting
+gulp.task('lint-sass', function () {
+    return gulp.src(paths.source.sass)
+        .pipe(sassLint())
+        .pipe(sassLint.format())
+        .pipe(sassLint.failOnError())
+});
+
+// Runs all linters
+gulp.task('lint', function (callback) {
+    // this fails at first error so we can't run all linters sequentially with runSequence and then print the errors
+    runSequence('lint-ts', 'lint-sass', callback);
+    // TODO check in Gulp 4.0 if all linters can be run sequentially before aborting due to an error
+});
 
 // Copies html files to the target directory
 gulp.task('html', function () {
@@ -129,7 +158,7 @@ gulp.task('build', function(callback) {
 
 gulp.task('build-prod', function(callback) {
     production = true;
-    runSequence('build', callback);
+    runSequence('lint', 'build', callback);
 });
 
 gulp.task('default', ['build']);
