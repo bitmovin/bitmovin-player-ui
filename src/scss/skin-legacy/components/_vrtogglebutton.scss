@@ -13,17 +13,17 @@
   @extend %ui-button;
 
   // svg() usage: http://pavliko.github.io/postcss-svg/
-  background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color}');
+  background-image: svg('assets/skin-legacy/images/components/normal/stereo.svg', '[fill]: #{$button-image-color}');
 
   &:hover {
-    background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-hover}');
+    background-image: svg('assets/skin-legacy/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-hover}');
   }
 
   &.on {
-    background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active}');
+    background-image: svg('assets/skin-legacy/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active}');
 
     &:hover {
-      background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active-hover}');
+      background-image: svg('assets/skin-legacy/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active-hover}');
     }
   }
 }

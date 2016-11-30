@@ -10,17 +10,17 @@
 .ui-fullscreentogglebutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/images/components/normal/fullscreen_enter.png');
+  background-image: url('../../../assets/skin-legacy/images/components/normal/fullscreen_enter.png');
 
   &:hover {
-    background-image: url('../../assets/images/components/hover/fullscreen_enter.png');
+    background-image: url('../../../assets/skin-legacy/images/components/hover/fullscreen_enter.png');
   }
 
   &.on {
-    background-image: url('../../assets/images/components/normal/fullscreen_exit.png');
+    background-image: url('../../../assets/skin-legacy/images/components/normal/fullscreen_exit.png');
 
     &:hover {
-      background-image: url('../../assets/images/components/hover/fullscreen_exit.png');
+      background-image: url('../../../assets/skin-legacy/images/components/hover/fullscreen_exit.png');
     }
   }
 }
