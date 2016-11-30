@@ -35,7 +35,7 @@ export class SubtitleSelectBox extends SelectBox {
         };
 
         self.onItemSelected.subscribe(function (sender: SubtitleSelectBox, value: string) {
-            player.setSubtitle(value == "null" ? null : value);
+            player.setSubtitle(value === "null" ? null : value);
         });
 
         // React to API events

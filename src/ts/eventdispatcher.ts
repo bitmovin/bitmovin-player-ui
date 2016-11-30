@@ -12,7 +12,7 @@ import {ArrayUtils} from "./utils";
  * Function interface for event listeners on the {@link EventDispatcher}.
  */
 export interface EventListener<Sender, Args> {
-    (sender: Sender, args: Args): void
+    (sender: Sender, args: Args): void;
 }
 
 /**
@@ -78,7 +78,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
         // Iterate through listeners, compare with parameter, and remove if found
         for (let i = 0; i < this.listeners.length; i++) {
             let subscribedListener = this.listeners[i];
-            if (subscribedListener.listener == listener) {
+            if (subscribedListener.listener === listener) {
                 ArrayUtils.remove(this.listeners, subscribedListener);
                 return true;
             }

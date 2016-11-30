@@ -29,21 +29,21 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-selectbox'
+            cssClass: "ui-selectbox"
         }, this.config);
     }
 
     protected toDomElement(): DOM {
-        let selectElement = new DOM('select', {
-            'id': this.config.id,
-            'class': this.getCssClasses()
+        let selectElement = new DOM("select", {
+            "id": this.config.id,
+            "class": this.getCssClasses()
         });
 
         this.selectElement = selectElement;
         this.updateDomItems();
 
         let self = this;
-        selectElement.on('change', function () {
+        selectElement.on("change", function () {
             let value = new DOM(this).val();
             self.onItemSelectedEvent(value, false);
         });
@@ -58,12 +58,12 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
         // Add updated children
         for (let value in this.items) {
             let label = this.items[value];
-            let optionElement = new DOM('option', {
-                'value': value
+            let optionElement = new DOM("option", {
+                "value": value
             }).html(label);
 
-            if (value == selectedValue + "") { // convert selectedValue to string to catch "null"/null case
-                optionElement.attr('selected', 'selected');
+            if (value === selectedValue + "") { // convert selectedValue to string to catch "null"/null case
+                optionElement.attr("selected", "selected");
             }
 
             this.selectElement.append(optionElement);

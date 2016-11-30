@@ -22,8 +22,8 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-hugeplaybacktogglebutton',
-            text: 'Play/Pause'
+            cssClass: "ui-hugeplaybacktogglebutton",
+            text: "Play/Pause"
         }, this.config);
     }
 
@@ -96,7 +96,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
         // Hide the huge playback button during VR playback to let mouse events pass through and navigate the VR viewport
         self.onToggle.subscribe(function () {
-            if (player.getVRStatus().contentType != 'none') {
+            if (player.getVRStatus().contentType !== "none") {
                 if (player.isPlaying()) {
                     self.hide();
                 } else {
@@ -107,7 +107,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
         // Hide button while initializing a Cast session
         let castInitializationHandler = function (event: PlayerEvent) {
-            if (event.type == bitmovin.player.EVENT.ON_CAST_START) {
+            if (event.type === bitmovin.player.EVENT.ON_CAST_START) {
                 // Hide button when session is being initialized
                 self.hide();
             } else {
@@ -121,14 +121,14 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     }
 
     protected toDomElement(): DOM {
-        var buttonElement = super.toDomElement();
+        let buttonElement = super.toDomElement();
 
         // Add child that contains the play button image
         // Setting the image directly on the button does not work together with scaling animations, because the button
         // can cover the whole video player are and scaling would extend it beyond. By adding an inner element, confined
         // to the size if the image, it can scale inside the player without overshooting.
-        buttonElement.append(new DOM('div', {
-            'class': 'image'
+        buttonElement.append(new DOM("div", {
+            "class": "image"
         }));
 
         return buttonElement;

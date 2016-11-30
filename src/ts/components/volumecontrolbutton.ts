@@ -51,7 +51,7 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
         });
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-volumecontrolbutton',
+            cssClass: "ui-volumecontrolbutton",
             components: [this.volumeToggleButton, this.volumeSlider],
             hideDelay: 500
         }, <VolumeControlButtonConfig>this.config);
@@ -74,7 +74,7 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
          * shall disappear.
          */
         let volumeSliderHovered = false;
-        volumeToggleButton.getDomElement().on('mouseenter', function () {
+        volumeToggleButton.getDomElement().on("mouseenter", function () {
             // Show volume slider when mouse enters the button area
             if (volumeSlider.isHidden()) {
                 volumeSlider.show();
@@ -82,16 +82,16 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
             // Avoid hiding of the slider when button is hovered
             timeout.clear();
         });
-        volumeToggleButton.getDomElement().on('mouseleave', function () {
+        volumeToggleButton.getDomElement().on("mouseleave", function () {
             // Hide slider delayed when button is left
             timeout.reset();
         });
-        volumeSlider.getDomElement().on('mouseenter', function () {
+        volumeSlider.getDomElement().on("mouseenter", function () {
             // When the slider is entered, cancel the hide timeout activated by leaving the button
             timeout.clear();
             volumeSliderHovered = true;
         });
-        volumeSlider.getDomElement().on('mouseleave', function () {
+        volumeSlider.getDomElement().on("mouseleave", function () {
             // When mouse leaves the slider, only hide it if there is no slide operation in progress
             if (volumeSlider.isSeeking()) {
                 timeout.clear();

@@ -29,13 +29,13 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     constructor(config: SettingsToggleButtonConfig) {
         super(config);
 
-        if(!config.settingsPanel) {
+        if (!config.settingsPanel) {
             throw new Error("Required SettingsPanel is missing");
         }
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-settingstogglebutton',
-            text: 'Settings',
+            cssClass: "ui-settingstogglebutton",
+            text: "Settings",
             settingsPanel: null
         }, <SettingsToggleButtonConfig>this.config);
     }
@@ -50,6 +50,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
         settingsPanel.onHide.subscribe(function () {
             // Set toggle status to off when the settings panel hides
             self.off();
-        })
+        });
     }
 }

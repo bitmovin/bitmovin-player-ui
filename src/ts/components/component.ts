@@ -19,7 +19,7 @@ import {UIManager} from "../uimanager";
 export interface ComponentConfig {
     /**
      * The HTML tag name of the component.
-     * Default: 'div'
+     * Default: "div"
      */
     tag?: string;
     /**
@@ -146,9 +146,9 @@ export class Component<Config extends ComponentConfig> {
 
         // Create the configuration for this component
         this.config = <Config>this.mergeConfig(config, {
-            tag: 'div',
-            id: 'ui-id-' + Guid.next(),
-            cssClass: 'ui-component',
+            tag: "div",
+            id: "ui-id-" + Guid.next(),
+            cssClass: "ui-component",
             cssClasses: [],
             hidden: false
         }, {});
@@ -193,8 +193,8 @@ export class Component<Config extends ComponentConfig> {
      */
     protected toDomElement(): DOM {
         let element = new DOM(this.config.tag, {
-            'id': this.config.id,
-            'class': this.getCssClasses()
+            "id": this.config.id,
+            "class": this.getCssClasses()
         });
         return element;
     }
@@ -239,7 +239,7 @@ export class Component<Config extends ComponentConfig> {
         // Merge all CSS classes into single array
         let flattenedArray = [this.config.cssClass].concat(this.config.cssClasses);
         // Join array values into a string
-        let flattenedString = flattenedArray.join(' ');
+        let flattenedString = flattenedArray.join(" ");
         // Return trimmed string to prevent whitespace at the end from the join operation
         return flattenedString.trim();
     }

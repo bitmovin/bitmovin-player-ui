@@ -41,7 +41,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
 
         this.config = this.mergeConfig(config, {
             items: {},
-            cssClass: 'ui-listselector'
+            cssClass: "ui-listselector"
         }, this.config);
 
         this.items = this.config.items;
@@ -87,7 +87,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
      * @returns {boolean} true is the selection was successful, false if the selected item is not part of the selector
      */
     selectItem(key: string): boolean {
-        if (key == this.selectedItem) {
+        if (key === this.selectedItem) {
             // itemConfig is already selected, suppress any further action
             return true;
         }

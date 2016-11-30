@@ -84,7 +84,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-seekbar'
+            cssClass: "ui-seekbar"
         }, this.config);
 
         this.label = this.config.label;
@@ -115,7 +115,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             }
 
             if (player.isLive()) {
-                if (player.getMaxTimeShift() == 0) {
+                if (player.getMaxTimeShift() === 0) {
                     // This case must be explicitly handled to avoid division by zero
                     self.setPlaybackPosition(100);
                 }
@@ -226,40 +226,40 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     protected toDomElement(): DOM {
         if (this.config.vertical) {
-            this.config.cssClasses.push('vertical');
+            this.config.cssClasses.push("vertical");
         }
 
-        let seekBarContainer = new DOM('div', {
-            'id': this.config.id,
-            'class': this.getCssClasses()
+        let seekBarContainer = new DOM("div", {
+            "id": this.config.id,
+            "class": this.getCssClasses()
         });
 
-        let seekBar = new DOM('div', {
-            'class': 'seekbar'
+        let seekBar = new DOM("div", {
+            "class": "seekbar"
         });
         this.seekBar = seekBar;
 
         // Indicator that shows the buffer fill level
-        let seekBarBufferLevel = new DOM('div', {
-            'class': 'seekbar-bufferlevel'
+        let seekBarBufferLevel = new DOM("div", {
+            "class": "seekbar-bufferlevel"
         });
         this.seekBarBufferPosition = seekBarBufferLevel;
 
         // Indicator that shows the current playback position
-        let seekBarPlaybackPosition = new DOM('div', {
-            'class': 'seekbar-playbackposition'
+        let seekBarPlaybackPosition = new DOM("div", {
+            "class": "seekbar-playbackposition"
         });
         this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
         // Indicator that show where a seek will go to
-        let seekBarSeekPosition = new DOM('div', {
-            'class': 'seekbar-seekposition'
+        let seekBarSeekPosition = new DOM("div", {
+            "class": "seekbar-seekposition"
         });
         this.seekBarSeekPosition = seekBarSeekPosition;
 
         // Indicator that shows the full seekbar
-        let seekBarBackdrop = new DOM('div', {
-            'class': 'seekbar-backdrop'
+        let seekBarBackdrop = new DOM("div", {
+            "class": "seekbar-backdrop"
         });
         this.seekBarBackdrop = seekBarBackdrop;
 
@@ -278,8 +278,8 @@ export class SeekBar extends Component<SeekBarConfig> {
             e.preventDefault();
 
             // Remove handlers, seek operation is finished
-            new DOM(document).off('mousemove', mouseMoveHandler);
-            new DOM(document).off('mouseup', mouseUpHandler);
+            new DOM(document).off("mousemove", mouseMoveHandler);
+            new DOM(document).off("mouseup", mouseUpHandler);
 
             let targetPercentage = 100 * self.getMouseOffset(e);
 
@@ -293,7 +293,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         // (so the user does not need to take care that the mouse always stays on the seekbar), we attach the mousemove
         // and mouseup handlers to the whole document. A seek is triggered when the user lifts the mouse key.
         // A seek mouse gesture is thus basically a click with a long time frame between down and up events.
-        seekBar.on('mousedown', function (e: MouseEvent) {
+        seekBar.on("mousedown", function (e: MouseEvent) {
             // Prevent selection of DOM elements
             e.preventDefault();
 
@@ -303,12 +303,12 @@ export class SeekBar extends Component<SeekBarConfig> {
             self.onSeekEvent();
 
             // Add handler to track the seek operation over the whole document
-            new DOM(document).on('mousemove', mouseMoveHandler);
-            new DOM(document).on('mouseup', mouseUpHandler);
+            new DOM(document).on("mousemove", mouseMoveHandler);
+            new DOM(document).on("mouseup", mouseUpHandler);
         });
 
         // Display seek target indicator when mouse hovers over seekbar
-        seekBar.on('mousemove', function (e: MouseEvent) {
+        seekBar.on("mousemove", function (e: MouseEvent) {
             let position = 100 * self.getMouseOffset(e);
             self.setSeekPosition(position);
             self.onSeekPreviewEvent(position, false);
@@ -319,7 +319,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         });
 
         // Hide seek target indicator when mouse leaves seekbar
-        seekBar.on('mouseleave', function (e: MouseEvent) {
+        seekBar.on("mouseleave", function (e: MouseEvent) {
             self.setSeekPosition(0);
 
             if (self.hasLabel()) {
@@ -431,7 +431,7 @@ export class SeekBar extends Component<SeekBarConfig> {
      * @param percent a number between 0 and 100
      */
     private setPosition(element: DOM, percent: number) {
-        let style = this.config.vertical ? {'height': percent + '%'} : {'width': percent + '%'};
+        let style = this.config.vertical ? {"height": percent + "%"} : {"width": percent + "%"};
         element.css(style);
     }
 

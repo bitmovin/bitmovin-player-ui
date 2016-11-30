@@ -20,8 +20,8 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-playbacktogglebutton',
-            text: 'Play/Pause'
+            cssClass: "ui-playbacktogglebutton",
+            text: "Play/Pause"
         }, this.config);
     }
 
@@ -40,8 +40,8 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
             // TODO replace this hack with a sole player.isPlaying() call once issue #1203 is fixed
             let isPlaying = player.isPlaying();
             if (player.isCasting() &&
-                (event.type == bitmovin.player.EVENT.ON_PLAY || event.type == bitmovin.player.EVENT.ON_PLAY
-                || event.type == bitmovin.player.EVENT.ON_CAST_PLAYING || event.type == bitmovin.player.EVENT.ON_CAST_PAUSE)) {
+                (event.type === bitmovin.player.EVENT.ON_PLAY || event.type === bitmovin.player.EVENT.ON_PLAY
+                || event.type === bitmovin.player.EVENT.ON_CAST_PLAYING || event.type === bitmovin.player.EVENT.ON_CAST_PAUSE)) {
                 isPlaying = !isPlaying;
             }
 

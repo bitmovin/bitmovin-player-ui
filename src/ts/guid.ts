@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-export module Guid {
+export namespace Guid {
 
     let guid = 1;
 

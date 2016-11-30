@@ -25,8 +25,8 @@ export class PlaybackTimeLabel extends Label<LabelConfig> {
         let self = this;
 
         let playbackTimeHandler = function () {
-            if (player.getDuration() == Infinity) {
-                self.setText('Live');
+            if (player.getDuration() === Infinity) {
+                self.setText("Live");
             } else {
                 self.setTime(player.getCurrentTime(), player.getDuration());
             }

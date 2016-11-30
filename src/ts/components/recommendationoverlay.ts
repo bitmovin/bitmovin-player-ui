@@ -22,7 +22,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-recommendation-overlay',
+            cssClass: "ui-recommendation-overlay",
             hidden: true
         }, this.config);
     }
@@ -30,7 +30,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
 
-        if (!uimanager.getConfig() || !uimanager.getConfig().recommendations || uimanager.getConfig().recommendations.length == 0) {
+        if (!uimanager.getConfig() || !uimanager.getConfig().recommendations || uimanager.getConfig().recommendations.length === 0) {
             // There are no recommendation items, so don't need to configure anything
             return;
         }
@@ -67,7 +67,7 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-recommendation-item',
+            cssClass: "ui-recommendation-item",
             itemConfig: null // this must be passed in from outside
         }, this.config);
     }
@@ -75,24 +75,24 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
     protected toDomElement(): DOM {
         let config = (<RecommendationItemConfig>this.config).itemConfig; // TODO fix generics and get rid of cast
 
-        let itemElement = new DOM('a', {
-            'id': this.config.id,
-            'class': this.getCssClasses(),
-            'href': config.url
+        let itemElement = new DOM("a", {
+            "id": this.config.id,
+            "class": this.getCssClasses(),
+            "href": config.url
         });
 
-        let bgElement = new DOM('div', {
-            'class': 'thumbnail'
+        let bgElement = new DOM("div", {
+            "class": "thumbnail"
         }).css({"background-image": `url(${config.thumbnail})`});
         itemElement.append(bgElement);
 
-        let titleElement = new DOM('span', {
-            'class': 'title'
+        let titleElement = new DOM("span", {
+            "class": "title"
         }).html(config.title);
         itemElement.append(titleElement);
 
-        let timeElement = new DOM('span', {
-            'class': 'duration'
+        let timeElement = new DOM("span", {
+            "class": "duration"
         }).html(StringUtils.secondsToTime(config.duration));
         itemElement.append(timeElement);
 

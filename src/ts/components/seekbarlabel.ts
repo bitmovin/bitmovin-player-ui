@@ -31,11 +31,11 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     constructor(config: SeekBarLabelConfig = {}) {
         super(config);
 
-        this.label = new Label({cssClasses: ['seekbar-label']});
-        this.thumbnail = new Component({cssClasses: ['seekbar-thumbnail']});
+        this.label = new Label({cssClasses: ["seekbar-label"]});
+        this.thumbnail = new Component({cssClasses: ["seekbar-thumbnail"]});
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-seekbar-label',
+            cssClass: "ui-seekbar-label",
             components: [this.thumbnail, this.label],
             hidden: true
         }, this.config);

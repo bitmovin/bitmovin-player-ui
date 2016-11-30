@@ -57,7 +57,7 @@ export class DOM {
         this.document = document; // Set the global document to the local document field
 
         if (something instanceof HTMLElement) {
-            var element = something;
+            let element = something;
             this.elements = [element];
         }
         else if (something instanceof Document) {
@@ -120,7 +120,7 @@ export class DOM {
     }
 
     private setHtml(content: string): DOM {
-        if (content == undefined || content == null) {
+        if (content === undefined || content == null) {
             // Set to empty string to avoid innerHTML getting set to "undefined" (all browsers) or "null" (IE9)
             content = "";
         }
@@ -138,7 +138,7 @@ export class DOM {
      */
     empty(): DOM {
         this.forEach(function (element) {
-            element.innerHTML = '';
+            element.innerHTML = "";
         });
         return this;
     }
@@ -247,13 +247,13 @@ export class DOM {
 
         // Workaround for document.body.scrollTop always 0 in IE9, IE11, Firefox
         // http://stackoverflow.com/a/11102215/370252
-        let scrollTop = typeof window.pageYOffset != 'undefined' ?
+        let scrollTop = typeof window.pageYOffset !== "undefined" ?
             window.pageYOffset : document.documentElement.scrollTop ?
             document.documentElement.scrollTop : document.body.scrollTop ?
             document.body.scrollTop : 0;
 
         // Workaround for document.body.scrollLeft always 0 in IE9, IE11, Firefox
-        let scrollLeft = typeof window.pageXOffset != 'undefined' ?
+        let scrollLeft = typeof window.pageXOffset !== "undefined" ?
             window.pageXOffset : document.documentElement.scrollLeft ?
             document.documentElement.scrollLeft : document.body.scrollLeft ?
             document.body.scrollLeft : 0;
@@ -341,7 +341,7 @@ export class DOM {
                 element.classList.add(className);
             }
             else {
-                element.className += ' ' + className;
+                element.className += " " + className;
             }
         });
 
@@ -359,7 +359,7 @@ export class DOM {
                 element.classList.remove(className);
             }
             else {
-                element.className = element.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+                element.className = element.className.replace(new RegExp("(^|\\b)" + className.split(" ").join("|") + "(\\b|$)", "gi"), " ");
             }
         });
 
@@ -374,12 +374,12 @@ export class DOM {
     hasClass(className: string): boolean {
         this.forEach(function (element) {
             if (element.classList) {
-                if(element.classList.contains(className)) {
+                if (element.classList.contains(className)) {
                     return true;
                 }
             }
             else {
-                if (new RegExp('(^| )' + className + '( |$)', 'gi').test(element.className)) {
+                if (new RegExp("(^| )" + className + "( |$)", "gi").test(element.className)) {
                     return true;
                 }
             }
@@ -408,7 +408,7 @@ export class DOM {
         if (typeof propertyNameOrCollection === "string") {
             let propertyName = propertyNameOrCollection;
 
-            if (arguments.length == 2) {
+            if (arguments.length === 2) {
                 return this.setCss(propertyName, value);
             }
             else {

@@ -120,7 +120,7 @@ declare namespace bitmovin {
                 deviceName: string;
                 timestamp: number;
                 type: string;
-            }
+            };
         }
 
         interface CastLaunchedEvent extends PlayerEvent {

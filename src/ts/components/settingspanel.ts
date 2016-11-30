@@ -36,7 +36,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         super(config);
 
         this.config = this.mergeConfig<SettingsPanelConfig>(config, {
-            cssClass: 'ui-settings-panel',
+            cssClass: "ui-settings-panel",
             hideDelay: 3000
         }, this.config);
     }
@@ -53,14 +53,14 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
                 // Activate timeout when shown
                 timeout.start();
             });
-            self.getDomElement().on('mousemove', function () {
+            self.getDomElement().on("mousemove", function () {
                 // Reset timeout on interaction
-                timeout.reset()
+                timeout.reset();
             });
             self.onHide.subscribe(function () {
                 // Clear timeout when hidden from outside
                 timeout.clear();
-            })
+            });
         }
     }
 }
@@ -81,7 +81,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
         this.setting = selectBox;
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-settings-panel-entry',
+            cssClass: "ui-settings-panel-entry",
             components: [this.label, this.setting]
         }, this.config);
     }

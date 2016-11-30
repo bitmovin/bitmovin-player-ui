@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-export module ArrayUtils {
+export namespace ArrayUtils {
     /**
      * Removes an item from an array.
      * @param array the array that may contain the item to remove
@@ -25,7 +25,7 @@ export module ArrayUtils {
     }
 }
 
-export module StringUtils {
+export namespace StringUtils {
 
     /**
      * Formats a number of seconds into a time string with the pattern hh:mm:ss.
@@ -36,7 +36,7 @@ export module StringUtils {
     export function secondsToTime(totalSeconds: number): string {
         let isNegative = totalSeconds < 0;
 
-        if(isNegative) {
+        if (isNegative) {
             // If the time is negative, we make it positive for the calculation below
             // (else we'd get all negative numbers) and reattach the negative sign later.
             totalSeconds = -totalSeconds;
@@ -54,12 +54,12 @@ export module StringUtils {
      * Converts a number to a string and left-pads it with zeros to the specified length.
      * Example: leftPadWithZeros(123, 5) => "00123"
      *
-     * @param number the number to convert to string and pad with zeros
+     * @param num the number to convert to string and pad with zeros
      * @param length the desired length of the padded string
      * @returns {string} the padded number as string
      */
-    function leftPadWithZeros(number: number, length: number): string {
-        let text = number + "";
+    function leftPadWithZeros(num: number, length: number): string {
+        let text = num + "";
         let padding = "0000000000".substr(0, length - text.length);
         return padding + text;
     }

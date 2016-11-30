@@ -20,8 +20,8 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-volumetogglebutton',
-            text: 'Volume/Mute'
+            cssClass: "ui-volumetogglebutton",
+            text: "Volume/Mute"
         }, this.config);
     }
 

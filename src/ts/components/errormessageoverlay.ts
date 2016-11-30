@@ -22,10 +22,10 @@ export class ErrorMessageOverlay extends Container<ContainerConfig> {
     constructor(config: ContainerConfig = {}) {
         super(config);
 
-        this.errorLabel = new Label<LabelConfig>({cssClass: 'ui-errormessage-label'});
+        this.errorLabel = new Label<LabelConfig>({cssClass: "ui-errormessage-label"});
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-errormessage-overlay',
+            cssClass: "ui-errormessage-overlay",
             components: [this.errorLabel],
             hidden: true
         }, this.config);

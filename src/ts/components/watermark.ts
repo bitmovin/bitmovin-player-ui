@@ -28,8 +28,8 @@ export class Watermark extends Button<WatermarkConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-watermark',
-            url: 'http://bitmovin.com'
+            cssClass: "ui-watermark",
+            url: "http://bitmovin.com"
         }, <WatermarkConfig>this.config);
     }
 
@@ -38,9 +38,9 @@ export class Watermark extends Button<WatermarkConfig> {
 
         if (this.getUrl()) {
             let element = this.getDomElement();
-            element.data('url', this.getUrl());
-            element.on('click', function () {
-                window.open(element.data('url'), '_blank');
+            element.data("url", this.getUrl());
+            element.on("click", function () {
+                window.open(element.data("url"), "_blank");
             });
         }
     }

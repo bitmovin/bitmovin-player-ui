@@ -19,8 +19,8 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-casttogglebutton',
-            text: 'Google Cast'
+            cssClass: "ui-casttogglebutton",
+            text: "Google Cast"
         }, this.config);
     }
 

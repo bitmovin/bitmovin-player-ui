@@ -19,7 +19,7 @@ export class VolumeSlider extends SeekBar {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-volumeslider'
+            cssClass: "ui-volumeslider"
         }, this.config);
     }
 

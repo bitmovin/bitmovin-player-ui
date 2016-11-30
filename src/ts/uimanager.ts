@@ -146,17 +146,17 @@ export class UIManager {
         }
 
         private static assembleDefaultUI(): UIContainer {
-            var settingsPanel = new SettingsPanel({
+            let settingsPanel = new SettingsPanel({
                 components: [
-                    new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-                    new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-                    new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-                    new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+                    new SettingsPanelItem("Video Quality", new VideoQualitySelectBox()),
+                    new SettingsPanelItem("Audio Track", new AudioTrackSelectBox()),
+                    new SettingsPanelItem("Audio Quality", new AudioQualitySelectBox()),
+                    new SettingsPanelItem("Subtitles", new SubtitleSelectBox())
                 ],
                 hidden: true
             });
 
-            var controlBar = new ControlBar({
+            let controlBar = new ControlBar({
                 components: [
                     settingsPanel,
                     new PlaybackToggleButton(),
@@ -170,7 +170,7 @@ export class UIManager {
                 ]
             });
 
-            var ui = new UIContainer({
+            let ui = new UIContainer({
                 components: [
                     new SubtitleOverlay(),
                     new CastStatusOverlay(),
@@ -180,7 +180,7 @@ export class UIManager {
                     controlBar,
                     new TitleBar(),
                     new ErrorMessageOverlay()
-                ], cssClasses: ['ui-skin-default']
+                ], cssClasses: ["ui-skin-default"]
             });
 
             console.log(ui);
@@ -189,17 +189,17 @@ export class UIManager {
         }
 
         private static assembleTestUI(): UIContainer {
-            var settingsPanel = new SettingsPanel({
+            let settingsPanel = new SettingsPanel({
                 components: [
-                    new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-                    new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-                    new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-                    new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+                    new SettingsPanelItem("Video Quality", new VideoQualitySelectBox()),
+                    new SettingsPanelItem("Audio Track", new AudioTrackSelectBox()),
+                    new SettingsPanelItem("Audio Quality", new AudioQualitySelectBox()),
+                    new SettingsPanelItem("Subtitles", new SubtitleSelectBox())
                 ],
                 hidden: true
             });
 
-            var controlBar = new ControlBar({
+            let controlBar = new ControlBar({
                 components: [settingsPanel,
                     new PlaybackToggleButton(),
                     new SeekBar({label: new SeekBarLabel()}),
@@ -215,7 +215,7 @@ export class UIManager {
                 ]
             });
 
-            var ui = new UIContainer({
+            let ui = new UIContainer({
                 components: [
                     new SubtitleOverlay(),
                     new CastStatusOverlay(),
@@ -225,12 +225,12 @@ export class UIManager {
                     controlBar,
                     new TitleBar(),
                     new ErrorMessageOverlay()
-                ], cssClasses: ['ui-skin-default']
+                ], cssClasses: ["ui-skin-default"]
             });
 
             console.log(ui);
 
             return ui;
         }
-    }
+    };
 }

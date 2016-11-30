@@ -41,7 +41,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-togglebutton'
+            cssClass: "ui-togglebutton"
         }, this.config);
     }
 
@@ -49,7 +49,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
      * Toggles the button to the "on" state.
      */
     on() {
-        if(this.isOff()) {
+        if (this.isOff()) {
             this.onState = true;
             this.getDomElement().removeClass(ToggleButton.CLASS_OFF);
             this.getDomElement().addClass(ToggleButton.CLASS_ON);
@@ -63,7 +63,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
      * Toggles the button to the "off" state.
      */
     off() {
-        if(this.isOn()) {
+        if (this.isOn()) {
             this.onState = false;
             this.getDomElement().removeClass(ToggleButton.CLASS_ON);
             this.getDomElement().addClass(ToggleButton.CLASS_OFF);

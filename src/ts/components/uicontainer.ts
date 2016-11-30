@@ -34,7 +34,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-uicontainer'
+            cssClass: "ui-uicontainer"
         }, this.config);
     }
 
@@ -56,19 +56,18 @@ export class UIContainer extends Container<UIContainerConfig> {
         let self = this;
         let container = super.toDomElement();
 
-        container.on('mouseenter', function () {
+        container.on("mouseenter", function () {
             self.onMouseEnterEvent();
         });
-        container.on('mousemove', function () {
+        container.on("mousemove", function () {
             self.onMouseMoveEvent();
         });
-        container.on('mouseleave', function () {
+        container.on("mouseleave", function () {
             self.onMouseLeaveEvent();
         });
 
         // Detect flexbox support (not supported in IE9)
-        console.log(document);
-        if(document && typeof document.createElement("p").style.flex !== "undefined") {
+        if (document && typeof document.createElement("p").style.flex !== "undefined") {
             container.addClass("flexbox");
         } else {
             container.addClass("no-flexbox");

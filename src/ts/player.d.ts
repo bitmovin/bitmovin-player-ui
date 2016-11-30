@@ -314,7 +314,7 @@ declare namespace bitmovin {
             /**
              * The width of the video representation.
              */
-            width: number
+            width: number;
             /**
              * The height of the video representation.
              */

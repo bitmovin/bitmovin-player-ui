@@ -19,8 +19,8 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, {
-            cssClass: 'ui-vrtogglebutton',
-            text: 'VR'
+            cssClass: "ui-vrtogglebutton",
+            text: "VR"
         }, this.config);
     }
 
@@ -32,11 +32,11 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
             // available at UI initialization. As an alternative, we check the VR settings in the config.
             // TODO use getVRStatus() through isVRStereoAvailable() once the player has been rewritten and the status is available in ON_READY
             let config = player.getConfig();
-            return config.source && config.source.vr && config.source.vr.contentType != 'none';
+            return config.source && config.source.vr && config.source.vr.contentType !== "none";
         };
 
         let isVRStereoAvailable = function () {
-            return player.getVRStatus().contentType != 'none';
+            return player.getVRStatus().contentType !== "none";
         };
 
         let vrStateHandler = function () {
@@ -69,7 +69,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
 
         self.onClick.subscribe(function () {
             if (!isVRStereoAvailable()) {
-                if (console) console.log('No VR content');
+                if (console) console.log("No VR content");
             } else {
                 if (player.getVRStatus().isStereo) {
                     player.setVRStereo(false);
