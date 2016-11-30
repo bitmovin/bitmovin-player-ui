@@ -38,6 +38,14 @@
                 </div>
                 <span class="col-sm-4 form-text">The video source to load into the player.</span>
             </div>
+
+            <div class="form-group row">
+                <label for="config-ui" class="col-sm-4 form-control-label">UI</label>
+                <div class="col-sm-4">
+                    <select class="form-control" id="config-ui"></select>
+                </div>
+                <span class="col-sm-4 form-text">The UI skin or skin type to display.</span>
+            </div>
         </div>
 
         <div class="card-block">
@@ -149,9 +157,11 @@
         ]
     };
 
+    var uiManager;
+
     player.setup(conf).then(function () {
         // Add UI to loaded player
-        bitmovin.playerui.UIManager.Factory.buildLegacyCastReceiverUI(player, uiConfig);
+        uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
     }, function (errorEvent) {
         // Play setup failed, and there's no player UI yet to display the error in
         console.log(errorEvent);
@@ -235,6 +245,24 @@
                 player.removeEventHandler(bitmovin.player.EVENT[event], allEventsListener);
             }
         }
+    });
+
+    // Collect all UI factory methods which are basically the different built-in skins and skin types
+    var uiFactoryMethods = [];
+    for (var member in bitmovin.playerui.UIManager.Factory) {
+        if (typeof bitmovin.playerui.UIManager.Factory[member] == "function") {
+            uiFactoryMethods.push(member);
+        }
+    }
+    // Fill the UI factory method select box
+    $.each(uiFactoryMethods, function (key, value) {
+        $('#config-ui').append($("<option></option>").attr("value", value).text(value));
+    });
+    // Refresh UI when a factory is selected
+    $('#config-ui').change(function () {
+        uiManager.release();
+        var factoryMethod = $(this).val();
+        uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
     });
 
 </script>
