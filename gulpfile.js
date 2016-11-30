@@ -80,7 +80,11 @@ gulp.task('lint-ts', function () {
 // Sass/SCSS linting
 gulp.task('lint-sass', function () {
     return gulp.src(paths.source.sass)
-        .pipe(sassLint())
+        .pipe(sassLint({
+            rules: {
+                'no-css-comments': 0 // Disable warning because of copyright headers
+            }
+        }))
         .pipe(sassLint.format())
         .pipe(sassLint.failOnError())
 });
