@@ -138,6 +138,10 @@ export class UIManager {
         return this.events.onSeeked;
     }
 
+    release(): void {
+        this.ui.getDomElement().remove();
+    }
+
     static Factory = class {
         static buildDefaultUI(player: Player, config: UIConfig = {}): UIManager {
             return UIManager.Factory.buildLegacyUI(player, config);

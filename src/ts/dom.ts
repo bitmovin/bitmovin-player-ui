@@ -238,6 +238,15 @@ export class DOM {
     }
 
     /**
+     * Removes all elements from the DOM.
+     */
+    remove(): void {
+        this.forEach(function (element) {
+            element.parentNode.removeChild(element);
+        });
+    }
+
+    /**
      * Returns the offset of the first element from the document's top left corner.
      * @returns {Offset}
      */
