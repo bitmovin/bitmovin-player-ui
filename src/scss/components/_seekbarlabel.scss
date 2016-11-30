@@ -7,33 +7,37 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
+
 .ui-seekbar-label {
   @extend .ui-container;
 
-  text-align: center;
-  position: absolute;
-  left: 0%;
   bottom: 100%;
+  left: 0;
   margin-bottom: 1em;
   pointer-events: none;
+  position: absolute;
+  text-align: center;
 
   > .container-wrapper {
     background-color: $controlbar-background-color;
-    padding: 0.5em;
+    padding: .5em;
 
     // Center container on left edge to get it centered over timeline position
-    margin-left: -50%;
-    margin-right: 50%;
+    & {
+      margin-left: -50%;
+      margin-right: 50%;
+    }
 
     .seekbar-thumbnail {
-      margin-bottom: 0.3em;
+      margin-bottom: .3em;
     }
 
     .seekbar-label {
-      margin: 0.5em;
-      line-height: 0.8em;
+      line-height: .8em;
+      margin: .5em;
     }
   }
 
-  @include hiddenAnimated();
+  @include hidden-animated;
 }

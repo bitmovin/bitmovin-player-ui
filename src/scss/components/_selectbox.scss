@@ -7,15 +7,17 @@
  * and conditions of the applicable license agreement.
  */
 
-select.ui-selectbox {
+@import '../variables';
+
+.ui-selectbox {
   @extend .ui-component;
 
+  background-color: darken($color-white, 10%);
+  border: 1px solid $color-gray;
+  color: lighten($color-black, 30%);
   cursor: pointer;
-  border: 1px solid gray;
-  background-color: darken(white, 10%);
-  color: lighten(black, 30%);
-  padding: 0.3em;
-  font-size: 0.8em;
+  font-size: .8em;
+  padding: .3em;
 
   option {
     // nothing yet

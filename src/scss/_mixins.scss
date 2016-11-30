@@ -7,20 +7,22 @@
  * and conditions of the applicable license agreement.
  */
 
-@mixin hidden() {
+@import 'variables';
+
+@mixin hidden {
   &.hidden {
     display: none;
   }
 }
 
-@mixin hiddenAnimated($duration: $animation-duration) {
+@mixin hidden-animated($duration: $animation-duration) {
   opacity: 1;
-  visibility: visible;
   transition: opacity $duration, visibility 0s;
+  visibility: visible;
 
   &.hidden {
     opacity: 0;
-    visibility: hidden;
     transition: opacity $duration, visibility $duration;
+    visibility: hidden;
   }
 }

@@ -7,38 +7,33 @@
  * and conditions of the applicable license agreement.
  */
 
-@import "../variables";
+@import '../variables';
 
 .ui-settings-panel {
   @extend .ui-container;
 
-  position: absolute;
-  bottom: 100%;
-  right: 0;
   background-color: $controlbar-background-color;
+  bottom: 100%;
   margin: 0 !important;
-  padding: 0;
   overflow: hidden;
+  padding: 0;
+  position: absolute;
+  right: 0;
 
   > .container-wrapper {
-    margin: -0.5em;
-    padding: 0.5em;
+    margin: -.5em;
+    padding: .5em;
 
     > * {
-      margin: 0.5em;
+      margin: .5em;
     }
-
-    // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
-    // Animate show
-    max-height: 10em;
-    transition: max-height $animation-duration ease-in;
 
     // A "line" in the panel: a container holding a label + control
     .container-wrapper > * {
       // Labels
       &:first-child {
-        width: 8em;
         display: inline-block;
+        width: 8em;
       }
 
       // Controls (e.g. selectbox)
@@ -48,10 +43,20 @@
     }
   }
 
-  &.hidden > .container-wrapper {
+  // Animation stuff
+  // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
+  & {
+    // Animate show
+    > .container-wrapper {
+      max-height: 10em;
+      transition: max-height $animation-duration ease-in;
+    }
+
     // Animate hide
-    max-height: 0;
-    transition: max-height $animation-duration ease-out;
+    &.hidden > .container-wrapper {
+      max-height: 0;
+      transition: max-height $animation-duration ease-out;
+    }
   }
 
   .ui-settings-panel-entry {

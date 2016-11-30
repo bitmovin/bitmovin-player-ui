@@ -11,12 +11,14 @@
   @extend .ui-button;
 
   background-image: url('../../assets/images/components/normal/fullscreen_enter.png');
+
   &:hover {
     background-image: url('../../assets/images/components/hover/fullscreen_enter.png');
   }
 
   &.on {
     background-image: url('../../assets/images/components/normal/fullscreen_exit.png');
+
     &:hover {
       background-image: url('../../assets/images/components/hover/fullscreen_exit.png');
     }

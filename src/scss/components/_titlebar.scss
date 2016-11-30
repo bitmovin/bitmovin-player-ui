@@ -12,17 +12,20 @@
 .ui-titlebar {
   @extend .ui-container;
 
-  // Align to top
-  position: absolute;
-  top: 0;
-  width: 100%;
-
   background-color: $controlbar-background-color;
-  color: white;
+  color: $color-white;
 
-  > .container-wrapper {
-    padding: 0.5em;
+  // Align to top
+  & {
+    position: absolute;
+    top: 0;
+    width: 100%;
   }
 
-  @include hiddenAnimated();
+
+  > .container-wrapper {
+    padding: .5em;
+  }
+
+  @include hidden-animated;
 }

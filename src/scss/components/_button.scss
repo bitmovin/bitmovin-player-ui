@@ -7,23 +7,25 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
+
 .ui-button {
   @extend .ui-component;
 
-  font-size: 1em;
-  padding: 0;
-  border: none;
   background-color: transparent;
-  background-repeat: no-repeat;
   background-position: center;
-  min-width: 1.5em;
-  height: 1em;
+  background-repeat: no-repeat;
+  border: 0;
   cursor: pointer;
+  font-size: 1em;
+  height: 1em;
+  min-width: 1.5em;
+  padding: 0;
 
   .label {
+    color: $color-white;
     display: none;
-    color: white;
   }
 
-  @include hidden();
+  @include hidden;
 }

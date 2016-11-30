@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-@import "../variables";
+@import '../variables';
 
 .ui-vrtogglebutton {
   @extend .ui-button;
@@ -21,6 +21,7 @@
 
   &.on {
     background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active}');
+
     &:hover {
       background-image: svg('assets/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active-hover}');
     }

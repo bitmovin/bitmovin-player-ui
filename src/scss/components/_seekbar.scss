@@ -7,62 +7,65 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
+
 .ui-seekbar {
   @extend .ui-component;
 
   font-size: 1em;
   height: 1em;
-  margin: 0.2em;
-  width: 100%;
+  margin: .2em;
   position: relative;
+  width: 100%;
 
-  $position-marker-width: 0.3em;
-  $bar-inset: 0.3em;
+  $position-marker-width: .3em;
+  $bar-inset: .3em;
 
   .seekbar {
-    position: relative;
     height: 100%;
+    position: relative;
     //background-color: lighten($controlbar-background-color, 10%);
 
     %bar {
-      position: absolute;
-      left: 0;
-      top: 0;
       bottom: 0;
+      left: 0;
+      position: absolute;
       right: auto;
+      top: 0;
     }
 
     .seekbar-backdrop {
       @extend %bar;
       background-color: lighten($controlbar-background-color, 20%);
-      margin: $bar-inset 0 $bar-inset 0;
+      margin: $bar-inset 0;
       width: 100%;
     }
 
     .seekbar-bufferlevel {
       @extend %bar;
       background-color: $button-image-color-active;
-      transition: width 0.3s linear, height 0.3s linear;
-      margin: $bar-inset 0 $bar-inset 0;
+      margin: $bar-inset 0;
+      transition: width .3s linear, height .3s linear;
     }
 
     .seekbar-seekposition {
       @extend %bar;
-      background-color: transparentize(white, 0.8);
-      margin: $bar-inset 0 $bar-inset 0;
+      background-color: transparentize($color-white, .8);
+      margin: $bar-inset 0;
     }
 
     .seekbar-playbackposition {
       @extend %bar;
-      transition: width 0.1s linear, height 0.1s linear;
+      transition: width .1s linear, height .1s linear;
 
       // position marker
-      border-right: $position-marker-width solid white;
-      // offset position marker to center it on mouse pointer and make it visible on both the leftmost and rightmost timeline positions
-      margin-left: -$position-marker-width / 2;
-
-      // don't consider the border for width, else it does not overlap at edges
-      box-sizing: content-box;
+      & {
+        border-right: $position-marker-width solid $color-white;
+        // don't consider the border for width, else it does not overlap at edges
+        box-sizing: content-box;
+        // offset position marker to center it on mouse pointer and make it visible on both the leftmost and rightmost timeline positions
+        margin-left: -$position-marker-width / 2;
+      }
     }
   }
 
@@ -83,35 +86,40 @@
       width: auto;
 
       %bar-vertical {
-        top: auto;
         right: 0;
+        top: auto;
       }
 
       .seekbar-backdrop {
         @extend %bar-vertical;
-        margin: 0 $bar-inset 0 $bar-inset;
+
         height: 100%;
+        margin: 0 $bar-inset;
         width: auto;
       }
 
       .seekbar-bufferlevel {
         @extend %bar-vertical;
-        margin: 0 $bar-inset 0 $bar-inset;
+
+        margin: 0 $bar-inset;
       }
 
       .seekbar-seekposition {
         @extend %bar-vertical;
-        margin: 0 $bar-inset 0 $bar-inset;
+
+        margin: 0 $bar-inset;
       }
 
       .seekbar-playbackposition {
         @extend %bar-vertical;
 
         // position marker
-        border-right: 0;
-        border-top: $position-marker-width solid white;
-        // offset position marker to center it on mouse pointer and make it visible on both the bottommost and topmost positions
-        margin-bottom: -$position-marker-width / 2;
+        & {
+          border-right: 0;
+          border-top: $position-marker-width solid $color-white;
+          // offset position marker to center it on mouse pointer and make it visible on both the bottommost and topmost positions
+          margin-bottom: -$position-marker-width / 2;
+        }
       }
     }
   }

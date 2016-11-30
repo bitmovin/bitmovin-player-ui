@@ -11,12 +11,14 @@
   @extend .ui-button;
 
   background-image: url('../../assets/images/components/normal/chromecast.png');
+
   &:hover {
     background-image: url('../../assets/images/components/hover/chromecast.png');
   }
 
   &.on {
     background-image: url('../../assets/images/components/normal/chromecast.png');
+
     &:hover {
       background-image: url('../../assets/images/components/hover/chromecast.png');
     }

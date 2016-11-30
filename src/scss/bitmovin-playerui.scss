@@ -7,6 +7,8 @@
  * and conditions of the applicable license agreement.
  */
 
+@import 'variables';
+
 .ui-skin-default {
   @import 'mixins';
   @import 'components/component';
@@ -35,8 +37,8 @@
   @import 'components/titlebar';
   @import 'components/recommendationoverlay';
 
+  color: $font-color;
   font-family: $font-family;
   font-size: $font-size;
   line-height: $font-size;
-  color: $font-color;
 }

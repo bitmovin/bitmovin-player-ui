@@ -12,23 +12,25 @@
 .ui-controlbar {
   @extend .ui-container;
 
-  // Align to bottom
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-
   background-color: $controlbar-background-color;
+
+  // Align to bottom
+  & {
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+  }
 
   > .container-wrapper {
     display: flex;
     justify-content: space-around;
-    margin: 0.5em;
+    margin: .5em;
 
     // Evenly distribute controls
     > * {
       // Overwrite margins to make them all equal
       // Outside margins come from the wrapping container, this is just the spacing between controls
-      margin: 0 0.5em 0 0;
+      margin: 0 .5em 0 0;
 
       &:last-child {
         // Remove spacing from last control
@@ -37,23 +39,26 @@
     }
   }
 
-  @include hiddenAnimated();
+  @include hidden-animated;
 
   .ui-label {
-    font-size: 0.8em;
+    font-size: .8em;
   }
 }
 
 // IE9 compatibility: fallback for missing flexbox support
-&.no-flexbox .ui-controlbar {
-  > .container-wrapper {
-    display: table;
-    border-spacing: 0.5em 0;
+&.no-flexbox {
+  .ui-controlbar {
+    > .container-wrapper {
+      border-spacing: .5em 0;
+      display: table;
 
-    > * {
-      display: table-cell;
-      vertical-align: middle;
-      @include hidden(); // Add hidden here too, else it is overwritten by display: table-cell
+      > * {
+        @include hidden; // Add hidden here too, else it is overwritten by display: table-cell
+
+        display: table-cell;
+        vertical-align: middle;
+      }
     }
   }
 }
