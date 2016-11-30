@@ -16,7 +16,7 @@
   @include layout-cover;
   @include hidden-animated;
 
-  background: $color-black url('../../../assets/skin-legacy/images/components/normal/chromecast_overlay.png') center no-repeat;
+  background: $color-black url('../../assets/skin-legacy/images/components/normal/chromecast_overlay.png') center no-repeat;
   pointer-events: none; // Disable input events
 
   .ui-cast-status-label {

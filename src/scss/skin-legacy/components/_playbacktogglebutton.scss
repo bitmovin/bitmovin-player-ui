@@ -10,17 +10,17 @@
 .ui-playbacktogglebutton {
   @extend %ui-button;
 
-  background-image: url('../../../assets/skin-legacy/images/components/normal/play.png');
+  background-image: url('../../assets/skin-legacy/images/components/normal/play.png');
 
   &:hover {
-    background-image: url('../../../assets/skin-legacy/images/components/hover/play.png');
+    background-image: url('../../assets/skin-legacy/images/components/hover/play.png');
   }
 
   &.on {
-    background-image: url('../../../assets/skin-legacy/images/components/normal/pause.png');
+    background-image: url('../../assets/skin-legacy/images/components/normal/pause.png');
 
     &:hover {
-      background-image: url('../../../assets/skin-legacy/images/components/hover/pause.png');
+      background-image: url('../../assets/skin-legacy/images/components/hover/pause.png');
     }
   }
 }

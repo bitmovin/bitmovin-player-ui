@@ -44,14 +44,14 @@
   width: 100%;
 
   .image {
-    background-image: url('../../../assets/skin-legacy/images/components/normal/play_overlay.png');
+    background-image: url('../../assets/skin-legacy/images/components/normal/play_overlay.png');
     background-position: center;
     background-repeat: no-repeat;
     height: 100%;
     width: 100%;
 
     &:hover {
-      background-image: url('../../../assets/skin-legacy/images/components/hover/play_overlay.png');
+      background-image: url('../../assets/skin-legacy/images/components/hover/play_overlay.png');
     }
   }
 
