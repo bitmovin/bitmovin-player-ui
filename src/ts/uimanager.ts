@@ -225,6 +225,28 @@ export class UIManager {
             return new UIManager(player, ui, config);
         }
 
+        static buildLegacyCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
+            let controlBar = new ControlBar({
+                components: [
+                    new SeekBar(),
+                    new PlaybackTimeLabel(),
+                ]
+            });
+
+            let ui = new UIContainer({
+                components: [
+                    new SubtitleOverlay(),
+                    new HugePlaybackToggleButton(),
+                    new Watermark(),
+                    controlBar,
+                    new TitleBar(),
+                    new ErrorMessageOverlay()
+                ], cssClasses: ["ui-skin-legacy ui-skin-legacy-cast-receiver"]
+            });
+
+            return new UIManager(player, ui, config);
+        }
+
         static buildLegacyTestUI(player: Player, config: UIConfig = {}): UIManager {
             let settingsPanel = new SettingsPanel({
                 components: [

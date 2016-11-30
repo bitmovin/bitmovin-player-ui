@@ -151,7 +151,7 @@
 
     player.setup(conf).then(function () {
         // Add UI to loaded player
-        bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
+        bitmovin.playerui.UIManager.Factory.buildLegacyCastReceiverUI(player, uiConfig);
     }, function (errorEvent) {
         // Play setup failed, and there's no player UI yet to display the error in
         console.log(errorEvent);
