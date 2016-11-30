@@ -58,6 +58,7 @@
   }
 
   // Animate hide
+  // sass-lint:disable force-element-nesting
   &.hidden #{$inner-selector} {
     max-height: 0;
     transition: max-height $duration ease-out;
