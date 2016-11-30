@@ -25,7 +25,7 @@
   @extend .ui-container;
   @extend %center-items-in-overlay;
 
-  @include layout-align-bottom;
+  @include layout-cover;
   @include hidden-animated($animation-duration * 2);
 
   background-color: $controlbar-background-color;

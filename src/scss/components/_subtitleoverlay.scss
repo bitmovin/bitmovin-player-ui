@@ -8,16 +8,14 @@
  */
 
 @import '../variables';
+@import '../mixins';
 
 .ui-subtitle-overlay {
   @extend .ui-container;
 
-  height: 100%;
-  margin: 0;
+  @include layout-cover;
+
   pointer-events: none;
-  position: absolute;
-  top: 0;
-  width: 100%;
 
   .ui-subtitle-label {
     bottom: 3em;
