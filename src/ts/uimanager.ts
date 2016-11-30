@@ -140,12 +140,10 @@ export class UIManager {
 
     static Factory = class {
         static buildDefaultUI(player: Player, config: UIConfig = {}): UIManager {
-            let ui = UIManager.Factory.assembleDefaultUI();
-            let manager = new UIManager(player, ui, config);
-            return manager;
+            return UIManager.Factory.buildLegacyUI(player, config);
         }
 
-        private static assembleDefaultUI(): UIContainer {
+        static buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
             let settingsPanel = new SettingsPanel({
                 components: [
                     new SettingsPanelItem("Video Quality", new VideoQualitySelectBox()),
@@ -183,12 +181,10 @@ export class UIManager {
                 ], cssClasses: ["ui-skin-legacy"]
             });
 
-            console.log(ui);
-
-            return ui;
+            return new UIManager(player, ui, config);
         }
 
-        private static assembleTestUI(): UIContainer {
+        static buildLegacyTestUI(player: Player, config: UIConfig = {}): UIManager {
             let settingsPanel = new SettingsPanel({
                 components: [
                     new SettingsPanelItem("Video Quality", new VideoQualitySelectBox()),
@@ -228,9 +224,7 @@ export class UIManager {
                 ], cssClasses: ["ui-skin-legacy"]
             });
 
-            console.log(ui);
-
-            return ui;
+            return new UIManager(player, ui, config);
         }
     };
 }
