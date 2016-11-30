@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
  *
  * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
@@ -9,7 +9,7 @@
 
 @import 'variables';
 
-.ui-skin-default {
+.ui-skin-legacy {
   @import 'mixins';
   @import 'components/component';
   @import 'components/container';
