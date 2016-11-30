@@ -8,23 +8,16 @@
  */
 
 @import '../variables';
+@import '../mixins';
 
 .ui-cast-status-overlay {
   @extend .ui-container;
 
+  @include layout-cover;
+  @include hidden-animated;
+
   background: $color-black url('../../assets/images/components/normal/chromecast_overlay.png') center no-repeat;
   pointer-events: none; // Disable input events
-
-  // Cover whole UI area
-  & {
-    height: 100%;
-    margin: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
-  @include hidden-animated;
 
   .ui-cast-status-label {
     color: $color-white;

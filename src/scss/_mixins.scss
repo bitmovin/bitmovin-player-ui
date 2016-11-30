@@ -26,3 +26,40 @@
     visibility: hidden;
   }
 }
+
+// Cover the whole parent element
+@mixin layout-cover {
+  height: 100%;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+// Align to parent's bottom
+@mixin layout-align-bottom {
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+}
+
+// Align to parent's top
+@mixin layout-align-top {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+@mixin animate-slide-in-from-bottom($max-height, $duration: $animation-duration, $inner-selector: '') {
+  // Animate show
+  #{$inner-selector} {
+    max-height: $max-height;
+    transition: max-height $duration ease-in;
+  }
+
+  // Animate hide
+  &.hidden #{$inner-selector} {
+    max-height: 0;
+    transition: max-height $duration ease-out;
+  }
+}

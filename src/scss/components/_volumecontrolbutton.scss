@@ -7,6 +7,9 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
+@import '../mixins';
+
 .ui-volumecontrolbutton {
   @extend .ui-container;
 
@@ -14,6 +17,8 @@
   position: relative;
 
   .ui-volumeslider {
+    @include animate-slide-in-from-bottom(6em, $animation-duration / 2);
+
     background-color: $controlbar-background-color;
     bottom: 100%;
     height: 6em;
@@ -29,17 +34,6 @@
       right: .3em;
       top: .5em;
       width: auto;
-    }
-
-    // Animation stuff
-    & {
-      max-height: 6em;
-      transition: max-height $animation-duration / 2 ease-in;
-
-      &.hidden {
-        max-height: 0;
-        transition: max-height $animation-duration / 2 ease-out;
-      }
     }
   }
 }

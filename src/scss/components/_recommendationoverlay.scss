@@ -8,33 +8,27 @@
  */
 
 @import '../variables';
+@import '../mixins';
+
+// H/V center items in the middle of the overlay
+%center-items-in-overlay {
+  display: table;
+
+  > .container-wrapper {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+}
 
 .ui-recommendation-overlay {
   @extend .ui-container;
+  @extend %center-items-in-overlay;
 
-  background-color: $controlbar-background-color;
-
-  // Span over UI viewport
-  & {
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
+  @include layout-align-bottom;
   @include hidden-animated($animation-duration * 2);
 
-  // H/V center items in the middle of the overlay
-  & {
-    display: table;
-
-    > .container-wrapper {
-      display: table-cell;
-      text-align: center;
-      vertical-align: middle;
-    }
-  }
+  background-color: $controlbar-background-color;
 
   a {
     color: $color-white;

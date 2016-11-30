@@ -8,24 +8,18 @@
  */
 
 @import '../variables';
+@import '../mixins';
 
 .ui-titlebar {
   @extend .ui-container;
 
+  @include hidden-animated;
+  @include layout-align-top;
+
   background-color: $controlbar-background-color;
   color: $color-white;
-
-  // Align to top
-  & {
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
 
   > .container-wrapper {
     padding: .5em;
   }
-
-  @include hidden-animated;
 }

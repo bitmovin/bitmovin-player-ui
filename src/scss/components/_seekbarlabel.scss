@@ -12,6 +12,8 @@
 .ui-seekbar-label {
   @extend .ui-container;
 
+  @include hidden-animated;
+
   bottom: 100%;
   left: 0;
   margin-bottom: 1em;
@@ -19,15 +21,16 @@
   position: absolute;
   text-align: center;
 
+  // Center container on left edge to get it centered over timeline position
+  %center-on-left-edge {
+    margin-left: -50%;
+    margin-right: 50%;
+  }
+
   > .container-wrapper {
+    @extend %center-on-left-edge;
     background-color: $controlbar-background-color;
     padding: .5em;
-
-    // Center container on left edge to get it centered over timeline position
-    & {
-      margin-left: -50%;
-      margin-right: 50%;
-    }
 
     .seekbar-thumbnail {
       margin-bottom: .3em;
@@ -38,6 +41,4 @@
       margin: .5em;
     }
   }
-
-  @include hidden-animated;
 }

@@ -7,20 +7,17 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
+@import '../mixins';
+
 &.ui-uicontainer {
   @extend .ui-container;
+
+  @include layout-cover;
 
   font-size: 1em;
   pointer-events: none; // Do not catch pointer events, pass them through
   z-index: 9999; // render UI above player
-
-  // Fit into player frame
-  & {
-    height: 100%;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
 
   * {
     pointer-events: auto;

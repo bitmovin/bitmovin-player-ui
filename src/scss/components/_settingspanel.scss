@@ -8,9 +8,13 @@
  */
 
 @import '../variables';
+@import '../mixins';
 
 .ui-settings-panel {
   @extend .ui-container;
+
+  // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
+  @include animate-slide-in-from-bottom(10em, $animation-duration, '> .container-wrapper');
 
   background-color: $controlbar-background-color;
   bottom: 100%;
@@ -40,22 +44,6 @@
       &:last-child {
         width: 12em;
       }
-    }
-  }
-
-  // Animation stuff
-  // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
-  & {
-    // Animate show
-    > .container-wrapper {
-      max-height: 10em;
-      transition: max-height $animation-duration ease-in;
-    }
-
-    // Animate hide
-    &.hidden > .container-wrapper {
-      max-height: 0;
-      transition: max-height $animation-duration ease-out;
     }
   }
 

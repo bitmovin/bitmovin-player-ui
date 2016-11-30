@@ -12,17 +12,11 @@
 .ui-errormessage-overlay {
   @extend .ui-container;
 
+  @include layout-cover;
+  @include hidden;
+
   background-color: $color-black;
   pointer-events: none;
-
-  // Span over whole UI area
-  & {
-    height: 100%;
-    margin: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
 
   .ui-errormessage-label {
     color: $color-white;
@@ -38,6 +32,4 @@
       top: 50%;
     }
   }
-
-  @include hidden;
 }

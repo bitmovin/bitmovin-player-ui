@@ -8,18 +8,14 @@
  */
 
 @import '../variables';
+@import '../mixins';
 
 .ui-controlbar {
   @extend .ui-container;
 
-  background-color: $controlbar-background-color;
+  @include layout-align-bottom;
 
-  // Align to bottom
-  & {
-    bottom: 0;
-    position: absolute;
-    width: 100%;
-  }
+  background-color: $controlbar-background-color;
 
   > .container-wrapper {
     display: flex;

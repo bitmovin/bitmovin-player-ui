@@ -34,6 +34,14 @@
       top: 0;
     }
 
+    %positionmarker-horizontal {
+      border-right: $position-marker-width solid $color-white;
+      // don't consider the border for width, else it does not overlap at edges
+      box-sizing: content-box;
+      // offset position marker to center it on mouse pointer and make it visible on both the leftmost and rightmost timeline positions
+      margin-left: -$position-marker-width / 2;
+    }
+
     .seekbar-backdrop {
       @extend %bar;
       background-color: lighten($controlbar-background-color, 20%);
@@ -56,16 +64,8 @@
 
     .seekbar-playbackposition {
       @extend %bar;
+      @extend %positionmarker-horizontal;
       transition: width .1s linear, height .1s linear;
-
-      // position marker
-      & {
-        border-right: $position-marker-width solid $color-white;
-        // don't consider the border for width, else it does not overlap at edges
-        box-sizing: content-box;
-        // offset position marker to center it on mouse pointer and make it visible on both the leftmost and rightmost timeline positions
-        margin-left: -$position-marker-width / 2;
-      }
     }
   }
 
@@ -90,6 +90,13 @@
         top: auto;
       }
 
+      %positionmarker-vertical {
+        border-right: 0;
+        border-top: $position-marker-width solid $color-white;
+        // offset position marker to center it on mouse pointer and make it visible on both the bottommost and topmost positions
+        margin-bottom: -$position-marker-width / 2;
+      }
+
       .seekbar-backdrop {
         @extend %bar-vertical;
 
@@ -112,14 +119,7 @@
 
       .seekbar-playbackposition {
         @extend %bar-vertical;
-
-        // position marker
-        & {
-          border-right: 0;
-          border-top: $position-marker-width solid $color-white;
-          // offset position marker to center it on mouse pointer and make it visible on both the bottommost and topmost positions
-          margin-bottom: -$position-marker-width / 2;
-        }
+        @extend %positionmarker-vertical;
       }
     }
   }
