@@ -19,6 +19,12 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
      * The settings panel whose visibility the button should toggle.
      */
     settingsPanel: SettingsPanel;
+
+    /**
+     * Decides if the button should be automatically hidden when the settings panel does not contain any active settings.
+     * Default: true
+     */
+    autoHideWhenNoActiveSettings?: boolean;
 }
 
 /**
@@ -36,13 +42,15 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
         this.config = this.mergeConfig(config, {
             cssClass: "ui-settingstogglebutton",
             text: "Settings",
-            settingsPanel: null
+            settingsPanel: null,
+            autoHideWhenNoActiveSettings: true
         }, <SettingsToggleButtonConfig>this.config);
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
-        let settingsPanel = (<SettingsToggleButtonConfig>this.getConfig()).settingsPanel;
+        let config = <SettingsToggleButtonConfig>this.getConfig(); // TODO fix generics type inference
+        let settingsPanel = config.settingsPanel;
 
         this.onClick.subscribe(function () {
             settingsPanel.toggleHidden();
@@ -51,5 +59,21 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
             // Set toggle status to off when the settings panel hides
             self.off();
         });
+
+        // Handle automatic hiding of the button if there are no settings for the user to interact with
+        if (config.autoHideWhenNoActiveSettings) {
+            // Setup handler to show/hide button when the settings change
+            let settingsPanelItemsChangedHandler = function () {
+                if (settingsPanel.hasActiveSettings()) {
+                    if (self.isHidden()) self.show();
+                } else {
+                    if (self.isShown()) self.hide();
+                }
+            };
+            // Wire the handler to the event
+            settingsPanel.onSettingsStateChanged.subscribe(settingsPanelItemsChangedHandler);
+            // Call handler for first init at startup
+            settingsPanelItemsChangedHandler();
+        }
     }
 }

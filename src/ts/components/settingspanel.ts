@@ -14,6 +14,7 @@ import {UIManager} from "../uimanager";
 import {VideoQualitySelectBox} from "./videoqualityselectbox";
 import {AudioQualitySelectBox} from "./audioqualityselectbox";
 import {Timeout} from "../timeout";
+import {Event, EventDispatcher, NoArgs} from "../eventdispatcher";
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -32,6 +33,10 @@ export interface SettingsPanelConfig extends ContainerConfig {
  */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
+    private settingsPanelEvents = {
+        onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>()
+    };
+
     constructor(config: SettingsPanelConfig) {
         super(config);
 
@@ -43,9 +48,10 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
         let self = this;
+        let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
 
-        if ((<SettingsPanelConfig>self.config).hideDelay > -1) {
-            let timeout = new Timeout((<SettingsPanelConfig>this.config).hideDelay, function () {
+        if (config.hideDelay > -1) {
+            let timeout = new Timeout(config.hideDelay, function () {
                 self.hide();
             });
 
@@ -62,6 +68,45 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
                 timeout.clear();
             });
         }
+
+        // Fire event when the state of a settings-item has changed
+        let settingsStateChangedHandler = function () {
+            self.onSettingsStateChangedEvent();
+        };
+        for (let component of this.getItems()) {
+            component.onActiveChanged.subscribe(settingsStateChangedHandler);
+        }
+    }
+
+    /**
+     * Checks if there are active settings within this settings panel. An active setting is a setting that is visible
+     * and enabled, which the user can interact with.
+     * @returns {boolean} true if there are active settings, false if the panel is functionally empty to a user
+     */
+    hasActiveSettings(): boolean {
+        for (let component of this.getItems()) {
+            if (component.isActive()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private getItems(): SettingsPanelItem[] {
+        return <SettingsPanelItem[]>this.config.components;
+    }
+
+    protected onSettingsStateChangedEvent() {
+        this.settingsPanelEvents.onSettingsStateChanged.dispatch(this);
+    }
+
+    /**
+     * Gets the event that is fired when one or more {@link SettingsPanelItem items} have changed state.
+     * @returns {Event<SettingsPanel, NoArgs>}
+     */
+    get onSettingsStateChanged(): Event<SettingsPanel, NoArgs> {
+        return this.settingsPanelEvents.onSettingsStateChanged.getEvent();
     }
 }
 
@@ -73,6 +118,10 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
     private label: Label<LabelConfig>;
     private setting: SelectBox;
+
+    private settingsPanelItemEvents = {
+        onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>()
+    };
 
     constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
         super(config);
@@ -104,6 +153,10 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
             } else {
                 self.show();
             }
+
+            // Visibility might have changed and therefore the active state might have changed so we fire the event
+            // TODO fire only when state has really changed (e.g. check if visibility has really changed)
+            self.onActiveChangedEvent();
         };
 
         self.setting.onItemAdded.subscribe(handleConfigItemChanged);
@@ -111,5 +164,26 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
         // Initialize hidden state
         handleConfigItemChanged();
+    }
+
+    /**
+     * Checks if this settings panel item is active, i.e. visible and enabled and a user can interact with it.
+     * @returns {boolean} true if the panel is active, else false
+     */
+    isActive(): boolean {
+        return this.isShown();
+    }
+
+    protected onActiveChangedEvent() {
+        this.settingsPanelItemEvents.onActiveChanged.dispatch(this);
+    }
+
+    /**
+     * Gets the event that is fired when the "active" state of this item changes.
+     * @see #isActive
+     * @returns {Event<SettingsPanelItem, NoArgs>}
+     */
+    get onActiveChanged(): Event<SettingsPanelItem, NoArgs> {
+        return this.settingsPanelItemEvents.onActiveChanged.getEvent();
     }
 }
