@@ -38,6 +38,7 @@ import {ErrorMessageOverlay} from "./components/errormessageoverlay";
 import {TitleBar} from "./components/titlebar";
 import Player = bitmovin.player.Player;
 import {RecommendationOverlay} from "./components/recommendationoverlay";
+import {ClickOverlay} from "./components/clickoverlay";
 
 export interface UIRecommendationConfig {
     title: string;
@@ -272,6 +273,7 @@ export class UIManager {
 
             let adsUi = new UIContainer({
                 components: [
+                    new ClickOverlay(),
                     new ControlBar({
                         components: [
                             new PlaybackToggleButton(),

@@ -8,7 +8,7 @@
  */
 
 .ui-watermark {
-  @extend %ui-button;
+  @extend %ui-clickoverlay;
 
   background-image: url('../../assets/skin-legacy/images/components/normal/bitmovin-logo.png');
   height: 26px;

@@ -40,6 +40,7 @@ import {SubtitleOverlay} from "./components/subtitleoverlay";
 import {SubtitleSelectBox} from "./components/subtitleselectbox";
 import {TitleBar} from "./components/titlebar";
 import {VolumeControlButton} from "./components/volumecontrolbutton";
+import {ClickOverlay} from "./components/clickoverlay";
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -79,6 +80,7 @@ if (typeof Object.assign !== "function") {
         Button,
         CastStatusOverlay,
         CastToggleButton,
+        ClickOverlay,
         Component,
         Container,
         ControlBar,

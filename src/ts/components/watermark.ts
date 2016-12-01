@@ -7,22 +7,19 @@
  * and conditions of the applicable license agreement.
  */
 
-import {Button, ButtonConfig} from "./button";
+import {ClickOverlay, ClickOverlayConfig} from "./clickoverlay";
 
 /**
- * Configuration interface for a {@link Watermark}.
+ * Configuration interface for a {@link ClickOverlay}.
  */
-export interface WatermarkConfig extends ButtonConfig {
-    /**
-     * The url to open when the watermark is clicked. Set to null to disable the click handler.
-     */
-    url?: string;
+export interface WatermarkConfig extends ClickOverlayConfig {
+    // nothing yet
 }
 
 /**
  * A watermark overlay with a clickable logo.
  */
-export class Watermark extends Button<WatermarkConfig> {
+export class Watermark extends ClickOverlay {
 
     constructor(config: WatermarkConfig = {}) {
         super(config);
@@ -31,25 +28,5 @@ export class Watermark extends Button<WatermarkConfig> {
             cssClass: "ui-watermark",
             url: "http://bitmovin.com"
         }, <WatermarkConfig>this.config);
-    }
-
-    initialize(): void {
-        super.initialize();
-
-        if (this.getUrl()) {
-            let element = this.getDomElement();
-            element.data("url", this.getUrl());
-            element.on("click", function () {
-                window.open(element.data("url"), "_blank");
-            });
-        }
-    }
-
-    /**
-     * Gets the URL that should be followed when the watermark is clicked.
-     * @returns {string} the watermark URL
-     */
-    getUrl(): string {
-        return (<WatermarkConfig>this.config).url;
     }
 }
