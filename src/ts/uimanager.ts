@@ -100,29 +100,22 @@ export class UIManager {
         let self = this;
 
         // Add UI elements to player
-        this.addUi(this.playerUi);
+        this.addUi(playerUi);
 
         // Ads UI
         if (adsUi) {
-            adsUi.hide();
-            this.addUi(adsUi);
-
             let enterAdsUi = function (event: bitmovin.player.AdStartedEvent) {
-                // Hide the normal player UI
-                playerUi.hide();
+                self.releaseUi(playerUi);
+
                 // Display the ads UI (only for VAST ads, other clients bring their own UI)
-                if (adsUi && event.clientType === "vast") {
-                    adsUi.show();
+                if (event.clientType === "vast") {
+                    self.addUi(adsUi);
                 }
             };
 
             let exitAdsUi = function () {
-                // Hide ads UI if shown
-                if (adsUi && adsUi.isShown()) {
-                    adsUi.hide();
-                }
-                // Show the normal player UI
-                playerUi.show();
+                self.releaseUi(adsUi);
+                self.addUi(playerUi);
             };
 
             // React to ad events from the player
