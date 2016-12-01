@@ -90,7 +90,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     /**
      * Gets the event that is fired when the mouse enters the UI.
-     * @returns {Event<Sender, Args>}
+     * @returns {Event<UIContainer, NoArgs>}
      */
     get onMouseEnter(): Event<UIContainer, NoArgs> {
         return this.uiContainerEvents.onMouseEnter.getEvent();
@@ -98,7 +98,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     /**
      * Gets the event that is fired when the mouse moves within UI.
-     * @returns {Event<Sender, Args>}
+     * @returns {Event<UIContainer, NoArgs>}
      */
     get onMouseMove(): Event<UIContainer, NoArgs> {
         return this.uiContainerEvents.onMouseMove.getEvent();
@@ -106,7 +106,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     /**
      * Gets the event that is fired when the mouse leaves the UI.
-     * @returns {Event<Sender, Args>}
+     * @returns {Event<UIContainer, NoArgs>}
      */
     get onMouseLeave(): Event<UIContainer, NoArgs> {
         return this.uiContainerEvents.onMouseLeave.getEvent();

@@ -14,6 +14,7 @@
   @extend %ui-container;
 
   @include layout-cover;
+  @include hidden-animated;
 
   font-size: 1em;
   pointer-events: none; // Do not catch pointer events, pass them through
@@ -27,5 +28,11 @@
   // We abuse the no-flexbox class which is only set in IE9 (of all supported browsers)
   &.no-flexbox {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
+  }
+
+  &.ads {
+    &.hidden {
+      display: none;
+    }
   }
 }

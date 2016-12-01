@@ -56,7 +56,9 @@ export interface UIConfig {
 export class UIManager {
 
     private player: bitmovin.player.Player;
-    private ui: Component<ComponentConfig>;
+    private playerElement: DOM;
+    private playerUi: UIContainer;
+    private adsUi: UIContainer;
     private config: UIConfig;
 
     private events = {
@@ -86,17 +88,47 @@ export class UIManager {
         onSeeked: new EventDispatcher<SeekBar, NoArgs>()
     };
 
-    constructor(player: Player, ui: UIContainer, config: UIConfig = {}) {
+    constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config: UIConfig = {}) {
         this.player = player;
-        this.ui = ui;
+        this.playerUi = playerUi;
+        this.adsUi = adsUi;
         this.config = config;
 
         let playerId = player.getFigure().parentElement.id;
+        this.playerElement = new DOM(`#${playerId}`);
+        let self = this;
 
         // Add UI elements to player
-        new DOM(`#${playerId}`).append(ui.getDomElement());
+        this.addUi(this.playerUi);
 
-        this.configureControls(ui);
+        // Ads UI
+        if (adsUi) {
+            adsUi.hide();
+            this.addUi(adsUi);
+
+            let enterAdsUi = function (event: bitmovin.player.AdStartedEvent) {
+                // Hide the normal player UI
+                playerUi.hide();
+                // Display the ads UI (only for VAST ads, other clients bring their own UI)
+                if (adsUi && event.clientType === "vast") {
+                    adsUi.show();
+                }
+            };
+
+            let exitAdsUi = function () {
+                // Hide ads UI if shown
+                if (adsUi && adsUi.isShown()) {
+                    adsUi.hide();
+                }
+                // Show the normal player UI
+                playerUi.show();
+            };
+
+            // React to ad events from the player
+            player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, enterAdsUi);
+            player.addEventHandler(bitmovin.player.EVENT.ON_AD_FINISHED, exitAdsUi);
+            player.addEventHandler(bitmovin.player.EVENT.ON_AD_SKIPPED, exitAdsUi);
+        }
     }
 
     getConfig(): UIConfig {
@@ -138,8 +170,20 @@ export class UIManager {
         return this.events.onSeeked;
     }
 
+    private addUi(ui: UIContainer): void {
+        this.playerElement.append(ui.getDomElement());
+        this.configureControls(ui);
+    }
+
+    private releaseUi(ui: UIContainer): void {
+        ui.getDomElement().remove();
+    }
+
     release(): void {
-        this.ui.getDomElement().remove();
+        this.releaseUi(this.playerUi);
+        if (this.adsUi) {
+            this.releaseUi(this.adsUi);
+        }
     }
 
     static Factory = class {
@@ -185,7 +229,7 @@ export class UIManager {
                 ], cssClasses: ["ui-skin-modern"]
             });
 
-            return new UIManager(player, ui, config);
+            return new UIManager(player, ui, null, config);
         }
 
         static buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
@@ -226,7 +270,20 @@ export class UIManager {
                 ], cssClasses: ["ui-skin-legacy"]
             });
 
-            return new UIManager(player, ui, config);
+            let adsUi = new UIContainer({
+                components: [
+                    new ControlBar({
+                        components: [
+                            new PlaybackToggleButton(),
+                            new PlaybackTimeLabel(),
+                            new VolumeControlButton(),
+                            new FullscreenToggleButton()
+                        ]
+                    })
+                ], cssClasses: ["ui-skin-legacy ads"]
+            });
+
+            return new UIManager(player, ui, adsUi, config);
         }
 
         static buildLegacyCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
@@ -248,7 +305,7 @@ export class UIManager {
                 ], cssClasses: ["ui-skin-legacy ui-skin-legacy-cast-receiver"]
             });
 
-            return new UIManager(player, ui, config);
+            return new UIManager(player, ui, null, config);
         }
 
         static buildLegacyTestUI(player: Player, config: UIConfig = {}): UIManager {
@@ -291,7 +348,7 @@ export class UIManager {
                 ], cssClasses: ["ui-skin-legacy"]
             });
 
-            return new UIManager(player, ui, config);
+            return new UIManager(player, ui, null, config);
         }
     };
 }

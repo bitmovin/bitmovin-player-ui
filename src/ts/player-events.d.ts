@@ -135,6 +135,14 @@ declare namespace bitmovin {
             message: string;
         }
 
+        interface AdStartedEvent extends PlayerEvent {
+            clickThroughUrl: string;
+            clientType: string;
+            duration: number;
+            skipOffset: number;
+            timeOffset: string;
+        }
+
         interface PlayerEventCallback {
             (event: PlayerEvent): void;
         }
