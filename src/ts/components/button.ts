@@ -58,6 +58,14 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
         return buttonElement;
     }
 
+    /**
+     * Sets text on the label of the button.
+     * @param text the text to put into the label of the button
+     */
+    setText(text: string): void {
+        this.getDomElement().find(".label").html(text);
+    }
+
     protected onClickEvent() {
         this.buttonEvents.onClick.dispatch(this);
     }

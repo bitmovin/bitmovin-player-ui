@@ -39,6 +39,10 @@ import {TitleBar} from "./components/titlebar";
 import Player = bitmovin.player.Player;
 import {RecommendationOverlay} from "./components/recommendationoverlay";
 import {ClickOverlay} from "./components/clickoverlay";
+import {Button} from "./components/button";
+import {AdMessageLabel} from "./components/admessagelabel";
+import {AdSkipButton} from "./components/adskipbutton";
+import {AdClickOverlay} from "./components/adclickoverlay";
 
 export interface UIRecommendationConfig {
     title: string;
@@ -105,6 +109,7 @@ export class UIManager {
         // Ads UI
         if (adsUi) {
             let enterAdsUi = function (event: bitmovin.player.AdStartedEvent) {
+                console.log(event);
                 self.releaseUi(playerUi);
 
                 // Display the ads UI (only for VAST ads, other clients bring their own UI)
@@ -266,15 +271,16 @@ export class UIManager {
 
             let adsUi = new UIContainer({
                 components: [
-                    new ClickOverlay(),
+                    new AdClickOverlay(),
                     new ControlBar({
                         components: [
                             new PlaybackToggleButton(),
-                            new PlaybackTimeLabel(),
+                            new AdMessageLabel(),
                             new VolumeControlButton(),
                             new FullscreenToggleButton()
                         ]
-                    })
+                    }),
+                    new AdSkipButton()
                 ], cssClasses: ["ui-skin-legacy ads"]
             });
 
