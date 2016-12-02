@@ -21,5 +21,9 @@ export class AdClickOverlay extends ClickOverlay {
         player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, function (event: bitmovin.player.AdStartedEvent) {
             self.setUrl(event.clickThroughUrl);
         });
+
+        self.onClick.subscribe(function () {
+            player.pause();
+        });
     }
 }
