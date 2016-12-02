@@ -49,14 +49,25 @@ export class DOM {
      */
     constructor(element: HTMLElement);
     /**
+     * Wraps a list of plain HTMLElements with a DOM instance.
+     * @param element the HTMLElements to wrap with DOM
+     */
+    constructor(elements: HTMLElement[]);
+    /**
      * Wraps the document with a DOM instance. Useful to attach event listeners to the document.
      * @param document the document to wrap
      */
     constructor(document: Document);
-    constructor(something: string | HTMLElement | Document, attributes?: { [name: string]: string }) {
+    constructor(something: string | HTMLElement | HTMLElement[] | Document, attributes?: { [name: string]: string }) {
         this.document = document; // Set the global document to the local document field
 
-        if (something instanceof HTMLElement) {
+        if (something instanceof Array) {
+            if (something.length > 0 && something[0] instanceof HTMLElement) {
+                let elements = something;
+                this.elements = elements;
+            }
+        }
+        else if (something instanceof HTMLElement) {
             let element = something;
             this.elements = [element];
         }
@@ -79,11 +90,7 @@ export class DOM {
         }
         else {
             let selector = something;
-            let elements = document.querySelectorAll(selector);
-
-            // Convert NodeList to Array
-            // https://toddmotto.com/a-comprehensive-dive-into-nodelists-arrays-converting-nodelists-and-understanding-the-dom/
-            this.elements = [].slice.call(elements);
+            this.elements = this.findChildElements(selector);
         }
     }
 
@@ -95,6 +102,40 @@ export class DOM {
         this.elements.forEach(function (element) {
             handler(element);
         });
+    }
+
+    private findChildElementsOfElement(element: HTMLElement | Document, selector: string): HTMLElement[] {
+        let childElements = element.querySelectorAll(selector);
+
+        // Convert NodeList to Array
+        // https://toddmotto.com/a-comprehensive-dive-into-nodelists-arrays-converting-nodelists-and-understanding-the-dom/
+        return [].slice.call(childElements);
+    }
+
+    private findChildElements(selector: string): HTMLElement[] {
+        let self = this;
+        let allChildElements = <HTMLElement[]>[];
+
+        if (this.elements) {
+            this.forEach(function (element) {
+                allChildElements = allChildElements.concat(self.findChildElementsOfElement(element, selector));
+            });
+        }
+        else {
+            return this.findChildElementsOfElement(document, selector);
+        }
+
+        return allChildElements;
+    }
+
+    /**
+     * Finds all child elements of all elements matching the supplied selector.
+     * @param selector the selector to match with child elements
+     * @returns {DOM} a new DOM instance representing all matched children
+     */
+    find(selector: string): DOM {
+        let allChildElements = this.findChildElements(selector);
+        return new DOM(allChildElements);
     }
 
     /**
