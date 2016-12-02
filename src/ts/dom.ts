@@ -242,7 +242,10 @@ export class DOM {
      */
     remove(): void {
         this.forEach(function (element) {
-            element.parentNode.removeChild(element);
+            let parent = element.parentNode;
+            if (parent) {
+                parent.removeChild(element);
+            }
         });
     }
 

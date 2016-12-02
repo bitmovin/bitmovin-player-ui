@@ -3267,7 +3267,10 @@ var DOM = (function () {
      */
     DOM.prototype.remove = function () {
         this.forEach(function (element) {
-            element.parentNode.removeChild(element);
+            var parent = element.parentNode;
+            if (parent) {
+                parent.removeChild(element);
+            }
         });
     };
     /**
