@@ -50,6 +50,8 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
             } else {
                 self.off();
             }
+
+            console.log("blubb");
         };
 
         // Call handler upon these events

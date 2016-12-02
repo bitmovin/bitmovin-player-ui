@@ -605,7 +605,8 @@ declare namespace bitmovin {
              * @param eventType The event to remove the handler from
              * @param callback The callback handler to remove
              */
-            removeEventHandler(eventType: EVENT, callback: PlayerEventCallback): Player;
+            // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
+            removeEventHandler(eventType: EVENT | string, callback: PlayerEventCallback): Player;
             /**
              * Removes the existing subtitle/caption track with the track ID specified by trackID. If the track is
              * currently active, it will be deactivated and then removed. If no track with the given ID exists,

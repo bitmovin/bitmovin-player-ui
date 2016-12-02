@@ -24,7 +24,6 @@ import {SettingsToggleButton} from "./components/settingstogglebutton";
 import {SettingsPanel, SettingsPanelItem} from "./components/settingspanel";
 import {VideoQualitySelectBox} from "./components/videoqualityselectbox";
 import {Watermark} from "./components/watermark";
-import {Label} from "./components/label";
 import {AudioQualitySelectBox} from "./components/audioqualityselectbox";
 import {AudioTrackSelectBox} from "./components/audiotrackselectbox";
 import {SeekBarLabel} from "./components/seekbarlabel";
@@ -38,11 +37,13 @@ import {ErrorMessageOverlay} from "./components/errormessageoverlay";
 import {TitleBar} from "./components/titlebar";
 import Player = bitmovin.player.Player;
 import {RecommendationOverlay} from "./components/recommendationoverlay";
-import {ClickOverlay} from "./components/clickoverlay";
-import {Button} from "./components/button";
 import {AdMessageLabel} from "./components/admessagelabel";
 import {AdSkipButton} from "./components/adskipbutton";
 import {AdClickOverlay} from "./components/adclickoverlay";
+import EVENT = bitmovin.player.EVENT;
+import PlayerEventCallback = bitmovin.player.PlayerEventCallback;
+import AdStartedEvent = bitmovin.player.AdStartedEvent;
+import {ArrayUtils} from "./utils";
 
 export interface UIRecommendationConfig {
     title: string;
@@ -60,11 +61,14 @@ export interface UIConfig {
 
 export class UIManager {
 
-    private player: bitmovin.player.Player;
+    private player: Player;
     private playerElement: DOM;
     private playerUi: UIContainer;
     private adsUi: UIContainer;
     private config: UIConfig;
+
+    private managerPlayerWrapper: PlayerWrapper;
+    private uiPlayerWrappers: PlayerWrapper[] = [];
 
     private events = {
         /**
@@ -99,6 +103,8 @@ export class UIManager {
         this.adsUi = adsUi;
         this.config = config;
 
+        this.managerPlayerWrapper = new PlayerWrapper(player);
+
         let playerId = player.getFigure().parentElement.id;
         this.playerElement = new DOM(`#${playerId}`);
         let self = this;
@@ -108,7 +114,7 @@ export class UIManager {
 
         // Ads UI
         if (adsUi) {
-            let enterAdsUi = function (event: bitmovin.player.AdStartedEvent) {
+            let enterAdsUi = function (event: AdStartedEvent) {
                 console.log(event);
                 self.releaseUi(playerUi);
 
@@ -124,9 +130,9 @@ export class UIManager {
             };
 
             // React to ad events from the player
-            player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, enterAdsUi);
-            player.addEventHandler(bitmovin.player.EVENT.ON_AD_FINISHED, exitAdsUi);
-            player.addEventHandler(bitmovin.player.EVENT.ON_AD_SKIPPED, exitAdsUi);
+            this.managerPlayerWrapper.getPlayer().addEventHandler(EVENT.ON_AD_STARTED, enterAdsUi);
+            this.managerPlayerWrapper.getPlayer().addEventHandler(EVENT.ON_AD_FINISHED, exitAdsUi);
+            this.managerPlayerWrapper.getPlayer().addEventHandler(EVENT.ON_AD_SKIPPED, exitAdsUi);
         }
     }
 
@@ -135,8 +141,10 @@ export class UIManager {
     }
 
     private configureControls(component: Component<ComponentConfig>) {
+        let playerWrapper = this.uiPlayerWrappers[<any>component];
+
         component.initialize();
-        component.configure(this.player, this);
+        component.configure(playerWrapper.getPlayer(), this);
 
         if (component instanceof Container) {
             for (let childComponent of component.getComponents()) {
@@ -171,11 +179,13 @@ export class UIManager {
 
     private addUi(ui: UIContainer): void {
         this.playerElement.append(ui.getDomElement());
+        this.uiPlayerWrappers[<any>ui] = new PlayerWrapper(this.player);
         this.configureControls(ui);
     }
 
     private releaseUi(ui: UIContainer): void {
         ui.getDomElement().remove();
+        this.uiPlayerWrappers[<any>ui].clearEventHandlers();
     }
 
     release(): void {
@@ -183,6 +193,7 @@ export class UIManager {
         if (this.adsUi) {
             this.releaseUi(this.adsUi);
         }
+        this.managerPlayerWrapper.clearEventHandlers();
     }
 
     static Factory = class {
@@ -352,4 +363,84 @@ export class UIManager {
             return new UIManager(player, ui, null, config);
         }
     };
+}
+
+/**
+ * Wraps the player to track event handlers and provide a simple method to remove all registered event
+ * handlers from the player.
+ */
+class PlayerWrapper {
+
+    private player: Player;
+    private wrapper: Player;
+
+    private eventHandlers: { [eventType: string]: PlayerEventCallback[]; } = {};
+
+    constructor(player: Player) {
+        this.player = player;
+
+        let self = this;
+
+        // Collect all public API methods of the player
+        let methods = <any[]>[];
+        for (let member in player) {
+            if (typeof (<any>player)[member] === "function") {
+                methods.push(member);
+            }
+        }
+
+        // Create wrapper object and add function wrappers for all API methods that do nothing but calling the base method on the player
+        let wrapper = <any>{};
+        for (let member of methods) {
+            wrapper[member] = function () {
+                // console.log("called " + member); // track method calls on the player
+                return (<any>player)[member].apply(player, arguments);
+            };
+        }
+
+        // Explicitly add a wrapper method for "addEventHandler" that adds added event handlers to the event list
+        wrapper.addEventHandler = function (eventType: EVENT, callback: PlayerEventCallback): Player {
+            player.addEventHandler(eventType, callback);
+
+            if (!self.eventHandlers[eventType]) {
+                self.eventHandlers[eventType] = [];
+            }
+
+            self.eventHandlers[eventType].push(callback);
+
+            return wrapper;
+        };
+
+        // Explicitly add a wrapper method for "removeEventHandler" that removes removed event handlers from the event list
+        wrapper.removeEventHandler = function (eventType: EVENT, callback: PlayerEventCallback): Player {
+            player.removeEventHandler(eventType, callback);
+
+            if (self.eventHandlers[eventType]) {
+                ArrayUtils.remove(self.eventHandlers[eventType], callback);
+            }
+
+            return wrapper;
+        };
+
+        this.wrapper = <Player>wrapper;
+    }
+
+    /**
+     * Returns a wrapped player object that can be used on place of the normal player object.
+     * @returns {Player} a wrapped player
+     */
+    getPlayer(): Player {
+        return this.wrapper;
+    }
+
+    /**
+     * Clears all registered event handlers from the player that were added through the wrapped player.
+     */
+    clearEventHandlers(): void {
+        for (let eventType in this.eventHandlers) {
+            for (let callback of this.eventHandlers[eventType]) {
+                this.player.removeEventHandler(eventType, callback);
+            }
+        }
+    }
 }
