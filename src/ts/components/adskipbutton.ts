@@ -60,12 +60,22 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
             }
         };
 
-        player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, function (event: bitmovin.player.AdStartedEvent) {
+        let adStartHandler = function (event: bitmovin.player.AdStartedEvent) {
             adEvent = event;
             updateSkipMessageHandler();
-        });
-        player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
-        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, updateSkipMessageHandler);
+
+            player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
+            player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, updateSkipMessageHandler);
+        };
+
+        let adEndHandler = function () {
+            player.removeEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
+            player.removeEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, updateSkipMessageHandler);
+        };
+
+        player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, adStartHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_AD_SKIPPED, adEndHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_AD_FINISHED, adEndHandler);
 
         self.onClick.subscribe(function () {
             // Try to skip the ad (this only works if it is skippable so we don't need to take extra care of that here)
