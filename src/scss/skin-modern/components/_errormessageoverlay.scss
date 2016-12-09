@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+@import '../mixins';
+
+.ui-errormessage-overlay {
+  @extend %ui-container;
+
+  @include layout-cover;
+  @include hidden;
+
+  background-color: $color-background;
+  pointer-events: none;
+
+  .ui-errormessage-label {
+    color: $color-primary;
+    font-size: 1.2em;
+    left: 3em;
+    position: absolute;
+    right: 3em;
+    text-align: center;
+
+    // Vertically center the label (not exactly, but works for single line errors)
+    & {
+      margin-top: -1em;
+      top: 50%;
+    }
+  }
+}

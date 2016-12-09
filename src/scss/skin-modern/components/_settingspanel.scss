@@ -1,0 +1,59 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+@import '../mixins';
+
+.ui-settings-panel {
+  @extend %ui-container;
+
+  // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
+  @include animate-slide-in-from-bottom(10em, $animation-duration, '> .container-wrapper');
+
+  background-color: $color-background;
+  bottom: 100%;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  right: 0;
+
+  > .container-wrapper {
+    margin: -.5em;
+    padding: .5em;
+
+    > * {
+      margin: .5em;
+    }
+
+    // A "line" in the panel: a container holding a label + control
+    .container-wrapper > * {
+      // Labels
+      &:first-child {
+        display: inline-block;
+        width: 8em;
+      }
+
+      // Controls (e.g. selectbox)
+      &:last-child {
+        width: 12em;
+      }
+    }
+  }
+
+  .ui-settings-panel-entry {
+    &.hidden {
+      display: none;
+    }
+  }
+}
+
+// Remove margin inherited from controlbar
+.container-wrapper > .ui-settings-panel {
+  margin: 0;
+}

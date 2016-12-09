@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+
+.ui-seekbar-label {
+  @extend %ui-container;
+
+  @include hidden-animated;
+
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 1em;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+
+  // Center container on left edge to get it centered over timeline position
+  %center-on-left-edge {
+    margin-left: -50%;
+    margin-right: 50%;
+  }
+
+  > .container-wrapper {
+    @extend %center-on-left-edge;
+    background-color: $color-background;
+    padding: .5em;
+
+    .seekbar-thumbnail {
+      margin-bottom: .3em;
+    }
+
+    .seekbar-label {
+      line-height: .8em;
+      margin: .5em;
+    }
+  }
+}

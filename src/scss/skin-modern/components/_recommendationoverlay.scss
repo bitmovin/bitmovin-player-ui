@@ -1,0 +1,83 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+@import '../mixins';
+
+// H/V center items in the middle of the overlay
+%center-items-in-overlay {
+  display: table;
+
+  > .container-wrapper {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+.ui-recommendation-overlay {
+  @extend %ui-container;
+  @extend %center-items-in-overlay;
+
+  @include layout-cover;
+  @include hidden-animated($animation-duration * 2);
+
+  background-color: $color-background-highlight;
+
+  a {
+    color: $color-primary;
+
+    &:hover,
+    &:visited {
+      color: $color-primary;
+    }
+  }
+
+  .ui-recommendation-item {
+    display: inline-block;
+    font-size: .7em;
+    height: 100px;
+    margin: .3em;
+    position: relative;
+    text-align: left;
+    text-shadow: 0 0 3px $color-background;
+    width: 100px;
+
+    .thumbnail {
+      background-size: contain;
+      height: 100%;
+      position: absolute;
+      transform: scale(1);
+      transition: transform .15s ease-out;
+      width: 100%;
+    }
+
+    &:hover {
+      .thumbnail {
+        transform: scale(1.05);
+        transition: transform .15s ease-in;
+      }
+    }
+
+    .title {
+      left: .5em;
+      position: absolute;
+      right: .5em;
+      top: .5em;
+      white-space: normal;
+      word-break: break-all;
+    }
+
+    .duration {
+      bottom: .5em;
+      position: absolute;
+      right: .5em;
+    }
+  }
+}

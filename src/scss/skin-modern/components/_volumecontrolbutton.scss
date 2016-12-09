@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+@import '../mixins';
+
+.ui-volumecontrolbutton {
+  @extend %ui-container;
+
+  line-height: 0; // Fix layout for Firefox: removes spurious space in the container
+  position: relative;
+
+  .ui-volumeslider {
+    @include animate-slide-in-from-bottom(6em, $animation-duration / 2);
+
+    background-color: $color-background;
+    bottom: 100%;
+    height: 6em;
+    position: absolute;
+    width: 1.5em;
+
+    .seekbar {
+      bottom: .5em;
+      height: auto;
+      left: .3em;
+      overflow: hidden;
+      position: absolute;
+      right: .3em;
+      top: .5em;
+      width: auto;
+    }
+  }
+}

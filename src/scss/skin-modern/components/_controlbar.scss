@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+@import '../mixins';
+
+.ui-controlbar {
+  @extend %ui-container;
+
+  @include layout-align-bottom;
+
+  > .container-wrapper {
+    display: flex;
+    justify-content: space-around;
+    margin: .5em;
+
+    // Evenly distribute controls
+    > * {
+      // Overwrite margins to make them all equal
+      // Outside margins come from the wrapping container, this is just the spacing between controls
+      margin: 0 .5em 0 0;
+
+      // sass-lint:disable nesting-depth
+      &:last-child {
+        // Remove spacing from last control
+        margin: 0;
+      }
+    }
+  }
+
+  @include hidden-animated;
+
+  .ui-label {
+    font-size: .8em;
+  }
+}
+
+// IE9 compatibility: fallback for missing flexbox support
+// sass-lint:disable nesting-depth
+&.no-flexbox {
+  .ui-controlbar {
+    > .container-wrapper {
+      border-spacing: .5em 0;
+      display: table;
+
+      > * {
+        @include hidden; // Add hidden here too, else it is overwritten by display: table-cell
+
+        display: table-cell;
+        vertical-align: middle;
+      }
+    }
+  }
+}

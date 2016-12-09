@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+@import '../mixins';
+
+.ui-cast-status-overlay {
+  @extend %ui-container;
+
+  @include layout-cover;
+  @include hidden-animated;
+
+  background: $color-background svg('assets/skin-modern/images/chromecast.svg') center no-repeat;
+  background-size: 7em 7em;
+  pointer-events: none; // Disable input events
+
+  .ui-cast-status-label {
+    color: $color-primary;
+    font-size: 1.2em;
+    left: 0;
+    margin: 0 2em;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 65%;
+  }
+}

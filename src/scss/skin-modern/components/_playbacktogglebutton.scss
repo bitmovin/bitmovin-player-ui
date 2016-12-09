@@ -1,0 +1,26 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+.ui-playbacktogglebutton {
+  @extend %ui-button;
+
+  background-image: svg('assets/skin-modern/images/play.svg');
+
+  &:hover {
+    //background-image: svg('assets/skin-modern/images/play.svg');
+  }
+
+  &.on {
+    background-image: svg('assets/skin-modern/images/pause.svg');
+
+    &:hover {
+      //background-image: svg('assets/skin-modern/images/pause.svg');
+    }
+  }
+}

@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+
+.ui-selectbox {
+  @extend %ui-component;
+
+  background-color: darken($color-primary, 10%);
+  border: 1px solid $color-secondary;
+  color: lighten($color-background, 30%);
+  cursor: pointer;
+  font-size: .8em;
+  padding: .3em;
+
+  option {
+    // nothing yet
+  }
+}

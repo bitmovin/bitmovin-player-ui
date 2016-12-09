@@ -11,3 +11,12 @@ $color-highlight: #1fabe2; //Bitmovin blue
 $color-primary: #fff;
 $color-secondary: #999;
 $color-background: #111;
+$color-background-highlight: transparentize($color-highlight, .7);
+
+$font-family: inherit;
+$font-size: 1em;
+
+$subtitle-text-color: #fff;
+$subtitle-text-border-color: #000;
+
+$animation-duration: .3s;

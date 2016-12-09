@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
+ *
+ * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
+ *
+ * This source code and its use and distribution, is subject to the terms
+ * and conditions of the applicable license agreement.
+ */
+
+@import '../variables';
+@import '../mixins';
+
+.ui-titlebar {
+  @extend %ui-container;
+
+  @include hidden-animated;
+  @include layout-align-top;
+
+  background-color: $color-background;
+  color: $color-primary;
+
+  > .container-wrapper {
+    padding: .5em;
+  }
+}
