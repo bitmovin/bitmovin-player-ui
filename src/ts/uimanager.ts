@@ -107,26 +107,28 @@ export class UIManager {
 
         let playerId = player.getFigure().parentElement.id;
         this.playerElement = new DOM(`#${playerId}`);
-        let self = this;
 
         // Add UI elements to player
         this.addUi(playerUi);
 
         // Ads UI
         if (adsUi) {
+            this.addUi(adsUi);
+            adsUi.hide();
+
             let enterAdsUi = function (event: AdStartedEvent) {
                 console.log(event);
-                self.releaseUi(playerUi);
+                playerUi.hide();
 
                 // Display the ads UI (only for VAST ads, other clients bring their own UI)
                 if (event.clientType === "vast") {
-                    self.addUi(adsUi);
+                    adsUi.show();
                 }
             };
 
             let exitAdsUi = function () {
-                self.releaseUi(adsUi);
-                self.addUi(playerUi);
+                adsUi.hide();
+                playerUi.show();
             };
 
             // React to ad events from the player

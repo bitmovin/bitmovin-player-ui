@@ -44,4 +44,11 @@
   font-family: $font-family;
   font-size: $font-size;
   line-height: $font-size;
+
+  &.hidden {
+    // Most hiding within the UI works through the "visibility" property, because "display" cannot be animated.
+    // For the outermost UI container we use "display" though, to not block any events (e.g. click events) on the video
+    // when the UI is hidden.
+    display: none;
+  }
 }
