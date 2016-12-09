@@ -22,6 +22,13 @@ export class AdClickOverlay extends ClickOverlay {
             self.setUrl(event.clickThroughUrl);
         });
 
+        // Clear click-through URL when ad has finished
+        let adFinishedHandler = function () {
+            self.setUrl(null);
+        };
+        player.addEventHandler(bitmovin.player.EVENT.ON_AD_FINISHED, adFinishedHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_AD_SKIPPED, adFinishedHandler);
+
         self.onClick.subscribe(function () {
             player.pause();
         });
