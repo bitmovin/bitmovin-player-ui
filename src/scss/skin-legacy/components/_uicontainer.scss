@@ -14,7 +14,6 @@
   @extend %ui-container;
 
   @include layout-cover;
-  @include hidden-animated;
 
   font-size: 1em;
   pointer-events: none; // Do not catch pointer events, pass them through
@@ -22,6 +21,13 @@
 
   * {
     pointer-events: auto;
+  }
+
+  &.hidden {
+    // Most hiding within the UI works through the "visibility" property, because "display" cannot be animated.
+    // For the outermost UI container we use "display" though, to not block any events (e.g. click events) on the video
+    // when the UI is hidden.
+    display: none;
   }
 
   // IE9 compatibility: set transparent 1x1 pixel png background image to make it capture mouse events (IE9 does not capture events in areas without image or color content)
