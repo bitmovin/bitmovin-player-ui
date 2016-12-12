@@ -248,7 +248,9 @@ export class SeekBar extends Component<SeekBarConfig> {
         // Indicator that shows the current playback position
         let seekBarPlaybackPosition = new DOM("div", {
             "class": "seekbar-playbackposition"
-        });
+        }).append(new DOM("div", {
+            "class": "seekbar-playbackposition-marker"
+        }));
         this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
         // Indicator that show where a seek will go to

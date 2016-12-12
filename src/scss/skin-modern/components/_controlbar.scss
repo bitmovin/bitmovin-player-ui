@@ -16,9 +16,8 @@
   @include layout-align-bottom;
 
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), $color-background-bars);
+  line-height: 1em;
   padding-top: 1em;
-
-
 
   .controlbar-top,
   .controlbar-bottom {
@@ -47,6 +46,13 @@
       .spacer {
         width: 100%;
       }
+    }
+  }
+
+  .controlbar-bottom {
+    //font-size: 1.5em;
+    .ui-volumeslider {
+      margin: .25em 0; // vcenter
     }
   }
 

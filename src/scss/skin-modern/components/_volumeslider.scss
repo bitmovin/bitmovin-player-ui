@@ -10,5 +10,7 @@
 .ui-volumeslider {
   @extend %ui-seekbar;
 
-  //
+  .seekbar .seekbar-playbackposition .seekbar-playbackposition-marker {
+    background-image: svg('assets/skin-modern/images/dot-volume.svg');
+  }
 }

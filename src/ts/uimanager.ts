@@ -216,6 +216,7 @@ export class UIManager {
 
             let controlBar = new ControlBar({
                 components: [
+                    settingsPanel,
                     new Container({
                         components: [
                             new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime}),

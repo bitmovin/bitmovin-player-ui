@@ -18,8 +18,7 @@
   position: relative;
   width: 100%;
 
-  $position-marker-width: .3em;
-  $bar-inset: .3em;
+  $bar-inset: .44em;
 
   .seekbar {
     height: 100%;
@@ -35,11 +34,20 @@
     }
 
     %positionmarker-horizontal {
-      border-right: $position-marker-width solid $color-primary;
-      // don't consider the border for width, else it does not overlap at edges
-      box-sizing: content-box;
-      // offset position marker to center it on mouse pointer and make it visible on both the leftmost and rightmost timeline positions
-      margin-left: -$position-marker-width / 2;
+      background-color: $color-highlight;
+      margin: $bar-inset 0;
+
+      .seekbar-playbackposition-marker {
+        background-image: svg('assets/skin-modern/images/dot-play.svg');
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 1.3em;
+        height: 1em;
+        position: absolute;
+        right: -.5em;
+        top: -.5em + (.5em - $bar-inset);
+        width: 1em;
+      }
     }
 
     .seekbar-backdrop {
@@ -51,7 +59,7 @@
 
     .seekbar-bufferlevel {
       @extend %bar;
-      background-color: $color-highlight;
+      background-color: $color-primary;
       margin: $bar-inset 0;
       transition: width .3s linear, height .3s linear;
     }
@@ -91,10 +99,13 @@
       }
 
       %positionmarker-vertical {
-        border-right: 0;
-        border-top: $position-marker-width solid $color-primary;
-        // offset position marker to center it on mouse pointer and make it visible on both the bottommost and topmost positions
-        margin-bottom: -$position-marker-width / 2;
+        @extend %positionmarker-horizontal;
+
+        .seekbar-playbackposition-marker {
+          height: 1em;
+          top: -0.5em;
+          width: 100%;
+        }
       }
 
       .seekbar-backdrop {
