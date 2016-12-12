@@ -18,30 +18,39 @@
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), $color-background-bars);
   padding-top: 1em;
 
-  > .container-wrapper {
-    display: flex;
-    justify-content: space-around;
-    margin: .5em;
 
-    // Evenly distribute controls
-    > * {
-      // Overwrite margins to make them all equal
-      // Outside margins come from the wrapping container, this is just the spacing between controls
-      margin: 0 .5em 0 0;
 
-      // sass-lint:disable nesting-depth
-      &:last-child {
-        // Remove spacing from last control
-        margin: 0;
+  .controlbar-top,
+  .controlbar-bottom {
+    > .container-wrapper {
+      display: flex;
+      //justify-content: space-around;
+      margin: .5em;
+
+      // Evenly distribute controls
+      > * {
+        // Overwrite margins to make them all equal
+        // Outside margins come from the wrapping container, this is just the spacing between controls
+        margin: 0 .5em 0 0;
+
+        // sass-lint:disable nesting-depth
+        &:last-child {
+          // Remove spacing from last control
+          margin: 0;
+        }
+      }
+
+      .ui-volumeslider {
+        width: 5em;
+      }
+
+      .spacer {
+        width: 100%;
       }
     }
   }
 
   @include hidden-animated;
-
-  .ui-label {
-    font-size: .8em;
-  }
 }
 
 // IE9 compatibility: fallback for missing flexbox support
