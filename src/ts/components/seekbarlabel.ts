@@ -36,7 +36,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
         this.config = this.mergeConfig(config, {
             cssClass: "ui-seekbar-label",
-            components: [this.thumbnail, this.label],
+            components: [new Container({components: [this.thumbnail, this.label], cssClass: "seekbar-label-inner"})],
             hidden: true
         }, this.config);
     }
@@ -81,8 +81,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
         if (thumbnail == null) {
             thumbnailElement.css({
-                "background-image": "none",
-                "display": "none"
+                "background-image": null,
+                "display": null,
+                "width": null,
+                "height": null
             });
         }
         else {
