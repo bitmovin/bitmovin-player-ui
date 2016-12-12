@@ -13,19 +13,36 @@
 .ui-settings-panel {
   @extend %ui-container;
 
-  // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
-  @include animate-slide-in-from-bottom(10em, $animation-duration, '> .container-wrapper');
+  @include hidden-animated;
 
-  background-color: $color-background;
-  bottom: 100%;
-  overflow: hidden;
+  $background-color: transparentize($color-background, .15);
+
+  background-color: $background-color;
+  bottom: 6em;
+  //overflow: hidden;
   padding: 0;
   position: absolute;
-  right: 0;
+  right: 2em;
+
+  // bottom arrow from http://www.cssarrowplease.com/
+  &:after {
+    top: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: transparent;
+    border-top-color: $background-color;
+    border-width: 1em;
+    margin-left: 6em;
+  }
 
   > .container-wrapper {
     margin: -.5em;
-    padding: .5em;
+    padding: 1em 1.5em;
 
     > * {
       margin: .5em;
@@ -36,6 +53,7 @@
       // Labels
       &:first-child {
         display: inline-block;
+        font-size: .8em;
         width: 8em;
       }
 
@@ -47,6 +65,13 @@
   }
 
   .ui-settings-panel-entry {
+    border-bottom: 1px solid transparentize($color-secondary, .7);
+    padding: .5em 0;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
     &.hidden {
       display: none;
     }

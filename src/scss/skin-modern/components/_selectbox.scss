@@ -12,14 +12,18 @@
 .ui-selectbox {
   @extend %ui-component;
 
-  background-color: darken($color-primary, 10%);
-  border: 1px solid $color-secondary;
-  color: lighten($color-background, 30%);
+  background-color: transparent;
+  border: none;
+  color: $color-highlight;
   cursor: pointer;
   font-size: .8em;
   padding: .3em;
 
   option {
-    // nothing yet
+    color: $color-secondary;
+
+    &:checked {
+      color: $color-highlight;
+    }
   }
 }
