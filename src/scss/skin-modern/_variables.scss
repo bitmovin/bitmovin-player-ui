@@ -12,6 +12,7 @@ $color-primary: #fff;
 $color-secondary: #999;
 $color-background: #111;
 $color-background-highlight: transparentize($color-highlight, .7);
+$color-background-bars: transparentize(#000, 0.3);
 
 $font-family: inherit;
 $font-size: 1em;
