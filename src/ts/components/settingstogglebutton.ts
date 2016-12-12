@@ -55,6 +55,10 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
         this.onClick.subscribe(function () {
             settingsPanel.toggleHidden();
         });
+        settingsPanel.onShow.subscribe(function () {
+            // Set toggle status to on when the settings panel shows
+            self.on();
+        });
         settingsPanel.onHide.subscribe(function () {
             // Set toggle status to off when the settings panel hides
             self.off();
