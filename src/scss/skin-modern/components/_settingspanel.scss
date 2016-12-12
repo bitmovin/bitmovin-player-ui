@@ -68,7 +68,7 @@
     border-bottom: 1px solid transparentize($color-secondary, .7);
     padding: .5em 0;
 
-    &:last-child {
+    &.last {
       border-bottom: 0;
     }
 

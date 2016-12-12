@@ -786,7 +786,7 @@
     .ui-skin-modern .ui-settings-panel .ui-settings-panel-entry {
       border-bottom: 1px solid rgba(153, 153, 153, 0.3);
       padding: .5em 0; }
-      .ui-skin-modern .ui-settings-panel .ui-settings-panel-entry:last-child {
+      .ui-skin-modern .ui-settings-panel .ui-settings-panel-entry.last {
         border-bottom: 0; }
       .ui-skin-modern .ui-settings-panel .ui-settings-panel-entry.hidden {
         display: none; }

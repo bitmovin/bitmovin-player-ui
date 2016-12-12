@@ -33,6 +33,8 @@ export interface SettingsPanelConfig extends ContainerConfig {
  */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
+    private static readonly CLASS_LAST = "last";
+
     private settingsPanelEvents = {
         onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>()
     };
@@ -72,6 +74,18 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         // Fire event when the state of a settings-item has changed
         let settingsStateChangedHandler = function () {
             self.onSettingsStateChangedEvent();
+
+            // Attach marker class to last visible item
+            let lastShownItem = null;
+            for (let component of self.getItems()) {
+                component.getDomElement().removeClass(SettingsPanel.CLASS_LAST);
+                if(component.isShown()) {
+                    lastShownItem = component;
+                }
+            }
+            if(lastShownItem) {
+                lastShownItem.getDomElement().addClass(SettingsPanel.CLASS_LAST);
+            }
         };
         for (let component of this.getItems()) {
             component.onActiveChanged.subscribe(settingsStateChangedHandler);
