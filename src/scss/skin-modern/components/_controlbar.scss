@@ -17,29 +17,34 @@
 
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), $color-background-bars);
   line-height: 1em;
-  padding-top: 1em;
+  padding: 1em 1em .5em;
 
   .controlbar-top,
   .controlbar-bottom {
     > .container-wrapper {
       display: flex;
-      //justify-content: space-around;
       margin: .5em;
+    }
+  }
 
-      // Evenly distribute controls
+  .controlbar-top {
+    .ui-label {
+      font-size: .9em;
+    }
+
+    > .container-wrapper > * {
+      margin: 0 .5em;
+    }
+  }
+
+  .controlbar-bottom {
+    > .container-wrapper {
       > * {
-        // Overwrite margins to make them all equal
-        // Outside margins come from the wrapping container, this is just the spacing between controls
-        margin: 0 .5em 0 0;
-
-        // sass-lint:disable nesting-depth
-        &:last-child {
-          // Remove spacing from last control
-          margin: 0;
-        }
+        margin: 0 .25em;
       }
 
       .ui-volumeslider {
+        margin: .25em;
         width: 5em;
       }
 
