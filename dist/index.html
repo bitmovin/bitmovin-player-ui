@@ -127,7 +127,37 @@
         }
     };
 
-    var conf = {
+    var advertisingConfig = {
+        forceSinglePlayer: false,
+        client: 'vast',
+        admessage: 'staring contest (ಠ_ಠ) ... hold on for xx seconds',
+        skipmessage: {
+            countdown: '┏(-_-)┛┗(-_-﻿ )┓┗(-_-)┛┏(-_-)┓ (xx)',
+            skip: 'SKIP'
+        },
+        schedule: {
+            'ad-skippable': {
+                offset: 'pre',
+                tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
+            },
+            'ad-nonskippable': {
+                offset: '15',
+                tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
+            },
+            'ad-skippable-ima': {
+                client: 'ima',
+                offset: '30',
+                tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
+            },
+            'ad-nonskippable-ima': {
+                client: 'ima',
+                offset: '45',
+                tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
+            }
+        }
+    };
+
+    var config = {
         key: 'YOUR KEY HERE',
         source: sources.fullyFeatured,
         style: {
@@ -136,35 +166,7 @@
         cast: {
             enable: true
         },
-        advertising: {
-            forceSinglePlayer: false,
-            client: 'vast',
-            admessage: 'staring contest (ಠ_ಠ) ... hold on for xx seconds',
-            skipmessage: {
-                countdown: '┏(-_-)┛┗(-_-﻿ )┓┗(-_-)┛┏(-_-)┓ (xx)',
-                skip: 'SKIP'
-            },
-            schedule: {
-                'ad-skippable': {
-                    offset: 'pre',
-                    tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
-                },
-                'ad-nonskippable': {
-                    offset: '15',
-                    tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
-                },
-                'ad-skippable-ima': {
-                    client: 'ima',
-                    offset: '30',
-                    tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
-                },
-                'ad-nonskippable-ima': {
-                    client: 'ima',
-                    offset: '45',
-                    tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
-                }
-            }
-        }
+        advertising: advertisingConfig
     };
 
     var uiConfig = {
@@ -189,7 +191,7 @@
 
     var uiManager;
 
-    player.setup(conf).then(function () {
+    player.setup(config).then(function () {
         // Add UI to loaded player
         uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
     }, function (errorEvent) {
