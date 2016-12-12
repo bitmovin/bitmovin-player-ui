@@ -200,7 +200,7 @@ export class UIManager {
 
     static Factory = class {
         static buildDefaultUI(player: Player, config: UIConfig = {}): UIManager {
-            return UIManager.Factory.buildLegacyUI(player, config);
+            return UIManager.Factory.buildModernUI(player, config);
         }
 
         static buildModernUI(player: Player, config: UIConfig = {}): UIManager {
