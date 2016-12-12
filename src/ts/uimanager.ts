@@ -223,20 +223,20 @@ export class UIManager {
                             new SeekBar({label: new SeekBarLabel()}),
                             new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.TotalTime}),
                         ],
-                        cssClasses: ['controlbar-top']
+                        cssClasses: ["controlbar-top"]
                     }),
                     new Container({
                         components: [
                             new PlaybackToggleButton(),
                             new VolumeToggleButton(),
                             new VolumeSlider(),
-                            new Component({cssClass: 'spacer'}),
+                            new Component({cssClass: "spacer"}),
                             new CastToggleButton(),
                             new VRToggleButton(),
                             new SettingsToggleButton({settingsPanel: settingsPanel}),
                             new FullscreenToggleButton(),
                         ],
-                        cssClasses: ['controlbar-bottom']
+                        cssClasses: ["controlbar-bottom"]
                     }),
                 ]
             });

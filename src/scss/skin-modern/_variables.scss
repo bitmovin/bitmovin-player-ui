@@ -7,12 +7,16 @@
  * and conditions of the applicable license agreement.
  */
 
+$color-black: #000;
+$color-transparent: rgba(0, 0, 0, 0);
+
 $color-highlight: #1fabe2; //Bitmovin blue
 $color-primary: #fff;
 $color-secondary: #999;
+
 $color-background: #111;
 $color-background-highlight: transparentize($color-highlight, .7);
-$color-background-bars: transparentize(#000, 0.3);
+$color-background-bars: transparentize($color-black, .3);
 
 $font-family: inherit;
 $font-size: 1em;

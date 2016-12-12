@@ -79,11 +79,11 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
             let lastShownItem = null;
             for (let component of self.getItems()) {
                 component.getDomElement().removeClass(SettingsPanel.CLASS_LAST);
-                if(component.isShown()) {
+                if (component.isShown()) {
                     lastShownItem = component;
                 }
             }
-            if(lastShownItem) {
+            if (lastShownItem) {
                 lastShownItem.getDomElement().addClass(SettingsPanel.CLASS_LAST);
             }
         };

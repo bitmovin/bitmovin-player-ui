@@ -16,7 +16,7 @@
   @include hidden-animated;
   @include layout-align-top;
 
-  background: linear-gradient(to top, rgba(0, 0, 0, 0), $color-background-bars);
+  background: linear-gradient(to top, $color-transparent, $color-background-bars);
   padding: .5em 1em 1em;
 
   > .container-wrapper {

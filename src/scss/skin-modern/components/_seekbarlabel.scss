@@ -23,9 +23,9 @@
 
   // Center container on left edge to get it centered over timeline position
   %center-on-left-edge {
-    position: relative;
     margin-left: -50%;
     margin-right: 50%;
+    position: relative;
   }
 
   > .container-wrapper {
@@ -34,22 +34,22 @@
 
   .seekbar-label-inner {
     background-color: transparentize($color-background, .15);
-    border-bottom: 0.2em solid $color-primary;
+    border-bottom: .2em solid $color-primary;
 
     // bottom arrow from http://www.cssarrowplease.com/
-    &:after {
-      top: 100%;
-      left: 50%;
+    &::after {
       border: solid transparent;
-      content: " ";
-      height: 0;
-      width: 0;
-      position: absolute;
-      pointer-events: none;
       border-color: transparent;
       border-top-color: $color-primary;
       border-width: .5em;
+      content: ' ';
+      height: 0;
+      left: 50%;
       margin-left: -.5em;
+      pointer-events: none;
+      position: absolute;
+      top: 100%;
+      width: 0;
     }
 
     > .container-wrapper {
@@ -61,7 +61,7 @@
       }
 
       .seekbar-label {
-        background: linear-gradient(to bottom, rgba(0, 0, 0, 0), $color-background-bars);
+        background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
         bottom: 0;
         display: block;
         line-height: .8em;

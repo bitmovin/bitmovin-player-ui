@@ -25,19 +25,19 @@
   right: 2em;
 
   // bottom arrow from http://www.cssarrowplease.com/
-  &:after {
-    top: 100%;
-    left: 50%;
+  &::after {
     border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
     border-color: transparent;
     border-top-color: $background-color;
     border-width: 1em;
+    content: ' ';
+    height: 0;
+    left: 50%;
     margin-left: 6em;
+    pointer-events: none;
+    position: absolute;
+    top: 100%;
+    width: 0;
   }
 
   > .container-wrapper {

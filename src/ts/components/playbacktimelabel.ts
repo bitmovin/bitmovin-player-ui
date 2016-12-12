@@ -61,7 +61,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
      * @param durationSeconds the total duration in seconds
      */
     setTime(playbackSeconds: number, durationSeconds: number) {
-        switch((<PlaybackTimeLabelConfig>this.config).timeLabelMode) {
+        switch ((<PlaybackTimeLabelConfig>this.config).timeLabelMode) {
             case TimeLabelMode.CurrentTime:
                 this.setText(`${StringUtils.secondsToTime(playbackSeconds)}`);
                 break;

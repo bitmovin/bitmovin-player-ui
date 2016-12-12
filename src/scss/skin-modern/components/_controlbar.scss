@@ -13,9 +13,10 @@
 .ui-controlbar {
   @extend %ui-container;
 
+  @include hidden-animated;
   @include layout-align-bottom;
 
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), $color-background-bars);
+  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   line-height: 1em;
   padding: 1em 1em .5em;
 
@@ -53,15 +54,6 @@
       }
     }
   }
-
-  .controlbar-bottom {
-    //font-size: 1.5em;
-    .ui-volumeslider {
-      margin: .25em 0; // vcenter
-    }
-  }
-
-  @include hidden-animated;
 }
 
 // IE9 compatibility: fallback for missing flexbox support
