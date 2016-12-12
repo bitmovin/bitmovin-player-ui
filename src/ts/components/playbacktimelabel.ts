@@ -11,14 +11,29 @@ import {LabelConfig, Label} from "./label";
 import {UIManager} from "../uimanager";
 import {StringUtils} from "../utils";
 
+export enum TimeLabelMode {
+    CurrentTime,
+    TotalTime,
+    CurrentAndTotalTime,
+}
+
+export interface PlaybackTimeLabelConfig extends LabelConfig {
+    timeLabelMode?: TimeLabelMode;
+}
+
 /**
  * A label that display the current playback time and the total time through {@link PlaybackTimeLabel#setTime setTime}
  * or any string through {@link PlaybackTimeLabel#setText setText}.
  */
-export class PlaybackTimeLabel extends Label<LabelConfig> {
+export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
-    constructor(config: LabelConfig = {}) {
+    constructor(config: PlaybackTimeLabelConfig = {}) {
         super(config);
+
+        this.config = this.mergeConfig(config, <PlaybackTimeLabelConfig>{
+            cssClass: "ui-label",
+            timeLabelMode: TimeLabelMode.CurrentAndTotalTime,
+        }, this.config);
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
@@ -46,6 +61,16 @@ export class PlaybackTimeLabel extends Label<LabelConfig> {
      * @param durationSeconds the total duration in seconds
      */
     setTime(playbackSeconds: number, durationSeconds: number) {
-        this.setText(`${StringUtils.secondsToTime(playbackSeconds)} / ${StringUtils.secondsToTime(durationSeconds)}`);
+        switch((<PlaybackTimeLabelConfig>this.config).timeLabelMode) {
+            case TimeLabelMode.CurrentTime:
+                this.setText(`${StringUtils.secondsToTime(playbackSeconds)}`);
+                break;
+            case TimeLabelMode.TotalTime:
+                this.setText(`${StringUtils.secondsToTime(durationSeconds)}`);
+                break;
+            case TimeLabelMode.CurrentAndTotalTime:
+                this.setText(`${StringUtils.secondsToTime(playbackSeconds)} / ${StringUtils.secondsToTime(durationSeconds)}`);
+                break;
+        }
     }
 }

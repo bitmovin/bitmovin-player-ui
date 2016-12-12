@@ -16,7 +16,7 @@ import {FullscreenToggleButton} from "./components/fullscreentogglebutton";
 import {VRToggleButton} from "./components/vrtogglebutton";
 import {VolumeToggleButton} from "./components/volumetogglebutton";
 import {SeekBar} from "./components/seekbar";
-import {PlaybackTimeLabel} from "./components/playbacktimelabel";
+import {PlaybackTimeLabel, TimeLabelMode} from "./components/playbacktimelabel";
 import {HugePlaybackToggleButton} from "./components/hugeplaybacktogglebutton";
 import {ControlBar} from "./components/controlbar";
 import {NoArgs, EventDispatcher} from "./eventdispatcher";
@@ -220,6 +220,8 @@ export class UIManager {
                     new PlaybackToggleButton(),
                     new SeekBar({label: new SeekBarLabel()}),
                     new PlaybackTimeLabel(),
+                    new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime}),
+                    new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.TotalTime}),
                     new VRToggleButton(),
                     new VolumeControlButton(),
                     new SettingsToggleButton({settingsPanel: settingsPanel}),
