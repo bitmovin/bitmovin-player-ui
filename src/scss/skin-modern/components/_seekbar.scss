@@ -18,12 +18,11 @@
   position: relative;
   width: 100%;
 
-  $bar-inset: .44em;
+  $bar-inset: .41em;
 
   .seekbar {
     height: 100%;
     position: relative;
-    //background-color: lighten($color-background, 10%);
 
     %bar {
       bottom: 0;
@@ -41,7 +40,7 @@
         background-image: svg('assets/skin-modern/images/dot-play.svg');
         background-position: center;
         background-repeat: no-repeat;
-        background-size: 1.3em;
+        background-size: 1.6em;
         height: 1em;
         position: absolute;
         right: -.5em;
@@ -52,7 +51,7 @@
 
     .seekbar-backdrop {
       @extend %bar;
-      background-color: lighten($color-background, 20%);
+      background-color: transparentize($color-primary, .8);
       margin: $bar-inset 0;
       width: 100%;
     }
