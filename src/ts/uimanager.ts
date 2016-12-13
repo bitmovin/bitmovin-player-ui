@@ -125,7 +125,6 @@ export class UIManager {
             adsUi.hide();
 
             let enterAdsUi = function (event: AdStartedEvent) {
-                console.log(event);
                 playerUi.hide();
 
                 // Display the ads UI (only for VAST ads, other clients bring their own UI)
