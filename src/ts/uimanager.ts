@@ -44,6 +44,7 @@ import EVENT = bitmovin.player.EVENT;
 import PlayerEventCallback = bitmovin.player.PlayerEventCallback;
 import AdStartedEvent = bitmovin.player.AdStartedEvent;
 import {ArrayUtils} from "./utils";
+import {PlaybackSpeedSelectBox} from "./components/playbackspeedselectbox";
 
 export interface UIRecommendationConfig {
     title: string;
@@ -222,6 +223,7 @@ export class UIManager {
             let settingsPanel = new SettingsPanel({
                 components: [
                     new SettingsPanelItem("Video Quality", new VideoQualitySelectBox()),
+                    new SettingsPanelItem("Speed", new PlaybackSpeedSelectBox()),
                     new SettingsPanelItem("Audio Track", new AudioTrackSelectBox()),
                     new SettingsPanelItem("Audio Quality", new AudioQualitySelectBox()),
                     new SettingsPanelItem("Subtitles", new SubtitleSelectBox())

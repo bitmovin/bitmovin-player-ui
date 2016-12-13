@@ -44,6 +44,7 @@ import {ClickOverlay} from "./components/clickoverlay";
 import {AdSkipButton} from "./components/adskipbutton";
 import {AdMessageLabel} from "./components/admessagelabel";
 import {AdClickOverlay} from "./components/adclickoverlay";
+import {PlaybackSpeedSelectBox} from "./components/playbackspeedselectbox";
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -112,7 +113,8 @@ if (typeof Object.assign !== "function") {
         VolumeToggleButton,
         VRToggleButton,
         Watermark,
-        ErrorMessageOverlay
+        ErrorMessageOverlay,
+        PlaybackSpeedSelectBox
     ];
 
     (window as any)["bitmovin"]["playerui"] = {};
