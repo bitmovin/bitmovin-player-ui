@@ -11,11 +11,15 @@ import {Container, ContainerConfig} from "./container";
 import {UIManager} from "../uimanager";
 import SubtitleCueEvent = bitmovin.player.SubtitleCueEvent;
 import {Label, LabelConfig} from "./label";
+import {ComponentConfig, Component} from "./component";
+import {ControlBar} from "./controlbar";
 
 /**
  * Overlays the player to display subtitles.
  */
 export class SubtitleOverlay extends Container<ContainerConfig> {
+
+    private static readonly CLASS_CONTROLBAR_VISIBLE = "controlbar-visible";
 
     /**
      * Inner label that renders the subtitle text
@@ -53,5 +57,16 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_CHANGE, subtitleClearHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, subtitleClearHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
+
+        uimanager.onComponentShow.subscribe(function (component: Component<ComponentConfig>) {
+            if(component instanceof ControlBar) {
+                self.getDomElement().addClass(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE);
+            }
+        });
+        uimanager.onComponentHide.subscribe(function (component: Component<ComponentConfig>) {
+            if(component instanceof ControlBar) {
+                self.getDomElement().removeClass(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE);
+            }
+        });
     }
 }
