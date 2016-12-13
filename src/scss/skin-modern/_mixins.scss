@@ -64,3 +64,15 @@
     transition: max-height $duration ease-out;
   }
 }
+
+@mixin text-border($color: $color-primary) {
+  // Shift shadow in all 8 directions to get a homogeneous stroke around the text (works only for 1px width)
+  text-shadow: -1px -1px 0 $color,
+  0 -1px 0 $color,
+  1px -1px 0 $color,
+  -1px 0 0 $color,
+  1px 0 0 $color,
+  -1px 1px 0 $color,
+  0 1px 0 $color,
+  1px 1px 0 $color;
+}

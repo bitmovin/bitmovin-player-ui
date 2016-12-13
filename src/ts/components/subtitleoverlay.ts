@@ -59,12 +59,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
 
         uimanager.onComponentShow.subscribe(function (component: Component<ComponentConfig>) {
-            if(component instanceof ControlBar) {
+            if (component instanceof ControlBar) {
                 self.getDomElement().addClass(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE);
             }
         });
         uimanager.onComponentHide.subscribe(function (component: Component<ComponentConfig>) {
-            if(component instanceof ControlBar) {
+            if (component instanceof ControlBar) {
                 self.getDomElement().removeClass(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE);
             }
         });

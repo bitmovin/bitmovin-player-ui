@@ -14,6 +14,7 @@
   @extend %ui-container;
 
   @include layout-cover;
+  @include text-border($subtitle-text-border-color);
 
   pointer-events: none;
 
@@ -27,15 +28,7 @@
     text-align: center;
     transition: bottom $animation-duration-short ease-out;
 
-    // Shift shadow in all 8 directions to get a homogeneous stroke around the text (works only for 1px width)
-    text-shadow: -1px -1px 0 $subtitle-text-border-color,
-    0 -1px 0 $subtitle-text-border-color,
-    1px -1px 0 $subtitle-text-border-color,
-    -1px 0 0 $subtitle-text-border-color,
-    1px 0 0 $subtitle-text-border-color,
-    -1px 1px 0 $subtitle-text-border-color,
-    0 1px 0 $subtitle-text-border-color,
-    1px 1px 0 $subtitle-text-border-color;
+
   }
 
   &.controlbar-visible {
