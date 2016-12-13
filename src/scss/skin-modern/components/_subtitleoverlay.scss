@@ -25,7 +25,7 @@
     position: absolute;
     right: 3em;
     text-align: center;
-    transition: bottom $animation-duration / 2 ease-out;
+    transition: bottom $animation-duration-short ease-out;
 
     // Shift shadow in all 8 directions to get a homogeneous stroke around the text (works only for 1px width)
     text-shadow: -1px -1px 0 $subtitle-text-border-color,
@@ -41,7 +41,7 @@
   &.controlbar-visible {
     .ui-subtitle-label {
       bottom: 5em;
-      transition: bottom $animation-duration / 2 ease-in;
+      transition: bottom $animation-duration-short ease-in;
     }
   }
 }

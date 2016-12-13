@@ -17,7 +17,7 @@
   position: relative;
 
   .ui-volumeslider {
-    @include animate-slide-in-from-bottom(6em, $animation-duration / 2);
+    @include animate-slide-in-from-bottom(6em, $animation-duration-short);
 
     background-color: $color-background;
     bottom: 100%;
