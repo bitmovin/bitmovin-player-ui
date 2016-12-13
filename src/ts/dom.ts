@@ -95,6 +95,14 @@ export class DOM {
     }
 
     /**
+     * Gets the number of elements that this DOM instance currently holds.
+     * @returns {number} the number of elements
+     */
+    get length(): number {
+        return this.elements ? this.elements.length : 0;
+    }
+
+    /**
      * A shortcut method for iterating all elements. Shorts this.elements.forEach(...) to this.forEach(...).
      * @param handler the handler to execute an operation on an element
      */
