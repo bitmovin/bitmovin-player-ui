@@ -112,6 +112,7 @@ if (typeof Object.assign !== "function") {
         VolumeToggleButton,
         VRToggleButton,
         Watermark,
+        ErrorMessageOverlay
     ];
 
     (window as any)["bitmovin"]["playerui"] = {};

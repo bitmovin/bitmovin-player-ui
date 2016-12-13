@@ -32,5 +32,19 @@
       margin-top: -1em;
       top: 50%;
     }
+
+    ul {
+      color: $color-secondary;
+      font-size: .9em;
+      padding: 0;
+
+      li {
+        list-style: none;
+      }
+    }
+  }
+
+  .ui-tvnoisecanvas {
+    @include layout-cover;
   }
 }

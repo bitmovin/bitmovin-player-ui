@@ -103,6 +103,14 @@ export class DOM {
     }
 
     /**
+     * Gets the HTML elements that this DOM instance currently holds.
+     * @returns {HTMLElement[]} the raw HTML elements
+     */
+    getElements(): HTMLElement[] {
+        return this.elements;
+    }
+
+    /**
      * A shortcut method for iterating all elements. Shorts this.elements.forEach(...) to this.forEach(...).
      * @param handler the handler to execute an operation on an element
      */
