@@ -56,13 +56,12 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
         this.selectElement.empty();
 
         // Add updated children
-        for (let value in this.items) {
-            let label = this.items[value];
+        for (let item of this.items) {
             let optionElement = new DOM("option", {
-                "value": value
-            }).html(label);
+                "value": item.key
+            }).html(item.label);
 
-            if (value === selectedValue + "") { // convert selectedValue to string to catch "null"/null case
+            if (item.key === selectedValue + "") { // convert selectedValue to string to catch "null"/null case
                 optionElement.attr("selected", "selected");
             }
 

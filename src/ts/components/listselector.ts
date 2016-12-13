@@ -13,21 +13,21 @@ import {EventDispatcher, Event} from "../eventdispatcher";
 /**
  * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.
  */
-export interface ListItemCollection {
-    // key -> label mapping
-    [key: string]: string;
+export interface ListItem {
+    key: string;
+    label: string;
 }
 
 /**
  * Configuration interface for a {@link ListSelector}.
  */
 export interface ListSelectorConfig extends ComponentConfig {
-    items?: ListItemCollection;
+    items?: ListItem[];
 }
 
 export abstract class ListSelector<Config extends ListSelectorConfig> extends Component<ListSelectorConfig> {
 
-    protected items: ListItemCollection;
+    protected items: ListItem[];
     protected selectedItem: string;
 
     private listSelectorEvents = {
@@ -40,11 +40,20 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
         super(config);
 
         this.config = this.mergeConfig(config, {
-            items: {},
+            items: [],
             cssClass: "ui-listselector"
         }, this.config);
 
         this.items = this.config.items;
+    }
+
+    private getItemIndex(key: string): number {
+        for (let index in this.items) {
+            if (key == this.items[index].key) {
+                return parseInt(index);
+            }
+        }
+        return -1;
     }
 
     /**
@@ -53,7 +62,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
      * @returns {boolean} true if the item is part of this selector, else false
      */
     hasItem(key: string): boolean {
-        return this.items[key] != null;
+        return this.getItemIndex(key) > -1;
     }
 
     /**
@@ -62,7 +71,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
      * @param label the (human-readable) label of the item to add
      */
     addItem(key: string, label: string) {
-        this.items[key] = label;
+        this.items.push({key: key, label: label});
         this.onItemAddedEvent(key);
     }
 
@@ -72,8 +81,9 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
      * @returns {boolean} true if removal was successful, false if the item is not part of this selector
      */
     removeItem(key: string): boolean {
-        if (this.hasItem(key)) {
-            delete this.items[key];
+        let index = this.getItemIndex(key);
+        if (index > -1) {
+            delete this.items[index];
             this.onItemRemovedEvent(key);
             return true;
         }
@@ -92,7 +102,9 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
             return true;
         }
 
-        if (this.items[key] != null) {
+        let index = this.getItemIndex(key);
+
+        if (index > -1) {
             this.selectedItem = key;
             this.onItemSelectedEvent(key);
             return true;
@@ -114,11 +126,11 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
      */
     clearItems() {
         let items = this.items; // local copy for iteration after clear
-        this.items = {}; // clear items
+        this.items = []; // clear items
 
         // fire events
-        for (let key in items) {
-            this.onItemRemovedEvent(key);
+        for (let item of items) {
+            this.onItemRemovedEvent(item.key);
         }
     }
 
