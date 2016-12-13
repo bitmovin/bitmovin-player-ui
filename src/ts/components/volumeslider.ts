@@ -24,7 +24,7 @@ export class VolumeSlider extends SeekBar {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
-        super.configure(player, uimanager);
+        super.configure(player, uimanager, false);
 
         let self = this;
 

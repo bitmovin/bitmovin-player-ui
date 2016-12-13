@@ -98,8 +98,16 @@ export class SeekBar extends Component<SeekBarConfig> {
         }
     }
 
-    configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+    configure(player: bitmovin.player.Player, uimanager: UIManager, configureSeek: boolean = true): void {
         super.configure(player, uimanager);
+
+        if (!configureSeek) {
+            // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
+            // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
+            // This is actually a hack, the proper solution would be for both seek bar and volume sliders to extend
+            // a common base slider component and implement their functionality there.
+            return;
+        }
 
         let self = this;
         let playbackNotInitialized = true;
