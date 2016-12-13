@@ -44,6 +44,8 @@ export class TitleBar extends Container<TitleBarConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
 
         if (uimanager.getConfig() && uimanager.getConfig().metadata) {

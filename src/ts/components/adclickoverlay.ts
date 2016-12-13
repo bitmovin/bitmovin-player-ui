@@ -16,6 +16,8 @@ import {UIManager} from "../uimanager";
 export class AdClickOverlay extends ClickOverlay {
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
 
         player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, function (event: bitmovin.player.AdStartedEvent) {

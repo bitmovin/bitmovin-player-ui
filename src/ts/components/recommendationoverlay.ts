@@ -28,6 +28,8 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
 
         if (!uimanager.getConfig() || !uimanager.getConfig().recommendations || uimanager.getConfig().recommendations.length === 0) {

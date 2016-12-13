@@ -34,6 +34,8 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
         let castDeviceName = "unknown";
 

@@ -32,6 +32,8 @@ export class ErrorMessageOverlay extends Container<ContainerConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
 
         player.addEventHandler(bitmovin.player.EVENT.ON_ERROR, function (event: ErrorEvent) {

@@ -39,6 +39,8 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
         let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
         let adEvent = <bitmovin.player.AdStartedEvent>null;

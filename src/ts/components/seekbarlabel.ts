@@ -42,6 +42,8 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
 
         uimanager.onSeekPreview.subscribe(function (sender, percentage) {

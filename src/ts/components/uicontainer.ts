@@ -39,6 +39,8 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
 
         self.onMouseEnter.subscribe(function (sender) {

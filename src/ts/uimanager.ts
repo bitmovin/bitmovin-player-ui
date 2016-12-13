@@ -94,7 +94,15 @@ export class UIManager {
         /**
          * Fires when a seek is finished.
          */
-        onSeeked: new EventDispatcher<SeekBar, NoArgs>()
+        onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
+        /**
+         * Fires when a component is showing.
+         */
+        onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+        /**
+         * Fires when a component is hiding.
+         */
+        onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     };
 
     constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config: UIConfig = {}) {
@@ -177,6 +185,14 @@ export class UIManager {
 
     get onSeeked(): EventDispatcher<SeekBar, NoArgs> {
         return this.events.onSeeked;
+    }
+
+    get onComponentShow(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
+        return this.events.onComponentShow;
+    }
+
+    get onComponentHide(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
+        return this.events.onComponentHide;
     }
 
     private addUi(ui: UIContainer): void {

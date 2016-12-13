@@ -183,7 +183,14 @@ export class Component<Config extends ComponentConfig> {
      * @param uimanager the UIManager that manages this component
      */
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
-        // nothing to do here; overwrite in subclasses
+        let self = this;
+
+        self.onShow.subscribe(function () {
+            uimanager.onComponentShow.dispatch(self);
+        });
+        self.onHide.subscribe(function () {
+            uimanager.onComponentHide.dispatch(self);
+        });
     }
 
     /**

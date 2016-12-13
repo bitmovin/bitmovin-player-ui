@@ -58,6 +58,8 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
         let volumeToggleButton = this.getVolumeToggleButton();
         let volumeSlider = this.getVolumeSlider();

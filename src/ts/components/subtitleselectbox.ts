@@ -24,6 +24,8 @@ export class SubtitleSelectBox extends SelectBox {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
 
         let updateSubtitles = function () {

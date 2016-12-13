@@ -21,6 +21,8 @@ export class VideoQualitySelectBox extends SelectBox {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
 
         let updateVideoQualities = function () {

@@ -99,6 +99,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
         let playbackNotInitialized = true;
         let isPlaying = false;

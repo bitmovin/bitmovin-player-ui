@@ -49,6 +49,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+        super.configure(player, uimanager);
+
         let self = this;
         let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
 

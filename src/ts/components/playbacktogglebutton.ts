@@ -26,6 +26,8 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     }
 
     configure(player: bitmovin.player.Player, uimanager: UIManager, handleClickEvent: boolean = true): void {
+        super.configure(player, uimanager);
+
         let self = this;
         let isSeeking = false;
 
