@@ -19,7 +19,7 @@
   pointer-events: none;
 
   .ui-subtitle-label {
-    bottom: 3em;
+    bottom: 2em;
     color: $subtitle-text-color;
     font-size: 1.2em;
     left: 3em;
@@ -27,8 +27,6 @@
     right: 3em;
     text-align: center;
     transition: bottom $animation-duration-short ease-out;
-
-
   }
 
   &.controlbar-visible {
