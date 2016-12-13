@@ -47,5 +47,8 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
                 player.enterFullscreen();
             }
         });
+
+        // Startup init
+        fullscreenStateHandler();
     }
 }

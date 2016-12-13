@@ -41,7 +41,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
 
             // TODO replace this hack with a sole player.isPlaying() call once issue #1203 is fixed
             let isPlaying = player.isPlaying();
-            if (player.isCasting() &&
+            if (player.isCasting() && event &&
                 (event.type === bitmovin.player.EVENT.ON_PLAY || event.type === bitmovin.player.EVENT.ON_PLAY
                 || event.type === bitmovin.player.EVENT.ON_CAST_PLAYING || event.type === bitmovin.player.EVENT.ON_CAST_PAUSE)) {
                 isPlaying = !isPlaying;
@@ -83,5 +83,8 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         uimanager.onSeeked.subscribe(function () {
             isSeeking = false;
         });
+
+        // Startup init
+        playbackStateHandler(null);
     }
 }

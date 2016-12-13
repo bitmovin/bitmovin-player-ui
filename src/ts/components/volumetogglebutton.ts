@@ -57,5 +57,8 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
                 self.getDomElement().removeClass("low");
             }
         });
+
+        // Startup init
+        muteStateHandler();
     }
 }

@@ -59,7 +59,10 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
             self.off();
         });
 
-        // Hide button if Cast not available
-        castAvailableHander();
+        // Startup init
+        castAvailableHander(); // Hide button if Cast not available
+        if (player.isCasting()) {
+            self.on();
+        }
     }
 }
