@@ -156,6 +156,7 @@
             }
         }
     };
+    var adsEnabled = false;
 
     var config = {
         key: 'YOUR KEY HERE',
@@ -166,7 +167,7 @@
         cast: {
             enable: true
         },
-        advertising: advertisingConfig
+        advertising: adsEnabled ? advertisingConfig : null
     };
 
     var uiConfig = {
