@@ -270,7 +270,34 @@ export class UIManager {
                 ], cssClasses: ["ui-skin-modern"]
             });
 
-            return new UIManager(player, ui, null, config);
+            let adsUi = new UIContainer({
+                components: [
+                    new AdClickOverlay(),
+                    new Container({
+                        components: [
+                            new AdMessageLabel({ text: "Ad: {remainingTime} secs" }),
+                            new AdSkipButton()
+                        ],
+                        cssClass: "ui-ads-status"
+                    }),
+                    new ControlBar({
+                        components: [
+                            new Container({
+                                components: [
+                                    new PlaybackToggleButton(),
+                                    new VolumeToggleButton(),
+                                    new VolumeSlider(),
+                                    new Component({cssClass: "spacer"}),
+                                    new FullscreenToggleButton(),
+                                ],
+                                cssClasses: ["controlbar-bottom"]
+                            }),
+                        ]
+                    })
+                ], cssClasses: ["ui-skin-modern ads"]
+            });
+
+            return new UIManager(player, ui, adsUi, config);
         }
 
         static buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
