@@ -41,11 +41,11 @@
   }
 
   > .container-wrapper {
-    margin: -.5em;
-    padding: 1em 1.5em;
+    overflow-y: scroll;
+    margin: .5em;
 
     > * {
-      margin: .5em;
+      margin: 0 .5em;
     }
 
     // A "line" in the panel: a container holding a label + control
@@ -67,6 +67,7 @@
   .ui-settings-panel-entry {
     border-bottom: 1px solid transparentize($color-secondary, .7);
     padding: .5em 0;
+    margin: 0 1em;
 
     &.last {
       border-bottom: 0;
