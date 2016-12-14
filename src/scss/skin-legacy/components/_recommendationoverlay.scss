@@ -40,6 +40,7 @@
   }
 
   .ui-recommendation-item {
+    background-size: cover;
     display: inline-block;
     font-size: .7em;
     height: 100px;
@@ -47,22 +48,19 @@
     position: relative;
     text-align: left;
     text-shadow: 0 0 3px $color-black;
+    transform: scale(1);
+    transition: transform .15s ease-out;
     width: 100px;
 
     .thumbnail {
-      background-size: contain;
       height: 100%;
       position: absolute;
-      transform: scale(1);
-      transition: transform .15s ease-out;
       width: 100%;
     }
 
     &:hover {
-      .thumbnail {
-        transform: scale(1.05);
-        transition: transform .15s ease-in;
-      }
+      transform: scale(1.05);
+      transition: transform .15s ease-in;
     }
 
     .title {

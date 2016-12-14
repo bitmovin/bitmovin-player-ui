@@ -37,8 +37,12 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
             return;
         }
 
+        let index = 1;
         for (let item of uimanager.getConfig().recommendations) {
-            this.addComponent(new RecommendationItem({itemConfig: item}));
+            this.addComponent(new RecommendationItem({
+                itemConfig: item,
+                cssClasses: ["recommendation-item-" + (index++)]
+            }));
         }
         this.updateComponents(); // create container DOM elements
 
@@ -87,21 +91,25 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
             "id": this.config.id,
             "class": this.getCssClasses(),
             "href": config.url
-        });
+        }).css({"background-image": `url(${config.thumbnail})`});
 
         let bgElement = new DOM("div", {
-            "class": "thumbnail"
-        }).css({"background-image": `url(${config.thumbnail})`});
+            "class": "background"
+        });
         itemElement.append(bgElement);
 
         let titleElement = new DOM("span", {
             "class": "title"
-        }).html(config.title);
+        }).append(new DOM("span", {
+            "class": "innertitle"
+        }).html(config.title));
         itemElement.append(titleElement);
 
         let timeElement = new DOM("span", {
             "class": "duration"
-        }).html(StringUtils.secondsToTime(config.duration));
+        }).append(new DOM("span", {
+            "class": "innerduration"
+        }).html(StringUtils.secondsToTime(config.duration)));
         itemElement.append(timeElement);
 
         return itemElement;
