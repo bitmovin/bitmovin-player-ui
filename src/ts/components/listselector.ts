@@ -9,6 +9,7 @@
 
 import {Component, ComponentConfig} from "./component";
 import {EventDispatcher, Event} from "../eventdispatcher";
+import {ArrayUtils} from "../utils";
 
 /**
  * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.
@@ -83,7 +84,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     removeItem(key: string): boolean {
         let index = this.getItemIndex(key);
         if (index > -1) {
-            delete this.items[index];
+            ArrayUtils.remove(this.items, this.items[index]);
             this.onItemRemovedEvent(key);
             return true;
         }
