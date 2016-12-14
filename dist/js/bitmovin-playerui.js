@@ -1318,7 +1318,7 @@ var ListSelector = (function (_super) {
     }
     ListSelector.prototype.getItemIndex = function (key) {
         for (var index in this.items) {
-            if (key == this.items[index].key) {
+            if (key === this.items[index].key) {
                 return parseInt(index);
             }
         }

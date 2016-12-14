@@ -50,7 +50,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
 
     private getItemIndex(key: string): number {
         for (let index in this.items) {
-            if (key == this.items[index].key) {
+            if (key === this.items[index].key) {
                 return parseInt(index);
             }
         }
