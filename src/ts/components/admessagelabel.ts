@@ -9,6 +9,7 @@
 
 import {Label, LabelConfig} from "./label";
 import {UIManager} from "../uimanager";
+import {StringUtils} from "../utils";
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
@@ -31,8 +32,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
         let text = this.getConfig().text;
 
         let updateMessageHandler = function () {
-            let remainingTime = Math.ceil(player.getDuration() - player.getCurrentTime());
-            self.setText(text.replace("{remainingTime}", String(remainingTime)));
+            self.setText(StringUtils.replaceAdMessagePlaceholders(text, null, player));
         };
 
         let adStartHandler = function () {

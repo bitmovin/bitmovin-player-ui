@@ -10,6 +10,7 @@
 import {ButtonConfig, Button} from "./button";
 import {UIManager} from "../uimanager";
 import SkipMessage = bitmovin.player.SkipMessage;
+import {StringUtils} from "../utils";
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
@@ -32,7 +33,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
         this.config = this.mergeConfig(config, <AdSkipButtonConfig>{
             cssClass: "ui-button-ad-skip",
             skipMessage: {
-                countdown: "Skip ad in {remainingSkipWaitTime}",
+                countdown: "Skip ad in {remainingTime}",
                 skip: "Skip ad"
             }
         }, this.config);
@@ -55,8 +56,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
             // Update the skip message on the button
             if (player.getCurrentTime() < adEvent.skipOffset) {
-                let remainingSkipWaitTime = Math.ceil(adEvent.skipOffset - player.getCurrentTime());
-                self.setText(config.skipMessage.countdown.replace("{remainingSkipWaitTime}", String(remainingSkipWaitTime)));
+                self.setText(StringUtils.replaceAdMessagePlaceholders(config.skipMessage.countdown, adEvent.skipOffset, player));
             } else {
                 self.setText(config.skipMessage.skip);
             }
