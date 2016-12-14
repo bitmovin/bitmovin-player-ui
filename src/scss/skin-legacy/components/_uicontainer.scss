@@ -16,6 +16,7 @@
   @include layout-cover;
 
   font-size: 1em;
+  overflow: hidden;
   pointer-events: none; // Do not catch pointer events, pass them through
   z-index: 9999; // render UI above player
 
