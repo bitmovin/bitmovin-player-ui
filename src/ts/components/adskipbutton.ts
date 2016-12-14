@@ -64,7 +64,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
         let adStartHandler = function (event: bitmovin.player.AdStartedEvent) {
             adEvent = event;
-            self.setText("");
+            updateSkipMessageHandler();
 
             player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
             player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, updateSkipMessageHandler);

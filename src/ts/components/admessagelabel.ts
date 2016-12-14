@@ -36,7 +36,8 @@ export class AdMessageLabel extends Label<LabelConfig> {
         };
 
         let adStartHandler = function () {
-            self.setText("");
+            updateMessageHandler();
+
             player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
             player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, updateMessageHandler);
         };
