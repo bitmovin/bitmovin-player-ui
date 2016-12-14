@@ -31,7 +31,7 @@
   background-color: $color-background-highlight;
 
   > .container-wrapper {
-    padding: 3em 3em;
+    padding: 3em;
   }
 
   a {
@@ -47,8 +47,8 @@
     $margin: 1em;
     $item-scale: 1;
 
-    background-size: cover;
     background-position: center;
+    background-size: cover;
     display: inline-block;
     font-size: .7em;
     height: (9em * $item-scale);

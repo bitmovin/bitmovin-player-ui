@@ -41,8 +41,8 @@
   }
 
   > .container-wrapper {
-    overflow-y: auto;
     margin: .5em;
+    overflow-y: auto;
 
     > * {
       margin: 0 .5em;
@@ -66,8 +66,8 @@
 
   .ui-settings-panel-entry {
     border-bottom: 1px solid transparentize($color-secondary, .7);
-    padding: .5em 0;
     margin: 0 1em;
+    padding: .5em 0;
 
     &.last {
       border-bottom: 0;
