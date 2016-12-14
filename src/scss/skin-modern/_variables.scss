@@ -15,7 +15,7 @@ $color-primary: #fff;
 $color-secondary: #999;
 
 $color-background: #111;
-$color-background-highlight: transparentize($color-highlight, .7);
+$color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3);
 $color-background-bars: transparentize($color-black, .3);
 
 $font-family: inherit;
