@@ -19,9 +19,9 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
 
     private canvasElement: HTMLCanvasElement;
     private canvasContext: CanvasRenderingContext2D;
-    private canvasWidth = 500;
-    private canvasHeight = 280;
-    private interferenceHeight = 100;
+    private canvasWidth = 160;
+    private canvasHeight = 90;
+    private interferenceHeight = 50;
     private lastFrameUpdate: number = 0;
     private frameInterval: number = 60;
     private useAnimationFrame: boolean = !!window.requestAnimationFrame;
@@ -45,6 +45,9 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
         this.canvasContext = this.canvasElement.getContext("2d");
         this.noiseAnimationWindowPos = -this.canvasHeight;
         this.lastFrameUpdate = 0;
+
+        this.canvasElement.width = this.canvasWidth;
+        this.canvasElement.height = this.canvasHeight;
 
         this.renderFrame();
     }
