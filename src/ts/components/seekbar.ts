@@ -66,7 +66,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     private label: SeekBarLabel;
 
     // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
-    private touchSupported = ('ontouchstart' in window);
+    private touchSupported = ("ontouchstart" in window);
 
     private seekBarEvents = {
         /**
@@ -396,14 +396,14 @@ export class SeekBar extends Component<SeekBarConfig> {
      * @see #getVerticalOffset
      */
     private getOffset(e: MouseEvent | TouchEvent): number {
-        if(this.touchSupported && e instanceof TouchEvent) {
+        if (this.touchSupported && e instanceof TouchEvent) {
             if (this.config.vertical) {
                 return this.getVerticalOffset(e.type === "touchend" ? e.changedTouches[0].pageY : e.touches[0].pageY);
             } else {
                 return this.getHorizontalOffset(e.type === "touchend" ? e.changedTouches[0].pageX : e.touches[0].pageX);
             }
         }
-        else if(e instanceof MouseEvent) {
+        else if (e instanceof MouseEvent) {
             if (this.config.vertical) {
                 return this.getVerticalOffset(e.pageY);
             } else {
@@ -411,7 +411,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             }
         }
         else {
-            if(console) console.warn("invalid event");
+            if (console) console.warn("invalid event");
             return 0;
         }
     }
