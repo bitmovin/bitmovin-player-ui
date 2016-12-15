@@ -24,6 +24,11 @@ export interface UIContainerConfig extends ContainerConfig {
  */
 export class UIContainer extends Container<UIContainerConfig> {
 
+    private static readonly STATE_IDLE = "player-state-idle";
+    private static readonly STATE_PLAYING = "player-state-playing";
+    private static readonly STATE_PAUSED = "player-state-paused";
+    private static readonly STATE_FINISHED = "player-state-finished";
+
     private uiContainerEvents = {
         onMouseEnter: new EventDispatcher<UIContainer, NoArgs>(),
         onMouseMove: new EventDispatcher<UIContainer, NoArgs>(),
@@ -52,6 +57,32 @@ export class UIContainer extends Container<UIContainerConfig> {
         self.onMouseLeave.subscribe(function (sender) {
             uimanager.onMouseLeave.dispatch(sender);
         });
+
+        // Player states
+        let removeStates = function () {
+            self.getDomElement().removeClass(UIContainer.STATE_IDLE);
+            self.getDomElement().removeClass(UIContainer.STATE_PLAYING);
+            self.getDomElement().removeClass(UIContainer.STATE_PAUSED);
+            self.getDomElement().removeClass(UIContainer.STATE_FINISHED);
+        };
+        player.addEventHandler(bitmovin.player.EVENT.ON_READY, function () {
+            removeStates();
+            self.getDomElement().addClass(UIContainer.STATE_IDLE);
+        });
+        player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function () {
+            removeStates();
+            self.getDomElement().addClass(UIContainer.STATE_PLAYING);
+        });
+        player.addEventHandler(bitmovin.player.EVENT.ON_PAUSE, function () {
+            removeStates();
+            self.getDomElement().addClass(UIContainer.STATE_PAUSED);
+        });
+        player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, function () {
+            removeStates();
+            self.getDomElement().addClass(UIContainer.STATE_FINISHED);
+        });
+        // Init in idle state
+        self.getDomElement().addClass(UIContainer.STATE_IDLE);
     }
 
     protected toDomElement(): DOM {
