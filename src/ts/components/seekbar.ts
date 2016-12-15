@@ -65,6 +65,9 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     private label: SeekBarLabel;
 
+    // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
+    private touchSupported = ('ontouchstart' in window);
+
     private seekBarEvents = {
         /**
          * Fired when a scrubbing seek operation is started.
@@ -309,7 +312,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         // and mouseup handlers to the whole document. A seek is triggered when the user lifts the mouse key.
         // A seek mouse gesture is thus basically a click with a long time frame between down and up events.
         seekBar.on("touchstart mousedown", function (e: MouseEvent | TouchEvent) {
-            let isTouchEvent = e instanceof TouchEvent;
+            let isTouchEvent = self.touchSupported && e instanceof TouchEvent;
 
             // Prevent selection of DOM elements (also prevents mousedown if current event is touchstart)
             e.preventDefault();
@@ -393,12 +396,23 @@ export class SeekBar extends Component<SeekBarConfig> {
      * @see #getVerticalOffset
      */
     private getOffset(e: MouseEvent | TouchEvent): number {
-        if (this.config.vertical) {
-            return this.getVerticalOffset(e instanceof TouchEvent ?
-                (e.type === "touchend" ? e.changedTouches[0].pageY : e.touches[0].pageY) : e.pageY);
-        } else {
-            return this.getHorizontalOffset(e instanceof TouchEvent ?
-                (e.type === "touchend" ? e.changedTouches[0].pageX : e.touches[0].pageX) : e.pageX);
+        if(this.touchSupported && e instanceof TouchEvent) {
+            if (this.config.vertical) {
+                return this.getVerticalOffset(e.type === "touchend" ? e.changedTouches[0].pageY : e.touches[0].pageY);
+            } else {
+                return this.getHorizontalOffset(e.type === "touchend" ? e.changedTouches[0].pageX : e.touches[0].pageX);
+            }
+        }
+        else if(e instanceof MouseEvent) {
+            if (this.config.vertical) {
+                return this.getVerticalOffset(e.pageY);
+            } else {
+                return this.getHorizontalOffset(e.pageX);
+            }
+        }
+        else {
+            if(console) console.warn("invalid event");
+            return 0;
         }
     }
 
