@@ -301,6 +301,34 @@ export class UIManager {
             return new UIManager(player, ui, adsUi, config);
         }
 
+        static buildModernCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
+            let controlBar = new ControlBar({
+                components: [
+                    new Container({
+                        components: [
+                            new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime}),
+                            new SeekBar({label: new SeekBarLabel()}),
+                            new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.TotalTime}),
+                        ],
+                        cssClasses: ["controlbar-top"]
+                    }),
+                ]
+            });
+
+            let ui = new UIContainer({
+                components: [
+                    new SubtitleOverlay(),
+                    new HugePlaybackToggleButton(),
+                    new Watermark(),
+                    controlBar,
+                    new TitleBar(),
+                    new ErrorMessageOverlay()
+                ], cssClasses: ["ui-skin-modern ui-skin-modern-cast-receiver"]
+            });
+
+            return new UIManager(player, ui, null, config);
+        }
+
         static buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
             let settingsPanel = new SettingsPanel({
                 components: [
