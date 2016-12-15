@@ -3,18 +3,18 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+	.st0{fill:#FFFFFF;}
 </style>
-<g id="Rectangle_4_1_">
+<g id="Rectangle_4">
 	<g>
-		<path class="st0" d="M23.4,5.1c-0.3-0.2-0.8-0.1-1.1,0.1L12,12.6v2.6l9.9-7.1v15.9L12,16.8v2.6l10.4,7.4c0.2,0.1,0.4,0.2,0.6,0.2
-			c0.2,0,0.3,0,0.5-0.1c0.3-0.2,0.6-0.5,0.6-0.9V6C24,5.6,23.8,5.3,23.4,5.1z"/>
+		<path class="st0" d="M19.4,5.1c-0.3-0.2-0.8-0.1-1.1,0.1L8,12.6v2.6l9.9-7.1V24L8,16.8v2.6l10.4,7.4c0.2,0.1,0.4,0.2,0.6,0.2
+			s0.3,0,0.5-0.1c0.3-0.2,0.6-0.5,0.6-0.9V6C20,5.6,19.8,5.3,19.4,5.1z"/>
 	</g>
 </g>
-<g id="Rectangle_2_copy_4_1_">
+<g id="Rectangle_2_copy_4">
 	<g>
-		<path class="st0" d="M16,13h-6c-1.1,0-2,0.9-2,2v2c0,1.1,0.9,2,2,2h6c1.1,0,2-0.9,2-2v-2C18,13.9,17.1,13,16,13z M16,17h-6v-2h6
-			V17z"/>
+		<path class="st0" d="M12,13H6c-1.1,0-2,0.9-2,2v2c0,1.1,0.9,2,2,2h6c1.1,0,2-0.9,2-2v-2C14,13.9,13.1,13,12,13z M12,17H6v-2h6V17z
+			"/>
 	</g>
 </g>
 </svg>

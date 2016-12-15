@@ -3,12 +3,15 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#1FABE2;}
-	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#1FABE2;}
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#1FABE2;}
 </style>
-<g id="Ellipse_1" class="st0">
+<g id="Ellipse_1_copy">
 	<g>
-		<circle class="st1" cx="16.5" cy="16.5" r="5.5"/>
+		<g id="Ellipse_2">
+			<g>
+				<circle class="st0" cx="16.5" cy="16.5" r="4.5"/>
+			</g>
+		</g>
 	</g>
 </g>
 </svg>
