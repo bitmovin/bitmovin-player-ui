@@ -10,6 +10,7 @@
 @import '../mixins';
 
 .ui-hugereplaybutton {
+  // sass-lint:disable placeholder-in-extend
   @extend .ui-hugeplaybacktogglebutton;
 
   height: 100px;
