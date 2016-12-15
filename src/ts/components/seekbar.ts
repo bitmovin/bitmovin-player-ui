@@ -280,20 +280,22 @@ export class SeekBar extends Component<SeekBarConfig> {
         let self = this;
 
         // Define handler functions so we can attach/remove them later
-        let mouseMoveHandler = function (e: MouseEvent) {
-            let targetPercentage = 100 * self.getMouseOffset(e);
+        let mouseTouchMoveHandler = function (e: MouseEvent | TouchEvent) {
+            e.preventDefault();
+
+            let targetPercentage = 100 * self.getOffset(e);
             self.setSeekPosition(targetPercentage);
             self.setPlaybackPosition(targetPercentage);
             self.onSeekPreviewEvent(targetPercentage, true);
         };
-        let mouseUpHandler = function (e: MouseEvent) {
+        let mouseTouchUpHandler = function (e: MouseEvent | TouchEvent) {
             e.preventDefault();
 
             // Remove handlers, seek operation is finished
-            new DOM(document).off("mousemove", mouseMoveHandler);
-            new DOM(document).off("mouseup", mouseUpHandler);
+            new DOM(document).off("touchmove mousemove", mouseTouchMoveHandler);
+            new DOM(document).off("touchend mouseup", mouseTouchUpHandler);
 
-            let targetPercentage = 100 * self.getMouseOffset(e);
+            let targetPercentage = 100 * self.getOffset(e);
 
             self.setSeeking(false);
 
@@ -301,12 +303,15 @@ export class SeekBar extends Component<SeekBarConfig> {
             self.onSeekedEvent(targetPercentage);
         };
 
-        // A seek always start with a mousedown directly on the seekbar. To track a seek also outside the seekbar
-        // (so the user does not need to take care that the mouse always stays on the seekbar), we attach the mousemove
+        // A seek always start with a touchstart or mousedown directly on the seekbar.
+        // To track a mouse seek also outside the seekbar (for touch events this works automatically),
+        // so the user does not need to take care that the mouse always stays on the seekbar, we attach the mousemove
         // and mouseup handlers to the whole document. A seek is triggered when the user lifts the mouse key.
         // A seek mouse gesture is thus basically a click with a long time frame between down and up events.
-        seekBar.on("mousedown", function (e: MouseEvent) {
-            // Prevent selection of DOM elements
+        seekBar.on("touchstart mousedown", function (e: MouseEvent | TouchEvent) {
+            let isTouchEvent = e instanceof TouchEvent;
+
+            // Prevent selection of DOM elements (also prevents mousedown if current event is touchstart)
             e.preventDefault();
 
             self.setSeeking(true);
@@ -315,13 +320,15 @@ export class SeekBar extends Component<SeekBarConfig> {
             self.onSeekEvent();
 
             // Add handler to track the seek operation over the whole document
-            new DOM(document).on("mousemove", mouseMoveHandler);
-            new DOM(document).on("mouseup", mouseUpHandler);
+            new DOM(document).on(isTouchEvent ? "touchmove" : "mousemove", mouseTouchMoveHandler);
+            new DOM(document).on(isTouchEvent ? "touchend" : "mouseup", mouseTouchUpHandler);
         });
 
-        // Display seek target indicator when mouse hovers over seekbar
-        seekBar.on("mousemove", function (e: MouseEvent) {
-            let position = 100 * self.getMouseOffset(e);
+        // Display seek target indicator when mouse hovers or finger slides over seekbar
+        seekBar.on("touchmove mousemove", function (e: MouseEvent | TouchEvent) {
+            e.preventDefault();
+
+            let position = 100 * self.getOffset(e);
             self.setSeekPosition(position);
             self.onSeekPreviewEvent(position, false);
 
@@ -330,8 +337,10 @@ export class SeekBar extends Component<SeekBarConfig> {
             }
         });
 
-        // Hide seek target indicator when mouse leaves seekbar
-        seekBar.on("mouseleave", function (e: MouseEvent) {
+        // Hide seek target indicator when mouse or finger leaves seekbar
+        seekBar.on("touchend mouseleave", function (e: MouseEvent | TouchEvent) {
+            e.preventDefault();
+
             self.setSeekPosition(0);
 
             if (self.hasLabel()) {
@@ -349,45 +358,47 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     /**
-     * Gets the horizontal mouse offset from the left edge of the seek bar.
-     * @param e the event to calculate the offset from
+     * Gets the horizontal offset of a mouse/touch event point from the left edge of the seek bar.
+     * @param eventPageX the pageX coordinate of an event to calculate the offset from
      * @returns {number} a number in the range of [0, 1], where 0 is the left edge and 1 is the right edge
      */
-    private getHorizontalMouseOffset(e: MouseEvent): number {
+    private getHorizontalOffset(eventPageX: number): number {
         let elementOffsetPx = this.seekBar.offset().left;
         let widthPx = this.seekBar.width();
-        let offsetPx = e.pageX - elementOffsetPx;
+        let offsetPx = eventPageX - elementOffsetPx;
         let offset = 1 / widthPx * offsetPx;
 
         return this.sanitizeOffset(offset);
     }
 
     /**
-     * Gets the vertical mouse offset from the bottom edge of the seek bar.
-     * @param e the event to calculate the offset from
+     * Gets the vertical offset of a mouse/touch event point from the bottom edge of the seek bar.
+     * @param eventPageY the pageX coordinate of an event to calculate the offset from
      * @returns {number} a number in the range of [0, 1], where 0 is the bottom edge and 1 is the top edge
      */
-    private getVerticalMouseOffset(e: MouseEvent): number {
+    private getVerticalOffset(eventPageY: number): number {
         let elementOffsetPx = this.seekBar.offset().top;
         let widthPx = this.seekBar.height();
-        let offsetPx = e.pageY - elementOffsetPx;
+        let offsetPx = eventPageY - elementOffsetPx;
         let offset = 1 / widthPx * offsetPx;
 
         return 1 - this.sanitizeOffset(offset);
     }
 
     /**
-     * Gets the mouse offset for the current configuration (horizontal or vertical).
+     * Gets the mouse or touch event offset for the current configuration (horizontal or vertical).
      * @param e the event to calculate the offset from
      * @returns {number} a number in the range of [0, 1]
-     * @see #getHorizontalMouseOffset
-     * @see #getVerticalMouseOffset
+     * @see #getHorizontalOffset
+     * @see #getVerticalOffset
      */
-    private getMouseOffset(e: MouseEvent): number {
+    private getOffset(e: MouseEvent | TouchEvent): number {
         if (this.config.vertical) {
-            return this.getVerticalMouseOffset(e);
+            return this.getVerticalOffset(e instanceof TouchEvent ?
+                (e.type === "touchend" ? e.changedTouches[0].pageY : e.touches[0].pageY) : e.pageY);
         } else {
-            return this.getHorizontalMouseOffset(e);
+            return this.getHorizontalOffset(e instanceof TouchEvent ?
+                (e.type === "touchend" ? e.changedTouches[0].pageX : e.touches[0].pageX) : e.pageX);
         }
     }
 
