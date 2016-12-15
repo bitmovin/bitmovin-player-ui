@@ -64,15 +64,17 @@
         </div>
 
         <div class="card-block">
-            <h4 class="card-title">Various</h4>
+            <h4 class="card-title">
+                Events
+                <small class="text-muted">Log events to the console</small>
+            </h4>
 
-            <div class="form-group row">
-                <label for="config-various-allevents" class="col-sm-4 form-control-label">Listen to all events</label>
-                <div class="col-sm-4">
-                    <input type="checkbox" id="config-various-allevents">
-                </div>
-                <span class="col-sm-4 form-text">Logs all fired events to the console</span>
-            </div>
+            <p class="card-text" id="events">
+                <label>
+                    <input type="checkbox" id="config-events-all">
+                    All
+                </label>
+            </p>
         </div>
 
     </div>
@@ -299,19 +301,43 @@
     });
 
 
-    var allEventsListener = function (event) {
+    var eventConsoleLogger = function (event) {
         console.log(event);
     };
-    $('#config-various-allevents').change(function () {
+    $('#config-events-all').change(function () {
         var checked = $(this).prop('checked');
-        for (var event in bitmovin.player.EVENT) {
-            if(checked) {
-                player.addEventHandler(bitmovin.player.EVENT[event], allEventsListener);
-            } else {
-                player.removeEventHandler(bitmovin.player.EVENT[event], allEventsListener);
+
+        $("#events input").each(function (index) {
+            // Skip first checkbox (the "all" checkbox)
+            if (index === 0) {
+                return;
             }
-        }
+
+            $(this).prop("checked", checked);
+        });
     });
+    // Add a checkbox for each event to toggle logging to console
+    var eventIndex = 0;
+    for (var event in bitmovin.player.EVENT) {
+        var checkbox = $("<input>", {
+            "type": "checkbox",
+            "id": "config-events-" + (eventIndex++)
+        }).data("event", event);
+
+        checkbox.change(function () {
+            var checkbox = $(this);
+            var checked = checkbox.prop('checked');
+            var eventName = checkbox.data("event");
+
+            if(checked) {
+                player.addEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+            } else {
+                player.removeEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+            }
+        });
+
+        $("#events").append($("<label>").append(checkbox).append(" ").append(event).append("&ensp;"));
+    }
 
     // Collect all UI factory methods which are basically the different built-in skins and skin types
     var uiFactoryMethods = [];
