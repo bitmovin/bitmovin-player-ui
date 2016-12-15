@@ -7,20 +7,18 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../mixins';
+
 .ui-casttogglebutton {
   @extend %ui-button;
 
   background-image: svg('assets/skin-modern/images/chromecast.svg');
 
   &:hover {
-    //background-image: svg('assets/skin-modern/images/chromecast.svg');
+    @include svg-icon-shadow;
   }
 
   &.on {
     background-image: svg('assets/skin-modern/images/chromecastX.svg');
-
-    &:hover {
-      //background-image: svg('assets/skin-modern/images/chromecastX.svg');
-    }
   }
 }

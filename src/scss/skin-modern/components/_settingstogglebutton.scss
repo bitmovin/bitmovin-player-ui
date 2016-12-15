@@ -7,20 +7,18 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../mixins';
+
 .ui-settingstogglebutton {
   @extend %ui-button;
 
   background-image: svg('assets/skin-modern/images/settings.svg');
 
   &:hover {
-    //background-image: svg('assets/skin-modern/images/settings.svg');
+    @include svg-icon-shadow;
   }
 
   &.on {
     background-image: svg('assets/skin-modern/images/settingsX.svg');
-
-    &:hover {
-      //background-image: svg('assets/skin-modern/images/settingsX.svg');
-    }
   }
 }

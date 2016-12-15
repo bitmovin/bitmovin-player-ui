@@ -7,20 +7,18 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../mixins';
+
 .ui-fullscreentogglebutton {
   @extend %ui-button;
 
   background-image: svg('assets/skin-modern/images/fullscreen.svg');
 
   &:hover {
-    //background-image: svg('assets/skin-modern/images/fullscreen.svg');
+    @include svg-icon-shadow;
   }
 
   &.on {
     background-image: svg('assets/skin-modern/images/fullscreenX.svg');
-
-    &:hover {
-      //background-image: svg('assets/skin-modern/images/fullscreenX.svg');
-    }
   }
 }

@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-@import '../variables';
+@import '../mixins';
 
 .ui-vrtogglebutton {
   @extend %ui-button;
@@ -16,14 +16,10 @@
   background-image: svg('assets/skin-modern/images/glasses.svg');
 
   &:hover {
-    //background-image: svg('assets/skin-modern/images/glassesX.svg');
+    @include svg-icon-shadow;
   }
 
   &.on {
     background-image: svg('assets/skin-modern/images/glassesX.svg');
-
-    &:hover {
-      //background-image: svg('assets/skin-modern/images/glassesX.svg');
-    }
   }
 }

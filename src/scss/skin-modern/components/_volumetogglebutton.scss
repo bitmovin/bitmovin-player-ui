@@ -7,28 +7,22 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../mixins';
+
 .ui-volumetogglebutton {
   @extend %ui-button;
 
   background-image: svg('assets/skin-modern/images/music-on.svg');
 
   &:hover {
-    //background-image: svg('assets/skin-modern/images/music-on.svg');
+    @include svg-icon-shadow;
   }
 
   &.low {
     background-image: svg('assets/skin-modern/images/music-low.svg');
-
-    &:hover {
-      //background-image: svg('assets/skin-modern/images/music-low.svg');
-    }
   }
 
   &.on {
     background-image: svg('assets/skin-modern/images/music-off.svg');
-
-    &:hover {
-      //background-image: svg('assets/skin-modern/images/music-off.svg');
-    }
   }
 }
