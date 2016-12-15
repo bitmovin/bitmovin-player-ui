@@ -12,18 +12,24 @@ import {Component, ComponentConfig} from "./component";
 import {DOM} from "../dom";
 import {UIManager, UIRecommendationConfig} from "../uimanager";
 import {StringUtils} from "../utils";
+import {HugeReplayButton} from "./hugereplaybutton";
 
 /**
  * Overlays the player and displays recommended videos.
  */
 export class RecommendationOverlay extends Container<ContainerConfig> {
 
+    private replayButton: HugeReplayButton;
+
     constructor(config: ContainerConfig = {}) {
         super(config);
 
+        this.replayButton = new HugeReplayButton();
+
         this.config = this.mergeConfig(config, {
             cssClass: "ui-recommendation-overlay",
-            hidden: true
+            hidden: true,
+            components: [this.replayButton]
         }, this.config);
     }
 
@@ -31,11 +37,6 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
         super.configure(player, uimanager);
 
         let self = this;
-
-        if (!uimanager.getConfig() || !uimanager.getConfig().recommendations || uimanager.getConfig().recommendations.length === 0) {
-            // There are no recommendation items, so don't need to configure anything
-            return;
-        }
 
         let index = 1;
         for (let item of uimanager.getConfig().recommendations) {

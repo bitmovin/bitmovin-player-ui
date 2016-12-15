@@ -263,11 +263,11 @@ export class UIManager {
                     new SubtitleOverlay(),
                     new CastStatusOverlay(),
                     new HugePlaybackToggleButton(),
-                    new RecommendationOverlay(),
                     controlBar,
                     new TitleBar(),
-                    new ErrorMessageOverlay(),
-                    new Watermark()
+                    new RecommendationOverlay(),
+                    new Watermark(),
+                    new ErrorMessageOverlay()
                 ], cssClasses: ["ui-skin-modern"]
             });
 
