@@ -60,15 +60,22 @@
 // sass-lint:disable nesting-depth
 &.no-flexbox {
   .ui-controlbar {
-    > .container-wrapper {
-      border-spacing: .5em 0;
-      display: table;
+    .controlbar-top,
+    .controlbar-bottom {
+      > .container-wrapper {
+        border-spacing: .5em 0;
+        display: table;
 
-      > * {
-        @include hidden; // Add hidden here too, else it is overwritten by display: table-cell
+        > * {
+          @include hidden; // Add hidden here too, else it is overwritten by display: table-cell
 
-        display: table-cell;
-        vertical-align: middle;
+          display: table-cell;
+          vertical-align: middle;
+        }
+
+        .ui-volumeslider {
+          width: 10%;
+        }
       }
     }
   }
