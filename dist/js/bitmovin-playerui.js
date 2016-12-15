@@ -3207,6 +3207,13 @@ var UIContainer = (function (_super) {
         });
         // Init in idle state
         self.getDomElement().addClass(UIContainer.STATE_IDLE);
+        // Fullscreen marker class
+        player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function () {
+            self.getDomElement().addClass(UIContainer.FULLSCREEN);
+        });
+        player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function () {
+            self.getDomElement().removeClass(UIContainer.FULLSCREEN);
+        });
     };
     UIContainer.prototype.toDomElement = function () {
         var self = this;
@@ -3277,6 +3284,7 @@ UIContainer.STATE_IDLE = "player-state-idle";
 UIContainer.STATE_PLAYING = "player-state-playing";
 UIContainer.STATE_PAUSED = "player-state-paused";
 UIContainer.STATE_FINISHED = "player-state-finished";
+UIContainer.FULLSCREEN = "fullscreen";
 exports.UIContainer = UIContainer;
 },{"../eventdispatcher":41,"./container":11}],34:[function(require,module,exports){
 /*

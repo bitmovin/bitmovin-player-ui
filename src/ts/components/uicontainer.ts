@@ -29,6 +29,8 @@ export class UIContainer extends Container<UIContainerConfig> {
     private static readonly STATE_PAUSED = "player-state-paused";
     private static readonly STATE_FINISHED = "player-state-finished";
 
+    private static readonly FULLSCREEN = "fullscreen";
+
     private uiContainerEvents = {
         onMouseEnter: new EventDispatcher<UIContainer, NoArgs>(),
         onMouseMove: new EventDispatcher<UIContainer, NoArgs>(),
@@ -83,6 +85,14 @@ export class UIContainer extends Container<UIContainerConfig> {
         });
         // Init in idle state
         self.getDomElement().addClass(UIContainer.STATE_IDLE);
+
+        // Fullscreen marker class
+        player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function () {
+            self.getDomElement().addClass(UIContainer.FULLSCREEN);
+        });
+        player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function () {
+            self.getDomElement().removeClass(UIContainer.FULLSCREEN);
+        });
     }
 
     protected toDomElement(): DOM {
