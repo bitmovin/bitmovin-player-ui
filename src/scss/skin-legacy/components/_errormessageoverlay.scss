@@ -33,4 +33,10 @@
       top: 50%;
     }
   }
+
+  .ui-tvnoisecanvas {
+    @include layout-cover;
+
+    filter: blur(4px);
+  }
 }
