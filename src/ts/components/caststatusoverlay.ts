@@ -39,7 +39,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
         let self = this;
         let castDeviceName = "unknown";
 
-        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_START, function (event) {
+        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, function (event) {
             // Show Cast status when a session is being started
             self.show();
             self.statusLabel.setText("Select a Cast device");
@@ -55,7 +55,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
             self.show();
             self.statusLabel.setText(`Playing on <strong>${castDeviceName}</strong>`);
         });
-        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOP, function (event: CastStoppedEvent) {
+        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOPPED, function (event: CastStoppedEvent) {
             // Cast session gone, hide the status panel
             self.hide();
         });

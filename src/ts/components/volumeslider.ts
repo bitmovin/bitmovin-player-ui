@@ -39,9 +39,9 @@ export class VolumeSlider extends SeekBar {
             }
         };
 
-        player.addEventHandler(bitmovin.player.EVENT.ON_VOLUME_CHANGE, volumeChangeHandler);
-        player.addEventHandler(bitmovin.player.EVENT.ON_MUTE, volumeChangeHandler);
-        player.addEventHandler(bitmovin.player.EVENT.ON_UNMUTE, volumeChangeHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_VOLUME_CHANGED, volumeChangeHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_MUTED, volumeChangeHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_UNMUTED, volumeChangeHandler);
 
         this.onSeekPreview.subscribe(function (sender, args) {
             if (args.scrubbing) {

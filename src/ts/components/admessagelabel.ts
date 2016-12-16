@@ -39,12 +39,12 @@ export class AdMessageLabel extends Label<LabelConfig> {
             updateMessageHandler();
 
             player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
-            player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, updateMessageHandler);
+            player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
         };
 
         let adEndHandler = function () {
             player.removeEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
-            player.removeEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, updateMessageHandler);
+            player.removeEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
         };
 
         player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, adStartHandler);

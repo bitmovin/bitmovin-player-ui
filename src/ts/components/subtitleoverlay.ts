@@ -53,8 +53,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
             self.subtitleLabel.setText("");
         };
 
-        player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGE, subtitleClearHandler);
-        player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_CHANGE, subtitleClearHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGED, subtitleClearHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_CHANGED, subtitleClearHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, subtitleClearHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
 

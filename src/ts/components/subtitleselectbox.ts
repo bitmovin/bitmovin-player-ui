@@ -44,7 +44,7 @@ export class SubtitleSelectBox extends SelectBox {
         player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_ADDED, function (event: SubtitleAddedEvent) {
             self.addItem(event.subtitle.id, event.subtitle.label);
         });
-        player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_CHANGE, function (event: SubtitleChangedEvent) {
+        player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_CHANGED, function (event: SubtitleChangedEvent) {
             self.selectItem(event.targetSubtitle.id);
         });
         player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_REMOVED, function (event: SubtitleRemovedEvent) {

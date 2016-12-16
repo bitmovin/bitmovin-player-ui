@@ -118,7 +118,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
         // Hide button while initializing a Cast session
         let castInitializationHandler = function (event: PlayerEvent) {
-            if (event.type === bitmovin.player.EVENT.ON_CAST_START) {
+            if (event.type === bitmovin.player.EVENT.ON_CAST_STARTED) {
                 // Hide button when session is being initialized
                 self.hide();
             } else {
@@ -126,9 +126,9 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
                 self.show();
             }
         };
-        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_START, castInitializationHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, castInitializationHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_LAUNCHED, castInitializationHandler);
-        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOP, castInitializationHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
     }
 
     protected toDomElement(): DOM {

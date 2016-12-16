@@ -67,12 +67,12 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
             updateSkipMessageHandler();
 
             player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
-            player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, updateSkipMessageHandler);
+            player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
         };
 
         let adEndHandler = function () {
             player.removeEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
-            player.removeEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, updateSkipMessageHandler);
+            player.removeEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
         };
 
         player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, adStartHandler);

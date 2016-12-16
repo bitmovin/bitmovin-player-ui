@@ -51,7 +51,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
         player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackTimeHandler);
-        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATE, playbackTimeHandler);
+        player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
 
         // Init time display (when the UI is initialized, it's too late for the ON_READY event)
         playbackTimeHandler();

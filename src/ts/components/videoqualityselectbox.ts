@@ -45,7 +45,7 @@ export class VideoQualitySelectBox extends SelectBox {
 
         player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateVideoQualities); // Update qualities when source goes away
         player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateVideoQualities); // Update qualities when a new source is loaded
-        player.addEventHandler(bitmovin.player.EVENT.ON_VIDEO_DOWNLOAD_QUALITY_CHANGE, function () {
+        player.addEventHandler(bitmovin.player.EVENT.ON_VIDEO_DOWNLOAD_QUALITY_CHANGED, function () {
             let data = player.getDownloadedVideoData();
             self.selectItem(data.isAuto ? "auto" : data.id);
         }); // Update quality selection when quality is changed (from outside)
