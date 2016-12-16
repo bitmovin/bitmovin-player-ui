@@ -49,6 +49,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
             }
         };
 
+        let firstClick = true;
         let clickTime = 0;
         let doubleClickTime = 0;
 
@@ -69,6 +70,16 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
          * if a double click happens.
          */
         self.onClick.subscribe(function () {
+            // Directly start playback on first click of the button.
+            // This is a required workaround for mobile browsers where video playback needs to be triggered directly
+            // by the user. A deferred playback start through the timeout below is not considered as user action and
+            // therefore ignored by mobile browsers.
+            if (firstClick) {
+                togglePlayback();
+                firstClick = false;
+                return;
+            }
+
             let now = Date.now();
 
             if (now - clickTime < 200) {
