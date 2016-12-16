@@ -114,8 +114,7 @@ export class UIManager {
 
         this.managerPlayerWrapper = new PlayerWrapper(player);
 
-        let playerId = player.getFigure().parentElement.id;
-        this.playerElement = new DOM(`#${playerId}`);
+        this.playerElement = new DOM(player.getFigure());
 
         // Add UI elements to player
         this.addUi(playerUi);
