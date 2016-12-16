@@ -37,7 +37,7 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
                     player.castVideo();
                 }
             } else {
-                if(console) console.log("Cast unavailable");
+                if (console) console.log("Cast unavailable");
             }
         });
 
