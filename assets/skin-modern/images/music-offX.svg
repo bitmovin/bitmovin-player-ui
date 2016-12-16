@@ -3,7 +3,8 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#FFFFFF;}
+	.st0{fill:#1FABE2;}
+	.st1{opacity:0.3;fill:#1FABE2;}
 </style>
 <g id="Rectangle_2_copy_4">
 	<g>
@@ -30,4 +31,5 @@
 		L17.9,21.7L17.9,21.7z"/>
 	<path class="st0" d="M17.9,10.3H20v-4c-0.1-0.4-0.3-0.7-0.7-0.9c-0.3-0.2-0.8-0.1-1.1,0.1l-9.9,7.1v2.5l9.6-6.9V10.3z"/>
 </g>
+<polygon class="st1" points="9.5,12.3 9.5,14.2 6,14.2 6,17.7 9.5,17.7 9.5,18.9 19.2,25.2 19.2,6.5 "/>
 </svg>

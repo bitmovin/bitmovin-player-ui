@@ -3,13 +3,18 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#FFFFFF;}
+	.st0{fill:#1FABE2;}
 </style>
-<g id="Shape_2">
+<g id="Rounded_Rectangle_6">
 	<g>
-		<path class="st0" d="M23.3,15.2L9.8,5.6c-0.3-0.2-0.7-0.3-1-0.1C8.5,5.7,8.3,6,8.3,6.3v19.3c0,0.4,0.2,0.7,0.6,0.9
-			c0.1,0.1,0.3,0.1,0.4,0.1c0.2,0,0.4-0.1,0.6-0.2l13.4-9.7c0.3-0.2,0.4-0.5,0.4-0.8C23.6,15.7,23.5,15.3,23.3,15.2z M10.3,23.6V8.4
-			L21,16L10.3,23.6z"/>
+		<path class="st0" d="M26,6c-0.9-0.9-2.2-0.9-3.1,0L6,22.8c-0.9,0.9-0.9,2.2,0,3.1s2.2,0.9,3.1,0L26,9.2C26.9,8.3,26.9,6.9,26,6z"
+			/>
+	</g>
+</g>
+<g id="Rounded_Rectangle_6_copy">
+	<g>
+		<path class="st0" d="M26,22.8L9.2,6C8.3,5.1,7,5.1,6.1,6s-0.9,2.2,0,3.1L23,26c0.9,0.9,2.2,0.9,3.1,0C26.9,25.1,26.9,23.7,26,22.8
+			z"/>
 	</g>
 </g>
 </svg>
