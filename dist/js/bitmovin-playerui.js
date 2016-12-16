@@ -626,8 +626,6 @@ var Component = (function () {
             onShow: new eventdispatcher_1.EventDispatcher(),
             onHide: new eventdispatcher_1.EventDispatcher()
         };
-        console.log(this);
-        console.log(config);
         // Create the configuration for this component
         this.config = this.mergeConfig(config, {
             tag: "div",

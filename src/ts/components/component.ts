@@ -141,9 +141,6 @@ export class Component<Config extends ComponentConfig> {
      * @param config the configuration for the component
      */
     constructor(config: ComponentConfig = {}) {
-        console.log(this);
-        console.log(config);
-
         // Create the configuration for this component
         this.config = <Config>this.mergeConfig(config, {
             tag: "div",
