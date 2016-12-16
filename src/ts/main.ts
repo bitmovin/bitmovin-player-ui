@@ -72,65 +72,44 @@ if (typeof Object.assign !== "function") {
 }
 
 // Expose classes to window
-// Inspired by https://keestalkstech.com/2016/08/support-both-node-js-and-browser-js-in-one-typescript-file/
-// TODO find out how TS/Browserify can compile the classes to plain JS without the module wrapper we don't need to expose classes to the window scope manually here
-(function () {
-
-    let exportables = [
-        // Management
-        UIManager,
-        // Components
-        AdClickOverlay,
-        AdMessageLabel,
-        AdSkipButton,
-        AudioQualitySelectBox,
-        AudioTrackSelectBox,
-        Button,
-        CastStatusOverlay,
-        CastToggleButton,
-        ClickOverlay,
-        Component,
-        Container,
-        ControlBar,
-        ErrorMessageOverlay,
-        FullscreenToggleButton,
-        HugePlaybackToggleButton,
-        Label,
-        PlaybackTimeLabel,
-        PlaybackToggleButton,
-        RecommendationOverlay,
-        SeekBar,
-        SeekBarLabel,
-        SelectBox,
-        SettingsPanel,
-        SettingsToggleButton,
-        SubtitleOverlay,
-        SubtitleSelectBox,
-        TitleBar,
-        ToggleButton,
-        UIContainer,
-        VideoQualitySelectBox,
-        VolumeControlButton,
-        VolumeToggleButton,
-        VRToggleButton,
-        Watermark,
-        ErrorMessageOverlay,
-        PlaybackSpeedSelectBox,
-        HugeReplayButton
-    ];
-
-    (window as any)["bitmovin"]["playerui"] = {};
-    let uiscope = (window as any)["bitmovin"]["playerui"];
-
-    if (window) {
-        exportables.forEach(exp => uiscope[nameof(exp)] = exp);
-    }
-
-    function nameof(fn: any): string {
-        return typeof fn === "undefined" ? "" : fn.name ? fn.name : (() => {
-            let result = /^function\s+([\w\$]+)\s*\(/.exec(fn.toString());
-            return !result ? "" : result[1];
-        })();
-    }
-
-}());
+(window as any).bitmovin.playerui = {
+    // Management
+    UIManager,
+    // Components
+    AdClickOverlay,
+    AdMessageLabel,
+    AdSkipButton,
+    AudioQualitySelectBox,
+    AudioTrackSelectBox,
+    Button,
+    CastStatusOverlay,
+    CastToggleButton,
+    ClickOverlay,
+    Component,
+    Container,
+    ControlBar,
+    ErrorMessageOverlay,
+    FullscreenToggleButton,
+    HugePlaybackToggleButton,
+    Label,
+    PlaybackTimeLabel,
+    PlaybackToggleButton,
+    RecommendationOverlay,
+    SeekBar,
+    SeekBarLabel,
+    SelectBox,
+    SettingsPanel,
+    SettingsToggleButton,
+    SubtitleOverlay,
+    SubtitleSelectBox,
+    TitleBar,
+    ToggleButton,
+    UIContainer,
+    VideoQualitySelectBox,
+    VolumeControlButton,
+    VolumeToggleButton,
+    VRToggleButton,
+    Watermark,
+    PlaybackSpeedSelectBox,
+    HugeReplayButton
+};
