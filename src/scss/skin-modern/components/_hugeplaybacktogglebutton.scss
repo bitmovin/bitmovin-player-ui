@@ -10,6 +10,8 @@
 .ui-hugeplaybacktogglebutton {
   @extend %ui-button;
 
+  @include layout-cover;
+
   @keyframes fade-out {
     from {
       opacity: 1;
@@ -36,13 +38,8 @@
   }
 
   cursor: default;
-  height: 100%;
-  margin: 0;
   outline: none;
   overflow: hidden; // hide overflow from scale animation
-  position: absolute;
-  top: 0;
-  width: 100%;
 
   .image {
     background-image: svg('assets/skin-modern/images/play_big.svg');
