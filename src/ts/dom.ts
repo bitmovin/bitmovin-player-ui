@@ -312,24 +312,25 @@ export class DOM {
      */
     offset(): Offset {
         let element = this.elements[0];
-        let rect = element.getBoundingClientRect();
+        let elementRect = element.getBoundingClientRect();
+        let htmlRect = document.body.parentElement.getBoundingClientRect();
 
-        // Workaround for document.body.scrollTop always 0 in IE9, IE11, Firefox
-        // http://stackoverflow.com/a/11102215/370252
-        let scrollTop = typeof window.pageYOffset !== "undefined" ?
-            window.pageYOffset : document.documentElement.scrollTop ?
-            document.documentElement.scrollTop : document.body.scrollTop ?
-            document.body.scrollTop : 0;
-
-        // Workaround for document.body.scrollLeft always 0 in IE9, IE11, Firefox
-        let scrollLeft = typeof window.pageXOffset !== "undefined" ?
-            window.pageXOffset : document.documentElement.scrollLeft ?
-            document.documentElement.scrollLeft : document.body.scrollLeft ?
-            document.body.scrollLeft : 0;
+        // Virtual viewport scroll handling (e.g. pinch zoomed viewports in mobile browsers or desktop Chrome/Edge)
+        // "normal" zooms and virtual viewport zooms (aka layout viewport) result in different
+        // element.getBoundingClientRect() results:
+        //  - with normal scrolls, the clientRect decreases with an increase in scroll(Top|Left)/page(X|Y)Offset
+        //  - with pinch zoom scrolls, the clientRect stays the same while scroll/pageOffset changes
+        // This means, that the combination of clientRect + scroll/pageOffset does not work to calculate the offset
+        // from the document's upper left origin when pinch zoom is used.
+        // To work around this issue, we do not use scroll/pageOffset but get the clientRect of the html element and
+        // subtract it from the element's rect, which always results in the offset from the document origin.
+        // NOTE: the current way of offset calculation was implemented specifically to track event positions on the
+        // seek bar, and it might break compatibility with jQuery's offset() method. If this ever turns out to be a
+        // problem, this method should be reverted to the old version and the offset calculation moved to the seek bar.
 
         return {
-            top: rect.top + scrollTop,
-            left: rect.left + scrollLeft
+            top: elementRect.top - htmlRect.top,
+            left: elementRect.left - htmlRect.left
         };
     }
 
