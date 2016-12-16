@@ -37,6 +37,16 @@
     }
   }
 
+  @keyframes breathe {
+    30% {
+      transform: scale(1.1);
+    }
+
+    60% {
+      transform: scale(1);
+    }
+  }
+
   cursor: default;
   outline: none;
   overflow: hidden; // hide overflow from scale animation
@@ -50,7 +60,7 @@
     width: 100%;
 
     &:hover {
-      //background-image: svg('assets/skin-modern/images/play_big.svg');
+      animation: breathe 3s ease-in-out infinite;
     }
   }
 
