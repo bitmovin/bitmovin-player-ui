@@ -114,7 +114,7 @@ gulp.task('browserify', function () {
 
     // Compile output JS file
     var stream = browserifyBundle
-        .pipe(source('bitmovin-playerui.js'))
+        .pipe(source('bitmovinplayer-ui.js'))
         .pipe(buffer())
         .pipe(gulp.dest(paths.target.js));
 
