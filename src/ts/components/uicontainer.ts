@@ -75,7 +75,7 @@ export class UIContainer extends Container<UIContainerConfig> {
             removeStates();
             self.getDomElement().addClass(UIContainer.STATE_PLAYING);
         });
-        player.addEventHandler(bitmovin.player.EVENT.ON_PAUSE, function () {
+        player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, function () {
             removeStates();
             self.getDomElement().addClass(UIContainer.STATE_PAUSED);
         });
