@@ -120,8 +120,10 @@ gulp.task('browserify', function () {
 
     if (production) {
         // Minify JS
-        stream.pipe(uglify())
+        stream.pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(uglify())
             .pipe(rename({extname: '.min.js'}))
+            .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest(paths.target.js));
     }
 
