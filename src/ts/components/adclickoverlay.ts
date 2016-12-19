@@ -27,7 +27,7 @@ export class AdClickOverlay extends ClickOverlay {
         player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, function (event: bitmovin.player.AdStartedEvent) {
             clickThroughUrl = event.clickThroughUrl;
 
-            if(clickThroughEnabled) {
+            if (clickThroughEnabled) {
                 self.setUrl(clickThroughUrl);
             } else {
                 // If click-through is disabled, we set the url to null to avoid it open
@@ -44,7 +44,7 @@ export class AdClickOverlay extends ClickOverlay {
 
         self.onClick.subscribe(function () {
             // Pause the ad when click-through URL opens
-            if(clickThroughEnabled) {
+            if (clickThroughEnabled) {
                 player.pause();
             }
 
