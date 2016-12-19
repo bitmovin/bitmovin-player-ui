@@ -35,7 +35,8 @@ export class AdMessageLabel extends Label<LabelConfig> {
             self.setText(StringUtils.replaceAdMessagePlaceholders(text, null, player));
         };
 
-        let adStartHandler = function () {
+        let adStartHandler = function (event: bitmovin.player.AdStartedEvent) {
+            text = event.adMessage || text;
             updateMessageHandler();
 
             player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateMessageHandler);

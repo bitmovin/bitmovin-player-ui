@@ -141,6 +141,8 @@ declare namespace bitmovin {
             duration: number;
             skipOffset: number;
             timeOffset: string;
+            adMessage?: string;
+            skipMessage?: SkipMessage
         }
 
         interface PlayerEventCallback {

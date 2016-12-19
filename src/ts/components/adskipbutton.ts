@@ -16,10 +16,7 @@ import {StringUtils} from "../utils";
  * Configuration interface for the {@link AdSkipButton}.
  */
 export interface AdSkipButtonConfig extends ButtonConfig {
-    skipMessage?: {
-        countdown: string;
-        skip: string;
-    };
+    skipMessage?: SkipMessage;
 }
 
 /**
@@ -44,6 +41,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
         let self = this;
         let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
+        let skipMessage = config.skipMessage;
         let adEvent = <bitmovin.player.AdStartedEvent>null;
 
         let updateSkipMessageHandler = function () {
@@ -64,6 +62,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
         let adStartHandler = function (event: bitmovin.player.AdStartedEvent) {
             adEvent = event;
+            skipMessage = adEvent.skipMessage || skipMessage;
             updateSkipMessageHandler();
 
             player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);

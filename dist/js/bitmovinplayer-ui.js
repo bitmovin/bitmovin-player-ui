@@ -79,7 +79,8 @@ var AdMessageLabel = (function (_super) {
         var updateMessageHandler = function () {
             self.setText(utils_1.StringUtils.replaceAdMessagePlaceholders(text, null, player));
         };
-        var adStartHandler = function () {
+        var adStartHandler = function (event) {
+            text = event.adMessage || text;
             updateMessageHandler();
             player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
             player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
@@ -133,6 +134,7 @@ var AdSkipButton = (function (_super) {
         _super.prototype.configure.call(this, player, uimanager);
         var self = this;
         var config = this.getConfig(); // TODO get rid of generic cast
+        var skipMessage = config.skipMessage;
         var adEvent = null;
         var updateSkipMessageHandler = function () {
             // Display this button only if ad is skippable
@@ -152,6 +154,7 @@ var AdSkipButton = (function (_super) {
         };
         var adStartHandler = function (event) {
             adEvent = event;
+            skipMessage = adEvent.skipMessage || skipMessage;
             updateSkipMessageHandler();
             player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
             player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
@@ -5002,7 +5005,7 @@ var StringUtils;
                     time = Math.ceil(skipOffset - player.getCurrentTime());
                 }
                 else {
-                    time = Math.ceil(player.getDuration() - player.getCurrentTime());
+                    time = player.getDuration() - player.getCurrentTime();
                 }
             }
             else if (formatString.indexOf("playedTime") > -1) {
