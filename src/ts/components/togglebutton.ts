@@ -51,8 +51,8 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     on() {
         if (this.isOff()) {
             this.onState = true;
-            this.getDomElement().removeClass(ToggleButton.CLASS_OFF);
-            this.getDomElement().addClass(ToggleButton.CLASS_ON);
+            this.getDomElement().removeClass(this.prefixCss(ToggleButton.CLASS_OFF));
+            this.getDomElement().addClass(this.prefixCss(ToggleButton.CLASS_ON));
 
             this.onToggleEvent();
             this.onToggleOnEvent();
@@ -65,8 +65,8 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     off() {
         if (this.isOn()) {
             this.onState = false;
-            this.getDomElement().removeClass(ToggleButton.CLASS_ON);
-            this.getDomElement().addClass(ToggleButton.CLASS_OFF);
+            this.getDomElement().removeClass(this.prefixCss(ToggleButton.CLASS_ON));
+            this.getDomElement().addClass(this.prefixCss(ToggleButton.CLASS_OFF));
 
             this.onToggleEvent();
             this.onToggleOffEvent();

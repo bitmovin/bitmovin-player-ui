@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-fullscreentogglebutton {
+.#{$prefix}-ui-fullscreentogglebutton {
   @extend %ui-button;
 
   background-image: url('../../assets/skin-legacy/images/components/normal/fullscreen_enter.png');
@@ -16,7 +16,7 @@
     background-image: url('../../assets/skin-legacy/images/components/hover/fullscreen_enter.png');
   }
 
-  &.on {
+  &.#{$prefix}-on {
     background-image: url('../../assets/skin-legacy/images/components/normal/fullscreen_exit.png');
 
     &:hover {

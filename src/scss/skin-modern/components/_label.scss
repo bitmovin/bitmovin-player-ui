@@ -7,12 +7,14 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
+
 %ui-label {
   @extend %ui-component;
 
   white-space: nowrap;
 }
 
-.ui-label {
+.#{$prefix}-ui-label {
   @extend %ui-label;
 }

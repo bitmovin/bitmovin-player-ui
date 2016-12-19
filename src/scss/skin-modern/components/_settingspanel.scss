@@ -10,7 +10,7 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-settings-panel {
+.#{$prefix}-ui-settings-panel {
   @extend %ui-container;
 
   @include hidden-animated;
@@ -40,7 +40,7 @@
     width: 0;
   }
 
-  > .container-wrapper {
+  > .#{$prefix}-container-wrapper {
     margin: .5em;
     overflow-y: auto;
 
@@ -49,7 +49,7 @@
     }
 
     // A "line" in the panel: a container holding a label + control
-    .container-wrapper > * {
+    .#{$prefix}-container-wrapper > * {
       // Labels
       &:first-child {
         display: inline-block;
@@ -64,22 +64,22 @@
     }
   }
 
-  .ui-settings-panel-entry {
+  .#{$prefix}-ui-settings-panel-entry {
     border-bottom: 1px solid transparentize($color-secondary, .7);
     margin: 0 1em;
     padding: .5em 0;
 
-    &.last {
+    &.#{$prefix}-last {
       border-bottom: 0;
     }
 
-    &.hidden {
+    &.#{$prefix}-hidden {
       display: none;
     }
   }
 }
 
 // Remove margin inherited from controlbar
-.container-wrapper > .ui-settings-panel {
+.#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
   margin: 0;
 }

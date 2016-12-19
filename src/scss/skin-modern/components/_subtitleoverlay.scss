@@ -10,7 +10,7 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-subtitle-overlay {
+.#{$prefix}-ui-subtitle-overlay {
   @extend %ui-container;
 
   @include layout-cover;
@@ -18,7 +18,7 @@
 
   pointer-events: none;
 
-  .ui-subtitle-label {
+  .#{$prefix}-ui-subtitle-label {
     bottom: 2em;
     color: $subtitle-text-color;
     font-size: 1.2em;
@@ -29,8 +29,8 @@
     transition: bottom $animation-duration-short ease-out;
   }
 
-  &.controlbar-visible {
-    .ui-subtitle-label {
+  &.#{$prefix}-controlbar-visible {
+    .#{$prefix}-ui-subtitle-label {
       bottom: 5em;
       transition: bottom $animation-duration-short ease-in;
     }

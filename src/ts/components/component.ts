@@ -29,6 +29,11 @@ export interface ComponentConfig {
     id?: string;
 
     /**
+     * A prefix to prepend all CSS classes with.
+     */
+    cssPrefix?: string;
+
+    /**
      * The CSS classes of the component. This is usually the class from where the component takes its styling.
      */
     cssClass?: string; // "class" is a reserved keyword, so we need to make the name more complicated
@@ -144,7 +149,8 @@ export class Component<Config extends ComponentConfig> {
         // Create the configuration for this component
         this.config = <Config>this.mergeConfig(config, {
             tag: "div",
-            id: "ui-id-" + Guid.next(),
+            id: "bmpui-id-" + Guid.next(),
+            cssPrefix: "bmpui",
             cssClass: "ui-component",
             cssClasses: [],
             hidden: false
@@ -240,12 +246,21 @@ export class Component<Config extends ComponentConfig> {
      * @returns {string}
      */
     protected getCssClasses(): string {
+        let self = this;
         // Merge all CSS classes into single array
         let flattenedArray = [this.config.cssClass].concat(this.config.cssClasses);
+        // Prefix classes
+        flattenedArray = flattenedArray.map(function (css) {
+            return self.prefixCss(css);
+        });
         // Join array values into a string
         let flattenedString = flattenedArray.join(" ");
         // Return trimmed string to prevent whitespace at the end from the join operation
         return flattenedString.trim();
+    }
+
+    protected prefixCss(cssClassOrId: string): string {
+        return this.config.cssPrefix + "-" + cssClassOrId;
     }
 
     /**
@@ -262,7 +277,7 @@ export class Component<Config extends ComponentConfig> {
      */
     hide() {
         this.hidden = true;
-        this.getDomElement().addClass(Component.CLASS_HIDDEN);
+        this.getDomElement().addClass(this.prefixCss(Component.CLASS_HIDDEN));
         this.onHideEvent();
     }
 
@@ -270,7 +285,7 @@ export class Component<Config extends ComponentConfig> {
      * Shows the component.
      */
     show() {
-        this.getDomElement().removeClass(Component.CLASS_HIDDEN);
+        this.getDomElement().removeClass(this.prefixCss(Component.CLASS_HIDDEN));
         this.hidden = false;
         this.onShowEvent();
     }

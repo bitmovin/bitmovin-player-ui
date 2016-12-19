@@ -7,7 +7,9 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-watermark {
+@import '../variables';
+
+.#{$prefix}-ui-watermark {
   @extend %ui-clickoverlay;
 
   $watermark-size: 4em;

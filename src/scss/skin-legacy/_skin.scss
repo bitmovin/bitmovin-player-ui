@@ -9,7 +9,7 @@
 
 @import 'variables';
 
-.ui-skin-legacy {
+.#{$prefix}-ui-skin-legacy {
   @import 'mixins';
   @import 'components/component';
   @import 'components/container';

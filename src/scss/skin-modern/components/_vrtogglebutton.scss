@@ -7,9 +7,10 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
 @import '../mixins';
 
-.ui-vrtogglebutton {
+.#{$prefix}-ui-vrtogglebutton {
   @extend %ui-button;
 
   // svg() usage: http://pavliko.github.io/postcss-svg/
@@ -19,7 +20,7 @@
     @include svg-icon-shadow;
   }
 
-  &.on {
+  &.#{$prefix}-on {
     background-image: svg('assets/skin-modern/images/glassesX.svg');
   }
 }

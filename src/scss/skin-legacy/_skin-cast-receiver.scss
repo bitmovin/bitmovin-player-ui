@@ -9,13 +9,13 @@
 
 @import 'variables';
 
-&.ui-skin-legacy-cast-receiver {
+&.#{$prefix}-ui-skin-legacy-cast-receiver {
 
   $overscan-margin: 10%;
 
   // Add title safe margins for overscan TV sets
   // 10% as recommended by the Cast docs: https://developers.google.com/cast/docs/custom_receiver#overscan
-  &.ui-uicontainer {
+  &.#{$prefix}-ui-uicontainer {
 
     // Pad the bars a little bit and round the corners to make it look nicer when it floats inside the video
     %padded-and-rounded {
@@ -23,7 +23,7 @@
       padding: .3em .5em;
     }
 
-    .ui-controlbar {
+    .#{$prefix}-ui-controlbar {
       @extend %padded-and-rounded;
 
       bottom: $overscan-margin;
@@ -32,7 +32,7 @@
       width: auto;
     }
 
-    .ui-titlebar {
+    .#{$prefix}-ui-titlebar {
       @extend %padded-and-rounded;
 
       left: $overscan-margin;
@@ -41,12 +41,12 @@
       width: auto;
     }
 
-    .ui-watermark {
+    .#{$prefix}-ui-watermark {
       margin: $overscan-margin;
     }
 
-    .ui-subtitle-overlay {
-      .ui-subtitle-label {
+    .#{$prefix}-ui-subtitle-overlay {
+      .#{$prefix}-ui-subtitle-label {
         bottom: 25%;
       }
     }

@@ -7,12 +7,14 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
+
 %ui-component {
   /*! placeholder to avoid removal of empty selector */
   //outline: 1px solid red;
   outline: 0;
 }
 
-.ui-component {
+.#{$prefix}-ui-component {
   @extend %ui-component;
 }

@@ -7,16 +7,17 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
 @import '../mixins';
 
-.ui-hugereplaybutton {
+.#{$prefix}-ui-hugereplaybutton {
   @extend %ui-button;
 
   height: 5em;
   outline: none;
   width: 5em;
 
-  .image {
+  .#{$prefix}-image {
     background-image: svg('assets/skin-modern/images/replayX.svg');
     background-position: center;
     background-repeat: no-repeat;

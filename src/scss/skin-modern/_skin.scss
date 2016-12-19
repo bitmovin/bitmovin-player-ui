@@ -9,7 +9,7 @@
 
 @import 'variables';
 
-.ui-skin-modern {
+.#{$prefix}-ui-skin-modern {
   @import 'mixins';
   @import 'components/component';
   @import 'components/container';
@@ -45,9 +45,9 @@
   font-family: $font-family;
   font-size: $font-size;
 
-  &.player-state-finished {
-    .ui-controlbar,
-    .ui-hugeplaybacktogglebutton {
+  &.#{$prefix}-player-state-finished {
+    .#{$prefix}-ui-controlbar,
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
       display: none;
     }
   }

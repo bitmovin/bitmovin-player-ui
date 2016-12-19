@@ -10,14 +10,14 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-controlbar {
+.#{$prefix}-ui-controlbar {
   @extend %ui-container;
 
   @include layout-align-bottom;
 
   background-color: $controlbar-background-color;
 
-  > .container-wrapper {
+  > .#{$prefix}-container-wrapper {
     display: flex;
     justify-content: space-around;
     margin: .5em;
@@ -38,16 +38,16 @@
 
   @include hidden-animated;
 
-  .ui-label {
+  .#{$prefix}-ui-label {
     font-size: .8em;
   }
 }
 
 // IE9 compatibility: fallback for missing flexbox support
 // sass-lint:disable nesting-depth
-&.no-flexbox {
-  .ui-controlbar {
-    > .container-wrapper {
+&.#{$prefix}-no-flexbox {
+  .#{$prefix}-ui-controlbar {
+    > .#{$prefix}-container-wrapper {
       border-spacing: .5em 0;
       display: table;
 

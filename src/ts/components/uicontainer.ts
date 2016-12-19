@@ -62,36 +62,36 @@ export class UIContainer extends Container<UIContainerConfig> {
 
         // Player states
         let removeStates = function () {
-            self.getDomElement().removeClass(UIContainer.STATE_IDLE);
-            self.getDomElement().removeClass(UIContainer.STATE_PLAYING);
-            self.getDomElement().removeClass(UIContainer.STATE_PAUSED);
-            self.getDomElement().removeClass(UIContainer.STATE_FINISHED);
+            self.getDomElement().removeClass(self.prefixCss(UIContainer.STATE_IDLE));
+            self.getDomElement().removeClass(self.prefixCss(UIContainer.STATE_PLAYING));
+            self.getDomElement().removeClass(self.prefixCss(UIContainer.STATE_PAUSED));
+            self.getDomElement().removeClass(self.prefixCss(UIContainer.STATE_FINISHED));
         };
         player.addEventHandler(bitmovin.player.EVENT.ON_READY, function () {
             removeStates();
-            self.getDomElement().addClass(UIContainer.STATE_IDLE);
+            self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_IDLE));
         });
         player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function () {
             removeStates();
-            self.getDomElement().addClass(UIContainer.STATE_PLAYING);
+            self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_PLAYING));
         });
         player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, function () {
             removeStates();
-            self.getDomElement().addClass(UIContainer.STATE_PAUSED);
+            self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_PAUSED));
         });
         player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, function () {
             removeStates();
-            self.getDomElement().addClass(UIContainer.STATE_FINISHED);
+            self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_FINISHED));
         });
         // Init in idle state
-        self.getDomElement().addClass(UIContainer.STATE_IDLE);
+        self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_IDLE));
 
         // Fullscreen marker class
         player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function () {
-            self.getDomElement().addClass(UIContainer.FULLSCREEN);
+            self.getDomElement().addClass(self.prefixCss(UIContainer.FULLSCREEN));
         });
         player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function () {
-            self.getDomElement().removeClass(UIContainer.FULLSCREEN);
+            self.getDomElement().removeClass(self.prefixCss(UIContainer.FULLSCREEN));
         });
     }
 
@@ -111,9 +111,9 @@ export class UIContainer extends Container<UIContainerConfig> {
 
         // Detect flexbox support (not supported in IE9)
         if (document && typeof document.createElement("p").style.flex !== "undefined") {
-            container.addClass("flexbox");
+            container.addClass(self.prefixCss("flexbox"));
         } else {
-            container.addClass("no-flexbox");
+            container.addClass(self.prefixCss("no-flexbox"));
         }
 
         return container;

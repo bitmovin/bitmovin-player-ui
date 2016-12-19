@@ -10,7 +10,7 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-errormessage-overlay {
+.#{$prefix}-ui-errormessage-overlay {
   @extend %ui-container;
 
   @include layout-cover;
@@ -19,7 +19,7 @@
   background-color: $color-black;
   pointer-events: none;
 
-  .ui-errormessage-label {
+  .#{$prefix}-ui-errormessage-label {
     color: $color-white;
     font-size: 1.2em;
     left: 3em;
@@ -34,7 +34,7 @@
     }
   }
 
-  .ui-tvnoisecanvas {
+  .#{$prefix}-ui-tvnoisecanvas {
     @include layout-cover;
 
     filter: blur(4px);

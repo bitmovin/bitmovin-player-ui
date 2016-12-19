@@ -12,6 +12,6 @@
   //outline: 1px solid red;
 }
 
-.ui-component {
+.#{$prefix}-ui-component {
   @extend %ui-component;
 }

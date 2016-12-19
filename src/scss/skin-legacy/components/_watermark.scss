@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-watermark {
+.#{$prefix}-ui-watermark {
   @extend %ui-clickoverlay;
 
   background-image: url('../../assets/skin-legacy/images/components/normal/bitmovin-logo.png');

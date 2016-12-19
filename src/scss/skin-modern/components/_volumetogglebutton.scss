@@ -7,9 +7,10 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
 @import '../mixins';
 
-.ui-volumetogglebutton {
+.#{$prefix}-ui-volumetogglebutton {
   @extend %ui-button;
 
   background-image: svg('assets/skin-modern/images/music-on.svg');
@@ -18,11 +19,11 @@
     @include svg-icon-shadow;
   }
 
-  &.low {
+  &.#{$prefix}-low {
     background-image: svg('assets/skin-modern/images/music-low.svg');
   }
 
-  &.on {
+  &.#{$prefix}-on {
     background-image: svg('assets/skin-modern/images/music-off.svg');
   }
 }

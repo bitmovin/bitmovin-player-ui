@@ -9,7 +9,7 @@
 
 @import '../variables';
 
-.ui-seekbar-label {
+.#{$prefix}-ui-seekbar-label {
   @extend %ui-container;
 
   @include hidden-animated;
@@ -27,16 +27,16 @@
     margin-right: 50%;
   }
 
-  > .container-wrapper {
+  > .#{$prefix}-container-wrapper {
     @extend %center-on-left-edge;
     background-color: $controlbar-background-color;
     padding: .5em;
 
-    .seekbar-thumbnail {
+    .#{$prefix}-seekbar-thumbnail {
       margin-bottom: .3em;
     }
 
-    .seekbar-label {
+    .#{$prefix}-seekbar-label {
       line-height: .8em;
       margin: .5em;
     }

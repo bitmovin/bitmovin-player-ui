@@ -9,23 +9,23 @@
 
 @import 'variables';
 
-.ui-ads-status {
+.#{$prefix}-ui-ads-status {
   background-color: $color-background-bars;
   left: 1.5em;
   padding: .5em 1.5em;
   position: absolute;
   top: 1em;
 
-  .ui-label-ad-message {
+  .#{$prefix}-ui-label-ad-message {
     @extend %ui-label;
 
     color: $color-secondary;
   }
 
-  .ui-button-ad-skip {
+  .#{$prefix}-ui-button-ad-skip {
     @extend %ui-button;
 
-    .label {
+    .#{$prefix}-label {
       display: inherit;
 
       &:hover {

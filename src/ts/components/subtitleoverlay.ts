@@ -60,12 +60,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
         uimanager.onComponentShow.subscribe(function (component: Component<ComponentConfig>) {
             if (component instanceof ControlBar) {
-                self.getDomElement().addClass(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE);
+                self.getDomElement().addClass(self.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
             }
         });
         uimanager.onComponentHide.subscribe(function (component: Component<ComponentConfig>) {
             if (component instanceof ControlBar) {
-                self.getDomElement().removeClass(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE);
+                self.getDomElement().removeClass(self.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
             }
         });
     }

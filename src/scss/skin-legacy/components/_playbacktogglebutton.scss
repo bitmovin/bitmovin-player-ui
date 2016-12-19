@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-playbacktogglebutton {
+.#{$prefix}-ui-playbacktogglebutton {
   @extend %ui-button;
 
   background-image: url('../../assets/skin-legacy/images/components/normal/play.png');
@@ -16,7 +16,7 @@
     background-image: url('../../assets/skin-legacy/images/components/hover/play.png');
   }
 
-  &.on {
+  &.#{$prefix}-on {
     background-image: url('../../assets/skin-legacy/images/components/normal/pause.png');
 
     &:hover {

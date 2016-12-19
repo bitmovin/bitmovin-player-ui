@@ -7,12 +7,14 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
+
 %ui-container {
   @extend %ui-component;
 
   font-size: 1em;
 }
 
-.ui-container {
+.#{$prefix}-ui-container {
   @extend %ui-container;
 }

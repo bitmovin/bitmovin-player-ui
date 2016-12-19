@@ -10,13 +10,13 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-volumecontrolbutton {
+.#{$prefix}-ui-volumecontrolbutton {
   @extend %ui-container;
 
   line-height: 0; // Fix layout for Firefox: removes spurious space in the container
   position: relative;
 
-  .ui-volumeslider {
+  .#{$prefix}-ui-volumeslider {
     @include animate-slide-in-from-bottom(6em, $animation-duration-short);
 
     background-color: $color-background;
@@ -25,7 +25,7 @@
     position: absolute;
     width: 1.5em;
 
-    .seekbar {
+    .#{$prefix}-seekbar {
       bottom: .5em;
       height: auto;
       left: .3em;

@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-volumeslider {
+.#{$prefix}-ui-volumeslider {
   @extend %ui-seekbar;
 
   //

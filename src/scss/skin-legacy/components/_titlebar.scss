@@ -10,7 +10,7 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-titlebar {
+.#{$prefix}-ui-titlebar {
   @extend %ui-container;
 
   @include hidden-animated;
@@ -19,7 +19,7 @@
   background-color: $controlbar-background-color;
   color: $color-white;
 
-  > .container-wrapper {
+  > .#{$prefix}-container-wrapper {
     padding: .5em;
   }
 }

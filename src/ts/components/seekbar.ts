@@ -248,33 +248,33 @@ export class SeekBar extends Component<SeekBarConfig> {
         });
 
         let seekBar = new DOM("div", {
-            "class": "seekbar"
+            "class": this.prefixCss("seekbar")
         });
         this.seekBar = seekBar;
 
         // Indicator that shows the buffer fill level
         let seekBarBufferLevel = new DOM("div", {
-            "class": "seekbar-bufferlevel"
+            "class": this.prefixCss("seekbar-bufferlevel")
         });
         this.seekBarBufferPosition = seekBarBufferLevel;
 
         // Indicator that shows the current playback position
         let seekBarPlaybackPosition = new DOM("div", {
-            "class": "seekbar-playbackposition"
+            "class": this.prefixCss("seekbar-playbackposition")
         }).append(new DOM("div", {
-            "class": "seekbar-playbackposition-marker"
+            "class": this.prefixCss("seekbar-playbackposition-marker")
         }));
         this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
         // Indicator that show where a seek will go to
         let seekBarSeekPosition = new DOM("div", {
-            "class": "seekbar-seekposition"
+            "class": this.prefixCss("seekbar-seekposition")
         });
         this.seekBarSeekPosition = seekBarSeekPosition;
 
         // Indicator that shows the full seekbar
         let seekBarBackdrop = new DOM("div", {
-            "class": "seekbar-backdrop"
+            "class": this.prefixCss("seekbar-backdrop")
         });
         this.seekBarBackdrop = seekBarBackdrop;
 
@@ -483,9 +483,9 @@ export class SeekBar extends Component<SeekBarConfig> {
      */
     setSeeking(seeking: boolean) {
         if (seeking) {
-            this.getDomElement().addClass(SeekBar.CLASS_SEEKING);
+            this.getDomElement().addClass(this.prefixCss(SeekBar.CLASS_SEEKING));
         } else {
-            this.getDomElement().removeClass(SeekBar.CLASS_SEEKING);
+            this.getDomElement().removeClass(this.prefixCss(SeekBar.CLASS_SEEKING));
         }
     }
 
@@ -494,7 +494,7 @@ export class SeekBar extends Component<SeekBarConfig> {
      * @returns {boolean} true if in seek state, else false
      */
     isSeeking(): boolean {
-        return this.getDomElement().hasClass(SeekBar.CLASS_SEEKING);
+        return this.getDomElement().hasClass(this.prefixCss(SeekBar.CLASS_SEEKING));
     }
 
     /**

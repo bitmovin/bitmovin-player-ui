@@ -7,7 +7,9 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-hugeplaybacktogglebutton {
+@import '../variables';
+
+.#{$prefix}-ui-hugeplaybacktogglebutton {
   @extend %ui-button;
 
   @include layout-cover;
@@ -51,7 +53,7 @@
   outline: none;
   overflow: hidden; // hide overflow from scale animation
 
-  .image {
+  .#{$prefix}-image {
     background-image: svg('assets/skin-modern/images/play_big.svg');
     background-position: center;
     background-repeat: no-repeat;
@@ -64,16 +66,16 @@
     }
   }
 
-  &.on {
-    .image {
+  &.#{$prefix}-on {
+    .#{$prefix}-image {
       animation: fade-out $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
       transition: visibility 0s $animation-duration;
       visibility: hidden;
     }
   }
 
-  &.off {
-    .image {
+  &.#{$prefix}-off {
+    .#{$prefix}-image {
       animation: fade-in $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
       visibility: visible;
     }

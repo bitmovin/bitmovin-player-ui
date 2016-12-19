@@ -10,14 +10,14 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-subtitle-overlay {
+.#{$prefix}-ui-subtitle-overlay {
   @extend %ui-container;
 
   @include layout-cover;
 
   pointer-events: none;
 
-  .ui-subtitle-label {
+  .#{$prefix}-ui-subtitle-label {
     bottom: 3em;
     color: $subtitle-text-color;
     font-size: 1.2em;

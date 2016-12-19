@@ -10,7 +10,7 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-controlbar {
+.#{$prefix}-ui-controlbar {
   @extend %ui-container;
 
   @include hidden-animated;
@@ -20,36 +20,36 @@
   line-height: 1em;
   padding: 1em 1em .5em;
 
-  .controlbar-top,
-  .controlbar-bottom {
-    > .container-wrapper {
+  .#{$prefix}-controlbar-top,
+  .#{$prefix}-controlbar-bottom {
+    > .#{$prefix}-container-wrapper {
       display: flex;
       margin: .5em;
     }
   }
 
-  .controlbar-top {
-    .ui-label {
+  .#{$prefix}-controlbar-top {
+    .#{$prefix}-ui-label {
       font-size: .9em;
     }
 
-    > .container-wrapper > * {
+    > .#{$prefix}-container-wrapper > * {
       margin: 0 .5em;
     }
   }
 
-  .controlbar-bottom {
-    > .container-wrapper {
+  .#{$prefix}-controlbar-bottom {
+    > .#{$prefix}-container-wrapper {
       > * {
         margin: 0 .25em;
       }
 
-      .ui-volumeslider {
+      .#{$prefix}-ui-volumeslider {
         margin: .25em .5em;
         width: 5em;
       }
 
-      .spacer {
+      .#{$prefix}-spacer {
         width: 100%;
       }
     }

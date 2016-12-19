@@ -9,9 +9,9 @@
 
 @import '../mixins';
 
-.ui-hugereplaybutton {
+.#{$prefix}-ui-hugereplaybutton {
   // sass-lint:disable placeholder-in-extend
-  @extend .ui-hugeplaybacktogglebutton;
+  @extend .#{$prefix}-ui-hugeplaybacktogglebutton;
 
   height: 100px;
   position: inherit;

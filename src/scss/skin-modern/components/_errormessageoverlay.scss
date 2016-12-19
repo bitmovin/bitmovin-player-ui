@@ -19,7 +19,7 @@
   background-color: $color-background;
   pointer-events: none;
 
-  .ui-errormessage-label {
+  .#{$prefix}-ui-errormessage-label {
     color: $color-primary;
     font-size: 1.2em;
     left: 3em;
@@ -44,7 +44,7 @@
     }
   }
 
-  .ui-tvnoisecanvas {
+  .#{$prefix}-ui-tvnoisecanvas {
     @include layout-cover;
 
     filter: blur(4px);

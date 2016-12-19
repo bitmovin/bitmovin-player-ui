@@ -22,7 +22,7 @@
   min-width: 1.5em;
   padding: 0;
 
-  .label {
+  .#{$prefix}-label {
     color: $color-white;
     display: none;
   }
@@ -30,6 +30,6 @@
   @include hidden;
 }
 
-.ui-button {
+.#{$prefix}-ui-button {
   @extend %ui-button;
 }

@@ -14,14 +14,14 @@
 %center-items-in-overlay {
   display: table;
 
-  > .container-wrapper {
+  > .#{$prefix}-container-wrapper {
     display: table-cell;
     text-align: center;
     vertical-align: middle;
   }
 }
 
-.ui-recommendation-overlay {
+.#{$prefix}-ui-recommendation-overlay {
   @extend %ui-container;
   @extend %center-items-in-overlay;
 
@@ -39,7 +39,7 @@
     }
   }
 
-  .ui-recommendation-item {
+  .#{$prefix}-ui-recommendation-item {
     background-size: cover;
     display: inline-block;
     font-size: .7em;
@@ -52,7 +52,7 @@
     transition: transform .15s ease-out;
     width: 100px;
 
-    .thumbnail {
+    .#{$prefix}-thumbnail {
       height: 100%;
       position: absolute;
       width: 100%;
@@ -63,7 +63,7 @@
       transition: transform .15s ease-in;
     }
 
-    .title {
+    .#{$prefix}-title {
       left: .5em;
       position: absolute;
       right: .5em;
@@ -72,7 +72,7 @@
       word-break: break-all;
     }
 
-    .duration {
+    .#{$prefix}-duration {
       bottom: .5em;
       position: absolute;
       right: .5em;

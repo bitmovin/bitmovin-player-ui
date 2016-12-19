@@ -10,11 +10,11 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-settings-panel {
+.#{$prefix}-ui-settings-panel {
   @extend %ui-container;
 
   // Animation must be done on the inner container because the outer auto-sizes to its container height (e.g. the control bar)
-  @include animate-slide-in-from-bottom(10em, $animation-duration, '> .container-wrapper');
+  @include animate-slide-in-from-bottom(10em, $animation-duration, '> .#{$prefix}-container-wrapper');
 
   background-color: $controlbar-background-color;
   bottom: 100%;
@@ -23,7 +23,7 @@
   position: absolute;
   right: 0;
 
-  > .container-wrapper {
+  > .#{$prefix}-container-wrapper {
     margin: -.5em;
     padding: .5em;
 
@@ -32,7 +32,7 @@
     }
 
     // A "line" in the panel: a container holding a label + control
-    .container-wrapper > * {
+    .#{$prefix}-container-wrapper > * {
       // Labels
       &:first-child {
         display: inline-block;
@@ -46,14 +46,14 @@
     }
   }
 
-  .ui-settings-panel-entry {
-    &.hidden {
+  .#{$prefix}-ui-settings-panel-entry {
+    &.#{$prefix}-hidden {
       display: none;
     }
   }
 }
 
 // Remove margin inherited from controlbar
-.container-wrapper > .ui-settings-panel {
+.#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
   margin: 0;
 }

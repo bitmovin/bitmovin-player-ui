@@ -14,14 +14,14 @@
 %center-items-in-overlay {
   display: table;
 
-  > .container-wrapper {
+  > .#{$prefix}-container-wrapper {
     display: table-cell;
     text-align: center;
     vertical-align: middle;
   }
 }
 
-.ui-recommendation-overlay {
+.#{$prefix}-ui-recommendation-overlay {
   @extend %ui-container;
   @extend %center-items-in-overlay;
 
@@ -30,7 +30,7 @@
 
   background-color: $color-background-highlight;
 
-  > .container-wrapper {
+  > .#{$prefix}-container-wrapper {
     padding: 3em;
   }
 
@@ -43,7 +43,7 @@
     }
   }
 
-  .ui-recommendation-item {
+  .#{$prefix}-ui-recommendation-item {
     $margin: 1em;
     $item-scale: 1;
 
@@ -61,7 +61,7 @@
     transition: transform $animation-duration-short ease-out;
     width: (16em * $item-scale);
 
-    .background {
+    .#{$prefix}-background {
       background: linear-gradient(to bottom, $color-transparent, $color-transparent, $color-background-bars);
       height: 100%;
       position: absolute;
@@ -70,20 +70,20 @@
       width: 100%;
     }
 
-    .title {
+    .#{$prefix}-title {
       bottom: $margin + 2em;
       left: $margin;
       position: absolute;
       right: $margin;
 
-      .innertitle {
+      .#{$prefix}-innertitle {
         font-size: 1.2em;
         white-space: normal;
         word-break: break-all;
       }
     }
 
-    .duration {
+    .#{$prefix}-duration {
       bottom: $margin;
       left: $margin;
       position: absolute;
@@ -94,7 +94,7 @@
       transform: scale(1.05);
       transition: transform $animation-duration-short ease-in;
 
-      .background {
+      .#{$prefix}-background {
         top: 0;
         transition: top $animation-duration-short ease-in;
       }

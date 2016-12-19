@@ -11,7 +11,7 @@
   @extend %ui-button;
 }
 
-.ui-clickoverlay {
+.#{$prefix}-ui-clickoverlay {
   @extend %ui-clickoverlay;
 
   @include layout-cover;

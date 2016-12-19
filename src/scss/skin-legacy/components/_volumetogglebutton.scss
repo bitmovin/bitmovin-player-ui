@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-volumetogglebutton {
+.#{$prefix}-ui-volumetogglebutton {
   @extend %ui-button;
 
   background-image: url('../../assets/skin-legacy/images/components/normal/volume_high.png');
@@ -16,7 +16,7 @@
     background-image: url('../../assets/skin-legacy/images/components/hover/volume_high.png');
   }
 
-  &.low {
+  &.#{$prefix}-low {
     background-image: url('../../assets/skin-legacy/images/components/normal/volume_low.png');
 
     &:hover {
@@ -24,7 +24,7 @@
     }
   }
 
-  &.on {
+  &.#{$prefix}-on {
     background-image: url('../../assets/skin-legacy/images/components/normal/volume_muted.png');
 
     &:hover {

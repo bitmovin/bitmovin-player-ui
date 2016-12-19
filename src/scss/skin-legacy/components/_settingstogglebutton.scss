@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-settingstogglebutton {
+.#{$prefix}-ui-settingstogglebutton {
   @extend %ui-button;
 
   background-image: url('../../assets/skin-legacy/images/components/normal/settings.png');
@@ -16,7 +16,7 @@
     background-image: url('../../assets/skin-legacy/images/components/hover/settings.png');
   }
 
-  &.on {
+  &.#{$prefix}-on {
     background-image: url('../../assets/skin-legacy/images/components/normal/settings.png');
 
     &:hover {

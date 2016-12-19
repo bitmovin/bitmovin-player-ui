@@ -7,7 +7,7 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-casttogglebutton {
+.#{$prefix}-ui-casttogglebutton {
   @extend %ui-button;
 
   background-image: url('../../assets/skin-legacy/images/components/normal/chromecast.png');
@@ -16,7 +16,7 @@
     background-image: url('../../assets/skin-legacy/images/components/hover/chromecast.png');
   }
 
-  &.on {
+  &.#{$prefix}-on {
     background-image: url('../../assets/skin-legacy/images/components/normal/chromecast.png');
 
     &:hover {

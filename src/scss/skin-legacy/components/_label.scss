@@ -13,6 +13,6 @@
   white-space: nowrap;
 }
 
-.ui-label {
+.#{$prefix}-ui-label {
   @extend %ui-label;
 }

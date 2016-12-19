@@ -10,7 +10,7 @@
 @import 'variables';
 
 @mixin hidden {
-  &.hidden {
+  &.#{$prefix}-hidden {
     display: none;
   }
 }
@@ -20,7 +20,7 @@
   transition: opacity $duration, visibility 0s;
   visibility: visible;
 
-  &.hidden {
+  &.#{$prefix}-hidden {
     opacity: 0;
     transition: opacity $duration, visibility $duration;
     visibility: hidden;
@@ -60,7 +60,7 @@
 
   // Animate hide
   // sass-lint:disable force-element-nesting
-  &.hidden #{$inner-selector} {
+  &.#{$prefix}-hidden #{$inner-selector} {
     max-height: 0;
     transition: max-height $duration ease-out;
   }

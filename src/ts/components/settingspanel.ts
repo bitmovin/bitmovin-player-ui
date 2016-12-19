@@ -80,13 +80,13 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
             // Attach marker class to last visible item
             let lastShownItem = null;
             for (let component of self.getItems()) {
-                component.getDomElement().removeClass(SettingsPanel.CLASS_LAST);
+                component.getDomElement().removeClass(self.prefixCss(SettingsPanel.CLASS_LAST));
                 if (component.isShown()) {
                     lastShownItem = component;
                 }
             }
             if (lastShownItem) {
-                lastShownItem.getDomElement().addClass(SettingsPanel.CLASS_LAST);
+                lastShownItem.getDomElement().addClass(self.prefixCss(SettingsPanel.CLASS_LAST));
             }
         };
         for (let component of this.getItems()) {

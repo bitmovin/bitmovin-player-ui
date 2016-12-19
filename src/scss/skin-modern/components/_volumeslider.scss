@@ -7,13 +7,15 @@
  * and conditions of the applicable license agreement.
  */
 
-.ui-volumeslider {
+@import '../variables';
+
+.#{$prefix}-ui-volumeslider {
   @extend %ui-seekbar;
 
   // sass-lint:disable nesting-depth
-  .seekbar {
-    .seekbar-playbackposition {
-      .seekbar-playbackposition-marker {
+  .#{$prefix}-seekbar {
+    .#{$prefix}-seekbar-playbackposition {
+      .#{$prefix}-seekbar-playbackposition-marker {
         background-image: svg('assets/skin-modern/images/dot-volume.svg');
       }
     }

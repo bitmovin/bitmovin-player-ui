@@ -9,14 +9,14 @@
 
 @import 'variables';
 
-.ui-label-ad-message {
+.#{$prefix}-ui-label-ad-message {
   @extend %ui-label;
 
   text-align: center;
   width: 100%;
 }
 
-.ui-button-ad-skip {
+.#{$prefix}-ui-button-ad-skip {
   @extend %ui-button;
 
   bottom: 3em;
@@ -24,7 +24,7 @@
   position: absolute;
   right: 1.5em;
 
-  .label {
+  .#{$prefix}-label {
     background-color: transparentize($color-black, .3);
     border: 1px solid $color-white;
     display: inherit;

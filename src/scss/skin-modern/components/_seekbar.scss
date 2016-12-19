@@ -20,7 +20,7 @@
 
   $bar-inset: .41em;
 
-  .seekbar {
+  .#{$prefix}-seekbar {
     height: 100%;
     position: relative;
 
@@ -36,7 +36,7 @@
       background-color: $color-highlight;
       margin: $bar-inset 0;
 
-      .seekbar-playbackposition-marker {
+      .#{$prefix}-seekbar-playbackposition-marker {
         background-image: svg('assets/skin-modern/images/dot-play.svg');
         background-position: center;
         background-repeat: no-repeat;
@@ -49,27 +49,27 @@
       }
     }
 
-    .seekbar-backdrop {
+    .#{$prefix}-seekbar-backdrop {
       @extend %bar;
       background-color: transparentize($color-primary, .8);
       margin: $bar-inset 0;
       width: 100%;
     }
 
-    .seekbar-bufferlevel {
+    .#{$prefix}-seekbar-bufferlevel {
       @extend %bar;
       background-color: $color-primary;
       margin: $bar-inset 0;
       transition: width .3s linear, height .3s linear;
     }
 
-    .seekbar-seekposition {
+    .#{$prefix}-seekbar-seekposition {
       @extend %bar;
       background-color: transparentize($color-primary, .8);
       margin: $bar-inset 0;
     }
 
-    .seekbar-playbackposition {
+    .#{$prefix}-seekbar-playbackposition {
       @extend %bar;
       @extend %positionmarker-horizontal;
       transition: width .1s linear, height .1s linear;
@@ -77,17 +77,17 @@
   }
 
   // disable animations during seeks
-  &.seeking {
-    .seekbar {
-      .seekbar-bufferlevel,
-      .seekbar-playbackposition {
+  &.#{$prefix}-seeking {
+    .#{$prefix}-seekbar {
+      .#{$prefix}-seekbar-bufferlevel,
+      .#{$prefix}-seekbar-playbackposition {
         transition: none;
       }
     }
   }
 
-  &.vertical {
-    .seekbar {
+  &.#{$prefix}-vertical {
+    .#{$prefix}-seekbar {
       //overflow-y: hidden;
       height: 100%;
       width: auto;
@@ -100,14 +100,14 @@
       %positionmarker-vertical {
         @extend %positionmarker-horizontal;
 
-        .seekbar-playbackposition-marker {
+        .#{$prefix}-seekbar-playbackposition-marker {
           height: 1em;
           top: -.5em;
           width: 100%;
         }
       }
 
-      .seekbar-backdrop {
+      .#{$prefix}-seekbar-backdrop {
         @extend %bar-vertical;
 
         height: 100%;
@@ -115,19 +115,19 @@
         width: auto;
       }
 
-      .seekbar-bufferlevel {
+      .#{$prefix}-seekbar-bufferlevel {
         @extend %bar-vertical;
 
         margin: 0 $bar-inset;
       }
 
-      .seekbar-seekposition {
+      .#{$prefix}-seekbar-seekposition {
         @extend %bar-vertical;
 
         margin: 0 $bar-inset;
       }
 
-      .seekbar-playbackposition {
+      .#{$prefix}-seekbar-playbackposition {
         @extend %bar-vertical;
         @extend %positionmarker-vertical;
       }
@@ -135,6 +135,6 @@
   }
 }
 
-.ui-seekbar {
+.#{$prefix}-ui-seekbar {
   @extend %ui-seekbar;
 }

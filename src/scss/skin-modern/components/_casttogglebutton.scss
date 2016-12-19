@@ -7,9 +7,10 @@
  * and conditions of the applicable license agreement.
  */
 
+@import '../variables';
 @import '../mixins';
 
-.ui-casttogglebutton {
+.#{$prefix}-ui-casttogglebutton {
   @extend %ui-button;
 
   background-image: svg('assets/skin-modern/images/chromecast.svg');
@@ -18,7 +19,7 @@
     @include svg-icon-shadow;
   }
 
-  &.on {
+  &.#{$prefix}-on {
     background-image: svg('assets/skin-modern/images/chromecastX.svg');
   }
 }

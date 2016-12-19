@@ -13,6 +13,6 @@
   font-size: 1em;
 }
 
-.ui-container {
+.#{$prefix}-ui-container {
   @extend %ui-container;
 }

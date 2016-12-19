@@ -10,7 +10,7 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-cast-status-overlay {
+.#{$prefix}-ui-cast-status-overlay {
   @extend %ui-container;
 
   @include layout-cover;
@@ -19,7 +19,7 @@
   background: $color-black url('../../assets/skin-legacy/images/components/normal/chromecast_overlay.png') center no-repeat;
   pointer-events: none; // Disable input events
 
-  .ui-cast-status-label {
+  .#{$prefix}-ui-cast-status-label {
     color: $color-white;
     font-size: 1.2em;
     left: 0;

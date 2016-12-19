@@ -9,7 +9,7 @@
 
 @import '../variables';
 
-.ui-selectbox {
+.#{$prefix}-ui-selectbox {
   @extend %ui-component;
 
   background-color: darken($color-white, 10%);

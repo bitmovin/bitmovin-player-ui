@@ -37,7 +37,7 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
     }
 
     protected toDomElement(): DOM {
-        return this.canvas = new DOM("canvas", {"class": this.config.cssClass});
+        return this.canvas = new DOM("canvas", {"class": this.getCssClasses()});
     }
 
     start(): void {

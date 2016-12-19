@@ -21,7 +21,7 @@
   $position-marker-width: .3em;
   $bar-inset: .3em;
 
-  .seekbar {
+  .#{$prefix}-seekbar {
     height: 100%;
     position: relative;
     //background-color: lighten($controlbar-background-color, 10%);
@@ -42,27 +42,27 @@
       margin-left: -$position-marker-width / 2;
     }
 
-    .seekbar-backdrop {
+    .#{$prefix}-seekbar-backdrop {
       @extend %bar;
       background-color: lighten($controlbar-background-color, 20%);
       margin: $bar-inset 0;
       width: 100%;
     }
 
-    .seekbar-bufferlevel {
+    .#{$prefix}-seekbar-bufferlevel {
       @extend %bar;
       background-color: $button-image-color-active;
       margin: $bar-inset 0;
       transition: width .3s linear, height .3s linear;
     }
 
-    .seekbar-seekposition {
+    .#{$prefix}-seekbar-seekposition {
       @extend %bar;
       background-color: transparentize($color-white, .8);
       margin: $bar-inset 0;
     }
 
-    .seekbar-playbackposition {
+    .#{$prefix}-seekbar-playbackposition {
       @extend %bar;
       @extend %positionmarker-horizontal;
       transition: width .1s linear, height .1s linear;
@@ -70,17 +70,17 @@
   }
 
   // disable animations during seeks
-  &.seeking {
-    .seekbar {
-      .seekbar-bufferlevel,
-      .seekbar-playbackposition {
+  &.#{$prefix}-seeking {
+    .#{$prefix}-seekbar {
+      .#{$prefix}-seekbar-bufferlevel,
+      .#{$prefix}-seekbar-playbackposition {
         transition: none;
       }
     }
   }
 
-  &.vertical {
-    .seekbar {
+  &.#{$prefix}-vertical {
+    .#{$prefix}-seekbar {
       //overflow-y: hidden;
       height: 100%;
       width: auto;
@@ -97,7 +97,7 @@
         margin-bottom: -$position-marker-width / 2;
       }
 
-      .seekbar-backdrop {
+      .#{$prefix}-seekbar-backdrop {
         @extend %bar-vertical;
 
         height: 100%;
@@ -105,19 +105,19 @@
         width: auto;
       }
 
-      .seekbar-bufferlevel {
+      .#{$prefix}-seekbar-bufferlevel {
         @extend %bar-vertical;
 
         margin: 0 $bar-inset;
       }
 
-      .seekbar-seekposition {
+      .#{$prefix}-seekbar-seekposition {
         @extend %bar-vertical;
 
         margin: 0 $bar-inset;
       }
 
-      .seekbar-playbackposition {
+      .#{$prefix}-seekbar-playbackposition {
         @extend %bar-vertical;
         @extend %positionmarker-vertical;
       }
@@ -125,6 +125,6 @@
   }
 }
 
-.ui-seekbar {
+.#{$prefix}-ui-seekbar {
   @extend %ui-seekbar;
 }
