@@ -360,6 +360,14 @@ declare namespace bitmovin {
              * Configuration for VR and omnidirectional (360°) video.
              */
             vr?: VRConfig;
+            /**
+             * The title of the video source.
+             */
+            title?: string;
+            /**
+             * The description of the video source.
+             */
+            description?: string;
         }
 
         interface PlaybackTech {
