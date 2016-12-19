@@ -112,10 +112,10 @@ export class UIManager {
         this.adsUi = adsUi;
         this.config = config;
 
-        if(!config.metadata) {
+        if (!config.metadata) {
             config.metadata = {
                 title: player.getConfig().source ? player.getConfig().source.title : null
-            }
+            };
         }
 
         this.managerPlayerWrapper = new PlayerWrapper(player);
