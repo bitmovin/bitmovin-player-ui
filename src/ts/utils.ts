@@ -156,7 +156,7 @@ export namespace StringUtils {
         }
         // Time format
         else if (format.indexOf(":") > -1) {
-            let totalSeconds = Math.round(time);
+            let totalSeconds = Math.ceil(time);
 
             // hh:mm:ss format
             if (format.indexOf("hh") > -1) {
@@ -164,7 +164,7 @@ export namespace StringUtils {
             }
             // mm:ss format
             else {
-                let minutes = Math.round(totalSeconds / 60);
+                let minutes = Math.floor(totalSeconds / 60);
                 let seconds = totalSeconds % 60;
 
                 return leftPadWithZeros(minutes, 2) + ":" + leftPadWithZeros(seconds, 2);
@@ -172,7 +172,7 @@ export namespace StringUtils {
         }
         // Integer format
         else {
-            return leftPadWithZeros(Math.round(time), leadingZeroes);
+            return leftPadWithZeros(Math.ceil(time), leadingZeroes);
         }
     }
 }
