@@ -333,7 +333,7 @@ var Button = (function (_super) {
      * @param text the text to put into the label of the button
      */
     Button.prototype.setText = function (text) {
-        this.getDomElement().find(".label").html(text);
+        this.getDomElement().find("." + this.prefixCss("label")).html(text);
     };
     Button.prototype.onClickEvent = function () {
         this.buttonEvents.onClick.dispatch(this);
