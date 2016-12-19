@@ -4043,19 +4043,23 @@ var DOM = (function () {
      * @returns {boolean} true if one of the elements has the class attached, else if no element has it attached
      */
     DOM.prototype.hasClass = function (className) {
+        var hasClass = false;
         this.forEach(function (element) {
             if (element.classList) {
                 if (element.classList.contains(className)) {
-                    return true;
+                    // Since we are inside a handler, we can't just "return true". Instead, we save it to a variable
+                    // and return it at the end of the function body.
+                    hasClass = true;
                 }
             }
             else {
                 if (new RegExp("(^| )" + className + "( |$)", "gi").test(element.className)) {
-                    return true;
+                    // See comment above
+                    hasClass = true;
                 }
             }
         });
-        return false;
+        return hasClass;
     };
     DOM.prototype.css = function (propertyNameOrCollection, value) {
         if (typeof propertyNameOrCollection === "string") {
