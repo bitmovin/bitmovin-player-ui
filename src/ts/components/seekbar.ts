@@ -281,10 +281,13 @@ export class SeekBar extends Component<SeekBarConfig> {
         seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition, seekBarPlaybackPosition);
 
         let self = this;
+        let seeking = false;
 
         // Define handler functions so we can attach/remove them later
         let mouseTouchMoveHandler = function (e: MouseEvent | TouchEvent) {
             e.preventDefault();
+            // Avoid propagation to VR handler
+            e.stopPropagation();
 
             let targetPercentage = 100 * self.getOffset(e);
             self.setSeekPosition(targetPercentage);
@@ -301,6 +304,7 @@ export class SeekBar extends Component<SeekBarConfig> {
             let targetPercentage = 100 * self.getOffset(e);
 
             self.setSeeking(false);
+            seeking = false;
 
             // Fire seeked event
             self.onSeekedEvent(targetPercentage);
@@ -316,8 +320,11 @@ export class SeekBar extends Component<SeekBarConfig> {
 
             // Prevent selection of DOM elements (also prevents mousedown if current event is touchstart)
             e.preventDefault();
+            // Avoid propagation to VR handler
+            e.stopPropagation();
 
-            self.setSeeking(true);
+            self.setSeeking(true); // Set seeking class on DOM element
+            seeking = true; // Set seek tracking flag
 
             // Fire seeked event
             self.onSeekEvent();
@@ -330,6 +337,14 @@ export class SeekBar extends Component<SeekBarConfig> {
         // Display seek target indicator when mouse hovers or finger slides over seekbar
         seekBar.on("touchmove mousemove", function (e: MouseEvent | TouchEvent) {
             e.preventDefault();
+
+            if (seeking) {
+                // During a seek (when mouse is down or touch move active), we need to stop propagation to avoid
+                // the VR viewport reacting to the moves.
+                e.stopPropagation();
+                // Because the stopped propagation inhibits the event on the document, we need to call it from here
+                mouseTouchMoveHandler(e);
+            }
 
             let position = 100 * self.getOffset(e);
             self.setSeekPosition(position);
