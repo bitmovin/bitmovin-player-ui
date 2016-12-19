@@ -145,7 +145,11 @@ gulp.task('sass', function () {
 
     if (production) {
         // Minify CSS
-        stream.pipe(postcss([cssnano()]))
+        stream.pipe(postcss([cssnano({
+            // Disable svg optimizer because output is not a valid URI and does not work in IE11
+            // TODO check if it works in a later version, because disabling increases file size substantially
+            svgo: false
+        })]))
             .pipe(rename({extname: '.min.css'}))
             .pipe(gulp.dest(paths.target.css));
     }
