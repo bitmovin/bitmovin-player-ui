@@ -137,6 +137,7 @@
 
     var advertisingConfig = {
         forceSinglePlayer: false,
+        //clickThroughEnabled: false,
         client: 'vast',
         admessage: 'staring contest (ಠ_ಠ) ... hold on for {remainingTime} seconds',
         skipmessage: {
@@ -287,6 +288,10 @@
         "Schedule nonskippable VAST ad in 5 secs": function () {
             printResult(player.scheduleAd('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
                 'vast', { timeOffset: player.getCurrentTime() + 5 }));
+        },
+        "Schedule skippable VAST postroll ad": function () {
+            printResult(player.scheduleAd('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+                'vast', { timeOffset: "post" }));
         },
         "Schedule skippable IMA ad in 5 secs": function () {
             printResult(player.scheduleAd('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',

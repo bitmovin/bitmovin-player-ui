@@ -756,6 +756,8 @@ declare namespace bitmovin {
              * Unmutes the player if muted.
              */
             unmute(): Player;
+
+            fireEvent(event: EVENT, args: { clickThroughUrl: string; }): void;
         }
 
         namespace VR {
