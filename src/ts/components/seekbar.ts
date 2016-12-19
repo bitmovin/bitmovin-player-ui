@@ -285,7 +285,6 @@ export class SeekBar extends Component<SeekBarConfig> {
         // Define handler functions so we can attach/remove them later
         let mouseTouchMoveHandler = function (e: MouseEvent | TouchEvent) {
             e.preventDefault();
-            e.stopPropagation();
 
             let targetPercentage = 100 * self.getOffset(e);
             self.setSeekPosition(targetPercentage);
@@ -331,11 +330,9 @@ export class SeekBar extends Component<SeekBarConfig> {
         // Display seek target indicator when mouse hovers or finger slides over seekbar
         seekBar.on("touchmove mousemove", function (e: MouseEvent | TouchEvent) {
             e.preventDefault();
-            e.stopPropagation();
 
             let position = 100 * self.getOffset(e);
             self.setSeekPosition(position);
-            self.setPlaybackPosition(position);
             self.onSeekPreviewEvent(position, false);
 
             if (self.hasLabel() && self.getLabel().isHidden()) {
