@@ -45,6 +45,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         let config = <PlaybackTimeLabelConfig>self.getConfig();
         let live = false;
         let liveCssClass = self.prefixCss("ui-playbacktimelabel-live");
+        let liveEdgeCssClass = self.prefixCss("ui-playbacktimelabel-live-edge");
         let minWidth = 0;
 
         let liveClickHandler = function () {
@@ -63,10 +64,20 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
                     self.hide();
                 }
                 self.onClick.subscribe(liveClickHandler);
+                updateLiveTimeshiftState();
             } else {
                 self.getDomElement().removeClass(liveCssClass);
+                self.getDomElement().removeClass(liveEdgeCssClass);
                 self.show();
                 self.onClick.unsubscribe(liveClickHandler);
+            }
+        };
+
+        let updateLiveTimeshiftState = function () {
+            if (player.getTimeShift() === 0) {
+                self.getDomElement().addClass(liveEdgeCssClass);
+            } else {
+                self.getDomElement().removeClass(liveEdgeCssClass);
             }
         };
 
@@ -94,6 +105,9 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackTimeHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
+
+        player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, updateLiveTimeshiftState);
+        player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, updateLiveTimeshiftState);
 
         // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content changes)
         player.addEventHandler(bitmovin.player.EVENT.ON_READY, function () {

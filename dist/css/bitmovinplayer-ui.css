@@ -1441,9 +1441,11 @@
   .bmpui-ui-skin-modern .bmpui-ui-playbacktimelabel {
     text-transform: uppercase; }
     .bmpui-ui-skin-modern .bmpui-ui-playbacktimelabel.bmpui-ui-playbacktimelabel-live::before {
-      color: #f00;
+      color: #999;
       content: '●';
       padding-right: .2em; }
+    .bmpui-ui-skin-modern .bmpui-ui-playbacktimelabel.bmpui-ui-playbacktimelabel-live.bmpui-ui-playbacktimelabel-live-edge::before {
+      color: #f00; }
   .bmpui-ui-skin-modern .bmpui-ui-ads-status {
     background-color: rgba(0, 0, 0, 0.7);
     left: 1.5em;

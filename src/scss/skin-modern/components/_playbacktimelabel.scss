@@ -16,9 +16,15 @@
 
   &.#{$prefix}-ui-playbacktimelabel-live {
     &::before {
-      color: $color-red;
+      color: $color-secondary;
       content: '●';
       padding-right: .2em;
+    }
+
+    &.#{$prefix}-ui-playbacktimelabel-live-edge {
+      &::before {
+        color: $color-red;
+      }
     }
   }
 }
