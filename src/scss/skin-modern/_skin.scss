@@ -45,6 +45,7 @@
   color: $color-primary;
   font-family: $font-family;
   font-size: $font-size;
+  user-select: none;
 
   &.#{$prefix}-player-state-finished {
     .#{$prefix}-ui-controlbar,
