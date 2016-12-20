@@ -19,6 +19,7 @@ export enum TimeLabelMode {
 
 export interface PlaybackTimeLabelConfig extends LabelConfig {
     timeLabelMode?: TimeLabelMode;
+    hideInLivePlayback?: boolean;
 }
 
 /**
@@ -33,6 +34,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         this.config = this.mergeConfig(config, <PlaybackTimeLabelConfig>{
             cssClass: "ui-playbacktimelabel",
             timeLabelMode: TimeLabelMode.CurrentAndTotalTime,
+            hideInLivePlayback: false,
         }, this.config);
     }
 
@@ -40,6 +42,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         super.configure(player, uimanager);
 
         let self = this;
+        let config = <PlaybackTimeLabelConfig>self.getConfig();
         let live = false;
         let liveCssClass = self.prefixCss("ui-playbacktimelabel-live");
         let minWidth = 0;
@@ -52,8 +55,12 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
             if (live) {
                 self.getDomElement().addClass(liveCssClass);
                 self.setText("Live");
+                if (config.hideInLivePlayback) {
+                    self.hide();
+                }
             } else {
                 self.getDomElement().removeClass(liveCssClass);
+                self.show();
             }
         };
 

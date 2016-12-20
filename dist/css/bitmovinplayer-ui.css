@@ -1065,6 +1065,8 @@
   .bmpui-ui-skin-modern .bmpui-ui-label, .bmpui-ui-skin-modern .bmpui-ui-playbacktimelabel, .bmpui-ui-skin-modern .bmpui-ui-ads-status .bmpui-ui-label-ad-message {
     white-space: nowrap;
     cursor: default; }
+    .bmpui-ui-skin-modern .bmpui-hidden.bmpui-ui-label, .bmpui-ui-skin-modern .bmpui-hidden.bmpui-ui-playbacktimelabel, .bmpui-ui-skin-modern .bmpui-ui-ads-status .bmpui-hidden.bmpui-ui-label-ad-message {
+      display: none; }
   .bmpui-ui-skin-modern .bmpui-ui-settings-panel {
     opacity: 1;
     -webkit-transition: opacity 0.3s, visibility 0s;

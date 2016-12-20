@@ -244,7 +244,11 @@ export class UIManager {
                         components: [
                             new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime}),
                             new SeekBar({label: new SeekBarLabel()}),
-                            new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ["text-right"]}),
+                            new PlaybackTimeLabel({
+                                timeLabelMode: TimeLabelMode.TotalTime,
+                                cssClasses: ["text-right"],
+                                hideInLivePlayback: true
+                            }),
                         ],
                         cssClasses: ["controlbar-top"]
                     }),

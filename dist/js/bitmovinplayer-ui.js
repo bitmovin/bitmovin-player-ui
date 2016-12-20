@@ -1599,12 +1599,14 @@ var PlaybackTimeLabel = (function (_super) {
         _this.config = _this.mergeConfig(config, {
             cssClass: "ui-playbacktimelabel",
             timeLabelMode: TimeLabelMode.CurrentAndTotalTime,
+            hideInLivePlayback: false,
         }, _this.config);
         return _this;
     }
     PlaybackTimeLabel.prototype.configure = function (player, uimanager) {
         _super.prototype.configure.call(this, player, uimanager);
         var self = this;
+        var config = self.getConfig();
         var live = false;
         var liveCssClass = self.prefixCss("ui-playbacktimelabel-live");
         var minWidth = 0;
@@ -1615,9 +1617,13 @@ var PlaybackTimeLabel = (function (_super) {
             if (live) {
                 self.getDomElement().addClass(liveCssClass);
                 self.setText("Live");
+                if (config.hideInLivePlayback) {
+                    self.hide();
+                }
             }
             else {
                 self.getDomElement().removeClass(liveCssClass);
+                self.show();
             }
         };
         var playbackTimeHandler = function () {
@@ -4695,7 +4701,11 @@ UIManager.Factory = (function () {
                     components: [
                         new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.CurrentTime }),
                         new seekbar_1.SeekBar({ label: new seekbarlabel_1.SeekBarLabel() }),
-                        new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.TotalTime, cssClasses: ["text-right"] }),
+                        new playbacktimelabel_1.PlaybackTimeLabel({
+                            timeLabelMode: playbacktimelabel_1.TimeLabelMode.TotalTime,
+                            cssClasses: ["text-right"],
+                            hideInLivePlayback: true
+                        }),
                     ],
                     cssClasses: ["controlbar-top"]
                 }),
@@ -4762,7 +4772,11 @@ UIManager.Factory = (function () {
                     components: [
                         new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.CurrentTime }),
                         new seekbar_1.SeekBar({ label: new seekbarlabel_1.SeekBarLabel() }),
-                        new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.TotalTime, cssClasses: ["text-right"] }),
+                        new playbacktimelabel_1.PlaybackTimeLabel({
+                            timeLabelMode: playbacktimelabel_1.TimeLabelMode.TotalTime,
+                            cssClasses: ["text-right"],
+                            hideInLivePlayback: true
+                        }),
                     ],
                     cssClasses: ["controlbar-top"]
                 }),

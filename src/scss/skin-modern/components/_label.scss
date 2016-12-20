@@ -12,6 +12,8 @@
 %ui-label {
   @extend %ui-component;
 
+  @include hidden;
+
   white-space: nowrap;
   cursor: default;
 }
