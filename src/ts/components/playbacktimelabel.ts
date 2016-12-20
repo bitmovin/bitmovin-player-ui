@@ -58,7 +58,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         };
 
         let playbackTimeHandler = function () {
-            if ((player.getDuration() === Infinity) != live) {
+            if ((player.getDuration() === Infinity) !== live) {
                 updateLiveState();
             }
 
