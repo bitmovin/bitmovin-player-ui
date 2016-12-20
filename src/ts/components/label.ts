@@ -9,6 +9,7 @@
 
 import {ComponentConfig, Component} from "./component";
 import {DOM} from "../dom";
+import {EventDispatcher, Event, NoArgs} from "../eventdispatcher";
 
 /**
  * Configuration interface for a {@link Label} component.
@@ -30,6 +31,10 @@ export interface LabelConfig extends ComponentConfig {
  */
 export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
 
+    private labelEvents = {
+        onClick: new EventDispatcher<Label<Config>, NoArgs>()
+    };
+
     constructor(config: LabelConfig = {}) {
         super(config);
 
@@ -39,10 +44,16 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
     }
 
     protected toDomElement(): DOM {
+        let self = this;
+
         let labelElement = new DOM("span", {
             "id": this.config.id,
             "class": this.getCssClasses()
         }).html(this.config.text);
+
+        labelElement.on("click", function () {
+            self.onClickEvent();
+        });
 
         return labelElement;
     }
@@ -60,5 +71,17 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
      */
     clearText() {
         this.getDomElement().html("");
+    }
+
+    protected onClickEvent() {
+        this.labelEvents.onClick.dispatch(this);
+    }
+
+    /**
+     * Gets the event that is fired when the label is clicked.
+     * @returns {Event<Sender, Args>}
+     */
+    get onClick(): Event<Label<LabelConfig>, NoArgs> {
+        return this.labelEvents.onClick.getEvent();
     }
 }
