@@ -14,7 +14,7 @@
 
   &.#{$prefix}-ui-playbacktimelabel-live {
     &::before {
-      color: $color-secondary;
+      color: $color-gray;
       content: '●';
       padding-right: .2em;
     }
