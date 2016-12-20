@@ -1,12 +1,3 @@
-/*
- * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
- *
- * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
- *
- * This source code and its use and distribution, is subject to the terms
- * and conditions of the applicable license agreement.
- */
-
 // TODO change to internal (not exported) class, how to use in other files?
 /**
  * Executes a callback after a specified amount of time, optionally repeatedly until stopped.

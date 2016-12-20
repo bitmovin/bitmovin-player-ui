@@ -1,12 +1,3 @@
-/*
- * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
- *
- * Authors: Mario Guggenberger <mario.guggenberger@bitmovin.com>
- *
- * This source code and its use and distribution, is subject to the terms
- * and conditions of the applicable license agreement.
- */
-
 import {Component, ComponentConfig} from "./component";
 import {EventDispatcher, Event} from "../eventdispatcher";
 import {ArrayUtils} from "../utils";
