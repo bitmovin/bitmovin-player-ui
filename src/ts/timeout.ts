@@ -56,7 +56,7 @@ export class Timeout {
         let internalCallback = function () {
             self.callback();
 
-            if(self.repeat) {
+            if (self.repeat) {
                 self.timeoutHandle = setTimeout(internalCallback, self.delay);
             }
         };
