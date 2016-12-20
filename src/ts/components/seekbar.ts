@@ -12,6 +12,7 @@ import {DOM} from "../dom";
 import {Event, EventDispatcher, NoArgs} from "../eventdispatcher";
 import {SeekBarLabel} from "./seekbarlabel";
 import {UIManager} from "../uimanager";
+import {Timeout} from "../timeout";
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -141,9 +142,10 @@ export class SeekBar extends Component<SeekBarConfig> {
                 self.setBufferPosition(100);
             }
             else {
-                let playbackPositionPercentage = 100 / player.getDuration() * player.getCurrentTime();
-                self.setPlaybackPosition(playbackPositionPercentage);
+                // NOTE: We do not update the playback position here because we maintain our own local
+                // playback position update handling in the Timeout below
 
+                let playbackPositionPercentage = 100 / player.getDuration() * player.getCurrentTime();
                 let bufferPercentage = 100 / player.getDuration() * player.getVideoBufferLength();
                 self.setBufferPosition(playbackPositionPercentage + bufferPercentage);
             }
@@ -162,6 +164,50 @@ export class SeekBar extends Component<SeekBarConfig> {
         player.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler); // update bufferlevel when a segment has been downloaded
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler); // update playback position of Cast playback
 
+
+        // Playback position update
+        // We do not update the position directly from the ON_TIME_CHANGED event, because it arrives very jittery and
+        // results in a jittery position indicator since the CSS transition time is statically set.
+        // To work around this issue, we maintain a local playback position that is updated in a stable regular interval
+        // and kept in sync with the player.
+        let currentTimeSeekBar = 0;
+        let currentTimePlayer = 0;
+        let updateIntervalMs = 100;
+        let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
+
+        let smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, function () {
+            currentTimeSeekBar += currentTimeUpdateDeltaSecs;
+            currentTimePlayer = player.getCurrentTime();
+
+            // Sync currentTime of seekbar to player
+            let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
+            // If currentTimeDelta is negative and below the adjustment threshold,
+            // the player is ahead of the seekbar and we "fast forward" the seekbar
+            if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
+                currentTimeSeekBar += currentTimeUpdateDeltaSecs;
+            }
+            // If currentTimeDelta is positive and above the adjustment threshold,
+            // the player is behind the seekbar and we "rewind" the seekbar
+            else if (currentTimeDelta >= currentTimeUpdateDeltaSecs) {
+                currentTimeSeekBar -= currentTimeUpdateDeltaSecs;
+            }
+
+            let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
+            self.setPlaybackPosition(playbackPositionPercentage);
+        }, true);
+
+        player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function () {
+            if(!player.isLive()) {
+                currentTimeSeekBar = player.getCurrentTime();
+                smoothPlaybackPositionUpdater.start();
+            }
+        });
+        player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, function () {
+            smoothPlaybackPositionUpdater.clear();
+        });
+
+
+        // Seek handling
         player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, function () {
             self.setSeeking(true);
         });
