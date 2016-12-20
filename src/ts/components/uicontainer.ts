@@ -30,6 +30,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     private static readonly STATE_FINISHED = "player-state-finished";
 
     private static readonly FULLSCREEN = "fullscreen";
+    private static readonly BUFFERING = "buffering";
 
     private uiContainerEvents = {
         onMouseEnter: new EventDispatcher<UIContainer, NoArgs>(),
@@ -92,6 +93,14 @@ export class UIContainer extends Container<UIContainerConfig> {
         });
         player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function () {
             self.getDomElement().removeClass(self.prefixCss(UIContainer.FULLSCREEN));
+        });
+
+        // Buffering marker class
+        player.addEventHandler(bitmovin.player.EVENT.ON_STALL_STARTED, function () {
+            self.getDomElement().addClass(self.prefixCss(UIContainer.BUFFERING));
+        });
+        player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, function () {
+            self.getDomElement().removeClass(self.prefixCss(UIContainer.BUFFERING));
         });
     }
 
