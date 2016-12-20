@@ -42,6 +42,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         let self = this;
         let live = false;
         let liveCssClass = self.prefixCss("ui-playbacktimelabel-live");
+        let minWidth = 0;
 
         let updateLiveState = function () {
             // Player is playing a live stream when the duration is infinite
@@ -57,12 +58,22 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         };
 
         let playbackTimeHandler = function () {
-            if((player.getDuration() === Infinity) != live) {
+            if ((player.getDuration() === Infinity) != live) {
                 updateLiveState();
             }
 
             if (!live) {
                 self.setTime(player.getCurrentTime(), player.getDuration());
+            }
+
+            // To avoid "jumping" in the UI by varying label sizes due to non-monospaced fonts,
+            // we gradually increase the min-width with the content to reach a stable size.
+            let width = self.getDomElement().width();
+            if (width > minWidth) {
+                minWidth = width;
+                self.getDomElement().css({
+                    "min-width": minWidth + "px"
+                });
             }
         };
 
@@ -70,6 +81,14 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackTimeHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
+
+        // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content changes)
+        player.addEventHandler(bitmovin.player.EVENT.ON_READY, function () {
+            minWidth = 0;
+            self.getDomElement().css({
+                "min-width": null
+            });
+        });
 
         // Init time display (when the UI is initialized, it's too late for the ON_READY event)
         playbackTimeHandler();
