@@ -4515,13 +4515,23 @@ var Timeout = (function () {
      */
     Timeout.prototype.reset = function () {
         var self = this;
+        var lastScheduleTime = 0;
+        var delayAdjust = 0;
         this.clear();
         var internalCallback = function () {
             self.callback();
             if (self.repeat) {
-                self.timeoutHandle = setTimeout(internalCallback, self.delay);
+                var now = Date.now();
+                // The time of one iteration from scheduling to executing the callback (usually a bit longer than the delay time)
+                var delta = now - lastScheduleTime;
+                // Calculate the delay adjustment for the next schedule to keep a steady delay interval over time
+                delayAdjust = self.delay - delta + delayAdjust;
+                lastScheduleTime = now;
+                // Schedule next execution by the adjusted delay
+                self.timeoutHandle = setTimeout(internalCallback, self.delay + delayAdjust);
             }
         };
+        lastScheduleTime = Date.now();
         this.timeoutHandle = setTimeout(internalCallback, this.delay);
     };
     return Timeout;

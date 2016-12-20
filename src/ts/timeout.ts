@@ -50,6 +50,8 @@ export class Timeout {
      */
     reset(): void {
         let self = this;
+        let lastScheduleTime = 0;
+        let delayAdjust = 0;
 
         this.clear();
 
@@ -57,10 +59,22 @@ export class Timeout {
             self.callback();
 
             if (self.repeat) {
-                self.timeoutHandle = setTimeout(internalCallback, self.delay);
+                let now = Date.now();
+
+                // The time of one iteration from scheduling to executing the callback (usually a bit longer than the delay time)
+                let delta = now - lastScheduleTime;
+
+                // Calculate the delay adjustment for the next schedule to keep a steady delay interval over time
+                delayAdjust = self.delay - delta + delayAdjust;
+
+                lastScheduleTime = now;
+
+                // Schedule next execution by the adjusted delay
+                self.timeoutHandle = setTimeout(internalCallback, self.delay + delayAdjust);
             }
         };
 
+        lastScheduleTime = Date.now();
         this.timeoutHandle = setTimeout(internalCallback, this.delay);
     }
 }
