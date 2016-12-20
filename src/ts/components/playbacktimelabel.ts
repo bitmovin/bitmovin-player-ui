@@ -47,6 +47,10 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         let liveCssClass = self.prefixCss("ui-playbacktimelabel-live");
         let minWidth = 0;
 
+        let liveClickHandler = function () {
+            player.timeShift(0);
+        };
+
         let updateLiveState = function () {
             // Player is playing a live stream when the duration is infinite
             live = (player.getDuration() === Infinity);
@@ -58,9 +62,11 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
                 if (config.hideInLivePlayback) {
                     self.hide();
                 }
+                self.onClick.subscribe(liveClickHandler);
             } else {
                 self.getDomElement().removeClass(liveCssClass);
                 self.show();
+                self.onClick.unsubscribe(liveClickHandler);
             }
         };
 

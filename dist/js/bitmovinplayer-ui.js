@@ -1319,6 +1319,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var component_1 = require("./component");
 var dom_1 = require("../dom");
+var eventdispatcher_1 = require("../eventdispatcher");
 /**
  * A simple text label.
  *
@@ -1332,16 +1333,23 @@ var Label = (function (_super) {
     function Label(config) {
         if (config === void 0) { config = {}; }
         var _this = _super.call(this, config) || this;
+        _this.labelEvents = {
+            onClick: new eventdispatcher_1.EventDispatcher()
+        };
         _this.config = _this.mergeConfig(config, {
             cssClass: "ui-label"
         }, _this.config);
         return _this;
     }
     Label.prototype.toDomElement = function () {
+        var self = this;
         var labelElement = new dom_1.DOM("span", {
             "id": this.config.id,
             "class": this.getCssClasses()
         }).html(this.config.text);
+        labelElement.on("click", function () {
+            self.onClickEvent();
+        });
         return labelElement;
     };
     /**
@@ -1357,10 +1365,24 @@ var Label = (function (_super) {
     Label.prototype.clearText = function () {
         this.getDomElement().html("");
     };
+    Label.prototype.onClickEvent = function () {
+        this.labelEvents.onClick.dispatch(this);
+    };
+    Object.defineProperty(Label.prototype, "onClick", {
+        /**
+         * Gets the event that is fired when the label is clicked.
+         * @returns {Event<Sender, Args>}
+         */
+        get: function () {
+            return this.labelEvents.onClick.getEvent();
+        },
+        enumerable: true,
+        configurable: true
+    });
     return Label;
 }(component_1.Component));
 exports.Label = Label;
-},{"../dom":40,"./component":10}],18:[function(require,module,exports){
+},{"../dom":40,"../eventdispatcher":41,"./component":10}],18:[function(require,module,exports){
 /*
  * Copyright (C) 2016, bitmovin GmbH, All Rights Reserved
  *
@@ -1610,6 +1632,9 @@ var PlaybackTimeLabel = (function (_super) {
         var live = false;
         var liveCssClass = self.prefixCss("ui-playbacktimelabel-live");
         var minWidth = 0;
+        var liveClickHandler = function () {
+            player.timeShift(0);
+        };
         var updateLiveState = function () {
             // Player is playing a live stream when the duration is infinite
             live = (player.getDuration() === Infinity);
@@ -1620,10 +1645,12 @@ var PlaybackTimeLabel = (function (_super) {
                 if (config.hideInLivePlayback) {
                     self.hide();
                 }
+                self.onClick.subscribe(liveClickHandler);
             }
             else {
                 self.getDomElement().removeClass(liveCssClass);
                 self.show();
+                self.onClick.unsubscribe(liveClickHandler);
             }
         };
         var playbackTimeHandler = function () {
