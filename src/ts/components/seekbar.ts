@@ -42,7 +42,7 @@ export interface SeekPreviewEventArgs extends NoArgs {
 }
 
 /**
- * A seek bar to seek within the player's media. It displays the purrent playback position, amount of buffed data, seek
+ * A seek bar to seek within the player's media. It displays the current playback position, amount of buffed data, seek
  * target, and keeps status about an ongoing seek.
  *
  * The seek bar displays different "bars":
