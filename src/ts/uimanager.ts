@@ -242,13 +242,9 @@ export class UIManager {
                     settingsPanel,
                     new Container({
                         components: [
-                            new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime}),
+                            new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true}),
                             new SeekBar({label: new SeekBarLabel()}),
-                            new PlaybackTimeLabel({
-                                timeLabelMode: TimeLabelMode.TotalTime,
-                                cssClasses: ["text-right"],
-                                hideInLivePlayback: true
-                            }),
+                            new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ["text-right"]}),
                         ],
                         cssClasses: ["controlbar-top"]
                     }),
@@ -316,13 +312,9 @@ export class UIManager {
                 components: [
                     new Container({
                         components: [
-                            new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime}),
+                            new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true}),
                             new SeekBar({label: new SeekBarLabel()}),
-                            new PlaybackTimeLabel({
-                                timeLabelMode: TimeLabelMode.TotalTime,
-                                cssClasses: ["text-right"],
-                                hideInLivePlayback: true
-                            }),
+                            new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ["text-right"]}),
                         ],
                         cssClasses: ["controlbar-top"]
                     }),

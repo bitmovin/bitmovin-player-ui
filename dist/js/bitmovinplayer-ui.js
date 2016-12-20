@@ -4813,13 +4813,9 @@ UIManager.Factory = (function () {
                 settingsPanel,
                 new container_1.Container({
                     components: [
-                        new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.CurrentTime }),
+                        new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
                         new seekbar_1.SeekBar({ label: new seekbarlabel_1.SeekBarLabel() }),
-                        new playbacktimelabel_1.PlaybackTimeLabel({
-                            timeLabelMode: playbacktimelabel_1.TimeLabelMode.TotalTime,
-                            cssClasses: ["text-right"],
-                            hideInLivePlayback: true
-                        }),
+                        new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.TotalTime, cssClasses: ["text-right"] }),
                     ],
                     cssClasses: ["controlbar-top"]
                 }),
@@ -4884,13 +4880,9 @@ UIManager.Factory = (function () {
             components: [
                 new container_1.Container({
                     components: [
-                        new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.CurrentTime }),
+                        new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
                         new seekbar_1.SeekBar({ label: new seekbarlabel_1.SeekBarLabel() }),
-                        new playbacktimelabel_1.PlaybackTimeLabel({
-                            timeLabelMode: playbacktimelabel_1.TimeLabelMode.TotalTime,
-                            cssClasses: ["text-right"],
-                            hideInLivePlayback: true
-                        }),
+                        new playbacktimelabel_1.PlaybackTimeLabel({ timeLabelMode: playbacktimelabel_1.TimeLabelMode.TotalTime, cssClasses: ["text-right"] }),
                     ],
                     cssClasses: ["controlbar-top"]
                 }),
