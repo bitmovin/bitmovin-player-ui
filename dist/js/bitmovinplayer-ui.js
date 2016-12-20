@@ -4481,10 +4481,21 @@ window.bitmovin.playerui = {
  */
 "use strict";
 // TODO change to internal (not exported) class, how to use in other files?
+/**
+ * Executes a callback after a specified amount of time, optionally repeatedly until stopped.
+ */
 var Timeout = (function () {
-    function Timeout(delay, callback) {
+    /**
+     * Creates a new timeout callback handler.
+     * @param delay the delay in milliseconds after which the callback should be executed
+     * @param callback the callback to execute after the delay time
+     * @param repeat if true, call the callback repeatedly in delay intervals
+     */
+    function Timeout(delay, callback, repeat) {
+        if (repeat === void 0) { repeat = false; }
         this.delay = delay;
         this.callback = callback;
+        this.repeat = repeat;
         this.timeoutHandle = 0;
     }
     /**
@@ -4503,8 +4514,15 @@ var Timeout = (function () {
      * Resets the passed timeout delay to zero. Can be used to defer the calling of the callback.
      */
     Timeout.prototype.reset = function () {
+        var self = this;
         this.clear();
-        this.timeoutHandle = setTimeout(this.callback, this.delay);
+        var internalCallback = function () {
+            self.callback();
+            if (self.repeat) {
+                self.timeoutHandle = setTimeout(internalCallback, self.delay);
+            }
+        };
+        this.timeoutHandle = setTimeout(internalCallback, this.delay);
     };
     return Timeout;
 }());
