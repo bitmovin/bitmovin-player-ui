@@ -2127,6 +2127,15 @@ var SeekBar = (function (_super) {
             // Configure a seekbar label that is internal to the seekbar)
             self.getLabel().configure(player, uimanager);
         }
+        // Hide seekbar for live sources without timeshift
+        player.addEventHandler(bitmovin.player.EVENT.ON_READY, function () {
+            if (player.isLive() && player.getMaxTimeShift() === 0) {
+                self.hide();
+            }
+            else {
+                self.show();
+            }
+        });
     };
     SeekBar.prototype.toDomElement = function () {
         if (this.config.vertical) {

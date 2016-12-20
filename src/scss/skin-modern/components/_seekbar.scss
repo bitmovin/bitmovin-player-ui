@@ -12,6 +12,8 @@
 %ui-seekbar {
   @extend %ui-component;
 
+  @include hidden;
+
   font-size: 1em;
   height: 1em;
   margin: .2em;
