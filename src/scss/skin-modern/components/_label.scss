@@ -13,6 +13,7 @@
   @extend %ui-component;
 
   white-space: nowrap;
+  cursor: default;
 }
 
 .#{$prefix}-ui-label {

@@ -1062,7 +1062,8 @@
               animation: fade-in 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19);
       visibility: visible; }
   .bmpui-ui-skin-modern .bmpui-ui-label, .bmpui-ui-skin-modern .bmpui-ui-playbacktimelabel, .bmpui-ui-skin-modern .bmpui-ui-ads-status .bmpui-ui-label-ad-message {
-    white-space: nowrap; }
+    white-space: nowrap;
+    cursor: default; }
   .bmpui-ui-skin-modern .bmpui-ui-settings-panel {
     opacity: 1;
     -webkit-transition: opacity 0.3s, visibility 0s;
