@@ -31,7 +31,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         super(config);
 
         this.config = this.mergeConfig(config, <PlaybackTimeLabelConfig>{
-            cssClass: "ui-label",
+            cssClass: "ui-playbacktimelabel",
             timeLabelMode: TimeLabelMode.CurrentAndTotalTime,
         }, this.config);
     }
@@ -40,15 +40,33 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         super.configure(player, uimanager);
 
         let self = this;
+        let live = false;
+        let liveCssClass = self.prefixCss("ui-playbacktimelabel-live");
 
-        let playbackTimeHandler = function () {
-            if (player.getDuration() === Infinity) {
+        let updateLiveState = function () {
+            // Player is playing a live stream when the duration is infinite
+            live = (player.getDuration() === Infinity);
+
+            // Attach/detach live marker class
+            if (live) {
+                self.getDomElement().addClass(liveCssClass);
                 self.setText("Live");
             } else {
+                self.getDomElement().removeClass(liveCssClass);
+            }
+        };
+
+        let playbackTimeHandler = function () {
+            if((player.getDuration() === Infinity) != live) {
+                updateLiveState();
+            }
+
+            if (!live) {
                 self.setTime(player.getCurrentTime(), player.getDuration());
             }
         };
 
+        player.addEventHandler(bitmovin.player.EVENT.ON_READY, playbackTimeHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackTimeHandler);
         player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
