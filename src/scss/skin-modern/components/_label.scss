@@ -14,8 +14,8 @@
 
   @include hidden;
 
-  white-space: nowrap;
   cursor: default;
+  white-space: nowrap;
 }
 
 .#{$prefix}-ui-label {

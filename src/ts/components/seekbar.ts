@@ -197,7 +197,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         }, true);
 
         player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function () {
-            if(!player.isLive()) {
+            if (!player.isLive()) {
                 currentTimeSeekBar = player.getCurrentTime();
                 smoothPlaybackPositionUpdater.start();
             }

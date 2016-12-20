@@ -14,12 +14,12 @@
 
   @include hidden;
 
+  cursor: pointer;
   font-size: 1em;
   height: 1em;
   margin: .2em;
   position: relative;
   width: 100%;
-  cursor: pointer;
 
   $bar-inset: .41em;
 
