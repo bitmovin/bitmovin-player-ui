@@ -51,11 +51,19 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private seekBar: DOM;
   private seekBarPlaybackPosition: DOM;
+  private seekBarPlaybackPositionMarker: DOM;
   private seekBarBufferPosition: DOM;
   private seekBarSeekPosition: DOM;
   private seekBarBackdrop: DOM;
 
   private label: SeekBarLabel;
+
+  /**
+   * Buffer of the the current playback position. The position must be buffered in case it needs the element
+   * needs to be refreshed with {@link #refreshPlaybackPosition}.
+   * @type {number}
+   */
+  private playbackPositionPercentage = 0;
 
   // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
   private touchSupported = ('ontouchstart' in window);
@@ -137,7 +145,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         let bufferPercentage = 100 / player.getDuration() * player.getVideoBufferLength();
 
         // Update playback position only in paused state, playback updates are handled in the Timeout below
-        if(player.isPaused()) {
+        if (player.isPaused()) {
           self.setPlaybackPosition(playbackPositionPercentage);
         }
 
@@ -175,7 +183,7 @@ export class SeekBar extends Component<SeekBarConfig> {
      */
     let currentTimeSeekBar = 0;
     let currentTimePlayer = 0;
-    let updateIntervalMs = 100;
+    let updateIntervalMs = 25;
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
     let smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, function() {
@@ -293,6 +301,15 @@ export class SeekBar extends Component<SeekBarConfig> {
         self.show();
       }
     });
+
+    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYER_RESIZE, function() {
+      self.refreshPlaybackPosition();
+    });
+
+    // Initialize seekbar
+    this.setPlaybackPosition(0);
+    this.setBufferPosition(0);
+    this.setSeekPosition(0);
   }
 
   protected toDomElement(): DOM {
@@ -319,10 +336,14 @@ export class SeekBar extends Component<SeekBarConfig> {
     // Indicator that shows the current playback position
     let seekBarPlaybackPosition = new DOM('div', {
       'class': this.prefixCss('seekbar-playbackposition')
-    }).append(new DOM('div', {
-      'class': this.prefixCss('seekbar-playbackposition-marker')
-    }));
+    });
     this.seekBarPlaybackPosition = seekBarPlaybackPosition;
+
+    // A marker of the current playback position, e.g. a dot or line
+    let seekBarPlaybackPositionMarker = new DOM('div', {
+      'class': this.prefixCss('seekbar-playbackposition-marker')
+    });
+    this.seekBarPlaybackPositionMarker = seekBarPlaybackPositionMarker;
 
     // Indicator that show where a seek will go to
     let seekBarSeekPosition = new DOM('div', {
@@ -336,7 +357,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     this.seekBarBackdrop = seekBarBackdrop;
 
-    seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition, seekBarPlaybackPosition);
+    seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition,
+      seekBarPlaybackPosition, seekBarPlaybackPositionMarker);
 
     let self = this;
     let seeking = false;
@@ -518,7 +540,29 @@ export class SeekBar extends Component<SeekBarConfig> {
    * @param percent a number between 0 and 100 as returned by the player
    */
   setPlaybackPosition(percent: number) {
+    this.playbackPositionPercentage = percent;
+
+    // Set position of the bar
     this.setPosition(this.seekBarPlaybackPosition, percent);
+
+    // Set position of the marker
+    let px = (this.config.vertical ? this.seekBar.height() : this.seekBar.width()) / 100 * percent;
+    if (this.config.vertical) {
+      px = this.seekBar.height() - px;
+    }
+    let style = this.config.vertical ?
+      // -ms-transform required for IE9
+      { 'transform': 'translateY(' + px + 'px)', '-ms-transform': 'translateY(' + px + 'px)' } :
+      { 'transform': 'translateX(' + px + 'px)', '-ms-transform': 'translateX(' + px + 'px)' };
+    this.seekBarPlaybackPositionMarker.css(style);
+  }
+
+  /**
+   * Refreshes the playback position. Can be used by subclasses to refresh the position when
+   * the size of the component changes.
+   */
+  protected refreshPlaybackPosition() {
+    this.setPlaybackPosition(this.playbackPositionPercentage);
   }
 
   /**
@@ -543,7 +587,11 @@ export class SeekBar extends Component<SeekBarConfig> {
    * @param percent a number between 0 and 100
    */
   private setPosition(element: DOM, percent: number) {
-    let style = this.config.vertical ? { 'height': percent + '%' } : { 'width': percent + '%' };
+    let scale = percent / 100;
+    let style = this.config.vertical ?
+      // -ms-transform required for IE9
+      { 'transform': 'scaleY(' + scale + ')', '-ms-transform': 'scaleY(' + scale + ')' } :
+      { 'transform': 'scaleX(' + scale + ')', '-ms-transform': 'scaleX(' + scale + ')' };
     element.css(style);
   }
 

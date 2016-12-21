@@ -19,28 +19,15 @@
     position: relative;
 
     %bar {
+      // sass-lint:disable no-vendor-prefixes
+      -ms-transform-origin: 0 0; // required for IE9
       bottom: 0;
       left: 0;
       position: absolute;
       right: auto;
       top: 0;
-    }
-
-    %positionmarker-horizontal {
-      background-color: $color-highlight;
-      margin: $bar-inset 0;
-
-      .#{$prefix}-seekbar-playbackposition-marker {
-        background-image: svg('assets/skin-modern/images/dot-play.svg');
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: 1.6em;
-        height: 1em;
-        position: absolute;
-        right: -.5em;
-        top: -.5em + (.5em - $bar-inset);
-        width: 1em;
-      }
+      transform-origin: 0 0;
+      width: 100%;
     }
 
     .#{$prefix}-seekbar-backdrop {
@@ -54,7 +41,8 @@
       @extend %bar;
       background-color: $color-primary;
       margin: $bar-inset 0;
-      transition: width .3s linear, height .3s linear;
+      transition: .3s linear, .3s linear;
+      transition-property: transform;
     }
 
     .#{$prefix}-seekbar-seekposition {
@@ -65,8 +53,23 @@
 
     .#{$prefix}-seekbar-playbackposition {
       @extend %bar;
-      @extend %positionmarker-horizontal;
-      transition: width .1s linear, height .1s linear;
+      background-color: $color-highlight;
+      margin: $bar-inset 0;
+      transition: .1s linear, .1s linear;
+      transition-property: transform;
+    }
+
+    .#{$prefix}-seekbar-playbackposition-marker {
+      @extend %bar;
+
+      background-image: svg('assets/skin-modern/images/dot-play.svg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 1.6em;
+      height: 1em;
+      left: -.5em;
+      position: absolute;
+      width: 1em;
     }
   }
 
@@ -92,7 +95,7 @@
       }
 
       %positionmarker-vertical {
-        @extend %positionmarker-horizontal;
+        //@extend %positionmarker-horizontal;
 
         .#{$prefix}-seekbar-playbackposition-marker {
           height: 1em;
