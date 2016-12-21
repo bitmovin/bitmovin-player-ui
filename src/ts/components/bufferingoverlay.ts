@@ -1,6 +1,6 @@
-import {ContainerConfig, Container} from "./container";
-import {UIManager} from "../uimanager";
-import {Component, ComponentConfig} from "./component";
+import {ContainerConfig, Container} from './container';
+import {UIManager} from '../uimanager';
+import {Component, ComponentConfig} from './component';
 
 /**
  * Overlays the player and displays a buffering indicator.
@@ -13,13 +13,13 @@ export class BufferingOverlay extends Container<ContainerConfig> {
     super(config);
 
     this.indicators = [
-      new Component<ComponentConfig>({tag: "div", cssClass: "ui-buffering-overlay-indicator"}),
-      new Component<ComponentConfig>({tag: "div", cssClass: "ui-buffering-overlay-indicator"}),
-      new Component<ComponentConfig>({tag: "div", cssClass: "ui-buffering-overlay-indicator"}),
+      new Component<ComponentConfig>({tag: 'div', cssClass: 'ui-buffering-overlay-indicator'}),
+      new Component<ComponentConfig>({tag: 'div', cssClass: 'ui-buffering-overlay-indicator'}),
+      new Component<ComponentConfig>({tag: 'div', cssClass: 'ui-buffering-overlay-indicator'}),
     ];
 
     this.config = this.mergeConfig(config, {
-      cssClass  : "ui-buffering-overlay",
+      cssClass  : 'ui-buffering-overlay',
       hidden    : true,
       components: this.indicators
     }, this.config);
