@@ -29,14 +29,18 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
 
     let self = this;
 
-    let index = 1;
-    for (let item of uimanager.getConfig().recommendations) {
-      this.addComponent(new RecommendationItem({
-        itemConfig: item,
-        cssClasses: ['recommendation-item-' + (index++)]
-      }));
+    if (uimanager.getConfig().recommendations && uimanager.getConfig().recommendations.length > 0) {
+      let index = 1;
+      for (let item of uimanager.getConfig().recommendations) {
+        this.addComponent(new RecommendationItem({
+          itemConfig: item,
+          cssClasses: ['recommendation-item-' + (index++)]
+        }));
+      }
+      this.updateComponents(); // create container DOM elements
+
+      this.getDomElement().addClass(this.prefixCss('recommendations'));
     }
-    this.updateComponents(); // create container DOM elements
 
     // Display recommendations when playback has finished
     player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, function() {

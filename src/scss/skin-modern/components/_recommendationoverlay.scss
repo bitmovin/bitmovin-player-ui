@@ -34,60 +34,68 @@
     }
   }
 
-  .#{$prefix}-ui-recommendation-item {
-    $margin: 1em;
-    $item-scale: 1;
-
-    background-position: center;
-    background-size: cover;
-    display: inline-block;
-    font-size: .7em;
-    height: (9em * $item-scale);
-    margin: .3em .6em;
-    overflow: hidden;
-    position: relative;
-    text-align: left;
-    text-shadow: 0 0 3px $color-background;
-    transform: scale(1);
-    transition: transform $animation-duration-short ease-out;
-    width: (16em * $item-scale);
-
-    .#{$prefix}-background {
-      background: linear-gradient(to bottom, $color-transparent, $color-transparent, $color-background-bars);
-      height: 100%;
+  &.#{$prefix}-recommendations {
+    .#{$prefix}-ui-hugereplaybutton {
       position: absolute;
-      top: 20%;
-      transition: top $animation-duration-short ease-out;
-      width: 100%;
+      left: 2em;
+      bottom: 2em;
     }
 
-    .#{$prefix}-title {
-      bottom: $margin + 2em;
-      left: $margin;
-      position: absolute;
-      right: $margin;
+    .#{$prefix}-ui-recommendation-item {
+      $margin: 1em;
+      $item-scale: 1;
 
-      .#{$prefix}-innertitle {
-        font-size: 1.2em;
-        white-space: normal;
-        word-break: break-all;
-      }
-    }
-
-    .#{$prefix}-duration {
-      bottom: $margin;
-      left: $margin;
-      position: absolute;
-    }
-
-    &:hover {
-      outline: 2px solid $color-highlight;
-      transform: scale(1.05);
-      transition: transform $animation-duration-short ease-in;
+      background-position: center;
+      background-size: cover;
+      display: inline-block;
+      font-size: .7em;
+      height: (9em * $item-scale);
+      margin: .3em .6em;
+      overflow: hidden;
+      position: relative;
+      text-align: left;
+      text-shadow: 0 0 3px $color-background;
+      transform: scale(1);
+      transition: transform $animation-duration-short ease-out;
+      width: (16em * $item-scale);
 
       .#{$prefix}-background {
-        top: 0;
-        transition: top $animation-duration-short ease-in;
+        background: linear-gradient(to bottom, $color-transparent, $color-transparent, $color-background-bars);
+        height: 100%;
+        position: absolute;
+        top: 20%;
+        transition: top $animation-duration-short ease-out;
+        width: 100%;
+      }
+
+      .#{$prefix}-title {
+        bottom: $margin + 2em;
+        left: $margin;
+        position: absolute;
+        right: $margin;
+
+        .#{$prefix}-innertitle {
+          font-size: 1.2em;
+          white-space: normal;
+          word-break: break-all;
+        }
+      }
+
+      .#{$prefix}-duration {
+        bottom: $margin;
+        left: $margin;
+        position: absolute;
+      }
+
+      &:hover {
+        outline: 2px solid $color-highlight;
+        transform: scale(1.05);
+        transition: transform $animation-duration-short ease-in;
+
+        .#{$prefix}-background {
+          top: 0;
+          transition: top $animation-duration-short ease-in;
+        }
       }
     }
   }
