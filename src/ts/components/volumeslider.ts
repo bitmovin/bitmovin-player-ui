@@ -43,6 +43,10 @@ export class VolumeSlider extends SeekBar {
       player.setVolume(percentage);
     });
 
+    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYER_RESIZE, function() {
+      self.refreshPlaybackPosition();
+    });
+
     // Init volume bar
     volumeChangeHandler();
   }

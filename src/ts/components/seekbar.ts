@@ -58,6 +58,13 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private label: SeekBarLabel;
 
+  /**
+   * Buffer of the the current playback position. The position must be buffered in case it needs the element
+   * needs to be refreshed with {@link #refreshPlaybackPosition}.
+   * @type {number}
+   */
+  private playbackPositionPercentage = 0;
+
   // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
   private touchSupported = ('ontouchstart' in window);
 
@@ -295,6 +302,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     });
 
+    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYER_RESIZE, function() {
+      self.refreshPlaybackPosition();
+    });
+
     // Initialize seekbar
     this.setPlaybackPosition(0);
     this.setBufferPosition(0);
@@ -529,12 +540,14 @@ export class SeekBar extends Component<SeekBarConfig> {
    * @param percent a number between 0 and 100 as returned by the player
    */
   setPlaybackPosition(percent: number) {
+    this.playbackPositionPercentage = percent;
+
     // Set position of the bar
     this.setPosition(this.seekBarPlaybackPosition, percent);
 
     // Set position of the marker
     let px = (this.config.vertical ? this.seekBar.height() : this.seekBar.width()) / 100 * percent;
-    if(this.config.vertical) {
+    if (this.config.vertical) {
       px = this.seekBar.height() - px;
     }
     let style = this.config.vertical ?
@@ -542,6 +555,14 @@ export class SeekBar extends Component<SeekBarConfig> {
       { 'transform': 'translateY(' + px + 'px)', '-ms-transform': 'translateY(' + px + 'px)' } :
       { 'transform': 'translateX(' + px + 'px)', '-ms-transform': 'translateX(' + px + 'px)' };
     this.seekBarPlaybackPositionMarker.css(style);
+  }
+
+  /**
+   * Refreshes the playback position. Can be used by subclasses to refresh the position when
+   * the size of the component changes.
+   */
+  protected refreshPlaybackPosition() {
+    this.setPlaybackPosition(this.playbackPositionPercentage);
   }
 
   /**
