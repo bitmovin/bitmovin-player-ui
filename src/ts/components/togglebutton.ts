@@ -1,6 +1,5 @@
 import {Button, ButtonConfig} from './button';
 import {NoArgs, EventDispatcher, Event} from '../eventdispatcher';
-import {DOM} from '../dom';
 
 /**
  * Configuration interface for a toggle button component.

@@ -40,10 +40,11 @@ export class ControlBar extends Container<ControlBarConfig> {
     });
 
     uimanager.onMouseEnter.subscribe(function(sender, args) {
-      self.show(); // show control bar when the mouse enters the UI
+      // Show control bar when the mouse enters the UI
+      self.show();
 
-      timeout.clear(); // Clear timeout to avoid hiding the control bar if the mouse moves back into the UI during the
-                       // timeout period
+      // Clear timeout to avoid hiding the control bar if the mouse moves back into the UI during the timeout period
+      timeout.clear();
     });
     uimanager.onMouseMove.subscribe(function(sender, args) {
       if (self.isHidden()) {
@@ -54,7 +55,8 @@ export class ControlBar extends Container<ControlBarConfig> {
         return;
       }
 
-      timeout.reset(); // hide the control bar if mouse does not move during the timeout time
+      // Hide the control bar if mouse does not move during the timeout time
+      timeout.reset();
     });
     uimanager.onMouseLeave.subscribe(function(sender, args) {
       if (isSeeking) {
@@ -62,7 +64,8 @@ export class ControlBar extends Container<ControlBarConfig> {
         return;
       }
 
-      timeout.reset(); // hide control bar some time after the mouse left the UI
+      // Hide control bar some time after the mouse left the UI
+      timeout.reset();
     });
     uimanager.onSeek.subscribe(function() {
       timeout.clear(); // Don't hide control bar while a seek is in progress
@@ -70,7 +73,7 @@ export class ControlBar extends Container<ControlBarConfig> {
     });
     uimanager.onSeeked.subscribe(function() {
       isSeeking = false;
-      timeout.start(); // hide control bar some time after a seek has finished
+      timeout.start(); // Hide control bar some time after a seek has finished
     });
   }
 }

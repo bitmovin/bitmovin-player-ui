@@ -148,31 +148,28 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     // Update seekbar upon these events
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackPositionHandler); // update playback position
-                                                                                            // when it changes
-    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, playbackPositionHandler); // update bufferlevel when
-                                                                                           // buffering is complete
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler); // update playback position when
-                                                                                      // a seek has finished
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, playbackPositionHandler); // update playback position
-                                                                                            // when a timeshift has
-                                                                                            // finished
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler); // update
-                                                                                                        // bufferlevel
-                                                                                                        // when a
-                                                                                                        // segment has
-                                                                                                        // been
-                                                                                                        // downloaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler); // update playback
-                                                                                                 // position of Cast
-                                                                                                 // playback
+    // update playback position when it changes
+    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackPositionHandler);
+    // update bufferlevel when buffering is complete
+    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, playbackPositionHandler);
+    // update playback position when a seek has finished
+    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler);
+    // update playback position when a timeshift has finished
+    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, playbackPositionHandler);
+    // update bufferlevel when a segment has been downloaded
+    player.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler);
+    // update playback position of Cast playback
+    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
 
 
-    // Playback position update
-    // We do not update the position directly from the ON_TIME_CHANGED event, because it arrives very jittery and
-    // results in a jittery position indicator since the CSS transition time is statically set.
-    // To work around this issue, we maintain a local playback position that is updated in a stable regular interval
-    // and kept in sync with the player.
+    /*
+     * Playback position update
+     *
+     * We do not update the position directly from the ON_TIME_CHANGED event, because it arrives very jittery and
+     * results in a jittery position indicator since the CSS transition time is statically set.
+     * To work around this issue, we maintain a local playback position that is updated in a stable regular interval
+     * and kept in sync with the player.
+     */
     let currentTimeSeekBar         = 0;
     let currentTimePlayer          = 0;
     let updateIntervalMs           = 100;

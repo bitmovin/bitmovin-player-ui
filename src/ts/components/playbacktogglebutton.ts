@@ -49,9 +49,8 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     // Call handler upon these events
     player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, playbackStateHandler);
     player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, playbackStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler); // when playback
-                                                                                              // finishes, player turns
-                                                                                              // to paused mode
+    // when playback finishes, player turns to paused mode
+    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler);
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_LAUNCHED, playbackStateHandler);
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PLAYING, playbackStateHandler);
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PAUSED, playbackStateHandler);

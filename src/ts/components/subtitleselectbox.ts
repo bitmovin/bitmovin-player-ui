@@ -42,10 +42,10 @@ export class SubtitleSelectBox extends SelectBox {
       self.removeItem(event.subtitleId);
     });
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateSubtitles); // Update subtitles when source
-                                                                                       // goes away
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateSubtitles); // Update subtitles when a new source is
-                                                                             // loaded
+    // Update subtitles when source goes away
+    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateSubtitles);
+    // Update subtitles when a new source is loaded
+    player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateSubtitles);
 
     // Populate subtitles at startup
     updateSubtitles();
