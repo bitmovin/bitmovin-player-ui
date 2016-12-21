@@ -23,6 +23,12 @@ export interface Event<Sender, Args> {
   subscribe(listener: EventListener<Sender, Args>): void;
 
   /**
+   * Subscribes an event listener to this event dispatcher that is only called once.
+   * @param listener the listener to add
+   */
+  subscribeOnce(listener: EventListener<Sender, Args>): void;
+
+  /**
    * Subscribes an event listener to this event dispatcher that will be called at a limited rate with a minimum
    * interval of the specified milliseconds.
    * @param listener the listener to add
@@ -59,6 +65,13 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
   /**
    * {@inheritDoc}
    */
+  subscribeOnce(listener: EventListener<Sender, Args>) {
+    this.listeners.push(new EventListenerWrapper(listener, true));
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   subscribeRateLimited(listener: EventListener<Sender, Args>, rateMs: number) {
     this.listeners.push(new RateLimitedEventListenerWrapper(listener, rateMs));
   }
@@ -85,9 +98,20 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
    * @param args the arguments for the event
    */
   dispatch(sender: Sender, args: Args = null) {
+    let listenersToRemove = [];
+
     // Call every listener
     for (let listener of this.listeners) {
       listener.fire(sender, args);
+
+      if(listener.isOnce()) {
+        listenersToRemove.push(listener);
+      }
+    }
+
+    // Remove one-time listener
+    for (let listenerToRemove of listenersToRemove) {
+      ArrayUtils.remove(this.listeners, listenerToRemove);
     }
   }
 
@@ -109,9 +133,11 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
 class EventListenerWrapper<Sender, Args> {
 
   private eventListener: EventListener<Sender, Args>;
+  private once: boolean;
 
-  constructor(listener: EventListener<Sender, Args>) {
+  constructor(listener: EventListener<Sender, Args>, once: boolean = false) {
     this.eventListener = listener;
+    this.once = once;
   }
 
   /**
@@ -129,6 +155,14 @@ class EventListenerWrapper<Sender, Args> {
    */
   fire(sender: Sender, args: Args) {
     this.eventListener(sender, args);
+  }
+
+  /**
+   * Checks if this listener is scheduled to be called only once.
+   * @returns {boolean} once if true
+   */
+  isOnce(): boolean {
+    return this.once;
   }
 }
 
