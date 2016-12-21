@@ -101,7 +101,7 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
       'class': this.prefixCss('duration')
     }).append(new DOM('span', {
       'class': this.prefixCss('innerduration')
-    }).html(StringUtils.secondsToTime(config.duration)));
+    }).html(config.duration ? StringUtils.secondsToTime(config.duration) : ''));
     itemElement.append(timeElement);
 
     return itemElement;
