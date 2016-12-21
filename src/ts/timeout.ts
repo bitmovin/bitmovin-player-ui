@@ -16,9 +16,9 @@ export class Timeout {
    * @param repeat if true, call the callback repeatedly in delay intervals
    */
   constructor(delay: number, callback: () => void, repeat: boolean = false) {
-    this.delay         = delay;
-    this.callback      = callback;
-    this.repeat        = repeat;
+    this.delay = delay;
+    this.callback = callback;
+    this.repeat = repeat;
     this.timeoutHandle = 0;
   }
 
@@ -40,9 +40,9 @@ export class Timeout {
    * Resets the passed timeout delay to zero. Can be used to defer the calling of the callback.
    */
   reset(): void {
-    let self             = this;
+    let self = this;
     let lastScheduleTime = 0;
-    let delayAdjust      = 0;
+    let delayAdjust = 0;
 
     this.clear();
 
@@ -66,7 +66,7 @@ export class Timeout {
       }
     };
 
-    lastScheduleTime   = Date.now();
+    lastScheduleTime = Date.now();
     this.timeoutHandle = setTimeout(internalCallback, this.delay);
   }
 }

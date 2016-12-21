@@ -15,19 +15,19 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
   constructor(config: ContainerConfig = {}) {
     super(config);
 
-    this.statusLabel = new Label<LabelConfig>({cssClass: 'ui-cast-status-label'});
+    this.statusLabel = new Label<LabelConfig>({ cssClass: 'ui-cast-status-label' });
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-cast-status-overlay',
+      cssClass: 'ui-cast-status-overlay',
       components: [this.statusLabel],
-      hidden    : true
+      hidden: true
     }, this.config);
   }
 
   configure(player: bitmovin.player.Player, uimanager: UIManager): void {
     super.configure(player, uimanager);
 
-    let self           = this;
+    let self = this;
     let castDeviceName = 'unknown';
 
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, function(event) {

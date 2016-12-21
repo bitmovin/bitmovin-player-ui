@@ -145,7 +145,7 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
   constructor(listener: EventListener<Sender, Args>, rateMs: number) {
     super(listener); // sets the event listener sink
 
-    this.rateMs       = rateMs;
+    this.rateMs = rateMs;
     this.lastFireTime = 0;
 
     // Wrap the event listener with an event listener that does the rate-limiting

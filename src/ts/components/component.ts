@@ -139,12 +139,12 @@ export class Component<Config extends ComponentConfig> {
   constructor(config: ComponentConfig = {}) {
     // Create the configuration for this component
     this.config = <Config>this.mergeConfig(config, {
-      tag       : 'div',
-      id        : 'bmpui-id-' + Guid.next(),
-      cssPrefix : 'bmpui',
-      cssClass  : 'ui-component',
+      tag: 'div',
+      id: 'bmpui-id-' + Guid.next(),
+      cssPrefix: 'bmpui',
+      cssClass: 'ui-component',
       cssClasses: [],
-      hidden    : false
+      hidden: false
     }, {});
   }
 
@@ -194,7 +194,7 @@ export class Component<Config extends ComponentConfig> {
    */
   protected toDomElement(): DOM {
     let element = new DOM(this.config.tag, {
-      'id'   : this.config.id,
+      'id': this.config.id,
       'class': this.getCssClasses()
     });
     return element;
@@ -237,11 +237,11 @@ export class Component<Config extends ComponentConfig> {
    * @returns {string}
    */
   protected getCssClasses(): string {
-    let self            = this;
+    let self = this;
     // Merge all CSS classes into single array
-    let flattenedArray  = [this.config.cssClass].concat(this.config.cssClasses);
+    let flattenedArray = [this.config.cssClass].concat(this.config.cssClasses);
     // Prefix classes
-    flattenedArray      = flattenedArray.map(function(css) {
+    flattenedArray = flattenedArray.map(function(css) {
       return self.prefixCss(css);
     });
     // Join array values into a string

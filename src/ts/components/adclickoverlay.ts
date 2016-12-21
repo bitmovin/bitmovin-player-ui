@@ -9,8 +9,8 @@ export class AdClickOverlay extends ClickOverlay {
   configure(player: bitmovin.player.Player, uimanager: UIManager): void {
     super.configure(player, uimanager);
 
-    let self                = this;
-    let clickThroughUrl     = <string>null;
+    let self = this;
+    let clickThroughUrl = <string>null;
     let clickThroughEnabled = !player.getConfig().advertising
       || !player.getConfig().advertising.hasOwnProperty('clickThroughEnabled')
       || player.getConfig().advertising.clickThroughEnabled;

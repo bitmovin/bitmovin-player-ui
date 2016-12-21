@@ -67,27 +67,27 @@ export class UIManager {
     /**
      * Fires when the mouse enters the UI area.
      */
-    onMouseEnter   : new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+    onMouseEnter: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     /**
      * Fires when the mouse moves inside the UI area.
      */
-    onMouseMove    : new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+    onMouseMove: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     /**
      * Fires when the mouse leaves the UI area.
      */
-    onMouseLeave   : new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+    onMouseLeave: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     /**
      * Fires when a seek starts.
      */
-    onSeek         : new EventDispatcher<SeekBar, NoArgs>(),
+    onSeek: new EventDispatcher<SeekBar, NoArgs>(),
     /**
      * Fires when the seek timeline is scrubbed.
      */
-    onSeekPreview  : new EventDispatcher<SeekBar, number>(),
+    onSeekPreview: new EventDispatcher<SeekBar, number>(),
     /**
      * Fires when a seek is finished.
      */
-    onSeeked       : new EventDispatcher<SeekBar, NoArgs>(),
+    onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
     /**
      * Fires when a component is showing.
      */
@@ -99,10 +99,10 @@ export class UIManager {
   };
 
   constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config: UIConfig = {}) {
-    this.player   = player;
+    this.player = player;
     this.playerUi = playerUi;
-    this.adsUi    = adsUi;
-    this.config   = config;
+    this.adsUi = adsUi;
+    this.config = config;
 
     if (!config.metadata) {
       config.metadata = {
@@ -226,7 +226,7 @@ export class UIManager {
           new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
           new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
         ],
-        hidden    : true
+        hidden: true
       });
 
       let controlBar = new ControlBar({
@@ -234,9 +234,9 @@ export class UIManager {
           settingsPanel,
           new Container({
             components: [
-              new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true}),
-              new SeekBar({label: new SeekBarLabel()}),
-              new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right']}),
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+              new SeekBar({ label: new SeekBarLabel() }),
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
             ],
             cssClasses: ['controlbar-top']
           }),
@@ -245,10 +245,10 @@ export class UIManager {
               new PlaybackToggleButton(),
               new VolumeToggleButton(),
               new VolumeSlider(),
-              new Component({cssClass: 'spacer'}),
+              new Component({ cssClass: 'spacer' }),
               new CastToggleButton(),
               new VRToggleButton(),
-              new SettingsToggleButton({settingsPanel: settingsPanel}),
+              new SettingsToggleButton({ settingsPanel: settingsPanel }),
               new FullscreenToggleButton(),
             ],
             cssClasses: ['controlbar-bottom']
@@ -257,7 +257,7 @@ export class UIManager {
       });
 
       let ui = new UIContainer({
-        components   : [
+        components: [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
           new BufferingOverlay(),
@@ -271,15 +271,15 @@ export class UIManager {
       });
 
       let adsUi = new UIContainer({
-        components   : [
+        components: [
           new BufferingOverlay(),
           new AdClickOverlay(),
           new Container({
             components: [
-              new AdMessageLabel({text: 'Ad: {remainingTime} secs'}),
+              new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
               new AdSkipButton()
             ],
-            cssClass  : 'ui-ads-status'
+            cssClass: 'ui-ads-status'
           }),
           new ControlBar({
             components: [
@@ -288,7 +288,7 @@ export class UIManager {
                   new PlaybackToggleButton(),
                   new VolumeToggleButton(),
                   new VolumeSlider(),
-                  new Component({cssClass: 'spacer'}),
+                  new Component({ cssClass: 'spacer' }),
                   new FullscreenToggleButton(),
                 ],
                 cssClasses: ['controlbar-bottom']
@@ -306,9 +306,9 @@ export class UIManager {
         components: [
           new Container({
             components: [
-              new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true}),
-              new SeekBar({label: new SeekBarLabel()}),
-              new PlaybackTimeLabel({timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right']}),
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+              new SeekBar({ label: new SeekBarLabel() }),
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
             ],
             cssClasses: ['controlbar-top']
           }),
@@ -316,7 +316,7 @@ export class UIManager {
       });
 
       let ui = new UIContainer({
-        components   : [
+        components: [
           new SubtitleOverlay(),
           new BufferingOverlay(),
           new HugePlaybackToggleButton(),
@@ -338,25 +338,25 @@ export class UIManager {
           new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
           new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
         ],
-        hidden    : true
+        hidden: true
       });
 
       let controlBar = new ControlBar({
         components: [
           settingsPanel,
           new PlaybackToggleButton(),
-          new SeekBar({label: new SeekBarLabel()}),
+          new SeekBar({ label: new SeekBarLabel() }),
           new PlaybackTimeLabel(),
           new VRToggleButton(),
           new VolumeControlButton(),
-          new SettingsToggleButton({settingsPanel: settingsPanel}),
+          new SettingsToggleButton({ settingsPanel: settingsPanel }),
           new CastToggleButton(),
           new FullscreenToggleButton()
         ]
       });
 
       let ui = new UIContainer({
-        components   : [
+        components: [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
           new HugePlaybackToggleButton(),
@@ -369,7 +369,7 @@ export class UIManager {
       });
 
       let adsUi = new UIContainer({
-        components   : [
+        components: [
           new AdClickOverlay(),
           new ControlBar({
             components: [
@@ -395,7 +395,7 @@ export class UIManager {
       });
 
       let ui = new UIContainer({
-        components   : [
+        components: [
           new SubtitleOverlay(),
           new HugePlaybackToggleButton(),
           new Watermark(),
@@ -416,27 +416,27 @@ export class UIManager {
           new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
           new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
         ],
-        hidden    : true
+        hidden: true
       });
 
       let controlBar = new ControlBar({
         components: [settingsPanel,
           new PlaybackToggleButton(),
-          new SeekBar({label: new SeekBarLabel()}),
+          new SeekBar({ label: new SeekBarLabel() }),
           new PlaybackTimeLabel(),
           new VRToggleButton(),
           new VolumeToggleButton(),
           new VolumeSlider(),
           new VolumeControlButton(),
-          new VolumeControlButton({vertical: false}),
-          new SettingsToggleButton({settingsPanel: settingsPanel}),
+          new VolumeControlButton({ vertical: false }),
+          new SettingsToggleButton({ settingsPanel: settingsPanel }),
           new CastToggleButton(),
           new FullscreenToggleButton()
         ]
       });
 
       let ui = new UIContainer({
-        components   : [
+        components: [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
           new HugePlaybackToggleButton(),
@@ -462,7 +462,7 @@ class PlayerWrapper {
   private player: Player;
   private wrapper: Player;
 
-  private eventHandlers: {[eventType: string]: PlayerEventCallback[];} = {};
+  private eventHandlers: { [eventType: string]: PlayerEventCallback[]; } = {};
 
   constructor(player: Player) {
     this.player = player;

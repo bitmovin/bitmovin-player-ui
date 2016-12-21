@@ -15,13 +15,13 @@ export class ErrorMessageOverlay extends Container<ContainerConfig> {
   constructor(config: ContainerConfig = {}) {
     super(config);
 
-    this.errorLabel        = new Label<LabelConfig>({cssClass: 'ui-errormessage-label'});
+    this.errorLabel = new Label<LabelConfig>({ cssClass: 'ui-errormessage-label' });
     this.tvNoiseBackground = new TvNoiseCanvas();
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-errormessage-overlay',
+      cssClass: 'ui-errormessage-overlay',
       components: [this.tvNoiseBackground, this.errorLabel],
-      hidden    : true
+      hidden: true
     }, this.config);
   }
 

@@ -16,17 +16,17 @@ export interface UIContainerConfig extends ContainerConfig {
  */
 export class UIContainer extends Container<UIContainerConfig> {
 
-  private static readonly STATE_IDLE     = 'player-state-idle';
-  private static readonly STATE_PLAYING  = 'player-state-playing';
-  private static readonly STATE_PAUSED   = 'player-state-paused';
+  private static readonly STATE_IDLE = 'player-state-idle';
+  private static readonly STATE_PLAYING = 'player-state-playing';
+  private static readonly STATE_PAUSED = 'player-state-paused';
   private static readonly STATE_FINISHED = 'player-state-finished';
 
   private static readonly FULLSCREEN = 'fullscreen';
-  private static readonly BUFFERING  = 'buffering';
+  private static readonly BUFFERING = 'buffering';
 
   private uiContainerEvents = {
     onMouseEnter: new EventDispatcher<UIContainer, NoArgs>(),
-    onMouseMove : new EventDispatcher<UIContainer, NoArgs>(),
+    onMouseMove: new EventDispatcher<UIContainer, NoArgs>(),
     onMouseLeave: new EventDispatcher<UIContainer, NoArgs>()
   };
 
@@ -97,7 +97,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   protected toDomElement(): DOM {
-    let self      = this;
+    let self = this;
     let container = super.toDomElement();
 
     container.on('mouseenter', function() {

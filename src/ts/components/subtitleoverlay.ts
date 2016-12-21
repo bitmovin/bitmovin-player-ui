@@ -20,10 +20,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   constructor(config: ContainerConfig = {}) {
     super(config);
 
-    this.subtitleLabel = new Label<LabelConfig>({cssClass: 'ui-subtitle-label'});
+    this.subtitleLabel = new Label<LabelConfig>({ cssClass: 'ui-subtitle-label' });
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-subtitle-overlay',
+      cssClass: 'ui-subtitle-overlay',
       components: [this.subtitleLabel]
     }, this.config);
   }

@@ -23,8 +23,8 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, <PlaybackTimeLabelConfig>{
-      cssClass          : 'ui-playbacktimelabel',
-      timeLabelMode     : TimeLabelMode.CurrentAndTotalTime,
+      cssClass: 'ui-playbacktimelabel',
+      timeLabelMode: TimeLabelMode.CurrentAndTotalTime,
       hideInLivePlayback: false,
     }, this.config);
   }
@@ -32,12 +32,12 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIManager): void {
     super.configure(player, uimanager);
 
-    let self             = this;
-    let config           = <PlaybackTimeLabelConfig>self.getConfig();
-    let live             = false;
-    let liveCssClass     = self.prefixCss('ui-playbacktimelabel-live');
+    let self = this;
+    let config = <PlaybackTimeLabelConfig>self.getConfig();
+    let live = false;
+    let liveCssClass = self.prefixCss('ui-playbacktimelabel-live');
     let liveEdgeCssClass = self.prefixCss('ui-playbacktimelabel-live-edge');
-    let minWidth         = 0;
+    let minWidth = 0;
 
     let liveClickHandler = function() {
       player.timeShift(0);

@@ -36,24 +36,24 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
     super(config);
 
     this.volumeToggleButton = new VolumeToggleButton();
-    this.volumeSlider       = new VolumeSlider({
+    this.volumeSlider = new VolumeSlider({
       vertical: config.vertical != null ? config.vertical : true,
-      hidden  : true
+      hidden: true
     });
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-volumecontrolbutton',
+      cssClass: 'ui-volumecontrolbutton',
       components: [this.volumeToggleButton, this.volumeSlider],
-      hideDelay : 500
+      hideDelay: 500
     }, <VolumeControlButtonConfig>this.config);
   }
 
   configure(player: bitmovin.player.Player, uimanager: UIManager): void {
     super.configure(player, uimanager);
 
-    let self               = this;
+    let self = this;
     let volumeToggleButton = this.getVolumeToggleButton();
-    let volumeSlider       = this.getVolumeSlider();
+    let volumeSlider = this.getVolumeSlider();
 
     let timeout = new Timeout((<VolumeControlButtonConfig>self.getConfig()).hideDelay, function() {
       volumeSlider.hide();

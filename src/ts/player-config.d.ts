@@ -512,7 +512,7 @@ declare namespace bitmovin {
        * subtitle files, …). Query_parameters should be an object with key value pairs, where the keys are
        * used as parameter name and the values as parameter values.
        */
-      query_parameters?: {[key: string]: string;};
+      query_parameters?: { [key: string]: string; };
     }
 
     interface CastConfig {
@@ -613,7 +613,7 @@ declare namespace bitmovin {
        * Contains one or more ad breaks. Each ad break defines when an ad shall be played and must contain
        * an offset and a tag property.
        */
-      schedule?: {[name: string]: AdvertisingScheduleItem;};
+      schedule?: { [name: string]: AdvertisingScheduleItem; };
     }
 
     interface LocationConfig {
@@ -679,7 +679,7 @@ declare namespace bitmovin {
       /**
        * A list of callback functions for events.
        */
-      events?: {[event: string]: PlayerEventCallback;};
+      events?: { [event: string]: PlayerEventCallback; };
       /**
        * Tweaks. Use these values only if you know what you are doing.
        */

@@ -12,14 +12,14 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-playbacktogglebutton',
-      text    : 'Play/Pause'
+      text: 'Play/Pause'
     }, this.config);
   }
 
   configure(player: bitmovin.player.Player, uimanager: UIManager, handleClickEvent: boolean = true): void {
     super.configure(player, uimanager);
 
-    let self      = this;
+    let self = this;
     let isSeeking = false;
 
     // Handler to update button state based on player state

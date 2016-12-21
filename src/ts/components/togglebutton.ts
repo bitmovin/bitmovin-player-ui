@@ -16,14 +16,14 @@ export interface ToggleButtonConfig extends ButtonConfig {
  */
 export class ToggleButton<Config extends ToggleButtonConfig> extends Button<ToggleButtonConfig> {
 
-  private static readonly CLASS_ON  = 'on';
+  private static readonly CLASS_ON = 'on';
   private static readonly CLASS_OFF = 'off';
 
   private onState: boolean;
 
   private toggleButtonEvents = {
-    onToggle   : new EventDispatcher<ToggleButton<Config>, NoArgs>(),
-    onToggleOn : new EventDispatcher<ToggleButton<Config>, NoArgs>(),
+    onToggle: new EventDispatcher<ToggleButton<Config>, NoArgs>(),
+    onToggleOn: new EventDispatcher<ToggleButton<Config>, NoArgs>(),
     onToggleOff: new EventDispatcher<ToggleButton<Config>, NoArgs>()
   };
 

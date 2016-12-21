@@ -23,8 +23,8 @@ export class ControlBar extends Container<ControlBarConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass : 'ui-controlbar',
-      hidden   : true,
+      cssClass: 'ui-controlbar',
+      hidden: true,
       hideDelay: 5000
     }, <ControlBarConfig>this.config);
   }
@@ -32,7 +32,7 @@ export class ControlBar extends Container<ControlBarConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIManager): void {
     super.configure(player, uimanager);
 
-    let self      = this;
+    let self = this;
     let isSeeking = false;
 
     let timeout = new Timeout((<ControlBarConfig>self.getConfig()).hideDelay, function() { // TODO fix generics to spare these damn casts... is that even possible in TS?

@@ -55,12 +55,12 @@ export class DOM {
 
     if (something instanceof Array) {
       if (something.length > 0 && something[0] instanceof HTMLElement) {
-        let elements  = something;
+        let elements = something;
         this.elements = elements;
       }
     }
     else if (something instanceof HTMLElement) {
-      let element   = something;
+      let element = something;
       this.elements = [element];
     }
     else if (something instanceof Document) {
@@ -81,7 +81,7 @@ export class DOM {
       this.elements = [element];
     }
     else {
-      let selector  = something;
+      let selector = something;
       this.elements = this.findChildElements(selector);
     }
   }
@@ -121,7 +121,7 @@ export class DOM {
   }
 
   private findChildElements(selector: string): HTMLElement[] {
-    let self             = this;
+    let self = this;
     let allChildElements = <HTMLElement[]>[];
 
     if (this.elements) {
@@ -304,9 +304,9 @@ export class DOM {
    * @returns {Offset}
    */
   offset(): Offset {
-    let element     = this.elements[0];
+    let element = this.elements[0];
     let elementRect = element.getBoundingClientRect();
-    let htmlRect    = document.body.parentElement.getBoundingClientRect();
+    let htmlRect = document.body.parentElement.getBoundingClientRect();
 
     // Virtual viewport scroll handling (e.g. pinch zoomed viewports in mobile browsers or desktop Chrome/Edge)
     // 'normal' zooms and virtual viewport zooms (aka layout viewport) result in different
@@ -322,7 +322,7 @@ export class DOM {
     // problem, this method should be reverted to the old version and the offset calculation moved to the seek bar.
 
     return {
-      top : elementRect.top - htmlRect.top,
+      top: elementRect.top - htmlRect.top,
       left: elementRect.left - htmlRect.left
     };
   }
@@ -353,7 +353,7 @@ export class DOM {
    */
   on(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
     let events = eventName.split(' ');
-    let self   = this;
+    let self = this;
 
     events.forEach(function(event) {
       if (self.elements == null) {
@@ -377,7 +377,7 @@ export class DOM {
    */
   off(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
     let events = eventName.split(' ');
-    let self   = this;
+    let self = this;
 
     events.forEach(function(event) {
       if (self.elements == null) {

@@ -31,9 +31,9 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     }
 
     this.config = this.mergeConfig(config, {
-      cssClass                    : 'ui-settingstogglebutton',
-      text                        : 'Settings',
-      settingsPanel               : null,
+      cssClass: 'ui-settingstogglebutton',
+      text: 'Settings',
+      settingsPanel: null,
       autoHideWhenNoActiveSettings: true
     }, <SettingsToggleButtonConfig>this.config);
   }
@@ -41,8 +41,8 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
   configure(player: bitmovin.player.Player, uimanager: UIManager): void {
     super.configure(player, uimanager);
 
-    let self          = this;
-    let config        = <SettingsToggleButtonConfig>this.getConfig(); // TODO fix generics type inference
+    let self = this;
+    let config = <SettingsToggleButtonConfig>this.getConfig(); // TODO fix generics type inference
     let settingsPanel = config.settingsPanel;
 
     this.onClick.subscribe(function() {

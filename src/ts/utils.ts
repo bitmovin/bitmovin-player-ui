@@ -34,7 +34,7 @@ export namespace StringUtils {
     }
 
     // Split into separate time parts
-    let hours   = Math.floor(totalSeconds / 3600);
+    let hours = Math.floor(totalSeconds / 3600);
     let minutes = Math.floor(totalSeconds / 60) - hours * 60;
     let seconds = Math.floor(totalSeconds) % 60;
 
@@ -51,7 +51,7 @@ export namespace StringUtils {
    * @returns {string} the padded number as string
    */
   function leftPadWithZeros(num: number | string, length: number): string {
-    let text    = num + '';
+    let text = num + '';
     let padding = '0000000000'.substr(0, length - text.length);
     return padding + text;
   }
@@ -103,8 +103,8 @@ export namespace StringUtils {
 
   function formatNumber(time: number, format: string) {
     let formatStringValidationRegex = /%((0[1-9]\d*(\.\d+(d|f)|d|f)|\.\d+f|d|f)|hh:mm:ss|mm:ss)/;
-    let leadingZeroesRegex          = /(%0[1-9]\d*)(?=(\.\d+f|f|d))/;
-    let decimalPlacesRegex          = /\.\d*(?=f)/;
+    let leadingZeroesRegex = /(%0[1-9]\d*)(?=(\.\d+f|f|d))/;
+    let decimalPlacesRegex = /\.\d*(?=f)/;
 
     if (!formatStringValidationRegex.test(format)) {
       // If the format is invalid, we set a default fallback format
@@ -112,14 +112,14 @@ export namespace StringUtils {
     }
 
     // Determine the number of leading zeros
-    let leadingZeroes        = 0;
+    let leadingZeroes = 0;
     let leadingZeroesMatches = format.match(leadingZeroesRegex);
     if (leadingZeroesMatches) {
       leadingZeroes = parseInt(leadingZeroesMatches[0].substring(2));
     }
 
     // Determine the number of decimal places
-    let numDecimalPlaces     = null;
+    let numDecimalPlaces = null;
     let decimalPlacesMatches = format.match(decimalPlacesRegex);
     if (decimalPlacesMatches && !isNaN(parseInt(decimalPlacesMatches[0].substring(1)))) {
       numDecimalPlaces = parseInt(decimalPlacesMatches[0].substring(1));

@@ -38,7 +38,7 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
     let self = this;
 
     let labelElement = new DOM('span', {
-      'id'   : this.config.id,
+      'id': this.config.id,
       'class': this.getCssClasses()
     }).html(this.config.text);
 

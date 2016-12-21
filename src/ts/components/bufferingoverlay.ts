@@ -13,14 +13,14 @@ export class BufferingOverlay extends Container<ContainerConfig> {
     super(config);
 
     this.indicators = [
-      new Component<ComponentConfig>({tag: 'div', cssClass: 'ui-buffering-overlay-indicator'}),
-      new Component<ComponentConfig>({tag: 'div', cssClass: 'ui-buffering-overlay-indicator'}),
-      new Component<ComponentConfig>({tag: 'div', cssClass: 'ui-buffering-overlay-indicator'}),
+      new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator' }),
+      new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator' }),
+      new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator' }),
     ];
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-buffering-overlay',
-      hidden    : true,
+      cssClass: 'ui-buffering-overlay',
+      hidden: true,
       components: this.indicators
     }, this.config);
   }

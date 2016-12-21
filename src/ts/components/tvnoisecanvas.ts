@@ -10,11 +10,11 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
 
   private canvasElement: HTMLCanvasElement;
   private canvasContext: CanvasRenderingContext2D;
-  private canvasWidth                = 160;
-  private canvasHeight               = 90;
-  private interferenceHeight         = 50;
-  private lastFrameUpdate: number    = 0;
-  private frameInterval: number      = 60;
+  private canvasWidth = 160;
+  private canvasHeight = 90;
+  private interferenceHeight = 50;
+  private lastFrameUpdate: number = 0;
+  private frameInterval: number = 60;
   private useAnimationFrame: boolean = !!window.requestAnimationFrame;
   private noiseAnimationWindowPos: number;
   private frameUpdateHandlerId: number;
@@ -28,16 +28,16 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
   }
 
   protected toDomElement(): DOM {
-    return this.canvas = new DOM('canvas', {'class': this.getCssClasses()});
+    return this.canvas = new DOM('canvas', { 'class': this.getCssClasses() });
   }
 
   start(): void {
-    this.canvasElement           = <HTMLCanvasElement>this.canvas.getElements()[0];
-    this.canvasContext           = this.canvasElement.getContext('2d');
+    this.canvasElement = <HTMLCanvasElement>this.canvas.getElements()[0];
+    this.canvasContext = this.canvasElement.getContext('2d');
     this.noiseAnimationWindowPos = -this.canvasHeight;
-    this.lastFrameUpdate         = 0;
+    this.lastFrameUpdate = 0;
 
-    this.canvasElement.width  = this.canvasWidth;
+    this.canvasElement.width = this.canvasWidth;
     this.canvasElement.height = this.canvasHeight;
 
     this.renderFrame();
@@ -61,7 +61,7 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
     }
 
     let currentPixelOffset;
-    let canvasWidth  = this.canvasWidth;
+    let canvasWidth = this.canvasWidth;
     let canvasHeight = this.canvasHeight;
 
     // Create texture
@@ -70,7 +70,7 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
     // Fill texture with noise
     for (let y = 0; y < canvasHeight; y++) {
       for (let x = 0; x < canvasWidth; x++) {
-        currentPixelOffset                  = (canvasWidth * y * 4) + x * 4;
+        currentPixelOffset = (canvasWidth * y * 4) + x * 4;
         noiseImage.data[currentPixelOffset] = Math.random() * 255;
         if (y < this.noiseAnimationWindowPos || y > this.noiseAnimationWindowPos + this.interferenceHeight) {
           noiseImage.data[currentPixelOffset] *= 0.85;

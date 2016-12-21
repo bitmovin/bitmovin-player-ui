@@ -23,8 +23,8 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   protected selectedItem: string;
 
   private listSelectorEvents = {
-    onItemAdded   : new EventDispatcher<ListSelector<Config>, string>(),
-    onItemRemoved : new EventDispatcher<ListSelector<Config>, string>(),
+    onItemAdded: new EventDispatcher<ListSelector<Config>, string>(),
+    onItemRemoved: new EventDispatcher<ListSelector<Config>, string>(),
     onItemSelected: new EventDispatcher<ListSelector<Config>, string>()
   };
 
@@ -32,7 +32,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     super(config);
 
     this.config = this.mergeConfig(config, {
-      items   : [],
+      items: [],
       cssClass: 'ui-listselector'
     }, this.config);
 
@@ -63,7 +63,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param label the (human-readable) label of the item to add
    */
   addItem(key: string, label: string) {
-    this.items.push({key: key, label: label});
+    this.items.push({ key: key, label: label });
     this.onItemAddedEvent(key);
   }
 
@@ -117,7 +117,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * Removes all items from this selector.
    */
   clearItems() {
-    let items  = this.items; // local copy for iteration after clear
+    let items = this.items; // local copy for iteration after clear
     this.items = []; // clear items
 
     // fire events

@@ -19,10 +19,10 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, <AdSkipButtonConfig>{
-      cssClass   : 'ui-button-ad-skip',
+      cssClass: 'ui-button-ad-skip',
       skipMessage: {
         countdown: 'Skip ad in {remainingTime}',
-        skip     : 'Skip ad'
+        skip: 'Skip ad'
       }
     }, this.config);
   }
@@ -30,10 +30,10 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIManager): void {
     super.configure(player, uimanager);
 
-    let self        = this;
-    let config      = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
+    let self = this;
+    let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
     let skipMessage = config.skipMessage;
-    let adEvent     = <bitmovin.player.AdStartedEvent>null;
+    let adEvent = <bitmovin.player.AdStartedEvent>null;
 
     let updateSkipMessageHandler = function() {
       // Display this button only if ad is skippable
@@ -53,7 +53,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     };
 
     let adStartHandler = function(event: bitmovin.player.AdStartedEvent) {
-      adEvent     = event;
+      adEvent = event;
       skipMessage = adEvent.skipMessage || skipMessage;
       updateSkipMessageHandler();
 

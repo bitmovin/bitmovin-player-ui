@@ -34,7 +34,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     super(config);
 
     this.config = this.mergeConfig<SettingsPanelConfig>(config, {
-      cssClass : 'ui-settings-panel',
+      cssClass: 'ui-settings-panel',
       hideDelay: 3000
     }, this.config);
   }
@@ -42,7 +42,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIManager): void {
     super.configure(player, uimanager);
 
-    let self   = this;
+    let self = this;
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
 
     if (config.hideDelay > -1) {
@@ -133,11 +133,11 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
     super(config);
 
-    this.label   = new Label({text: label});
+    this.label = new Label({ text: label });
     this.setting = selectBox;
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-settings-panel-entry',
+      cssClass: 'ui-settings-panel-entry',
       components: [this.label, this.setting]
     }, this.config);
   }

@@ -24,12 +24,12 @@ export class TitleBar extends Container<TitleBarConfig> {
   constructor(config: TitleBarConfig = {}) {
     super(config);
 
-    this.label = new Label({cssClass: 'ui-titlebar-label'});
+    this.label = new Label({ cssClass: 'ui-titlebar-label' });
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-titlebar',
-      hidden    : true,
-      hideDelay : 5000,
+      cssClass: 'ui-titlebar',
+      hidden: true,
+      hideDelay: 5000,
       components: [this.label]
     }, <TitleBarConfig>this.config);
   }

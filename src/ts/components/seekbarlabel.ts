@@ -22,13 +22,13 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   constructor(config: SeekBarLabelConfig = {}) {
     super(config);
 
-    this.label     = new Label({cssClasses: ['seekbar-label']});
-    this.thumbnail = new Component({cssClasses: ['seekbar-thumbnail']});
+    this.label = new Label({ cssClasses: ['seekbar-label'] });
+    this.thumbnail = new Component({ cssClasses: ['seekbar-thumbnail'] });
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-seekbar-label',
-      components: [new Container({components: [this.thumbnail, this.label], cssClass: 'seekbar-label-inner'})],
-      hidden    : true
+      cssClass: 'ui-seekbar-label',
+      components: [new Container({ components: [this.thumbnail, this.label], cssClass: 'seekbar-label-inner' })],
+      hidden: true
     }, this.config);
   }
 
@@ -75,17 +75,17 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     if (thumbnail == null) {
       thumbnailElement.css({
         'background-image': null,
-        'display'         : null,
-        'width'           : null,
-        'height'          : null
+        'display': null,
+        'width': null,
+        'height': null
       });
     }
     else {
       thumbnailElement.css({
-        'display'            : 'inherit',
-        'background-image'   : `url(${thumbnail.url})`,
-        'width'              : thumbnail.w + 'px',
-        'height'             : thumbnail.h + 'px',
+        'display': 'inherit',
+        'background-image': `url(${thumbnail.url})`,
+        'width': thumbnail.w + 'px',
+        'height': thumbnail.h + 'px',
         'background-position': `-${thumbnail.x}px -${thumbnail.y}px`
       });
     }

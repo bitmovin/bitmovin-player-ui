@@ -355,8 +355,8 @@ declare namespace bitmovin {
        */
       castVideo(): Player;
       /**
-       * Removes all existing query parameters as specified in {@link #setQueryParameters} or {@link
-       * Config#tweaks#query_parameters}.
+       * Removes all existing query parameters as specified in {@link #setQueryParameters} or
+       * {@link Config#tweaks#query_parameters}.
        */
       clearQueryParameters(): Player;
       /**
@@ -683,7 +683,7 @@ declare namespace bitmovin {
        *
        * @param queryParameters The list of query parameter key/value pairs
        */
-      setQueryParameters(queryParameters: {[key: string]: string;}): Player;
+      setQueryParameters(queryParameters: { [key: string]: string; }): Player;
       /**
        * Applies a new skin during run-time. See the https://bitmovin.com/tutorials/html5-player-skin-tutorial/
        * in the player configuration for more details about the parameter.
@@ -755,7 +755,7 @@ declare namespace bitmovin {
        */
       unmute(): Player;
 
-      fireEvent(event: EVENT, args: {clickThroughUrl: string;}): void;
+      fireEvent(event: EVENT, args: { clickThroughUrl: string; }): void;
     }
 
     namespace VR {
@@ -767,11 +767,11 @@ declare namespace bitmovin {
           /**
            * Two equirectangular videos for 3D content in top-and-bottom position.
            */
-          TAB,
+        TAB,
           /**
            *  Two equirectangular videos for 3D content in side-by-side position.
            */
-          SBS
+        SBS
       }
     }
   }

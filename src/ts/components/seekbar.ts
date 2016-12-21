@@ -64,7 +64,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     /**
      * Fired when a scrubbing seek operation is started.
      */
-    onSeek       : new EventDispatcher<SeekBar, NoArgs>(),
+    onSeek: new EventDispatcher<SeekBar, NoArgs>(),
     /**
      * Fired during a scrubbing seek to indicate that the seek preview (i.e. the video frame) should be updated.
      */
@@ -72,7 +72,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     /**
      * Fired when a scrubbing seek has finished or when a direct seek is issued.
      */
-    onSeeked     : new EventDispatcher<SeekBar, number>()
+    onSeeked: new EventDispatcher<SeekBar, number>()
   };
 
   constructor(config: SeekBarConfig = {}) {
@@ -104,10 +104,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       return;
     }
 
-    let self                   = this;
+    let self = this;
     let playbackNotInitialized = true;
-    let isPlaying              = false;
-    let isSeeking              = false;
+    let isPlaying = false;
+    let isSeeking = false;
 
     // Update playback and buffer positions
     let playbackPositionHandler = function() {
@@ -137,7 +137,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         // playback position update handling in the Timeout below
 
         let playbackPositionPercentage = 100 / player.getDuration() * player.getCurrentTime();
-        let bufferPercentage           = 100 / player.getDuration() * player.getVideoBufferLength();
+        let bufferPercentage = 100 / player.getDuration() * player.getVideoBufferLength();
         self.setBufferPosition(playbackPositionPercentage + bufferPercentage);
       }
     };
@@ -170,9 +170,9 @@ export class SeekBar extends Component<SeekBarConfig> {
      * To work around this issue, we maintain a local playback position that is updated in a stable regular interval
      * and kept in sync with the player.
      */
-    let currentTimeSeekBar         = 0;
-    let currentTimePlayer          = 0;
-    let updateIntervalMs           = 100;
+    let currentTimeSeekBar = 0;
+    let currentTimePlayer = 0;
+    let updateIntervalMs = 100;
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
     let smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, function() {
@@ -298,23 +298,23 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     let seekBarContainer = new DOM('div', {
-      'id'   : this.config.id,
+      'id': this.config.id,
       'class': this.getCssClasses()
     });
 
-    let seekBar  = new DOM('div', {
+    let seekBar = new DOM('div', {
       'class': this.prefixCss('seekbar')
     });
     this.seekBar = seekBar;
 
     // Indicator that shows the buffer fill level
-    let seekBarBufferLevel     = new DOM('div', {
+    let seekBarBufferLevel = new DOM('div', {
       'class': this.prefixCss('seekbar-bufferlevel')
     });
     this.seekBarBufferPosition = seekBarBufferLevel;
 
     // Indicator that shows the current playback position
-    let seekBarPlaybackPosition  = new DOM('div', {
+    let seekBarPlaybackPosition = new DOM('div', {
       'class': this.prefixCss('seekbar-playbackposition')
     }).append(new DOM('div', {
       'class': this.prefixCss('seekbar-playbackposition-marker')
@@ -322,20 +322,20 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
     // Indicator that show where a seek will go to
-    let seekBarSeekPosition  = new DOM('div', {
+    let seekBarSeekPosition = new DOM('div', {
       'class': this.prefixCss('seekbar-seekposition')
     });
     this.seekBarSeekPosition = seekBarSeekPosition;
 
     // Indicator that shows the full seekbar
-    let seekBarBackdrop  = new DOM('div', {
+    let seekBarBackdrop = new DOM('div', {
       'class': this.prefixCss('seekbar-backdrop')
     });
     this.seekBarBackdrop = seekBarBackdrop;
 
     seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition, seekBarPlaybackPosition);
 
-    let self    = this;
+    let self = this;
     let seeking = false;
 
     // Define handler functions so we can attach/remove them later
@@ -349,7 +349,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       self.setPlaybackPosition(targetPercentage);
       self.onSeekPreviewEvent(targetPercentage, true);
     };
-    let mouseTouchUpHandler   = function(e: MouseEvent | TouchEvent) {
+    let mouseTouchUpHandler = function(e: MouseEvent | TouchEvent) {
       e.preventDefault();
 
       // Remove handlers, seek operation is finished
@@ -437,9 +437,9 @@ export class SeekBar extends Component<SeekBarConfig> {
    */
   private getHorizontalOffset(eventPageX: number): number {
     let elementOffsetPx = this.seekBar.offset().left;
-    let widthPx         = this.seekBar.width();
-    let offsetPx        = eventPageX - elementOffsetPx;
-    let offset          = 1 / widthPx * offsetPx;
+    let widthPx = this.seekBar.width();
+    let offsetPx = eventPageX - elementOffsetPx;
+    let offset = 1 / widthPx * offsetPx;
 
     return this.sanitizeOffset(offset);
   }
@@ -451,9 +451,9 @@ export class SeekBar extends Component<SeekBarConfig> {
    */
   private getVerticalOffset(eventPageY: number): number {
     let elementOffsetPx = this.seekBar.offset().top;
-    let widthPx         = this.seekBar.height();
-    let offsetPx        = eventPageY - elementOffsetPx;
-    let offset          = 1 / widthPx * offsetPx;
+    let widthPx = this.seekBar.height();
+    let offsetPx = eventPageY - elementOffsetPx;
+    let offset = 1 / widthPx * offsetPx;
 
     return 1 - this.sanitizeOffset(offset);
   }
@@ -540,7 +540,7 @@ export class SeekBar extends Component<SeekBarConfig> {
    * @param percent a number between 0 and 100
    */
   private setPosition(element: DOM, percent: number) {
-    let style = this.config.vertical ? {'height': percent + '%'} : {'width': percent + '%'};
+    let style = this.config.vertical ? { 'height': percent + '%' } : { 'width': percent + '%' };
     element.css(style);
   }
 
@@ -593,7 +593,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         'left': percentage + '%'
       });
     }
-    this.seekBarEvents.onSeekPreview.dispatch(this, {scrubbing: scrubbing, position: percentage});
+    this.seekBarEvents.onSeekPreview.dispatch(this, { scrubbing: scrubbing, position: percentage });
   }
 
   protected onSeekedEvent(percentage: number) {

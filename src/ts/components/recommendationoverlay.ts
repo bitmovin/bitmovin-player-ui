@@ -18,8 +18,8 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     this.replayButton = new HugeReplayButton();
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-recommendation-overlay',
-      hidden    : true,
+      cssClass: 'ui-recommendation-overlay',
+      hidden: true,
       components: [this.replayButton]
     }, this.config);
   }
@@ -71,7 +71,7 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass  : 'ui-recommendation-item',
+      cssClass: 'ui-recommendation-item',
       itemConfig: null // this must be passed in from outside
     }, this.config);
   }
@@ -80,10 +80,10 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
     let config = (<RecommendationItemConfig>this.config).itemConfig; // TODO fix generics and get rid of cast
 
     let itemElement = new DOM('a', {
-      'id'   : this.config.id,
+      'id': this.config.id,
       'class': this.getCssClasses(),
-      'href' : config.url
-    }).css({'background-image': `url(${config.thumbnail})`});
+      'href': config.url
+    }).css({ 'background-image': `url(${config.thumbnail})` });
 
     let bgElement = new DOM('div', {
       'class': 'background'

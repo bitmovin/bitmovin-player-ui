@@ -13,7 +13,7 @@ export class HugeReplayButton extends Button<ButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-hugereplaybutton',
-      text    : 'Replay'
+      text: 'Replay'
     }, this.config);
   }
 
