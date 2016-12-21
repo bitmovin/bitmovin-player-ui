@@ -49,11 +49,11 @@
 
 // IE9 compatibility: fallback for missing flexbox support
 // sass-lint:disable nesting-depth
-&.no-flexbox {
-  .ui-controlbar {
-    .controlbar-top,
-    .controlbar-bottom {
-      > .container-wrapper {
+&.#{$prefix}-no-flexbox {
+  .#{$prefix}-ui-controlbar {
+    .#{$prefix}-controlbar-top,
+    .#{$prefix}-controlbar-bottom {
+      > .#{$prefix}-container-wrapper {
         border-spacing: .5em 0;
         display: table;
 
@@ -64,7 +64,7 @@
           vertical-align: middle;
         }
 
-        .ui-volumeslider {
+        .#{$prefix}-ui-volumeslider {
           width: 10%;
         }
       }
