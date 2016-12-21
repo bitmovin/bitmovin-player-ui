@@ -434,11 +434,6 @@ declare namespace bitmovin {
              */
             autoHideControls?: boolean;
             /**
-             * Can be used to disable (i.e. never show) the overlay during buffering by setting this value to false.
-             * Default is true.
-             */
-            bufferingOverlay?: boolean;
-            /**
              * Can be used to disable (i.e. never show) the overlay in pause or stopped mode by setting this
              * value to false. Default is true.
              */
@@ -453,7 +448,7 @@ declare namespace bitmovin {
              */
             mouse?: boolean;
             /**
-             * A short hand function to disable/enable controls, bufferingOverlay, playOverlay, subtitles, keyboard,
+             * A short hand function to disable/enable controls, playOverlay, subtitles, keyboard,
              * and mouse. It is not possible to override this setting with one of the mentioned attributes.
              */
             ux?: boolean;
