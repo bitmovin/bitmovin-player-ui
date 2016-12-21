@@ -133,11 +133,14 @@ export class SeekBar extends Component<SeekBarConfig> {
         self.setBufferPosition(100);
       }
       else {
-        // NOTE: We do not update the playback position here because we maintain our own local
-        // playback position update handling in the Timeout below
-
         let playbackPositionPercentage = 100 / player.getDuration() * player.getCurrentTime();
         let bufferPercentage = 100 / player.getDuration() * player.getVideoBufferLength();
+
+        // Update playback position only in paused state, playback updates are handled in the Timeout below
+        if(player.isPaused()) {
+          self.setPlaybackPosition(playbackPositionPercentage);
+        }
+
         self.setBufferPosition(playbackPositionPercentage + bufferPercentage);
       }
     };
