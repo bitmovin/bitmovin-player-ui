@@ -113,7 +113,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
 
   /**
    * Gets the event that is fired when the button is toggled.
-   * @returns {Event<Sender, Args>}
+   * @returns {Event<ToggleButton<Config>, NoArgs>}
    */
   get onToggle(): Event<ToggleButton<Config>, NoArgs> {
     return this.toggleButtonEvents.onToggle.getEvent();
@@ -121,7 +121,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
 
   /**
    * Gets the event that is fired when the button is toggled 'on'.
-   * @returns {Event<Sender, Args>}
+   * @returns {Event<ToggleButton<Config>, NoArgs>}
    */
   get onToggleOn(): Event<ToggleButton<Config>, NoArgs> {
     return this.toggleButtonEvents.onToggleOn.getEvent();
@@ -129,7 +129,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
 
   /**
    * Gets the event that is fired when the button is toggled 'off'.
-   * @returns {Event<Sender, Args>}
+   * @returns {Event<ToggleButton<Config>, NoArgs>}
    */
   get onToggleOff(): Event<ToggleButton<Config>, NoArgs> {
     return this.toggleButtonEvents.onToggleOff.getEvent();

@@ -63,7 +63,7 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
 
   /**
    * Gets the event that is fired when the button is clicked.
-   * @returns {Event<Sender, Args>}
+   * @returns {Event<Button<Config>, NoArgs>}
    */
   get onClick(): Event<Button<Config>, NoArgs> {
     return this.buttonEvents.onClick.getEvent();

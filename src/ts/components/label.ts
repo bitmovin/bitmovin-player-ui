@@ -70,7 +70,7 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
 
   /**
    * Gets the event that is fired when the label is clicked.
-   * @returns {Event<Sender, Args>}
+   * @returns {Event<Label<LabelConfig>, NoArgs>}
    */
   get onClick(): Event<Label<LabelConfig>, NoArgs> {
     return this.labelEvents.onClick.getEvent();

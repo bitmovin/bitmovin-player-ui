@@ -327,7 +327,7 @@ export class Component<Config extends ComponentConfig> {
   /**
    * Gets the event that is fired when the component is showing.
    * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
-   * @returns {Event<Sender, Args>}
+   * @returns {Event<Component<Config>, NoArgs>}
    */
   get onShow(): Event<Component<Config>, NoArgs> {
     return this.componentEvents.onShow.getEvent();
@@ -336,7 +336,7 @@ export class Component<Config extends ComponentConfig> {
   /**
    * Gets the event that is fired when the component is hiding.
    * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
-   * @returns {Event<Sender, Args>}
+   * @returns {Event<Component<Config>, NoArgs>}
    */
   get onHide(): Event<Component<Config>, NoArgs> {
     return this.componentEvents.onHide.getEvent();
