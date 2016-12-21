@@ -86,21 +86,21 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
     }).css({ 'background-image': `url(${config.thumbnail})` });
 
     let bgElement = new DOM('div', {
-      'class': 'background'
+      'class': this.prefixCss('background')
     });
     itemElement.append(bgElement);
 
     let titleElement = new DOM('span', {
-      'class': 'title'
+      'class': this.prefixCss('title')
     }).append(new DOM('span', {
-      'class': 'innertitle'
+      'class': this.prefixCss('innertitle')
     }).html(config.title));
     itemElement.append(titleElement);
 
     let timeElement = new DOM('span', {
-      'class': 'duration'
+      'class': this.prefixCss('duration')
     }).append(new DOM('span', {
-      'class': 'innerduration'
+      'class': this.prefixCss('innerduration')
     }).html(StringUtils.secondsToTime(config.duration)));
     itemElement.append(timeElement);
 
