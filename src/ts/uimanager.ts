@@ -194,9 +194,13 @@ export class UIManager {
   }
 
   private addUi(ui: UIContainer): void {
-    this.playerElement.append(ui.getDomElement());
+    let dom = ui.getDomElement();
     this.uiPlayerWrappers[<any>ui] = new PlayerWrapper(this.player);
     this.configureControls(ui);
+    /* Append the UI DOM after configuration to avoid CSS transitions at initialization
+     * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
+     * undesirable at this time. */
+    this.playerElement.append(dom);
   }
 
   private releaseUi(ui: UIContainer): void {
