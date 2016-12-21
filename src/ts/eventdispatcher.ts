@@ -104,7 +104,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
     for (let listener of this.listeners) {
       listener.fire(sender, args);
 
-      if(listener.isOnce()) {
+      if (listener.isOnce()) {
         listenersToRemove.push(listener);
       }
     }
