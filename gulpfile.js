@@ -73,7 +73,7 @@ gulp.task('lint-sass', function () {
     return gulp.src(paths.source.sass)
         .pipe(sassLint({
             rules: {
-                'no-css-comments': 0 // Disable warning because of copyright headers
+                'no-css-comments': 0
             }
         }))
         .pipe(sassLint.format())
