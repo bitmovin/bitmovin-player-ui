@@ -54,7 +54,7 @@
       @extend %bar;
       background-color: $button-image-color-active;
       margin: $bar-inset 0;
-      transition: .1s linear, .1s linear;
+      transition: .025s linear, .025s linear;
       transition-property: transform;
     }
 
