@@ -91,7 +91,7 @@
                 file: '//bitdash-a.akamaihd.net/content/sintel/sprite/sprite.vtt',
                 kind: 'thumbnails'
             }],
-            title: "Sintel"
+            title: 'Sintel'
         },
         basicDash: {
             dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
@@ -116,7 +116,7 @@
             tracks: [{
                 file: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.vtt',
                 kind: 'thumbnails'
-            }], userId: "demo_html5_vts", videoId: "art-of-motion"
+            }], userId: 'demo_html5_vts', videoId: 'art-of-motion'
         },
         live: {
             dash: 'http://bitcdn-kronehit-live.bitmovin.com/mpds/stream-full.php?streamkey=bitcodin&segmenthost=bitcdn-kronehit-live.bitmovin.com&liveoffset=20'
@@ -172,21 +172,21 @@
 
     var uiConfig = {
         metadata: {
-            title: "UI Demo Video Title"
+            title: 'UI Demo Video Title'
         },
         recommendations: [
-//            {title: "Recommendation 1: The best video ever", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 10.4},
-//            {title: "Recommendation 2: The second best video", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 64},
-//            {title: "Recommendation 3: The third best video of all time", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 195},
-//            {title: "Recommendation 4: The fourth, you know what", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 15},
-//            {title: "Recommendation 5", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 174},
-//            {title: "Recommendation 6", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 26},
-//            {title: "Recommendation 7", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 87},
-//            {title: "Recommendation 8", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 54},
-//            {title: "Recommendation 9", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 22},
-//            {title: "Recommendation 10", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 44},
-//            {title: "Recommendation 11", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 435},
-//            {title: "Recommendation 12: Ain't no better video than this", url: "http://bitmovin.com", thumbnail: "http://placehold.it/300x300", duration: 34}
+//            {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
+//            {title: 'Recommendation 2: The second best video', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 64},
+//            {title: 'Recommendation 3: The third best video of all time', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 195},
+//            {title: 'Recommendation 4: The fourth, you know what', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 15},
+//            {title: 'Recommendation 5', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 174},
+//            {title: 'Recommendation 6', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 26},
+//            {title: 'Recommendation 7', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 87},
+//            {title: 'Recommendation 8', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 54},
+//            {title: 'Recommendation 9', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 22},
+//            {title: 'Recommendation 10', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 44},
+//            {title: 'Recommendation 11', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 435},
+//            {title: 'Recommendation 12: Ain't no better video than this', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 34}
         ]
     };
 
@@ -201,7 +201,7 @@
     });
 
     $.each(sources, function (key, value) {
-        $('#config-source').append($("<option></option>").attr("value", key).text(key));
+        $('#config-source').append($('<option></option>').attr('value', key).text(key));
     });
     $('#config-source').change(function () {
         player.unload();
@@ -209,30 +209,30 @@
     });
 
     var printResult = function (result) {
-        $("#function-call-output").html(JSON.stringify(result, null, 2));
+        $('#function-call-output').html(JSON.stringify(result, null, 2));
     };
 
     // Collect all API methods of the player object
     var apiMethods = [];
     for (var member in player) {
-        if (typeof player[member] == "function") {
+        if (typeof player[member] == 'function') {
             apiMethods.push(member);
         }
     }
 
     // Define custom parameters for testing API methods that take parameters
     var apiMethodParameters = {
-        "setVolume": [0, 50, 100, function () { return player.getVolume() + 10; }],
-        "seek": [0, function () { return player.getCurrentTime() + 60; }, function () { return player.getCurrentTime() - 60; }, function () { return player.getDuration() - 1; }],
-        "setPlaybackSpeed": [0, 0.1, 0.25, 0.5, 1, 2, 4, 10],
+        'setVolume': [0, 50, 100, function () { return player.getVolume() + 10; }],
+        'seek': [0, function () { return player.getCurrentTime() + 60; }, function () { return player.getCurrentTime() - 60; }, function () { return player.getDuration() - 1; }],
+        'setPlaybackSpeed': [0, 0.1, 0.25, 0.5, 1, 2, 4, 10],
     };
 
     var addApiMethodButton = function (method, parameter) {
         var button = $('<button class="btn btn-primary btn-sm">' + method + '(' + (typeof parameter == 'undefined' ? '' : parameter) + ')' + '</button>');
-        $('#playback-controls').append(button).append(" ");
+        $('#playback-controls').append(button).append(' ');
         button.click(function () {
             var p = parameter;
-            if (typeof parameter == "function") {
+            if (typeof parameter == 'function') {
                 // The parameter is a function, evaluate it first
                 p = parameter();
             }
@@ -262,39 +262,39 @@
 
 
     var actions = {
-        "Add subtitle": function () {
-            printResult(player.addSubtitle("http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt", "test", "subtitle", "ru", "Test Subtitle"));
+        'Add subtitle': function () {
+            printResult(player.addSubtitle('http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', 'test', 'subtitle', 'ru', 'Test Subtitle'));
         },
-        "Remove subtitle": function () {
-            printResult(player.removeSubtitle("test"));
+        'Remove subtitle': function () {
+            printResult(player.removeSubtitle('test'));
         },
-        "Schedule skippable VAST preroll ad": function () {
+        'Schedule skippable VAST preroll ad': function () {
             printResult(player.scheduleAd('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-                'vast', { timeOffset: "pre" }));
+                'vast', { timeOffset: 'pre' }));
         },
-        "Schedule skippable VAST ad in 5 secs": function () {
+        'Schedule skippable VAST ad in 5 secs': function () {
             printResult(player.scheduleAd('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
                 'vast', { timeOffset: player.getCurrentTime() + 5 }));
         },
-        "Schedule nonskippable VAST ad in 5 secs": function () {
+        'Schedule nonskippable VAST ad in 5 secs': function () {
             printResult(player.scheduleAd('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
                 'vast', { timeOffset: player.getCurrentTime() + 5 }));
         },
-        "Schedule skippable VAST postroll ad": function () {
+        'Schedule skippable VAST postroll ad': function () {
             printResult(player.scheduleAd('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-                'vast', { timeOffset: "post" }));
+                'vast', { timeOffset: 'post' }));
         },
-        "Schedule skippable IMA ad in 5 secs": function () {
+        'Schedule skippable IMA ad in 5 secs': function () {
             printResult(player.scheduleAd('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
                 'ima', { timeOffset: player.getCurrentTime() + 5 }));
         },
-        "Schedule nonskippable IMA ad in 5 secs": function () {
+        'Schedule nonskippable IMA ad in 5 secs': function () {
             printResult(player.scheduleAd('https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
                 'ima', { timeOffset: player.getCurrentTime() + 5 }));
         }
     };
     $.each(actions, function (title, handler) {
-        $('#actions').append($('<button type="button" class="btn btn-primary btn-sm">' + title + '</button>').click(handler)).append(" ");
+        $('#actions').append($('<button type="button" class="btn btn-primary btn-sm">' + title + '</button>').click(handler)).append(' ');
     });
 
 
@@ -304,27 +304,27 @@
     $('#config-events-all').change(function () {
         var checked = $(this).prop('checked');
 
-        $("#events input").each(function (index) {
-            // Skip first checkbox (the "all" checkbox)
+        $('#events input').each(function (index) {
+            // Skip first checkbox (the 'all' checkbox)
             if (index === 0) {
                 return;
             }
 
-            $(this).prop("checked", checked);
+            $(this).prop('checked', checked);
         });
     });
     // Add a checkbox for each event to toggle logging to console
     var eventIndex = 0;
     for (var event in bitmovin.player.EVENT) {
-        var checkbox = $("<input>", {
-            "type": "checkbox",
-            "id": "config-events-" + (eventIndex++)
-        }).data("event", event);
+        var checkbox = $('<input>', {
+            'type': 'checkbox',
+            'id': 'config-events-' + (eventIndex++)
+        }).data('event', event);
 
         checkbox.change(function () {
             var checkbox = $(this);
             var checked = checkbox.prop('checked');
-            var eventName = checkbox.data("event");
+            var eventName = checkbox.data('event');
 
             if(checked) {
                 player.addEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
@@ -333,19 +333,19 @@
             }
         });
 
-        $("#events").append($("<label>").append(checkbox).append(" ").append(event).append("&ensp;"));
+        $('#events').append($('<label>').append(checkbox).append(' ').append(event).append('&ensp;'));
     }
 
     // Collect all UI factory methods which are basically the different built-in skins and skin types
     var uiFactoryMethods = [];
     for (var member in bitmovin.playerui.UIManager.Factory) {
-        if (typeof bitmovin.playerui.UIManager.Factory[member] == "function") {
+        if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function') {
             uiFactoryMethods.push(member);
         }
     }
     // Fill the UI factory method select box
     $.each(uiFactoryMethods, function (key, value) {
-        $('#config-ui').append($("<option></option>").attr("value", value).text(value));
+        $('#config-ui').append($('<option></option>').attr('value', value).text(value));
     });
     // Refresh UI when a factory is selected
     $('#config-ui').change(function () {

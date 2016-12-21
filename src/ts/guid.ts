@@ -1,8 +1,8 @@
 export namespace Guid {
 
-    let guid = 1;
+  let guid = 1;
 
-    export function next() {
-        return guid++;
-    }
+  export function next() {
+    return guid++;
+  }
 }

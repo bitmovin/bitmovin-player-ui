@@ -1,10 +1,10 @@
-import {ClickOverlay, ClickOverlayConfig} from "./clickoverlay";
+import {ClickOverlay, ClickOverlayConfig} from './clickoverlay';
 
 /**
  * Configuration interface for a {@link ClickOverlay}.
  */
 export interface WatermarkConfig extends ClickOverlayConfig {
-    // nothing yet
+  // nothing yet
 }
 
 /**
@@ -12,12 +12,12 @@ export interface WatermarkConfig extends ClickOverlayConfig {
  */
 export class Watermark extends ClickOverlay {
 
-    constructor(config: WatermarkConfig = {}) {
-        super(config);
+  constructor(config: WatermarkConfig = {}) {
+    super(config);
 
-        this.config = this.mergeConfig(config, {
-            cssClass: "ui-watermark",
-            url: "http://bitmovin.com"
-        }, <WatermarkConfig>this.config);
-    }
+    this.config = this.mergeConfig(config, {
+      cssClass: 'ui-watermark',
+      url     : 'http://bitmovin.com'
+    }, <WatermarkConfig>this.config);
+  }
 }

@@ -1,79 +1,79 @@
-import {ListSelector, ListSelectorConfig} from "./listselector";
-import {DOM} from "../dom";
+import {ListSelector, ListSelectorConfig} from './listselector';
+import {DOM} from '../dom';
 
 /**
  * A simple select box providing the possibility to select a single item out of a list of available items.
  *
  * DOM example:
  * <code>
- *     <select class="ui-selectbox">
- *         <option value="key">label</option>
+ *     <select class='ui-selectbox'>
+ *         <option value='key'>label</option>
  *         ...
  *     </select>
  * </code>
  */
 export class SelectBox extends ListSelector<ListSelectorConfig> {
 
-    private selectElement: DOM;
+  private selectElement: DOM;
 
-    constructor(config: ListSelectorConfig = {}) {
-        super(config);
+  constructor(config: ListSelectorConfig = {}) {
+    super(config);
 
-        this.config = this.mergeConfig(config, {
-            cssClass: "ui-selectbox"
-        }, this.config);
+    this.config = this.mergeConfig(config, {
+      cssClass: 'ui-selectbox'
+    }, this.config);
+  }
+
+  protected toDomElement(): DOM {
+    let selectElement = new DOM('select', {
+      'id'   : this.config.id,
+      'class': this.getCssClasses()
+    });
+
+    this.selectElement = selectElement;
+    this.updateDomItems();
+
+    let self = this;
+    selectElement.on('change', function() {
+      let value = new DOM(this).val();
+      self.onItemSelectedEvent(value, false);
+    });
+
+    return selectElement;
+  }
+
+  protected updateDomItems(selectedValue: string = null) {
+    // Delete all children
+    this.selectElement.empty();
+
+    // Add updated children
+    for (let item of this.items) {
+      let optionElement = new DOM('option', {
+        'value': item.key
+      }).html(item.label);
+
+      if (item.key === selectedValue + '') { // convert selectedValue to string to catch 'null'/null case
+        optionElement.attr('selected', 'selected');
+      }
+
+      this.selectElement.append(optionElement);
     }
+  }
 
-    protected toDomElement(): DOM {
-        let selectElement = new DOM("select", {
-            "id": this.config.id,
-            "class": this.getCssClasses()
-        });
+  protected onItemAddedEvent(value: string) {
+    super.onItemAddedEvent(value);
+    this.updateDomItems(this.selectedItem);
+  }
 
-        this.selectElement = selectElement;
-        this.updateDomItems();
+  protected onItemRemovedEvent(value: string) {
+    super.onItemRemovedEvent(value);
+    this.updateDomItems(this.selectedItem);
+  }
 
-        let self = this;
-        selectElement.on("change", function () {
-            let value = new DOM(this).val();
-            self.onItemSelectedEvent(value, false);
-        });
-
-        return selectElement;
+  protected onItemSelectedEvent(value: string, updateDomItems: boolean = true) {
+    super.onItemSelectedEvent(value);
+    if (updateDomItems) {
+      this.updateDomItems(value);
     }
-
-    protected updateDomItems(selectedValue: string = null) {
-        // Delete all children
-        this.selectElement.empty();
-
-        // Add updated children
-        for (let item of this.items) {
-            let optionElement = new DOM("option", {
-                "value": item.key
-            }).html(item.label);
-
-            if (item.key === selectedValue + "") { // convert selectedValue to string to catch "null"/null case
-                optionElement.attr("selected", "selected");
-            }
-
-            this.selectElement.append(optionElement);
-        }
-    }
-
-    protected onItemAddedEvent(value: string) {
-        super.onItemAddedEvent(value);
-        this.updateDomItems(this.selectedItem);
-    }
-
-    protected onItemRemovedEvent(value: string) {
-        super.onItemRemovedEvent(value);
-        this.updateDomItems(this.selectedItem);
-    }
-
-    protected onItemSelectedEvent(value: string, updateDomItems: boolean = true) {
-        super.onItemSelectedEvent(value);
-        if (updateDomItems) {
-            this.updateDomItems(value);
-        }
-    }
+  }
 }

@@ -1,15 +1,15 @@
-import {ComponentConfig, Component} from "./component";
-import {DOM} from "../dom";
-import {EventDispatcher, Event, NoArgs} from "../eventdispatcher";
+import {ComponentConfig, Component} from './component';
+import {DOM} from '../dom';
+import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
 
 /**
  * Configuration interface for a {@link Label} component.
  */
 export interface LabelConfig extends ComponentConfig {
-    /**
-     * The text on the label.
-     */
-    text?: string;
+  /**
+   * The text on the label.
+   */
+  text?: string;
 }
 
 /**
@@ -17,62 +17,62 @@ export interface LabelConfig extends ComponentConfig {
  *
  * DOM example:
  * <code>
- *     <span class="ui-label">...some text...</span>
+ *     <span class='ui-label'>...some text...</span>
  * </code>
  */
 export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
 
-    private labelEvents = {
-        onClick: new EventDispatcher<Label<Config>, NoArgs>()
-    };
+  private labelEvents = {
+    onClick: new EventDispatcher<Label<Config>, NoArgs>()
+  };
 
-    constructor(config: LabelConfig = {}) {
-        super(config);
+  constructor(config: LabelConfig = {}) {
+    super(config);
 
-        this.config = this.mergeConfig(config, {
-            cssClass: "ui-label"
-        }, this.config);
-    }
+    this.config = this.mergeConfig(config, {
+      cssClass: 'ui-label'
+    }, this.config);
+  }
 
-    protected toDomElement(): DOM {
-        let self = this;
+  protected toDomElement(): DOM {
+    let self = this;
 
-        let labelElement = new DOM("span", {
-            "id": this.config.id,
-            "class": this.getCssClasses()
-        }).html(this.config.text);
+    let labelElement = new DOM('span', {
+      'id'   : this.config.id,
+      'class': this.getCssClasses()
+    }).html(this.config.text);
 
-        labelElement.on("click", function () {
-            self.onClickEvent();
-        });
+    labelElement.on('click', function() {
+      self.onClickEvent();
+    });
 
-        return labelElement;
-    }
+    return labelElement;
+  }
 
-    /**
-     * Set the text on this label.
-     * @param text
-     */
-    setText(text: string) {
-        this.getDomElement().html(text);
-    }
+  /**
+   * Set the text on this label.
+   * @param text
+   */
+  setText(text: string) {
+    this.getDomElement().html(text);
+  }
 
-    /**
-     * Clears the text on this label.
-     */
-    clearText() {
-        this.getDomElement().html("");
-    }
+  /**
+   * Clears the text on this label.
+   */
+  clearText() {
+    this.getDomElement().html('');
+  }
 
-    protected onClickEvent() {
-        this.labelEvents.onClick.dispatch(this);
-    }
+  protected onClickEvent() {
+    this.labelEvents.onClick.dispatch(this);
+  }
 
-    /**
-     * Gets the event that is fired when the label is clicked.
-     * @returns {Event<Sender, Args>}
-     */
-    get onClick(): Event<Label<LabelConfig>, NoArgs> {
-        return this.labelEvents.onClick.getEvent();
-    }
+  /**
+   * Gets the event that is fired when the label is clicked.
+   * @returns {Event<Sender, Args>}
+   */
+  get onClick(): Event<Label<LabelConfig>, NoArgs> {
+    return this.labelEvents.onClick.getEvent();
+  }
 }
