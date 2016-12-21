@@ -1,0 +1,79 @@
+@import '../variables';
+@import '../mixins';
+
+// H/V center items in the middle of the overlay
+%center-items-in-overlay {
+  display: table;
+
+  > .#{$prefix}-container-wrapper {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+.#{$prefix}-ui-buffering-overlay {
+  @extend %ui-container;
+  @extend %center-items-in-overlay;
+
+  @include layout-cover;
+  @include hidden-animated($animation-duration * 2);
+
+  background-color: $color-background-highlight;
+
+  > .#{$prefix}-container-wrapper {
+    padding: 3em;
+  }
+
+  a {
+    color: $color-primary;
+
+    &:hover,
+    &:visited {
+      color: $color-primary;
+    }
+  }
+
+  .#{$prefix}-ui-buffering-overlay-indicator {
+    $buffering-animation-duration: 2s;
+    $buffering-animation-delay: $buffering-animation-duration / 10;
+
+    @keyframes fancy {
+      0% {
+        opacity: 0;
+        transform: scale(1);
+      }
+
+      20% {
+        opacity: 1;
+      }
+
+      30% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+        transform: scale(2);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(3);
+      }
+    }
+
+    animation: fancy $buffering-animation-duration ease-in infinite;
+    background: svg('assets/skin-modern/images/loader.svg') no-repeat center;
+    display: inline-block;
+    height: 2em;
+    margin: .2em;
+    width: 2em;
+
+    @for $i from 1 through 3 {
+      &:nth-child(#{$i}) {
+        animation-delay: $buffering-animation-delay * ($i - 1);
+      }
+    }
+  }
+}

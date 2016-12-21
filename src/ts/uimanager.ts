@@ -36,6 +36,7 @@ import PlayerEventCallback = bitmovin.player.PlayerEventCallback;
 import AdStartedEvent = bitmovin.player.AdStartedEvent;
 import {ArrayUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
+import {BufferingOverlay} from './components/bufferingoverlay';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -259,6 +260,7 @@ export class UIManager {
         components   : [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
+          new BufferingOverlay(),
           new HugePlaybackToggleButton(),
           controlBar,
           new TitleBar(),
@@ -270,6 +272,7 @@ export class UIManager {
 
       let adsUi = new UIContainer({
         components   : [
+          new BufferingOverlay(),
           new AdClickOverlay(),
           new Container({
             components: [
@@ -315,6 +318,7 @@ export class UIManager {
       let ui = new UIContainer({
         components   : [
           new SubtitleOverlay(),
+          new BufferingOverlay(),
           new HugePlaybackToggleButton(),
           new Watermark(),
           controlBar,
