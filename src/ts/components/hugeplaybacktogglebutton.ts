@@ -106,8 +106,8 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         self.show();
       }
     };
+    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_START, castInitializationHandler);
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, castInitializationHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_LAUNCHED, castInitializationHandler);
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
   }
 
