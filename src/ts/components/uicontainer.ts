@@ -74,6 +74,14 @@ export class UIContainer extends Container<UIContainerConfig> {
     // Timeout to defer UI hiding by the configured delay time
     let uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
+    // On touch displays, the first touch reveals the UI
+    container.on('touchend', function(e) {
+      if (!isUiShown) {
+        // Only if the UI is hidden, we prevent other actions and reveal the UI instead
+        e.preventDefault();
+        showUi();
+      }
+    });
     // When the mouse enters, we show the UI
     container.on('mouseenter', function() {
       showUi();
