@@ -169,3 +169,12 @@ export namespace StringUtils {
     }
   }
 }
+
+export namespace PlayerUtils {
+
+  import Player = bitmovin.player.Player;
+
+  export function isSourceLoaded(player: Player): boolean {
+    return player.getConfig().source !== undefined;
+  }
+}

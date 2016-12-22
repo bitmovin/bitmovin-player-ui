@@ -2,6 +2,7 @@ import {ContainerConfig, Container} from './container';
 import {UIManager} from '../uimanager';
 import {DOM} from '../dom';
 import {Timeout} from '../timeout';
+import {PlayerUtils} from '../utils';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -21,6 +22,7 @@ export interface UIContainerConfig extends ContainerConfig {
 export class UIContainer extends Container<UIContainerConfig> {
 
   private static readonly STATE_IDLE = 'player-state-idle';
+  private static readonly STATE_PREPARED = 'player-state-prepared';
   private static readonly STATE_PLAYING = 'player-state-playing';
   private static readonly STATE_PAUSED = 'player-state-paused';
   private static readonly STATE_FINISHED = 'player-state-finished';
@@ -117,13 +119,14 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     let removeStates = function() {
       container.removeClass(self.prefixCss(UIContainer.STATE_IDLE));
+      container.removeClass(self.prefixCss(UIContainer.STATE_PREPARED));
       container.removeClass(self.prefixCss(UIContainer.STATE_PLAYING));
       container.removeClass(self.prefixCss(UIContainer.STATE_PAUSED));
       container.removeClass(self.prefixCss(UIContainer.STATE_FINISHED));
     };
     player.addEventHandler(bitmovin.player.EVENT.ON_READY, function() {
       removeStates();
-      container.addClass(self.prefixCss(UIContainer.STATE_IDLE));
+      container.addClass(self.prefixCss(UIContainer.STATE_PREPARED));
     });
     player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function() {
       removeStates();
@@ -137,8 +140,13 @@ export class UIContainer extends Container<UIContainerConfig> {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_FINISHED));
     });
-    // Init in idle state
-    container.addClass(self.prefixCss(UIContainer.STATE_IDLE));
+    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, function() {
+      removeStates();
+      container.addClass(self.prefixCss(UIContainer.STATE_IDLE));
+    });
+    // Init in idle state without a source or prepared if a source is set
+    container.addClass(self.prefixCss(PlayerUtils.isSourceLoaded(player) ?
+      UIContainer.STATE_PREPARED : UIContainer.STATE_IDLE));
 
     // Fullscreen marker class
     player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function() {
