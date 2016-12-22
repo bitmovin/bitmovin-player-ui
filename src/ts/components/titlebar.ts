@@ -1,17 +1,12 @@
 import {Container, ContainerConfig} from './container';
 import {UIManager} from '../uimanager';
 import {LabelConfig, Label} from './label';
-import {Timeout} from '../timeout';
 
 /**
  * Configuration interface for a {@link TitleBar}.
  */
 export interface TitleBarConfig extends ContainerConfig {
-  /**
-   * The delay in milliseconds after which the title bar will be hidden when there is no user interaction.
-   * Default: 5 seconds (5000)
-   */
-  hideDelay?: number;
+  // nothing yet
 }
 
 /**
@@ -29,7 +24,6 @@ export class TitleBar extends Container<TitleBarConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-titlebar',
       hidden: true,
-      hideDelay: 5000,
       components: [this.label]
     }, <TitleBarConfig>this.config);
   }
@@ -47,24 +41,11 @@ export class TitleBar extends Container<TitleBarConfig> {
       return;
     }
 
-    let timeout = new Timeout((<TitleBarConfig>self.getConfig()).hideDelay, function() {
+    uimanager.onUiShow.subscribe(function () {
+      self.show();
+    });
+    uimanager.onUiHide.subscribe(function () {
       self.hide();
-    });
-
-    uimanager.onMouseEnter.subscribe(function(sender, args) {
-      self.show(); // show control bar when the mouse enters the UI
-
-      // Clear timeout to avoid hiding the bar if the mouse moves back into the UI during the timeout period
-      timeout.clear();
-    });
-    uimanager.onMouseMove.subscribe(function(sender, args) {
-      if (self.isHidden()) {
-        self.show();
-      }
-      timeout.reset(); // hide the bar if mouse does not move during the timeout time
-    });
-    uimanager.onMouseLeave.subscribe(function(sender, args) {
-      timeout.reset(); // hide bar some time after the mouse left the UI
     });
   }
 }

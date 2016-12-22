@@ -65,18 +65,6 @@ export class UIManager {
 
   private events = {
     /**
-     * Fires when the mouse enters the UI area.
-     */
-    onMouseEnter: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
-    /**
-     * Fires when the mouse moves inside the UI area.
-     */
-    onMouseMove: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
-    /**
-     * Fires when the mouse leaves the UI area.
-     */
-    onMouseLeave: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
-    /**
      * Fires when a seek starts.
      */
     onSeek: new EventDispatcher<SeekBar, NoArgs>(),
@@ -96,6 +84,14 @@ export class UIManager {
      * Fires when a component is hiding.
      */
     onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+    /**
+     * Fires when the UI is showing.
+     */
+    onUiShow: new EventDispatcher<UIContainer, NoArgs>(),
+    /**
+     * Fires when the UI is hiding.
+     */
+    onUiHide: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
   constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config: UIConfig = {}) {
@@ -161,18 +157,6 @@ export class UIManager {
     }
   }
 
-  get onMouseEnter(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
-    return this.events.onMouseEnter;
-  }
-
-  get onMouseMove(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
-    return this.events.onMouseMove;
-  }
-
-  get onMouseLeave(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
-    return this.events.onMouseLeave;
-  }
-
   get onSeek(): EventDispatcher<SeekBar, NoArgs> {
     return this.events.onSeek;
   }
@@ -191,6 +175,14 @@ export class UIManager {
 
   get onComponentHide(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
     return this.events.onComponentHide;
+  }
+
+  get onUiShow(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onUiShow;
+  }
+
+  get onUiHide(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onUiHide;
   }
 
   private addUi(ui: UIContainer): void {

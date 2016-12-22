@@ -1,13 +1,17 @@
 import {ContainerConfig, Container} from './container';
-import {NoArgs, EventDispatcher, Event} from '../eventdispatcher';
 import {UIManager} from '../uimanager';
 import {DOM} from '../dom';
+import {Timeout} from '../timeout';
 
 /**
  * Configuration interface for a {@link UIContainer}.
  */
 export interface UIContainerConfig extends ContainerConfig {
-  // nothing to add
+  /**
+   * The delay in milliseconds after which the control bar will be hidden when there is no user interaction.
+   * Default: 5 seconds (5000)
+   */
+  hideDelay?: number;
 }
 
 /**
@@ -24,91 +28,128 @@ export class UIContainer extends Container<UIContainerConfig> {
   private static readonly FULLSCREEN = 'fullscreen';
   private static readonly BUFFERING = 'buffering';
 
-  private uiContainerEvents = {
-    onMouseEnter: new EventDispatcher<UIContainer, NoArgs>(),
-    onMouseMove: new EventDispatcher<UIContainer, NoArgs>(),
-    onMouseLeave: new EventDispatcher<UIContainer, NoArgs>()
-  };
-
   constructor(config: UIContainerConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-uicontainer'
+    this.config = this.mergeConfig(config, <UIContainerConfig>{
+      cssClass: 'ui-uicontainer',
+      hideDelay: 5000,
     }, this.config);
   }
 
   configure(player: bitmovin.player.Player, uimanager: UIManager): void {
     super.configure(player, uimanager);
 
+    this.configureUIShowHide(player, uimanager);
+    this.configurePlayerStates(player, uimanager);
+  }
+
+  private configureUIShowHide(player: bitmovin.player.Player, uimanager: UIManager): void {
     let self = this;
+    let container = this.getDomElement();
+    let config = <UIContainerConfig>this.getConfig();
 
-    self.onMouseEnter.subscribe(function(sender) {
-      uimanager.onMouseEnter.dispatch(sender);
+    let isUiShown = false;
+    let isSeeking = false;
+
+    let showUi = function() {
+      if (!isUiShown) {
+        // Let subscribers know that they should reveal themselves
+        uimanager.onUiShow.dispatch(self);
+        isUiShown = true;
+
+        // Don't trigger timeout while seeking, it will be triggered once the seek is finished
+        if (!isSeeking) {
+          uiHideTimeout.start();
+        }
+      }
+    };
+
+    let hideUi = function() {
+      // Let subscribers know that they should now hide themselves
+      uimanager.onUiHide.dispatch(self);
+      isUiShown = false;
+    };
+
+    // Timeout to defer UI hiding by the configured delay time
+    let uiHideTimeout = new Timeout(config.hideDelay, hideUi);
+
+    // When the mouse enters, we show the UI
+    container.on('mouseenter', function() {
+      showUi();
     });
-    self.onMouseMove.subscribe(function(sender) {
-      uimanager.onMouseMove.dispatch(sender);
+    // When the mouse moves within, we show the UI
+    container.on('mousemove', function() {
+      showUi();
     });
-    self.onMouseLeave.subscribe(function(sender) {
-      uimanager.onMouseLeave.dispatch(sender);
+    // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
+    container.on('mouseleave', function() {
+      // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not hide
+      // the UI in such cases
+      if (!isSeeking) {
+        uiHideTimeout.start();
+      }
     });
 
-    // Player states
+    uimanager.onSeek.subscribe(function() {
+      uiHideTimeout.clear(); // Don't hide UI while a seek is in progress
+      isSeeking = true;
+    });
+    uimanager.onSeeked.subscribe(function() {
+      isSeeking = false;
+      uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+    });
+  }
+
+  private configurePlayerStates(player: bitmovin.player.Player, uimanager: UIManager): void {
+    let self = this;
+    let container = this.getDomElement();
+
     let removeStates = function() {
-      self.getDomElement().removeClass(self.prefixCss(UIContainer.STATE_IDLE));
-      self.getDomElement().removeClass(self.prefixCss(UIContainer.STATE_PLAYING));
-      self.getDomElement().removeClass(self.prefixCss(UIContainer.STATE_PAUSED));
-      self.getDomElement().removeClass(self.prefixCss(UIContainer.STATE_FINISHED));
+      container.removeClass(self.prefixCss(UIContainer.STATE_IDLE));
+      container.removeClass(self.prefixCss(UIContainer.STATE_PLAYING));
+      container.removeClass(self.prefixCss(UIContainer.STATE_PAUSED));
+      container.removeClass(self.prefixCss(UIContainer.STATE_FINISHED));
     };
     player.addEventHandler(bitmovin.player.EVENT.ON_READY, function() {
       removeStates();
-      self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_IDLE));
+      container.addClass(self.prefixCss(UIContainer.STATE_IDLE));
     });
     player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function() {
       removeStates();
-      self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_PLAYING));
+      container.addClass(self.prefixCss(UIContainer.STATE_PLAYING));
     });
     player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, function() {
       removeStates();
-      self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_PAUSED));
+      container.addClass(self.prefixCss(UIContainer.STATE_PAUSED));
     });
     player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, function() {
       removeStates();
-      self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_FINISHED));
+      container.addClass(self.prefixCss(UIContainer.STATE_FINISHED));
     });
     // Init in idle state
-    self.getDomElement().addClass(self.prefixCss(UIContainer.STATE_IDLE));
+    container.addClass(self.prefixCss(UIContainer.STATE_IDLE));
 
     // Fullscreen marker class
     player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function() {
-      self.getDomElement().addClass(self.prefixCss(UIContainer.FULLSCREEN));
+      container.addClass(self.prefixCss(UIContainer.FULLSCREEN));
     });
     player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function() {
-      self.getDomElement().removeClass(self.prefixCss(UIContainer.FULLSCREEN));
+      container.removeClass(self.prefixCss(UIContainer.FULLSCREEN));
     });
 
     // Buffering marker class
     player.addEventHandler(bitmovin.player.EVENT.ON_STALL_STARTED, function() {
-      self.getDomElement().addClass(self.prefixCss(UIContainer.BUFFERING));
+      container.addClass(self.prefixCss(UIContainer.BUFFERING));
     });
     player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, function() {
-      self.getDomElement().removeClass(self.prefixCss(UIContainer.BUFFERING));
+      container.removeClass(self.prefixCss(UIContainer.BUFFERING));
     });
   }
 
   protected toDomElement(): DOM {
     let self = this;
     let container = super.toDomElement();
-
-    container.on('mouseenter', function() {
-      self.onMouseEnterEvent();
-    });
-    container.on('mousemove', function() {
-      self.onMouseMoveEvent();
-    });
-    container.on('mouseleave', function() {
-      self.onMouseLeaveEvent();
-    });
 
     // Detect flexbox support (not supported in IE9)
     if (document && typeof document.createElement('p').style.flex !== 'undefined') {
@@ -118,41 +159,5 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     return container;
-  }
-
-  protected onMouseEnterEvent() {
-    this.uiContainerEvents.onMouseEnter.dispatch(this);
-  }
-
-  protected onMouseMoveEvent() {
-    this.uiContainerEvents.onMouseMove.dispatch(this);
-  }
-
-  protected onMouseLeaveEvent() {
-    this.uiContainerEvents.onMouseLeave.dispatch(this);
-  }
-
-  /**
-   * Gets the event that is fired when the mouse enters the UI.
-   * @returns {Event<UIContainer, NoArgs>}
-   */
-  get onMouseEnter(): Event<UIContainer, NoArgs> {
-    return this.uiContainerEvents.onMouseEnter.getEvent();
-  }
-
-  /**
-   * Gets the event that is fired when the mouse moves within UI.
-   * @returns {Event<UIContainer, NoArgs>}
-   */
-  get onMouseMove(): Event<UIContainer, NoArgs> {
-    return this.uiContainerEvents.onMouseMove.getEvent();
-  }
-
-  /**
-   * Gets the event that is fired when the mouse leaves the UI.
-   * @returns {Event<UIContainer, NoArgs>}
-   */
-  get onMouseLeave(): Event<UIContainer, NoArgs> {
-    return this.uiContainerEvents.onMouseLeave.getEvent();
   }
 }
