@@ -48,7 +48,8 @@ export interface UIRecommendationConfig {
 
 export interface UIConfig {
   metadata?: {
-    title?: string
+    title?: string;
+    description?: string;
   };
   recommendations?: UIRecommendationConfig[];
 }

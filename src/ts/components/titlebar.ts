@@ -14,17 +14,19 @@ export interface TitleBarConfig extends ContainerConfig {
  */
 export class TitleBar extends Container<TitleBarConfig> {
 
-  private label: Label<LabelConfig>;
+  private titleLabel: Label<LabelConfig>;
+  private descriptionLabel: Label<LabelConfig>;
 
   constructor(config: TitleBarConfig = {}) {
     super(config);
 
-    this.label = new Label({ cssClass: 'ui-titlebar-label' });
+    this.titleLabel = new Label({ cssClass: 'ui-titlebar-title' });
+    this.descriptionLabel = new Label({ cssClass: 'ui-titlebar-description' });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-titlebar',
       hidden: true,
-      components: [this.label]
+      components: [this.titleLabel, this.descriptionLabel]
     }, <TitleBarConfig>this.config);
   }
 
@@ -32,9 +34,14 @@ export class TitleBar extends Container<TitleBarConfig> {
     super.configure(player, uimanager);
 
     let self = this;
+    let uiconfig = uimanager.getConfig();
 
-    if (uimanager.getConfig() && uimanager.getConfig().metadata) {
-      self.label.setText(uimanager.getConfig().metadata.title);
+    if (uiconfig && uiconfig.metadata) {
+      self.titleLabel.setText(uiconfig.metadata.title);
+
+      if (uiconfig.metadata.description) {
+        self.descriptionLabel.setText(uiconfig.metadata.description);
+      }
     } else {
       // Cancel configuration if there is no metadata to display
       // TODO this probably won't work if we put the share buttons into the title bar
