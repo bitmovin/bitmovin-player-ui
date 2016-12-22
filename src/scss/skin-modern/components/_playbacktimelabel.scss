@@ -6,6 +6,8 @@
   text-transform: uppercase;
 
   &.#{$prefix}-ui-playbacktimelabel-live {
+    cursor: pointer;
+
     &::before {
       color: $color-secondary;
       content: '●';
