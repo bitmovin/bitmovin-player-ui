@@ -21,7 +21,7 @@
     display: none;
   }
 
-  &.#{$prefix}-controls-hidden {
+  &.#{$prefix}-player-state-playing.#{$prefix}-controls-hidden {
     // Hide cursor in fullscreen mode while the controls are hidden
     * {
       cursor: none;
