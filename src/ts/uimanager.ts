@@ -214,6 +214,10 @@ export class UIManager {
       return UIManager.Factory.buildModernUI(player, config);
     }
 
+    static buildDefaultCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
+      return UIManager.Factory.buildModernCastReceiverUI(player, config);
+    }
+
     static buildModernUI(player: Player, config: UIConfig = {}): UIManager {
       let settingsPanel = new SettingsPanel({
         components: [
