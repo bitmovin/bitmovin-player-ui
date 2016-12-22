@@ -41,10 +41,10 @@ export class TitleBar extends Container<TitleBarConfig> {
       return;
     }
 
-    uimanager.onUiShow.subscribe(function () {
+    uimanager.onControlsShow.subscribe(function () {
       self.show();
     });
-    uimanager.onUiHide.subscribe(function () {
+    uimanager.onControlsHide.subscribe(function () {
       self.hide();
     });
   }

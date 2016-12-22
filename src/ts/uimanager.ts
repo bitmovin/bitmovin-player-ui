@@ -86,13 +86,13 @@ export class UIManager {
      */
     onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     /**
-     * Fires when the UI is showing.
+     * Fires when the UI controls are showing.
      */
-    onUiShow: new EventDispatcher<UIContainer, NoArgs>(),
+    onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
     /**
-     * Fires when the UI is hiding.
+     * Fires when the UI controls are hiding.
      */
-    onUiHide: new EventDispatcher<UIContainer, NoArgs>(),
+    onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
   constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config: UIConfig = {}) {
@@ -178,12 +178,12 @@ export class UIManager {
     return this.events.onComponentHide;
   }
 
-  get onUiShow(): EventDispatcher<UIContainer, NoArgs> {
-    return this.events.onUiShow;
+  get onControlsShow(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onControlsShow;
   }
 
-  get onUiHide(): EventDispatcher<UIContainer, NoArgs> {
-    return this.events.onUiHide;
+  get onControlsHide(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onControlsHide;
   }
 
   private addUi(ui: UIContainer): void {

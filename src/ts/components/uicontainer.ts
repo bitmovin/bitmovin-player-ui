@@ -55,7 +55,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     let showUi = function() {
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
-        uimanager.onUiShow.dispatch(self);
+        uimanager.onControlsShow.dispatch(self);
         isUiShown = true;
 
         // Don't trigger timeout while seeking, it will be triggered once the seek is finished
@@ -67,7 +67,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     let hideUi = function() {
       // Let subscribers know that they should now hide themselves
-      uimanager.onUiHide.dispatch(self);
+      uimanager.onControlsHide.dispatch(self);
       isUiShown = false;
     };
 

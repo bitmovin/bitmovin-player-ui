@@ -30,7 +30,7 @@ export class CastUIContainer extends UIContainer {
     let isUiShown = false;
 
     let hideUi = function() {
-      uimanager.onUiHide.dispatch(self);
+      uimanager.onControlsHide.dispatch(self);
       isUiShown = false;
     };
 
@@ -38,7 +38,7 @@ export class CastUIContainer extends UIContainer {
 
     let showUi = function () {
       if(!isUiShown) {
-        uimanager.onUiShow.dispatch(self);
+        uimanager.onControlsShow.dispatch(self);
         isUiShown = true;
       }
       uiHideTimeout.start();
