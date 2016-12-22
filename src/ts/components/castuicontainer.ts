@@ -36,8 +36,8 @@ export class CastUIContainer extends UIContainer {
 
     let uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
-    let showUi = function () {
-      if(!isUiShown) {
+    let showUi = function() {
+      if (!isUiShown) {
         uimanager.onControlsShow.dispatch(self);
         isUiShown = true;
       }
