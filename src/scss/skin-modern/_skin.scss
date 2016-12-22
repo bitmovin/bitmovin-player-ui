@@ -39,6 +39,14 @@
   font-size: $font-size;
   user-select: none;
 
+  &.#{$prefix}-player-state-idle {
+    .#{$prefix}-ui-controlbar,
+    .#{$prefix}-ui-titlebar,
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      display: none;
+    }
+  }
+
   &.#{$prefix}-player-state-finished {
     .#{$prefix}-ui-controlbar,
     .#{$prefix}-ui-hugeplaybacktogglebutton {
