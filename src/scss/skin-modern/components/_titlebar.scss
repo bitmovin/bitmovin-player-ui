@@ -14,12 +14,14 @@
     padding: .5em;
 
     .#{$prefix}-ui-titlebar-title {
+      cursor: default;
       display: block;
       font-size: 1.2em;
     }
 
     .#{$prefix}-ui-titlebar-description {
       color: $color-secondary;
+      cursor: default;
       display: block;
     }
   }
