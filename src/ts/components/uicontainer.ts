@@ -27,6 +27,8 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   private static readonly FULLSCREEN = 'fullscreen';
   private static readonly BUFFERING = 'buffering';
+  private static readonly CONTROLS_SHOWN = 'controls-shown';
+  private static readonly CONTROLS_HIDDEN = 'controls-hidden';
 
   constructor(config: UIContainerConfig) {
     super(config);
@@ -152,6 +154,16 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, function() {
       container.removeClass(self.prefixCss(UIContainer.BUFFERING));
+    });
+
+    // Controls visibility marker class
+    uimanager.onControlsShow.subscribe(function() {
+      container.removeClass(self.prefixCss(UIContainer.CONTROLS_HIDDEN));
+      container.addClass(self.prefixCss(UIContainer.CONTROLS_SHOWN));
+    });
+    uimanager.onControlsHide.subscribe(function() {
+      container.removeClass(self.prefixCss(UIContainer.CONTROLS_SHOWN));
+      container.addClass(self.prefixCss(UIContainer.CONTROLS_HIDDEN));
     });
   }
 
