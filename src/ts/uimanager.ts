@@ -255,9 +255,9 @@ export class UIManager {
       let ui = new UIContainer({
         components: [
           new SubtitleOverlay(),
-          new CastStatusOverlay(),
           new BufferingOverlay(),
           new HugePlaybackToggleButton(),
+          new CastStatusOverlay(),
           controlBar,
           new TitleBar(),
           new RecommendationOverlay(),
