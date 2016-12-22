@@ -37,6 +37,7 @@ import AdStartedEvent = bitmovin.player.AdStartedEvent;
 import {ArrayUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
+import {CastUIContainer} from './components/castuicontainer';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -311,7 +312,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new UIContainer({
+      let ui = new CastUIContainer({
         components: [
           new SubtitleOverlay(),
           new BufferingOverlay(),
@@ -320,7 +321,7 @@ export class UIManager {
           controlBar,
           new TitleBar(),
           new ErrorMessageOverlay()
-        ], cssClasses: ['ui-skin-modern ui-skin-modern-cast-receiver']
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-modern-cast-receiver']
       });
 
       return new UIManager(player, ui, null, config);
@@ -376,7 +377,7 @@ export class UIManager {
             ]
           }),
           new AdSkipButton()
-        ], cssClasses: ['ui-skin-legacy ads']
+        ], cssClasses: ['ui-skin-legacy', 'ads']
       });
 
       return new UIManager(player, ui, adsUi, config);
@@ -398,7 +399,7 @@ export class UIManager {
           controlBar,
           new TitleBar(),
           new ErrorMessageOverlay()
-        ], cssClasses: ['ui-skin-legacy ui-skin-legacy-cast-receiver']
+        ], cssClasses: ['ui-skin-legacy', 'ui-skin-legacy-cast-receiver']
       });
 
       return new UIManager(player, ui, null, config);

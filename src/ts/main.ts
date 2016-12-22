@@ -38,6 +38,7 @@ import {AdClickOverlay} from './components/adclickoverlay';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {HugeReplayButton} from './components/hugereplaybutton';
 import {BufferingOverlay} from './components/bufferingoverlay';
+import {CastUIContainer} from './components/castuicontainer';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -104,5 +105,6 @@ if (typeof Object.assign !== 'function') {
   Watermark,
   PlaybackSpeedSelectBox,
   HugeReplayButton,
-  BufferingOverlay
+  BufferingOverlay,
+  CastUIContainer,
 };
