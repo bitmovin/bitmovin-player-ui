@@ -21,7 +21,7 @@
     display: none;
   }
 
-  &.#{$prefix}-fullscreen.#{$prefix}-controls-hidden {
+  &.#{$prefix}-controls-hidden {
     // Hide cursor in fullscreen mode while the controls are hidden
     * {
       cursor: none;
