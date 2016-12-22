@@ -30,7 +30,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
     let self = this;
     let castDeviceName = 'unknown';
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, function(event) {
+    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_START, function(event) {
       // Show Cast status when a session is being started
       self.show();
       self.statusLabel.setText('Select a Cast device');
@@ -41,7 +41,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
         castDeviceName = event.castPayload.deviceName;
         self.statusLabel.setText(`Connecting to <strong>${castDeviceName}</strong>...`);
       });
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_LAUNCHED, function(event: CastLaunchedEvent) {
+    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, function(event: CastLaunchedEvent) {
       // Session is started or resumed
       // For cases when a session is resumed, we do not receive the previous events and therefore show the status panel
       // here too
