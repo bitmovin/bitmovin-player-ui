@@ -36,9 +36,9 @@
 
   &.#{$prefix}-recommendations {
     .#{$prefix}-ui-hugereplaybutton {
-      position: absolute;
-      left: 2em;
       bottom: 2em;
+      left: 2em;
+      position: absolute;
     }
 
     .#{$prefix}-ui-recommendation-item {
