@@ -1,7 +1,7 @@
 @import '../variables';
 @import '../mixins';
 
-.ui-errormessage-overlay {
+.#{$prefix}-ui-errormessage-overlay {
   @extend %ui-container;
 
   @include layout-cover;
