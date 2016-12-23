@@ -61,11 +61,10 @@ export class UIContainer extends Container<UIContainerConfig> {
         // Let subscribers know that they should reveal themselves
         uimanager.onControlsShow.dispatch(self);
         isUiShown = true;
-
-        // Don't trigger timeout while seeking, it will be triggered once the seek is finished
-        if (!isSeeking) {
-          uiHideTimeout.start();
-        }
+      }
+      // Don't trigger timeout while seeking, it will be triggered once the seek is finished
+      if (!isSeeking) {
+        uiHideTimeout.start();
       }
     };
 
