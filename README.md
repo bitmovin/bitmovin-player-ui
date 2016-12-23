@@ -26,31 +26,53 @@ The framework basically consists of a `UIManager` that handles initialization an
 
 A UI is defined by a tree of components, making up the UI *structure*, and their visuals styles, making up the UI *skin*. The root of the structure always starts with a `UIContainer` (or a subclass, e.g. `CastUIContainer`), which is a subclass of `Container` and can contain other components, like any other components extending this class (usually layout components, e.g. `ControlBar`). Components that do not extend the `Container` cannot contain other components and therefore make up the leaves of the UI tree.
 
-## Using a custom UI
+## Customizing the UI
 
-To use the player with a custom UI, you need to deactivate the built-in UI and attach your own
-UI with the `UIManager`. Also make sure to include your skin styles.
+There are basically two approaches to customize the UI. The simple approach is to go with the built-in UI of the player and adjust the styling to your liking with CSS. the advanced approach is to replace the built-in UI with a your own build from this repository.
+
+### Styling the built-in UI
+
+When using the built-in UI, you can style it to your linking with CSS by overwriting our default styles, as documented in our [CSS Class Reference](https://bitmovin.com/player-documentation/css-class-reference/).
+
+### Replacing the built-in UI
+
+To use the player with a custom UI, you need to deactivate the built-in UI, include the necessary `js` and `css` files into your HTML and create and attach your own
+UI instance with the `UIManager`.
+
+ * Deactivate the built-in UI by setting `ux: false` in the `style` config of the player ([https://bitmovin.com/player-documentation/player-configuration/](Player Configuration Guide))
+ * Build the UI framework (e.g. `gulp build-prod`) and include `bitmovinplayer-ui.min.js` and `bitmovinplayer-ui.min.css` (or their non-minified counterparts) from the `dist` directory
+ * Create your own UI instance with the `UIManager.Factory` once the player is loaded
 
 ```js
-// Player config according to https://bitmovin.com/player-documentation/player-configuration/
 var config = {
-    key: 'YOUR KEY HERE',
+    ...,
     source: {
       ...
     },
     style: {
-        ux: false // disables the built-in UI
+        ux: false // disable the built-in UI
     }
 };
 
 bitmovin.player('player-id').setup(config).then(function (player) {
-  // Setup UI structure
-  var myCustomUiStructure = new UIContainer({
-    components: [
-      // other UI components
-    ]
-  });
-
-  var myCustomUiManager = new bitmovin.playerui.UIManager(player, ui, null);
+  var myUiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player);
 });
 ```
+
+`UIManager.Factory` provides a few predefined UI structures and styles, e.g.:
+
+ * `buildDefaultUI`: The default UI as used by the player by default
+ * `buildDefaultCastReceiverUI`: A light UI specifically for Google Cast receivers
+ * `buildLegacyUI`: ported legacy UI style from player <= version 6
+
+You can easily test and switch between these UIs in the UI playground page by running `gulp serve`.
+
+### Building a custom UI structure
+
+### UIManager
+
+### UI Playground
+
+The UI playground can be launched with `gulp serve` and opens a page in a local browser window. On this page, you can switch between different sources and UI styles, trigger API actions and observe events.
+
+This page uses BrowserSync to sync the state across multiple tabs and browsers and recompiles and reloads automatically files automatically when any `.scss` or `.ts` files are modified. It makes a helpful tool for developing and testing the UI.
