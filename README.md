@@ -59,17 +59,79 @@ bitmovin.player('player-id').setup(config).then(function (player) {
 });
 ```
 
+### Building a custom UI structure
+
+Instead of using predefined UI structures from the `UIManager.Factory`, you can easily create a custom structure. For examples on how to create such UI structures, take a look at the `UIManager.Factory`.
+
+A simple example on how to create a custom UI with our default skin that only contains
+a large playback toggle button looks as follows:
+
+```js
+// Definition of the UI structure
+var mySimpleUI = new UIContainer({
+  components: [
+    new HugePlaybackToggleButton()
+  ],
+  cssClasses: ['ui-skin-modern']
+});
+
+bitmovin.player('player-id').setup(config).then(function (player) {
+  // Add the UI to the player
+  var myUiManager = new bitmovin.playerui.UIManager(player, mySimpleUI, null);
+});
+```
+
+### UIManager
+
+The `UIManager` manages UI instances and is used to add and remove UIs to/from the player. To add a UI to the player, construct a new instance and pass the `player` object, a UI structure (`UIContainer`), a second UI structure to be displayed during ads or `null`, and an optional configuration object. To remove a UI from the player, just call `release()` on your UIManager instance.
+
+```js
+// Add UI (e.g. at player initialization)
+var myUiManager = new bitmovin.playerui.UIManager(player, mySimpleUI, null);
+
+// Remove UI (e.g. at player destruction)
+myUiManager.release();
+```
+
+UIs can be added and removed anytime during the player's lifecycle, which means UIs can be dynamically adjusted to the player, e.g. by listening to events. It is also perfectly possible to manage multiple UIs in parallel.
+
+Here is an example on how to display a special UI in fullscreen mode:
+
+```js
+bitmovin.player('player-id').setup(config).then(function (player) {
+  var myUiManager = new bitmovin.playerui.UIManager(player, myWindowUI, null);
+  
+  player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function () {
+    myUiManager.release();
+    myUiManager = new bitmovin.playerui.UIManager(player, myFullscreenUI, null);
+  });
+  
+  player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function () {
+    myUiManager.release();
+    myUiManager = new bitmovin.playerui.UIManager(player, myWindowUI, null);
+  });
+});
+```
+#### Factory
+
 `UIManager.Factory` provides a few predefined UI structures and styles, e.g.:
 
  * `buildDefaultUI`: The default UI as used by the player by default
  * `buildDefaultCastReceiverUI`: A light UI specifically for Google Cast receivers
  * `buildLegacyUI`: ported legacy UI style from player <= version 6
 
-You can easily test and switch between these UIs in the UI playground page by running `gulp serve`.
+You can easily test and switch between these UIs in the UI playground.
 
-### Building a custom UI structure
+#### UI configuration
 
-### UIManager
+...
+
+### Components
+
+| TypeScript class                  | CSS class                     | Description |
+| -------------                     | -------------                 | ----------- |
+| Component                         | .ui-component                 | Base class of all framework components |
+| ...                               | ....                          | ... |
 
 ### UI Playground
 
