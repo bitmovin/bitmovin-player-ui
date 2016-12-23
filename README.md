@@ -68,7 +68,7 @@ a large playback toggle button looks as follows:
 
 ```js
 // Definition of the UI structure
-var mySimpleUI = new UIContainer({
+var mySimpleUi = new UIContainer({
   components: [
     new HugePlaybackToggleButton()
   ],
@@ -77,7 +77,7 @@ var mySimpleUI = new UIContainer({
 
 bitmovin.player('player-id').setup(config).then(function (player) {
   // Add the UI to the player
-  var myUiManager = new bitmovin.playerui.UIManager(player, mySimpleUI, null);
+  var myUiManager = new bitmovin.playerui.UIManager(player, mySimpleUi, null);
 });
 ```
 
@@ -99,16 +99,16 @@ Here is an example on how to display a special UI in fullscreen mode:
 
 ```js
 bitmovin.player('player-id').setup(config).then(function (player) {
-  var myUiManager = new bitmovin.playerui.UIManager(player, myWindowUI, null);
+  var myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi, null);
   
   player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function () {
     myUiManager.release();
-    myUiManager = new bitmovin.playerui.UIManager(player, myFullscreenUI, null);
+    myUiManager = new bitmovin.playerui.UIManager(player, myFullscreenUi, null);
   });
   
   player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function () {
     myUiManager.release();
-    myUiManager = new bitmovin.playerui.UIManager(player, myWindowUI, null);
+    myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi, null);
   });
 });
 ```
@@ -122,16 +122,54 @@ bitmovin.player('player-id').setup(config).then(function (player) {
 
 You can easily test and switch between these UIs in the UI playground.
 
-#### UI configuration
-
-...
-
 ### Components
 
 | TypeScript class                  | CSS class                     | Description |
 | -------------                     | -------------                 | ----------- |
 | Component                         | .ui-component                 | Base class of all framework components |
 | ...                               | ....                          | ... |
+
+#### Component Configuration
+
+All components can be directly configured with an optional configuration object that is the first and only parameter of the constructor and defined by an interface. Each component is either accompanied by its own configuration interface (defined in the same `.ts` file and named with the suffix `Config`, e.g. `LabelConfig` for a `Label`), or inherits the configuration interface from its superclass.
+
+There is currently no way to change these configuration values on an existing UI instance, thus they must be passed directly when creating a custom UI structure.
+
+The following example creates a very basic UI structure with only two text labels:
+
+```js
+var myUi = new UIContainer({
+  components: [
+    new Label({ text: "A label" }),
+    new Label({ text: "A hidden label", hidden: true })
+  ],
+  cssClasses: ['ui-skin-modern']
+});
+```
+
+The `UIContainer` is configures with two options, the `components`, an array containing child components, and `cssClasses`, an array with CSS classes to be set on the container. The labels are configures with some `text`, and one label is initially hidden by setting the `hidden` option.
+
+### UI Configuration
+
+The `UIManager` takes an optional global configuration object that can be used to configure certain content on the UI.
+
+```js
+var myUiConfig = {
+  metadata: {
+    title: 'Video title',
+    description: 'Video description...'
+  },
+  recommendations: [
+    {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
+    {title: 'Recommendation 2: The second best video', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 64},
+    {title: 'Recommendation 3: The third best video of all time', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 195}
+  ]
+};
+
+var myUiManager = new bitmovin.playerui.UIManager(player, myUi, null, myUiConfig);
+```
+
+All of the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.
 
 ### UI Playground
 
