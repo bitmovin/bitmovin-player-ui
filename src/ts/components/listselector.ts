@@ -58,11 +58,13 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   }
 
   /**
-   * Adds an item to this selector by appending it to the end of the list of items.
-   * @param key the key  of the item to add
+   * Adds an item to this selector by appending it to the end of the list of items. If an item with the specified
+   * key already exists, it is replaced.
+   * @param key the key of the item to add
    * @param label the (human-readable) label of the item to add
    */
   addItem(key: string, label: string) {
+    this.removeItem(key); // Try to remove key first to get overwrite behavior and avoid duplicate keys
     this.items.push({ key: key, label: label });
     this.onItemAddedEvent(key);
   }
