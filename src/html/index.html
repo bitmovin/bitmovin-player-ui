@@ -312,6 +312,7 @@
             }
 
             $(this).prop('checked', checked);
+            $(this).trigger("change");
         });
     });
     // Add a checkbox for each event to toggle logging to console
