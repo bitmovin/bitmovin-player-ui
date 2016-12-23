@@ -336,15 +336,9 @@ declare namespace bitmovin {
        * Adds a new external subtitle/caption track. The track is only added to the available tracks but
        * not activated. Call {@link #setSubtitle} to activate it.
        *
-       * @param url An URL to the subtitle file.
-       * @param subtitleTrackID A unique ID for the subtitle track. If the ID already exists, the existing track is
-       *   overwritten with the new one.
-       * @param kind The kind of track. Should be either “caption” or “subtitle”. Tracks with other values are ignored.
-       * TODO change kind to enum?
-       * @param lang The language of the new track.
-       * @param label The text used to represent the track to a user (e.g. in the UI).
+       * @param subtitle the subtitle to add
        */
-      addSubtitle(url: string, subtitleTrackID: string, kind: string, lang: string, label?: string): Player;
+      addSubtitle(subtitle: Subtitle): Player;
       /**
        * Stops a running Cast session (i.e. {@link #isCasting} returns true). Has no effect if {@link #isCasting}
        * returns false.

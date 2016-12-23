@@ -264,7 +264,7 @@
 
     var actions = {
         'Add subtitle': function () {
-            printResult(player.addSubtitle('http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', 'test', 'subtitle', 'ru', 'Test Subtitle'));
+            printResult(player.addSubtitle({ url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', label: 'Test Subtitle' }));
         },
         'Remove subtitle': function () {
             printResult(player.removeSubtitle('test'));
