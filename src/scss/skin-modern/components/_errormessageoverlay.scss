@@ -17,6 +17,7 @@
     position: absolute;
     right: 3em;
     text-align: center;
+    user-select: text;
 
     // Vertically center the label (not exactly, but works for single line errors)
     & {
