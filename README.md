@@ -124,10 +124,9 @@ You can easily test and switch between these UIs in the UI playground.
 
 ### Components
 
-| TypeScript class                  | CSS class                     | Description |
-| -------------                     | -------------                 | ----------- |
-| Component                         | .ui-component                 | Base class of all framework components |
-| ...                               | ....                          | ... |
+For the list of available components check the `src/ts/components` directory. Each component extends the `Component` base class and adds its own configuration interface and functionality. Components that can container other components as child elements extend the `Container` component. Components are associated to their CSS styles by the `cssClass` config property (prefixed by the `cssPrefix` config property and the `$prefix` SCSS variable).
+
+Custom components can be easily written by extending any existing component, depending on the required functionality.
 
 #### Component Configuration
 
