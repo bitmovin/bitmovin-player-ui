@@ -69,7 +69,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     let hideUi = function() {
-      if(isUiShown) {
+      if (isUiShown) {
         // Let subscribers know that they should now hide themselves
         uimanager.onControlsHide.dispatch(self);
         isUiShown = false;
