@@ -21,7 +21,7 @@ export class HugeReplayButton extends Button<ButtonConfig> {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(function() {
-      player.play();
+      player.play('ui-overlay');
     });
   }
 

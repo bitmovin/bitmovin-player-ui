@@ -250,7 +250,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Pause playback while seeking
       if (isPlaying) {
-        player.pause();
+        player.pause('ui-seek');
       }
     });
     self.onSeekPreview.subscribe(function(sender: SeekBar, args: SeekPreviewEventArgs) {
@@ -272,8 +272,8 @@ export class SeekBar extends Component<SeekBarConfig> {
       // time a seek is issued.
       if (playbackNotInitialized) {
         playbackNotInitialized = false;
-        player.play();
-        player.pause();
+        player.play('ui-seek');
+        player.pause('ui-seek');
       }
 
       // Do the seek
@@ -281,7 +281,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Continue playback after seek if player was playing when seek started
       if (isPlaying) {
-        player.play();
+        player.play('ui-seek');
       }
 
       // Notify UI manager of finished seek

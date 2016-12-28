@@ -583,12 +583,12 @@ declare namespace bitmovin {
       /**
        * Pauses the video if it is playing. Has no effect if the player is already paused.
        */
-      pause(): Player;
+      pause(issuer?: string): Player;
       /**
        * Starts playback or resumes after being paused. No need to call it if the player is setup with
        * autoplay attribute ({@link Config#playback#autoplay}). Has no effect if the player is already playing.
        */
-      play(): Player;
+      play(issuer?: string): Player;
       /**
        * Removes a handler for a player event.
        *

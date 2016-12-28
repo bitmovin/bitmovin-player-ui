@@ -36,7 +36,7 @@ export class AdClickOverlay extends ClickOverlay {
     self.onClick.subscribe(function() {
       // Pause the ad when click-through URL opens
       if (clickThroughEnabled) {
-        player.pause();
+        player.pause('ui-content-click');
       }
 
       // Notify the player of the clicked ad

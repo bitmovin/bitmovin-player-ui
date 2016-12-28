@@ -62,9 +62,9 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
       // above that updated the button state.
       self.onClick.subscribe(function() {
         if (player.isPlaying()) {
-          player.pause();
+          player.pause('ui-button');
         } else {
-          player.play();
+          player.play('ui-button');
         }
       });
     }
