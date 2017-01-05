@@ -8,7 +8,6 @@ import {VRToggleButton} from './components/vrtogglebutton';
 import {VolumeToggleButton} from './components/volumetogglebutton';
 import {SeekBar} from './components/seekbar';
 import {PlaybackTimeLabel, TimeLabelMode} from './components/playbacktimelabel';
-import {HugePlaybackToggleButton} from './components/hugeplaybacktogglebutton';
 import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
@@ -38,6 +37,7 @@ import {ArrayUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
+import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -262,7 +262,7 @@ export class UIManager {
         components: [
           new SubtitleOverlay(),
           new BufferingOverlay(),
-          new HugePlaybackToggleButton(),
+          new PlaybackToggleOverlay(),
           new CastStatusOverlay(),
           controlBar,
           new TitleBar(),
@@ -321,7 +321,7 @@ export class UIManager {
         components: [
           new SubtitleOverlay(),
           new BufferingOverlay(),
-          new HugePlaybackToggleButton(),
+          new PlaybackToggleOverlay(),
           new Watermark(),
           controlBar,
           new TitleBar(),
@@ -361,7 +361,7 @@ export class UIManager {
         components: [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
-          new HugePlaybackToggleButton(),
+          new PlaybackToggleOverlay(),
           new Watermark(),
           new RecommendationOverlay(),
           controlBar,
@@ -399,7 +399,7 @@ export class UIManager {
       let ui = new UIContainer({
         components: [
           new SubtitleOverlay(),
-          new HugePlaybackToggleButton(),
+          new PlaybackToggleOverlay(),
           new Watermark(),
           controlBar,
           new TitleBar(),
@@ -441,7 +441,7 @@ export class UIManager {
         components: [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
-          new HugePlaybackToggleButton(),
+          new PlaybackToggleOverlay(),
           new Watermark(),
           new RecommendationOverlay(),
           controlBar,

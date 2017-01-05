@@ -27,13 +27,10 @@
   }
 
   cursor: default;
-  height: 100%;
-  margin: 0;
+  height: 8em;
   outline: none;
   overflow: hidden; // hide overflow from scale animation
-  position: absolute;
-  top: 0;
-  width: 100%;
+  width: 8em;
 
   .#{$prefix}-image {
     background-image: url('../../assets/skin-legacy/images/components/normal/play_overlay.png');

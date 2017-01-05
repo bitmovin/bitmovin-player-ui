@@ -1,0 +1,10 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-playbacktoggle-overlay {
+  @extend %ui-container;
+
+  .#{$prefix}-ui-hugeplaybacktogglebutton {
+    @include layout-cover;
+  }
+}
