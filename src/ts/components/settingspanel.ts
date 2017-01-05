@@ -137,7 +137,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     this.setting = selectBox;
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-settings-panel-entry',
+      cssClass: 'ui-settings-panel-item',
       components: [this.label, this.setting]
     }, this.config);
   }
