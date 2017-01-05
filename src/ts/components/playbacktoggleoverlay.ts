@@ -15,8 +15,7 @@ export class PlaybackToggleOverlay extends Container<ContainerConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-playbacktoggle-overlay',
-      components: [this.playbackToggleButton],
-      hidden: true
+      components: [this.playbackToggleButton]
     }, this.config);
   }
 }
