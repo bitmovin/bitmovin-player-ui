@@ -63,14 +63,13 @@ bitmovin.player('player-id').setup(config).then(function (player) {
 
 Instead of using predefined UI structures from the `UIManager.Factory`, you can easily create a custom structure. For examples on how to create such UI structures, take a look at the `UIManager.Factory`.
 
-A simple example on how to create a custom UI with our default skin that only contains
-a large playback toggle button looks as follows:
+A simple example on how to create a custom UI with our default skin that only contains a playback toggle overlay (an overlay with a large playback toggle button) looks as follows:
 
 ```js
 // Definition of the UI structure
 var mySimpleUi = new UIContainer({
   components: [
-    new HugePlaybackToggleButton()
+    new PlaybackToggleOverlay()
   ],
   cssClasses: ['ui-skin-modern']
 });
