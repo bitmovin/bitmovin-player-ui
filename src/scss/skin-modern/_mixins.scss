@@ -42,6 +42,17 @@
   width: 100%;
 }
 
+// H/V center items in the middle of the overlay
+@mixin layout-center-children-in-container {
+  display: table;
+
+  > .#{$prefix}-container-wrapper {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
 @mixin animate-slide-in-from-bottom($max-height, $duration: $animation-duration, $inner-selector: '') {
   // Animate show
   #{$inner-selector} {

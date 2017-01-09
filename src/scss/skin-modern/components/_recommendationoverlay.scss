@@ -1,22 +1,11 @@
 @import '../variables';
 @import '../mixins';
 
-// H/V center items in the middle of the overlay
-%center-items-in-overlay {
-  display: table;
-
-  > .#{$prefix}-container-wrapper {
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-  }
-}
-
 .#{$prefix}-ui-recommendation-overlay {
   @extend %ui-container;
-  @extend %center-items-in-overlay;
 
   @include layout-cover;
+  @include layout-center-children-in-container;
   @include hidden-animated($animation-duration * 2);
 
   background-color: $color-background-highlight;
