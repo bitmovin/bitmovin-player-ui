@@ -39,6 +39,7 @@ import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
 import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
 import {CloseButton} from './components/closebutton';
+import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -340,6 +341,7 @@ export class UIManager {
           controlBar,
           new TitleBar({
             components: [
+              new MetadataLabel({ content: MetadataLabelContent.Title }),
               new CastToggleButton(),
               new VRToggleButton(),
               new SettingsToggleButton({ settingsPanel: settingsPanel }),
