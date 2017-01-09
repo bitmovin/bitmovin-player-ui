@@ -364,11 +364,11 @@ export class UIManager {
         components: [
           new BufferingOverlay(),
           new AdClickOverlay(),
+          new PlaybackToggleOverlay(),
           new TitleBar({
             components: [
               // dummy label with no content to move buttons to the right
               new Label({ cssClass: 'label-metadata-title' }),
-              new PlaybackToggleButton(),
               new FullscreenToggleButton(),
             ]
           }),

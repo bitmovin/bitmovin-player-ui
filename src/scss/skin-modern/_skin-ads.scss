@@ -43,4 +43,15 @@
     padding: 1em 1.5em;
     width: 100%;
   }
+
+  /* Hide the huge playback button overlay while an ad is playing, so a click goes
+   * through to the click-through overlay which will register the click and then
+   * pause playback. In the paused state, the huge playback toggle button will be
+   * shown and continues playback of the ad when clicked.
+   */
+  &.#{$prefix}-player-state-playing {
+    .#{$prefix}-ui-playbacktoggle-overlay {
+      display: none;
+    }
+  }
 }
