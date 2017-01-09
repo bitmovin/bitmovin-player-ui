@@ -136,6 +136,11 @@ declare namespace bitmovin {
       skipMessage?: SkipMessage;
     }
 
+    interface PlayerResizeEvent extends PlayerEvent {
+      width: string;
+      height: string;
+    }
+
     interface PlayerEventCallback {
       (event: PlayerEvent): void;
     }
