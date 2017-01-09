@@ -1,5 +1,6 @@
 @import 'variables';
 
+// sass-lint:disable nesting-depth
 &.ads {
   .#{$prefix}-ui-ads-status {
     background-color: $color-background-bars;
