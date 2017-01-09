@@ -323,7 +323,7 @@ export class UIManager {
               }),
             ]
           })
-        ], cssClasses: ['ui-skin-modern ads']
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-modern-ads']
       });
 
       return new UIManager(player, ui, adsUi, config);
@@ -398,7 +398,7 @@ export class UIManager {
             ],
             cssClass: 'ui-ads-status'
           }),
-        ], cssClasses: ['ui-skin-modern ads', 'ui-skin-modern-smallscreen']
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-modern-ads', 'ui-skin-modern-smallscreen']
       });
 
       return new UIManager(player, ui, adsUi, config);
@@ -483,7 +483,7 @@ export class UIManager {
             ]
           }),
           new AdSkipButton()
-        ], cssClasses: ['ui-skin-legacy', 'ads']
+        ], cssClasses: ['ui-skin-legacy', 'ui-skin-legacy-ads']
       });
 
       return new UIManager(player, ui, adsUi, config);

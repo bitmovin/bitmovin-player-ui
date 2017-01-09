@@ -1,29 +1,33 @@
 @import 'variables';
 
-.#{$prefix}-ui-label-ad-message {
-  @extend %ui-label;
+// sass-lint:disable nesting-depth
+&.#{$prefix}-ui-skin-legacy-ads {
 
-  text-align: center;
-  width: 100%;
-}
+  .#{$prefix}-ui-label-ad-message {
+    @extend %ui-label;
 
-.#{$prefix}-ui-button-ad-skip {
-  @extend %ui-button;
+    text-align: center;
+    width: 100%;
+  }
 
-  bottom: 3em;
-  height: auto;
-  position: absolute;
-  right: 1.5em;
+  .#{$prefix}-ui-button-ad-skip {
+    @extend %ui-button;
 
-  .#{$prefix}-label {
-    background-color: transparentize($color-black, .3);
-    border: 1px solid $color-white;
-    display: inherit;
-    font-size: 1.2em;
-    padding: .5em 1em;
+    bottom: 3em;
+    height: auto;
+    position: absolute;
+    right: 1.5em;
 
-    &:hover {
-      background-color: transparentize($color-black, .1);
+    .#{$prefix}-label {
+      background-color: transparentize($color-black, .3);
+      border: 1px solid $color-white;
+      display: inherit;
+      font-size: 1.2em;
+      padding: .5em 1em;
+
+      &:hover {
+        background-color: transparentize($color-black, .1);
+      }
     }
   }
 }
