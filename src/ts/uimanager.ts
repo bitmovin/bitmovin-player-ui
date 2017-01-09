@@ -41,6 +41,7 @@ import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
 import {CloseButton} from './components/closebutton';
 import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 import {Label} from './components/label';
+import PlayerEvent = bitmovin.player.PlayerEvent;
 
 export interface UIRecommendationConfig {
   title: string;
@@ -121,17 +122,27 @@ export class UIManager {
     let self = this;
 
     // Ads UI
-    let adsUiAdded = false;
     if (adsUi) {
+      let adsUiAdded = false;
+
       let enterAdsUi = function(event: AdStartedEvent) {
         playerUi.hide();
 
         // Display the ads UI (only for VAST ads, other clients bring their own UI)
         if (event.clientType === 'vast') {
           // Add ads UI when it is needed for the first time
-          if(!adsUiAdded) {
+          if (!adsUiAdded) {
             self.addUi(adsUi);
             adsUiAdded = true;
+
+            /* Relay the ON_AD_STARTED event to the ads UI
+             *
+             * Because the ads UI is initialized in the ON_AD_STARTED handler, i.e. when the ON_AD_STARTED event has
+             * already been fired, components in the ads UI that listen for the ON_AD_STARTED event never receive it.
+             * Since this can break functionality of components that rely on this event, we relay the event to the
+             * ads UI components with the following call.
+             */
+            self.uiPlayerWrappers[<any>adsUi].getPlayer().fireEventInUI(bitmovin.player.EVENT.ON_AD_STARTED, event);
           }
 
           adsUi.show();
@@ -139,7 +150,7 @@ export class UIManager {
       };
 
       let exitAdsUi = function() {
-        if(adsUiAdded) {
+        if (adsUiAdded) {
           adsUi.hide();
         }
         playerUi.show();
@@ -546,13 +557,25 @@ export class UIManager {
 }
 
 /**
+ * Extended interface of the {@link Player} for use in the UI.
+ */
+interface WrappedPlayer extends Player {
+  /**
+   * Fires an event on the player that targets all handlers in the UI but never enters the real player.
+   * @param event the event to fire
+   * @param data data to send with the event
+   */
+  fireEventInUI(event: EVENT, data: {}): void;
+}
+
+/**
  * Wraps the player to track event handlers and provide a simple method to remove all registered event
  * handlers from the player.
  */
 class PlayerWrapper {
 
   private player: Player;
-  private wrapper: Player;
+  private wrapper: WrappedPlayer;
 
   private eventHandlers: { [eventType: string]: PlayerEventCallback[]; } = {};
 
@@ -603,14 +626,31 @@ class PlayerWrapper {
       return wrapper;
     };
 
-    this.wrapper = <Player>wrapper;
+    wrapper.fireEventInUI = function(event: EVENT, data: {}): void {
+      if (self.eventHandlers[event]) { // check if there are handlers for this event registered
+        // Extend the data object with default values to convert it to a {@link PlayerEvent} object.
+        let playerEventData = <PlayerEvent>Object.assign({}, {
+          timestamp: Date.now(),
+          type: event,
+          // Add a marker property so the UI can detect UI-internal player events
+          uiSourced: true,
+        }, data);
+
+        // Execute the registered callbacks
+        for (let callback of self.eventHandlers[event]) {
+          callback(playerEventData);
+        }
+      }
+    };
+
+    this.wrapper = <WrappedPlayer>wrapper;
   }
 
   /**
    * Returns a wrapped player object that can be used on place of the normal player object.
-   * @returns {Player} a wrapped player
+   * @returns {WrappedPlayer} a wrapped player
    */
-  getPlayer(): Player {
+  getPlayer(): WrappedPlayer {
     return this.wrapper;
   }
 
