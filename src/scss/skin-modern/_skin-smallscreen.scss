@@ -1,0 +1,32 @@
+@import 'variables';
+@import 'mixins';
+
+&.#{$prefix}-ui-skin-modern-smallscreen {
+  .#{$prefix}-ui-settings-panel {
+    @include layout-cover;
+    @include layout-center-children-in-container;
+
+    display: flex;
+    font-size: 1.5em;
+
+    > .#{$prefix}-container-wrapper {
+      margin: auto;
+    }
+  }
+
+  // Do not display watermark in mobile view
+  .#{$prefix}-ui-watermark {
+    display: none;
+  }
+
+  &.#{$prefix}-layout-max-width-400 {
+    .#{$prefix}-ui-settings-panel {
+      font-size: 0.8em;
+    }
+  }
+  &.#{$prefix}-layout-max-width-600 {
+    .#{$prefix}-ui-settings-panel {
+      font-size: 1.2em;
+    }
+  }
+}

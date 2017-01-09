@@ -303,6 +303,56 @@ export class UIManager {
       return new UIManager(player, ui, adsUi, config);
     }
 
+    static buildModernSmallScreenUI(player: Player, config: UIConfig = {}): UIManager {
+      let settingsPanel = new SettingsPanel({
+        components: [
+          new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
+          new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
+          new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
+          new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+          new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+        ],
+        hidden: true,
+      });
+
+      let controlBar = new ControlBar({
+        components: [
+          new Container({
+            components: [
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+              new SeekBar({ label: new SeekBarLabel() }),
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+            ],
+            cssClasses: ['controlbar-top']
+          }),
+        ]
+      });
+
+      let ui = new UIContainer({
+        components: [
+          new SubtitleOverlay(),
+          new BufferingOverlay(),
+          new PlaybackToggleOverlay(),
+          new CastStatusOverlay(),
+          controlBar,
+          new TitleBar({
+            components: [
+              new CastToggleButton(),
+              new VRToggleButton(),
+              new SettingsToggleButton({ settingsPanel: settingsPanel }),
+              new FullscreenToggleButton(),
+            ]
+          }),
+          settingsPanel,
+          new RecommendationOverlay(),
+          new Watermark(),
+          new ErrorMessageOverlay()
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-modern-smallscreen']
+      });
+
+      return new UIManager(player, ui, null, config);
+    }
+
     static buildModernCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
       let controlBar = new ControlBar({
         components: [
