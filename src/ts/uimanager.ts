@@ -38,6 +38,7 @@ import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
 import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
+import {CloseButton} from './components/closebutton';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -313,7 +314,9 @@ export class UIManager {
           new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
         ],
         hidden: true,
+        hideDelay: -1,
       });
+      settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
 
       let controlBar = new ControlBar({
         components: [

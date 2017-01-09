@@ -12,6 +12,13 @@
     > .#{$prefix}-container-wrapper {
       margin: auto;
     }
+
+    .#{$prefix}-ui-closebutton {
+      margin: 2em;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
   }
 
   // Do not display watermark in mobile view
