@@ -41,6 +41,7 @@ import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
 import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
 import {CloseButton} from './components/closebutton';
+import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -111,4 +112,6 @@ if (typeof Object.assign !== 'function') {
   CastUIContainer,
   PlaybackToggleOverlay,
   CloseButton,
+  MetadataLabel,
+  MetadataLabelContent,
 };
