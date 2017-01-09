@@ -749,7 +749,7 @@ declare namespace bitmovin {
        */
       unmute(): Player;
 
-      fireEvent(event: EVENT, args: { clickThroughUrl: string; }): void;
+      fireEvent(event: EVENT, data: {}): void;
     }
 
     namespace VR {
