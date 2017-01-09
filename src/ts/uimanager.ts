@@ -118,22 +118,30 @@ export class UIManager {
     // Add UI elements to player
     this.addUi(playerUi);
 
-    // Ads UI
-    if (adsUi) {
-      this.addUi(adsUi);
-      adsUi.hide();
+    let self = this;
 
+    // Ads UI
+    let adsUiAdded = false;
+    if (adsUi) {
       let enterAdsUi = function(event: AdStartedEvent) {
         playerUi.hide();
 
         // Display the ads UI (only for VAST ads, other clients bring their own UI)
         if (event.clientType === 'vast') {
+          // Add ads UI when it is needed for the first time
+          if(!adsUiAdded) {
+            self.addUi(adsUi);
+            adsUiAdded = true;
+          }
+
           adsUi.show();
         }
       };
 
       let exitAdsUi = function() {
-        adsUi.hide();
+        if(adsUiAdded) {
+          adsUi.hide();
+        }
         playerUi.show();
       };
 
