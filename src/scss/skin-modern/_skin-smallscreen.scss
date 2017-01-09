@@ -2,15 +2,20 @@
 @import 'mixins';
 
 &.#{$prefix}-ui-skin-modern-smallscreen {
+  font-size: 1.2em;
+
   .#{$prefix}-ui-settings-panel {
     @include layout-cover;
     @include layout-center-children-in-container;
 
     display: flex;
-    font-size: 1.5em;
 
     > .#{$prefix}-container-wrapper {
       margin: auto;
+    }
+
+    .#{$prefix}-ui-settings-panel-item {
+      text-align: left;
     }
 
     .#{$prefix}-ui-closebutton {
@@ -26,20 +31,40 @@
     display: none;
   }
 
+  .#{$prefix}-ui-titlebar {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      margin: .5em;
+
+      > * {
+        margin: 0 .5em 0 0;
+      }
+
+      .#{$prefix}-ui-label {
+        font-size: 1em;
+        display: inline;
+      }
+
+      .#{$prefix}-label-metadata-title {
+        width: 100%;
+      }
+    }
+  }
+
   // Adjustments for screen width x <= 400
   &.#{$prefix}-layout-max-width-400 {
     .#{$prefix}-ui-settings-panel {
-      font-size: 0.8em;
+      font-size: 0.6em;
     }
 
     .#{$prefix}-ui-hugeplaybacktogglebutton {
-      font-size: 0.8em;
+      font-size: 0.6em;
     }
   }
   // Adjustments for screen width 400 < x <= 600
   &.#{$prefix}-layout-max-width-600 {
     .#{$prefix}-ui-settings-panel {
-      font-size: 1.2em;
+      font-size: 0.8em;
     }
 
     .#{$prefix}-ui-hugeplaybacktogglebutton {
@@ -49,8 +74,6 @@
   // Adjustments for screen width x <= 600
   &.#{$prefix}-layout-max-width-400,
   &.#{$prefix}-layout-max-width-600 {
-    .#{$prefix}-ui-hugeplaybacktogglebutton {
-      font-size: 0.8em;
-    }
+    // none yet
   }
 }
