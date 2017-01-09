@@ -9,22 +9,30 @@
 
   background: linear-gradient(to top, $color-transparent, $color-background-bars);
   padding: .5em 1em 1em;
+  pointer-events: none;
 
   > .#{$prefix}-container-wrapper {
     padding: .5em;
+    pointer-events: none;
 
-    .#{$prefix}-ui-titlebar-title {
+    .#{$prefix}-label-metadata {
+      pointer-events: none;
+    }
+
+    .#{$prefix}-label-metadata-title {
       cursor: default;
       display: block;
       font-size: 1.2em;
       text-shadow: 0 0 5px $color-black;
+      white-space: normal;
     }
 
-    .#{$prefix}-ui-titlebar-description {
+    .#{$prefix}-label-metadata-description {
       color: lighten($color-secondary, 30%);
       cursor: default;
       display: block;
       text-shadow: 0 0 5px $color-black;
+      white-space: normal;
     }
   }
 }

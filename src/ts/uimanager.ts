@@ -38,6 +38,9 @@ import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
 import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
+import {CloseButton} from './components/closebutton';
+import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
+import {Label} from './components/label';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -215,6 +218,10 @@ export class UIManager {
       return UIManager.Factory.buildModernUI(player, config);
     }
 
+    static buildDefaultSmallScreenUI(player: Player, config: UIConfig = {}): UIManager {
+      return UIManager.Factory.buildModernSmallScreenUI(player, config);
+    }
+
     static buildDefaultCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
       return UIManager.Factory.buildModernCastReceiverUI(player, config);
     }
@@ -298,6 +305,81 @@ export class UIManager {
             ]
           })
         ], cssClasses: ['ui-skin-modern ads']
+      });
+
+      return new UIManager(player, ui, adsUi, config);
+    }
+
+    static buildModernSmallScreenUI(player: Player, config: UIConfig = {}): UIManager {
+      let settingsPanel = new SettingsPanel({
+        components: [
+          new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
+          new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
+          new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
+          new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+          new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+        ],
+        hidden: true,
+        hideDelay: -1,
+      });
+      settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
+
+      let controlBar = new ControlBar({
+        components: [
+          new Container({
+            components: [
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+              new SeekBar({ label: new SeekBarLabel() }),
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+            ],
+            cssClasses: ['controlbar-top']
+          }),
+        ]
+      });
+
+      let ui = new UIContainer({
+        components: [
+          new SubtitleOverlay(),
+          new BufferingOverlay(),
+          new PlaybackToggleOverlay(),
+          new CastStatusOverlay(),
+          controlBar,
+          new TitleBar({
+            components: [
+              new MetadataLabel({ content: MetadataLabelContent.Title }),
+              new CastToggleButton(),
+              new VRToggleButton(),
+              new SettingsToggleButton({ settingsPanel: settingsPanel }),
+              new FullscreenToggleButton(),
+            ]
+          }),
+          settingsPanel,
+          new RecommendationOverlay(),
+          new Watermark(),
+          new ErrorMessageOverlay()
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-modern-smallscreen']
+      });
+
+      let adsUi = new UIContainer({
+        components: [
+          new BufferingOverlay(),
+          new AdClickOverlay(),
+          new PlaybackToggleOverlay(),
+          new TitleBar({
+            components: [
+              // dummy label with no content to move buttons to the right
+              new Label({ cssClass: 'label-metadata-title' }),
+              new FullscreenToggleButton(),
+            ]
+          }),
+          new Container({
+            components: [
+              new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
+              new AdSkipButton()
+            ],
+            cssClass: 'ui-ads-status'
+          }),
+        ], cssClasses: ['ui-skin-modern ads', 'ui-skin-modern-smallscreen']
       });
 
       return new UIManager(player, ui, adsUi, config);

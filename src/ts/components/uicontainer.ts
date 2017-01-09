@@ -3,6 +3,7 @@ import {UIManager} from '../uimanager';
 import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../utils';
+import PlayerResizeEvent = bitmovin.player.PlayerResizeEvent;
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -156,6 +157,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function() {
       container.removeClass(self.prefixCss(UIContainer.FULLSCREEN));
     });
+    // Init fullscreen state
+    if (player.isFullscreen()) {
+      container.addClass(self.prefixCss(UIContainer.FULLSCREEN));
+    }
 
     // Buffering marker class
     player.addEventHandler(bitmovin.player.EVENT.ON_STALL_STARTED, function() {
@@ -178,6 +183,33 @@ export class UIContainer extends Container<UIContainerConfig> {
       container.removeClass(self.prefixCss(UIContainer.CONTROLS_SHOWN));
       container.addClass(self.prefixCss(UIContainer.CONTROLS_HIDDEN));
     });
+
+    // Layout size classes
+    let updateLayoutSizeClasses = function(width: number, height: number) {
+      container.removeClass(self.prefixCss('layout-max-width-400'));
+      container.removeClass(self.prefixCss('layout-max-width-600'));
+      container.removeClass(self.prefixCss('layout-max-width-800'));
+      container.removeClass(self.prefixCss('layout-max-width-1200'));
+
+      if (width <= 400) {
+        container.addClass(self.prefixCss('layout-max-width-400'));
+      } else if (width <= 600) {
+        container.addClass(self.prefixCss('layout-max-width-600'));
+      } else if (width <= 800) {
+        container.addClass(self.prefixCss('layout-max-width-800'));
+      } else if (width <= 1200) {
+        container.addClass(self.prefixCss('layout-max-width-1200'));
+      }
+    };
+    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYER_RESIZE, function(e: PlayerResizeEvent) {
+      // Convert strings (with "px" suffix) to ints
+      let width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
+      let height = Math.round(Number(e.height.substring(0, e.height.length - 2)));
+
+      updateLayoutSizeClasses(width, height);
+    });
+    // Init layout state
+    updateLayoutSizeClasses(new DOM(player.getFigure()).width(), new DOM(player.getFigure()).height());
   }
 
   protected toDomElement(): DOM {
