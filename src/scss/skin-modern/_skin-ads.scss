@@ -1,57 +1,59 @@
 @import 'variables';
 
-.#{$prefix}-ui-ads-status {
-  background-color: $color-background-bars;
-  left: 1.5em;
-  padding: .5em 1.5em;
-  position: absolute;
-  top: 1em;
+&.ads {
+  .#{$prefix}-ui-ads-status {
+    background-color: $color-background-bars;
+    left: 1.5em;
+    padding: .5em 1.5em;
+    position: absolute;
+    top: 1em;
 
-  .#{$prefix}-ui-label-ad-message {
-    @extend %ui-label;
+    .#{$prefix}-ui-label-ad-message {
+      @extend %ui-label;
 
-    color: $color-secondary;
-    white-space: normal;
-  }
+      color: $color-secondary;
+      white-space: normal;
+    }
 
-  .#{$prefix}-ui-button-ad-skip {
-    @extend %ui-button;
+    .#{$prefix}-ui-button-ad-skip {
+      @extend %ui-button;
 
-    .#{$prefix}-label {
-      display: inherit;
+      .#{$prefix}-label {
+        display: inherit;
 
-      &:hover {
-        text-decoration: underline;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      // Add the dot between ad message and skip button
+      &::before {
+        color: $color-highlight;
+        content: '●';
+        padding-left: .5em;
+        padding-right: .5em;
       }
     }
+  }
 
-    // Add the dot between ad message and skip button
-    &::before {
-      color: $color-highlight;
-      content: '●';
-      padding-left: .5em;
-      padding-right: .5em;
+  &.#{$prefix}-ui-skin-modern-smallscreen {
+    .#{$prefix}-ui-ads-status {
+      bottom: 0;
+      left: 0;
+      padding: 1em 1.5em;
+      top: auto;
+      width: 100%;
     }
-  }
-}
 
-&.#{$prefix}-ui-skin-modern-smallscreen {
-  .#{$prefix}-ui-ads-status {
-    bottom: 0;
-    left: 0;
-    padding: 1em 1.5em;
-    top: auto;
-    width: 100%;
-  }
-
-  /* Hide the huge playback button overlay while an ad is playing, so a click goes
-   * through to the click-through overlay which will register the click and then
-   * pause playback. In the paused state, the huge playback toggle button will be
-   * shown and continues playback of the ad when clicked.
-   */
-  &.#{$prefix}-player-state-playing {
-    .#{$prefix}-ui-playbacktoggle-overlay {
-      display: none;
+    /* Hide the huge playback button overlay while an ad is playing, so a click goes
+     * through to the click-through overlay which will register the click and then
+     * pause playback. In the paused state, the huge playback toggle button will be
+     * shown and continues playback of the ad when clicked.
+     */
+    &.#{$prefix}-player-state-playing {
+      .#{$prefix}-ui-playbacktoggle-overlay {
+        display: none;
+      }
     }
   }
 }
