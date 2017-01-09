@@ -77,4 +77,28 @@
   &.#{$prefix}-layout-max-width-600 {
     // none yet
   }
+
+  // IE9 compatibility: fallback for missing flexbox support
+  // sass-lint:disable nesting-depth
+  &.#{$prefix}-no-flexbox {
+    .#{$prefix}-ui-titlebar {
+      > .#{$prefix}-container-wrapper {
+        border-spacing: .5em 0;
+        display: table;
+        width: 100%;
+
+        > * {
+          @include hidden; // Add hidden here too, else it is overwritten by display: table-cell
+
+          display: table-cell;
+          vertical-align: middle;
+          width: 1em;
+        }
+
+        .#{$prefix}-label-metadata-title {
+          width: 100%;
+        }
+      }
+    }
+  }
 }
