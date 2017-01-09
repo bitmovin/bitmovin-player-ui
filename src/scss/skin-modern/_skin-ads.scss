@@ -11,6 +11,7 @@
     @extend %ui-label;
 
     color: $color-secondary;
+    white-space: normal;
   }
 
   .#{$prefix}-ui-button-ad-skip {
@@ -31,5 +32,15 @@
       padding-left: .5em;
       padding-right: .5em;
     }
+  }
+}
+
+&.#{$prefix}-ui-skin-modern-smallscreen {
+  .#{$prefix}-ui-ads-status {
+    left: 0;
+    top: auto;
+    bottom: 0;
+    padding: 1em 1.5em;
+    width: 100%;
   }
 }
