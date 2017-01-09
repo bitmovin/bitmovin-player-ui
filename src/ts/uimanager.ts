@@ -323,7 +323,7 @@ export class UIManager {
               }),
             ]
           })
-        ], cssClasses: ['ui-skin-modern', 'ui-skin-modern-ads']
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-ads']
       });
 
       return new UIManager(player, ui, adsUi, config);
@@ -376,7 +376,7 @@ export class UIManager {
           new RecommendationOverlay(),
           new Watermark(),
           new ErrorMessageOverlay()
-        ], cssClasses: ['ui-skin-modern', 'ui-skin-modern-smallscreen']
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen']
       });
 
       let adsUi = new UIContainer({
@@ -398,7 +398,7 @@ export class UIManager {
             ],
             cssClass: 'ui-ads-status'
           }),
-        ], cssClasses: ['ui-skin-modern', 'ui-skin-modern-ads', 'ui-skin-modern-smallscreen']
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-ads', 'ui-skin-smallscreen']
       });
 
       return new UIManager(player, ui, adsUi, config);
@@ -427,7 +427,7 @@ export class UIManager {
           controlBar,
           new TitleBar(),
           new ErrorMessageOverlay()
-        ], cssClasses: ['ui-skin-modern', 'ui-skin-modern-cast-receiver']
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver']
       });
 
       return new UIManager(player, ui, null, config);
@@ -483,7 +483,7 @@ export class UIManager {
             ]
           }),
           new AdSkipButton()
-        ], cssClasses: ['ui-skin-legacy', 'ui-skin-legacy-ads']
+        ], cssClasses: ['ui-skin-legacy', 'ui-skin-ads']
       });
 
       return new UIManager(player, ui, adsUi, config);
@@ -505,7 +505,7 @@ export class UIManager {
           controlBar,
           new TitleBar(),
           new ErrorMessageOverlay()
-        ], cssClasses: ['ui-skin-legacy', 'ui-skin-legacy-cast-receiver']
+        ], cssClasses: ['ui-skin-legacy', 'ui-skin-cast-receiver']
       });
 
       return new UIManager(player, ui, null, config);

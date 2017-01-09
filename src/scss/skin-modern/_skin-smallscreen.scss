@@ -1,7 +1,7 @@
 @import 'variables';
 @import 'mixins';
 
-&.#{$prefix}-ui-skin-modern-smallscreen {
+&.#{$prefix}-ui-skin-smallscreen {
   font-size: 1.2em;
 
   .#{$prefix}-ui-settings-panel {

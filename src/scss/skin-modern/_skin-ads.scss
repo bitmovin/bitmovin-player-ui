@@ -1,7 +1,7 @@
 @import 'variables';
 
 // sass-lint:disable nesting-depth
-&.#{$prefix}-ui-skin-modern-ads {
+&.#{$prefix}-ui-skin-ads {
 
   .#{$prefix}-ui-ads-status {
     background-color: $color-background-bars;
@@ -38,7 +38,7 @@
     }
   }
 
-  &.#{$prefix}-ui-skin-modern-smallscreen {
+  &.#{$prefix}-ui-skin-smallscreen {
     .#{$prefix}-ui-ads-status {
       bottom: 0;
       left: 0;
