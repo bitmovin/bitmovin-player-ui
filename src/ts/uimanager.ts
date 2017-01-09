@@ -217,6 +217,10 @@ export class UIManager {
       return UIManager.Factory.buildModernUI(player, config);
     }
 
+    static buildDefaultSmallScreenUI(player: Player, config: UIConfig = {}): UIManager {
+      return UIManager.Factory.buildModernSmallScreenUI(player, config);
+    }
+
     static buildDefaultCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
       return UIManager.Factory.buildModernCastReceiverUI(player, config);
     }
