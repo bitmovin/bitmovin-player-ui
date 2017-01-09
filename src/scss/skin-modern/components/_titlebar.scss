@@ -9,9 +9,15 @@
 
   background: linear-gradient(to top, $color-transparent, $color-background-bars);
   padding: .5em 1em 1em;
+  pointer-events: none;
 
   > .#{$prefix}-container-wrapper {
     padding: .5em;
+    pointer-events: none;
+
+    .#{$prefix}-label-metadata {
+      pointer-events: none;
+    }
 
     .#{$prefix}-label-metadata-title {
       cursor: default;

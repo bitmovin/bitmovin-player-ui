@@ -34,10 +34,9 @@
   .#{$prefix}-ui-titlebar {
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: .5em;
 
       > * {
-        margin: 0 .5em 0 0;
+        margin: 0 .25em;
       }
 
       .#{$prefix}-ui-label {
