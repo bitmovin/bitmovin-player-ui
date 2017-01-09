@@ -157,6 +157,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function() {
       container.removeClass(self.prefixCss(UIContainer.FULLSCREEN));
     });
+    // Init fullscreen state
+    if(player.isFullscreen()) {
+      container.addClass(self.prefixCss(UIContainer.FULLSCREEN));
+    }
 
     // Buffering marker class
     player.addEventHandler(bitmovin.player.EVENT.ON_STALL_STARTED, function() {
@@ -200,6 +204,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
       updateLayoutSizeClasses(width, height);
     });
+    // Init layout state
     updateLayoutSizeClasses(new DOM(player.getFigure()).width(), new DOM(player.getFigure()).height());
   }
 
