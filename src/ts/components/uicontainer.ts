@@ -164,6 +164,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, function() {
       container.removeClass(self.prefixCss(UIContainer.BUFFERING));
     });
+    // Init buffering state
+    if (player.isStalled()) {
+      container.addClass(self.prefixCss(UIContainer.BUFFERING));
+    }
 
     // Controls visibility marker class
     uimanager.onControlsShow.subscribe(function() {
