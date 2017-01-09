@@ -37,10 +37,10 @@
 
 &.#{$prefix}-ui-skin-modern-smallscreen {
   .#{$prefix}-ui-ads-status {
-    left: 0;
-    top: auto;
     bottom: 0;
+    left: 0;
     padding: 1em 1.5em;
+    top: auto;
     width: 100%;
   }
 

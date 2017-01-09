@@ -40,8 +40,8 @@
       }
 
       .#{$prefix}-ui-label {
-        font-size: 1em;
         display: inline;
+        font-size: 1em;
       }
 
       .#{$prefix}-label-metadata-title {
@@ -53,23 +53,25 @@
   // Adjustments for screen width x <= 400
   &.#{$prefix}-layout-max-width-400 {
     .#{$prefix}-ui-settings-panel {
-      font-size: 0.6em;
+      font-size: .6em;
     }
 
     .#{$prefix}-ui-hugeplaybacktogglebutton {
-      font-size: 0.6em;
+      font-size: .6em;
     }
   }
+
   // Adjustments for screen width 400 < x <= 600
   &.#{$prefix}-layout-max-width-600 {
     .#{$prefix}-ui-settings-panel {
-      font-size: 0.8em;
+      font-size: .8em;
     }
 
     .#{$prefix}-ui-hugeplaybacktogglebutton {
-      font-size: 0.8em;
+      font-size: .8em;
     }
   }
+
   // Adjustments for screen width x <= 600
   &.#{$prefix}-layout-max-width-400,
   &.#{$prefix}-layout-max-width-600 {
