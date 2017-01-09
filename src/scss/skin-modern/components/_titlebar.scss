@@ -13,18 +13,20 @@
   > .#{$prefix}-container-wrapper {
     padding: .5em;
 
-    .#{$prefix}-ui-titlebar-title {
+    .#{$prefix}-label-metadata-title {
       cursor: default;
       display: block;
       font-size: 1.2em;
       text-shadow: 0 0 5px $color-black;
+      white-space: normal;
     }
 
-    .#{$prefix}-ui-titlebar-description {
+    .#{$prefix}-label-metadata-description {
       color: lighten($color-secondary, 30%);
       cursor: default;
       display: block;
       text-shadow: 0 0 5px $color-black;
+      white-space: normal;
     }
   }
 }
