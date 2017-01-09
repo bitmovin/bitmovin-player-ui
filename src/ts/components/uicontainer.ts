@@ -158,7 +158,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       container.removeClass(self.prefixCss(UIContainer.FULLSCREEN));
     });
     // Init fullscreen state
-    if(player.isFullscreen()) {
+    if (player.isFullscreen()) {
       container.addClass(self.prefixCss(UIContainer.FULLSCREEN));
     }
 

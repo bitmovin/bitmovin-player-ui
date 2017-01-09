@@ -71,7 +71,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       // Attach marker class to last visible item
       let lastShownItem = null;
       for (let component of self.getItems()) {
-        if(component instanceof SettingsPanelItem) {
+        if (component instanceof SettingsPanelItem) {
           component.getDomElement().removeClass(self.prefixCss(SettingsPanel.CLASS_LAST));
           if (component.isShown()) {
             lastShownItem = component;
@@ -83,7 +83,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       }
     };
     for (let component of this.getItems()) {
-      if(component instanceof SettingsPanelItem) {
+      if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
       }
     }
