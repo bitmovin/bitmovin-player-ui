@@ -465,6 +465,9 @@ export class UIManager {
   };
 }
 
+/**
+ * Encapsulates functionality to manage a UI instance. Used by the {@link UIManager} to manage multiple UI instances.
+ */
 export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
   private playerElement: DOM;
@@ -472,33 +475,12 @@ export class UIInstanceManager {
   private config: UIConfig;
 
   private events = {
-    /**
-     * Fires when a seek starts.
-     */
     onSeek: new EventDispatcher<SeekBar, NoArgs>(),
-    /**
-     * Fires when the seek timeline is scrubbed.
-     */
     onSeekPreview: new EventDispatcher<SeekBar, number>(),
-    /**
-     * Fires when a seek is finished.
-     */
     onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
-    /**
-     * Fires when a component is showing.
-     */
     onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
-    /**
-     * Fires when a component is hiding.
-     */
     onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
-    /**
-     * Fires when the UI controls are showing.
-     */
     onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
-    /**
-     * Fires when the UI controls are hiding.
-     */
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
@@ -536,30 +518,58 @@ export class UIInstanceManager {
     }
   }
 
+  /**
+   * Fires when a seek starts.
+   * @returns {EventDispatcher}
+   */
   get onSeek(): EventDispatcher<SeekBar, NoArgs> {
     return this.events.onSeek;
   }
 
+  /**
+   * Fires when the seek timeline is scrubbed.
+   * @returns {EventDispatcher}
+   */
   get onSeekPreview(): EventDispatcher<SeekBar, number> {
     return this.events.onSeekPreview;
   }
 
+  /**
+   * Fires when a seek is finished.
+   * @returns {EventDispatcher}
+   */
   get onSeeked(): EventDispatcher<SeekBar, NoArgs> {
     return this.events.onSeeked;
   }
 
+  /**
+   * Fires when a component is showing.
+   * @returns {EventDispatcher}
+   */
   get onComponentShow(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
     return this.events.onComponentShow;
   }
 
+  /**
+   * Fires when a component is hiding.
+   * @returns {EventDispatcher}
+   */
   get onComponentHide(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
     return this.events.onComponentHide;
   }
 
+  /**
+   * Fires when the UI controls are showing.
+   * @returns {EventDispatcher}
+   */
   get onControlsShow(): EventDispatcher<UIContainer, NoArgs> {
     return this.events.onControlsShow;
   }
 
+  /**
+   * Fires when the UI controls are hiding.
+   * @returns {EventDispatcher}
+   */
   get onControlsHide(): EventDispatcher<UIContainer, NoArgs> {
     return this.events.onControlsHide;
   }
