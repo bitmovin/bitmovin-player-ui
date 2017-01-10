@@ -2,7 +2,7 @@ import {Component, ComponentConfig} from './component';
 import {DOM} from '../dom';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {SeekBarLabel} from './seekbarlabel';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {Timeout} from '../timeout';
 
 /**
@@ -101,7 +101,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager, configureSeek: boolean = true): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
 
     if (!configureSeek) {

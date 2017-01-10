@@ -1,7 +1,7 @@
 import {ContainerConfig, Container} from './container';
 import {Component, ComponentConfig} from './component';
 import {DOM} from '../dom';
-import {UIManager, UIRecommendationConfig} from '../uimanager';
+import {UIInstanceManager, UIRecommendationConfig} from '../uimanager';
 import {StringUtils} from '../utils';
 import {HugeReplayButton} from './hugereplaybutton';
 
@@ -24,7 +24,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

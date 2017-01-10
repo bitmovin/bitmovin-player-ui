@@ -62,48 +62,13 @@ export class UIManager {
 
   private player: Player;
   private playerElement: DOM;
-  private playerUi: UIContainer;
-  private adsUi: UIContainer;
+  private playerUi: InternalUIInstanceManager;
+  private adsUi: InternalUIInstanceManager;
   private config: UIConfig;
-
   private managerPlayerWrapper: PlayerWrapper;
-  private uiPlayerWrappers: PlayerWrapper[] = [];
-
-  private events = {
-    /**
-     * Fires when a seek starts.
-     */
-    onSeek: new EventDispatcher<SeekBar, NoArgs>(),
-    /**
-     * Fires when the seek timeline is scrubbed.
-     */
-    onSeekPreview: new EventDispatcher<SeekBar, number>(),
-    /**
-     * Fires when a seek is finished.
-     */
-    onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
-    /**
-     * Fires when a component is showing.
-     */
-    onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
-    /**
-     * Fires when a component is hiding.
-     */
-    onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
-    /**
-     * Fires when the UI controls are showing.
-     */
-    onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
-    /**
-     * Fires when the UI controls are hiding.
-     */
-    onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
-  };
 
   constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config: UIConfig = {}) {
     this.player = player;
-    this.playerUi = playerUi;
-    this.adsUi = adsUi;
     this.config = config;
 
     if (!config.metadata) {
@@ -112,12 +77,15 @@ export class UIManager {
       };
     }
 
+    this.playerUi = new InternalUIInstanceManager(player, playerUi, config);
+    this.adsUi = new InternalUIInstanceManager(player, adsUi, config);
+
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
     this.playerElement = new DOM(player.getFigure());
 
     // Add UI elements to player
-    this.addUi(playerUi);
+    this.addUi(this.playerUi);
 
     let self = this;
 
@@ -132,7 +100,7 @@ export class UIManager {
         if (event.clientType === 'vast') {
           // Add ads UI when it is needed for the first time
           if (!adsUiAdded) {
-            self.addUi(adsUi);
+            self.addUi(self.adsUi);
             adsUiAdded = true;
 
             /* Relay the ON_AD_STARTED event to the ads UI
@@ -142,7 +110,7 @@ export class UIManager {
              * Since this can break functionality of components that rely on this event, we relay the event to the
              * ads UI components with the following call.
              */
-            self.uiPlayerWrappers[<any>adsUi].getPlayer().fireEventInUI(bitmovin.player.EVENT.ON_AD_STARTED, event);
+            self.adsUi.getPlayer().fireEventInUI(bitmovin.player.EVENT.ON_AD_STARTED, event);
           }
 
           adsUi.show();
@@ -168,60 +136,29 @@ export class UIManager {
     return this.config;
   }
 
-  private configureControls(component: Component<ComponentConfig>) {
-    let playerWrapper = this.uiPlayerWrappers[<any>component];
-
+  private configureControls(component: Component<ComponentConfig>, manager: UIInstanceManager) {
     component.initialize();
-    component.configure(playerWrapper.getPlayer(), this);
+    component.configure(manager.getPlayer(), manager);
 
     if (component instanceof Container) {
       for (let childComponent of component.getComponents()) {
-        this.configureControls(childComponent);
+        this.configureControls(childComponent, manager);
       }
     }
   }
 
-  get onSeek(): EventDispatcher<SeekBar, NoArgs> {
-    return this.events.onSeek;
-  }
-
-  get onSeekPreview(): EventDispatcher<SeekBar, number> {
-    return this.events.onSeekPreview;
-  }
-
-  get onSeeked(): EventDispatcher<SeekBar, NoArgs> {
-    return this.events.onSeeked;
-  }
-
-  get onComponentShow(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
-    return this.events.onComponentShow;
-  }
-
-  get onComponentHide(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
-    return this.events.onComponentHide;
-  }
-
-  get onControlsShow(): EventDispatcher<UIContainer, NoArgs> {
-    return this.events.onControlsShow;
-  }
-
-  get onControlsHide(): EventDispatcher<UIContainer, NoArgs> {
-    return this.events.onControlsHide;
-  }
-
-  private addUi(ui: UIContainer): void {
-    let dom = ui.getDomElement();
-    this.uiPlayerWrappers[<any>ui] = new PlayerWrapper(this.player);
-    this.configureControls(ui);
+  private addUi(ui: InternalUIInstanceManager): void {
+    let dom = ui.getUI().getDomElement();
+    this.configureControls(ui.getUI(), ui);
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
     this.playerElement.append(dom);
   }
 
-  private releaseUi(ui: UIContainer): void {
-    ui.getDomElement().remove();
-    this.uiPlayerWrappers[<any>ui].clearEventHandlers();
+  private releaseUi(ui: InternalUIInstanceManager): void {
+    ui.getUI().getDomElement().remove();
+    ui.clearEventHandlers();
   }
 
   release(): void {
@@ -554,6 +491,119 @@ export class UIManager {
       return new UIManager(player, ui, null, config);
     }
   };
+}
+
+/**
+ * Encapsulates functionality to manage a UI instance. Used by the {@link UIManager} to manage multiple UI instances.
+ */
+export class UIInstanceManager {
+  private playerWrapper: PlayerWrapper;
+  private ui: UIContainer;
+  private config: UIConfig;
+
+  private events = {
+    onSeek: new EventDispatcher<SeekBar, NoArgs>(),
+    onSeekPreview: new EventDispatcher<SeekBar, number>(),
+    onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
+    onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+    onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+    onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
+    onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
+  };
+
+  constructor(player: Player, ui: UIContainer, config: UIConfig = {}) {
+    this.playerWrapper = new PlayerWrapper(player);
+    this.ui = ui;
+    this.config = config;
+  }
+
+  getConfig(): UIConfig {
+    return this.config;
+  }
+
+  getUI(): UIContainer {
+    return this.ui;
+  }
+
+  getPlayer(): WrappedPlayer {
+    return this.playerWrapper.getPlayer();
+  }
+
+  /**
+   * Fires when a seek starts.
+   * @returns {EventDispatcher}
+   */
+  get onSeek(): EventDispatcher<SeekBar, NoArgs> {
+    return this.events.onSeek;
+  }
+
+  /**
+   * Fires when the seek timeline is scrubbed.
+   * @returns {EventDispatcher}
+   */
+  get onSeekPreview(): EventDispatcher<SeekBar, number> {
+    return this.events.onSeekPreview;
+  }
+
+  /**
+   * Fires when a seek is finished.
+   * @returns {EventDispatcher}
+   */
+  get onSeeked(): EventDispatcher<SeekBar, NoArgs> {
+    return this.events.onSeeked;
+  }
+
+  /**
+   * Fires when a component is showing.
+   * @returns {EventDispatcher}
+   */
+  get onComponentShow(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
+    return this.events.onComponentShow;
+  }
+
+  /**
+   * Fires when a component is hiding.
+   * @returns {EventDispatcher}
+   */
+  get onComponentHide(): EventDispatcher<Component<ComponentConfig>, NoArgs> {
+    return this.events.onComponentHide;
+  }
+
+  /**
+   * Fires when the UI controls are showing.
+   * @returns {EventDispatcher}
+   */
+  get onControlsShow(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onControlsShow;
+  }
+
+  /**
+   * Fires when the UI controls are hiding.
+   * @returns {EventDispatcher}
+   */
+  get onControlsHide(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onControlsHide;
+  }
+
+  protected clearEventHandlers(): void {
+    this.playerWrapper.clearEventHandlers();
+
+    let events = <any>this.events; // avoid TS7017
+    for (let event in events) {
+      let dispatcher = <EventDispatcher<Object, Object>>events[event];
+      dispatcher.unsubscribeAll();
+    }
+  }
+}
+
+/**
+ * Extends the {@link UIInstanceManager} for internal use in the {@link UIManager} and provides access to functionality
+ * that components receiving a reference to the {@link UIInstanceManager} should not have access to.
+ */
+class InternalUIInstanceManager extends UIInstanceManager {
+  clearEventHandlers(): void {
+    super.clearEventHandlers();
+  }
 }
 
 /**

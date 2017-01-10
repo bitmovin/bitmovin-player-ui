@@ -1,7 +1,7 @@
 import {Guid} from '../guid';
 import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 
 /**
  * Base configuration interface for a component.
@@ -152,7 +152,7 @@ export class Component<Config extends ComponentConfig> {
    * Initializes the component, e.g. by applying config settings.
    * This method must not be called from outside the UI framework.
    *
-   * This method is automatically called by the {@link UIManager}. If the component is an inner component of
+   * This method is automatically called by the {@link UIInstanceManager}. If the component is an inner component of
    * some component, and thus encapsulated abd managed internally and never directly exposed to the UIManager,
    * this method must be called from the managing component's {@link #initialize} method.
    */
@@ -166,17 +166,17 @@ export class Component<Config extends ComponentConfig> {
   }
 
   /**
-   * Configures the component for the supplied Player and UIManager. This is the place where all the magic happens,
-   * where components typically subscribe and react to events (on their DOM element, the Player, or the UIManager),
-   * and basically everything that makes them interactive.
+   * Configures the component for the supplied Player and UIInstanceManager. This is the place where all the magic
+   * happens, where components typically subscribe and react to events (on their DOM element, the Player, or the
+   * UIInstanceManager), and basically everything that makes them interactive.
    * This method is called only once, when the UIManager initializes the UI.
    *
    * Subclasses usually overwrite this method to add their own functionality.
    *
    * @param player the player which this component controls
-   * @param uimanager the UIManager that manages this component
+   * @param uimanager the UIInstanceManager that manages this component
    */
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     let self = this;
 
     self.onShow.subscribe(function() {

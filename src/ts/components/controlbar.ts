@@ -1,5 +1,5 @@
 import {ContainerConfig, Container} from './container';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 
 /**
  * Configuration interface for the {@link ControlBar}.
@@ -23,7 +23,7 @@ export class ControlBar extends Container<ControlBarConfig> {
     }, <ControlBarConfig>this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

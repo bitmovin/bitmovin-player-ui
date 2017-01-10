@@ -1,7 +1,7 @@
 import {ContainerConfig, Container} from './container';
 import {SelectBox} from './selectbox';
 import {Label, LabelConfig} from './label';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {Timeout} from '../timeout';
@@ -39,7 +39,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;
@@ -146,7 +146,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     let self = this;
 
     let handleConfigItemChanged = function() {

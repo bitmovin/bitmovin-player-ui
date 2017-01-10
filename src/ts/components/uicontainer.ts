@@ -1,5 +1,5 @@
 import {ContainerConfig, Container} from './container';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../utils';
@@ -42,14 +42,14 @@ export class UIContainer extends Container<UIContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.configureUIShowHide(player, uimanager);
     this.configurePlayerStates(player, uimanager);
   }
 
-  private configureUIShowHide(player: bitmovin.player.Player, uimanager: UIManager): void {
+  private configureUIShowHide(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     let self = this;
     let container = this.getDomElement();
     let config = <UIContainerConfig>this.getConfig();
@@ -115,7 +115,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
   }
 
-  private configurePlayerStates(player: bitmovin.player.Player, uimanager: UIManager): void {
+  private configurePlayerStates(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     let self = this;
     let container = this.getDomElement();
 

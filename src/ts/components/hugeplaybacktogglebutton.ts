@@ -1,7 +1,7 @@
 import {ToggleButtonConfig} from './togglebutton';
 import {PlaybackToggleButton} from './playbacktogglebutton';
 import {DOM} from '../dom';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import PlayerEvent = bitmovin.player.PlayerEvent;
 
 /**
@@ -18,7 +18,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     // Update button state through API events
     super.configure(player, uimanager, false);
 

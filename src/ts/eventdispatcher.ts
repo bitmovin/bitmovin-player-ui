@@ -93,6 +93,13 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
   }
 
   /**
+   * Removes all listeners from this dispatcher.
+   */
+  unsubscribeAll(): void {
+    this.listeners = [];
+  }
+
+  /**
    * Dispatches an event to all subscribed listeners.
    * @param sender the source of the event
    * @param args the arguments for the event

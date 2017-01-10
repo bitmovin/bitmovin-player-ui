@@ -1,5 +1,5 @@
 import {ButtonConfig, Button} from './button';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import SkipMessage = bitmovin.player.SkipMessage;
 import {StringUtils} from '../utils';
 
@@ -27,7 +27,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

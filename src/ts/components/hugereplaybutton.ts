@@ -1,6 +1,6 @@
 import {ButtonConfig, Button} from './button';
 import {DOM} from '../dom';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import PlayerEvent = bitmovin.player.PlayerEvent;
 
 /**
@@ -17,7 +17,7 @@ export class HugeReplayButton extends Button<ButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(function() {

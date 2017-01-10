@@ -1,12 +1,12 @@
 import {ClickOverlay} from './clickoverlay';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 
 /**
  * A simple click capture overlay for clickThroughUrls of ads.
  */
 export class AdClickOverlay extends ClickOverlay {
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;
