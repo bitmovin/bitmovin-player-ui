@@ -223,20 +223,32 @@
 
     // Define custom parameters for testing API methods that take parameters
     var apiMethodParameters = {
-        'setVolume': [0, 50, 100, function () { return player.getVolume() + 10; }],
-        'seek': [0, function () { return player.getCurrentTime() + 60; }, function () { return player.getCurrentTime() + 60 * 5; }, function () { return player.getCurrentTime() - 60; }, function () { return player.getCurrentTime() - 60 * 5; }, function () { return player.getDuration() - 1; }],
+        'setVolume': [0, 50, 100, ['+10', function () { return player.getVolume() + 10; }]],
+        'seek': [0,
+          ['current+60s', function () { return player.getCurrentTime() + 60; }],
+          ['current+5min', function () { return player.getCurrentTime() + 60 * 5; }],
+          ['current-60s', function () { return player.getCurrentTime() - 60; }],
+          ['current-5min', function () { return player.getCurrentTime() - 60 * 5; }],
+          ['duration-1s', function () { return player.getDuration() - 1; }]
+        ],
         'setPlaybackSpeed': [0, 0.1, 0.25, 0.5, 1, 2, 4, 10],
     };
 
     var addApiMethodButton = function (method, parameter) {
-        var button = $('<button class="btn btn-primary btn-sm">' + method + '(' + (typeof parameter == 'undefined' ? '' : parameter) + ')' + '</button>');
+        var parameterName = (typeof parameter == 'undefined' ? '' : parameter instanceof Array ? parameter[0] : parameter);
+        var button = $('<button class="btn btn-primary btn-sm">' + method + '(' + parameterName + ')' + '</button>');
         $('#playback-controls').append(button).append(' ');
         button.click(function () {
             var p = parameter;
-            if (typeof parameter == 'function') {
-                // The parameter is a function, evaluate it first
-                p = parameter();
+            // If the parameter is an array, the actual parameter is located at index 1
+            if (p instanceof Array) {
+              p = p[1];
             }
+            // If the parameter is a function, evaluate it first
+            if (typeof p == 'function') {
+                p = p();
+            }
+            // Execute method with parameter
             printResult(player[method](p));
         });
     };
