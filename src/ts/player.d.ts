@@ -370,9 +370,9 @@ declare namespace bitmovin {
        */
       getAudio(): AudioTrack;
       /**
-       * Returns the seconds of already buffered audio data.
+       * Returns the seconds of already buffered audio data or null if no audio source is loaded.
        */
-      getAudioBufferLength(): number;
+      getAudioBufferLength(): number | null;
       /**
        * Returns an array of all available audio tracks.
        */
@@ -501,9 +501,9 @@ declare namespace bitmovin {
        */
       getVersion(): string;
       /**
-       * Returns the seconds of already buffered video data.
+       * Returns the seconds of already buffered video data or null if no video source is loaded.
        */
-      getVideoBufferLength(): number;
+      getVideoBufferLength(): number | null;
       /**
        * Returns the player’s volume between 0 (silent) and 100 (max volume).
        */

@@ -142,7 +142,21 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
       else {
         let playbackPositionPercentage = 100 / player.getDuration() * player.getCurrentTime();
-        let bufferPercentage = 100 / player.getDuration() * player.getVideoBufferLength();
+
+        let videoBufferLength = player.getVideoBufferLength();
+        let audioBufferLength = player.getAudioBufferLength();
+        // Calculate the buffer length which is the smaller length of the audio and video buffers. If one of these
+        // buffers is not available, we set it's value to MAX_VALUE to make sure that the other real value is taken
+        // as the buffer length.
+        let bufferLength = Math.min(
+          videoBufferLength != null ? videoBufferLength : Number.MAX_VALUE,
+          audioBufferLength != null ? audioBufferLength : Number.MAX_VALUE);
+        // If both buffer lengths are missing, we set the buffer length to zero
+        if(bufferLength == Number.MAX_VALUE) {
+          bufferLength = 0;
+        }
+
+        let bufferPercentage = 100 / player.getDuration() * bufferLength;
 
         // Update playback position only in paused state, playback updates are handled in the Timeout below
         if (player.isPaused()) {
