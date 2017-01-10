@@ -61,4 +61,11 @@
   .#{$prefix}-text-right {
     text-align: right;
   }
+
+  &.#{$prefix}-layout-max-width-400,
+  &.#{$prefix}-layout-max-width-600 {
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      font-size: 0.7em;
+    }
+  }
 }
