@@ -1,6 +1,6 @@
 import {ContainerConfig, Container} from './container';
 import {Label, LabelConfig} from './label';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import ErrorEvent = bitmovin.player.ErrorEvent;
 import {TvNoiseCanvas} from './tvnoisecanvas';
 
@@ -25,7 +25,7 @@ export class ErrorMessageOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

@@ -1,6 +1,6 @@
 import {ContainerConfig, Container} from './container';
 import {Label, LabelConfig} from './label';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import CastWaitingForDeviceEvent = bitmovin.player.CastWaitingForDeviceEvent;
 import CastLaunchedEvent = bitmovin.player.CastLaunchedEvent;
 import CastStoppedEvent = bitmovin.player.CastStoppedEvent;
@@ -24,7 +24,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

@@ -1,5 +1,5 @@
 import {ContainerConfig, Container} from './container';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {Component, ComponentConfig} from './component';
 
 /**
@@ -25,7 +25,7 @@ export class BufferingOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

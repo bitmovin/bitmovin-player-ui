@@ -1,5 +1,5 @@
 import {LabelConfig, Label} from './label';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../utils';
 
 export enum TimeLabelMode {
@@ -29,7 +29,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

@@ -1,7 +1,7 @@
 import {Container, ContainerConfig} from './container';
 import {Label, LabelConfig} from './label';
 import {Component, ComponentConfig} from './component';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../utils';
 
 /**
@@ -32,7 +32,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

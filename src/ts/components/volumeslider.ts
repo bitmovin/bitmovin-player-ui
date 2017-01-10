@@ -1,5 +1,5 @@
 import {SeekBar, SeekBarConfig} from './seekbar';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {Timeout} from '../timeout';
 
 /**
@@ -15,7 +15,7 @@ export class VolumeSlider extends SeekBar {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager, false);
 
     let self = this;

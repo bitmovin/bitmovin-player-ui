@@ -1,5 +1,5 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import PlayerEvent = bitmovin.player.PlayerEvent;
 
 /**
@@ -16,7 +16,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager, handleClickEvent: boolean = true): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager, handleClickEvent: boolean = true): void {
     super.configure(player, uimanager);
 
     let self = this;

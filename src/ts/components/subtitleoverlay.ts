@@ -1,5 +1,5 @@
 import {Container, ContainerConfig} from './container';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import SubtitleCueEvent = bitmovin.player.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
@@ -28,7 +28,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

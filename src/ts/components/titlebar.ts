@@ -1,5 +1,5 @@
 import {Container, ContainerConfig} from './container';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {MetadataLabel, MetadataLabelContent} from './metadatalabel';
 
 /**
@@ -27,7 +27,7 @@ export class TitleBar extends Container<TitleBarConfig> {
     }, <TitleBarConfig>this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

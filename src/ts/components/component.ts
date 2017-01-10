@@ -1,7 +1,7 @@
 import {Guid} from '../guid';
 import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 
 /**
  * Base configuration interface for a component.
@@ -176,7 +176,7 @@ export class Component<Config extends ComponentConfig> {
    * @param player the player which this component controls
    * @param uimanager the UIManager that manages this component
    */
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     let self = this;
 
     self.onShow.subscribe(function() {

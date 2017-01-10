@@ -1,5 +1,5 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 
 /**
  * A button that toggles the video view between normal/mono and VR/stereo.
@@ -15,7 +15,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

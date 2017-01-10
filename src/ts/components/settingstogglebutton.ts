@@ -1,6 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {SettingsPanel} from './settingspanel';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -38,7 +38,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     }, <SettingsToggleButtonConfig>this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

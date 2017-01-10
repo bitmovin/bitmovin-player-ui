@@ -1,5 +1,5 @@
 import {ButtonConfig, Button} from './button';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {Component, ComponentConfig} from './component';
 
 /**
@@ -26,7 +26,7 @@ export class CloseButton extends Button<CloseButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <CloseButtonConfig>this.getConfig();

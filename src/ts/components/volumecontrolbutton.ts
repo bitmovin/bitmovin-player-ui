@@ -1,7 +1,7 @@
 import {Container, ContainerConfig} from './container';
 import {VolumeSlider} from './volumeslider';
 import {VolumeToggleButton} from './volumetogglebutton';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {Timeout} from '../timeout';
 
 /**
@@ -48,7 +48,7 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
     }, <VolumeControlButtonConfig>this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;

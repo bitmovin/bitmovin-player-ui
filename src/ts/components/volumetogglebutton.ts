@@ -1,5 +1,5 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
-import {UIManager} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import VolumeChangeEvent = bitmovin.player.VolumeChangeEvent;
 
 /**
@@ -16,7 +16,7 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let self = this;
