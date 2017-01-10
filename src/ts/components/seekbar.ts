@@ -216,6 +216,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, function() {
       smoothPlaybackPositionUpdater.clear();
     });
+    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, function() {
+      currentTimeSeekBar = player.getCurrentTime();
+    });
 
 
     // Seek handling
