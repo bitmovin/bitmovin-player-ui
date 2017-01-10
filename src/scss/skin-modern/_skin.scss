@@ -65,11 +65,11 @@
   &.#{$prefix}-layout-max-width-400,
   &.#{$prefix}-layout-max-width-600 {
     .#{$prefix}-ui-hugeplaybacktogglebutton {
-      font-size: 0.7em;
+      font-size: .7em;
     }
 
     .#{$prefix}-ui-watermark {
-      font-size: 0.7em;
+      font-size: .7em;
     }
   }
 }

@@ -152,7 +152,7 @@ export class SeekBar extends Component<SeekBarConfig> {
           videoBufferLength != null ? videoBufferLength : Number.MAX_VALUE,
           audioBufferLength != null ? audioBufferLength : Number.MAX_VALUE);
         // If both buffer lengths are missing, we set the buffer length to zero
-        if(bufferLength == Number.MAX_VALUE) {
+        if (bufferLength === Number.MAX_VALUE) {
           bufferLength = 0;
         }
 
