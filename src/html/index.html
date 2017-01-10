@@ -224,7 +224,7 @@
     // Define custom parameters for testing API methods that take parameters
     var apiMethodParameters = {
         'setVolume': [0, 50, 100, function () { return player.getVolume() + 10; }],
-        'seek': [0, function () { return player.getCurrentTime() + 60; }, function () { return player.getCurrentTime() - 60; }, function () { return player.getDuration() - 1; }],
+        'seek': [0, function () { return player.getCurrentTime() + 60; }, function () { return player.getCurrentTime() + 60 * 5; }, function () { return player.getCurrentTime() - 60; }, function () { return player.getCurrentTime() - 60 * 5; }, function () { return player.getDuration() - 1; }],
         'setPlaybackSpeed': [0, 0.1, 0.25, 0.5, 1, 2, 4, 10],
     };
 
