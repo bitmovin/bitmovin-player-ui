@@ -239,6 +239,7 @@ export class UIManager {
         components: [
           new BufferingOverlay(),
           new AdClickOverlay(),
+          new PlaybackToggleOverlay(),
           new Container({
             components: [
               new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
