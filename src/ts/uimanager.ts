@@ -62,8 +62,8 @@ export class UIManager {
 
   private player: Player;
   private playerElement: DOM;
-  private playerUi: UIInstanceManager;
-  private adsUi: UIInstanceManager;
+  private playerUi: InternalUIInstanceManager;
+  private adsUi: InternalUIInstanceManager;
   private config: UIConfig;
   private managerPlayerWrapper: PlayerWrapper;
 
@@ -77,8 +77,8 @@ export class UIManager {
       };
     }
 
-    this.playerUi = new UIInstanceManager(player, playerUi, config);
-    this.adsUi = new UIInstanceManager(player, adsUi, config);
+    this.playerUi = new InternalUIInstanceManager(player, playerUi, config);
+    this.adsUi = new InternalUIInstanceManager(player, adsUi, config);
 
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
@@ -147,7 +147,7 @@ export class UIManager {
     }
   }
 
-  private addUi(ui: UIInstanceManager): void {
+  private addUi(ui: InternalUIInstanceManager): void {
     let dom = ui.getUI().getDomElement();
     this.configureControls(ui.getUI(), ui);
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization
@@ -156,7 +156,7 @@ export class UIManager {
     this.playerElement.append(dom);
   }
 
-  private releaseUi(ui: UIInstanceManager): void {
+  private releaseUi(ui: InternalUIInstanceManager): void {
     ui.getUI().getDomElement().remove();
     ui.clearEventHandlers();
   }
@@ -585,7 +585,7 @@ export class UIInstanceManager {
     return this.events.onControlsHide;
   }
 
-  clearEventHandlers(): void {
+  protected clearEventHandlers(): void {
     this.playerWrapper.clearEventHandlers();
 
     let events = <any>this.events; // avoid TS7017
@@ -593,6 +593,16 @@ export class UIInstanceManager {
       let dispatcher = <EventDispatcher<Object, Object>>events[event];
       dispatcher.unsubscribeAll();
     }
+  }
+}
+
+/**
+ * Extends the {@link UIInstanceManager} for internal use in the {@link UIManager} and provides access to functionality
+ * that components receiving a reference to the {@link UIInstanceManager} should not have access to.
+ */
+class InternalUIInstanceManager extends UIInstanceManager {
+  clearEventHandlers(): void {
+    super.clearEventHandlers();
   }
 }
 
