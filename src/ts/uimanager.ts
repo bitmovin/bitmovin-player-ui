@@ -61,6 +61,7 @@ export interface UIConfig {
 export class UIManager {
 
   private player: Player;
+  private playerElement: DOM;
   private playerUi: UIInstanceManager;
   private adsUi: UIInstanceManager;
   private config: UIConfig;
@@ -81,8 +82,10 @@ export class UIManager {
 
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
+    this.playerElement = new DOM(player.getFigure());
+
     // Add UI elements to player
-    this.playerUi.initialize();
+    this.addUi(this.playerUi);
 
     let self = this;
 
@@ -97,7 +100,7 @@ export class UIManager {
         if (event.clientType === 'vast') {
           // Add ads UI when it is needed for the first time
           if (!adsUiAdded) {
-            self.adsUi.initialize();
+            self.addUi(self.adsUi);
             adsUiAdded = true;
 
             /* Relay the ON_AD_STARTED event to the ads UI
@@ -133,10 +136,35 @@ export class UIManager {
     return this.config;
   }
 
+  private configureControls(component: Component<ComponentConfig>, manager: UIInstanceManager) {
+    component.initialize();
+    component.configure(manager.getPlayer(), manager);
+
+    if (component instanceof Container) {
+      for (let childComponent of component.getComponents()) {
+        this.configureControls(childComponent, manager);
+      }
+    }
+  }
+
+  private addUi(ui: UIInstanceManager): void {
+    let dom = ui.getUI().getDomElement();
+    this.configureControls(ui.getUI(), ui);
+    /* Append the UI DOM after configuration to avoid CSS transitions at initialization
+     * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
+     * undesirable at this time. */
+    this.playerElement.append(dom);
+  }
+
+  private releaseUi(ui: UIInstanceManager): void {
+    ui.getUI().getDomElement().remove();
+    ui.clearEventHandlers();
+  }
+
   release(): void {
-    this.playerUi.release();
+    this.releaseUi(this.playerUi);
     if (this.adsUi) {
-      this.adsUi.release();
+      this.releaseUi(this.adsUi);
     }
     this.managerPlayerWrapper.clearEventHandlers();
   }
@@ -470,7 +498,6 @@ export class UIManager {
  */
 export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
-  private playerElement: DOM;
   private ui: UIContainer;
   private config: UIConfig;
 
@@ -488,11 +515,6 @@ export class UIInstanceManager {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
-
-    this.playerElement = new DOM(player.getFigure());
-
-    // Add UI elements to player
-    //this.initialize();
   }
 
   getConfig(): UIConfig {
@@ -505,17 +527,6 @@ export class UIInstanceManager {
 
   getPlayer(): WrappedPlayer {
     return this.playerWrapper.getPlayer();
-  }
-
-  private configureControls(component: Component<ComponentConfig>) {
-    component.initialize();
-    component.configure(this.playerWrapper.getPlayer(), this);
-
-    if (component instanceof Container) {
-      for (let childComponent of component.getComponents()) {
-        this.configureControls(childComponent);
-      }
-    }
   }
 
   /**
@@ -574,17 +585,7 @@ export class UIInstanceManager {
     return this.events.onControlsHide;
   }
 
-  initialize(): void {
-    let dom = this.ui.getDomElement();
-    this.configureControls(this.ui);
-    /* Append the UI DOM after configuration to avoid CSS transitions at initialization
-     * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
-     * undesirable at this time. */
-    this.playerElement.append(dom);
-  }
-
-  release(): void {
-    this.ui.getDomElement().remove();
+  clearEventHandlers(): void {
     this.playerWrapper.clearEventHandlers();
 
     let events = <any>this.events; // avoid TS7017
