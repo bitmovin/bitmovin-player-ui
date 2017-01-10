@@ -34,10 +34,8 @@ export class AdClickOverlay extends ClickOverlay {
     player.addEventHandler(bitmovin.player.EVENT.ON_AD_SKIPPED, adFinishedHandler);
 
     self.onClick.subscribe(function() {
-      // Pause the ad when click-through URL opens
-      if (clickThroughEnabled) {
-        player.pause('ui-content-click');
-      }
+      // Pause the ad when overlay is clicked
+      player.pause('ui-content-click');
 
       // Notify the player of the clicked ad
       player.fireEvent(bitmovin.player.EVENT.ON_AD_CLICKED, {
