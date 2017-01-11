@@ -505,6 +505,10 @@ export interface SeekPreviewArgs extends NoArgs {
    * The timeline position in percent where the event originates from.
    */
   position: number;
+  /**
+   * The chapter marker associated with the current position, if existing.
+   */
+  chapter?: ChapterMarker;
 }
 
 /**

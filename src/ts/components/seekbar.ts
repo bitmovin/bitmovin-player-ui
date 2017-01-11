@@ -691,9 +691,22 @@ export class SeekBar extends Component<SeekBarConfig> {
       });
     }
 
+    let snappedChapter: ChapterMarker = null;
+    let snappingRange = 1;
+    if (this.chapterMarkers.length > 0) {
+      for (let chapter of this.chapterMarkers) {
+        if (percentage >= chapter.time - snappingRange && percentage <= chapter.time + snappingRange) {
+          snappedChapter = chapter;
+          console.log(snappedChapter);
+          break;
+        }
+      }
+    }
+
     this.seekBarEvents.onSeekPreview.dispatch(this, {
       scrubbing: scrubbing,
       position: percentage,
+      chapter: snappedChapter,
     });
   }
 
