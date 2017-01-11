@@ -50,10 +50,16 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
+export interface ChapterMarker {
+  time: number;
+  title?: string;
+}
+
 export interface UIConfig {
   metadata?: {
     title?: string;
     description?: string;
+    chapters?: ChapterMarker[];
   };
   recommendations?: UIRecommendationConfig[];
 }
