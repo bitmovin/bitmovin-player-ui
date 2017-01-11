@@ -53,6 +53,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
           self.setTitleText(args.chapter.title);
         } else {
           time = player.getDuration() * (args.position / 100);
+          self.setTitleText(null);
         }
         self.setTime(time);
         self.setThumbnail(player.getThumb(time));
