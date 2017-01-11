@@ -30,7 +30,12 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-seekbar-label',
       components: [new Container({
-        components: [this.thumbnail, this.titleLabel, this.timeLabel],
+        components: [
+          this.thumbnail,
+          new Container({
+            components: [this.titleLabel, this.timeLabel],
+            cssClass: 'seekbar-label-metadata',
+          })],
         cssClass: 'seekbar-label-inner',
       })],
       hidden: true
