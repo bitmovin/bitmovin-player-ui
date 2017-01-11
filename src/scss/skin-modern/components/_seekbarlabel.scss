@@ -24,7 +24,6 @@
   }
 
   .#{$prefix}-seekbar-label-inner {
-    background-color: transparentize($color-background, .15);
     border-bottom: .2em solid $color-primary;
 
     // bottom arrow from http://www.cssarrowplease.com/
@@ -47,18 +46,27 @@
       position: relative;
 
       .#{$prefix}-seekbar-thumbnail {
-        height: 1.8em;
         width: 6em;
       }
 
-      .#{$prefix}-seekbar-label {
+      .#{$prefix}-seekbar-label-metadata {
         background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
         bottom: 0;
         display: block;
-        line-height: .8em;
         padding: .5em;
         position: absolute;
         width: 100%;
+
+        .#{$prefix}-seekbar-label-time {
+          display: block;
+          line-height: .8em;
+        }
+
+        .#{$prefix}-seekbar-label-title {
+          display: block;
+          margin-bottom: .3em;
+          white-space: normal;
+        }
       }
     }
   }

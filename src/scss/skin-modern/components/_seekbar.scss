@@ -71,6 +71,25 @@
       position: absolute;
       width: 1em;
     }
+
+    .#{$prefix}-seekbar-chaptermarkers {
+      @extend %bar;
+
+      $chaptermarker-width: 2px;
+
+      margin: ($bar-inset / 1.3) 0;
+
+      > .#{$prefix}-seekbar-chaptermarker {
+        @extend %bar;
+
+        border-right: $chaptermarker-width solid $color-primary;
+        // don't consider the border for width, else it does not overlap at edges
+        box-sizing: content-box;
+        // offset position marker to center it on its actual position
+        margin-left: -$chaptermarker-width / 2;
+        width: 0;
+      }
+    }
   }
 
   // disable animations during seeks

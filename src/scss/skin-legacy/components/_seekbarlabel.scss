@@ -27,9 +27,16 @@
       margin-bottom: .3em;
     }
 
-    .#{$prefix}-seekbar-label {
+    .#{$prefix}-seekbar-label-time {
       line-height: .8em;
       margin: .5em;
+    }
+
+    .#{$prefix}-seekbar-label-title {
+      display: block;
+      line-height: .8em;
+      margin: .5em;
+      white-space: normal;
     }
   }
 }

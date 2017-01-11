@@ -2,7 +2,7 @@ import {Component, ComponentConfig} from './component';
 import {DOM} from '../dom';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {SeekBarLabel} from './seekbarlabel';
-import {UIInstanceManager} from '../uimanager';
+import {UIInstanceManager, ChapterMarker, SeekPreviewArgs} from '../uimanager';
 import {Timeout} from '../timeout';
 
 /**
@@ -22,15 +22,11 @@ export interface SeekBarConfig extends ComponentConfig {
 /**
  * Event argument interface for a seek preview event.
  */
-export interface SeekPreviewEventArgs extends NoArgs {
+export interface SeekPreviewEventArgs extends SeekPreviewArgs {
   /**
    * Tells if the seek preview event comes from a scrubbing.
    */
   scrubbing: boolean;
-  /**
-   * The timeline position in percent where the event originates from.
-   */
-  position: number;
 }
 
 /**
@@ -55,8 +51,11 @@ export class SeekBar extends Component<SeekBarConfig> {
   private seekBarBufferPosition: DOM;
   private seekBarSeekPosition: DOM;
   private seekBarBackdrop: DOM;
+  private seekBarChapterMarkersContainer: DOM;
 
   private label: SeekBarLabel;
+
+  private chapterMarkers: ChapterMarker[];
 
   /**
    * Buffer of the the current playback position. The position must be buffered in case it needs the element
@@ -91,6 +90,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }, this.config);
 
     this.label = this.config.label;
+    this.chapterMarkers = [];
   }
 
   initialize(): void {
@@ -110,6 +110,16 @@ export class SeekBar extends Component<SeekBarConfig> {
       // This is actually a hack, the proper solution would be for both seek bar and volume sliders to extend
       // a common base slider component and implement their functionality there.
       return;
+    }
+
+    if (uimanager.getConfig().metadata && uimanager.getConfig().metadata.chapters
+      && uimanager.getConfig().metadata.chapters.length > 0) {
+      for (let chapter of uimanager.getConfig().metadata.chapters) {
+        this.chapterMarkers.push({
+          time: 100 / player.getDuration() * chapter.time, // convert time to percentage
+          title: chapter.title,
+        })
+      }
     }
 
     let self = this;
@@ -272,7 +282,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     self.onSeekPreview.subscribe(function(sender: SeekBar, args: SeekPreviewEventArgs) {
       // Notify UI manager of seek preview
-      uimanager.onSeekPreview.dispatch(sender, args.position);
+      uimanager.onSeekPreview.dispatch(sender, args);
     });
     self.onSeekPreview.subscribeRateLimited(function(sender: SeekBar, args: SeekPreviewEventArgs) {
       // Rate-limited scrubbing seek
@@ -327,6 +337,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPlaybackPosition(0);
     this.setBufferPosition(0);
     this.setSeekPosition(0);
+    this.updateChapterMarkers();
   }
 
   protected toDomElement(): DOM {
@@ -374,8 +385,13 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     this.seekBarBackdrop = seekBarBackdrop;
 
+    let seekBarChapterMarkersContainer = new DOM('div', {
+      'class': this.prefixCss('seekbar-chaptermarkers')
+    });
+    this.seekBarChapterMarkersContainer = seekBarChapterMarkersContainer;
+
     seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition,
-      seekBarPlaybackPosition, seekBarPlaybackPositionMarker);
+      seekBarPlaybackPosition, seekBarChapterMarkersContainer, seekBarPlaybackPositionMarker);
 
     let self = this;
     let seeking = false;
@@ -399,12 +415,13 @@ export class SeekBar extends Component<SeekBarConfig> {
       new DOM(document).off('touchend mouseup', mouseTouchUpHandler);
 
       let targetPercentage = 100 * self.getOffset(e);
+      let snappedChapter = self.getChapterAtPosition(targetPercentage);
 
       self.setSeeking(false);
       seeking = false;
 
       // Fire seeked event
-      self.onSeekedEvent(targetPercentage);
+      self.onSeekedEvent(snappedChapter ? snappedChapter.time : targetPercentage);
     };
 
     // A seek always start with a touchstart or mousedown directly on the seekbar.
@@ -470,6 +487,34 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     return seekBarContainer;
+  }
+
+  protected updateChapterMarkers(): void {
+    this.seekBarChapterMarkersContainer.empty();
+    for (let chapter of this.chapterMarkers) {
+      this.seekBarChapterMarkersContainer.append(new DOM('div', {
+        'class': this.prefixCss('seekbar-chaptermarker'),
+        'data-chapter-time': String(chapter.time),
+        'data-chapter-title': String(chapter.title),
+      }).css({
+        'width': chapter.time + '%',
+      }));
+    }
+  }
+
+  protected getChapterAtPosition(percentage: number): ChapterMarker | null {
+    let snappedChapter: ChapterMarker = null;
+    let snappingRange = 1;
+    if (this.chapterMarkers.length > 0) {
+      for (let chapter of this.chapterMarkers) {
+        if (percentage >= chapter.time - snappingRange && percentage <= chapter.time + snappingRange) {
+          snappedChapter = chapter;
+          break;
+        }
+      }
+    }
+
+    return snappedChapter;
   }
 
   /**
@@ -655,13 +700,20 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
+    let snappedChapter = this.getChapterAtPosition(percentage);
+
     if (this.label) {
       this.label.setText(percentage + '');
       this.label.getDomElement().css({
-        'left': percentage + '%'
+        'left': (snappedChapter ? snappedChapter.time : percentage) + '%'
       });
     }
-    this.seekBarEvents.onSeekPreview.dispatch(this, { scrubbing: scrubbing, position: percentage });
+
+    this.seekBarEvents.onSeekPreview.dispatch(this, {
+      scrubbing: scrubbing,
+      position: percentage,
+      chapter: snappedChapter,
+    });
   }
 
   protected onSeekedEvent(percentage: number) {

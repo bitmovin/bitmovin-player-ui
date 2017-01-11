@@ -1,7 +1,7 @@
 import {Container, ContainerConfig} from './container';
 import {Label, LabelConfig} from './label';
 import {Component, ComponentConfig} from './component';
-import {UIInstanceManager} from '../uimanager';
+import {UIInstanceManager, SeekPreviewArgs} from '../uimanager';
 import {StringUtils} from '../utils';
 
 /**
@@ -16,18 +16,28 @@ export interface SeekBarLabelConfig extends ContainerConfig {
  */
 export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
-  private label: Label<LabelConfig>;
+  private timeLabel: Label<LabelConfig>;
+  private titleLabel: Label<LabelConfig>;
   private thumbnail: Component<ComponentConfig>;
 
   constructor(config: SeekBarLabelConfig = {}) {
     super(config);
 
-    this.label = new Label({ cssClasses: ['seekbar-label'] });
+    this.timeLabel = new Label({ cssClasses: ['seekbar-label-time'] });
+    this.titleLabel = new Label({ cssClasses: ['seekbar-label-title'] });
     this.thumbnail = new Component({ cssClasses: ['seekbar-thumbnail'] });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-seekbar-label',
-      components: [new Container({ components: [this.thumbnail, this.label], cssClass: 'seekbar-label-inner' })],
+      components: [new Container({
+        components: [
+          this.thumbnail,
+          new Container({
+            components: [this.titleLabel, this.timeLabel],
+            cssClass: 'seekbar-label-metadata',
+          })],
+        cssClass: 'seekbar-label-inner',
+      })],
       hidden: true
     }, this.config);
   }
@@ -37,12 +47,19 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
     let self = this;
 
-    uimanager.onSeekPreview.subscribe(function(sender, percentage) {
+    uimanager.onSeekPreview.subscribe(function(sender, args: SeekPreviewArgs) {
       if (player.isLive()) {
-        let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (percentage / 100);
+        let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (args.position / 100);
         self.setTime(time);
       } else {
-        let time = player.getDuration() * (percentage / 100);
+        let time = 0;
+        if (args.chapter) {
+          time = args.chapter.time;
+          self.setTitleText(args.chapter.title);
+        } else {
+          time = player.getDuration() * (args.position / 100);
+          self.setTitleText(null);
+        }
         self.setTime(time);
         self.setThumbnail(player.getThumb(time));
       }
@@ -54,7 +71,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * @param text the text to show on the label
    */
   setText(text: string) {
-    this.label.setText(text);
+    this.timeLabel.setText(text);
   }
 
   /**
@@ -63,6 +80,14 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    */
   setTime(seconds: number) {
     this.setText(StringUtils.secondsToTime(seconds));
+  }
+
+  /**
+   * Sets the text on the title label.
+   * @param text the text to show on the label
+   */
+  setTitleText(text: string) {
+    this.titleLabel.setText(text);
   }
 
   /**
