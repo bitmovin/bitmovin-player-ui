@@ -1,7 +1,7 @@
 import {Container, ContainerConfig} from './container';
 import {Label, LabelConfig} from './label';
 import {Component, ComponentConfig} from './component';
-import {UIInstanceManager} from '../uimanager';
+import {UIInstanceManager, SeekPreviewArgs} from '../uimanager';
 import {StringUtils} from '../utils';
 
 /**
@@ -42,12 +42,12 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
     let self = this;
 
-    uimanager.onSeekPreview.subscribe(function(sender, percentage) {
+    uimanager.onSeekPreview.subscribe(function(sender, args: SeekPreviewArgs) {
       if (player.isLive()) {
-        let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (percentage / 100);
+        let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (args.position / 100);
         self.setTime(time);
       } else {
-        let time = player.getDuration() * (percentage / 100);
+        let time = player.getDuration() * (args.position / 100);
         self.setTime(time);
         self.setThumbnail(player.getThumb(time));
       }

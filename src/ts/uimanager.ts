@@ -500,6 +500,13 @@ export class UIManager {
   };
 }
 
+export interface SeekPreviewArgs extends NoArgs {
+  /**
+   * The timeline position in percent where the event originates from.
+   */
+  position: number;
+}
+
 /**
  * Encapsulates functionality to manage a UI instance. Used by the {@link UIManager} to manage multiple UI instances.
  */
@@ -510,7 +517,7 @@ export class UIInstanceManager {
 
   private events = {
     onSeek: new EventDispatcher<SeekBar, NoArgs>(),
-    onSeekPreview: new EventDispatcher<SeekBar, number>(),
+    onSeekPreview: new EventDispatcher<SeekBar, SeekPreviewArgs>(),
     onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
     onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
@@ -548,7 +555,7 @@ export class UIInstanceManager {
    * Fires when the seek timeline is scrubbed.
    * @returns {EventDispatcher}
    */
-  get onSeekPreview(): EventDispatcher<SeekBar, number> {
+  get onSeekPreview(): EventDispatcher<SeekBar, SeekPreviewArgs> {
     return this.events.onSeekPreview;
   }
 

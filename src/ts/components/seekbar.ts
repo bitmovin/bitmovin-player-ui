@@ -2,7 +2,7 @@ import {Component, ComponentConfig} from './component';
 import {DOM} from '../dom';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {SeekBarLabel} from './seekbarlabel';
-import {UIInstanceManager, ChapterMarker} from '../uimanager';
+import {UIInstanceManager, ChapterMarker, SeekPreviewArgs} from '../uimanager';
 import {Timeout} from '../timeout';
 
 /**
@@ -22,15 +22,11 @@ export interface SeekBarConfig extends ComponentConfig {
 /**
  * Event argument interface for a seek preview event.
  */
-export interface SeekPreviewEventArgs extends NoArgs {
+export interface SeekPreviewEventArgs extends SeekPreviewArgs {
   /**
    * Tells if the seek preview event comes from a scrubbing.
    */
   scrubbing: boolean;
-  /**
-   * The timeline position in percent where the event originates from.
-   */
-  position: number;
 }
 
 /**
@@ -286,7 +282,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     self.onSeekPreview.subscribe(function(sender: SeekBar, args: SeekPreviewEventArgs) {
       // Notify UI manager of seek preview
-      uimanager.onSeekPreview.dispatch(sender, args.position);
+      uimanager.onSeekPreview.dispatch(sender, args);
     });
     self.onSeekPreview.subscribeRateLimited(function(sender: SeekBar, args: SeekPreviewEventArgs) {
       // Rate-limited scrubbing seek
@@ -694,7 +690,11 @@ export class SeekBar extends Component<SeekBarConfig> {
         'left': percentage + '%'
       });
     }
-    this.seekBarEvents.onSeekPreview.dispatch(this, { scrubbing: scrubbing, position: percentage });
+
+    this.seekBarEvents.onSeekPreview.dispatch(this, {
+      scrubbing: scrubbing,
+      position: percentage,
+    });
   }
 
   protected onSeekedEvent(percentage: number) {
