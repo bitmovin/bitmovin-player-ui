@@ -684,13 +684,6 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
-    if (this.label) {
-      this.label.setText(percentage + '');
-      this.label.getDomElement().css({
-        'left': percentage + '%'
-      });
-    }
-
     let snappedChapter: ChapterMarker = null;
     let snappingRange = 1;
     if (this.chapterMarkers.length > 0) {
@@ -701,6 +694,13 @@ export class SeekBar extends Component<SeekBarConfig> {
           break;
         }
       }
+    }
+
+    if (this.label) {
+      this.label.setText(percentage + '');
+      this.label.getDomElement().css({
+        'left': (snappedChapter ? snappedChapter.time : percentage) + '%'
+      });
     }
 
     this.seekBarEvents.onSeekPreview.dispatch(this, {
