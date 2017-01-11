@@ -415,12 +415,13 @@ export class SeekBar extends Component<SeekBarConfig> {
       new DOM(document).off('touchend mouseup', mouseTouchUpHandler);
 
       let targetPercentage = 100 * self.getOffset(e);
+      let snappedChapter = self.getChapterAtPosition(targetPercentage);
 
       self.setSeeking(false);
       seeking = false;
 
       // Fire seeked event
-      self.onSeekedEvent(targetPercentage);
+      self.onSeekedEvent(snappedChapter ? snappedChapter.time : targetPercentage);
     };
 
     // A seek always start with a touchstart or mousedown directly on the seekbar.
@@ -499,6 +500,21 @@ export class SeekBar extends Component<SeekBarConfig> {
         'width': chapter.time + '%',
       }));
     }
+  }
+
+  protected getChapterAtPosition(percentage: number): ChapterMarker | null {
+    let snappedChapter: ChapterMarker = null;
+    let snappingRange = 1;
+    if (this.chapterMarkers.length > 0) {
+      for (let chapter of this.chapterMarkers) {
+        if (percentage >= chapter.time - snappingRange && percentage <= chapter.time + snappingRange) {
+          snappedChapter = chapter;
+          break;
+        }
+      }
+    }
+
+    return snappedChapter;
   }
 
   /**
@@ -684,16 +700,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
-    let snappedChapter: ChapterMarker = null;
-    let snappingRange = 1;
-    if (this.chapterMarkers.length > 0) {
-      for (let chapter of this.chapterMarkers) {
-        if (percentage >= chapter.time - snappingRange && percentage <= chapter.time + snappingRange) {
-          snappedChapter = chapter;
-          break;
-        }
-      }
-    }
+    let snappedChapter = this.getChapterAtPosition(percentage);
 
     if (this.label) {
       this.label.setText(percentage + '');
