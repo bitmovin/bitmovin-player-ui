@@ -67,6 +67,18 @@
       margin-left: -$position-marker-width / 2;
       width: 0;
     }
+
+    .#{$prefix}-seekbar-chaptermarker {
+      @extend %bar;
+
+      $chaptermarker-width: $position-marker-width / 2;
+
+      border-right: $chaptermarker-width solid $color-white;
+      box-sizing: content-box;
+      margin: $bar-inset 0;
+      margin-left: -$chaptermarker-width / 2;
+      width: 0;
+    }
   }
 
   // disable animations during seeks
