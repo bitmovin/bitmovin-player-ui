@@ -47,7 +47,13 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (args.position / 100);
         self.setTime(time);
       } else {
-        let time = player.getDuration() * (args.position / 100);
+        let time = 0;
+        if (args.chapter) {
+          time = args.chapter.time;
+          self.setChapterText(args.chapter.title);
+        } else {
+          time = player.getDuration() * (args.position / 100);
+        }
         self.setTime(time);
         self.setThumbnail(player.getThumb(time));
       }
@@ -68,6 +74,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    */
   setTime(seconds: number) {
     this.setText(StringUtils.secondsToTime(seconds));
+  }
+
+  setChapterText(text: string) {
+    this.chapterLabel.setText(text);
   }
 
   /**

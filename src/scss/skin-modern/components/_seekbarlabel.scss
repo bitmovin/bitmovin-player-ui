@@ -60,6 +60,15 @@
         position: absolute;
         width: 100%;
       }
+
+      .#{$prefix}-seekbar-label-title {
+        bottom: 1em;
+        display: block;
+        padding: .5em;
+        position: absolute;
+        white-space: normal;
+        width: 100%;
+      }
     }
   }
 }
