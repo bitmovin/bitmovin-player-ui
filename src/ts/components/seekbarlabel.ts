@@ -17,20 +17,20 @@ export interface SeekBarLabelConfig extends ContainerConfig {
 export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
   private timeLabel: Label<LabelConfig>;
-  private chapterLabel: Label<LabelConfig>;
+  private titleLabel: Label<LabelConfig>;
   private thumbnail: Component<ComponentConfig>;
 
   constructor(config: SeekBarLabelConfig = {}) {
     super(config);
 
     this.timeLabel = new Label({ cssClasses: ['seekbar-label-time'] });
-    this.chapterLabel = new Label({ cssClasses: ['seekbar-label-title'] });
+    this.titleLabel = new Label({ cssClasses: ['seekbar-label-title'] });
     this.thumbnail = new Component({ cssClasses: ['seekbar-thumbnail'] });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-seekbar-label',
       components: [new Container({
-        components: [this.thumbnail, this.chapterLabel, this.timeLabel],
+        components: [this.thumbnail, this.titleLabel, this.timeLabel],
         cssClass: 'seekbar-label-inner',
       })],
       hidden: true
@@ -50,7 +50,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         let time = 0;
         if (args.chapter) {
           time = args.chapter.time;
-          self.setChapterText(args.chapter.title);
+          self.setTitleText(args.chapter.title);
         } else {
           time = player.getDuration() * (args.position / 100);
         }
@@ -76,8 +76,12 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     this.setText(StringUtils.secondsToTime(seconds));
   }
 
-  setChapterText(text: string) {
-    this.chapterLabel.setText(text);
+  /**
+   * Sets the text on the title label.
+   * @param text the text to show on the label
+   */
+  setTitleText(text: string) {
+    this.titleLabel.setText(text);
   }
 
   /**
