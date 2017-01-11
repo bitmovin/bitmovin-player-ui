@@ -690,7 +690,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       for (let chapter of this.chapterMarkers) {
         if (percentage >= chapter.time - snappingRange && percentage <= chapter.time + snappingRange) {
           snappedChapter = chapter;
-          console.log(snappedChapter);
           break;
         }
       }
