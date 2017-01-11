@@ -90,6 +90,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }, this.config);
 
     this.label = this.config.label;
+    this.chapterMarkers = [];
   }
 
   initialize(): void {
@@ -111,7 +112,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       return;
     }
 
-    this.chapterMarkers = [];
     if (uimanager.getConfig().metadata && uimanager.getConfig().metadata.chapters
       && uimanager.getConfig().metadata.chapters.length > 0) {
       for (let chapter of uimanager.getConfig().metadata.chapters) {
