@@ -16,18 +16,23 @@ export interface SeekBarLabelConfig extends ContainerConfig {
  */
 export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
-  private label: Label<LabelConfig>;
+  private timeLabel: Label<LabelConfig>;
+  private chapterLabel: Label<LabelConfig>;
   private thumbnail: Component<ComponentConfig>;
 
   constructor(config: SeekBarLabelConfig = {}) {
     super(config);
 
-    this.label = new Label({ cssClasses: ['seekbar-label'] });
+    this.timeLabel = new Label({ cssClasses: ['seekbar-label-time'] });
+    this.chapterLabel = new Label({ cssClasses: ['seekbar-label-title'] });
     this.thumbnail = new Component({ cssClasses: ['seekbar-thumbnail'] });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-seekbar-label',
-      components: [new Container({ components: [this.thumbnail, this.label], cssClass: 'seekbar-label-inner' })],
+      components: [new Container({
+        components: [this.thumbnail, this.chapterLabel, this.timeLabel],
+        cssClass: 'seekbar-label-inner',
+      })],
       hidden: true
     }, this.config);
   }
@@ -54,7 +59,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * @param text the text to show on the label
    */
   setText(text: string) {
-    this.label.setText(text);
+    this.timeLabel.setText(text);
   }
 
   /**
