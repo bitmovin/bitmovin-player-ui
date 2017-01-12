@@ -9,7 +9,6 @@
 
   background: $color-background svg('assets/skin-modern/images/chromecast.svg') center no-repeat;
   background-size: 7em 7em;
-  pointer-events: none; // Disable input events
 
   .#{$prefix}-ui-cast-status-label {
     color: $color-primary;
