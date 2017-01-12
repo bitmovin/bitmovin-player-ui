@@ -57,10 +57,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
           time = args.chapter.time;
           self.setTitleText(args.chapter.title);
         } else {
-          time = player.getDuration() * (args.position / 100);
+          time = args.position;
           self.setTitleText(null);
         }
-        self.setTime(time);
+        self.setTime(player.getDuration() * (time / 100));
         self.setThumbnail(player.getThumb(time));
       }
     });
