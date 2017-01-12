@@ -79,7 +79,8 @@ export class UIManager {
 
     if (!config.metadata) {
       config.metadata = {
-        title: player.getConfig().source ? player.getConfig().source.title : null
+        title: player.getConfig().source ? player.getConfig().source.title : null,
+        description: player.getConfig().source ? player.getConfig().source.description : null,
       };
     }
 
