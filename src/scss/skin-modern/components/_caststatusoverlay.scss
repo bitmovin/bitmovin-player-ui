@@ -15,9 +15,14 @@
     font-size: 1.2em;
     left: 0;
     margin: 0 2em;
+    pointer-events: none;
     position: absolute;
     right: 0;
     text-align: center;
     top: 65%;
+
+    * {
+      pointer-events: none;
+    }
   }
 }
