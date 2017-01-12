@@ -24,7 +24,8 @@ export class CastUIContainer extends UIContainer {
      * Since a Cast receiver does not have a direct HCI, we show the UI on certain playback events to give the user
      * a chance to see on the screen what's going on, e.g. on play/pause or a seek the UI is shown and the user can
      * see the current time and position on the seek bar.
-     * The UI automatically hides after the configured hide delay time.
+     * The UI is shown permanently while playback is paused, otherwise hides automatically after the configured
+     * hide delay time.
      */
 
     let isUiShown = false;
@@ -41,14 +42,31 @@ export class CastUIContainer extends UIContainer {
         uimanager.onControlsShow.dispatch(self);
         isUiShown = true;
       }
+    };
+
+    let showUiPermanently = function() {
+      showUi();
+      uiHideTimeout.clear();
+    };
+
+    let showUiWithTimeout = function() {
+      showUi();
       uiHideTimeout.start();
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, showUi);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_LOADED, showUi);
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, showUi);
-    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, showUi);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, showUi);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, showUi);
+    let showUiAfterSeek = function() {
+      if (player.isPlaying()) {
+        showUiWithTimeout();
+      } else {
+        showUiPermanently();
+      }
+    };
+
+    player.addEventHandler(bitmovin.player.EVENT.ON_READY, showUiWithTimeout);
+    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_LOADED, showUiWithTimeout);
+    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, showUiWithTimeout);
+    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, showUiPermanently);
+    player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, showUiPermanently);
+    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, showUiAfterSeek);
   }
 }
