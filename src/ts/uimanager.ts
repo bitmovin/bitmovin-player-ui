@@ -85,7 +85,6 @@ export class UIManager {
     }
 
     this.playerUi = new InternalUIInstanceManager(player, playerUi, config);
-    this.adsUi = new InternalUIInstanceManager(player, adsUi, config);
 
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
@@ -98,6 +97,7 @@ export class UIManager {
 
     // Ads UI
     if (adsUi) {
+      this.adsUi = new InternalUIInstanceManager(player, adsUi, config);
       let adsUiAdded = false;
 
       let enterAdsUi = function(event: AdStartedEvent) {
