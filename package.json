@@ -1,7 +1,7 @@
 {
   "name": "bitmovin-player-ui",
   "version": "0.0.1",
-  "description": "Bitmovin Player Default UI",
+  "description": "Bitmovin Player UI Framework",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
