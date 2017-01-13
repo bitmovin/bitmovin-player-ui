@@ -19,6 +19,8 @@ export interface PlaybackTimeLabelConfig extends LabelConfig {
  */
 export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
+  private timeFormat: string;
+
   constructor(config: PlaybackTimeLabelConfig = {}) {
     super(config);
 
@@ -100,15 +102,21 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, updateLiveTimeshiftState);
     player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, updateLiveTimeshiftState);
 
-    // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content
-    // changes)
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, function() {
+    let init = function() {
+      // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content
+      // changes)
       minWidth = 0;
       self.getDomElement().css({
         'min-width': null
       });
-    });
 
+      // Set time format depending on source duration
+      self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) > 3600 * 60 ?
+        StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
+    };
+    player.addEventHandler(bitmovin.player.EVENT.ON_READY, init);
+
+    init();
     // Init time display (when the UI is initialized, it's too late for the ON_READY event)
     playbackTimeHandler();
   }
@@ -119,15 +127,18 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
    * @param durationSeconds the total duration in seconds
    */
   setTime(playbackSeconds: number, durationSeconds: number) {
+    let currentTime = StringUtils.secondsToTime(playbackSeconds, this.timeFormat);
+    let totalTime = StringUtils.secondsToTime(durationSeconds, this.timeFormat);
+
     switch ((<PlaybackTimeLabelConfig>this.config).timeLabelMode) {
       case TimeLabelMode.CurrentTime:
-        this.setText(`${StringUtils.secondsToTime(playbackSeconds)}`);
+        this.setText(`${currentTime}`);
         break;
       case TimeLabelMode.TotalTime:
-        this.setText(`${StringUtils.secondsToTime(durationSeconds)}`);
+        this.setText(`${totalTime}`);
         break;
       case TimeLabelMode.CurrentAndTotalTime:
-        this.setText(`${StringUtils.secondsToTime(playbackSeconds)} / ${StringUtils.secondsToTime(durationSeconds)}`);
+        this.setText(`${currentTime} / ${totalTime}`);
         break;
     }
   }

@@ -18,13 +18,17 @@ export namespace ArrayUtils {
 
 export namespace StringUtils {
 
+  export let FORMAT_HHMMSS: string = 'hh:mm:ss';
+  export let FORMAT_MMSS: string = 'mm:ss';
+
   /**
    * Formats a number of seconds into a time string with the pattern hh:mm:ss.
    *
    * @param totalSeconds the total number of seconds to format to string
+   * @param format the time format to output (default: hh:mm:ss)
    * @returns {string} the formatted time string
    */
-  export function secondsToTime(totalSeconds: number): string {
+  export function secondsToTime(totalSeconds: number, format: string = FORMAT_HHMMSS): string {
     let isNegative = totalSeconds < 0;
 
     if (isNegative) {
@@ -38,8 +42,10 @@ export namespace StringUtils {
     let minutes = Math.floor(totalSeconds / 60) - hours * 60;
     let seconds = Math.floor(totalSeconds) % 60;
 
-    return (isNegative ? '-' : '') + leftPadWithZeros(hours, 2) + ':' + leftPadWithZeros(minutes, 2) + ':'
-      + leftPadWithZeros(seconds, 2);
+    return (isNegative ? '-' : '') + format
+        .replace('hh', leftPadWithZeros(hours, 2))
+        .replace('mm', leftPadWithZeros(minutes, 2))
+        .replace('ss', leftPadWithZeros(seconds, 2));
   }
 
   /**

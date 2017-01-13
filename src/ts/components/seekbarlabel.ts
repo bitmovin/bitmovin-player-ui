@@ -20,6 +20,8 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   private titleLabel: Label<LabelConfig>;
   private thumbnail: Component<ComponentConfig>;
 
+  private timeFormat: string;
+
   constructor(config: SeekBarLabelConfig = {}) {
     super(config);
 
@@ -64,6 +66,15 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         self.setThumbnail(player.getThumb(time));
       }
     });
+
+    let init = function() {
+      // Set time format depending on source duration
+      self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) > 3600 * 60 ?
+        StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
+    };
+
+    player.addEventHandler(bitmovin.player.EVENT.ON_READY, init);
+    init();
   }
 
   /**
@@ -79,7 +90,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * @param seconds the time in seconds to display on the label
    */
   setTime(seconds: number) {
-    this.setText(StringUtils.secondsToTime(seconds));
+    this.setText(StringUtils.secondsToTime(seconds, this.timeFormat));
   }
 
   /**
