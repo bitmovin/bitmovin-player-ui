@@ -55,9 +55,9 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         self.setTime(time);
       } else {
         let time = 0;
-        if (args.chapter) {
-          time = args.chapter.time;
-          self.setTitleText(args.chapter.title);
+        if (args.marker) {
+          time = args.marker.time;
+          self.setTitleText(args.marker.title);
         } else {
           time = args.position;
           self.setTitleText(null);

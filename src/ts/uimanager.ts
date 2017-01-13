@@ -50,7 +50,7 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
-export interface ChapterMarker {
+export interface TimelineMarker {
   time: number;
   title?: string;
 }
@@ -59,7 +59,7 @@ export interface UIConfig {
   metadata?: {
     title?: string;
     description?: string;
-    chapters?: ChapterMarker[];
+    markers?: TimelineMarker[];
   };
   recommendations?: UIRecommendationConfig[];
 }
@@ -507,9 +507,9 @@ export interface SeekPreviewArgs extends NoArgs {
    */
   position: number;
   /**
-   * The chapter marker associated with the current position, if existing.
+   * The timeline marker associated with the current position, if existing.
    */
-  chapter?: ChapterMarker;
+  marker?: TimelineMarker;
 }
 
 /**
