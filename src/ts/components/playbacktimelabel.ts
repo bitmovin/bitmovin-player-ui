@@ -111,7 +111,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       });
 
       // Set time format depending on source duration
-      self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) > 3600 * 60 ?
+      self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
     };
     player.addEventHandler(bitmovin.player.EVENT.ON_READY, init);

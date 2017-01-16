@@ -69,7 +69,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
     let init = function() {
       // Set time format depending on source duration
-      self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) > 3600 * 60 ?
+      self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
     };
 
