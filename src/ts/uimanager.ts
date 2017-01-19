@@ -671,6 +671,13 @@ class PlayerWrapper {
       };
     }
 
+    // Collect all public properties of the player and add it to the wrapper
+    for (let member in player) {
+      if (typeof (<any>player)[member] !== 'function') {
+        wrapper[member] = (<any>player)[member];
+      }
+    }
+
     // Explicitly add a wrapper method for 'addEventHandler' that adds added event handlers to the event list
     wrapper.addEventHandler = function(eventType: EVENT, callback: PlayerEventCallback): Player {
       player.addEventHandler(eventType, callback);
