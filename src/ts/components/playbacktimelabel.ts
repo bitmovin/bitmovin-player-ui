@@ -94,13 +94,13 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, playbackTimeHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackTimeHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
+    player.addEventHandler(player.EVENT.ON_READY, playbackTimeHandler);
+    player.addEventHandler(player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
+    player.addEventHandler(player.EVENT.ON_SEEKED, playbackTimeHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, updateLiveTimeshiftState);
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, updateLiveTimeshiftState);
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFT, updateLiveTimeshiftState);
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFTED, updateLiveTimeshiftState);
 
     let init = function() {
       // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content
@@ -114,7 +114,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) > 3600 * 60 ?
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
     };
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, init);
+    player.addEventHandler(player.EVENT.ON_READY, init);
 
     init();
     // Init time display (when the UI is initialized, it's too late for the ON_READY event)

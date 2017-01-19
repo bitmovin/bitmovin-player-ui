@@ -31,9 +31,9 @@ export class VolumeSlider extends SeekBar {
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_VOLUME_CHANGED, volumeChangeHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_MUTED, volumeChangeHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_UNMUTED, volumeChangeHandler);
+    player.addEventHandler(player.EVENT.ON_VOLUME_CHANGED, volumeChangeHandler);
+    player.addEventHandler(player.EVENT.ON_MUTED, volumeChangeHandler);
+    player.addEventHandler(player.EVENT.ON_UNMUTED, volumeChangeHandler);
 
     this.onSeekPreview.subscribe(function(sender, args) {
       if (args.scrubbing) {
@@ -44,7 +44,7 @@ export class VolumeSlider extends SeekBar {
       player.setVolume(percentage);
     });
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYER_RESIZE, function() {
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, function() {
       self.refreshPlaybackPosition();
     });
 

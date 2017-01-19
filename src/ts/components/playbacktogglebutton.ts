@@ -33,10 +33,10 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
       // TODO replace this hack with a sole player.isPlaying() call once issue #1203 is fixed
       let isPlaying = player.isPlaying();
       if (player.isCasting() && event &&
-        (event.type === bitmovin.player.EVENT.ON_PLAY
-        || event.type === bitmovin.player.EVENT.ON_PAUSED
-        || event.type === bitmovin.player.EVENT.ON_CAST_PLAYING
-        || event.type === bitmovin.player.EVENT.ON_CAST_PAUSED)) {
+        (event.type === player.EVENT.ON_PLAY
+        || event.type === player.EVENT.ON_PAUSED
+        || event.type === player.EVENT.ON_CAST_PLAYING
+        || event.type === player.EVENT.ON_CAST_PAUSED)) {
         isPlaying = !isPlaying;
       }
 
@@ -48,14 +48,14 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     // Call handler upon these events
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, playbackStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, playbackStateHandler);
+    player.addEventHandler(player.EVENT.ON_PLAY, playbackStateHandler);
+    player.addEventHandler(player.EVENT.ON_PAUSED, playbackStateHandler);
     // when playback finishes, player turns to paused mode
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, playbackStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PLAYING, playbackStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PAUSED, playbackStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PLAYBACK_FINISHED, playbackStateHandler);
+    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_STARTED, playbackStateHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, playbackStateHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, playbackStateHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_PLAYBACK_FINISHED, playbackStateHandler);
 
     if (handleClickEvent) {
       // Control player by button events

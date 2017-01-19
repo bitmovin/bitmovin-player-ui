@@ -177,24 +177,24 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, function() {
+    player.addEventHandler(player.EVENT.ON_READY, function() {
       // Reset flag when a new source is loaded
       playbackNotInitialized = true;
     });
 
     // Update seekbar upon these events
     // update playback position when it changes
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_TIME_CHANGED, playbackPositionHandler);
     // update bufferlevel when buffering is complete
-    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_STALL_ENDED, playbackPositionHandler);
     // update playback position when a seek has finished
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_SEEKED, playbackPositionHandler);
     // update playback position when a timeshift has finished
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFTED, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler);
     // update playback position of Cast playback
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
 
 
     /*
@@ -231,31 +231,31 @@ export class SeekBar extends Component<SeekBarConfig> {
       self.setPlaybackPosition(playbackPositionPercentage);
     }, true);
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function() {
+    player.addEventHandler(player.EVENT.ON_PLAY, function() {
       if (!player.isLive()) {
         currentTimeSeekBar = player.getCurrentTime();
         smoothPlaybackPositionUpdater.start();
       }
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, function() {
+    player.addEventHandler(player.EVENT.ON_PAUSED, function() {
       smoothPlaybackPositionUpdater.clear();
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, function() {
+    player.addEventHandler(player.EVENT.ON_SEEKED, function() {
       currentTimeSeekBar = player.getCurrentTime();
     });
 
 
     // Seek handling
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, function() {
+    player.addEventHandler(player.EVENT.ON_SEEK, function() {
       self.setSeeking(true);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, function() {
+    player.addEventHandler(player.EVENT.ON_SEEKED, function() {
       self.setSeeking(false);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, function() {
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFT, function() {
       self.setSeeking(true);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, function() {
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFTED, function() {
       self.setSeeking(false);
     });
 
@@ -321,7 +321,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     // Hide seekbar for live sources without timeshift
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, function() {
+    player.addEventHandler(player.EVENT.ON_READY, function() {
       if (player.isLive() && player.getMaxTimeShift() === 0) {
         self.hide();
       } else {
@@ -329,7 +329,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     });
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYER_RESIZE, function() {
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, function() {
       self.refreshPlaybackPosition();
     });
 

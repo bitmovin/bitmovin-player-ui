@@ -57,18 +57,18 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       skipMessage = adEvent.skipMessage || skipMessage;
       updateSkipMessageHandler();
 
-      player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
-      player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
+      player.addEventHandler(player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
+      player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
     };
 
     let adEndHandler = function() {
-      player.removeEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
-      player.removeEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
+      player.removeEventHandler(player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
+      player.removeEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, adStartHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_AD_SKIPPED, adEndHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_AD_FINISHED, adEndHandler);
+    player.addEventHandler(player.EVENT.ON_AD_STARTED, adStartHandler);
+    player.addEventHandler(player.EVENT.ON_AD_SKIPPED, adEndHandler);
+    player.addEventHandler(player.EVENT.ON_AD_FINISHED, adEndHandler);
 
     self.onClick.subscribe(function() {
       // Try to skip the ad (this only works if it is skippable so we don't need to take extra care of that here)
