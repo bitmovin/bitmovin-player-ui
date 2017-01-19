@@ -115,6 +115,7 @@ declare namespace bitmovin {
     }
 
     interface CastLaunchedEvent extends PlayerEvent {
+      deviceName: string;
       resuming: boolean;
     }
 
