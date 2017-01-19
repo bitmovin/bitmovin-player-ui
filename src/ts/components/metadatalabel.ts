@@ -41,24 +41,32 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
+    let self = this;
     let config = <MetadataLabelConfig>this.getConfig();
     let uiconfig = uimanager.getConfig();
 
-    switch (config.content) {
-      case MetadataLabelContent.Title:
-        if (uiconfig && uiconfig.metadata && uiconfig.metadata.title) {
-          this.setText(uiconfig.metadata.title);
-        } else if (player.getConfig().source && player.getConfig().source.title) {
-          this.setText(player.getConfig().source.title);
-        }
-        break;
-      case MetadataLabelContent.Description:
-        if (uiconfig && uiconfig.metadata && uiconfig.metadata.description) {
-          this.setText(uiconfig.metadata.description);
-        } else if (player.getConfig().source && player.getConfig().source.description) {
-          this.setText(player.getConfig().source.description);
-        }
-        break;
-    }
+    let init = function() {
+      switch (config.content) {
+        case MetadataLabelContent.Title:
+          if (uiconfig && uiconfig.metadata && uiconfig.metadata.title) {
+            self.setText(uiconfig.metadata.title);
+          } else if (player.getConfig().source && player.getConfig().source.title) {
+            self.setText(player.getConfig().source.title);
+          }
+          break;
+        case MetadataLabelContent.Description:
+          if (uiconfig && uiconfig.metadata && uiconfig.metadata.description) {
+            self.setText(uiconfig.metadata.description);
+          } else if (player.getConfig().source && player.getConfig().source.description) {
+            self.setText(player.getConfig().source.description);
+          }
+          break;
+      }
+    };
+
+    // Init label
+    init();
+    // Reinit label when a new source is loaded
+    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_LOADED, init);
   }
 }
