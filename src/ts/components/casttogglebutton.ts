@@ -48,6 +48,10 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_START, function() {
       self.on();
     });
+    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, function() {
+      // When a session is resumed, there is no ON_CAST_START event, so we also need to toggle here for such cases
+      self.on();
+    });
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOPPED, function() {
       self.off();
     });
