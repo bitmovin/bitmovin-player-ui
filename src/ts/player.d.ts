@@ -496,11 +496,6 @@ declare namespace bitmovin {
        */
       getTotalStalledTime(): number;
       /**
-       * Returns the version number of the player. This can be used without calling setup
-       * (i.e. without setting up the player) first.
-       */
-      getVersion(): string;
-      /**
        * Returns the seconds of already buffered video data or null if no video source is loaded.
        */
       getVideoBufferLength(): number | null;
@@ -750,6 +745,11 @@ declare namespace bitmovin {
       unmute(): Player;
 
       fireEvent(event: EVENT, data: {}): void;
+
+      /**
+       * The version number of the player.
+       */
+      version: string;
     }
 
     namespace VR {
