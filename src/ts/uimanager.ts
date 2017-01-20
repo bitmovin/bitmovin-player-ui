@@ -50,7 +50,7 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
-export interface ChapterMarker {
+export interface TimelineMarker {
   time: number;
   title?: string;
 }
@@ -59,7 +59,7 @@ export interface UIConfig {
   metadata?: {
     title?: string;
     description?: string;
-    chapters?: ChapterMarker[];
+    markers?: TimelineMarker[];
   };
   recommendations?: UIRecommendationConfig[];
 }
@@ -85,7 +85,6 @@ export class UIManager {
     }
 
     this.playerUi = new InternalUIInstanceManager(player, playerUi, config);
-    this.adsUi = new InternalUIInstanceManager(player, adsUi, config);
 
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
@@ -98,6 +97,7 @@ export class UIManager {
 
     // Ads UI
     if (adsUi) {
+      this.adsUi = new InternalUIInstanceManager(player, adsUi, config);
       let adsUiAdded = false;
 
       let enterAdsUi = function(event: AdStartedEvent) {
@@ -507,9 +507,9 @@ export interface SeekPreviewArgs extends NoArgs {
    */
   position: number;
   /**
-   * The chapter marker associated with the current position, if existing.
+   * The timeline marker associated with the current position, if existing.
    */
-  chapter?: ChapterMarker;
+  marker?: TimelineMarker;
 }
 
 /**

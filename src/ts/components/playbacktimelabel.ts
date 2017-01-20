@@ -94,7 +94,6 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    player.addEventHandler(player.EVENT.ON_READY, playbackTimeHandler);
     player.addEventHandler(player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
     player.addEventHandler(player.EVENT.ON_SEEKED, playbackTimeHandler);
     player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
@@ -111,14 +110,15 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       });
 
       // Set time format depending on source duration
-      self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) > 3600 * 60 ?
+      self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
+
+      // Update time after the format has been set
+      playbackTimeHandler();
     };
     player.addEventHandler(player.EVENT.ON_READY, init);
 
     init();
-    // Init time display (when the UI is initialized, it's too late for the ON_READY event)
-    playbackTimeHandler();
   }
 
   /**

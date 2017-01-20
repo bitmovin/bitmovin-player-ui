@@ -2,7 +2,7 @@ import {Component, ComponentConfig} from './component';
 import {DOM} from '../dom';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {SeekBarLabel} from './seekbarlabel';
-import {UIInstanceManager, ChapterMarker, SeekPreviewArgs} from '../uimanager';
+import {UIInstanceManager, TimelineMarker, SeekPreviewArgs} from '../uimanager';
 import {Timeout} from '../timeout';
 
 /**
@@ -51,11 +51,11 @@ export class SeekBar extends Component<SeekBarConfig> {
   private seekBarBufferPosition: DOM;
   private seekBarSeekPosition: DOM;
   private seekBarBackdrop: DOM;
-  private seekBarChapterMarkersContainer: DOM;
+  private seekBarMarkersContainer: DOM;
 
   private label: SeekBarLabel;
 
-  private chapterMarkers: ChapterMarker[];
+  private timelineMarkers: TimelineMarker[];
 
   /**
    * Buffer of the the current playback position. The position must be buffered in case it needs the element
@@ -90,7 +90,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }, this.config);
 
     this.label = this.config.label;
-    this.chapterMarkers = [];
+    this.timelineMarkers = [];
   }
 
   initialize(): void {
@@ -112,10 +112,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       return;
     }
 
-    if (uimanager.getConfig().metadata && uimanager.getConfig().metadata.chapters
-      && uimanager.getConfig().metadata.chapters.length > 0) {
-      for (let chapter of uimanager.getConfig().metadata.chapters) {
-        this.chapterMarkers.push({
+    if (uimanager.getConfig().metadata && uimanager.getConfig().metadata.markers
+      && uimanager.getConfig().metadata.markers.length > 0) {
+      for (let chapter of uimanager.getConfig().metadata.markers) {
+        this.timelineMarkers.push({
           time: 100 / player.getDuration() * chapter.time, // convert time to percentage
           title: chapter.title,
         })
@@ -337,7 +337,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPlaybackPosition(0);
     this.setBufferPosition(0);
     this.setSeekPosition(0);
-    this.updateChapterMarkers();
+    this.updateMarkers();
   }
 
   protected toDomElement(): DOM {
@@ -386,9 +386,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.seekBarBackdrop = seekBarBackdrop;
 
     let seekBarChapterMarkersContainer = new DOM('div', {
-      'class': this.prefixCss('seekbar-chaptermarkers')
+      'class': this.prefixCss('seekbar-markers')
     });
-    this.seekBarChapterMarkersContainer = seekBarChapterMarkersContainer;
+    this.seekBarMarkersContainer = seekBarChapterMarkersContainer;
 
     seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition,
       seekBarPlaybackPosition, seekBarChapterMarkersContainer, seekBarPlaybackPositionMarker);
@@ -415,7 +415,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       new DOM(document).off('touchend mouseup', mouseTouchUpHandler);
 
       let targetPercentage = 100 * self.getOffset(e);
-      let snappedChapter = self.getChapterAtPosition(targetPercentage);
+      let snappedChapter = self.getMarkerAtPosition(targetPercentage);
 
       self.setSeeking(false);
       seeking = false;
@@ -489,32 +489,32 @@ export class SeekBar extends Component<SeekBarConfig> {
     return seekBarContainer;
   }
 
-  protected updateChapterMarkers(): void {
-    this.seekBarChapterMarkersContainer.empty();
-    for (let chapter of this.chapterMarkers) {
-      this.seekBarChapterMarkersContainer.append(new DOM('div', {
-        'class': this.prefixCss('seekbar-chaptermarker'),
-        'data-chapter-time': String(chapter.time),
-        'data-chapter-title': String(chapter.title),
+  protected updateMarkers(): void {
+    this.seekBarMarkersContainer.empty();
+    for (let marker of this.timelineMarkers) {
+      this.seekBarMarkersContainer.append(new DOM('div', {
+        'class': this.prefixCss('seekbar-marker'),
+        'data-marker-time': String(marker.time),
+        'data-marker-title': String(marker.title),
       }).css({
-        'width': chapter.time + '%',
+        'width': marker.time + '%',
       }));
     }
   }
 
-  protected getChapterAtPosition(percentage: number): ChapterMarker | null {
-    let snappedChapter: ChapterMarker = null;
+  protected getMarkerAtPosition(percentage: number): TimelineMarker | null {
+    let snappedMarker: TimelineMarker = null;
     let snappingRange = 1;
-    if (this.chapterMarkers.length > 0) {
-      for (let chapter of this.chapterMarkers) {
-        if (percentage >= chapter.time - snappingRange && percentage <= chapter.time + snappingRange) {
-          snappedChapter = chapter;
+    if (this.timelineMarkers.length > 0) {
+      for (let marker of this.timelineMarkers) {
+        if (percentage >= marker.time - snappingRange && percentage <= marker.time + snappingRange) {
+          snappedMarker = marker;
           break;
         }
       }
     }
 
-    return snappedChapter;
+    return snappedMarker;
   }
 
   /**
@@ -700,19 +700,19 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
-    let snappedChapter = this.getChapterAtPosition(percentage);
+    let snappedMarker = this.getMarkerAtPosition(percentage);
 
     if (this.label) {
       this.label.setText(percentage + '');
       this.label.getDomElement().css({
-        'left': (snappedChapter ? snappedChapter.time : percentage) + '%'
+        'left': (snappedMarker ? snappedMarker.time : percentage) + '%'
       });
     }
 
     this.seekBarEvents.onSeekPreview.dispatch(this, {
       scrubbing: scrubbing,
       position: percentage,
-      chapter: snappedChapter,
+      marker: snappedMarker,
     });
   }
 
