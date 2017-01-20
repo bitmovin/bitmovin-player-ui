@@ -231,15 +231,21 @@ export class SeekBar extends Component<SeekBarConfig> {
       self.setPlaybackPosition(playbackPositionPercentage);
     }, true);
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function() {
+    let startSmoothPlaybackPositionUpdater = function() {
       if (!player.isLive()) {
         currentTimeSeekBar = player.getCurrentTime();
         smoothPlaybackPositionUpdater.start();
       }
-    });
-    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, function() {
+    };
+
+    let stopSmoothPlaybackPositionUpdater = function() {
       smoothPlaybackPositionUpdater.clear();
-    });
+    };
+
+    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
     player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, function() {
       currentTimeSeekBar = player.getCurrentTime();
     });
