@@ -30,8 +30,6 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         return;
       }
 
-      console.log('player.isPlaying ' + player.isPlaying());
-
       if (player.isPlaying()) {
         self.on();
       } else {
