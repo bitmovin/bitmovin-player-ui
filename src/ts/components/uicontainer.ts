@@ -114,6 +114,9 @@ export class UIContainer extends Container<UIContainerConfig> {
       isSeeking = false;
       uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
     });
+    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, function() {
+      showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
+    });
   }
 
   private configurePlayerStates(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
