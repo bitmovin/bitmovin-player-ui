@@ -209,10 +209,6 @@ declare namespace bitmovin {
        * TODO is that the same as {@link StyleConfig}?
        */
       style?: Object;
-      /**
-       * A skin that is applied only during ad playback.
-       */
-      skin?: Object;
     }
 
     /**
@@ -564,11 +560,6 @@ declare namespace bitmovin {
        */
       getTotalStalledTime(): number;
       /**
-       * Returns the version number of the player. This can be used without calling setup
-       * (i.e. without setting up the player) first.
-       */
-      getVersion(): string;
-      /**
        * Returns the seconds of already buffered video data or null if no video source is loaded.
        */
       getVideoBufferLength(): number | null;
@@ -747,13 +738,6 @@ declare namespace bitmovin {
        */
       setQueryParameters(queryParameters: { [key: string]: string; }): Player;
       /**
-       * Applies a new skin during run-time. See the https://bitmovin.com/tutorials/html5-player-skin-tutorial/
-       * in the player configuration for more details about the parameter.
-       *
-       * @param param The URL to a skin JSON file or a skin object
-       */
-      setSkin(param: string | Object): Promise<void>;
-      /**
        * Sets the subtitle track to the ID specified by trackID. A list can be retrieved by calling
        * {@link #getAvailableSubtitles}. Using null as ID disables subtitles.
        *
@@ -818,11 +802,22 @@ declare namespace bitmovin {
       unmute(): Player;
 
       fireEvent(event: EVENT, data: {}): void;
-
       /**
        * All available events of the player.
        */
       EVENT: EventList;
+      /**
+       * The version number of the player.
+       */
+      version: string;
+      /*
+       * Checks if Apple AirPlay support is available.
+       */
+      isAirplayAvailable(): boolean;
+      /**
+       * Shows the airplay playback target picker.
+       */
+      showAirplayTargetPicker(): Player;
     }
 
     namespace VR {

@@ -42,6 +42,7 @@ import {CloseButton} from './components/closebutton';
 import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 import {Label} from './components/label';
 import PlayerEvent = bitmovin.player.PlayerEvent;
+import {AirPlayToggleButton} from './components/airplaytogglebutton';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -218,6 +219,7 @@ export class UIManager {
               new VolumeToggleButton(),
               new VolumeSlider(),
               new Component({ cssClass: 'spacer' }),
+              new AirPlayToggleButton(),
               new CastToggleButton(),
               new VRToggleButton(),
               new SettingsToggleButton({ settingsPanel: settingsPanel }),
