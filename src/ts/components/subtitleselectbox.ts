@@ -32,20 +32,20 @@ export class SubtitleSelectBox extends SelectBox {
     });
 
     // React to API events
-    player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_ADDED, function(event: SubtitleAddedEvent) {
+    player.addEventHandler(player.EVENT.ON_SUBTITLE_ADDED, function(event: SubtitleAddedEvent) {
       self.addItem(event.subtitle.id, event.subtitle.label);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_CHANGED, function(event: SubtitleChangedEvent) {
+    player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, function(event: SubtitleChangedEvent) {
       self.selectItem(event.targetSubtitle.id);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_REMOVED, function(event: SubtitleRemovedEvent) {
+    player.addEventHandler(player.EVENT.ON_SUBTITLE_REMOVED, function(event: SubtitleRemovedEvent) {
       self.removeItem(event.subtitleId);
     });
 
     // Update subtitles when source goes away
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateSubtitles);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateSubtitles);
     // Update subtitles when a new source is loaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateSubtitles);
+    player.addEventHandler(player.EVENT.ON_READY, updateSubtitles);
 
     // Populate subtitles at startup
     updateSubtitles();

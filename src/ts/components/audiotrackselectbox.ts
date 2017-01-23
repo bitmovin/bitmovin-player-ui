@@ -37,11 +37,11 @@ export class AudioTrackSelectBox extends SelectBox {
     };
 
     // Update selection when selected track has changed
-    player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGED, audioTrackHandler);
+    player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, audioTrackHandler);
     // Update tracks when source goes away
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateAudioTracks);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateAudioTracks);
     // Update tracks when a new source is loaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateAudioTracks);
+    player.addEventHandler(player.EVENT.ON_READY, updateAudioTracks);
 
     // Populate tracks at startup
     updateAudioTracks();

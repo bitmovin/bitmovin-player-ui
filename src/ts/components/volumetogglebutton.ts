@@ -29,8 +29,8 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_MUTED, muteStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_UNMUTED, muteStateHandler);
+    player.addEventHandler(player.EVENT.ON_MUTED, muteStateHandler);
+    player.addEventHandler(player.EVENT.ON_UNMUTED, muteStateHandler);
 
     self.onClick.subscribe(function() {
       if (player.isMuted()) {
@@ -40,7 +40,7 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     });
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_VOLUME_CHANGED, function(event: VolumeChangeEvent) {
+    player.addEventHandler(player.EVENT.ON_VOLUME_CHANGED, function(event: VolumeChangeEvent) {
       // Toggle low class to display low volume icon below 50% volume
       if (event.targetVolume < 50) {
         self.getDomElement().addClass(self.prefixCss('low'));

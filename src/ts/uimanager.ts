@@ -118,7 +118,7 @@ export class UIManager {
              * Since this can break functionality of components that rely on this event, we relay the event to the
              * ads UI components with the following call.
              */
-            self.adsUi.getPlayer().fireEventInUI(bitmovin.player.EVENT.ON_AD_STARTED, event);
+            self.adsUi.getPlayer().fireEventInUI(self.player.EVENT.ON_AD_STARTED, event);
           }
 
           adsUi.show();
@@ -133,10 +133,10 @@ export class UIManager {
       };
 
       // React to ad events from the player
-      this.managerPlayerWrapper.getPlayer().addEventHandler(EVENT.ON_AD_STARTED, enterAdsUi);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(EVENT.ON_AD_FINISHED, exitAdsUi);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(EVENT.ON_AD_SKIPPED, exitAdsUi);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(EVENT.ON_AD_ERROR, exitAdsUi);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, enterAdsUi);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, exitAdsUi);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, exitAdsUi);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_ERROR, exitAdsUi);
     }
   }
 
@@ -671,6 +671,13 @@ class PlayerWrapper {
         // console.log('called ' + member); // track method calls on the player
         return (<any>player)[member].apply(player, arguments);
       };
+    }
+
+    // Collect all public properties of the player and add it to the wrapper
+    for (let member in player) {
+      if (typeof (<any>player)[member] !== 'function') {
+        wrapper[member] = (<any>player)[member];
+      }
     }
 
     // Explicitly add a wrapper method for 'addEventHandler' that adds added event handlers to the event list

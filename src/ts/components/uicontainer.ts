@@ -126,23 +126,23 @@ export class UIContainer extends Container<UIContainerConfig> {
       container.removeClass(self.prefixCss(UIContainer.STATE_PAUSED));
       container.removeClass(self.prefixCss(UIContainer.STATE_FINISHED));
     };
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, function() {
+    player.addEventHandler(player.EVENT.ON_READY, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_PREPARED));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function() {
+    player.addEventHandler(player.EVENT.ON_PLAY, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_PLAYING));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, function() {
+    player.addEventHandler(player.EVENT.ON_PAUSED, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_PAUSED));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, function() {
+    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_FINISHED));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, function() {
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_IDLE));
     });
@@ -151,10 +151,10 @@ export class UIContainer extends Container<UIContainerConfig> {
       UIContainer.STATE_PREPARED : UIContainer.STATE_IDLE));
 
     // Fullscreen marker class
-    player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function() {
+    player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, function() {
       container.addClass(self.prefixCss(UIContainer.FULLSCREEN));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function() {
+    player.addEventHandler(player.EVENT.ON_FULLSCREEN_EXIT, function() {
       container.removeClass(self.prefixCss(UIContainer.FULLSCREEN));
     });
     // Init fullscreen state
@@ -163,10 +163,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     // Buffering marker class
-    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_STARTED, function() {
+    player.addEventHandler(player.EVENT.ON_STALL_STARTED, function() {
       container.addClass(self.prefixCss(UIContainer.BUFFERING));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, function() {
+    player.addEventHandler(player.EVENT.ON_STALL_ENDED, function() {
       container.removeClass(self.prefixCss(UIContainer.BUFFERING));
     });
     // Init buffering state
@@ -201,7 +201,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         container.addClass(self.prefixCss('layout-max-width-1200'));
       }
     };
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYER_RESIZE, function(e: PlayerResizeEvent) {
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, function(e: PlayerResizeEvent) {
       // Convert strings (with "px" suffix) to ints
       let width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
       let height = Math.round(Number(e.height.substring(0, e.height.length - 2)));

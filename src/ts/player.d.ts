@@ -735,6 +735,10 @@ declare namespace bitmovin {
 
       fireEvent(event: EVENT, data: {}): void;
       /**
+       * All available events of the player.
+       */
+      EVENT: EventList;
+      /**
        * The version number of the player.
        */
       version: string;

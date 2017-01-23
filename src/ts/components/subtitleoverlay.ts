@@ -33,10 +33,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     let self = this;
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_CUE_ENTER, function(event: SubtitleCueEvent) {
+    player.addEventHandler(player.EVENT.ON_CUE_ENTER, function(event: SubtitleCueEvent) {
       self.subtitleLabel.setText(event.text);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_CUE_EXIT, function(event: SubtitleCueEvent) {
+    player.addEventHandler(player.EVENT.ON_CUE_EXIT, function(event: SubtitleCueEvent) {
       self.subtitleLabel.setText('');
     });
 
@@ -44,10 +44,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       self.subtitleLabel.setText('');
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGED, subtitleClearHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_CHANGED, subtitleClearHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, subtitleClearHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
+    player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, subtitleClearHandler);
+    player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, subtitleClearHandler);
+    player.addEventHandler(player.EVENT.ON_SEEK, subtitleClearHandler);
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
 
     uimanager.onComponentShow.subscribe(function(component: Component<ComponentConfig>) {
       if (component instanceof ControlBar) {
