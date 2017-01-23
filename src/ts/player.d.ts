@@ -734,11 +734,18 @@ declare namespace bitmovin {
       unmute(): Player;
 
       fireEvent(event: EVENT, data: {}): void;
-
       /**
        * The version number of the player.
        */
       version: string;
+      /*
+       * Checks if Apple AirPlay support is available.
+       */
+      isAirplayAvailable(): boolean;
+      /**
+       * Shows the airplay playback target picker.
+       */
+      showAirplayTargetPicker(): Player;
     }
 
     namespace VR {

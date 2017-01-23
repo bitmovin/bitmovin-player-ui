@@ -67,7 +67,8 @@ declare namespace bitmovin {
       ON_VR_ERROR,
       ON_VR_MODE_CHANGED,
       ON_VR_STEREO_CHANGED,
-      ON_WARNING
+      ON_WARNING,
+      ON_SHOW_AIRPLAY_TARGET_PICKER,
     }
 
     interface PlayerEvent {
