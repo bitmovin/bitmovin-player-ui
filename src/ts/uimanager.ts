@@ -117,7 +117,7 @@ export class UIManager {
              * Since this can break functionality of components that rely on this event, we relay the event to the
              * ads UI components with the following call.
              */
-            self.adsUi.getPlayer().fireEventInUI(this.player.EVENT.ON_AD_STARTED, event);
+            self.adsUi.getPlayer().fireEventInUI(self.player.EVENT.ON_AD_STARTED, event);
           }
 
           adsUi.show();
