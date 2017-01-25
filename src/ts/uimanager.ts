@@ -144,20 +144,9 @@ export class UIManager {
     return this.config;
   }
 
-  private configureControls(component: Component<ComponentConfig>, manager: UIInstanceManager) {
-    component.initialize();
-    component.configure(manager.getPlayer(), manager);
-
-    if (component instanceof Container) {
-      for (let childComponent of component.getComponents()) {
-        this.configureControls(childComponent, manager);
-      }
-    }
-  }
-
   private addUi(ui: InternalUIInstanceManager): void {
     let dom = ui.getUI().getDomElement();
-    this.configureControls(ui.getUI(), ui);
+    ui.configureControls();
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
@@ -165,6 +154,7 @@ export class UIManager {
   }
 
   private releaseUi(ui: InternalUIInstanceManager): void {
+    ui.releaseControls();
     ui.getUI().getDomElement().remove();
     ui.clearEventHandlers();
   }
@@ -622,6 +612,53 @@ export class UIInstanceManager {
  * that components receiving a reference to the {@link UIInstanceManager} should not have access to.
  */
 class InternalUIInstanceManager extends UIInstanceManager {
+
+  private configured: boolean;
+  private released: boolean;
+
+  configureControls(): void {
+    this.configureControlsTree(this.getUI());
+    this.configured = true;
+  }
+
+  isConfigured(): boolean {
+    return this.configured;
+  }
+
+  private configureControlsTree(component: Component<ComponentConfig>) {
+    component.initialize();
+    component.configure(this.getPlayer(), this);
+
+    if (component instanceof Container) {
+      for (let childComponent of component.getComponents()) {
+        this.configureControlsTree(childComponent);
+      }
+    }
+  }
+
+  releaseControls(): void {
+    // Do not call release methods if the components have never been configured; this can result in exceptions
+    if (this.configured) {
+      this.releaseControlsTree(this.getUI());
+      this.configured = false;
+    }
+    this.released = true;
+  }
+
+  isReleased(): boolean {
+    return this.released;
+  }
+
+  private releaseControlsTree(component: Component<ComponentConfig>) {
+    component.release();
+
+    if (component instanceof Container) {
+      for (let childComponent of component.getComponents()) {
+        this.releaseControlsTree(childComponent);
+      }
+    }
+  }
+
   clearEventHandlers(): void {
     super.clearEventHandlers();
   }
