@@ -168,8 +168,9 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         let bufferPercentage = 100 / player.getDuration() * bufferLength;
 
-        // Update playback position only in paused state, playback updates are handled in the Timeout below
-        if (player.isPaused()) {
+        // Update playback position only in paused state or in the initial startup state where player is neither
+        // paused nor playing. Playback updates are handled in the Timeout below.
+        if (player.isPaused() || (player.isPaused() == player.isPlaying())) {
           self.setPlaybackPosition(playbackPositionPercentage);
         }
 
