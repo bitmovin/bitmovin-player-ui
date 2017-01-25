@@ -1,6 +1,5 @@
 import {SeekBar, SeekBarConfig} from './seekbar';
 import {UIInstanceManager} from '../uimanager';
-import {Timeout} from '../timeout';
 
 /**
  * A simple volume slider component to adjust the player's volume setting.
@@ -44,20 +43,16 @@ export class VolumeSlider extends SeekBar {
       player.setVolume(percentage);
     });
 
+    // Update the volume slider marker when the player resized or the UI is configured.
+    // Check the seekbar for a detailed description.
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, function() {
+      self.refreshPlaybackPosition();
+    });
+    uimanager.onConfigured.subscribe(function() {
       self.refreshPlaybackPosition();
     });
 
     // Init volume bar
     volumeChangeHandler();
-
-    // TODO find a better solution for this hack
-    /* At the time where this is called, the DOM element does not have a size yet, resulting in a zero offset of the
-     * volume slider knob, no matter what the actual volume setting on the player is. Out of lack of a way to
-     * detect when the element gets its size, we use this hack that actually seems to work on all browsers.
-     */
-    new Timeout(1, function () {
-      self.refreshPlaybackPosition();
-    }).start();
   }
 }
