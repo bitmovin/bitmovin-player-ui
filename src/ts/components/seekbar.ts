@@ -123,15 +123,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     let self = this;
-    let playbackNotInitialized = true;
     let isPlaying = false;
     let isSeeking = false;
 
     // Update playback and buffer positions
     let playbackPositionHandler = function() {
-      // Once this handler os called, playback has been started and we set the flag to false
-      playbackNotInitialized = false;
-
       if (isSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
@@ -177,11 +173,6 @@ export class SeekBar extends Component<SeekBarConfig> {
         self.setBufferPosition(playbackPositionPercentage + bufferPercentage);
       }
     };
-
-    player.addEventHandler(player.EVENT.ON_READY, function() {
-      // Reset flag when a new source is loaded
-      playbackNotInitialized = true;
-    });
 
     // Update seekbar upon these events
     // update playback position when it changes
@@ -293,16 +284,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     }, 200);
     self.onSeeked.subscribe(function(sender, percentage) {
       isSeeking = false;
-
-      // If playback has not been started before, we need to call play to in it the playback engine for the
-      // seek to work. We call pause() immediately afterwards because we actually do not want to play back anything.
-      // The flag serves to call play/pause only on the first seek before playback has started, instead of every
-      // time a seek is issued.
-      if (playbackNotInitialized) {
-        playbackNotInitialized = false;
-        player.play('ui-seek');
-        player.pause('ui-seek');
-      }
 
       // Do the seek
       seek(percentage);
