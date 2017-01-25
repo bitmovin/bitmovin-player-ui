@@ -93,7 +93,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   release(): void {
     super.release();
-    if(this.hideTimeout) {
+    if (this.hideTimeout) {
       this.hideTimeout.clear();
     }
   }

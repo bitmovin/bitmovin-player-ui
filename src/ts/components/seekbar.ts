@@ -168,7 +168,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Update playback position only in paused state or in the initial startup state where player is neither
         // paused nor playing. Playback updates are handled in the Timeout below.
-        if (player.isPaused() || (player.isPaused() == player.isPlaying())) {
+        if (player.isPaused() || (player.isPaused() === player.isPlaying())) {
           self.setPlaybackPosition(playbackPositionPercentage);
         }
 
@@ -327,7 +327,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   release(): void {
     super.release();
 
-    if(this.smoothPlaybackPositionUpdater) { // object must not necessarily exist, e.g. in volume slider subclass
+    if (this.smoothPlaybackPositionUpdater) { // object must not necessarily exist, e.g. in volume slider subclass
       this.smoothPlaybackPositionUpdater.clear();
     }
   }
