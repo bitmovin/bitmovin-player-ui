@@ -64,6 +64,8 @@ export class SeekBar extends Component<SeekBarConfig> {
    */
   private playbackPositionPercentage = 0;
 
+  private smoothPlaybackPositionUpdater: Timeout;
+
   // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
   private touchSupported = ('ontouchstart' in window);
 
@@ -202,7 +204,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let updateIntervalMs = 25;
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
-    let smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, function() {
+    this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, function() {
       currentTimeSeekBar += currentTimeUpdateDeltaSecs;
       currentTimePlayer = player.getCurrentTime();
 
@@ -226,11 +228,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.ON_PLAY, function() {
       if (!player.isLive()) {
         currentTimeSeekBar = player.getCurrentTime();
-        smoothPlaybackPositionUpdater.start();
+        self.smoothPlaybackPositionUpdater.start();
       }
     });
     player.addEventHandler(player.EVENT.ON_PAUSED, function() {
-      smoothPlaybackPositionUpdater.clear();
+      self.smoothPlaybackPositionUpdater.clear();
     });
     player.addEventHandler(player.EVENT.ON_SEEKED, function() {
       currentTimeSeekBar = player.getCurrentTime();
@@ -320,6 +322,14 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setBufferPosition(0);
     this.setSeekPosition(0);
     this.updateMarkers();
+  }
+
+  release(): void {
+    super.release();
+
+    if(this.smoothPlaybackPositionUpdater) { // object must not necessarily exist, e.g. in volume slider subclass
+      this.smoothPlaybackPositionUpdater.clear();
+    }
   }
 
   protected toDomElement(): DOM {

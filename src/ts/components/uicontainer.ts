@@ -33,6 +33,8 @@ export class UIContainer extends Container<UIContainerConfig> {
   private static readonly CONTROLS_SHOWN = 'controls-shown';
   private static readonly CONTROLS_HIDDEN = 'controls-hidden';
 
+  private uiHideTimeout: Timeout;
+
   constructor(config: UIContainerConfig) {
     super(config);
 
@@ -65,7 +67,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
       // Don't trigger timeout while seeking, it will be triggered once the seek is finished
       if (!isSeeking) {
-        uiHideTimeout.start();
+        self.uiHideTimeout.start();
       }
     };
 
@@ -78,7 +80,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     // Timeout to defer UI hiding by the configured delay time
-    let uiHideTimeout = new Timeout(config.hideDelay, hideUi);
+    this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
     // On touch displays, the first touch reveals the UI
     container.on('touchend', function(e) {
@@ -101,17 +103,17 @@ export class UIContainer extends Container<UIContainerConfig> {
       // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not hide
       // the UI in such cases
       if (!isSeeking) {
-        uiHideTimeout.start();
+        self.uiHideTimeout.start();
       }
     });
 
     uimanager.onSeek.subscribe(function() {
-      uiHideTimeout.clear(); // Don't hide UI while a seek is in progress
+      self.uiHideTimeout.clear(); // Don't hide UI while a seek is in progress
       isSeeking = true;
     });
     uimanager.onSeeked.subscribe(function() {
       isSeeking = false;
-      uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+      self.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
     });
   }
 
@@ -210,6 +212,11 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     // Init layout state
     updateLayoutSizeClasses(new DOM(player.getFigure()).width(), new DOM(player.getFigure()).height());
+  }
+
+  release(): void {
+    super.release();
+    this.uiHideTimeout.clear();
   }
 
   protected toDomElement(): DOM {
