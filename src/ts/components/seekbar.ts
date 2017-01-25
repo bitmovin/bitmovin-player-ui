@@ -58,7 +58,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   private timelineMarkers: TimelineMarker[];
 
   /**
-   * Buffer of the the current playback position. The position must be buffered in case it needs the element
+   * Buffer of the the current playback position. The position must be buffered in case the element
    * needs to be refreshed with {@link #refreshPlaybackPosition}.
    * @type {number}
    */
