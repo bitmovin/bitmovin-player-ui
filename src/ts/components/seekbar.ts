@@ -313,12 +313,19 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     });
 
+    // Refresh the playback position when the player resized or the UI is configured. The playback position marker
+    // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, function() {
+      self.refreshPlaybackPosition();
+    });
+    // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
+    // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
+    uimanager.onConfigured.subscribe(function() {
       self.refreshPlaybackPosition();
     });
 
     // Initialize seekbar
-    this.setPlaybackPosition(0);
+    playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
     this.setSeekPosition(0);
     this.updateMarkers();
