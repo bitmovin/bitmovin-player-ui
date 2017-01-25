@@ -151,6 +151,7 @@ export class UIManager {
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
     this.playerElement.append(dom);
+    ui.onConfigured.dispatch(ui.getUI());
   }
 
   private releaseUi(ui: InternalUIInstanceManager): void {
@@ -513,6 +514,7 @@ export class UIInstanceManager {
   private config: UIConfig;
 
   private events = {
+    onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
     onSeek: new EventDispatcher<SeekBar, NoArgs>(),
     onSeekPreview: new EventDispatcher<SeekBar, SeekPreviewArgs>(),
     onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
@@ -538,6 +540,14 @@ export class UIInstanceManager {
 
   getPlayer(): WrappedPlayer {
     return this.playerWrapper.getPlayer();
+  }
+
+  /**
+   * Fires when the UI is fully configured and added to the DOM.
+   * @returns {EventDispatcher}
+   */
+  get onConfigured(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onConfigured;
   }
 
   /**
@@ -617,6 +627,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
   private released: boolean;
 
   configureControls(): void {
+    let self = this;
     this.configureControlsTree(this.getUI());
     this.configured = true;
   }
