@@ -216,9 +216,14 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Sync currentTime of seekbar to player
       let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
+      // If the delta is larger that 2 secs, directly jump the seekbar to the
+      // player time instead of smoothly fast forwarding/rewinding.
+      if(Math.abs(currentTimeDelta) > 2) {
+        currentTimeSeekBar = currentTimePlayer;
+      }
       // If currentTimeDelta is negative and below the adjustment threshold,
       // the player is ahead of the seekbar and we 'fast forward' the seekbar
-      if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
+      else if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
         currentTimeSeekBar += currentTimeUpdateDeltaSecs;
       }
       // If currentTimeDelta is positive and above the adjustment threshold,
