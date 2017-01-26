@@ -45,7 +45,7 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_AVAILABLE, castAvailableHander);
 
     // Toggle button 'on' state
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_START, function() {
+    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_WAITING_FOR_DEVICE, function() {
       self.on();
     });
     player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, function() {
