@@ -636,14 +636,45 @@ class InternalUIInstanceManager extends UIInstanceManager {
   }
 
   private configureControlsTree(component: Component<ComponentConfig>) {
-    component.initialize();
-    component.configure(this.getPlayer(), this);
+    let self = this;
+    let configuredComponents: Component<ComponentConfig>[] = [];
 
-    if (component instanceof Container) {
-      for (let childComponent of component.getComponents()) {
-        this.configureControlsTree(childComponent);
+    // Define the actual recursive function within this function body so we can use local variables
+    // (e.g. the configuredComponents array).
+    let recursiveTreeWalker = function(component: Component<ComponentConfig>) {
+      // First, check if we have already configured a component, and throw an error if we did. Multiple configuration
+      // of the same component leads to unexpected UI behavior. Also, a component that is in the UI tree multiple
+      // times hints at a wrong UI structure.
+      // We could just skip configuration in such a case and not throw an exception, but enforcing a clean UI tree
+      // seems like the better choice.
+      for (let configuredComponent of configuredComponents) {
+        if (configuredComponent === component) {
+          // Write the component to the console to simplify identification of the culprit
+          // (e.g. by inspecting the config)
+          if (console) {
+            console.error('Circular reference in UI tree', component);
+          }
+
+          // Additionally throw an error, because this case must not happen and leads to unexpected UI behavior.
+          throw Error('Circular reference in UI tree: ' + component.constructor.name);
+        }
       }
-    }
+
+      console.log(component);
+      component.initialize();
+      component.configure(self.getPlayer(), self);
+      configuredComponents.push(component);
+
+      // If the current component is a container, visit it's children
+      if (component instanceof Container) {
+        for (let childComponent of component.getComponents()) {
+          recursiveTreeWalker(childComponent);
+        }
+      }
+    };
+
+    // Walk and configure the component tree
+    recursiveTreeWalker(component);
   }
 
   releaseControls(): void {
