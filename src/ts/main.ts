@@ -5,11 +5,11 @@ import {Button} from './components/button';
 import {ControlBar} from './components/controlbar';
 import {FullscreenToggleButton} from './components/fullscreentogglebutton';
 import {HugePlaybackToggleButton} from './components/hugeplaybacktogglebutton';
-import {PlaybackTimeLabel} from './components/playbacktimelabel';
+import {PlaybackTimeLabel, TimeLabelMode} from './components/playbacktimelabel';
 import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {SeekBar} from './components/seekbar';
 import {SelectBox} from './components/selectbox';
-import {SettingsPanel} from './components/settingspanel';
+import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {ToggleButton} from './components/togglebutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
@@ -43,6 +43,7 @@ import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
 import {CloseButton} from './components/closebutton';
 import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
+import {VolumeSlider} from './components/volumeslider';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -90,12 +91,14 @@ if (typeof Object.assign !== 'function') {
   HugePlaybackToggleButton,
   Label,
   PlaybackTimeLabel,
+  TimeLabelMode,
   PlaybackToggleButton,
   RecommendationOverlay,
   SeekBar,
   SeekBarLabel,
   SelectBox,
   SettingsPanel,
+  SettingsPanelItem,
   SettingsToggleButton,
   SubtitleOverlay,
   SubtitleSelectBox,
@@ -116,4 +119,5 @@ if (typeof Object.assign !== 'function') {
   MetadataLabel,
   MetadataLabelContent,
   AirPlayToggleButton,
+  VolumeSlider,
 };
