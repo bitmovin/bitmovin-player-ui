@@ -659,8 +659,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
           throw Error('Circular reference in UI tree: ' + component.constructor.name);
         }
       }
-
-      console.log(component);
+      
       component.initialize();
       component.configure(self.getPlayer(), self);
       configuredComponents.push(component);
