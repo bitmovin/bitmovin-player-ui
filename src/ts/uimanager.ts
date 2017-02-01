@@ -627,7 +627,6 @@ class InternalUIInstanceManager extends UIInstanceManager {
   private released: boolean;
 
   configureControls(): void {
-    let self = this;
     this.configureControlsTree(this.getUI());
     this.configured = true;
   }
