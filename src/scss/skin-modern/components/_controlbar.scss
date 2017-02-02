@@ -1,0 +1,73 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-controlbar {
+  @extend %ui-container;
+
+  @include hidden-animated;
+  @include layout-align-bottom;
+
+  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
+  line-height: 1em;
+  padding: 1em 1em .5em;
+
+  .#{$prefix}-controlbar-top,
+  .#{$prefix}-controlbar-bottom {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      margin: .5em;
+    }
+  }
+
+  .#{$prefix}-controlbar-top {
+    .#{$prefix}-ui-label {
+      font-size: .9em;
+    }
+
+    > .#{$prefix}-container-wrapper > * {
+      margin: 0 .5em;
+    }
+  }
+
+  .#{$prefix}-controlbar-bottom {
+    > .#{$prefix}-container-wrapper {
+      > * {
+        margin: 0 .25em;
+      }
+
+      .#{$prefix}-ui-volumeslider {
+        margin: .25em .5em;
+        width: 5em;
+      }
+
+      .#{$prefix}-spacer {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// IE9 compatibility: fallback for missing flexbox support
+// sass-lint:disable nesting-depth
+&.#{$prefix}-no-flexbox {
+  .#{$prefix}-ui-controlbar {
+    .#{$prefix}-controlbar-top,
+    .#{$prefix}-controlbar-bottom {
+      > .#{$prefix}-container-wrapper {
+        border-spacing: .5em 0;
+        display: table;
+
+        > * {
+          @include hidden; // Add hidden here too, else it is overwritten by display: table-cell
+
+          display: table-cell;
+          vertical-align: middle;
+        }
+
+        .#{$prefix}-ui-volumeslider {
+          width: 10%;
+        }
+      }
+    }
+  }
+}

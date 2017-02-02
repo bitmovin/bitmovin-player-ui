@@ -1,0 +1,28 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-cast-status-overlay {
+  @extend %ui-container;
+
+  @include layout-cover;
+  @include hidden-animated;
+
+  background: $color-background svg('assets/skin-modern/images/chromecast.svg') center no-repeat;
+  background-size: 7em 7em;
+
+  .#{$prefix}-ui-cast-status-label {
+    color: $color-primary;
+    font-size: 1.2em;
+    left: 0;
+    margin: 0 2em;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 65%;
+
+    * {
+      pointer-events: none;
+    }
+  }
+}

@@ -1,0 +1,53 @@
+@import 'variables';
+
+&.#{$prefix}-ui-skin-cast-receiver {
+
+  $background-color: transparentize($color-background, .15);
+  $overscan-margin: 10%;
+
+  // Add title safe margins for overscan TV sets
+  // 10% as recommended by the Cast docs: https://developers.google.com/cast/docs/custom_receiver#overscan
+  &.#{$prefix}-ui-uicontainer {
+
+    %box {
+      background: $background-color;
+      padding: .3em .5em;
+    }
+
+    .#{$prefix}-ui-controlbar {
+      @extend %box;
+
+      bottom: $overscan-margin;
+      left: $overscan-margin;
+      right: $overscan-margin;
+      width: auto;
+    }
+
+    .#{$prefix}-ui-titlebar {
+      @extend %box;
+
+      left: $overscan-margin;
+      right: $overscan-margin;
+      top: $overscan-margin;
+      width: auto;
+    }
+
+    .#{$prefix}-ui-watermark {
+      margin: 0;
+      right: $overscan-margin;
+      top: $overscan-margin;
+    }
+
+    .#{$prefix}-ui-subtitle-overlay {
+      .#{$prefix}-ui-subtitle-label {
+        bottom: $overscan-margin;
+      }
+
+      &.#{$prefix}-controlbar-visible {
+        .#{$prefix}-ui-subtitle-label {
+          bottom: 20%;
+        }
+      }
+    }
+  }
+}

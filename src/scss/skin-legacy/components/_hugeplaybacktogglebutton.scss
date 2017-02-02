@@ -1,0 +1,61 @@
+.#{$prefix}-ui-hugeplaybacktogglebutton {
+  @extend %ui-button;
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    to {
+      opacity: 0;
+      transform: scale(2);
+      visibility: hidden;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: scale(2);
+      visibility: visible;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  cursor: default;
+  height: 8em;
+  outline: none;
+  overflow: hidden; // hide overflow from scale animation
+  width: 8em;
+
+  .#{$prefix}-image {
+    background-image: url('../../assets/skin-legacy/images/components/normal/play_overlay.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+
+    &:hover {
+      background-image: url('../../assets/skin-legacy/images/components/hover/play_overlay.png');
+    }
+  }
+
+  &.#{$prefix}-on {
+    .#{$prefix}-image {
+      animation: fade-out $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
+      transition: visibility 0s $animation-duration;
+      visibility: hidden;
+    }
+  }
+
+  &.#{$prefix}-off {
+    .#{$prefix}-image {
+      animation: fade-in $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
+      visibility: visible;
+    }
+  }
+}

@@ -1,0 +1,76 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-settings-panel {
+  @extend %ui-container;
+
+  @include hidden-animated;
+
+  $background-color: transparentize($color-background, .15);
+
+  background-color: $background-color;
+  bottom: 6em;
+  //overflow: hidden;
+  padding: 0;
+  position: absolute;
+  right: 2em;
+
+  // bottom arrow from http://www.cssarrowplease.com/
+  &::after {
+    border: solid transparent;
+    border-color: transparent;
+    border-top-color: $background-color;
+    border-width: 1em;
+    content: ' ';
+    height: 0;
+    left: 50%;
+    margin-left: 6em;
+    pointer-events: none;
+    position: absolute;
+    top: 100%;
+    width: 0;
+  }
+
+  > .#{$prefix}-container-wrapper {
+    margin: .5em;
+    overflow-y: auto;
+
+    > * {
+      margin: 0 .5em;
+    }
+
+    // A "line" in the panel: a container holding a label + control
+    .#{$prefix}-container-wrapper > * {
+      // Labels
+      &:first-child {
+        display: inline-block;
+        font-size: .8em;
+        width: 8em;
+      }
+
+      // Controls (e.g. selectbox)
+      &:last-child {
+        width: 12em;
+      }
+    }
+  }
+
+  .#{$prefix}-ui-settings-panel-item {
+    border-bottom: 1px solid transparentize($color-secondary, .7);
+    margin: 0 1em;
+    padding: .5em 0;
+
+    &.#{$prefix}-last {
+      border-bottom: 0;
+    }
+
+    &.#{$prefix}-hidden {
+      display: none;
+    }
+  }
+}
+
+// Remove margin inherited from controlbar
+.#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
+  margin: 0;
+}

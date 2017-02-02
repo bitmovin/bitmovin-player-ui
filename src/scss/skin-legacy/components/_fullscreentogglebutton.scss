@@ -1,0 +1,17 @@
+.#{$prefix}-ui-fullscreentogglebutton {
+  @extend %ui-button;
+
+  background-image: url('../../assets/skin-legacy/images/components/normal/fullscreen_enter.png');
+
+  &:hover {
+    background-image: url('../../assets/skin-legacy/images/components/hover/fullscreen_enter.png');
+  }
+
+  &.#{$prefix}-on {
+    background-image: url('../../assets/skin-legacy/images/components/normal/fullscreen_exit.png');
+
+    &:hover {
+      background-image: url('../../assets/skin-legacy/images/components/hover/fullscreen_exit.png');
+    }
+  }
+}

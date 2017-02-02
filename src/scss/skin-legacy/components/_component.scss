@@ -1,0 +1,8 @@
+%ui-component {
+  /*! placeholder to avoid removal of empty selector */
+  //outline: 1px solid red;
+}
+
+.#{$prefix}-ui-component {
+  @extend %ui-component;
+}

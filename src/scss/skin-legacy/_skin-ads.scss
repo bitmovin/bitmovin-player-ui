@@ -1,0 +1,33 @@
+@import 'variables';
+
+// sass-lint:disable nesting-depth
+&.#{$prefix}-ui-skin-ads {
+
+  .#{$prefix}-ui-label-ad-message {
+    @extend %ui-label;
+
+    text-align: center;
+    width: 100%;
+  }
+
+  .#{$prefix}-ui-button-ad-skip {
+    @extend %ui-button;
+
+    bottom: 3em;
+    height: auto;
+    position: absolute;
+    right: 1.5em;
+
+    .#{$prefix}-label {
+      background-color: transparentize($color-black, .3);
+      border: 1px solid $color-white;
+      display: inherit;
+      font-size: 1.2em;
+      padding: .5em 1em;
+
+      &:hover {
+        background-color: transparentize($color-black, .1);
+      }
+    }
+  }
+}

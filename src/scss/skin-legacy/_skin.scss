@@ -1,0 +1,41 @@
+@import 'variables';
+
+.#{$prefix}-ui-skin-legacy {
+  @import 'mixins';
+  @import 'components/component';
+  @import 'components/container';
+  @import 'components/uicontainer';
+  @import 'components/controlbar';
+  @import 'components/button';
+  @import 'components/playbacktogglebutton';
+  @import 'components/fullscreentogglebutton';
+  @import 'components/vrtogglebutton';
+  @import 'components/volumetogglebutton';
+  @import 'components/seekbar';
+  @import 'components/watermark';
+  @import 'components/hugeplaybacktogglebutton';
+  @import 'components/label';
+  @import 'components/settingspanel';
+  @import 'components/settingstogglebutton';
+  @import 'components/selectbox';
+  @import 'components/seekbarlabel';
+  @import 'components/volumeslider';
+  @import 'components/subtitleoverlay';
+  @import 'components/volumecontrolbutton';
+  @import 'components/casttogglebutton';
+  @import 'components/caststatusoverlay';
+  @import 'components/errormessageoverlay';
+  @import 'components/titlebar';
+  @import 'components/recommendationoverlay';
+  @import 'components/clickoverlay';
+  @import 'components/hugereplaybutton';
+  @import 'components/playbacktimelabel';
+  @import 'components/playbacktoggleoverlay';
+  @import 'skin-cast-receiver';
+  @import 'skin-ads';
+
+  color: $font-color;
+  font-family: $font-family;
+  font-size: $font-size;
+  line-height: $font-size;
+}

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Bitmovin Player UI Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="css/bitmovinplayer-ui-legacy.css">
+    <link rel="stylesheet" href="css/bitmovinplayer-ui.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="player-wrapper">
+        <div class="player" id="player"></div>
+    </div>
+
+    <br>
+
+    <div class="card">
+        <h3 class="card-header">Playground</h3>
+
+        <div class="card-block">
+            <h4 class="card-title">Player Config</h4>
+
+            <div class="form-group row">
+                <label for="config-source" class="col-sm-4 form-control-label">Video Source</label>
+                <div class="col-sm-4">
+                    <select class="form-control" id="config-source"></select>
+                </div>
+                <span class="col-sm-4 form-text">The video source to load into the player.</span>
+            </div>
+
+            <div class="form-group row">
+                <label for="config-ui" class="col-sm-4 form-control-label">UI</label>
+                <div class="col-sm-4">
+                    <select class="form-control" id="config-ui"></select>
+                </div>
+                <span class="col-sm-4 form-text">The UI skin or skin type to display.</span>
+            </div>
+        </div>
+
+        <div class="card-block">
+            <h4 class="card-title">Playback Control</h4>
+
+            <p class="card-text" id="playback-controls"></p>
+
+            <h5 class="card-title">Actions</h5>
+
+            <p class="card-text" id="actions"></p>
+
+            <h5 class="card-title">Output</h5>
+
+            <div class="card card-block"><samp id="function-call-output"></samp></div>
+        </div>
+
+        <div class="card-block">
+            <h4 class="card-title">
+                Events
+                <small class="text-muted">Log events to the console</small>
+            </h4>
+
+            <p class="card-text" id="events">
+                <label>
+                    <input type="checkbox" id="config-events-all">
+                    All
+                </label>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer.js"></script>
+<script src="js/bitmovinplayer-ui.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script type="text/javascript">
+
+  var player = bitmovin.player('player');
+
+  var sources = {
+    fullyFeatured: {
+      dash: '//bitdash-a.akamaihd.net/content/sintel/sintel.mpd',
+      hls: '//bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+      progressive: [
+        {url: '//bitdash-a.akamaihd.net/content/sintel/Sintel.mp4', type: 'video/mp4'},
+        {url: '//bitdash-a.akamaihd.net/content/sintel/Sintel.webm', type: 'video/webm'}
+      ],
+      poster: '//bitdash-a.akamaihd.net/content/sintel/poster.png',
+      tracks: [{
+        file: '//bitdash-a.akamaihd.net/content/sintel/sprite/sprite.vtt',
+        kind: 'thumbnails'
+      }],
+      title: 'Sintel'
+    },
+    basicDash: {
+      dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
+    },
+    basicDashAudioOnly: {
+      dash: 'http://bitmovin-a.akamaihd.net/content/sintel/sintel-audio.mpd'
+    },
+    basicDashVideoOnly: {
+      dash: 'http://bitmovin-a.akamaihd.net/content/sintel/sintel-video.mpd'
+    },
+    errorInvalidHost: {
+      dash: 'http://invalid/url/to/nonexistent/mpd.mpd'
+    },
+    errorMissingMpd: {
+      dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintellll.mpd'
+    },
+    vr: {
+      dash: 'https://bitmovin-a.akamaihd.net/content/playhouse-vr/mpds/105560.mpd',
+      vr: {
+        contentType: 'single'
+      }
+    },
+    posterAndThumbnails: {
+      dash: '//bitdash-a.akamaihd.net/content/MI201109210084_1/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd',
+      hls: '//bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8',
+      progressive: '//bitdash-a.akamaihd.net/content/MI201109210084_1/MI201109210084_mpeg-4_hd_high_1080p25_10mbits.mp4',
+      poster: '//bitdash-a.akamaihd.net/content/art-of-motion_drm/art-of-motion_poster.jpg',
+      tracks: [{
+        file: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.vtt',
+        kind: 'thumbnails'
+      }], userId: 'demo_html5_vts', videoId: 'art-of-motion'
+    },
+    live: {
+      dash: 'http://bitcdn-kronehit-live.bitmovin.com/mpds/stream-full.php?streamkey=bitcodin&segmenthost=bitcdn-kronehit-live.bitmovin.com&liveoffset=20'
+    },
+    liveWithTimeshift: {
+      dash: 'http://demo-dash-live.zahs.tv/hd/manifest.mpd?timeshift=100'
+    }
+  };
+
+  var advertisingConfig = {
+    forceSinglePlayer: false,
+    //clickThroughEnabled: false,
+    client: 'vast',
+    admessage: 'staring contest (ಠ_ಠ) ... hold on for {remainingTime} seconds',
+    skipmessage: {
+      countdown: '┏(-_-)┛┗(-_-﻿ )┓┗(-_-)┛┏(-_-)┓ ({remainingTime})',
+      skip: 'SKIP'
+    },
+    schedule: {
+      'ad-skippable': {
+        offset: 'pre',
+        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
+      },
+      'ad-nonskippable': {
+        offset: '15',
+        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
+      },
+      'ad-skippable-ima': {
+        client: 'ima',
+        offset: '30',
+        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
+      },
+      'ad-nonskippable-ima': {
+        client: 'ima',
+        offset: '45',
+        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
+      }
+    }
+  };
+  var adsEnabled = false;
+
+  var config = {
+    key: 'YOUR KEY HERE',
+    source: sources.fullyFeatured,
+    style: {
+      ux: false
+    },
+    cast: {
+      enable: true
+    },
+    advertising: adsEnabled ? advertisingConfig : null
+  };
+
+  var uiConfig = {
+    metadata: {
+      title: 'UI Demo Video Title',
+      description: 'Bacon ipsum dolor amet t-bone prosciutto cupim kevin tongue, venison tail pork beef ribs boudin beef shoulder bacon jerky. Pork tail spare ribs jowl jerky andouille corned beef frankfurter. Burgdoggen meatloaf short ribs andouille tail tri-tip cow kevin doner.',
+      markers: [
+        {time: 50, title: 'Chapter 1'},
+        {time: 80, title: 'Chapter Two'},
+        {time: 200},
+        {time: 300, title: 'Again a chapter with a title'},
+      ],
+    },
+//    recommendations: [
+//      {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
+//      {title: 'Recommendation 2: The second best video', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 64},
+//      {title: 'Recommendation 3: The third best video of all time', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 195},
+//      {title: 'Recommendation 4: The fourth, you know what', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 15},
+//      {title: 'Recommendation 5', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 174},
+//      {title: 'Recommendation 6', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 26},
+//      {title: 'Recommendation 7', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 87},
+//      {title: 'Recommendation 8', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 54},
+//      {title: 'Recommendation 9', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 22},
+//      {title: 'Recommendation 10', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 44},
+//      {title: 'Recommendation 11', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 435},
+//      {title: 'Recommendation 12: Ain\'t no better video than this', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 34}
+//    ],
+  };
+
+  var uiManager;
+
+  player.setup(config).then(function() {
+    // Add UI to loaded player
+    uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
+  }, function(errorEvent) {
+    // Play setup failed, and there's no player UI yet to display the error in
+    console.log(errorEvent);
+  });
+
+  $.each(sources, function(key, value) {
+    $('#config-source').append($('<option></option>').attr('value', key).text(key));
+  });
+  $('#config-source').change(function() {
+    player.unload();
+    player.load(sources[$(this).val()]);
+  });
+
+  var printResult = function(result) {
+    $('#function-call-output').html(JSON.stringify(result, null, 2));
+  };
+
+  // Collect all API methods of the player object
+  var apiMethods = [];
+  for (var member in player) {
+    if (typeof player[member] == 'function') {
+      apiMethods.push(member);
+    }
+  }
+
+  // Define custom parameters for testing API methods that take parameters
+  var apiMethodParameters = {
+    'setVolume': [0, 50, 100, ['+10', function() { return player.getVolume() + 10; }]],
+    'seek': [0,
+      ['current+60s', function() { return player.getCurrentTime() + 60; }],
+      ['current+5min', function() { return player.getCurrentTime() + 60 * 5; }],
+      ['current-60s', function() { return player.getCurrentTime() - 60; }],
+      ['current-5min', function() { return player.getCurrentTime() - 60 * 5; }],
+      ['duration-1s', function() { return player.getDuration() - 1; }]
+    ],
+    'setPlaybackSpeed': [0, 0.1, 0.25, 0.5, 1, 2, 4, 10],
+  };
+
+  var addApiMethodButton = function(method, parameter) {
+    var parameterName = (typeof parameter == 'undefined' ? '' : parameter instanceof Array ? parameter[0] : parameter);
+    var button = $('<button class="btn btn-primary btn-sm">' + method + '(' + parameterName + ')' + '</button>');
+    $('#playback-controls').append(button).append(' ');
+    button.click(function() {
+      var p = parameter;
+      // If the parameter is an array, the actual parameter is located at index 1
+      if (p instanceof Array) {
+        p = p[1];
+      }
+      // If the parameter is a function, evaluate it first
+      if (typeof p == 'function') {
+        p = p();
+      }
+      // Execute method with parameter
+      printResult(player[method](p));
+    });
+  };
+
+  // Create buttons for all API methods and method/parameter combinations
+  $.each(apiMethods, function(key, method) {
+    if (apiMethodParameters.hasOwnProperty(method)) {
+      // We found custom parameter(s)
+      var parameters = apiMethodParameters[method];
+      if ($.isArray(parameters)) {
+        // There are multiple parameters in an array, add a call for each parameter
+        $.each(parameters, function(key, parameter) {
+          addApiMethodButton(method, parameter);
+        });
+      } else {
+        // Just a single parameter, add the call
+        addApiMethodButton(method, parameters);
+      }
+    } else {
+      // No parameters defined, add a simple parameterless method call
+      addApiMethodButton(method);
+    }
+  });
+
+
+  var actions = {
+    'Add subtitle': function() {
+      printResult(player.addSubtitle({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', label: 'Test Subtitle'}));
+    },
+    'Remove subtitle': function() {
+      printResult(player.removeSubtitle('test'));
+    },
+    'Schedule skippable VAST preroll ad': function() {
+      printResult(player.scheduleAd(
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+        'vast', {timeOffset: 'pre'}));
+    },
+    'Schedule skippable VAST ad in 5 secs': function() {
+      printResult(player.scheduleAd(
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+        'vast', {timeOffset: player.getCurrentTime() + 5}));
+    },
+    'Schedule nonskippable VAST ad in 5 secs': function() {
+      printResult(player.scheduleAd(
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
+        'vast', {timeOffset: player.getCurrentTime() + 5}));
+    },
+    'Schedule skippable VAST postroll ad': function() {
+      printResult(player.scheduleAd(
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+        'vast', {timeOffset: 'post'}));
+    },
+    'Schedule skippable IMA ad in 5 secs': function() {
+      printResult(player.scheduleAd(
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+        'ima', {timeOffset: player.getCurrentTime() + 5}));
+    },
+    'Schedule nonskippable IMA ad in 5 secs': function() {
+      printResult(player.scheduleAd(
+        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
+        'ima', {timeOffset: player.getCurrentTime() + 5}));
+    }
+  };
+  $.each(actions, function(title, handler) {
+    $('#actions').append($('<button type="button" class="btn btn-primary btn-sm">' + title + '</button>').click(handler)).append(' ');
+  });
+
+
+  var eventConsoleLogger = function(event) {
+    console.log(event);
+  };
+  $('#config-events-all').change(function() {
+    var checked = $(this).prop('checked');
+
+    $('#events input').each(function(index) {
+      // Skip first checkbox (the 'all' checkbox)
+      if (index === 0) {
+        return;
+      }
+
+      $(this).prop('checked', checked);
+      $(this).trigger("change");
+    });
+  });
+  // Add a checkbox for each event to toggle logging to console
+  var eventIndex = 0;
+  for (var event in bitmovin.player.EVENT) {
+    var checkbox = $('<input>', {
+      'type': 'checkbox',
+      'id': 'config-events-' + (eventIndex++)
+    }).data('event', event);
+
+    checkbox.change(function() {
+      var checkbox = $(this);
+      var checked = checkbox.prop('checked');
+      var eventName = checkbox.data('event');
+
+      if (checked) {
+        player.addEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+      } else {
+        player.removeEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+      }
+    });
+
+    $('#events').append($('<label>').append(checkbox).append(' ').append(event).append('&ensp;'));
+  }
+
+  // Collect all UI factory methods which are basically the different built-in skins and skin types
+  var uiFactoryMethods = [];
+  for (var member in bitmovin.playerui.UIManager.Factory) {
+    if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function') {
+      uiFactoryMethods.push(member);
+    }
+  }
+  // Fill the UI factory method select box
+  $.each(uiFactoryMethods, function(key, value) {
+    $('#config-ui').append($('<option></option>').attr('value', value).text(value));
+  });
+  // Refresh UI when a factory is selected
+  $('#config-ui').change(function() {
+    uiManager.release();
+    var factoryMethod = $(this).val();
+    uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
+  });
+
+</script>
+</body>
+</html>

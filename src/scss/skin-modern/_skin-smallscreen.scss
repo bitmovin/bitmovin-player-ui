@@ -1,0 +1,104 @@
+@import 'variables';
+@import 'mixins';
+
+&.#{$prefix}-ui-skin-smallscreen {
+  font-size: 1.2em;
+
+  .#{$prefix}-ui-settings-panel {
+    @include layout-cover;
+    @include layout-center-children-in-container;
+
+    display: flex;
+
+    > .#{$prefix}-container-wrapper {
+      margin: auto;
+    }
+
+    .#{$prefix}-ui-settings-panel-item {
+      text-align: left;
+    }
+
+    .#{$prefix}-ui-closebutton {
+      margin: 2em;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+  }
+
+  // Do not display watermark in mobile view
+  .#{$prefix}-ui-watermark {
+    display: none;
+  }
+
+  .#{$prefix}-ui-titlebar {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+
+      > * {
+        margin: 0 .25em;
+      }
+
+      .#{$prefix}-ui-label {
+        display: inline;
+        font-size: 1em;
+      }
+
+      .#{$prefix}-label-metadata-title {
+        width: 100%;
+      }
+    }
+  }
+
+  // Adjustments for screen width x <= 400
+  &.#{$prefix}-layout-max-width-400 {
+    .#{$prefix}-ui-settings-panel {
+      font-size: .6em;
+    }
+
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      font-size: .6em;
+    }
+  }
+
+  // Adjustments for screen width 400 < x <= 600
+  &.#{$prefix}-layout-max-width-600 {
+    .#{$prefix}-ui-settings-panel {
+      font-size: .8em;
+    }
+
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      font-size: .8em;
+    }
+  }
+
+  // Adjustments for screen width x <= 600
+  &.#{$prefix}-layout-max-width-400,
+  &.#{$prefix}-layout-max-width-600 {
+    // none yet
+  }
+
+  // IE9 compatibility: fallback for missing flexbox support
+  // sass-lint:disable nesting-depth
+  &.#{$prefix}-no-flexbox {
+    .#{$prefix}-ui-titlebar {
+      > .#{$prefix}-container-wrapper {
+        border-spacing: .5em 0;
+        display: table;
+        width: 100%;
+
+        > * {
+          @include hidden; // Add hidden here too, else it is overwritten by display: table-cell
+
+          display: table-cell;
+          vertical-align: middle;
+          width: 1em;
+        }
+
+        .#{$prefix}-label-metadata-title {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+@import '../variables';
+
+.#{$prefix}-ui-vrtogglebutton {
+  @extend %ui-button;
+
+  // svg() usage: http://pavliko.github.io/postcss-svg/
+  background-image: svg('assets/skin-legacy/images/components/normal/stereo.svg', '[fill]: #{$button-image-color}');
+
+  &:hover {
+    background-image: svg('assets/skin-legacy/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-hover}');
+  }
+
+  &.#{$prefix}-on {
+    background-image: svg('assets/skin-legacy/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active}');
+
+    &:hover {
+      background-image: svg('assets/skin-legacy/images/components/normal/stereo.svg', '[fill]: #{$button-image-color-active-hover}');
+    }
+  }
+}

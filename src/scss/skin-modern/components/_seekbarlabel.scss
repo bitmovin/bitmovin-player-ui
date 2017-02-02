@@ -1,0 +1,73 @@
+@import '../variables';
+
+.#{$prefix}-ui-seekbar-label {
+  @extend %ui-container;
+
+  @include hidden-animated;
+
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 1em;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+
+  // Center container on left edge to get it centered over timeline position
+  %center-on-left-edge {
+    margin-left: -50%;
+    margin-right: 50%;
+    position: relative;
+  }
+
+  > .#{$prefix}-container-wrapper {
+    @extend %center-on-left-edge;
+  }
+
+  .#{$prefix}-seekbar-label-inner {
+    border-bottom: .2em solid $color-primary;
+
+    // bottom arrow from http://www.cssarrowplease.com/
+    &::after {
+      border: solid transparent;
+      border-color: transparent;
+      border-top-color: $color-primary;
+      border-width: .5em;
+      content: ' ';
+      height: 0;
+      left: 50%;
+      margin-left: -.5em;
+      pointer-events: none;
+      position: absolute;
+      top: 100%;
+      width: 0;
+    }
+
+    > .#{$prefix}-container-wrapper {
+      position: relative;
+
+      .#{$prefix}-seekbar-thumbnail {
+        width: 6em;
+      }
+
+      .#{$prefix}-seekbar-label-metadata {
+        background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
+        bottom: 0;
+        display: block;
+        padding: .5em;
+        position: absolute;
+        width: 100%;
+
+        .#{$prefix}-seekbar-label-time {
+          display: block;
+          line-height: .8em;
+        }
+
+        .#{$prefix}-seekbar-label-title {
+          display: block;
+          margin-bottom: .3em;
+          white-space: normal;
+        }
+      }
+    }
+  }
+}

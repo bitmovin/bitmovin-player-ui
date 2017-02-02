@@ -1,0 +1,14 @@
+@import '../variables';
+
+%ui-label {
+  @extend %ui-component;
+
+  @include hidden;
+
+  cursor: default;
+  white-space: nowrap;
+}
+
+.#{$prefix}-ui-label {
+  @extend %ui-label;
+}

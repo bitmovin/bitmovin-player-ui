@@ -1,0 +1,72 @@
+@import '../variables';
+@import '../mixins';
+
+// H/V center items in the middle of the overlay
+%center-items-in-overlay {
+  display: table;
+
+  > .#{$prefix}-container-wrapper {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+.#{$prefix}-ui-recommendation-overlay {
+  @extend %ui-container;
+  @extend %center-items-in-overlay;
+
+  @include layout-cover;
+  @include hidden-animated($animation-duration * 2);
+
+  background-color: $controlbar-background-color;
+
+  a {
+    color: $color-white;
+
+    &:hover,
+    &:visited {
+      color: $color-white;
+    }
+  }
+
+  .#{$prefix}-ui-recommendation-item {
+    background-size: cover;
+    display: inline-block;
+    font-size: .7em;
+    height: 100px;
+    margin: .3em;
+    position: relative;
+    text-align: left;
+    text-shadow: 0 0 3px $color-black;
+    transform: scale(1);
+    transition: transform .15s ease-out;
+    width: 100px;
+
+    .#{$prefix}-thumbnail {
+      height: 100%;
+      position: absolute;
+      width: 100%;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+      transition: transform .15s ease-in;
+    }
+
+    .#{$prefix}-title {
+      left: .5em;
+      position: absolute;
+      right: .5em;
+      top: .5em;
+      white-space: normal;
+      word-break: break-all;
+    }
+
+    .#{$prefix}-duration {
+      bottom: .5em;
+      position: absolute;
+      right: .5em;
+    }
+  }
+}

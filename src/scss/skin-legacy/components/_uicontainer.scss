@@ -1,0 +1,29 @@
+@import '../variables';
+@import '../mixins';
+
+&.#{$prefix}-ui-uicontainer {
+  @extend %ui-container;
+
+  @include layout-cover;
+
+  font-size: 1em;
+  overflow: hidden;
+  pointer-events: none; // Do not catch pointer events, pass them through
+
+  * {
+    pointer-events: auto;
+  }
+
+  &.#{$prefix}-hidden {
+    // Most hiding within the UI works through the "visibility" property, because "display" cannot be animated.
+    // For the outermost UI container we use "display" though, to not block any events (e.g. click events) on the video
+    // when the UI is hidden.
+    display: none;
+  }
+
+  // IE9 compatibility: set transparent 1x1 pixel png background image to make it capture mouse events (IE9 does not capture events in areas without image or color content)
+  // We abuse the no-flexbox class which is only set in IE9 (of all supported browsers)
+  &.#{$prefix}-no-flexbox {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
+  }
+}

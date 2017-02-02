@@ -1,0 +1,30 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-subtitle-overlay {
+  @extend %ui-container;
+
+  @include layout-cover;
+
+  pointer-events: none;
+
+  .#{$prefix}-ui-subtitle-label {
+    bottom: 3em;
+    color: $subtitle-text-color;
+    font-size: 1.2em;
+    left: 3em;
+    position: absolute;
+    right: 3em;
+    text-align: center;
+
+    // Shift shadow in all 8 directions to get a homogeneous stroke around the text (works only for 1px width)
+    text-shadow: -1px -1px 0 $subtitle-text-border-color,
+    0 -1px 0 $subtitle-text-border-color,
+    1px -1px 0 $subtitle-text-border-color,
+    -1px 0 0 $subtitle-text-border-color,
+    1px 0 0 $subtitle-text-border-color,
+    -1px 1px 0 $subtitle-text-border-color,
+    0 1px 0 $subtitle-text-border-color,
+    1px 1px 0 $subtitle-text-border-color;
+  }
+}
