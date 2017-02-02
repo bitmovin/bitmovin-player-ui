@@ -72,6 +72,7 @@ export interface UIConditionContext {
   isAd: boolean;
   isAdWithUI: boolean;
   isFullscreen: boolean;
+  isMobile: boolean;
   width: number;
   documentWidth: number;
   // TODO add platform (Android, iOS, Windows, Linux, MacOS)?
@@ -247,6 +248,7 @@ export class UIManager {
         isAd: ad,
         isAdWithUI: adWithUI,
         isFullscreen: self.player.isFullscreen(),
+        isMobile: navigator.userAgent.match(/(Android|iPhone|iPad|iPod)/i) != null,
         width: self.playerElement.width(),
         documentWidth: document.body.clientWidth,
       };
@@ -554,7 +556,7 @@ export class UIManager {
       return new UIManager(player, [{
         ui: UIManager.Factory.modernSmallScreenAdsUI(),
         condition: function(context: UIConditionContext) {
-          return context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
+          return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
         }
       }, {
         ui: UIManager.Factory.modernAdsUI(),
@@ -564,7 +566,7 @@ export class UIManager {
       }, {
         ui: UIManager.Factory.modernSmallScreenUI(),
         condition: function(context: UIConditionContext) {
-          return context.documentWidth < smallScreenSwitchWidth;
+          return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
         }
       }, {
         ui: UIManager.Factory.modernUI()
