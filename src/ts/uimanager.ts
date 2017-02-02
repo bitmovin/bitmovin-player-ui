@@ -94,16 +94,17 @@ export class UIManager {
   private config: UIConfig;
   private managerPlayerWrapper: PlayerWrapper;
 
+
   /**
-   *
-   * @param player
-   * @param uiVariants
-   * @param config
+   * Creates a UI manager with a single UI variant that will be permanently shown.
+   * @param player the associated player of this UI
+   * @param ui the UI to add to the player
+   * @param config optional UI configuration
    */
   constructor(player: Player, ui: UIContainer, config?: UIConfig);
   /**
-   * Creates a UI manager with a list of UI variants that will be dynamically selected and switched according to some
-   * criteria in the context of the UI.
+   * Creates a UI manager with a list of UI variants that will be dynamically selected and switched according to
+   * the context of the UI.
    * @param player the associated player of this UI
    * @param uiVariants a list of UI variants that will be dynamically switched
    * @param config optional UI configuration
@@ -117,13 +118,22 @@ export class UIManager {
    * @param config optional UI configuration
    * @deprecated Will be removed with the next major player release. Use the constructor with UIVariant instead.
    */
+  // TODO remove this constructor with next major player release (and simplify handling in constructor body)
   constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config?: UIConfig);
   constructor(player: Player, playerUiOrUiVariants: UIContainer | UIVariant[],
               adsUiOrConfig: UIContainer | UIConfig = {}, config: UIConfig = {}) {
     if (playerUiOrUiVariants instanceof UIContainer) {
-      // Old constructor has been called, transform arguments to the new UIVariant[] signature
+      // Deprecated or new single-UI constructor has been called, transform arguments to the new UIVariant[] signature
       let playerUi = <UIContainer>playerUiOrUiVariants;
-      let adsUi = <UIContainer>adsUiOrConfig;
+      let adsUi = null;
+
+      if (adsUiOrConfig instanceof UIContainer) {
+        // The third parameter is also a UI, this is definitely a call to the deprecated constructor
+        adsUi = <UIContainer>adsUiOrConfig;
+      } else if (adsUiOrConfig != null) {
+        // Since the third parameter cannot be a UI (covered by the preceding if), it can only be a UI config
+        config = <UIConfig>adsUiOrConfig;
+      }
 
       let uiVariants = [];
 
