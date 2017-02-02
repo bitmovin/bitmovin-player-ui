@@ -515,6 +515,33 @@ export class UIManager {
       });
     };
 
+    private static modernCastReceiverUI = function() {
+      let controlBar = new ControlBar({
+        components: [
+          new Container({
+            components: [
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+              new SeekBar({ label: new SeekBarLabel() }),
+              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+            ],
+            cssClasses: ['controlbar-top']
+          }),
+        ]
+      });
+
+      return new CastUIContainer({
+        components: [
+          new SubtitleOverlay(),
+          new BufferingOverlay(),
+          new PlaybackToggleOverlay(),
+          new Watermark(),
+          controlBar,
+          new TitleBar(),
+          new ErrorMessageOverlay()
+        ], cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver']
+      });
+    };
+
     static buildModernUI(player: Player, config: UIConfig = {}): UIManager {
       let smallScreenSwitchWidth = 600;
 
@@ -551,35 +578,10 @@ export class UIManager {
     }
 
     static buildModernCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
-      let controlBar = new ControlBar({
-        components: [
-          new Container({
-            components: [
-              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-              new SeekBar({ label: new SeekBarLabel() }),
-              new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
-            ],
-            cssClasses: ['controlbar-top']
-          }),
-        ]
-      });
-
-      let ui = new CastUIContainer({
-        components: [
-          new SubtitleOverlay(),
-          new BufferingOverlay(),
-          new PlaybackToggleOverlay(),
-          new Watermark(),
-          controlBar,
-          new TitleBar(),
-          new ErrorMessageOverlay()
-        ], cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver']
-      });
-
-      return new UIManager(player, ui, null, config);
+      return new UIManager(player, UIManager.Factory.modernCastReceiverUI(), config);
     }
 
-    static buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
+    private static legacyUI = function() {
       let settingsPanel = new SettingsPanel({
         components: [
           new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -604,7 +606,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new UIContainer({
+      return new UIContainer({
         components: [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
@@ -616,8 +618,10 @@ export class UIManager {
           new ErrorMessageOverlay()
         ], cssClasses: ['ui-skin-legacy']
       });
+    };
 
-      let adsUi = new UIContainer({
+    private static legacyAdsUI = function() {
+      return new UIContainer({
         components: [
           new AdClickOverlay(),
           new ControlBar({
@@ -631,11 +635,9 @@ export class UIManager {
           new AdSkipButton()
         ], cssClasses: ['ui-skin-legacy', 'ui-skin-ads']
       });
+    };
 
-      return new UIManager(player, ui, adsUi, config);
-    }
-
-    static buildLegacyCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
+    private static legacyCastReceiverUI = function() {
       let controlBar = new ControlBar({
         components: [
           new SeekBar(),
@@ -643,7 +645,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new UIContainer({
+      return new UIContainer({
         components: [
           new SubtitleOverlay(),
           new PlaybackToggleOverlay(),
@@ -653,11 +655,9 @@ export class UIManager {
           new ErrorMessageOverlay()
         ], cssClasses: ['ui-skin-legacy', 'ui-skin-cast-receiver']
       });
+    };
 
-      return new UIManager(player, ui, null, config);
-    }
-
-    static buildLegacyTestUI(player: Player, config: UIConfig = {}): UIManager {
+    private static legacyTestUI = function() {
       let settingsPanel = new SettingsPanel({
         components: [
           new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -684,7 +684,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new UIContainer({
+      return new UIContainer({
         components: [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
@@ -696,8 +696,25 @@ export class UIManager {
           new ErrorMessageOverlay()
         ], cssClasses: ['ui-skin-legacy']
       });
+    };
 
-      return new UIManager(player, ui, null, config);
+    static buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
+      return new UIManager(player, [{
+        ui: UIManager.Factory.legacyAdsUI(),
+        condition: function(context: UIConditionContext) {
+          return context.isAdWithUI;
+        }
+      }, {
+        ui: UIManager.Factory.legacyUI()
+      }], config);
+    }
+
+    static buildLegacyCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
+      return new UIManager(player, UIManager.Factory.legacyCastReceiverUI(), config);
+    }
+
+    static buildLegacyTestUI(player: Player, config: UIConfig = {}): UIManager {
+      return new UIManager(player, UIManager.Factory.legacyTestUI(), config);
     }
   };
 }

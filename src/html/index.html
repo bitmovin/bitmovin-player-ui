@@ -372,7 +372,7 @@
   // Collect all UI factory methods which are basically the different built-in skins and skin types
   var uiFactoryMethods = [];
   for (var member in bitmovin.playerui.UIManager.Factory) {
-    if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function') {
+    if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function' && member.indexOf('build') === 0) {
       uiFactoryMethods.push(member);
     }
   }
