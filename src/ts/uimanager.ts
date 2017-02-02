@@ -217,6 +217,8 @@ export class UIManager {
 
     let self = this;
     let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
+    // isMobile only needs to be evaluated once (it cannot change during a browser session)
+    let isMobile = navigator && navigator.userAgent && navigator.userAgent.match(/(Android|iPhone|iPad|iPod)/i) != null;
 
     // Dynamically select a UI variant that matches the current UI condition.
     let resolveUiVariant = function(event: PlayerEvent) {
@@ -248,7 +250,7 @@ export class UIManager {
         isAd: ad,
         isAdWithUI: adWithUI,
         isFullscreen: self.player.isFullscreen(),
-        isMobile: navigator.userAgent.match(/(Android|iPhone|iPad|iPod)/i) != null,
+        isMobile: isMobile,
         width: self.playerElement.width(),
         documentWidth: document.body.clientWidth,
       };
