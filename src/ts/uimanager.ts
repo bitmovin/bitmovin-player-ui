@@ -65,6 +65,9 @@ export interface UIConfig {
   recommendations?: UIRecommendationConfig[];
 }
 
+/**
+ * The context that will be passed to a {@link UIConditionResolver} to determine if it's conditions fulfil the context.
+ */
 export interface UIConditionContext {
   isAd: boolean;
   isAdWithUI: boolean;
@@ -75,10 +78,18 @@ export interface UIConditionContext {
   // TODO add document width?
 }
 
+/**
+ * Resolves the conditions of its associated UI in a {@link UIVariant} upon a {@link UIConditionContext} and decides
+ * if the UI should be displayed. If it returns true, the UI is a candidate for display; if it returns false, it will
+ * not be displayed in the given context.
+ */
 export interface UIConditionResolver {
   (context: UIConditionContext): boolean;
 }
 
+/**
+ * Associates a UI instance with an optional {@link UIConditionResolver} that determines if the UI should be displayed.
+ */
 export interface UIVariant {
   ui: UIContainer;
   condition?: UIConditionResolver;
@@ -94,7 +105,6 @@ export class UIManager {
   private config: UIConfig;
   private managerPlayerWrapper: PlayerWrapper;
 
-
   /**
    * Creates a UI manager with a single UI variant that will be permanently shown.
    * @param player the associated player of this UI
@@ -105,6 +115,12 @@ export class UIManager {
   /**
    * Creates a UI manager with a list of UI variants that will be dynamically selected and switched according to
    * the context of the UI.
+   *
+   * Every time the UI context changes, the conditions of the UI variants will be sequentially resolved and the first
+   * UI, whose condition evaluates to true, will be selected and displayed. The last variant in the list might omit the
+   * condition resolver and will be selected as default/fallback UI when all other conditions fail. If there is no
+   * fallback UI and all conditions fail, no UI will be displayed.
+   *
    * @param player the associated player of this UI
    * @param uiVariants a list of UI variants that will be dynamically switched
    * @param config optional UI configuration
