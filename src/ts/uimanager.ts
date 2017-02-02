@@ -71,6 +71,7 @@ export interface UIConfig {
 export interface UIConditionContext {
   isAd: boolean;
   isAdWithUI: boolean;
+  isFullscreen: boolean;
   width: number;
   // TODO add platform (Android, iOS, Windows, Linux, MacOS)?
   // TODO add device type (phone, tablet, desktop)?
@@ -245,6 +246,7 @@ export class UIManager {
       let context: UIConditionContext = {
         isAd: ad,
         isAdWithUI: adWithUI,
+        isFullscreen: self.player.isFullscreen(),
         width: self.playerElement.width(),
       };
 
@@ -308,6 +310,8 @@ export class UIManager {
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_ERROR, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAYER_RESIZE, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_ENTER, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_EXIT, resolveUiVariant);
 
     // Initialize the UI
     resolveUiVariant(null);
