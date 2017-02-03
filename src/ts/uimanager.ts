@@ -270,7 +270,8 @@ export class UIManager {
       // Determine if the UI variant is changing
       if (nextUi !== self.currentUi) {
         uiVariantChanged = true;
-        console.log('switched to ', nextUi ? nextUi.getUI() : 'none');
+        // console.log('switched from ', self.currentUi ? self.currentUi.getUI() : 'none',
+        //   ' to ', nextUi ? nextUi.getUI() : 'none');
       }
 
       // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
