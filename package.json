@@ -2,7 +2,7 @@
   "name": "bitmovin-player-ui",
   "version": "0.0.1",
   "description": "Bitmovin Player UI Framework",
-  "main": "index.js",
+  "main": "dist/js/bitmovinplayer-ui.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/bitmovin/bitmovin-player-ui.git"
   },
-  "author": "",
+  "author": "Bitmovin",
   "license": "LGPL-3.0",
   "bugs": {
     "url": "https://github.com/bitmovin/bitmovin-player-ui/issues"
