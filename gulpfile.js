@@ -1,57 +1,57 @@
 var gulp = require('gulp');
 
 // Gulp plugins
-var sass       = require('gulp-sass');
+var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
-var cssBase64  = require('gulp-css-base64');
-var postcss    = require('gulp-postcss');
-var uglify     = require('gulp-uglify');
-var gif        = require('gulp-if');
-var rename     = require('gulp-rename');
-var tslint     = require('gulp-tslint');
-var sassLint   = require('gulp-sass-lint');
+var cssBase64 = require('gulp-css-base64');
+var postcss = require('gulp-postcss');
+var uglify = require('gulp-uglify');
+var gif = require('gulp-if');
+var rename = require('gulp-rename');
+var tslint = require('gulp-tslint');
+var sassLint = require('gulp-sass-lint');
 
 // PostCSS plugins
-var postcssSVG   = require('postcss-svg');
+var postcssSVG = require('postcss-svg');
 var autoprefixer = require('autoprefixer');
-var cssnano      = require('cssnano');
+var cssnano = require('cssnano');
 
 // Browserify
 var browserify = require('browserify');
-var tsify      = require('tsify');
-var watchify   = require('watchify');
-var source     = require('vinyl-source-stream');
-var buffer     = require('vinyl-buffer');
+var tsify = require('tsify');
+var watchify = require('watchify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
 // Various stuff
-var del         = require('del');
+var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 
 var paths = {
   source: {
-    html   : ['./src/html/*.html'],
-    ts     : ['./src/ts/main.ts'],
+    html: ['./src/html/*.html'],
+    ts: ['./src/ts/main.ts'],
     tsWatch: ['./src/ts/**/*.ts'],
-    sass   : ['./src/scss/**/*.scss']
+    sass: ['./src/scss/**/*.scss']
   },
   target: {
     html: './dist',
-    js  : './dist/js',
-    css : './dist/css'
+    js: './dist/js',
+    css: './dist/css'
   }
 };
 
 var browserifyInstance = browserify({
-  basedir     : '.',
-  debug       : true,
-  entries     : paths.source.ts,
-  cache       : {},
+  basedir: '.',
+  debug: true,
+  entries: paths.source.ts,
+  cache: {},
   packageCache: {}
 }).plugin(tsify);
 
 var catchBrowserifyErrors = false;
-var production            = false;
+var production = false;
 
 // Deletes the target directory containing all generated files
 gulp.task('clean', del.bind(null, [paths.target.html]));
@@ -60,7 +60,7 @@ gulp.task('clean', del.bind(null, [paths.target.html]));
 gulp.task('lint-ts', function() {
   return gulp.src(paths.source.tsWatch)
   .pipe(tslint({
-    formatter    : 'verbose',
+    formatter: 'verbose',
     configuration: {
       rules: {
         'class-name': true,
@@ -219,7 +219,7 @@ gulp.task('serve', function() {
   runSequence(['build'], function() {
     browserSync({
       notify: false,
-      port  : 9000,
+      port: 9000,
       server: {
         baseDir: [paths.target.html]
       }
