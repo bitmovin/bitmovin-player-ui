@@ -1,11 +1,11 @@
 /// <reference path='player.d.ts' />
 /// <reference path='../../node_modules/@types/core-js/index.d.ts' />
-import {UIManager} from './uimanager';
+import {UIManager, UIInstanceManager} from './uimanager';
 import {Button} from './components/button';
 import {ControlBar} from './components/controlbar';
 import {FullscreenToggleButton} from './components/fullscreentogglebutton';
 import {HugePlaybackToggleButton} from './components/hugeplaybacktogglebutton';
-import {PlaybackTimeLabel, TimeLabelMode} from './components/playbacktimelabel';
+import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktimelabel';
 import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {SeekBar} from './components/seekbar';
 import {SelectBox} from './components/selectbox';
@@ -73,26 +73,36 @@ if (typeof Object.assign !== 'function') {
 (window as any).bitmovin.playerui = {
   // Management
   UIManager,
+  UIInstanceManager,
   // Components
   AdClickOverlay,
   AdMessageLabel,
   AdSkipButton,
+  AirPlayToggleButton,
   AudioQualitySelectBox,
   AudioTrackSelectBox,
+  BufferingOverlay,
   Button,
   CastStatusOverlay,
   CastToggleButton,
+  CastUIContainer,
   ClickOverlay,
+  CloseButton,
   Component,
   Container,
   ControlBar,
   ErrorMessageOverlay,
   FullscreenToggleButton,
   HugePlaybackToggleButton,
+  HugeReplayButton,
   Label,
+  MetadataLabel,
+  MetadataLabelContent,
+  PlaybackSpeedSelectBox,
   PlaybackTimeLabel,
-  TimeLabelMode,
+  PlaybackTimeLabelMode,
   PlaybackToggleButton,
+  PlaybackToggleOverlay,
   RecommendationOverlay,
   SeekBar,
   SeekBarLabel,
@@ -107,17 +117,8 @@ if (typeof Object.assign !== 'function') {
   UIContainer,
   VideoQualitySelectBox,
   VolumeControlButton,
+  VolumeSlider,
   VolumeToggleButton,
   VRToggleButton,
   Watermark,
-  PlaybackSpeedSelectBox,
-  HugeReplayButton,
-  BufferingOverlay,
-  CastUIContainer,
-  PlaybackToggleOverlay,
-  CloseButton,
-  MetadataLabel,
-  MetadataLabelContent,
-  AirPlayToggleButton,
-  VolumeSlider,
 };
