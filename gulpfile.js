@@ -10,6 +10,7 @@ var gif = require('gulp-if');
 var rename = require('gulp-rename');
 var tslint = require('gulp-tslint');
 var sassLint = require('gulp-sass-lint');
+var ts = require('gulp-typescript');
 
 // PostCSS plugins
 var postcssSVG = require('postcss-svg');
@@ -27,6 +28,7 @@ var buffer = require('vinyl-buffer');
 var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
+var merge = require('merge2');
 
 var paths = {
   source: {
@@ -38,6 +40,7 @@ var paths = {
   target: {
     html: './dist',
     js: './dist/js',
+    jsframework: './dist/js/framework',
     css: './dist/css'
   }
 };
@@ -230,4 +233,17 @@ gulp.task('serve', function() {
     catchBrowserifyErrors = true;
     gulp.watch(paths.source.ts, ['browserify']);
   });
+});
+
+// Prepares the project for a npm release
+// After running this task, the project can be published to npm or installed from this folder.
+gulp.task('npm-prepare', ['clean', 'lint', 'sass', 'browserify'], function() {
+  // https://www.npmjs.com/package/gulp-typescript
+  var tsProject = ts.createProject('tsconfig.json');
+  var tsResult = gulp.src(paths.source.ts).pipe(tsProject());
+
+  return merge([
+    tsResult.dts.pipe(gulp.dest(paths.target.jsframework)),
+    tsResult.js.pipe(gulp.dest(paths.target.jsframework))
+  ]);
 });
