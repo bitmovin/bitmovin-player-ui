@@ -63,6 +63,7 @@
     text-align: right;
   }
 
+  // sass-lint:disable force-element-nesting
   &.#{$prefix}-layout-max-width-400 {
     // Hide the description in ultra tiny players to not clog the UI too much
     .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {

@@ -211,7 +211,7 @@ export class UIManager {
     // If it comes earlier, the variants with conditions that come afterwards will never be selected because the
     // default variant without a condition always evaluates to 'true'
     if (uiVariantsWithoutCondition.length > 0
-      && uiVariantsWithoutCondition[0] != this.uiVariants[this.uiVariants.length - 1]) {
+      && uiVariantsWithoutCondition[0] !== this.uiVariants[this.uiVariants.length - 1]) {
       throw Error('Invalid UI variant order: the default UI (without condition) must be at the end of the list');
     }
 
