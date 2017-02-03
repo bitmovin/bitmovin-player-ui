@@ -31,8 +31,8 @@ var browserSync = require('browser-sync');
 var paths = {
   source: {
     html: ['./src/html/*.html'],
-    ts: ['./src/ts/main.ts'],
-    tsWatch: ['./src/ts/**/*.ts'],
+    tsmain: ['./src/ts/main.ts'],
+    ts: ['./src/ts/**/*.ts'],
     sass: ['./src/scss/**/*.scss']
   },
   target: {
@@ -45,7 +45,7 @@ var paths = {
 var browserifyInstance = browserify({
   basedir: '.',
   debug: true,
-  entries: paths.source.ts,
+  entries: paths.source.tsmain,
   cache: {},
   packageCache: {}
 }).plugin(tsify);
@@ -58,7 +58,7 @@ gulp.task('clean', del.bind(null, [paths.target.html]));
 
 // TypeScript linting
 gulp.task('lint-ts', function() {
-  return gulp.src(paths.source.tsWatch)
+  return gulp.src(paths.source.ts)
   .pipe(tslint({
     formatter: 'verbose',
     configuration: {
@@ -228,6 +228,6 @@ gulp.task('serve', function() {
     gulp.watch(paths.source.sass, ['sass']);
     gulp.watch(paths.source.html, ['html']).on('change', browserSync.reload);
     catchBrowserifyErrors = true;
-    gulp.watch(paths.source.tsWatch, ['browserify']);
+    gulp.watch(paths.source.ts, ['browserify']);
   });
 });
