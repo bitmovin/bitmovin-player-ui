@@ -7,7 +7,7 @@ import {FullscreenToggleButton} from './components/fullscreentogglebutton';
 import {VRToggleButton} from './components/vrtogglebutton';
 import {VolumeToggleButton} from './components/volumetogglebutton';
 import {SeekBar} from './components/seekbar';
-import {PlaybackTimeLabel, TimeLabelMode} from './components/playbacktimelabel';
+import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktimelabel';
 import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
@@ -207,9 +207,9 @@ export namespace UIManager.Factory {
         settingsPanel,
         new Container({
           components: [
-            new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
             new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top']
         }),
@@ -293,9 +293,9 @@ export namespace UIManager.Factory {
       components: [
         new Container({
           components: [
-            new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
             new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top']
         }),
@@ -355,9 +355,9 @@ export namespace UIManager.Factory {
       components: [
         new Container({
           components: [
-            new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
             new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({ timeLabelMode: TimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top']
         }),
