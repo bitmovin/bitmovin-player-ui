@@ -63,6 +63,13 @@
     text-align: right;
   }
 
+  &.#{$prefix}-layout-max-width-400 {
+    // Hide the description in ultra tiny players to not clog the UI too much
+    .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {
+      display: none;
+    }
+  }
+
   &.#{$prefix}-layout-max-width-400,
   &.#{$prefix}-layout-max-width-600 {
     .#{$prefix}-ui-hugeplaybacktogglebutton {
