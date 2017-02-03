@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Bitmovin Player UI Demo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
     <link rel="stylesheet" href="css/demo.css">
@@ -372,7 +373,7 @@
   // Collect all UI factory methods which are basically the different built-in skins and skin types
   var uiFactoryMethods = [];
   for (var member in bitmovin.playerui.UIManager.Factory) {
-    if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function') {
+    if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function' && member.indexOf('build') === 0) {
       uiFactoryMethods.push(member);
     }
   }

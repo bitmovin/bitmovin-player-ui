@@ -65,52 +65,233 @@ export interface UIConfig {
   recommendations?: UIRecommendationConfig[];
 }
 
+/**
+ * The context that will be passed to a {@link UIConditionResolver} to determine if it's conditions fulfil the context.
+ */
+export interface UIConditionContext {
+  isAd: boolean;
+  isAdWithUI: boolean;
+  isFullscreen: boolean;
+  isMobile: boolean;
+  width: number;
+  documentWidth: number;
+}
+
+/**
+ * Resolves the conditions of its associated UI in a {@link UIVariant} upon a {@link UIConditionContext} and decides
+ * if the UI should be displayed. If it returns true, the UI is a candidate for display; if it returns false, it will
+ * not be displayed in the given context.
+ */
+export interface UIConditionResolver {
+  (context: UIConditionContext): boolean;
+}
+
+/**
+ * Associates a UI instance with an optional {@link UIConditionResolver} that determines if the UI should be displayed.
+ */
+export interface UIVariant {
+  ui: UIContainer;
+  condition?: UIConditionResolver;
+}
+
 export class UIManager {
 
   private player: Player;
   private playerElement: DOM;
-  private playerUi: InternalUIInstanceManager;
-  private adsUi: InternalUIInstanceManager;
+  private uiVariants: UIVariant[];
+  private uiInstanceManagers: InternalUIInstanceManager[];
+  private currentUi: InternalUIInstanceManager;
   private config: UIConfig;
   private managerPlayerWrapper: PlayerWrapper;
 
-  constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config: UIConfig = {}) {
-    this.player = player;
-    this.config = config;
+  /**
+   * Creates a UI manager with a single UI variant that will be permanently shown.
+   * @param player the associated player of this UI
+   * @param ui the UI to add to the player
+   * @param config optional UI configuration
+   */
+  constructor(player: Player, ui: UIContainer, config?: UIConfig);
+  /**
+   * Creates a UI manager with a list of UI variants that will be dynamically selected and switched according to
+   * the context of the UI.
+   *
+   * Every time the UI context changes, the conditions of the UI variants will be sequentially resolved and the first
+   * UI, whose condition evaluates to true, will be selected and displayed. The last variant in the list might omit the
+   * condition resolver and will be selected as default/fallback UI when all other conditions fail. If there is no
+   * fallback UI and all conditions fail, no UI will be displayed.
+   *
+   * @param player the associated player of this UI
+   * @param uiVariants a list of UI variants that will be dynamically switched
+   * @param config optional UI configuration
+   */
+  constructor(player: Player, uiVariants: UIVariant[], config?: UIConfig);
+  /**
+   * Creates a UI Manager with a default player UI and an optional ads UI that is displayed during ad playback.
+   * @param player the associated player of this UI
+   * @param playerUi the default UI for the player
+   * @param adsUi an ads UI to be displayed during ad playback, can be null
+   * @param config optional UI configuration
+   * @deprecated Will be removed with the next major player release. Use the constructor with UIVariant instead.
+   */
+  // TODO remove this constructor with next major player release (and simplify handling in constructor body)
+  constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config?: UIConfig);
+  constructor(player: Player, playerUiOrUiVariants: UIContainer | UIVariant[],
+              adsUiOrConfig: UIContainer | UIConfig = {}, config: UIConfig = {}) {
+    if (playerUiOrUiVariants instanceof UIContainer) {
+      // Deprecated or new single-UI constructor has been called, transform arguments to the new UIVariant[] signature
+      let playerUi = <UIContainer>playerUiOrUiVariants;
+      let adsUi = null;
 
-    if (!config.metadata) {
-      config.metadata = {
+      if (adsUiOrConfig instanceof UIContainer) {
+        // The third parameter is also a UI, this is definitely a call to the deprecated constructor
+        adsUi = <UIContainer>adsUiOrConfig;
+      } else if (adsUiOrConfig != null) {
+        // Since the third parameter cannot be a UI (covered by the preceding if), it can only be a UI config
+        config = <UIConfig>adsUiOrConfig;
+      }
+
+      let uiVariants = [];
+
+      // Add the ads UI if defined
+      if (adsUi) {
+        uiVariants.push({
+          ui: adsUi,
+          condition: function(context: UIConditionContext) {
+            return context.isAdWithUI;
+          },
+        });
+      }
+
+      // Add the default player UI
+      uiVariants.push({ ui: playerUi });
+
+      this.uiVariants = uiVariants;
+      this.config = config;
+    }
+    else {
+      // Default constructor (UIVariant[]) has been called
+      this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
+      this.config = <UIConfig>adsUiOrConfig;
+    }
+
+    this.player = player;
+    this.managerPlayerWrapper = new PlayerWrapper(player);
+    this.playerElement = new DOM(player.getFigure());
+
+    // If no metadata is passed with the config, we take the metadata from the player config
+    if (!this.config.metadata) {
+      this.config.metadata = {
         title: player.getConfig().source ? player.getConfig().source.title : null,
         description: player.getConfig().source ? player.getConfig().source.description : null,
       };
     }
 
-    this.playerUi = new InternalUIInstanceManager(player, playerUi, config);
-
-    this.managerPlayerWrapper = new PlayerWrapper(player);
-
-    this.playerElement = new DOM(player.getFigure());
-
-    // Add UI elements to player
-    this.addUi(this.playerUi);
+    // Create UI instance managers for the UI variants
+    // The instance managers map to the corresponding UI variants by their array index
+    this.uiInstanceManagers = [];
+    let uiVariantsWithoutCondition = [];
+    for (let uiVariant of this.uiVariants) {
+      if (uiVariant.condition == null) {
+        // Collect variants without conditions for error checking
+        uiVariantsWithoutCondition.push(uiVariant);
+      }
+      // Create the instance manager for a UI variant
+      this.uiInstanceManagers.push(new InternalUIInstanceManager(player, uiVariant.ui, this.config));
+    }
+    // Make sure that there is only one UI variant without a condition
+    // It does not make sense to have multiple variants without condition, because only the first one in the list
+    // (the one with the lowest index) will ever be selected.
+    if (uiVariantsWithoutCondition.length > 1) {
+      throw Error('Too many UIs without a condition: You cannot have more than one default UI');
+    }
+    // Make sure that the default UI variant, if defined, is at the end of the list (last index)
+    // If it comes earlier, the variants with conditions that come afterwards will never be selected because the
+    // default variant without a condition always evaluates to 'true'
+    if (uiVariantsWithoutCondition.length > 0
+      && uiVariantsWithoutCondition[0] !== this.uiVariants[this.uiVariants.length - 1]) {
+      throw Error('Invalid UI variant order: the default UI (without condition) must be at the end of the list');
+    }
 
     let self = this;
+    let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
+    // isMobile only needs to be evaluated once (it cannot change during a browser session)
+    let isMobile = navigator && navigator.userAgent && navigator.userAgent.match(/(Android|iPhone|iPad|iPod)/i) != null;
 
-    // Ads UI
-    if (adsUi) {
-      this.adsUi = new InternalUIInstanceManager(player, adsUi, config);
-      let adsUiAdded = false;
+    // Dynamically select a UI variant that matches the current UI condition.
+    let resolveUiVariant = function(event: PlayerEvent) {
+      // Make sure that the ON_AD_STARTED event data is persisted through ad playback in case other events happen
+      // in the meantime, e.g. player resize. We need to store this data because there is no other way to find out
+      // ad details (e.g. the ad client) while an ad is playing.
+      // Existing event data signals that an ad is currently active. We cannot use player.isAd() because it returns
+      // true on ad start and also on ad end events, which is problematic.
+      if (event != null) {
+        switch (event.type) {
+          // When the ad starts, we store the event data
+          case player.EVENT.ON_AD_STARTED:
+            adStartedEvent = <AdStartedEvent>event;
+            break;
+          // When the ad ends, we delete the event data
+          case player.EVENT.ON_AD_FINISHED:
+          case player.EVENT.ON_AD_SKIPPED:
+          case player.EVENT.ON_AD_ERROR:
+            adStartedEvent = null;
+        }
+      }
 
-      let enterAdsUi = function(event: AdStartedEvent) {
-        playerUi.hide();
+      // Detect if an ad has started
+      let ad = adStartedEvent != null;
+      let adWithUI = ad && adStartedEvent.clientType === 'vast';
 
-        // Display the ads UI (only for VAST ads, other clients bring their own UI)
-        if (event.clientType === 'vast') {
-          // Add ads UI when it is needed for the first time
-          if (!adsUiAdded) {
-            self.addUi(self.adsUi);
-            adsUiAdded = true;
+      // Determine the current context for which the UI variant will be resolved
+      let context: UIConditionContext = {
+        isAd: ad,
+        isAdWithUI: adWithUI,
+        isFullscreen: self.player.isFullscreen(),
+        isMobile: isMobile,
+        width: self.playerElement.width(),
+        documentWidth: document.body.clientWidth,
+      };
 
+      let nextUi: InternalUIInstanceManager = null;
+      let uiVariantChanged = false;
+
+      // Select new UI variant
+      // If no variant condition is fulfilled, we switch to *no* UI
+      for (let uiVariant of self.uiVariants) {
+        if (uiVariant.condition == null || uiVariant.condition(context) === true) {
+          nextUi = self.uiInstanceManagers[self.uiVariants.indexOf(uiVariant)];
+          break;
+        }
+      }
+
+      // Determine if the UI variant is changing
+      if (nextUi !== self.currentUi) {
+        uiVariantChanged = true;
+        // console.log('switched from ', self.currentUi ? self.currentUi.getUI() : 'none',
+        //   ' to ', nextUi ? nextUi.getUI() : 'none');
+      }
+
+      // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
+      if (uiVariantChanged) {
+        // Hide the currently active UI variant
+        if (self.currentUi) {
+          self.currentUi.getUI().hide();
+        }
+
+        // Assign the new UI variant as current UI
+        self.currentUi = nextUi;
+
+        // When we switch to a different UI instance, there's some additional stuff to manage. If we do not switch
+        // to an instance, we're done here.
+        if (self.currentUi != null) {
+          // Add the UI to the DOM (and configure it) the first time it is selected
+          if (!self.currentUi.isConfigured()) {
+            self.addUi(self.currentUi);
+          }
+
+          // If this is an ad UI, we need to relay the saved ON_AD_STARTED event data so ad components can configure
+          // themselves for the current ad.
+          if (context.isAd) {
             /* Relay the ON_AD_STARTED event to the ads UI
              *
              * Because the ads UI is initialized in the ON_AD_STARTED handler, i.e. when the ON_AD_STARTED event has
@@ -118,26 +299,25 @@ export class UIManager {
              * Since this can break functionality of components that rely on this event, we relay the event to the
              * ads UI components with the following call.
              */
-            self.adsUi.getPlayer().fireEventInUI(self.player.EVENT.ON_AD_STARTED, event);
+            self.currentUi.getPlayer().fireEventInUI(self.player.EVENT.ON_AD_STARTED, adStartedEvent);
           }
 
-          adsUi.show();
+          self.currentUi.getUI().show();
         }
-      };
+      }
+    };
 
-      let exitAdsUi = function() {
-        if (adsUiAdded) {
-          adsUi.hide();
-        }
-        playerUi.show();
-      };
+    // Listen to the following events to trigger UI variant resolution
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_ERROR, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAYER_RESIZE, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_ENTER, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_EXIT, resolveUiVariant);
 
-      // React to ad events from the player
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, enterAdsUi);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, exitAdsUi);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, exitAdsUi);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_ERROR, exitAdsUi);
-    }
+    // Initialize the UI
+    resolveUiVariant(null);
   }
 
   getConfig(): UIConfig {
@@ -161,14 +341,14 @@ export class UIManager {
   }
 
   release(): void {
-    this.releaseUi(this.playerUi);
-    if (this.adsUi) {
-      this.releaseUi(this.adsUi);
+    for (let uiInstanceManager of this.uiInstanceManagers) {
+      this.releaseUi(uiInstanceManager);
     }
     this.managerPlayerWrapper.clearEventHandlers();
   }
 
   static Factory = class {
+
     static buildDefaultUI(player: Player, config: UIConfig = {}): UIManager {
       return UIManager.Factory.buildModernUI(player, config);
     }
@@ -181,7 +361,7 @@ export class UIManager {
       return UIManager.Factory.buildModernCastReceiverUI(player, config);
     }
 
-    static buildModernUI(player: Player, config: UIConfig = {}): UIManager {
+    private static modernUI = function() {
       let settingsPanel = new SettingsPanel({
         components: [
           new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -221,7 +401,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new UIContainer({
+      return new UIContainer({
         components: [
           new SubtitleOverlay(),
           new BufferingOverlay(),
@@ -234,8 +414,10 @@ export class UIManager {
           new ErrorMessageOverlay()
         ], cssClasses: ['ui-skin-modern']
       });
+    };
 
-      let adsUi = new UIContainer({
+    private static modernAdsUI = function() {
+      return new UIContainer({
         components: [
           new BufferingOverlay(),
           new AdClickOverlay(),
@@ -263,11 +445,9 @@ export class UIManager {
           })
         ], cssClasses: ['ui-skin-modern', 'ui-skin-ads']
       });
+    };
 
-      return new UIManager(player, ui, adsUi, config);
-    }
-
-    static buildModernSmallScreenUI(player: Player, config: UIConfig = {}): UIManager {
+    private static modernSmallScreenUI = function() {
       let settingsPanel = new SettingsPanel({
         components: [
           new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -294,7 +474,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new UIContainer({
+      return new UIContainer({
         components: [
           new SubtitleOverlay(),
           new BufferingOverlay(),
@@ -316,8 +496,10 @@ export class UIManager {
           new ErrorMessageOverlay()
         ], cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen']
       });
+    };
 
-      let adsUi = new UIContainer({
+    private static modernSmallScreenAdsUI = function() {
+      return new UIContainer({
         components: [
           new BufferingOverlay(),
           new AdClickOverlay(),
@@ -338,11 +520,9 @@ export class UIManager {
           }),
         ], cssClasses: ['ui-skin-modern', 'ui-skin-ads', 'ui-skin-smallscreen']
       });
+    };
 
-      return new UIManager(player, ui, adsUi, config);
-    }
-
-    static buildModernCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
+    private static modernCastReceiverUI = function() {
       let controlBar = new ControlBar({
         components: [
           new Container({
@@ -356,7 +536,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new CastUIContainer({
+      return new CastUIContainer({
         components: [
           new SubtitleOverlay(),
           new BufferingOverlay(),
@@ -367,11 +547,48 @@ export class UIManager {
           new ErrorMessageOverlay()
         ], cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver']
       });
+    };
 
-      return new UIManager(player, ui, null, config);
+    static buildModernUI(player: Player, config: UIConfig = {}): UIManager {
+      // show smallScreen UI only on mobile/handheld devices
+      let smallScreenSwitchWidth = 600;
+
+      return new UIManager(player, [{
+        ui: UIManager.Factory.modernSmallScreenAdsUI(),
+        condition: function(context: UIConditionContext) {
+          return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
+        }
+      }, {
+        ui: UIManager.Factory.modernAdsUI(),
+        condition: function(context: UIConditionContext) {
+          return context.isAdWithUI;
+        }
+      }, {
+        ui: UIManager.Factory.modernSmallScreenUI(),
+        condition: function(context: UIConditionContext) {
+          return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
+        }
+      }, {
+        ui: UIManager.Factory.modernUI()
+      }], config);
     }
 
-    static buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
+    static buildModernSmallScreenUI(player: Player, config: UIConfig = {}): UIManager {
+      return new UIManager(player, [{
+        ui: UIManager.Factory.modernSmallScreenAdsUI(),
+        condition: function(context: UIConditionContext) {
+          return context.isAdWithUI;
+        }
+      }, {
+        ui: UIManager.Factory.modernSmallScreenUI()
+      }], config);
+    }
+
+    static buildModernCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
+      return new UIManager(player, UIManager.Factory.modernCastReceiverUI(), config);
+    }
+
+    private static legacyUI = function() {
       let settingsPanel = new SettingsPanel({
         components: [
           new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -396,7 +613,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new UIContainer({
+      return new UIContainer({
         components: [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
@@ -408,8 +625,10 @@ export class UIManager {
           new ErrorMessageOverlay()
         ], cssClasses: ['ui-skin-legacy']
       });
+    };
 
-      let adsUi = new UIContainer({
+    private static legacyAdsUI = function() {
+      return new UIContainer({
         components: [
           new AdClickOverlay(),
           new ControlBar({
@@ -423,11 +642,9 @@ export class UIManager {
           new AdSkipButton()
         ], cssClasses: ['ui-skin-legacy', 'ui-skin-ads']
       });
+    };
 
-      return new UIManager(player, ui, adsUi, config);
-    }
-
-    static buildLegacyCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
+    private static legacyCastReceiverUI = function() {
       let controlBar = new ControlBar({
         components: [
           new SeekBar(),
@@ -435,7 +652,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new UIContainer({
+      return new UIContainer({
         components: [
           new SubtitleOverlay(),
           new PlaybackToggleOverlay(),
@@ -445,11 +662,9 @@ export class UIManager {
           new ErrorMessageOverlay()
         ], cssClasses: ['ui-skin-legacy', 'ui-skin-cast-receiver']
       });
+    };
 
-      return new UIManager(player, ui, null, config);
-    }
-
-    static buildLegacyTestUI(player: Player, config: UIConfig = {}): UIManager {
+    private static legacyTestUI = function() {
       let settingsPanel = new SettingsPanel({
         components: [
           new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -476,7 +691,7 @@ export class UIManager {
         ]
       });
 
-      let ui = new UIContainer({
+      return new UIContainer({
         components: [
           new SubtitleOverlay(),
           new CastStatusOverlay(),
@@ -488,8 +703,25 @@ export class UIManager {
           new ErrorMessageOverlay()
         ], cssClasses: ['ui-skin-legacy']
       });
+    };
 
-      return new UIManager(player, ui, null, config);
+    static buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
+      return new UIManager(player, [{
+        ui: UIManager.Factory.legacyAdsUI(),
+        condition: function(context: UIConditionContext) {
+          return context.isAdWithUI;
+        }
+      }, {
+        ui: UIManager.Factory.legacyUI()
+      }], config);
+    }
+
+    static buildLegacyCastReceiverUI(player: Player, config: UIConfig = {}): UIManager {
+      return new UIManager(player, UIManager.Factory.legacyCastReceiverUI(), config);
+    }
+
+    static buildLegacyTestUI(player: Player, config: UIConfig = {}): UIManager {
+      return new UIManager(player, UIManager.Factory.legacyTestUI(), config);
     }
   };
 }
