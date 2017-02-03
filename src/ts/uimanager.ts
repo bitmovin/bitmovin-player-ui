@@ -117,7 +117,7 @@ export class UIManager {
              * Since this can break functionality of components that rely on this event, we relay the event to the
              * ads UI components with the following call.
              */
-            self.adsUi.getPlayer().fireEventInUI(bitmovin.player.EVENT.ON_AD_STARTED, event);
+            self.adsUi.getWrappedPlayer().fireEventInUI(bitmovin.player.EVENT.ON_AD_STARTED, event);
           }
 
           adsUi.show();
@@ -544,7 +544,7 @@ export class UIInstanceManager {
     return this.ui;
   }
 
-  getPlayer(): WrappedPlayer {
+  getPlayer(): Player {
     return this.playerWrapper.getPlayer();
   }
 
@@ -622,6 +622,13 @@ export class UIInstanceManager {
 class InternalUIInstanceManager extends UIInstanceManager {
   clearEventHandlers(): void {
     super.clearEventHandlers();
+  }
+
+  getWrappedPlayer(): WrappedPlayer {
+    // TODO find a non-hacky way to provide the WrappedPlayer to the UIManager without exporting it
+    // getPlayer() actually returns the WrappedPlayer but its return type is set to Player so the WrappedPlayer does
+    // not need to be exported
+    return <WrappedPlayer>this.getPlayer();
   }
 }
 
