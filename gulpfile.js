@@ -237,7 +237,7 @@ gulp.task('serve', function() {
 
 // Prepares the project for a npm release
 // After running this task, the project can be published to npm or installed from this folder.
-gulp.task('npm-prepare', ['clean', 'lint', 'sass', 'browserify'], function() {
+gulp.task('npm-prepare', ['build-prod'], function() {
   // https://www.npmjs.com/package/gulp-typescript
   var tsProject = ts.createProject('tsconfig.json');
   var tsResult = gulp.src(paths.source.ts).pipe(tsProject());
