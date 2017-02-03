@@ -44,6 +44,7 @@ import {CloseButton} from './components/closebutton';
 import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {VolumeSlider} from './components/volumeslider';
+import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -98,6 +99,7 @@ if (typeof Object.assign !== 'function') {
   Label,
   MetadataLabel,
   MetadataLabelContent,
+  PictureInPictureToggleButton,
   PlaybackSpeedSelectBox,
   PlaybackTimeLabel,
   PlaybackTimeLabelMode,

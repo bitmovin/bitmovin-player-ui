@@ -73,7 +73,9 @@ declare namespace bitmovin {
       ON_VR_ERROR: EVENT,
       ON_VR_MODE_CHANGED: EVENT,
       ON_VR_STEREO_CHANGED: EVENT,
-      ON_WARNING: EVENT
+      ON_WARNING: EVENT,
+      ON_PICTURE_IN_PICTURE_ENTER: EVENT,
+      ON_PICTURE_IN_PICTURE_EXIT: EVENT,
     }
 
     interface PlayerEvent {

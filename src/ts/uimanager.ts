@@ -43,6 +43,7 @@ import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 import {Label} from './components/label';
 import PlayerEvent = bitmovin.player.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
+import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -391,6 +392,7 @@ export namespace UIManager.Factory {
             new VolumeToggleButton(),
             new VolumeSlider(),
             new Component({ cssClass: 'spacer' }),
+            new PictureInPictureToggleButton(),
             new AirPlayToggleButton(),
             new CastToggleButton(),
             new VRToggleButton(),

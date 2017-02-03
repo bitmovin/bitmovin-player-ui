@@ -750,6 +750,22 @@ declare namespace bitmovin {
        * Shows the airplay playback target picker.
        */
       showAirplayTargetPicker(): Player;
+      /**
+       * Checks if macOS picture in picture mode is available.
+       */
+      isPictureInPictureAvailable(): boolean;
+      /**
+       * Returns the status of picture in picture mode.
+       */
+      isPictureInPicture(): boolean;
+      /**
+       * Enter picture in picture mode.
+       */
+      enterPictureInPicture(): Player;
+      /**
+       * Exit picture in picture mode.
+       */
+      exitPictureInPicture(): Player;
     }
 
     namespace VR {
