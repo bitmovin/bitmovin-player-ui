@@ -75,9 +75,6 @@ export interface UIConditionContext {
   isMobile: boolean;
   width: number;
   documentWidth: number;
-  // TODO add platform (Android, iOS, Windows, Linux, MacOS)?
-  // TODO add device type (phone, tablet, desktop)?
-  // TODO add screen size?
 }
 
 /**
