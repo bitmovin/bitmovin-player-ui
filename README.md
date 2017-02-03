@@ -3,8 +3,27 @@ The Bitmovin Adaptive Streaming Player UI
 
 Read more about the usage, as well as other important information on Bitmovin's Adaptive Streaming Player itself at https://bitmovin.com/ and https://bitmovin.com/player-documentation/.
 
-## Getting Started
+## Installation
 
+Beside the Git repository, the UI framework is also available through the following distribution channels:
+
+### CDN
+
+The UI framework and default skin bundled with the latest player release are always available via CDN. This is the recommended way if you just want to work with the predefined UI components.
+
+ * JavaScript library: `//bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer-ui.js` 
+ * CSS default skin: `//bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer-ui.css`
+
+### NPM
+
+The UI framework is also available in the NPM repository and comes with all source and distributable files, JavaScript modules and TypeScript type definitions.
+
+ * `npm install bitmovin-player-ui`
+
+
+## Getting Started with Development
+
+ 0. Clone Git repository
  1. Install node.js
  2. Install Gulp: `npm install --global gulp-cli`
  3. Install required npm packages: `npm install`
