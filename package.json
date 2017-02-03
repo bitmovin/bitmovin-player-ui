@@ -1,8 +1,8 @@
 {
   "name": "bitmovin-player-ui",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Bitmovin Player UI Framework",
-  "main": "index.js",
+  "main": "dist/js/bitmovinplayer-ui.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/bitmovin/bitmovin-player-ui.git"
   },
-  "author": "",
+  "author": "Bitmovin",
   "license": "LGPL-3.0",
   "bugs": {
     "url": "https://github.com/bitmovin/bitmovin-player-ui/issues"
@@ -32,7 +32,9 @@
     "gulp-sass-lint": "^1.3.2",
     "gulp-sourcemaps": "^2.2.0",
     "gulp-tslint": "^7.0.1",
+    "gulp-typescript": "^3.1.4",
     "gulp-uglify": "^2.0.0",
+    "merge2": "^1.0.3",
     "postcss-svg": "^1.0.6",
     "run-sequence": "^1.2.2",
     "tsify": "^2.0.2",
