@@ -30,17 +30,17 @@ export class AdMessageLabel extends Label<LabelConfig> {
       text = event.adMessage || text;
       updateMessageHandler();
 
-      player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
-      player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
+      player.addEventHandler(player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
+      player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
     };
 
     let adEndHandler = function() {
-      player.removeEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
-      player.removeEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
+      player.removeEventHandler(player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
+      player.removeEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, adStartHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_AD_SKIPPED, adEndHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_AD_FINISHED, adEndHandler);
+    player.addEventHandler(player.EVENT.ON_AD_STARTED, adStartHandler);
+    player.addEventHandler(player.EVENT.ON_AD_SKIPPED, adEndHandler);
+    player.addEventHandler(player.EVENT.ON_AD_FINISHED, adEndHandler);
   }
 }

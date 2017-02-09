@@ -30,10 +30,10 @@ export class BufferingOverlay extends Container<ContainerConfig> {
 
     let self = this;
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_STARTED, function() {
+    player.addEventHandler(player.EVENT.ON_STALL_STARTED, function() {
       self.show();
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, function() {
+    player.addEventHandler(player.EVENT.ON_STALL_ENDED, function() {
       self.hide();
     });
   }

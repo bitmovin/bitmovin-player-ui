@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Bitmovin Player UI Demo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
     <link rel="stylesheet" href="css/demo.css">
@@ -71,7 +72,7 @@
     </div>
 </div>
 
-<script src="https://bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer.js"></script>
+<script src="https://bitmovin-a.akamaihd.net/bitmovin-player/beta/7/bitmovinplayer.js"></script>
 <script src="js/bitmovinplayer-ui.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
@@ -221,7 +222,8 @@
     player.load(sources[$(this).val()]);
   });
 
-  var printResult = function(result) {
+  var printResult = function(result, method) {
+    console.log(method, result);
     $('#function-call-output').html(JSON.stringify(result, null, 2));
   };
 
@@ -261,7 +263,7 @@
         p = p();
       }
       // Execute method with parameter
-      printResult(player[method](p));
+      printResult(player[method](p), method);
     });
   };
 
@@ -288,44 +290,44 @@
 
   var actions = {
     'Add subtitle': function() {
-      printResult(player.addSubtitle({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', label: 'Test Subtitle'}));
+      return player.addSubtitle({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', label: 'Test Subtitle'});
     },
     'Remove subtitle': function() {
-      printResult(player.removeSubtitle('test'));
+      return player.removeSubtitle('test');
     },
     'Schedule skippable VAST preroll ad': function() {
-      printResult(player.scheduleAd(
+      return player.scheduleAd(
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-        'vast', {timeOffset: 'pre'}));
+        'vast', {timeOffset: 'pre'});
     },
     'Schedule skippable VAST ad in 5 secs': function() {
-      printResult(player.scheduleAd(
+      return player.scheduleAd(
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-        'vast', {timeOffset: player.getCurrentTime() + 5}));
+        'vast', {timeOffset: player.getCurrentTime() + 5});
     },
     'Schedule nonskippable VAST ad in 5 secs': function() {
-      printResult(player.scheduleAd(
+      return player.scheduleAd(
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
-        'vast', {timeOffset: player.getCurrentTime() + 5}));
+        'vast', {timeOffset: player.getCurrentTime() + 5});
     },
     'Schedule skippable VAST postroll ad': function() {
-      printResult(player.scheduleAd(
+      return player.scheduleAd(
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-        'vast', {timeOffset: 'post'}));
+        'vast', {timeOffset: 'post'});
     },
     'Schedule skippable IMA ad in 5 secs': function() {
-      printResult(player.scheduleAd(
+      return player.scheduleAd(
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-        'ima', {timeOffset: player.getCurrentTime() + 5}));
+        'ima', {timeOffset: player.getCurrentTime() + 5});
     },
     'Schedule nonskippable IMA ad in 5 secs': function() {
-      printResult(player.scheduleAd(
+      return player.scheduleAd(
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
-        'ima', {timeOffset: player.getCurrentTime() + 5}));
+        'ima', {timeOffset: player.getCurrentTime() + 5});
     }
   };
   $.each(actions, function(title, handler) {
-    $('#actions').append($('<button type="button" class="btn btn-primary btn-sm">' + title + '</button>').click(handler)).append(' ');
+    $('#actions').append($('<button type="button" class="btn btn-primary btn-sm">' + title + '</button>').click(function() {printResult(handler(), title);})).append(' ');
   });
 
 
@@ -371,7 +373,7 @@
   // Collect all UI factory methods which are basically the different built-in skins and skin types
   var uiFactoryMethods = [];
   for (var member in bitmovin.playerui.UIManager.Factory) {
-    if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function') {
+    if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function' && member.indexOf('build') === 0) {
       uiFactoryMethods.push(member);
     }
   }

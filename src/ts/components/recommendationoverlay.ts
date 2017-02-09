@@ -43,7 +43,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     }
 
     // Display recommendations when playback has finished
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, function() {
+    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, function() {
       // Dismiss ON_PLAYBACK_FINISHED events at the end of ads
       // TODO remove this workaround once issue #1278 is solved
       if (player.isAd()) {
@@ -53,7 +53,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
       self.show();
     });
     // Hide recommendations when playback starts, e.g. a restart
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function() {
+    player.addEventHandler(player.EVENT.ON_PLAY, function() {
       self.hide();
     });
   }

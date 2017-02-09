@@ -35,13 +35,13 @@ export class AudioQualitySelectBox extends SelectBox {
     });
 
     // Update qualities when audio track has changed
-    player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGED, updateAudioQualities);
+    player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, updateAudioQualities);
     // Update qualities when source goes away
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateAudioQualities);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateAudioQualities);
     // Update qualities when a new source is loaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateAudioQualities);
+    player.addEventHandler(player.EVENT.ON_READY, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
-    player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_DOWNLOAD_QUALITY_CHANGED, function() {
+    player.addEventHandler(player.EVENT.ON_AUDIO_DOWNLOAD_QUALITY_CHANGED, function() {
       let data = player.getDownloadedAudioData();
       self.selectItem(data.isAuto ? 'auto' : data.id);
     });

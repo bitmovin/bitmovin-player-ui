@@ -33,6 +33,8 @@ export class UIContainer extends Container<UIContainerConfig> {
   private static readonly CONTROLS_SHOWN = 'controls-shown';
   private static readonly CONTROLS_HIDDEN = 'controls-hidden';
 
+  private uiHideTimeout: Timeout;
+
   constructor(config: UIContainerConfig) {
     super(config);
 
@@ -65,7 +67,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
       // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
       if (!isSeeking && !player.isCasting()) {
-        uiHideTimeout.start();
+        this.uiHideTimeout.start();
       }
     };
 
@@ -79,7 +81,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     // Timeout to defer UI hiding by the configured delay time
-    let uiHideTimeout = new Timeout(config.hideDelay, hideUi);
+    this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
     // On touch displays, the first touch reveals the UI
     container.on('touchend', function(e) {
@@ -102,19 +104,19 @@ export class UIContainer extends Container<UIContainerConfig> {
       // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not hide
       // the UI in such cases
       if (!isSeeking) {
-        uiHideTimeout.start();
+        self.uiHideTimeout.start();
       }
     });
 
     uimanager.onSeek.subscribe(function() {
-      uiHideTimeout.clear(); // Don't hide UI while a seek is in progress
+      self.uiHideTimeout.clear(); // Don't hide UI while a seek is in progress
       isSeeking = true;
     });
     uimanager.onSeeked.subscribe(function() {
       isSeeking = false;
-      uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+      self.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, function() {
+    player.addEventHandler(player.EVENT.ON_CAST_STARTED, function() {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
     });
   }
@@ -130,23 +132,23 @@ export class UIContainer extends Container<UIContainerConfig> {
       container.removeClass(self.prefixCss(UIContainer.STATE_PAUSED));
       container.removeClass(self.prefixCss(UIContainer.STATE_FINISHED));
     };
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, function() {
+    player.addEventHandler(player.EVENT.ON_READY, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_PREPARED));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, function() {
+    player.addEventHandler(player.EVENT.ON_PLAY, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_PLAYING));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, function() {
+    player.addEventHandler(player.EVENT.ON_PAUSED, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_PAUSED));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYBACK_FINISHED, function() {
+    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_FINISHED));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, function() {
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, function() {
       removeStates();
       container.addClass(self.prefixCss(UIContainer.STATE_IDLE));
     });
@@ -155,10 +157,10 @@ export class UIContainer extends Container<UIContainerConfig> {
       UIContainer.STATE_PREPARED : UIContainer.STATE_IDLE));
 
     // Fullscreen marker class
-    player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function() {
+    player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, function() {
       container.addClass(self.prefixCss(UIContainer.FULLSCREEN));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function() {
+    player.addEventHandler(player.EVENT.ON_FULLSCREEN_EXIT, function() {
       container.removeClass(self.prefixCss(UIContainer.FULLSCREEN));
     });
     // Init fullscreen state
@@ -167,10 +169,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     // Buffering marker class
-    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_STARTED, function() {
+    player.addEventHandler(player.EVENT.ON_STALL_STARTED, function() {
       container.addClass(self.prefixCss(UIContainer.BUFFERING));
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, function() {
+    player.addEventHandler(player.EVENT.ON_STALL_ENDED, function() {
       container.removeClass(self.prefixCss(UIContainer.BUFFERING));
     });
     // Init buffering state
@@ -205,7 +207,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         container.addClass(self.prefixCss('layout-max-width-1200'));
       }
     };
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYER_RESIZE, function(e: PlayerResizeEvent) {
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, function(e: PlayerResizeEvent) {
       // Convert strings (with "px" suffix) to ints
       let width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
       let height = Math.round(Number(e.height.substring(0, e.height.length - 2)));
@@ -214,6 +216,11 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     // Init layout state
     updateLayoutSizeClasses(new DOM(player.getFigure()).width(), new DOM(player.getFigure()).height());
+  }
+
+  release(): void {
+    super.release();
+    this.uiHideTimeout.clear();
   }
 
   protected toDomElement(): DOM {

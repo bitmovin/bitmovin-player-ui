@@ -1,15 +1,15 @@
 /// <reference path='player.d.ts' />
 /// <reference path='../../node_modules/@types/core-js/index.d.ts' />
-import {UIManager} from './uimanager';
+import {UIManager, UIInstanceManager} from './uimanager';
 import {Button} from './components/button';
 import {ControlBar} from './components/controlbar';
 import {FullscreenToggleButton} from './components/fullscreentogglebutton';
 import {HugePlaybackToggleButton} from './components/hugeplaybacktogglebutton';
-import {PlaybackTimeLabel} from './components/playbacktimelabel';
+import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktimelabel';
 import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {SeekBar} from './components/seekbar';
 import {SelectBox} from './components/selectbox';
-import {SettingsPanel} from './components/settingspanel';
+import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {ToggleButton} from './components/togglebutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
@@ -42,6 +42,9 @@ import {CastUIContainer} from './components/castuicontainer';
 import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
 import {CloseButton} from './components/closebutton';
 import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
+import {AirPlayToggleButton} from './components/airplaytogglebutton';
+import {VolumeSlider} from './components/volumeslider';
+import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -71,30 +74,43 @@ if (typeof Object.assign !== 'function') {
 (window as any).bitmovin.playerui = {
   // Management
   UIManager,
+  UIInstanceManager,
   // Components
   AdClickOverlay,
   AdMessageLabel,
   AdSkipButton,
+  AirPlayToggleButton,
   AudioQualitySelectBox,
   AudioTrackSelectBox,
+  BufferingOverlay,
   Button,
   CastStatusOverlay,
   CastToggleButton,
+  CastUIContainer,
   ClickOverlay,
+  CloseButton,
   Component,
   Container,
   ControlBar,
   ErrorMessageOverlay,
   FullscreenToggleButton,
   HugePlaybackToggleButton,
+  HugeReplayButton,
   Label,
+  MetadataLabel,
+  MetadataLabelContent,
+  PictureInPictureToggleButton,
+  PlaybackSpeedSelectBox,
   PlaybackTimeLabel,
+  PlaybackTimeLabelMode,
   PlaybackToggleButton,
+  PlaybackToggleOverlay,
   RecommendationOverlay,
   SeekBar,
   SeekBarLabel,
   SelectBox,
   SettingsPanel,
+  SettingsPanelItem,
   SettingsToggleButton,
   SubtitleOverlay,
   SubtitleSelectBox,
@@ -103,15 +119,8 @@ if (typeof Object.assign !== 'function') {
   UIContainer,
   VideoQualitySelectBox,
   VolumeControlButton,
+  VolumeSlider,
   VolumeToggleButton,
   VRToggleButton,
   Watermark,
-  PlaybackSpeedSelectBox,
-  HugeReplayButton,
-  BufferingOverlay,
-  CastUIContainer,
-  PlaybackToggleOverlay,
-  CloseButton,
-  MetadataLabel,
-  MetadataLabelContent,
 };

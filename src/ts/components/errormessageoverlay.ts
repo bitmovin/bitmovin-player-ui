@@ -3,6 +3,7 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import ErrorEvent = bitmovin.player.ErrorEvent;
 import {TvNoiseCanvas} from './tvnoisecanvas';
+import PlayerEvent = bitmovin.player.PlayerEvent;
 
 /**
  * Overlays the player and displays error messages.
@@ -30,10 +31,17 @@ export class ErrorMessageOverlay extends Container<ContainerConfig> {
 
     let self = this;
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_ERROR, function(event: ErrorEvent) {
+    player.addEventHandler(player.EVENT.ON_ERROR, function(event: ErrorEvent) {
       self.errorLabel.setText(event.message);
       self.tvNoiseBackground.start();
       self.show();
+    });
+
+    player.addEventHandler(player.EVENT.ON_SOURCE_LOADED, function(event: PlayerEvent) {
+      if(self.isShown()) {
+        self.tvNoiseBackground.stop();
+        self.hide();
+      }
     });
   }
 }

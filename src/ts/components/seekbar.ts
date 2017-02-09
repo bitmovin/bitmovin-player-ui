@@ -58,11 +58,13 @@ export class SeekBar extends Component<SeekBarConfig> {
   private timelineMarkers: TimelineMarker[];
 
   /**
-   * Buffer of the the current playback position. The position must be buffered in case it needs the element
+   * Buffer of the the current playback position. The position must be buffered in case the element
    * needs to be refreshed with {@link #refreshPlaybackPosition}.
    * @type {number}
    */
   private playbackPositionPercentage = 0;
+
+  private smoothPlaybackPositionUpdater: Timeout;
 
   // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
   private touchSupported = ('ontouchstart' in window);
@@ -168,8 +170,9 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         let bufferPercentage = 100 / player.getDuration() * bufferLength;
 
-        // Update playback position only in paused state, playback updates are handled in the Timeout below
-        if (player.isPaused()) {
+        // Update playback position only in paused state or in the initial startup state where player is neither
+        // paused nor playing. Playback updates are handled in the Timeout below.
+        if (player.isPaused() || (player.isPaused() === player.isPlaying())) {
           self.setPlaybackPosition(playbackPositionPercentage);
         }
 
@@ -177,24 +180,19 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, function() {
-      // Reset flag when a new source is loaded
-      playbackNotInitialized = true;
-    });
-
     // Update seekbar upon these events
     // update playback position when it changes
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_TIME_CHANGED, playbackPositionHandler);
     // update bufferlevel when buffering is complete
-    player.addEventHandler(bitmovin.player.EVENT.ON_STALL_ENDED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_STALL_ENDED, playbackPositionHandler);
     // update playback position when a seek has finished
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_SEEKED, playbackPositionHandler);
     // update playback position when a timeshift has finished
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFTED, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler);
     // update playback position of Cast playback
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
 
 
     /*
@@ -210,7 +208,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let updateIntervalMs = 25;
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
-    let smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, function() {
+    this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, function() {
       currentTimeSeekBar += currentTimeUpdateDeltaSecs;
       currentTimePlayer = player.getCurrentTime();
 
@@ -239,34 +237,34 @@ export class SeekBar extends Component<SeekBarConfig> {
     let startSmoothPlaybackPositionUpdater = function() {
       if (!player.isLive()) {
         currentTimeSeekBar = player.getCurrentTime();
-        smoothPlaybackPositionUpdater.start();
+        self.smoothPlaybackPositionUpdater.start();
       }
     };
 
     let stopSmoothPlaybackPositionUpdater = function() {
-      smoothPlaybackPositionUpdater.clear();
+      self.smoothPlaybackPositionUpdater.clear();
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, startSmoothPlaybackPositionUpdater);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
-    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, stopSmoothPlaybackPositionUpdater);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, function() {
+    player.addEventHandler(player.EVENT.ON_PLAY, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_PAUSED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_SEEKED, function() {
       currentTimeSeekBar = player.getCurrentTime();
     });
 
 
     // Seek handling
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, function() {
+    player.addEventHandler(player.EVENT.ON_SEEK, function() {
       self.setSeeking(true);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, function() {
+    player.addEventHandler(player.EVENT.ON_SEEKED, function() {
       self.setSeeking(false);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, function() {
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFT, function() {
       self.setSeeking(true);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, function() {
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFTED, function() {
       self.setSeeking(false);
     });
 
@@ -304,16 +302,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     self.onSeeked.subscribe(function(sender, percentage) {
       isSeeking = false;
 
-      // If playback has not been started before, we need to call play to in it the playback engine for the
-      // seek to work. We call pause() immediately afterwards because we actually do not want to play back anything.
-      // The flag serves to call play/pause only on the first seek before playback has started, instead of every
-      // time a seek is issued.
-      if (playbackNotInitialized) {
-        playbackNotInitialized = false;
-        player.play('ui-seek');
-        player.pause('ui-seek');
-      }
-
       // Do the seek
       seek(percentage);
 
@@ -332,7 +320,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     // Hide seekbar for live sources without timeshift
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, function() {
+    player.addEventHandler(player.EVENT.ON_READY, function() {
       if (player.isLive() && player.getMaxTimeShift() === 0) {
         self.hide();
       } else {
@@ -340,15 +328,30 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     });
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAYER_RESIZE, function() {
+    // Refresh the playback position when the player resized or the UI is configured. The playback position marker
+    // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, function() {
+      self.refreshPlaybackPosition();
+    });
+    // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
+    // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
+    uimanager.onConfigured.subscribe(function() {
       self.refreshPlaybackPosition();
     });
 
     // Initialize seekbar
-    this.setPlaybackPosition(0);
+    playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
     this.setSeekPosition(0);
     this.updateMarkers();
+  }
+
+  release(): void {
+    super.release();
+
+    if (this.smoothPlaybackPositionUpdater) { // object must not necessarily exist, e.g. in volume slider subclass
+      this.smoothPlaybackPositionUpdater.clear();
+    }
   }
 
   protected toDomElement(): DOM {

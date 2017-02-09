@@ -188,6 +188,17 @@ export class Component<Config extends ComponentConfig> {
   }
 
   /**
+   * Releases all resources and dependencies that the component holds. Player, DOM, and UIManager events are
+   * automatically removed during release and do not explicitly need to be removed here.
+   * This method is called by the UIManager when it releases the UI.
+   *
+   * Subclasses that need to release resources should override this method and call super.release().
+   */
+  release(): void {
+    // Nothing to do here, override where necessary
+  }
+
+  /**
    * Generate the DOM element for this component.
    *
    * Subclasses usually overwrite this method to extend or replace the DOM element with their own design.

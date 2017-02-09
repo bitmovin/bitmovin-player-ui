@@ -2,14 +2,14 @@ import {LabelConfig, Label} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../utils';
 
-export enum TimeLabelMode {
+export enum PlaybackTimeLabelMode {
   CurrentTime,
   TotalTime,
   CurrentAndTotalTime,
 }
 
 export interface PlaybackTimeLabelConfig extends LabelConfig {
-  timeLabelMode?: TimeLabelMode;
+  timeLabelMode?: PlaybackTimeLabelMode;
   hideInLivePlayback?: boolean;
 }
 
@@ -26,7 +26,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
     this.config = this.mergeConfig(config, <PlaybackTimeLabelConfig>{
       cssClass: 'ui-playbacktimelabel',
-      timeLabelMode: TimeLabelMode.CurrentAndTotalTime,
+      timeLabelMode: PlaybackTimeLabelMode.CurrentAndTotalTime,
       hideInLivePlayback: false,
     }, this.config);
   }
@@ -94,12 +94,12 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, playbackTimeHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
+    player.addEventHandler(player.EVENT.ON_TIME_CHANGED, playbackTimeHandler);
+    player.addEventHandler(player.EVENT.ON_SEEKED, playbackTimeHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFT, updateLiveTimeshiftState);
-    player.addEventHandler(bitmovin.player.EVENT.ON_TIME_SHIFTED, updateLiveTimeshiftState);
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFT, updateLiveTimeshiftState);
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFTED, updateLiveTimeshiftState);
 
     let init = function() {
       // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content
@@ -116,7 +116,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // Update time after the format has been set
       playbackTimeHandler();
     };
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, init);
+    player.addEventHandler(player.EVENT.ON_READY, init);
 
     init();
   }
@@ -131,13 +131,13 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     let totalTime = StringUtils.secondsToTime(durationSeconds, this.timeFormat);
 
     switch ((<PlaybackTimeLabelConfig>this.config).timeLabelMode) {
-      case TimeLabelMode.CurrentTime:
+      case PlaybackTimeLabelMode.CurrentTime:
         this.setText(`${currentTime}`);
         break;
-      case TimeLabelMode.TotalTime:
+      case PlaybackTimeLabelMode.TotalTime:
         this.setText(`${totalTime}`);
         break;
-      case TimeLabelMode.CurrentAndTotalTime:
+      case PlaybackTimeLabelMode.CurrentAndTotalTime:
         this.setText(`${currentTime} / ${totalTime}`);
         break;
     }

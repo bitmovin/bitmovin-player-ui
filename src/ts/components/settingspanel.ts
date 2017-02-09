@@ -30,6 +30,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>()
   };
 
+  private hideTimeout: Timeout;
+
   constructor(config: SettingsPanelConfig) {
     super(config);
 
@@ -46,21 +48,21 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
 
     if (config.hideDelay > -1) {
-      let timeout = new Timeout(config.hideDelay, function() {
+      this.hideTimeout = new Timeout(config.hideDelay, function() {
         self.hide();
       });
 
       self.onShow.subscribe(function() {
         // Activate timeout when shown
-        timeout.start();
+        self.hideTimeout.start();
       });
       self.getDomElement().on('mousemove', function() {
         // Reset timeout on interaction
-        timeout.reset();
+        self.hideTimeout.reset();
       });
       self.onHide.subscribe(function() {
         // Clear timeout when hidden from outside
-        timeout.clear();
+        self.hideTimeout.clear();
       });
     }
 
@@ -86,6 +88,13 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
       }
+    }
+  }
+
+  release(): void {
+    super.release();
+    if (this.hideTimeout) {
+      this.hideTimeout.clear();
     }
   }
 

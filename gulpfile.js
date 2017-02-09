@@ -1,66 +1,69 @@
 var gulp = require('gulp');
 
 // Gulp plugins
-var sass       = require('gulp-sass');
+var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
-var cssBase64  = require('gulp-css-base64');
-var postcss    = require('gulp-postcss');
-var uglify     = require('gulp-uglify');
-var gif        = require('gulp-if');
-var rename     = require('gulp-rename');
-var tslint     = require('gulp-tslint');
-var sassLint   = require('gulp-sass-lint');
+var cssBase64 = require('gulp-css-base64');
+var postcss = require('gulp-postcss');
+var uglify = require('gulp-uglify');
+var gif = require('gulp-if');
+var rename = require('gulp-rename');
+var tslint = require('gulp-tslint');
+var sassLint = require('gulp-sass-lint');
+var ts = require('gulp-typescript');
 
 // PostCSS plugins
-var postcssSVG   = require('postcss-svg');
+var postcssSVG = require('postcss-svg');
 var autoprefixer = require('autoprefixer');
-var cssnano      = require('cssnano');
+var cssnano = require('cssnano');
 
 // Browserify
 var browserify = require('browserify');
-var tsify      = require('tsify');
-var watchify   = require('watchify');
-var source     = require('vinyl-source-stream');
-var buffer     = require('vinyl-buffer');
+var tsify = require('tsify');
+var watchify = require('watchify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
 // Various stuff
-var del         = require('del');
+var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
+var merge = require('merge2');
 
 var paths = {
   source: {
-    html   : ['./src/html/*.html'],
-    ts     : ['./src/ts/main.ts'],
-    tsWatch: ['./src/ts/**/*.ts'],
-    sass   : ['./src/scss/**/*.scss']
+    html: ['./src/html/*.html'],
+    tsmain: ['./src/ts/main.ts'],
+    ts: ['./src/ts/**/*.ts'],
+    sass: ['./src/scss/**/*.scss']
   },
   target: {
     html: './dist',
-    js  : './dist/js',
-    css : './dist/css'
+    js: './dist/js',
+    jsframework: './dist/js/framework',
+    css: './dist/css'
   }
 };
 
 var browserifyInstance = browserify({
-  basedir     : '.',
-  debug       : true,
-  entries     : paths.source.ts,
-  cache       : {},
+  basedir: '.',
+  debug: true,
+  entries: paths.source.tsmain,
+  cache: {},
   packageCache: {}
 }).plugin(tsify);
 
 var catchBrowserifyErrors = false;
-var production            = false;
+var production = false;
 
 // Deletes the target directory containing all generated files
 gulp.task('clean', del.bind(null, [paths.target.html]));
 
 // TypeScript linting
 gulp.task('lint-ts', function() {
-  return gulp.src(paths.source.tsWatch)
+  return gulp.src(paths.source.ts)
   .pipe(tslint({
-    formatter    : 'verbose',
+    formatter: 'verbose',
     configuration: {
       rules: {
         'class-name': true,
@@ -219,7 +222,7 @@ gulp.task('serve', function() {
   runSequence(['build'], function() {
     browserSync({
       notify: false,
-      port  : 9000,
+      port: 9000,
       server: {
         baseDir: [paths.target.html]
       }
@@ -228,6 +231,19 @@ gulp.task('serve', function() {
     gulp.watch(paths.source.sass, ['sass']);
     gulp.watch(paths.source.html, ['html']).on('change', browserSync.reload);
     catchBrowserifyErrors = true;
-    gulp.watch(paths.source.tsWatch, ['browserify']);
+    gulp.watch(paths.source.ts, ['browserify']);
   });
+});
+
+// Prepares the project for a npm release
+// After running this task, the project can be published to npm or installed from this folder.
+gulp.task('npm-prepare', ['build-prod'], function() {
+  // https://www.npmjs.com/package/gulp-typescript
+  var tsProject = ts.createProject('tsconfig.json');
+  var tsResult = gulp.src(paths.source.ts).pipe(tsProject());
+
+  return merge([
+    tsResult.dts.pipe(gulp.dest(paths.target.jsframework)),
+    tsResult.js.pipe(gulp.dest(paths.target.jsframework))
+  ]);
 });

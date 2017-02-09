@@ -32,6 +32,8 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
   private volumeToggleButton: VolumeToggleButton;
   private volumeSlider: VolumeSlider;
 
+  private volumeSliderHideTimeout: Timeout;
+
   constructor(config: VolumeControlButtonConfig = {}) {
     super(config);
 
@@ -55,7 +57,7 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
     let volumeToggleButton = this.getVolumeToggleButton();
     let volumeSlider = this.getVolumeSlider();
 
-    let timeout = new Timeout((<VolumeControlButtonConfig>self.getConfig()).hideDelay, function() {
+    this.volumeSliderHideTimeout = new Timeout((<VolumeControlButtonConfig>self.getConfig()).hideDelay, function() {
       volumeSlider.hide();
     });
 
@@ -73,32 +75,37 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
         volumeSlider.show();
       }
       // Avoid hiding of the slider when button is hovered
-      timeout.clear();
+      self.volumeSliderHideTimeout.clear();
     });
     volumeToggleButton.getDomElement().on('mouseleave', function() {
       // Hide slider delayed when button is left
-      timeout.reset();
+      self.volumeSliderHideTimeout.reset();
     });
     volumeSlider.getDomElement().on('mouseenter', function() {
       // When the slider is entered, cancel the hide timeout activated by leaving the button
-      timeout.clear();
+      self.volumeSliderHideTimeout.clear();
       volumeSliderHovered = true;
     });
     volumeSlider.getDomElement().on('mouseleave', function() {
       // When mouse leaves the slider, only hide it if there is no slide operation in progress
       if (volumeSlider.isSeeking()) {
-        timeout.clear();
+        self.volumeSliderHideTimeout.clear();
       } else {
-        timeout.reset();
+        self.volumeSliderHideTimeout.reset();
       }
       volumeSliderHovered = false;
     });
     volumeSlider.onSeeked.subscribe(function() {
       // When a slide operation is done and the slider not hovered (mouse outside slider), hide slider delayed
       if (!volumeSliderHovered) {
-        timeout.reset();
+        self.volumeSliderHideTimeout.reset();
       }
     });
+  }
+
+  release(): void {
+    super.release();
+    this.volumeSliderHideTimeout.clear();
   }
 
   /**

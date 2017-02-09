@@ -8,6 +8,8 @@ import {Timeout} from '../timeout';
  */
 export class CastUIContainer extends UIContainer {
 
+  private castUiHideTimeout: Timeout;
+
   constructor(config: UIContainerConfig) {
     super(config);
   }
@@ -35,7 +37,7 @@ export class CastUIContainer extends UIContainer {
       isUiShown = false;
     };
 
-    let uiHideTimeout = new Timeout(config.hideDelay, hideUi);
+    this.castUiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
     let showUi = function() {
       if (!isUiShown) {
@@ -46,12 +48,12 @@ export class CastUIContainer extends UIContainer {
 
     let showUiPermanently = function() {
       showUi();
-      uiHideTimeout.clear();
+      self.castUiHideTimeout.clear();
     };
 
     let showUiWithTimeout = function() {
       showUi();
-      uiHideTimeout.start();
+      self.castUiHideTimeout.start();
     };
 
     let showUiAfterSeek = function() {
@@ -62,11 +64,16 @@ export class CastUIContainer extends UIContainer {
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, showUiWithTimeout);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_LOADED, showUiWithTimeout);
-    player.addEventHandler(bitmovin.player.EVENT.ON_PLAY, showUiWithTimeout);
-    player.addEventHandler(bitmovin.player.EVENT.ON_PAUSED, showUiPermanently);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEK, showUiPermanently);
-    player.addEventHandler(bitmovin.player.EVENT.ON_SEEKED, showUiAfterSeek);
+    player.addEventHandler(player.EVENT.ON_READY, showUiWithTimeout);
+    player.addEventHandler(player.EVENT.ON_SOURCE_LOADED, showUiWithTimeout);
+    player.addEventHandler(player.EVENT.ON_PLAY, showUiWithTimeout);
+    player.addEventHandler(player.EVENT.ON_PAUSED, showUiPermanently);
+    player.addEventHandler(player.EVENT.ON_SEEK, showUiPermanently);
+    player.addEventHandler(player.EVENT.ON_SEEKED, showUiAfterSeek);
+  }
+
+  release(): void {
+    super.release();
+    this.castUiHideTimeout.clear();
   }
 }

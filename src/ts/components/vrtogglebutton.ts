@@ -55,13 +55,13 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_VR_MODE_CHANGED, vrStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_VR_STEREO_CHANGED, vrStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_VR_ERROR, vrStateHandler);
+    player.addEventHandler(player.EVENT.ON_VR_MODE_CHANGED, vrStateHandler);
+    player.addEventHandler(player.EVENT.ON_VR_STEREO_CHANGED, vrStateHandler);
+    player.addEventHandler(player.EVENT.ON_VR_ERROR, vrStateHandler);
     // Hide button when VR source goes away
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, vrButtonVisibilityHandler);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, vrButtonVisibilityHandler);
     // Show button when a new source is loaded and it's VR
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, vrButtonVisibilityHandler);
+    player.addEventHandler(player.EVENT.ON_READY, vrButtonVisibilityHandler);
 
     self.onClick.subscribe(function() {
       if (!isVRStereoAvailable()) {
