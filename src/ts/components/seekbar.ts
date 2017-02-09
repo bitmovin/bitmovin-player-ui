@@ -125,11 +125,15 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     let self = this;
+    let playbackNotInitialized = true;
     let isPlaying = false;
     let isSeeking = false;
 
     // Update playback and buffer positions
     let playbackPositionHandler = function() {
+      // Once this handler os called, playback has been started and we set the flag to false
+      playbackNotInitialized = false;
+
       if (isSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
@@ -210,9 +214,14 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Sync currentTime of seekbar to player
       let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
+      // If the delta is larger that 2 secs, directly jump the seekbar to the
+      // player time instead of smoothly fast forwarding/rewinding.
+      if (Math.abs(currentTimeDelta) > 2) {
+        currentTimeSeekBar = currentTimePlayer;
+      }
       // If currentTimeDelta is negative and below the adjustment threshold,
       // the player is ahead of the seekbar and we 'fast forward' the seekbar
-      if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
+      else if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
         currentTimeSeekBar += currentTimeUpdateDeltaSecs;
       }
       // If currentTimeDelta is positive and above the adjustment threshold,
@@ -225,15 +234,21 @@ export class SeekBar extends Component<SeekBarConfig> {
       self.setPlaybackPosition(playbackPositionPercentage);
     }, true);
 
-    player.addEventHandler(player.EVENT.ON_PLAY, function() {
+    let startSmoothPlaybackPositionUpdater = function() {
       if (!player.isLive()) {
         currentTimeSeekBar = player.getCurrentTime();
         self.smoothPlaybackPositionUpdater.start();
       }
-    });
-    player.addEventHandler(player.EVENT.ON_PAUSED, function() {
+    };
+
+    let stopSmoothPlaybackPositionUpdater = function() {
       self.smoothPlaybackPositionUpdater.clear();
-    });
+    };
+
+    player.addEventHandler(player.EVENT.ON_PLAY, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_PAUSED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
     player.addEventHandler(player.EVENT.ON_SEEKED, function() {
       currentTimeSeekBar = player.getCurrentTime();
     });

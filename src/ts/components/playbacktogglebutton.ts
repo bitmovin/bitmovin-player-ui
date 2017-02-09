@@ -30,17 +30,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         return;
       }
 
-      // TODO replace this hack with a sole player.isPlaying() call once issue #1203 is fixed
-      let isPlaying = player.isPlaying();
-      if (player.isCasting() && event &&
-        (event.type === player.EVENT.ON_PLAY
-        || event.type === player.EVENT.ON_PAUSED
-        || event.type === player.EVENT.ON_CAST_PLAYING
-        || event.type === player.EVENT.ON_CAST_PAUSED)) {
-        isPlaying = !isPlaying;
-      }
-
-      if (isPlaying) {
+      if (player.isPlaying()) {
         self.on();
       } else {
         self.off();

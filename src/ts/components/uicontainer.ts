@@ -65,14 +65,15 @@ export class UIContainer extends Container<UIContainerConfig> {
         uimanager.onControlsShow.dispatch(self);
         isUiShown = true;
       }
-      // Don't trigger timeout while seeking, it will be triggered once the seek is finished
-      if (!isSeeking) {
+      // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
+      if (!isSeeking && !player.isCasting()) {
         self.uiHideTimeout.start();
       }
     };
 
     let hideUi = function() {
-      if (isUiShown) {
+      // Hide the UI only if it is shown, and if not casting
+      if (isUiShown && !player.isCasting()) {
         // Let subscribers know that they should now hide themselves
         uimanager.onControlsHide.dispatch(self);
         isUiShown = false;
@@ -114,6 +115,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     uimanager.onSeeked.subscribe(function() {
       isSeeking = false;
       self.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+    });
+    player.addEventHandler(player.EVENT.ON_CAST_STARTED, function() {
+      showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
     });
   }
 

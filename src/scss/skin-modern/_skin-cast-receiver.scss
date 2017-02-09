@@ -49,5 +49,21 @@
         }
       }
     }
+
+    // Chromecast (v1) has very poor rendering performance, so we disable the animations.
+    // We also display a pause image while playback is paused, instead of a play action button
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      .#{$prefix}-image {
+        background-image: svg('assets/skin-modern/images/pause.svg');
+        opacity: .7;
+      }
+
+      // sass-lint:disable force-element-nesting
+      &.#{$prefix}-on .#{$prefix}-image,
+      &.#{$prefix}-off .#{$prefix}-image {
+        animation: none;
+        transition: none;
+      }
+    }
   }
 }

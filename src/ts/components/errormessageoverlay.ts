@@ -38,7 +38,7 @@ export class ErrorMessageOverlay extends Container<ContainerConfig> {
     });
 
     player.addEventHandler(player.EVENT.ON_SOURCE_LOADED, function(event: PlayerEvent) {
-      if(self.isShown()) {
+      if (self.isShown()) {
         self.tvNoiseBackground.stop();
         self.hide();
       }

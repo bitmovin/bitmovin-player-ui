@@ -28,17 +28,12 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
     super.configure(player, uimanager);
 
     let self = this;
-    let castDeviceName = 'unknown';
 
-    player.addEventHandler(player.EVENT.ON_CAST_START, function(event) {
-      // Show Cast status when a session is being started
-      self.show();
-      self.statusLabel.setText('Select a Cast device');
-    });
     player.addEventHandler(player.EVENT.ON_CAST_WAITING_FOR_DEVICE,
       function(event: CastWaitingForDeviceEvent) {
+        self.show();
         // Get device name and update status text while connecting
-        castDeviceName = event.castPayload.deviceName;
+        let castDeviceName = event.castPayload.deviceName;
         self.statusLabel.setText(`Connecting to <strong>${castDeviceName}</strong>...`);
       });
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, function(event: CastLaunchedEvent) {
@@ -46,6 +41,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
       // For cases when a session is resumed, we do not receive the previous events and therefore show the status panel
       // here too
       self.show();
+      let castDeviceName = event.deviceName;
       self.statusLabel.setText(`Playing on <strong>${castDeviceName}</strong>`);
     });
     player.addEventHandler(player.EVENT.ON_CAST_STOPPED, function(event: CastStoppedEvent) {
