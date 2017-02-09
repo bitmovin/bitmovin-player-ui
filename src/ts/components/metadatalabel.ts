@@ -67,6 +67,6 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     // Init label
     init();
     // Reinit label when a new source is loaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_LOADED, init);
+    player.addEventHandler(player.EVENT.ON_SOURCE_LOADED, init);
   }
 }

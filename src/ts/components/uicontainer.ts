@@ -67,7 +67,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
       // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
       if (!isSeeking && !player.isCasting()) {
-        this.uiHideTimeout.start();
+        self.uiHideTimeout.start();
       }
     };
 
