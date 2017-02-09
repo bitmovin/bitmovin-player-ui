@@ -12,7 +12,7 @@ export interface SeekBarLabelConfig extends ContainerConfig {
 }
 
 /**
- * A label for a {@link SeekBar} that can display the seek target time and a thumbnail.
+ * A label for a {@link SeekBar} that can display the seek target time, a thumbnail, and title (e.g. chapter title).
  */
 export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
