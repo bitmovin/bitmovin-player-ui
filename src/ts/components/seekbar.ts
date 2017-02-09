@@ -216,7 +216,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
       // If the delta is larger that 2 secs, directly jump the seekbar to the
       // player time instead of smoothly fast forwarding/rewinding.
-      if(Math.abs(currentTimeDelta) > 2) {
+      if (Math.abs(currentTimeDelta) > 2) {
         currentTimeSeekBar = currentTimePlayer;
       }
       // If currentTimeDelta is negative and below the adjustment threshold,
