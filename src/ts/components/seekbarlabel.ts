@@ -54,15 +54,16 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (args.position / 100);
         self.setTime(time);
       } else {
-        let time = 0;
+        let percentage = 0;
         if (args.marker) {
-          time = args.marker.time;
+          percentage = args.marker.time;
           self.setTitleText(args.marker.title);
         } else {
-          time = args.position;
+          percentage = args.position;
           self.setTitleText(null);
         }
-        self.setTime(player.getDuration() * (time / 100));
+        let time = player.getDuration() * (percentage / 100);
+        self.setTime(time);
         self.setThumbnail(player.getThumb(time));
       }
     });
