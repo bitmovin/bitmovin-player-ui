@@ -742,7 +742,7 @@ declare namespace bitmovin {
        * The version number of the player.
        */
       version: string;
-      /*
+      /**
        * Checks if Apple AirPlay support is available.
        */
       isAirplayAvailable(): boolean;
