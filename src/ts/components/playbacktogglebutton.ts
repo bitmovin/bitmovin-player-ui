@@ -1,11 +1,15 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
 import PlayerEvent = bitmovin.player.PlayerEvent;
+import {PlayerUtils} from '../utils';
+import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 
 /**
  * A button that toggles between playback and pause.
  */
 export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
+
+  private static readonly CLASS_STOPTOGGLE = 'stoptoggle';
 
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
@@ -46,6 +50,17 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.addEventHandler(player.EVENT.ON_CAST_PLAYING, playbackStateHandler);
     player.addEventHandler(player.EVENT.ON_CAST_PAUSED, playbackStateHandler);
     player.addEventHandler(player.EVENT.ON_CAST_PLAYBACK_FINISHED, playbackStateHandler);
+
+    // Detect absence of timeshifting on live streams and add tagging class to convert button icons to play/stop
+    new PlayerUtils.TimeShiftAvailabilityDetector(player).onTimeShiftAvailabilityChanged.subscribe(
+      (sender, args: TimeShiftAvailabilityChangedArgs) => {
+        if (!args.timeShiftAvailable) {
+          self.getDomElement().addClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
+        } else {
+          self.getDomElement().removeClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
+        }
+      }
+    );
 
     if (handleClickEvent) {
       // Control player by button events

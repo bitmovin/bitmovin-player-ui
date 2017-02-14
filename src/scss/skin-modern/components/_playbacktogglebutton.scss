@@ -12,5 +12,9 @@
 
   &.#{$prefix}-on {
     background-image: svg('assets/skin-modern/images/pause.svg');
+
+    &.#{$prefix}-stoptoggle {
+      background-image: svg('assets/skin-modern/images/stop.svg');
+    }
   }
 }
