@@ -1,3 +1,4 @@
+import {EventDispatcher, Event, NoArgs} from './eventdispatcher';
 export namespace ArrayUtils {
   /**
    * Removes an item from an array.
@@ -182,5 +183,43 @@ export namespace PlayerUtils {
 
   export function isSourceLoaded(player: Player): boolean {
     return player.getConfig().source !== undefined;
+  }
+
+  export function isTimeShiftAvailable(player: Player): boolean {
+    return player.isLive() && player.getMaxTimeShift() !== 0;
+  }
+
+  export interface TimeShiftAvailabilityChangedArgs extends NoArgs {
+    timeShiftAvailable: boolean;
+  }
+
+  export class TimeShiftAvailabilityDetector {
+
+    private timeShiftAvailabilityChangedEvent = new EventDispatcher<Player, TimeShiftAvailabilityChangedArgs>();
+
+    constructor(player: Player) {
+      let timeShiftAvailable: boolean = undefined;
+
+      let timeShiftDetector = () => {
+        if (player.isLive()) {
+          let timeShiftAvailableNow = PlayerUtils.isTimeShiftAvailable(player);
+
+          // When the availability changes, we fire the event
+          if (timeShiftAvailableNow !== timeShiftAvailable) {
+            this.timeShiftAvailabilityChangedEvent.dispatch(player, { timeShiftAvailable: timeShiftAvailableNow });
+            timeShiftAvailable = timeShiftAvailableNow;
+          }
+        }
+      };
+      // Try to detect timeshift availability in ON_READY, which works for DASH streams
+      player.addEventHandler(player.EVENT.ON_READY, timeShiftDetector);
+      // With HLS/NativePlayer streams, getMaxTimeShift can be 0 before the buffer fills, so we need to additionally
+      // check timeshift availability in ON_TIME_CHANGED
+      player.addEventHandler(player.EVENT.ON_TIME_CHANGED, timeShiftDetector);
+    }
+
+    get onTimeShiftAvailabilityChanged(): Event<Player, TimeShiftAvailabilityChangedArgs> {
+      return this.timeShiftAvailabilityChangedEvent.getEvent();
+    }
   }
 }
