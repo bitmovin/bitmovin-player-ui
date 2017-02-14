@@ -18,9 +18,7 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    self.onClick.subscribe(function() {
+    this.onClick.subscribe(() => {
       if (player.isAirplayAvailable()) {
         player.showAirplayTargetPicker();
       } else {
@@ -30,11 +28,11 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     });
 
-    let airPlayAvailableHandler = function() {
+    let airPlayAvailableHandler = () => {
       if (player.isAirplayAvailable()) {
-        self.show();
+        this.show();
       } else {
-        self.hide();
+        this.hide();
       }
     };
 

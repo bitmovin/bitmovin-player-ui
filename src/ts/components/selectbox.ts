@@ -33,10 +33,9 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
     this.selectElement = selectElement;
     this.updateDomItems();
 
-    let self = this;
-    selectElement.on('change', function() {
-      let value = new DOM(this).val();
-      self.onItemSelectedEvent(value, false);
+    selectElement.on('change', () => {
+      let value = selectElement.val();
+      this.onItemSelectedEvent(value, false);
     });
 
     return selectElement;

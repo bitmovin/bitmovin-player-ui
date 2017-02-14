@@ -157,7 +157,7 @@ export class UIManager {
       if (adsUi) {
         uiVariants.push({
           ui: adsUi,
-          condition: function(context: UIConditionContext) {
+          condition: (context: UIConditionContext) => {
             return context.isAdWithUI;
           },
         });
@@ -213,13 +213,12 @@ export class UIManager {
       throw Error('Invalid UI variant order: the default UI (without condition) must be at the end of the list');
     }
 
-    let self = this;
     let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
     // isMobile only needs to be evaluated once (it cannot change during a browser session)
     let isMobile = navigator && navigator.userAgent && navigator.userAgent.match(/(Android|iPhone|iPad|iPod)/i) != null;
 
     // Dynamically select a UI variant that matches the current UI condition.
-    let resolveUiVariant = function(event: PlayerEvent) {
+    let resolveUiVariant = (event: PlayerEvent) => {
       // Make sure that the ON_AD_STARTED event data is persisted through ad playback in case other events happen
       // in the meantime, e.g. player resize. We need to store this data because there is no other way to find out
       // ad details (e.g. the ad client) while an ad is playing.
@@ -247,9 +246,9 @@ export class UIManager {
       let context: UIConditionContext = {
         isAd: ad,
         isAdWithUI: adWithUI,
-        isFullscreen: self.player.isFullscreen(),
+        isFullscreen: this.player.isFullscreen(),
         isMobile: isMobile,
-        width: self.playerElement.width(),
+        width: this.playerElement.width(),
         documentWidth: document.body.clientWidth,
       };
 
@@ -258,36 +257,36 @@ export class UIManager {
 
       // Select new UI variant
       // If no variant condition is fulfilled, we switch to *no* UI
-      for (let uiVariant of self.uiVariants) {
+      for (let uiVariant of this.uiVariants) {
         if (uiVariant.condition == null || uiVariant.condition(context) === true) {
-          nextUi = self.uiInstanceManagers[self.uiVariants.indexOf(uiVariant)];
+          nextUi = this.uiInstanceManagers[this.uiVariants.indexOf(uiVariant)];
           break;
         }
       }
 
       // Determine if the UI variant is changing
-      if (nextUi !== self.currentUi) {
+      if (nextUi !== this.currentUi) {
         uiVariantChanged = true;
-        // console.log('switched from ', self.currentUi ? self.currentUi.getUI() : 'none',
+        // console.log('switched from ', this.currentUi ? this.currentUi.getUI() : 'none',
         //   ' to ', nextUi ? nextUi.getUI() : 'none');
       }
 
       // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
       if (uiVariantChanged) {
         // Hide the currently active UI variant
-        if (self.currentUi) {
-          self.currentUi.getUI().hide();
+        if (this.currentUi) {
+          this.currentUi.getUI().hide();
         }
 
         // Assign the new UI variant as current UI
-        self.currentUi = nextUi;
+        this.currentUi = nextUi;
 
         // When we switch to a different UI instance, there's some additional stuff to manage. If we do not switch
         // to an instance, we're done here.
-        if (self.currentUi != null) {
+        if (this.currentUi != null) {
           // Add the UI to the DOM (and configure it) the first time it is selected
-          if (!self.currentUi.isConfigured()) {
-            self.addUi(self.currentUi);
+          if (!this.currentUi.isConfigured()) {
+            this.addUi(this.currentUi);
           }
 
           // If this is an ad UI, we need to relay the saved ON_AD_STARTED event data so ad components can configure
@@ -300,10 +299,10 @@ export class UIManager {
              * Since this can break functionality of components that rely on this event, we relay the event to the
              * ads UI components with the following call.
              */
-            self.currentUi.getWrappedPlayer().fireEventInUI(self.player.EVENT.ON_AD_STARTED, adStartedEvent);
+            this.currentUi.getWrappedPlayer().fireEventInUI(this.player.EVENT.ON_AD_STARTED, adStartedEvent);
           }
 
-          self.currentUi.getUI().show();
+          this.currentUi.getUI().show();
         }
       }
     };
@@ -558,17 +557,17 @@ export namespace UIManager.Factory {
 
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
-      condition: function(context: UIConditionContext) {
+      condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
       }
     }, {
       ui: modernAdsUI(),
-      condition: function(context: UIConditionContext) {
+      condition: (context: UIConditionContext) => {
         return context.isAdWithUI;
       }
     }, {
       ui: modernSmallScreenUI(),
-      condition: function(context: UIConditionContext) {
+      condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
       }
     }, {
@@ -579,7 +578,7 @@ export namespace UIManager.Factory {
   export function buildModernSmallScreenUI(player: Player, config: UIConfig = {}): UIManager {
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
-      condition: function(context: UIConditionContext) {
+      condition: (context: UIConditionContext) => {
         return context.isAdWithUI;
       }
     }, {
@@ -711,7 +710,7 @@ export namespace UIManager.Factory {
   export function buildLegacyUI(player: Player, config: UIConfig = {}): UIManager {
     return new UIManager(player, [{
       ui: legacyAdsUI(),
-      condition: function(context: UIConditionContext) {
+      condition: (context: UIConditionContext) => {
         return context.isAdWithUI;
       }
     }, {
@@ -877,12 +876,11 @@ class InternalUIInstanceManager extends UIInstanceManager {
   }
 
   private configureControlsTree(component: Component<ComponentConfig>) {
-    let self = this;
     let configuredComponents: Component<ComponentConfig>[] = [];
 
     // Define the actual recursive function within this function body so we can use local variables
     // (e.g. the configuredComponents array).
-    let recursiveTreeWalker = function(component: Component<ComponentConfig>) {
+    let recursiveTreeWalker = (component: Component<ComponentConfig>) => {
       // First, check if we have already configured a component, and throw an error if we did. Multiple configuration
       // of the same component leads to unexpected UI behavior. Also, a component that is in the UI tree multiple
       // times hints at a wrong UI structure.
@@ -902,7 +900,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
       }
 
       component.initialize();
-      component.configure(self.getPlayer(), self);
+      component.configure(this.getPlayer(), this);
       configuredComponents.push(component);
 
       // If the current component is a container, visit it's children
@@ -971,8 +969,6 @@ class PlayerWrapper {
   constructor(player: Player) {
     this.player = player;
 
-    let self = this;
-
     // Collect all public API methods of the player
     let methods = <any[]>[];
     for (let member in player) {
@@ -999,31 +995,31 @@ class PlayerWrapper {
     }
 
     // Explicitly add a wrapper method for 'addEventHandler' that adds added event handlers to the event list
-    wrapper.addEventHandler = function(eventType: EVENT, callback: PlayerEventCallback): Player {
+    wrapper.addEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
       player.addEventHandler(eventType, callback);
 
-      if (!self.eventHandlers[eventType]) {
-        self.eventHandlers[eventType] = [];
+      if (!this.eventHandlers[eventType]) {
+        this.eventHandlers[eventType] = [];
       }
 
-      self.eventHandlers[eventType].push(callback);
+      this.eventHandlers[eventType].push(callback);
 
       return wrapper;
     };
 
     // Explicitly add a wrapper method for 'removeEventHandler' that removes removed event handlers from the event list
-    wrapper.removeEventHandler = function(eventType: EVENT, callback: PlayerEventCallback): Player {
+    wrapper.removeEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
       player.removeEventHandler(eventType, callback);
 
-      if (self.eventHandlers[eventType]) {
-        ArrayUtils.remove(self.eventHandlers[eventType], callback);
+      if (this.eventHandlers[eventType]) {
+        ArrayUtils.remove(this.eventHandlers[eventType], callback);
       }
 
       return wrapper;
     };
 
-    wrapper.fireEventInUI = function(event: EVENT, data: {}): void {
-      if (self.eventHandlers[event]) { // check if there are handlers for this event registered
+    wrapper.fireEventInUI = (event: EVENT, data: {}) => {
+      if (this.eventHandlers[event]) { // check if there are handlers for this event registered
         // Extend the data object with default values to convert it to a {@link PlayerEvent} object.
         let playerEventData = <PlayerEvent>Object.assign({}, {
           timestamp: Date.now(),
@@ -1033,7 +1029,7 @@ class PlayerWrapper {
         }, data);
 
         // Execute the registered callbacks
-        for (let callback of self.eventHandlers[event]) {
+        for (let callback of this.eventHandlers[event]) {
           callback(playerEventData);
         }
       }

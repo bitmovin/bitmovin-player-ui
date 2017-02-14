@@ -23,11 +23,10 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager, handleClickEvent: boolean = true): void {
     super.configure(player, uimanager);
 
-    let self = this;
     let isSeeking = false;
 
     // Handler to update button state based on player state
-    let playbackStateHandler = function(event: PlayerEvent) {
+    let playbackStateHandler = (event: PlayerEvent) => {
       // If the UI is currently seeking, playback is temporarily stopped but the buttons should
       // not reflect that and stay as-is (e.g indicate playback while seeking).
       if (isSeeking) {
@@ -35,9 +34,9 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
 
       if (player.isPlaying()) {
-        self.on();
+        this.on();
       } else {
-        self.off();
+        this.off();
       }
     };
 
@@ -55,9 +54,9 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     new PlayerUtils.TimeShiftAvailabilityDetector(player).onTimeShiftAvailabilityChanged.subscribe(
       (sender, args: TimeShiftAvailabilityChangedArgs) => {
         if (!args.timeShiftAvailable) {
-          self.getDomElement().addClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
+          this.getDomElement().addClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
         } else {
-          self.getDomElement().removeClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
+          this.getDomElement().removeClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
         }
       }
     );
@@ -66,7 +65,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
       // Control player by button events
       // When a button event triggers a player API call, events are fired which in turn call the event handler
       // above that updated the button state.
-      self.onClick.subscribe(function() {
+      this.onClick.subscribe(() => {
         if (player.isPlaying()) {
           player.pause('ui-button');
         } else {
@@ -76,10 +75,10 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     }
 
     // Track UI seeking status
-    uimanager.onSeek.subscribe(function() {
+    uimanager.onSeek.subscribe(() => {
       isSeeking = true;
     });
-    uimanager.onSeeked.subscribe(function() {
+    uimanager.onSeeked.subscribe(() => {
       isSeeking = false;
     });
 

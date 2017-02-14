@@ -107,7 +107,7 @@ export class DOM {
    * @param handler the handler to execute an operation on an element
    */
   private forEach(handler: (element: HTMLElement) => void): void {
-    this.elements.forEach(function(element) {
+    this.elements.forEach((element) => {
       handler(element);
     });
   }
@@ -121,12 +121,11 @@ export class DOM {
   }
 
   private findChildElements(selector: string): HTMLElement[] {
-    let self = this;
     let allChildElements = <HTMLElement[]>[];
 
     if (this.elements) {
-      this.forEach(function(element) {
-        allChildElements = allChildElements.concat(self.findChildElementsOfElement(element, selector));
+      this.forEach((element) => {
+        allChildElements = allChildElements.concat(this.findChildElementsOfElement(element, selector));
       });
     }
     else {
@@ -174,7 +173,7 @@ export class DOM {
       content = '';
     }
 
-    this.forEach(function(element) {
+    this.forEach((element) => {
       element.innerHTML = content;
     });
 
@@ -186,7 +185,7 @@ export class DOM {
    * @returns {DOM}
    */
   empty(): DOM {
-    this.forEach(function(element) {
+    this.forEach((element) => {
       element.innerHTML = '';
     });
     return this;
@@ -234,7 +233,7 @@ export class DOM {
   }
 
   private setAttr(attribute: string, value: string): DOM {
-    this.forEach(function(element) {
+    this.forEach((element) => {
       element.setAttribute(attribute, value);
     });
     return this;
@@ -265,7 +264,7 @@ export class DOM {
   }
 
   private setData(dataAttribute: string, value: string): DOM {
-    this.forEach(function(element) {
+    this.forEach((element) => {
       element.setAttribute('data-' + dataAttribute, value);
     });
     return this;
@@ -277,9 +276,9 @@ export class DOM {
    * @returns {DOM}
    */
   append(...childElements: DOM[]): DOM {
-    this.forEach(function(element) {
-      childElements.forEach(function(childElement) {
-        childElement.elements.forEach(function(_, index) {
+    this.forEach((element) => {
+      childElements.forEach((childElement) => {
+        childElement.elements.forEach((_, index) => {
           element.appendChild(childElement.elements[index]);
         });
       });
@@ -291,7 +290,7 @@ export class DOM {
    * Removes all elements from the DOM.
    */
   remove(): void {
-    this.forEach(function(element) {
+    this.forEach((element) => {
       let parent = element.parentNode;
       if (parent) {
         parent.removeChild(element);
@@ -353,14 +352,13 @@ export class DOM {
    */
   on(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
     let events = eventName.split(' ');
-    let self = this;
 
-    events.forEach(function(event) {
-      if (self.elements == null) {
-        self.document.addEventListener(event, eventHandler);
+    events.forEach((event) => {
+      if (this.elements == null) {
+        this.document.addEventListener(event, eventHandler);
       }
       else {
-        self.forEach(function(element) {
+        this.forEach((element) => {
           element.addEventListener(event, eventHandler);
         });
       }
@@ -377,14 +375,13 @@ export class DOM {
    */
   off(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
     let events = eventName.split(' ');
-    let self = this;
 
-    events.forEach(function(event) {
-      if (self.elements == null) {
-        self.document.removeEventListener(event, eventHandler);
+    events.forEach((event) => {
+      if (this.elements == null) {
+        this.document.removeEventListener(event, eventHandler);
       }
       else {
-        self.forEach(function(element) {
+        this.forEach((element) => {
           element.removeEventListener(event, eventHandler);
         });
       }
@@ -399,7 +396,7 @@ export class DOM {
    * @returns {DOM}
    */
   addClass(className: string): DOM {
-    this.forEach(function(element) {
+    this.forEach((element) => {
       if (element.classList) {
         element.classList.add(className);
       }
@@ -417,7 +414,7 @@ export class DOM {
    * @returns {DOM}
    */
   removeClass(className: string): DOM {
-    this.forEach(function(element) {
+    this.forEach((element) => {
       if (element.classList) {
         element.classList.remove(className);
       }
@@ -438,7 +435,7 @@ export class DOM {
   hasClass(className: string): boolean {
     let hasClass = false;
 
-    this.forEach(function(element) {
+    this.forEach((element) => {
       if (element.classList) {
         if (element.classList.contains(className)) {
           // Since we are inside a handler, we can't just 'return true'. Instead, we save it to a variable
@@ -495,7 +492,7 @@ export class DOM {
   }
 
   private setCss(propertyName: string, value: string): DOM {
-    this.forEach(function(element) {
+    this.forEach((element) => {
       // <any> cast to resolve TS7015: http://stackoverflow.com/a/36627114/370252
       element.style[<any>propertyName] = value;
     });
@@ -503,7 +500,7 @@ export class DOM {
   }
 
   private setCssCollection(ruleValueCollection: {[ruleName: string]: string}): DOM {
-    this.forEach(function(element) {
+    this.forEach((element) => {
       // http://stackoverflow.com/a/34490573/370252
       Object.assign(element.style, ruleValueCollection);
     });

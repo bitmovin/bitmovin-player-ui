@@ -31,7 +31,7 @@ export class CloseButton extends Button<CloseButtonConfig> {
 
     let config = <CloseButtonConfig>this.getConfig();
 
-    this.onClick.subscribe(function() {
+    this.onClick.subscribe(() => {
       config.target.hide();
     });
   }

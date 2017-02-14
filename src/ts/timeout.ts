@@ -40,16 +40,15 @@ export class Timeout {
    * Resets the passed timeout delay to zero. Can be used to defer the calling of the callback.
    */
   reset(): void {
-    let self = this;
     let lastScheduleTime = 0;
     let delayAdjust = 0;
 
     this.clear();
 
-    let internalCallback = function() {
-      self.callback();
+    let internalCallback = () => {
+      this.callback();
 
-      if (self.repeat) {
+      if (this.repeat) {
         let now = Date.now();
 
         // The time of one iteration from scheduling to executing the callback (usually a bit longer than the delay
@@ -57,12 +56,12 @@ export class Timeout {
         let delta = now - lastScheduleTime;
 
         // Calculate the delay adjustment for the next schedule to keep a steady delay interval over time
-        delayAdjust = self.delay - delta + delayAdjust;
+        delayAdjust = this.delay - delta + delayAdjust;
 
         lastScheduleTime = now;
 
         // Schedule next execution by the adjusted delay
-        self.timeoutHandle = setTimeout(internalCallback, self.delay + delayAdjust);
+        this.timeoutHandle = setTimeout(internalCallback, this.delay + delayAdjust);
       }
     };
 

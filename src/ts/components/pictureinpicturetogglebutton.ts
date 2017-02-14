@@ -18,9 +18,7 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    self.onClick.subscribe(function() {
+    this.onClick.subscribe(() => {
       if (player.isPictureInPictureAvailable()) {
         if (player.isPictureInPicture()) {
           player.exitPictureInPicture();
@@ -34,28 +32,28 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
       }
     });
 
-    let pipAvailableHander = function() {
+    let pipAvailableHander = () => {
       if (player.isPictureInPictureAvailable()) {
-        self.show();
+        this.show();
       } else {
-        self.hide();
+        this.hide();
       }
     };
 
     player.addEventHandler(player.EVENT.ON_READY, pipAvailableHander);
 
     // Toggle button 'on' state
-    player.addEventHandler(player.EVENT.ON_PICTURE_IN_PICTURE_ENTER, function() {
-      self.on();
+    player.addEventHandler(player.EVENT.ON_PICTURE_IN_PICTURE_ENTER, () => {
+      this.on();
     });
-    player.addEventHandler(player.EVENT.ON_PICTURE_IN_PICTURE_EXIT, function() {
-      self.off();
+    player.addEventHandler(player.EVENT.ON_PICTURE_IN_PICTURE_EXIT, () => {
+      this.off();
     });
 
     // Startup init
     pipAvailableHander(); // Hide button if PIP not available
     if (player.isPictureInPicture()) {
-      self.on();
+      this.on();
     }
   }
 }

@@ -178,13 +178,11 @@ export class Component<Config extends ComponentConfig> {
    * @param uimanager the UIInstanceManager that manages this component
    */
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
-    let self = this;
-
-    self.onShow.subscribe(function() {
-      uimanager.onComponentShow.dispatch(self);
+    this.onShow.subscribe(() => {
+      uimanager.onComponentShow.dispatch(this);
     });
-    self.onHide.subscribe(function() {
-      uimanager.onComponentHide.dispatch(self);
+    this.onHide.subscribe(() => {
+      uimanager.onComponentHide.dispatch(this);
     });
   }
 
@@ -249,12 +247,11 @@ export class Component<Config extends ComponentConfig> {
    * @returns {string}
    */
   protected getCssClasses(): string {
-    let self = this;
     // Merge all CSS classes into single array
     let flattenedArray = [this.config.cssClass].concat(this.config.cssClasses);
     // Prefix classes
-    flattenedArray = flattenedArray.map(function(css) {
-      return self.prefixCss(css);
+    flattenedArray = flattenedArray.map((css) => {
+      return this.prefixCss(css);
     });
     // Join array values into a string
     let flattenedString = flattenedArray.join(' ');

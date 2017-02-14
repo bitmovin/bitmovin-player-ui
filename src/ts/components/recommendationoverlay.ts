@@ -27,8 +27,6 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
     if (uimanager.getConfig().recommendations && uimanager.getConfig().recommendations.length > 0) {
       let index = 1;
       for (let item of uimanager.getConfig().recommendations) {
@@ -43,18 +41,18 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     }
 
     // Display recommendations when playback has finished
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, function() {
+    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, () => {
       // Dismiss ON_PLAYBACK_FINISHED events at the end of ads
       // TODO remove this workaround once issue #1278 is solved
       if (player.isAd()) {
         return;
       }
 
-      self.show();
+      this.show();
     });
     // Hide recommendations when playback starts, e.g. a restart
-    player.addEventHandler(player.EVENT.ON_PLAY, function() {
-      self.hide();
+    player.addEventHandler(player.EVENT.ON_PLAY, () => {
+      this.hide();
     });
   }
 }

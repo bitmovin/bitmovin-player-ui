@@ -31,17 +31,15 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    player.addEventHandler(player.EVENT.ON_CUE_ENTER, function(event: SubtitleCueEvent) {
-      self.subtitleLabel.setText(event.text);
+    player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
+      this.subtitleLabel.setText(event.text);
     });
-    player.addEventHandler(player.EVENT.ON_CUE_EXIT, function(event: SubtitleCueEvent) {
-      self.subtitleLabel.setText('');
+    player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
+      this.subtitleLabel.setText('');
     });
 
-    let subtitleClearHandler = function() {
-      self.subtitleLabel.setText('');
+    let subtitleClearHandler = () => {
+      this.subtitleLabel.setText('');
     };
 
     player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, subtitleClearHandler);
@@ -49,14 +47,14 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_SEEK, subtitleClearHandler);
     player.addEventHandler(player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
 
-    uimanager.onComponentShow.subscribe(function(component: Component<ComponentConfig>) {
+    uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
-        self.getDomElement().addClass(self.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
+        this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
       }
     });
-    uimanager.onComponentHide.subscribe(function(component: Component<ComponentConfig>) {
+    uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
-        self.getDomElement().removeClass(self.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
+        this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
       }
     });
   }

@@ -28,13 +28,11 @@ export class BufferingOverlay extends Container<ContainerConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    player.addEventHandler(player.EVENT.ON_STALL_STARTED, function() {
-      self.show();
+    player.addEventHandler(player.EVENT.ON_STALL_STARTED, () => {
+      this.show();
     });
-    player.addEventHandler(player.EVENT.ON_STALL_ENDED, function() {
-      self.hide();
+    player.addEventHandler(player.EVENT.ON_STALL_ENDED, () => {
+      this.hide();
     });
   }
 }

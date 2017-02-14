@@ -53,11 +53,10 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
     let volumeToggleButton = this.getVolumeToggleButton();
     let volumeSlider = this.getVolumeSlider();
 
-    this.volumeSliderHideTimeout = new Timeout((<VolumeControlButtonConfig>self.getConfig()).hideDelay, function() {
+    this.volumeSliderHideTimeout = new Timeout((<VolumeControlButtonConfig>this.getConfig()).hideDelay, () => {
       volumeSlider.hide();
     });
 
@@ -69,36 +68,36 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
      * shall disappear.
      */
     let volumeSliderHovered = false;
-    volumeToggleButton.getDomElement().on('mouseenter', function() {
+    volumeToggleButton.getDomElement().on('mouseenter', () => {
       // Show volume slider when mouse enters the button area
       if (volumeSlider.isHidden()) {
         volumeSlider.show();
       }
       // Avoid hiding of the slider when button is hovered
-      self.volumeSliderHideTimeout.clear();
+      this.volumeSliderHideTimeout.clear();
     });
-    volumeToggleButton.getDomElement().on('mouseleave', function() {
+    volumeToggleButton.getDomElement().on('mouseleave', () => {
       // Hide slider delayed when button is left
-      self.volumeSliderHideTimeout.reset();
+      this.volumeSliderHideTimeout.reset();
     });
-    volumeSlider.getDomElement().on('mouseenter', function() {
+    volumeSlider.getDomElement().on('mouseenter', () => {
       // When the slider is entered, cancel the hide timeout activated by leaving the button
-      self.volumeSliderHideTimeout.clear();
+      this.volumeSliderHideTimeout.clear();
       volumeSliderHovered = true;
     });
-    volumeSlider.getDomElement().on('mouseleave', function() {
+    volumeSlider.getDomElement().on('mouseleave', () => {
       // When mouse leaves the slider, only hide it if there is no slide operation in progress
       if (volumeSlider.isSeeking()) {
-        self.volumeSliderHideTimeout.clear();
+        this.volumeSliderHideTimeout.clear();
       } else {
-        self.volumeSliderHideTimeout.reset();
+        this.volumeSliderHideTimeout.reset();
       }
       volumeSliderHovered = false;
     });
-    volumeSlider.onSeeked.subscribe(function() {
+    volumeSlider.onSeeked.subscribe(() => {
       // When a slide operation is done and the slider not hovered (mouse outside slider), hide slider delayed
       if (!volumeSliderHovered) {
-        self.volumeSliderHideTimeout.reset();
+        this.volumeSliderHideTimeout.reset();
       }
     });
   }

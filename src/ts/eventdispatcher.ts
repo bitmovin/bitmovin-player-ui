@@ -190,7 +190,7 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
     this.lastFireTime = 0;
 
     // Wrap the event listener with an event listener that does the rate-limiting
-    this.rateLimitingEventListener = function(sender: Sender, args: Args) {
+    this.rateLimitingEventListener = (sender: Sender, args: Args) => {
       if (Date.now() - this.lastFireTime > this.rateMs) {
         // Only if enough time since the previous call has passed, call the
         // actual event listener and record the current time

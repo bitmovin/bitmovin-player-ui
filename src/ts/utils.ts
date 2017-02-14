@@ -91,7 +91,7 @@ export namespace StringUtils {
       'g'
     );
 
-    return adMessage.replace(adMessagePlaceholderRegex, function(formatString) {
+    return adMessage.replace(adMessagePlaceholderRegex, (formatString) => {
       let time = 0;
       if (formatString.indexOf('remainingTime') > -1) {
         if (skipOffset) {

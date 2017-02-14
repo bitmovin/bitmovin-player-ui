@@ -14,23 +14,21 @@ export class AudioQualitySelectBox extends SelectBox {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    let updateAudioQualities = function() {
+    let updateAudioQualities = () => {
       let audioQualities = player.getAvailableAudioQualities();
 
-      self.clearItems();
+      this.clearItems();
 
       // Add entry for automatic quality switching (default setting)
-      self.addItem('auto', 'auto');
+      this.addItem('auto', 'auto');
 
       // Add audio qualities
       for (let audioQuality of audioQualities) {
-        self.addItem(audioQuality.id, audioQuality.label);
+        this.addItem(audioQuality.id, audioQuality.label);
       }
     };
 
-    self.onItemSelected.subscribe(function(sender: AudioQualitySelectBox, value: string) {
+    this.onItemSelected.subscribe((sender: AudioQualitySelectBox, value: string) => {
       player.setAudioQuality(value);
     });
 
@@ -41,9 +39,9 @@ export class AudioQualitySelectBox extends SelectBox {
     // Update qualities when a new source is loaded
     player.addEventHandler(player.EVENT.ON_READY, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
-    player.addEventHandler(player.EVENT.ON_AUDIO_DOWNLOAD_QUALITY_CHANGED, function() {
+    player.addEventHandler(player.EVENT.ON_AUDIO_DOWNLOAD_QUALITY_CHANGED, () => {
       let data = player.getDownloadedAudioData();
-      self.selectItem(data.isAuto ? 'auto' : data.id);
+      this.selectItem(data.isAuto ? 'auto' : data.id);
     });
 
     // Populate qualities at startup

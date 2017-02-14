@@ -17,7 +17,6 @@ export class CastUIContainer extends UIContainer {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
     let config = <UIContainerConfig>this.getConfig();
 
     /*
@@ -32,31 +31,31 @@ export class CastUIContainer extends UIContainer {
 
     let isUiShown = false;
 
-    let hideUi = function() {
-      uimanager.onControlsHide.dispatch(self);
+    let hideUi = () => {
+      uimanager.onControlsHide.dispatch(this);
       isUiShown = false;
     };
 
     this.castUiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
-    let showUi = function() {
+    let showUi = () => {
       if (!isUiShown) {
-        uimanager.onControlsShow.dispatch(self);
+        uimanager.onControlsShow.dispatch(this);
         isUiShown = true;
       }
     };
 
-    let showUiPermanently = function() {
+    let showUiPermanently = () => {
       showUi();
-      self.castUiHideTimeout.clear();
+      this.castUiHideTimeout.clear();
     };
 
-    let showUiWithTimeout = function() {
+    let showUiWithTimeout = () => {
       showUi();
-      self.castUiHideTimeout.start();
+      this.castUiHideTimeout.start();
     };
 
-    let showUiAfterSeek = function() {
+    let showUiAfterSeek = () => {
       if (player.isPlaying()) {
         showUiWithTimeout();
       } else {
