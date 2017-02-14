@@ -161,6 +161,7 @@ export class Component<Config extends ComponentConfig> {
 
     // Hide the component at initialization if it is configured to be hidden
     if (this.isHidden()) {
+      this.hidden = false; // Set flag to false for the following hide() call to work (hide() checks the flag)
       this.hide();
     }
   }
@@ -274,22 +275,26 @@ export class Component<Config extends ComponentConfig> {
   }
 
   /**
-   * Hides the component.
+   * Hides the component if shown.
    * This method basically transfers the component into the hidden state. Actual hiding is done via CSS.
    */
   hide() {
-    this.hidden = true;
-    this.getDomElement().addClass(this.prefixCss(Component.CLASS_HIDDEN));
-    this.onHideEvent();
+    if (!this.hidden) {
+      this.hidden = true;
+      this.getDomElement().addClass(this.prefixCss(Component.CLASS_HIDDEN));
+      this.onHideEvent();
+    }
   }
 
   /**
-   * Shows the component.
+   * Shows the component if hidden.
    */
   show() {
-    this.getDomElement().removeClass(this.prefixCss(Component.CLASS_HIDDEN));
-    this.hidden = false;
-    this.onShowEvent();
+    if (this.hidden) {
+      this.getDomElement().removeClass(this.prefixCss(Component.CLASS_HIDDEN));
+      this.hidden = false;
+      this.onShowEvent();
+    }
   }
 
   /**
