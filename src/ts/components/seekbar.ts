@@ -320,13 +320,20 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     // Hide seekbar for live sources without timeshift
-    player.addEventHandler(player.EVENT.ON_READY, function() {
-      if (player.isLive() && player.getMaxTimeShift() === 0) {
-        self.hide();
-      } else {
-        self.show();
+    let timeShiftDetector = function() {
+      if (player.isLive()) {
+        if (player.getMaxTimeShift() === 0) {
+          self.hide();
+        } else {
+          self.show();
+        }
       }
-    });
+    };
+    // Try to detect timeshift availability in ON_READY, which works for DASH streams
+    player.addEventHandler(player.EVENT.ON_READY, timeShiftDetector);
+    // With HLS/NativePlayer streams, getMaxTimeShift can be 0 before the buffer fills, so we need to additionally
+    // check timeshift availability in ON_TIME_CHANGED
+    player.addEventHandler(player.EVENT.ON_TIME_CHANGED, timeShiftDetector);
 
     // Refresh the playback position when the player resized or the UI is configured. The playback position marker
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
