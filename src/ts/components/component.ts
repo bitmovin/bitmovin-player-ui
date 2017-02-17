@@ -323,7 +323,7 @@ export class Component<Config extends ComponentConfig> {
 
   /**
    * Fires the onShow event.
-   * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
    */
   protected onShowEvent() {
     this.componentEvents.onShow.dispatch(this);
@@ -331,7 +331,7 @@ export class Component<Config extends ComponentConfig> {
 
   /**
    * Fires the onHide event.
-   * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
    */
   protected onHideEvent() {
     this.componentEvents.onHide.dispatch(this);
@@ -339,7 +339,7 @@ export class Component<Config extends ComponentConfig> {
 
   /**
    * Gets the event that is fired when the component is showing.
-   * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
    * @returns {Event<Component<Config>, NoArgs>}
    */
   get onShow(): Event<Component<Config>, NoArgs> {
@@ -348,7 +348,7 @@ export class Component<Config extends ComponentConfig> {
 
   /**
    * Gets the event that is fired when the component is hiding.
-   * See the detailed explanation on event architecture onj the {@link #componentEvents events list}.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
    * @returns {Event<Component<Config>, NoArgs>}
    */
   get onHide(): Event<Component<Config>, NoArgs> {
