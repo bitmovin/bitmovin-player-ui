@@ -44,6 +44,7 @@ import {Label} from './components/label';
 import PlayerEvent = bitmovin.player.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
+import {Spacer} from './components/spacer';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -382,7 +383,7 @@ export namespace UIManager.Factory {
             new PlaybackToggleButton(),
             new VolumeToggleButton(),
             new VolumeSlider(),
-            new Component({ cssClass: 'spacer' }),
+            new Spacer(),
             new PictureInPictureToggleButton(),
             new AirPlayToggleButton(),
             new CastToggleButton(),
@@ -430,7 +431,7 @@ export namespace UIManager.Factory {
                 new PlaybackToggleButton(),
                 new VolumeToggleButton(),
                 new VolumeSlider(),
-                new Component({ cssClass: 'spacer' }),
+                new Spacer(),
                 new FullscreenToggleButton(),
               ],
               cssClasses: ['controlbar-bottom']

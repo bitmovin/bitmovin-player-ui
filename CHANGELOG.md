@@ -19,7 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add `VolumeSliderConfig#hideIfVolumeControlProhibited` flag to automatically hide the volume slider on platforms which prohibit programmatic volume control (currently only iOS)
 - Add mouse hover-state to `Component`
   - `isHovered()` returns the current hover-state
-  `onHoverChanged` event with `ComponentHoverChangedEventArgs` is fired when the hover state changess
+  `onHoverChanged` event with `ComponentHoverChangedEventArgs` is fired when the hover state changes
+- Add `Spacer` component that just takes up space
 
 ### Changed
 - Update Cast support for new Cast implementation in player 7.1
