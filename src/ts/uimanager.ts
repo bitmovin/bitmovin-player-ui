@@ -179,14 +179,6 @@ export class UIManager {
     this.managerPlayerWrapper = new PlayerWrapper(player);
     this.playerElement = new DOM(player.getFigure());
 
-    // If no metadata is passed with the config, we take the metadata from the player config
-    if (!this.config.metadata) {
-      this.config.metadata = {
-        title: player.getConfig().source ? player.getConfig().source.title : null,
-        description: player.getConfig().source ? player.getConfig().source.description : null,
-      };
-    }
-
     // Create UI instance managers for the UI variants
     // The instance managers map to the corresponding UI variants by their array index
     this.uiInstanceManagers = [];
