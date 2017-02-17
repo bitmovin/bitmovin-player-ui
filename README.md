@@ -9,7 +9,7 @@ Beside the Git repository, the UI framework is also available through the follow
 
 ### CDN
 
-The UI framework and default skin bundled with the latest player release are always available via CDN. This is the recommended way if you just want to work with the predefined UI components.
+The UI framework and default skin bundled with the latest player release are always available via CDN. This is the recommended way if you just want to work with the predefined UI components. All components will be available in the `bitmovin.playerui` namespace.
 
  * JavaScript library: `//bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer-ui.js` 
  * CSS default skin: `//bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer-ui.css`
@@ -86,9 +86,9 @@ A simple example on how to create a custom UI with our default skin that only co
 
 ```js
 // Definition of the UI structure
-var mySimpleUi = new UIContainer({
+var mySimpleUi = new bitmovin.playerui.UIContainer({
   components: [
-    new PlaybackToggleOverlay()
+    new bitmovin.playerui.PlaybackToggleOverlay()
   ],
   cssClasses: ['ui-skin-modern']
 });
@@ -176,10 +176,10 @@ There is currently no way to change these configuration values on an existing UI
 The following example creates a very basic UI structure with only two text labels:
 
 ```js
-var myUi = new UIContainer({
+var myUi = new bitmovin.playerui.UIContainer({
   components: [
-    new Label({ text: "A label" }),
-    new Label({ text: "A hidden label", hidden: true })
+    new bitmovin.playerui.Label({ text: "A label" }),
+    new bitmovin.playerui.Label({ text: "A hidden label", hidden: true })
   ],
   cssClasses: ['ui-skin-modern']
 });
