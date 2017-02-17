@@ -34,7 +34,7 @@ The UI framework is also available in the NPM repository and comes with all sour
   * `gulp lint` to lint TypeScript and SASS files
   * `gulp build-prod` to build project with minified files into `dist` directory
   
-To just take a look at the project, also run `gulp serve`.
+To just take a look at the project, also run `gulp serve`. For changes, check our [change log](CHANGELOG.md).
 
 ## Introduction
 
