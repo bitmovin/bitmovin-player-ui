@@ -41,6 +41,13 @@ export interface ComponentConfig {
   hidden?: boolean;
 }
 
+export interface ComponentHoverChangedEventArgs extends NoArgs {
+  /**
+   * True is the component is hovered, else false.
+   */
+  hovered: boolean;
+}
+
 /**
  * The base class of the UI framework.
  * Each component must extend this class and optionally the config interface.
@@ -67,6 +74,11 @@ export class Component<Config extends ComponentConfig> {
    * Flag that keeps track of the hidden state.
    */
   private hidden: boolean;
+
+  /**
+   * Flag that keeps track of the hover state.
+   */
+  private hovered: boolean;
 
   /**
    * The list of events that this component offers. These events should always be private and only directly
@@ -128,7 +140,8 @@ export class Component<Config extends ComponentConfig> {
    */
   private componentEvents = {
     onShow: new EventDispatcher<Component<Config>, NoArgs>(),
-    onHide: new EventDispatcher<Component<Config>, NoArgs>()
+    onHide: new EventDispatcher<Component<Config>, NoArgs>(),
+    onHoverChanged: new EventDispatcher<Component<Config>, ComponentHoverChangedEventArgs>(),
   };
 
   /**
@@ -184,6 +197,14 @@ export class Component<Config extends ComponentConfig> {
     this.onHide.subscribe(() => {
       uimanager.onComponentHide.dispatch(this);
     });
+
+    // Track the hovered state of the element
+    this.getDomElement().on('mouseenter', () => {
+      this.onHoverChangedEvent(true);
+    });
+    this.getDomElement().on('mouseleave', () => {
+      this.onHoverChangedEvent(false);
+    });
   }
 
   /**
@@ -207,6 +228,7 @@ export class Component<Config extends ComponentConfig> {
       'id': this.config.id,
       'class': this.getCssClasses()
     });
+
     return element;
   }
 
@@ -322,6 +344,14 @@ export class Component<Config extends ComponentConfig> {
   }
 
   /**
+   * Determines if the component is currently hovered.
+   * @returns {boolean} true if the component is hovered, else false
+   */
+  isHovered(): boolean {
+    return this.hovered;
+  }
+
+  /**
    * Fires the onShow event.
    * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
    */
@@ -335,6 +365,15 @@ export class Component<Config extends ComponentConfig> {
    */
   protected onHideEvent() {
     this.componentEvents.onHide.dispatch(this);
+  }
+
+  /**
+   * Fires the onHoverChanged event.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
+   */
+  protected onHoverChangedEvent(hovered: boolean) {
+    this.hovered = hovered;
+    this.componentEvents.onHoverChanged.dispatch(this, { hovered: hovered });
   }
 
   /**
@@ -353,5 +392,13 @@ export class Component<Config extends ComponentConfig> {
    */
   get onHide(): Event<Component<Config>, NoArgs> {
     return this.componentEvents.onHide.getEvent();
+  }
+
+  /**
+   * Gets the event that is fired when the component's hover-state is changing.
+   * @returns {Event<Component<Config>, ComponentHoverChangedEventArgs>}
+   */
+  get onHoverChanged(): Event<Component<Config>, ComponentHoverChangedEventArgs> {
+    return this.componentEvents.onHoverChanged.getEvent();
   }
 }

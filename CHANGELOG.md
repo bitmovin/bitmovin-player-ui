@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add `onConfigured` event to `UIManager` which gets fired once UI is ready (configured and added to DOM)
 - Detect illegal circular references in UI component tree and throw error
 - Add `VolumeSliderConfig#hideIfVolumeControlProhibited` flag to automatically hide the volume slider on platforms which prohibit programmatic volume control (currently only iOS)
+- Add mouse hover-state to `Component`
+  - `isHovered()` returns the current hover-state
+  `onHoverChanged` event with `ComponentHoverChangedEventArgs` is fired when the hover state changess
 
 ### Changed
 - Update Cast support for new Cast implementation in player 7.1
