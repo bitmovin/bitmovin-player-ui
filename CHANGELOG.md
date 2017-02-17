@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add `release()` method to components to release resources and dependencies created during `configure(...)`
 - Add `onConfigured` event to `UIManager` which gets fired once UI is ready (configured and added to DOM)
 - Detect illegal circular references in UI component tree and throw error
+- Add `VolumeSliderConfig#hideIfVolumeControlProhibited` flag to automatically hide the volume slider on platforms which prohibit programmatic volume control (currently only iOS)
 
 ### Changed
 - Update Cast support for new Cast implementation in player 7.1
