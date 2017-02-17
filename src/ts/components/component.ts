@@ -355,7 +355,7 @@ export class Component<Config extends ComponentConfig> {
    * Fires the onShow event.
    * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
    */
-  protected onShowEvent() {
+  protected onShowEvent(): void {
     this.componentEvents.onShow.dispatch(this);
   }
 
@@ -363,7 +363,7 @@ export class Component<Config extends ComponentConfig> {
    * Fires the onHide event.
    * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
    */
-  protected onHideEvent() {
+  protected onHideEvent(): void {
     this.componentEvents.onHide.dispatch(this);
   }
 
@@ -371,7 +371,7 @@ export class Component<Config extends ComponentConfig> {
    * Fires the onHoverChanged event.
    * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
    */
-  protected onHoverChangedEvent(hovered: boolean) {
+  protected onHoverChangedEvent(hovered: boolean): void {
     this.hovered = hovered;
     this.componentEvents.onHoverChanged.dispatch(this, { hovered: hovered });
   }
