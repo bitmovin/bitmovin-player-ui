@@ -33,7 +33,7 @@ import {AdClickOverlay} from './components/adclickoverlay';
 import EVENT = bitmovin.player.EVENT;
 import PlayerEventCallback = bitmovin.player.PlayerEventCallback;
 import AdStartedEvent = bitmovin.player.AdStartedEvent;
-import {ArrayUtils} from './utils';
+import {ArrayUtils, UIUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
@@ -871,9 +871,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
   private configureControlsTree(component: Component<ComponentConfig>) {
     let configuredComponents: Component<ComponentConfig>[] = [];
 
-    // Define the actual recursive function within this function body so we can use local variables
-    // (e.g. the configuredComponents array).
-    let recursiveTreeWalker = (component: Component<ComponentConfig>) => {
+    UIUtils.traverseTree(component, (component) => {
       // First, check if we have already configured a component, and throw an error if we did. Multiple configuration
       // of the same component leads to unexpected UI behavior. Also, a component that is in the UI tree multiple
       // times hints at a wrong UI structure.
@@ -895,17 +893,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
       component.initialize();
       component.configure(this.getPlayer(), this);
       configuredComponents.push(component);
-
-      // If the current component is a container, visit it's children
-      if (component instanceof Container) {
-        for (let childComponent of component.getComponents()) {
-          recursiveTreeWalker(childComponent);
-        }
-      }
-    };
-
-    // Walk and configure the component tree
-    recursiveTreeWalker(component);
+    });
   }
 
   releaseControls(): void {
