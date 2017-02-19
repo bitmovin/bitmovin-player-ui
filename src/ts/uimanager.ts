@@ -208,7 +208,10 @@ export class UIManager {
 
     let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
     // isMobile only needs to be evaluated once (it cannot change during a browser session)
-    let isMobile = navigator && navigator.userAgent && navigator.userAgent.match(/(Android|iPhone|iPad|iPod)/i) != null;
+    // Mobile detection according to Mozilla recommendation: "In summary, we recommend looking for the string “Mobi”
+    // anywhere in the User Agent to detect a mobile device."
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
+    let isMobile = navigator && navigator.userAgent && /Mobi/.test(navigator.userAgent);
 
     // Dynamically select a UI variant that matches the current UI condition.
     let resolveUiVariant = (event: PlayerEvent) => {
