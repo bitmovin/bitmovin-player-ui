@@ -4,6 +4,7 @@ import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../utils';
 import PlayerResizeEvent = bitmovin.player.PlayerResizeEvent;
+import {CancelEventArgs} from '../eventdispatcher';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -73,9 +74,18 @@ export class UIContainer extends Container<UIContainerConfig> {
     let hideUi = () => {
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
-        // Let subscribers know that they should now hide themselves
-        uimanager.onControlsHide.dispatch(this);
-        isUiShown = false;
+        // Issue a preview event to check if we are good to hide the controls
+        let previewHideEventArgs = <CancelEventArgs>{};
+        uimanager.onPreviewControlsHide.dispatch(this, previewHideEventArgs);
+
+        if (!previewHideEventArgs.cancel) {
+          // If the preview wasn't canceled, let subscribers know that they should now hide themselves
+          uimanager.onControlsHide.dispatch(this);
+          isUiShown = false;
+        } else {
+          // If the hide preview was canceled, continue to show UI
+          showUi();
+        }
       }
     };
 

@@ -9,7 +9,7 @@ import {VolumeToggleButton} from './components/volumetogglebutton';
 import {SeekBar} from './components/seekbar';
 import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktimelabel';
 import {ControlBar} from './components/controlbar';
-import {NoArgs, EventDispatcher} from './eventdispatcher';
+import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
@@ -747,6 +747,7 @@ export class UIInstanceManager {
     onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
+    onPreviewControlsHide: new EventDispatcher<UIContainer, CancelEventArgs>(),
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
@@ -822,6 +823,14 @@ export class UIInstanceManager {
    */
   get onControlsShow(): EventDispatcher<UIContainer, NoArgs> {
     return this.events.onControlsShow;
+  }
+
+  /**
+   * Fires before the UI controls are hiding to check if they are allowed to hide.
+   * @returns {EventDispatcher}
+   */
+  get onPreviewControlsHide(): EventDispatcher<UIContainer, CancelEventArgs> {
+    return this.events.onPreviewControlsHide;
   }
 
   /**
