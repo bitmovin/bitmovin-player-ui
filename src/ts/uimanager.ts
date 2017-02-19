@@ -9,7 +9,7 @@ import {VolumeToggleButton} from './components/volumetogglebutton';
 import {SeekBar} from './components/seekbar';
 import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktimelabel';
 import {ControlBar} from './components/controlbar';
-import {NoArgs, EventDispatcher} from './eventdispatcher';
+import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
@@ -33,7 +33,7 @@ import {AdClickOverlay} from './components/adclickoverlay';
 import EVENT = bitmovin.player.EVENT;
 import PlayerEventCallback = bitmovin.player.PlayerEventCallback;
 import AdStartedEvent = bitmovin.player.AdStartedEvent;
-import {ArrayUtils} from './utils';
+import {ArrayUtils, UIUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
@@ -44,6 +44,7 @@ import {Label} from './components/label';
 import PlayerEvent = bitmovin.player.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
+import {Spacer} from './components/spacer';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -382,7 +383,7 @@ export namespace UIManager.Factory {
             new PlaybackToggleButton(),
             new VolumeToggleButton(),
             new VolumeSlider(),
-            new Component({ cssClass: 'spacer' }),
+            new Spacer(),
             new PictureInPictureToggleButton(),
             new AirPlayToggleButton(),
             new CastToggleButton(),
@@ -430,7 +431,7 @@ export namespace UIManager.Factory {
                 new PlaybackToggleButton(),
                 new VolumeToggleButton(),
                 new VolumeSlider(),
-                new Component({ cssClass: 'spacer' }),
+                new Spacer(),
                 new FullscreenToggleButton(),
               ],
               cssClasses: ['controlbar-bottom']
@@ -746,6 +747,7 @@ export class UIInstanceManager {
     onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
+    onPreviewControlsHide: new EventDispatcher<UIContainer, CancelEventArgs>(),
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
@@ -824,6 +826,14 @@ export class UIInstanceManager {
   }
 
   /**
+   * Fires before the UI controls are hiding to check if they are allowed to hide.
+   * @returns {EventDispatcher}
+   */
+  get onPreviewControlsHide(): EventDispatcher<UIContainer, CancelEventArgs> {
+    return this.events.onPreviewControlsHide;
+  }
+
+  /**
    * Fires when the UI controls are hiding.
    * @returns {EventDispatcher}
    */
@@ -870,9 +880,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
   private configureControlsTree(component: Component<ComponentConfig>) {
     let configuredComponents: Component<ComponentConfig>[] = [];
 
-    // Define the actual recursive function within this function body so we can use local variables
-    // (e.g. the configuredComponents array).
-    let recursiveTreeWalker = (component: Component<ComponentConfig>) => {
+    UIUtils.traverseTree(component, (component) => {
       // First, check if we have already configured a component, and throw an error if we did. Multiple configuration
       // of the same component leads to unexpected UI behavior. Also, a component that is in the UI tree multiple
       // times hints at a wrong UI structure.
@@ -894,17 +902,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
       component.initialize();
       component.configure(this.getPlayer(), this);
       configuredComponents.push(component);
-
-      // If the current component is a container, visit it's children
-      if (component instanceof Container) {
-        for (let childComponent of component.getComponents()) {
-          recursiveTreeWalker(childComponent);
-        }
-      }
-    };
-
-    // Walk and configure the component tree
-    recursiveTreeWalker(component);
+    });
   }
 
   releaseControls(): void {

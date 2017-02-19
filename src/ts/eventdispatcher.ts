@@ -13,6 +13,16 @@ export interface NoArgs {
 }
 
 /**
+ * Event args for an event that can be canceled.
+ */
+export interface CancelEventArgs extends NoArgs {
+  /**
+   * Gets or sets a flag whether the event should be canceled.
+   */
+  cancel?: boolean;
+}
+
+/**
  * Public interface that represents an event. Can be used to subscribe to and unsubscribe from events.
  */
 export interface Event<Sender, Args> {
