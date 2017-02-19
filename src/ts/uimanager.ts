@@ -133,9 +133,9 @@ export class UIManager {
    * @param playerUi the default UI for the player
    * @param adsUi an ads UI to be displayed during ad playback, can be null
    * @param config optional UI configuration
-   * @deprecated Will be removed with the next major player release. Use the constructor with UIVariant instead.
+   * @deprecated Will be removed with the next major release. Use the constructor with UIVariant instead.
    */
-  // TODO remove this constructor with next major player release (and simplify handling in constructor body)
+  // TODO remove this constructor with next major release (and simplify handling in constructor body)
   constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config?: UIConfig);
   constructor(player: Player, playerUiOrUiVariants: UIContainer | UIVariant[],
               adsUiOrConfig: UIContainer | UIConfig = {}, config: UIConfig = {}) {
