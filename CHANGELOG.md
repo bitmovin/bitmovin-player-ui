@@ -6,11 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 ### Added
-- Add `AirPlayToggleButton` for AirPlay support on MacOS and iOS
-- Add `PictureInPictureToggleButton` for picture-in-picture support on MacOS and iOS
+- Add `AirPlayToggleButton` for AirPlay support on MacOS and iOS (player 7.1+)
+- Add `PictureInPictureToggleButton` for picture-in-picture support on MacOS and iOS (player 7.1+)
 - Add dynamic switching between different UIs based on various context properties (screen size, ads, mobile, fullscreen)
   - Add new `UIManager` constructor `(player: Player, uiVariants: UIVariant[], config?: UIConfig)` for dynamic switching
   - Add new `UIManager` constructor `(player: Player, ui: UIContainer, config?: UIConfig)` for simple cases with only one UI instance
+  - Automatically display smallscreen UI on mobile devices in default modern UI
 - Read metadata (title/description) from player source config if metadata in UIConfig is empty
 - Refresh metadata when a new source is loaded into the player
 - Add `release()` method to components to release resources and dependencies created during `configure(...)`
@@ -29,8 +30,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Hide error overlay when a new source is loaded
 - Do not attempt to show/hide components if they are already in the target state
 - Display stop icon instead of pause icon on the `PlaybackToggleButton` for live streams without timeshift
+- UI is no longer hidden while a control in the controlbar is hovered
 
 ### Removed
+- Remove play/pause icon animations in Cast receiver UI due to low rendering performance on Chromecast devices
 - Remove Cast workarounds/hacks required for old Cast implementation in player 7.0
 - Remove seek-before-play workaround (now directly supported by player 7.1)
 
