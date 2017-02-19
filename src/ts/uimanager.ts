@@ -127,30 +127,11 @@ export class UIManager {
    * @param config optional UI configuration
    */
   constructor(player: Player, uiVariants: UIVariant[], config?: UIConfig);
-  /**
-   * Creates a UI Manager with a default player UI and an optional ads UI that is displayed during ad playback.
-   * @param player the associated player of this UI
-   * @param playerUi the default UI for the player
-   * @param adsUi an ads UI to be displayed during ad playback, can be null
-   * @param config optional UI configuration
-   * @deprecated Will be removed with the next major release. Use the constructor with UIVariant instead.
-   */
-  // TODO remove this constructor with next major release (and simplify handling in constructor body)
-  constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config?: UIConfig);
-  constructor(player: Player, playerUiOrUiVariants: UIContainer | UIVariant[],
-              adsUiOrConfig: UIContainer | UIConfig = {}, config: UIConfig = {}) {
+  constructor(player: Player, playerUiOrUiVariants: UIContainer | UIVariant[], config: UIConfig = {}) {
     if (playerUiOrUiVariants instanceof UIContainer) {
-      // Deprecated or new single-UI constructor has been called, transform arguments to the new UIVariant[] signature
+      // Single-UI constructor has been called, transform arguments to UIVariant[] signature
       let playerUi = <UIContainer>playerUiOrUiVariants;
       let adsUi = null;
-
-      if (adsUiOrConfig instanceof UIContainer) {
-        // The third parameter is also a UI, this is definitely a call to the deprecated constructor
-        adsUi = <UIContainer>adsUiOrConfig;
-      } else if (adsUiOrConfig != null) {
-        // Since the third parameter cannot be a UI (covered by the preceding if), it can only be a UI config
-        config = <UIConfig>adsUiOrConfig;
-      }
 
       let uiVariants = [];
 
@@ -168,15 +149,14 @@ export class UIManager {
       uiVariants.push({ ui: playerUi });
 
       this.uiVariants = uiVariants;
-      this.config = config;
     }
     else {
       // Default constructor (UIVariant[]) has been called
       this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
-      this.config = <UIConfig>adsUiOrConfig;
     }
 
     this.player = player;
+    this.config = config;
     this.managerPlayerWrapper = new PlayerWrapper(player);
     this.playerElement = new DOM(player.getFigure());
 
