@@ -76,9 +76,6 @@
 <script src="js/bitmovinplayer-ui.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
-
-  var player = bitmovin.player('player');
-
   var sources = {
     fullyFeatured: {
       dash: '//bitdash-a.akamaihd.net/content/sintel/sintel.mpd',
@@ -204,15 +201,21 @@
 //    ],
   };
 
+  var player;
   var uiManager;
+  var playerSetup = function(config) {
+    player = bitmovin.player('player');
 
-  player.setup(config).then(function() {
-    // Add UI to loaded player
-    uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
-  }, function(errorEvent) {
-    // Play setup failed, and there's no player UI yet to display the error in
-    console.log(errorEvent);
-  });
+    player.setup(config).then(function() {
+      // Add UI to loaded player
+      uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
+    }, function(errorEvent) {
+      // Play setup failed, and there's no player UI yet to display the error in
+      console.log(errorEvent);
+    });
+  };
+
+  playerSetup(config);
 
   $.each(sources, function(key, value) {
     $('#config-source').append($('<option></option>').attr('value', key).text(key));
@@ -289,6 +292,11 @@
 
 
   var actions = {
+    'Recreate player': function() {
+      var config = player.getConfig();
+      player.destroy();
+      playerSetup(config);
+    },
     'Add subtitle': function() {
       return player.addSubtitle({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', label: 'Test Subtitle'});
     },
