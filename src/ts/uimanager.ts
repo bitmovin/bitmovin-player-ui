@@ -307,7 +307,16 @@ export class UIManager {
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
     this.playerElement.append(dom);
-    ui.onConfigured.dispatch(ui.getUI());
+
+    // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
+    // might not be fully configured and e.g. do not have a size.
+    // https://swizec.com/blog/how-to-properly-wait-for-dom-elements-to-show-up-in-modern-browsers/swizec/6663
+    if(window.requestAnimationFrame) {
+      requestAnimationFrame(() => { ui.onConfigured.dispatch(ui.getUI()); });
+    } else {
+      // IE9 fallback
+      setTimeout(() => { ui.onConfigured.dispatch(ui.getUI()); }, 0);
+    }
   }
 
   private releaseUi(ui: InternalUIInstanceManager): void {
