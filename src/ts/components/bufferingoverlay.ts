@@ -34,5 +34,8 @@ export class BufferingOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_STALL_ENDED, () => {
       this.hide();
     });
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
+      this.hide();
+    });
   }
 }

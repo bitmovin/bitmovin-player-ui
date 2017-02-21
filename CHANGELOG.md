@@ -31,6 +31,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Permanently display UI during a Cast session
 - No more use of the player's global namespace
 - Hide error overlay when a new source is loaded
+- Hide buffering overlay when source is unloaded
 - Do not attempt to show/hide components if they are already in the target state
 - Display stop icon instead of pause icon on the `PlaybackToggleButton` for live streams without timeshift
 - UI is no longer hidden while a control in the controlbar is hovered
