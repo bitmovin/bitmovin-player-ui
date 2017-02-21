@@ -183,6 +183,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     };
 
     // Update seekbar upon these events
+    // init playback position when the player is ready
+    player.addEventHandler(player.EVENT.ON_READY, playbackPositionHandler);
     // update playback position when it changes
     player.addEventHandler(player.EVENT.ON_TIME_CHANGED, playbackPositionHandler);
     // update bufferlevel when buffering is complete
@@ -340,6 +342,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
     // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
     uimanager.onConfigured.subscribe(() => {
+      this.refreshPlaybackPosition();
+    });
+    // It can also happen that the value changes once the player is ready, or when a new source is loaded, so we need
+    // to update on ON_READY too
+    player.addEventHandler(player.EVENT.ON_READY, () => {
       this.refreshPlaybackPosition();
     });
 

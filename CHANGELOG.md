@@ -45,7 +45,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ### Fixed
 - Fix seekbar position indicator when seeking before playback
 - Fix unloading/releasing of UI
-- Fix wrong volume slider / seekbar positioning on UI startup
+- Fix wrong volume slider / seekbar positioning on UI startup and after loading a source
 - Fix missing component exports to global JS namespace
 - Fix timeshift support on live streams where timeshifting is not available from the beginning
 
