@@ -311,7 +311,7 @@ export class UIManager {
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
     // might not be fully configured and e.g. do not have a size.
     // https://swizec.com/blog/how-to-properly-wait-for-dom-elements-to-show-up-in-modern-browsers/swizec/6663
-    if(window.requestAnimationFrame) {
+    if (window.requestAnimationFrame) {
       requestAnimationFrame(() => { ui.onConfigured.dispatch(ui.getUI()); });
     } else {
       // IE9 fallback
