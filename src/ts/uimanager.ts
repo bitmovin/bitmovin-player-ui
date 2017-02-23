@@ -33,7 +33,7 @@ import {AdClickOverlay} from './components/adclickoverlay';
 import EVENT = bitmovin.player.EVENT;
 import PlayerEventCallback = bitmovin.player.PlayerEventCallback;
 import AdStartedEvent = bitmovin.player.AdStartedEvent;
-import {ArrayUtils, UIUtils} from './utils';
+import {ArrayUtils, UIUtils, BrowserUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
@@ -187,11 +187,7 @@ export class UIManager {
     }
 
     let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
-    // isMobile only needs to be evaluated once (it cannot change during a browser session)
-    // Mobile detection according to Mozilla recommendation: "In summary, we recommend looking for the string “Mobi”
-    // anywhere in the User Agent to detect a mobile device."
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
-    let isMobile = navigator && navigator.userAgent && /Mobi/.test(navigator.userAgent);
+    let isMobile = BrowserUtils.isMobile;
 
     // Dynamically select a UI variant that matches the current UI condition.
     let resolveUiVariant = (event: PlayerEvent) => {
