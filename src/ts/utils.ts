@@ -261,10 +261,15 @@ export namespace PlayerUtils {
       };
       // Initialize when player is ready
       player.addEventHandler(player.EVENT.ON_READY, liveDetector);
-      // Re-evaluate when playback starts, because that is when the live flag might change
+      // Re-evaluate when playback starts
       player.addEventHandler(player.EVENT.ON_PLAY, liveDetector);
-      // Also re-evaluate during playback
-      player.addEventHandler(player.EVENT.ON_TIME_CHANGED, liveDetector);
+
+      // HLS live detection workaround for Android:
+      // Also re-evaluate during playback, because that is when the live flag might change.
+      // (Doing it only in Android Chrome saves unnecessary overhead on other plattforms)
+      if(BrowserUtils.isAndroid && BrowserUtils.isChrome) {
+        player.addEventHandler(player.EVENT.ON_TIME_CHANGED, liveDetector);
+      }
     }
 
     get onLiveChanged(): Event<Player, LiveStreamDetectorEventArgs> {
@@ -302,4 +307,8 @@ export namespace BrowserUtils {
   // anywhere in the User Agent to detect a mobile device."
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
   export const isMobile = navigator && navigator.userAgent && /Mobi/.test(navigator.userAgent);
+
+  export const isChrome = navigator && navigator.userAgent && /Chrome/.test(navigator.userAgent);
+
+  export const isAndroid = navigator && navigator.userAgent && /Android/.test(navigator.userAgent);
 }
