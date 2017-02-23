@@ -225,6 +225,52 @@ export namespace PlayerUtils {
       return this.timeShiftAvailabilityChangedEvent.getEvent();
     }
   }
+
+  export interface LiveStreamDetectorEventArgs extends NoArgs {
+    live: boolean;
+  }
+
+  /**
+   * Detects changes of the stream type, i.e. changes of the return value of the player#isLive method.
+   * Normally, a stream cannot change its type during playback, it's either VOD or live. Due to bugs on some
+   * platforms or browsers, it can still change. It is therefore unreliable to just check #isLive and this detector
+   * should be used as a workaround instead.
+   *
+   * Known cases:
+   *
+   * - HLS VOD on Android 4.3
+   * Video duration is initially 'Infinity' and only gets available after playback starts, so streams are wrongly
+   * reported as 'live' before playback (the live-check in the player checks for infinite duration).
+   */
+  export class LiveStreamDetector {
+
+    private liveChangedEvent = new EventDispatcher<Player, LiveStreamDetectorEventArgs>();
+
+    constructor(player: Player) {
+      let live: boolean = undefined;
+
+      let liveDetector = () => {
+        let liveNow = player.isLive();
+
+        // Compare current to previous live state flag and fire event when it changes. Since we initialize the flag
+        // with undefined, there is always at least an initial event fired that tells listeners the live state.
+        if (liveNow !== live) {
+          this.liveChangedEvent.dispatch(player, { live: liveNow });
+          live = liveNow;
+        }
+      };
+      // Initialize when player is ready
+      player.addEventHandler(player.EVENT.ON_READY, liveDetector);
+      // Re-evaluate when playback starts, because that is when the live flag might change
+      player.addEventHandler(player.EVENT.ON_PLAY, liveDetector);
+      // Also re-evaluate during playback
+      player.addEventHandler(player.EVENT.ON_TIME_CHANGED, liveDetector);
+    }
+
+    get onLiveChanged(): Event<Player, LiveStreamDetectorEventArgs> {
+      return this.liveChangedEvent.getEvent();
+    }
+  }
 }
 
 export namespace UIUtils {
