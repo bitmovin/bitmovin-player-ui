@@ -35,6 +35,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Do not attempt to show/hide components if they are already in the target state
 - Display stop icon instead of pause icon on the `PlaybackToggleButton` for live streams without timeshift
 - UI is no longer hidden while a control in the controlbar is hovered
+- Instead of requiring two touches to start playback, the first touch now reveals UI and triggers playback at the same time (`UIContainer` with `HugePlaybackToggleButton`)
 
 ### Removed
 - Remove play/pause icon animations in Cast receiver UI due to low rendering performance on Chromecast devices

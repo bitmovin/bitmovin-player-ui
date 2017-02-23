@@ -58,6 +58,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     let isUiShown = false;
     let isSeeking = false;
+    let isFirstTouch = true;
 
     let showUi = () => {
       if (!isUiShown) {
@@ -95,8 +96,15 @@ export class UIContainer extends Container<UIContainerConfig> {
     // On touch displays, the first touch reveals the UI
     container.on('touchend', (e) => {
       if (!isUiShown) {
-        // Only if the UI is hidden, we prevent other actions and reveal the UI instead
-        e.preventDefault();
+        // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI instead.
+        // The first touch is not prevented to let other listeners receive the event and trigger an initial action, e.g.
+        // the huge playback button can directly start playback instead of requiring a double tap which 1. reveals
+        // the UI and 2. starts playback.
+        if(isFirstTouch) {
+          isFirstTouch = false;
+        } else {
+          e.preventDefault();
+        }
         showUi();
       }
     });
