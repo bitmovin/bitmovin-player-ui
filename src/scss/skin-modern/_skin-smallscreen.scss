@@ -50,6 +50,10 @@
     }
   }
 
+  .#{$prefix}-ui-errormessage-overlay {
+    font-size: .7em;
+  }
+
   // Adjustments for screen width x <= 400
   &.#{$prefix}-layout-max-width-400 {
     .#{$prefix}-ui-settings-panel {
