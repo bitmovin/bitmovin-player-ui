@@ -55,7 +55,8 @@
     .#{$prefix}-ui-settings-panel,
     .#{$prefix}-ui-hugeplaybacktogglebutton,
     .#{$prefix}-ui-hugereplaybutton,
-    .#{$prefix}-ui-errormessage-overlay {
+    .#{$prefix}-ui-errormessage-overlay,
+    .#{$prefix}-ui-buffering-overlay {
       font-size: .6em;
     }
   }
@@ -65,7 +66,8 @@
     .#{$prefix}-ui-settings-panel,
     .#{$prefix}-ui-hugeplaybacktogglebutton,
     .#{$prefix}-ui-hugereplaybutton,
-    .#{$prefix}-ui-errormessage-overlay {
+    .#{$prefix}-ui-errormessage-overlay,
+    .#{$prefix}-ui-buffering-overlay {
       font-size: .8em;
     }
   }
