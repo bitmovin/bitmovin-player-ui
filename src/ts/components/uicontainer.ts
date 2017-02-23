@@ -100,7 +100,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         // The first touch is not prevented to let other listeners receive the event and trigger an initial action, e.g.
         // the huge playback button can directly start playback instead of requiring a double tap which 1. reveals
         // the UI and 2. starts playback.
-        if(isFirstTouch) {
+        if (isFirstTouch) {
           isFirstTouch = false;
         } else {
           e.preventDefault();
