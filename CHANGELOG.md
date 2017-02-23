@@ -50,6 +50,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Fix wrong volume slider / seekbar positioning on UI startup and after loading a source
 - Fix missing component exports to global JS namespace
 - Fix timeshift support on live streams where timeshifting is not available from the beginning
+- Fix wrongly detected live state of HLS streams in Chrome on Android
 
 ## [1.0.1] - 2017-02-10
 ### Fixed

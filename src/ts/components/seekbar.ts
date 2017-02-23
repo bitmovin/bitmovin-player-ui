@@ -6,6 +6,7 @@ import {UIInstanceManager, TimelineMarker, SeekPreviewArgs} from '../uimanager';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../utils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
+import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -132,7 +133,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isSeeking = false;
 
     // Update playback and buffer positions
-    let playbackPositionHandler = () => {
+    let playbackPositionHandler = (forceUpdate: boolean = false) => {
       // Once this handler os called, playback has been started and we set the flag to false
       playbackNotInitialized = false;
 
@@ -174,7 +175,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Update playback position only in paused state or in the initial startup state where player is neither
         // paused nor playing. Playback updates are handled in the Timeout below.
-        if (player.isPaused() || (player.isPaused() === player.isPlaying())) {
+        if (forceUpdate || player.isPaused() || (player.isPaused() === player.isPlaying())) {
           this.setPlaybackPosition(playbackPositionPercentage);
         }
 
@@ -324,13 +325,25 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     // Hide seekbar for live sources without timeshift
+    let isLive = false;
+    let hasTimeShift = false;
+    let switchVisibility = (isLive: boolean, hasTimeShift: boolean) => {
+      if (isLive && !hasTimeShift) {
+        this.hide();
+      } else {
+        this.show();
+      }
+      playbackPositionHandler(true);
+      this.refreshPlaybackPosition();
+    };
+    new PlayerUtils.LiveStreamDetector(player).onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
+      isLive = args.live;
+      switchVisibility(isLive, hasTimeShift);
+    });
     new PlayerUtils.TimeShiftAvailabilityDetector(player).onTimeShiftAvailabilityChanged.subscribe(
       (sender, args: TimeShiftAvailabilityChangedArgs) => {
-        if (!args.timeShiftAvailable) {
-          this.hide();
-        } else {
-          this.show();
-        }
+        hasTimeShift = args.timeShiftAvailable;
+        switchVisibility(isLive, hasTimeShift);
       }
     );
 
