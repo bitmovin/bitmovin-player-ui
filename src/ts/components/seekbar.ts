@@ -7,6 +7,7 @@ import {Timeout} from '../timeout';
 import {PlayerUtils} from '../utils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
+import PlayerEvent = bitmovin.player.PlayerEvent;
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -133,7 +134,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isSeeking = false;
 
     // Update playback and buffer positions
-    let playbackPositionHandler = (forceUpdate: boolean = false) => {
+    let playbackPositionHandler = (event: PlayerEvent = null, forceUpdate: boolean = false) => {
       // Once this handler os called, playback has been started and we set the flag to false
       playbackNotInitialized = false;
 
@@ -333,7 +334,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       } else {
         this.show();
       }
-      playbackPositionHandler(true);
+      playbackPositionHandler(null, true);
       this.refreshPlaybackPosition();
     };
     new PlayerUtils.LiveStreamDetector(player).onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
