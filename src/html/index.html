@@ -89,7 +89,30 @@
         file: '//bitdash-a.akamaihd.net/content/sintel/sprite/sprite.vtt',
         kind: 'thumbnails'
       }],
-      title: 'Sintel'
+      title: 'Sintel',
+      markers: [
+        {time: 0, title: 'Intro'},
+        {time: 102, title: 'Old Guy'},
+        {time: 150, title: 'City'},
+        {time: 200, title: 'Dragon'},
+        {time: 370, title: 'Desert'},
+        {time: 385, title: 'Bamboo Forest'},
+        {time: 410, title: 'Winter again'},
+        {time: 755, title: 'Credits'},
+      ],
+      recommendations: [
+        {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
+        {title: 'Recommendation 2: The second best video', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 64},
+        {title: 'Recommendation 3: The third best video of all time', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 195},
+      ],
+    },
+    basicProgressive: {
+      progressive: '//bitdash-a.akamaihd.net/content/sintel/Sintel.mp4',
+      poster: '//bitdash-a.akamaihd.net/content/sintel/poster.png',
+    },
+    basicHls: {
+      hls: "//bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
+      poster: '//bitdash-a.akamaihd.net/content/sintel/poster.png',
     },
     basicDash: {
       dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
@@ -184,6 +207,12 @@
         {time: 200},
         {time: 300, title: 'Again a chapter with a title'},
       ],
+//      markers: [
+//        {time: 50, title: 'Chapter 1'},
+//        {time: 80, title: 'Chapter Two'},
+//        {time: 200},
+//        {time: 300, title: 'Again a chapter with a title'},
+//      ],
     },
 //    recommendations: [
 //      {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
