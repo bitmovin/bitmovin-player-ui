@@ -27,6 +27,8 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Add `Spacer` component that just takes up space
 - Read timeline markers from player source config (`source.markers`) if `UIConfig` does not contain markers
 - Refresh timeline markers when a source is loaded/unloaded
+- Read recommendations from player source config (`source.recommendations`) if `UIConfig` does not contain recommendations
+- Refresh `RecommendationOverlay` when a source is loaded/unloaded
 
 ### Changed
 - Update Cast support for new Cast implementation in player 7.1
