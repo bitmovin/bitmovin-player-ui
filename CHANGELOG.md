@@ -15,7 +15,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
   - Add new `UIManager` constructor `(player: Player, uiVariants: UIVariant[], config?: UIConfig)` for dynamic switching
   - Add new `UIManager` constructor `(player: Player, ui: UIContainer, config?: UIConfig)` for simple cases with only one UI instance
   - Automatically display smallscreen UI on mobile devices in default modern UI
-- Read metadata (title/description) from player source config if metadata in UIConfig is empty
+- Read metadata (title/description) from player source config if metadata in `UIConfig` is empty
 - Refresh metadata when a new source is loaded into the player
 - Add `release()` method to components to release resources and dependencies created during `configure(...)`
 - Add `onConfigured` event to `UIManager` which gets fired once UI is ready (configured and added to DOM)
@@ -25,6 +25,8 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
   - `isHovered()` returns the current hover-state
   - `onHoverChanged` event with `ComponentHoverChangedEventArgs` is fired when the hover state changes
 - Add `Spacer` component that just takes up space
+- Read timeline markers from player source config (`source.markers`) if `UIConfig` does not contain markers
+- Refresh timeline markers when a source is loaded/unloaded
 
 ### Changed
 - Update Cast support for new Cast implementation in player 7.1

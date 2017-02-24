@@ -119,16 +119,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       return;
     }
 
-    if (uimanager.getConfig().metadata && uimanager.getConfig().metadata.markers
-      && uimanager.getConfig().metadata.markers.length > 0) {
-      for (let chapter of uimanager.getConfig().metadata.markers) {
-        this.timelineMarkers.push({
-          time: 100 / player.getDuration() * chapter.time, // convert time to percentage
-          title: chapter.title,
-        })
-      }
-    }
-
     let playbackNotInitialized = true;
     let isPlaying = false;
     let isSeeking = false;
@@ -368,7 +358,49 @@ export class SeekBar extends Component<SeekBarConfig> {
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
     this.setSeekPosition(0);
-    this.updateMarkers();
+    this.configureMarkers(player, uimanager);
+  }
+
+  private configureMarkers(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+    let clearMarkers = () => {
+      this.timelineMarkers = [];
+      this.updateMarkers();
+    };
+
+    let setupMarkers = () => {
+      clearMarkers();
+
+      let hasMarkersInUiConfig = uimanager.getConfig().metadata && uimanager.getConfig().metadata.markers
+        && uimanager.getConfig().metadata.markers.length > 0;
+      let hasMarkersInPlayerConfig = player.getConfig().source && player.getConfig().source.markers
+        && player.getConfig().source.markers.length > 0;
+
+      // Take markers from the UI config. If no markers defined, try to take them from the player's source config.
+      let markers = hasMarkersInUiConfig ? uimanager.getConfig().metadata.markers :
+        hasMarkersInPlayerConfig ? player.getConfig().source.markers : null;
+
+      // Generate timeline markers from the config if we have markers and if we have a duration
+      // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
+      if (markers && player.getDuration() !== Infinity) {
+        for (let marker of markers) {
+          this.timelineMarkers.push({
+            time: 100 / player.getDuration() * marker.time, // convert time to percentage
+            title: marker.title,
+          })
+        }
+      }
+
+      // Populate the timeline with the markers
+      this.updateMarkers();
+    };
+
+    // Add markers when a source is loaded
+    player.addEventHandler(player.EVENT.ON_READY, setupMarkers);
+    // Remove markers when unloaded
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, clearMarkers);
+
+    // Init markers at startup
+    setupMarkers();
   }
 
   release(): void {
