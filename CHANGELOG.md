@@ -41,6 +41,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - UI is no longer hidden while a control in the controlbar is hovered
 - Instead of requiring two touches to start playback, the first touch now reveals UI and triggers playback at the same time (`UIContainer` with `HugePlaybackToggleButton`)
 - Decreased `HugePlaybackButton`, `ErrorMessageOverlay` `BufferingOverlay`, and `SubtitleOverlay` font size in smallscreen UI
+- Hide `RecommendationOverlay` when source is unloaded
 
 ### Removed
 - Remove play/pause icon animations in Cast receiver UI due to low rendering performance on Chromecast devices

@@ -67,8 +67,11 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
 
     // Add recommendation when a source is loaded
     player.addEventHandler(player.EVENT.ON_READY, setupRecommendations);
-    // Remove recommendations when source is unloaded
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, clearRecommendations);
+    // Remove recommendations and hide overlay when source is unloaded
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
+      clearRecommendations();
+      this.hide();
+    });
     // Display recommendations when playback has finished
     player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, () => {
       // Dismiss ON_PLAYBACK_FINISHED events at the end of ads
