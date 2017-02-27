@@ -773,7 +773,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     let snappedMarker = this.getMarkerAtPosition(percentage);
 
     if (this.label) {
-      this.label.setText(percentage + '');
       this.label.getDomElement().css({
         'left': (snappedMarker ? snappedMarker.time : percentage) + '%'
       });
