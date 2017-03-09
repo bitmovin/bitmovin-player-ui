@@ -191,9 +191,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
 
 
-
-
-
     // Seek handling
     player.addEventHandler(player.EVENT.ON_SEEK, () => {
       this.setSeeking(true);
@@ -364,6 +361,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.ON_SEEKED, () => {
       currentTimeSeekBar = player.getCurrentTime();
     });
+
+    if (player.isPlaying()) {
+      startSmoothPlaybackPositionUpdater();
+    }
   }
 
   private configureMarkers(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
