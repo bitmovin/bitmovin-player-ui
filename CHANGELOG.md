@@ -31,6 +31,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Refresh `RecommendationOverlay` when a source is loaded/unloaded
 - Clear `MetadataLabel` when source is unloaded
 - Add `SeekBarConfig#smoothPlaybackPositionUpdateIntervalMs` to configure or disable smooth playback position updates on the `SeekBar`
+- Delay displaying of the `BufferingOverlay` by 1 second to bypass short stalls without the distraction of the overlay (configurable with `BufferingOverlayConfig#showDelayMs`)
 
 ### Changed
 - Update Cast support for new Cast implementation in player 7.1
