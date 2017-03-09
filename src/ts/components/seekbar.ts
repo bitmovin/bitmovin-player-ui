@@ -201,7 +201,7 @@ export class SeekBar extends Component<SeekBarConfig> {
      */
     let currentTimeSeekBar = 0;
     let currentTimePlayer = 0;
-    let updateIntervalMs = 25;
+    let updateIntervalMs = 50;
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
     this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
