@@ -191,63 +191,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
 
 
-    /*
-     * Playback position update
-     *
-     * We do not update the position directly from the ON_TIME_CHANGED event, because it arrives very jittery and
-     * results in a jittery position indicator since the CSS transition time is statically set.
-     * To work around this issue, we maintain a local playback position that is updated in a stable regular interval
-     * and kept in sync with the player.
-     */
-    let currentTimeSeekBar = 0;
-    let currentTimePlayer = 0;
-    let updateIntervalMs = 50;
-    let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
-    this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
-      currentTimeSeekBar += currentTimeUpdateDeltaSecs;
-      currentTimePlayer = player.getCurrentTime();
-
-      // Sync currentTime of seekbar to player
-      let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
-      // If the delta is larger that 2 secs, directly jump the seekbar to the
-      // player time instead of smoothly fast forwarding/rewinding.
-      if (Math.abs(currentTimeDelta) > 2) {
-        currentTimeSeekBar = currentTimePlayer;
-      }
-      // If currentTimeDelta is negative and below the adjustment threshold,
-      // the player is ahead of the seekbar and we 'fast forward' the seekbar
-      else if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
-        currentTimeSeekBar += currentTimeUpdateDeltaSecs;
-      }
-      // If currentTimeDelta is positive and above the adjustment threshold,
-      // the player is behind the seekbar and we 'rewind' the seekbar
-      else if (currentTimeDelta >= currentTimeUpdateDeltaSecs) {
-        currentTimeSeekBar -= currentTimeUpdateDeltaSecs;
-      }
-
-      let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
-      this.setPlaybackPosition(playbackPositionPercentage);
-    }, true);
-
-    let startSmoothPlaybackPositionUpdater = () => {
-      if (!player.isLive()) {
-        currentTimeSeekBar = player.getCurrentTime();
-        this.smoothPlaybackPositionUpdater.start();
-      }
-    };
-
-    let stopSmoothPlaybackPositionUpdater = () => {
-      this.smoothPlaybackPositionUpdater.clear();
-    };
-
-    player.addEventHandler(player.EVENT.ON_PLAY, startSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_PAUSED, stopSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_SEEKED, () => {
-      currentTimeSeekBar = player.getCurrentTime();
-    });
 
 
     // Seek handling
@@ -358,7 +302,68 @@ export class SeekBar extends Component<SeekBarConfig> {
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
     this.setSeekPosition(0);
+    this.configureSmoothPlaybackPositionUpdater(player, uimanager);
     this.configureMarkers(player, uimanager);
+  }
+
+  private configureSmoothPlaybackPositionUpdater(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+    /*
+     * Playback position update
+     *
+     * We do not update the position directly from the ON_TIME_CHANGED event, because it arrives very jittery and
+     * results in a jittery position indicator since the CSS transition time is statically set.
+     * To work around this issue, we maintain a local playback position that is updated in a stable regular interval
+     * and kept in sync with the player.
+     */
+    let currentTimeSeekBar = 0;
+    let currentTimePlayer = 0;
+    let updateIntervalMs = 50;
+    let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
+
+    this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
+      currentTimeSeekBar += currentTimeUpdateDeltaSecs;
+      currentTimePlayer = player.getCurrentTime();
+
+      // Sync currentTime of seekbar to player
+      let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
+      // If the delta is larger that 2 secs, directly jump the seekbar to the
+      // player time instead of smoothly fast forwarding/rewinding.
+      if (Math.abs(currentTimeDelta) > 2) {
+        currentTimeSeekBar = currentTimePlayer;
+      }
+      // If currentTimeDelta is negative and below the adjustment threshold,
+      // the player is ahead of the seekbar and we 'fast forward' the seekbar
+      else if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
+        currentTimeSeekBar += currentTimeUpdateDeltaSecs;
+      }
+      // If currentTimeDelta is positive and above the adjustment threshold,
+      // the player is behind the seekbar and we 'rewind' the seekbar
+      else if (currentTimeDelta >= currentTimeUpdateDeltaSecs) {
+        currentTimeSeekBar -= currentTimeUpdateDeltaSecs;
+      }
+
+      let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
+      this.setPlaybackPosition(playbackPositionPercentage);
+    }, true);
+
+    let startSmoothPlaybackPositionUpdater = () => {
+      if (!player.isLive()) {
+        currentTimeSeekBar = player.getCurrentTime();
+        this.smoothPlaybackPositionUpdater.start();
+      }
+    };
+
+    let stopSmoothPlaybackPositionUpdater = () => {
+      this.smoothPlaybackPositionUpdater.clear();
+    };
+
+    player.addEventHandler(player.EVENT.ON_PLAY, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_PAUSED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_SEEKED, () => {
+      currentTimeSeekBar = player.getCurrentTime();
+    });
   }
 
   private configureMarkers(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
