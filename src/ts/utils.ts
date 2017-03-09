@@ -184,12 +184,34 @@ export namespace PlayerUtils {
 
   import Player = bitmovin.player.Player;
 
+  export enum PlayerState {
+    IDLE,
+    PREPARED,
+    PLAYING,
+    PAUSED,
+    FINISHED,
+  }
+
   export function isSourceLoaded(player: Player): boolean {
     return player.getConfig().source !== undefined;
   }
 
   export function isTimeShiftAvailable(player: Player): boolean {
     return player.isLive() && player.getMaxTimeShift() !== 0;
+  }
+
+  export function getState(player: Player): PlayerState {
+    if (player.hasEnded()) {
+      return PlayerState.FINISHED;
+    } else if (player.isPlaying()) {
+      return PlayerState.PLAYING;
+    } else if (player.isPaused()) {
+      return PlayerState.PAUSED;
+    } else if (isSourceLoaded(player)) {
+      return PlayerState.PREPARED;
+    } else {
+      return PlayerState.IDLE;
+    }
   }
 
   export interface TimeShiftAvailabilityChangedArgs extends NoArgs {

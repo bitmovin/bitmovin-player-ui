@@ -23,11 +23,7 @@ export interface UIContainerConfig extends ContainerConfig {
  */
 export class UIContainer extends Container<UIContainerConfig> {
 
-  private static readonly STATE_IDLE = 'player-state-idle';
-  private static readonly STATE_PREPARED = 'player-state-prepared';
-  private static readonly STATE_PLAYING = 'player-state-playing';
-  private static readonly STATE_PAUSED = 'player-state-paused';
-  private static readonly STATE_FINISHED = 'player-state-finished';
+  private static readonly STATE_PREFIX = 'player-state-';
 
   private static readonly FULLSCREEN = 'fullscreen';
   private static readonly BUFFERING = 'buffering';
@@ -141,36 +137,45 @@ export class UIContainer extends Container<UIContainerConfig> {
   private configurePlayerStates(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     let container = this.getDomElement();
 
+    // Convert player states into CSS class names
+    let stateClassNames = <any>[];
+    for (let state in PlayerUtils.PlayerState) {
+      if (isNaN(Number(state))) {
+        let enumName = PlayerUtils.PlayerState[<any>PlayerUtils.PlayerState[state]];
+        stateClassNames[PlayerUtils.PlayerState[state]] =
+          this.prefixCss(UIContainer.STATE_PREFIX + enumName.toLowerCase());
+      }
+    }
+
     let removeStates = () => {
-      container.removeClass(this.prefixCss(UIContainer.STATE_IDLE));
-      container.removeClass(this.prefixCss(UIContainer.STATE_PREPARED));
-      container.removeClass(this.prefixCss(UIContainer.STATE_PLAYING));
-      container.removeClass(this.prefixCss(UIContainer.STATE_PAUSED));
-      container.removeClass(this.prefixCss(UIContainer.STATE_FINISHED));
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.IDLE]);
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.PREPARED]);
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.PLAYING]);
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
     };
     player.addEventHandler(player.EVENT.ON_READY, () => {
       removeStates();
-      container.addClass(this.prefixCss(UIContainer.STATE_PREPARED));
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.PREPARED]);
     });
     player.addEventHandler(player.EVENT.ON_PLAY, () => {
       removeStates();
-      container.addClass(this.prefixCss(UIContainer.STATE_PLAYING));
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.PLAYING]);
     });
     player.addEventHandler(player.EVENT.ON_PAUSED, () => {
       removeStates();
-      container.addClass(this.prefixCss(UIContainer.STATE_PAUSED));
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
     });
     player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, () => {
       removeStates();
-      container.addClass(this.prefixCss(UIContainer.STATE_FINISHED));
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
     });
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
       removeStates();
-      container.addClass(this.prefixCss(UIContainer.STATE_IDLE));
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.IDLE]);
     });
-    // Init in idle state without a source or prepared if a source is set
-    container.addClass(this.prefixCss(PlayerUtils.isSourceLoaded(player) ?
-      UIContainer.STATE_PREPARED : UIContainer.STATE_IDLE));
+    // Init in current player state
+    container.addClass(stateClassNames[PlayerUtils.getState(player)]);
 
     // Fullscreen marker class
     player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, () => {
