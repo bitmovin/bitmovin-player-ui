@@ -50,6 +50,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Remove Cast workarounds/hacks required for old Cast implementation in player 7.0
 - Remove seek-before-play workaround (now directly supported by player 7.1)
 - Remove `UIManager` constructor `(player: Player, playerUi: UIContainer, adsUi: UIContainer, config?: UIConfig)`, use new constructor with `UIVariant[]` instead
+- Disable smooth seekbar update in Cast receiver UI for increased Chromecast performance
 
 ### Fixed
 - Fix seekbar position indicator when seeking before playback
