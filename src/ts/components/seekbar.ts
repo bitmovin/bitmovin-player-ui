@@ -21,6 +21,14 @@ export interface SeekBarConfig extends ComponentConfig {
    * Bar will be vertical instead of horizontal if set to true.
    */
   vertical?: boolean;
+  /**
+   * The interval in milliseconds in which the playback position on the seek bar will be updated. The shorter the
+   * interval, the smoother it looks and the more resource intense it is. The update interval will be kept as steady
+   * as possible to avoid jitter.
+   * Set to -1 to disable smooth updating and update it on player ON_TIME_CHANGED events instead.
+   * Default: 50 (50ms = 20fps).
+   */
+  smoothPlaybackPositionUpdateIntervalMs?: number;
 }
 
 /**
@@ -43,6 +51,8 @@ export interface SeekPreviewEventArgs extends SeekPreviewArgs {
  *  - the seek position, used to preview to where in the timeline a seek will jump to
  */
 export class SeekBar extends Component<SeekBarConfig> {
+
+  public static readonly SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED = -1;
 
   /**
    * The CSS class that is added to the DOM element while the seek bar is in 'seeking' state.
@@ -94,6 +104,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-seekbar',
       vertical: false,
+      smoothPlaybackPositionUpdateIntervalMs: 50,
     }, this.config);
 
     this.label = this.config.label;
@@ -166,7 +177,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Update playback position only in paused state or in the initial startup state where player is neither
         // paused nor playing. Playback updates are handled in the Timeout below.
-        if (forceUpdate || player.isPaused() || (player.isPaused() === player.isPlaying())) {
+        if (this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
+          || forceUpdate || player.isPaused() || (player.isPaused() === player.isPlaying())) {
           this.setPlaybackPosition(playbackPositionPercentage);
         }
 
@@ -299,7 +311,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
     this.setSeekPosition(0);
-    this.configureSmoothPlaybackPositionUpdater(player, uimanager);
+    if (this.config.smoothPlaybackPositionUpdateIntervalMs !== SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED) {
+      this.configureSmoothPlaybackPositionUpdater(player, uimanager);
+    }
     this.configureMarkers(player, uimanager);
   }
 

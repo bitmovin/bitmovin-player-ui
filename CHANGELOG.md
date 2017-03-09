@@ -30,6 +30,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Read recommendations from player source config (`source.recommendations`) if `UIConfig` does not contain recommendations
 - Refresh `RecommendationOverlay` when a source is loaded/unloaded
 - Clear `MetadataLabel` when source is unloaded
+- Add `SeekBarConfig#smoothPlaybackPositionUpdateIntervalMs` to configure or disable smooth playback position updates on the `SeekBar`
 
 ### Changed
 - Update Cast support for new Cast implementation in player 7.1
