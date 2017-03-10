@@ -47,7 +47,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Hide `RecommendationOverlay` when source is unloaded
 
 ### Removed
-- Remove play/pause icon animations in Cast receiver UI due to low rendering performance on Chromecast devices
+- Remove all transitions and animations from Cast receiver UI due to low rendering performance on Chromecast devices
 - Remove Cast workarounds/hacks required for old Cast implementation in player 7.0
 - Remove seek-before-play workaround (now directly supported by player 7.1)
 - Remove `UIManager` constructor `(player: Player, playerUi: UIContainer, adsUi: UIContainer, config?: UIConfig)`, use new constructor with `UIVariant[]` instead

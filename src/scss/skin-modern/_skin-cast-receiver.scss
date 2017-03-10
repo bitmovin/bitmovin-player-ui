@@ -71,5 +71,20 @@
         transition: none;
       }
     }
+
+    // Disable transitions due to poor Chromecast performance
+    .#{$prefix}-seekbar-bufferlevel,
+    .#{$prefix}-seekbar-playbackposition,
+    .#{$prefix}-ui-buffering-overlay,
+    .#{$prefix}-ui-titlebar,
+    .#{$prefix}-ui-controlbar,
+    .#{$prefix}-ui-subtitle-overlay {
+      transition: none;
+    }
+
+    // Hide animated buffering indicators due to poor Chromecast performance
+    .#{$prefix}-ui-buffering-overlay-indicator {
+      display: none;
+    }
   }
 }
