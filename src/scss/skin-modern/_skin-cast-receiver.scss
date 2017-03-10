@@ -44,6 +44,15 @@
       &.#{$prefix}-controlbar-visible {
         bottom: 20%;
       }
+
+      // Replace the shadow-based text border with a transparent backdrop for better rendering
+      // performance on Chromecast.
+      .#{$prefix}-ui-subtitle-label {
+        background-color: transparentize($subtitle-text-border-color, .5);
+        box-decoration-break: clone;
+        line-height: 2em;
+        padding: .3em .5em;
+        text-shadow: none;
       }
     }
 
