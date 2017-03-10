@@ -4,26 +4,25 @@
 .#{$prefix}-ui-subtitle-overlay {
   @extend %ui-container;
 
-  @include layout-cover;
-  @include text-border($subtitle-text-border-color);
+  @include hidden;
 
+  bottom: 2em;
+  font-size: 1.2em;
+  left: 3em;
   pointer-events: none;
+  position: absolute;
+  right: 3em;
+  text-align: center;
+  transition: bottom $animation-duration-short ease-out;
 
   .#{$prefix}-ui-subtitle-label {
-    bottom: 2em;
+    @include text-border($subtitle-text-border-color);
+
     color: $subtitle-text-color;
-    font-size: 1.2em;
-    left: 3em;
-    position: absolute;
-    right: 3em;
-    text-align: center;
-    transition: bottom $animation-duration-short ease-out;
   }
 
   &.#{$prefix}-controlbar-visible {
-    .#{$prefix}-ui-subtitle-label {
-      bottom: 5em;
-      transition: bottom $animation-duration-short ease-in;
-    }
+    bottom: 5em;
+    transition: bottom $animation-duration-short ease-in;
   }
 }
