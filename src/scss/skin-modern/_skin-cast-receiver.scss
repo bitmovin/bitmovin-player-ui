@@ -39,14 +39,11 @@
     }
 
     .#{$prefix}-ui-subtitle-overlay {
-      .#{$prefix}-ui-subtitle-label {
-        bottom: $overscan-margin;
-      }
+      bottom: $overscan-margin;
 
       &.#{$prefix}-controlbar-visible {
-        .#{$prefix}-ui-subtitle-label {
-          bottom: 20%;
-        }
+        bottom: 20%;
+      }
       }
     }
 
