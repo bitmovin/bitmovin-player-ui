@@ -1,5 +1,4 @@
 /// <reference path='player.d.ts' />
-/// <reference path='../../node_modules/@types/core-js/index.d.ts' />
 import {UIManager, UIInstanceManager} from './uimanager';
 import {Button} from './components/button';
 import {ControlBar} from './components/controlbar';
