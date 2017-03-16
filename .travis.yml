@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "6"
+before_script:
+  - npm install -g gulp-cli
+script: gulp build-prod
+cache:
+  yarn: true
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
