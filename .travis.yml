@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - "6"
+before_script:
+  - npm install -g gulp-cli
+script: gulp build-prod
+cache:
+  yarn: true
