@@ -204,7 +204,7 @@ var myUiConfig = {
   ]
 };
 
-var myUiManager = new bitmovin.playerui.UIManager(player, myUi, null, myUiConfig);
+var myUiManager = new bitmovin.playerui.UIManager(player, myUi, myUiConfig);
 ```
 
 All of the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.

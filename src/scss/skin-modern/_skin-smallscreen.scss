@@ -52,22 +52,24 @@
 
   // Adjustments for screen width x <= 400
   &.#{$prefix}-layout-max-width-400 {
-    .#{$prefix}-ui-settings-panel {
-      font-size: .6em;
-    }
-
-    .#{$prefix}-ui-hugeplaybacktogglebutton {
+    .#{$prefix}-ui-settings-panel,
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-hugereplaybutton,
+    .#{$prefix}-ui-errormessage-overlay,
+    .#{$prefix}-ui-buffering-overlay,
+    .#{$prefix}-ui-subtitle-overlay {
       font-size: .6em;
     }
   }
 
   // Adjustments for screen width 400 < x <= 600
   &.#{$prefix}-layout-max-width-600 {
-    .#{$prefix}-ui-settings-panel {
-      font-size: .8em;
-    }
-
-    .#{$prefix}-ui-hugeplaybacktogglebutton {
+    .#{$prefix}-ui-settings-panel,
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-hugereplaybutton,
+    .#{$prefix}-ui-errormessage-overlay,
+    .#{$prefix}-ui-buffering-overlay,
+    .#{$prefix}-ui-subtitle-overlay {
       font-size: .8em;
     }
   }

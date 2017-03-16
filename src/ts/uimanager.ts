@@ -33,7 +33,7 @@ import {AdClickOverlay} from './components/adclickoverlay';
 import EVENT = bitmovin.player.EVENT;
 import PlayerEventCallback = bitmovin.player.PlayerEventCallback;
 import AdStartedEvent = bitmovin.player.AdStartedEvent;
-import {ArrayUtils, UIUtils} from './utils';
+import {ArrayUtils, UIUtils, BrowserUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
@@ -127,30 +127,11 @@ export class UIManager {
    * @param config optional UI configuration
    */
   constructor(player: Player, uiVariants: UIVariant[], config?: UIConfig);
-  /**
-   * Creates a UI Manager with a default player UI and an optional ads UI that is displayed during ad playback.
-   * @param player the associated player of this UI
-   * @param playerUi the default UI for the player
-   * @param adsUi an ads UI to be displayed during ad playback, can be null
-   * @param config optional UI configuration
-   * @deprecated Will be removed with the next major release. Use the constructor with UIVariant instead.
-   */
-  // TODO remove this constructor with next major release (and simplify handling in constructor body)
-  constructor(player: Player, playerUi: UIContainer, adsUi: UIContainer, config?: UIConfig);
-  constructor(player: Player, playerUiOrUiVariants: UIContainer | UIVariant[],
-              adsUiOrConfig: UIContainer | UIConfig = {}, config: UIConfig = {}) {
+  constructor(player: Player, playerUiOrUiVariants: UIContainer | UIVariant[], config: UIConfig = {}) {
     if (playerUiOrUiVariants instanceof UIContainer) {
-      // Deprecated or new single-UI constructor has been called, transform arguments to the new UIVariant[] signature
+      // Single-UI constructor has been called, transform arguments to UIVariant[] signature
       let playerUi = <UIContainer>playerUiOrUiVariants;
       let adsUi = null;
-
-      if (adsUiOrConfig instanceof UIContainer) {
-        // The third parameter is also a UI, this is definitely a call to the deprecated constructor
-        adsUi = <UIContainer>adsUiOrConfig;
-      } else if (adsUiOrConfig != null) {
-        // Since the third parameter cannot be a UI (covered by the preceding if), it can only be a UI config
-        config = <UIConfig>adsUiOrConfig;
-      }
 
       let uiVariants = [];
 
@@ -168,15 +149,14 @@ export class UIManager {
       uiVariants.push({ ui: playerUi });
 
       this.uiVariants = uiVariants;
-      this.config = config;
     }
     else {
       // Default constructor (UIVariant[]) has been called
       this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
-      this.config = <UIConfig>adsUiOrConfig;
     }
 
     this.player = player;
+    this.config = config;
     this.managerPlayerWrapper = new PlayerWrapper(player);
     this.playerElement = new DOM(player.getFigure());
 
@@ -207,11 +187,7 @@ export class UIManager {
     }
 
     let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
-    // isMobile only needs to be evaluated once (it cannot change during a browser session)
-    // Mobile detection according to Mozilla recommendation: "In summary, we recommend looking for the string “Mobi”
-    // anywhere in the User Agent to detect a mobile device."
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
-    let isMobile = navigator && navigator.userAgent && /Mobi/.test(navigator.userAgent);
+    let isMobile = BrowserUtils.isMobile;
 
     // Dynamically select a UI variant that matches the current UI condition.
     let resolveUiVariant = (event: PlayerEvent) => {
@@ -327,7 +303,16 @@ export class UIManager {
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
     this.playerElement.append(dom);
-    ui.onConfigured.dispatch(ui.getUI());
+
+    // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
+    // might not be fully configured and e.g. do not have a size.
+    // https://swizec.com/blog/how-to-properly-wait-for-dom-elements-to-show-up-in-modern-browsers/swizec/6663
+    if (window.requestAnimationFrame) {
+      requestAnimationFrame(() => { ui.onConfigured.dispatch(ui.getUI()); });
+    } else {
+      // IE9 fallback
+      setTimeout(() => { ui.onConfigured.dispatch(ui.getUI()); }, 0);
+    }
   }
 
   private releaseUi(ui: InternalUIInstanceManager): void {
@@ -526,7 +511,7 @@ export namespace UIManager.Factory {
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel() }),
+            new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top']
