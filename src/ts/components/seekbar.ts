@@ -6,6 +6,8 @@ import {UIInstanceManager, TimelineMarker, SeekPreviewArgs} from '../uimanager';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../utils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
+import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
+import PlayerEvent = bitmovin.player.PlayerEvent;
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -19,6 +21,14 @@ export interface SeekBarConfig extends ComponentConfig {
    * Bar will be vertical instead of horizontal if set to true.
    */
   vertical?: boolean;
+  /**
+   * The interval in milliseconds in which the playback position on the seek bar will be updated. The shorter the
+   * interval, the smoother it looks and the more resource intense it is. The update interval will be kept as steady
+   * as possible to avoid jitter.
+   * Set to -1 to disable smooth updating and update it on player ON_TIME_CHANGED events instead.
+   * Default: 50 (50ms = 20fps).
+   */
+  smoothPlaybackPositionUpdateIntervalMs?: number;
 }
 
 /**
@@ -41,6 +51,8 @@ export interface SeekPreviewEventArgs extends SeekPreviewArgs {
  *  - the seek position, used to preview to where in the timeline a seek will jump to
  */
 export class SeekBar extends Component<SeekBarConfig> {
+
+  public static readonly SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED = -1;
 
   /**
    * The CSS class that is added to the DOM element while the seek bar is in 'seeking' state.
@@ -90,7 +102,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-seekbar'
+      cssClass: 'ui-seekbar',
+      vertical: false,
+      smoothPlaybackPositionUpdateIntervalMs: 50,
     }, this.config);
 
     this.label = this.config.label;
@@ -116,22 +130,12 @@ export class SeekBar extends Component<SeekBarConfig> {
       return;
     }
 
-    if (uimanager.getConfig().metadata && uimanager.getConfig().metadata.markers
-      && uimanager.getConfig().metadata.markers.length > 0) {
-      for (let chapter of uimanager.getConfig().metadata.markers) {
-        this.timelineMarkers.push({
-          time: 100 / player.getDuration() * chapter.time, // convert time to percentage
-          title: chapter.title,
-        })
-      }
-    }
-
     let playbackNotInitialized = true;
     let isPlaying = false;
     let isSeeking = false;
 
     // Update playback and buffer positions
-    let playbackPositionHandler = () => {
+    let playbackPositionHandler = (event: PlayerEvent = null, forceUpdate: boolean = false) => {
       // Once this handler os called, playback has been started and we set the flag to false
       playbackNotInitialized = false;
 
@@ -173,7 +177,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Update playback position only in paused state or in the initial startup state where player is neither
         // paused nor playing. Playback updates are handled in the Timeout below.
-        if (player.isPaused() || (player.isPaused() === player.isPlaying())) {
+        if (this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
+          || forceUpdate || player.isPaused() || (player.isPaused() === player.isPlaying())) {
           this.setPlaybackPosition(playbackPositionPercentage);
         }
 
@@ -182,6 +187,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     };
 
     // Update seekbar upon these events
+    // init playback position when the player is ready
+    player.addEventHandler(player.EVENT.ON_READY, playbackPositionHandler);
     // update playback position when it changes
     player.addEventHandler(player.EVENT.ON_TIME_CHANGED, playbackPositionHandler);
     // update bufferlevel when buffering is complete
@@ -194,65 +201,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.ON_SEGMENT_REQUEST_FINISHED, playbackPositionHandler);
     // update playback position of Cast playback
     player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
-
-
-    /*
-     * Playback position update
-     *
-     * We do not update the position directly from the ON_TIME_CHANGED event, because it arrives very jittery and
-     * results in a jittery position indicator since the CSS transition time is statically set.
-     * To work around this issue, we maintain a local playback position that is updated in a stable regular interval
-     * and kept in sync with the player.
-     */
-    let currentTimeSeekBar = 0;
-    let currentTimePlayer = 0;
-    let updateIntervalMs = 25;
-    let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
-
-    this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
-      currentTimeSeekBar += currentTimeUpdateDeltaSecs;
-      currentTimePlayer = player.getCurrentTime();
-
-      // Sync currentTime of seekbar to player
-      let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
-      // If the delta is larger that 2 secs, directly jump the seekbar to the
-      // player time instead of smoothly fast forwarding/rewinding.
-      if (Math.abs(currentTimeDelta) > 2) {
-        currentTimeSeekBar = currentTimePlayer;
-      }
-      // If currentTimeDelta is negative and below the adjustment threshold,
-      // the player is ahead of the seekbar and we 'fast forward' the seekbar
-      else if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
-        currentTimeSeekBar += currentTimeUpdateDeltaSecs;
-      }
-      // If currentTimeDelta is positive and above the adjustment threshold,
-      // the player is behind the seekbar and we 'rewind' the seekbar
-      else if (currentTimeDelta >= currentTimeUpdateDeltaSecs) {
-        currentTimeSeekBar -= currentTimeUpdateDeltaSecs;
-      }
-
-      let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
-      this.setPlaybackPosition(playbackPositionPercentage);
-    }, true);
-
-    let startSmoothPlaybackPositionUpdater = () => {
-      if (!player.isLive()) {
-        currentTimeSeekBar = player.getCurrentTime();
-        this.smoothPlaybackPositionUpdater.start();
-      }
-    };
-
-    let stopSmoothPlaybackPositionUpdater = () => {
-      this.smoothPlaybackPositionUpdater.clear();
-    };
-
-    player.addEventHandler(player.EVENT.ON_PLAY, startSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_PAUSED, stopSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_SEEKED, () => {
-      currentTimeSeekBar = player.getCurrentTime();
-    });
 
 
     // Seek handling
@@ -321,13 +269,25 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     // Hide seekbar for live sources without timeshift
+    let isLive = false;
+    let hasTimeShift = false;
+    let switchVisibility = (isLive: boolean, hasTimeShift: boolean) => {
+      if (isLive && !hasTimeShift) {
+        this.hide();
+      } else {
+        this.show();
+      }
+      playbackPositionHandler(null, true);
+      this.refreshPlaybackPosition();
+    };
+    new PlayerUtils.LiveStreamDetector(player).onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
+      isLive = args.live;
+      switchVisibility(isLive, hasTimeShift);
+    });
     new PlayerUtils.TimeShiftAvailabilityDetector(player).onTimeShiftAvailabilityChanged.subscribe(
       (sender, args: TimeShiftAvailabilityChangedArgs) => {
-        if (!args.timeShiftAvailable) {
-          this.hide();
-        } else {
-          this.show();
-        }
+        hasTimeShift = args.timeShiftAvailable;
+        switchVisibility(isLive, hasTimeShift);
       }
     );
 
@@ -341,12 +301,126 @@ export class SeekBar extends Component<SeekBarConfig> {
     uimanager.onConfigured.subscribe(() => {
       this.refreshPlaybackPosition();
     });
+    // It can also happen that the value changes once the player is ready, or when a new source is loaded, so we need
+    // to update on ON_READY too
+    player.addEventHandler(player.EVENT.ON_READY, () => {
+      this.refreshPlaybackPosition();
+    });
 
     // Initialize seekbar
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
     this.setSeekPosition(0);
-    this.updateMarkers();
+    if (this.config.smoothPlaybackPositionUpdateIntervalMs !== SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED) {
+      this.configureSmoothPlaybackPositionUpdater(player, uimanager);
+    }
+    this.configureMarkers(player, uimanager);
+  }
+
+  private configureSmoothPlaybackPositionUpdater(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+    /*
+     * Playback position update
+     *
+     * We do not update the position directly from the ON_TIME_CHANGED event, because it arrives very jittery and
+     * results in a jittery position indicator since the CSS transition time is statically set.
+     * To work around this issue, we maintain a local playback position that is updated in a stable regular interval
+     * and kept in sync with the player.
+     */
+    let currentTimeSeekBar = 0;
+    let currentTimePlayer = 0;
+    let updateIntervalMs = 50;
+    let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
+
+    this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
+      currentTimeSeekBar += currentTimeUpdateDeltaSecs;
+      currentTimePlayer = player.getCurrentTime();
+
+      // Sync currentTime of seekbar to player
+      let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
+      // If the delta is larger that 2 secs, directly jump the seekbar to the
+      // player time instead of smoothly fast forwarding/rewinding.
+      if (Math.abs(currentTimeDelta) > 2) {
+        currentTimeSeekBar = currentTimePlayer;
+      }
+      // If currentTimeDelta is negative and below the adjustment threshold,
+      // the player is ahead of the seekbar and we 'fast forward' the seekbar
+      else if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
+        currentTimeSeekBar += currentTimeUpdateDeltaSecs;
+      }
+      // If currentTimeDelta is positive and above the adjustment threshold,
+      // the player is behind the seekbar and we 'rewind' the seekbar
+      else if (currentTimeDelta >= currentTimeUpdateDeltaSecs) {
+        currentTimeSeekBar -= currentTimeUpdateDeltaSecs;
+      }
+
+      let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
+      this.setPlaybackPosition(playbackPositionPercentage);
+    }, true);
+
+    let startSmoothPlaybackPositionUpdater = () => {
+      if (!player.isLive()) {
+        currentTimeSeekBar = player.getCurrentTime();
+        this.smoothPlaybackPositionUpdater.start();
+      }
+    };
+
+    let stopSmoothPlaybackPositionUpdater = () => {
+      this.smoothPlaybackPositionUpdater.clear();
+    };
+
+    player.addEventHandler(player.EVENT.ON_PLAY, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_PAUSED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_SEEKED, () => {
+      currentTimeSeekBar = player.getCurrentTime();
+    });
+
+    if (player.isPlaying()) {
+      startSmoothPlaybackPositionUpdater();
+    }
+  }
+
+  private configureMarkers(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+    let clearMarkers = () => {
+      this.timelineMarkers = [];
+      this.updateMarkers();
+    };
+
+    let setupMarkers = () => {
+      clearMarkers();
+
+      let hasMarkersInUiConfig = uimanager.getConfig().metadata && uimanager.getConfig().metadata.markers
+        && uimanager.getConfig().metadata.markers.length > 0;
+      let hasMarkersInPlayerConfig = player.getConfig().source && player.getConfig().source.markers
+        && player.getConfig().source.markers.length > 0;
+
+      // Take markers from the UI config. If no markers defined, try to take them from the player's source config.
+      let markers = hasMarkersInUiConfig ? uimanager.getConfig().metadata.markers :
+        hasMarkersInPlayerConfig ? player.getConfig().source.markers : null;
+
+      // Generate timeline markers from the config if we have markers and if we have a duration
+      // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
+      if (markers && player.getDuration() !== Infinity) {
+        for (let marker of markers) {
+          this.timelineMarkers.push({
+            time: 100 / player.getDuration() * marker.time, // convert time to percentage
+            title: marker.title,
+          })
+        }
+      }
+
+      // Populate the timeline with the markers
+      this.updateMarkers();
+    };
+
+    // Add markers when a source is loaded
+    player.addEventHandler(player.EVENT.ON_READY, setupMarkers);
+    // Remove markers when unloaded
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, clearMarkers);
+
+    // Init markers at startup
+    setupMarkers();
   }
 
   release(): void {
@@ -719,7 +793,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     let snappedMarker = this.getMarkerAtPosition(percentage);
 
     if (this.label) {
-      this.label.setText(percentage + '');
       this.label.getDomElement().css({
         'left': (snappedMarker ? snappedMarker.time : percentage) + '%'
       });

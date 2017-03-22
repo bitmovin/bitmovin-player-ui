@@ -184,12 +184,34 @@ export namespace PlayerUtils {
 
   import Player = bitmovin.player.Player;
 
+  export enum PlayerState {
+    IDLE,
+    PREPARED,
+    PLAYING,
+    PAUSED,
+    FINISHED,
+  }
+
   export function isSourceLoaded(player: Player): boolean {
     return player.getConfig().source !== undefined;
   }
 
   export function isTimeShiftAvailable(player: Player): boolean {
     return player.isLive() && player.getMaxTimeShift() !== 0;
+  }
+
+  export function getState(player: Player): PlayerState {
+    if (player.hasEnded()) {
+      return PlayerState.FINISHED;
+    } else if (player.isPlaying()) {
+      return PlayerState.PLAYING;
+    } else if (player.isPaused()) {
+      return PlayerState.PAUSED;
+    } else if (isSourceLoaded(player)) {
+      return PlayerState.PREPARED;
+    } else {
+      return PlayerState.IDLE;
+    }
   }
 
   export interface TimeShiftAvailabilityChangedArgs extends NoArgs {
@@ -225,6 +247,57 @@ export namespace PlayerUtils {
       return this.timeShiftAvailabilityChangedEvent.getEvent();
     }
   }
+
+  export interface LiveStreamDetectorEventArgs extends NoArgs {
+    live: boolean;
+  }
+
+  /**
+   * Detects changes of the stream type, i.e. changes of the return value of the player#isLive method.
+   * Normally, a stream cannot change its type during playback, it's either VOD or live. Due to bugs on some
+   * platforms or browsers, it can still change. It is therefore unreliable to just check #isLive and this detector
+   * should be used as a workaround instead.
+   *
+   * Known cases:
+   *
+   * - HLS VOD on Android 4.3
+   * Video duration is initially 'Infinity' and only gets available after playback starts, so streams are wrongly
+   * reported as 'live' before playback (the live-check in the player checks for infinite duration).
+   */
+  export class LiveStreamDetector {
+
+    private liveChangedEvent = new EventDispatcher<Player, LiveStreamDetectorEventArgs>();
+
+    constructor(player: Player) {
+      let live: boolean = undefined;
+
+      let liveDetector = () => {
+        let liveNow = player.isLive();
+
+        // Compare current to previous live state flag and fire event when it changes. Since we initialize the flag
+        // with undefined, there is always at least an initial event fired that tells listeners the live state.
+        if (liveNow !== live) {
+          this.liveChangedEvent.dispatch(player, { live: liveNow });
+          live = liveNow;
+        }
+      };
+      // Initialize when player is ready
+      player.addEventHandler(player.EVENT.ON_READY, liveDetector);
+      // Re-evaluate when playback starts
+      player.addEventHandler(player.EVENT.ON_PLAY, liveDetector);
+
+      // HLS live detection workaround for Android:
+      // Also re-evaluate during playback, because that is when the live flag might change.
+      // (Doing it only in Android Chrome saves unnecessary overhead on other plattforms)
+      if (BrowserUtils.isAndroid && BrowserUtils.isChrome) {
+        player.addEventHandler(player.EVENT.ON_TIME_CHANGED, liveDetector);
+      }
+    }
+
+    get onLiveChanged(): Event<Player, LiveStreamDetectorEventArgs> {
+      return this.liveChangedEvent.getEvent();
+    }
+  }
 }
 
 export namespace UIUtils {
@@ -247,4 +320,17 @@ export namespace UIUtils {
     // Walk and configure the component tree
     recursiveTreeWalker(component);
   }
+}
+
+export namespace BrowserUtils {
+
+  // isMobile only needs to be evaluated once (it cannot change during a browser session)
+  // Mobile detection according to Mozilla recommendation: "In summary, we recommend looking for the string “Mobi”
+  // anywhere in the User Agent to detect a mobile device."
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
+  export const isMobile = navigator && navigator.userAgent && /Mobi/.test(navigator.userAgent);
+
+  export const isChrome = navigator && navigator.userAgent && /Chrome/.test(navigator.userAgent);
+
+  export const isAndroid = navigator && navigator.userAgent && /Android/.test(navigator.userAgent);
 }

@@ -51,6 +51,7 @@ export class VolumeSlider extends SeekBar {
       }
     };
 
+    player.addEventHandler(player.EVENT.ON_READY, volumeChangeHandler);
     player.addEventHandler(player.EVENT.ON_VOLUME_CHANGED, volumeChangeHandler);
     player.addEventHandler(player.EVENT.ON_MUTED, volumeChangeHandler);
     player.addEventHandler(player.EVENT.ON_UNMUTED, volumeChangeHandler);
@@ -64,9 +65,12 @@ export class VolumeSlider extends SeekBar {
       player.setVolume(percentage);
     });
 
-    // Update the volume slider marker when the player resized or the UI is configured.
-    // Check the seekbar for a detailed description.
+    // Update the volume slider marker when the player resized, a source is loaded and player is ready,
+    // or the UI is configured. Check the seekbar for a detailed description.
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => {
+      this.refreshPlaybackPosition();
+    });
+    player.addEventHandler(player.EVENT.ON_READY, () => {
       this.refreshPlaybackPosition();
     });
     uimanager.onConfigured.subscribe(() => {

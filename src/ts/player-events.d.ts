@@ -76,6 +76,7 @@ declare namespace bitmovin {
       ON_WARNING: EVENT,
       ON_PICTURE_IN_PICTURE_ENTER: EVENT,
       ON_PICTURE_IN_PICTURE_EXIT: EVENT,
+      ON_AIRPLAY_AVAILABLE: EVENT,
     }
 
     interface PlayerEvent {

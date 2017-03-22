@@ -76,9 +76,6 @@
 <script src="js/bitmovinplayer-ui.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
-
-  var player = bitmovin.player('player');
-
   var sources = {
     fullyFeatured: {
       dash: '//bitdash-a.akamaihd.net/content/sintel/sintel.mpd',
@@ -92,7 +89,31 @@
         file: '//bitdash-a.akamaihd.net/content/sintel/sprite/sprite.vtt',
         kind: 'thumbnails'
       }],
-      title: 'Sintel'
+      title: 'Sintel',
+      description: 'A woman, Sintel, is attacked while traveling through a wintry mountainside. After defeating her attacker and taking his spear, she finds refuge in a shaman\'s hut...',
+      markers: [
+        {time: 0, title: 'Intro'},
+        {time: 102, title: 'Old Guy'},
+        {time: 150, title: 'City'},
+        {time: 200, title: 'Dragon'},
+        {time: 370, title: 'Desert'},
+        {time: 385, title: 'Bamboo Forest'},
+        {time: 410, title: 'Winter again'},
+        {time: 755, title: 'Credits'},
+      ],
+      recommendations: [
+        {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
+        {title: 'Recommendation 2: The second best video', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 64},
+        {title: 'Recommendation 3: The third best video of all time', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 195},
+      ],
+    },
+    basicProgressive: {
+      progressive: '//bitdash-a.akamaihd.net/content/sintel/Sintel.mp4',
+      poster: '//bitdash-a.akamaihd.net/content/sintel/poster.png',
+    },
+    basicHls: {
+      hls: "//bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
+      poster: '//bitdash-a.akamaihd.net/content/sintel/poster.png',
     },
     basicDash: {
       dash: 'http://bitdash-a.akamaihd.net/content/sintel/sintel.mpd'
@@ -179,14 +200,14 @@
 
   var uiConfig = {
     metadata: {
-      title: 'UI Demo Video Title',
-      description: 'Bacon ipsum dolor amet t-bone prosciutto cupim kevin tongue, venison tail pork beef ribs boudin beef shoulder bacon jerky. Pork tail spare ribs jowl jerky andouille corned beef frankfurter. Burgdoggen meatloaf short ribs andouille tail tri-tip cow kevin doner.',
-      markers: [
-        {time: 50, title: 'Chapter 1'},
-        {time: 80, title: 'Chapter Two'},
-        {time: 200},
-        {time: 300, title: 'Again a chapter with a title'},
-      ],
+//      title: 'UI Demo Video Title',
+//      description: 'Bacon ipsum dolor amet t-bone prosciutto cupim kevin tongue, venison tail pork beef ribs boudin beef shoulder bacon jerky. Pork tail spare ribs jowl jerky andouille corned beef frankfurter. Burgdoggen meatloaf short ribs andouille tail tri-tip cow kevin doner.',
+//      markers: [
+//        {time: 50, title: 'Chapter 1'},
+//        {time: 80, title: 'Chapter Two'},
+//        {time: 200},
+//        {time: 300, title: 'Again a chapter with a title'},
+//      ],
     },
 //    recommendations: [
 //      {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
@@ -204,15 +225,21 @@
 //    ],
   };
 
+  var player;
   var uiManager;
+  var playerSetup = function(config) {
+    player = bitmovin.player('player');
 
-  player.setup(config).then(function() {
-    // Add UI to loaded player
-    uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
-  }, function(errorEvent) {
-    // Play setup failed, and there's no player UI yet to display the error in
-    console.log(errorEvent);
-  });
+    player.setup(config).then(function() {
+      // Add UI to loaded player
+      uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
+    }, function(errorEvent) {
+      // Play setup failed, and there's no player UI yet to display the error in
+      console.log(errorEvent);
+    });
+  };
+
+  playerSetup(config);
 
   $.each(sources, function(key, value) {
     $('#config-source').append($('<option></option>').attr('value', key).text(key));
@@ -289,6 +316,11 @@
 
 
   var actions = {
+    'Recreate player': function() {
+      var config = player.getConfig();
+      player.destroy();
+      playerSetup(config);
+    },
     'Add subtitle': function() {
       return player.addSubtitle({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', label: 'Test Subtitle'});
     },

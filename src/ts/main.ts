@@ -1,5 +1,4 @@
 /// <reference path='player.d.ts' />
-/// <reference path='../../node_modules/@types/core-js/index.d.ts' />
 import {UIManager, UIInstanceManager} from './uimanager';
 import {Button} from './components/button';
 import {ControlBar} from './components/controlbar';
@@ -46,7 +45,7 @@ import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {VolumeSlider} from './components/volumeslider';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 import {Spacer} from './components/spacer';
-import {ArrayUtils, StringUtils, PlayerUtils, UIUtils} from './utils';
+import {ArrayUtils, StringUtils, PlayerUtils, UIUtils, BrowserUtils} from './utils';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -82,6 +81,7 @@ if (typeof Object.assign !== 'function') {
   StringUtils,
   PlayerUtils,
   UIUtils,
+  BrowserUtils,
   // Components
   AdClickOverlay,
   AdMessageLabel,
