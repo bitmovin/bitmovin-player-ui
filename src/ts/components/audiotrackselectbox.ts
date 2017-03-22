@@ -43,5 +43,9 @@ export class AudioTrackSelectBox extends SelectBox {
 
     // Populate tracks at startup
     updateAudioTracks();
+
+    // When `playback.audioLanguage` is set, the `ON_AUDIO_CHANGED` event for that change is triggered before the
+    // UI is created. Therefore we need to set the audio track on configure.
+    audioTrackHandler();
   }
 }
