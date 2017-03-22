@@ -33,7 +33,7 @@ export class AudioTrackSelectBox extends SelectBox {
       let currentAudioTrack = player.getAudio();
 
       // HLS streams don't always provide this, so we have to check
-      if(currentAudioTrack) {
+      if (currentAudioTrack) {
         this.selectItem(currentAudioTrack.id);
       }
     };
