@@ -31,7 +31,11 @@ export class AudioTrackSelectBox extends SelectBox {
 
     let audioTrackHandler = () => {
       let currentAudioTrack = player.getAudio();
-      this.selectItem(currentAudioTrack.id);
+
+      // HLS streams don't always provide this, so we have to check
+      if (currentAudioTrack) {
+        this.selectItem(currentAudioTrack.id);
+      }
     };
 
     // Update selection when selected track has changed
