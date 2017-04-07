@@ -82,8 +82,11 @@ export class VolumeSlider extends SeekBar {
   }
 
   private detectVolumeControlAvailability(player: bitmovin.player.Player): boolean {
-    // Store current volume so we can restore it later
-    let currentVolume = player.getVolume();
+    // Store current state so we can restore it later
+    let volume = player.getVolume();
+    let muted = player.isMuted();
+
+    let volumeControlAvailable = true;
 
     /*
      * "On iOS devices, the audio level is always under the user’s physical control. The volume property is not
@@ -96,10 +99,15 @@ export class VolumeSlider extends SeekBar {
      */
     player.setVolume(50);
     if (player.getVolume() === 100) {
-      return false;
+      volumeControlAvailable = false;
     } else {
-      player.setVolume(currentVolume); // Restore volume
-      return true;
+      player.setVolume(volume); // Restore volume
     }
+
+    if (muted) {
+      player.mute();
+    }
+
+    return volumeControlAvailable;
   }
 }
