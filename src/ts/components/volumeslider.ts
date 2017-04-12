@@ -82,32 +82,43 @@ export class VolumeSlider extends SeekBar {
   }
 
   private detectVolumeControlAvailability(player: bitmovin.player.Player): boolean {
-    // Store current state so we can restore it later
+    // Store current player state so we can restore it later
     let volume = player.getVolume();
     let muted = player.isMuted();
-
-    let volumeControlAvailable = true;
+    let playing = player.isPlaying();
 
     /*
      * "On iOS devices, the audio level is always under the user’s physical control. The volume property is not
      * settable in JavaScript. Reading the volume property always returns 1."
      * https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/Device-SpecificConsiderations/Device-SpecificConsiderations.html
      *
-     * We can detect such an iOS device by setting the volume to 50 (translates to 0.5 on the video element)
-     * and then checking if it is set to 50 (volume control supported) or 100 (the readonly default volume of 1,
-     * meaning volume control prohibited).
+     * Our player API returns a volume range of [0, 100] so we need to check for 100 instead of 1.
      */
-    player.setVolume(50);
-    if (player.getVolume() === 100) {
-      volumeControlAvailable = false;
+
+    // Only if the volume is 100, there's the possibility we are on a volume-control-restricted iOS device
+    if (volume === 100) {
+      // We set the volume to zero (that's the only value that does not unmute a muted player!)
+      player.setVolume(0);
+      // Then we check if the value is still 100
+      if (player.getVolume() === 100) {
+        // If the volume stayed at 100, we're on a volume-control-restricted device
+        return false;
+      } else {
+        // We can control volume, so we must restore the previous player state
+        player.setVolume(volume);
+        if (muted) {
+          player.mute();
+        }
+        if (playing) {
+          // The volume restore above pauses autoplay on mobile devices (e.g. Android) so we need to resume playback
+          // (We cannot check isPaused() here because it is not set when playback is prohibited by the mobile platform)
+          player.play();
+        }
+        return true;
+      }
     } else {
-      player.setVolume(volume); // Restore volume
+      // Volume is not 100, so we're definitely not on a volume-control-restricted iOS device
+      return true;
     }
-
-    if (muted) {
-      player.mute();
-    }
-
-    return volumeControlAvailable;
   }
 }
