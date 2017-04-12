@@ -27,8 +27,18 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
+    let volumeLevelHandler = () => {
+      // Toggle low class to display low volume icon below 50% volume
+      if (player.getVolume() < 50) {
+        this.getDomElement().addClass(this.prefixCss('low'));
+      } else {
+        this.getDomElement().removeClass(this.prefixCss('low'));
+      }
+    };
+
     player.addEventHandler(player.EVENT.ON_MUTED, muteStateHandler);
     player.addEventHandler(player.EVENT.ON_UNMUTED, muteStateHandler);
+    player.addEventHandler(player.EVENT.ON_VOLUME_CHANGED, volumeLevelHandler);
 
     this.onClick.subscribe(() => {
       if (player.isMuted()) {
@@ -38,16 +48,8 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     });
 
-    player.addEventHandler(player.EVENT.ON_VOLUME_CHANGED, (event: VolumeChangeEvent) => {
-      // Toggle low class to display low volume icon below 50% volume
-      if (event.targetVolume < 50) {
-        this.getDomElement().addClass(this.prefixCss('low'));
-      } else {
-        this.getDomElement().removeClass(this.prefixCss('low'));
-      }
-    });
-
     // Startup init
     muteStateHandler();
+    volumeLevelHandler();
   }
 }

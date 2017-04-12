@@ -62,6 +62,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Fix wrongly detected live state of HLS streams in Chrome on Android
 - Fix seekbar position update when player is already playing at UI initialization (e.g. when autoplay is enabled)
 - Fix wrong `UIContainer` playback state class when creating UI in other states than idle and prepared
+- Correctly initialize `VolumeToggleButton` low/high volume icon state
 
 ## [1.0.1] - 2017-02-10
 ### Fixed
