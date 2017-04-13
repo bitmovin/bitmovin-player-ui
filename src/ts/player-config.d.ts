@@ -328,7 +328,7 @@ declare namespace bitmovin {
        * other methods fail. Multiple progressive files can be used, e.g. .mp4 and .webm files to support as
        * many browsers as possible.
        */
-      progressive?: ProgressiveSourceConfig[];
+      progressive?: string | ProgressiveSourceConfig[];
       /**
        * The URL to a preview image displayed until the video starts. Make sure JavaScript and Flash are allowed
        * to access it, i.e. CORS (for the HTML5/JavaScript player) must be enabled and a crossdomain.xml has to
@@ -648,6 +648,10 @@ declare namespace bitmovin {
        * Enable or disable the bitmovin credits in the browser’s console. Defaults to true (enable).
        */
       bitmovin?: boolean;
+      /**
+       * Logging level.
+       */
+      level?: string;
     }
 
     interface LicensingConfig {
@@ -663,11 +667,11 @@ declare namespace bitmovin {
        * Mandatory. A personal key can be found in the bitmovin portal and should be specified here as string.
        * Do not forget to enter all your domains (subdomains are included) in your account.
        */
-      key: string;
+      key?: string;
       /**
        * Mandatory. Contains information to the video source, e.g. dash, hls, progressive fallback.
        */
-      source: SourceConfig;
+      source?: SourceConfig;
       /**
        * Playback config settings.
        */
