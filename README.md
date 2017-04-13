@@ -47,7 +47,11 @@ A UI is defined by a tree of components, making up the UI *structure*, and their
 
 ## Customizing the UI
 
-There are basically two approaches to customize the UI. The simple approach is to go with the built-in UI of the player and adjust the styling to your liking with CSS. the advanced approach is to replace the built-in UI with a your own build from this repository.
+There are basically three approaches to customize the UI:
+
+1. Go with the built-in UI of the player and adjust the styling to your liking with CSS
+2. Keep the player managing the UI internally but tell it to load alternative UI CSS/JS files, e.g. your own build from this repository
+3. Deactivate the built-in UI and manage your own UI instance externally, e.g. your own build from this repository
 
 ### Styling the built-in UI
 
@@ -55,12 +59,36 @@ When using the built-in UI, you can style it to your linking with CSS by overwri
 
 ### Replacing the built-in UI
 
-To use the player with a custom UI, you need to deactivate the built-in UI, include the necessary `js` and `css` files into your HTML and create and attach your own
-UI instance with the `UIManager`.
+#### Internally managed by the player
+
+It is possible to override which `js` and `css` files the player loads for its internal UI with the `ui` and `ui_css` properties in the `location` section of the player configuration. This is a simple way to supply a customized UI without the overhead of managing an external UI instance, and especially helpful for supplying a custom script which otherwise cannot be overridden like the CSS styles can. The paths to the `ui` (`js`) and `ui_css` (obviously `css`) files can be absolute or relative. Both are optional and do not need to be specified together.
+
+The player constructs its internal UI instance from the `UIManager.Factory.buildDefaultUI(player)` factory method, so this entry point must exist for this approach to work. The base class of the UI skin (e.g. the default `bmpui-ui-skin-modern`) must also match between the JS and CSS.
+
+```js
+var config = {
+    ...,
+    source: {
+      ...
+    },
+    location: {
+        ui: '//domain.tld/path/to/bitmovinplayer-ui.js',
+        ui_css: 'styles/bitmovinplayer-ui.css',
+    }
+};
+
+bitmovin.player('player-id').setup(config).then(function (player) {
+  // player successfully loaded
+});
+```
+
+#### Externally managed
+
+To use the player with an external custom UI instance, you need to deactivate the built-in UI (set `ux: false`), include the necessary `js` and `css` files into your HTML and create and attach your own UI instance with the `UIManager`.
 
  * Deactivate the built-in UI by setting `ux: false` in the `style` config of the player ([Player Configuration Guide](https://bitmovin.com/player-documentation/player-configuration/))
  * Build the UI framework (e.g. `gulp build-prod`) and include `bitmovinplayer-ui.min.js` and `bitmovinplayer-ui.min.css` (or their non-minified counterparts) from the `dist` directory
- * Create your own UI instance with the `UIManager.Factory` once the player is loaded
+ * Create your own UI instance with the `UIManager.Factory` once the player is loaded (or [load a custom UI structure](#building-a-custom-ui-structure))
 
 ```js
 var config = {
