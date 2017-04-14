@@ -250,6 +250,11 @@ declare namespace bitmovin {
        * TODO check why this is missing from the API docs
        */
       url: string;
+      /**
+       * Only used for fragmented subtitles in HLS
+       * TODO check why this is missing from the API docs
+       */
+      isFragmented?: boolean;
     }
 
     /**
