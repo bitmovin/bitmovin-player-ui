@@ -566,7 +566,7 @@ declare namespace bitmovin {
        * @param forceTechnology Forces the player to use the specified playback and streaming technology
        * @param disableSeeking If set, seeking will be disabled
        */
-      load(source: SourceConfig, forceTechnology?: string, disableSeeking?: boolean): void;
+      load(source: SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<Player>;
       /**
        * Mutes the player if an audio track is available. Has no effect if the player is already muted.
        */
