@@ -3,11 +3,17 @@
 
 declare namespace bitmovin {
 
+  interface PlayerConstructor {
+    (domElementID: string): bitmovin.player.Player;
+  }
+
   /**
    * Creates and returns a new player instance attached to the provided DOM element ID.
    * @param domElementID the ID of the DOM (i.e. HTML) element that the player should be added to
    */
-  function player(domElementID: string): player.Player;
+  // tslint:disable-next-line class-name
+  interface player extends PlayerConstructor {
+  }
 
   namespace player {
 
