@@ -5,6 +5,14 @@ declare namespace bitmovin {
 
   interface PlayerConstructor {
     (domElementID: string): bitmovin.player.Player;
+    /**
+     * All available events of the player.
+     */
+    EVENT: bitmovin.player.EventList;
+    /**
+     * The version number of the player.
+     */
+    version: string;
   }
 
   /**
