@@ -10,7 +10,23 @@ declare namespace bitmovin {
       /**
        * The MIME type of the video file, e.g. “video/mp4” or “video/webm”.
        */
-        type: string;
+      type?: string;
+      /**
+       * Can be used to specify which bitrate the a progressive source has. Providing multiple progressive
+       * sources with different bitrates allows the users to manually select qualities.
+       * Please note that no automatic quality switching will happen.
+       */
+      bitrate?: number;
+      /**
+       * Sets the source/quality which the player will use per default. Should be set to true at only one object
+       * within the progressive array. If no element has set this attribute to true, the first object in the array
+       * will be used per default.
+       */
+      preferred?: boolean;
+      /**
+       * Specifies the label to be displayed in the quality selection in the player’s settings window.
+       */
+      label?: string;
     }
 
     interface SourceConfigOptions {
