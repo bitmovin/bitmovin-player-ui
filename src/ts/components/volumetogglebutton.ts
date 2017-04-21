@@ -1,6 +1,5 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
-import VolumeChangeEvent = bitmovin.player.VolumeChangeEvent;
 
 /**
  * A button that toggles audio muting.
