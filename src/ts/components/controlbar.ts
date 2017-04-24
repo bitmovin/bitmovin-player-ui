@@ -1,5 +1,7 @@
 import {ContainerConfig, Container} from './container';
 import {UIInstanceManager} from '../uimanager';
+import {UIUtils} from '../utils';
+import {Spacer} from './spacer';
 
 /**
  * Configuration interface for the {@link ControlBar}.
@@ -26,13 +28,35 @@ export class ControlBar extends Container<ControlBarConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
+    // Counts how many components are hovered and block hiding of the control bar
+    let hoverStackCount = 0;
 
-    uimanager.onControlsShow.subscribe(function () {
-      self.show();
+    // Track hover status of child components
+    UIUtils.traverseTree(this, (component) => {
+      // Do not track hover status of child containers or spacers, only of 'real' controls
+      if (component instanceof Container || component instanceof Spacer) {
+        return;
+      }
+
+      // Subscribe hover event and keep a count of the number of hovered children
+      component.onHoverChanged.subscribe((sender, args) => {
+        if (args.hovered) {
+          hoverStackCount++;
+        } else {
+          hoverStackCount--;
+        }
+      });
     });
-    uimanager.onControlsHide.subscribe(function () {
-      self.hide();
+
+    uimanager.onControlsShow.subscribe(() => {
+      this.show();
+    });
+    uimanager.onPreviewControlsHide.subscribe((sender, args) => {
+      // Cancel the hide event if hovered child components block hiding
+      args.cancel = (hoverStackCount > 0);
+    });
+    uimanager.onControlsHide.subscribe(() => {
+      this.hide();
     });
   }
 }

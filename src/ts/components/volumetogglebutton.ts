@@ -1,6 +1,5 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
-import VolumeChangeEvent = bitmovin.player.VolumeChangeEvent;
 
 /**
  * A button that toggles audio muting.
@@ -19,20 +18,28 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    let muteStateHandler = function() {
+    let muteStateHandler = () => {
       if (player.isMuted()) {
-        self.on();
+        this.on();
       } else {
-        self.off();
+        this.off();
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_MUTED, muteStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_UNMUTED, muteStateHandler);
+    let volumeLevelHandler = () => {
+      // Toggle low class to display low volume icon below 50% volume
+      if (player.getVolume() < 50) {
+        this.getDomElement().addClass(this.prefixCss('low'));
+      } else {
+        this.getDomElement().removeClass(this.prefixCss('low'));
+      }
+    };
 
-    self.onClick.subscribe(function() {
+    player.addEventHandler(player.EVENT.ON_MUTED, muteStateHandler);
+    player.addEventHandler(player.EVENT.ON_UNMUTED, muteStateHandler);
+    player.addEventHandler(player.EVENT.ON_VOLUME_CHANGED, volumeLevelHandler);
+
+    this.onClick.subscribe(() => {
       if (player.isMuted()) {
         player.unmute();
       } else {
@@ -40,16 +47,8 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     });
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_VOLUME_CHANGED, function(event: VolumeChangeEvent) {
-      // Toggle low class to display low volume icon below 50% volume
-      if (event.targetVolume < 50) {
-        self.getDomElement().addClass(self.prefixCss('low'));
-      } else {
-        self.getDomElement().removeClass(self.prefixCss('low'));
-      }
-    });
-
     // Startup init
     muteStateHandler();
+    volumeLevelHandler();
   }
 }

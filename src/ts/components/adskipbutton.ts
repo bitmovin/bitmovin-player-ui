@@ -30,47 +30,47 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
     let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
     let skipMessage = config.skipMessage;
     let adEvent = <bitmovin.player.AdStartedEvent>null;
 
-    let updateSkipMessageHandler = function() {
+    let updateSkipMessageHandler = () => {
       // Display this button only if ad is skippable
       if (adEvent.skipOffset) {
-        self.show();
+        this.show();
       } else {
-        self.hide();
+        this.hide();
       }
 
       // Update the skip message on the button
       if (player.getCurrentTime() < adEvent.skipOffset) {
-        self.setText(
+        this.setText(
           StringUtils.replaceAdMessagePlaceholders(config.skipMessage.countdown, adEvent.skipOffset, player));
       } else {
-        self.setText(config.skipMessage.skip);
+        this.setText(config.skipMessage.skip);
       }
     };
 
-    let adStartHandler = function(event: bitmovin.player.AdStartedEvent) {
+    let adStartHandler = (event: bitmovin.player.AdStartedEvent) => {
       adEvent = event;
       skipMessage = adEvent.skipMessage || skipMessage;
       updateSkipMessageHandler();
 
-      player.addEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
-      player.addEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
+      player.addEventHandler(player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
+      player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
     };
 
-    let adEndHandler = function() {
-      player.removeEventHandler(bitmovin.player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
-      player.removeEventHandler(bitmovin.player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
+    let adEndHandler = () => {
+      player.removeEventHandler(player.EVENT.ON_TIME_CHANGED, updateSkipMessageHandler);
+      player.removeEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_AD_STARTED, adStartHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_AD_SKIPPED, adEndHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_AD_FINISHED, adEndHandler);
+    player.addEventHandler(player.EVENT.ON_AD_STARTED, adStartHandler);
+    player.addEventHandler(player.EVENT.ON_AD_SKIPPED, adEndHandler);
+    player.addEventHandler(player.EVENT.ON_AD_ERROR, adEndHandler);
+    player.addEventHandler(player.EVENT.ON_AD_FINISHED, adEndHandler);
 
-    self.onClick.subscribe(function() {
+    this.onClick.subscribe(() => {
       // Try to skip the ad (this only works if it is skippable so we don't need to take extra care of that here)
       player.skipAd();
     });

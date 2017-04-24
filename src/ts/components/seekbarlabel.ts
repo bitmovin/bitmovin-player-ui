@@ -47,34 +47,32 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    uimanager.onSeekPreview.subscribe(function(sender, args: SeekPreviewArgs) {
+    uimanager.onSeekPreview.subscribe((sender, args: SeekPreviewArgs) => {
       if (player.isLive()) {
         let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (args.position / 100);
-        self.setTime(time);
+        this.setTime(time);
       } else {
         let percentage = 0;
         if (args.marker) {
           percentage = args.marker.time;
-          self.setTitleText(args.marker.title);
+          this.setTitleText(args.marker.title);
         } else {
           percentage = args.position;
-          self.setTitleText(null);
+          this.setTitleText(null);
         }
         let time = player.getDuration() * (percentage / 100);
-        self.setTime(time);
-        self.setThumbnail(player.getThumb(time));
+        this.setTime(time);
+        this.setThumbnail(player.getThumb(time));
       }
     });
 
-    let init = function() {
+    let init = () => {
       // Set time format depending on source duration
-      self.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
+      this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, init);
+    player.addEventHandler(player.EVENT.ON_READY, init);
     init();
   }
 

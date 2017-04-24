@@ -30,13 +30,11 @@ export class TitleBar extends Container<TitleBarConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    uimanager.onControlsShow.subscribe(function () {
-      self.show();
+    uimanager.onControlsShow.subscribe(() => {
+      this.show();
     });
-    uimanager.onControlsHide.subscribe(function () {
-      self.hide();
+    uimanager.onControlsHide.subscribe(() => {
+      this.hide();
     });
   }
 }

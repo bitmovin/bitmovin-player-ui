@@ -18,20 +18,18 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    let fullscreenStateHandler = function() {
+    let fullscreenStateHandler = () => {
       if (player.isFullscreen()) {
-        self.on();
+        this.on();
       } else {
-        self.off();
+        this.off();
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, fullscreenStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, fullscreenStateHandler);
+    player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, fullscreenStateHandler);
+    player.addEventHandler(player.EVENT.ON_FULLSCREEN_EXIT, fullscreenStateHandler);
 
-    self.onClick.subscribe(function() {
+    this.onClick.subscribe(() => {
       if (player.isFullscreen()) {
         player.exitFullscreen();
       } else {

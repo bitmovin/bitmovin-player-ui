@@ -14,34 +14,32 @@ export class VideoQualitySelectBox extends SelectBox {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    let updateVideoQualities = function() {
+    let updateVideoQualities = () => {
       let videoQualities = player.getAvailableVideoQualities();
 
-      self.clearItems();
+      this.clearItems();
 
       // Add entry for automatic quality switching (default setting)
-      self.addItem('auto', 'auto');
+      this.addItem('auto', 'auto');
 
       // Add video qualities
       for (let videoQuality of videoQualities) {
-        self.addItem(videoQuality.id, videoQuality.label);
+        this.addItem(videoQuality.id, videoQuality.label);
       }
     };
 
-    self.onItemSelected.subscribe(function(sender: VideoQualitySelectBox, value: string) {
+    this.onItemSelected.subscribe((sender: VideoQualitySelectBox, value: string) => {
       player.setVideoQuality(value);
     });
 
     // Update qualities when source goes away
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateVideoQualities);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateVideoQualities);
     // Update qualities when a new source is loaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateVideoQualities);
+    player.addEventHandler(player.EVENT.ON_READY, updateVideoQualities);
     // Update quality selection when quality is changed (from outside)
-    player.addEventHandler(bitmovin.player.EVENT.ON_VIDEO_DOWNLOAD_QUALITY_CHANGED, function() {
+    player.addEventHandler(player.EVENT.ON_VIDEO_DOWNLOAD_QUALITY_CHANGE, () => {
       let data = player.getDownloadedVideoData();
-      self.selectItem(data.isAuto ? 'auto' : data.id);
+      this.selectItem(data.isAuto ? 'auto' : data.id);
     });
 
     // Populate qualities at startup

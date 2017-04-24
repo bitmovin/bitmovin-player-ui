@@ -18,9 +18,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    let isVRConfigured = function() {
+    let isVRConfigured = () => {
       // VR availability cannot be checked through getVRStatus() because it is asynchronously populated and not
       // available at UI initialization. As an alternative, we check the VR settings in the config.
       // TODO use getVRStatus() through isVRStereoAvailable() once the player has been rewritten and the status is
@@ -29,41 +27,41 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
       return config.source && config.source.vr && config.source.vr.contentType !== 'none';
     };
 
-    let isVRStereoAvailable = function() {
+    let isVRStereoAvailable = () => {
       return player.getVRStatus().contentType !== 'none';
     };
 
-    let vrStateHandler = function() {
+    let vrStateHandler = () => {
       if (isVRConfigured() && isVRStereoAvailable()) {
-        self.show(); // show button in case it is hidden
+        this.show(); // show button in case it is hidden
 
         if (player.getVRStatus().isStereo) {
-          self.on();
+          this.on();
         } else {
-          self.off();
+          this.off();
         }
       } else {
-        self.hide(); // hide button if no stereo mode available
+        this.hide(); // hide button if no stereo mode available
       }
     };
 
-    let vrButtonVisibilityHandler = function() {
+    let vrButtonVisibilityHandler = () => {
       if (isVRConfigured()) {
-        self.show();
+        this.show();
       } else {
-        self.hide();
+        this.hide();
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_VR_MODE_CHANGED, vrStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_VR_STEREO_CHANGED, vrStateHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_VR_ERROR, vrStateHandler);
+    player.addEventHandler(player.EVENT.ON_VR_MODE_CHANGED, vrStateHandler);
+    player.addEventHandler(player.EVENT.ON_VR_STEREO_CHANGED, vrStateHandler);
+    player.addEventHandler(player.EVENT.ON_VR_ERROR, vrStateHandler);
     // Hide button when VR source goes away
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, vrButtonVisibilityHandler);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, vrButtonVisibilityHandler);
     // Show button when a new source is loaded and it's VR
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, vrButtonVisibilityHandler);
+    player.addEventHandler(player.EVENT.ON_READY, vrButtonVisibilityHandler);
 
-    self.onClick.subscribe(function() {
+    this.onClick.subscribe(() => {
       if (!isVRStereoAvailable()) {
         if (console) {
           console.log('No VR content');

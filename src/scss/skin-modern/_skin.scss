@@ -33,6 +33,9 @@
   @import 'components/bufferingoverlay';
   @import 'components/playbacktoggleoverlay';
   @import 'components/closebutton';
+  @import 'components/airplaytogglebutton';
+  @import 'components/pictureinpicturetogglebutton';
+  @import 'components/spacer';
   @import 'skin-ads';
   @import 'skin-cast-receiver';
   @import 'skin-smallscreen';
@@ -60,6 +63,14 @@
 
   .#{$prefix}-text-right {
     text-align: right;
+  }
+
+  // sass-lint:disable force-element-nesting
+  &.#{$prefix}-layout-max-width-400 {
+    // Hide the description in ultra tiny players to not clog the UI too much
+    .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {
+      display: none;
+    }
   }
 
   &.#{$prefix}-layout-max-width-400,

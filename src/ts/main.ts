@@ -1,5 +1,4 @@
 /// <reference path='player.d.ts' />
-/// <reference path='../../node_modules/@types/core-js/index.d.ts' />
 import {UIManager, UIInstanceManager} from './uimanager';
 import {Button} from './components/button';
 import {ControlBar} from './components/controlbar';
@@ -42,7 +41,11 @@ import {CastUIContainer} from './components/castuicontainer';
 import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
 import {CloseButton} from './components/closebutton';
 import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
+import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {VolumeSlider} from './components/volumeslider';
+import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
+import {Spacer} from './components/spacer';
+import {ArrayUtils, StringUtils, PlayerUtils, UIUtils, BrowserUtils} from './utils';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -73,10 +76,17 @@ if (typeof Object.assign !== 'function') {
   // Management
   UIManager,
   UIInstanceManager,
+  // Utils
+  ArrayUtils,
+  StringUtils,
+  PlayerUtils,
+  UIUtils,
+  BrowserUtils,
   // Components
   AdClickOverlay,
   AdMessageLabel,
   AdSkipButton,
+  AirPlayToggleButton,
   AudioQualitySelectBox,
   AudioTrackSelectBox,
   BufferingOverlay,
@@ -96,6 +106,7 @@ if (typeof Object.assign !== 'function') {
   Label,
   MetadataLabel,
   MetadataLabelContent,
+  PictureInPictureToggleButton,
   PlaybackSpeedSelectBox,
   PlaybackTimeLabel,
   PlaybackTimeLabelMode,
@@ -108,6 +119,7 @@ if (typeof Object.assign !== 'function') {
   SettingsPanel,
   SettingsPanelItem,
   SettingsToggleButton,
+  Spacer,
   SubtitleOverlay,
   SubtitleSelectBox,
   TitleBar,

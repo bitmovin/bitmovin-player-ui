@@ -17,35 +17,33 @@ export class SubtitleSelectBox extends SelectBox {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    let updateSubtitles = function() {
-      self.clearItems();
+    let updateSubtitles = () => {
+      this.clearItems();
 
       for (let subtitle of player.getAvailableSubtitles()) {
-        self.addItem(subtitle.id, subtitle.label);
+        this.addItem(subtitle.id, subtitle.label);
       }
     };
 
-    self.onItemSelected.subscribe(function(sender: SubtitleSelectBox, value: string) {
+    this.onItemSelected.subscribe((sender: SubtitleSelectBox, value: string) => {
       player.setSubtitle(value === 'null' ? null : value);
     });
 
     // React to API events
-    player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_ADDED, function(event: SubtitleAddedEvent) {
-      self.addItem(event.subtitle.id, event.subtitle.label);
+    player.addEventHandler(player.EVENT.ON_SUBTITLE_ADDED, (event: SubtitleAddedEvent) => {
+      this.addItem(event.subtitle.id, event.subtitle.label);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_CHANGED, function(event: SubtitleChangedEvent) {
-      self.selectItem(event.targetSubtitle.id);
+    player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, (event: SubtitleChangedEvent) => {
+      this.selectItem(event.targetSubtitle.id);
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_SUBTITLE_REMOVED, function(event: SubtitleRemovedEvent) {
-      self.removeItem(event.subtitleId);
+    player.addEventHandler(player.EVENT.ON_SUBTITLE_REMOVED, (event: SubtitleRemovedEvent) => {
+      this.removeItem(event.subtitleId);
     });
 
     // Update subtitles when source goes away
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateSubtitles);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateSubtitles);
     // Update subtitles when a new source is loaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateSubtitles);
+    player.addEventHandler(player.EVENT.ON_READY, updateSubtitles);
 
     // Populate subtitles at startup
     updateSubtitles();

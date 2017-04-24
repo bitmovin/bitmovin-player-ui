@@ -13,6 +13,16 @@ export interface NoArgs {
 }
 
 /**
+ * Event args for an event that can be canceled.
+ */
+export interface CancelEventArgs extends NoArgs {
+  /**
+   * Gets or sets a flag whether the event should be canceled.
+   */
+  cancel?: boolean;
+}
+
+/**
  * Public interface that represents an event. Can be used to subscribe to and unsubscribe from events.
  */
 export interface Event<Sender, Args> {
@@ -190,7 +200,7 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
     this.lastFireTime = 0;
 
     // Wrap the event listener with an event listener that does the rate-limiting
-    this.rateLimitingEventListener = function(sender: Sender, args: Args) {
+    this.rateLimitingEventListener = (sender: Sender, args: Args) => {
       if (Date.now() - this.lastFireTime > this.rateMs) {
         // Only if enough time since the previous call has passed, call the
         // actual event listener and record the current time

@@ -30,6 +30,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>()
   };
 
+  private hideTimeout: Timeout;
+
   constructor(config: SettingsPanelConfig) {
     super(config);
 
@@ -42,50 +44,56 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
 
     if (config.hideDelay > -1) {
-      let timeout = new Timeout(config.hideDelay, function() {
-        self.hide();
+      this.hideTimeout = new Timeout(config.hideDelay, () => {
+        this.hide();
       });
 
-      self.onShow.subscribe(function() {
+      this.onShow.subscribe(() => {
         // Activate timeout when shown
-        timeout.start();
+        this.hideTimeout.start();
       });
-      self.getDomElement().on('mousemove', function() {
+      this.getDomElement().on('mousemove', () => {
         // Reset timeout on interaction
-        timeout.reset();
+        this.hideTimeout.reset();
       });
-      self.onHide.subscribe(function() {
+      this.onHide.subscribe(() => {
         // Clear timeout when hidden from outside
-        timeout.clear();
+        this.hideTimeout.clear();
       });
     }
 
     // Fire event when the state of a settings-item has changed
-    let settingsStateChangedHandler = function() {
-      self.onSettingsStateChangedEvent();
+    let settingsStateChangedHandler = () => {
+      this.onSettingsStateChangedEvent();
 
       // Attach marker class to last visible item
       let lastShownItem = null;
-      for (let component of self.getItems()) {
+      for (let component of this.getItems()) {
         if (component instanceof SettingsPanelItem) {
-          component.getDomElement().removeClass(self.prefixCss(SettingsPanel.CLASS_LAST));
+          component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
           if (component.isShown()) {
             lastShownItem = component;
           }
         }
       }
       if (lastShownItem) {
-        lastShownItem.getDomElement().addClass(self.prefixCss(SettingsPanel.CLASS_LAST));
+        lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_LAST));
       }
     };
     for (let component of this.getItems()) {
       if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
       }
+    }
+  }
+
+  release(): void {
+    super.release();
+    if (this.hideTimeout) {
+      this.hideTimeout.clear();
     }
   }
 
@@ -147,32 +155,30 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   }
 
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
-    let self = this;
-
-    let handleConfigItemChanged = function() {
+    let handleConfigItemChanged = () => {
       // The minimum number of items that must be available for the setting to be displayed
       // By default, at least two items must be available, else a selection is not possible
       let minItemsToDisplay = 2;
       // Audio/video quality select boxes contain an additional 'auto' mode, which in combination with a single
       // available quality also does not make sense
-      if (self.setting instanceof VideoQualitySelectBox || self.setting instanceof AudioQualitySelectBox) {
+      if (this.setting instanceof VideoQualitySelectBox || this.setting instanceof AudioQualitySelectBox) {
         minItemsToDisplay = 3;
       }
 
       // Hide the setting if no meaningful choice is available
-      if (self.setting.itemCount() < minItemsToDisplay) {
-        self.hide();
+      if (this.setting.itemCount() < minItemsToDisplay) {
+        this.hide();
       } else {
-        self.show();
+        this.show();
       }
 
       // Visibility might have changed and therefore the active state might have changed so we fire the event
       // TODO fire only when state has really changed (e.g. check if visibility has really changed)
-      self.onActiveChangedEvent();
+      this.onActiveChangedEvent();
     };
 
-    self.setting.onItemAdded.subscribe(handleConfigItemChanged);
-    self.setting.onItemRemoved.subscribe(handleConfigItemChanged);
+    this.setting.onItemAdded.subscribe(handleConfigItemChanged);
+    this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
 
     // Initialize hidden state
     handleConfigItemChanged();

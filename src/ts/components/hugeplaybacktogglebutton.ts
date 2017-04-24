@@ -22,9 +22,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     // Update button state through API events
     super.configure(player, uimanager, false);
 
-    let self = this;
-
-    let togglePlayback = function() {
+    let togglePlayback = () => {
       if (player.isPlaying()) {
         player.pause('ui-overlay');
       } else {
@@ -32,7 +30,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }
     };
 
-    let toggleFullscreen = function() {
+    let toggleFullscreen = () => {
       if (player.isFullscreen()) {
         player.exitFullscreen();
       } else {
@@ -40,7 +38,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }
     };
 
-    let firstClick = true;
+    let firstPlay = true;
     let clickTime = 0;
     let doubleClickTime = 0;
 
@@ -60,14 +58,17 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
      * In the end, this method basically introduces a 200ms observing interval in which playback changes are prevented
      * if a double click happens.
      */
-    self.onClick.subscribe(function() {
+    this.onClick.subscribe(() => {
       // Directly start playback on first click of the button.
       // This is a required workaround for mobile browsers where video playback needs to be triggered directly
       // by the user. A deferred playback start through the timeout below is not considered as user action and
       // therefore ignored by mobile browsers.
-      if (firstClick) {
+      if (firstPlay) {
+        // Try to start playback. Then we wait for ON_PLAY and only when it arrives, we disable the firstPlay flag.
+        // If we disable the flag here, onClick was triggered programmatically instead of by a user interaction, and
+        // playback is blocked (e.g. on mobile devices due to the programmatic play() call), we loose the chance to
+        // ever start playback through a user interaction again with this button.
         togglePlayback();
-        firstClick = false;
         return;
       }
 
@@ -88,7 +89,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
       clickTime = now;
 
-      setTimeout(function() {
+      setTimeout(() => {
         if (Date.now() - doubleClickTime > 200) {
           // No double click detected, so we toggle playback and wait what happens next
           togglePlayback();
@@ -96,19 +97,24 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }, 200);
     });
 
+    player.addEventHandler(player.EVENT.ON_PLAY, () => {
+      // Playback has really started, we can disable the flag to switch to normal toggle button handling
+      firstPlay = false;
+    });
+
     // Hide button while initializing a Cast session
-    let castInitializationHandler = function(event: PlayerEvent) {
-      if (event.type === bitmovin.player.EVENT.ON_CAST_STARTED) {
+    let castInitializationHandler = (event: PlayerEvent) => {
+      if (event.type === player.EVENT.ON_CAST_STARTED) {
         // Hide button when session is being initialized
-        self.hide();
+        this.hide();
       } else {
         // Show button when session is established or initialization was aborted
-        self.show();
+        this.show();
       }
     };
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_START, castInitializationHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, castInitializationHandler);
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_START, castInitializationHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_STARTED, castInitializationHandler);
+    player.addEventHandler(player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
   }
 
   protected toDomElement(): DOM {

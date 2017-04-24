@@ -14,18 +14,16 @@ export class PlaybackSpeedSelectBox extends SelectBox {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
+    this.addItem('0.25', '0.25x');
+    this.addItem('0.5', '0.5x');
+    this.addItem('1', 'Normal');
+    this.addItem('1.5', '1.5x');
+    this.addItem('2', '2x');
 
-    self.addItem('0.25', '0.25x');
-    self.addItem('0.5', '0.5x');
-    self.addItem('1', 'Normal');
-    self.addItem('1.5', '1.5x');
-    self.addItem('2', '2x');
-
-    self.selectItem('1');
+    this.selectItem('1');
 
 
-    self.onItemSelected.subscribe(function(sender: PlaybackSpeedSelectBox, value: string) {
+    this.onItemSelected.subscribe((sender: PlaybackSpeedSelectBox, value: string) => {
       player.setPlaybackSpeed(parseFloat(value));
     });
   }

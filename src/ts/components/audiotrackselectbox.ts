@@ -14,36 +14,42 @@ export class AudioTrackSelectBox extends SelectBox {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    let updateAudioTracks = function() {
+    let updateAudioTracks = () => {
       let audioTracks = player.getAvailableAudio();
 
-      self.clearItems();
+      this.clearItems();
 
       // Add audio tracks
       for (let audioTrack of audioTracks) {
-        self.addItem(audioTrack.id, audioTrack.label);
+        this.addItem(audioTrack.id, audioTrack.label);
       }
     };
 
-    self.onItemSelected.subscribe(function(sender: AudioTrackSelectBox, value: string) {
+    this.onItemSelected.subscribe((sender: AudioTrackSelectBox, value: string) => {
       player.setAudio(value);
     });
 
-    let audioTrackHandler = function() {
+    let audioTrackHandler = () => {
       let currentAudioTrack = player.getAudio();
-      self.selectItem(currentAudioTrack.id);
+
+      // HLS streams don't always provide this, so we have to check
+      if (currentAudioTrack) {
+        this.selectItem(currentAudioTrack.id);
+      }
     };
 
     // Update selection when selected track has changed
-    player.addEventHandler(bitmovin.player.EVENT.ON_AUDIO_CHANGED, audioTrackHandler);
+    player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, audioTrackHandler);
     // Update tracks when source goes away
-    player.addEventHandler(bitmovin.player.EVENT.ON_SOURCE_UNLOADED, updateAudioTracks);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateAudioTracks);
     // Update tracks when a new source is loaded
-    player.addEventHandler(bitmovin.player.EVENT.ON_READY, updateAudioTracks);
+    player.addEventHandler(player.EVENT.ON_READY, updateAudioTracks);
 
     // Populate tracks at startup
     updateAudioTracks();
+
+    // When `playback.audioLanguage` is set, the `ON_AUDIO_CHANGED` event for that change is triggered before the
+    // UI is created. Therefore we need to set the audio track on configure.
+    audioTrackHandler();
   }
 }

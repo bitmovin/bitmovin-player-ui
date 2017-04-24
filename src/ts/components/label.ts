@@ -35,15 +35,13 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
   }
 
   protected toDomElement(): DOM {
-    let self = this;
-
     let labelElement = new DOM('span', {
       'id': this.config.id,
       'class': this.getCssClasses()
     }).html(this.config.text);
 
-    labelElement.on('click', function() {
-      self.onClickEvent();
+    labelElement.on('click', () => {
+      this.onClickEvent();
     });
 
     return labelElement;

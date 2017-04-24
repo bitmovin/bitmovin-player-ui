@@ -9,7 +9,7 @@ Beside the Git repository, the UI framework is also available through the follow
 
 ### CDN
 
-The UI framework and default skin bundled with the latest player release are always available via CDN. This is the recommended way if you just want to work with the predefined UI components.
+The UI framework and default skin bundled with the latest player release are always available via CDN. This is the recommended way if you just want to work with the predefined UI components. All components will be available in the `bitmovin.playerui` namespace.
 
  * JavaScript library: `//bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer-ui.js` 
  * CSS default skin: `//bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer-ui.css`
@@ -34,7 +34,7 @@ The UI framework is also available in the NPM repository and comes with all sour
   * `gulp lint` to lint TypeScript and SASS files
   * `gulp build-prod` to build project with minified files into `dist` directory
   
-To just take a look at the project, also run `gulp serve`.
+To just take a look at the project, also run `gulp serve`. For changes, check our [change log](CHANGELOG.md).
 
 ## Introduction
 
@@ -47,7 +47,11 @@ A UI is defined by a tree of components, making up the UI *structure*, and their
 
 ## Customizing the UI
 
-There are basically two approaches to customize the UI. The simple approach is to go with the built-in UI of the player and adjust the styling to your liking with CSS. the advanced approach is to replace the built-in UI with a your own build from this repository.
+There are basically three approaches to customize the UI:
+
+1. Go with the built-in UI of the player and adjust the styling to your liking with CSS
+2. Keep the player managing the UI internally but tell it to load alternative UI CSS/JS files, e.g. your own build from this repository
+3. Deactivate the built-in UI and manage your own UI instance externally, e.g. your own build from this repository
 
 ### Styling the built-in UI
 
@@ -55,12 +59,36 @@ When using the built-in UI, you can style it to your linking with CSS by overwri
 
 ### Replacing the built-in UI
 
-To use the player with a custom UI, you need to deactivate the built-in UI, include the necessary `js` and `css` files into your HTML and create and attach your own
-UI instance with the `UIManager`.
+#### Internally managed by the player
 
- * Deactivate the built-in UI by setting `ux: false` in the `style` config of the player ([https://bitmovin.com/player-documentation/player-configuration/](Player Configuration Guide))
+It is possible to override which `js` and `css` files the player loads for its internal UI with the `ui` and `ui_css` properties in the `location` section of the player configuration. This is a simple way to supply a customized UI without the overhead of managing an external UI instance, and especially helpful for supplying a custom script which otherwise cannot be overridden like the CSS styles can. The paths to the `ui` (`js`) and `ui_css` (obviously `css`) files can be absolute or relative. Both are optional and do not need to be specified together.
+
+The player constructs its internal UI instance from the `UIManager.Factory.buildDefaultUI(player)` factory method, so this entry point must exist for this approach to work. The base class of the UI skin (e.g. the default `bmpui-ui-skin-modern`) must also match between the JS and CSS.
+
+```js
+var config = {
+    ...,
+    source: {
+      ...
+    },
+    location: {
+        ui: '//domain.tld/path/to/bitmovinplayer-ui.js',
+        ui_css: 'styles/bitmovinplayer-ui.css',
+    }
+};
+
+bitmovin.player('player-id').setup(config).then(function (player) {
+  // player successfully loaded
+});
+```
+
+#### Externally managed
+
+To use the player with an external custom UI instance, you need to deactivate the built-in UI (set `ux: false`), include the necessary `js` and `css` files into your HTML and create and attach your own UI instance with the `UIManager`.
+
+ * Deactivate the built-in UI by setting `ux: false` in the `style` config of the player ([Player Configuration Guide](https://bitmovin.com/player-documentation/player-configuration/))
  * Build the UI framework (e.g. `gulp build-prod`) and include `bitmovinplayer-ui.min.js` and `bitmovinplayer-ui.min.css` (or their non-minified counterparts) from the `dist` directory
- * Create your own UI instance with the `UIManager.Factory` once the player is loaded
+ * Create your own UI instance with the `UIManager.Factory` once the player is loaded (or [load a custom UI structure](#building-a-custom-ui-structure))
 
 ```js
 var config = {
@@ -86,26 +114,26 @@ A simple example on how to create a custom UI with our default skin that only co
 
 ```js
 // Definition of the UI structure
-var mySimpleUi = new UIContainer({
+var mySimpleUi = new bitmovin.playerui.UIContainer({
   components: [
-    new PlaybackToggleOverlay()
+    new bitmovin.playerui.PlaybackToggleOverlay()
   ],
   cssClasses: ['ui-skin-modern']
 });
 
 bitmovin.player('player-id').setup(config).then(function (player) {
   // Add the UI to the player
-  var myUiManager = new bitmovin.playerui.UIManager(player, mySimpleUi, null);
+  var myUiManager = new bitmovin.playerui.UIManager(player, mySimpleUi);
 });
 ```
 
 ### UIManager
 
-The `UIManager` manages UI instances and is used to add and remove UIs to/from the player. To add a UI to the player, construct a new instance and pass the `player` object, a UI structure (`UIContainer`), a second UI structure to be displayed during ads or `null`, and an optional configuration object. To remove a UI from the player, just call `release()` on your UIManager instance.
+The `UIManager` manages UI instances and is used to add and remove UIs to/from the player. To add a UI to the player, construct a new instance and pass the `player` object, a UI structure (`UIContainer`) or a list of UI structures with conditions (`UIVariant[]`), and an optional configuration object. To remove a UI from the player, just call `release()` on your UIManager instance.
 
 ```js
 // Add UI (e.g. at player initialization)
-var myUiManager = new bitmovin.playerui.UIManager(player, mySimpleUI, null);
+var myUiManager = new bitmovin.playerui.UIManager(player, mySimpleUI);
 
 // Remove UI (e.g. at player destruction)
 myUiManager.release();
@@ -117,25 +145,46 @@ Here is an example on how to display a special UI in fullscreen mode:
 
 ```js
 bitmovin.player('player-id').setup(config).then(function (player) {
-  var myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi, null);
+  var myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi);
   
-  player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_ENTER, function () {
+  player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, function () {
     myUiManager.release();
-    myUiManager = new bitmovin.playerui.UIManager(player, myFullscreenUi, null);
+    myUiManager = new bitmovin.playerui.UIManager(player, myFullscreenUi);
   });
   
-  player.addEventHandler(bitmovin.player.EVENT.ON_FULLSCREEN_EXIT, function () {
+  player.addEventHandler(player.EVENT.ON_FULLSCREEN_EXIT, function () {
     myUiManager.release();
-    myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi, null);
+    myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi);
   });
 });
 ```
+
+Alternatively, you can let the `UIManager` handle switching between different UIs by passing in multiple `UIVariant`s:
+
+```js
+bitmovin.player('player-id').setup(config).then(function (player) {
+  var myUiManager = new bitmovin.playerui.UIManager(player, [{
+    // Display my fullscreen UI under the condition that the player is in fullscreen mode
+    ui: myFullscreenUi,
+    condition: function(context) {
+      return context.isFullscreen;
+    }
+  }, {
+    // Display my window UI in all other cases
+    ui: myWindowUi
+  }]);
+});
+```
+
+There are various conditions upon which the `UIManager` can automatically switch between different UIs, e.g. ad playback and player size.
+
 #### Factory
 
 `UIManager.Factory` provides a few predefined UI structures and styles, e.g.:
 
  * `buildDefaultUI`: The default UI as used by the player by default
  * `buildDefaultCastReceiverUI`: A light UI specifically for Google Cast receivers
+ * `buildDefaultSmallScreenUI`: A light UI specifically for small handheld devices
  * `buildLegacyUI`: ported legacy UI style from player <= version 6
 
 You can easily test and switch between these UIs in the UI playground.
@@ -155,10 +204,10 @@ There is currently no way to change these configuration values on an existing UI
 The following example creates a very basic UI structure with only two text labels:
 
 ```js
-var myUi = new UIContainer({
+var myUi = new bitmovin.playerui.UIContainer({
   components: [
-    new Label({ text: "A label" }),
-    new Label({ text: "A hidden label", hidden: true })
+    new bitmovin.playerui.Label({ text: "A label" }),
+    new bitmovin.playerui.Label({ text: "A hidden label", hidden: true })
   ],
   cssClasses: ['ui-skin-modern']
 });
@@ -183,7 +232,7 @@ var myUiConfig = {
   ]
 };
 
-var myUiManager = new bitmovin.playerui.UIManager(player, myUi, null, myUiConfig);
+var myUiManager = new bitmovin.playerui.UIManager(player, myUi, myUiConfig);
 ```
 
 All of the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.

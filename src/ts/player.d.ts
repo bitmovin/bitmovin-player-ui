@@ -3,11 +3,25 @@
 
 declare namespace bitmovin {
 
-  /**
-   * Creates and returns a new player instance attached to the provided DOM element ID.
-   * @param domElementID the ID of the DOM (i.e. HTML) element that the player should be added to
-   */
-  function player(domElementID: string): player.Player;
+  interface PlayerStatic {
+    /**
+     * Creates and returns a new player instance attached to the provided DOM element ID.
+     * @param domElementID the ID of the DOM (i.e. HTML) element that the player should be added to
+     */
+    (domElementID: string): bitmovin.player.Player;
+    /**
+     * All available events of the player.
+     */
+    EVENT: bitmovin.player.EventList;
+    /**
+     * The version number of the player.
+     */
+    version: string;
+  }
+
+  // tslint:disable-next-line class-name
+  interface player extends PlayerStatic {
+  }
 
   namespace player {
 
@@ -209,10 +223,6 @@ declare namespace bitmovin {
        * TODO is that the same as {@link StyleConfig}?
        */
       style?: Object;
-      /**
-       * A skin that is applied only during ad playback.
-       */
-      skin?: Object;
     }
 
     /**
@@ -254,6 +264,11 @@ declare namespace bitmovin {
        * TODO check why this is missing from the API docs
        */
       url: string;
+      /**
+       * Only used for fragmented subtitles in HLS
+       * TODO check why this is missing from the API docs
+       */
+      isFragmented?: boolean;
     }
 
     /**
@@ -496,11 +511,6 @@ declare namespace bitmovin {
        */
       getTotalStalledTime(): number;
       /**
-       * Returns the version number of the player. This can be used without calling setup
-       * (i.e. without setting up the player) first.
-       */
-      getVersion(): string;
-      /**
        * Returns the seconds of already buffered video data or null if no video source is loaded.
        */
       getVideoBufferLength(): number | null;
@@ -575,7 +585,7 @@ declare namespace bitmovin {
        * @param forceTechnology Forces the player to use the specified playback and streaming technology
        * @param disableSeeking If set, seeking will be disabled
        */
-      load(source: SourceConfig, forceTechnology?: string, disableSeeking?: boolean): void;
+      load(source: SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<Player>;
       /**
        * Mutes the player if an audio track is available. Has no effect if the player is already muted.
        */
@@ -679,13 +689,6 @@ declare namespace bitmovin {
        */
       setQueryParameters(queryParameters: { [key: string]: string; }): Player;
       /**
-       * Applies a new skin during run-time. See the https://bitmovin.com/tutorials/html5-player-skin-tutorial/
-       * in the player configuration for more details about the parameter.
-       *
-       * @param param The URL to a skin JSON file or a skin object
-       */
-      setSkin(param: string | Object): Promise<void>;
-      /**
        * Sets the subtitle track to the ID specified by trackID. A list can be retrieved by calling
        * {@link #getAvailableSubtitles}. Using null as ID disables subtitles.
        *
@@ -750,6 +753,38 @@ declare namespace bitmovin {
       unmute(): Player;
 
       fireEvent(event: EVENT, data: {}): void;
+      /**
+       * All available events of the player.
+       */
+      EVENT: EventList;
+      /**
+       * The version number of the player.
+       */
+      version: string;
+      /**
+       * Checks if Apple AirPlay support is available.
+       */
+      isAirplayAvailable(): boolean;
+      /**
+       * Shows the airplay playback target picker.
+       */
+      showAirplayTargetPicker(): Player;
+      /**
+       * Checks if macOS picture in picture mode is available.
+       */
+      isPictureInPictureAvailable(): boolean;
+      /**
+       * Returns the status of picture in picture mode.
+       */
+      isPictureInPicture(): boolean;
+      /**
+       * Enter picture in picture mode.
+       */
+      enterPictureInPicture(): Player;
+      /**
+       * Exit picture in picture mode.
+       */
+      exitPictureInPicture(): Player;
     }
 
     namespace VR {

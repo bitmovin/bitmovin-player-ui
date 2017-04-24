@@ -39,15 +39,52 @@
     }
 
     .#{$prefix}-ui-subtitle-overlay {
-      .#{$prefix}-ui-subtitle-label {
-        bottom: $overscan-margin;
-      }
+      bottom: $overscan-margin;
 
       &.#{$prefix}-controlbar-visible {
-        .#{$prefix}-ui-subtitle-label {
-          bottom: 20%;
-        }
+        bottom: 20%;
       }
+
+      // Replace the shadow-based text border with a transparent backdrop for better rendering
+      // performance on Chromecast.
+      .#{$prefix}-ui-subtitle-label {
+        background-color: transparentize($subtitle-text-border-color, .5);
+        box-decoration-break: clone;
+        line-height: 2em;
+        padding: .3em .5em;
+        text-shadow: none;
+      }
+    }
+
+    // Chromecast (v1) has very poor rendering performance, so we disable the animations.
+    // We also display a pause image while playback is paused, instead of a play action button
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      .#{$prefix}-image {
+        background-image: svg('assets/skin-modern/images/pause.svg');
+        opacity: .7;
+      }
+
+      // sass-lint:disable force-element-nesting
+      &.#{$prefix}-on .#{$prefix}-image,
+      &.#{$prefix}-off .#{$prefix}-image {
+        animation: none;
+        transition: none;
+      }
+    }
+
+    // Disable transitions due to poor Chromecast performance
+    .#{$prefix}-seekbar-bufferlevel,
+    .#{$prefix}-seekbar-playbackposition,
+    .#{$prefix}-ui-buffering-overlay,
+    .#{$prefix}-ui-titlebar,
+    .#{$prefix}-ui-controlbar,
+    .#{$prefix}-ui-subtitle-overlay {
+      transition: none;
+    }
+
+    // Hide animated buffering indicators due to poor Chromecast performance
+    .#{$prefix}-ui-buffering-overlay-indicator {
+      display: none;
     }
   }
 }

@@ -18,9 +18,7 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
-
-    self.onClick.subscribe(function() {
+    this.onClick.subscribe(() => {
       if (player.isCastAvailable()) {
         if (player.isCasting()) {
           player.castStop();
@@ -34,28 +32,32 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     });
 
-    let castAvailableHander = function() {
+    let castAvailableHander = () => {
       if (player.isCastAvailable()) {
-        self.show();
+        this.show();
       } else {
-        self.hide();
+        this.hide();
       }
     };
 
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_AVAILABLE, castAvailableHander);
+    player.addEventHandler(player.EVENT.ON_CAST_AVAILABLE, castAvailableHander);
 
     // Toggle button 'on' state
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STARTED, function() {
-      self.on();
+    player.addEventHandler(player.EVENT.ON_CAST_WAITING_FOR_DEVICE, () => {
+      this.on();
     });
-    player.addEventHandler(bitmovin.player.EVENT.ON_CAST_STOPPED, function() {
-      self.off();
+    player.addEventHandler(player.EVENT.ON_CAST_STARTED, () => {
+      // When a session is resumed, there is no ON_CAST_START event, so we also need to toggle here for such cases
+      this.on();
+    });
+    player.addEventHandler(player.EVENT.ON_CAST_STOPPED, () => {
+      this.off();
     });
 
     // Startup init
     castAvailableHander(); // Hide button if Cast not available
     if (player.isCasting()) {
-      self.on();
+      this.on();
     }
   }
 }

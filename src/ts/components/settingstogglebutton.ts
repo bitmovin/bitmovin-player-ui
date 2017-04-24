@@ -41,33 +41,32 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let self = this;
     let config = <SettingsToggleButtonConfig>this.getConfig(); // TODO fix generics type inference
     let settingsPanel = config.settingsPanel;
 
-    this.onClick.subscribe(function() {
+    this.onClick.subscribe(() => {
       settingsPanel.toggleHidden();
     });
-    settingsPanel.onShow.subscribe(function() {
+    settingsPanel.onShow.subscribe(() => {
       // Set toggle status to on when the settings panel shows
-      self.on();
+      this.on();
     });
-    settingsPanel.onHide.subscribe(function() {
+    settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides
-      self.off();
+      this.off();
     });
 
     // Handle automatic hiding of the button if there are no settings for the user to interact with
     if (config.autoHideWhenNoActiveSettings) {
       // Setup handler to show/hide button when the settings change
-      let settingsPanelItemsChangedHandler = function() {
+      let settingsPanelItemsChangedHandler = () => {
         if (settingsPanel.hasActiveSettings()) {
-          if (self.isHidden()) {
-            self.show();
+          if (this.isHidden()) {
+            this.show();
           }
         } else {
-          if (self.isShown()) {
-            self.hide();
+          if (this.isShown()) {
+            this.hide();
           }
         }
       };
