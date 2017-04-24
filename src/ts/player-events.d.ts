@@ -23,7 +23,6 @@ declare namespace bitmovin {
       ON_AUDIO_ADAPTATION: EVENT,
       ON_AUDIO_CHANGED: EVENT,
       ON_AUDIO_DOWNLOAD_QUALITY_CHANGE: EVENT,
-      ON_AUDIO_PLAYBACK_QUALITY_CHANGE: EVENT,
       ON_AUDIO_DOWNLOAD_QUALITY_CHANGED: EVENT,
       ON_AUDIO_PLAYBACK_QUALITY_CHANGED: EVENT,
       ON_CAST_AVAILABLE: EVENT,
@@ -67,6 +66,7 @@ declare namespace bitmovin {
       ON_TIME_SHIFTED: EVENT,
       ON_UNMUTED: EVENT,
       ON_VIDEO_ADAPTATION: EVENT,
+      ON_VIDEO_DOWNLOAD_QUALITY_CHANGE: EVENT,
       ON_VIDEO_DOWNLOAD_QUALITY_CHANGED: EVENT,
       ON_VIDEO_PLAYBACK_QUALITY_CHANGED: EVENT,
       ON_VOLUME_CHANGED: EVENT,
@@ -163,38 +163,52 @@ declare namespace bitmovin {
       targetSubtitle: Subtitle;
     }
 
-    interface VideoDownloadQualityChangeEvent extends PlayerEvent {
+    interface MediaDownloadQualityChangeEvent<Q extends Quality> extends PlayerEvent {
       /**
-       * Previous quality
+       * Previous quality or null if no quality was set before.
        */
-      sourceQuality: VideoQuality;
+      sourceQuality?: Q | null;
       /**
-       * New quality
+       * ID of the previous quality or null if no quality was set before.
        */
-      targetQuality: VideoQuality;
-    }
-
-    interface AudioDownloadQualityChangeEvent extends PlayerEvent {
-      /**
-       * Previous quality
-       */
-      sourceQuality: AudioQuality;
+      sourceQualityId: string | null;
       /**
        * New quality
        */
-      targetQuality: AudioQuality;
+      targetQuality?: Q;
+      /**
+       * ID of the new quality.
+       */
+      targetQualityId: string;
     }
 
-    interface VideoDownloadQualityChangedEvent extends VideoDownloadQualityChangeEvent {
+    interface VideoDownloadQualityChangeEvent extends MediaDownloadQualityChangeEvent<VideoQuality> {
     }
 
-    interface AudioDownloadQualityChangedEvent extends AudioDownloadQualityChangeEvent {
+    interface AudioDownloadQualityChangeEvent extends MediaDownloadQualityChangeEvent<AudioQuality> {
     }
 
-    interface VideoPlaybackQualityChangedEvent extends VideoDownloadQualityChangeEvent {
+    interface VideoDownloadQualityChangedEvent extends MediaDownloadQualityChangeEvent<VideoQuality> {
     }
 
-    interface AudioPlaybackQualityChangedEvent extends AudioDownloadQualityChangeEvent {
+    interface AudioDownloadQualityChangedEvent extends MediaDownloadQualityChangeEvent<AudioQuality> {
+    }
+
+    interface MediaPlaybackQualityChangeEvent<Q extends Quality> extends PlayerEvent {
+      /**
+       * Previous quality
+       */
+      sourceQuality: Q;
+      /**
+       * New quality
+       */
+      targetQuality: Q;
+    }
+
+    interface VideoPlaybackQualityChangedEvent extends MediaPlaybackQualityChangeEvent<VideoQuality> {
+    }
+
+    interface AudioPlaybackQualityChangedEvent extends MediaPlaybackQualityChangeEvent<AudioQuality> {
     }
 
     interface TimeChangedEvent extends PlaybackEvent {
