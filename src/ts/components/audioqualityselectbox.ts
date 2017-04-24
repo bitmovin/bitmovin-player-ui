@@ -39,7 +39,7 @@ export class AudioQualitySelectBox extends SelectBox {
     // Update qualities when a new source is loaded
     player.addEventHandler(player.EVENT.ON_READY, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
-    player.addEventHandler(player.EVENT.ON_AUDIO_DOWNLOAD_QUALITY_CHANGED, () => {
+    player.addEventHandler(player.EVENT.ON_AUDIO_DOWNLOAD_QUALITY_CHANGE, () => {
       let data = player.getDownloadedAudioData();
       this.selectItem(data.isAuto ? 'auto' : data.id);
     });

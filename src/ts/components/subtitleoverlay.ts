@@ -33,12 +33,15 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       this.subtitleLabel.setText(event.text);
+      this.show();
     });
     player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
+      this.hide();
       this.subtitleLabel.setText('');
     });
 
     let subtitleClearHandler = () => {
+      this.hide();
       this.subtitleLabel.setText('');
     };
 
@@ -57,5 +60,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
       }
     });
+
+    // Init
+    subtitleClearHandler();
   }
 }

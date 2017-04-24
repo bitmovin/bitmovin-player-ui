@@ -3,11 +3,25 @@
 
 declare namespace bitmovin {
 
-  /**
-   * Creates and returns a new player instance attached to the provided DOM element ID.
-   * @param domElementID the ID of the DOM (i.e. HTML) element that the player should be added to
-   */
-  function player(domElementID: string): player.Player;
+  interface PlayerStatic {
+    /**
+     * Creates and returns a new player instance attached to the provided DOM element ID.
+     * @param domElementID the ID of the DOM (i.e. HTML) element that the player should be added to
+     */
+    (domElementID: string): bitmovin.player.Player;
+    /**
+     * All available events of the player.
+     */
+    EVENT: bitmovin.player.EventList;
+    /**
+     * The version number of the player.
+     */
+    version: string;
+  }
+
+  // tslint:disable-next-line class-name
+  interface player extends PlayerStatic {
+  }
 
   namespace player {
 
@@ -250,6 +264,11 @@ declare namespace bitmovin {
        * TODO check why this is missing from the API docs
        */
       url: string;
+      /**
+       * Only used for fragmented subtitles in HLS
+       * TODO check why this is missing from the API docs
+       */
+      isFragmented?: boolean;
     }
 
     /**
@@ -566,7 +585,7 @@ declare namespace bitmovin {
        * @param forceTechnology Forces the player to use the specified playback and streaming technology
        * @param disableSeeking If set, seeking will be disabled
        */
-      load(source: SourceConfig, forceTechnology?: string, disableSeeking?: boolean): void;
+      load(source: SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<Player>;
       /**
        * Mutes the player if an audio track is available. Has no effect if the player is already muted.
        */

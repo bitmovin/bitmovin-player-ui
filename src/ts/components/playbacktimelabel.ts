@@ -1,6 +1,7 @@
 import {LabelConfig, Label} from './label';
 import {UIInstanceManager} from '../uimanager';
-import {StringUtils} from '../utils';
+import {StringUtils, PlayerUtils} from '../utils';
+import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 
 export enum PlaybackTimeLabelMode {
   CurrentTime,
@@ -46,7 +47,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
     let updateLiveState = () => {
       // Player is playing a live stream when the duration is infinite
-      live = (player.getDuration() === Infinity);
+      live = player.isLive();
 
       // Attach/detach live marker class
       if (live) {
@@ -65,6 +66,11 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
+    new PlayerUtils.LiveStreamDetector(player).onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
+      live = args.live;
+      updateLiveState();
+    });
+
     let updateLiveTimeshiftState = () => {
       if (player.getTimeShift() === 0) {
         this.getDomElement().addClass(liveEdgeCssClass);
@@ -74,11 +80,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     };
 
     let playbackTimeHandler = () => {
-      if ((player.getDuration() === Infinity) !== live) {
-        updateLiveState();
-      }
-
-      if (!live) {
+      if (!live && player.getDuration() !== Infinity) {
         this.setTime(player.getCurrentTime(), player.getDuration());
       }
 

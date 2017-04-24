@@ -38,7 +38,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }
     };
 
-    let firstClick = true;
+    let firstPlay = true;
     let clickTime = 0;
     let doubleClickTime = 0;
 
@@ -63,9 +63,12 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       // This is a required workaround for mobile browsers where video playback needs to be triggered directly
       // by the user. A deferred playback start through the timeout below is not considered as user action and
       // therefore ignored by mobile browsers.
-      if (firstClick) {
+      if (firstPlay) {
+        // Try to start playback. Then we wait for ON_PLAY and only when it arrives, we disable the firstPlay flag.
+        // If we disable the flag here, onClick was triggered programmatically instead of by a user interaction, and
+        // playback is blocked (e.g. on mobile devices due to the programmatic play() call), we loose the chance to
+        // ever start playback through a user interaction again with this button.
         togglePlayback();
-        firstClick = false;
         return;
       }
 
@@ -92,6 +95,11 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
           togglePlayback();
         }
       }, 200);
+    });
+
+    player.addEventHandler(player.EVENT.ON_PLAY, () => {
+      // Playback has really started, we can disable the flag to switch to normal toggle button handling
+      firstPlay = false;
     });
 
     // Hide button while initializing a Cast session

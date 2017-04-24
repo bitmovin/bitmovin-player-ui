@@ -31,7 +31,11 @@ export class AudioTrackSelectBox extends SelectBox {
 
     let audioTrackHandler = () => {
       let currentAudioTrack = player.getAudio();
-      this.selectItem(currentAudioTrack.id);
+
+      // HLS streams don't always provide this, so we have to check
+      if (currentAudioTrack) {
+        this.selectItem(currentAudioTrack.id);
+      }
     };
 
     // Update selection when selected track has changed
@@ -43,5 +47,9 @@ export class AudioTrackSelectBox extends SelectBox {
 
     // Populate tracks at startup
     updateAudioTracks();
+
+    // When `playback.audioLanguage` is set, the `ON_AUDIO_CHANGED` event for that change is triggered before the
+    // UI is created. Therefore we need to set the audio track on configure.
+    audioTrackHandler();
   }
 }

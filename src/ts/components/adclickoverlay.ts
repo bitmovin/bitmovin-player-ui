@@ -31,6 +31,7 @@ export class AdClickOverlay extends ClickOverlay {
     };
     player.addEventHandler(player.EVENT.ON_AD_FINISHED, adFinishedHandler);
     player.addEventHandler(player.EVENT.ON_AD_SKIPPED, adFinishedHandler);
+    player.addEventHandler(player.EVENT.ON_AD_ERROR, adFinishedHandler);
 
     this.onClick.subscribe(() => {
       // Pause the ad when overlay is clicked

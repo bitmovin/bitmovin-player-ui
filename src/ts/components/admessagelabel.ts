@@ -40,6 +40,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
 
     player.addEventHandler(player.EVENT.ON_AD_STARTED, adStartHandler);
     player.addEventHandler(player.EVENT.ON_AD_SKIPPED, adEndHandler);
+    player.addEventHandler(player.EVENT.ON_AD_ERROR, adEndHandler);
     player.addEventHandler(player.EVENT.ON_AD_FINISHED, adEndHandler);
   }
 }
