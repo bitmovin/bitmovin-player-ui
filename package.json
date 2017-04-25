@@ -4,7 +4,8 @@
   "description": "Bitmovin Player UI Framework",
   "main": "dist/js/bitmovinplayer-ui.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "gulp npm-prepare"
   },
   "repository": {
     "type": "git",
