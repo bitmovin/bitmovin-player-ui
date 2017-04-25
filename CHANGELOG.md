@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.2]
 
-This version has no functional changes. It just adds a `prepublish` script to the NPM package so an incomplete version like `2.0.2` cannot happen to be published again.
+This version has no functional changes. It just adds a `prepublish` script to the NPM package so an incomplete version like `2.0.0` cannot happen to be published again.
 
 ## [2.0.1]
 
