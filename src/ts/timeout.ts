@@ -24,9 +24,11 @@ export class Timeout {
 
   /**
    * Starts the timeout and calls the callback when the timeout delay has passed.
+   * @returns {Timeout} the current timeout (so the start call can be chained to the constructor)
    */
-  start(): void {
+  start(): this {
     this.reset();
+    return this;
   }
 
   /**
