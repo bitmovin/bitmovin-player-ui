@@ -637,7 +637,7 @@ declare namespace bitmovin {
        *
        * Allowed values are:
        * - 'pre': pre-roll ad
-       * -'post': post-roll ad
+       * - 'post': post-roll ad
        * - fractional seconds: '10', '12.5' (mid-roll ad)
        * - percentage of the entire video duration: '25%', '50%' (mid-roll ad)
        * - timecode [hh:mm:ss.mmm]: '00:10:30.000', '01:00:00.000' (mid-roll ad)
