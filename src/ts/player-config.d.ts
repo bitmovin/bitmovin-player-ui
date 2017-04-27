@@ -592,7 +592,7 @@ declare namespace bitmovin {
        */
       client?: string;
       /**
-       * Defines when the ad shall be played.
+       * Defines when the ad shall be played. Supports the same values as {@link AdvertisingConfig#offset}.
        */
       offset: string;
       /**
@@ -601,7 +601,7 @@ declare namespace bitmovin {
       tag: string;
     }
 
-    interface AdvertisingConfig extends AdvertisingScheduleItem {
+    interface AdvertisingConfig {
       /**
        * Mandatory. Specifies which ad client to use, like e.g., VAST or VPAID.
        */
@@ -619,12 +619,30 @@ declare namespace bitmovin {
       /**
        * Defines a custom message that will be displayed to the user as a skip button.
        */
-      skipMessage?: SkipMessage;
+      skipmessage?: SkipMessage;
       /**
        * Specifies that cookies are send along with the ad request. The server needs to explicitly accept
        * them for CORS requests, otherwise the request will fail.
        */
       withCredentials?: boolean;
+      /**
+       * Defines the path to an ad manifest. Can be used to schedule a single ad without setting the {@link #schedule}
+       * property, that will be played at the time defined in the {@link #offset} property.
+       * It will be played as pre-roll add by default if no offset is set, or when as schedule with additional ads
+       * is provided.
+       */
+      tag?: string;
+      /**
+       * Defines when the ad shall be played.
+       *
+       * Allowed values are:
+       * - 'pre': pre-roll ad
+       * -'post': post-roll ad
+       * - fractional seconds: '10', '12.5' (mid-roll ad)
+       * - percentage of the entire video duration: '25%', '50%' (mid-roll ad)
+       * - timecode [hh:mm:ss.mmm]: '00:10:30.000', '01:00:00.000' (mid-roll ad)
+       */
+      offset?: string;
       /**
        * Contains one or more ad breaks. Each ad break defines when an ad shall be played and must contain
        * an offset and a tag property.
