@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Develop
+
+### Added
+- Add `ErrorMessageOverlayConfig#messages` to customize error messages in the `ErrorMessageOverlay`
+
 ## [2.0.3]
 
 No functional changes. Fixes typo in the changelog.
