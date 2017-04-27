@@ -6,14 +6,21 @@ import {TvNoiseCanvas} from './tvnoisecanvas';
 import PlayerEvent = bitmovin.player.PlayerEvent;
 
 /**
+ * Configuration interface for the {@link ErrorMessageOverlay}.
+ */
+export interface ErrorMessageOverlayConfig extends ContainerConfig {
+  // nothing yet
+}
+
+/**
  * Overlays the player and displays error messages.
  */
-export class ErrorMessageOverlay extends Container<ContainerConfig> {
+export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
   private errorLabel: Label<LabelConfig>;
   private tvNoiseBackground: TvNoiseCanvas;
 
-  constructor(config: ContainerConfig = {}) {
+  constructor(config: ErrorMessageOverlayConfig = {}) {
     super(config);
 
     this.errorLabel = new Label<LabelConfig>({ cssClass: 'ui-errormessage-label' });
