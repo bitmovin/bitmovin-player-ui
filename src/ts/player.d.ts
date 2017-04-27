@@ -180,10 +180,21 @@ declare namespace bitmovin {
     interface SkipMessage {
       /**
        * The message that is displayed until the ad can be skipped.
-       * Has the placeholder 'xx', which is replaced by the remaining time until the ad can be skipped.
-       * TODO replace placeholder with a better pattern, e.g. '{remainingTime}' instead of 'xx' which can
-       *      appear in normal text (for backwards compatibility, the new pattern could be matched first and
-       *      if not found, fallback to the old pattern)
+       * Supports the placeholders '{remainingTime[formatString]}', '{playedTime[formatString]}' and
+       * '{adDuration[formatString]}', which are replaced by the remaining time until the ad can be skipped,
+       * the current time or the ad duration.
+       *
+       * The format string is optional. The default is the time in seconds.
+       *
+       * Supported format strings:
+       * - %d: Inserts the time as an integer.
+       * - %0Nd: Inserts the time as an integer with leading zeroes, if the length of the time string is smaller than N.
+       * - %f: Inserts the time as a float.
+       * - %0Nf: Inserts the time as a float with leading zeroes.
+       * - %.Mf: Inserts the time as a float with M decimal places. Can be combined with %0Nf, e.g. %04.2f
+       *    (the time 10.123 would be printed as 0010.12).
+       * - %hh:mm:ss
+       * - %mm:ss
        */
       countdown: string;
       /**
@@ -200,6 +211,7 @@ declare namespace bitmovin {
     interface ScheduleAdOptions {
       /**
        * The offset for the ad, may be 'pre', 'post', seconds, percent, or a string in the format hh:mm:ss
+       * @see AdvertisingConfig#offset
        */
       timeOffset?: any;
       /**
