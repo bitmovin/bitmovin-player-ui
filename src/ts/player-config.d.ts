@@ -634,29 +634,25 @@ declare namespace bitmovin {
 
     interface LocationConfig {
       /**
-       * Specifies the path, relative or absolute, to bitmovinplayer-core.min.js, including the filename.
-       */
-      html5?: string;
-      /**
-       * Specifies the path, relative or absolute, to bitmovinplayer-core.min.css, including the filename.
-       */
-      css?: string;
-      /**
-       * Specifies the path, relative or absolute, to bitmovinplayer.swf, including the filename.
+       * Specifies the path, relative or absolute, to the file containing the Flash based player.
+       * Default name: bitmovinplayer.swf
        */
       flash?: string;
       /**
-       * Specifies the path, relative or absolute, to bitmovinplayer-vr.min.js, including the filename.
+       * Specifies the path, relative or absolute, to the file needed for VR and 360º video playback.
+       * Default name: bitmovinplayer-vr.js
        */
       vr?: string;
       /**
-       * Specifies the path, relative or absolute, to bitmovinplayer-controls.min.js, including the filename.
+       * Specifies the path, relative or absolute, to the UI/skin.
+       * Default name: bitmovinplayer-ui.js
        */
-      ctrls?: string;
+      ui?: string;
       /**
-       * Specifies the path, relative or absolute, to bitmovinplayer-controls.min.css, including the filename.
+       * Specifies the path, relative or absolute, to the style sheet of the UI/skin.
+       * Default name: bitmovinplayer-ui.css
        */
-      ctrls_css?: string;
+      ui_css?: string;
     }
 
     interface LogConfig {
