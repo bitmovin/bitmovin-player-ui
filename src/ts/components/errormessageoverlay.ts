@@ -9,18 +9,46 @@ export interface ErrorMessageTranslator {
   (error: ErrorEvent): string;
 }
 
+export interface ErrorMessageMap {
+  [code: number]: string | ErrorMessageTranslator;
+}
+
 /**
  * Configuration interface for the {@link ErrorMessageOverlay}.
  */
 export interface ErrorMessageOverlayConfig extends ContainerConfig {
   /**
-   * List of error messages from the player to overwrite or localize for the error message overlay. Every custom
-   * error message must be mapped to the corresponding error code for which it will be displayed.
-   * The localized error message can be a plain string or a function that receives the {@link ErrorEvent} as parameter
-   * and returns a customized string. The function can be used to extract data from the original error message, e.g.
-   * when it is parameterized.
+   * Allows overwriting of the error messages displayed in the overlay for customization and localization.
+   * This is either a function that receives any {@link ErrorEvent} as parameter and translates error messages,
+   * or a map of error codes that overwrites specific error messages with a plain string or a function that
+   * receives the {@link ErrorEvent} as parameter and returns a customized string.
+   * The translation functions can be used to extract data (e.g. parameters) from the original error message.
    *
-   * Example:
+   * Example 1 (catch-all translation function):
+   * <code>
+   * errorMessageOverlayConfig = {
+   *   messages: function(error) {
+   *     switch (error.code) {
+   *       // Overwrite error 3000 'Unknown error'
+   *       case 3000:
+   *         return 'Houston, we have a problem'
+   *
+   *       // Transform error 3001 'Unsupported manifest format' to uppercase
+   *       case 3001:
+   *         return error.message.toUpperCase();
+   *
+   *       // Customize error 3006 'Could not load manifest, got HTTP status code XXX'
+   *       case 3006:
+   *         var statusCode = error.message.substring(46);
+   *         return 'Manifest loading failed with HTTP error ' + statusCode;
+   *     }
+   *     // Return unmodified error message for all other errors
+   *     return error.message;
+   *   }
+   * };
+   * </code>
+   *
+   * Example 2 (translating specific errors):
    * <code>
    * errorMessageOverlayConfig = {
    *   messages: {
@@ -41,9 +69,7 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
    * };
    * </code>
    */
-  messages?: {
-    [code: number]: string | ErrorMessageTranslator;
-  }
+  messages?: ErrorMessageMap | ErrorMessageTranslator;
 }
 
 /**
@@ -75,15 +101,21 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     player.addEventHandler(player.EVENT.ON_ERROR, (event: ErrorEvent) => {
       let message = event.message;
 
-      // If the config contains a message override for the current code, user the configured message
-      if (config.messages && config.messages[event.code]) {
-        let customMessage = config.messages[event.code];
+      // Process message translations
+      if (config.messages) {
+        if(typeof config.messages === 'function') {
+          // Translation function for all errors
+          message = config.messages(event);
+        } else if (config.messages[event.code]) {
+          // It's not a translation function, so it must be a map of strings or translation functions
+          let customMessage = config.messages[event.code];
 
-        if (typeof customMessage === 'string') {
-          message = customMessage;
-        } else {
-          // The message is a translation function, so we call it
-          message = customMessage(event);
+          if (typeof customMessage === 'string') {
+            message = customMessage;
+          } else {
+            // The message is a translation function, so we call it
+            message = customMessage(event);
+          }
         }
       }
 
