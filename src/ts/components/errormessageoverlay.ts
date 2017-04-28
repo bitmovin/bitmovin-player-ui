@@ -103,7 +103,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
       // Process message translations
       if (config.messages) {
-        if(typeof config.messages === 'function') {
+        if (typeof config.messages === 'function') {
           // Translation function for all errors
           message = config.messages(event);
         } else if (config.messages[event.code]) {
