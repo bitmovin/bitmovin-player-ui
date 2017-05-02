@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Development
 
+### Changed
+- Adjust `CastStatusOverlay` font size styling in smallscreen UI
+
 ### Fixed
 - Fix hiding of `HugePlaybackToggleButton` during Cast session initialization
 

@@ -50,6 +50,14 @@
     }
   }
 
+  .#{$prefix}-ui-cast-status-overlay {
+    background-size: 3em 3em;
+
+    .#{$prefix}-ui-cast-status-label {
+      top: 60%;
+    }
+  }
+
   // Adjustments for screen width x <= 400
   &.#{$prefix}-layout-max-width-400 {
     .#{$prefix}-ui-settings-panel,
@@ -57,7 +65,8 @@
     .#{$prefix}-ui-hugereplaybutton,
     .#{$prefix}-ui-errormessage-overlay,
     .#{$prefix}-ui-buffering-overlay,
-    .#{$prefix}-ui-subtitle-overlay {
+    .#{$prefix}-ui-subtitle-overlay,
+    .#{$prefix}-ui-cast-status-overlay {
       font-size: .6em;
     }
   }
@@ -69,7 +78,8 @@
     .#{$prefix}-ui-hugereplaybutton,
     .#{$prefix}-ui-errormessage-overlay,
     .#{$prefix}-ui-buffering-overlay,
-    .#{$prefix}-ui-subtitle-overlay {
+    .#{$prefix}-ui-subtitle-overlay,
+    .#{$prefix}-ui-cast-status-overlay {
       font-size: .8em;
     }
   }
