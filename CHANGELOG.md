@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Development
 
+### Added
+- Add `remote-control` marker class to `UIContainer` that is applied during an active remote control session (e.g. Cast session)
+
 ### Changed
 - Adjust `CastStatusOverlay` font size and remove Cast icon (makes place for the playback toggle) in smallscreen UI
 

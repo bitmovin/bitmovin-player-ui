@@ -27,6 +27,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   private static readonly FULLSCREEN = 'fullscreen';
   private static readonly BUFFERING = 'buffering';
+  private static readonly REMOTE_CONTROL = 'remote-control';
   private static readonly CONTROLS_SHOWN = 'controls-shown';
   private static readonly CONTROLS_HIDDEN = 'controls-hidden';
 
@@ -199,6 +200,18 @@ export class UIContainer extends Container<UIContainerConfig> {
     // Init buffering state
     if (player.isStalled()) {
       container.addClass(this.prefixCss(UIContainer.BUFFERING));
+    }
+
+    // RemoteControl marker class
+    player.addEventHandler(player.EVENT.ON_CAST_STARTED, () => {
+      container.addClass(this.prefixCss(UIContainer.REMOTE_CONTROL));
+    });
+    player.addEventHandler(player.EVENT.ON_CAST_STOPPED, () => {
+      container.removeClass(this.prefixCss(UIContainer.REMOTE_CONTROL));
+    });
+    // Init RemoteControl state
+    if (player.isCasting()) {
+      container.addClass(this.prefixCss(UIContainer.REMOTE_CONTROL));
     }
 
     // Controls visibility marker class
