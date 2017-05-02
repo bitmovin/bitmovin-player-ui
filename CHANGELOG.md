@@ -8,13 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Add `remote-control` marker class to `UIContainer` that is applied during an active remote control session (e.g. Cast session)
+- Display play/pause button in smallscreen UI during an active remote control session (e.g. Cast session)
 
 ### Changed
 - Adjust `CastStatusOverlay` font size and remove Cast icon (makes place for the playback toggle) in smallscreen UI
+- Move `PlaybackToggleOverlay` over `CastStatusOverlay` in smallscreen UI to enable playback toggling
 
 ### Fixed
 - Fix hiding of `HugePlaybackToggleButton` during Cast session initialization
-- Display `PlaybackToggleOverlay` over `CastStatusOverlay` in smallscreen UI to enable playback toggling (no playback toggle button was displayed before)
 
 ## [2.0.4]
 
