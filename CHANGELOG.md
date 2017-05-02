@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Development
 
 ### Changed
-- Adjust `CastStatusOverlay` font size styling in smallscreen UI
+- Adjust `CastStatusOverlay` font size and remove Cast icon (makes place for the playback toggle) in smallscreen UI
 
 ### Fixed
 - Fix hiding of `HugePlaybackToggleButton` during Cast session initialization
+- Display `PlaybackToggleOverlay` over `CastStatusOverlay` in smallscreen UI to enable playback toggling (no playback toggle button was displayed before)
 
 ## [2.0.4]
 

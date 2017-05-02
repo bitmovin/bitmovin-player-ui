@@ -51,10 +51,10 @@
   }
 
   .#{$prefix}-ui-cast-status-overlay {
-    background-size: 3em 3em;
+    background: $color-background; // Remove background Cast icon
 
     .#{$prefix}-ui-cast-status-label {
-      top: 60%;
+      top: 30%;
     }
   }
 
