@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Development
+## [2.1.0]
 
 ### Added
 - Add `remote-control` marker class to `UIContainer` that is applied during an active remote control session (e.g. Cast session)
@@ -102,6 +102,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[2.1.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.0.4...v2.1.0
 [2.0.4]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.0.1...v2.0.2
