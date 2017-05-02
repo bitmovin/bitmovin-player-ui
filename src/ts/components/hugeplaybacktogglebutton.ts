@@ -104,7 +104,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     // Hide button while initializing a Cast session
     let castInitializationHandler = (event: PlayerEvent) => {
-      if (event.type === player.EVENT.ON_CAST_STARTED) {
+      if (event.type === player.EVENT.ON_CAST_START) {
         // Hide button when session is being initialized
         this.hide();
       } else {

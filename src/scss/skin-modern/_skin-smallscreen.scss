@@ -50,6 +50,42 @@
     }
   }
 
+  .#{$prefix}-ui-cast-status-overlay {
+    background: $color-background; // Remove background Cast icon
+
+    .#{$prefix}-ui-cast-status-label {
+      top: 30%;
+    }
+  }
+
+  // Decrease huge play button size and replace icon with normal play icon
+  .#{$prefix}-ui-hugeplaybacktogglebutton {
+    .#{$prefix}-image {
+      background-image: svg('assets/skin-modern/images/play.svg');
+      background-size: 4em;
+    }
+  }
+
+  // When casting, also display pause icon and disable animations because the transition doesn't look right
+  // sass-lint:disable nesting-depth
+  &.#{$prefix}-remote-control {
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      &.#{$prefix}-on {
+        .#{$prefix}-image {
+          animation: none;
+          background-image: svg('assets/skin-modern/images/pause.svg');
+          visibility: visible;
+        }
+      }
+
+      &.#{$prefix}-off {
+        .#{$prefix}-image {
+          animation: none;
+        }
+      }
+    }
+  }
+
   // Adjustments for screen width x <= 400
   &.#{$prefix}-layout-max-width-400 {
     .#{$prefix}-ui-settings-panel,
@@ -57,7 +93,8 @@
     .#{$prefix}-ui-hugereplaybutton,
     .#{$prefix}-ui-errormessage-overlay,
     .#{$prefix}-ui-buffering-overlay,
-    .#{$prefix}-ui-subtitle-overlay {
+    .#{$prefix}-ui-subtitle-overlay,
+    .#{$prefix}-ui-cast-status-overlay {
       font-size: .6em;
     }
   }
@@ -69,7 +106,8 @@
     .#{$prefix}-ui-hugereplaybutton,
     .#{$prefix}-ui-errormessage-overlay,
     .#{$prefix}-ui-buffering-overlay,
-    .#{$prefix}-ui-subtitle-overlay {
+    .#{$prefix}-ui-subtitle-overlay,
+    .#{$prefix}-ui-cast-status-overlay {
       font-size: .8em;
     }
   }

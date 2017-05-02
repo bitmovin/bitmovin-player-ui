@@ -461,8 +461,8 @@ export namespace UIManager.Factory {
       components: [
         new SubtitleOverlay(),
         new BufferingOverlay(),
-        new PlaybackToggleOverlay(),
         new CastStatusOverlay(),
+        new PlaybackToggleOverlay(),
         controlBar,
         new TitleBar({
           components: [
