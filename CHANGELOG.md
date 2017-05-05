@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add `Container#removeComponents()` to remove all child components of a container
 - Display multiple subtitle cues in parallel in `SubtitleOverlay`
 
+### Fixed
+- Clear `SubtitleOverlay` when playback is finished
+
 ## [2.1.1]
 
 ### Fixed
