@@ -137,7 +137,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
    * @returns {Event}
    */
   getEvent(): Event<Sender, Args> {
-    // For now, just case the event dispatcher to the event interface. At some point in the future when the
+    // For now, just cast the event dispatcher to the event interface. At some point in the future when the
     // codebase grows, it might make sense to split the dispatcher into separate dispatcher and event classes.
     return <Event<Sender, Args>>this;
   }

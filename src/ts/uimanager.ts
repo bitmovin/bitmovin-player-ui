@@ -526,7 +526,7 @@ export namespace UIManager.Factory {
         new PlaybackToggleOverlay(),
         new Watermark(),
         controlBar,
-        new TitleBar(),
+        new TitleBar({ keepHiddenWithoutMetadata: true }),
         new ErrorMessageOverlay()
       ], cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver']
     });

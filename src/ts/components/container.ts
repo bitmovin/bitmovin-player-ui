@@ -73,6 +73,15 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
   }
 
   /**
+   * Removes all child components from the container.
+   */
+  removeComponents(): void {
+    for (let component of this.getComponents()) {
+      this.removeComponent(component);
+    }
+  }
+
+  /**
    * Updates the DOM of the container with the current components.
    */
   protected updateComponents(): void {

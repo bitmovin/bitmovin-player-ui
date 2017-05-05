@@ -19,6 +19,13 @@
     @include text-border($subtitle-text-border-color);
 
     color: $subtitle-text-color;
+
+    // Break labels into separate lines
+    // sass-lint:disable force-pseudo-nesting
+    &:nth-child(1n-1)::after {
+      content: '\A';
+      white-space: pre;
+    }
   }
 
   &.#{$prefix}-controlbar-visible {
