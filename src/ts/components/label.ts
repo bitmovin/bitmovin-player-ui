@@ -25,7 +25,8 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
   private text: string;
 
   private labelEvents = {
-    onClick: new EventDispatcher<Label<Config>, NoArgs>()
+    onClick: new EventDispatcher<Label<Config>, NoArgs>(),
+    onTextChanged: new EventDispatcher<Label<Config>, string>(),
   };
 
   constructor(config: LabelConfig = {}) {
@@ -58,6 +59,7 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
   setText(text: string) {
     this.text = text;
     this.getDomElement().html(text);
+    this.onTextChangedEvent(text);
   }
 
   /**
@@ -73,10 +75,25 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
    */
   clearText() {
     this.getDomElement().html('');
+    this.onTextChangedEvent(null);
   }
 
+  /**
+   * Fires the {@link #onClick} event.
+   * Can be used by subclasses to listen to this event without subscribing an event listener by overwriting the method
+   * and calling the super method.
+   */
   protected onClickEvent() {
     this.labelEvents.onClick.dispatch(this);
+  }
+
+  /**
+   * Fires the {@link #onClick} event.
+   * Can be used by subclasses to listen to this event without subscribing an event listener by overwriting the method
+   * and calling the super method.
+   */
+  protected onTextChangedEvent(text: string) {
+    this.labelEvents.onTextChanged.dispatch(this, text);
   }
 
   /**
@@ -85,5 +102,13 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
    */
   get onClick(): Event<Label<LabelConfig>, NoArgs> {
     return this.labelEvents.onClick.getEvent();
+  }
+
+  /**
+   * Gets the event that is fired when the text on the label is changed.
+   * @returns {Event<Label<LabelConfig>, string>}
+   */
+  get onTextChanged(): Event<Label<LabelConfig>, string> {
+    return this.labelEvents.onTextChanged.getEvent();
   }
 }
