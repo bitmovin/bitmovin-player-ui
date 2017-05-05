@@ -22,6 +22,8 @@ export interface LabelConfig extends ComponentConfig {
  */
 export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
 
+  private text: string;
+
   private labelEvents = {
     onClick: new EventDispatcher<Label<Config>, NoArgs>()
   };
@@ -32,13 +34,15 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-label'
     }, this.config);
+
+    this.text = this.config.text;
   }
 
   protected toDomElement(): DOM {
     let labelElement = new DOM('span', {
       'id': this.config.id,
       'class': this.getCssClasses()
-    }).html(this.config.text);
+    }).html(this.text);
 
     labelElement.on('click', () => {
       this.onClickEvent();
@@ -52,7 +56,16 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
    * @param text
    */
   setText(text: string) {
+    this.text = text;
     this.getDomElement().html(text);
+  }
+
+  /**
+   * Gets the text on this label.
+   * @return {string} The text on the label
+   */
+  getText(): string {
+    return this.text;
   }
 
   /**
