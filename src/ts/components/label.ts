@@ -79,6 +79,14 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
   }
 
   /**
+   * Tests if the label is empty and does not contain any text.
+   * @return {boolean} True if the label is empty, else false
+   */
+  isEmpty(): boolean {
+    return !this.text;
+  }
+
+  /**
    * Fires the {@link #onClick} event.
    * Can be used by subclasses to listen to this event without subscribing an event listener by overwriting the method
    * and calling the super method.

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Add `Container#removeComponents()` to remove all child components of a container
 - Display multiple subtitle cues in parallel in `SubtitleOverlay`
-- Add `getText()` method and `onTextChanged` event to `Label`
+- Add `getText()` method, `isEmpty()` method, and `onTextChanged` event to `Label`
 
 ### Fixed
 - Clear `SubtitleOverlay` when playback is finished
