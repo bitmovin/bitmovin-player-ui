@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add `getText()` method, `isEmpty()` method, and `onTextChanged` event to `Label`
 - Add `TitleBarConfig#keepHiddenWithoutMetadata` to keep `TitleBar` hidden if metadata labels are empty
 
+### Changed
+- Do not display `TitleBar` in Cast UI when it does not contain any metadata (title/description)
+
 ### Fixed
 - Clear `SubtitleOverlay` when playback is finished
 
