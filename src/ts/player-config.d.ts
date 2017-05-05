@@ -64,6 +64,10 @@ declare namespace bitmovin {
        * If set to true, this will keep the poster image visible during playback, e.g. for audio-only streams.
        */
       persistentPoster?: boolean;
+      /**
+       * The position in fractional seconds to start playback from.
+       */
+      startTime?: number;
     }
 
     interface SourceConfigTrack {
