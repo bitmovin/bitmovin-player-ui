@@ -128,7 +128,7 @@ class ActiveSubtitleManager {
       text: event.html || event.text
     });
 
-    this.activeSubtitleCueMap[id] = { event: event, label: label};
+    this.activeSubtitleCueMap[id] = { event, label };
 
     return label;
   }
