@@ -448,6 +448,7 @@ declare namespace bitmovin {
       start: number;
       end: number;
       text: string;
+      html?: string;
       region?: string;
       regionStyle?: string;
       position?: string;

@@ -124,7 +124,8 @@ class ActiveSubtitleManager {
     let id = ActiveSubtitleManager.calculateId(event);
 
     let label = new SubtitleLabel({
-      text: event.text
+      // Prefer the HTML subtitle text if set, else use the plain text
+      text: event.html || event.text
     });
 
     this.activeSubtitleCueMap[id] = { event: event, label: label};
