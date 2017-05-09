@@ -229,7 +229,7 @@ gulp.task('serve', function() {
     });
 
     gulp.watch(paths.source.sass, ['sass']);
-    gulp.watch(paths.source.html).on('change', function() { runSequence('client:html', browserSync.reload); });
+    gulp.watch(paths.source.html).on('change', function() { runSequence('html', browserSync.reload); });
     catchBrowserifyErrors = true;
     gulp.watch(paths.source.ts, ['browserify']);
   });

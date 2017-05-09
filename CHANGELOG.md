@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Display subtitles in `SubtitleOverlay` with HTML markup if available instead of the plain text
 
+### Fixed
+- Fix crash of Gulp `serve` task on HTML file changes
+
 ## [2.2.0]
 
 ### Added
