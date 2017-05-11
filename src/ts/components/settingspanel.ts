@@ -1,5 +1,6 @@
 import {ContainerConfig, Container} from './container';
 import {SelectBox} from './selectbox';
+import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
@@ -87,9 +88,13 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_LAST));
       }
     };
+    let close = () => {
+      this.hide()
+    }
     for (let component of this.getItems()) {
       if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
+        component.onClickUpdate.subscribe(close);
       }
     }
   }
@@ -135,18 +140,19 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
 /**
  * An item for a {@link SettingsPanel}, containing a {@link Label} and a component that configures a setting.
- * Supported setting components: {@link SelectBox}
+ * Supported setting components: {@link SelectBox}, {@link ToggleButton}
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
   private label: Label<LabelConfig>;
-  private setting: SelectBox;
+  private setting: SelectBox | ToggleButton<ToggleButtonConfig>;
 
   private settingsPanelItemEvents = {
-    onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>()
+    onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
+    onClickUpdate: new EventDispatcher<SettingsPanelItem, NoArgs>()
   };
 
-  constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
+  constructor(label: string, selectBox: SelectBox | ToggleButton<ToggleButtonConfig>, config: ContainerConfig = {}) {
     super(config);
 
     this.label = new Label({ text: label });
@@ -160,6 +166,9 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     let handleConfigItemChanged = () => {
+      if (! (this.setting instanceof SelectBox)) {
+        return
+      }
       // The minimum number of items that must be available for the setting to be displayed
       // By default, at least two items must be available, else a selection is not possible
       let minItemsToDisplay = 2;
@@ -181,8 +190,17 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       this.onActiveChangedEvent();
     };
 
-    this.setting.onItemAdded.subscribe(handleConfigItemChanged);
-    this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
+    let handleClick = () => {
+      this.onClickUpdateEvent();
+    }
+
+    if (this.setting instanceof SelectBox) {
+      this.setting.onItemAdded.subscribe(handleConfigItemChanged);
+      this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
+    }
+    if (this.setting instanceof ToggleButton) {
+      this.setting.onClick.subscribe(handleClick);
+    }
 
     // Initialize hidden state
     handleConfigItemChanged();
@@ -199,6 +217,9 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   protected onActiveChangedEvent() {
     this.settingsPanelItemEvents.onActiveChanged.dispatch(this);
   }
+  protected onClickUpdateEvent() {
+    this.settingsPanelItemEvents.onClickUpdate.dispatch(this);
+  }
 
   /**
    * Gets the event that is fired when the 'active' state of this item changes.
@@ -207,5 +228,12 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
    */
   get onActiveChanged(): Event<SettingsPanelItem, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
+  }
+  /**
+   * Gets the event that is fired when the button get clicked
+   * @returns {Event<SettingsPanelItem, NoArgs>}
+   */
+  get onClickUpdate(): Event<SettingsPanelItem, NoArgs> {
+    return this.settingsPanelItemEvents.onClickUpdate.getEvent();
   }
 }

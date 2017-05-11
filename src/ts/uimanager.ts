@@ -20,6 +20,8 @@ import {SeekBarLabel} from './components/seekbarlabel';
 import {VolumeSlider} from './components/volumeslider';
 import {SubtitleSelectBox} from './components/subtitleselectbox';
 import {SubtitleOverlay} from './components/subtitleoverlay';
+import {SubtitleOptionsToggle} from './components/subtitleoptiontoggle';
+import {SubtitleOptions} from './components/subtitleoptions';
 import {VolumeControlButton} from './components/volumecontrolbutton';
 import {CastToggleButton} from './components/casttogglebutton';
 import {CastStatusOverlay} from './components/caststatusoverlay';
@@ -344,13 +346,15 @@ export namespace UIManager.Factory {
   }
 
   function modernUI() {
+    let subtitleOptions = new SubtitleOptions()
     let settingsPanel = new SettingsPanel({
       components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
+        new SettingsPanelItem('Subtitles options', new SubtitleOptionsToggle({subtitleoptions: subtitleOptions})),
       ],
       hidden: true
     });
@@ -358,6 +362,7 @@ export namespace UIManager.Factory {
     let controlBar = new ControlBar({
       components: [
         settingsPanel,
+        subtitleOptions,
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),

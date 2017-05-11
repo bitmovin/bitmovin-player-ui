@@ -1,0 +1,16 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-subtitleoptiontoggle {
+  @extend %ui-button;
+
+  background-image: svg('assets/skin-modern/images/settings.svg');
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    background-image: svg('assets/skin-modern/images/settingsX.svg');
+  }
+}
