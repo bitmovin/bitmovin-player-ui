@@ -8,11 +8,14 @@ import {ControlBar} from './controlbar';
 /**
  * Overlays the player to display subtitles.
  */
-export class SubtitleOverlay extends Container<ContainerConfig> {
+export class SubtitleOverlay extends Container<ComponentConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
-  constructor(config: ContainerConfig = {}) {
+  private color?: string;
+  private background?: string;
+
+  constructor(config: ComponentConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
@@ -27,6 +30,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
+
+      if (this.color) {
+        labelToAdd.getDomElement().css('color', this.color)
+      }
+      if (this.background) {
+        labelToAdd.getDomElement().css('background', this.background)
+      }
 
       this.addComponent(labelToAdd);
       this.updateComponents();
@@ -72,6 +82,15 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     // Init
     subtitleClearHandler();
+  }
+
+  setColor(color: string) {
+    this.color = color
+    this.getDomElement().find(".bmpui-ui-subtitle-label").css('color', color)
+  }
+  setBackground(color: string) {
+    this.background = color
+    this.getDomElement().find(".bmpui-ui-subtitle-label").css('background', color)
   }
 }
 

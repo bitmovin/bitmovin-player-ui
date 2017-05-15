@@ -9,7 +9,6 @@ import {SubtitleOverlay} from '../subtitleoverlay'
 export class FontColorSelectBox extends SelectBox {
 
   private overlay: SubtitleOverlay;
-  private colorState: string;
 
   constructor(config: ListSelectorConfig = {}, overlay: SubtitleOverlay ) {
     super(config);
@@ -31,7 +30,7 @@ export class FontColorSelectBox extends SelectBox {
     this.selectItem('white');
 
     this.onItemSelected.subscribe((sender: FontColorSelectBox, value: string) => {
-      this.overlay.getDomElement().find(".bmpui-ui-subtitle-label").css('color', value)
+      this.overlay.setColor(value)
     });
   }
 }
