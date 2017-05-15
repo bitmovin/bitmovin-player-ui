@@ -27,4 +27,9 @@
       white-space: pre;
     }
   }
+
+  &.#{$prefix}-controlbar-visible {
+    bottom: 5em;
+    transition: bottom $animation-duration-short ease-in;
+  }
 }
