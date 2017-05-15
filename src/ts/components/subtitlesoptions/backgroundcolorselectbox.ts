@@ -9,6 +9,7 @@ import {SubtitleOverlay} from '../subtitleoverlay'
 export class BackgroundColorSelectBox extends SelectBox {
 
   private overlay: SubtitleOverlay;
+  private colorState: string;
 
   constructor(config: ListSelectorConfig = {}, overlay: SubtitleOverlay) {
     super(config);
@@ -18,19 +19,22 @@ export class BackgroundColorSelectBox extends SelectBox {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem('white', 'white');
-    this.addItem('black', 'black');
-    this.addItem('red', 'red');
-    this.addItem('green', 'green');
-    this.addItem('blue', 'blue');
-    this.addItem('cyan', 'cyan');
-    this.addItem('yellow', 'yellow');
-    this.addItem('magenta', 'magenta');
+    this.addItem('ui-subtitle-background-white', 'white');
+    this.addItem('ui-subtitle-background-black', 'black');
+    this.addItem('ui-subtitle-background-red', 'red');
+    this.addItem('ui-subtitle-background-green', 'green');
+    this.addItem('ui-subtitle-background-blue', 'blue');
+    this.addItem('ui-subtitle-background-cyan', 'cyan');
+    this.addItem('ui-subtitle-background-yellow', 'yellow');
+    this.addItem('ui-subtitle-background-magenta', 'magenta');
 
-    this.selectItem('1');
+    this.selectItem('white');
+    this.colorState = 'ui-subtitle-font-white'
 
     this.onItemSelected.subscribe((sender: BackgroundColorSelectBox, value: string) => {
-      player.setPlaybackSpeed(parseFloat(value));
+      this.overlay.getDomElement().removeClass(this.prefixCss(this.colorState));
+      this.overlay.getDomElement().addClass(this.prefixCss(value));
+      this.colorState = value;
     });
   }
 }

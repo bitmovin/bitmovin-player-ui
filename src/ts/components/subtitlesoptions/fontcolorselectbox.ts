@@ -19,22 +19,19 @@ export class FontColorSelectBox extends SelectBox {
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem('ui-subtitle-font-white', 'white');
-    this.addItem('ui-subtitle-font-black', 'black');
-    this.addItem('ui-subtitle-font-red', 'red');
-    this.addItem('ui-subtitle-font-green', 'green');
-    this.addItem('ui-subtitle-font-blue', 'blue');
-    this.addItem('ui-subtitle-font-cyan', 'cyan');
-    this.addItem('ui-subtitle-font-yellow', 'yellow');
-    this.addItem('ui-subtitle-font-magenta', 'magenta');
+    this.addItem('white', 'white');
+    this.addItem('black', 'black');
+    this.addItem('red', 'red');
+    this.addItem('green', 'green');
+    this.addItem('blue', 'blue');
+    this.addItem('cyan', 'cyan');
+    this.addItem('yellow', 'yellow');
+    this.addItem('magenta', 'magenta');
 
     this.selectItem('white');
-    this.colorState = 'ui-subtitle-font-white'
 
     this.onItemSelected.subscribe((sender: FontColorSelectBox, value: string) => {
-      this.overlay.getDomElement().removeClass(this.prefixCss(this.colorState));
-      this.overlay.getDomElement().addClass(this.prefixCss(value));
-      this.colorState = value;
+      this.overlay.getDomElement().find(".bmpui-ui-subtitle-label").css('color', value)
     });
   }
 }

@@ -27,41 +27,4 @@
       white-space: pre;
     }
   }
-
-  &.#{$prefix}-controlbar-visible {
-    bottom: 5em;
-    transition: bottom $animation-duration-short ease-in;
-  }
-
-  &.#{$prefix}-ui-subtitle-font-green .#{$prefix}-ui-subtitle-label{
-    color: green
-  }
-
-  &.#{$prefix}-ui-subtitle-font-black .#{$prefix}-ui-subtitle-label{
-    color: black
-  }
-
-  &.#{$prefix}-ui-subtitle-font-red .#{$prefix}-ui-subtitle-label{
-    color: red
-  }
-
-  &.#{$prefix}-ui-subtitle-font-green .#{$prefix}-ui-subtitle-label{
-    color: green
-  }
-
-  &.#{$prefix}-ui-subtitle-font-blue .#{$prefix}-ui-subtitle-label{
-      color: blue
-  }
-
-  &.#{$prefix}-ui-subtitle-font-cyan .#{$prefix}-ui-subtitle-label{
-    color: cyan
-  }
-
-  &.#{$prefix}-ui-subtitle-font-yellow .#{$prefix}-ui-subtitle-label{
-    color: yellow
-  }
-
-  &.#{$prefix}-ui-subtitle-font-magenta .#{$prefix}-ui-subtitle-label{
-    color: magenta
-  }
 }
