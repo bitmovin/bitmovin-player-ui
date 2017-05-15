@@ -12,7 +12,6 @@ export class SubtitleOptions extends SettingsPanel {
       hideDelay: 3000,
       hidden: true,
       components: [
-        new SettingsPanelItem('Font color', new FontColorSelectBox())
       ]
     }, this.config);
   }

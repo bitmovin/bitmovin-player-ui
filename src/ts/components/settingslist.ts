@@ -1,5 +1,4 @@
 import {ContainerConfig, Container} from './container';
-import {ComponentConfig, Component} from './component';
 import {SelectBox} from './selectbox';
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {Label, LabelConfig} from './label';
@@ -20,8 +19,6 @@ export interface SettingsPanelConfig extends ContainerConfig {
    * Default: 3 seconds (3000)
    */
   hideDelay?: number;
-  defaultComponents?: Component<ComponentConfig>[];
-  subtitlesComponents?: Component<ComponentConfig>[];
 }
 
 /**
@@ -42,24 +39,14 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     this.config = this.mergeConfig<SettingsPanelConfig>(config, {
       cssClass: 'ui-settings-panel',
-      hideDelay: 3000,
-      defaultComponents: this.config.components,
+      hideDelay: 3000
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
-
-    this.onShow.subscribe(() => {
-      for (let option of config.defaultComponents) {
-        option.show()
-      }
-      for (let option of config.subtitlesComponents) {
-        option.hide()
-      }
-    });
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
@@ -70,12 +57,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         // Activate timeout when shown
         this.hideTimeout.start();
       });
-      this.getDomElement().on('mouseenter', () => {
-        // On mouse enter clear the timeout
-        this.hideTimeout.clear();
-      });
-      this.getDomElement().on('mouseleave', () => {
-        // On mouse leave activate the timeout
+      this.getDomElement().on('mousemove', () => {
+        // Reset timeout on interaction
         this.hideTimeout.reset();
       });
       this.onHide.subscribe(() => {
@@ -103,13 +86,10 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       }
     };
     let close = () => {
-      for (let option of config.subtitlesComponents) {
-        option.show()
-      }
-      for (let option of config.defaultComponents) {
-        option.hide()
-      }
-      this.updateComponents()
+      this.config.components = [
+        new SettingsPanelItem('Font color', new FontColorSelectBox())
+      ]
+      //this.hide()
     }
     for (let component of this.getItems()) {
       if (component instanceof SettingsPanelItem) {
@@ -184,7 +164,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     let handleConfigItemChanged = () => {
       if (! (this.setting instanceof SelectBox)) {
         return
@@ -249,6 +229,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   get onActiveChanged(): Event<SettingsPanelItem, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
   }
+
   /**
    * Gets the event that is fired when the button get clicked
    * @returns {Event<SettingsPanelItem, NoArgs>}

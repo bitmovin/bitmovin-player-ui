@@ -21,7 +21,6 @@ import {VolumeSlider} from './components/volumeslider';
 import {SubtitleSelectBox} from './components/subtitleselectbox';
 import {SubtitleOverlay} from './components/subtitleoverlay';
 import {SubtitleOptionsToggle} from './components/subtitleoptiontoggle';
-import {SubtitleOptions} from './components/subtitleoptions';
 import {VolumeControlButton} from './components/volumecontrolbutton';
 import {CastToggleButton} from './components/casttogglebutton';
 import {CastStatusOverlay} from './components/caststatusoverlay';
@@ -47,6 +46,7 @@ import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 import {Spacer} from './components/spacer';
+import GetSubtitleOptionList from './components/subtitlesoptions/optionlist';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -346,23 +346,26 @@ export namespace UIManager.Factory {
   }
 
   function modernUI() {
-    let subtitleOptions = new SubtitleOptions()
-    let settingsPanel = new SettingsPanel({
-      components: [
+    let overlay = new SubtitleOverlay();
+    let subtitlesOptionList = GetSubtitleOptionList(overlay);
+    let defaultComponents = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
         new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-        new SettingsPanelItem('Subtitles options', new SubtitleOptionsToggle({subtitleoptions: subtitleOptions})),
-      ],
+        new SettingsPanelItem('Subtitles options', new SubtitleOptionsToggle()),
+  ]
+    let settingsPanel = new SettingsPanel({
+      components: defaultComponents.concat(subtitlesOptionList),
+      subtitlesComponents: subtitlesOptionList,
+      defaultComponents: defaultComponents,
       hidden: true
     });
 
     let controlBar = new ControlBar({
       components: [
         settingsPanel,
-        subtitleOptions,
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
@@ -391,7 +394,7 @@ export namespace UIManager.Factory {
 
     return new UIContainer({
       components: [
-        new SubtitleOverlay(),
+        overlay,
         new BufferingOverlay(),
         new PlaybackToggleOverlay(),
         new CastStatusOverlay(),
