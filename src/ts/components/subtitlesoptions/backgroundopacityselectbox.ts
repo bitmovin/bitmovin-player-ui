@@ -27,7 +27,7 @@ export class BackgroundOpacitySelectBox extends SelectBox {
     this.selectItem('0');
 
     this.onItemSelected.subscribe((sender: BackgroundOpacitySelectBox, value: string) => {
-      player.setPlaybackSpeed(parseFloat(value));
+      this.overlay.setBackgroundOpacity(Number(value));
     });
   }
 }

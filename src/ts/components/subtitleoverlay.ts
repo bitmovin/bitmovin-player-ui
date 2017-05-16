@@ -106,6 +106,10 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
     this.color.a = alpha
     this.getSubtitleLabel().css('color', this.color.toCSS())
   }
+  setBackgroundOpacity(alpha: number) {
+    this.background.a = alpha
+    this.getSubtitleLabel().css('background', this.background.toCSS())
+  }
 }
 
 interface ActiveSubtitleCue {

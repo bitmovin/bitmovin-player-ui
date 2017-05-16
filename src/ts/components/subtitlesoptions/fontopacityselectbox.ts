@@ -26,7 +26,7 @@ export class FontOpacitySelectBox extends SelectBox {
     this.selectItem('1');
 
     this.onItemSelected.subscribe((sender: FontOpacitySelectBox, value: string) => {
-      this.overlay.setFontOpacity(Number(value))
+      this.overlay.setFontOpacity(Number(value));
     });
   }
 }
