@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Fix crash of Gulp `serve` task on HTML file changes
+- Fix `SeekBar` in legacy skin did not hide on `hide()`
 
 ## [2.2.0]
 
