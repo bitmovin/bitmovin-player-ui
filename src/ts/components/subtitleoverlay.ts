@@ -4,6 +4,8 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
+import {ColorUtils} from '../utils';
+import {DOM} from '../dom';
 
 /**
  * Overlays the player to display subtitles.
@@ -12,8 +14,8 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
-  private color?: string;
-  private background?: string;
+  private color?: ColorUtils.Color;
+  private background: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0)
 
   constructor(config: ComponentConfig = {}) {
     super(config);
@@ -32,11 +34,9 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
       let labelToAdd = subtitleManager.cueEnter(event);
 
       if (this.color) {
-        labelToAdd.getDomElement().css('color', this.color)
+        labelToAdd.getDomElement().css('color', this.color.toCSS())
       }
-      if (this.background) {
-        labelToAdd.getDomElement().css('background', this.background)
-      }
+      labelToAdd.getDomElement().css('background', this.background.toCSS())
 
       this.addComponent(labelToAdd);
       this.updateComponents();
@@ -84,13 +84,23 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
     subtitleClearHandler();
   }
 
+  getSubtitleLabel(): DOM {
+    return this.getDomElement().find(".bmpui-ui-subtitle-label")
+  }
   setColor(color: string) {
-    this.color = color
-    this.getDomElement().find(".bmpui-ui-subtitle-label").css('color', color)
+    this.color = ColorUtils.colorFromName(color)
+    this.getSubtitleLabel().css('color', this.color.toCSS())
   }
   setBackground(color: string) {
-    this.background = color
-    this.getDomElement().find(".bmpui-ui-subtitle-label").css('background', color)
+    let background = ColorUtils.colorFromName(color)
+    if (! this.background.a || this.background.a === 0) {
+      // 25%  opacity at least
+      background.a = 0.25
+    } else {
+      background.a =this.background.a
+    }
+    this.background = background
+    this.getSubtitleLabel().css('background', this.background.toCSS())
   }
 }
 

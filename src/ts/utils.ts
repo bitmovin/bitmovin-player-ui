@@ -348,3 +348,39 @@ export namespace BrowserUtils {
 
   export const isAndroid = navigator && navigator.userAgent && /Android/.test(navigator.userAgent);
 }
+
+export namespace ColorUtils {
+  export class Color {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+
+    constructor(r: number, g: number, b: number, a: number = 1) {
+      this.r = r
+      this.g = g
+      this.b = b
+      this.a = a
+    }
+    toCSS(): string {
+      return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`
+    }
+  }
+
+  export function colorFromName(name: string): Color {
+    let matcher: {[name: string]: Color} = {
+      'white': new Color(0, 0, 0),
+      'black': new Color(0, 0, 0),
+      'red': new Color(255, 0, 0),
+      'green': new Color(0, 255 , 0),
+      'blue': new Color(0, 0, 255),
+      'cyan': new Color(0, 255, 255),
+      'yellow': new Color(255, 255, 0),
+      'magenta': new Color(255, 0, 255),
+    }
+    if (matcher[name]) {
+      return matcher[name]
+    }
+     return new Color(0, 0, 0);
+  }
+}
