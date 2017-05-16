@@ -1,6 +1,6 @@
 import {FontColorSelectBox} from './fontcolorselectbox'
+import {FontOpacitySelectBox} from './fontopacityselectbox'
 import {BackgroundColorSelectBox} from './backgroundcolorselectbox'
-import {CharacterOpacitySelectBox} from './characteropacityselectbox'
 import {BackgroundOpacitySelectBox} from './backgroundopacityselectbox'
 import {FontFamillySelectBox} from './fontfamillyselectbox'
 import {CharacterEdgeSelectBox} from './characteredgeselectbox'
@@ -10,8 +10,8 @@ import {SubtitleOverlay} from '../subtitleoverlay'
 let GetSubtitleOptionList = (overlay: SubtitleOverlay) => {
   let SubtitleOptionList = [
     new SettingsPanelItem('Font', new FontColorSelectBox({}, overlay)),
+    new SettingsPanelItem('Font opacity', new FontOpacitySelectBox({}, overlay)),
     new SettingsPanelItem('Background', new BackgroundColorSelectBox({}, overlay)),
-    new SettingsPanelItem('Character', new CharacterOpacitySelectBox({}, overlay)),
     new SettingsPanelItem('Background', new BackgroundOpacitySelectBox({}, overlay)),
     new SettingsPanelItem('Font', new FontFamillySelectBox({}, overlay)),
     new SettingsPanelItem('Edge', new CharacterEdgeSelectBox({}, overlay)),

@@ -14,7 +14,7 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
-  private color?: ColorUtils.Color;
+  private color: ColorUtils.Color = new ColorUtils.Color(255, 255, 255, 1);
   private background: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0)
 
   constructor(config: ComponentConfig = {}) {
@@ -97,10 +97,14 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
       // 25%  opacity at least
       background.a = 0.25
     } else {
-      background.a =this.background.a
+      background.a = this.background.a
     }
     this.background = background
     this.getSubtitleLabel().css('background', this.background.toCSS())
+  }
+  setFontOpacity(alpha: number) {
+    this.color.a = alpha
+    this.getSubtitleLabel().css('color', this.color.toCSS())
   }
 }
 
