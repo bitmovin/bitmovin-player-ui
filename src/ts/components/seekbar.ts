@@ -280,16 +280,20 @@ export class SeekBar extends Component<SeekBarConfig> {
       playbackPositionHandler(null, true);
       this.refreshPlaybackPosition();
     };
-    new PlayerUtils.LiveStreamDetector(player).onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
+    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player);
+    liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       isLive = args.live;
       switchVisibility(isLive, hasTimeShift);
     });
-    new PlayerUtils.TimeShiftAvailabilityDetector(player).onTimeShiftAvailabilityChanged.subscribe(
-      (sender, args: TimeShiftAvailabilityChangedArgs) => {
+    let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
+    timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe((sender, args: TimeShiftAvailabilityChangedArgs) => {
         hasTimeShift = args.timeShiftAvailable;
         switchVisibility(isLive, hasTimeShift);
       }
     );
+    // Initial detection
+    liveStreamDetector.detect();
+    timeShiftDetector.detect();
 
     // Refresh the playback position when the player resized or the UI is configured. The playback position marker
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.

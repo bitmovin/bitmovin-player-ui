@@ -51,7 +51,8 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.addEventHandler(player.EVENT.ON_CAST_PLAYBACK_FINISHED, playbackStateHandler);
 
     // Detect absence of timeshifting on live streams and add tagging class to convert button icons to play/stop
-    new PlayerUtils.TimeShiftAvailabilityDetector(player).onTimeShiftAvailabilityChanged.subscribe(
+    let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
+    timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe(
       (sender, args: TimeShiftAvailabilityChangedArgs) => {
         if (!args.timeShiftAvailable) {
           this.getDomElement().addClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
@@ -60,6 +61,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         }
       }
     );
+    timeShiftDetector.detect(); // Initial detection
 
     if (handleClickEvent) {
       // Control player by button events

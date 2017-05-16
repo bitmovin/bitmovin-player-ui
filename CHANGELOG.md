@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Display subtitles in `SubtitleOverlay` with HTML markup if available instead of the plain text
 
+### Changed
+- Detect live streams and time shift availability when configuring dependent components (`PlaybackTimeLabel`, `PlaybackToggleButton`, `SeekBar`) to adjust their mode independently from the player state changes
+
 ### Fixed
 - Fix crash of Gulp `serve` task on HTML file changes
 - Fix `SeekBar` in legacy skin did not hide on `hide()`
