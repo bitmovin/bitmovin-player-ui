@@ -16,6 +16,7 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
 
   private color: ColorUtils.Color = new ColorUtils.Color(255, 255, 255, 1);
   private background: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0)
+  private family: string = ''
 
   constructor(config: ComponentConfig = {}) {
     super(config);
@@ -33,10 +34,9 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
 
-      if (this.color) {
-        labelToAdd.getDomElement().css('color', this.color.toCSS())
-      }
+      labelToAdd.getDomElement().css('color', this.color.toCSS())
       labelToAdd.getDomElement().css('background', this.background.toCSS())
+      labelToAdd.getDomElement().css('font-family', this.family)
 
       this.addComponent(labelToAdd);
       this.updateComponents();
@@ -109,6 +109,10 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
   setBackgroundOpacity(alpha: number) {
     this.background.a = alpha
     this.getSubtitleLabel().css('background', this.background.toCSS())
+  }
+  setFontFamily(family: string) {
+    this.family = family
+    this.getSubtitleLabel().css('font-family', this.family)
   }
 }
 

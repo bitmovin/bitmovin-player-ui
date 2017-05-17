@@ -19,18 +19,18 @@ export class FontFamillySelectBox extends SelectBox {
     super.configure(player, uimanager);
 
     this.addItem('default', 'default');
-    this.addItem('monospaced serif', 'monospaced serif');
-    this.addItem('proportional serif', 'proportional serif');
-    this.addItem('monospaced sans serif', 'monospaced sans serif');
-    this.addItem('proportional sans serif', 'proportional sans serif');
-    this.addItem('casual', 'casual');
-    this.addItem('cursive', 'cursive');
+    this.addItem('"Courier New",Courier,"Nimbus Mono L","Cutive Mono",monospace', 'monospaced serif');
+    this.addItem('"Times New Roman",Times,Georgia,Cambria,"PT Serif Caption",serif', 'proportional serif');
+    this.addItem('"Deja Vu Sans Mono","Lucida Console",Monaco,Consolas,"PT Mono",monospace', 'monospaced sans serif');
+    this.addItem('Roboto,"Arial Unicode Ms",Arial,Helvetica,Verdana,"PT Sans Caption",sans-serif', 'proportional sans serif');
+    this.addItem('"Comic Sans MS",Impact,Handlee,fantasy', 'casual');
+    this.addItem('"Monotype Corsiva","URW Chancery L","Apple Chancery","Dancing Script",cursive', 'cursive');
     this.addItem('small capital', 'small capital');
 
     this.selectItem('default');
 
     this.onItemSelected.subscribe((sender: FontFamillySelectBox, value: string) => {
-      player.setPlaybackSpeed(parseFloat(value));
+      this.overlay.setFontFamily(value);
     });
   }
 }
