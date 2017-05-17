@@ -34,7 +34,16 @@ The UI framework is also available in the NPM repository and comes with all sour
   * `gulp lint` to lint TypeScript and SASS files
   * `gulp build-prod` to build project with minified files into `dist` directory
   
-To just take a look at the project, also run `gulp serve`. For changes, check our [change log](CHANGELOG.md).
+To just take a look at the project, also run `gulp serve`. For changes, check our [CHANGELOG](CHANGELOG.md).
+
+## Contributing
+
+This project applies the GitFlow branching model. Please submit bugfix pull requests against the `master` branch if they concern the current release, else against the `develop` branch. Feature branches always go against the `develop` branch. 
+
+Before creating a pull request, please
+ * add an appropriate entry to the [CHANGELOG](CHANGELOG.md)
+ * make sure that `gulp lint` is free of warnings and errors
+ * make sure your branch is free of merge conflicts
 
 ## Introduction
 
