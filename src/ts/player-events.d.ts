@@ -22,6 +22,8 @@ declare namespace bitmovin {
       ON_AD_STARTED: EVENT,
       ON_AUDIO_ADAPTATION: EVENT,
       ON_AUDIO_CHANGED: EVENT,
+      ON_AUDIO_ADDED: EVENT,
+      ON_AUDIO_REMOVED: EVENT,
       ON_AUDIO_DOWNLOAD_QUALITY_CHANGE: EVENT,
       ON_AUDIO_DOWNLOAD_QUALITY_CHANGED: EVENT,
       ON_AUDIO_PLAYBACK_QUALITY_CHANGED: EVENT,
@@ -150,6 +152,13 @@ declare namespace bitmovin {
        * New audio track
        */
       targetAudio: AudioTrack;
+    }
+
+    interface AudioEvent extends PlayerEvent {
+      /**
+       * The concerned audio track
+       */
+      track: AudioTrack;
     }
 
     interface SubtitleChangedEvent extends PlaybackEvent {

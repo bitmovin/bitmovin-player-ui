@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Display subtitles in `SubtitleOverlay` with HTML markup if available instead of the plain text
+- Update `AudioTrackSelectionBox` on new `ON_AUDIO_ADDED`/`ON_AUDIO_REMOVED` events in player 7.1.4
 
 ### Changed
 - Detect live streams and time shift availability when configuring dependent components (`PlaybackTimeLabel`, `PlaybackToggleButton`, `SeekBar`) to adjust their mode independently from the player state changes
@@ -15,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Fix crash of Gulp `serve` task on HTML file changes
 - Fix `SeekBar` in legacy skin did not hide on `hide()`
+- Fix missing audio track selection box in Safari with player 7.1.2 and 7.1.3
 
 ## [2.2.0]
 
