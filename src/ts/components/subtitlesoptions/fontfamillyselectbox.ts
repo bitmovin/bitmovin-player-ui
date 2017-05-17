@@ -25,7 +25,7 @@ export class FontFamillySelectBox extends SelectBox {
     this.addItem('Roboto,"Arial Unicode Ms",Arial,Helvetica,Verdana,"PT Sans Caption",sans-serif', 'proportional sans serif');
     this.addItem('"Comic Sans MS",Impact,Handlee,fantasy', 'casual');
     this.addItem('"Monotype Corsiva","URW Chancery L","Apple Chancery","Dancing Script",cursive', 'cursive');
-    this.addItem('small capital', 'small capital');
+    this.addItem('small-caps', 'small capital');
 
     this.selectItem('default');
 

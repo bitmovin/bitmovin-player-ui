@@ -15,8 +15,9 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
   private color: ColorUtils.Color = new ColorUtils.Color(255, 255, 255, 1);
-  private background: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0)
-  private family: string = ''
+  private background: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0);
+  private family: string = '';
+  private fontVariant: string = 'normal';
 
   constructor(config: ComponentConfig = {}) {
     super(config);
@@ -36,6 +37,7 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
 
       labelToAdd.getDomElement().css('color', this.color.toCSS())
       labelToAdd.getDomElement().css('background', this.background.toCSS())
+      labelToAdd.getDomElement().css('font-variant', this.fontVariant)
       labelToAdd.getDomElement().css('font-family', this.family)
 
       this.addComponent(labelToAdd);
@@ -111,8 +113,16 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
     this.getSubtitleLabel().css('background', this.background.toCSS())
   }
   setFontFamily(family: string) {
-    this.family = family
-    this.getSubtitleLabel().css('font-family', this.family)
+    // clear previous state, so that switching to small caps doesn' affect further font changes
+    this.fontVariant = 'normal'
+    this.family = ''
+    if (family == 'small-caps') {
+      this.getSubtitleLabel().css('font-variant', family)
+      this.fontVariant = family
+    } else {
+      this.getSubtitleLabel().css('font-family', family)
+      this.family = family
+    }
   }
 }
 
