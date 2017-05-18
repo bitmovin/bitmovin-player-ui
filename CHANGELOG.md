@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Detect live streams and time shift availability when configuring dependent components (`PlaybackTimeLabel`, `PlaybackToggleButton`, `SeekBar`) to adjust their mode independently from the player state changes
 
 ### Fixed
+- Fix settings panel closing when an option select box is open
 - Fix crash of Gulp `serve` task on HTML file changes
 - Fix `SeekBar` in legacy skin did not hide on `hide()`
 - Fix missing audio track selection box in Safari with player 7.1.2 and 7.1.3

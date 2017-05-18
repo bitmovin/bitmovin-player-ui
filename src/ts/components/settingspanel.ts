@@ -55,8 +55,12 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         // Activate timeout when shown
         this.hideTimeout.start();
       });
-      this.getDomElement().on('mousemove', () => {
-        // Reset timeout on interaction
+      this.getDomElement().on('mouseenter', () => {
+        // On mouse enter clear the timeout
+        this.hideTimeout.clear();
+      });
+      this.getDomElement().on('mouseleave', () => {
+        // On mouse leave activate the timeout
         this.hideTimeout.reset();
       });
       this.onHide.subscribe(() => {
