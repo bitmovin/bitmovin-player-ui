@@ -19,6 +19,7 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
   private family: string = '';
   private fontVariant: string = 'normal';
   private characterEdge: string = '';
+  private size: number = 1.2;
 
   constructor(config: ComponentConfig = {}) {
     super(config);
@@ -41,6 +42,7 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
       labelToAdd.getDomElement().css('font-variant', this.fontVariant)
       labelToAdd.getDomElement().css('font-family', this.family)
       labelToAdd.getDomElement().css('text-shadow', this.characterEdge)
+      labelToAdd.getDomElement().css('font-size', `${this.size}em`)
 
       this.addComponent(labelToAdd);
       this.updateComponents();
@@ -129,6 +131,10 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
   setCharacterEdge(characterEdge: string) {
     this.characterEdge = characterEdge;
     this.getSubtitleLabel().css('text-shadow', characterEdge);
+  }
+  setFontSize(coefficient: number) {
+    this.size = 1.2 * coefficient;
+    this.getSubtitleLabel().css('font-size', `${this.size}em`)
   }
 }
 
