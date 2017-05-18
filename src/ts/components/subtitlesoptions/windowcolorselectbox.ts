@@ -6,7 +6,7 @@ import {SubtitleOverlay} from '../subtitleoverlay'
 /**
  * A select box providing a selection of different background colors.
  */
-export class BackgroundColorSelectBox extends SelectBox {
+export class WindowColorSelectBox extends SelectBox {
 
   private overlay: SubtitleOverlay;
 
@@ -29,8 +29,8 @@ export class BackgroundColorSelectBox extends SelectBox {
 
     this.selectItem('black');
 
-    this.onItemSelected.subscribe((sender: BackgroundColorSelectBox, value: string) => {
-      this.overlay.setBackgroundColor(value)
+    this.onItemSelected.subscribe((sender: WindowColorSelectBox, value: string) => {
+      this.overlay.setWindowColor(value)
     });
   }
 }

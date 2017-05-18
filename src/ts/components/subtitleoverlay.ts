@@ -14,8 +14,9 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
-  private color: ColorUtils.Color = new ColorUtils.Color(255, 255, 255, 1);
-  private background: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0);
+  private fontColor: ColorUtils.Color = new ColorUtils.Color(255, 255, 255, 1);
+  private backgroundColor: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0);
+  private windowColor: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0);
   private family: string = '';
   private fontVariant: string = 'normal';
   private characterEdge: string = '';
@@ -37,8 +38,8 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
 
-      labelToAdd.getDomElement().css('color', this.color.toCSS())
-      labelToAdd.getDomElement().css('background', this.background.toCSS())
+      labelToAdd.getDomElement().css('color', this.fontColor.toCSS())
+      labelToAdd.getDomElement().css('background', this.backgroundColor.toCSS())
       labelToAdd.getDomElement().css('font-variant', this.fontVariant)
       labelToAdd.getDomElement().css('font-family', this.family)
       labelToAdd.getDomElement().css('text-shadow', this.characterEdge)
@@ -94,27 +95,42 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
     return this.getDomElement().find('.bmpui-ui-subtitle-label')
   }
   setColor(color: string) {
-    this.color = ColorUtils.colorFromName(color);
-    this.getSubtitleLabel().css('color', this.color.toCSS());
+    this.fontColor = ColorUtils.colorFromName(color);
+    this.getSubtitleLabel().css('color', this.fontColor.toCSS());
   }
-  setBackground(color: string) {
-    let background = ColorUtils.colorFromName(color);
-    if (! this.background.a || this.background.a === 0) {
+  setBackgroundColor(color: string) {
+    let backgroundColor = ColorUtils.colorFromName(color);
+    if (! this.backgroundColor.a || this.backgroundColor.a === 0) {
       // 25%  opacity at least
-      background.a = 0.25;
+      backgroundColor.a = 0.25;
     } else {
-      background.a = this.background.a;
+      backgroundColor.a = this.backgroundColor.a;
     }
-    this.background = background;
-    this.getSubtitleLabel().css('background', this.background.toCSS());
+    this.backgroundColor = backgroundColor;
+    this.getSubtitleLabel().css('background', this.backgroundColor.toCSS());
+  }
+  setWindowColor(color: string) {
+    let windowColor = ColorUtils.colorFromName(color);
+    if (! this.windowColor.a || this.windowColor.a === 0) {
+      // 25%  opacity at least
+      windowColor.a = 0.25;
+    } else {
+      windowColor.a = this.windowColor.a;
+    }
+    this.windowColor = windowColor;
+    this.getDomElement().css('background', this.windowColor.toCSS());
   }
   setFontOpacity(alpha: number) {
-    this.color.a = alpha;
-    this.getSubtitleLabel().css('color', this.color.toCSS());
+    this.fontColor.a = alpha;
+    this.getSubtitleLabel().css('color', this.fontColor.toCSS());
   }
   setBackgroundOpacity(alpha: number) {
-    this.background.a = alpha;
-    this.getSubtitleLabel().css('background', this.background.toCSS());
+    this.windowColor.a = alpha;
+    this.getDomElement().css('background', this.windowColor.toCSS());
+  }
+  setWindowOpacity(alpha: number) {
+    this.backgroundColor.a = alpha;
+    this.getSubtitleLabel().css('background', this.backgroundColor.toCSS());
   }
   setFontFamily(family: string) {
     // clear previous state, so that switching to small caps doesn' affect further font changes
