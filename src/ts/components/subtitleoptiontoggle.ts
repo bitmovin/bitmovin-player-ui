@@ -1,5 +1,4 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
-import {SubtitleOptions} from './subtitleoptions';
 import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
 
