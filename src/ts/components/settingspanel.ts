@@ -52,13 +52,31 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
 
+    let updateLastItem = () => {
+      // Attach marker class to last visible item
+      let lastShownItem = null;
+      for (let component of this.getItems()) {
+        if (component instanceof SettingsPanelItem) {
+          component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
+          if (component.isShown()) {
+            lastShownItem = component;
+          }
+        }
+      }
+      if (lastShownItem) {
+        lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_LAST));
+      }
+    }
+
     this.onShow.subscribe(() => {
+      // When opening the default state is having default component showing
       for (let option of config.defaultComponents) {
         option.show()
       }
       for (let option of config.subtitlesComponents) {
         option.hide()
       }
+      updateLastItem()
     });
 
     if (config.hideDelay > -1) {
@@ -87,34 +105,21 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     // Fire event when the state of a settings-item has changed
     let settingsStateChangedHandler = () => {
       this.onSettingsStateChangedEvent();
-
-      // Attach marker class to last visible item
-      let lastShownItem = null;
-      for (let component of this.getItems()) {
-        if (component instanceof SettingsPanelItem) {
-          component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
-          if (component.isShown()) {
-            lastShownItem = component;
-          }
-        }
-      }
-      if (lastShownItem) {
-        lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_LAST));
-      }
+      updateLastItem()
     };
-    let close = () => {
+    let openSubtitleSettings = () => {
       for (let option of config.subtitlesComponents) {
         option.show()
       }
       for (let option of config.defaultComponents) {
         option.hide()
       }
-      this.updateComponents()
+      updateLastItem()
     }
     for (let component of this.getItems()) {
       if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
-        component.onClickUpdate.subscribe(close);
+        component.onClickUpdate.subscribe(openSubtitleSettings);
       }
     }
   }
