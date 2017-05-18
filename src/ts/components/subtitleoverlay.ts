@@ -18,6 +18,7 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
   private background: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0);
   private family: string = '';
   private fontVariant: string = 'normal';
+  private characterEdge: string = '';
 
   constructor(config: ComponentConfig = {}) {
     super(config);
@@ -39,6 +40,7 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
       labelToAdd.getDomElement().css('background', this.background.toCSS())
       labelToAdd.getDomElement().css('font-variant', this.fontVariant)
       labelToAdd.getDomElement().css('font-family', this.family)
+      labelToAdd.getDomElement().css('text-shadow', this.characterEdge)
 
       this.addComponent(labelToAdd);
       this.updateComponents();
@@ -87,42 +89,46 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
   }
 
   getSubtitleLabel(): DOM {
-    return this.getDomElement().find(".bmpui-ui-subtitle-label")
+    return this.getDomElement().find('.bmpui-ui-subtitle-label')
   }
   setColor(color: string) {
-    this.color = ColorUtils.colorFromName(color)
-    this.getSubtitleLabel().css('color', this.color.toCSS())
+    this.color = ColorUtils.colorFromName(color);
+    this.getSubtitleLabel().css('color', this.color.toCSS());
   }
   setBackground(color: string) {
-    let background = ColorUtils.colorFromName(color)
+    let background = ColorUtils.colorFromName(color);
     if (! this.background.a || this.background.a === 0) {
       // 25%  opacity at least
-      background.a = 0.25
+      background.a = 0.25;
     } else {
-      background.a = this.background.a
+      background.a = this.background.a;
     }
-    this.background = background
-    this.getSubtitleLabel().css('background', this.background.toCSS())
+    this.background = background;
+    this.getSubtitleLabel().css('background', this.background.toCSS());
   }
   setFontOpacity(alpha: number) {
-    this.color.a = alpha
-    this.getSubtitleLabel().css('color', this.color.toCSS())
+    this.color.a = alpha;
+    this.getSubtitleLabel().css('color', this.color.toCSS());
   }
   setBackgroundOpacity(alpha: number) {
-    this.background.a = alpha
-    this.getSubtitleLabel().css('background', this.background.toCSS())
+    this.background.a = alpha;
+    this.getSubtitleLabel().css('background', this.background.toCSS());
   }
   setFontFamily(family: string) {
     // clear previous state, so that switching to small caps doesn' affect further font changes
-    this.fontVariant = 'normal'
-    this.family = ''
-    if (family == 'small-caps') {
-      this.getSubtitleLabel().css('font-variant', family)
-      this.fontVariant = family
+    this.fontVariant = 'normal';
+    this.family = '';
+    if (family === 'small-caps') {
+      this.getSubtitleLabel().css('font-variant', family);
+      this.fontVariant = family;
     } else {
-      this.getSubtitleLabel().css('font-family', family)
-      this.family = family
+      this.getSubtitleLabel().css('font-family', family);
+      this.family = family;
     }
+  }
+  setCharacterEdge(characterEdge: string) {
+    this.characterEdge = characterEdge;
+    this.getSubtitleLabel().css('text-shadow', characterEdge);
   }
 }
 

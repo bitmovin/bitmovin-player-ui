@@ -19,16 +19,15 @@ export class CharacterEdgeSelectBox extends SelectBox {
     super.configure(player, uimanager);
 
     this.addItem('none', 'none');
-    this.addItem('raised', 'raised');
-    this.addItem('depressed', 'depressed');
-    this.addItem('uniform', 'uniform');
-    this.addItem('left shadow', 'left_drop_shadow');
-    this.addItem('right shadow', 'right_drop_shadow');
+    this.addItem('0px 0px 4px rgba(0, 0, 0, 0.9), 0px 1px 4px rgba(0, 0, 0, 0.9), 0px 2px 4px rgba(0, 0, 0, 0.9)', 'raised');
+    this.addItem('rgba(0, 0, 0, 0.8) 0px -2px 1px', 'depressed');
+    this.addItem('-2px 0px 1px rgba(0, 0, 0, 0.8), 2px 0px 1px rgba(0, 0, 0, 0.8), 0px -2px 1px rgba(0, 0, 0, 0.8), 0px 2px 1px rgba(0, 0, 0, 0.8), -1px 1px 1px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(0, 0, 0, 0.8), 1px -1px 1px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(0, 0, 0, 0.8)', 'uniform');
+    this.addItem('0px 2px 1px rgba(0, 0, 0, 0.8)', 'drop shadowed');
 
     this.selectItem('none');
 
     this.onItemSelected.subscribe((sender: CharacterEdgeSelectBox, value: string) => {
-      player.setPlaybackSpeed(parseFloat(value));
+      this.overlay.setCharacterEdge(value);
     });
   }
 }
