@@ -69,13 +69,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }
 
     this.onShow.subscribe(() => {
-      // When opening the default state is having default component showing
-      for (let option of config.defaultComponents) {
-        option.show()
-      }
-      for (let option of config.subtitlesComponents) {
-        option.hide()
-      }
+      config.components = config.defaultComponents
+      this.updateComponents()
       updateLastItem()
     });
 
@@ -108,12 +103,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       updateLastItem()
     };
     let openSubtitleSettings = () => {
-      for (let option of config.subtitlesComponents) {
-        option.show()
-      }
-      for (let option of config.defaultComponents) {
-        option.hide()
-      }
+      config.components = config.subtitlesComponents
+      this.updateComponents()
       updateLastItem()
     }
     for (let component of this.getItems()) {
@@ -191,7 +182,10 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     let handleConfigItemChanged = () => {
-      if (! (this.setting instanceof SelectBox)) {
+      if (this.setting instanceof ToggleButton) {
+        if (player.getAvailableSubtitles().length === 1) {
+          this.hide()
+        }
         return
       }
       // The minimum number of items that must be available for the setting to be displayed
