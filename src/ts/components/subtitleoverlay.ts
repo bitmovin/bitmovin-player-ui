@@ -7,43 +7,53 @@ import {ControlBar} from './controlbar';
 import {ColorUtils} from '../utils';
 import {DOM} from '../dom';
 
+export interface SubtitleOverlayConfig extends ContainerConfig{
+  fontColor?: ColorUtils.Color;
+  backgroundColor?: ColorUtils.Color;
+  windowColor?: ColorUtils.Color;
+  family?: string;
+  fontVariant?: string;
+  characterEdge?: string;
+  size?: number;
+}
 /**
  * Overlays the player to display subtitles.
  */
-export class SubtitleOverlay extends Container<ComponentConfig> {
+export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
+
+  public config: SubtitleOverlayConfig;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
-
-  private fontColor: ColorUtils.Color = new ColorUtils.Color(255, 255, 255, 1);
-  private backgroundColor: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0);
-  private windowColor: ColorUtils.Color = new ColorUtils.Color(0, 0, 0, 0);
-  private family: string = '';
-  private fontVariant: string = 'normal';
-  private characterEdge: string = '';
-  private size: number = 1.2;
-
-  constructor(config: ComponentConfig = {}) {
+  constructor(config: SubtitleOverlayConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitle-overlay',
-    }, this.config);
+    this.config = this.mergeConfig( config, <SubtitleOverlayConfig>{ 
+        cssClass: 'ui-subtitle-overlay',
+        fontColor: new ColorUtils.Color(255, 255, 255, 1),
+        backgroundColor: new ColorUtils.Color(0, 0, 0, 0),
+        windowColor: new ColorUtils.Color(0, 0, 0, 0),
+        family: '',
+        fontVariant: 'normal',
+        characterEdge: '',
+        size: 1.2,
+      }, this.config);
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let subtitleManager = new ActiveSubtitleManager();
+    let config = <SubtitleOverlayConfig>this.config;
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
 
-      labelToAdd.getDomElement().css('color', this.fontColor.toCSS())
-      labelToAdd.getDomElement().css('background', this.backgroundColor.toCSS())
-      labelToAdd.getDomElement().css('font-variant', this.fontVariant)
-      labelToAdd.getDomElement().css('font-family', this.family)
-      labelToAdd.getDomElement().css('text-shadow', this.characterEdge)
-      labelToAdd.getDomElement().css('font-size', `${this.size}em`)
+      labelToAdd.getDomElement().css('color', config.fontColor.toCSS())
+      labelToAdd.getDomElement().css('background', config.backgroundColor.toCSS())
+      labelToAdd.getDomElement().css('font-variant', config.fontVariant)
+      labelToAdd.getDomElement().css('font-family', config.family)
+      labelToAdd.getDomElement().css('text-shadow', config.characterEdge)
+      labelToAdd.getDomElement().css('font-size', `${config.size}em`)
 
       this.addComponent(labelToAdd);
       this.updateComponents();
@@ -95,62 +105,62 @@ export class SubtitleOverlay extends Container<ComponentConfig> {
     return this.getDomElement().find('.bmpui-ui-subtitle-label')
   }
   setColor(color: string) {
-    this.fontColor = ColorUtils.colorFromName(color);
-    this.getSubtitleLabel().css('color', this.fontColor.toCSS());
+    this.config.fontColor = ColorUtils.colorFromName(color);
+    this.getSubtitleLabel().css('color', this.config.fontColor.toCSS());
   }
   setBackgroundColor(color: string) {
     let backgroundColor = ColorUtils.colorFromName(color);
-    if (! this.backgroundColor.a || this.backgroundColor.a === 0) {
+    if (! this.config.backgroundColor.a || this.config.backgroundColor.a === 0) {
       // 25%  opacity at least
       backgroundColor.a = 0.25;
     } else {
-      backgroundColor.a = this.backgroundColor.a;
+      backgroundColor.a = this.config.backgroundColor.a;
     }
-    this.backgroundColor = backgroundColor;
-    this.getSubtitleLabel().css('background', this.backgroundColor.toCSS());
+    this.config.backgroundColor = backgroundColor;
+    this.getSubtitleLabel().css('background', this.config.backgroundColor.toCSS());
   }
   setWindowColor(color: string) {
     let windowColor = ColorUtils.colorFromName(color);
-    if (! this.windowColor.a || this.windowColor.a === 0) {
+    if (! this.config.windowColor.a || this.config.windowColor.a === 0) {
       // 25%  opacity at least
       windowColor.a = 0.25;
     } else {
-      windowColor.a = this.windowColor.a;
+      windowColor.a = this.config.windowColor.a;
     }
-    this.windowColor = windowColor;
-    this.getDomElement().css('background', this.windowColor.toCSS());
+    this.config.windowColor = windowColor;
+    this.getDomElement().css('background', this.config.windowColor.toCSS());
   }
   setFontOpacity(alpha: number) {
-    this.fontColor.a = alpha;
-    this.getSubtitleLabel().css('color', this.fontColor.toCSS());
+    this.config.fontColor.a = alpha;
+    this.getSubtitleLabel().css('color', this.config.fontColor.toCSS());
   }
   setBackgroundOpacity(alpha: number) {
-    this.windowColor.a = alpha;
-    this.getDomElement().css('background', this.windowColor.toCSS());
+    this.config.windowColor.a = alpha;
+    this.getDomElement().css('background', this.config.windowColor.toCSS());
   }
   setWindowOpacity(alpha: number) {
-    this.backgroundColor.a = alpha;
-    this.getSubtitleLabel().css('background', this.backgroundColor.toCSS());
+    this.config.backgroundColor.a = alpha;
+    this.getSubtitleLabel().css('background', this.config.backgroundColor.toCSS());
   }
   setFontFamily(family: string) {
     // clear previous state, so that switching to small caps doesn' affect further font changes
-    this.fontVariant = 'normal';
-    this.family = '';
+    this.config.fontVariant = 'normal';
+    this.config.family = '';
     if (family === 'small-caps') {
       this.getSubtitleLabel().css('font-variant', family);
-      this.fontVariant = family;
+      this.config.fontVariant = family;
     } else {
       this.getSubtitleLabel().css('font-family', family);
-      this.family = family;
+      this.config.family = family;
     }
   }
   setCharacterEdge(characterEdge: string) {
-    this.characterEdge = characterEdge;
+    this.config.characterEdge = characterEdge;
     this.getSubtitleLabel().css('text-shadow', characterEdge);
   }
   setFontSize(coefficient: number) {
-    this.size = 1.2 * coefficient;
-    this.getSubtitleLabel().css('font-size', `${this.size}em`)
+    this.config.size = 1.2 * coefficient;
+    this.getSubtitleLabel().css('font-size', `${this.config.size}em`)
   }
 }
 
