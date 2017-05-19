@@ -219,6 +219,12 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     }
     if (this.setting instanceof ToggleButton) {
       this.setting.onClick.subscribe(handleClick);
+      // React to API events to decide whether to show subtitles option or not
+      player.addEventHandler(player.EVENT.ON_SUBTITLE_ADDED, handleConfigItemChanged);
+      player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, handleConfigItemChanged);
+      player.addEventHandler(player.EVENT.ON_SUBTITLE_REMOVED, handleConfigItemChanged);
+      player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, handleConfigItemChanged);
+      player.addEventHandler(player.EVENT.ON_READY, handleConfigItemChanged);
     }
 
     // Initialize hidden state
