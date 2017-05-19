@@ -135,12 +135,12 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.getSubtitleLabel().css('color', this.config.fontColor.toCSS());
   }
   setBackgroundOpacity(alpha: number) {
-    this.config.windowColor.a = alpha;
-    this.getDomElement().css('background', this.config.windowColor.toCSS());
+    this.config.backgroundColor.a = alpha;
+    this.getDomElement().css('background', this.config.backgroundColor.toCSS());
   }
   setWindowOpacity(alpha: number) {
-    this.config.backgroundColor.a = alpha;
-    this.getSubtitleLabel().css('background', this.config.backgroundColor.toCSS());
+    this.config.windowColor.a = alpha;
+    this.getSubtitleLabel().css('background', this.config.windowColor.toCSS());
   }
   setFontFamily(family: string) {
     // clear previous state, so that switching to small caps doesn' affect further font changes
