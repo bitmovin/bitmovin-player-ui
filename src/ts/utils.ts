@@ -383,4 +383,15 @@ export namespace ColorUtils {
     }
      return new Color(0, 0, 0);
   }
+
+  // colorFromCss is used to get a color value from localstorage since an objec can't be stored
+  // Only parses value in the 'rgba(\d+, \d+, \d+, \d+)' format
+  export function colorFromCss(css: string, fallback: Color = new Color(0, 0, 0)): Color {
+    let re = /rgba\((\d+), (\d+), (\d+), (\d+)\)/
+    let result = re.exec(css)
+    if (result === null) {
+      return fallback
+    }
+    return new Color(Number(result[1]), Number(result[2]), Number(result[3]), Number(result[4]))
+  }
 }
