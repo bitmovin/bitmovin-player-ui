@@ -386,6 +386,10 @@ export namespace ColorUtils {
     }
     return new Color(Number(vals[0]), Number(vals[1]), Number(vals[2]), Number(vals[3]));
   }
+
+  // Transparent black and opaque white default colors for background and foreground
+  export const background = new Color(0, 0, 0, 0);
+  export const foreground = new Color(255, 255, 255, 1)
 }
 
 export namespace Storage {

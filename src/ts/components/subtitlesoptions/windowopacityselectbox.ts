@@ -30,7 +30,7 @@ export class WindowOpacitySelectBox extends SelectBox {
     if (Storage.hasLocalStorage()) {
       let color = window.localStorage.getItem('windowColor');
       if (color != null) {
-        let col = ColorUtils.colorFromCss(color);
+        let col = ColorUtils.colorFromCss(color, ColorUtils.background);
         this.selectItem(col.a.toString());
       }
     }

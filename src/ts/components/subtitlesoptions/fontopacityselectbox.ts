@@ -29,7 +29,7 @@ export class FontOpacitySelectBox extends SelectBox {
     if (Storage.hasLocalStorage()) {
       let color = window.localStorage.getItem('fontColor');
       if (color != null) {
-        let col = ColorUtils.colorFromCss(color);
+        let col = ColorUtils.colorFromCss(color, ColorUtils.foreground);
         this.selectItem(col.a.toString());
       }
     }

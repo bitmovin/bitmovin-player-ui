@@ -34,7 +34,7 @@ export class FontColorSelectBox extends SelectBox {
     if (Storage.hasLocalStorage()) {
       let color = window.localStorage.getItem('fontColor');
       if (color != null) {
-        let col = ColorUtils.colorFromCss(color);
+        let col = ColorUtils.colorFromCss(color, ColorUtils.foreground);
         col.a = 1; // All colors are defined with default opacity
         this.selectItem(col.toCSS());
       }

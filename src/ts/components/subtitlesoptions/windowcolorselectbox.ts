@@ -32,11 +32,11 @@ export class WindowColorSelectBox extends SelectBox {
     this.selectItem('rgba(0, 0, 0, 1)');
 
     if (Storage.hasLocalStorage()) {
-      let color = window.localStorage.getItem('windowColor')
+      let color = window.localStorage.getItem('windowColor');
       if (color != null) {
-        let col = ColorUtils.colorFromCss(color)
-        col.a = 1
-        this.selectItem(col.toCSS())
+        let col = ColorUtils.colorFromCss(color, ColorUtils.background);
+        col.a = 1;
+        this.selectItem(col.toCSS());
       }
     }
 

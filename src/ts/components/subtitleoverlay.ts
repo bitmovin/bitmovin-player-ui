@@ -31,9 +31,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
     this.config = this.mergeConfig( config, <SubtitleOverlayConfig>{
         cssClass: 'ui-subtitle-overlay',
-        fontColor: new ColorUtils.Color(255, 255, 255, 1),
-        backgroundColor: new ColorUtils.Color(0, 0, 0, 0),
-        windowColor: new ColorUtils.Color(0, 0, 0, 0),
+        fontColor: ColorUtils.foreground,
+        backgroundColor: ColorUtils.background,
+        windowColor: ColorUtils.background,
         family: '',
         fontVariant: 'normal',
         characterEdge: '',
@@ -44,15 +44,15 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       let store = window.localStorage
       let fontColor = store.getItem('fontColor')
       if (fontColor != null) {
-        this.config.fontColor = ColorUtils.colorFromCss(fontColor)
+        this.config.fontColor = ColorUtils.colorFromCss(fontColor, ColorUtils.foreground)
       }
       let backgroundColor = store.getItem('backgroundColor')
       if (backgroundColor != null) {
-        this.config.backgroundColor = ColorUtils.colorFromCss(backgroundColor)
+        this.config.backgroundColor = ColorUtils.colorFromCss(backgroundColor, ColorUtils.background)
       }
       let windowColor = store.getItem('windowColor')
       if (windowColor != null) {
-        this.config.windowColor = ColorUtils.colorFromCss(windowColor)
+        this.config.windowColor = ColorUtils.colorFromCss(windowColor, ColorUtils.background)
         this.getDomElement().css('backgroundColor', this.config.windowColor.toCSS())
       }
       let family = store.getItem('family')
