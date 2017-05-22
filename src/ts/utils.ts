@@ -374,14 +374,14 @@ export namespace ColorUtils {
       return fallback
     }
     let end = css.indexOf(')')
-    if (end !== css.length-1) {
+    if (end !== css.length - 1) {
       return fallback
     }
     if (end !== css.lastIndexOf(')')) {
       return fallback
     }
     let vals = css.slice(5, end).split(',')
-    if (vals.length != 4) {
+    if (vals.length !== 4) {
       return fallback
     }
     return new Color(Number(vals[0]), Number(vals[1]), Number(vals[2]), Number(vals[3]));
@@ -399,7 +399,7 @@ export namespace Storage {
         storage.removeItem(x);
         return true;
     }
-    catch(e) {
+    catch (e) {
         return e instanceof DOMException && (
             // everything except Firefox
             e.code === 22 ||

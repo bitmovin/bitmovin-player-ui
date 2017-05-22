@@ -7,7 +7,7 @@ import {ControlBar} from './controlbar';
 import {ColorUtils, Storage} from '../utils';
 import {DOM} from '../dom';
 
-export interface SubtitleOverlayConfig extends ContainerConfig{
+export interface SubtitleOverlayConfig extends ContainerConfig {
   fontColor?: ColorUtils.Color;
   backgroundColor?: ColorUtils.Color;
   windowColor?: ColorUtils.Color;
@@ -29,7 +29,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   constructor(config: SubtitleOverlayConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig( config, <SubtitleOverlayConfig>{ 
+    this.config = this.mergeConfig( config, <SubtitleOverlayConfig>{
         cssClass: 'ui-subtitle-overlay',
         fontColor: new ColorUtils.Color(255, 255, 255, 1),
         backgroundColor: new ColorUtils.Color(0, 0, 0, 0),
