@@ -140,14 +140,16 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     return this.getDomElement().find('.bmpui-ui-subtitle-label')
   }
   setColor(color: string) {
-    this.config.fontColor = ColorUtils.colorFromName(color);
+    let col = ColorUtils.colorFromCss(color);
+    col.a = this.config.fontColor.a
+    this.config.fontColor = col
     this.getSubtitleLabel().css('color', this.config.fontColor.toCSS());
     if (this.config.hasLocalStorage) {
       window.localStorage.setItem('fontColor', this.config.fontColor.toCSS());
     }
   }
   setBackgroundColor(color: string) {
-    let backgroundColor = ColorUtils.colorFromName(color);
+    let backgroundColor = ColorUtils.colorFromCss(color);
     if (! this.config.backgroundColor.a || this.config.backgroundColor.a === 0) {
       // 25%  opacity at least
       backgroundColor.a = 0.25;
@@ -161,7 +163,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
   }
   setWindowColor(color: string) {
-    let windowColor = ColorUtils.colorFromName(color);
+    let windowColor = ColorUtils.colorFromCss(color);
     if (! this.config.windowColor.a || this.config.windowColor.a === 0) {
       // 25%  opacity at least
       windowColor.a = 0.25;

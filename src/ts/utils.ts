@@ -367,23 +367,6 @@ export namespace ColorUtils {
     }
   }
 
-  export function colorFromName(name: string): Color {
-    let matcher: {[name: string]: Color} = {
-      'white': new Color(0, 0, 0),
-      'black': new Color(0, 0, 0),
-      'red': new Color(255, 0, 0),
-      'green': new Color(0, 255 , 0),
-      'blue': new Color(0, 0, 255),
-      'cyan': new Color(0, 255, 255),
-      'yellow': new Color(255, 255, 0),
-      'magenta': new Color(255, 0, 255),
-    }
-    if (matcher[name]) {
-      return matcher[name]
-    }
-     return new Color(0, 0, 0);
-  }
-
   // colorFromCss is used to get a color value from localstorage since an objec can't be stored
   // Only parses value in the 'rgba(number, number, number, number)' format
   export function colorFromCss(css: string, fallback: Color = new Color(0, 0, 0)): Color {
