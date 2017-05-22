@@ -2,6 +2,7 @@ import {SelectBox} from '../selectbox';
 import {ListSelectorConfig} from '../listselector';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay'
+import {ColorUtils, Storage} from '../../utils';
 
 /**
  * A select box providing a selection of different font colors.
@@ -24,6 +25,14 @@ export class FontOpacitySelectBox extends SelectBox {
     this.addItem('1', '100%');
 
     this.selectItem('1');
+
+    if (Storage.hasLocalStorage()) {
+      let color = window.localStorage.getItem('fontColor');
+      if (color != null) {
+        let col = ColorUtils.colorFromCss(color);
+        this.selectItem(col.a.toString());
+      }
+    }
 
     this.onItemSelected.subscribe((sender: FontOpacitySelectBox, value: string) => {
       this.overlay.setFontOpacity(Number(value));

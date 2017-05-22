@@ -2,6 +2,7 @@ import {SelectBox} from '../selectbox';
 import {ListSelectorConfig} from '../listselector';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay'
+import {ColorUtils, Storage} from '../../utils';
 
 /**
  * A select box providing a selection of different background colors.
@@ -29,6 +30,15 @@ export class WindowColorSelectBox extends SelectBox {
 
     // black is the default value
     this.selectItem('rgba(0, 0, 0, 1)');
+
+    if (Storage.hasLocalStorage()) {
+      let color = window.localStorage.getItem('windowColor')
+      if (color != null) {
+        let col = ColorUtils.colorFromCss(color)
+        col.a = 1
+        this.selectItem(col.toCSS())
+      }
+    }
 
     this.onItemSelected.subscribe((sender: WindowColorSelectBox, value: string) => {
       this.overlay.setWindowColor(value)
