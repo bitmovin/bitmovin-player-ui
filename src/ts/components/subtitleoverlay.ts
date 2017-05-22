@@ -4,7 +4,7 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
-import {ColorUtils} from '../utils';
+import {ColorUtils, Storage} from '../utils';
 import {DOM} from '../dom';
 
 export interface SubtitleOverlayConfig extends ContainerConfig{
@@ -15,7 +15,9 @@ export interface SubtitleOverlayConfig extends ContainerConfig{
   fontVariant?: string;
   characterEdge?: string;
   size?: number;
+  hasLocalStorage?: boolean;
 }
+
 /**
  * Overlays the player to display subtitles.
  */
@@ -37,6 +39,39 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         characterEdge: '',
         size: 1.2,
       }, this.config);
+    if (Storage.hasLocalStorage()) {
+      this.config.hasLocalStorage = true
+      let store = window.localStorage
+      let fontColor = store.getItem('fontColor')
+      if (fontColor != null) {
+        this.config.fontColor = ColorUtils.colorFromCss(fontColor)
+      }
+      let backgroundColor = store.getItem('backgroundColor')
+      if (backgroundColor != null) {
+        this.config.backgroundColor = ColorUtils.colorFromCss(backgroundColor)
+      }
+      let windowColor = store.getItem('windowColor')
+      if (windowColor != null) {
+        this.config.windowColor = ColorUtils.colorFromCss(windowColor)
+        this.getDomElement().css('backgroundColor', this.config.windowColor.toCSS())
+      }
+      let family = store.getItem('family')
+      if (family != null) {
+        this.config.family = family
+      }
+      let fontVariant = store.getItem('fontVariant')
+      if (fontVariant != null) {
+        this.config.fontVariant = fontVariant
+      }
+      let characterEdge = store.getItem('characterEdge')
+      if (characterEdge != null) {
+        this.config.characterEdge = characterEdge
+      }
+      let size = store.getItem('size')
+      if (size != null) {
+        this.config.size = Number(size)
+      }
+    }
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
@@ -107,6 +142,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   setColor(color: string) {
     this.config.fontColor = ColorUtils.colorFromName(color);
     this.getSubtitleLabel().css('color', this.config.fontColor.toCSS());
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem('fontColor', this.config.fontColor.toCSS());
+    }
   }
   setBackgroundColor(color: string) {
     let backgroundColor = ColorUtils.colorFromName(color);
@@ -118,6 +156,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
     this.config.backgroundColor = backgroundColor;
     this.getSubtitleLabel().css('background', this.config.backgroundColor.toCSS());
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem('backgroundColor', this.config.backgroundColor.toCSS());
+    }
   }
   setWindowColor(color: string) {
     let windowColor = ColorUtils.colorFromName(color);
@@ -129,18 +170,30 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
     this.config.windowColor = windowColor;
     this.getDomElement().css('background', this.config.windowColor.toCSS());
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem('windowColor', this.config.windowColor.toCSS());
+    }
   }
   setFontOpacity(alpha: number) {
     this.config.fontColor.a = alpha;
     this.getSubtitleLabel().css('color', this.config.fontColor.toCSS());
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem('fontColor', this.config.fontColor.toCSS());
+    }
   }
   setBackgroundOpacity(alpha: number) {
     this.config.backgroundColor.a = alpha;
     this.getDomElement().css('background', this.config.backgroundColor.toCSS());
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem('backgroundColor', this.config.backgroundColor.toCSS());
+    }
   }
   setWindowOpacity(alpha: number) {
     this.config.windowColor.a = alpha;
     this.getSubtitleLabel().css('background', this.config.windowColor.toCSS());
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem('windowColor', this.config.windowColor.toCSS());
+    }
   }
   setFontFamily(family: string) {
     // clear previous state, so that switching to small caps doesn' affect further font changes
@@ -153,14 +206,24 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       this.getSubtitleLabel().css('font-family', family);
       this.config.family = family;
     }
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem('family', this.config.family);
+      window.localStorage.setItem('font-variant', this.config.fontVariant);
+    }
   }
   setCharacterEdge(characterEdge: string) {
     this.config.characterEdge = characterEdge;
     this.getSubtitleLabel().css('text-shadow', characterEdge);
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem('characterEdge', this.config.characterEdge);
+    }
   }
   setFontSize(coefficient: number) {
     this.config.size = 1.2 * coefficient;
     this.getSubtitleLabel().css('font-size', `${this.config.size}em`)
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem('size', this.config.size.toString().toString());
+    }
   }
 }
 

@@ -385,13 +385,50 @@ export namespace ColorUtils {
   }
 
   // colorFromCss is used to get a color value from localstorage since an objec can't be stored
-  // Only parses value in the 'rgba(\d+, \d+, \d+, \d+)' format
+  // Only parses value in the 'rgba(number, number, number, number)' format
   export function colorFromCss(css: string, fallback: Color = new Color(0, 0, 0)): Color {
-    let re = /rgba\((\d+), (\d+), (\d+), (\d+)\)/
-    let result = re.exec(css)
-    if (result === null) {
+    if (!css.startsWith('rgba(')) {
       return fallback
     }
-    return new Color(Number(result[1]), Number(result[2]), Number(result[3]), Number(result[4]))
+    let end = css.indexOf(')')
+    if (end !== css.length-1) {
+      return fallback
+    }
+    if (end !== css.lastIndexOf(')')) {
+      return fallback
+    }
+    let vals = css.slice(5, end).split(',')
+    if (vals.length != 4) {
+      return fallback
+    }
+    return new Color(Number(vals[0]), Number(vals[1]), Number(vals[2]), Number(vals[3]));
+  }
+}
+
+export namespace Storage {
+  // hasLocalStorage is used to safely ensure we can use localStorage
+  // taken from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
+  export function hasLocalStorage(): boolean {
+    try {
+        var storage = window['localStorage'],
+            x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch(e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            storage.length !== 0;
+    }
   }
 }
