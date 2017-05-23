@@ -1,7 +1,8 @@
 import {SelectBox} from '../selectbox';
 import {ListSelectorConfig} from '../listselector';
 import {UIInstanceManager} from '../../uimanager';
-import {SubtitleOverlay} from '../subtitleoverlay'
+import {SubtitleOverlay} from '../subtitleoverlay';
+import {Storage} from '../../utils';
 
 /**
  * A select box providing a selection of different font familly.
@@ -28,6 +29,13 @@ export class FontFamillySelectBox extends SelectBox {
     this.addItem('small-caps', 'small capital');
 
     this.selectItem('default');
+
+    if (Storage.hasLocalStorage()) {
+      let family = window.localStorage.getItem('family');
+      if (family != null) {
+        this.selectItem(family);
+      }
+    }
 
     this.onItemSelected.subscribe((sender: FontFamillySelectBox, value: string) => {
       this.overlay.setFontFamily(value);

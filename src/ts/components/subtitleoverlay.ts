@@ -14,6 +14,7 @@ export interface SubtitleOverlayConfig extends ContainerConfig {
   family?: string;
   fontVariant?: string;
   characterEdge?: string;
+  coef?: number;
   size?: number;
   hasLocalStorage?: boolean;
 }
@@ -37,6 +38,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         family: '',
         fontVariant: 'normal',
         characterEdge: '',
+        coef: 1,
         size: 1.2,
       }, this.config);
     if (Storage.hasLocalStorage()) {
@@ -67,9 +69,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       if (characterEdge != null) {
         this.config.characterEdge = characterEdge
       }
-      let size = store.getItem('size')
-      if (size != null) {
-        this.config.size = Number(size)
+      let coef = store.getItem('coef')
+      if (coef != null) {
+        this.config.coef = Number(coef)
       }
     }
   }
@@ -88,7 +90,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       labelToAdd.getDomElement().css('font-variant', config.fontVariant)
       labelToAdd.getDomElement().css('font-family', config.family)
       labelToAdd.getDomElement().css('text-shadow', config.characterEdge)
-      labelToAdd.getDomElement().css('font-size', `${config.size}em`)
+      labelToAdd.getDomElement().css('font-size', `${config.size * config.coef}em`)
 
       this.addComponent(labelToAdd);
       this.updateComponents();
@@ -221,10 +223,11 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
   }
   setFontSize(coefficient: number) {
-    this.config.size = 1.2 * coefficient;
-    this.getSubtitleLabel().css('font-size', `${this.config.size}em`)
+    this.config.coef = coefficient;
+    console.log(`${this.config.size * this.config.coef}em`)
+    this.getSubtitleLabel().css('font-size', `${this.config.size * this.config.coef}em`)
     if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('size', this.config.size.toString().toString());
+      window.localStorage.setItem('coef', this.config.coef.toString());
     }
   }
 }

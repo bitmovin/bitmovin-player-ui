@@ -1,7 +1,8 @@
 import {SelectBox} from '../selectbox';
 import {ListSelectorConfig} from '../listselector';
 import {UIInstanceManager} from '../../uimanager';
-import {SubtitleOverlay} from '../subtitleoverlay'
+import {SubtitleOverlay} from '../subtitleoverlay';
+import {Storage} from '../../utils';
 
 /**
  * A select box providing a selection of different font colors.
@@ -26,7 +27,14 @@ export class FontSizeSelectBox extends SelectBox {
     this.addItem('3', '300%');
     this.addItem('4', '400%');
 
-    this.selectItem('100%');
+    this.selectItem('1');
+
+    if (Storage.hasLocalStorage()) {
+      let coef = window.localStorage.getItem('coef')
+      if (coef != null) {
+        this.selectItem(coef)
+      }
+    }
 
     this.onItemSelected.subscribe((sender: FontSizeSelectBox, value: string) => {
       this.overlay.setFontSize(Number(value))
