@@ -36,8 +36,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
 
-      this.removeComponent(labelToRemove);
-      this.updateComponents();
+      if (labelToRemove) {
+        this.removeComponent(labelToRemove);
+        this.updateComponents();
+      }
 
       if (!subtitleManager.hasCues) {
         this.hide();
@@ -134,15 +136,21 @@ class ActiveSubtitleManager {
   }
 
   /**
-   * Removes the subtitle cue from the manager and returns the label that should be removed from the subtitle overlay.
+   * Removes the subtitle cue from the manager and returns the label that should be removed from the subtitle overlay,
+   * or null if there is no associated label existing (e.g. because all labels have been {@link #clear cleared}.
    * @param event
-   * @return {SubtitleLabel}
+   * @return {SubtitleLabel|null}
    */
   cueExit(event: SubtitleCueEvent): SubtitleLabel {
     let id = ActiveSubtitleManager.calculateId(event);
     let activeSubtitleCue = this.activeSubtitleCueMap[id];
-    delete this.activeSubtitleCueMap[id];
-    return activeSubtitleCue.label;
+
+    if (activeSubtitleCue) {
+      delete this.activeSubtitleCueMap[id];
+      return activeSubtitleCue.label;
+    } else {
+      return null;
+    }
   }
 
   /**

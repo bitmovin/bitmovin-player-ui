@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fix crash of Gulp `serve` task on HTML file changes
 - Fix `SeekBar` in legacy skin did not hide on `hide()`
 - Fix missing audio track selection box in Safari with player 7.1.2 and 7.1.3
+- Fix error in `SubtitleOverlay` when trying to remove an already cleared subtitle cue
 
 ## [2.2.0]
 
