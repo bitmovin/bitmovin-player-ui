@@ -67,6 +67,15 @@ export interface UIConfig {
     markers?: TimelineMarker[];
   };
   recommendations?: UIRecommendationConfig[];
+  captions?: {
+    fontColor?: string;
+    backgroundColor?: string;
+    windowColor?: string;
+    family?: string;
+    fontVariant?: string;
+    characterEdge?: string;
+    coef?: number;
+  }
 }
 
 /**
