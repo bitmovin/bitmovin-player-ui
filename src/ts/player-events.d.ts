@@ -154,7 +154,7 @@ declare namespace bitmovin {
       targetAudio: AudioTrack;
     }
 
-    interface AudioEvent extends PlayerEvent {
+    interface AudioTrackEvent extends PlayerEvent {
       /**
        * The concerned audio track
        */
