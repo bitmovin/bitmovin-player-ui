@@ -19,7 +19,7 @@ import {AudioTrackSelectBox} from './components/audiotrackselectbox';
 import {SeekBarLabel} from './components/seekbarlabel';
 import {VolumeSlider} from './components/volumeslider';
 import {SubtitleSelectBox} from './components/subtitleselectbox';
-import {SubtitleOverlay} from './components/subtitleoverlay';
+import {SubtitleOverlay, SubtitleOverlayConfig} from './components/subtitleoverlay';
 import {SubtitleOptionsToggle} from './components/subtitleoptiontoggle';
 import {VolumeControlButton} from './components/volumecontrolbutton';
 import {CastToggleButton} from './components/casttogglebutton';
@@ -34,7 +34,7 @@ import {AdClickOverlay} from './components/adclickoverlay';
 import EVENT = bitmovin.PlayerAPI.EVENT;
 import PlayerEventCallback = bitmovin.PlayerAPI.PlayerEventCallback;
 import AdStartedEvent = bitmovin.PlayerAPI.AdStartedEvent;
-import {ArrayUtils, UIUtils, BrowserUtils} from './utils';
+import {ArrayUtils, UIUtils, BrowserUtils, ColorUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
@@ -354,8 +354,33 @@ export namespace UIManager.Factory {
     return UIManager.Factory.buildModernCastReceiverUI(player, config);
   }
 
-  function modernUI() {
-    let overlay = new SubtitleOverlay();
+  // extractSubtitleOverlayConfig takes the subtitle sstyling option from the UIConfig
+  // and translate it to use proper classes where required
+  // user only have to input string
+  function extractSubtitleOverlayConfig(config: UIConfig): SubtitleOverlayConfig {
+    if (config.captions == null) {
+      return {}
+    }
+    let conf = config.captions;
+    let res: SubtitleOverlayConfig = {};
+    if (conf.backgroundColor != null) {
+      res.backgroundColor = ColorUtils.colorFromCss(conf.backgroundColor)
+    }
+    if (conf.fontColor != null) {
+      res.fontColor = ColorUtils.colorFromCss(conf.fontColor)
+    }
+    if (conf.windowColor != null) {
+      res.windowColor = ColorUtils.colorFromCss(conf.windowColor)
+    }
+    res.family = conf.family
+    res.fontVariant = conf.fontVariant
+    res.characterEdge = conf.characterEdge
+    res.characterEdge = conf.characterEdge
+    return res
+  }
+
+  function modernUI(config: SubtitleOverlayConfig) {
+    let overlay = new SubtitleOverlay(config);
     let subtitlesOptionList = GetSubtitleOptionList(overlay);
     let defaultComponents = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -552,7 +577,6 @@ export namespace UIManager.Factory {
   export function buildModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     // show smallScreen UI only on mobile/handheld devices
     let smallScreenSwitchWidth = 600;
-
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
@@ -569,7 +593,7 @@ export namespace UIManager.Factory {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
       }
     }, {
-      ui: modernUI()
+      ui: modernUI(extractSubtitleOverlayConfig(config))
     }], config);
   }
 

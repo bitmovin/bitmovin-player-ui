@@ -41,6 +41,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         coef: 1,
         size: 1.2,
       }, this.config);
+
     if (Storage.hasLocalStorage()) {
       this.config.hasLocalStorage = true
       let store = window.localStorage
@@ -55,7 +56,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       let windowColor = store.getItem('windowColor')
       if (windowColor != null) {
         this.config.windowColor = ColorUtils.colorFromCss(windowColor, ColorUtils.background)
-        this.getDomElement().css('backgroundColor', this.config.windowColor.toCSS())
       }
       let family = store.getItem('family')
       if (family != null) {
@@ -73,6 +73,11 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       if (coef != null) {
         this.config.coef = Number(coef)
       }
+    }
+    // This css property isn't applied to the subtitle cue
+    // and therefore shoud be applied now
+    if (this.config.windowColor != null) {
+        this.getDomElement().css('backgroundColor', this.config.windowColor.toCSS())
     }
   }
 
