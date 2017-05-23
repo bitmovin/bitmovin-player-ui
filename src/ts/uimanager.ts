@@ -67,7 +67,7 @@ export interface UIConfig {
     markers?: TimelineMarker[];
   };
   recommendations?: UIRecommendationConfig[];
-  captions?: {
+  subtitles?: {
     fontColor?: string;
     backgroundColor?: string;
     windowColor?: string;
@@ -358,10 +358,10 @@ export namespace UIManager.Factory {
   // and translate it to use proper classes where required
   // user only have to input string
   function extractSubtitleOverlayConfig(config: UIConfig): SubtitleOverlayConfig {
-    if (config.captions == null) {
+    if (config.subtitles == null) {
       return {}
     }
-    let conf = config.captions;
+    let conf = config.subtitles;
     let res: SubtitleOverlayConfig = {};
     if (conf.backgroundColor != null) {
       res.backgroundColor = ColorUtils.colorFromCss(conf.backgroundColor)
