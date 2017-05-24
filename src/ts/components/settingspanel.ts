@@ -123,6 +123,17 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   }
 
   /**
+   * Adds a child component to the container.
+   * It will be present both in default component and subtitles related components
+   * @param component the component to add
+   */
+  addComponent(component: Component<ComponentConfig>) {
+    let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
+    config.components.push(component)
+    config.defaultComponents.push(component)
+    config.subtitlesComponents.push(component)
+  };
+  /**
    * Checks if there are active settings within this settings panel. An active setting is a setting that is visible
    * and enabled, which the user can interact with.
    * @returns {boolean} true if there are active settings, false if the panel is functionally empty to a user
