@@ -18,6 +18,12 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
   configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
+    if (!player.isPictureInPictureAvailable) {
+      // If the player does not support PIP (player 7.0), we just hide this component and skip configuration
+      this.hide();
+      return;
+    }
+
     this.onClick.subscribe(() => {
       if (player.isPictureInPictureAvailable()) {
         if (player.isPictureInPicture()) {

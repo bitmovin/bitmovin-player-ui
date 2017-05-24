@@ -6,12 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Develop
 
+UI does not crash any more when used with player 7.0, all other restrictions explained in [2.0.0](#200) still apply.
+
 ### Added
 - Display subtitles in `SubtitleOverlay` with HTML markup if available instead of the plain text
 - Update `AudioTrackSelectionBox` on new `ON_AUDIO_ADDED`/`ON_AUDIO_REMOVED` events in player 7.1.4 / 7.2.0
 
 ### Changed
 - Detect live streams and time shift availability when configuring dependent components (`PlaybackTimeLabel`, `PlaybackToggleButton`, `SeekBar`) to adjust their mode independently from the player state changes
+- Skip configuration of `PictureInPictureToggleButton` and `AirPlayToggleButton` and hide the components if functionality is not supported (when used with player 7.0)
 
 ### Fixed
 - Fix settings panel closing when an option select box is open
