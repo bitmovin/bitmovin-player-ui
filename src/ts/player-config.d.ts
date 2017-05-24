@@ -1,6 +1,6 @@
 declare namespace bitmovin {
 
-  namespace player {
+  namespace PlayerAPI {
 
     interface ProgressiveSourceConfig {
       /**

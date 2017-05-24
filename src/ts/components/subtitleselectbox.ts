@@ -1,9 +1,9 @@
 import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
-import SubtitleAddedEvent = bitmovin.player.SubtitleAddedEvent;
-import SubtitleChangedEvent = bitmovin.player.SubtitleChangedEvent;
-import SubtitleRemovedEvent = bitmovin.player.SubtitleRemovedEvent;
+import SubtitleAddedEvent = bitmovin.PlayerAPI.SubtitleAddedEvent;
+import SubtitleChangedEvent = bitmovin.PlayerAPI.SubtitleChangedEvent;
+import SubtitleRemovedEvent = bitmovin.PlayerAPI.SubtitleRemovedEvent;
 
 /**
  * A select box providing a selection between available subtitle and caption tracks.
@@ -14,7 +14,7 @@ export class SubtitleSelectBox extends SelectBox {
     super(config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let updateSubtitles = () => {

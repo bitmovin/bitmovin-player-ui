@@ -11,7 +11,7 @@ export class AudioTrackSelectBox extends SelectBox {
     super(config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let updateAudioTracks = () => {

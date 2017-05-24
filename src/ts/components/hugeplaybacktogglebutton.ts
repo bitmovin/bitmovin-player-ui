@@ -2,7 +2,7 @@ import {ToggleButtonConfig} from './togglebutton';
 import {PlaybackToggleButton} from './playbacktogglebutton';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
-import PlayerEvent = bitmovin.player.PlayerEvent;
+import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 
 /**
  * A button that overlays the video and toggles between playback and pause.
@@ -18,7 +18,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     // Update button state through API events
     super.configure(player, uimanager, false);
 

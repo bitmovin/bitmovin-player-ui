@@ -11,7 +11,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     super(config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.addItem('0.25', '0.25x');

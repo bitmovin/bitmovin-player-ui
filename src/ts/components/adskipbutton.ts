@@ -1,6 +1,6 @@
 import {ButtonConfig, Button} from './button';
 import {UIInstanceManager} from '../uimanager';
-import SkipMessage = bitmovin.player.SkipMessage;
+import SkipMessage = bitmovin.PlayerAPI.SkipMessage;
 import {StringUtils} from '../utils';
 
 /**
@@ -27,12 +27,12 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
     let skipMessage = config.skipMessage;
-    let adEvent = <bitmovin.player.AdStartedEvent>null;
+    let adEvent = <bitmovin.PlayerAPI.AdStartedEvent>null;
 
     let updateSkipMessageHandler = () => {
       // Display this button only if ad is skippable
@@ -51,7 +51,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       }
     };
 
-    let adStartHandler = (event: bitmovin.player.AdStartedEvent) => {
+    let adStartHandler = (event: bitmovin.PlayerAPI.AdStartedEvent) => {
       adEvent = event;
       skipMessage = adEvent.skipMessage || skipMessage;
       updateSkipMessageHandler();

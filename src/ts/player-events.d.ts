@@ -1,6 +1,6 @@
 declare namespace bitmovin {
 
-  namespace player {
+  namespace PlayerAPI {
 
     /**
      * The events that are exposed by the player API are strings.

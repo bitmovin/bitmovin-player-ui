@@ -44,7 +44,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     uimanager.onSeekPreview.subscribe((sender, args: SeekPreviewArgs) => {
@@ -104,7 +104,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * Sets or removes a thumbnail on the label.
    * @param thumbnail the thumbnail to display on the label or null to remove a displayed thumbnail
    */
-  setThumbnail(thumbnail: bitmovin.player.Thumbnail = null) {
+  setThumbnail(thumbnail: bitmovin.PlayerAPI.Thumbnail = null) {
     let thumbnailElement = this.thumbnail.getDomElement();
 
     if (thumbnail == null) {

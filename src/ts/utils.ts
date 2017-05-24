@@ -88,7 +88,7 @@ export namespace StringUtils {
    * @param player the player to get the time data from
    * @returns {string} the ad message with filled placeholders
    */
-  export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: bitmovin.player.Player) {
+  export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: bitmovin.PlayerAPI) {
     let adMessagePlaceholderRegex = new RegExp(
       '\\{(remainingTime|playedTime|adDuration)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g'
@@ -182,7 +182,7 @@ export namespace StringUtils {
 
 export namespace PlayerUtils {
 
-  import Player = bitmovin.player.Player;
+  import PlayerAPI = bitmovin.PlayerAPI;
 
   export enum PlayerState {
     IDLE,
@@ -192,15 +192,15 @@ export namespace PlayerUtils {
     FINISHED,
   }
 
-  export function isSourceLoaded(player: Player): boolean {
+  export function isSourceLoaded(player: bitmovin.PlayerAPI): boolean {
     return player.getConfig().source !== undefined;
   }
 
-  export function isTimeShiftAvailable(player: Player): boolean {
+  export function isTimeShiftAvailable(player: bitmovin.PlayerAPI): boolean {
     return player.isLive() && player.getMaxTimeShift() !== 0;
   }
 
-  export function getState(player: Player): PlayerState {
+  export function getState(player: PlayerAPI): PlayerState {
     if (player.hasEnded()) {
       return PlayerState.FINISHED;
     } else if (player.isPlaying()) {
@@ -220,11 +220,11 @@ export namespace PlayerUtils {
 
   export class TimeShiftAvailabilityDetector {
 
-    private player: Player;
+    private player: PlayerAPI;
     private timeShiftAvailable: boolean;
-    private timeShiftAvailabilityChangedEvent = new EventDispatcher<Player, TimeShiftAvailabilityChangedArgs>();
+    private timeShiftAvailabilityChangedEvent = new EventDispatcher<PlayerAPI, TimeShiftAvailabilityChangedArgs>();
 
-    constructor(player: Player) {
+    constructor(player: PlayerAPI) {
       this.player = player;
       this.timeShiftAvailable = undefined;
 
@@ -250,7 +250,7 @@ export namespace PlayerUtils {
       }
     }
 
-    get onTimeShiftAvailabilityChanged(): Event<Player, TimeShiftAvailabilityChangedArgs> {
+    get onTimeShiftAvailabilityChanged(): Event<PlayerAPI, TimeShiftAvailabilityChangedArgs> {
       return this.timeShiftAvailabilityChangedEvent.getEvent();
     }
   }
@@ -273,11 +273,11 @@ export namespace PlayerUtils {
    */
   export class LiveStreamDetector {
 
-    private player: Player;
+    private player: PlayerAPI;
     private live: boolean;
-    private liveChangedEvent = new EventDispatcher<Player, LiveStreamDetectorEventArgs>();
+    private liveChangedEvent = new EventDispatcher<PlayerAPI, LiveStreamDetectorEventArgs>();
 
-    constructor(player: Player) {
+    constructor(player: PlayerAPI) {
       this.player = player;
       this.live = undefined;
 
@@ -308,7 +308,7 @@ export namespace PlayerUtils {
       }
     }
 
-    get onLiveChanged(): Event<Player, LiveStreamDetectorEventArgs> {
+    get onLiveChanged(): Event<PlayerAPI, LiveStreamDetectorEventArgs> {
       return this.liveChangedEvent.getEvent();
     }
   }

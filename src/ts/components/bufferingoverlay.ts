@@ -39,7 +39,7 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <BufferingOverlayConfig>this.getConfig();
