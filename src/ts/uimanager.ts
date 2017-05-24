@@ -472,15 +472,21 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernSmallScreenUI() {
-    let settingsPanel = new SettingsPanel({
-      components: [
+  function modernSmallScreenUI(config: SubtitleOverlayConfig) {
+    let subtitleOverlay = new SubtitleOverlay(config);
+    let subtitlesOptionList = GetSubtitleOptionList(subtitleOverlay);
+    let defaultComponents = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
-      ],
+        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
+        new SettingsPanelItem('Subtitles options', new SubtitleOptionsToggle()),
+    ]
+    let settingsPanel = new SettingsPanel({
+      components: defaultComponents.concat(subtitlesOptionList),
+      subtitlesComponents: subtitlesOptionList,
+      defaultComponents: defaultComponents,
       hidden: true,
       hideDelay: -1,
     });
@@ -501,7 +507,7 @@ export namespace UIManager.Factory {
 
     return new UIContainer({
       components: [
-        new SubtitleOverlay(),
+        subtitleOverlay,
         new BufferingOverlay(),
         new CastStatusOverlay(),
         new PlaybackToggleOverlay(),
@@ -547,7 +553,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernCastReceiverUI() {
+  function modernCastReceiverUI(config: SubtitleOverlayConfig) {
     let controlBar = new ControlBar({
       components: [
         new Container({
@@ -563,7 +569,7 @@ export namespace UIManager.Factory {
 
     return new CastUIContainer({
       components: [
-        new SubtitleOverlay(),
+        new SubtitleOverlay(config),
         new BufferingOverlay(),
         new PlaybackToggleOverlay(),
         new Watermark(),
@@ -588,7 +594,7 @@ export namespace UIManager.Factory {
         return context.isAdWithUI;
       }
     }, {
-      ui: modernSmallScreenUI(),
+      ui: modernSmallScreenUI(extractSubtitleOverlayConfig(config)),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
       }
@@ -604,12 +610,12 @@ export namespace UIManager.Factory {
         return context.isAdWithUI;
       }
     }, {
-      ui: modernSmallScreenUI()
+      ui: modernSmallScreenUI(extractSubtitleOverlayConfig(config))
     }], config);
   }
 
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, modernCastReceiverUI(), config);
+    return new UIManager(player, modernCastReceiverUI(extractSubtitleOverlayConfig(config)), config);
   }
 
   function legacyUI() {
