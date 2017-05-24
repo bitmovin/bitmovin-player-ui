@@ -1,7 +1,7 @@
 import {ButtonConfig, Button} from './button';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
-import PlayerEvent = bitmovin.player.PlayerEvent;
+import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 
 /**
  * A button to play/replay a video.
@@ -17,7 +17,7 @@ export class HugeReplayButton extends Button<ButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {

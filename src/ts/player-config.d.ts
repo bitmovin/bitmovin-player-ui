@@ -1,6 +1,6 @@
 declare namespace bitmovin {
 
-  namespace player {
+  namespace PlayerAPI {
 
     interface ProgressiveSourceConfig {
       /**
@@ -283,30 +283,34 @@ declare namespace bitmovin {
       licenseResponseType?: string;
     }
 
-    interface VRViewingWindowConfig {
+    interface VRControlConfig {
       /**
-       * Specifies how low the user can look. Valid values are from -90 to 90 (default: -90).
+       * Specifies the transition timing that shall be used for this control.
        */
-      minYaw: number;
+      transitionTimingType?: VR.TransitionTimingType;
       /**
-       * Specifies how high the user can look. Valid values are from -90 to 90 (default: 90).
+       * The time that a transition should take.
        */
-      maxYaw: number;
+      transitionTime?: number;
       /**
-       * Specifies how far left the user can look. Valid values are from 0 to 360 (default: 0).
+       * The maximum displacement speed in degrees per second. Default values are 90°/s for keyboard controls, and Infinity
+       * for mouse and API controls.
        */
-      minPitch: number;
+      maxDisplacementSpeed?: number;
+    }
+
+    interface VRKeyboardControlConfig extends VRControlConfig {
       /**
-       * Specifies how far right the user can look. Valid values are from 0 to 360 (default: 360).
+       * Specifies which keys should be used for the keyboard control.
        */
-      maxPitch: number;
+      keyMap?: VR.KeyMap;
     }
 
     interface VRConfig {
       /**
        * Specifies the type of the VR/360 content.
        */
-      contentType: VR.CONTENT_TYPE;
+      contentType: VR.ContentType;
       /**
        * Specifies if the video should start in stereo mode (true) or not (false, default).
        */
@@ -316,19 +320,43 @@ declare namespace bitmovin {
        */
       startPosition?: number;
       /**
-       * Set to true, an automatic rotation across the entire video will be executed.
-       */
-      initialRotation?: boolean;
-      /**
-       * Specifies the automatic rotation speed of the projection, if initialRotation is active.
-       */
-      initialRotationRate?: number;
-      /**
        * Specifies the angles the user can view around within the VR/360 video.
        * Per default, the user has no limitations.
        */
-      viewingWindow?: VRViewingWindowConfig;
-
+      viewingWindow?: VR.ViewingWindow;
+      /**
+       * Specifies whether the restricted inline playback shall be used or not.
+       */
+      restrictedInlinePlayback?: boolean;
+      /**
+       * Specifies whether performance measurements shall be enabled or not.
+       */
+      enableFrameRateMeasurements?: boolean;
+      /**
+       * Specifies the cardboard config.
+       */
+      cardboard?: string;
+      /**
+       * The threshold in degrees that the viewport can change before the ON_VR_VIEWING_DIRECTION_CHANGE event is
+       * triggered.
+       */
+      viewingDirectionChangeThreshold?: number;
+      /**
+       * The minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       */
+      viewingDirectionChangeEventInterval?: number;
+      /**
+       * The keyboard control config.
+       */
+      keyboardControl?: VRKeyboardControlConfig;
+      /**
+       * The mouse control config.
+       */
+      mouseControl?: VRControlConfig;
+      /**
+       * The api control config.
+       */
+      apiControl?: VRControlConfig;
     }
 
     interface SourceConfig {

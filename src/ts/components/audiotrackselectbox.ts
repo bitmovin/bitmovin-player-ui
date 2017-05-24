@@ -11,7 +11,7 @@ export class AudioTrackSelectBox extends SelectBox {
     super(config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let updateAudioTracks = () => {
@@ -44,6 +44,11 @@ export class AudioTrackSelectBox extends SelectBox {
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateAudioTracks);
     // Update tracks when a new source is loaded
     player.addEventHandler(player.EVENT.ON_READY, updateAudioTracks);
+    // Update tracks when a track is added or removed (since player 7.1.4)
+    if (player.EVENT.ON_AUDIO_ADDED && player.EVENT.ON_AUDIO_REMOVED) {
+      player.addEventHandler(player.EVENT.ON_AUDIO_ADDED, updateAudioTracks);
+      player.addEventHandler(player.EVENT.ON_AUDIO_REMOVED, updateAudioTracks);
+    }
 
     // Populate tracks at startup
     updateAudioTracks();

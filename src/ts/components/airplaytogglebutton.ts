@@ -15,8 +15,14 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    if (!player.isAirplayAvailable) {
+      // If the player does not support Airplay (player 7.0), we just hide this component and skip configuration
+      this.hide();
+      return;
+    }
 
     this.onClick.subscribe(() => {
       if (player.isAirplayAvailable()) {

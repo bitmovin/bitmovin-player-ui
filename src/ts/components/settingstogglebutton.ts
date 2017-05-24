@@ -38,7 +38,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     }, <SettingsToggleButtonConfig>this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <SettingsToggleButtonConfig>this.getConfig(); // TODO fix generics type inference

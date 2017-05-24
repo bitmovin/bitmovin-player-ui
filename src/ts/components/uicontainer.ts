@@ -3,7 +3,7 @@ import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../utils';
-import PlayerResizeEvent = bitmovin.player.PlayerResizeEvent;
+import PlayerResizeEvent = bitmovin.PlayerAPI.PlayerResizeEvent;
 import {CancelEventArgs} from '../eventdispatcher';
 
 /**
@@ -42,14 +42,14 @@ export class UIContainer extends Container<UIContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.configureUIShowHide(player, uimanager);
     this.configurePlayerStates(player, uimanager);
   }
 
-  private configureUIShowHide(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  private configureUIShowHide(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     let container = this.getDomElement();
     let config = <UIContainerConfig>this.getConfig();
 
@@ -135,7 +135,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
   }
 
-  private configurePlayerStates(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  private configurePlayerStates(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     let container = this.getDomElement();
 
     // Convert player states into CSS class names

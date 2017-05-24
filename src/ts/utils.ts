@@ -88,7 +88,7 @@ export namespace StringUtils {
    * @param player the player to get the time data from
    * @returns {string} the ad message with filled placeholders
    */
-  export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: bitmovin.player.Player) {
+  export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: bitmovin.PlayerAPI) {
     let adMessagePlaceholderRegex = new RegExp(
       '\\{(remainingTime|playedTime|adDuration)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g'
@@ -182,7 +182,7 @@ export namespace StringUtils {
 
 export namespace PlayerUtils {
 
-  import Player = bitmovin.player.Player;
+  import PlayerAPI = bitmovin.PlayerAPI;
 
   export enum PlayerState {
     IDLE,
@@ -192,15 +192,15 @@ export namespace PlayerUtils {
     FINISHED,
   }
 
-  export function isSourceLoaded(player: Player): boolean {
+  export function isSourceLoaded(player: bitmovin.PlayerAPI): boolean {
     return player.getConfig().source !== undefined;
   }
 
-  export function isTimeShiftAvailable(player: Player): boolean {
+  export function isTimeShiftAvailable(player: bitmovin.PlayerAPI): boolean {
     return player.isLive() && player.getMaxTimeShift() !== 0;
   }
 
-  export function getState(player: Player): PlayerState {
+  export function getState(player: PlayerAPI): PlayerState {
     if (player.hasEnded()) {
       return PlayerState.FINISHED;
     } else if (player.isPlaying()) {
@@ -220,21 +220,16 @@ export namespace PlayerUtils {
 
   export class TimeShiftAvailabilityDetector {
 
-    private timeShiftAvailabilityChangedEvent = new EventDispatcher<Player, TimeShiftAvailabilityChangedArgs>();
+    private player: PlayerAPI;
+    private timeShiftAvailable: boolean;
+    private timeShiftAvailabilityChangedEvent = new EventDispatcher<PlayerAPI, TimeShiftAvailabilityChangedArgs>();
 
-    constructor(player: Player) {
-      let timeShiftAvailable: boolean = undefined;
+    constructor(player: PlayerAPI) {
+      this.player = player;
+      this.timeShiftAvailable = undefined;
 
       let timeShiftDetector = () => {
-        if (player.isLive()) {
-          let timeShiftAvailableNow = PlayerUtils.isTimeShiftAvailable(player);
-
-          // When the availability changes, we fire the event
-          if (timeShiftAvailableNow !== timeShiftAvailable) {
-            this.timeShiftAvailabilityChangedEvent.dispatch(player, { timeShiftAvailable: timeShiftAvailableNow });
-            timeShiftAvailable = timeShiftAvailableNow;
-          }
-        }
+        this.detect();
       };
       // Try to detect timeshift availability in ON_READY, which works for DASH streams
       player.addEventHandler(player.EVENT.ON_READY, timeShiftDetector);
@@ -243,7 +238,19 @@ export namespace PlayerUtils {
       player.addEventHandler(player.EVENT.ON_TIME_CHANGED, timeShiftDetector);
     }
 
-    get onTimeShiftAvailabilityChanged(): Event<Player, TimeShiftAvailabilityChangedArgs> {
+    detect(): void {
+      if (this.player.isLive()) {
+        let timeShiftAvailableNow = PlayerUtils.isTimeShiftAvailable(this.player);
+
+        // When the availability changes, we fire the event
+        if (timeShiftAvailableNow !== this.timeShiftAvailable) {
+          this.timeShiftAvailabilityChangedEvent.dispatch(this.player, { timeShiftAvailable: timeShiftAvailableNow });
+          this.timeShiftAvailable = timeShiftAvailableNow;
+        }
+      }
+    }
+
+    get onTimeShiftAvailabilityChanged(): Event<PlayerAPI, TimeShiftAvailabilityChangedArgs> {
       return this.timeShiftAvailabilityChangedEvent.getEvent();
     }
   }
@@ -266,20 +273,16 @@ export namespace PlayerUtils {
    */
   export class LiveStreamDetector {
 
-    private liveChangedEvent = new EventDispatcher<Player, LiveStreamDetectorEventArgs>();
+    private player: PlayerAPI;
+    private live: boolean;
+    private liveChangedEvent = new EventDispatcher<PlayerAPI, LiveStreamDetectorEventArgs>();
 
-    constructor(player: Player) {
-      let live: boolean = undefined;
+    constructor(player: PlayerAPI) {
+      this.player = player;
+      this.live = undefined;
 
       let liveDetector = () => {
-        let liveNow = player.isLive();
-
-        // Compare current to previous live state flag and fire event when it changes. Since we initialize the flag
-        // with undefined, there is always at least an initial event fired that tells listeners the live state.
-        if (liveNow !== live) {
-          this.liveChangedEvent.dispatch(player, { live: liveNow });
-          live = liveNow;
-        }
+        this.detect();
       };
       // Initialize when player is ready
       player.addEventHandler(player.EVENT.ON_READY, liveDetector);
@@ -294,7 +297,18 @@ export namespace PlayerUtils {
       }
     }
 
-    get onLiveChanged(): Event<Player, LiveStreamDetectorEventArgs> {
+    detect(): void {
+      let liveNow = this.player.isLive();
+
+      // Compare current to previous live state flag and fire event when it changes. Since we initialize the flag
+      // with undefined, there is always at least an initial event fired that tells listeners the live state.
+      if (liveNow !== this.live) {
+        this.liveChangedEvent.dispatch(this.player, { live: liveNow });
+        this.live = liveNow;
+      }
+    }
+
+    get onLiveChanged(): Event<PlayerAPI, LiveStreamDetectorEventArgs> {
       return this.liveChangedEvent.getEvent();
     }
   }

@@ -41,7 +41,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
@@ -55,8 +55,12 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         // Activate timeout when shown
         this.hideTimeout.start();
       });
-      this.getDomElement().on('mousemove', () => {
-        // Reset timeout on interaction
+      this.getDomElement().on('mouseenter', () => {
+        // On mouse enter clear the timeout
+        this.hideTimeout.clear();
+      });
+      this.getDomElement().on('mouseleave', () => {
+        // On mouse leave activate the timeout
         this.hideTimeout.reset();
       });
       this.onHide.subscribe(() => {
@@ -154,7 +158,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     let handleConfigItemChanged = () => {
       // The minimum number of items that must be available for the setting to be displayed
       // By default, at least two items must be available, else a selection is not possible

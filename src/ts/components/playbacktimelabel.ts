@@ -32,7 +32,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <PlaybackTimeLabelConfig>this.getConfig();
@@ -66,11 +66,6 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    new PlayerUtils.LiveStreamDetector(player).onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
-      live = args.live;
-      updateLiveState();
-    });
-
     let updateLiveTimeshiftState = () => {
       if (player.getTimeShift() === 0) {
         this.getDomElement().addClass(liveEdgeCssClass);
@@ -78,6 +73,13 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         this.getDomElement().removeClass(liveEdgeCssClass);
       }
     };
+
+    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player);
+    liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
+      live = args.live;
+      updateLiveState();
+    });
+    liveStreamDetector.detect(); // Initial detection
 
     let playbackTimeHandler = () => {
       if (!live && player.getDuration() !== Infinity) {

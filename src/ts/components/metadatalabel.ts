@@ -38,7 +38,7 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <MetadataLabelConfig>this.getConfig();

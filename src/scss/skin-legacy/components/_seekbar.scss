@@ -12,6 +12,12 @@
   $position-marker-width: .3em;
   $bar-inset: .3em;
 
+  // We just set the visibility to hidden instead of "@include hidden;" because really
+  // hiding it screws up the control bar formatting
+  &.#{$prefix}-hidden {
+    visibility: hidden;
+  }
+
   .#{$prefix}-seekbar {
     height: 100%;
     position: relative;

@@ -1,6 +1,6 @@
 import {Container, ContainerConfig} from './container';
 import {UIInstanceManager} from '../uimanager';
-import SubtitleCueEvent = bitmovin.player.SubtitleCueEvent;
+import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
@@ -20,7 +20,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let subtitleManager = new ActiveSubtitleManager();
@@ -36,8 +36,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
 
-      this.removeComponent(labelToRemove);
-      this.updateComponents();
+      if (labelToRemove) {
+        this.removeComponent(labelToRemove);
+        this.updateComponents();
+      }
 
       if (!subtitleManager.hasCues) {
         this.hide();
@@ -124,24 +126,31 @@ class ActiveSubtitleManager {
     let id = ActiveSubtitleManager.calculateId(event);
 
     let label = new SubtitleLabel({
-      text: event.text
+      // Prefer the HTML subtitle text if set, else use the plain text
+      text: event.html || event.text
     });
 
-    this.activeSubtitleCueMap[id] = { event: event, label: label};
+    this.activeSubtitleCueMap[id] = { event, label };
 
     return label;
   }
 
   /**
-   * Removes the subtitle cue from the manager and returns the label that should be removed from the subtitle overlay.
+   * Removes the subtitle cue from the manager and returns the label that should be removed from the subtitle overlay,
+   * or null if there is no associated label existing (e.g. because all labels have been {@link #clear cleared}.
    * @param event
-   * @return {SubtitleLabel}
+   * @return {SubtitleLabel|null}
    */
   cueExit(event: SubtitleCueEvent): SubtitleLabel {
     let id = ActiveSubtitleManager.calculateId(event);
     let activeSubtitleCue = this.activeSubtitleCueMap[id];
-    delete this.activeSubtitleCueMap[id];
-    return activeSubtitleCue.label;
+
+    if (activeSubtitleCue) {
+      delete this.activeSubtitleCueMap[id];
+      return activeSubtitleCue.label;
+    } else {
+      return null;
+    }
   }
 
   /**

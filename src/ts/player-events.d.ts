@@ -1,6 +1,6 @@
 declare namespace bitmovin {
 
-  namespace player {
+  namespace PlayerAPI {
 
     /**
      * The events that are exposed by the player API are strings.
@@ -22,6 +22,8 @@ declare namespace bitmovin {
       ON_AD_STARTED: EVENT,
       ON_AUDIO_ADAPTATION: EVENT,
       ON_AUDIO_CHANGED: EVENT,
+      ON_AUDIO_ADDED: EVENT,
+      ON_AUDIO_REMOVED: EVENT,
       ON_AUDIO_DOWNLOAD_QUALITY_CHANGE: EVENT,
       ON_AUDIO_DOWNLOAD_QUALITY_CHANGED: EVENT,
       ON_AUDIO_PLAYBACK_QUALITY_CHANGED: EVENT,
@@ -77,6 +79,8 @@ declare namespace bitmovin {
       ON_PICTURE_IN_PICTURE_ENTER: EVENT,
       ON_PICTURE_IN_PICTURE_EXIT: EVENT,
       ON_AIRPLAY_AVAILABLE: EVENT,
+      ON_VR_VIEWING_DIRECTION_CHANGE: EVENT,
+      ON_VR_VIEWING_DIRECTION_CHANGED: EVENT,
     }
 
     interface PlayerEvent {
@@ -150,6 +154,13 @@ declare namespace bitmovin {
        * New audio track
        */
       targetAudio: AudioTrack;
+    }
+
+    interface AudioTrackEvent extends PlayerEvent {
+      /**
+       * The concerned audio track
+       */
+      track: AudioTrack;
     }
 
     interface SubtitleChangedEvent extends PlaybackEvent {
@@ -448,6 +459,7 @@ declare namespace bitmovin {
       start: number;
       end: number;
       text: string;
+      html?: string;
       region?: string;
       regionStyle?: string;
       position?: string;

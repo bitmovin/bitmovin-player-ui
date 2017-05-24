@@ -16,7 +16,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let text = this.getConfig().text;
@@ -25,7 +25,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
       this.setText(StringUtils.replaceAdMessagePlaceholders(text, null, player));
     };
 
-    let adStartHandler = (event: bitmovin.player.AdStartedEvent) => {
+    let adStartHandler = (event: bitmovin.PlayerAPI.AdStartedEvent) => {
       text = event.adMessage || text;
       updateMessageHandler();
 

@@ -14,7 +14,7 @@ export class CastUIContainer extends UIContainer {
     super(config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <UIContainerConfig>this.getConfig();

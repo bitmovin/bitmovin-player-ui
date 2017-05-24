@@ -7,7 +7,7 @@ import {Timeout} from '../timeout';
 import {PlayerUtils} from '../utils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
-import PlayerEvent = bitmovin.player.PlayerEvent;
+import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -119,7 +119,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
 
     if (!configureSeek) {
@@ -280,16 +280,20 @@ export class SeekBar extends Component<SeekBarConfig> {
       playbackPositionHandler(null, true);
       this.refreshPlaybackPosition();
     };
-    new PlayerUtils.LiveStreamDetector(player).onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
+    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player);
+    liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       isLive = args.live;
       switchVisibility(isLive, hasTimeShift);
     });
-    new PlayerUtils.TimeShiftAvailabilityDetector(player).onTimeShiftAvailabilityChanged.subscribe(
-      (sender, args: TimeShiftAvailabilityChangedArgs) => {
+    let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
+    timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe((sender, args: TimeShiftAvailabilityChangedArgs) => {
         hasTimeShift = args.timeShiftAvailable;
         switchVisibility(isLive, hasTimeShift);
       }
     );
+    // Initial detection
+    liveStreamDetector.detect();
+    timeShiftDetector.detect();
 
     // Refresh the playback position when the player resized or the UI is configured. The playback position marker
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
@@ -317,7 +321,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.configureMarkers(player, uimanager);
   }
 
-  private configureSmoothPlaybackPositionUpdater(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  private configureSmoothPlaybackPositionUpdater(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     /*
      * Playback position update
      *
@@ -381,7 +385,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
-  private configureMarkers(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  private configureMarkers(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     let clearMarkers = () => {
       this.timelineMarkers = [];
       this.updateMarkers();

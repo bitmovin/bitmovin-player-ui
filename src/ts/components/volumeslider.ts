@@ -27,7 +27,7 @@ export class VolumeSlider extends SeekBar {
     }, this.config);
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager, false);
 
     let config = <VolumeSliderConfig>this.getConfig();
@@ -81,7 +81,7 @@ export class VolumeSlider extends SeekBar {
     volumeChangeHandler();
   }
 
-  private detectVolumeControlAvailability(player: bitmovin.player.Player): boolean {
+  private detectVolumeControlAvailability(player: bitmovin.PlayerAPI): boolean {
     // Store current player state so we can restore it later
     let volume = player.getVolume();
     let muted = player.isMuted();

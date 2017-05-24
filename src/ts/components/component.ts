@@ -190,7 +190,7 @@ export class Component<Config extends ComponentConfig> {
    * @param player the player which this component controls
    * @param uimanager the UIInstanceManager that manages this component
    */
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     this.onShow.subscribe(() => {
       uimanager.onComponentShow.dispatch(this);
     });

@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.0-rc1]
+
+UI does not crash any more when used with player 7.0, all other restrictions explained in [2.0.0](#200) still apply.
+
+### Added
+- Display subtitles in `SubtitleOverlay` with HTML markup if available instead of the plain text
+- Update `AudioTrackSelectionBox` on new `ON_AUDIO_ADDED`/`ON_AUDIO_REMOVED` events in player 7.1.4 / 7.2.0
+
+### Changed
+- Detect live streams and time shift availability when configuring dependent components (`PlaybackTimeLabel`, `PlaybackToggleButton`, `SeekBar`) to adjust their mode independently from the player state changes
+- Skip configuration of `PictureInPictureToggleButton` and `AirPlayToggleButton` and hide the components if functionality is not supported (when used with player 7.0)
+
+### Fixed
+- Fix settings panel closing when an option select box is open
+- Fix crash of Gulp `serve` task on HTML file changes
+- Fix `SeekBar` in legacy skin did not hide on `hide()`
+- Fix missing audio track selection box in Safari with player 7.1.2 and 7.1.3
+- Fix error in `SubtitleOverlay` when trying to remove an already cleared subtitle cue
+
 ## [2.2.0]
 
 ### Added
@@ -121,6 +140,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[2.3.0-rc1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.2.0...v2.3.0-rc1
 [2.2.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.0.4...v2.1.0
