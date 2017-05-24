@@ -18,10 +18,12 @@ declare namespace bitmovin {
      */
     version: string;
 
-    CONTENT_TYPE: {
-      SINGLE: PlayerAPI.VR.ContentType,
-      TAB: PlayerAPI.VR.ContentType,
-      SBS: PlayerAPI.VR.ContentType,
+    VR: {
+      CONTENT_TYPE: {
+        SINGLE: PlayerAPI.VR.ContentType,
+        TAB: PlayerAPI.VR.ContentType,
+        SBS: PlayerAPI.VR.ContentType,
+      }
     }
   }
 
