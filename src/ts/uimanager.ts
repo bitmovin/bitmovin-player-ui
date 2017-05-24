@@ -490,7 +490,7 @@ export namespace UIManager.Factory {
       hidden: true,
       hideDelay: -1,
     });
-    settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
+    settingsPanel.addGlobalComponent(new CloseButton({ target: settingsPanel }));
 
     let controlBar = new ControlBar({
       components: [

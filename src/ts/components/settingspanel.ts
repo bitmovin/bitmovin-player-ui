@@ -122,12 +122,24 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }
   }
 
+
   /**
    * Adds a child component to the container.
    * It will be present both in default component and subtitles related components
    * @param component the component to add
    */
   addComponent(component: Component<ComponentConfig>) {
+    let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
+    config.components.push(component)
+    config.defaultComponents.push(component)
+  };
+
+  /**
+   * Adds a child component to the container.
+   * It will be present both in default component and subtitles related components
+   * @param component the component to add
+   */
+  addGlobalComponent(component: Component<ComponentConfig>) {
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
     config.components.push(component)
     config.defaultComponents.push(component)
