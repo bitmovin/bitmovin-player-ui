@@ -26,57 +26,6 @@ declare namespace bitmovin {
   namespace player {
 
     /**
-     * The direction in which the viewport of the VR player is looking.
-     */
-    interface ViewingDirection {
-      /**
-       * Rotation around the vertical axis in degrees.
-       */
-      yaw: number;
-      /**
-       * Rotation around the horizontal axis in degrees.
-       */
-      pitch: number;
-      /**
-       * Rotation around the depth axis in degrees.
-       */
-      roll: number;
-    }
-
-    interface VRStatus {
-      /**
-       * The type of the VR content. Either one of the {@link VR.CONTENT_TYPE} enum values or 'none' for
-       * non-VR content.
-       * TODO add 'none' to CONTENT_TYPE enum
-       */
-      contentType: VR.CONTENT_TYPE | string;
-      /**
-       * The current playback state. Is either 'ready' (if playback has not yet started), 'playing'
-       * (if VR content is playing) or 'error' if an error occurred and VR playback has been disabled.
-       * Will only be present if contentType is not 'none'.
-       * TODO introduce PlaybackState enum
-       */
-      playbackState?: string;
-      /**
-       * The last error that occurred. Will only be present if playbackState equals 'error'.
-       * TODO update description to PlaybackState.Error enum value
-       */
-      lastError?: string;
-      /**
-       * True, if the content is currently played back in stereo. Will only be present if contentType is
-       * not 'none' and playbackState is not 'error'.
-       * TODO update description with enum values
-       */
-      isStereo?: boolean;
-      /**
-       * The direction the player is currently facing. Will only be present if contentType is not 'none'
-       * and playbackState is not 'error'.
-       * TODO update description with enum values
-       */
-      viewingDirection?: ViewingDirection;
-    }
-
-    /**
      * Properties of a thumbnail out of a seeking thumbnail preview definition.
      */
     interface Thumbnail {
@@ -340,6 +289,143 @@ declare namespace bitmovin {
       height: number;
     }
 
+    interface PlayerVRAPI {
+      /**
+       * Enables or disables stereo mode for VR content.
+       * @param {Boolean} enableStereo - If true, stereo mode will be enabled.
+       * @returns {Boolean} - True if API call was successful, false otherwise.
+       */
+      setStereo(enableStereo: boolean): boolean;
+
+      /**
+       * Enables the gyroscope (also on VRHMDs).
+       * @return {boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      enableGyroscope(): boolean;
+
+      /**
+       * Disables the gyroscope (also on VRHMDs).
+       * @return {boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      disableGyroscope(): boolean;
+
+      /**
+       * Returns true, if the gyroscope is enabled, false otherwise.
+       * @return {boolean} - True, if the gyroscope is enabled, false otherwise.
+       */
+      isGyroscopeEnabled(): boolean;
+
+      /**
+       * Enables the mouse controls.
+       * @return {boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      enableMouseControl(): boolean;
+
+      /**
+       * Disables the mouse controls.
+       * @return {boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      disableMouseControl(): boolean;
+
+      /**
+       * Returns true, if mouse controls are enabled, false otherwise.
+       * @return {Boolean} - True, if mouse controls are enabled, false otherwise.
+       */
+      isMouseControlEnabled(): boolean;
+
+      /**
+       * Enables the keyboard controls.
+       * @return {boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      enableKeyboardControl(): boolean;
+
+      /**
+       * Disables the keyboard controls.
+       * @return {boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      disableKeyboardControl(): boolean;
+
+      /**
+       * Returns true, if keyboard controls are enabled, false otherwise.
+       * @return {Boolean} - True, if keyboard controls are enabled, false otherwise.
+       */
+      isKeyboardControlEnabled(): boolean;
+
+      /**
+       * Returns true, if stereo is enabled, false otherwise.
+       * @return {Boolean} - True, if stereo is enabled, false otherwise.
+       */
+      getStereo(): boolean;
+
+      /**
+       * Returns the current state of the VR handler or null, if the VR handler is not yet initialized.
+       * @return {String|null} - The current state of the VR handler.
+       */
+      getState(): string | null;
+
+      /**
+       * Returns the last recorded error or null, if no error occurred.
+       * @return {String|null} - The last recorded error.
+       */
+      getLastError(): string | null;
+
+      /**
+       * Returns the current viewing direction, if the VRHandler is in the playing state.
+       * @return {VR.ViewingDirection} - The current viewing direction.
+       */
+      getViewingDirection(): VR.ViewingDirection;
+
+      /**
+       * Sets the given viewing direction, if the VRHandler is in the playing state.
+       * @param {VR.ViewingDirection} viewingDirection - The viewing direction to set.
+       * @return {boolean} - True, if the viewing direction could be set, false otherwise.
+       */
+      setViewingDirection(viewingDirection: VR.ViewingDirection): boolean;
+
+      /**
+       * Moves the current VR viewing direction in the given direction with the given speed. The speed is determined by the
+       * length of the direction vector in degrees / second. The movement will be continued for 110ms, after that period
+       * the
+       * movement will be dampened and fade out. To sustain a smooth viewport movement, no more than 100ms must pass
+       * between
+       * consecutive calls to this function.
+       * @param {VR.Vec3} direction - A three-component vector describing the direction and speed in which the viewing
+       *   direction shall be moved.
+       * @return {Boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      moveViewingDirection(direction: VR.Vec3): boolean;
+
+      /**
+       * Sets the minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events. The default value is 250ms.
+       * @param {number} interval - The minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       * @return {boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      setViewingDirectionChangeEventInterval(interval: number): boolean;
+
+      /**
+       * Gets the minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       * @return {Number} - The minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       */
+      getViewingDirectionChangeEventInterval(): number;
+
+      /**
+       * Sets the number of degrees that the viewport can change before the ON_VR_VIEWING_DIRECTION_CHANGE event is
+       * triggered. The default value is 5°.
+       * @param {Number} threshold - The threshold in degrees that the viewport can change before the
+       * ON_VR_VIEWING_DIRECTION_CHANGE event is triggered.
+       * @return {Boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      setViewingDirectionChangeThreshold(threshold: number): boolean;
+
+      /**
+       * Gets the number of degrees that the viewport can change before the ON_VR_VIEWING_DIRECTION_CHANGE event is
+       * triggered.
+       * @return {Number} - The threshold in degrees that the viewport can change before the
+       * ON_VR_VIEWING_DIRECTION_CHANGE event is triggered.
+       */
+      getViewingDirectionChangeThreshold(): number;
+    }
+
     /**
      * Bitmovin Player instance members.
      */
@@ -533,7 +619,7 @@ declare namespace bitmovin {
       /**
        * Returns the current VR playback status.
        */
-      getVRStatus(): VRStatus;
+      getVRStatus(): VR.Status;
       /**
        * Returns true if the video has ended.
        */
@@ -797,10 +883,20 @@ declare namespace bitmovin {
        * Exit picture in picture mode.
        */
       exitPictureInPicture(): Player;
+
+      VR: {
+        CONTENT_TYPE: {
+          SINGLE: VR.ContentType,
+          TAB: VR.ContentType,
+          SBS: VR.ContentType,
+        },
+      }
+
+      vr: PlayerVRAPI;
     }
 
     namespace VR {
-      enum CONTENT_TYPE {
+      enum ContentType {
         /**
          * A single equirectangular video typically used for 2D VR/360 content.
          */
@@ -813,6 +909,140 @@ declare namespace bitmovin {
            *  Two equirectangular videos for 3D content in side-by-side position.
            */
         SBS
+      }
+
+      enum CONTENT_TYPE {
+        SINGLE,
+        TAB,
+        SBS
+      }
+
+      /**
+       * The direction in which the viewport of the VR player is looking.
+       */
+      interface ViewingDirection {
+        /**
+         * Rotation around the vertical axis in degrees.
+         */
+        yaw: number;
+        /**
+         * Rotation around the horizontal axis in degrees.
+         */
+        pitch: number;
+        /**
+         * Rotation around the depth axis in degrees.
+         */
+        roll: number;
+      }
+
+      interface Status {
+        /**
+         * The type of the VR content. Either one of the {@link VR.CONTENT_TYPE} enum values or 'none' for
+         * non-VR content.
+         * TODO add 'none' to CONTENT_TYPE enum
+         */
+        contentType: ContentType | string;
+        /**
+         * The current playback state. Is either 'ready' (if playback has not yet started), 'playing'
+         * (if VR content is playing) or 'error' if an error occurred and VR playback has been disabled.
+         * Will only be present if contentType is not 'none'.
+         * TODO introduce PlaybackState enum
+         */
+        playbackState?: string;
+        /**
+         * The last error that occurred. Will only be present if playbackState equals 'error'.
+         * TODO update description to PlaybackState.Error enum value
+         */
+        lastError?: string;
+        /**
+         * True, if the content is currently played back in stereo. Will only be present if contentType is
+         * not 'none' and playbackState is not 'error'.
+         * TODO update description with enum values
+         */
+        isStereo?: boolean;
+        /**
+         * The direction the player is currently facing. Will only be present if contentType is not 'none'
+         * and playbackState is not 'error'.
+         * TODO update description with enum values
+         */
+        viewingDirection?: ViewingDirection;
+      }
+
+      interface Vec3 {
+        /**
+         * The x component of the vector.
+         */
+        x: number;
+        /**
+         * The y component of the vector.
+         */
+        y: number;
+        /**
+         * The roll of the vector.
+         */
+        phi: number;
+      }
+
+      /**
+       * Represents a viewing window for VR content. The current viewing direction is restricted to the set viewing window.
+       */
+      interface ViewingWindow {
+        /**
+         * Lower bound for yaw.
+         */
+        minYaw: number;
+        /**
+         * Upper bound for yaw.
+         */
+        maxYaw: number;
+        /**
+         * Lower bound for pitch.
+         */
+        minPitch: number;
+        /**
+         * Upper bound for pitch.
+         */
+        maxPitch: number;
+      }
+
+      enum TransitionTimingType {
+        NONE,
+        EASE_IN,
+        EASE_OUT,
+        EASE_IN_OUT,
+      }
+
+      interface KeyMap {
+        /**
+         * The keys that shall be used to move the viewing direction upwards. Each string represents a key combination,
+         * where different keys are separated by a space character, i.e. 'w', 'ArrowUp' or 'Alt F4'.
+         */
+        up?: string[];
+        /**
+         * The keys that shall be used to move the viewing direction downwards. Each string represents a key combination,
+         * where different keys are separated by a space character, i.e. 'w', 'ArrowUp' or 'Alt F4'.
+         */
+        down?: string[];
+        /**
+         * The keys that shall be used to move the viewing direction leftwards. Each string represents a key combination,
+         * where different keys are separated by a space character, i.e. 'w', 'ArrowUp' or 'Alt F4'.
+         */
+        left?: string[];
+        /**
+         * The keys that shall be used to move the viewing direction rightwards. Each string represents a key combination,
+         * where different keys are separated by a space character, i.e. 'w', 'ArrowUp' or 'Alt F4'.
+         */
+        right?: string[];
+        /**
+         * The keys that shall be used to rotate the viewing direction clockwise. Each string represents a key combination,
+         * where different keys are separated by a space character, i.e. 'w', 'ArrowUp' or 'Alt F4'.
+         */
+        rotateClockwise?: string[];
+        /**
+         * The keys that shall be used to rotate the viewing direction counterclockwise. Each string represents a key
+         * combination, where different keys are separated by a space character, i.e. 'w', 'ArrowUp' or 'Alt F4'.
+         */
+        rotateCounterclockwise?: string[];
       }
     }
   }
