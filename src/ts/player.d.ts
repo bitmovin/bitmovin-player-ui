@@ -82,7 +82,7 @@ declare namespace bitmovin {
     /**
      * Returns the currently used audio track.
      */
-    getAudio(): AudioTrack;
+    getAudio(): PlayerAPI.AudioTrack;
     /**
      * Returns the seconds of already buffered audio data or null if no audio source is loaded.
      */
