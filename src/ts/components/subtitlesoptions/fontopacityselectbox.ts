@@ -16,7 +16,7 @@ export class FontOpacitySelectBox extends SelectBox {
     this.overlay = overlay;
   }
 
-  configure(player: bitmovin.player.Player, uimanager: UIInstanceManager): void {
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.addItem('0.25', '25%');
