@@ -178,9 +178,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     col.a = this.config.fontColor.a
     this.config.fontColor = col
     this.updateSubtitleLabelCss();
-    if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('fontColor', this.config.fontColor.toCSS());
-    }
+    this.setItem('fontColor', this.config.fontColor.toCSS())
   }
   setBackgroundColor(color: string) {
     let backgroundColor = ColorUtils.colorFromCss(color);
@@ -192,9 +190,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
     this.config.backgroundColor = backgroundColor;
     this.updateSubtitleLabelCss();
-    if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('backgroundColor', this.config.backgroundColor.toCSS());
-    }
+    this.setItem('backgroundColor', this.config.backgroundColor.toCSS())
   }
   setWindowColor(color: string) {
     let windowColor = ColorUtils.colorFromCss(color);
@@ -206,29 +202,22 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
     this.config.windowColor = windowColor;
     this.getDomElement().css('background', this.config.windowColor.toCSS());
-    if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('windowColor', this.config.windowColor.toCSS());
-    }
+    this.setItem('windowColor', this.config.windowColor.toCSS())
   }
   setFontOpacity(alpha: number) {
     this.config.fontColor.a = alpha;
     this.updateSubtitleLabelCss();
-    if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('fontColor', this.config.fontColor.toCSS());
-    }
+    this.setItem('fontColor', this.config.fontColor.toCSS())
   }
   setBackgroundOpacity(alpha: number) {
     this.config.backgroundColor.a = alpha;
-    if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('backgroundColor', this.config.backgroundColor.toCSS());
-    }
+    this.updateSubtitleLabelCss();
+    this.setItem('backgroundColor', this.config.backgroundColor.toCSS())
   }
   setWindowOpacity(alpha: number) {
     this.config.windowColor.a = alpha;
     this.getDomElement().css('background', this.config.windowColor.toCSS());
-    if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('windowColor', this.config.windowColor.toCSS());
-    }
+    this.setItem('windowColor', this.config.windowColor.toCSS())
   }
   setFontFamily(family: string) {
     // clear previous state, so that switching to small caps doesn' affect further font changes
@@ -241,25 +230,18 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       this.updateSubtitleLabelCss();
       this.config.family = family;
     }
-    if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('family', this.config.family);
-      window.localStorage.setItem('font-variant', this.config.fontVariant);
-    }
+    this.setItem('family', this.config.family);
+    this.setItem('font-variant', this.config.fontVariant);
   }
   setCharacterEdge(characterEdge: string) {
     this.config.characterEdge = characterEdge;
     this.updateSubtitleLabelCss();
-    if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('characterEdge', this.config.characterEdge);
-    }
+    this.setItem('characterEdge', this.config.characterEdge)
   }
   setFontSize(coefficient: number) {
     this.config.coef = coefficient;
-    console.log(`${this.config.size * this.config.coef}em`)
     this.updateSubtitleLabelCss()
-    if (this.config.hasLocalStorage) {
-      window.localStorage.setItem('coef', this.config.coef.toString());
-    }
+    this.setItem('coef', this.config.coef.toString())
   }
 
   applyConfToDom(dom: DOM) {
@@ -269,6 +251,11 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       dom.css('font-family', this.config.family)
       dom.css('text-shadow', this.config.characterEdge)
       dom.css('font-size', `${this.config.size * this.config.coef}em`)
+  }
+  setItem(item: string, value: string) {
+    if (this.config.hasLocalStorage) {
+      window.localStorage.setItem(item, value)
+    }
   }
 }
 
