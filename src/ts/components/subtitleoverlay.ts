@@ -51,16 +51,15 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     if (Storage.hasLocalStorage()) {
       this.config.hasLocalStorage = true;
       let store = window.localStorage;
-      let fontColor = store.getItem('fontColor');
       let forcedCueDom = this.forcedCue.getDomElement()
+
+      let fontColor = store.getItem('fontColor');
       if (fontColor != null) {
         this.config.fontColor = ColorUtils.colorFromCss(fontColor, ColorUtils.foreground);
-        forcedCueDom.css('color', this.config.fontColor.toCSS());
       }
       let backgroundColor = store.getItem('backgroundColor');
       if (backgroundColor != null) {
         this.config.backgroundColor = ColorUtils.colorFromCss(backgroundColor, ColorUtils.background);
-        forcedCueDom.css('background', this.config.backgroundColor.toCSS());
       }
       let windowColor = store.getItem('windowColor');
       if (windowColor != null) {
@@ -69,29 +68,24 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       let family = store.getItem('family');
       if (family != null) {
         this.config.family = family;
-        forcedCueDom.css('font-family', family);
       }
       let fontVariant = store.getItem('fontVariant');
       if (fontVariant != null) {
         this.config.fontVariant = fontVariant;
-        forcedCueDom.css('font-variant', fontVariant);
       }
       let characterEdge = store.getItem('characterEdge');
       if (characterEdge != null) {
         this.config.characterEdge = characterEdge;
-        forcedCueDom.css('text-shadow', characterEdge);
       }
       let coef = store.getItem('coef');
       if (coef != null) {
         this.config.coef = Number(coef);
-        forcedCueDom.css('font-size', `${config.size * config.coef}em`);
       }
     }
     // This css property isn't applied to the subtitle cue
     // and therefore shoud be applied now
-    if (this.config.windowColor != null) {
-        this.getDomElement().css('background', this.config.windowColor.toCSS());
-    }
+    this.getDomElement().css('background', this.config.windowColor.toCSS());
+    this.updateSubtitleLabelCss()
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
@@ -104,12 +98,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
 
-      labelToAdd.getDomElement().css('color', config.fontColor.toCSS())
-      labelToAdd.getDomElement().css('background', config.backgroundColor.toCSS())
-      labelToAdd.getDomElement().css('font-variant', config.fontVariant)
-      labelToAdd.getDomElement().css('font-family', config.family)
-      labelToAdd.getDomElement().css('text-shadow', config.characterEdge)
-      labelToAdd.getDomElement().css('font-size', `${config.size * config.coef}em`)
+      this.applyConfToDom(labelToAdd.getDomElement())
 
       if (this.forceCue) {
         this.removeComponent(this.forcedCue);
@@ -165,9 +154,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     subtitleClearHandler();
   }
 
-  updateSubtitleLabelCss(propertyName: string, value: string) {
-    this.getDomElement().find('.bmpui-ui-subtitle-label').css(propertyName, value)
-    this.forcedCue.getDomElement().css(propertyName, value)
+  updateSubtitleLabelCss() {
+    this.applyConfToDom(this.getDomElement().find('.bmpui-ui-subtitle-label'))
+    this.applyConfToDom(this.forcedCue.getDomElement())
   }
 
   enforceSubtitleLabel() {
@@ -188,7 +177,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     let col = ColorUtils.colorFromCss(color);
     col.a = this.config.fontColor.a
     this.config.fontColor = col
-    this.updateSubtitleLabelCss('color', this.config.fontColor.toCSS());
+    this.updateSubtitleLabelCss();
     if (this.config.hasLocalStorage) {
       window.localStorage.setItem('fontColor', this.config.fontColor.toCSS());
     }
@@ -202,7 +191,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       backgroundColor.a = this.config.backgroundColor.a;
     }
     this.config.backgroundColor = backgroundColor;
-    this.updateSubtitleLabelCss('background', this.config.backgroundColor.toCSS());
+    this.updateSubtitleLabelCss();
     if (this.config.hasLocalStorage) {
       window.localStorage.setItem('backgroundColor', this.config.backgroundColor.toCSS());
     }
@@ -223,21 +212,20 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
   setFontOpacity(alpha: number) {
     this.config.fontColor.a = alpha;
-    this.updateSubtitleLabelCss('color', this.config.fontColor.toCSS());
+    this.updateSubtitleLabelCss();
     if (this.config.hasLocalStorage) {
       window.localStorage.setItem('fontColor', this.config.fontColor.toCSS());
     }
   }
   setBackgroundOpacity(alpha: number) {
     this.config.backgroundColor.a = alpha;
-    this.getDomElement().css('background', this.config.backgroundColor.toCSS());
     if (this.config.hasLocalStorage) {
       window.localStorage.setItem('backgroundColor', this.config.backgroundColor.toCSS());
     }
   }
   setWindowOpacity(alpha: number) {
     this.config.windowColor.a = alpha;
-    this.updateSubtitleLabelCss('background', this.config.windowColor.toCSS());
+    this.getDomElement().css('background', this.config.windowColor.toCSS());
     if (this.config.hasLocalStorage) {
       window.localStorage.setItem('windowColor', this.config.windowColor.toCSS());
     }
@@ -247,10 +235,10 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.config.fontVariant = 'normal';
     this.config.family = '';
     if (family === 'small-caps') {
-      this.updateSubtitleLabelCss('font-variant', family);
+      this.updateSubtitleLabelCss();
       this.config.fontVariant = family;
     } else {
-      this.updateSubtitleLabelCss('font-family', family);
+      this.updateSubtitleLabelCss();
       this.config.family = family;
     }
     if (this.config.hasLocalStorage) {
@@ -260,7 +248,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
   setCharacterEdge(characterEdge: string) {
     this.config.characterEdge = characterEdge;
-    this.updateSubtitleLabelCss('text-shadow', characterEdge);
+    this.updateSubtitleLabelCss();
     if (this.config.hasLocalStorage) {
       window.localStorage.setItem('characterEdge', this.config.characterEdge);
     }
@@ -268,10 +256,19 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   setFontSize(coefficient: number) {
     this.config.coef = coefficient;
     console.log(`${this.config.size * this.config.coef}em`)
-    this.updateSubtitleLabelCss('font-size', `${this.config.size * this.config.coef}em`)
+    this.updateSubtitleLabelCss()
     if (this.config.hasLocalStorage) {
       window.localStorage.setItem('coef', this.config.coef.toString());
     }
+  }
+
+  applyConfToDom(dom: DOM) {
+      dom.css('color', this.config.fontColor.toCSS())
+      dom.css('background', this.config.backgroundColor.toCSS())
+      dom.css('font-variant', this.config.fontVariant)
+      dom.css('font-family', this.config.family)
+      dom.css('text-shadow', this.config.characterEdge)
+      dom.css('font-size', `${this.config.size * this.config.coef}em`)
   }
 }
 
