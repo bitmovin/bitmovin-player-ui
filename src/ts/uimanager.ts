@@ -380,8 +380,8 @@ export namespace UIManager.Factory {
   }
 
   function modernUI(config: SubtitleOverlayConfig) {
-    let overlay = new SubtitleOverlay(config);
-    let subtitlesOptionList = GetSubtitleOptionList(overlay);
+    let subtitleOverlay = new SubtitleOverlay(config);
+    let subtitlesOptionList = GetSubtitleOptionList(subtitleOverlay);
     let defaultComponents = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
@@ -394,7 +394,8 @@ export namespace UIManager.Factory {
       components: defaultComponents.concat(subtitlesOptionList),
       subtitlesComponents: subtitlesOptionList,
       defaultComponents: defaultComponents,
-      hidden: true
+      hidden: true,
+      subtitleOverlay: subtitleOverlay,
     });
 
     let controlBar = new ControlBar({
@@ -428,7 +429,7 @@ export namespace UIManager.Factory {
 
     return new UIContainer({
       components: [
-        overlay,
+        subtitleOverlay,
         new BufferingOverlay(),
         new PlaybackToggleOverlay(),
         new CastStatusOverlay(),
@@ -489,6 +490,7 @@ export namespace UIManager.Factory {
       defaultComponents: defaultComponents,
       hidden: true,
       hideDelay: -1,
+      subtitleOverlay: subtitleOverlay,
     });
     settingsPanel.addGlobalComponent(new CloseButton({ target: settingsPanel }));
 

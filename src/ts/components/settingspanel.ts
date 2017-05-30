@@ -8,8 +8,8 @@ import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
-import {FontColorSelectBox} from './subtitlesoptions/fontcolorselectbox'
-
+import {FontColorSelectBox} from './subtitlesoptions/fontcolorselectbox';
+import {SubtitleOverlay} from './subtitleoverlay';
 /**
  * Configuration interface for a {@link SettingsPanel}.
  */
@@ -22,6 +22,7 @@ export interface SettingsPanelConfig extends ContainerConfig {
   hideDelay?: number;
   defaultComponents?: Component<ComponentConfig>[];
   subtitlesComponents?: Component<ComponentConfig>[];
+  subtitleOverlay?: SubtitleOverlay;
 }
 
 /**
@@ -97,6 +98,10 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       });
     }
 
+    this.onHide.subscribe(() => {
+      config.subtitleOverlay.removeEnforcedSubtitleLabel();
+    });
+
     // Fire event when the state of a settings-item has changed
     let settingsStateChangedHandler = () => {
       this.onSettingsStateChangedEvent();
@@ -104,6 +109,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     };
     let openSubtitleSettings = () => {
       config.components = config.subtitlesComponents
+      config.subtitleOverlay.enforceSubtitleLabel()
       this.updateComponents()
       updateLastItem()
     }
