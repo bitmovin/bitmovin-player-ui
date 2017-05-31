@@ -6,6 +6,7 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
+import {SubtitleOptionsToggle} from './subtitleoptiontoggle';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {FontColorSelectBox} from './subtitlesoptions/fontcolorselectbox';
@@ -116,7 +117,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     for (let component of this.getItems()) {
       if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
-        component.onClickUpdate.subscribe(openSubtitleSettings);
+        component.onSubtitlePanelOpenClick.subscribe(openSubtitleSettings);
       }
     }
   }
@@ -194,7 +195,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
-    onClickUpdate: new EventDispatcher<SettingsPanelItem, NoArgs>()
+    onSubtitlePanelOpenClick: new EventDispatcher<SettingsPanelItem, NoArgs>()
   };
 
   constructor(label: string, selectBox: SelectBox | ToggleButton<ToggleButtonConfig>, config: ContainerConfig = {}) {
@@ -238,16 +239,16 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       this.onActiveChangedEvent();
     };
 
-    let handleClick = () => {
-      this.onClickUpdateEvent();
+    let switchToSubtitlePanel = () => {
+      this.onSwitchToSubtitlePanelEvent();
     }
 
     if (this.setting instanceof SelectBox) {
       this.setting.onItemAdded.subscribe(handleConfigItemChanged);
       this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
     }
-    if (this.setting instanceof ToggleButton) {
-      this.setting.onClick.subscribe(handleClick);
+    if (this.setting instanceof SubtitleOptionsToggle) {
+      this.setting.onClick.subscribe(switchToSubtitlePanel);
       // React to API events to decide whether to show subtitles option or not
       player.addEventHandler(player.EVENT.ON_SUBTITLE_ADDED, handleConfigItemChanged);
       player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, handleConfigItemChanged);
@@ -271,8 +272,8 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   protected onActiveChangedEvent() {
     this.settingsPanelItemEvents.onActiveChanged.dispatch(this);
   }
-  protected onClickUpdateEvent() {
-    this.settingsPanelItemEvents.onClickUpdate.dispatch(this);
+  protected onSwitchToSubtitlePanelEvent() {
+    this.settingsPanelItemEvents.onSubtitlePanelOpenClick.dispatch(this);
   }
 
   /**
@@ -287,7 +288,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
    * Gets the event that is fired when the button get clicked
    * @returns {Event<SettingsPanelItem, NoArgs>}
    */
-  get onClickUpdate(): Event<SettingsPanelItem, NoArgs> {
-    return this.settingsPanelItemEvents.onClickUpdate.getEvent();
+  get onSubtitlePanelOpenClick(): Event<SettingsPanelItem, NoArgs> {
+    return this.settingsPanelItemEvents.onSubtitlePanelOpenClick.getEvent();
   }
 }
