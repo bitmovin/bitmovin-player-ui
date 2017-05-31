@@ -23,6 +23,18 @@ declare namespace bitmovin {
         SINGLE: PlayerAPI.VR.ContentType,
         TAB: PlayerAPI.VR.ContentType,
         SBS: PlayerAPI.VR.ContentType,
+      },
+      STATE: {
+        READY: PlayerAPI.VR.State,
+        PLAYING: PlayerAPI.VR.State,
+        ERROR: PlayerAPI.VR.State,
+        UNINITIALIZED: PlayerAPI.VR.State,
+      },
+      TRANSITION_TIMING_TYPE: {
+        NONE: PlayerAPI.VR.TransitionTimingType,
+        EASE_IN: PlayerAPI.VR.TransitionTimingType,
+        EASE_OUT: PlayerAPI.VR.TransitionTimingType,
+        EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
       }
     }
   }
@@ -493,6 +505,18 @@ declare namespace bitmovin {
         TAB: PlayerAPI.VR.ContentType,
         SBS: PlayerAPI.VR.ContentType,
       },
+      STATE: {
+        READY: PlayerAPI.VR.State,
+        PLAYING: PlayerAPI.VR.State,
+        ERROR: PlayerAPI.VR.State,
+        UNINITIALIZED: PlayerAPI.VR.State,
+      },
+      TRANSITION_TIMING_TYPE: {
+        NONE: PlayerAPI.VR.TransitionTimingType,
+        EASE_IN: PlayerAPI.VR.TransitionTimingType,
+        EASE_OUT: PlayerAPI.VR.TransitionTimingType,
+        EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
+      }
     }
 
     vr: PlayerAPI.PlayerVRAPI;
@@ -914,6 +938,13 @@ declare namespace bitmovin {
            *  Two equirectangular videos for 3D content in side-by-side position.
            */
         SBS
+      }
+
+      enum State {
+        READY,
+        PLAYING,
+        ERROR,
+        UNINITIALIZED,
       }
 
       /**
