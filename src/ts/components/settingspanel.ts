@@ -9,7 +9,7 @@ import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {SubtitleOptionsToggle} from './subtitleoptiontoggle';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
-import {FontColorSelectBox} from './subtitlesoptions/fontcolorselectbox';
+import {FontColorSelectBox} from './subtitlesettings/fontcolorselectbox';
 import {SubtitleOverlay} from './subtitleoverlay';
 /**
  * Configuration interface for a {@link SettingsPanel}.

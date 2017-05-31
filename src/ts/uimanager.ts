@@ -46,7 +46,7 @@ import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 import {Spacer} from './components/spacer';
-import GetSubtitleOptionList from './components/subtitlesoptions/optionlist';
+import GetSubtitleOptionList from './components/subtitlesettings/optionlist';
 
 export interface UIRecommendationConfig {
   title: string;
