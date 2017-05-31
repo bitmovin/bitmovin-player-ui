@@ -27,8 +27,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   public config: SubtitleOverlayConfig;
 
   private subtitleManager: ActiveSubtitleManager;
-  private forceCue: boolean = false;
-  private forcedCue: SubtitleLabel = new SubtitleLabel({text: 'exemple cue'});
+  private forceSubtitle: boolean = false;
+  private forcedSubtitle: SubtitleLabel = new SubtitleLabel({text: 'exemple subtitle'});
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
@@ -51,7 +51,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     if (Storage.hasLocalStorage()) {
       this.config.hasLocalStorage = true;
       let store = window.localStorage;
-      let forcedCueDom = this.forcedCue.getDomElement()
+      let forcedSubtitleDom = this.forcedSubtitle.getDomElement()
 
       let fontColor = store.getItem('fontColor');
       if (fontColor != null) {
@@ -100,8 +100,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
       this.applyConfToDom(labelToAdd.getDomElement())
 
-      if (this.forceCue) {
-        this.removeComponent(this.forcedCue);
+      if (this.forceSubtitle) {
+        this.removeComponent(this.forcedSubtitle);
       }
       this.addComponent(labelToAdd);
       this.updateComponents();
@@ -117,10 +117,10 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       }
 
       if (!subtitleManager.hasCues) {
-        if (!this.forceCue) {
+        if (!this.forceSubtitle) {
           this.hide();
         } else {
-          this.addComponent(this.forcedCue);
+          this.addComponent(this.forcedSubtitle);
           this.updateComponents()
         }
       }
@@ -156,20 +156,20 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   updateSubtitleLabelCss() {
     this.applyConfToDom(this.getDomElement().find('.bmpui-ui-subtitle-label'))
-    this.applyConfToDom(this.forcedCue.getDomElement())
+    this.applyConfToDom(this.forcedSubtitle.getDomElement())
   }
 
   enforceSubtitleLabel() {
-    this.forceCue = true;
+    this.forceSubtitle = true;
     if (!this.subtitleManager.hasCues) {
-      this.addComponent(this.forcedCue);
+      this.addComponent(this.forcedSubtitle);
       this.updateComponents();
       this.show();
     }
   }
   removeEnforcedSubtitleLabel() {
-    this.forceCue = false;
-    this.removeComponent(this.forcedCue);
+    this.forceSubtitle = false;
+    this.removeComponent(this.forcedSubtitle);
     this.updateComponents();
   }
   // Methods used to define custom styling on subtitles labels
