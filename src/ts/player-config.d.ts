@@ -359,6 +359,25 @@ declare namespace bitmovin {
       apiControl?: VRControlConfig;
     }
 
+    interface SourceLabelingConfig {
+      /**
+       * A function that generates a label for a track, usually an audio track.
+       * @param track Object with metadata about the track for which the label should be generated. The id field is
+       *   populated when used for HLS, the mimeType when used for DASH.
+       */
+      tracks?: (track: { id?: string, mimeType?: string, lang: string }) => string;
+      /**
+       * A function that generates a label for a quality, usually a video quality.
+       * @param quality Object with metadata about the quality for which the label should be generated.
+       */
+      qualities?: (quality: { id: string, mimeType: string, bitrate: number, width: number, height: number, qualityRanking?: number, frameRate?: number }) => string;
+      /**
+       * A function that generates a label for a subtitle.
+       * @param subtitle The subtitle for which the label should be generated.
+       */
+      subtitles?: (subtitle: Subtitle) => string;
+    }
+
     interface SourceConfig {
       /**
        * The URL to the MPEG-DASH manifest file (MPD, Media Presentation Description) for the video to play.
@@ -407,6 +426,19 @@ declare namespace bitmovin {
        * The description of the video source.
        */
       description?: string;
+      /**
+       * An object with callback functions that provide labels for audio tracks, qualities and subtitle tracks.
+       */
+      labeling?: {
+        /**
+         * Labeling functions for DASH sources.
+         */
+        dash?: SourceLabelingConfig;
+        /**
+         * Labeling functions for HLS sources.
+         */
+        hls?: SourceLabelingConfig;
+      }
     }
 
     interface PlaybackTech {
