@@ -1,7 +1,6 @@
 import {ContainerConfig, Container} from './container';
 import {ComponentConfig, Component} from './component';
 import {SelectBox} from './selectbox';
-import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
@@ -117,7 +116,9 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     for (let component of this.getItems()) {
       if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
-        component.onSubtitlePanelOpenClick.subscribe(openSubtitleSettings);
+      }
+      if (component instanceof SubtitleOptionsToggle) {
+        component.onClick.subscribe(openSubtitleSettings);
       }
     }
   }
@@ -186,19 +187,18 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
 /**
  * An item for a {@link SettingsPanel}, containing a {@link Label} and a component that configures a setting.
- * Supported setting components: {@link SelectBox}, {@link ToggleButton}
+ * Supported setting components: {@link SelectBox}
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
   private label: Label<LabelConfig>;
-  private setting: SelectBox | ToggleButton<ToggleButtonConfig>;
+  private setting: SelectBox;
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
-    onSubtitlePanelOpenClick: new EventDispatcher<SettingsPanelItem, NoArgs>()
   };
 
-  constructor(label: string, selectBox: SelectBox | ToggleButton<ToggleButtonConfig>, config: ContainerConfig = {}) {
+  constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
     super(config);
 
     this.label = new Label({ text: label });
@@ -212,12 +212,6 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     let handleConfigItemChanged = () => {
-      if (this.setting instanceof ToggleButton) {
-        if (player.getAvailableSubtitles().length === 1) {
-          this.hide()
-        }
-        return
-      }
       // The minimum number of items that must be available for the setting to be displayed
       // By default, at least two items must be available, else a selection is not possible
       let minItemsToDisplay = 2;
@@ -239,22 +233,9 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       this.onActiveChangedEvent();
     };
 
-    let switchToSubtitlePanel = () => {
-      this.onSwitchToSubtitlePanelEvent();
-    }
-
     if (this.setting instanceof SelectBox) {
       this.setting.onItemAdded.subscribe(handleConfigItemChanged);
       this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
-    }
-    if (this.setting instanceof SubtitleOptionsToggle) {
-      this.setting.onClick.subscribe(switchToSubtitlePanel);
-      // React to API events to decide whether to show subtitles option or not
-      player.addEventHandler(player.EVENT.ON_SUBTITLE_ADDED, handleConfigItemChanged);
-      player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, handleConfigItemChanged);
-      player.addEventHandler(player.EVENT.ON_SUBTITLE_REMOVED, handleConfigItemChanged);
-      player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, handleConfigItemChanged);
-      player.addEventHandler(player.EVENT.ON_READY, handleConfigItemChanged);
     }
 
     // Initialize hidden state
@@ -272,9 +253,6 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   protected onActiveChangedEvent() {
     this.settingsPanelItemEvents.onActiveChanged.dispatch(this);
   }
-  protected onSwitchToSubtitlePanelEvent() {
-    this.settingsPanelItemEvents.onSubtitlePanelOpenClick.dispatch(this);
-  }
 
   /**
    * Gets the event that is fired when the 'active' state of this item changes.
@@ -283,12 +261,5 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
    */
   get onActiveChanged(): Event<SettingsPanelItem, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
-  }
-  /**
-   * Gets the event that is fired when the button get clicked
-   * @returns {Event<SettingsPanelItem, NoArgs>}
-   */
-  get onSubtitlePanelOpenClick(): Event<SettingsPanelItem, NoArgs> {
-    return this.settingsPanelItemEvents.onSubtitlePanelOpenClick.getEvent();
   }
 }
