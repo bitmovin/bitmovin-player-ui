@@ -46,7 +46,7 @@ import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 import {Spacer} from './components/spacer';
-import GetSubtitleOptionList from './components/subtitlesettings/optionlist';
+import GetSubtitleSettingList from './components/subtitlesettings/settinglist';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -381,7 +381,7 @@ export namespace UIManager.Factory {
 
   function modernUI(config: SubtitleOverlayConfig) {
     let subtitleOverlay = new SubtitleOverlay(config);
-    let subtitlesOptionList = GetSubtitleOptionList(subtitleOverlay);
+    let subtitlesOptionList = GetSubtitleSettingList(subtitleOverlay);
     let defaultComponents = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
@@ -475,7 +475,7 @@ export namespace UIManager.Factory {
 
   function modernSmallScreenUI(config: SubtitleOverlayConfig) {
     let subtitleOverlay = new SubtitleOverlay(config);
-    let subtitlesOptionList = GetSubtitleOptionList(subtitleOverlay);
+    let subtitlesOptionList = GetSubtitleSettingList(subtitleOverlay);
     let defaultComponents = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
