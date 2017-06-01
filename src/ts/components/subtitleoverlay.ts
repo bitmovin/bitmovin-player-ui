@@ -11,7 +11,7 @@ export interface SubtitleOverlayConfig extends ContainerConfig {
   fontColor?: ColorUtils.Color;
   backgroundColor?: ColorUtils.Color;
   windowColor?: ColorUtils.Color;
-  family?: string;
+  fontFamily?: string;
   fontVariant?: string;
   characterEdge?: string;
   coef?: number;
@@ -40,7 +40,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         fontColor: ColorUtils.foreground,
         backgroundColor: ColorUtils.background,
         windowColor: ColorUtils.background,
-        family: '',
+        fontFamily: '',
         fontVariant: 'normal',
         characterEdge: '',
         coef: 1,
@@ -65,9 +65,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       if (windowColor != null) {
         this.config.windowColor = ColorUtils.colorFromCss(windowColor, ColorUtils.background);
       }
-      let family = store.getItem('family');
-      if (family != null) {
-        this.config.family = family;
+      let fontFamily = store.getItem('fontFamily');
+      if (fontFamily != null) {
+        this.config.fontFamily = fontFamily;
       }
       let fontVariant = store.getItem('fontVariant');
       if (fontVariant != null) {
@@ -219,18 +219,18 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.getDomElement().css('background', this.config.windowColor.toCSS());
     this.setItem('windowColor', this.config.windowColor.toCSS())
   }
-  setFontFamily(family: string) {
+  setFontFamily(fontFamily: string) {
     // clear previous state, so that switching to small caps doesn' affect further font changes
     this.config.fontVariant = 'normal';
-    this.config.family = '';
-    if (family === 'small-caps') {
+    this.config.fontFamily = '';
+    if (fontFamily === 'small-caps') {
       this.updateSubtitleLabelCss();
-      this.config.fontVariant = family;
+      this.config.fontVariant = fontFamily;
     } else {
       this.updateSubtitleLabelCss();
-      this.config.family = family;
+      this.config.fontFamily = fontFamily;
     }
-    this.setItem('family', this.config.family);
+    this.setItem('fontFamily', this.config.fontFamily);
     this.setItem('font-variant', this.config.fontVariant);
   }
   setCharacterEdge(characterEdge: string) {
@@ -248,7 +248,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       dom.css('color', this.config.fontColor.toCSS())
       dom.css('background', this.config.backgroundColor.toCSS())
       dom.css('font-variant', this.config.fontVariant)
-      dom.css('font-family', this.config.family)
+      dom.css('font-family', this.config.fontFamily)
       dom.css('text-shadow', this.config.characterEdge)
       dom.css('font-size', `${this.config.size * this.config.coef}em`)
   }
