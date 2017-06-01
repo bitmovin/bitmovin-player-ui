@@ -388,7 +388,7 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
         new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-        new SettingsPanelItem('Subtitles options', new SubtitleOptionsToggle()),
+        new SubtitleOptionsToggle(),
   ]
     let settingsPanel = new SettingsPanel({
       components: defaultComponents.concat(subtitlesOptionList),

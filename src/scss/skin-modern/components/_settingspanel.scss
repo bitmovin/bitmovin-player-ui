@@ -68,6 +68,31 @@
       display: none;
     }
   }
+
+  .#{$prefix}-ui-subtitleoptiontoggle {
+    @extend %ui-button;
+
+    margin: .5em;
+    border-bottom: 1px solid transparentize($color-secondary, .7);
+    width: 20em;
+
+    &.#{$prefix}-last {
+      border-bottom: 0;
+    }
+
+    span {
+      margin: auto;
+      color: $color-primary;
+      font-family: $font-family;
+      font-size: .8em;
+      text-align: left;
+      user-select: none;
+    }
+
+    &:hover {
+      @include svg-icon-shadow;
+    }
+  }
 }
 
 // Remove margin inherited from controlbar
