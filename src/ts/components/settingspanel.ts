@@ -5,7 +5,7 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
-import {SubtitleOptionsToggle, SubtitlePanelCloser} from './subtitleoptiontoggle';
+import {SubtitleSettingsOpener, SubtitlePanelCloser} from './subtitlesettingtoggle';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {FontColorSelectBox} from './subtitlesettings/fontcolorselectbox';
@@ -59,7 +59,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       let lastShownItem = null;
       for (let component of this.getItems()) {
         if ((component instanceof SettingsPanelItem)
-            || (component instanceof SubtitleOptionsToggle)
+            || (component instanceof SubtitleSettingsOpener)
             || (component instanceof SubtitlePanelCloser)) {
           component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
           if (component.isShown()) {
@@ -126,11 +126,10 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
       }
-      if (component instanceof SubtitleOptionsToggle) {
-        component.onClick.subscribe(openSubtitleSettings);
-      }
       if (component instanceof SubtitlePanelCloser) {
         component.onClick.subscribe(closeSubtitleSettings);
+      } else if (component instanceof SubtitleSettingsOpener) {
+        component.onClick.subscribe(openSubtitleSettings);
       }
     }
   }

@@ -69,7 +69,7 @@
     }
   }
 
-  .#{$prefix}-ui-subtitleoptiontoggle {
+  .#{$prefix}-ui-subtitlesettingtoggle {
     @extend %ui-button;
 
     border-bottom: 1px solid transparentize($color-secondary, .7);

@@ -20,7 +20,7 @@ import {SeekBarLabel} from './components/seekbarlabel';
 import {VolumeSlider} from './components/volumeslider';
 import {SubtitleSelectBox} from './components/subtitleselectbox';
 import {SubtitleOverlay, SubtitleOverlayConfig} from './components/subtitleoverlay';
-import {SubtitleOptionsToggle} from './components/subtitleoptiontoggle';
+import {SubtitleSettingsOpener} from './components/subtitlesettingtoggle';
 import {VolumeControlButton} from './components/volumecontrolbutton';
 import {CastToggleButton} from './components/casttogglebutton';
 import {CastStatusOverlay} from './components/caststatusoverlay';
@@ -390,7 +390,7 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
         new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-        new SubtitleOptionsToggle(),
+        new SubtitleSettingsOpener(),
   ]
     let settingsPanel = new SettingsPanel({
       components: defaultComponents.concat(subtitlesOptionList),
@@ -484,7 +484,7 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
         new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-        new SubtitleOptionsToggle(),
+        new SubtitleSettingsOpener(),
     ]
     let settingsPanel = new SettingsPanel({
       components: defaultComponents.concat(subtitlesOptionList),
