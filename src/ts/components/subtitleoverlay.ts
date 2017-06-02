@@ -240,6 +240,19 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.setItem('fontVariant', this.config.fontVariant);
     this.updateSubtitleLabelCss();
   }
+  /** 
+   * A helper method to avoid updating the CSS label 3 times in a row
+   * since familly, style and variant are normally updated together
+   **/
+  setFont(fontFamily: string, fontStyle: string, fontVariant: string) {
+    this.config.fontFamily = fontFamily;
+    this.setItem('fontFamily', this.config.fontFamily);
+    this.config.fontStyle = fontStyle;
+    this.setItem('fontStyle', this.config.fontStyle);
+    this.config.fontVariant = fontVariant;
+    this.setItem('fontVariant', this.config.fontVariant);
+    this.updateSubtitleLabelCss();
+  }
   setCharacterEdge(characterEdge: string) {
     this.config.characterEdge = characterEdge;
     this.updateSubtitleLabelCss();
@@ -252,13 +265,13 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
 
   applyConfToDom(dom: DOM) {
-      dom.css('color', this.config.fontColor.toCSS())
-      dom.css('background', this.config.backgroundColor.toCSS())
-      dom.css('font-variant', this.config.fontVariant)
-      dom.css('font-family', this.config.fontFamily)
-      dom.css('font-style', this.config.fontStyle)
-      dom.css('text-shadow', this.config.characterEdge)
-      dom.css('font-size', `${this.config.size * this.config.coef}em`)
+    dom.css('color', this.config.fontColor.toCSS())
+    dom.css('background', this.config.backgroundColor.toCSS())
+    dom.css('font-variant', this.config.fontVariant)
+    dom.css('font-family', this.config.fontFamily)
+    dom.css('font-style', this.config.fontStyle)
+    dom.css('text-shadow', this.config.characterEdge)
+    dom.css('font-size', `${this.config.size * this.config.coef}em`)
   }
   setItem(item: string, value: string) {
     if (this.config.hasLocalStorage) {

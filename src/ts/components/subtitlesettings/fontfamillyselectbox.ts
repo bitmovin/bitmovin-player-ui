@@ -19,29 +19,29 @@ export class FontFamillySelectBox extends SelectBox {
     'proportional sans serif': 'Roboto,"Arial Unicode Ms",Arial,Helvetica,Verdana,"PT Sans Caption",sans-serif',
     'casual': '"Comic Sans MS",Impact,Handlee,fantasy',
     'cursive': '"Monotype Corsiva","URW Chancery L","Apple Chancery","Dancing Script",cursive',
-    'small capital': 'small-caps',
+    'small capital': 'unset',
   }
 
   private fontVariant: { [key: string]: string} = {
-    'default': 'default',
-    'monospaced serif': 'default',
-    'proportional serif': '',
-    'monospaced sans serif': '',
-    'proportional sans serif': '',
-    'casual': '',
-    'cursive': '',
+    'default': 'unset',
+    'monospaced serif': 'unset',
+    'proportional serif': 'unset',
+    'monospaced sans serif': 'unset',
+    'proportional sans serif': 'unset',
+    'casual': 'unset',
+    'cursive': 'unset',
     'small capital': 'small-caps',
   }
 
   private fontStyle: { [key: string]: string} = {
-    'default': 'default',
-    'monospaced serif': 'default',
-    'proportional serif': '',
-    'monospaced sans serif': '',
-    'proportional sans serif': '',
-    'casual': '',
+    'default': 'unset',
+    'monospaced serif': 'unset',
+    'proportional serif': 'unset',
+    'monospaced sans serif': 'unset',
+    'proportional sans serif': 'unset',
+    'casual': 'unset',
     'cursive': 'italic',
-    'small capital': 'small-caps',
+    'small capital': '',
   }
 
   constructor(config: ListSelectorConfig = {}, overlay: SubtitleOverlay) {
@@ -71,9 +71,11 @@ export class FontFamillySelectBox extends SelectBox {
     }
 
     this.onItemSelected.subscribe((sender: FontFamillySelectBox, value: string) => {
-      this.overlay.setFontVariant(this.fontVariant[value]);
-      this.overlay.setFontFamily(this.fontFamilly[value]);
-      this.overlay.setFontStyle(this.fontStyle[value]);
+      this.overlay.setFont(this.fontFamilly[value], this.fontStyle[value], this.fontVariant[value]);
+      // Easier than trying to get back to the selected item from font-family, font-variant and font-style
+      if (Storage.hasLocalStorage()) {
+         window.localStorage.setItem('family', value);
+      }
     });
   }
 }
