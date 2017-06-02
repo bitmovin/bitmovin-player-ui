@@ -11,6 +11,39 @@ export class FontFamillySelectBox extends SelectBox {
 
   private overlay: SubtitleOverlay;
 
+  private fontFamilly: { [key: string]: string} = {
+    'default': 'default',
+    'monospaced serif': '"Courier New",Courier,"Nimbus Mono L","Cutive Mono",monospace',
+    'proportional serif': '"Times New Roman",Times,Georgia,Cambria,"PT Serif Caption",serif',
+    'monospaced sans serif': '"Deja Vu Sans Mono","Lucida Console",Monaco,Consolas,"PT Mono",monospace',
+    'proportional sans serif': 'Roboto,"Arial Unicode Ms",Arial,Helvetica,Verdana,"PT Sans Caption",sans-serif',
+    'casual': '"Comic Sans MS",Impact,Handlee,fantasy',
+    'cursive': '"Monotype Corsiva","URW Chancery L","Apple Chancery","Dancing Script",cursive',
+    'small capital': 'small-caps',
+  }
+
+  private fontVariant: { [key: string]: string} = {
+    'default': 'default',
+    'monospaced serif': 'default',
+    'proportional serif': '',
+    'monospaced sans serif': '',
+    'proportional sans serif': '',
+    'casual': '',
+    'cursive': '',
+    'small capital': 'small-caps',
+  }
+
+  private fontStyle: { [key: string]: string} = {
+    'default': 'default',
+    'monospaced serif': 'default',
+    'proportional serif': '',
+    'monospaced sans serif': '',
+    'proportional sans serif': '',
+    'casual': '',
+    'cursive': 'italic',
+    'small capital': 'small-caps',
+  }
+
   constructor(config: ListSelectorConfig = {}, overlay: SubtitleOverlay) {
     super(config);
     this.overlay = overlay;
@@ -20,13 +53,13 @@ export class FontFamillySelectBox extends SelectBox {
     super.configure(player, uimanager);
 
     this.addItem('default', 'default');
-    this.addItem('"Courier New",Courier,"Nimbus Mono L","Cutive Mono",monospace', 'monospaced serif');
-    this.addItem('"Times New Roman",Times,Georgia,Cambria,"PT Serif Caption",serif', 'proportional serif');
-    this.addItem('"Deja Vu Sans Mono","Lucida Console",Monaco,Consolas,"PT Mono",monospace', 'monospaced sans serif');
-    this.addItem('Roboto,"Arial Unicode Ms",Arial,Helvetica,Verdana,"PT Sans Caption",sans-serif', 'proportional sans serif');
-    this.addItem('"Comic Sans MS",Impact,Handlee,fantasy', 'casual');
-    this.addItem('"Monotype Corsiva","URW Chancery L","Apple Chancery","Dancing Script",cursive', 'cursive');
-    this.addItem('small-caps', 'small capital');
+    this.addItem('monospaced serif', 'monospaced serif');
+    this.addItem('proportional serif', 'proportional serif');
+    this.addItem('monospaced sans serif', 'monospaced sans serif');
+    this.addItem('proportional sans serif', 'proportional sans serif');
+    this.addItem('casual', 'casual');
+    this.addItem('cursive', 'cursive');
+    this.addItem('small capital', 'small capital');
 
     this.selectItem('default');
 
@@ -38,7 +71,9 @@ export class FontFamillySelectBox extends SelectBox {
     }
 
     this.onItemSelected.subscribe((sender: FontFamillySelectBox, value: string) => {
-      this.overlay.setFontFamily(value);
+      this.overlay.setFontVariant(this.fontVariant[value]);
+      this.overlay.setFontFamily(this.fontFamilly[value]);
+      this.overlay.setFontStyle(this.fontStyle[value]);
     });
   }
 }

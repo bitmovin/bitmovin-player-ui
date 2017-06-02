@@ -71,7 +71,7 @@ export interface UIConfig {
     fontColor?: string;
     backgroundColor?: string;
     windowColor?: string;
-    family?: string;
+    fontFamily?: string;
     fontVariant?: string;
     characterEdge?: string;
     coef?: number;
@@ -372,7 +372,7 @@ export namespace UIManager.Factory {
     if (conf.windowColor != null) {
       res.windowColor = ColorUtils.colorFromCss(conf.windowColor)
     }
-    res.family = conf.family
+    res.fontFamily = conf.fontFamily
     res.fontVariant = conf.fontVariant
     res.characterEdge = conf.characterEdge
     res.characterEdge = conf.characterEdge
