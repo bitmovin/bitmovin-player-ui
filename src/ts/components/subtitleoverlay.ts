@@ -240,7 +240,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.setItem('fontVariant', this.config.fontVariant);
     this.updateSubtitleLabelCss();
   }
-  /** 
+  /**
    * A helper method to avoid updating the CSS label 3 times in a row
    * since familly, style and variant are normally updated together
    **/

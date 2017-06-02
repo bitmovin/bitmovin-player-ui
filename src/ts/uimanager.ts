@@ -384,7 +384,7 @@ export namespace UIManager.Factory {
   function modernUI(config: SubtitleOverlayConfig) {
     let subtitleOverlay = new SubtitleOverlay(config);
     let subtitlesOptionList = GetSubtitleSettingList(subtitleOverlay);
-    let defaultComponents = [
+    let defaultComponents: Component<ComponentConfig>[] = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
@@ -478,7 +478,7 @@ export namespace UIManager.Factory {
   function modernSmallScreenUI(config: SubtitleOverlayConfig) {
     let subtitleOverlay = new SubtitleOverlay(config);
     let subtitlesOptionList = GetSubtitleSettingList(subtitleOverlay);
-    let defaultComponents = [
+    let defaultComponents: Component<ComponentConfig>[] = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),

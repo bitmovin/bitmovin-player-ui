@@ -9,9 +9,11 @@ import {WindowOpacitySelectBox} from './windowopacityselectbox'
 import {CharacterEdgeSelectBox} from './characteredgeselectbox'
 import {SettingsPanelItem} from '../settingspanel'
 import {SubtitleOverlay} from '../subtitleoverlay'
+import {SubtitlePanelCloser} from '../subtitleoptiontoggle'
+import {Component, ComponentConfig} from '../component'
 
 // Helper function since the subtitle option panel should not change
-let GetSubtitleSettingList = (overlay: SubtitleOverlay) => {
+let GetSubtitleSettingList = (overlay: SubtitleOverlay): Component<ComponentConfig>[] => {
     return [
         new SettingsPanelItem('Font', new FontColorSelectBox({}, overlay)),
         new SettingsPanelItem('Font opacity', new FontOpacitySelectBox({}, overlay)),
@@ -22,6 +24,7 @@ let GetSubtitleSettingList = (overlay: SubtitleOverlay) => {
         new SettingsPanelItem('Font', new FontFamillySelectBox({}, overlay)),
         new SettingsPanelItem('Font size', new FontSizeSelectBox({}, overlay)),
         new SettingsPanelItem('Edge', new CharacterEdgeSelectBox({}, overlay)),
+        new SubtitlePanelCloser()
     ]
 };
 

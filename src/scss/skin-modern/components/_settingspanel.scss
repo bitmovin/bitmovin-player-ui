@@ -72,8 +72,9 @@
   .#{$prefix}-ui-subtitleoptiontoggle {
     @extend %ui-button;
 
-    margin: .5em;
     border-bottom: 1px solid transparentize($color-secondary, .7);
+    margin: .5em;
+    position: relative;
     width: 20em;
 
     &.#{$prefix}-last {
@@ -81,16 +82,30 @@
     }
 
     span {
-      margin: auto;
       color: $color-primary;
       font-family: $font-family;
       font-size: .8em;
+      margin: auto;
       text-align: left;
       user-select: none;
     }
 
     &:hover {
       @include svg-icon-shadow;
+    }
+  }
+
+  .#{$prefix}-ui-subtitleoptioncloser {
+    &::before {
+      border-bottom: .2em solid $color-primary;
+      border-left: .2em solid $color-primary;
+      content: '';
+      height: .6em;
+      left: 30%;
+      position: absolute;
+      top: .4em;
+      transform: rotate(45deg);
+      width: .6em;
     }
   }
 }
