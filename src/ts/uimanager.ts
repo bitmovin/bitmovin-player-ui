@@ -73,6 +73,7 @@ export interface UIConfig {
     windowColor?: string;
     fontFamily?: string;
     fontVariant?: string;
+    fontStyle?: string;
     characterEdge?: string;
     coef?: number;
   }
@@ -374,6 +375,7 @@ export namespace UIManager.Factory {
     }
     res.fontFamily = conf.fontFamily
     res.fontVariant = conf.fontVariant
+    res.fontStyle = conf.fontStyle
     res.characterEdge = conf.characterEdge
     res.characterEdge = conf.characterEdge
     return res
