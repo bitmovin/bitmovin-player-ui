@@ -82,9 +82,25 @@
     &.#{$prefix}-on {
       background-image: svg('assets/skin-modern/images/settingsX.svg');
     }
-    }
+  }
 
   .#{$prefix}-ui-subtitleoptioncloser {
+    @extend %ui-button;
+
+    border-bottom: 1px solid transparentize($color-secondary, .7);
+    margin: .5em;
+    position: relative;
+    width: 20em;
+
+    span {
+      color: $color-primary;
+      font-family: $font-family;
+      font-size: .8em;
+      margin: auto;
+      text-align: left;
+      user-select: none;
+    }
+
     &::before {
       border-bottom: .2em solid $color-primary;
       border-left: .2em solid $color-primary;
@@ -95,6 +111,10 @@
       top: .4em;
       transform: rotate(45deg);
       width: .6em;
+    }
+
+    &.#{$prefix}-last {
+      border-bottom: 0;
     }
   }
 }

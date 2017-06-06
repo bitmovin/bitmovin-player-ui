@@ -50,8 +50,7 @@ export class SubtitlePanelCloser extends SubtitleSettingsOpener {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitlesettingtoggle',
-      cssClasses: ['ui-subtitleoptioncloser'],
+      cssClass: 'ui-subtitleoptioncloser',
       text: 'Normal settings',
     }, this.config);
   }
@@ -60,5 +59,21 @@ export class SubtitlePanelCloser extends SubtitleSettingsOpener {
     super.configure(player, uimanager);
 
     let config = <ToggleButtonConfig>this.getConfig();
+  }
+ 
+  protected toDomElement(): DOM {
+    // Create the button element with the text label
+    let buttonElement = new DOM('button', {
+      'type': 'button',
+      'id': this.config.id,
+      'class': this.getCssClasses()
+    }).append(new DOM('span', {}).html(this.config.text));
+
+    // Listen for the click event on the button element and trigger the corresponding event on the button component
+    buttonElement.on('click', () => {
+      this.onClickEvent();
+    });
+
+    return buttonElement;
   }
 }

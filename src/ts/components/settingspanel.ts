@@ -128,8 +128,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       }
       if (component instanceof SubtitlePanelCloser) {
         component.onClick.subscribe(closeSubtitleSettings);
-      } else if (component instanceof SubtitleSettingsOpener) {
-        component.onClick.subscribe(openSubtitleSettings);
+      } else if (component instanceof SettingsPanelSubtitleItem) {
+        component.onSubtitlePanelOpen.subscribe(openSubtitleSettings);
       }
     }
   }
@@ -277,8 +277,32 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
 export class SettingsPanelSubtitleItem extends SettingsPanelItem {
 
+  private opener: SubtitleSettingsOpener;
+
+  private settingsPanelSubtitleItemEvents = {
+    onSubtitlePanelOpen: new EventDispatcher<SettingsPanelItem, NoArgs>(),
+  };
+
   constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
     super(label, selectBox, config);
-    this.addComponent(new SubtitleSettingsOpener());
+    this.opener = new SubtitleSettingsOpener();
+    let test = () => {
+      this.onSubtitlePanelOpenEvent();
+    };
+    this.opener.onClick.subscribe(test);
+    this.addComponent(this.opener);
+  }
+
+  protected onSubtitlePanelOpenEvent() {
+    this.settingsPanelSubtitleItemEvents.onSubtitlePanelOpen.dispatch(this);
+  }
+
+  /**
+   * Gets the event that is fired when the 'active' state of this item changes.
+   * @see #isActive
+   * @returns {Event<SettingsPanelItem, NoArgs>}
+   */
+  get onSubtitlePanelOpen(): Event<SettingsPanelItem, NoArgs> {
+    return this.settingsPanelSubtitleItemEvents.onSubtitlePanelOpen.getEvent();
   }
 }
