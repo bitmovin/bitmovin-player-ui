@@ -71,9 +71,10 @@
 
   .#{$prefix}-ui-subtitlesettingtoggle {
     @extend %ui-button;
-    width: 1em;
 
     background-image: svg('assets/skin-modern/images/settings.svg');
+    height: 1em;
+    padding: 0.3em;
 
     &:hover {
       @include svg-icon-shadow;
