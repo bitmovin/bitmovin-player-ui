@@ -274,3 +274,11 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
   }
 }
+
+export class SettingsPanelSubtitleItem extends SettingsPanelItem {
+
+  constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
+    super(label, selectBox, config);
+    this.addComponent(new SubtitleSettingsOpener());
+  }
+}

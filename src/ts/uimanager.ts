@@ -11,7 +11,7 @@ import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktim
 import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
-import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
+import {SettingsPanel, SettingsPanelItem, SettingsPanelSubtitleItem} from './components/settingspanel';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
@@ -20,7 +20,6 @@ import {SeekBarLabel} from './components/seekbarlabel';
 import {VolumeSlider} from './components/volumeslider';
 import {SubtitleSelectBox} from './components/subtitleselectbox';
 import {SubtitleOverlay, SubtitleOverlayConfig} from './components/subtitleoverlay';
-import {SubtitleSettingsOpener} from './components/subtitlesettingtoggle';
 import {VolumeControlButton} from './components/volumecontrolbutton';
 import {CastToggleButton} from './components/casttogglebutton';
 import {CastStatusOverlay} from './components/caststatusoverlay';
@@ -389,8 +388,7 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-        new SubtitleSettingsOpener(),
+        new SettingsPanelSubtitleItem('Subtitles', new SubtitleSelectBox()),
   ]
     let settingsPanel = new SettingsPanel({
       components: defaultComponents.concat(subtitlesOptionList),
@@ -483,8 +481,7 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-        new SubtitleSettingsOpener(),
+        new SettingsPanelSubtitleItem('Subtitles', new SubtitleSelectBox()),
     ]
     let settingsPanel = new SettingsPanel({
       components: defaultComponents.concat(subtitlesOptionList),
