@@ -947,28 +947,53 @@ class PlayerWrapper {
   constructor(player: PlayerAPI) {
     this.player = player;
 
-    // Collect all public API methods of the player
-    let methods = <any[]>[];
+    // Collect all members of the player (public API methods and properties of the player)
+    // (Object.getOwnPropertyNames(player) does not work with the player TypeScript class starting in 7.2)
+    let members: string[] = [];
     for (let member in player) {
+      members.push(member);
+    }
+
+    // Split the members into methods and properties
+    let methods = <any[]>[];
+    let properties = <any[]>[];
+
+    for (let member of members) {
       if (typeof (<any>player)[member] === 'function') {
         methods.push(member);
+      } else {
+        properties.push(member);
       }
     }
 
-    // Create wrapper object and add function wrappers for all API methods that do nothing but calling the base method
-    // on the player
+    // Create wrapper object
     let wrapper = <any>{};
-    for (let member of methods) {
-      wrapper[member] = function() {
+
+    // Add function wrappers for all API methods that do nothing but calling the base method on the player
+    for (let method of methods) {
+      wrapper[method] = function() {
         // console.log('called ' + member); // track method calls on the player
-        return (<any>player)[member].apply(player, arguments);
+        return (<any>player)[method].apply(player, arguments);
       };
     }
 
-    // Collect all public properties of the player and add it to the wrapper
-    for (let member in player) {
-      if (typeof (<any>player)[member] !== 'function') {
-        wrapper[member] = (<any>player)[member];
+    // Add all public properties of the player to the wrapper
+    for (let property of properties) {
+      // Get an eventually existing property descriptor to differentiate between plain properties and properties with
+      // getters/setters.
+      let propertyDescriptor: PropertyDescriptor = Object.getOwnPropertyDescriptor(player, property) ||
+        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(player), property);
+
+      // If the property has getters/setters, wrap them accordingly...
+      if (propertyDescriptor && (propertyDescriptor.get || propertyDescriptor.set)) {
+        Object.defineProperty(wrapper, property, {
+          get: () => propertyDescriptor.get.call(player),
+          set: (value: any) => propertyDescriptor.set.call(player, value),
+        });
+      }
+      // ... else just transfer the property to the wrapper
+      else {
+        wrapper[property] = (<any>player)[property];
       }
     }
 
