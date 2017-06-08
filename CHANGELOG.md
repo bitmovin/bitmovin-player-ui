@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Improved UI variant switching by detecting the end of an ad when loading a new source during ad playback
 
+### Fixed
+- Fix subtitle line breaking
+
 ## [2.3.0]
 
 UI does not crash any more when used with player 7.0, all other restrictions explained in [2.0.0](#200) still apply.
