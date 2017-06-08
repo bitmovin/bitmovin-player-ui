@@ -207,6 +207,14 @@ export class UIManager {
           case player.EVENT.ON_AD_SKIPPED:
           case player.EVENT.ON_AD_ERROR:
             adStartedEvent = null;
+            break;
+          // When a new source is loaded during ad playback, there will be no ad end event so we detect the end
+          // of the ad playback by checking isAd() in ON_READY, because ON_READY always arrives when the source
+          // changes.
+          case player.EVENT.ON_READY:
+            if (adStartedEvent && !player.isAd()) {
+              adStartedEvent = null;
+            }
         }
       }
 
@@ -280,6 +288,7 @@ export class UIManager {
     };
 
     // Listen to the following events to trigger UI variant resolution
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_READY, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
