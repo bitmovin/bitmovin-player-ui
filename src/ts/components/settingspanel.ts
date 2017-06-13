@@ -102,7 +102,9 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }
 
     this.onHide.subscribe(() => {
-      config.subtitleOverlay.removeEnforcedSubtitleLabel();
+      if (config.subtitleOverlay) {
+        config.subtitleOverlay.removeEnforcedSubtitleLabel();
+      }
     });
 
     // Fire event when the state of a settings-item has changed
