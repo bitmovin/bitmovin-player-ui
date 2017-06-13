@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Develop]
 
+### Changed
+- NPM entry point changed from browserified standalone distributable file to CommonJS module (NPM package can now be used with Node and Browserify out-of-the-box)
+
 ### Fixed
 - Stop rendering loop of the `ErrorMessageOverlay` background canvas when UI is released
 - Fix wrapped control bar in modern skin on iOS 8.2
