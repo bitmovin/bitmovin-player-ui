@@ -94,6 +94,10 @@ export interface UIConditionContext {
    */
   isMobile: boolean;
   /**
+   * Tells if the player is in playing or paused state.
+   */
+  isPlaying: boolean;
+  /**
    * The width of the player/UI element.
    */
   width: number;
@@ -253,6 +257,7 @@ export class UIManager {
         adClientType: ad ? adStartedEvent.clientType : null,
         isFullscreen: this.player.isFullscreen(),
         isMobile: isMobile,
+        isPlaying: this.player.isPlaying(),
         width: this.playerElement.width(),
         documentWidth: document.body.clientWidth,
       };
@@ -314,6 +319,8 @@ export class UIManager {
 
     // Listen to the following events to trigger UI variant resolution
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_READY, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAY, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PAUSED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
