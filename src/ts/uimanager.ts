@@ -81,6 +81,10 @@ export interface UIConditionContext {
    */
   isAdWithUI: boolean;
   /**
+   * Tells the ad client (e.g. 'vast, 'ima') if {@link #isAd} is true.
+   */
+  adClientType: string;
+  /**
    * Tells if the player is currently in fullscreen mode.
    */
   isFullscreen: boolean;
@@ -245,6 +249,7 @@ export class UIManager {
       let context: UIConditionContext = {
         isAd: ad,
         isAdWithUI: adWithUI,
+        adClientType: ad ? adStartedEvent.clientType : null,
         isFullscreen: this.player.isFullscreen(),
         isMobile: isMobile,
         width: this.playerElement.width(),

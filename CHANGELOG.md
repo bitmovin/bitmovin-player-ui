@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Develop]
 
+### Added
+- Add `UIConditionContext#adClientType` to be able to switch to different UI variants for different ad types
+
 ### Changed
 - NPM entry point changed from browserified standalone distributable file to CommonJS module (NPM package can now be used with Node and Browserify out-of-the-box)
 
