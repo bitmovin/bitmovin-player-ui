@@ -71,11 +71,39 @@ export interface UIConfig {
  * The context that will be passed to a {@link UIConditionResolver} to determine if it's conditions fulfil the context.
  */
 export interface UIConditionContext {
+  /**
+   * Tells if the player is loading or playing an ad.
+   */
   isAd: boolean;
+  /**
+   * Tells if the ad allows a UI. This is currently only true for VAST ads and cannot be used to differentiate between
+   * different ad clients (i.e. to display different UIs for different ad clients).
+   * @deprecated Will be removed in an upcoming major release, use {@link #adClientType} instead.
+   */
   isAdWithUI: boolean;
+  /**
+   * Tells the ad client (e.g. 'vast, 'ima') if {@link #isAd} is true.
+   */
+  adClientType: string;
+  /**
+   * Tells if the player is currently in fullscreen mode.
+   */
   isFullscreen: boolean;
+  /**
+   * Tells if the UI is running in a mobile browser.
+   */
   isMobile: boolean;
+  /**
+   * Tells if the player is in playing or paused state.
+   */
+  isPlaying: boolean;
+  /**
+   * The width of the player/UI element.
+   */
   width: number;
+  /**
+   * The width of the document where the player/UI is embedded in.
+   */
   documentWidth: number;
 }
 
@@ -226,8 +254,10 @@ export class UIManager {
       let context: UIConditionContext = {
         isAd: ad,
         isAdWithUI: adWithUI,
+        adClientType: ad ? adStartedEvent.clientType : null,
         isFullscreen: this.player.isFullscreen(),
         isMobile: isMobile,
+        isPlaying: this.player.isPlaying(),
         width: this.playerElement.width(),
         documentWidth: document.body.clientWidth,
       };
@@ -289,6 +319,8 @@ export class UIManager {
 
     // Listen to the following events to trigger UI variant resolution
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_READY, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAY, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PAUSED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
