@@ -78,6 +78,7 @@ export interface UIConditionContext {
   /**
    * Tells if the ad allows a UI. This is currently only true for VAST ads and cannot be used to differentiate between
    * different ad clients (i.e. to display different UIs for different ad clients).
+   * @deprecated Will be removed in an upcoming major release, use {@link #adClientType} instead.
    */
   isAdWithUI: boolean;
   /**
