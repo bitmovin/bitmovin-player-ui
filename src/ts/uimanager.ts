@@ -71,11 +71,30 @@ export interface UIConfig {
  * The context that will be passed to a {@link UIConditionResolver} to determine if it's conditions fulfil the context.
  */
 export interface UIConditionContext {
+  /**
+   * Tells if the player is loading or playing an ad.
+   */
   isAd: boolean;
+  /**
+   * Tells if the ad allows a UI. This is currently only true for VAST ads and cannot be used to differentiate between
+   * different ad clients (i.e. to display different UIs for different ad clients).
+   */
   isAdWithUI: boolean;
+  /**
+   * Tells if the player is currently in fullscreen mode.
+   */
   isFullscreen: boolean;
+  /**
+   * Tells if the UI is running in a mobile browser.
+   */
   isMobile: boolean;
+  /**
+   * The width of the player/UI element.
+   */
   width: number;
+  /**
+   * The width of the document where the player/UI is embedded in.
+   */
   documentWidth: number;
 }
 
