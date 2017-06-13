@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [2.4.0]
 
 ### Changed
+- Resolve UI variants on `ON_READY`
 - Improved UI variant switching by detecting the end of an ad when loading a new source during ad playback
 
 ### Fixed
