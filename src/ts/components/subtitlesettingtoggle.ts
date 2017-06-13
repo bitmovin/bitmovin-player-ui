@@ -60,7 +60,7 @@ export class SubtitlePanelCloser extends SubtitleSettingsOpener {
 
     let config = <ToggleButtonConfig>this.getConfig();
   }
- 
+
   protected toDomElement(): DOM {
     // Create the button element with the text label
     let buttonElement = new DOM('button', {

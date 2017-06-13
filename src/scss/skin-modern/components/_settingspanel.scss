@@ -74,7 +74,7 @@
 
     background-image: svg('assets/skin-modern/images/settings.svg');
     height: 1em;
-    padding: 0.3em;
+    padding: .3em;
 
     &:hover {
       @include svg-icon-shadow;
@@ -89,7 +89,7 @@
     @extend %ui-button;
 
     border-bottom: 1px solid transparentize($color-secondary, .7);
-    margin: 0.5em 1em;
+    margin: .5em 1em;
     position: relative;
     width: 20em;
 
