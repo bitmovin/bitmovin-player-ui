@@ -36,7 +36,7 @@ declare namespace bitmovin {
         EASE_OUT: PlayerAPI.VR.TransitionTimingType,
         EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
       }
-    }
+    };
   }
 
   const player: PlayerStatic;
@@ -517,7 +517,7 @@ declare namespace bitmovin {
         EASE_OUT: PlayerAPI.VR.TransitionTimingType,
         EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
       }
-    }
+    };
 
     vr: PlayerAPI.PlayerVRAPI;
   }

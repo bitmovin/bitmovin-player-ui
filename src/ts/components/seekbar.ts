@@ -410,7 +410,7 @@ export class SeekBar extends Component<SeekBarConfig> {
           this.timelineMarkers.push({
             time: 100 / player.getDuration() * marker.time, // convert time to percentage
             title: marker.title,
-          })
+          });
         }
       }
 

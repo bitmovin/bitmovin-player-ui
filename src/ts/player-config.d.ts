@@ -438,7 +438,7 @@ declare namespace bitmovin {
          * Labeling functions for HLS sources.
          */
         hls?: SourceLabelingConfig;
-      }
+      };
     }
 
     interface PlaybackTech {
