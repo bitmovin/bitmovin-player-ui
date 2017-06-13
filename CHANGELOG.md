@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Stop rendering loop of the `ErrorMessageOverlay` background canvas when UI is released
+- Fix wrapped control bar in modern skin on iOS 8.2
 
 ## [2.4.0]
 

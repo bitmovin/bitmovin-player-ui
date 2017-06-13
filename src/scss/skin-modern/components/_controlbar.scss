@@ -30,6 +30,8 @@
   }
 
   .#{$prefix}-controlbar-bottom {
+    white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
+
     > .#{$prefix}-container-wrapper {
       > * {
         margin: 0 .25em;
@@ -41,10 +43,6 @@
       }
     }
   }
-}
-
-.#{$prefix}-controlbar-bottom {
-  white-space: nowrap;
 }
 
 // IE9 compatibility: fallback for missing flexbox support
