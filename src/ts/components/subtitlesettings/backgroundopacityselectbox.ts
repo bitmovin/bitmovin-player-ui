@@ -2,7 +2,7 @@ import {SelectBox} from '../selectbox';
 import {ListSelectorConfig} from '../listselector';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay'
-import {ColorUtils, Storage} from '../../utils';
+import {ColorUtils, StorageUtils} from '../../utils';
 
 /**
  * A select box providing a selection of different background opacity.
@@ -27,7 +27,7 @@ export class BackgroundOpacitySelectBox extends SelectBox {
 
     this.selectItem('0');
 
-    if (Storage.hasLocalStorage()) {
+    if (StorageUtils.hasLocalStorage()) {
       let color = window.localStorage.getItem('backgroundColor');
       if (color != null) {
         let col = ColorUtils.colorFromCss(color, ColorUtils.background);

@@ -2,7 +2,7 @@ import {SelectBox} from '../selectbox';
 import {ListSelectorConfig} from '../listselector';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay'
-import {ColorUtils, Storage} from '../../utils';
+import {ColorUtils, StorageUtils} from '../../utils';
 
 /**
  * A select box providing a selection of different font colors.
@@ -31,7 +31,7 @@ export class FontColorSelectBox extends SelectBox {
     // white as the default value
     this.selectItem('rgba(255, 255, 255, 1)');
 
-    if (Storage.hasLocalStorage()) {
+    if (StorageUtils.hasLocalStorage()) {
       let color = window.localStorage.getItem('fontColor');
       if (color != null) {
         let col = ColorUtils.colorFromCss(color, ColorUtils.foreground);

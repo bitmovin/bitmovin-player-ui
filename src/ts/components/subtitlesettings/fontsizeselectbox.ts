@@ -2,7 +2,7 @@ import {SelectBox} from '../selectbox';
 import {ListSelectorConfig} from '../listselector';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay';
-import {Storage} from '../../utils';
+import {StorageUtils} from '../../utils';
 
 /**
  * A select box providing a selection of different font colors.
@@ -29,7 +29,7 @@ export class FontSizeSelectBox extends SelectBox {
 
     this.selectItem('1');
 
-    if (Storage.hasLocalStorage()) {
+    if (StorageUtils.hasLocalStorage()) {
       let coef = window.localStorage.getItem('coef')
       if (coef != null) {
         this.selectItem(coef)

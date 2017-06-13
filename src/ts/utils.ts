@@ -392,7 +392,7 @@ export namespace ColorUtils {
   export const foreground = new Color(255, 255, 255, 1)
 }
 
-export namespace Storage {
+export namespace StorageUtils {
   // hasLocalStorage is used to safely ensure we can use localStorage
   // taken from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
   export function hasLocalStorage(): boolean {

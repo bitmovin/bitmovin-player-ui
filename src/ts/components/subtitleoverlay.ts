@@ -4,7 +4,7 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
-import {ColorUtils, Storage} from '../utils';
+import {ColorUtils, StorageUtils} from '../utils';
 import {DOM} from '../dom';
 
 export interface SubtitleOverlayConfig extends ContainerConfig {
@@ -50,7 +50,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       }, this.config);
 
     config = this.config;
-    if (Storage.hasLocalStorage()) {
+    if (StorageUtils.hasLocalStorage()) {
       this.config.hasLocalStorage = true;
       let store = window.localStorage;
       let forcedSubtitleDom = this.forcedSubtitle.getDomElement()

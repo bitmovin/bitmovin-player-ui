@@ -2,7 +2,7 @@ import {SelectBox} from '../selectbox';
 import {ListSelectorConfig} from '../listselector';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay';
-import {Storage} from '../../utils';
+import {StorageUtils} from '../../utils';
 
 /**
  * A select box providing a selection of different font familly.
@@ -63,7 +63,7 @@ export class FontFamillySelectBox extends SelectBox {
 
     this.selectItem('default');
 
-    if (Storage.hasLocalStorage()) {
+    if (StorageUtils.hasLocalStorage()) {
       let family = window.localStorage.getItem('family');
       if (family != null) {
         this.selectItem(family);
@@ -73,7 +73,7 @@ export class FontFamillySelectBox extends SelectBox {
     this.onItemSelected.subscribe((sender: FontFamillySelectBox, value: string) => {
       this.overlay.setFont(this.fontFamilly[value], this.fontStyle[value], this.fontVariant[value]);
       // Easier than trying to get back to the selected item from font-family, font-variant and font-style
-      if (Storage.hasLocalStorage()) {
+      if (StorageUtils.hasLocalStorage()) {
          window.localStorage.setItem('family', value);
       }
     });
