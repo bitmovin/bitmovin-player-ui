@@ -89,7 +89,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-errormessage-overlay',
       components: [this.tvNoiseBackground, this.errorLabel],
-      hidden: true
+      hidden: true,
     }, this.config);
   }
 

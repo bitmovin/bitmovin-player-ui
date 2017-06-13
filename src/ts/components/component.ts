@@ -157,7 +157,7 @@ export class Component<Config extends ComponentConfig> {
       cssPrefix: 'bmpui',
       cssClass: 'ui-component',
       cssClasses: [],
-      hidden: false
+      hidden: false,
     }, {});
   }
 

@@ -23,7 +23,7 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-tvnoisecanvas'
+      cssClass: 'ui-tvnoisecanvas',
     }, this.config);
   }
 

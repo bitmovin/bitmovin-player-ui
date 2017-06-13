@@ -18,14 +18,14 @@ export interface ButtonConfig extends ComponentConfig {
 export class Button<Config extends ButtonConfig> extends Component<ButtonConfig> {
 
   private buttonEvents = {
-    onClick: new EventDispatcher<Button<Config>, NoArgs>()
+    onClick: new EventDispatcher<Button<Config>, NoArgs>(),
   };
 
   constructor(config: ButtonConfig) {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-button'
+      cssClass: 'ui-button',
     }, this.config);
   }
 

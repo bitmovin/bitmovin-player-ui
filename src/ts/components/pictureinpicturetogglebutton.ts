@@ -11,7 +11,7 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-piptogglebutton',
-      text: 'Picture-in-Picture'
+      text: 'Picture-in-Picture',
     }, this.config);
   }
 

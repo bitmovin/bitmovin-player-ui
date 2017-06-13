@@ -26,6 +26,14 @@
       "check-operator",
       "check-separator",
       "check-type"
-    ]
+    ],
+    "trailing-comma": [true, {"multiline": {
+      "arrays": "always",
+      "exports": "always",
+      "functions": "never",
+      "imports": "always",
+      "objects": "always",
+      "typeLiterals": "always"
+    }, "singleline": "never"}]
   }
 }

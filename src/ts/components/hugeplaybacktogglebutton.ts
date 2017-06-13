@@ -14,7 +14,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-hugeplaybacktogglebutton',
-      text: 'Play/Pause'
+      text: 'Play/Pause',
     }, this.config);
   }
 

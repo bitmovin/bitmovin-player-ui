@@ -391,9 +391,9 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
       ],
-      hidden: true
+      hidden: true,
     });
 
     let controlBar = new ControlBar({
@@ -405,7 +405,7 @@ export namespace UIManager.Factory {
             new SeekBar({ label: new SeekBarLabel() }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
-          cssClasses: ['controlbar-top']
+          cssClasses: ['controlbar-top'],
         }),
         new Container({
           components: [
@@ -420,7 +420,7 @@ export namespace UIManager.Factory {
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
           ],
-          cssClasses: ['controlbar-bottom']
+          cssClasses: ['controlbar-bottom'],
         }),
       ]
     });
@@ -435,8 +435,9 @@ export namespace UIManager.Factory {
         new TitleBar(),
         new RecommendationOverlay(),
         new Watermark(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-modern']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-modern'],
     });
   }
 
@@ -449,9 +450,9 @@ export namespace UIManager.Factory {
         new Container({
           components: [
             new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
-            new AdSkipButton()
+            new AdSkipButton(),
           ],
-          cssClass: 'ui-ads-status'
+          cssClass: 'ui-ads-status',
         }),
         new ControlBar({
           components: [
@@ -463,11 +464,12 @@ export namespace UIManager.Factory {
                 new Spacer(),
                 new FullscreenToggleButton(),
               ],
-              cssClasses: ['controlbar-bottom']
+              cssClasses: ['controlbar-bottom'],
             }),
           ]
         })
-      ], cssClasses: ['ui-skin-modern', 'ui-skin-ads']
+      ],
+      cssClasses: ['ui-skin-modern', 'ui-skin-ads'],
     });
   }
 
@@ -478,7 +480,7 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
       ],
       hidden: true,
       hideDelay: -1,
@@ -493,7 +495,7 @@ export namespace UIManager.Factory {
             new SeekBar({ label: new SeekBarLabel() }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
-          cssClasses: ['controlbar-top']
+          cssClasses: ['controlbar-top'],
         }),
       ]
     });
@@ -517,8 +519,9 @@ export namespace UIManager.Factory {
         settingsPanel,
         new RecommendationOverlay(),
         new Watermark(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen'],
     });
   }
 
@@ -533,16 +536,17 @@ export namespace UIManager.Factory {
             // dummy label with no content to move buttons to the right
             new Label({ cssClass: 'label-metadata-title' }),
             new FullscreenToggleButton(),
-          ]
+          ],
         }),
         new Container({
           components: [
             new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
-            new AdSkipButton()
+            new AdSkipButton(),
           ],
-          cssClass: 'ui-ads-status'
+          cssClass: 'ui-ads-status',
         }),
-      ], cssClasses: ['ui-skin-modern', 'ui-skin-ads', 'ui-skin-smallscreen']
+      ],
+      cssClasses: ['ui-skin-modern', 'ui-skin-ads', 'ui-skin-smallscreen'],
     });
   }
 
@@ -555,7 +559,7 @@ export namespace UIManager.Factory {
             new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
-          cssClasses: ['controlbar-top']
+          cssClasses: ['controlbar-top'],
         }),
       ]
     });
@@ -568,8 +572,9 @@ export namespace UIManager.Factory {
         new Watermark(),
         controlBar,
         new TitleBar({ keepHiddenWithoutMetadata: true }),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver'],
     });
   }
 
@@ -581,19 +586,19 @@ export namespace UIManager.Factory {
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
-      }
+      },
     }, {
       ui: modernAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isAdWithUI;
-      }
+      },
     }, {
       ui: modernSmallScreenUI(),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
-      }
+      },
     }, {
-      ui: modernUI()
+      ui: modernUI(),
     }], config);
   }
 
@@ -602,9 +607,9 @@ export namespace UIManager.Factory {
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isAdWithUI;
-      }
+      },
     }, {
-      ui: modernSmallScreenUI()
+      ui: modernSmallScreenUI(),
     }], config);
   }
 
@@ -618,9 +623,9 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
       ],
-      hidden: true
+      hidden: true,
     });
 
     let controlBar = new ControlBar({
@@ -633,8 +638,8 @@ export namespace UIManager.Factory {
         new VolumeControlButton(),
         new SettingsToggleButton({ settingsPanel: settingsPanel }),
         new CastToggleButton(),
-        new FullscreenToggleButton()
-      ]
+        new FullscreenToggleButton(),
+      ],
     });
 
     return new UIContainer({
@@ -646,8 +651,9 @@ export namespace UIManager.Factory {
         new RecommendationOverlay(),
         controlBar,
         new TitleBar(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-legacy']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-legacy'],
     });
   }
 
@@ -660,11 +666,12 @@ export namespace UIManager.Factory {
             new PlaybackToggleButton(),
             new AdMessageLabel(),
             new VolumeControlButton(),
-            new FullscreenToggleButton()
-          ]
+            new FullscreenToggleButton(),
+          ],
         }),
-        new AdSkipButton()
-      ], cssClasses: ['ui-skin-legacy', 'ui-skin-ads']
+        new AdSkipButton(),
+      ],
+      cssClasses: ['ui-skin-legacy', 'ui-skin-ads'],
     });
   }
 
@@ -673,7 +680,7 @@ export namespace UIManager.Factory {
       components: [
         new SeekBar(),
         new PlaybackTimeLabel(),
-      ]
+      ],
     });
 
     return new UIContainer({
@@ -683,8 +690,9 @@ export namespace UIManager.Factory {
         new Watermark(),
         controlBar,
         new TitleBar(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-legacy', 'ui-skin-cast-receiver']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-legacy', 'ui-skin-cast-receiver'],
     });
   }
 
@@ -694,9 +702,9 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
       ],
-      hidden: true
+      hidden: true,
     });
 
     let controlBar = new ControlBar({
@@ -711,8 +719,8 @@ export namespace UIManager.Factory {
         new VolumeControlButton({ vertical: false }),
         new SettingsToggleButton({ settingsPanel: settingsPanel }),
         new CastToggleButton(),
-        new FullscreenToggleButton()
-      ]
+        new FullscreenToggleButton(),
+      ],
     });
 
     return new UIContainer({
@@ -724,8 +732,9 @@ export namespace UIManager.Factory {
         new RecommendationOverlay(),
         controlBar,
         new TitleBar(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-legacy']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-legacy'],
     });
   }
 
@@ -734,9 +743,9 @@ export namespace UIManager.Factory {
       ui: legacyAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isAdWithUI;
-      }
+      },
     }, {
-      ui: legacyUI()
+      ui: legacyUI(),
     }], config);
   }
 

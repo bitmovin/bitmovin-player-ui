@@ -27,7 +27,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   private static readonly CLASS_LAST = 'last';
 
   private settingsPanelEvents = {
-    onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>()
+    onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>(),
   };
 
   private hideTimeout: Timeout;
@@ -37,7 +37,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     this.config = this.mergeConfig<SettingsPanelConfig>(config, {
       cssClass: 'ui-settings-panel',
-      hideDelay: 3000
+      hideDelay: 3000,
     }, this.config);
   }
 
@@ -143,7 +143,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   private setting: SelectBox;
 
   private settingsPanelItemEvents = {
-    onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>()
+    onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
   };
 
   constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
@@ -154,7 +154,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
-      components: [this.label, this.setting]
+      components: [this.label, this.setting],
     }, this.config);
   }
 

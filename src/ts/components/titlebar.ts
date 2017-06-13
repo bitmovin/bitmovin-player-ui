@@ -27,7 +27,7 @@ export class TitleBar extends Container<TitleBarConfig> {
       hidden: true,
       components: [
         new MetadataLabel({ content: MetadataLabelContent.Title }),
-        new MetadataLabel({ content: MetadataLabelContent.Description })
+        new MetadataLabel({ content: MetadataLabelContent.Description }),
       ],
       keepHiddenWithoutMetadata: false,
     }, <TitleBarConfig>this.config);

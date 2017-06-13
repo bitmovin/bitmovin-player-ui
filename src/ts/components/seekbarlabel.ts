@@ -40,7 +40,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
           })],
         cssClass: 'seekbar-label-inner',
       })],
-      hidden: true
+      hidden: true,
     }, this.config);
   }
 
@@ -112,7 +112,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         'background-image': null,
         'display': null,
         'width': null,
-        'height': null
+        'height': null,
       });
     }
     else {
@@ -121,7 +121,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         'background-image': `url(${thumbnail.url})`,
         'width': thumbnail.w + 'px',
         'height': thumbnail.h + 'px',
-        'background-position': `-${thumbnail.x}px -${thumbnail.y}px`
+        'background-position': `-${thumbnail.x}px -${thumbnail.y}px`,
       });
     }
   }

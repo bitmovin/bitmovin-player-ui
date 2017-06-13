@@ -43,7 +43,7 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-container',
-      components: []
+      components: [],
     }, this.config);
   }
 

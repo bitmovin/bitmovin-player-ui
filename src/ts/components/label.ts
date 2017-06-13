@@ -33,7 +33,7 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-label'
+      cssClass: 'ui-label',
     }, this.config);
 
     this.text = this.config.text;
