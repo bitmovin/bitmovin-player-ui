@@ -131,4 +131,11 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
       }
     });
   }
+
+  release(): void {
+    super.release();
+
+    // Canvas rendering must be explicitly stopped, else it just continues forever and hogs resources
+    this.tvNoiseBackground.stop();
+  }
 }
