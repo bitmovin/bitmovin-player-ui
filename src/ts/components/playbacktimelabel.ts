@@ -92,7 +92,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       if (width > minWidth) {
         minWidth = width;
         this.getDomElement().css({
-          'min-width': minWidth + 'px'
+          'min-width': minWidth + 'px',
         });
       }
     };
@@ -109,7 +109,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // changes)
       minWidth = 0;
       this.getDomElement().css({
-        'min-width': null
+        'min-width': null,
       });
 
       // Set time format depending on source duration

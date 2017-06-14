@@ -23,7 +23,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       skipMessage: {
         countdown: 'Skip ad in {remainingTime}',
         skip: 'Skip ad',
-      }
+      },
     }, this.config);
   }
 

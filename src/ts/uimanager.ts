@@ -422,7 +422,7 @@ export namespace UIManager.Factory {
           ],
           cssClasses: ['controlbar-bottom'],
         }),
-      ]
+      ],
     });
 
     return new UIContainer({
@@ -466,8 +466,8 @@ export namespace UIManager.Factory {
               ],
               cssClasses: ['controlbar-bottom'],
             }),
-          ]
-        })
+          ],
+        }),
       ],
       cssClasses: ['ui-skin-modern', 'ui-skin-ads'],
     });
@@ -497,7 +497,7 @@ export namespace UIManager.Factory {
           ],
           cssClasses: ['controlbar-top'],
         }),
-      ]
+      ],
     });
 
     return new UIContainer({
@@ -514,7 +514,7 @@ export namespace UIManager.Factory {
             new VRToggleButton(),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
-          ]
+          ],
         }),
         settingsPanel,
         new RecommendationOverlay(),
@@ -561,7 +561,7 @@ export namespace UIManager.Factory {
           ],
           cssClasses: ['controlbar-top'],
         }),
-      ]
+      ],
     });
 
     return new CastUIContainer({

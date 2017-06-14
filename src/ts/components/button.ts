@@ -34,9 +34,9 @@ export class Button<Config extends ButtonConfig> extends Component<ButtonConfig>
     let buttonElement = new DOM('button', {
       'type': 'button',
       'id': this.config.id,
-      'class': this.getCssClasses()
+      'class': this.getCssClasses(),
     }).append(new DOM('span', {
-      'class': this.prefixCss('label')
+      'class': this.prefixCss('label'),
     }).html(this.config.text));
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component

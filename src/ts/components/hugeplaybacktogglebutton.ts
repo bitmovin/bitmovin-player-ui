@@ -125,7 +125,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     // can cover the whole video player are and scaling would extend it beyond. By adding an inner element, confined
     // to the size if the image, it can scale inside the player without overshooting.
     buttonElement.append(new DOM('div', {
-      'class': this.prefixCss('image')
+      'class': this.prefixCss('image'),
     }));
 
     return buttonElement;

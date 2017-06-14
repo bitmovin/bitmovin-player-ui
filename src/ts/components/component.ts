@@ -226,7 +226,7 @@ export class Component<Config extends ComponentConfig> {
   protected toDomElement(): DOM {
     let element = new DOM(this.config.tag, {
       'id': this.config.id,
-      'class': this.getCssClasses()
+      'class': this.getCssClasses(),
     });
 
     return element;

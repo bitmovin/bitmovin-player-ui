@@ -643,10 +643,10 @@ declare namespace bitmovin {
        */
       disableDownloadCancelling?: boolean;
       desktop?: {
-        bitrates: AdaptationBitrateConfig
+        bitrates: AdaptationBitrateConfig,
       };
       mobile?: {
-        bitrates: AdaptationBitrateConfig
+        bitrates: AdaptationBitrateConfig,
       };
     }
 
