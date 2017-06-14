@@ -90,7 +90,7 @@
     border-bottom: 1px solid transparentize($color-secondary, .7);
     margin: .5em 1em;
     position: relative;
-    width: 20em;
+    width: fill;
 
     span {
       color: $color-primary;
@@ -99,18 +99,19 @@
       margin: auto;
       text-align: left;
       user-select: none;
-    }
 
-    &::before {
-      border-bottom: .2em solid $color-primary;
-      border-left: .2em solid $color-primary;
-      content: '';
-      height: .6em;
-      left: 30%;
-      position: absolute;
-      top: .4em;
-      transform: rotate(45deg);
-      width: .6em;
+      &::before {
+        border-bottom: .2em solid $color-primary;
+        border-left: .2em solid $color-primary;
+        content: '';
+        height: .6em;
+        left: 25%;
+        position: absolute;
+        top: .6em;
+        transform: rotate(45deg);
+        width: .6em;
+      }
+
     }
 
     &.#{$prefix}-last {
