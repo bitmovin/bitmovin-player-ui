@@ -84,7 +84,7 @@ export class SubtitlePanelCloser extends SubtitleSettingsOpener {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitleoptioncloser',
-      text: 'Normal settings',
+      text: 'Back',
     }, this.config);
   }
 
