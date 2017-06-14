@@ -42,10 +42,10 @@
     // A "line" in the panel: a container holding a label + control
     .#{$prefix}-container-wrapper > * {
       // Labels
-      &:first-child {
-        display: inline-block;
-        font-size: .8em;
+      &.#{$prefix}-ui-label {
         width: 8em;
+        font-size: .8em;
+        display: inline-block;
       }
 
       // Controls (e.g. selectbox)
@@ -73,7 +73,6 @@
     @extend %ui-button;
 
     background-image: svg('assets/skin-modern/images/settings.svg');
-    height: 1em;
     padding: .3em;
 
     &:hover {

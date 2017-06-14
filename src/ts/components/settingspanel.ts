@@ -5,7 +5,7 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
-import {SubtitleSettingsOpener, SubtitlePanelCloser} from './subtitlesettingtoggle';
+import {SubtitleSettingsOpener, SubtitlePanelCloser, SubtitleSettingLabel} from './subtitlesettingtoggle';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {FontColorSelectBox} from './subtitlesettings/fontcolorselectbox';
@@ -204,8 +204,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
-  private label: Label<LabelConfig>;
-  private setting: SelectBox;
+  protected label: Component<ComponentConfig>;
+  protected setting: SelectBox;
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
@@ -287,12 +287,19 @@ export class SettingsPanelSubtitleItem extends SettingsPanelItem {
 
   constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
     super(label, selectBox, config);
-    this.opener = new SubtitleSettingsOpener();
-    let test = () => {
+
+    let subtitleSettingLabel = new SubtitleSettingLabel({text: label})
+
+    subtitleSettingLabel.onOpenerClick.subscribe(() => { 
       this.onSubtitlePanelOpenEvent();
-    };
-    this.opener.onClick.subscribe(test);
-    this.addComponent(this.opener);
+    });
+
+    this.label = subtitleSettingLabel
+
+    this.config = this.mergeConfig(config, {
+      components: [this.label, this.setting]
+    }, this.config)
+
   }
 
   protected onSubtitlePanelOpenEvent() {

@@ -1,6 +1,8 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
+import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
+import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
 
 /**
  * A button that toggles the option menu for subtitles
@@ -38,6 +40,37 @@ export class SubtitleSettingsOpener extends ToggleButton<ToggleButtonConfig> {
     player.addEventHandler(player.EVENT.ON_READY, checkVisibility);
 
     checkVisibility()
+  }
+}
+
+export class SubtitleSettingLabel extends Label<LabelConfig> {
+
+  private opener: SubtitleSettingsOpener;
+
+  constructor(config: LabelConfig = {}) {
+    super(config)
+
+    this.opener = new SubtitleSettingsOpener();
+  }
+
+  protected toDomElement(): DOM {
+    let labelElement = new DOM('span', {
+      'id': this.config.id,
+      'class': this.getCssClasses()
+    }).append(
+      new DOM('span', {}).html(this.text),
+      this.opener.getDomElement() ,
+    );
+
+    labelElement.on('click', () => {
+      this.onClickEvent();
+    });
+
+    return labelElement;
+  }
+
+  get onOpenerClick(): Event<ToggleButton<ToggleButtonConfig>, NoArgs> {
+    return this.opener.onClick
   }
 }
 
