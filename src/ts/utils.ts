@@ -393,18 +393,22 @@ export namespace ColorUtils {
 }
 
 export namespace StorageUtils {
+  let hasLocalStorageCache: boolean;
   // hasLocalStorage is used to safely ensure we can use localStorage
   // taken from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
   export function hasLocalStorage(): boolean {
+    if (hasLocalStorageCache) {
+      return hasLocalStorageCache
+    }
     try {
         var storage = window['localStorage'],
             x = '__storage_test__';
         storage.setItem(x, x);
         storage.removeItem(x);
-        return true;
+        hasLocalStorageCache = true
     }
     catch (e) {
-        return e instanceof DOMException && (
+        hasLocalStorageCache = e instanceof DOMException && (
             // everything except Firefox
             e.code === 22 ||
             // Firefox
@@ -417,5 +421,6 @@ export namespace StorageUtils {
             // acknowledge QuotaExceededError only if there's something already stored
             storage.length !== 0;
     }
-  }
+    return hasLocalStorageCache;
+  };
 }

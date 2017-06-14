@@ -17,7 +17,6 @@ export interface SubtitleOverlayConfig extends ContainerConfig {
   characterEdge?: string;
   coef?: number;
   size?: number;
-  hasLocalStorage?: boolean;
 }
 
 /**
@@ -51,7 +50,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
     config = this.config;
     if (StorageUtils.hasLocalStorage()) {
-      this.config.hasLocalStorage = true;
       let store = window.localStorage;
       let forcedSubtitleDom = this.forcedSubtitle.getDomElement()
 
@@ -274,7 +272,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     dom.css('font-size', `${this.config.size * this.config.coef}em`)
   }
   setItem(item: string, value: string) {
-    if (this.config.hasLocalStorage) {
+    if (StorageUtils.hasLocalStorage()) {
       window.localStorage.setItem(item, value)
     }
   }
