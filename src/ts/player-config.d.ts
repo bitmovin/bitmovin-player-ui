@@ -614,13 +614,6 @@ declare namespace bitmovin {
       message_namespace?: string;
     }
 
-    interface AdaptationBitrateConfig {
-      minSelectableAudioBitrate?: number | string;
-      maxSelectableAudioBitrate?: number | string;
-      minSelectableVideoBitrate?: number | string;
-      maxSelectableVideoBitrate?: number | string;
-    }
-
     interface AdaptationConfig {
       /**
        * Limits the automatically selected quality to the player size, so the player won’t select quality
@@ -642,11 +635,25 @@ declare namespace bitmovin {
        * This behavior can be disabled by setting this option to false (default is true).
        */
       disableDownloadCancelling?: boolean;
+      /**
+       * Lower and upper bitrate boundaries. Values should generally be strings with mbps (megabits per second), kbps
+       * (kilobits per second), or bps (bits per second) units (e.g. '5000kbps'). Only the values 0 (no limitation for
+       * lower boundaries) and Infinity (no limitation for upper boundaries) are not required to be strings.
+       */
+      bitrates?: {
+        minSelectableAudioBitrate?: number | string;
+        maxSelectableAudioBitrate?: number | string;
+        minSelectableVideoBitrate?: number | string;
+        maxSelectableVideoBitrate?: number | string;
+      };
+    }
+
+    interface AdaptationPlatformConfig {
       desktop?: {
-        bitrates: AdaptationBitrateConfig,
+        bitrates: AdaptationConfig,
       };
       mobile?: {
-        bitrates: AdaptationBitrateConfig,
+        bitrates: AdaptationConfig,
       };
     }
 
@@ -787,12 +794,9 @@ declare namespace bitmovin {
        */
       cast?: CastConfig;
       /**
-       * The adaptation logic can be influenced by this parameter. Lower and upper bitrate boundaries can be
-       * set for desktop and mobile separately. Only representations between minSelectableVideoBitrate
-       * (or minSelectableAudioBitrate) and maxSelectableVideoBitrate (or maxSelectableAudioBitrate) are chosen
-       * except there are no matching representations.
+       * Configures the adaptation logic.
        */
-      adaptation?: AdaptationConfig;
+      adaptation?: AdaptationPlatformConfig;
       /**
        * Allows you to define which ads you want to display and when you want to display them.
        * In order to play ads on your website, you need to specify an ad config.
