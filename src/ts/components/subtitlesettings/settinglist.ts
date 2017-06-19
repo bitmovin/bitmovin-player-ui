@@ -19,7 +19,7 @@ let GetSubtitleSettingList = (overlay: SubtitleOverlay): Component<ComponentConf
         new SettingsPanelItem('Font color', new FontColorSelectBox({}, overlay)),
         new SettingsPanelItem('Font size', new FontSizeSelectBox({}, overlay)),
         new SettingsPanelItem('Font opacity', new FontOpacitySelectBox({}, overlay)),
-        new SettingsPanelItem('Character edge style', new CharacterEdgeSelectBox({}, overlay)),
+        new SettingsPanelItem('Character edge', new CharacterEdgeSelectBox({}, overlay)),
         new SettingsPanelItem('Background color', new BackgroundColorSelectBox({}, overlay)),
         new SettingsPanelItem('Background opacity', new BackgroundOpacitySelectBox({}, overlay)),
         new SettingsPanelItem('Window color', new WindowColorSelectBox({}, overlay)),
