@@ -33,7 +33,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   private subtitleManager: ActiveSubtitleManager;
   private forceSubtitle: boolean = false;
-  private forcedSubtitle: SubtitleLabel = new SubtitleLabel({text: 'exemple subtitle'});
+  private forcedSubtitle: SubtitleLabel = new SubtitleLabel({text: 'example subtitle'});
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
