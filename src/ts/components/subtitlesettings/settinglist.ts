@@ -15,15 +15,15 @@ import {Component, ComponentConfig} from '../component'
 // Helper function since the subtitle option panel should not change
 let GetSubtitleSettingList = (overlay: SubtitleOverlay): Component<ComponentConfig>[] => {
     return [
-        new SettingsPanelItem('Font', new FontColorSelectBox({}, overlay)),
-        new SettingsPanelItem('Font opacity', new FontOpacitySelectBox({}, overlay)),
-        new SettingsPanelItem('Background', new BackgroundColorSelectBox({}, overlay)),
-        new SettingsPanelItem('Background', new BackgroundOpacitySelectBox({}, overlay)),
-        new SettingsPanelItem('Window', new WindowColorSelectBox({}, overlay)),
-        new SettingsPanelItem('Window', new WindowOpacitySelectBox({}, overlay)),
-        new SettingsPanelItem('Font', new FontFamilySelectBox({}, overlay)),
+        new SettingsPanelItem('Font family', new FontFamilySelectBox({}, overlay)),
+        new SettingsPanelItem('Font color', new FontColorSelectBox({}, overlay)),
         new SettingsPanelItem('Font size', new FontSizeSelectBox({}, overlay)),
-        new SettingsPanelItem('Edge', new CharacterEdgeSelectBox({}, overlay)),
+        new SettingsPanelItem('Font opacity', new FontOpacitySelectBox({}, overlay)),
+        new SettingsPanelItem('Character edge style', new CharacterEdgeSelectBox({}, overlay)),
+        new SettingsPanelItem('Background color', new BackgroundColorSelectBox({}, overlay)),
+        new SettingsPanelItem('Background opacity', new BackgroundOpacitySelectBox({}, overlay)),
+        new SettingsPanelItem('Window color', new WindowColorSelectBox({}, overlay)),
+        new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({}, overlay)),
         new SubtitlePanelCloser()
     ]
 };
