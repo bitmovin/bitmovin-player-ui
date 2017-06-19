@@ -1,6 +1,6 @@
 import {FontColorSelectBox} from './fontcolorselectbox'
 import {FontOpacitySelectBox} from './fontopacityselectbox'
-import {FontFamillySelectBox} from './fontfamillyselectbox'
+import {FontFamilySelectBox} from './fontfamilyselectbox'
 import {FontSizeSelectBox} from './fontsizeselectbox'
 import {BackgroundColorSelectBox} from './backgroundcolorselectbox'
 import {BackgroundOpacitySelectBox} from './backgroundopacityselectbox'
@@ -21,7 +21,7 @@ let GetSubtitleSettingList = (overlay: SubtitleOverlay): Component<ComponentConf
         new SettingsPanelItem('Background', new BackgroundOpacitySelectBox({}, overlay)),
         new SettingsPanelItem('Window', new WindowColorSelectBox({}, overlay)),
         new SettingsPanelItem('Window', new WindowOpacitySelectBox({}, overlay)),
-        new SettingsPanelItem('Font', new FontFamillySelectBox({}, overlay)),
+        new SettingsPanelItem('Font', new FontFamilySelectBox({}, overlay)),
         new SettingsPanelItem('Font size', new FontSizeSelectBox({}, overlay)),
         new SettingsPanelItem('Edge', new CharacterEdgeSelectBox({}, overlay)),
         new SubtitlePanelCloser()

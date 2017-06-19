@@ -5,13 +5,13 @@ import {SubtitleOverlay} from '../subtitleoverlay';
 import {StorageUtils} from '../../utils';
 
 /**
- * A select box providing a selection of different font familly.
+ * A select box providing a selection of different font family.
  */
-export class FontFamillySelectBox extends SelectBox {
+export class FontFamilySelectBox extends SelectBox {
 
   private overlay: SubtitleOverlay;
 
-  private fontFamilly: { [key: string]: string} = {
+  private fontFamily: { [key: string]: string} = {
     'default': 'default',
     'monospaced serif': '"Courier New",Courier,"Nimbus Mono L","Cutive Mono",monospace',
     'proportional serif': '"Times New Roman",Times,Georgia,Cambria,"PT Serif Caption",serif',
@@ -70,8 +70,8 @@ export class FontFamillySelectBox extends SelectBox {
       }
     }
 
-    this.onItemSelected.subscribe((sender: FontFamillySelectBox, value: string) => {
-      this.overlay.setFont(this.fontFamilly[value], this.fontStyle[value], this.fontVariant[value]);
+    this.onItemSelected.subscribe((sender: FontFamilySelectBox, value: string) => {
+      this.overlay.setFont(this.fontFamily[value], this.fontStyle[value], this.fontVariant[value]);
       // Easier than trying to get back to the selected item from font-family, font-variant and font-style
       if (StorageUtils.hasLocalStorage()) {
          window.localStorage.setItem('family', value);
