@@ -15,7 +15,12 @@ export interface SubtitleOverlayConfig extends ContainerConfig {
   fontStyle?: string;
   fontVariant?: string;
   characterEdge?: string;
-  coef?: number;
+  /**
+   * Font size is defined by a base size
+   * and a multiplicating coefficient depending
+   * on user preferences
+   **/
+  fontCoefficient?: number;
   size?: number;
 }
 
@@ -44,7 +49,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         fontStyle: '',
         fontVariant: 'normal',
         characterEdge: '',
-        coef: 1,
+        fontCoefficient: 1,
         size: 1.2,
       }, this.config);
 
@@ -81,9 +86,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       if (characterEdge != null) {
         this.config.characterEdge = characterEdge;
       }
-      let coef = store.getItem('coef');
-      if (coef != null) {
-        this.config.coef = Number(coef);
+      let fontCoefficient = store.getItem('fontCoefficient');
+      if (fontCoefficient != null) {
+        this.config.fontCoefficient = Number(fontCoefficient);
       }
     }
     // This css property isn't applied to the subtitle cue
@@ -257,9 +262,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.setItem('characterEdge', this.config.characterEdge)
   }
   setFontSize(coefficient: number) {
-    this.config.coef = coefficient;
+    this.config.fontCoefficient = coefficient;
     this.updateSubtitleLabelCss()
-    this.setItem('coef', this.config.coef.toString())
+    this.setItem('fontCoefficient', this.config.fontCoefficient.toString())
   }
 
   applyConfToDom(dom: DOM) {
@@ -269,7 +274,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     dom.css('font-family', this.config.fontFamily)
     dom.css('font-style', this.config.fontStyle)
     dom.css('text-shadow', this.config.characterEdge)
-    dom.css('font-size', `${this.config.size * this.config.coef}em`)
+    dom.css('font-size', `${this.config.size * this.config.fontCoefficient}em`)
   }
   setItem(item: string, value: string) {
     if (StorageUtils.hasLocalStorage()) {
