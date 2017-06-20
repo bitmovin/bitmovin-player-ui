@@ -1,5 +1,5 @@
 import {SelectBox} from '../selectbox';
-import {ListSelectorConfig} from '../listselector';
+import {SubtitleSettingConfig} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay'
 import {ColorUtils, StorageUtils} from '../../utils';
@@ -11,9 +11,9 @@ export class FontColorSelectBox extends SelectBox {
 
   private overlay: SubtitleOverlay;
 
-  constructor(config: ListSelectorConfig = {}, overlay: SubtitleOverlay ) {
+  constructor(config: SubtitleSettingConfig) {
     super(config);
-    this.overlay = overlay;
+    this.overlay = config.overlay;
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
