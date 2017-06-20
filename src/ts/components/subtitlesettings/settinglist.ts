@@ -1,17 +1,17 @@
 import {SubtitleSettingConfig} from './subtitlesetting';
-import {FontColorSelectBox} from './fontcolorselectbox'
-import {FontOpacitySelectBox} from './fontopacityselectbox'
-import {FontFamilySelectBox} from './fontfamilyselectbox'
-import {FontSizeSelectBox} from './fontsizeselectbox'
-import {BackgroundColorSelectBox} from './backgroundcolorselectbox'
-import {BackgroundOpacitySelectBox} from './backgroundopacityselectbox'
-import {WindowColorSelectBox} from './windowcolorselectbox'
-import {WindowOpacitySelectBox} from './windowopacityselectbox'
-import {CharacterEdgeSelectBox} from './characteredgeselectbox'
-import {SettingsPanelItem} from '../settingspanel'
-import {SubtitleOverlay} from '../subtitleoverlay'
-import {SubtitlePanelCloser} from '../subtitlesettingtoggle'
-import {Component, ComponentConfig} from '../component'
+import {FontColorSelectBox} from './fontcolorselectbox';
+import {FontOpacitySelectBox} from './fontopacityselectbox';
+import {FontFamilySelectBox} from './fontfamilyselectbox';
+import {FontSizeSelectBox} from './fontsizeselectbox';
+import {BackgroundColorSelectBox} from './backgroundcolorselectbox';
+import {BackgroundOpacitySelectBox} from './backgroundopacityselectbox';
+import {WindowColorSelectBox} from './windowcolorselectbox';
+import {WindowOpacitySelectBox} from './windowopacityselectbox';
+import {CharacterEdgeSelectBox} from './characteredgeselectbox';
+import {SettingsPanelItem} from '../settingspanel';
+import {SubtitleOverlay} from '../subtitleoverlay';
+import {SubtitlePanelCloser} from '../subtitlesettingtoggle';
+import {Component, ComponentConfig} from '../component';
 
 // Helper function since the subtitle option panel should not change
 let GetSubtitleSettingList = (overlay: SubtitleOverlay): Component<ComponentConfig>[] => {
