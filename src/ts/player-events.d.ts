@@ -230,13 +230,13 @@ declare namespace bitmovin {
       /**
        * segment URL
        */
-      URL: string;
+      url: string;
       /**
        * segment Unique ID
        */
       uid: string;
       /**
-       * filetype
+       * media mime type
        */
       mimeType: string;
       /**
@@ -247,7 +247,16 @@ declare namespace bitmovin {
        * segment duration
        */
       duration: number;
-      mediaInfo: { bitrate: string, sampleRate: string };
+      /**
+       * coding parameters
+       */
+      mediaInfo: {
+        bitrate?: number,
+        sampleRate?: number,
+        frameRate?: number,
+        width?: number,
+        height?: number,
+      };
       /**
        * optional program date time (time string)
        */
