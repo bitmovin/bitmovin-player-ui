@@ -593,6 +593,12 @@ declare namespace bitmovin {
        * used as parameter name and the values as parameter values.
        */
       query_parameters?: { [key: string]: string; };
+      /**
+       * If enabled the native player used for HLS in Safari would fetch and parse the HLS playlist and trigger
+       * onSegmentPlayback events carrying segment-specific metadata like EXT-X-PROGRAM-DATE-TIME if present
+       * in the manifest.
+       */
+      native_hls_parsing?: boolean;
     }
 
     interface CastConfig {
