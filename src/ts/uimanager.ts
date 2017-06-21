@@ -13,7 +13,7 @@ import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SubtitleSettingsPanel} from './components/subtitlesettingspanel';
-import {SubtitleSettingsOpener, SubtitleSettingLabel} from './components/subtitlesettingtoggle';
+import {SubtitleSettingsOpener, SubtitlePanelCloser, SubtitleSettingLabel} from './components/subtitlesettingtoggle';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
@@ -384,32 +384,39 @@ export namespace UIManager.Factory {
 
   function modernUI(config: SubtitleOverlayConfig) {
     let subtitleOverlay = new SubtitleOverlay(config);
-    let subtitlesOptionList = GetSubtitleSettingList(subtitleOverlay);
 
     let subtitleSettingsPanel = new SubtitleSettingsPanel({
       hidden: true,
       components: GetSubtitleSettingList(subtitleOverlay),
     });
 
-    let subtitleSettingsOpener = new SubtitleSettingsOpener({
-      subtitleSettingsPanel: subtitleSettingsPanel
-    });
-    let defaultComponents: Component<ComponentConfig>[] = [
+    let components: Component<ComponentConfig>[] = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem(
-          new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
-          new SubtitleSelectBox()),
   ]
     let settingsPanel = new SettingsPanel({
-      components: defaultComponents.concat(subtitlesOptionList),
-      subtitlesComponents: subtitlesOptionList,
-      defaultComponents: defaultComponents,
+      components: components,
       hidden: true,
       subtitleOverlay: subtitleOverlay,
     });
+
+    let subtitleSettingsOpener = new SubtitleSettingsOpener({
+      subtitleSettingsPanel: subtitleSettingsPanel,
+      settingsPanel: settingsPanel,
+    });
+    settingsPanel.addComponent(
+      new SettingsPanelItem(
+        new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
+        new SubtitleSelectBox()
+    ))
+
+    let subtitleSettingsCloser = new SubtitlePanelCloser({
+      subtitleSettingsPanel: subtitleSettingsPanel,
+      settingsPanel: settingsPanel,
+    });
+    subtitleSettingsPanel.addComponent(subtitleSettingsCloser)
 
     let controlBar = new ControlBar({
       components: [
@@ -489,33 +496,40 @@ export namespace UIManager.Factory {
 
   function modernSmallScreenUI(config: SubtitleOverlayConfig) {
     let subtitleOverlay = new SubtitleOverlay(config);
-    let subtitlesOptionList = GetSubtitleSettingList(subtitleOverlay);
     let subtitleSettingsPanel = new SubtitleSettingsPanel({
       hidden: true,
       hideDelay: -1,
       components: GetSubtitleSettingList(subtitleOverlay),
     });
-    let subtitleSettingsOpener = new SubtitleSettingsOpener({
-      subtitleSettingsPanel: subtitleSettingsPanel
-    });
-    let defaultComponents: Component<ComponentConfig>[] = [
+    let components: Component<ComponentConfig>[] = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem(
-          new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
-          new SubtitleSelectBox()),
     ]
     let settingsPanel = new SettingsPanel({
-      components: defaultComponents.concat(subtitlesOptionList),
-      subtitlesComponents: subtitlesOptionList,
-      defaultComponents: defaultComponents,
+      components: components,
       hidden: true,
       hideDelay: -1,
       subtitleOverlay: subtitleOverlay,
     });
-    settingsPanel.addGlobalComponent(new CloseButton({ target: settingsPanel }));
+    let subtitleSettingsOpener = new SubtitleSettingsOpener({
+      subtitleSettingsPanel: subtitleSettingsPanel,
+      settingsPanel: settingsPanel
+    });
+    settingsPanel.addComponent(
+      new SettingsPanelItem(
+        new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
+        new SubtitleSelectBox()
+    ))
+
+    let subtitleSettingsCloser = new SubtitlePanelCloser({
+      subtitleSettingsPanel: subtitleSettingsPanel,
+      settingsPanel: settingsPanel,
+    });
+    subtitleSettingsPanel.addComponent(subtitleSettingsCloser)
+
+    settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
 
     let controlBar = new ControlBar({
       components: [

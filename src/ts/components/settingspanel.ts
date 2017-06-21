@@ -146,7 +146,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   addComponent(component: Component<ComponentConfig>) {
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
     config.components.push(component)
-    config.defaultComponents.push(component)
   };
 
   /**

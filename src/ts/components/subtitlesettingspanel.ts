@@ -11,11 +11,5 @@ export class SubtitleSettingsPanel extends SettingsPanel {
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
-
-    for (let component of this.getItems()) {
-      if (component instanceof SubtitlePanelCloser) {
-        component.addSubtileSettingsPanel(this);
-      }
-    }
   }
 }

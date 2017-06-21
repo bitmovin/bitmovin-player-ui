@@ -25,7 +25,6 @@ let GetSubtitleSettingList = (overlay: SubtitleOverlay): Component<ComponentConf
         new SettingsPanelItem('Background opacity', new BackgroundOpacitySelectBox({overlay: overlay})),
         new SettingsPanelItem('Window color', new WindowColorSelectBox({overlay: overlay})),
         new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({overlay: overlay})),
-        new SubtitlePanelCloser({subtitleSettingsPanel: null})
     ]
 };
 

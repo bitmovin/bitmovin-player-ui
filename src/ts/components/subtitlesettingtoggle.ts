@@ -2,6 +2,7 @@ import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {Button, ButtonConfig} from './button';
 import {Container, ContainerConfig} from './container';
 import {Label, LabelConfig} from './label';
+import {SettingsPanel} from './settingspanel';
 import {SubtitleSettingsPanel} from './subtitlesettingspanel';
 import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
@@ -9,6 +10,7 @@ import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
 
 export interface SubtitleSettingsButtonConfig extends ButtonConfig {
   subtitleSettingsPanel: SubtitleSettingsPanel
+  settingsPanel: SettingsPanel
 }
 
 /**
@@ -16,8 +18,14 @@ export interface SubtitleSettingsButtonConfig extends ButtonConfig {
  */
 export class SubtitleSettingsOpener extends Button<ButtonConfig> {
 
+  private subtitleSettingsPanel: SubtitleSettingsPanel
+  private settingsPanel:SettingsPanel
+
   constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
+
+    this.subtitleSettingsPanel = config.subtitleSettingsPanel
+    this.settingsPanel = config.settingsPanel
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitlesettingtoggle',
@@ -96,12 +104,16 @@ export class SubtitleSettingLabel extends Container<ContainerConfig> {
  */
 export class SubtitlePanelCloser extends Button<ButtonConfig> {
 
-  private panel: SubtitleSettingsPanel;
+  private subtitleSettingsPanel: SubtitleSettingsPanel
+  private settingsPanel:SettingsPanel
 
   constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
 
-    this.panel = config.subtitleSettingsPanel;
+    this.subtitleSettingsPanel = config.subtitleSettingsPanel
+    this.settingsPanel = config.settingsPanel
+
+    this.subtitleSettingsPanel = config.subtitleSettingsPanel;
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitleoptioncloser',
       text: 'Back',
@@ -112,7 +124,7 @@ export class SubtitlePanelCloser extends Button<ButtonConfig> {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {
-      this.panel.hide();
+      this.subtitleSettingsPanel.hide();
     });
   }
 
@@ -130,9 +142,5 @@ export class SubtitlePanelCloser extends Button<ButtonConfig> {
     });
 
     return buttonElement;
-  }
-
-  addSubtileSettingsPanel(panel: SubtitleSettingsPanel) {
-    this.panel = panel;
   }
 }
