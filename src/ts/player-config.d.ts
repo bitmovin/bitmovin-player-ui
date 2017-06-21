@@ -654,13 +654,12 @@ declare namespace bitmovin {
       };
     }
 
+    /**
+     * Adaptation configurations for different platforms.
+     */
     interface AdaptationPlatformConfig {
-      desktop?: {
-        bitrates: AdaptationConfig,
-      };
-      mobile?: {
-        bitrates: AdaptationConfig,
-      };
+      desktop?: AdaptationConfig;
+      mobile?: AdaptationConfig;
     }
 
     interface AdvertisingScheduleItem {
