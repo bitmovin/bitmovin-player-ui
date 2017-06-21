@@ -59,7 +59,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       let lastShownItem = null;
       for (let component of this.getItems()) {
         if ((component instanceof SettingsPanelItem)
-            || (component instanceof SubtitleSettingsOpener)
             || (component instanceof SubtitlePanelCloser)) {
           component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
           if (component.isShown()) {
