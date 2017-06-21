@@ -1,15 +1,22 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
+import {Button, ButtonConfig} from './button';
+import {Container, ContainerConfig} from './container';
 import {Label, LabelConfig} from './label';
+import {SubtitleSettingsPanel} from './subtitlesettingspanel';
 import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
 import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
 
+export interface SubtitleSettingsButtonConfig extends ButtonConfig {
+  subtitleSettingsPanel: SubtitleSettingsPanel
+}
+
 /**
  * A button that toggles the option menu for subtitles
  */
-export class SubtitleSettingsOpener extends ToggleButton<ToggleButtonConfig> {
+export class SubtitleSettingsOpener extends Button<ButtonConfig> {
 
-  constructor(config: ToggleButtonConfig = {}) {
+  constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
 
     this.config = this.mergeConfig(config, {
@@ -21,7 +28,11 @@ export class SubtitleSettingsOpener extends ToggleButton<ToggleButtonConfig> {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <ToggleButtonConfig>this.getConfig();
+    let config = <SubtitleSettingsButtonConfig>this.getConfig();
+
+    this.onClick.subscribe(() => {
+      config.subtitleSettingsPanel.show();
+    });
 
     let checkVisibility = () => {
       // Only display the menu panel if subtitles are present
@@ -43,14 +54,25 @@ export class SubtitleSettingsOpener extends ToggleButton<ToggleButtonConfig> {
   }
 }
 
-export class SubtitleSettingLabel extends Label<LabelConfig> {
+export interface SubtitleSettingLabelConfig extends LabelConfig {
+  opener: SubtitleSettingsOpener;
+}
+
+export class SubtitleSettingLabel extends Container<ContainerConfig> {
 
   private opener: SubtitleSettingsOpener;
 
-  constructor(config: LabelConfig = {}) {
+  private text: string;
+
+  constructor(config: SubtitleSettingLabelConfig) {
     super(config)
 
-    this.opener = new SubtitleSettingsOpener();
+    this.config = this.mergeConfig(<ContainerConfig>config, {
+      cssClass: 'ui-label'
+    }, this.config);
+
+    this.opener = config.opener;
+    this.text = config.text;
   }
 
   protected toDomElement(): DOM {
@@ -62,15 +84,7 @@ export class SubtitleSettingLabel extends Label<LabelConfig> {
       this.opener.getDomElement() ,
     );
 
-    labelElement.on('click', () => {
-      this.onClickEvent();
-    });
-
     return labelElement;
-  }
-
-  get onOpenerClick(): Event<ToggleButton<ToggleButtonConfig>, NoArgs> {
-    return this.opener.onClick
   }
 }
 
@@ -79,7 +93,7 @@ export class SubtitleSettingLabel extends Label<LabelConfig> {
  */
 export class SubtitlePanelCloser extends SubtitleSettingsOpener {
 
-  constructor(config: ToggleButtonConfig = {}) {
+  constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
 
     this.config = this.mergeConfig(config, {
@@ -91,7 +105,11 @@ export class SubtitlePanelCloser extends SubtitleSettingsOpener {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <ToggleButtonConfig>this.getConfig();
+    let config = <SubtitleSettingsButtonConfig>this.getConfig();
+
+    this.onClick.subscribe(() => {
+      config.subtitleSettingsPanel.hide();
+    });
   }
 
   protected toDomElement(): DOM {

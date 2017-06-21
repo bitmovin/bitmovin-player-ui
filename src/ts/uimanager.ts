@@ -12,6 +12,8 @@ import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {SettingsPanel, SettingsPanelItem, SettingsPanelSubtitleItem} from './components/settingspanel';
+import {SubtitleSettingsPanel} from './components/subtitlesettingspanel';
+import {SubtitleSettingsOpener} from './components/subtitlesettingtoggle';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
@@ -383,12 +385,21 @@ export namespace UIManager.Factory {
   function modernUI(config: SubtitleOverlayConfig) {
     let subtitleOverlay = new SubtitleOverlay(config);
     let subtitlesOptionList = GetSubtitleSettingList(subtitleOverlay);
+
+    let subtitleSettingsPanel = new SubtitleSettingsPanel({
+      hidden: true,
+      overlay: subtitleOverlay,
+    });
+
+    let subtitleSettingsOpener = new SubtitleSettingsOpener({
+      subtitleSettingsPanel: subtitleSettingsPanel
+    });
     let defaultComponents: Component<ComponentConfig>[] = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelSubtitleItem('Subtitles', new SubtitleSelectBox()),
+        new SettingsPanelSubtitleItem('Subtitles', new SubtitleSelectBox(), {opener: subtitleSettingsOpener}),
   ]
     let settingsPanel = new SettingsPanel({
       components: defaultComponents.concat(subtitlesOptionList),
@@ -401,6 +412,7 @@ export namespace UIManager.Factory {
     let controlBar = new ControlBar({
       components: [
         settingsPanel,
+        subtitleSettingsPanel,
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
@@ -476,12 +488,20 @@ export namespace UIManager.Factory {
   function modernSmallScreenUI(config: SubtitleOverlayConfig) {
     let subtitleOverlay = new SubtitleOverlay(config);
     let subtitlesOptionList = GetSubtitleSettingList(subtitleOverlay);
+    let subtitleSettingsPanel = new SubtitleSettingsPanel({
+      hidden: true,
+      hideDelay: -1,
+      overlay: subtitleOverlay,
+    });
+    let subtitleSettingsOpener = new SubtitleSettingsOpener({
+      subtitleSettingsPanel: subtitleSettingsPanel
+    });
     let defaultComponents: Component<ComponentConfig>[] = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelSubtitleItem('Subtitles', new SubtitleSelectBox()),
+        new SettingsPanelSubtitleItem('Subtitles', new SubtitleSelectBox(), {opener: subtitleSettingsOpener}),
     ]
     let settingsPanel = new SettingsPanel({
       components: defaultComponents.concat(subtitlesOptionList),
@@ -523,6 +543,7 @@ export namespace UIManager.Factory {
           ]
         }),
         settingsPanel,
+        subtitleSettingsPanel,
         new RecommendationOverlay(),
         new Watermark(),
         new ErrorMessageOverlay()

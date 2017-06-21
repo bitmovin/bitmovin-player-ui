@@ -128,11 +128,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
       }
-      if (component instanceof SubtitlePanelCloser) {
-        component.onClick.subscribe(closeSubtitleSettings);
-      } else if (component instanceof SettingsPanelSubtitleItem) {
-        component.onSubtitlePanelOpen.subscribe(openSubtitleSettings);
-      }
     }
   }
 
@@ -277,6 +272,10 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   }
 }
 
+export interface SettingsPanelSubtitleItemConfig extends ContainerConfig {
+  opener: SubtitleSettingsOpener,
+}
+
 export class SettingsPanelSubtitleItem extends SettingsPanelItem {
 
   private opener: SubtitleSettingsOpener;
@@ -285,14 +284,10 @@ export class SettingsPanelSubtitleItem extends SettingsPanelItem {
     onSubtitlePanelOpen: new EventDispatcher<SettingsPanelItem, NoArgs>(),
   };
 
-  constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
+  constructor(label: string, selectBox: SelectBox, config: SettingsPanelSubtitleItemConfig) {
     super(label, selectBox, config);
 
-    let subtitleSettingLabel = new SubtitleSettingLabel({text: label})
-
-    subtitleSettingLabel.onOpenerClick.subscribe(() => { 
-      this.onSubtitlePanelOpenEvent();
-    });
+    let subtitleSettingLabel = new SubtitleSettingLabel({text: label, opener: config.opener})
 
     this.label = subtitleSettingLabel
 
