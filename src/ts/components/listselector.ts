@@ -25,7 +25,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   private listSelectorEvents = {
     onItemAdded: new EventDispatcher<ListSelector<Config>, string>(),
     onItemRemoved: new EventDispatcher<ListSelector<Config>, string>(),
-    onItemSelected: new EventDispatcher<ListSelector<Config>, string>()
+    onItemSelected: new EventDispatcher<ListSelector<Config>, string>(),
   };
 
   constructor(config: ListSelectorConfig = {}) {
@@ -33,7 +33,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
 
     this.config = this.mergeConfig(config, {
       items: [],
-      cssClass: 'ui-listselector'
+      cssClass: 'ui-listselector',
     }, this.config);
 
     this.items = this.config.items;

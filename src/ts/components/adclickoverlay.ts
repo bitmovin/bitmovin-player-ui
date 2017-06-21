@@ -39,7 +39,7 @@ export class AdClickOverlay extends ClickOverlay {
 
       // Notify the player of the clicked ad
       player.fireEvent(player.EVENT.ON_AD_CLICKED, {
-        clickThroughUrl: clickThroughUrl
+        clickThroughUrl: clickThroughUrl,
       });
     });
   }

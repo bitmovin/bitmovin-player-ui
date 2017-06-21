@@ -95,7 +95,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     /**
      * Fired when a scrubbing seek has finished or when a direct seek is issued.
      */
-    onSeeked: new EventDispatcher<SeekBar, number>()
+    onSeeked: new EventDispatcher<SeekBar, number>(),
   };
 
   constructor(config: SeekBarConfig = {}) {
@@ -410,7 +410,7 @@ export class SeekBar extends Component<SeekBarConfig> {
           this.timelineMarkers.push({
             time: 100 / player.getDuration() * marker.time, // convert time to percentage
             title: marker.title,
-          })
+          });
         }
       }
 
@@ -442,46 +442,46 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let seekBarContainer = new DOM('div', {
       'id': this.config.id,
-      'class': this.getCssClasses()
+      'class': this.getCssClasses(),
     });
 
     let seekBar = new DOM('div', {
-      'class': this.prefixCss('seekbar')
+      'class': this.prefixCss('seekbar'),
     });
     this.seekBar = seekBar;
 
     // Indicator that shows the buffer fill level
     let seekBarBufferLevel = new DOM('div', {
-      'class': this.prefixCss('seekbar-bufferlevel')
+      'class': this.prefixCss('seekbar-bufferlevel'),
     });
     this.seekBarBufferPosition = seekBarBufferLevel;
 
     // Indicator that shows the current playback position
     let seekBarPlaybackPosition = new DOM('div', {
-      'class': this.prefixCss('seekbar-playbackposition')
+      'class': this.prefixCss('seekbar-playbackposition'),
     });
     this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
     // A marker of the current playback position, e.g. a dot or line
     let seekBarPlaybackPositionMarker = new DOM('div', {
-      'class': this.prefixCss('seekbar-playbackposition-marker')
+      'class': this.prefixCss('seekbar-playbackposition-marker'),
     });
     this.seekBarPlaybackPositionMarker = seekBarPlaybackPositionMarker;
 
     // Indicator that show where a seek will go to
     let seekBarSeekPosition = new DOM('div', {
-      'class': this.prefixCss('seekbar-seekposition')
+      'class': this.prefixCss('seekbar-seekposition'),
     });
     this.seekBarSeekPosition = seekBarSeekPosition;
 
     // Indicator that shows the full seekbar
     let seekBarBackdrop = new DOM('div', {
-      'class': this.prefixCss('seekbar-backdrop')
+      'class': this.prefixCss('seekbar-backdrop'),
     });
     this.seekBarBackdrop = seekBarBackdrop;
 
     let seekBarChapterMarkersContainer = new DOM('div', {
-      'class': this.prefixCss('seekbar-markers')
+      'class': this.prefixCss('seekbar-markers'),
     });
     this.seekBarMarkersContainer = seekBarChapterMarkersContainer;
 
@@ -798,7 +798,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     if (this.label) {
       this.label.getDomElement().css({
-        'left': (snappedMarker ? snappedMarker.time : percentage) + '%'
+        'left': (snappedMarker ? snappedMarker.time : percentage) + '%',
       });
     }
 

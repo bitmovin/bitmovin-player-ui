@@ -325,7 +325,7 @@ export class DOM {
 
     return {
       top: elementRect.top - htmlRect.top,
-      left: elementRect.left - htmlRect.left
+      left: elementRect.left - htmlRect.left,
     };
   }
 

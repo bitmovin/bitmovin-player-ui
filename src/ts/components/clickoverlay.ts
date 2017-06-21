@@ -19,7 +19,7 @@ export class ClickOverlay extends Button<ClickOverlayConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-clickoverlay'
+      cssClass: 'ui-clickoverlay',
     }, <ClickOverlayConfig>this.config);
   }
 

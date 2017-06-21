@@ -64,37 +64,6 @@ gulp.task('lint-ts', function() {
   return gulp.src(paths.source.ts)
   .pipe(tslint({
     formatter: 'verbose',
-    configuration: {
-      rules: {
-        'class-name': true,
-        'comment-format': [true, 'check-space'],
-        'indent': [true, 'spaces'],
-        'no-duplicate-variable': true,
-        'no-eval': true,
-        'no-internal-module': true,
-        'no-trailing-whitespace': true,
-        'no-var-keyword': false,
-        'one-line': [true, 'check-open-brace', 'check-whitespace'],
-        'quotemark': [true, 'single'],
-        'semicolon': false,
-        'triple-equals': [true, 'allow-null-check'],
-        'typedef-whitespace': [true, {
-          'call-signature': 'nospace',
-          'index-signature': 'nospace',
-          'parameter': 'nospace',
-          'property-declaration': 'nospace',
-          'variable-declaration': 'nospace'
-        }],
-        'variable-name': [true, 'ban-keywords'],
-        'whitespace': [true,
-          'check-branch',
-          'check-decl',
-          'check-operator',
-          'check-separator',
-          'check-type'
-        ]
-      }
-    }
   }))
   .pipe(tslint.report({
     // Print just the number of errors (instead of printing all errors again)
@@ -140,7 +109,7 @@ gulp.task('browserify', function() {
   // Compile output JS file
   var stream = browserifyBundle
   .pipe(source('bitmovinplayer-ui.js'))
-  .pipe(buffer())
+  .pipe(buffer()) // required for production/sourcemaps
   .pipe(gulp.dest(paths.target.js));
 
   if (production) {

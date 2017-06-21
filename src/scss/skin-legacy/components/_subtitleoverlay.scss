@@ -31,7 +31,7 @@
     // sass-lint:disable force-pseudo-nesting
     &:nth-child(1n-1)::after {
       content: '\A';
-      white-space: pre;
+      white-space: pre-line;
     }
   }
 }

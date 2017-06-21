@@ -34,7 +34,7 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['label-metadata', 'label-metadata-' + MetadataLabelContent[config.content].toLowerCase()]
+      cssClasses: ['label-metadata', 'label-metadata-' + MetadataLabelContent[config.content].toLowerCase()],
     }, this.config);
   }
 

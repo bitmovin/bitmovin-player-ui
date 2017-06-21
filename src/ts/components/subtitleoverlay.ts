@@ -298,7 +298,7 @@ class SubtitleLabel extends Label<LabelConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitle-label'
+      cssClass: 'ui-subtitle-label',
     }, this.config);
   }
 }
@@ -335,7 +335,7 @@ class ActiveSubtitleManager {
 
     let label = new SubtitleLabel({
       // Prefer the HTML subtitle text if set, else use the plain text
-      text: event.html || event.text
+      text: event.html || event.text,
     });
 
     this.activeSubtitleCueMap[id] = { event, label };

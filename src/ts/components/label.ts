@@ -33,7 +33,7 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-label'
+      cssClass: 'ui-label',
     }, this.config);
 
     this.text = this.config.text;
@@ -42,7 +42,7 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
   protected toDomElement(): DOM {
     let labelElement = new DOM('span', {
       'id': this.config.id,
-      'class': this.getCssClasses()
+      'class': this.getCssClasses(),
     }).html(this.text);
 
     labelElement.on('click', () => {

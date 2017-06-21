@@ -40,13 +40,13 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
     this.volumeToggleButton = new VolumeToggleButton();
     this.volumeSlider = new VolumeSlider({
       vertical: config.vertical != null ? config.vertical : true,
-      hidden: true
+      hidden: true,
     });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-volumecontrolbutton',
       components: [this.volumeToggleButton, this.volumeSlider],
-      hideDelay: 500
+      hideDelay: 500,
     }, <VolumeControlButtonConfig>this.config);
   }
 

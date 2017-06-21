@@ -29,7 +29,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   private static readonly CLASS_LAST = 'last';
 
   private settingsPanelEvents = {
-    onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>()
+    onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>(),
   };
 
   private hideTimeout: Timeout;
@@ -174,7 +174,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
-      components: [this.label, this.setting]
+      components: [this.label, this.setting],
     }, this.config);
   }
 

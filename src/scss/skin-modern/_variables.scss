@@ -1,22 +1,22 @@
-$prefix: 'bmpui';
+$prefix: 'bmpui' !default;
 
-$color-black: #000;
-$color-transparent: rgba(0, 0, 0, 0);
-$color-red: #f00;
+$color-black: #000 !default;
+$color-transparent: rgba(0, 0, 0, 0) !default;
+$color-red: #f00 !default;
 
-$color-highlight: #1fabe2; //Bitmovin blue
-$color-primary: #fff;
-$color-secondary: #999;
+$color-highlight: #1fabe2 !default; //Bitmovin blue
+$color-primary: #fff !default;
+$color-secondary: #999 !default;
 
-$color-background: #111;
-$color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3);
-$color-background-bars: transparentize($color-black, .3);
+$color-background: #111 !default;
+$color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3) !default;
+$color-background-bars: transparentize($color-black, .3) !default;
 
-$font-family: sans-serif;
-$font-size: 1em;
+$font-family: sans-serif !default;
+$font-size: 1em !default;
 
-$subtitle-text-color: #fff;
-$subtitle-text-border-color: #000;
+$subtitle-text-color: #fff !default;
+$subtitle-text-border-color: #000 !default;
 
-$animation-duration: .3s;
-$animation-duration-short: $animation-duration / 2;
+$animation-duration: .3s !default;
+$animation-duration-short: $animation-duration / 2 !default;

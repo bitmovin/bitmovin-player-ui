@@ -89,7 +89,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-errormessage-overlay',
       components: [this.tvNoiseBackground, this.errorLabel],
-      hidden: true
+      hidden: true,
     }, this.config);
   }
 
@@ -130,5 +130,12 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
         this.hide();
       }
     });
+  }
+
+  release(): void {
+    super.release();
+
+    // Canvas rendering must be explicitly stopped, else it just continues forever and hogs resources
+    this.tvNoiseBackground.stop();
   }
 }

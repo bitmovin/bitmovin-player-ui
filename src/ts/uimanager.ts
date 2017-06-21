@@ -49,6 +49,7 @@ import {PictureInPictureToggleButton} from './components/pictureinpicturetoggleb
 import {Spacer} from './components/spacer';
 import GetSubtitleSettingList from './components/subtitlesettings/settinglist';
 
+
 export interface UIRecommendationConfig {
   title: string;
   url: string;
@@ -84,11 +85,39 @@ export interface UIConfig {
  * The context that will be passed to a {@link UIConditionResolver} to determine if it's conditions fulfil the context.
  */
 export interface UIConditionContext {
+  /**
+   * Tells if the player is loading or playing an ad.
+   */
   isAd: boolean;
+  /**
+   * Tells if the ad allows a UI. This is currently only true for VAST ads and cannot be used to differentiate between
+   * different ad clients (i.e. to display different UIs for different ad clients).
+   * @deprecated Will be removed in an upcoming major release, use {@link #adClientType} instead.
+   */
   isAdWithUI: boolean;
+  /**
+   * Tells the ad client (e.g. 'vast, 'ima') if {@link #isAd} is true.
+   */
+  adClientType: string;
+  /**
+   * Tells if the player is currently in fullscreen mode.
+   */
   isFullscreen: boolean;
+  /**
+   * Tells if the UI is running in a mobile browser.
+   */
   isMobile: boolean;
+  /**
+   * Tells if the player is in playing or paused state.
+   */
+  isPlaying: boolean;
+  /**
+   * The width of the player/UI element.
+   */
   width: number;
+  /**
+   * The width of the document where the player/UI is embedded in.
+   */
   documentWidth: number;
 }
 
@@ -220,6 +249,14 @@ export class UIManager {
           case player.EVENT.ON_AD_SKIPPED:
           case player.EVENT.ON_AD_ERROR:
             adStartedEvent = null;
+            break;
+          // When a new source is loaded during ad playback, there will be no ad end event so we detect the end
+          // of the ad playback by checking isAd() in ON_READY, because ON_READY always arrives when the source
+          // changes.
+          case player.EVENT.ON_READY:
+            if (adStartedEvent && !player.isAd()) {
+              adStartedEvent = null;
+            }
         }
       }
 
@@ -231,8 +268,10 @@ export class UIManager {
       let context: UIConditionContext = {
         isAd: ad,
         isAdWithUI: adWithUI,
+        adClientType: ad ? adStartedEvent.clientType : null,
         isFullscreen: this.player.isFullscreen(),
         isMobile: isMobile,
+        isPlaying: this.player.isPlaying(),
         width: this.playerElement.width(),
         documentWidth: document.body.clientWidth,
       };
@@ -293,6 +332,9 @@ export class UIManager {
     };
 
     // Listen to the following events to trigger UI variant resolution
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_READY, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAY, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PAUSED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
     this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
@@ -391,14 +433,14 @@ export namespace UIManager.Factory {
       overlay: subtitleOverlay,
     });
 
-    let components: Component<ComponentConfig>[] = [
+
+    let settingsPanel = new SettingsPanel({
+      components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-  ]
-    let settingsPanel = new SettingsPanel({
-      components: components,
+      ],
       hidden: true,
     });
 
@@ -428,7 +470,7 @@ export namespace UIManager.Factory {
             new SeekBar({ label: new SeekBarLabel() }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
-          cssClasses: ['controlbar-top']
+          cssClasses: ['controlbar-top'],
         }),
         new Container({
           components: [
@@ -443,9 +485,9 @@ export namespace UIManager.Factory {
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
           ],
-          cssClasses: ['controlbar-bottom']
+          cssClasses: ['controlbar-bottom'],
         }),
-      ]
+      ],
     });
 
     return new UIContainer({
@@ -458,8 +500,9 @@ export namespace UIManager.Factory {
         new TitleBar(),
         new RecommendationOverlay(),
         new Watermark(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-modern']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-modern'],
     });
   }
 
@@ -472,9 +515,9 @@ export namespace UIManager.Factory {
         new Container({
           components: [
             new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
-            new AdSkipButton()
+            new AdSkipButton(),
           ],
-          cssClass: 'ui-ads-status'
+          cssClass: 'ui-ads-status',
         }),
         new ControlBar({
           components: [
@@ -486,11 +529,12 @@ export namespace UIManager.Factory {
                 new Spacer(),
                 new FullscreenToggleButton(),
               ],
-              cssClasses: ['controlbar-bottom']
+              cssClasses: ['controlbar-bottom'],
             }),
-          ]
-        })
-      ], cssClasses: ['ui-skin-modern', 'ui-skin-ads']
+          ],
+        }),
+      ],
+      cssClasses: ['ui-skin-modern', 'ui-skin-ads'],
     });
   }
 
@@ -502,14 +546,13 @@ export namespace UIManager.Factory {
       components: GetSubtitleSettingList(subtitleOverlay),
       overlay: subtitleOverlay,
     });
-    let components: Component<ComponentConfig>[] = [
+    let settingsPanel = new SettingsPanel({
+      components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-    ]
-    let settingsPanel = new SettingsPanel({
-      components: components,
+      ],
       hidden: true,
       hideDelay: -1,
     });
@@ -540,9 +583,9 @@ export namespace UIManager.Factory {
             new SeekBar({ label: new SeekBarLabel() }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
-          cssClasses: ['controlbar-top']
+          cssClasses: ['controlbar-top'],
         }),
-      ]
+      ],
     });
 
     return new UIContainer({
@@ -559,14 +602,15 @@ export namespace UIManager.Factory {
             new VRToggleButton(),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
-          ]
+          ],
         }),
         settingsPanel,
         subtitleSettingsPanel,
         new RecommendationOverlay(),
         new Watermark(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen'],
     });
   }
 
@@ -581,16 +625,17 @@ export namespace UIManager.Factory {
             // dummy label with no content to move buttons to the right
             new Label({ cssClass: 'label-metadata-title' }),
             new FullscreenToggleButton(),
-          ]
+          ],
         }),
         new Container({
           components: [
             new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
-            new AdSkipButton()
+            new AdSkipButton(),
           ],
-          cssClass: 'ui-ads-status'
+          cssClass: 'ui-ads-status',
         }),
-      ], cssClasses: ['ui-skin-modern', 'ui-skin-ads', 'ui-skin-smallscreen']
+      ],
+      cssClasses: ['ui-skin-modern', 'ui-skin-ads', 'ui-skin-smallscreen'],
     });
   }
 
@@ -603,9 +648,9 @@ export namespace UIManager.Factory {
             new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
-          cssClasses: ['controlbar-top']
+          cssClasses: ['controlbar-top'],
         }),
-      ]
+      ],
     });
 
     return new CastUIContainer({
@@ -616,8 +661,9 @@ export namespace UIManager.Factory {
         new Watermark(),
         controlBar,
         new TitleBar({ keepHiddenWithoutMetadata: true }),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver'],
     });
   }
 
@@ -628,19 +674,19 @@ export namespace UIManager.Factory {
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
-      }
+      },
     }, {
       ui: modernAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isAdWithUI;
-      }
+      },
     }, {
       ui: modernSmallScreenUI(extractSubtitleOverlayConfig(config)),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
-      }
+      },
     }, {
-      ui: modernUI(extractSubtitleOverlayConfig(config))
+      ui: modernUI(extractSubtitleOverlayConfig(config)),
     }], config);
   }
 
@@ -649,9 +695,9 @@ export namespace UIManager.Factory {
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isAdWithUI;
-      }
+      },
     }, {
-      ui: modernSmallScreenUI(extractSubtitleOverlayConfig(config))
+      ui: modernSmallScreenUI(extractSubtitleOverlayConfig(config)),
     }], config);
   }
 
@@ -665,9 +711,9 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
       ],
-      hidden: true
+      hidden: true,
     });
 
     let controlBar = new ControlBar({
@@ -680,8 +726,8 @@ export namespace UIManager.Factory {
         new VolumeControlButton(),
         new SettingsToggleButton({ settingsPanel: settingsPanel }),
         new CastToggleButton(),
-        new FullscreenToggleButton()
-      ]
+        new FullscreenToggleButton(),
+      ],
     });
 
     return new UIContainer({
@@ -693,8 +739,9 @@ export namespace UIManager.Factory {
         new RecommendationOverlay(),
         controlBar,
         new TitleBar(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-legacy']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-legacy'],
     });
   }
 
@@ -707,11 +754,12 @@ export namespace UIManager.Factory {
             new PlaybackToggleButton(),
             new AdMessageLabel(),
             new VolumeControlButton(),
-            new FullscreenToggleButton()
-          ]
+            new FullscreenToggleButton(),
+          ],
         }),
-        new AdSkipButton()
-      ], cssClasses: ['ui-skin-legacy', 'ui-skin-ads']
+        new AdSkipButton(),
+      ],
+      cssClasses: ['ui-skin-legacy', 'ui-skin-ads'],
     });
   }
 
@@ -720,7 +768,7 @@ export namespace UIManager.Factory {
       components: [
         new SeekBar(),
         new PlaybackTimeLabel(),
-      ]
+      ],
     });
 
     return new UIContainer({
@@ -730,8 +778,9 @@ export namespace UIManager.Factory {
         new Watermark(),
         controlBar,
         new TitleBar(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-legacy', 'ui-skin-cast-receiver']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-legacy', 'ui-skin-cast-receiver'],
     });
   }
 
@@ -741,9 +790,9 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox())
+        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
       ],
-      hidden: true
+      hidden: true,
     });
 
     let controlBar = new ControlBar({
@@ -758,8 +807,8 @@ export namespace UIManager.Factory {
         new VolumeControlButton({ vertical: false }),
         new SettingsToggleButton({ settingsPanel: settingsPanel }),
         new CastToggleButton(),
-        new FullscreenToggleButton()
-      ]
+        new FullscreenToggleButton(),
+      ],
     });
 
     return new UIContainer({
@@ -771,8 +820,9 @@ export namespace UIManager.Factory {
         new RecommendationOverlay(),
         controlBar,
         new TitleBar(),
-        new ErrorMessageOverlay()
-      ], cssClasses: ['ui-skin-legacy']
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-legacy'],
     });
   }
 
@@ -781,9 +831,9 @@ export namespace UIManager.Factory {
       ui: legacyAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isAdWithUI;
-      }
+      },
     }, {
-      ui: legacyUI()
+      ui: legacyUI(),
     }], config);
   }
 
@@ -1035,28 +1085,53 @@ class PlayerWrapper {
   constructor(player: PlayerAPI) {
     this.player = player;
 
-    // Collect all public API methods of the player
-    let methods = <any[]>[];
+    // Collect all members of the player (public API methods and properties of the player)
+    // (Object.getOwnPropertyNames(player) does not work with the player TypeScript class starting in 7.2)
+    let members: string[] = [];
     for (let member in player) {
+      members.push(member);
+    }
+
+    // Split the members into methods and properties
+    let methods = <any[]>[];
+    let properties = <any[]>[];
+
+    for (let member of members) {
       if (typeof (<any>player)[member] === 'function') {
         methods.push(member);
+      } else {
+        properties.push(member);
       }
     }
 
-    // Create wrapper object and add function wrappers for all API methods that do nothing but calling the base method
-    // on the player
+    // Create wrapper object
     let wrapper = <any>{};
-    for (let member of methods) {
-      wrapper[member] = function() {
+
+    // Add function wrappers for all API methods that do nothing but calling the base method on the player
+    for (let method of methods) {
+      wrapper[method] = function() {
         // console.log('called ' + member); // track method calls on the player
-        return (<any>player)[member].apply(player, arguments);
+        return (<any>player)[method].apply(player, arguments);
       };
     }
 
-    // Collect all public properties of the player and add it to the wrapper
-    for (let member in player) {
-      if (typeof (<any>player)[member] !== 'function') {
-        wrapper[member] = (<any>player)[member];
+    // Add all public properties of the player to the wrapper
+    for (let property of properties) {
+      // Get an eventually existing property descriptor to differentiate between plain properties and properties with
+      // getters/setters.
+      let propertyDescriptor: PropertyDescriptor = Object.getOwnPropertyDescriptor(player, property) ||
+        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(player), property);
+
+      // If the property has getters/setters, wrap them accordingly...
+      if (propertyDescriptor && (propertyDescriptor.get || propertyDescriptor.set)) {
+        Object.defineProperty(wrapper, property, {
+          get: () => propertyDescriptor.get.call(player),
+          set: (value: any) => propertyDescriptor.set.call(player, value),
+        });
+      }
+      // ... else just transfer the property to the wrapper
+      else {
+        wrapper[property] = (<any>player)[property];
       }
     }
 
