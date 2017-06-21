@@ -20,5 +20,13 @@ export class SubtitleSettingsPanel extends SettingsPanel {
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    this.onShow.subscribe(() => {
+      this.overlay.enforceSubtitleLabel()
+    });
+
+    this.onHide.subscribe(() => {
+      this.overlay.removeEnforcedSubtitleLabel()
+    });
   }
 }
