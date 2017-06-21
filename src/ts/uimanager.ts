@@ -530,6 +530,7 @@ export namespace UIManager.Factory {
     subtitleSettingsPanel.addComponent(subtitleSettingsCloser)
 
     settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
+    subtitleSettingsPanel.addComponent(new CloseButton({ target: subtitleSettingsPanel }));
 
     let controlBar = new ControlBar({
       components: [
