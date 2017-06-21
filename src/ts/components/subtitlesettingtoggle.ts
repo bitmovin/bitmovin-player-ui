@@ -67,12 +67,15 @@ export class SubtitleSettingLabel extends Container<ContainerConfig> {
   constructor(config: SubtitleSettingLabelConfig) {
     super(config)
 
-    this.config = this.mergeConfig(<ContainerConfig>config, {
-      cssClass: 'ui-label'
-    }, this.config);
-
     this.opener = config.opener;
     this.text = config.text;
+
+    this.config = this.mergeConfig(<ContainerConfig>config, {
+      cssClass: 'ui-label',
+      components: [
+        this.opener
+      ],
+    }, this.config);
   }
 
   protected toDomElement(): DOM {
