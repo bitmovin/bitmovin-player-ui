@@ -43,9 +43,9 @@
     .#{$prefix}-container-wrapper > * {
       // Labels
       &.#{$prefix}-ui-label {
-        width: 9em;
-        font-size: .8em;
         display: inline-block;
+        font-size: .8em;
+        width: 9em;
       }
 
       // Controls (e.g. selectbox)

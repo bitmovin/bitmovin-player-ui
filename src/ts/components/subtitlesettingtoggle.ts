@@ -19,7 +19,7 @@ export interface SubtitleSettingsButtonConfig extends ButtonConfig {
 export class SubtitleSettingsOpener extends Button<ButtonConfig> {
 
   private subtitleSettingsPanel: SubtitleSettingsPanel
-  private settingsPanel:SettingsPanel
+  private settingsPanel: SettingsPanel
 
   constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
@@ -88,7 +88,7 @@ export class SubtitleSettingLabel extends Container<ContainerConfig> {
 export class SubtitlePanelCloser extends Button<ButtonConfig> {
 
   private subtitleSettingsPanel: SubtitleSettingsPanel
-  private settingsPanel:SettingsPanel
+  private settingsPanel: SettingsPanel
 
   constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
