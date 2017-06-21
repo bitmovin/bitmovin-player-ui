@@ -5,10 +5,9 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
-import {SubtitleSettingsOpener, SubtitlePanelCloser, SubtitleSettingLabel} from './subtitlesettingtoggle';
+import {SubtitlePanelCloser} from './subtitlesettingtoggle';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
-import {FontColorSelectBox} from './subtitlesettings/fontcolorselectbox';
 import {SubtitleOverlay} from './subtitleoverlay';
 
 /**
@@ -21,8 +20,6 @@ export interface SettingsPanelConfig extends ContainerConfig {
    * Default: 3 seconds (3000)
    */
   hideDelay?: number;
-  defaultComponents?: Component<ComponentConfig>[];
-  subtitlesComponents?: Component<ComponentConfig>[];
   subtitleOverlay?: SubtitleOverlay;
 }
 
@@ -45,7 +42,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.config = this.mergeConfig<SettingsPanelConfig>(config, {
       cssClass: 'ui-settings-panel',
       hideDelay: 3000,
-      defaultComponents: this.config.components,
     }, this.config);
   }
 
@@ -70,12 +66,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_LAST));
       }
     }
-
-    this.onShow.subscribe(() => {
-      config.components = config.defaultComponents
-      this.updateComponents()
-      updateLastItem()
-    });
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
@@ -111,18 +101,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       this.onSettingsStateChangedEvent();
       updateLastItem()
     };
-    let openSubtitleSettings = () => {
-      config.components = config.subtitlesComponents
-      config.subtitleOverlay.enforceSubtitleLabel()
-      this.updateComponents()
-      updateLastItem()
-    }
-    let closeSubtitleSettings = () => {
-      config.components = config.defaultComponents
-      config.subtitleOverlay.removeEnforcedSubtitleLabel()
-      this.updateComponents()
-      updateLastItem()
-    }
     for (let component of this.getItems()) {
       if (component instanceof SettingsPanelItem) {
         component.onActiveChanged.subscribe(settingsStateChangedHandler);
@@ -140,7 +118,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   /**
    * Adds a child component to the container.
-   * It will be present both in default component and subtitles related components
    * @param component the component to add
    */
   addComponent(component: Component<ComponentConfig>) {
@@ -148,17 +125,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     config.components.push(component)
   };
 
-  /**
-   * Adds a child component to the container.
-   * It will be present both in default component and subtitles related components
-   * @param component the component to add
-   */
-  addGlobalComponent(component: Component<ComponentConfig>) {
-    let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
-    config.components.push(component)
-    config.defaultComponents.push(component)
-    config.subtitlesComponents.push(component)
-  };
   /**
    * Checks if there are active settings within this settings panel. An active setting is a setting that is visible
    * and enabled, which the user can interact with.
