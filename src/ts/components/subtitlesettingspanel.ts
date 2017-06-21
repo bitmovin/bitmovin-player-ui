@@ -3,17 +3,9 @@ import {SubtitleOverlay} from './subtitleoverlay';
 import {UIInstanceManager} from '../uimanager';
 import GetSubtitleSettingList from './subtitlesettings/settinglist';
 
-export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
-  overlay: SubtitleOverlay,
-}
-
 export class SubtitleSettingsPanel extends SettingsPanel {
-  constructor(config: SubtitleSettingsPanelConfig) {
+  constructor(config: SettingsPanelConfig) {
     super(config)
-
-    this.config = this.mergeConfig<SettingsPanelConfig>(config, {
-      components: GetSubtitleSettingList(config.overlay)
-    }, this.config);
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {

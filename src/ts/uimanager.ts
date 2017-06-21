@@ -388,7 +388,7 @@ export namespace UIManager.Factory {
 
     let subtitleSettingsPanel = new SubtitleSettingsPanel({
       hidden: true,
-      overlay: subtitleOverlay,
+      components: GetSubtitleSettingList(subtitleOverlay),
     });
 
     let subtitleSettingsOpener = new SubtitleSettingsOpener({
@@ -493,7 +493,7 @@ export namespace UIManager.Factory {
     let subtitleSettingsPanel = new SubtitleSettingsPanel({
       hidden: true,
       hideDelay: -1,
-      overlay: subtitleOverlay,
+      components: GetSubtitleSettingList(subtitleOverlay),
     });
     let subtitleSettingsOpener = new SubtitleSettingsOpener({
       subtitleSettingsPanel: subtitleSettingsPanel
