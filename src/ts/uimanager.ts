@@ -388,6 +388,7 @@ export namespace UIManager.Factory {
     let subtitleSettingsPanel = new SubtitleSettingsPanel({
       hidden: true,
       components: GetSubtitleSettingList(subtitleOverlay),
+      overlay: subtitleOverlay,
     });
 
     let components: Component<ComponentConfig>[] = [
@@ -399,7 +400,6 @@ export namespace UIManager.Factory {
     let settingsPanel = new SettingsPanel({
       components: components,
       hidden: true,
-      subtitleOverlay: subtitleOverlay,
     });
 
     let subtitleSettingsOpener = new SubtitleSettingsOpener({
@@ -500,6 +500,7 @@ export namespace UIManager.Factory {
       hidden: true,
       hideDelay: -1,
       components: GetSubtitleSettingList(subtitleOverlay),
+      overlay: subtitleOverlay,
     });
     let components: Component<ComponentConfig>[] = [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -511,7 +512,6 @@ export namespace UIManager.Factory {
       components: components,
       hidden: true,
       hideDelay: -1,
-      subtitleOverlay: subtitleOverlay,
     });
     let subtitleSettingsOpener = new SubtitleSettingsOpener({
       subtitleSettingsPanel: subtitleSettingsPanel,

@@ -8,7 +8,6 @@ import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {SubtitlePanelCloser} from './subtitlesettingtoggle';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
-import {SubtitleOverlay} from './subtitleoverlay';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -20,7 +19,6 @@ export interface SettingsPanelConfig extends ContainerConfig {
    * Default: 3 seconds (3000)
    */
   hideDelay?: number;
-  subtitleOverlay?: SubtitleOverlay;
 }
 
 /**
@@ -89,12 +87,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         this.hideTimeout.clear();
       });
     }
-
-    this.onHide.subscribe(() => {
-      if (config.subtitleOverlay) {
-        config.subtitleOverlay.removeEnforcedSubtitleLabel();
-      }
-    });
 
     // Fire event when the state of a settings-item has changed
     let settingsStateChangedHandler = () => {
