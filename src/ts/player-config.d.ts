@@ -652,15 +652,34 @@ declare namespace bitmovin {
         minSelectableVideoBitrate?: number | string;
         maxSelectableVideoBitrate?: number | string;
       };
+      /**
+       * A callback function to customize the player's adaptation logic that is called before the player tries to download
+       * a new video segment.
+       * @param data An object carrying the <code>suggested</code> attribute, holding the suggested representation/quality
+       *   ID the player would select
+       * @return A valid representation/quality ID which the player should use, based on your custom logic (or
+       *   <code>data.suggested</code> to switch to the suggested quality)
+       * @see PlayerAPI#getAvailableVideoQualities to get a list of all available video qualities
+       */
+      onVideoAdaptation?: (data: { suggested: string }) => string;
+      /**
+       * A callback function to customize the player's adaptation logic that is called before the player tries to download
+       * a new audio segment.
+       * @param data An object carrying the <code>suggested</code> attribute, holding the suggested representation/quality
+       *   ID the player would select
+       * @return A valid representation/quality ID which the player should use, based on your custom logic (or
+       *   <code>data.suggested</code> to switch to the suggested quality)
+       * @see PlayerAPI#getAvailableAudioQualities to get a list of all available audio qualities
+       */
+      onAudioAdaptation?: (data: { suggested: string }) => string;
     }
 
+    /**
+     * Adaptation configurations for different platforms.
+     */
     interface AdaptationPlatformConfig {
-      desktop?: {
-        bitrates: AdaptationConfig,
-      };
-      mobile?: {
-        bitrates: AdaptationConfig,
-      };
+      desktop?: AdaptationConfig;
+      mobile?: AdaptationConfig;
     }
 
     interface AdvertisingScheduleItem {
