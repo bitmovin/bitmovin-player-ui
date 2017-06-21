@@ -1,7 +1,7 @@
 import {SelectBox} from '../selectbox';
 import {SubtitleSettingConfig} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
-import {SubtitleOverlay} from '../subtitleoverlay'
+import {SubtitleOverlay} from '../subtitleoverlay';
 import {ColorUtils, StorageUtils} from '../../utils';
 
 /**
@@ -42,7 +42,7 @@ export class BackgroundColorSelectBox extends SelectBox {
 
 
     this.onItemSelected.subscribe((sender: BackgroundColorSelectBox, value: string) => {
-      this.overlay.setBackgroundColor(value)
+      this.overlay.setBackgroundColor(value);
     });
   }
 }

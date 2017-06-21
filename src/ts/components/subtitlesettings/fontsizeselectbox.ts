@@ -30,14 +30,14 @@ export class FontSizeSelectBox extends SelectBox {
     this.selectItem('1');
 
     if (StorageUtils.hasLocalStorage()) {
-      let coef = window.localStorage.getItem('coef')
+      let coef = window.localStorage.getItem('coef');
       if (coef != null) {
-        this.selectItem(coef)
+        this.selectItem(coef);
       }
     }
 
     this.onItemSelected.subscribe((sender: FontSizeSelectBox, value: string) => {
-      this.overlay.setFontSize(Number(value))
+      this.overlay.setFontSize(Number(value));
     });
   }
 }

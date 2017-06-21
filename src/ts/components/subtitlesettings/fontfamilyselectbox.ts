@@ -51,7 +51,7 @@ let fontFamilies: FontFamily[] = [{
   family: 'unset',
   variant: 'small-caps',
   style: 'unset',
-}
+},
 ];
 
 /**
@@ -70,7 +70,7 @@ export class FontFamilySelectBox extends SelectBox {
     super.configure(player, uimanager);
 
     for (let index in fontFamilies) {
-      this.addItem(index, fontFamilies[index].name)
+      this.addItem(index, fontFamilies[index].name);
     }
 
     this.selectItem(fontFamilies[0].name);

@@ -357,13 +357,13 @@ export namespace ColorUtils {
     a: number;
 
     constructor(r: number, g: number, b: number, a: number = 1) {
-      this.r = r
-      this.g = g
-      this.b = b
-      this.a = a
+      this.r = r;
+      this.g = g;
+      this.b = b;
+      this.a = a;
     }
     toCSS(): string {
-      return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`
+      return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
     }
   }
 
@@ -371,25 +371,25 @@ export namespace ColorUtils {
   // Only parses value in the 'rgba(number, number, number, number)' format
   export function colorFromCss(css: string, fallback: Color = new Color(0, 0, 0)): Color {
     if (!css.startsWith('rgba(')) {
-      return fallback
+      return fallback;
     }
-    let end = css.indexOf(')')
+    let end = css.indexOf(')');
     if (end !== css.length - 1) {
-      return fallback
+      return fallback;
     }
     if (end !== css.lastIndexOf(')')) {
-      return fallback
+      return fallback;
     }
-    let vals = css.slice(5, end).split(',')
+    let vals = css.slice(5, end).split(',');
     if (vals.length !== 4) {
-      return fallback
+      return fallback;
     }
     return new Color(Number(vals[0]), Number(vals[1]), Number(vals[2]), Number(vals[3]));
   }
 
   // Transparent black and opaque white default colors for background and foreground
   export const background = new Color(0, 0, 0, 0);
-  export const foreground = new Color(255, 255, 255, 1)
+  export const foreground = new Color(255, 255, 255, 1);
 }
 
 export namespace StorageUtils {
@@ -398,14 +398,14 @@ export namespace StorageUtils {
   // taken from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
   export function hasLocalStorage(): boolean {
     if (hasLocalStorageCache) {
-      return hasLocalStorageCache
+      return hasLocalStorageCache;
     }
     try {
         var storage = window['localStorage'],
             x = '__storage_test__';
         storage.setItem(x, x);
         storage.removeItem(x);
-        hasLocalStorageCache = true
+        hasLocalStorageCache = true;
     }
     catch (e) {
         hasLocalStorageCache = e instanceof DOMException && (
@@ -422,5 +422,5 @@ export namespace StorageUtils {
             storage.length !== 0;
     }
     return hasLocalStorageCache;
-  };
+  }
 }

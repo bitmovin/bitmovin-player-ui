@@ -9,8 +9,8 @@ import {DOM} from '../dom';
 import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
 
 export interface SubtitleSettingsButtonConfig extends ButtonConfig {
-  subtitleSettingsPanel: SubtitleSettingsPanel
-  settingsPanel: SettingsPanel
+  subtitleSettingsPanel: SubtitleSettingsPanel;
+  settingsPanel: SettingsPanel;
 }
 
 /**
@@ -18,14 +18,14 @@ export interface SubtitleSettingsButtonConfig extends ButtonConfig {
  */
 export class SubtitleSettingsOpener extends Button<ButtonConfig> {
 
-  private subtitleSettingsPanel: SubtitleSettingsPanel
-  private settingsPanel: SettingsPanel
+  private subtitleSettingsPanel: SubtitleSettingsPanel;
+  private settingsPanel: SettingsPanel;
 
   constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
 
-    this.subtitleSettingsPanel = config.subtitleSettingsPanel
-    this.settingsPanel = config.settingsPanel
+    this.subtitleSettingsPanel = config.subtitleSettingsPanel;
+    this.settingsPanel = config.settingsPanel;
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitlesettingtoggle',
@@ -56,7 +56,7 @@ export class SubtitleSettingLabel extends Container<ContainerConfig> {
   private text: string;
 
   constructor(config: SubtitleSettingLabelConfig) {
-    super(config)
+    super(config);
 
     this.opener = config.opener;
     this.text = config.text;
@@ -64,7 +64,7 @@ export class SubtitleSettingLabel extends Container<ContainerConfig> {
     this.config = this.mergeConfig(<ContainerConfig>config, {
       cssClass: 'ui-label',
       components: [
-        this.opener
+        this.opener,
       ],
     }, this.config);
   }
@@ -72,10 +72,10 @@ export class SubtitleSettingLabel extends Container<ContainerConfig> {
   protected toDomElement(): DOM {
     let labelElement = new DOM('span', {
       'id': this.config.id,
-      'class': this.getCssClasses()
+      'class': this.getCssClasses(),
     }).append(
       new DOM('span', {}).html(this.text),
-      this.opener.getDomElement() ,
+      this.opener.getDomElement()
     );
 
     return labelElement;
@@ -87,14 +87,14 @@ export class SubtitleSettingLabel extends Container<ContainerConfig> {
  */
 export class SubtitlePanelCloser extends Button<ButtonConfig> {
 
-  private subtitleSettingsPanel: SubtitleSettingsPanel
-  private settingsPanel: SettingsPanel
+  private subtitleSettingsPanel: SubtitleSettingsPanel;
+  private settingsPanel: SettingsPanel;
 
   constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
 
-    this.subtitleSettingsPanel = config.subtitleSettingsPanel
-    this.settingsPanel = config.settingsPanel
+    this.subtitleSettingsPanel = config.subtitleSettingsPanel;
+    this.settingsPanel = config.settingsPanel;
 
     this.subtitleSettingsPanel = config.subtitleSettingsPanel;
     this.config = this.mergeConfig(config, {
@@ -117,7 +117,7 @@ export class SubtitlePanelCloser extends Button<ButtonConfig> {
     let buttonElement = new DOM('button', {
       'type': 'button',
       'id': this.config.id,
-      'class': this.getCssClasses()
+      'class': this.getCssClasses(),
     }).append(new DOM('span', {}).html(this.config.text));
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component

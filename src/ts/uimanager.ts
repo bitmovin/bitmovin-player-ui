@@ -78,7 +78,7 @@ export interface UIConfig {
     fontStyle?: string;
     characterEdge?: string;
     coef?: number;
-  }
+  };
 }
 
 /**
@@ -403,25 +403,25 @@ export namespace UIManager.Factory {
   // user only have to input string
   function extractSubtitleOverlayConfig(config: UIConfig): SubtitleOverlayConfig {
     if (config.subtitles == null) {
-      return {}
+      return {};
     }
     let conf = config.subtitles;
     let res: SubtitleOverlayConfig = {};
     if (conf.backgroundColor != null) {
-      res.backgroundColor = ColorUtils.colorFromCss(conf.backgroundColor)
+      res.backgroundColor = ColorUtils.colorFromCss(conf.backgroundColor);
     }
     if (conf.fontColor != null) {
-      res.fontColor = ColorUtils.colorFromCss(conf.fontColor)
+      res.fontColor = ColorUtils.colorFromCss(conf.fontColor);
     }
     if (conf.windowColor != null) {
-      res.windowColor = ColorUtils.colorFromCss(conf.windowColor)
+      res.windowColor = ColorUtils.colorFromCss(conf.windowColor);
     }
-    res.fontFamily = conf.fontFamily
-    res.fontVariant = conf.fontVariant
-    res.fontStyle = conf.fontStyle
-    res.characterEdge = conf.characterEdge
-    res.characterEdge = conf.characterEdge
-    return res
+    res.fontFamily = conf.fontFamily;
+    res.fontVariant = conf.fontVariant;
+    res.fontStyle = conf.fontStyle;
+    res.characterEdge = conf.characterEdge;
+    res.characterEdge = conf.characterEdge;
+    return res;
   }
 
   function modernUI(config: SubtitleOverlayConfig) {
@@ -452,13 +452,13 @@ export namespace UIManager.Factory {
       new SettingsPanelItem(
         new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
         new SubtitleSelectBox()
-    ))
+    ));
 
     let subtitleSettingsCloser = new SubtitlePanelCloser({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
-    subtitleSettingsPanel.addComponent(subtitleSettingsCloser)
+    subtitleSettingsPanel.addComponent(subtitleSettingsCloser);
 
     let controlBar = new ControlBar({
       components: [
@@ -558,19 +558,19 @@ export namespace UIManager.Factory {
     });
     let subtitleSettingsOpener = new SubtitleSettingsOpener({
       subtitleSettingsPanel: subtitleSettingsPanel,
-      settingsPanel: settingsPanel
+      settingsPanel: settingsPanel,
     });
     settingsPanel.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
         new SubtitleSelectBox()
-    ))
+    ));
 
     let subtitleSettingsCloser = new SubtitlePanelCloser({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
-    subtitleSettingsPanel.addComponent(subtitleSettingsCloser)
+    subtitleSettingsPanel.addComponent(subtitleSettingsCloser);
 
     settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
     subtitleSettingsPanel.addComponent(new CloseButton({ target: subtitleSettingsPanel }));

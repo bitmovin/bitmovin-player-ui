@@ -108,7 +108,7 @@ export class DOM {
    */
   private forEach(handler: (element: HTMLElement) => void): void {
     if (!this.elements) {
-      return
+      return;
     }
     this.elements.forEach((element) => {
       handler(element);

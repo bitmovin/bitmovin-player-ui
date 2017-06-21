@@ -1,7 +1,7 @@
 import {SelectBox} from '../selectbox';
 import {SubtitleSettingConfig} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
-import {SubtitleOverlay} from '../subtitleoverlay'
+import {SubtitleOverlay} from '../subtitleoverlay';
 
 /**
  * A select box providing a selection of different character edge.

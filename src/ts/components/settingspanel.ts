@@ -63,7 +63,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       if (lastShownItem) {
         lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_LAST));
       }
-    }
+    };
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
@@ -91,7 +91,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     // Fire event when the state of a settings-item has changed
     let settingsStateChangedHandler = () => {
       this.onSettingsStateChangedEvent();
-      updateLastItem()
+      updateLastItem();
     };
     for (let component of this.getItems()) {
       if (component instanceof SettingsPanelItem) {
@@ -114,8 +114,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    */
   addComponent(component: Component<ComponentConfig>) {
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
-    config.components.push(component)
-  };
+    config.components.push(component);
+  }
 
   /**
    * Checks if there are active settings within this settings panel. An active setting is a setting that is visible
@@ -166,7 +166,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     super(config);
 
     if (label instanceof Component) {
-      this.label = label
+      this.label = label;
     } else {
       this.label = new Label({ text: label });
     }

@@ -56,7 +56,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     config = this.config;
     if (StorageUtils.hasLocalStorage()) {
       let store = window.localStorage;
-      let forcedSubtitleDom = this.forcedSubtitle.getDomElement()
+      let forcedSubtitleDom = this.forcedSubtitle.getDomElement();
 
       let fontColor = store.getItem('fontColor');
       if (fontColor != null) {
@@ -94,7 +94,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     // This css property isn't applied to the subtitle cue
     // and therefore shoud be applied now
     this.getDomElement().css('background', this.config.windowColor.toCSS());
-    this.updateSubtitleLabelCss()
+    this.updateSubtitleLabelCss();
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
@@ -107,7 +107,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
 
-      this.applyConfToDom(labelToAdd.getDomElement())
+      this.applyConfToDom(labelToAdd.getDomElement());
 
       if (this.forceSubtitle) {
         this.removeComponent(this.forcedSubtitle);
@@ -130,7 +130,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
           this.hide();
         } else {
           this.addComponent(this.forcedSubtitle);
-          this.updateComponents()
+          this.updateComponents();
         }
       }
     });
@@ -164,8 +164,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
 
   updateSubtitleLabelCss() {
-    this.applyConfToDom(this.getDomElement().find('.bmpui-ui-subtitle-label'))
-    this.applyConfToDom(this.forcedSubtitle.getDomElement())
+    this.applyConfToDom(this.getDomElement().find('.bmpui-ui-subtitle-label'));
+    this.applyConfToDom(this.forcedSubtitle.getDomElement());
   }
 
   enforceSubtitleLabel() {
@@ -184,10 +184,10 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   // Methods used to define custom styling on subtitles labels
   setColor(color: string) {
     let col = ColorUtils.colorFromCss(color);
-    col.a = this.config.fontColor.a
-    this.config.fontColor = col
+    col.a = this.config.fontColor.a;
+    this.config.fontColor = col;
     this.updateSubtitleLabelCss();
-    this.setItem('fontColor', this.config.fontColor.toCSS())
+    this.setItem('fontColor', this.config.fontColor.toCSS());
   }
   setBackgroundColor(color: string) {
     let backgroundColor = ColorUtils.colorFromCss(color);
@@ -199,7 +199,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
     this.config.backgroundColor = backgroundColor;
     this.updateSubtitleLabelCss();
-    this.setItem('backgroundColor', this.config.backgroundColor.toCSS())
+    this.setItem('backgroundColor', this.config.backgroundColor.toCSS());
   }
   setWindowColor(color: string) {
     let windowColor = ColorUtils.colorFromCss(color);
@@ -211,22 +211,22 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
     this.config.windowColor = windowColor;
     this.getDomElement().css('background', this.config.windowColor.toCSS());
-    this.setItem('windowColor', this.config.windowColor.toCSS())
+    this.setItem('windowColor', this.config.windowColor.toCSS());
   }
   setFontOpacity(alpha: number) {
     this.config.fontColor.a = alpha;
     this.updateSubtitleLabelCss();
-    this.setItem('fontColor', this.config.fontColor.toCSS())
+    this.setItem('fontColor', this.config.fontColor.toCSS());
   }
   setBackgroundOpacity(alpha: number) {
     this.config.backgroundColor.a = alpha;
     this.updateSubtitleLabelCss();
-    this.setItem('backgroundColor', this.config.backgroundColor.toCSS())
+    this.setItem('backgroundColor', this.config.backgroundColor.toCSS());
   }
   setWindowOpacity(alpha: number) {
     this.config.windowColor.a = alpha;
     this.getDomElement().css('background', this.config.windowColor.toCSS());
-    this.setItem('windowColor', this.config.windowColor.toCSS())
+    this.setItem('windowColor', this.config.windowColor.toCSS());
   }
   setFontFamily(fontFamily: string) {
     this.config.fontFamily = fontFamily;
@@ -259,26 +259,26 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   setCharacterEdge(characterEdge: string) {
     this.config.characterEdge = characterEdge;
     this.updateSubtitleLabelCss();
-    this.setItem('characterEdge', this.config.characterEdge)
+    this.setItem('characterEdge', this.config.characterEdge);
   }
   setFontSize(coefficient: number) {
     this.config.fontCoefficient = coefficient;
-    this.updateSubtitleLabelCss()
-    this.setItem('fontCoefficient', this.config.fontCoefficient.toString())
+    this.updateSubtitleLabelCss();
+    this.setItem('fontCoefficient', this.config.fontCoefficient.toString());
   }
 
   applyConfToDom(dom: DOM) {
-    dom.css('color', this.config.fontColor.toCSS())
-    dom.css('background', this.config.backgroundColor.toCSS())
-    dom.css('font-variant', this.config.fontVariant)
-    dom.css('font-family', this.config.fontFamily)
-    dom.css('font-style', this.config.fontStyle)
-    dom.css('text-shadow', this.config.characterEdge)
-    dom.css('font-size', `${this.config.size * this.config.fontCoefficient}em`)
+    dom.css('color', this.config.fontColor.toCSS());
+    dom.css('background', this.config.backgroundColor.toCSS());
+    dom.css('font-variant', this.config.fontVariant);
+    dom.css('font-family', this.config.fontFamily);
+    dom.css('font-style', this.config.fontStyle);
+    dom.css('text-shadow', this.config.characterEdge);
+    dom.css('font-size', `${this.config.size * this.config.fontCoefficient}em`);
   }
   setItem(item: string, value: string) {
     if (StorageUtils.hasLocalStorage()) {
-      window.localStorage.setItem(item, value)
+      window.localStorage.setItem(item, value);
     }
   }
 }

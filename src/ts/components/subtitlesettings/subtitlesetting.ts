@@ -3,5 +3,5 @@ import {ListSelectorConfig} from '../listselector';
 
 
 export interface SubtitleSettingConfig extends ListSelectorConfig {
-  overlay: SubtitleOverlay
+  overlay: SubtitleOverlay;
 }

@@ -1,7 +1,7 @@
 import {SelectBox} from '../selectbox';
 import {SubtitleSettingConfig} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
-import {SubtitleOverlay} from '../subtitleoverlay'
+import {SubtitleOverlay} from '../subtitleoverlay';
 import {ColorUtils, StorageUtils} from '../../utils';
 
 /**
@@ -41,7 +41,7 @@ export class WindowColorSelectBox extends SelectBox {
     }
 
     this.onItemSelected.subscribe((sender: WindowColorSelectBox, value: string) => {
-      this.overlay.setWindowColor(value)
+      this.overlay.setWindowColor(value);
     });
   }
 }

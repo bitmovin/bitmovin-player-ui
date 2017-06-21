@@ -1,32 +1,32 @@
 import {SettingsPanel, SettingsPanelConfig} from './settingspanel';
-import {SubtitlePanelCloser} from './subtitlesettingtoggle'
+import {SubtitlePanelCloser} from './subtitlesettingtoggle';
 import {SubtitleOverlay} from './subtitleoverlay';
 import {UIInstanceManager} from '../uimanager';
 import GetSubtitleSettingList from './subtitlesettings/settinglist';
 
 export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
-  overlay: SubtitleOverlay
+  overlay: SubtitleOverlay;
 }
 
 export class SubtitleSettingsPanel extends SettingsPanel {
 
-  private overlay: SubtitleOverlay
+  private overlay: SubtitleOverlay;
 
   constructor(config: SubtitleSettingsPanelConfig) {
-    super(config)
+    super(config);
 
-    this.overlay = config.overlay
+    this.overlay = config.overlay;
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.onShow.subscribe(() => {
-      this.overlay.enforceSubtitleLabel()
+      this.overlay.enforceSubtitleLabel();
     });
 
     this.onHide.subscribe(() => {
-      this.overlay.removeEnforcedSubtitleLabel()
+      this.overlay.removeEnforcedSubtitleLabel();
     });
   }
 }
