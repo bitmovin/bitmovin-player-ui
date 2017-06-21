@@ -40,6 +40,7 @@ export class SubtitleSettingsOpener extends Button<ButtonConfig> {
 
     this.onClick.subscribe(() => {
       config.subtitleSettingsPanel.show();
+      config.settingsPanel.hide();
     });
   }
 }
@@ -107,6 +108,7 @@ export class SubtitlePanelCloser extends Button<ButtonConfig> {
 
     this.onClick.subscribe(() => {
       this.subtitleSettingsPanel.hide();
+      this.settingsPanel.show();
     });
   }
 
