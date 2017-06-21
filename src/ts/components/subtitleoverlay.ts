@@ -21,7 +21,7 @@ export interface SubtitleOverlayConfig extends ContainerConfig {
    * on user preferences
    **/
   fontCoefficient?: number;
-  size?: number;
+  fontSize?: number;
 }
 
 /**
@@ -50,7 +50,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         fontVariant: 'normal',
         characterEdge: '',
         fontCoefficient: 1,
-        size: 1.2,
+        fontSize: 1.2,
       }, this.config);
 
     config = this.config;
@@ -274,7 +274,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     dom.css('font-family', this.config.fontFamily);
     dom.css('font-style', this.config.fontStyle);
     dom.css('text-shadow', this.config.characterEdge);
-    dom.css('font-size', `${this.config.size * this.config.fontCoefficient}em`);
+    dom.css('font-size', `${this.config.fontSize * this.config.fontCoefficient}em`);
   }
   setItem(item: string, value: string) {
     if (StorageUtils.hasLocalStorage()) {

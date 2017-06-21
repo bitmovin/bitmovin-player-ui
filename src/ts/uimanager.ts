@@ -70,14 +70,14 @@ export interface UIConfig {
   };
   recommendations?: UIRecommendationConfig[];
   subtitles?: {
-    fontColor?: string;
     backgroundColor?: string;
-    windowColor?: string;
-    fontFamily?: string;
-    fontVariant?: string;
-    fontStyle?: string;
     characterEdge?: string;
-    coef?: number;
+    fontCoefficient?: number;
+    fontColor?: string;
+    fontFamily?: string;
+    fontStyle?: string;
+    fontVariant?: string;
+    windowColor?: string;
   };
 }
 
@@ -419,6 +419,7 @@ export namespace UIManager.Factory {
     res.fontFamily = conf.fontFamily;
     res.fontVariant = conf.fontVariant;
     res.fontStyle = conf.fontStyle;
+    res.fontCoefficient = conf.fontCoefficient;
     res.characterEdge = conf.characterEdge;
     res.characterEdge = conf.characterEdge;
     return res;
