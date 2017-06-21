@@ -94,11 +94,14 @@ export class SubtitleSettingLabel extends Container<ContainerConfig> {
 /**
  * A button that toggles the option menu for subtitles
  */
-export class SubtitlePanelCloser extends SubtitleSettingsOpener {
+export class SubtitlePanelCloser extends Button<ButtonConfig> {
+
+  private panel: SubtitleSettingsPanel;
 
   constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
 
+    this.panel = config.subtitleSettingsPanel;
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitleoptioncloser',
       text: 'Back',
@@ -108,10 +111,8 @@ export class SubtitlePanelCloser extends SubtitleSettingsOpener {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <SubtitleSettingsButtonConfig>this.getConfig();
-
     this.onClick.subscribe(() => {
-      config.subtitleSettingsPanel.hide();
+      this.panel.hide();
     });
   }
 
@@ -129,5 +130,9 @@ export class SubtitlePanelCloser extends SubtitleSettingsOpener {
     });
 
     return buttonElement;
+  }
+
+  addSubtileSettingsPanel(panel: SubtitleSettingsPanel) {
+    this.panel = panel;
   }
 }

@@ -175,7 +175,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     return false;
   }
 
-  private getItems(): SettingsPanelItem[] {
+  protected getItems(): SettingsPanelItem[] {
     return <SettingsPanelItem[]>this.config.components;
   }
 
