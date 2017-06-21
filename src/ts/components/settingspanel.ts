@@ -48,23 +48,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
 
-    let updateLastItem = () => {
-      // Attach marker class to last visible item
-      let lastShownItem = null;
-      for (let component of this.getItems()) {
-        if ((component instanceof SettingsPanelItem)
-            || (component instanceof SubtitlePanelCloser)) {
-          component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
-          if (component.isShown()) {
-            lastShownItem = component;
-          }
-        }
-      }
-      if (lastShownItem) {
-        lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_LAST));
-      }
-    };
-
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
         this.hide();
@@ -91,7 +74,21 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     // Fire event when the state of a settings-item has changed
     let settingsStateChangedHandler = () => {
       this.onSettingsStateChangedEvent();
-      updateLastItem();
+
+      // Attach marker class to last visible item
+      let lastShownItem = null;
+      for (let component of this.getItems()) {
+        if ((component instanceof SettingsPanelItem)
+            || (component instanceof SubtitlePanelCloser)) {
+          component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
+          if (component.isShown()) {
+            lastShownItem = component;
+          }
+        }
+      }
+      if (lastShownItem) {
+        lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_LAST));
+      }
     };
     for (let component of this.getItems()) {
       if (component instanceof SettingsPanelItem) {
@@ -105,16 +102,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     if (this.hideTimeout) {
       this.hideTimeout.clear();
     }
-  }
-
-
-  /**
-   * Adds a child component to the container.
-   * @param component the component to add
-   */
-  addComponent(component: Component<ComponentConfig>) {
-    let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
-    config.components.push(component);
   }
 
   /**
@@ -155,8 +142,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
-  protected label: Component<ComponentConfig>;
-  protected setting: SelectBox;
+  private label: Component<ComponentConfig>;
+  private setting: SelectBox;
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
@@ -201,10 +188,8 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       this.onActiveChangedEvent();
     };
 
-    if (this.setting instanceof SelectBox) {
-      this.setting.onItemAdded.subscribe(handleConfigItemChanged);
-      this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
-    }
+    this.setting.onItemAdded.subscribe(handleConfigItemChanged);
+    this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
 
     // Initialize hidden state
     handleConfigItemChanged();
