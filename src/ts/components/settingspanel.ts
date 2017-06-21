@@ -206,10 +206,14 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
   };
 
-  constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
+  constructor(label: string | Component<ComponentConfig>, selectBox: SelectBox, config: ContainerConfig = {}) {
     super(config);
 
-    this.label = new Label({ text: label });
+    if (label instanceof Component) {
+      this.label = label
+    } else {
+      this.label = new Label({ text: label });
+    }
     this.setting = selectBox;
 
     this.config = this.mergeConfig(config, {
@@ -269,44 +273,5 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
    */
   get onActiveChanged(): Event<SettingsPanelItem, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
-  }
-}
-
-export interface SettingsPanelSubtitleItemConfig extends ContainerConfig {
-  opener: SubtitleSettingsOpener,
-}
-
-export class SettingsPanelSubtitleItem extends SettingsPanelItem {
-
-  private opener: SubtitleSettingsOpener;
-
-  private settingsPanelSubtitleItemEvents = {
-    onSubtitlePanelOpen: new EventDispatcher<SettingsPanelItem, NoArgs>(),
-  };
-
-  constructor(label: string, selectBox: SelectBox, config: SettingsPanelSubtitleItemConfig) {
-    super(label, selectBox, config);
-
-    let subtitleSettingLabel = new SubtitleSettingLabel({text: label, opener: config.opener})
-
-    this.label = subtitleSettingLabel
-
-    this.config = this.mergeConfig(config, {
-      components: [this.label, this.setting]
-    }, this.config)
-
-  }
-
-  protected onSubtitlePanelOpenEvent() {
-    this.settingsPanelSubtitleItemEvents.onSubtitlePanelOpen.dispatch(this);
-  }
-
-  /**
-   * Gets the event that is fired when the 'active' state of this item changes.
-   * @see #isActive
-   * @returns {Event<SettingsPanelItem, NoArgs>}
-   */
-  get onSubtitlePanelOpen(): Event<SettingsPanelItem, NoArgs> {
-    return this.settingsPanelSubtitleItemEvents.onSubtitlePanelOpen.getEvent();
   }
 }

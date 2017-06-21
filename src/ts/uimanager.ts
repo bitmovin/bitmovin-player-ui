@@ -11,9 +11,9 @@ import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktim
 import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
-import {SettingsPanel, SettingsPanelItem, SettingsPanelSubtitleItem} from './components/settingspanel';
+import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SubtitleSettingsPanel} from './components/subtitlesettingspanel';
-import {SubtitleSettingsOpener} from './components/subtitlesettingtoggle';
+import {SubtitleSettingsOpener, SubtitleSettingLabel} from './components/subtitlesettingtoggle';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
@@ -399,7 +399,9 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelSubtitleItem('Subtitles', new SubtitleSelectBox(), {opener: subtitleSettingsOpener}),
+        new SettingsPanelItem(
+          new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
+          new SubtitleSelectBox()),
   ]
     let settingsPanel = new SettingsPanel({
       components: defaultComponents.concat(subtitlesOptionList),
@@ -501,7 +503,9 @@ export namespace UIManager.Factory {
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelSubtitleItem('Subtitles', new SubtitleSelectBox(), {opener: subtitleSettingsOpener}),
+        new SettingsPanelItem(
+          new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
+          new SubtitleSelectBox()),
     ]
     let settingsPanel = new SettingsPanel({
       components: defaultComponents.concat(subtitlesOptionList),
