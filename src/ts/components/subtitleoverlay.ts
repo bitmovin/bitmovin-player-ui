@@ -1,5 +1,5 @@
 import {Container, ContainerConfig} from './container';
-import {UIInstanceManager} from '../uimanager';
+import {UIInstanceManager, UISubtitleConfig} from '../uimanager';
 import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
@@ -36,6 +36,26 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   private forcedSubtitle: SubtitleLabel = new SubtitleLabel({text: 'example subtitle'});
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
+
+  public static extractSubtitleOverlayConfig(subtitlesConfig: UISubtitleConfig): SubtitleOverlayConfig {
+    let res: SubtitleOverlayConfig = {};
+    if (subtitlesConfig.backgroundColor != null) {
+      res.backgroundColor = ColorUtils.colorFromCss(subtitlesConfig.backgroundColor);
+    }
+    if (subtitlesConfig.fontColor != null) {
+      res.fontColor = ColorUtils.colorFromCss(subtitlesConfig.fontColor);
+    }
+    if (subtitlesConfig.windowColor != null) {
+      res.windowColor = ColorUtils.colorFromCss(subtitlesConfig.windowColor);
+    }
+    res.fontFamily = subtitlesConfig.fontFamily;
+    res.fontVariant = subtitlesConfig.fontVariant;
+    res.fontStyle = subtitlesConfig.fontStyle;
+    res.fontCoefficient = subtitlesConfig.fontCoefficient;
+    res.characterEdge = subtitlesConfig.characterEdge;
+    res.characterEdge = subtitlesConfig.characterEdge;
+    return res;
+  }
 
   constructor(config: SubtitleOverlayConfig = {}) {
     super(config);

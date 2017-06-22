@@ -57,6 +57,17 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
+export interface UISubtitleConfig {
+  backgroundColor?: string;
+  characterEdge?: string;
+  fontCoefficient?: number;
+  fontColor?: string;
+  fontFamily?: string;
+  fontStyle?: string;
+  fontVariant?: string;
+  windowColor?: string;
+}
+
 export interface TimelineMarker {
   time: number;
   title?: string;
@@ -69,16 +80,7 @@ export interface UIConfig {
     markers?: TimelineMarker[];
   };
   recommendations?: UIRecommendationConfig[];
-  subtitles?: {
-    backgroundColor?: string;
-    characterEdge?: string;
-    fontCoefficient?: number;
-    fontColor?: string;
-    fontFamily?: string;
-    fontStyle?: string;
-    fontVariant?: string;
-    windowColor?: string;
-  };
+  subtitles?: UISubtitleConfig;
 }
 
 /**
@@ -398,35 +400,8 @@ export namespace UIManager.Factory {
     return UIManager.Factory.buildModernCastReceiverUI(player, config);
   }
 
-  // extractSubtitleOverlayConfig takes the subtitle sstyling option from the UIConfig
-  // and translate it to use proper classes where required
-  // user only have to input string
-  function extractSubtitleOverlayConfig(config: UIConfig): SubtitleOverlayConfig {
-    if (config.subtitles == null) {
-      return {};
-    }
-    let conf = config.subtitles;
-    let res: SubtitleOverlayConfig = {};
-    if (conf.backgroundColor != null) {
-      res.backgroundColor = ColorUtils.colorFromCss(conf.backgroundColor);
-    }
-    if (conf.fontColor != null) {
-      res.fontColor = ColorUtils.colorFromCss(conf.fontColor);
-    }
-    if (conf.windowColor != null) {
-      res.windowColor = ColorUtils.colorFromCss(conf.windowColor);
-    }
-    res.fontFamily = conf.fontFamily;
-    res.fontVariant = conf.fontVariant;
-    res.fontStyle = conf.fontStyle;
-    res.fontCoefficient = conf.fontCoefficient;
-    res.characterEdge = conf.characterEdge;
-    res.characterEdge = conf.characterEdge;
-    return res;
-  }
-
-  function modernUI(config: SubtitleOverlayConfig) {
-    let subtitleOverlay = new SubtitleOverlay(config);
+  function modernUI() {
+    let subtitleOverlay = new SubtitleOverlay();
 
     let subtitleSettingsPanel = new SubtitleSettingsPanel({
       hidden: true,
@@ -539,8 +514,8 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernSmallScreenUI(config: SubtitleOverlayConfig) {
-    let subtitleOverlay = new SubtitleOverlay(config);
+  function modernSmallScreenUI() {
+    let subtitleOverlay = new SubtitleOverlay();
     let subtitleSettingsPanel = new SubtitleSettingsPanel({
       hidden: true,
       hideDelay: -1,
@@ -640,7 +615,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernCastReceiverUI(config: SubtitleOverlayConfig) {
+  function modernCastReceiverUI() {
     let controlBar = new ControlBar({
       components: [
         new Container({
@@ -656,7 +631,7 @@ export namespace UIManager.Factory {
 
     return new CastUIContainer({
       components: [
-        new SubtitleOverlay(config),
+        new SubtitleOverlay(),
         new BufferingOverlay(),
         new PlaybackToggleOverlay(),
         new Watermark(),
@@ -682,12 +657,12 @@ export namespace UIManager.Factory {
         return context.isAdWithUI;
       },
     }, {
-      ui: modernSmallScreenUI(extractSubtitleOverlayConfig(config)),
+      ui: modernSmallScreenUI(),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
       },
     }, {
-      ui: modernUI(extractSubtitleOverlayConfig(config)),
+      ui: modernUI(),
     }], config);
   }
 
@@ -698,12 +673,12 @@ export namespace UIManager.Factory {
         return context.isAdWithUI;
       },
     }, {
-      ui: modernSmallScreenUI(extractSubtitleOverlayConfig(config)),
+      ui: modernSmallScreenUI(),
     }], config);
   }
 
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, modernCastReceiverUI(extractSubtitleOverlayConfig(config)), config);
+    return new UIManager(player, modernCastReceiverUI(), config);
   }
 
   function legacyUI() {
