@@ -43,8 +43,8 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     let playbackWarningHandler = (event: WarningEvent) => {
-      if (event && event.code === 5007) {
-        // Warnings[5007] === 'Playback could not be started, user interaction required'
+      if (event && event.code === 5008) {
+        // Warnings[5008] === 'Playback could not be started, user interaction required'
         // if playback did not start although the buffer was full pause the video (might not have any effect) and display
         // the play button again as the most probable explanation is disabled autoplay on mobile devices
         player.pause();
