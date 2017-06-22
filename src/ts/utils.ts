@@ -362,6 +362,7 @@ export namespace ColorUtils {
       this.b = b;
       this.a = a;
     }
+
     toCSS(): string {
       return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
     }
@@ -394,15 +395,16 @@ export namespace ColorUtils {
 
 export namespace StorageUtils {
   let hasLocalStorageCache: boolean;
-  // hasLocalStorage is used to safely ensure we can use localStorage
-  // taken from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
   export function hasLocalStorage(): boolean {
     if (hasLocalStorageCache) {
       return hasLocalStorageCache;
     }
+
+    // hasLocalStorage is used to safely ensure we can use localStorage
+    // taken from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
+    let storage = window['localStorage'];
     try {
-        var storage = window['localStorage'],
-            x = '__storage_test__';
+        let x = '__storage_test__';
         storage.setItem(x, x);
         storage.removeItem(x);
         hasLocalStorageCache = true;
