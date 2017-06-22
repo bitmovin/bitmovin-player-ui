@@ -49,6 +49,7 @@ declare namespace bitmovin {
       ON_PAUSED: EVENT;
       ON_PERIOD_SWITCHED: EVENT;
       ON_PLAY: EVENT;
+      ON_PLAYING: EVENT;
       ON_PLAYBACK_FINISHED: EVENT;
       ON_PLAYER_RESIZE: EVENT;
       ON_READY: EVENT;
@@ -145,6 +146,8 @@ declare namespace bitmovin {
        */
       message: string;
     }
+
+    interface WarningEvent extends ErrorEvent {}
 
     interface AudioChangedEvent extends PlaybackEvent {
       /**
