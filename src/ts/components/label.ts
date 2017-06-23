@@ -22,7 +22,7 @@ export interface LabelConfig extends ComponentConfig {
  */
 export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
 
-  protected text: string;
+  private text: string;
 
   private labelEvents = {
     onClick: new EventDispatcher<Label<Config>, NoArgs>(),
