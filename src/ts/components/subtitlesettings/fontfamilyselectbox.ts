@@ -1,4 +1,4 @@
-import {SubtitleSettingConfig, SubtitleSettingSelectBox} from './subtitlesetting';
+import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay';
 import {StorageUtils} from '../../utils';
@@ -58,7 +58,7 @@ let fontFamilies: FontFamily[] = [{
  */
 export class FontFamilySelectBox extends SubtitleSettingSelectBox {
 
-  constructor(config: SubtitleSettingConfig) {
+  constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
   }
 

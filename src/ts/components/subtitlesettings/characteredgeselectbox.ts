@@ -1,4 +1,4 @@
-import {SubtitleSettingConfig, SubtitleSettingSelectBox} from './subtitlesetting';
+import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay';
 
@@ -7,7 +7,7 @@ import {SubtitleOverlay} from '../subtitleoverlay';
  */
 export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
 
-  constructor(config: SubtitleSettingConfig) {
+  constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
   }
 

@@ -1,4 +1,3 @@
-import {SubtitleSettingConfig} from './subtitlesetting';
 import {FontColorSelectBox} from './fontcolorselectbox';
 import {FontOpacitySelectBox} from './fontopacityselectbox';
 import {FontFamilySelectBox} from './fontfamilyselectbox';

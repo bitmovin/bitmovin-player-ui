@@ -1,4 +1,4 @@
-import {SubtitleSettingConfig, SubtitleSettingSelectBox} from './subtitlesetting';
+import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay';
 import {StorageUtils} from '../../utils';
@@ -8,7 +8,7 @@ import {StorageUtils} from '../../utils';
  */
 export class FontSizeSelectBox extends SubtitleSettingSelectBox {
 
-  constructor(config: SubtitleSettingConfig) {
+  constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
   }
 
