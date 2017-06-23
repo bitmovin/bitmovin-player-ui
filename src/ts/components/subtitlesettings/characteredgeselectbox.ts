@@ -1,18 +1,14 @@
-import {SelectBox} from '../selectbox';
-import {SubtitleSettingConfig} from './subtitlesetting';
+import {SubtitleSettingConfig, SubtitleSettingSelectBox} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay';
 
 /**
  * A select box providing a selection of different character edge.
  */
-export class CharacterEdgeSelectBox extends SelectBox {
-
-  private overlay: SubtitleOverlay;
+export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
 
   constructor(config: SubtitleSettingConfig) {
     super(config);
-    this.overlay = config.overlay;
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {

@@ -1,5 +1,4 @@
-import {SelectBox} from '../selectbox';
-import {SubtitleSettingConfig} from './subtitlesetting';
+import {SubtitleSettingConfig, SubtitleSettingSelectBox} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay';
 import {ColorUtils, StorageUtils} from '../../utils';
@@ -7,13 +6,10 @@ import {ColorUtils, StorageUtils} from '../../utils';
 /**
  * A select box providing a selection of different font colors.
  */
-export class FontOpacitySelectBox extends SelectBox {
-
-  private overlay: SubtitleOverlay;
+export class FontOpacitySelectBox extends SubtitleSettingSelectBox {
 
   constructor(config: SubtitleSettingConfig) {
     super(config);
-    this.overlay = config.overlay;
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {

@@ -1,5 +1,4 @@
-import {SelectBox} from '../selectbox';
-import {SubtitleSettingConfig} from './subtitlesetting';
+import {SubtitleSettingConfig, SubtitleSettingSelectBox} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay';
 import {ColorUtils, StorageUtils} from '../../utils';
@@ -7,9 +6,7 @@ import {ColorUtils, StorageUtils} from '../../utils';
 /**
  * A select box providing a selection of different background colors.
  */
-export class BackgroundColorSelectBox extends SelectBox {
-
-  private overlay: SubtitleOverlay;
+export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
 
   constructor(config: SubtitleSettingConfig) {
     super(config);

@@ -1,5 +1,4 @@
-import {SelectBox} from '../selectbox';
-import {SubtitleSettingConfig} from './subtitlesetting';
+import {SubtitleSettingConfig, SubtitleSettingSelectBox} from './subtitlesetting';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleOverlay} from '../subtitleoverlay';
 import {StorageUtils} from '../../utils';
@@ -57,13 +56,10 @@ let fontFamilies: FontFamily[] = [{
 /**
  * A select box providing a selection of different font family.
  */
-export class FontFamilySelectBox extends SelectBox {
-
-  private overlay: SubtitleOverlay;
+export class FontFamilySelectBox extends SubtitleSettingSelectBox {
 
   constructor(config: SubtitleSettingConfig) {
     super(config);
-    this.overlay = config.overlay;
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
