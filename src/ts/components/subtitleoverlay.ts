@@ -37,25 +37,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
-  public static extractSubtitleOverlayConfig(subtitlesConfig: UISubtitleConfig): SubtitleOverlayConfig {
-    let res: SubtitleOverlayConfig = {};
-    if (subtitlesConfig.backgroundColor != null) {
-      res.backgroundColor = ColorUtils.colorFromCss(subtitlesConfig.backgroundColor);
-    }
-    if (subtitlesConfig.fontColor != null) {
-      res.fontColor = ColorUtils.colorFromCss(subtitlesConfig.fontColor);
-    }
-    if (subtitlesConfig.windowColor != null) {
-      res.windowColor = ColorUtils.colorFromCss(subtitlesConfig.windowColor);
-    }
-    res.fontFamily = subtitlesConfig.fontFamily;
-    res.fontVariant = subtitlesConfig.fontVariant;
-    res.fontStyle = subtitlesConfig.fontStyle;
-    res.fontCoefficient = subtitlesConfig.fontCoefficient;
-    res.characterEdge = subtitlesConfig.characterEdge;
-    res.characterEdge = subtitlesConfig.characterEdge;
-    return res;
-  }
 
   constructor(config: SubtitleOverlayConfig = {}) {
     super(config);
@@ -74,51 +55,17 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       }, this.config);
 
     config = this.config;
-    if (StorageUtils.hasLocalStorage()) {
-      let store = window.localStorage;
-      let forcedSubtitleDom = this.forcedSubtitle.getDomElement();
-
-      let fontColor = store.getItem('fontColor');
-      if (fontColor != null) {
-        this.config.fontColor = ColorUtils.colorFromCss(fontColor, ColorUtils.foreground);
-      }
-      let backgroundColor = store.getItem('backgroundColor');
-      if (backgroundColor != null) {
-        this.config.backgroundColor = ColorUtils.colorFromCss(backgroundColor, ColorUtils.background);
-      }
-      let windowColor = store.getItem('windowColor');
-      if (windowColor != null) {
-        this.config.windowColor = ColorUtils.colorFromCss(windowColor, ColorUtils.background);
-      }
-      let fontFamily = store.getItem('fontFamily');
-      if (fontFamily != null) {
-        this.config.fontFamily = fontFamily;
-      }
-      let fontStyle = store.getItem('fontStyle');
-      if (fontStyle != null) {
-        this.config.fontStyle = fontStyle;
-      }
-      let fontVariant = store.getItem('fontVariant');
-      if (fontVariant != null) {
-        this.config.fontVariant = fontVariant;
-      }
-      let characterEdge = store.getItem('characterEdge');
-      if (characterEdge != null) {
-        this.config.characterEdge = characterEdge;
-      }
-      let fontCoefficient = store.getItem('fontCoefficient');
-      if (fontCoefficient != null) {
-        this.config.fontCoefficient = Number(fontCoefficient);
-      }
-    }
-    // This css property isn't applied to the subtitle cue
-    // and therefore shoud be applied now
-    this.getDomElement().css('background', this.config.windowColor.toCSS());
-    this.updateSubtitleLabelCss();
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    this.updateSubtitleOverlayConfigFromUIconfig(uimanager.getConfig().subtitles);
+    this.updateSubtitleOverlayConfigFromLocalStorage();
+    // This css property isn't applied to the subtitle cue
+    // and therefore shoud be applied now
+    this.getDomElement().css('background', this.config.windowColor.toCSS());
+    this.updateSubtitleLabelCss();
 
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
@@ -181,6 +128,73 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
     // Init
     subtitleClearHandler();
+  }
+
+  /**
+   * updateSubtitleOverlayConfig updates style for the subtitle overlay based on init config
+   **/
+  private updateSubtitleOverlayConfigFromUIconfig(subtitlesConfig: UISubtitleConfig): void {
+    if (subtitlesConfig == null) {
+      return
+    }
+    if (subtitlesConfig.backgroundColor != null) {
+      this.config.backgroundColor = ColorUtils.colorFromCss(subtitlesConfig.backgroundColor);
+    }
+    if (subtitlesConfig.fontColor != null) {
+      this.config.fontColor = ColorUtils.colorFromCss(subtitlesConfig.fontColor);
+    }
+    if (subtitlesConfig.windowColor != null) {
+      this.config.windowColor = ColorUtils.colorFromCss(subtitlesConfig.windowColor);
+    }
+    this.config.fontFamily = subtitlesConfig.fontFamily;
+    this.config.fontVariant = subtitlesConfig.fontVariant;
+    this.config.fontStyle = subtitlesConfig.fontStyle;
+    this.config.fontCoefficient = subtitlesConfig.fontCoefficient;
+    this.config.characterEdge = subtitlesConfig.characterEdge;
+    this.config.characterEdge = subtitlesConfig.characterEdge;
+  }
+
+  /**
+   * updateSubtitleOverlayConfig updates styles for the subtitle overlay based local storage values
+   **/
+  private updateSubtitleOverlayConfigFromLocalStorage(): void {
+    if (StorageUtils.hasLocalStorage()) {
+      let store = window.localStorage;
+      let forcedSubtitleDom = this.forcedSubtitle.getDomElement();
+
+      let fontColor = store.getItem('fontColor');
+      if (fontColor != null) {
+        this.config.fontColor = ColorUtils.colorFromCss(fontColor, ColorUtils.foreground);
+      }
+      let backgroundColor = store.getItem('backgroundColor');
+      if (backgroundColor != null) {
+        this.config.backgroundColor = ColorUtils.colorFromCss(backgroundColor, ColorUtils.background);
+      }
+      let windowColor = store.getItem('windowColor');
+      if (windowColor != null) {
+        this.config.windowColor = ColorUtils.colorFromCss(windowColor, ColorUtils.background);
+      }
+      let fontFamily = store.getItem('fontFamily');
+      if (fontFamily != null) {
+        this.config.fontFamily = fontFamily;
+      }
+      let fontStyle = store.getItem('fontStyle');
+      if (fontStyle != null) {
+        this.config.fontStyle = fontStyle;
+      }
+      let fontVariant = store.getItem('fontVariant');
+      if (fontVariant != null) {
+        this.config.fontVariant = fontVariant;
+      }
+      let characterEdge = store.getItem('characterEdge');
+      if (characterEdge != null) {
+        this.config.characterEdge = characterEdge;
+      }
+      let fontCoefficient = store.getItem('fontCoefficient');
+      if (fontCoefficient != null) {
+        this.config.fontCoefficient = Number(fontCoefficient);
+      }
+    }
   }
 
   updateSubtitleLabelCss() {
