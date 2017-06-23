@@ -37,7 +37,6 @@ export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
       }
     }
 
-
     this.onItemSelected.subscribe((sender: BackgroundColorSelectBox, value: string) => {
       this.overlay.setBackgroundColor(value);
     });
