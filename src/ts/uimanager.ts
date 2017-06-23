@@ -13,8 +13,9 @@ import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SubtitleSettingsPanel} from './components/subtitlesettingspanel';
-import {SubtitlePanelCloser, SubtitleSettingLabel} from './components/subtitlesettingtoggle';
+import {SubtitleSettingLabel} from './components/subtitlesettingtoggle';
 import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
+import {SubtitleSettingsCloseButton} from './components/subtitlesettings/subtitlesettingsclosebutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
@@ -431,11 +432,11 @@ export namespace UIManager.Factory {
         new SubtitleSelectBox()
     ));
 
-    let subtitleSettingsCloser = new SubtitlePanelCloser({
+    let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
-    subtitleSettingsPanel.addComponent(subtitleSettingsCloser);
+    subtitleSettingsPanel.addComponent(subtitleSettingsCloseButton);
 
     let controlBar = new ControlBar({
       components: [
@@ -543,11 +544,11 @@ export namespace UIManager.Factory {
         new SubtitleSelectBox()
     ));
 
-    let subtitleSettingsCloser = new SubtitlePanelCloser({
+    let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
-    subtitleSettingsPanel.addComponent(subtitleSettingsCloser);
+    subtitleSettingsPanel.addComponent(subtitleSettingsCloseButton);
 
     settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
     subtitleSettingsPanel.addComponent(new CloseButton({ target: subtitleSettingsPanel }));

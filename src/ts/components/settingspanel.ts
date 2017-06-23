@@ -5,7 +5,7 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
-import {SubtitlePanelCloser} from './subtitlesettingtoggle';
+import {SubtitleSettingsCloseButton} from './subtitlesettings/subtitlesettingsclosebutton';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 
@@ -79,7 +79,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       let lastShownItem = null;
       for (let component of this.getItems()) {
         if ((component instanceof SettingsPanelItem)
-            || (component instanceof SubtitlePanelCloser)) {
+            || (component instanceof SubtitleSettingsCloseButton)) {
           component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
           if (component.isShown()) {
             lastShownItem = component;

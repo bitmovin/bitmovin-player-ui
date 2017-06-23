@@ -1,5 +1,4 @@
 import {SettingsPanel, SettingsPanelConfig} from './settingspanel';
-import {SubtitlePanelCloser} from './subtitlesettingtoggle';
 import {SubtitleOverlay} from './subtitleoverlay';
 import {UIInstanceManager} from '../uimanager';
 import GetSubtitleSettingList from './subtitlesettings/settinglist';

@@ -9,7 +9,6 @@ import {WindowOpacitySelectBox} from './windowopacityselectbox';
 import {CharacterEdgeSelectBox} from './characteredgeselectbox';
 import {SettingsPanelItem} from '../settingspanel';
 import {SubtitleOverlay} from '../subtitleoverlay';
-import {SubtitlePanelCloser} from '../subtitlesettingtoggle';
 import {Component, ComponentConfig} from '../component';
 
 // Helper function since the subtitle option panel should not change
