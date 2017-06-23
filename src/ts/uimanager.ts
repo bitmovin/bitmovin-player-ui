@@ -13,7 +13,8 @@ import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SubtitleSettingsPanel} from './components/subtitlesettingspanel';
-import {SubtitleSettingsOpener, SubtitlePanelCloser, SubtitleSettingLabel} from './components/subtitlesettingtoggle';
+import {SubtitlePanelCloser, SubtitleSettingLabel} from './components/subtitlesettingtoggle';
+import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
@@ -420,13 +421,13 @@ export namespace UIManager.Factory {
       hidden: true,
     });
 
-    let subtitleSettingsOpener = new SubtitleSettingsOpener({
+    let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
+        new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
 
@@ -532,13 +533,13 @@ export namespace UIManager.Factory {
       hidden: true,
       hideDelay: -1,
     });
-    let subtitleSettingsOpener = new SubtitleSettingsOpener({
+    let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpener}),
+        new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
 
