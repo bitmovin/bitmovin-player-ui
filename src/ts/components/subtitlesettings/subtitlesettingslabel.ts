@@ -3,17 +3,17 @@ import {Container, ContainerConfig} from './../container';
 import {SubtitleSettingsOpenButton} from './subtitlesettingsopenbutton';
 import {DOM} from './../../dom';
 
-export interface SubtitleSettingLabelConfig extends LabelConfig {
+export interface SubtitleSettingsLabelConfig extends LabelConfig {
   opener: SubtitleSettingsOpenButton;
 }
 
-export class SubtitleSettingLabel extends Container<ContainerConfig> {
+export class SubtitleSettingsLabel extends Container<ContainerConfig> {
 
   private opener: SubtitleSettingsOpenButton;
 
   private text: string;
 
-  constructor(config: SubtitleSettingLabelConfig) {
+  constructor(config: SubtitleSettingsLabelConfig) {
     super(config);
 
     this.opener = config.opener;

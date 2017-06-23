@@ -13,7 +13,7 @@ import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SubtitleSettingsPanel} from './components/subtitlesettingspanel';
-import {SubtitleSettingLabel} from './components/subtitlesettings/subtitlesettingslabel';
+import {SubtitleSettingsLabel} from './components/subtitlesettings/subtitlesettingslabel';
 import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
 import {SubtitleSettingsCloseButton} from './components/subtitlesettings/subtitlesettingsclosebutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
@@ -428,7 +428,7 @@ export namespace UIManager.Factory {
     });
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
 
@@ -540,7 +540,7 @@ export namespace UIManager.Factory {
     });
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
 
