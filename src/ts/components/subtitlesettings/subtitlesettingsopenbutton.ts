@@ -13,7 +13,7 @@ export class SubtitleSettingsOpenButton extends SubtitleSettingsButton {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitlesettingtoggle',
+      cssClass: 'ui-subtitlesettingsopenbutton',
       text: 'Subtitles settings',
     }, this.config);
   }

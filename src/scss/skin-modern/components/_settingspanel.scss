@@ -68,56 +68,6 @@
       display: none;
     }
   }
-
-  .#{$prefix}-ui-subtitlesettingtoggle {
-    @extend %ui-button;
-
-    background-image: svg('assets/skin-modern/images/settings.svg');
-    padding: .3em;
-
-    &:hover {
-      @include svg-icon-shadow;
-    }
-
-    &.#{$prefix}-on {
-      background-image: svg('assets/skin-modern/images/settingsX.svg');
-    }
-  }
-
-  .#{$prefix}-ui-subtitleoptioncloser {
-    @extend %ui-button;
-
-    border-bottom: 1px solid transparentize($color-secondary, .7);
-    margin: .5em 1em;
-    position: relative;
-    width: fill;
-
-    span {
-      color: $color-primary;
-      font-family: $font-family;
-      font-size: .8em;
-      margin: auto;
-      text-align: left;
-      user-select: none;
-
-      &::before {
-        border-bottom: .2em solid $color-primary;
-        border-left: .2em solid $color-primary;
-        content: '';
-        height: .6em;
-        left: 35%;
-        position: absolute;
-        top: .6em;
-        transform: rotate(45deg);
-        width: .6em;
-      }
-
-    }
-
-    &.#{$prefix}-last {
-      border-bottom: 0;
-    }
-  }
 }
 
 // Remove margin inherited from controlbar
