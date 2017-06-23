@@ -9,11 +9,6 @@ import {DOM} from '../dom';
 import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
 import {SubtitleSettingsOpenButton} from './subtitlesettings/subtitlesettingsopenbutton';
 
-export interface SubtitleSettingsButtonConfig extends ButtonConfig {
-  subtitleSettingsPanel: SubtitleSettingsPanel;
-  settingsPanel: SettingsPanel;
-}
-
 export interface SubtitleSettingLabelConfig extends LabelConfig {
   opener: SubtitleSettingsOpenButton;
 }

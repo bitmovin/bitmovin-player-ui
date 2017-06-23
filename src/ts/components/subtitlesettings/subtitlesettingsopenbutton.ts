@@ -1,22 +1,16 @@
-import {Button, ButtonConfig} from '../button';
+import {SubtitleSettingsButton} from './subtitlesettingsbutton';
 import {SettingsPanel} from '../settingspanel';
 import {SubtitleSettingsPanel} from '../subtitlesettingspanel';
-import {SubtitleSettingsButtonConfig} from '../subtitlesettingtoggle';
+import {SubtitleSettingsButtonConfig} from './subtitlesettingsbutton';
 import {UIInstanceManager} from '../../uimanager';
 
 /**
  * A button that toggles the option menu for subtitles
  */
-export class SubtitleSettingsOpenButton extends Button<ButtonConfig> {
-
-  private subtitleSettingsPanel: SubtitleSettingsPanel;
-  private settingsPanel: SettingsPanel;
+export class SubtitleSettingsOpenButton extends SubtitleSettingsButton {
 
   constructor(config: SubtitleSettingsButtonConfig) {
     super(config);
-
-    this.subtitleSettingsPanel = config.subtitleSettingsPanel;
-    this.settingsPanel = config.settingsPanel;
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitlesettingtoggle',
