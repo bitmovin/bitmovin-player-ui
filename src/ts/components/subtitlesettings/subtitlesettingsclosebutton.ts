@@ -19,7 +19,6 @@ export class SubtitleSettingsCloseButton extends Button<ButtonConfig> {
     this.subtitleSettingsPanel = config.subtitleSettingsPanel;
     this.settingsPanel = config.settingsPanel;
 
-    this.subtitleSettingsPanel = config.subtitleSettingsPanel;
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitleoptioncloser',
       text: 'Back',
