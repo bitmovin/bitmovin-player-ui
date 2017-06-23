@@ -1,13 +1,7 @@
-import {ToggleButton, ToggleButtonConfig} from './togglebutton';
-import {Button, ButtonConfig} from './button';
-import {Container, ContainerConfig} from './container';
-import {Label, LabelConfig} from './label';
-import {SettingsPanel} from './settingspanel';
-import {SubtitleSettingsPanel} from './subtitlesettingspanel';
-import {UIInstanceManager} from '../uimanager';
-import {DOM} from '../dom';
-import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
-import {SubtitleSettingsOpenButton} from './subtitlesettings/subtitlesettingsopenbutton';
+import {Label, LabelConfig} from './../label';
+import {Container, ContainerConfig} from './../container';
+import {SubtitleSettingsOpenButton} from './subtitlesettingsopenbutton';
+import {DOM} from './../../dom';
 
 export interface SubtitleSettingLabelConfig extends LabelConfig {
   opener: SubtitleSettingsOpenButton;
