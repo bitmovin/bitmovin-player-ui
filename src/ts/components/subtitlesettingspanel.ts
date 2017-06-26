@@ -21,11 +21,11 @@ export class SubtitleSettingsPanel extends SettingsPanel {
     super.configure(player, uimanager);
 
     this.onShow.subscribe(() => {
-      this.overlay.enforceSubtitleLabel();
+      this.overlay.enablePreviewSubtitleLabel();
     });
 
     this.onHide.subscribe(() => {
-      this.overlay.removeEnforcedSubtitleLabel();
+      this.overlay.removePreviewSubtitleLabel();
     });
   }
 }
