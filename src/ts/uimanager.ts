@@ -414,10 +414,10 @@ export namespace UIManager.Factory {
 
     let settingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+        new SettingsPanelItem(new VideoQualitySelectBox(), {components: [new Label({text: 'Video Quality'})]}),
+        new SettingsPanelItem(new PlaybackSpeedSelectBox(), {components: [new Label({text: 'Speed'})]}),
+        new SettingsPanelItem(new AudioTrackSelectBox(), {components: [new Label({text: 'Audio Track'})]}),
+        new SettingsPanelItem(new AudioQualitySelectBox(), {components: [new Label({text: 'Audio Quality'})]}),
       ],
       hidden: true,
     });
@@ -428,8 +428,8 @@ export namespace UIManager.Factory {
     });
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox()
+        new SubtitleSelectBox(),
+        {components: [new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton})]},
     ));
 
     let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
@@ -526,10 +526,10 @@ export namespace UIManager.Factory {
     });
     let settingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+        new SettingsPanelItem(new VideoQualitySelectBox(), {components: [new Label({text: 'Video Quality'})]}),
+        new SettingsPanelItem(new PlaybackSpeedSelectBox(), {components: [new Label({text: 'Speed'})]}),
+        new SettingsPanelItem(new AudioTrackSelectBox(), {components: [new Label({text: 'Audio Track'})]}),
+        new SettingsPanelItem(new AudioQualitySelectBox(), {components: [new Label({text: 'Audio Quality'})]}),
       ],
       hidden: true,
       hideDelay: -1,
@@ -540,8 +540,8 @@ export namespace UIManager.Factory {
     });
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox()
+        new SubtitleSelectBox(),
+        {components: [new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton})]},
     ));
 
     let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
@@ -686,10 +686,10 @@ export namespace UIManager.Factory {
   function legacyUI() {
     let settingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
+        new SettingsPanelItem(new VideoQualitySelectBox(), {components: [new Label({text: 'Video Quality'})]}),
+        new SettingsPanelItem(new AudioTrackSelectBox(), {components: [new Label({text: 'Audio Track'})]}),
+        new SettingsPanelItem(new AudioQualitySelectBox(), {components: [new Label({text: 'Audio Quality'})]}),
+        new SettingsPanelItem(new SubtitleSelectBox(), {components: [new Label({text: 'Subtitles'})]}),
       ],
       hidden: true,
     });
@@ -765,10 +765,10 @@ export namespace UIManager.Factory {
   function legacyTestUI() {
     let settingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
+        new SettingsPanelItem(new VideoQualitySelectBox(), {components: [new Label({text: 'Video Quality'})]}),
+        new SettingsPanelItem(new AudioTrackSelectBox(), {components: [new Label({text: 'Audio Track'})]}),
+        new SettingsPanelItem(new AudioQualitySelectBox(), {components: [new Label({text: 'Audio Quality'})]}),
+        new SettingsPanelItem(new SubtitleSelectBox(), {components: [new Label({text: 'Subtitles'})]}),
       ],
       hidden: true,
     });

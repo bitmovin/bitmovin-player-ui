@@ -142,27 +142,21 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
-  private label: Component<ComponentConfig>;
   private setting: SelectBox;
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
   };
 
-  constructor(label: string | Component<ComponentConfig>, selectBox: SelectBox, config: ContainerConfig = {}) {
+  constructor(selectBox: SelectBox, config: ContainerConfig = {}) {
     super(config);
 
-    if (label instanceof Component) {
-      this.label = label;
-    } else {
-      this.label = new Label({ text: label });
-    }
     this.setting = selectBox;
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
-      components: [this.label, this.setting],
     }, this.config);
+    this.addComponent(this.setting)
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {

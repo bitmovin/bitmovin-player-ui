@@ -1,3 +1,4 @@
+import {Label} from '../label';
 import {FontColorSelectBox} from './fontcolorselectbox';
 import {FontOpacitySelectBox} from './fontopacityselectbox';
 import {FontFamilySelectBox} from './fontfamilyselectbox';
@@ -14,15 +15,15 @@ import {Component, ComponentConfig} from '../component';
 // Helper function since the subtitle option panel should not change
 let GetSubtitleSettingList = (overlay: SubtitleOverlay): Component<ComponentConfig>[] => {
     return [
-        new SettingsPanelItem('Font family', new FontFamilySelectBox({overlay: overlay})),
-        new SettingsPanelItem('Font color', new FontColorSelectBox({overlay: overlay})),
-        new SettingsPanelItem('Font size', new FontSizeSelectBox({overlay: overlay})),
-        new SettingsPanelItem('Font opacity', new FontOpacitySelectBox({overlay: overlay})),
-        new SettingsPanelItem('Character edge', new CharacterEdgeSelectBox({overlay: overlay})),
-        new SettingsPanelItem('Background color', new BackgroundColorSelectBox({overlay: overlay})),
-        new SettingsPanelItem('Background opacity', new BackgroundOpacitySelectBox({overlay: overlay})),
-        new SettingsPanelItem('Window color', new WindowColorSelectBox({overlay: overlay})),
-        new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({overlay: overlay})),
+        new SettingsPanelItem(new FontFamilySelectBox({overlay: overlay}), {components: [new Label({text: 'Font family'})]}),
+        new SettingsPanelItem(new FontColorSelectBox({overlay: overlay}), {components: [new Label({text: 'Font color'})]}),
+        new SettingsPanelItem(new FontSizeSelectBox({overlay: overlay}), {components: [new Label({text: 'Font size'})]}),
+        new SettingsPanelItem(new FontOpacitySelectBox({overlay: overlay}), {components: [new Label({text: 'Font opacity'})]}),
+        new SettingsPanelItem(new CharacterEdgeSelectBox({overlay: overlay}), {components: [new Label({text: 'Character edge'})]}),
+        new SettingsPanelItem(new BackgroundColorSelectBox({overlay: overlay}), {components: [new Label({text: 'Background color'})]}),
+        new SettingsPanelItem(new BackgroundOpacitySelectBox({overlay: overlay}), {components: [new Label({text: 'Background opacity'})]}),
+        new SettingsPanelItem(new WindowColorSelectBox({overlay: overlay}), {components: [new Label({text: 'Window color'})]}),
+        new SettingsPanelItem(new WindowOpacitySelectBox({overlay: overlay}), {components: [new Label({text: 'Window opacity'})]}),
     ];
 };
 
