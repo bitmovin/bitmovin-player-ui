@@ -5,7 +5,7 @@ export interface ImageLoadedCallback {
 }
 
 interface ImageLoaderState {
-  url: string,
+  url: string;
   image: DOM;
   loadedCallback: ImageLoadedCallback;
   loaded: boolean;
@@ -68,7 +68,7 @@ export class ImageLoader {
       state.loadedCallback = loadedCallback;
 
       // When the image is already loaded, we directly execute the callback instead of waiting for the load event
-      if(state.loaded) {
+      if (state.loaded) {
         this.callLoadedCallback(state);
       }
     }
