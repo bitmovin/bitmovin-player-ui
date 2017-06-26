@@ -6,6 +6,9 @@ export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
   overlay: SubtitleOverlay;
 }
 
+/**
+ * SubtitleSettingsPanel is a settings panel specific to subtitles settings
+ **/
 export class SubtitleSettingsPanel extends SettingsPanel {
 
   private overlay: SubtitleOverlay;

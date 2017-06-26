@@ -118,7 +118,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     return false;
   }
 
-  protected getItems(): SettingsPanelItem[] {
+  private getItems(): SettingsPanelItem[] {
     return <SettingsPanelItem[]>this.config.components;
   }
 
@@ -189,7 +189,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
 
       // Initialize hidden state
-    handleConfigItemChanged();
+      handleConfigItemChanged();
     }
   }
 
