@@ -11,7 +11,7 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-airplaytogglebutton',
-      text: 'Apple AirPlay'
+      text: 'Apple AirPlay',
     }, this.config);
   }
 

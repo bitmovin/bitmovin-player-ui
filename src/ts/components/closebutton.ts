@@ -22,7 +22,7 @@ export class CloseButton extends Button<CloseButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-closebutton',
-      text: 'Close'
+      text: 'Close',
     }, this.config);
   }
 

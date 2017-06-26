@@ -20,7 +20,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-recommendation-overlay',
       hidden: true,
-      components: [this.replayButton]
+      components: [this.replayButton],
     }, this.config);
   }
 
@@ -56,7 +56,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
         for (let item of recommendations) {
           this.addComponent(new RecommendationItem({
             itemConfig: item,
-            cssClasses: ['recommendation-item-' + (index++)]
+            cssClasses: ['recommendation-item-' + (index++)],
           }));
         }
         this.updateComponents(); // create container DOM elements
@@ -109,7 +109,7 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-recommendation-item',
-      itemConfig: null // this must be passed in from outside
+      itemConfig: null, // this must be passed in from outside
     }, this.config);
   }
 
@@ -119,25 +119,25 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
     let itemElement = new DOM('a', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-      'href': config.url
+      'href': config.url,
     }).css({ 'background-image': `url(${config.thumbnail})` });
 
     let bgElement = new DOM('div', {
-      'class': this.prefixCss('background')
+      'class': this.prefixCss('background'),
     });
     itemElement.append(bgElement);
 
     let titleElement = new DOM('span', {
-      'class': this.prefixCss('title')
+      'class': this.prefixCss('title'),
     }).append(new DOM('span', {
-      'class': this.prefixCss('innertitle')
+      'class': this.prefixCss('innertitle'),
     }).html(config.title));
     itemElement.append(titleElement);
 
     let timeElement = new DOM('span', {
-      'class': this.prefixCss('duration')
+      'class': this.prefixCss('duration'),
     }).append(new DOM('span', {
-      'class': this.prefixCss('innerduration')
+      'class': this.prefixCss('innerduration'),
     }).html(config.duration ? StringUtils.secondsToTime(config.duration) : ''));
     itemElement.append(timeElement);
 

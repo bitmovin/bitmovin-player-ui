@@ -35,8 +35,8 @@ declare namespace bitmovin {
         EASE_IN: PlayerAPI.VR.TransitionTimingType,
         EASE_OUT: PlayerAPI.VR.TransitionTimingType,
         EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
-      }
-    }
+      },
+    };
   }
 
   const player: PlayerStatic;
@@ -516,8 +516,8 @@ declare namespace bitmovin {
         EASE_IN: PlayerAPI.VR.TransitionTimingType,
         EASE_OUT: PlayerAPI.VR.TransitionTimingType,
         EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
-      }
-    }
+      },
+    };
 
     vr: PlayerAPI.PlayerVRAPI;
   }
@@ -937,7 +937,7 @@ declare namespace bitmovin {
           /**
            *  Two equirectangular videos for 3D content in side-by-side position.
            */
-        SBS
+        SBS,
       }
 
       enum State {

@@ -43,7 +43,7 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-container',
-      components: []
+      components: [],
     }, this.config);
   }
 
@@ -96,12 +96,12 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
     // Create the container element (the outer <div>)
     let containerElement = new DOM(this.config.tag, {
       'id': this.config.id,
-      'class': this.getCssClasses()
+      'class': this.getCssClasses(),
     });
 
     // Create the inner container element (the inner <div>) that will contain the components
     let innerContainer = new DOM(this.config.tag, {
-      'class': this.prefixCss('container-wrapper')
+      'class': this.prefixCss('container-wrapper'),
     });
     this.innerContainerElement = innerContainer;
 

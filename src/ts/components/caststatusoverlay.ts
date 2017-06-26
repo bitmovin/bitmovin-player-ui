@@ -19,7 +19,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-cast-status-overlay',
       components: [this.statusLabel],
-      hidden: true
+      hidden: true,
     }, this.config);
   }
 

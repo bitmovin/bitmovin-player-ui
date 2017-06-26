@@ -438,7 +438,7 @@ declare namespace bitmovin {
          * Labeling functions for HLS sources.
          */
         hls?: SourceLabelingConfig;
-      }
+      };
     }
 
     interface PlaybackTech {
@@ -593,6 +593,12 @@ declare namespace bitmovin {
        * used as parameter name and the values as parameter values.
        */
       query_parameters?: { [key: string]: string; };
+      /**
+       * If enabled the native player used for HLS in Safari would fetch and parse the HLS playlist and trigger
+       * onSegmentPlayback events carrying segment-specific metadata like EXT-X-PROGRAM-DATE-TIME if present
+       * in the manifest.
+       */
+      native_hls_parsing?: boolean;
     }
 
     interface CastConfig {
@@ -612,13 +618,6 @@ declare namespace bitmovin {
        * to use this option! This is only needed if one wants to create a custom ChromeCast receiver app.
        */
       message_namespace?: string;
-    }
-
-    interface AdaptationBitrateConfig {
-      minSelectableAudioBitrate?: number | string;
-      maxSelectableAudioBitrate?: number | string;
-      minSelectableVideoBitrate?: number | string;
-      maxSelectableVideoBitrate?: number | string;
     }
 
     interface AdaptationConfig {
@@ -642,12 +641,45 @@ declare namespace bitmovin {
        * This behavior can be disabled by setting this option to false (default is true).
        */
       disableDownloadCancelling?: boolean;
-      desktop?: {
-        bitrates: AdaptationBitrateConfig
+      /**
+       * Lower and upper bitrate boundaries. Values should generally be strings with mbps (megabits per second), kbps
+       * (kilobits per second), or bps (bits per second) units (e.g. '5000kbps'). Only the values 0 (no limitation for
+       * lower boundaries) and Infinity (no limitation for upper boundaries) are not required to be strings.
+       */
+      bitrates?: {
+        minSelectableAudioBitrate?: number | string;
+        maxSelectableAudioBitrate?: number | string;
+        minSelectableVideoBitrate?: number | string;
+        maxSelectableVideoBitrate?: number | string;
       };
-      mobile?: {
-        bitrates: AdaptationBitrateConfig
-      };
+      /**
+       * A callback function to customize the player's adaptation logic that is called before the player tries to download
+       * a new video segment.
+       * @param data An object carrying the <code>suggested</code> attribute, holding the suggested representation/quality
+       *   ID the player would select
+       * @return A valid representation/quality ID which the player should use, based on your custom logic (or
+       *   <code>data.suggested</code> to switch to the suggested quality)
+       * @see PlayerAPI#getAvailableVideoQualities to get a list of all available video qualities
+       */
+      onVideoAdaptation?: (data: { suggested: string }) => string;
+      /**
+       * A callback function to customize the player's adaptation logic that is called before the player tries to download
+       * a new audio segment.
+       * @param data An object carrying the <code>suggested</code> attribute, holding the suggested representation/quality
+       *   ID the player would select
+       * @return A valid representation/quality ID which the player should use, based on your custom logic (or
+       *   <code>data.suggested</code> to switch to the suggested quality)
+       * @see PlayerAPI#getAvailableAudioQualities to get a list of all available audio qualities
+       */
+      onAudioAdaptation?: (data: { suggested: string }) => string;
+    }
+
+    /**
+     * Adaptation configurations for different platforms.
+     */
+    interface AdaptationPlatformConfig {
+      desktop?: AdaptationConfig;
+      mobile?: AdaptationConfig;
     }
 
     interface AdvertisingScheduleItem {
@@ -787,12 +819,9 @@ declare namespace bitmovin {
        */
       cast?: CastConfig;
       /**
-       * The adaptation logic can be influenced by this parameter. Lower and upper bitrate boundaries can be
-       * set for desktop and mobile separately. Only representations between minSelectableVideoBitrate
-       * (or minSelectableAudioBitrate) and maxSelectableVideoBitrate (or maxSelectableAudioBitrate) are chosen
-       * except there are no matching representations.
+       * Configures the adaptation logic.
        */
-      adaptation?: AdaptationConfig;
+      adaptation?: AdaptationPlatformConfig;
       /**
        * Allows you to define which ads you want to display and when you want to display them.
        * In order to play ads on your website, you need to specify an ad config.

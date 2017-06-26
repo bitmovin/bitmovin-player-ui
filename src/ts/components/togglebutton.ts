@@ -24,14 +24,14 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
   private toggleButtonEvents = {
     onToggle: new EventDispatcher<ToggleButton<Config>, NoArgs>(),
     onToggleOn: new EventDispatcher<ToggleButton<Config>, NoArgs>(),
-    onToggleOff: new EventDispatcher<ToggleButton<Config>, NoArgs>()
+    onToggleOff: new EventDispatcher<ToggleButton<Config>, NoArgs>(),
   };
 
   constructor(config: ToggleButtonConfig) {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-togglebutton'
+      cssClass: 'ui-togglebutton',
     }, this.config);
   }
 
