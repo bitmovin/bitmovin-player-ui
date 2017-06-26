@@ -12,7 +12,7 @@ import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
-import {SubtitleSettingsPanel} from './components/subtitlesettingspanel';
+import {SubtitleSettingsPanel} from './components/subtitlesettings/subtitlesettingspanel';
 import {SubtitleSettingsLabel} from './components/subtitlesettings/subtitlesettingslabel';
 import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
 import {SubtitleSettingsCloseButton} from './components/subtitlesettings/subtitlesettingsclosebutton';

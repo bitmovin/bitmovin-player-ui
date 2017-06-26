@@ -1,6 +1,6 @@
 import {Button, ButtonConfig} from '../button';
 import {SettingsPanel} from '../settingspanel';
-import {SubtitleSettingsPanel} from '../subtitlesettingspanel';
+import {SubtitleSettingsPanel} from '../subtitlesettings/subtitlesettingspanel';
 
 export interface SubtitleSettingsButtonConfig extends ButtonConfig {
   subtitleSettingsPanel: SubtitleSettingsPanel;

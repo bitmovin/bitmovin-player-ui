@@ -1,7 +1,6 @@
-import {SettingsPanel, SettingsPanelConfig} from './settingspanel';
-import {SubtitleOverlay} from './subtitleoverlay';
-import {UIInstanceManager} from '../uimanager';
-import GetSubtitleSettingList from './subtitlesettings/settinglist';
+import {SettingsPanel, SettingsPanelConfig} from '../settingspanel';
+import {SubtitleOverlay} from '../subtitleoverlay';
+import {UIInstanceManager} from '../../uimanager';
 
 export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
   overlay: SubtitleOverlay;

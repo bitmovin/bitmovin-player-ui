@@ -1,6 +1,6 @@
 import {SubtitleSettingsButton} from './subtitlesettingsbutton';
 import {SettingsPanel} from '../settingspanel';
-import {SubtitleSettingsPanel} from '../subtitlesettingspanel';
+import {SubtitleSettingsPanel} from '../subtitlesettings/subtitlesettingspanel';
 import {SubtitleSettingsButtonConfig} from './subtitlesettingsbutton';
 import {UIInstanceManager} from '../../uimanager';
 
