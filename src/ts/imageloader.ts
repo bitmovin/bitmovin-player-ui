@@ -41,17 +41,11 @@ export class ImageLoader {
       };
       this.state[url] = state;
 
-      // We need to add the image element to the DOM to get the size of the loaded image
-      new DOM('body').append(state.image);
-
       // Listen to the load event, update the state and call the callback once the image is loaded
       state.image.on('load', (e) => {
         state.loaded = true;
-        state.width = state.image.width();
-        state.height = state.image.height();
-
-        // We can safely remove the image from the DOM once the image is loaded and the size extracted
-        state.image.remove();
+        state.width = (<HTMLImageElement>state.image.get(0)).width;
+        state.height = (<HTMLImageElement>state.image.get(0)).height;
 
         this.callLoadedCallback(state);
       });
