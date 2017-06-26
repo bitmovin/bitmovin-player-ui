@@ -155,14 +155,14 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
     }, this.config);
-    this.addComponent(this.setting)
+    this.addComponent(this.setting);
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     if (this.setting instanceof SelectBox) {
       let handleConfigItemChanged = () => {
         if (! (this.setting instanceof SelectBox)) {
-          return
+          return;
         }
         // The minimum number of items that must be available for the setting to be displayed
         // By default, at least two items must be available, else a selection is not possible

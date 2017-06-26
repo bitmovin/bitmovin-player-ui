@@ -54,15 +54,15 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
     let config = <SubtitleOverlayConfig>this.config;
 
-    this.fontColor= ColorUtils.foreground;
-    this.backgroundColor= ColorUtils.background;
-    this.windowColor= ColorUtils.background;
-    this.fontFamily= '';
-    this.fontStyle= '';
-    this.fontVariant= 'normal';
-    this.characterEdge= '';
-    this.fontCoefficient= 1;
-    this.fontSize= 1.2;
+    this.fontColor = ColorUtils.foreground;
+    this.backgroundColor = ColorUtils.background;
+    this.windowColor = ColorUtils.background;
+    this.fontFamily = '';
+    this.fontStyle = '';
+    this.fontVariant = 'normal';
+    this.characterEdge = '';
+    this.fontCoefficient = 1;
+    this.fontSize = 1.2;
 
     // Update the config first loading info from UImanager config
     // then overwrites it with config given to the component if it applies
