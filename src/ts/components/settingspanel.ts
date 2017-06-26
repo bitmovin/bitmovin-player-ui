@@ -137,21 +137,21 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 }
 
 /**
- * An item for a {@link SettingsPanel}, containing a {@link Label} and a component that configures a setting.
- * Supported setting components: {@link SelectBox}
+ * An item for a {@link SettingsPanel},
+ * If the components is a {@link SelectBox} it will handle the logic of displaying it or not
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
-  private setting: SelectBox;
+  private setting: Component<ComponentConfig>;
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
   };
 
-  constructor(selectBox: SelectBox, config: ContainerConfig = {}) {
+  constructor(setting: Component<ComponentConfig>, config: ContainerConfig = {}) {
     super(config);
 
-    this.setting = selectBox;
+    this.setting = setting;
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
@@ -160,33 +160,38 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    let handleConfigItemChanged = () => {
-      // The minimum number of items that must be available for the setting to be displayed
-      // By default, at least two items must be available, else a selection is not possible
-      let minItemsToDisplay = 2;
-      // Audio/video quality select boxes contain an additional 'auto' mode, which in combination with a single
-      // available quality also does not make sense
-      if (this.setting instanceof VideoQualitySelectBox || this.setting instanceof AudioQualitySelectBox) {
-        minItemsToDisplay = 3;
-      }
+    if (this.setting instanceof SelectBox) {
+      let handleConfigItemChanged = () => {
+        if (! (this.setting instanceof SelectBox)) {
+          return
+        }
+        // The minimum number of items that must be available for the setting to be displayed
+        // By default, at least two items must be available, else a selection is not possible
+        let minItemsToDisplay = 2;
+        // Audio/video quality select boxes contain an additional 'auto' mode, which in combination with a single
+        // available quality also does not make sense
+        if (this.setting instanceof VideoQualitySelectBox || this.setting instanceof AudioQualitySelectBox) {
+          minItemsToDisplay = 3;
+        }
 
-      // Hide the setting if no meaningful choice is available
-      if (this.setting.itemCount() < minItemsToDisplay) {
-        this.hide();
-      } else {
-        this.show();
-      }
+        // Hide the setting if no meaningful choice is available
+        if (this.setting.itemCount() < minItemsToDisplay) {
+          this.hide();
+        } else {
+          this.show();
+        }
 
-      // Visibility might have changed and therefore the active state might have changed so we fire the event
-      // TODO fire only when state has really changed (e.g. check if visibility has really changed)
-      this.onActiveChangedEvent();
-    };
+        // Visibility might have changed and therefore the active state might have changed so we fire the event
+        // TODO fire only when state has really changed (e.g. check if visibility has really changed)
+        this.onActiveChangedEvent();
+      };
 
-    this.setting.onItemAdded.subscribe(handleConfigItemChanged);
-    this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
+      this.setting.onItemAdded.subscribe(handleConfigItemChanged);
+      this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
 
-    // Initialize hidden state
+      // Initialize hidden state
     handleConfigItemChanged();
+    }
   }
 
   /**
