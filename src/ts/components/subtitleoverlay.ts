@@ -205,7 +205,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
   }
 
-  private updateSubtitleLabelCss() {
+  private updateSubtitleLabelCss(): void {
     this.applyConfToDom(this.getDomElement().find('.bmpui-ui-subtitle-label'));
     this.applyConfToDom(this.previewSubtitle.getDomElement());
   }
