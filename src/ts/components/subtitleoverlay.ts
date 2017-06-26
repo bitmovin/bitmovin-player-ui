@@ -218,11 +218,13 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       this.show();
     }
   }
+
   removePreviewSubtitleLabel(): void {
     this.previewSubtitleActive = false;
     this.removeComponent(this.previewSubtitle);
     this.updateComponents();
   }
+
   // Methods used to define custom styling on subtitles labels
   setColor(color: string): void {
     let col = ColorUtils.colorFromCss(color);
@@ -231,6 +233,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.updateSubtitleLabelCss();
     this.setItem('fontColor', this.fontColor.toCSS());
   }
+
   setBackgroundColor(color: string): void {
     let backgroundColor = ColorUtils.colorFromCss(color);
     if (! this.backgroundColor.a || this.backgroundColor.a === 0) {
@@ -243,6 +246,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.updateSubtitleLabelCss();
     this.setItem('backgroundColor', this.backgroundColor.toCSS());
   }
+
   setWindowColor(color: string): void {
     let windowColor = ColorUtils.colorFromCss(color);
     if (! this.windowColor.a || this.windowColor.a === 0) {
@@ -255,36 +259,43 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.getDomElement().css('background', this.windowColor.toCSS());
     this.setItem('windowColor', this.windowColor.toCSS());
   }
+
   setFontOpacity(alpha: number): void {
     this.fontColor.a = alpha;
     this.updateSubtitleLabelCss();
     this.setItem('fontColor', this.fontColor.toCSS());
   }
+
   setBackgroundOpacity(alpha: number): void {
     this.backgroundColor.a = alpha;
     this.updateSubtitleLabelCss();
     this.setItem('backgroundColor', this.backgroundColor.toCSS());
   }
+
   setWindowOpacity(alpha: number): void {
     this.windowColor.a = alpha;
     this.getDomElement().css('background', this.windowColor.toCSS());
     this.setItem('windowColor', this.windowColor.toCSS());
   }
+
   setFontFamily(fontFamily: string): void {
     this.fontFamily = fontFamily;
     this.setItem('fontFamily', this.fontFamily);
     this.updateSubtitleLabelCss();
   }
+
   setFontStyle(fontStyle: string): void {
     this.fontStyle = fontStyle;
     this.setItem('fontStyle', this.fontStyle);
     this.updateSubtitleLabelCss();
   }
+
   setFontVariant(fontVariant: string): void {
     this.fontVariant = fontVariant;
     this.setItem('fontVariant', this.fontVariant);
     this.updateSubtitleLabelCss();
   }
+
   /**
    * A helper method to avoid updating the CSS label 3 times in a row
    * since family, style and variant are normally updated together
@@ -298,11 +309,13 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.setItem('fontVariant', this.fontVariant);
     this.updateSubtitleLabelCss();
   }
+
   setCharacterEdge(characterEdge: string): void {
     this.characterEdge = characterEdge;
     this.updateSubtitleLabelCss();
     this.setItem('characterEdge', this.characterEdge);
   }
+
   setFontSize(coefficient: number): void {
     this.fontCoefficient = coefficient;
     this.updateSubtitleLabelCss();
