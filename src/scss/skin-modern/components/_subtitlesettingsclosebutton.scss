@@ -1,8 +1,6 @@
 .#{$prefix}-ui-settings-panel .#{$prefix}-ui-subtitlesettingsclosebutton {
   @extend %ui-button;
 
-  border-bottom: 1px solid transparentize($color-secondary, .7);
-  margin: .5em 1em;
   position: relative;
   width: fill;
 
@@ -26,9 +24,5 @@
       width: .6em;
     }
 
-  }
-
-  &.#{$prefix}-last {
-    border-bottom: 0;
   }
 }

@@ -78,8 +78,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       // Attach marker class to last visible item
       let lastShownItem = null;
       for (let component of this.getItems()) {
-        if ((component instanceof SettingsPanelItem)
-            || (component instanceof SubtitleSettingsCloseButton)) {
+        if (component instanceof SettingsPanelItem) {
           component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
           if (component.isShown()) {
             lastShownItem = component;
