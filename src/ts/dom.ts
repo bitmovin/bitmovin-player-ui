@@ -97,9 +97,33 @@ export class DOM {
   /**
    * Gets the HTML elements that this DOM instance currently holds.
    * @returns {HTMLElement[]} the raw HTML elements
+   * @deprecated use {@link #get()} instead
    */
   getElements(): HTMLElement[] {
-    return this.elements;
+    return this.get();
+  }
+
+  /**
+   * Gets the HTML elements that this DOM instance currently holds.
+   * @returns {HTMLElement[]} the raw HTML elements
+   */
+  get(): HTMLElement[];
+  /**
+   * Gets an HTML element from the list elements that this DOM instance currently holds.
+   * @param index The zero-based index into the element list. Can be negative to return an element from the end,
+   *    e.g. -1 returns the last element.
+   */
+  get(index: number): HTMLElement;
+  get(index?: number): HTMLElement | HTMLElement[] {
+    if (index === undefined) {
+      return this.elements;
+    } else if (!this.elements || index >= this.elements.length || index < -this.elements.length) {
+      return undefined;
+    } else if (index < 0) {
+      return this.elements[this.elements.length - index];
+    } else {
+      return this.elements[index];
+    }
   }
 
   /**
