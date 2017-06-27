@@ -67,8 +67,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     // Update the config first loading info from UImanager config
     // then overwrites it with config given to the component if it applies
     // finally loads user preferences from local storage
-    this.updateSubtitleOverlayFromUIconfig(uimanager.getConfig().subtitles);
     this.updateSubtitleOverlayFromUIconfig(config.subtitleConfig);
+    this.updateSubtitleOverlayFromUIconfig(uimanager.getConfig().subtitles);
     this.updateSubtitleOverlayFromLocalStorage();
 
     // This css property isn't applied to the subtitle cue
