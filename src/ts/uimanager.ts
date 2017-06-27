@@ -49,8 +49,6 @@ import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 import {Spacer} from './components/spacer';
-import GetSubtitleSettingList from './components/subtitlesettings/settinglist';
-
 
 export interface UIRecommendationConfig {
   title: string;
@@ -407,7 +405,6 @@ export namespace UIManager.Factory {
 
     let subtitleSettingsPanel = new SubtitleSettingsPanel({
       hidden: true,
-      components: GetSubtitleSettingList(subtitleOverlay),
       overlay: subtitleOverlay,
     });
 
@@ -521,7 +518,6 @@ export namespace UIManager.Factory {
     let subtitleSettingsPanel = new SubtitleSettingsPanel({
       hidden: true,
       hideDelay: -1,
-      components: GetSubtitleSettingList(subtitleOverlay),
       overlay: subtitleOverlay,
     });
     let settingsPanel = new SettingsPanel({
