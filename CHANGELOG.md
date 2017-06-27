@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- Add an option to keep the UI always visible by setting the `UIContainerConfig#hideTimeout` to -1
+
 ## [2.5.1]
 
 No functional changes. Improves player API declarations, code linting configuration, and adds [contribution guidelines](CONTRIBUTING.md).
