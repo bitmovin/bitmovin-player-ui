@@ -1,7 +1,7 @@
-import {Label, LabelConfig} from './../label';
-import {Container, ContainerConfig} from './../container';
+import {Label, LabelConfig} from '../label';
+import {Container, ContainerConfig} from '../container';
 import {SubtitleSettingsOpenButton} from './subtitlesettingsopenbutton';
-import {DOM} from './../../dom';
+import {DOM} from '../../dom';
 
 export interface SubtitleSettingsLabelConfig extends LabelConfig {
   opener: SubtitleSettingsOpenButton;
