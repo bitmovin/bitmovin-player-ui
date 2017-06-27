@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Add an option to keep the UI always visible by setting the `UIContainerConfig#hideTimeout` to -1
 
+### Changed
+- Thumbnail size is no longer determined by the physical image size and can now be arbitrarily set by CSS
+
 ## [2.5.1]
 
 No functional changes. Improves player API declarations, code linting configuration, and adds [contribution guidelines](CONTRIBUTING.md).
