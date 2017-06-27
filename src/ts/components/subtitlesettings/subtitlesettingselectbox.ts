@@ -7,7 +7,7 @@ export interface SubtitleSettingSelectBoxConfig extends ListSelectorConfig {
 }
 
 /**
- * SubtitleSettingSelectBox is a base class for all subtiles settings
+ * Base class for all subtitles settings select box
  **/
 export class SubtitleSettingSelectBox extends SelectBox {
 
