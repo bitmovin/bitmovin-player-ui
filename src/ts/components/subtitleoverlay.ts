@@ -139,7 +139,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
 
   /**
-   * updateSubtitleOverlayConfig updates style for the subtitle overlay based on init config
+   * Updates the setting used to display subtitles based on config information
    **/
   private updateSubtitleOverlayFromUIconfig(subtitlesConfig: UISubtitleConfig): void {
     if (subtitlesConfig == null) {
@@ -163,7 +163,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
 
   /**
-   * updateSubtitleOverlayConfig updates styles for the subtitle overlay based local storage values
+   *  update the settings used to diplay subtitles based on local storage values
    **/
   private updateSubtitleOverlayFromLocalStorage(): void {
     if (StorageUtils.hasLocalStorage()) {
