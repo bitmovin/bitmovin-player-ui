@@ -180,7 +180,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   private updateSubtitleOverlayFromLocalStorage(): void {
     if (StorageUtils.hasLocalStorage()) {
       let store = window.localStorage;
-      let previewSubtitleDom = this.previewSubtitle.getDomElement();
 
       let fontColor = store.getItem('fontColor');
       if (fontColor != null) {
