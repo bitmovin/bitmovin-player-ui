@@ -348,8 +348,9 @@ declare namespace bitmovin {
      * not possible.
      *
      * @param time The time to seek to
+     * @param issuer the source of the seek command
      */
-    seek(time: number): boolean;
+    seek(time: number, issuer?: string): boolean;
     /**
      * Sets the audio track to the ID specified by trackID.
      * Available tracks can be retrieved with {@link #getAvailableAudio}.
