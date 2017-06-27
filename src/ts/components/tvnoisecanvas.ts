@@ -32,7 +32,7 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
   }
 
   start(): void {
-    this.canvasElement = <HTMLCanvasElement>this.canvas.getElements()[0];
+    this.canvasElement = <HTMLCanvasElement>this.canvas.get(0);
     this.canvasContext = this.canvasElement.getContext('2d');
     this.noiseAnimationWindowPos = -this.canvasHeight;
     this.lastFrameUpdate = 0;
