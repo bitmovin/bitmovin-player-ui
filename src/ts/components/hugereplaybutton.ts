@@ -1,7 +1,6 @@
 import {ButtonConfig, Button} from './button';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
-import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 
 /**
  * A button to play/replay a video.
