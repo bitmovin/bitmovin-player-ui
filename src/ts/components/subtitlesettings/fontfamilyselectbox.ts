@@ -1,6 +1,5 @@
 import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-import {SubtitleOverlay} from '../subtitleoverlay';
 import {StorageUtils} from '../../utils';
 
 interface FontFamily {
