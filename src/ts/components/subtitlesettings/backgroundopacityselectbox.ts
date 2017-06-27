@@ -15,11 +15,11 @@ export class BackgroundOpacitySelectBox extends SubtitleSettingSelectBox {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem('1', '100%') ;
-    this.addItem('0.75', '75%') ;
-    this.addItem('0.5', '50%') ;
-    this.addItem('0.25', '25%') ;
-    this.addItem('0', '0%') ;
+    this.addItem('1', '100%');
+    this.addItem('0.75', '75%');
+    this.addItem('0.5', '50%');
+    this.addItem('0.25', '25%');
+    this.addItem('0', '0%');
 
     this.selectItem('0');
 
