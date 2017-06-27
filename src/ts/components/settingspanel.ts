@@ -137,6 +137,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
 /**
  * An item for a {@link SettingsPanel},
+ * Containing an optionnal {@link Label} and a component that configures a setting.
  * If the components is a {@link SelectBox} it will handle the logic of displaying it or not
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {

@@ -368,8 +368,10 @@ export namespace ColorUtils {
     }
   }
 
-  // colorFromCss is used to get a color value from localstorage since an objec can't be stored
-  // Only parses value in the 'rgba(number, number, number, number)' format
+  /**
+   * Parses a string formated as 'rgba(number, number, number, number)' 
+   * and returns a color element of the same value
+   */
   export function colorFromCss(css: string, fallback: Color = new Color(0, 0, 0)): Color {
     if (!css.startsWith('rgba(')) {
       return fallback;
@@ -395,6 +397,7 @@ export namespace ColorUtils {
 
 export namespace StorageUtils {
   let hasLocalStorageCache: boolean;
+
   export function hasLocalStorage(): boolean {
     if (hasLocalStorageCache) {
       return hasLocalStorageCache;
