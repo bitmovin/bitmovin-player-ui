@@ -141,13 +141,14 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
+  private label: Component<ComponentConfig>; 
   private setting: Component<ComponentConfig>;
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
   };
 
-  constructor(setting: Component<ComponentConfig>, config: ContainerConfig = {}) {
+  constructor(label: string | Component<ComponentConfig>, setting: Component<ComponentConfig>, config: ContainerConfig = {}) {
     super(config);
 
     this.setting = setting;
@@ -155,6 +156,16 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
     }, this.config);
+
+    if (label !== null) {
+      if (label instanceof Component) {
+        this.label = label;
+      } else {
+        this.label = new Label({ text: label });
+      }
+      this.addComponent(this.label);
+    }
+
     this.addComponent(this.setting);
   }
 
