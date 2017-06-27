@@ -369,7 +369,7 @@ export namespace ColorUtils {
   }
 
   /**
-   * Parses a string formated as 'rgba(number, number, number, number)' 
+   * Parses a string formated as 'rgba(number, number, number, number)'
    * and returns a color element of the same value
    */
   export function colorFromCss(css: string, fallback: Color = new Color(0, 0, 0)): Color {

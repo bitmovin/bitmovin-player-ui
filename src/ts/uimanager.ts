@@ -426,7 +426,7 @@ export namespace UIManager.Factory {
     settingsPanel.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox(),
+        new SubtitleSelectBox()
     ));
 
     let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
@@ -537,7 +537,7 @@ export namespace UIManager.Factory {
     settingsPanel.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox(),
+        new SubtitleSelectBox()
     ));
 
     let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({

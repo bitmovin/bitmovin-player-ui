@@ -19,7 +19,7 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
       'raised');
     this.addItem('rgba(0, 0, 0, 0.8) 0px -2px 1px', 'depressed');
     this.addItem(`-2px 0px 1px rgba(0, 0, 0, 0.8), 2px 0px 1px rgba(0, 0, 0, 0.8), 0px -2px 1px rgba(0, 0, 0, 0.8),
-      0px 2px 1px rgba(0, 0, 0, 0.8), -1px 1px 1px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(0, 0, 0, 0.8), 
+      0px 2px 1px rgba(0, 0, 0, 0.8), -1px 1px 1px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(0, 0, 0, 0.8),
       1px -1px 1px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(0, 0, 0, 0.8)`, 'uniform');
     this.addItem('0px 2px 1px rgba(0, 0, 0, 0.8)', 'drop shadowed');
 

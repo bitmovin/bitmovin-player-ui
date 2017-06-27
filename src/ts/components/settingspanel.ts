@@ -142,7 +142,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
-  private label: Component<ComponentConfig>; 
+  private label: Component<ComponentConfig>;
   private setting: Component<ComponentConfig>;
 
   private settingsPanelItemEvents = {

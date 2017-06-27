@@ -165,5 +165,5 @@ if (typeof Object.assign !== 'function') {
     SubtitleSettingsPanel,
     WindowColorSelectBox,
     WindowOpacitySelectBox,
-  }
+  },
 };
