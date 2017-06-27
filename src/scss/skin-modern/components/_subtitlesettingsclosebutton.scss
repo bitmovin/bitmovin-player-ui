@@ -2,7 +2,7 @@
   @extend %ui-button;
 
   position: relative;
-  width: stretch;
+  width: 100%;
 
   span {
     color: $color-primary;
