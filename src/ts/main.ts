@@ -149,7 +149,7 @@ if (typeof Object.assign !== 'function') {
   VRToggleButton,
   Watermark,
   // Subtitle related components
-  SubtitleSettings: {
+  subtitlesettings: {
     BackgroundColorSelectBox,
     BackgroundOpacitySelectBox,
     CharacterEdgeSelectBox,
