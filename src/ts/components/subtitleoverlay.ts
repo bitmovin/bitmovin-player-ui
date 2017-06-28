@@ -48,8 +48,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.config = this.mergeConfig( config, {
         cssClass: 'ui-subtitle-overlay',
       }, this.config);
-
-    config = this.config;
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {

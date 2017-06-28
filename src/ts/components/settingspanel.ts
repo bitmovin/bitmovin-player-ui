@@ -5,7 +5,6 @@ import {Label} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
-
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 
