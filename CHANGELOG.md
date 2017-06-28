@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Add support for FCC compliant closed captions. Adds options on how captions are displayed, and a SubtitleSettingsPanel with the possibility to update the settings while playing the video.
+- Add UI version property to global namespace (`bitmovin.playerui.version`)
 
 ## [2.6.0]
 

@@ -11,6 +11,7 @@ var rename = require('gulp-rename');
 var tslint = require('gulp-tslint');
 var sassLint = require('gulp-sass-lint');
 var ts = require('gulp-typescript');
+var replace = require('gulp-replace');
 
 // PostCSS plugins
 var postcssSVG = require('postcss-svg');
@@ -30,6 +31,7 @@ var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 var merge = require('merge2');
 var nativeTslint = require('tslint');
+var npmPackage = require('./package.json');
 
 var paths = {
   source: {
@@ -114,6 +116,7 @@ gulp.task('browserify', function() {
   // Compile output JS file
   var stream = browserifyBundle
   .pipe(source('bitmovinplayer-ui.js'))
+  .pipe(replace('{{VERSION}}', npmPackage.version))
   .pipe(buffer()) // required for production/sourcemaps
   .pipe(gulp.dest(paths.target.js));
 
