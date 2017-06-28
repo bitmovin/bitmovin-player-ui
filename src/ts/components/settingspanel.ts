@@ -1,6 +1,7 @@
 import {ContainerConfig, Container} from './container';
+import {ComponentConfig, Component} from './component';
 import {SelectBox} from './selectbox';
-import {Label, LabelConfig} from './label';
+import {Label} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
@@ -134,58 +135,73 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 }
 
 /**
- * An item for a {@link SettingsPanel}, containing a {@link Label} and a component that configures a setting.
- * Supported setting components: {@link SelectBox}
+ * An item for a {@link SettingsPanel},
+ * Containing an optionnal {@link Label} and a component that configures a setting.
+ * If the components is a {@link SelectBox} it will handle the logic of displaying it or not
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
-  private label: Label<LabelConfig>;
-  private setting: SelectBox;
+  private label: Component<ComponentConfig>;
+  private setting: Component<ComponentConfig>;
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
   };
 
-  constructor(label: string, selectBox: SelectBox, config: ContainerConfig = {}) {
+  constructor(label: string | Component<ComponentConfig>, setting: Component<ComponentConfig>, config: ContainerConfig = {}) {
     super(config);
 
-    this.label = new Label({ text: label });
-    this.setting = selectBox;
+    this.setting = setting;
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
-      components: [this.label, this.setting],
     }, this.config);
+
+    if (label !== null) {
+      if (label instanceof Component) {
+        this.label = label;
+      } else {
+        this.label = new Label({ text: label });
+      }
+      this.addComponent(this.label);
+    }
+
+    this.addComponent(this.setting);
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    let handleConfigItemChanged = () => {
-      // The minimum number of items that must be available for the setting to be displayed
-      // By default, at least two items must be available, else a selection is not possible
-      let minItemsToDisplay = 2;
-      // Audio/video quality select boxes contain an additional 'auto' mode, which in combination with a single
-      // available quality also does not make sense
-      if (this.setting instanceof VideoQualitySelectBox || this.setting instanceof AudioQualitySelectBox) {
-        minItemsToDisplay = 3;
-      }
+    if (this.setting instanceof SelectBox) {
+      let handleConfigItemChanged = () => {
+        if (! (this.setting instanceof SelectBox)) {
+          return;
+        }
+        // The minimum number of items that must be available for the setting to be displayed
+        // By default, at least two items must be available, else a selection is not possible
+        let minItemsToDisplay = 2;
+        // Audio/video quality select boxes contain an additional 'auto' mode, which in combination with a single
+        // available quality also does not make sense
+        if (this.setting instanceof VideoQualitySelectBox || this.setting instanceof AudioQualitySelectBox) {
+          minItemsToDisplay = 3;
+        }
 
-      // Hide the setting if no meaningful choice is available
-      if (this.setting.itemCount() < minItemsToDisplay) {
-        this.hide();
-      } else {
-        this.show();
-      }
+        // Hide the setting if no meaningful choice is available
+        if (this.setting.itemCount() < minItemsToDisplay) {
+          this.hide();
+        } else {
+          this.show();
+        }
 
-      // Visibility might have changed and therefore the active state might have changed so we fire the event
-      // TODO fire only when state has really changed (e.g. check if visibility has really changed)
-      this.onActiveChangedEvent();
-    };
+        // Visibility might have changed and therefore the active state might have changed so we fire the event
+        // TODO fire only when state has really changed (e.g. check if visibility has really changed)
+        this.onActiveChangedEvent();
+      };
 
-    this.setting.onItemAdded.subscribe(handleConfigItemChanged);
-    this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
+      this.setting.onItemAdded.subscribe(handleConfigItemChanged);
+      this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
 
-    // Initialize hidden state
-    handleConfigItemChanged();
+      // Initialize hidden state
+      handleConfigItemChanged();
+    }
   }
 
   /**
