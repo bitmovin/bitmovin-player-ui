@@ -26,6 +26,8 @@ export class SubtitleSettingsPanel extends SettingsPanel {
   constructor(config: SubtitleSettingsPanelConfig) {
     super(config);
 
+    this.overlay = config.overlay;
+
     this.config = this.mergeConfig(config, {
       components: <Component<ComponentConfig>[]>[
         new SettingsPanelItem('Font family', new FontFamilySelectBox({overlay: this.overlay})),
@@ -38,8 +40,6 @@ export class SubtitleSettingsPanel extends SettingsPanel {
         new SettingsPanelItem('Window color', new WindowColorSelectBox({overlay: this.overlay})),
         new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({overlay: this.overlay})),
       ]}, this.config);
-
-    this.overlay = config.overlay;
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
