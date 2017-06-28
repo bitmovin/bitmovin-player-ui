@@ -42,7 +42,7 @@ export class DOM {
   constructor(element: HTMLElement);
   /**
    * Wraps a list of plain HTMLElements with a DOM instance.
-   * @param element the HTMLElements to wrap with DOM
+   * @param elements the HTMLElements to wrap with DOM
    */
   constructor(elements: HTMLElement[]);
   /**
