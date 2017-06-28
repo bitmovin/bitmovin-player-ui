@@ -29,6 +29,7 @@ var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 var merge = require('merge2');
+var nativeTslint = require('tslint');
 
 var paths = {
   source: {
@@ -61,9 +62,13 @@ gulp.task('clean', del.bind(null, [paths.target.html]));
 
 // TypeScript linting
 gulp.task('lint-ts', function() {
+  // The program is required for type checking rules to work: https://palantir.github.io/tslint/usage/type-checking/
+  var program = nativeTslint.Linter.createProgram("./tsconfig.json");
+
   return gulp.src(paths.source.ts)
   .pipe(tslint({
     formatter: 'verbose',
+    program: program,
   }))
   .pipe(tslint.report({
     // Print just the number of errors (instead of printing all errors again)
