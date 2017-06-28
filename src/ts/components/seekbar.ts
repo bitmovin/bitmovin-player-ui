@@ -219,7 +219,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let seek = (percentage: number) => {
       if (player.isLive()) {
-        player.timeShift(player.getMaxTimeShift() - (player.getMaxTimeShift() * (percentage / 100)));
+        player.timeShift(player.getMaxTimeShift() - (player.getMaxTimeShift() * (percentage / 100)), 'ui-seekbar');
       } else {
         player.seek(player.getDuration() * (percentage / 100), 'ui-seekbar');
       }
