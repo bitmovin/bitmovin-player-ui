@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-- Add support for FCC compliant Closed Caption, by adding options on how captions are displayed, and a `SubtitleSettingsPanel` with the possibility to update the settings while playing the video.
+- Add support for FCC compliant closed captions. Adds options on how captions are displayed, and a SubtitleSettingsPanel with the possibility to update the settings while playing the video.
 
 ## [2.6.0]
 
