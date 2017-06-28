@@ -248,12 +248,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   setBackgroundColor(color: string): void {
     let backgroundColor = ColorUtils.colorFromCss(color);
-    if (! this.backgroundColor.a || this.backgroundColor.a === 0) {
-      // 25%  opacity at least
-      backgroundColor.a = 0.25;
-    } else {
-      backgroundColor.a = this.backgroundColor.a;
-    }
+    backgroundColor.a = this.backgroundColor.a;
     this.backgroundColor = backgroundColor;
     this.updateSubtitleLabelCss();
     this.setItem('backgroundColor', this.backgroundColor.toCSS());
@@ -261,12 +256,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   setWindowColor(color: string): void {
     let windowColor = ColorUtils.colorFromCss(color);
-    if (! this.windowColor.a || this.windowColor.a === 0) {
-      // 25%  opacity at least
-      windowColor.a = 0.25;
-    } else {
-      windowColor.a = this.windowColor.a;
-    }
+    windowColor.a = this.windowColor.a;
     this.windowColor = windowColor;
     this.getDomElement().css('background', this.windowColor.toCSS());
     this.setItem('windowColor', this.windowColor.toCSS());
