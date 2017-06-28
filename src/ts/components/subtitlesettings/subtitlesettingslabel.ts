@@ -1,4 +1,4 @@
-import {Label, LabelConfig} from '../label';
+import {LabelConfig} from '../label';
 import {Container, ContainerConfig} from '../container';
 import {SubtitleSettingsOpenButton} from './subtitlesettingsopenbutton';
 import {DOM} from '../../dom';

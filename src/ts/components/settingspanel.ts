@@ -1,11 +1,11 @@
 import {ContainerConfig, Container} from './container';
 import {ComponentConfig, Component} from './component';
 import {SelectBox} from './selectbox';
-import {Label, LabelConfig} from './label';
+import {Label} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
-import {SubtitleSettingsCloseButton} from './subtitlesettings/subtitlesettingsclosebutton';
+
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 
