@@ -39,7 +39,7 @@
     "run-sequence": "^1.2.2",
     "tsify": "^2.0.2",
     "tslint": "^5.4.3",
-    "typescript": "^2.3.0",
+    "typescript": "^2.4.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
