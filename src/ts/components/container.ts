@@ -38,7 +38,7 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
    */
   private innerContainerElement: DOM;
 
-  constructor(config: ContainerConfig) {
+  constructor(config: Config) {
     super(config);
 
     this.config = this.mergeConfig(config, {
