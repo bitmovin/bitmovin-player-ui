@@ -408,7 +408,6 @@ export namespace UIManager.Factory {
       overlay: subtitleOverlay,
     });
 
-
     let settingsPanel = new SettingsPanel({
       components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -425,7 +424,7 @@ export namespace UIManager.Factory {
     });
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
 
@@ -536,7 +535,7 @@ export namespace UIManager.Factory {
     });
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtiles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
 
@@ -644,6 +643,7 @@ export namespace UIManager.Factory {
   export function buildModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     // show smallScreen UI only on mobile/handheld devices
     let smallScreenSwitchWidth = 600;
+
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
@@ -1172,3 +1172,4 @@ class PlayerWrapper {
     }
   }
 }
+
