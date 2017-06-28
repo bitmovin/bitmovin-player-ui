@@ -147,6 +147,8 @@ declare namespace bitmovin {
       message: string;
     }
 
+    interface WarningEvent extends ErrorEvent {}
+
     interface AudioChangedEvent extends PlaybackEvent {
       /**
        * Previous audio track

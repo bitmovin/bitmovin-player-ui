@@ -3,6 +3,7 @@ import {UIInstanceManager} from '../uimanager';
 import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {PlayerUtils} from '../utils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
+import WarningEvent = bitmovin.PlayerAPI.WarningEvent;
 
 /**
  * A button that toggles between playback and pause.
@@ -33,16 +34,31 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         return;
       }
 
-      if (player.isPlaying()) {
+      // always hide the button on the onPlay Event as the user should get feedback on the press of the play button
+      if (player.isPlaying() || (event && event.type === player.EVENT.ON_PLAY)) {
         this.on();
       } else {
         this.off();
       }
     };
 
+    let playbackWarningHandler = (event: WarningEvent) => {
+      if (event && event.code === 5008) {
+        // Warnings[5008] === 'Playback could not be started, user interaction required'
+        // if playback did not start although the buffer was full pause the video (might not have any effect) and display
+        // the play button again as the most probable explanation is disabled autoplay on mobile devices
+        player.pause();
+        this.off();
+      }
+    };
+
     // Call handler upon these events
     player.addEventHandler(player.EVENT.ON_PLAY, playbackStateHandler);
+    player.addEventHandler(player.EVENT.ON_PLAYING, playbackStateHandler);
     player.addEventHandler(player.EVENT.ON_PAUSED, playbackStateHandler);
+
+    player.addEventHandler(player.EVENT.ON_WARNING, playbackWarningHandler);
+
     // when playback finishes, player turns to paused mode
     player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler);
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, playbackStateHandler);
