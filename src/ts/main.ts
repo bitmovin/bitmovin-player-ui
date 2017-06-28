@@ -88,6 +88,7 @@ if (typeof Object.assign !== 'function') {
 
 // Expose classes to window
 (window as any).bitmovin.playerui = {
+  version: '{{VERSION}}',
   // Management
   UIManager,
   UIInstanceManager,
