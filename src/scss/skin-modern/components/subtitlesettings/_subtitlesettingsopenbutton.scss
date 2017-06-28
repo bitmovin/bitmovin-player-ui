@@ -1,3 +1,6 @@
+@import '../../variables';
+@import '../../mixins';
+
 .#{$prefix}-ui-subtitlesettingsopenbutton {
   @extend %ui-button;
 
