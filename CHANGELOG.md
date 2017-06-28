@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.6.0]
+## [2.6.0]
 
 ### Added
 - Add an option to keep the UI always visible by setting the `UIContainerConfig#hideTimeout` to -1
