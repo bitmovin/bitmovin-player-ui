@@ -42,14 +42,14 @@
     // A "line" in the panel: a container holding a label + control
     .#{$prefix}-container-wrapper > * {
       // Labels
-      &:first-child {
+      &.#{$prefix}-ui-label {
         display: inline-block;
         font-size: .8em;
-        width: 8em;
+        width: 9em;
       }
 
       // Controls (e.g. selectbox)
-      &:last-child {
+      &.#{$prefix}-ui-selectbox {
         width: 12em;
       }
     }

@@ -42,7 +42,7 @@ export class DOM {
   constructor(element: HTMLElement);
   /**
    * Wraps a list of plain HTMLElements with a DOM instance.
-   * @param element the HTMLElements to wrap with DOM
+   * @param elements the HTMLElements to wrap with DOM
    */
   constructor(elements: HTMLElement[]);
   /**
@@ -131,6 +131,9 @@ export class DOM {
    * @param handler the handler to execute an operation on an element
    */
   private forEach(handler: (element: HTMLElement) => void): void {
+    if (!this.elements) {
+      return;
+    }
     this.elements.forEach((element) => {
       handler(element);
     });

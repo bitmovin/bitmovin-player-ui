@@ -12,6 +12,10 @@ import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
+import {SubtitleSettingsPanel} from './components/subtitlesettings/subtitlesettingspanel';
+import {SubtitleSettingsLabel} from './components/subtitlesettings/subtitlesettingslabel';
+import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
+import {SubtitleSettingsCloseButton} from './components/subtitlesettings/subtitlesettingsclosebutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
@@ -53,18 +57,35 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
+export interface UISubtitleConfig {
+  backgroundColor?: string;
+  characterEdge?: string;
+  fontCoefficient?: number;
+  fontColor?: string;
+  fontFamily?: string;
+  fontStyle?: string;
+  fontVariant?: string;
+  windowColor?: string;
+}
+
 export interface TimelineMarker {
   time: number;
   title?: string;
 }
 
 export interface UIConfig {
+  /**
+   * Specifies the container in the DOM into which the UI will be added. Can be a CSS selector string or a
+   * HTMLElement object. By default, the player figure will be used ({@link PlayerAPI#getFigure}).
+   */
+  container?: string | HTMLElement;
   metadata?: {
     title?: string;
     description?: string;
     markers?: TimelineMarker[];
   };
   recommendations?: UIRecommendationConfig[];
+  subtitles?: UISubtitleConfig;
 }
 
 /**
@@ -127,7 +148,7 @@ export interface UIVariant {
 export class UIManager {
 
   private player: PlayerAPI;
-  private playerElement: DOM;
+  private uiContainerElement: DOM;
   private uiVariants: UIVariant[];
   private uiInstanceManagers: InternalUIInstanceManager[];
   private currentUi: InternalUIInstanceManager;
@@ -186,7 +207,16 @@ export class UIManager {
     this.player = player;
     this.config = config;
     this.managerPlayerWrapper = new PlayerWrapper(player);
-    this.playerElement = new DOM(player.getFigure());
+
+    if (config.container) {
+      // Unfortunately "uiContainerElement = new DOM(config.container)" will not accept the container with
+      // string|HTMLElement type directly, although it accepts both types, so we need to spit these two cases up here.
+      // TODO check in upcoming TS versions if the container can be passed in directly, or fix the constructor
+      this.uiContainerElement = config.container instanceof HTMLElement ?
+        new DOM(config.container) : new DOM(config.container);
+    } else {
+      this.uiContainerElement = new DOM(player.getFigure());
+    }
 
     // Create UI instance managers for the UI variants
     // The instance managers map to the corresponding UI variants by their array index
@@ -258,7 +288,7 @@ export class UIManager {
         isFullscreen: this.player.isFullscreen(),
         isMobile: isMobile,
         isPlaying: this.player.isPlaying(),
-        width: this.playerElement.width(),
+        width: this.uiContainerElement.width(),
         documentWidth: document.body.clientWidth,
       };
 
@@ -343,7 +373,7 @@ export class UIManager {
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
-    this.playerElement.append(dom);
+    this.uiContainerElement.append(dom);
 
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
     // might not be fully configured and e.g. do not have a size.
@@ -385,20 +415,43 @@ export namespace UIManager.Factory {
   }
 
   function modernUI() {
+    let subtitleOverlay = new SubtitleOverlay();
+
+    let subtitleSettingsPanel = new SubtitleSettingsPanel({
+      hidden: true,
+      overlay: subtitleOverlay,
+    });
+
     let settingsPanel = new SettingsPanel({
       components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
       ],
       hidden: true,
     });
 
+    let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
+      subtitleSettingsPanel: subtitleSettingsPanel,
+      settingsPanel: settingsPanel,
+    });
+    settingsPanel.addComponent(
+      new SettingsPanelItem(
+        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSelectBox()
+    ));
+
+    let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
+      subtitleSettingsPanel: subtitleSettingsPanel,
+      settingsPanel: settingsPanel,
+    });
+    subtitleSettingsPanel.addComponent(new SettingsPanelItem(null, subtitleSettingsCloseButton));
+
     let controlBar = new ControlBar({
       components: [
         settingsPanel,
+        subtitleSettingsPanel,
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
@@ -427,7 +480,7 @@ export namespace UIManager.Factory {
 
     return new UIContainer({
       components: [
-        new SubtitleOverlay(),
+        subtitleOverlay,
         new BufferingOverlay(),
         new PlaybackToggleOverlay(),
         new CastStatusOverlay(),
@@ -474,18 +527,40 @@ export namespace UIManager.Factory {
   }
 
   function modernSmallScreenUI() {
+    let subtitleOverlay = new SubtitleOverlay();
+    let subtitleSettingsPanel = new SubtitleSettingsPanel({
+      hidden: true,
+      hideDelay: -1,
+      overlay: subtitleOverlay,
+    });
     let settingsPanel = new SettingsPanel({
       components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
       ],
       hidden: true,
       hideDelay: -1,
     });
+    let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
+      subtitleSettingsPanel: subtitleSettingsPanel,
+      settingsPanel: settingsPanel,
+    });
+    settingsPanel.addComponent(
+      new SettingsPanelItem(
+        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSelectBox()
+    ));
+
+    let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
+      subtitleSettingsPanel: subtitleSettingsPanel,
+      settingsPanel: settingsPanel,
+    });
+    subtitleSettingsPanel.addComponent(new SettingsPanelItem(null, subtitleSettingsCloseButton));
+
     settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
+    subtitleSettingsPanel.addComponent(new CloseButton({ target: subtitleSettingsPanel }));
 
     let controlBar = new ControlBar({
       components: [
@@ -502,7 +577,7 @@ export namespace UIManager.Factory {
 
     return new UIContainer({
       components: [
-        new SubtitleOverlay(),
+        subtitleOverlay,
         new BufferingOverlay(),
         new CastStatusOverlay(),
         new PlaybackToggleOverlay(),
@@ -517,6 +592,7 @@ export namespace UIManager.Factory {
           ],
         }),
         settingsPanel,
+        subtitleSettingsPanel,
         new RecommendationOverlay(),
         new Watermark(),
         new ErrorMessageOverlay(),
@@ -1110,3 +1186,4 @@ class PlayerWrapper {
     }
   }
 }
+
