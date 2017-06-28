@@ -19,8 +19,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   public config: SubtitleOverlayConfig;
 
   private subtitleManager: ActiveSubtitleManager;
-  private previewSubtitleActive: boolean = false;
-  private previewSubtitle: SubtitleLabel = new SubtitleLabel({text: 'example subtitle'});
+  private previewSubtitleActive: boolean;
+  private previewSubtitle: SubtitleLabel;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
@@ -41,6 +41,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   constructor(config: SubtitleOverlayConfig = {}) {
     super(config);
+
+    this.previewSubtitleActive = false;
+    this.previewSubtitle = new SubtitleLabel({text: 'example subtitle'});
 
     this.config = this.mergeConfig( config, {
         cssClass: 'ui-subtitle-overlay',
