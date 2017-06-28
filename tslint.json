@@ -34,6 +34,7 @@
       "imports": "always",
       "objects": "always",
       "typeLiterals": "always"
-    }, "singleline": "never"}]
+    }, "singleline": "never"}],
+    "no-unused-variable": true
   }
 }

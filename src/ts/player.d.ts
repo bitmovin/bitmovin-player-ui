@@ -39,6 +39,7 @@ declare namespace bitmovin {
     };
   }
 
+  // tslint:disable-next-line:no-unused-variable
   const player: PlayerStatic;
 
   /**
