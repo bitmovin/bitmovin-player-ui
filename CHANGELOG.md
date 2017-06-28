@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- Add support for FCC compliant Closed Caption, by adding options on how captions are displayed, and a `SubtitleSettingsPanel` with the possibility to update the settings while playing the video.
+
 ## [2.6.0]
 
 ### Added
