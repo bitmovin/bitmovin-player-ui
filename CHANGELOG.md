@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Add support for FCC compliant closed captions. Adds options on how captions are displayed, and a SubtitleSettingsPanel with the possibility to update the settings while playing the video.
+- Add `UIConfig#container` config property to specify a custom place in the DOM where the UI will be put into. Can be used to place it somewhere else beside the default player figure.
 
 ## [2.6.0]
 
