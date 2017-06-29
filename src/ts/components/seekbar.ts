@@ -219,9 +219,9 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let seek = (percentage: number) => {
       if (player.isLive()) {
-        player.timeShift(player.getMaxTimeShift() - (player.getMaxTimeShift() * (percentage / 100)), 'ui-seekbar');
+        player.timeShift(player.getMaxTimeShift() - (player.getMaxTimeShift() * (percentage / 100)), 'ui');
       } else {
-        player.seek(player.getDuration() * (percentage / 100));
+        player.seek(player.getDuration() * (percentage / 100), 'ui');
       }
     };
     this.onSeek.subscribe((sender) => {
@@ -235,7 +235,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Pause playback while seeking
       if (isPlaying) {
-        player.pause('ui-seek');
+        player.pause('ui');
       }
     });
     this.onSeekPreview.subscribe((sender: SeekBar, args: SeekPreviewEventArgs) => {
@@ -256,7 +256,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Continue playback after seek if player was playing when seek started
       if (isPlaying) {
-        player.play('ui-seek');
+        player.play('ui');
       }
 
       // Notify UI manager of finished seek

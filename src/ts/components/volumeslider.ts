@@ -18,7 +18,7 @@ export interface VolumeSliderConfig extends SeekBarConfig {
  */
 export class VolumeSlider extends SeekBar {
 
-  private readonly issuerName = 'ui-volumeslider';
+  private static readonly issuerName = 'ui';
 
   constructor(config: SeekBarConfig = {}) {
     super(config);
@@ -60,11 +60,11 @@ export class VolumeSlider extends SeekBar {
 
     this.onSeekPreview.subscribeRateLimited((sender, args) => {
       if (args.scrubbing) {
-        player.setVolume(args.position, this.issuerName);
+        player.setVolume(args.position, VolumeSlider.issuerName);
       }
     }, 50);
     this.onSeeked.subscribe((sender, percentage) => {
-      player.setVolume(percentage, this.issuerName);
+      player.setVolume(percentage, VolumeSlider.issuerName);
     });
 
     // Update the volume slider marker when the player resized, a source is loaded and player is ready,
@@ -100,21 +100,21 @@ export class VolumeSlider extends SeekBar {
     // Only if the volume is 100, there's the possibility we are on a volume-control-restricted iOS device
     if (volume === 100) {
       // We set the volume to zero (that's the only value that does not unmute a muted player!)
-      player.setVolume(0, this.issuerName);
+      player.setVolume(0, VolumeSlider.issuerName);
       // Then we check if the value is still 100
       if (player.getVolume() === 100) {
         // If the volume stayed at 100, we're on a volume-control-restricted device
         return false;
       } else {
         // We can control volume, so we must restore the previous player state
-        player.setVolume(volume, this.issuerName);
+        player.setVolume(volume, VolumeSlider.issuerName);
         if (muted) {
-          player.mute(this.issuerName);
+          player.mute(VolumeSlider.issuerName);
         }
         if (playing) {
           // The volume restore above pauses autoplay on mobile devices (e.g. Android) so we need to resume playback
           // (We cannot check isPaused() here because it is not set when playback is prohibited by the mobile platform)
-          player.play(this.issuerName);
+          player.play(VolumeSlider.issuerName);
         }
         return true;
       }
