@@ -24,9 +24,9 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     let togglePlayback = () => {
       if (player.isPlaying()) {
-        player.pause('ui-overlay');
+        player.pause('ui');
       } else {
-        player.play('ui-overlay');
+        player.play('ui');
       }
     };
 
