@@ -35,7 +35,7 @@ export class AdClickOverlay extends ClickOverlay {
 
     this.onClick.subscribe(() => {
       // Pause the ad when overlay is clicked
-      player.pause('ui-content-click');
+      player.pause('ui');
 
       // Notify the player of the clicked ad
       player.fireEvent(player.EVENT.ON_AD_CLICKED, {
