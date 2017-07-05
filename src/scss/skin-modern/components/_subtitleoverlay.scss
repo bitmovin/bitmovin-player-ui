@@ -8,11 +8,13 @@
 
   height: 80%;
   width: 80%;
+  top: 50%;
+  transform: translate(0%, -50%);
+  display: inline-block;
   font-size: 1.2em;
   pointer-events: none;
   position: absolute;
   margin: auto 10%;
-  transform: rotate(0deg);
   text-align: center;
   transition: height $animation-duration-short ease-out;
 
