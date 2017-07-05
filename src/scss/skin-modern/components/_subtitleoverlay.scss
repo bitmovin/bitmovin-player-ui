@@ -6,14 +6,19 @@
 
   @include hidden;
 
-  bottom: 2em;
+  height: 80%;
+  width: 80%;
   font-size: 1.2em;
-  left: 3em;
   pointer-events: none;
   position: absolute;
-  right: 3em;
+  margin: auto 10%;
+  transform: rotate(0deg);
   text-align: center;
-  transition: bottom $animation-duration-short ease-out;
+  transition: height $animation-duration-short ease-out;
+
+  .#{$prefix}-container-wrapper {
+      position: absolute;
+  }
 
   .#{$prefix}-ui-subtitle-label {
     @include text-border($subtitle-text-border-color);
@@ -29,7 +34,7 @@
   }
 
   &.#{$prefix}-controlbar-visible {
-    bottom: 5em;
-    transition: bottom $animation-duration-short ease-in;
+    height: 60%;
+    transition: height $animation-duration-short ease-in;
   }
 }

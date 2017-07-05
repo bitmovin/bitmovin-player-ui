@@ -85,6 +85,13 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
       this.applyConfToDom(labelToAdd.getDomElement());
 
+      if (event.position != null) {
+        let domElement = labelToAdd.getDomElement()
+        domElement.css('position', 'fixed');
+        domElement.css('left', `${event.position.column * 3.126}%`);
+        domElement.css('top', `${event.position.row * 6.66}%`);
+      }
+
       if (this.previewSubtitleActive) {
         this.removeComponent(this.previewSubtitle);
       }
