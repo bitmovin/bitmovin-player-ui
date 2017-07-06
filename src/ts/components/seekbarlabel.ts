@@ -51,9 +51,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    uimanager.onSeekPreview.subscribe((sender, args: SeekPreviewArgs) => {
+    uimanager.onSeekPreview.subscribeRateLimited((sender, args: SeekPreviewArgs) => {
       if (player.isLive()) {
-        let time = player.getMaxTimeShift() - player.getMaxTimeShift() * (args.position / 100);
+        let maxTimeShift = player.getMaxTimeShift();
+        let time = maxTimeShift - maxTimeShift * (args.position / 100);
         this.setTime(time);
       } else {
         let percentage = 0;
@@ -68,7 +69,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         this.setTime(time);
         this.setThumbnail(player.getThumb(time));
       }
-    });
+    }, 100);
 
     let init = () => {
       // Set time format depending on source duration
