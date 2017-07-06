@@ -10,7 +10,9 @@
   width: 80%;
   top: 50%;
   transform: translate(0%, -50%);
-  display: inline-block;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   font-size: 1.2em;
   pointer-events: none;
   position: absolute;
