@@ -1,4 +1,4 @@
-import {ArrayUtils} from './utils';
+import {ArrayUtils} from './arrayutils';
 /**
  * Function interface for event listeners on the {@link EventDispatcher}.
  */

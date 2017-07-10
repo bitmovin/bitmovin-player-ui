@@ -1,7 +1,7 @@
 import {ButtonConfig, Button} from './button';
 import {UIInstanceManager} from '../uimanager';
 import SkipMessage = bitmovin.PlayerAPI.SkipMessage;
-import {StringUtils} from '../utils';
+import {StringUtils} from '../stringutils';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
