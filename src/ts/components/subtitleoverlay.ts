@@ -373,7 +373,7 @@ class ActiveSubtitleManager {
    * Calculates a unique ID for a subtitle cue, which is needed to associate an ON_CUE_ENTER with its ON_CUE_EXIT
    * event so we can remove the correct subtitle in ON_CUE_EXIT when multiple subtitles are active at the same time.
    * The start time plus the text should make a unique identifier, and in the only case where a collision
-   * can happen, two similar texts will displayed at a similar time so it does not matter which one we delete.
+   * can happen, two similar texts will be displayed at a similar time so it does not matter which one we delete.
    * The start time should always be known, because it is required to schedule the ON_CUE_ENTER event. The end time
    * must not necessarily be known and therefore cannot be used for the ID.
    * @param event
