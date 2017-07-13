@@ -9,12 +9,11 @@
   align-items: flex-end;
   display: flex;
   font-size: 1.2em;
-  height: 80%;
+  height: 86%;
   justify-content: center;
   margin: auto 10%;
   pointer-events: none;
   position: absolute;
-  text-align: center;
   top: 50%;
   transform: translate(0%, -50%);
   transition: height $animation-duration-short ease-out;
@@ -38,7 +37,7 @@
   }
 
   &.#{$prefix}-controlbar-visible {
-    height: 60%;
+    height: 70%;
     transition: height $animation-duration-short ease-in;
   }
 }
