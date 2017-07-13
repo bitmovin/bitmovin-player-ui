@@ -89,6 +89,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         let domElement = labelToAdd.getDomElement();
         domElement.css('position', 'fixed');
         domElement.css('left', `${event.position.column}em`);
+        // 6.66 = 100/15 the number of possible lines
         domElement.css('top', `${event.position.row * 6.66}%`);
       }
 
