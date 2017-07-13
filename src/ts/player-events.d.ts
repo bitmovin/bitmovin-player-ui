@@ -474,8 +474,8 @@ declare namespace bitmovin {
       region?: string;
       regionStyle?: string;
       position?: {
-        row: number
-        column: number
+        row: number;
+        column: number;
       };
     }
 
