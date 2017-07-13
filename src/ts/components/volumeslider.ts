@@ -56,11 +56,11 @@ export class VolumeSlider extends SeekBar {
     player.addEventHandler(player.EVENT.ON_MUTED, volumeChangeHandler);
     player.addEventHandler(player.EVENT.ON_UNMUTED, volumeChangeHandler);
 
-    this.onSeekPreview.subscribe((sender, args) => {
+    this.onSeekPreview.subscribeRateLimited((sender, args) => {
       if (args.scrubbing) {
         player.setVolume(args.position);
       }
-    });
+    }, 50);
     this.onSeeked.subscribe((sender, percentage) => {
       player.setVolume(percentage);
     });

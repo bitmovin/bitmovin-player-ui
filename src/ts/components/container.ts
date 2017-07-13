@@ -76,7 +76,7 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
    * Removes all child components from the container.
    */
   removeComponents(): void {
-    for (let component of this.getComponents()) {
+    for (let component of this.getComponents().slice()) {
       this.removeComponent(component);
     }
   }
