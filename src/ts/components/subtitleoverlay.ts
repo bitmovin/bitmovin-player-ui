@@ -4,8 +4,9 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
-import {ColorUtils, StorageUtils} from '../utils';
 import {DOM} from '../dom';
+import {ColorUtils} from '../colorutils';
+import {StorageUtils} from '../storageutils';
 
 export interface SubtitleOverlayConfig extends ContainerConfig {
   subtitleConfig?: UISubtitleConfig;

@@ -1,7 +1,8 @@
 import {LabelConfig, Label} from './label';
 import {UIInstanceManager} from '../uimanager';
-import {StringUtils, PlayerUtils} from '../utils';
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
+import {PlayerUtils} from '../playerutils';
+import {StringUtils} from '../stringutils';
 
 export enum PlaybackTimeLabelMode {
   CurrentTime,

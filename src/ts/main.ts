@@ -60,7 +60,15 @@ import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitle
 import {SubtitleSettingsPanel} from './components/subtitlesettings/subtitlesettingspanel';
 import {WindowColorSelectBox} from './components/subtitlesettings/windowcolorselectbox';
 import {WindowOpacitySelectBox} from './components/subtitlesettings/windowopacityselectbox';
-import {ArrayUtils, StringUtils, PlayerUtils, UIUtils, BrowserUtils, ColorUtils, StorageUtils} from './utils';
+import {ArrayUtils} from './arrayutils';
+import {StringUtils} from './stringutils';
+import {PlayerUtils} from './playerutils';
+import {UIUtils} from './uiutils';
+import {BrowserUtils} from './browserutils';
+import {ColorUtils} from './colorutils';
+import {StorageUtils} from './storageutils';
+// HACK: gulp-tslint fails on unused files so we need this dummy import
+import {ArrayUtils as Dummy} from './utils'; // tslint:disable-line
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign

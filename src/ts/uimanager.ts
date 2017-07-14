@@ -37,7 +37,6 @@ import {AdClickOverlay} from './components/adclickoverlay';
 import EVENT = bitmovin.PlayerAPI.EVENT;
 import PlayerEventCallback = bitmovin.PlayerAPI.PlayerEventCallback;
 import AdStartedEvent = bitmovin.PlayerAPI.AdStartedEvent;
-import {ArrayUtils, UIUtils, BrowserUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
@@ -49,6 +48,9 @@ import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 import {Spacer} from './components/spacer';
+import {UIUtils} from './uiutils';
+import {ArrayUtils} from './arrayutils';
+import {BrowserUtils} from './browserutils';
 
 export interface UIRecommendationConfig {
   title: string;

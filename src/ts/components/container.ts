@@ -1,6 +1,6 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
-import {ArrayUtils} from '../utils';
+import {ArrayUtils} from '../arrayutils';
 
 /**
  * Configuration interface for a {@link Container}.
