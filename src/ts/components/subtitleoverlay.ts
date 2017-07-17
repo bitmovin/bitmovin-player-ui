@@ -188,37 +188,42 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
    * Updates the settings used to display subtitles based on local storage values
    */
   private updateSubtitleOverlayFromLocalStorage(): void {
-    let fontColor = StorageUtils.getItem('fontColor');
-    if (fontColor != null) {
-      this.subtitleStyleSetting.fontColor = ColorUtils.colorFromCss(fontColor, ColorUtils.foreground);
+    let styleConfig = this.loadSubtitleStyle();
+
+    if (!styleConfig) {
+      return;
     }
-    let backgroundColor = StorageUtils.getItem('backgroundColor');
-    if (backgroundColor != null) {
-      this.subtitleStyleSetting.backgroundColor = ColorUtils.colorFromCss(backgroundColor, ColorUtils.background);
+
+    if (styleConfig.fontColor != null) {
+      this.subtitleStyleSetting.fontColor = styleConfig.fontColor;
     }
-    let windowColor = StorageUtils.getItem('windowColor');
-    if (windowColor != null) {
-      this.subtitleStyleSetting.windowColor = ColorUtils.colorFromCss(windowColor, ColorUtils.background);
+
+    if (styleConfig.backgroundColor != null) {
+      this.subtitleStyleSetting.backgroundColor = styleConfig.backgroundColor;
     }
-    let fontFamily = StorageUtils.getItem('fontFamily');
-    if (fontFamily != null) {
-      this.subtitleStyleSetting.fontFamily = fontFamily;
+
+    if (styleConfig.windowColor != null) {
+      this.subtitleStyleSetting.windowColor = styleConfig.windowColor;
     }
-    let fontStyle = StorageUtils.getItem('fontStyle');
-    if (fontStyle != null) {
-      this.subtitleStyleSetting.fontStyle = fontStyle;
+
+    if (styleConfig.fontFamily != null) {
+      this.subtitleStyleSetting.fontFamily = styleConfig.fontFamily;
     }
-    let fontVariant = StorageUtils.getItem('fontVariant');
-    if (fontVariant != null) {
-      this.subtitleStyleSetting.fontVariant = fontVariant;
+
+    if (styleConfig.fontStyle != null) {
+      this.subtitleStyleSetting.fontStyle = styleConfig.fontStyle;
     }
-    let characterEdge = StorageUtils.getItem('characterEdge');
-    if (characterEdge != null) {
-      this.subtitleStyleSetting.characterEdge = characterEdge;
+
+    if (styleConfig.fontVariant != null) {
+      this.subtitleStyleSetting.fontVariant = styleConfig.fontVariant;
     }
-    let fontCoefficient = StorageUtils.getItem('fontCoefficient');
-    if (fontCoefficient != null) {
-      this.subtitleStyleSetting.fontCoefficient = Number(fontCoefficient);
+
+    if (styleConfig.characterEdge != null) {
+      this.subtitleStyleSetting.characterEdge = styleConfig.characterEdge;
+    }
+
+    if (styleConfig.fontCoefficient != null) {
+      this.subtitleStyleSetting.fontCoefficient = styleConfig.fontCoefficient;
     }
   }
 
@@ -252,7 +257,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     col.a = this.subtitleStyleSetting.fontColor.a;
     this.subtitleStyleSetting.fontColor = col;
     this.applyStyleToLabels();
-    StorageUtils.setItem('fontColor', this.subtitleStyleSetting.fontColor.toCSS());
+    this.saveSubtitleStyle();
   }
 
   setBackgroundColor(color: string): void {
@@ -260,7 +265,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     backgroundColor.a = this.subtitleStyleSetting.backgroundColor.a;
     this.subtitleStyleSetting.backgroundColor = backgroundColor;
     this.applyStyleToLabels();
-    StorageUtils.setItem('backgroundColor', this.subtitleStyleSetting.backgroundColor.toCSS());
+    this.saveSubtitleStyle();
   }
 
   setWindowColor(color: string): void {
@@ -268,43 +273,43 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     windowColor.a = this.subtitleStyleSetting.windowColor.a;
     this.subtitleStyleSetting.windowColor = windowColor;
     this.getDomElement().css('background', this.subtitleStyleSetting.windowColor.toCSS());
-    StorageUtils.setItem('windowColor', this.subtitleStyleSetting.windowColor.toCSS());
+    this.saveSubtitleStyle();
   }
 
   setFontOpacity(alpha: number): void {
     this.subtitleStyleSetting.fontColor.a = alpha;
     this.applyStyleToLabels();
-    StorageUtils.setItem('fontColor', this.subtitleStyleSetting.fontColor.toCSS());
+    this.saveSubtitleStyle();
   }
 
   setBackgroundOpacity(alpha: number): void {
     this.subtitleStyleSetting.backgroundColor.a = alpha;
     this.applyStyleToLabels();
-    StorageUtils.setItem('backgroundColor', this.subtitleStyleSetting.backgroundColor.toCSS());
+    this.saveSubtitleStyle();
   }
 
   setWindowOpacity(alpha: number): void {
     this.subtitleStyleSetting.windowColor.a = alpha;
     this.getDomElement().css('background', this.subtitleStyleSetting.windowColor.toCSS());
-    StorageUtils.setItem('windowColor', this.subtitleStyleSetting.windowColor.toCSS());
+    this.saveSubtitleStyle();
   }
 
   setFontFamily(fontFamily: string): void {
     this.subtitleStyleSetting.fontFamily = fontFamily;
-    StorageUtils.setItem('fontFamily', this.subtitleStyleSetting.fontFamily);
     this.applyStyleToLabels();
+    this.saveSubtitleStyle();
   }
 
   setFontStyle(fontStyle: string): void {
     this.subtitleStyleSetting.fontStyle = fontStyle;
-    StorageUtils.setItem('fontStyle', this.subtitleStyleSetting.fontStyle);
     this.applyStyleToLabels();
+    this.saveSubtitleStyle();
   }
 
   setFontVariant(fontVariant: string): void {
     this.subtitleStyleSetting.fontVariant = fontVariant;
-    StorageUtils.setItem('fontVariant', this.subtitleStyleSetting.fontVariant);
     this.applyStyleToLabels();
+    this.saveSubtitleStyle();
   }
 
   /**
@@ -313,24 +318,30 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
    */
   setFont(fontFamily: string, fontStyle: string, fontVariant: string): void {
     this.subtitleStyleSetting.fontFamily = fontFamily;
-    StorageUtils.setItem('fontFamily', this.subtitleStyleSetting.fontFamily);
     this.subtitleStyleSetting.fontStyle = fontStyle;
-    StorageUtils.setItem('fontStyle', this.subtitleStyleSetting.fontStyle);
     this.subtitleStyleSetting.fontVariant = fontVariant;
-    StorageUtils.setItem('fontVariant', this.subtitleStyleSetting.fontVariant);
     this.applyStyleToLabels();
+    this.saveSubtitleStyle();
   }
 
   setCharacterEdge(characterEdge: string): void {
     this.subtitleStyleSetting.characterEdge = characterEdge;
     this.applyStyleToLabels();
-    StorageUtils.setItem('characterEdge', this.subtitleStyleSetting.characterEdge);
+    this.saveSubtitleStyle();
   }
 
   setFontSize(coefficient: number): void {
     this.subtitleStyleSetting.fontCoefficient = coefficient;
     this.applyStyleToLabels();
-    StorageUtils.setItem('fontCoefficient', this.subtitleStyleSetting.fontCoefficient.toString());
+    this.saveSubtitleStyle();
+  }
+
+  private saveSubtitleStyle(): void {
+    StorageUtils.setObject('subtitleStyle', this.subtitleStyleSetting);
+  }
+
+  private loadSubtitleStyle(): SubtitleStyleSetting {
+    return StorageUtils.getObject<SubtitleStyleSetting>('subtitleStyle');
   }
 
   private applyStyleToLabel(label: SubtitleLabel): void {

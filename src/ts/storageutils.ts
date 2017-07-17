@@ -1,3 +1,5 @@
+import {ColorUtils} from './colorutils';
+
 export namespace StorageUtils {
   let hasLocalStorageCache: boolean;
 
@@ -44,5 +46,38 @@ export namespace StorageUtils {
     } else {
       return null;
     }
+  }
+
+  const ColorUtilsColorMarker = 'ColorUtils.Color::';
+
+  export function setObject<T>(item: string, object: T): void {
+    if (StorageUtils.hasLocalStorage()) {
+      let json = JSON.stringify(object, (key: string, value: any) => {
+        if (value instanceof ColorUtils.Color) {
+          return ColorUtilsColorMarker + value.toCSS();
+        }
+        return value;
+      });
+
+      setItem(item, json);
+    }
+  }
+
+  export function getObject<T>(item: string): T {
+    if (StorageUtils.hasLocalStorage()) {
+      let json = getItem(item);
+
+      if (item) {
+        let object = JSON.parse(json, (key: any, value: any) => {
+          if (typeof value === 'string' && value.indexOf(ColorUtilsColorMarker) === 0) {
+            return ColorUtils.colorFromCss(value.substr(ColorUtilsColorMarker.length));
+          }
+          return value;
+        });
+
+        return <T>object;
+      }
+    }
+    return null;
   }
 }
