@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Fix clearing of container components with `Container#removeComponents` (fixes sticky/duplicate subtitle issue)
+- Fix clearing of recommendations in `RecommendationOverlay` (fixes duplicate recommendations issue)
 
 ## [2.7.1]
 
