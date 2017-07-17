@@ -196,7 +196,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
 
   /**
-   *  update the settings used to diplay subtitles based on local storage values
+   *  Updates the settings used to display subtitles based on local storage values
    **/
   private updateSubtitleOverlayFromLocalStorage(): void {
     if (StorageUtils.hasLocalStorage()) {
