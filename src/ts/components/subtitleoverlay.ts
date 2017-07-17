@@ -348,7 +348,7 @@ interface ActiveSubtitleCue {
 }
 
 interface ActiveSubtitleCueMap {
-  [id: string]: ActiveSubtitleCue;
+  [id: string]: ActiveSubtitleCue[];
 }
 
 class SubtitleLabel extends Label<LabelConfig> {
@@ -365,9 +365,11 @@ class SubtitleLabel extends Label<LabelConfig> {
 class ActiveSubtitleManager {
 
   private activeSubtitleCueMap: ActiveSubtitleCueMap;
+  private activeSubtitleCueCount: number;
 
   constructor() {
     this.activeSubtitleCueMap = {};
+    this.activeSubtitleCueCount = 0;
   }
 
   /**
@@ -397,7 +399,12 @@ class ActiveSubtitleManager {
       text: event.html || event.text,
     });
 
-    this.activeSubtitleCueMap[id] = { event, label };
+    // Create array for id if it does not exist
+    this.activeSubtitleCueMap[id] = this.activeSubtitleCueMap[id] || [];
+
+    // Add cue
+    this.activeSubtitleCueMap[id].push({ event, label });
+    this.activeSubtitleCueCount++;
 
     return label;
   }
@@ -410,10 +417,13 @@ class ActiveSubtitleManager {
    */
   cueExit(event: SubtitleCueEvent): SubtitleLabel {
     let id = ActiveSubtitleManager.calculateId(event);
-    let activeSubtitleCue = this.activeSubtitleCueMap[id];
+    let activeSubtitleCues = this.activeSubtitleCueMap[id];
 
-    if (activeSubtitleCue) {
-      delete this.activeSubtitleCueMap[id];
+    if (activeSubtitleCues && activeSubtitleCues.length > 0) {
+      // Remove cue
+      let activeSubtitleCue = activeSubtitleCues.shift();
+      this.activeSubtitleCueCount--;
+
       return activeSubtitleCue.label;
     } else {
       return null;
@@ -425,7 +435,8 @@ class ActiveSubtitleManager {
    * @return {number}
    */
   get cueCount(): number {
-    return Object.keys(this.activeSubtitleCueMap).length;
+    // We explicitly count the cues to save an Array.reduce on every cueCount call (which can happen frequently)
+    return this.activeSubtitleCueCount;
   }
 
   /**
@@ -441,5 +452,6 @@ class ActiveSubtitleManager {
    */
   clear(): void {
     this.activeSubtitleCueMap = {};
+    this.activeSubtitleCueCount = 0;
   }
 }
