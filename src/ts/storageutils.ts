@@ -34,15 +34,25 @@ export namespace StorageUtils {
     return hasLocalStorageCache;
   }
 
-  export function setItem(item: string, value: string): void {
+  /**
+   * Stores a string item into localStorage.
+   * @param key the item's key
+   * @param data the item's data
+   */
+  export function setItem(key: string, data: string): void {
     if (StorageUtils.hasLocalStorage()) {
-      window.localStorage.setItem(item, value);
+      window.localStorage.setItem(key, data);
     }
   }
 
-  export function getItem(item: string): string | null {
+  /**
+   * Gets an item's string value from the localStorage.
+   * @param key the key to look up its associated value
+   * @return {string | null} Returns the string if found, null if there is no data stored for the key
+   */
+  export function getItem(key: string): string | null {
     if (StorageUtils.hasLocalStorage()) {
-      return window.localStorage.getItem(item);
+      return window.localStorage.getItem(key);
     } else {
       return null;
     }
@@ -50,24 +60,40 @@ export namespace StorageUtils {
 
   const ColorUtilsColorMarker = 'ColorUtils.Color::';
 
-  export function setObject<T>(item: string, object: T): void {
+  /**
+   * Stores an object into localStorage. The object will be serialized to JSON. The following types are supported
+   * in addition to the default types:
+   *  - ColorUtils.Color
+   *
+   * @param key the key to store the data to
+   * @param data the object to store
+   */
+  export function setObject<T>(key: string, data: T): void {
     if (StorageUtils.hasLocalStorage()) {
-      let json = JSON.stringify(object, (key: string, value: any) => {
+      let json = JSON.stringify(data, (key: string, value: any) => {
         if (value instanceof ColorUtils.Color) {
           return ColorUtilsColorMarker + value.toCSS();
         }
         return value;
       });
 
-      setItem(item, json);
+      setItem(key, json);
     }
   }
 
-  export function getObject<T>(item: string): T {
+  /**
+   * Gets an object for the given key from localStorage. The object will be deserialized from JSON. Beside the
+   * default types, the following types are supported:
+   *  - ColorUtils.Color
+   *
+   * @param key the key to look up its associated object
+   * @return {any} Returns the object if found, null otherwise
+   */
+  export function getObject<T>(key: string): T {
     if (StorageUtils.hasLocalStorage()) {
-      let json = getItem(item);
+      let json = getItem(key);
 
-      if (item) {
+      if (key) {
         let object = JSON.parse(json, (key: any, value: any) => {
           if (typeof value === 'string' && value.indexOf(ColorUtilsColorMarker) === 0) {
             return ColorUtils.colorFromCss(value.substr(ColorUtilsColorMarker.length));
