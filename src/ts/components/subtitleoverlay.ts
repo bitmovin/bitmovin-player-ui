@@ -341,13 +341,15 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
 
   private applyConfToDom(dom: DOM): void {
-    dom.css('color', this.subtitleStyleSetting.fontColor.toCSS());
-    dom.css('background', this.subtitleStyleSetting.backgroundColor.toCSS());
-    dom.css('font-variant', this.subtitleStyleSetting.fontVariant);
-    dom.css('font-family', this.subtitleStyleSetting.fontFamily);
-    dom.css('font-style', this.subtitleStyleSetting.fontStyle);
-    dom.css('text-shadow', this.subtitleStyleSetting.characterEdge);
-    dom.css('font-size', `${this.subtitleStyleSetting.fontSize * this.subtitleStyleSetting.fontCoefficient}em`);
+    dom.css({
+      'color': this.subtitleStyleSetting.fontColor.toCSS(),
+      'background': this.subtitleStyleSetting.backgroundColor.toCSS(),
+      'font-variant': this.subtitleStyleSetting.fontVariant,
+      'font-family': this.subtitleStyleSetting.fontFamily,
+      'font-style': this.subtitleStyleSetting.fontStyle,
+      'text-shadow': this.subtitleStyleSetting.characterEdge,
+      'font-size': `${this.subtitleStyleSetting.fontSize * this.subtitleStyleSetting.fontCoefficient}em`
+    });
   }
 }
 
