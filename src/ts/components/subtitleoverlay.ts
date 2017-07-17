@@ -4,7 +4,6 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
-import {DOM} from '../dom';
 import {ColorUtils} from '../colorutils';
 import {StorageUtils} from '../storageutils';
 
@@ -343,7 +342,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       'font-family': this.subtitleStyleSetting.fontFamily,
       'font-style': this.subtitleStyleSetting.fontStyle,
       'text-shadow': this.subtitleStyleSetting.characterEdge,
-      'font-size': `${this.subtitleStyleSetting.fontSize * this.subtitleStyleSetting.fontCoefficient}em`
+      'font-size': `${this.subtitleStyleSetting.fontSize * this.subtitleStyleSetting.fontCoefficient}em`,
     });
   }
 
