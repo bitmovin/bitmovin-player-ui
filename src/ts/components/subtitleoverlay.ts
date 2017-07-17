@@ -24,7 +24,7 @@ interface SubtitleStyleSetting {
    * Font size is defined by a base size
    * and a multiplicating coefficient depending
    * on user preferences
-   **/
+   */
   fontCoefficient?: number;
   fontSize?: number;
 }
@@ -164,7 +164,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   /**
    * Updates the setting used to display subtitles based on config information
-   **/
+   */
   private updateSubtitleOverlayFromUIConfig(subtitlesConfig: UISubtitleConfig): void {
     if (subtitlesConfig == null) {
       return;
@@ -196,8 +196,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
 
   /**
-   *  Updates the settings used to display subtitles based on local storage values
-   **/
+   * Updates the settings used to display subtitles based on local storage values
+   */
   private updateSubtitleOverlayFromLocalStorage(): void {
     if (StorageUtils.hasLocalStorage()) {
       let store = window.localStorage;
@@ -321,7 +321,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   /**
    * A helper method to avoid updating the CSS label 3 times in a row
    * since family, style and variant are normally updated together
-   **/
+   */
   setFont(fontFamily: string, fontStyle: string, fontVariant: string): void {
     this.subtitleStyleSetting.fontFamily = fontFamily;
     this.setItem('fontFamily', this.subtitleStyleSetting.fontFamily);
