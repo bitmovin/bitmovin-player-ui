@@ -227,15 +227,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     }
   }
 
-  private applyStyleToLabels(): void {
-    for (let component of this.getComponents()) {
-      if (component instanceof SubtitleLabel) {
-        this.applyStyleToLabel(component);
-      }
-    }
-    this.applyStyleToLabel(this.previewSubtitle);
-  }
-
   enablePreviewSubtitleLabel(): void {
     this.previewSubtitleActive = true;
     if (!this.subtitleManager.hasCues) {
@@ -354,6 +345,15 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       'text-shadow': this.subtitleStyleSetting.characterEdge,
       'font-size': `${this.subtitleStyleSetting.fontSize * this.subtitleStyleSetting.fontCoefficient}em`
     });
+  }
+
+  private applyStyleToLabels(): void {
+    for (let component of this.getComponents()) {
+      if (component instanceof SubtitleLabel) {
+        this.applyStyleToLabel(component);
+      }
+    }
+    this.applyStyleToLabel(this.previewSubtitle);
   }
 }
 
