@@ -48,11 +48,11 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     super(config);
 
     this.previewSubtitleActive = false;
-    this.previewSubtitle = new SubtitleLabel({text: 'example subtitle'});
+    this.previewSubtitle = new SubtitleLabel({ text: 'example subtitle' });
 
-    this.config = this.mergeConfig( config, {
-        cssClass: 'ui-subtitle-overlay',
-      }, this.config);
+    this.config = this.mergeConfig(config, {
+      cssClass: 'ui-subtitle-overlay',
+    }, this.config);
 
     // Define the default subtitles style
     this.subtitleStyleSetting = {
