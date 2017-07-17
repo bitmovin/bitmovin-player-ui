@@ -75,8 +75,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     // Update the config first loading info from UImanager config
     // then overwrites it with config given to the component if it applies
     // finally loads user preferences from local storage
-    this.updateSubtitleOverlayFromUIconfig(config.subtitleConfig);
-    this.updateSubtitleOverlayFromUIconfig(uimanager.getConfig().subtitles);
+    this.updateSubtitleOverlayFromUIConfig(config.subtitleConfig);
+    this.updateSubtitleOverlayFromUIConfig(uimanager.getConfig().subtitles);
     this.updateSubtitleOverlayFromLocalStorage();
 
     // This css property isn't applied to the subtitle cue
@@ -152,8 +152,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     // Update the config first loading info from UImanager config
     // then overwrites it with config given to the component if it applies
     // finally loads user preferences from local storage
-    this.updateSubtitleOverlayFromUIconfig(config.subtitleConfig);
-    this.updateSubtitleOverlayFromUIconfig(uimanager.getConfig().subtitles);
+    this.updateSubtitleOverlayFromUIConfig(config.subtitleConfig);
+    this.updateSubtitleOverlayFromUIConfig(uimanager.getConfig().subtitles);
     this.updateSubtitleOverlayFromLocalStorage();
 
     // This css property isn't applied to the subtitle cue
@@ -165,7 +165,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   /**
    * Updates the setting used to display subtitles based on config information
    **/
-  private updateSubtitleOverlayFromUIconfig(subtitlesConfig: UISubtitleConfig): void {
+  private updateSubtitleOverlayFromUIConfig(subtitlesConfig: UISubtitleConfig): void {
     if (subtitlesConfig == null) {
       return;
     }
