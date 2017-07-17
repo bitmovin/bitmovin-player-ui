@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Fix clearing of container components with `Container#removeComponents` (fixes sticky/duplicate subtitle issue)
+- Fix updating container components with `Container#updateComponents` (fixes empty subtitles in IE11)
 
 ## [2.7.1]
 
