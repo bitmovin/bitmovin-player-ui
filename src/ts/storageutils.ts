@@ -31,4 +31,18 @@ export namespace StorageUtils {
     }
     return hasLocalStorageCache;
   }
+
+  export function setItem(item: string, value: string): void {
+    if (StorageUtils.hasLocalStorage()) {
+      window.localStorage.setItem(item, value);
+    }
+  }
+
+  export function getItem(item: string): string | null {
+    if (StorageUtils.hasLocalStorage()) {
+      return window.localStorage.getItem(item);
+    } else {
+      return null;
+    }
+  }
 }
