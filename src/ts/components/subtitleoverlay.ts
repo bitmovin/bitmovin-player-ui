@@ -53,13 +53,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.config = this.mergeConfig( config, {
         cssClass: 'ui-subtitle-overlay',
       }, this.config);
-  }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    super.configure(player, uimanager);
-
-    let config = <SubtitleOverlayConfig>this.config;
-
+    // Define the default subtitles style
     this.subtitleStyleSetting = {
       fontColor: ColorUtils.foreground,
       backgroundColor: ColorUtils.background,
@@ -71,18 +66,12 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       fontCoefficient: 1,
       fontSize: 1.2,
     };
+  }
 
-    // Update the config first loading info from UImanager config
-    // then overwrites it with config given to the component if it applies
-    // finally loads user preferences from local storage
-    this.updateSubtitleOverlayFromUIConfig(config.subtitleConfig);
-    this.updateSubtitleOverlayFromUIConfig(uimanager.getConfig().subtitles);
-    this.updateSubtitleOverlayFromLocalStorage();
+  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+    super.configure(player, uimanager);
 
-    // This css property isn't applied to the subtitle cue
-    // and therefore shoud be applied now
-    this.getDomElement().css('background', this.subtitleStyleSetting.windowColor.toCSS());
-    this.applyStyleToLabels();
+    this.configureSubtitleStyle(player, uimanager);
 
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
