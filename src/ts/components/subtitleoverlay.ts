@@ -376,7 +376,7 @@ class ActiveSubtitleManager {
    * Calculates a unique ID for a subtitle cue, which is needed to associate an ON_CUE_ENTER with its ON_CUE_EXIT
    * event so we can remove the correct subtitle in ON_CUE_EXIT when multiple subtitles are active at the same time.
    * The start time plus the text should make a unique identifier, and in the only case where a collision
-   * can happen, two similar texts will be displayed at a similar time so it does not matter which one we delete.
+   * can happen, two similar texts will be displayed at a similar time.
    * The start time should always be known, because it is required to schedule the ON_CUE_ENTER event. The end time
    * must not necessarily be known and therefore cannot be used for the ID.
    * @param event
@@ -421,6 +421,13 @@ class ActiveSubtitleManager {
 
     if (activeSubtitleCues && activeSubtitleCues.length > 0) {
       // Remove cue
+      /* We apply the FIFO approach here and remove the oldest cue from the associated id. When there are multiple cues
+       * with the same id, there is no way to know which one of the cues is to be deleted, so we just hope that FIFO
+       * works fine. Theoretically it can happen that two cues with colliding ids are removed at different times, in
+       * the wrong order. This rare case has yet to be observed. If it ever gets an issue, we can take the unstable
+       * cue end time (which can change between ON_CUE_ENTER and ON_CUE_EXIT IN ON_CUE_UPDATE) and use it as an
+       * additional hint to try and remove the correct one of the colliding cues.
+       */
       let activeSubtitleCue = activeSubtitleCues.shift();
       this.activeSubtitleCueCount--;
 
