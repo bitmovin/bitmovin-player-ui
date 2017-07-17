@@ -178,22 +178,19 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     if (subtitlesConfig.windowColor != null) {
       this.subtitleStyleSetting.windowColor = ColorUtils.colorFromCss(subtitlesConfig.windowColor);
     }
-    if (this.subtitleStyleSetting.fontFamily != null) {
+    if (subtitlesConfig.fontFamily != null) {
       this.subtitleStyleSetting.fontFamily = subtitlesConfig.fontFamily;
     }
-    if (this.subtitleStyleSetting.fontVariant != null) {
+    if (subtitlesConfig.fontVariant != null) {
       this.subtitleStyleSetting.fontVariant = subtitlesConfig.fontVariant;
     }
-    if (this.subtitleStyleSetting.fontStyle != null) {
+    if (subtitlesConfig.fontStyle != null) {
       this.subtitleStyleSetting.fontStyle = subtitlesConfig.fontStyle;
     }
-    if (this.subtitleStyleSetting.fontCoefficient != null) {
+    if (subtitlesConfig.fontCoefficient != null) {
       this.subtitleStyleSetting.fontCoefficient = subtitlesConfig.fontCoefficient;
     }
-    if (this.subtitleStyleSetting.characterEdge != null) {
-      this.subtitleStyleSetting.characterEdge = subtitlesConfig.characterEdge;
-    }
-    if (this.subtitleStyleSetting.characterEdge != null) {
+    if (subtitlesConfig.characterEdge != null) {
       this.subtitleStyleSetting.characterEdge = subtitlesConfig.characterEdge;
     }
   }
