@@ -37,6 +37,8 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
    * A reference to the inner element that contains the components of the container.
    */
   private innerContainerElement: DOM;
+  private componentsToAdd: Component<ComponentConfig>[];
+  private componentsToRemove: Component<ComponentConfig>[];
 
   constructor(config: Config) {
     super(config);
@@ -45,6 +47,9 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
       cssClass: 'ui-container',
       components: [],
     }, this.config);
+
+    this.componentsToAdd = [];
+    this.componentsToRemove = [];
   }
 
   /**
@@ -53,6 +58,7 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
    */
   addComponent(component: Component<ComponentConfig>) {
     this.config.components.push(component);
+    this.componentsToAdd.push(component);
   }
 
   /**
@@ -61,7 +67,12 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
    * @returns {boolean} true if the component has been removed, false if it is not contained in this container
    */
   removeComponent(component: Component<ComponentConfig>): boolean {
-    return ArrayUtils.remove(this.config.components, component) != null;
+    if (ArrayUtils.remove(this.config.components, component) != null) {
+      this.componentsToRemove.push(component);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -85,9 +96,19 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
    * Updates the DOM of the container with the current components.
    */
   protected updateComponents(): void {
-    this.innerContainerElement.empty();
+    /* We cannot just clear the container to remove all elements and then re-add those that should stay, because
+     * IE looses the innerHTML of unattached elements, leading to empty elements within the container (e.g. missing
+     * subtitle text in SubtitleLabel).
+     * Instead, we keep a list of elements to add and remove, leaving remaining elements alone. By keeping them in
+     * the DOM, their content gets preserved in all browsers.
+     */
+    let component;
 
-    for (let component of this.config.components) {
+    while (component = this.componentsToRemove.shift()) {
+      component.getDomElement().remove();
+    }
+
+    while (component = this.componentsToAdd.shift()) {
       this.innerContainerElement.append(component.getDomElement());
     }
   }
@@ -105,6 +126,9 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
     });
     this.innerContainerElement = innerContainer;
 
+    for (let initialComponent of this.config.components) {
+      this.componentsToAdd.push(initialComponent);
+    }
     this.updateComponents();
 
     containerElement.append(innerContainer);
