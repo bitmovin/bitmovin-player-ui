@@ -24,7 +24,6 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
   }
 
   protected isActive(): boolean {
-    // Compare to 2, because auto will always be in the list
     return this.items.length > 1;
   }
 
