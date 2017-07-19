@@ -8,7 +8,6 @@ export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
 
   constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
-    this.overlay = config.overlay;
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
