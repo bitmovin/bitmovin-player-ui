@@ -154,7 +154,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
     // This css property isn't applied to the subtitle cue
     // and therefore should be applied now
-    this.getDomElement().css('background', this.userSubtitleStyle.windowColor.toCSS());
+    if (this.style.windowColor) {
+      this.getDomElement().css('background', this.style.windowColor.toCSS());
+    }
     this.applyStyleToLabels();
   }
 
