@@ -1,7 +1,5 @@
 import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-import {StorageUtils} from '../../storageutils';
-import {ColorUtils} from '../../colorutils';
 
 /**
  * A select box providing a selection of different font colors.
@@ -27,13 +25,11 @@ export class FontColorSelectBox extends SubtitleSettingSelectBox {
     // white as the default value
     this.selectItem('rgba(255, 255, 255, 1)');
 
-    if (StorageUtils.hasLocalStorage()) {
-      let color = window.localStorage.getItem('fontColor');
-      if (color != null) {
-        let col = ColorUtils.colorFromCss(color, ColorUtils.foreground);
-        col.a = 1; // All colors are defined with default opacity
-        this.selectItem(col.toCSS());
-      }
+    let color = this.overlay.style.fontColor;
+    if (color != null) {
+      color = color.clone();
+      color.a = 1; // All colors are defined with default opacity
+      this.selectItem(color.toCSS());
     }
 
     this.onItemSelected.subscribe((sender: FontColorSelectBox, value: string) => {

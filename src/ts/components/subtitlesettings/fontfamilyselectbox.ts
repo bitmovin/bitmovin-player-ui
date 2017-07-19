@@ -1,6 +1,5 @@
 import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-import {StorageUtils} from '../../storageutils';
 
 interface FontFamily {
   name: string;
@@ -70,21 +69,15 @@ export class FontFamilySelectBox extends SubtitleSettingSelectBox {
 
     this.selectItem(fontFamilies[0].name);
 
-    if (StorageUtils.hasLocalStorage()) {
-      let index = window.localStorage.getItem('family');
-      if (index != null) {
-        this.selectItem(index);
-      }
+    let index = this.overlay.style.fontFamily;
+    if (index != null) {
+      this.selectItem(index);
     }
 
     this.onItemSelected.subscribe((sender: FontFamilySelectBox, index: string) => {
       let idx = parseInt(index);
       let fontFamily = fontFamilies[idx];
       this.overlay.setFont(fontFamily.family, fontFamily.style, fontFamily.variant);
-      // Easier than trying to get back to the selected item from font-family, font-variant and font-style
-      if (StorageUtils.hasLocalStorage()) {
-         window.localStorage.setItem('family', index);
-      }
     });
   }
 }

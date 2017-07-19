@@ -1,7 +1,5 @@
 import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-import {StorageUtils} from '../../storageutils';
-import {ColorUtils} from '../../colorutils';
 
 /**
  * A select box providing a selection of different background opacity.
@@ -23,12 +21,9 @@ export class BackgroundOpacitySelectBox extends SubtitleSettingSelectBox {
 
     this.selectItem('0');
 
-    if (StorageUtils.hasLocalStorage()) {
-      let color = window.localStorage.getItem('backgroundColor');
-      if (color != null) {
-        let col = ColorUtils.colorFromCss(color, ColorUtils.background);
-        this.selectItem(col.a.toString());
-      }
+    let color = this.overlay.style.backgroundColor;
+    if (color != null) {
+      this.selectItem(color.a.toString());
     }
 
     this.onItemSelected.subscribe((sender: BackgroundOpacitySelectBox, value: string) => {

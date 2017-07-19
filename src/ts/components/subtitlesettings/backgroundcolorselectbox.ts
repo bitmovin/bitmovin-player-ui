@@ -1,7 +1,5 @@
 import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-import {StorageUtils} from '../../storageutils';
-import {ColorUtils} from '../../colorutils';
 
 /**
  * A select box providing a selection of different background colors.
@@ -28,13 +26,11 @@ export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
     // black is the default value
     this.selectItem('rgba(0, 0, 0, 1)');
 
-    if (StorageUtils.hasLocalStorage()) {
-      let color = window.localStorage.getItem('backgroundColor');
-      if (color != null) {
-        let col = ColorUtils.colorFromCss(color, ColorUtils.background);
-        col.a = 1;
-        this.selectItem(col.toCSS());
-      }
+    let color = this.overlay.style.backgroundColor;
+    if (color != null) {
+      color = color.clone();
+      color.a = 1;
+      this.selectItem(color.toCSS());
     }
 
     this.onItemSelected.subscribe((sender: BackgroundColorSelectBox, value: string) => {
