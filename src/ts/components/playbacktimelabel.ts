@@ -146,4 +146,12 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         break;
     }
   }
+
+  /**
+   * Sets the current time format
+   * @param timeFormat the time format
+   */
+  protected setTimeFormat(timeFormat: string): void {
+    this.timeFormat = timeFormat;
+  }
 }
