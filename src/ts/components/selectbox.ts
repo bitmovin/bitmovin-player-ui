@@ -51,7 +51,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
         'value': item.key,
       }).html(item.label);
 
-      if (item.key === selectedValue + '') { // convert selectedValue to string to catch 'null'/null case
+      if (item.key === String(selectedValue)) { // convert selectedValue to string to catch 'null'/null case
         optionElement.attr('selected', 'selected');
       }
 

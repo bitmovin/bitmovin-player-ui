@@ -1,9 +1,5 @@
-import {ListSelector, ListSelectorConfig} from 'bitmovin-player-ui/dist/js/framework/components/listselector';
-
-
-
-
-import {DOM} from 'bitmovin-player-ui/dist/js/framework/dom';
+import {ListSelector, ListSelectorConfig} from './listselector';
+import {DOM} from '../dom';
 
 export interface ItemSelectionListConfig extends  ListSelectorConfig {
   label?: string;
@@ -69,7 +65,7 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
         selectedValue = item.key; // Ensure no other item get selected
       }
 
-      if (item.key === selectedValue + '') { // convert selectedValue to string to catch 'null'/null case
+      if (item.key === String(selectedValue)) { // convert selectedValue to string to catch 'null'/null case
         optionElement.addClass(this.prefixCss('selected'));
       }
 
