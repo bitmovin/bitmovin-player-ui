@@ -1,26 +1,17 @@
 import {ListSelector, ListSelectorConfig} from './listselector';
 import {DOM} from '../dom';
 
-export interface ItemSelectionListConfig extends  ListSelectorConfig {
-  label?: string;
-}
-
 export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
 
-  private label?: string;
   private listElement: DOM;
 
-  constructor(config: ItemSelectionListConfig = {}) {
+  constructor(config: ListSelectorConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
       tag: 'ul',
       cssClass: 'ui-itemselectionlist',
     }, this.config);
-
-    if (config.label != null) {
-      this.label = config.label;
-    }
   }
 
   protected isActive(): boolean {
@@ -42,15 +33,6 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
   protected updateDomItems(selectedValue: string = null) {
     // Delete all children
     this.listElement.empty();
-
-    if (this.label != null) {
-      let titleElement = new DOM('span', {
-        'type': 'span',
-        'class': this.prefixCss('ui-selectionlistitem'),
-      }).html(this.label);
-      titleElement.addClass(this.prefixCss('highlighted'));
-      this.listElement.append(titleElement);
-    }
 
     for (let item of this.items) {
       let optionElement = new DOM('li', {
