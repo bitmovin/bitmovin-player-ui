@@ -31,22 +31,22 @@ export namespace ColorUtils {
   }
 
   export function mergeColor(colors: Color[]): Color {
-    let r, g, b, a :number;
+    let r, g, b, a: number;
     for (let color of colors) {
       if (color.r != null) {
-        r = color.r
+        r = color.r;
       }
       if (color.g != null) {
-        g = color.g
+        g = color.g;
       }
       if (color.b != null) {
-        b = color.b
+        b = color.b;
       }
       if (color.a != null) {
-        a = color.a
+        a = color.a;
       }
     }
-    return new Color(r, g, b, a)
+    return new Color(r, g, b, a);
   }
   /**
    * Parses a string formated as 'rgba(number, number, number, number)'

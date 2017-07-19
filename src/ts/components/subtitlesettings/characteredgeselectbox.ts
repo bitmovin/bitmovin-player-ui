@@ -25,7 +25,7 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
     this.selectItem('none');
     let characterEdge = this.overlay.style.characterEdge;
     if (characterEdge != null) {
-      this.selectItem(characterEdge)
+      this.selectItem(characterEdge);
     }
 
     this.onItemSelected.subscribe((sender: CharacterEdgeSelectBox, value: string) => {
