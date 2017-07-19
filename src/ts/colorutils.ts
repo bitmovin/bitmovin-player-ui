@@ -7,10 +7,18 @@ export namespace ColorUtils {
     a: number;
 
     constructor(r: number, g: number, b: number, a: number = 1) {
-      this.r = r;
-      this.g = g;
-      this.b = b;
-      this.a = a;
+      if (r != null && !isNaN(r)) {
+        this.r = r;
+      }
+      if (g != null && !isNaN(g)) {
+        this.g = g;
+      }
+      if (b != null && !isNaN(b)) {
+        this.b = b;
+      }
+      if (a != null && !isNaN(a)) {
+        this.a = a;
+      }
     }
 
     toCSS(): string {
@@ -22,6 +30,24 @@ export namespace ColorUtils {
     }
   }
 
+  export function mergeColor(colors: Color[]): Color {
+    let r, g, b, a :number;
+    for (let color of colors) {
+      if (color.r != null) {
+        r = color.r
+      }
+      if (color.g != null) {
+        g = color.g
+      }
+      if (color.b != null) {
+        b = color.b
+      }
+      if (color.a != null) {
+        a = color.a
+      }
+    }
+    return new Color(r, g, b, a)
+  }
   /**
    * Parses a string formated as 'rgba(number, number, number, number)'
    * and returns a color element of the same value

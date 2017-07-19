@@ -200,19 +200,28 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     let styleConfig = this.loadUserSubtitleStyle();
 
     if (!styleConfig) {
+      this.userSubtitleStyle.fontColor = new ColorUtils.Color(null, null, null, null);
+      this.userSubtitleStyle.backgroundColor = new ColorUtils.Color(null, null, null, null);
+      this.userSubtitleStyle.windowColor = new ColorUtils.Color(null, null, null, null);
       return;
     }
 
     if (styleConfig.fontColor != null) {
       this.userSubtitleStyle.fontColor = styleConfig.fontColor;
+    } else {
+      this.userSubtitleStyle.fontColor = new ColorUtils.Color(null, null, null, null);
     }
 
     if (styleConfig.backgroundColor != null) {
       this.userSubtitleStyle.backgroundColor = styleConfig.backgroundColor;
+    } else {
+      this.userSubtitleStyle.backgroundColor = new ColorUtils.Color(null, null, null, null);
     }
 
     if (styleConfig.windowColor != null) {
       this.userSubtitleStyle.windowColor = styleConfig.windowColor;
+    } else {
+      this.userSubtitleStyle.windowColor = new ColorUtils.Color(null, null, null, null);
     }
 
     if (styleConfig.fontFamily != null) {
@@ -338,6 +347,9 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   get style(): SubtitleStyle {
     let mergedStyle = <SubtitleStyle>Object.assign({}, this.baseSubtitleStyle, this.userSubtitleStyle);
+    mergedStyle.backgroundColor = ColorUtils.mergeColor([this.baseSubtitleStyle.backgroundColor, this.userSubtitleStyle.backgroundColor]);
+    mergedStyle.fontColor = ColorUtils.mergeColor([this.baseSubtitleStyle.fontColor, this.userSubtitleStyle.fontColor]);
+    mergedStyle.windowColor = ColorUtils.mergeColor([this.baseSubtitleStyle.windowColor, this.userSubtitleStyle.windowColor]);
     return mergedStyle;
   }
 

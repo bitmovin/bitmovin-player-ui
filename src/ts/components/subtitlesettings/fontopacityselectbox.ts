@@ -14,7 +14,7 @@ export class FontOpacitySelectBox extends SubtitleSettingSelectBox {
     super.configure(player, uimanager);
 
     this.addItem('0.25', '25%');
-    this.addItem('0.50', '50%');
+    this.addItem('0.5', '50%');
     this.addItem('0.75', '75%');
     this.addItem('1', '100%');
 
