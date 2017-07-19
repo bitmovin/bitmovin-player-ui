@@ -23,6 +23,10 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
     this.addItem('0px 2px 1px rgba(0, 0, 0, 0.8)', 'drop shadowed');
 
     this.selectItem('none');
+    let characterEdge = this.overlay.style.characterEdge;
+    if (characterEdge != null) {
+      this.selectItem(characterEdge)
+    }
 
     this.onItemSelected.subscribe((sender: CharacterEdgeSelectBox, value: string) => {
       this.overlay.setCharacterEdge(value);
