@@ -6,11 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Develop]
 
-### Fixed
-- Fix clearing of container components with `Container#removeComponents` (fixes sticky/duplicate subtitle issue)
-
 ### Added
 - Adds a `VolumeToggleButton` to the small screen UI
+
+### Fixed
+- Fix clearing of container components with `Container#removeComponents` (fixes sticky/duplicate subtitle issue)
 
 ## [2.7.1]
 
