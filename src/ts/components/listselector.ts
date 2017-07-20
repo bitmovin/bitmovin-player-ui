@@ -1,6 +1,6 @@
 import {Component, ComponentConfig} from './component';
 import {EventDispatcher, Event} from '../eventdispatcher';
-import {ArrayUtils} from '../utils';
+import {ArrayUtils} from '../arrayutils';
 
 /**
  * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.

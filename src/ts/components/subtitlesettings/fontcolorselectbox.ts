@@ -1,6 +1,7 @@
 import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-import {ColorUtils, StorageUtils} from '../../utils';
+import {StorageUtils} from '../../storageutils';
+import {ColorUtils} from '../../colorutils';
 
 /**
  * A select box providing a selection of different font colors.

@@ -2,7 +2,7 @@ import {ContainerConfig, Container} from './container';
 import {Component, ComponentConfig} from './component';
 import {DOM} from '../dom';
 import {UIInstanceManager, UIRecommendationConfig} from '../uimanager';
-import {StringUtils} from '../utils';
+import {StringUtils} from '../stringutils';
 import {HugeReplayButton} from './hugereplaybutton';
 
 /**
@@ -28,7 +28,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     super.configure(player, uimanager);
 
     let clearRecommendations = () => {
-      for (let component of this.getComponents()) {
+      for (let component of this.getComponents().slice()) {
         if (component instanceof RecommendationItem) {
           this.removeComponent(component);
         }

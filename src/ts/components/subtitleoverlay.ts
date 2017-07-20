@@ -4,8 +4,9 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
-import {ColorUtils, StorageUtils} from '../utils';
 import {DOM} from '../dom';
+import {ColorUtils} from '../colorutils';
+import {StorageUtils} from '../storageutils';
 
 export interface SubtitleOverlayConfig extends ContainerConfig {
   subtitleConfig?: UISubtitleConfig;
@@ -355,7 +356,7 @@ interface ActiveSubtitleCue {
 }
 
 interface ActiveSubtitleCueMap {
-  [id: string]: ActiveSubtitleCue;
+  [id: string]: ActiveSubtitleCue[];
 }
 
 class SubtitleLabel extends Label<LabelConfig> {
@@ -372,16 +373,18 @@ class SubtitleLabel extends Label<LabelConfig> {
 class ActiveSubtitleManager {
 
   private activeSubtitleCueMap: ActiveSubtitleCueMap;
+  private activeSubtitleCueCount: number;
 
   constructor() {
     this.activeSubtitleCueMap = {};
+    this.activeSubtitleCueCount = 0;
   }
 
   /**
    * Calculates a unique ID for a subtitle cue, which is needed to associate an ON_CUE_ENTER with its ON_CUE_EXIT
    * event so we can remove the correct subtitle in ON_CUE_EXIT when multiple subtitles are active at the same time.
    * The start time plus the text should make a unique identifier, and in the only case where a collision
-   * can happen, two similar texts will be displayed at a similar time so it does not matter which one we delete.
+   * can happen, two similar texts will be displayed at a similar time.
    * The start time should always be known, because it is required to schedule the ON_CUE_ENTER event. The end time
    * must not necessarily be known and therefore cannot be used for the ID.
    * @param event
@@ -404,7 +407,12 @@ class ActiveSubtitleManager {
       text: event.html || event.text,
     });
 
-    this.activeSubtitleCueMap[id] = { event, label };
+    // Create array for id if it does not exist
+    this.activeSubtitleCueMap[id] = this.activeSubtitleCueMap[id] || [];
+
+    // Add cue
+    this.activeSubtitleCueMap[id].push({ event, label });
+    this.activeSubtitleCueCount++;
 
     return label;
   }
@@ -417,10 +425,20 @@ class ActiveSubtitleManager {
    */
   cueExit(event: SubtitleCueEvent): SubtitleLabel {
     let id = ActiveSubtitleManager.calculateId(event);
-    let activeSubtitleCue = this.activeSubtitleCueMap[id];
+    let activeSubtitleCues = this.activeSubtitleCueMap[id];
 
-    if (activeSubtitleCue) {
-      delete this.activeSubtitleCueMap[id];
+    if (activeSubtitleCues && activeSubtitleCues.length > 0) {
+      // Remove cue
+      /* We apply the FIFO approach here and remove the oldest cue from the associated id. When there are multiple cues
+       * with the same id, there is no way to know which one of the cues is to be deleted, so we just hope that FIFO
+       * works fine. Theoretically it can happen that two cues with colliding ids are removed at different times, in
+       * the wrong order. This rare case has yet to be observed. If it ever gets an issue, we can take the unstable
+       * cue end time (which can change between ON_CUE_ENTER and ON_CUE_EXIT IN ON_CUE_UPDATE) and use it as an
+       * additional hint to try and remove the correct one of the colliding cues.
+       */
+      let activeSubtitleCue = activeSubtitleCues.shift();
+      this.activeSubtitleCueCount--;
+
       return activeSubtitleCue.label;
     } else {
       return null;
@@ -432,7 +450,8 @@ class ActiveSubtitleManager {
    * @return {number}
    */
   get cueCount(): number {
-    return Object.keys(this.activeSubtitleCueMap).length;
+    // We explicitly count the cues to save an Array.reduce on every cueCount call (which can happen frequently)
+    return this.activeSubtitleCueCount;
   }
 
   /**
@@ -448,5 +467,6 @@ class ActiveSubtitleManager {
    */
   clear(): void {
     this.activeSubtitleCueMap = {};
+    this.activeSubtitleCueCount = 0;
   }
 }

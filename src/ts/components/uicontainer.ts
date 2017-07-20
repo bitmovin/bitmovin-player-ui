@@ -2,7 +2,7 @@ import {ContainerConfig, Container} from './container';
 import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
 import {Timeout} from '../timeout';
-import {PlayerUtils} from '../utils';
+import {PlayerUtils} from '../playerutils';
 import PlayerResizeEvent = bitmovin.PlayerAPI.PlayerResizeEvent;
 import {CancelEventArgs} from '../eventdispatcher';
 
