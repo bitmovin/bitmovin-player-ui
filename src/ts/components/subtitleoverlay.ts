@@ -86,12 +86,18 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
       this.applyConfToDom(labelToAdd.getDomElement());
 
+      // In this block all the logic for CEA-608 captions is applied
+      // It's based on the assertion that a cue with position metadata
+      // is CEA-608
       if (event.position != null) {
         let domElement = labelToAdd.getDomElement();
         domElement.css('position', 'fixed');
-        domElement.css('left', `${event.position.column}em`);
+        domElement.css('left', `${event.position.column*0.6}em`);
         // 6.66 = 100/15 the number of possible lines
         domElement.css('top', `${event.position.row * 6.66}%`);
+        domElement.css('text-transform', 'uppercase');
+        domElement.css('font-family', '"Courier New",Courier,"Nimbus Mono L","Cutive Mono",monospace')
+        console.log(event.position.column, event.position.column + event.text.length, event.text);
       }
 
       if (this.previewSubtitleActive) {
