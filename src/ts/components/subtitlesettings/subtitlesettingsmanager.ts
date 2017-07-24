@@ -53,7 +53,7 @@ export class SubtitleSettingsManager {
         }
 
         this.save();
-      })
+      });
     }
 
     this.load();
