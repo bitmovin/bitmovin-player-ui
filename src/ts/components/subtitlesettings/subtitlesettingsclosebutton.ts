@@ -1,7 +1,6 @@
 import {SubtitleSettingsButton} from './subtitlesettingsbutton';
 import {SubtitleSettingsButtonConfig} from './subtitlesettingsbutton';
 import {UIInstanceManager} from '../../uimanager';
-import {DOM} from '../../dom';
 
 /**
  * A button that toggles the option menu for subtitles
