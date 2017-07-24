@@ -82,14 +82,14 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.subtitleManager = subtitleManager;
 
     let cea608CssClass = this.prefixCss('cea608');
-    let cea608fontSize = 1
+    let cea608fontSize = 1;
 
     let generateCea608Ratio = () => {
       let label = new SubtitleLabel({
         // One letter label used to calculate the height wifth ratio of the font
         // Works because we are using a monospace font for cea 608
         // Using a longer string increases precision due to width being an integer
-        text: "aaaaaaaaaa",
+        text: 'aaaaaaaaaa',
       });
       let domElement = label.getDomElement();
       domElement.addClass(cea608CssClass);
@@ -100,7 +100,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       this.show();
 
       // 10 is the length of the string used above
-      let width = domElement.width()/10
+      let width = domElement.width() / 10;
 
       this.removeComponent(label);
       this.updateComponents();
@@ -108,8 +108,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         this.hide();
       }
 
-      let ratio = 1/width
-      cea608fontSize = (new DOM(player.getFigure()).width()) * (0.8 / 32) * ratio
+      let ratio =   1 / width;
+      cea608fontSize = (new DOM(player.getFigure()).width()) * (0.8 / 32) * ratio;
     };
     uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
@@ -138,7 +138,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       this.updateComponents();
 
       this.show();
-      let domElement = labelToAdd.getDomElement();
     });
     player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
