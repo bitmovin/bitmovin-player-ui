@@ -13,6 +13,7 @@ import {Component, ComponentConfig} from '../component';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleSettingsManager} from './subtitlesettingsmanager';
 import {SubtitleSettingsCloseButton} from './subtitlesettingsclosebutton';
+import {SubtitleSettingsResetButton} from './subtitlesettingsresetbutton';
 
 export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
   overlay: SubtitleOverlay;
@@ -62,10 +63,13 @@ export class SubtitleSettingsPanel extends SettingsPanel {
         new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(null, new SubtitleSettingsCloseButton({
+        new SettingsPanelItem(new SubtitleSettingsCloseButton({
           subtitleSettingsPanel: this, settingsPanel: config.settingsPanel,
+        }), new SubtitleSettingsResetButton({
+          settingsManager: manager,
         })),
-      ]}, this.config);
+      ],
+    }, this.config);
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {

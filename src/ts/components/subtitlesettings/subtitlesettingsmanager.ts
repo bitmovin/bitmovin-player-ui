@@ -59,6 +59,12 @@ export class SubtitleSettingsManager {
     this.load();
   }
 
+  public reset(): void {
+    for (let propertyName in this._properties) {
+      this._properties[propertyName].clear();
+    }
+  }
+
   public get fontColor(): SubtitleSettingsProperty<string> {
     return this._properties.fontColor;
   }
