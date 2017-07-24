@@ -62,7 +62,7 @@ export interface UIRecommendationConfig {
 export interface UISubtitleConfig {
   backgroundColor?: string;
   characterEdge?: string;
-  fontCoefficient?: number;
+  fontSize?: number;
   fontColor?: string;
   fontFamily?: string;
   fontStyle?: string;

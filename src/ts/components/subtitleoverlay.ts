@@ -19,12 +19,6 @@ export interface SubtitleStyle {
   fontStyle?: string;
   fontVariant?: string;
   characterEdge?: string;
-  /**
-   * Font size is defined by a base size
-   * and a multiplicating coefficient depending
-   * on user preferences
-   */
-  fontCoefficient?: number;
   fontSize?: number;
 }
 
@@ -69,8 +63,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       fontStyle: '',
       fontVariant: 'normal',
       characterEdge: '',
-      fontCoefficient: 1,
-      fontSize: 1.2,
+      fontSize: 1,
     };
     this.userSubtitleStyle = {};
   }
@@ -185,9 +178,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     if (subtitlesConfig.fontStyle != null) {
       subtitleStyle.fontStyle = subtitlesConfig.fontStyle;
     }
-    if (subtitlesConfig.fontCoefficient != null) {
-      subtitleStyle.fontCoefficient = subtitlesConfig.fontCoefficient;
-    }
     if (subtitlesConfig.characterEdge != null) {
       subtitleStyle.characterEdge = subtitlesConfig.characterEdge;
     }
@@ -238,10 +228,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
     if (styleConfig.characterEdge != null) {
       this.userSubtitleStyle.characterEdge = styleConfig.characterEdge;
-    }
-
-    if (styleConfig.fontCoefficient != null) {
-      this.userSubtitleStyle.fontCoefficient = styleConfig.fontCoefficient;
     }
   }
 
@@ -339,8 +325,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.saveUserSubtitleStyle();
   }
 
-  setFontSize(coefficient: number): void {
-    this.userSubtitleStyle.fontCoefficient = coefficient;
+  setFontSize(size: number): void {
+    this.userSubtitleStyle.fontSize = size;
     this.applyStyleToLabels();
     this.saveUserSubtitleStyle();
   }
@@ -375,7 +361,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       'font-family': subtitleStyle.fontFamily,
       'font-style': subtitleStyle.fontStyle,
       'text-shadow': subtitleStyle.characterEdge,
-      'font-size': `${subtitleStyle.fontSize * subtitleStyle.fontCoefficient}em`,
+      'font-size': `${subtitleStyle.fontSize}em`,
     });
   }
 
