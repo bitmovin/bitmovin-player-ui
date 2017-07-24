@@ -1,4 +1,4 @@
-import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
+import {SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
 
 /**
@@ -6,30 +6,33 @@ import {UIInstanceManager} from '../../uimanager';
  */
 export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
 
-  constructor(config: SubtitleSettingSelectBoxConfig) {
-    super(config);
-  }
-
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem('none', 'none');
-    this.addItem('0px 0px 4px rgba(0, 0, 0, 0.9), 0px 1px 4px rgba(0, 0, 0, 0.9), 0px 2px 4px rgba(0, 0, 0, 0.9)',
-      'raised');
-    this.addItem('rgba(0, 0, 0, 0.8) 0px -2px 1px', 'depressed');
-    this.addItem(`-2px 0px 1px rgba(0, 0, 0, 0.8), 2px 0px 1px rgba(0, 0, 0, 0.8), 0px -2px 1px rgba(0, 0, 0, 0.8),
-      0px 2px 1px rgba(0, 0, 0, 0.8), -1px 1px 1px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(0, 0, 0, 0.8),
-      1px -1px 1px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(0, 0, 0, 0.8)`, 'uniform');
-    this.addItem('0px 2px 1px rgba(0, 0, 0, 0.8)', 'drop shadowed');
+    this.addItem(null, 'default');
+    this.addItem('raised', 'raised');
+    this.addItem('depressed', 'depressed');
+    this.addItem('uniform', 'uniform');
+    this.addItem('dropshadowed', 'drop shadowed');
 
-    this.selectItem('none');
-    let characterEdge = this.overlay.style.characterEdge;
-    if (characterEdge != null) {
-      this.selectItem(characterEdge);
-    }
+    this.settingsManager.characterEdge.onChanged.subscribe((sender, property) => {
+      if (property.isSet()) {
+        this.toggleOverlayClass('characteredge-' + property.value);
+      } else {
+        this.toggleOverlayClass(null);
+      }
 
-    this.onItemSelected.subscribe((sender: CharacterEdgeSelectBox, value: string) => {
-      this.overlay.setCharacterEdge(value);
+      // Select the item in case the property was set from outside
+      this.selectItem(property.value);
     });
+
+    this.onItemSelected.subscribe((sender, key: string) => {
+      this.settingsManager.characterEdge.value = key;
+    });
+
+    // Load initial value
+    if (this.settingsManager.characterEdge.isSet()) {
+      this.selectItem(this.settingsManager.characterEdge.value);
+    }
   }
 }

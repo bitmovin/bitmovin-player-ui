@@ -4,19 +4,6 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
-import {ColorUtils} from '../colorutils';
-import {StorageUtils} from '../storageutils';
-
-export interface SubtitleStyle {
-  fontColor?: ColorUtils.Color;
-  backgroundColor?: ColorUtils.Color;
-  windowColor?: ColorUtils.Color;
-  fontFamily?: string;
-  fontStyle?: string;
-  fontVariant?: string;
-  characterEdge?: string;
-  fontSize?: number;
-}
 
 /**
  * Overlays the player to display subtitles.
@@ -29,15 +16,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
-  /**
-   * Carries base styling from the config.
-   */
-  private baseSubtitleStyle: SubtitleStyle;
-  /**
-   * Carries user-set styling separately from the base style so we can save only the user-set properties.
-   */
-  private userSubtitleStyle: SubtitleStyle;
-
   constructor(config: ContainerConfig = {}) {
     super(config);
 
@@ -47,33 +25,16 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitle-overlay',
     }, this.config);
-
-    // Define the default subtitles style
-    this.baseSubtitleStyle = {
-      fontColor: ColorUtils.foreground,
-      backgroundColor: ColorUtils.background,
-      windowColor: ColorUtils.background,
-      fontFamily: '',
-      fontStyle: '',
-      fontVariant: 'normal',
-      characterEdge: '',
-      fontSize: 1,
-    };
-    this.userSubtitleStyle = {};
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
-
-    this.configureSubtitleStyle(player, uimanager);
 
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
-
-      this.applyStyleToLabel(labelToAdd);
 
       if (this.previewSubtitleActive) {
         this.removeComponent(this.previewSubtitle);
@@ -129,65 +90,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     subtitleClearHandler();
   }
 
-  private configureSubtitleStyle(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    this.updateSubtitleOverlayFromLocalStorage();
-
-    // This css property isn't applied to the subtitle cue
-    // and therefore should be applied now
-    if (this.style.windowColor) {
-      this.getDomElement().css('background', this.style.windowColor.toCSS());
-    }
-    this.applyStyleToLabels();
-  }
-
-  /**
-   * Updates the settings used to display subtitles based on local storage values
-   */
-  private updateSubtitleOverlayFromLocalStorage(): void {
-    let styleConfig = this.loadUserSubtitleStyle();
-
-    if (!styleConfig) {
-      this.userSubtitleStyle.fontColor = new ColorUtils.Color(null, null, null, null);
-      this.userSubtitleStyle.backgroundColor = new ColorUtils.Color(null, null, null, null);
-      this.userSubtitleStyle.windowColor = new ColorUtils.Color(null, null, null, null);
-      return;
-    }
-
-    if (styleConfig.fontColor != null) {
-      this.userSubtitleStyle.fontColor = styleConfig.fontColor;
-    } else {
-      this.userSubtitleStyle.fontColor = new ColorUtils.Color(null, null, null, null);
-    }
-
-    if (styleConfig.backgroundColor != null) {
-      this.userSubtitleStyle.backgroundColor = styleConfig.backgroundColor;
-    } else {
-      this.userSubtitleStyle.backgroundColor = new ColorUtils.Color(null, null, null, null);
-    }
-
-    if (styleConfig.windowColor != null) {
-      this.userSubtitleStyle.windowColor = styleConfig.windowColor;
-    } else {
-      this.userSubtitleStyle.windowColor = new ColorUtils.Color(null, null, null, null);
-    }
-
-    if (styleConfig.fontFamily != null) {
-      this.userSubtitleStyle.fontFamily = styleConfig.fontFamily;
-    }
-
-    if (styleConfig.fontStyle != null) {
-      this.userSubtitleStyle.fontStyle = styleConfig.fontStyle;
-    }
-
-    if (styleConfig.fontVariant != null) {
-      this.userSubtitleStyle.fontVariant = styleConfig.fontVariant;
-    }
-
-    if (styleConfig.characterEdge != null) {
-      this.userSubtitleStyle.characterEdge = styleConfig.characterEdge;
-    }
-  }
-
   enablePreviewSubtitleLabel(): void {
     this.previewSubtitleActive = true;
     if (!this.subtitleManager.hasCues) {
@@ -201,137 +103,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.previewSubtitleActive = false;
     this.removeComponent(this.previewSubtitle);
     this.updateComponents();
-  }
-
-  // Methods used to define custom styling on subtitles labels
-  setColor(color: string): void {
-    let col = ColorUtils.colorFromCss(color);
-    col.a = this.userSubtitleStyle.fontColor.a;
-    this.userSubtitleStyle.fontColor = col;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  setBackgroundColor(color: string): void {
-    let backgroundColor = ColorUtils.colorFromCss(color);
-    backgroundColor.a = this.userSubtitleStyle.backgroundColor.a;
-    this.userSubtitleStyle.backgroundColor = backgroundColor;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  setWindowColor(color: string): void {
-    let windowColor = ColorUtils.colorFromCss(color);
-    windowColor.a = this.userSubtitleStyle.windowColor.a;
-    this.userSubtitleStyle.windowColor = windowColor;
-    this.getDomElement().css('background', this.userSubtitleStyle.windowColor.toCSS());
-    this.saveUserSubtitleStyle();
-  }
-
-  setFontOpacity(alpha: number): void {
-    this.userSubtitleStyle.fontColor.a = alpha;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  setBackgroundOpacity(alpha: number): void {
-    this.userSubtitleStyle.backgroundColor.a = alpha;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  setWindowOpacity(alpha: number): void {
-    this.userSubtitleStyle.windowColor.a = alpha;
-    this.getDomElement().css('background', this.userSubtitleStyle.windowColor.toCSS());
-    this.saveUserSubtitleStyle();
-  }
-
-  setFontFamily(fontFamily: string): void {
-    this.userSubtitleStyle.fontFamily = fontFamily;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  setFontStyle(fontStyle: string): void {
-    this.userSubtitleStyle.fontStyle = fontStyle;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  setFontVariant(fontVariant: string): void {
-    this.userSubtitleStyle.fontVariant = fontVariant;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  /**
-   * A helper method to avoid updating the CSS label 3 times in a row
-   * since family, style and variant are normally updated together
-   */
-  setFont(fontFamily: string, fontStyle: string, fontVariant: string): void {
-    this.userSubtitleStyle.fontFamily = fontFamily;
-    this.userSubtitleStyle.fontStyle = fontStyle;
-    this.userSubtitleStyle.fontVariant = fontVariant;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  setCharacterEdge(characterEdge: string): void {
-    this.userSubtitleStyle.characterEdge = characterEdge;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  setFontSize(size: number): void {
-    this.userSubtitleStyle.fontSize = size;
-    this.applyStyleToLabels();
-    this.saveUserSubtitleStyle();
-  }
-
-  get style(): SubtitleStyle {
-    let mergedStyle = <SubtitleStyle>Object.assign({}, this.baseSubtitleStyle, this.userSubtitleStyle);
-    mergedStyle.backgroundColor = ColorUtils.mergeColor([this.baseSubtitleStyle.backgroundColor, this.userSubtitleStyle.backgroundColor]);
-    mergedStyle.fontColor = ColorUtils.mergeColor([this.baseSubtitleStyle.fontColor, this.userSubtitleStyle.fontColor]);
-    mergedStyle.windowColor = ColorUtils.mergeColor([this.baseSubtitleStyle.windowColor, this.userSubtitleStyle.windowColor]);
-    return mergedStyle;
-  }
-
-  private saveUserSubtitleStyle(): void {
-    StorageUtils.setObject('subtitleStyle', this.userSubtitleStyle);
-  }
-
-  private loadUserSubtitleStyle(): SubtitleStyle {
-    return StorageUtils.getObject<SubtitleStyle>('subtitleStyle');
-  }
-
-  private applyStyleToLabel(label: SubtitleLabel, subtitleStyle?: SubtitleStyle): void {
-    if (!subtitleStyle) {
-      // When applying the style to multiple labels, it is better to pass it to this method instead of
-      // getting it at every call.
-      subtitleStyle = this.style;
-    }
-
-    label.getDomElement().css({
-      'color': subtitleStyle.fontColor.toCSS(),
-      'background': subtitleStyle.backgroundColor.toCSS(),
-      'font-variant': subtitleStyle.fontVariant,
-      'font-family': subtitleStyle.fontFamily,
-      'font-style': subtitleStyle.fontStyle,
-      'text-shadow': subtitleStyle.characterEdge,
-      'font-size': `${subtitleStyle.fontSize}em`,
-    });
-  }
-
-  private applyStyleToLabels(): void {
-    // Get the merged style that we want to apply to the labels
-    let style = this.style;
-
-    for (let component of this.getComponents()) {
-      if (component instanceof SubtitleLabel) {
-        this.applyStyleToLabel(component, style);
-      }
-    }
-    this.applyStyleToLabel(this.previewSubtitle, style);
   }
 }
 

@@ -11,6 +11,7 @@ import {CharacterEdgeSelectBox} from './characteredgeselectbox';
 import {SubtitleOverlay} from '../subtitleoverlay';
 import {Component, ComponentConfig} from '../component';
 import {UIInstanceManager} from '../../uimanager';
+import {SubtitleSettingsManager} from './subtitlesettingsmanager';
 
 export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
   overlay: SubtitleOverlay;
@@ -28,17 +29,19 @@ export class SubtitleSettingsPanel extends SettingsPanel {
 
     this.overlay = config.overlay;
 
+    let manager = new SubtitleSettingsManager(this.overlay);
+
     this.config = this.mergeConfig(config, {
       components: <Component<ComponentConfig>[]>[
-        new SettingsPanelItem('Font family', new FontFamilySelectBox({overlay: this.overlay})),
-        new SettingsPanelItem('Font color', new FontColorSelectBox({overlay: this.overlay})),
-        new SettingsPanelItem('Font size', new FontSizeSelectBox({overlay: this.overlay})),
-        new SettingsPanelItem('Font opacity', new FontOpacitySelectBox({overlay: this.overlay})),
-        new SettingsPanelItem('Character edge', new CharacterEdgeSelectBox({overlay: this.overlay})),
-        new SettingsPanelItem('Background color', new BackgroundColorSelectBox({overlay: this.overlay})),
-        new SettingsPanelItem('Background opacity', new BackgroundOpacitySelectBox({overlay: this.overlay})),
-        new SettingsPanelItem('Window color', new WindowColorSelectBox({overlay: this.overlay})),
-        new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({overlay: this.overlay})),
+        new SettingsPanelItem('Font family', new FontFamilySelectBox(manager, {overlay: this.overlay})),
+        new SettingsPanelItem('Font color', new FontColorSelectBox(manager, {overlay: this.overlay})),
+        new SettingsPanelItem('Font size', new FontSizeSelectBox(manager, {overlay: this.overlay})),
+        new SettingsPanelItem('Font opacity', new FontOpacitySelectBox(manager, {overlay: this.overlay})),
+        new SettingsPanelItem('Character edge', new CharacterEdgeSelectBox(manager, {overlay: this.overlay})),
+        new SettingsPanelItem('Background color', new BackgroundColorSelectBox(manager, {overlay: this.overlay})),
+        new SettingsPanelItem('Background opacity', new BackgroundOpacitySelectBox(manager, {overlay: this.overlay})),
+        new SettingsPanelItem('Window color', new WindowColorSelectBox(manager, {overlay: this.overlay})),
+        new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox(manager, {overlay: this.overlay})),
       ]}, this.config);
   }
 

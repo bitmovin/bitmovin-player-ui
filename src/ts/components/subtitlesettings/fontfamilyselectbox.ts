@@ -1,83 +1,41 @@
-import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
+import {SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-
-interface FontFamily {
-  name: string;
-  family: string;
-  variant: string;
-  style: string;
-}
-
-let fontFamilies: FontFamily[] = [{
-  name: 'default',
-  family: 'default',
-  variant: 'unset',
-  style: 'unset',
-}, {
-  name: 'monospaced serif',
-  family: '"Courier New",Courier,"Nimbus Mono L","Cutive Mono",monospace',
-  variant: 'unset',
-  style: 'unset',
-}, {
-  name: 'proportional serif',
-  family: '"Times New Roman",Times,Georgia,Cambria,"PT Serif Caption",serif',
-  variant: 'unset',
-  style: 'unset',
-}, {
-  name: 'monospaced sans serif',
-  family: '"Deja Vu Sans Mono","Lucida Console",Monaco,Consolas,"PT Mono",monospace',
-  variant: 'unset',
-  style: 'unset',
-}, {
-  name: 'proportional sans serif',
-  family: 'Roboto,"Arial Unicode Ms",Arial,Helvetica,Verdana,"PT Sans Caption",sans-serif',
-  variant: 'unset',
-  style: 'unset',
-}, {
-  name: 'casual',
-  family: '"Comic Sans MS",Impact,Handlee,fantasy',
-  variant: 'unset',
-  style: 'unset',
-}, {
-  name: 'cursive',
-  family: '"Monotype Corsiva","URW Chancery L","Apple Chancery","Dancing Script",cursive',
-  variant: 'unset',
-  style: 'italic',
-}, {
-  name: 'small capital',
-  family: 'unset',
-  variant: 'small-caps',
-  style: 'unset',
-},
-];
 
 /**
  * A select box providing a selection of different font family.
  */
 export class FontFamilySelectBox extends SubtitleSettingSelectBox {
 
-  constructor(config: SubtitleSettingSelectBoxConfig) {
-    super(config);
-  }
-
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    for (let index in fontFamilies) {
-      this.addItem(index, fontFamilies[index].name);
-    }
+    this.addItem(null, 'default');
+    this.addItem('monospacedserif', 'monospaced serif');
+    this.addItem('proportionalserif', 'proportional serif');
+    this.addItem('monospacedsansserif', 'monospaced sans serif');
+    this.addItem('proportionalsansserif', 'proportional sans serif');
+    this.addItem('casual', 'casual');
+    this.addItem('cursive', 'cursive');
+    this.addItem('smallcapital', 'small capital');
 
-    this.selectItem(fontFamilies[0].name);
+    this.settingsManager.fontFamily.onChanged.subscribe((sender, property) => {
+      if (property.isSet()) {
+        this.toggleOverlayClass('fontfamily-' + property.value);
+      } else {
+        this.toggleOverlayClass(null);
+      }
 
-    let index = this.overlay.style.fontFamily;
-    if (index != null) {
-      this.selectItem(index);
-    }
-
-    this.onItemSelected.subscribe((sender: FontFamilySelectBox, index: string) => {
-      let idx = parseInt(index);
-      let fontFamily = fontFamilies[idx];
-      this.overlay.setFont(fontFamily.family, fontFamily.style, fontFamily.variant);
+      // Select the item in case the property was set from outside
+      this.selectItem(property.value);
     });
+
+    this.onItemSelected.subscribe((sender, key: string) => {
+      this.settingsManager.fontFamily.value = key;
+    });
+
+    // Load initial value
+    if (this.settingsManager.fontFamily.isSet()) {
+      this.selectItem(this.settingsManager.fontFamily.value);
+    }
   }
 }
