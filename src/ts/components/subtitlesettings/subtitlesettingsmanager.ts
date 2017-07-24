@@ -44,8 +44,6 @@ export class SubtitleSettingsManager {
 
     for (let propertyName in this._properties) {
       this._properties[propertyName].onChanged.subscribe((sender, property) => {
-        console.log(propertyName, property.value);
-
         if (property.isSet()) {
           (<any>this.userSettings)[propertyName] = property.value;
         } else {
