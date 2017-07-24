@@ -82,6 +82,35 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     this.subtitleManager = subtitleManager;
 
     let cea608CssClass = this.prefixCss('cea608');
+    let cea608fontSize = 1
+
+    let generateCea608Ratio = () => {
+      let label = new SubtitleLabel({
+        // One letter label used to calculate the height wifth ratio of the font
+        // Works because we are using a monospace font for cea 608
+        // Using a longer string increases precision due to width being an integer
+        text: "aaaaaaaaaa",
+      });
+      let domElement = label.getDomElement();
+      domElement.addClass(cea608CssClass);
+      domElement.css('color', 'rgba(0, 0, 0, 0)');
+      domElement.css('font-size', '1px');
+      this.addComponent(label);
+      this.updateComponents();
+      this.show();
+
+      // 10 is the length of the string used above
+      let width = domElement.width()/10
+
+      this.removeComponent(label);
+      this.updateComponents();
+      if (!subtitleManager.hasCues) {
+        this.hide();
+      }
+
+      let ratio = 1/width
+      cea608fontSize = (new DOM(player.getFigure()).width()) * (0.8 / 32) * ratio
+    };
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
@@ -94,6 +123,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         domElement.css('left', `${event.position.column * 0.6}em`);
         // 6.66 = 100/15 the number of possible lines
         domElement.css('top', `${event.position.row * 6.66}%`);
+        console.log(cea608fontSize)
+        domElement.css('font-size', `${cea608fontSize}px`);
         domElement.addClass(cea608CssClass);
         console.log(event.position.column, event.position.column + event.text.length, event.text);
       } else {
@@ -107,6 +138,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       this.updateComponents();
 
       this.show();
+      let domElement = labelToAdd.getDomElement();
     });
     player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
@@ -138,6 +170,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     player.addEventHandler(player.EVENT.ON_SEEK, subtitleClearHandler);
     player.addEventHandler(player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
     player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, subtitleClearHandler);
+    uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
 
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
