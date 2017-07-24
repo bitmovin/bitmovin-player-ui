@@ -1,15 +1,11 @@
 import {Container, ContainerConfig} from './container';
-import {UIInstanceManager, UISubtitleConfig} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
 import {ColorUtils} from '../colorutils';
 import {StorageUtils} from '../storageutils';
-
-export interface SubtitleOverlayConfig extends ContainerConfig {
-  subtitleConfig?: UISubtitleConfig;
-}
 
 export interface SubtitleStyle {
   fontColor?: ColorUtils.Color;
@@ -25,9 +21,7 @@ export interface SubtitleStyle {
 /**
  * Overlays the player to display subtitles.
  */
-export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
-
-  public config: SubtitleOverlayConfig;
+export class SubtitleOverlay extends Container<ContainerConfig> {
 
   private subtitleManager: ActiveSubtitleManager;
   private previewSubtitleActive: boolean;
@@ -44,7 +38,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
    */
   private userSubtitleStyle: SubtitleStyle;
 
-  constructor(config: SubtitleOverlayConfig = {}) {
+  constructor(config: ContainerConfig = {}) {
     super(config);
 
     this.previewSubtitleActive = false;
@@ -136,13 +130,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
 
   private configureSubtitleStyle(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    let config = <SubtitleOverlayConfig>this.config;
-
-    // Update the config first loading info from UImanager config
-    // then overwrites it with config given to the component if it applies
-    // finally loads user preferences from local storage
-    this.updateSubtitleOverlayFromUIConfig(config.subtitleConfig, this.baseSubtitleStyle);
-    this.updateSubtitleOverlayFromUIConfig(uimanager.getConfig().subtitles, this.baseSubtitleStyle);
     this.updateSubtitleOverlayFromLocalStorage();
 
     // This css property isn't applied to the subtitle cue
@@ -151,36 +138,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       this.getDomElement().css('background', this.style.windowColor.toCSS());
     }
     this.applyStyleToLabels();
-  }
-
-  /**
-   * Updates the setting used to display subtitles based on config information
-   */
-  private updateSubtitleOverlayFromUIConfig(subtitlesConfig: UISubtitleConfig, subtitleStyle: SubtitleStyle): void {
-    if (subtitlesConfig == null) {
-      return;
-    }
-    if (subtitlesConfig.backgroundColor != null) {
-      subtitleStyle.backgroundColor = ColorUtils.colorFromCss(subtitlesConfig.backgroundColor);
-    }
-    if (subtitlesConfig.fontColor != null) {
-      subtitleStyle.fontColor = ColorUtils.colorFromCss(subtitlesConfig.fontColor);
-    }
-    if (subtitlesConfig.windowColor != null) {
-      subtitleStyle.windowColor = ColorUtils.colorFromCss(subtitlesConfig.windowColor);
-    }
-    if (subtitlesConfig.fontFamily != null) {
-      subtitleStyle.fontFamily = subtitlesConfig.fontFamily;
-    }
-    if (subtitlesConfig.fontVariant != null) {
-      subtitleStyle.fontVariant = subtitlesConfig.fontVariant;
-    }
-    if (subtitlesConfig.fontStyle != null) {
-      subtitleStyle.fontStyle = subtitlesConfig.fontStyle;
-    }
-    if (subtitlesConfig.characterEdge != null) {
-      subtitleStyle.characterEdge = subtitlesConfig.characterEdge;
-    }
   }
 
   /**

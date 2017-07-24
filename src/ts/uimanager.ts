@@ -59,17 +59,6 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
-export interface UISubtitleConfig {
-  backgroundColor?: string;
-  characterEdge?: string;
-  fontSize?: number;
-  fontColor?: string;
-  fontFamily?: string;
-  fontStyle?: string;
-  fontVariant?: string;
-  windowColor?: string;
-}
-
 export interface TimelineMarker {
   time: number;
   title?: string;
@@ -87,7 +76,6 @@ export interface UIConfig {
     markers?: TimelineMarker[];
   };
   recommendations?: UIRecommendationConfig[];
-  subtitles?: UISubtitleConfig;
 }
 
 /**
