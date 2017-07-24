@@ -81,6 +81,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
+    let cea608CssClass = this.prefixCss('cea608');
+
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
 
@@ -92,7 +94,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         domElement.css('left', `${event.position.column * 0.6}em`);
         // 6.66 = 100/15 the number of possible lines
         domElement.css('top', `${event.position.row * 6.66}%`);
-        domElement.addClass(this.prefixCss('cea608'));
+        domElement.addClass(cea608CssClass);
         console.log(event.position.column, event.position.column + event.text.length, event.text);
       } else {
         this.applyConfToDom(labelToAdd.getDomElement());
