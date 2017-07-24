@@ -33,9 +33,9 @@ export class SubtitleSettingsPanel extends SettingsPanel {
 
     this.config = this.mergeConfig(config, {
       components: <Component<ComponentConfig>[]>[
+        new SettingsPanelItem('Font size', new FontSizeSelectBox(manager, {overlay: this.overlay})),
         new SettingsPanelItem('Font family', new FontFamilySelectBox(manager, {overlay: this.overlay})),
         new SettingsPanelItem('Font color', new FontColorSelectBox(manager, {overlay: this.overlay})),
-        new SettingsPanelItem('Font size', new FontSizeSelectBox(manager, {overlay: this.overlay})),
         new SettingsPanelItem('Font opacity', new FontOpacitySelectBox(manager, {overlay: this.overlay})),
         new SettingsPanelItem('Character edge', new CharacterEdgeSelectBox(manager, {overlay: this.overlay})),
         new SettingsPanelItem('Background color', new BackgroundColorSelectBox(manager, {overlay: this.overlay})),
