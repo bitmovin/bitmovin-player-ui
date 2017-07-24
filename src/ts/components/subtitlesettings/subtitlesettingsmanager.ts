@@ -47,9 +47,11 @@ export class SubtitleSettingsManager {
         if (property.isSet()) {
           (<any>this.userSettings)[propertyName] = property.value;
         } else {
+          // Delete the property from the settings object if unset to avoid serialization of null values
           delete (<any>this.userSettings)[propertyName];
         }
 
+        // Save the settings object when a property has changed
         this.save();
       });
     }
