@@ -111,6 +111,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       let ratio = 1/width
       cea608fontSize = (new DOM(player.getFigure()).width()) * (0.8 / 32) * ratio
     };
+    uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
@@ -170,7 +172,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     player.addEventHandler(player.EVENT.ON_SEEK, subtitleClearHandler);
     player.addEventHandler(player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
     player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, subtitleClearHandler);
-    uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
 
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
