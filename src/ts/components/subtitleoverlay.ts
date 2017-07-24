@@ -125,10 +125,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         domElement.css('left', `${event.position.column * 0.6}em`);
         // 6.66 = 100/15 the number of possible lines
         domElement.css('top', `${event.position.row * 6.66}%`);
-        console.log(cea608fontSize)
         domElement.css('font-size', `${cea608fontSize}px`);
         domElement.addClass(cea608CssClass);
-        console.log(event.position.column, event.position.column + event.text.length, event.text);
       } else {
         this.applyConfToDom(labelToAdd.getDomElement());
       }
