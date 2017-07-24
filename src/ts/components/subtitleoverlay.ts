@@ -124,6 +124,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     player.addEventHandler(player.EVENT.ON_SEEK, subtitleClearHandler);
     player.addEventHandler(player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
     player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, subtitleClearHandler);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, subtitleClearHandler);
 
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
