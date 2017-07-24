@@ -5,6 +5,7 @@ import {SubtitleSettingsManager} from './subtitlesettingsmanager';
 
 export interface SubtitleSettingSelectBoxConfig extends ListSelectorConfig {
   overlay: SubtitleOverlay;
+  settingsManager: SubtitleSettingsManager;
 }
 
 /**
@@ -16,9 +17,10 @@ export class SubtitleSettingSelectBox extends SelectBox {
   protected overlay: SubtitleOverlay;
   private currentCssClass: string;
 
-  constructor(settingsManager: SubtitleSettingsManager, config: SubtitleSettingSelectBoxConfig) {
+  constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
-    this.settingsManager = settingsManager;
+
+    this.settingsManager = config.settingsManager;
     this.overlay = config.overlay;
   }
 

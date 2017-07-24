@@ -15,7 +15,6 @@ import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SubtitleSettingsPanel} from './components/subtitlesettings/subtitlesettingspanel';
 import {SubtitleSettingsLabel} from './components/subtitlesettings/subtitlesettingslabel';
 import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
-import {SubtitleSettingsCloseButton} from './components/subtitlesettings/subtitlesettingsclosebutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
@@ -407,11 +406,6 @@ export namespace UIManager.Factory {
   function modernUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
-    let subtitleSettingsPanel = new SubtitleSettingsPanel({
-      hidden: true,
-      overlay: subtitleOverlay,
-    });
-
     let settingsPanel = new SettingsPanel({
       components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -422,21 +416,22 @@ export namespace UIManager.Factory {
       hidden: true,
     });
 
+    let subtitleSettingsPanel = new SubtitleSettingsPanel({
+      hidden: true,
+      overlay: subtitleOverlay,
+      settingsPanel: settingsPanel,
+    });
+
     let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
+
     settingsPanel.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
-
-    let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
-      subtitleSettingsPanel: subtitleSettingsPanel,
-      settingsPanel: settingsPanel,
-    });
-    subtitleSettingsPanel.addComponent(new SettingsPanelItem(null, subtitleSettingsCloseButton));
 
     let controlBar = new ControlBar({
       components: [
@@ -518,11 +513,7 @@ export namespace UIManager.Factory {
 
   function modernSmallScreenUI() {
     let subtitleOverlay = new SubtitleOverlay();
-    let subtitleSettingsPanel = new SubtitleSettingsPanel({
-      hidden: true,
-      hideDelay: -1,
-      overlay: subtitleOverlay,
-    });
+
     let settingsPanel = new SettingsPanel({
       components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -533,21 +524,24 @@ export namespace UIManager.Factory {
       hidden: true,
       hideDelay: -1,
     });
+
+    let subtitleSettingsPanel = new SubtitleSettingsPanel({
+      hidden: true,
+      hideDelay: -1,
+      overlay: subtitleOverlay,
+      settingsPanel: settingsPanel,
+    });
+
     let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
+
     settingsPanel.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
-
-    let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
-      subtitleSettingsPanel: subtitleSettingsPanel,
-      settingsPanel: settingsPanel,
-    });
-    subtitleSettingsPanel.addComponent(new SettingsPanelItem(null, subtitleSettingsCloseButton));
 
     settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
     subtitleSettingsPanel.addComponent(new CloseButton({ target: subtitleSettingsPanel }));

@@ -12,9 +12,11 @@ import {SubtitleOverlay} from '../subtitleoverlay';
 import {Component, ComponentConfig} from '../component';
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleSettingsManager} from './subtitlesettingsmanager';
+import {SubtitleSettingsCloseButton} from './subtitlesettingsclosebutton';
 
 export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
   overlay: SubtitleOverlay;
+  settingsPanel: SettingsPanel;
 }
 
 /**
@@ -33,15 +35,36 @@ export class SubtitleSettingsPanel extends SettingsPanel {
 
     this.config = this.mergeConfig(config, {
       components: <Component<ComponentConfig>[]>[
-        new SettingsPanelItem('Font size', new FontSizeSelectBox(manager, {overlay: this.overlay})),
-        new SettingsPanelItem('Font family', new FontFamilySelectBox(manager, {overlay: this.overlay})),
-        new SettingsPanelItem('Font color', new FontColorSelectBox(manager, {overlay: this.overlay})),
-        new SettingsPanelItem('Font opacity', new FontOpacitySelectBox(manager, {overlay: this.overlay})),
-        new SettingsPanelItem('Character edge', new CharacterEdgeSelectBox(manager, {overlay: this.overlay})),
-        new SettingsPanelItem('Background color', new BackgroundColorSelectBox(manager, {overlay: this.overlay})),
-        new SettingsPanelItem('Background opacity', new BackgroundOpacitySelectBox(manager, {overlay: this.overlay})),
-        new SettingsPanelItem('Window color', new WindowColorSelectBox(manager, {overlay: this.overlay})),
-        new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox(manager, {overlay: this.overlay})),
+        new SettingsPanelItem('Font size', new FontSizeSelectBox({
+          overlay: this.overlay, settingsManager: manager,
+        })),
+        new SettingsPanelItem('Font family', new FontFamilySelectBox({
+          overlay: this.overlay, settingsManager: manager,
+        })),
+        new SettingsPanelItem('Font color', new FontColorSelectBox({
+          overlay: this.overlay, settingsManager: manager,
+        })),
+        new SettingsPanelItem('Font opacity', new FontOpacitySelectBox({
+          overlay: this.overlay, settingsManager: manager,
+        })),
+        new SettingsPanelItem('Character edge', new CharacterEdgeSelectBox({
+          overlay: this.overlay, settingsManager: manager,
+        })),
+        new SettingsPanelItem('Background color', new BackgroundColorSelectBox({
+          overlay: this.overlay, settingsManager: manager,
+        })),
+        new SettingsPanelItem('Background opacity', new BackgroundOpacitySelectBox({
+          overlay: this.overlay, settingsManager: manager,
+        })),
+        new SettingsPanelItem('Window color', new WindowColorSelectBox({
+          overlay: this.overlay, settingsManager: manager,
+        })),
+        new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({
+          overlay: this.overlay, settingsManager: manager,
+        })),
+        new SettingsPanelItem(null, new SubtitleSettingsCloseButton({
+          subtitleSettingsPanel: this, settingsPanel: config.settingsPanel,
+        })),
       ]}, this.config);
   }
 
