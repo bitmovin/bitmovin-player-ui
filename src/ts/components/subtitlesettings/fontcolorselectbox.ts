@@ -1,43 +1,57 @@
-import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
+import {SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-import {StorageUtils} from '../../storageutils';
-import {ColorUtils} from '../../colorutils';
 
 /**
  * A select box providing a selection of different font colors.
  */
 export class FontColorSelectBox extends SubtitleSettingSelectBox {
 
-  constructor(config: SubtitleSettingSelectBoxConfig) {
-    super(config);
-  }
-
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem('rgba(255, 255, 255, 1)', 'white');
-    this.addItem('rgba(0, 0, 0, 1)', 'black');
-    this.addItem('rgba(255, 0, 0, 1)', 'red');
-    this.addItem('rgba(0, 255, 0, 1)', 'green');
-    this.addItem('rgba(0, 0, 255, 1)', 'blue');
-    this.addItem('rgba(0, 255, 255, 1)', 'cyan');
-    this.addItem('rgba(255, 255, 0, 1)', 'yellow');
-    this.addItem('rgba(255, 0, 255, 1)', 'magenta');
+    this.addItem(null, 'default');
+    this.addItem('white', 'white');
+    this.addItem('black', 'black');
+    this.addItem('red', 'red');
+    this.addItem('green', 'green');
+    this.addItem('blue', 'blue');
+    this.addItem('cyan', 'cyan');
+    this.addItem('yellow', 'yellow');
+    this.addItem('magenta', 'magenta');
 
-    // white as the default value
-    this.selectItem('rgba(255, 255, 255, 1)');
-
-    if (StorageUtils.hasLocalStorage()) {
-      let color = window.localStorage.getItem('fontColor');
-      if (color != null) {
-        let col = ColorUtils.colorFromCss(color, ColorUtils.foreground);
-        col.a = 1; // All colors are defined with default opacity
-        this.selectItem(col.toCSS());
+    let setColorAndOpacity = () => {
+      if (this.settingsManager.fontColor.isSet() && this.settingsManager.fontOpacity.isSet()) {
+        this.toggleOverlayClass(
+          'fontcolor-' + this.settingsManager.fontColor.value + this.settingsManager.fontOpacity.value);
+      } else {
+        this.toggleOverlayClass(null);
       }
-    }
+    };
 
-    this.onItemSelected.subscribe((sender: FontColorSelectBox, value: string) => {
-      this.overlay.setColor(value);
+    this.onItemSelected.subscribe((sender, key: string) => {
+      this.settingsManager.fontColor.value = key;
     });
+
+    this.settingsManager.fontColor.onChanged.subscribe((sender, property) => {
+      // Color and opacity go together, so we need to...
+      if (!this.settingsManager.fontColor.isSet()) {
+        // ... clear the opacity when the color is not set
+        this.settingsManager.fontOpacity.clear();
+      } else if (!this.settingsManager.fontOpacity.isSet()) {
+        // ... set an opacity when the color is set
+        this.settingsManager.fontOpacity.value = '100';
+      }
+      this.selectItem(property.value);
+      setColorAndOpacity();
+    });
+
+    this.settingsManager.fontOpacity.onChanged.subscribe(() => {
+      setColorAndOpacity();
+    });
+
+    // Load initial value
+    if (this.settingsManager.fontColor.isSet()) {
+      this.selectItem(this.settingsManager.fontColor.value);
+    }
   }
 }

@@ -5,7 +5,6 @@
  */
 export {ArrayUtils} from './arrayutils';
 export {BrowserUtils} from './browserutils';
-export {ColorUtils} from './colorutils';
 export {PlayerUtils} from './playerutils';
 export {StorageUtils} from './storageutils';
 export {StringUtils} from './stringutils';

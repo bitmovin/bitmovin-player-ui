@@ -1,43 +1,57 @@
-import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
+import {SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-import {StorageUtils} from '../../storageutils';
-import {ColorUtils} from '../../colorutils';
 
 /**
  * A select box providing a selection of different background colors.
  */
 export class WindowColorSelectBox extends SubtitleSettingSelectBox {
 
-  constructor(config: SubtitleSettingSelectBoxConfig) {
-    super(config);
-  }
-
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem('rgba(255, 255, 255, 1)', 'white');
-    this.addItem('rgba(0, 0, 0, 1)', 'black');
-    this.addItem('rgba(255, 0, 0, 1)', 'red');
-    this.addItem('rgba(0, 255, 0, 1)', 'green');
-    this.addItem('rgba(0, 0, 255, 1)', 'blue');
-    this.addItem('rgba(0, 255, 255, 1)', 'cyan');
-    this.addItem('rgba(255, 255, 0, 1)', 'yellow');
-    this.addItem('rgba(255, 0, 255, 1)', 'magenta');
+    this.addItem(null, 'default');
+    this.addItem('white', 'white');
+    this.addItem('black', 'black');
+    this.addItem('red', 'red');
+    this.addItem('green', 'green');
+    this.addItem('blue', 'blue');
+    this.addItem('cyan', 'cyan');
+    this.addItem('yellow', 'yellow');
+    this.addItem('magenta', 'magenta');
 
-    // black is the default value
-    this.selectItem('rgba(0, 0, 0, 1)');
-
-    if (StorageUtils.hasLocalStorage()) {
-      let color = window.localStorage.getItem('windowColor');
-      if (color != null) {
-        let col = ColorUtils.colorFromCss(color, ColorUtils.background);
-        col.a = 1;
-        this.selectItem(col.toCSS());
+    let setColorAndOpacity = () => {
+      if (this.settingsManager.windowColor.isSet() && this.settingsManager.windowOpacity.isSet()) {
+        this.toggleOverlayClass(
+          'windowcolor-' + this.settingsManager.windowColor.value + this.settingsManager.windowOpacity.value);
+      } else {
+        this.toggleOverlayClass(null);
       }
-    }
+    };
 
-    this.onItemSelected.subscribe((sender: WindowColorSelectBox, value: string) => {
-      this.overlay.setWindowColor(value);
+    this.onItemSelected.subscribe((sender, key: string) => {
+      this.settingsManager.windowColor.value = key;
     });
+
+    this.settingsManager.windowColor.onChanged.subscribe((sender, property) => {
+      // Color and opacity go together, so we need to...
+      if (!this.settingsManager.windowColor.isSet()) {
+        // ... clear the opacity when the color is not set
+        this.settingsManager.windowOpacity.clear();
+      } else if (!this.settingsManager.windowOpacity.isSet()) {
+        // ... set an opacity when the color is set
+        this.settingsManager.windowOpacity.value = '100';
+      }
+      this.selectItem(property.value);
+      setColorAndOpacity();
+    });
+
+    this.settingsManager.windowOpacity.onChanged.subscribe(() => {
+      setColorAndOpacity();
+    });
+
+    // Load initial value
+    if (this.settingsManager.windowColor.isSet()) {
+      this.selectItem(this.settingsManager.windowColor.value);
+    }
   }
 }
