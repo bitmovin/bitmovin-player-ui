@@ -180,7 +180,8 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
         let minItemsToDisplay = 2;
         // Audio/video quality select boxes contain an additional 'auto' mode, which in combination with a single
         // available quality also does not make sense
-        if (this.setting instanceof VideoQualitySelectBox || this.setting instanceof AudioQualitySelectBox) {
+        if ((this.setting instanceof VideoQualitySelectBox && this.setting.hasAutoItem())
+          || this.setting instanceof AudioQualitySelectBox) {
           minItemsToDisplay = 3;
         }
 

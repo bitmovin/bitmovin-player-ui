@@ -7,6 +7,8 @@ import {UIInstanceManager} from '../uimanager';
  */
 export class VideoQualitySelectBox extends SelectBox {
 
+  private hasAuto: boolean;
+
   constructor(config: ListSelectorConfig = {}) {
     super(config);
   }
@@ -19,8 +21,13 @@ export class VideoQualitySelectBox extends SelectBox {
 
       this.clearItems();
 
-      // Add entry for automatic quality switching (default setting)
-      this.addItem('auto', 'auto');
+      // Progressive streams do not support automatic quality selection
+      this.hasAuto = player.getStreamType() !== 'progressive';
+
+      if (this.hasAuto) {
+        // Add entry for automatic quality switching (default setting)
+        this.addItem('auto', 'auto');
+      }
 
       // Add video qualities
       for (let videoQuality of videoQualities) {
@@ -44,5 +51,13 @@ export class VideoQualitySelectBox extends SelectBox {
 
     // Populate qualities at startup
     updateVideoQualities();
+  }
+
+  /**
+   * Returns true if the select box contains an 'auto' item for automatic quality selection mode.
+   * @return {boolean}
+   */
+  hasAutoItem(): boolean {
+    return this.hasAuto;
   }
 }
