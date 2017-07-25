@@ -28,7 +28,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     super.configure(player, uimanager);
 
     let clearRecommendations = () => {
-      for (let component of this.getComponents()) {
+      for (let component of this.getComponents().slice()) {
         if (component instanceof RecommendationItem) {
           this.removeComponent(component);
         }

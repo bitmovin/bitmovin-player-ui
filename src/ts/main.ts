@@ -8,6 +8,7 @@ import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktim
 import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {SeekBar} from './components/seekbar';
 import {SelectBox} from './components/selectbox';
+import {ItemSelectionList} from './components/itemselectionlist';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {ToggleButton} from './components/togglebutton';
@@ -141,6 +142,7 @@ if (typeof Object.assign !== 'function') {
   SeekBar,
   SeekBarLabel,
   SelectBox,
+  ItemSelectionList,
   SettingsPanel,
   SettingsPanelItem,
   SettingsToggleButton,

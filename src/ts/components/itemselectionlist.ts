@@ -1,61 +1,60 @@
 import {ListSelector, ListSelectorConfig} from './listselector';
 import {DOM} from '../dom';
 
-/**
- * A simple select box providing the possibility to select a single item out of a list of available items.
- *
- * DOM example:
- * <code>
- *     <select class='ui-selectbox'>
- *         <option value='key'>label</option>
- *         ...
- *     </select>
- * </code>
- */
-export class SelectBox extends ListSelector<ListSelectorConfig> {
+export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
 
-  private selectElement: DOM;
+  private listElement: DOM;
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-selectbox',
+      tag: 'ul',
+      cssClass: 'ui-itemselectionlist',
     }, this.config);
   }
 
+  protected isActive(): boolean {
+    return this.items.length > 1;
+  }
+
   protected toDomElement(): DOM {
-    let selectElement = new DOM('select', {
+    let listElement = new DOM('ul', {
       'id': this.config.id,
       'class': this.getCssClasses(),
     });
 
-    this.selectElement = selectElement;
+    this.listElement = listElement;
     this.updateDomItems();
 
-    selectElement.on('change', () => {
-      let value = selectElement.val();
-      this.onItemSelectedEvent(value, false);
-    });
-
-    return selectElement;
+    return listElement;
   }
 
   protected updateDomItems(selectedValue: string = null) {
     // Delete all children
-    this.selectElement.empty();
+    this.listElement.empty();
 
-    // Add updated children
     for (let item of this.items) {
-      let optionElement = new DOM('option', {
-        'value': item.key,
-      }).html(item.label);
+      let optionElement = new DOM('li', {
+        'type': 'li',
+        'class': this.prefixCss('ui-selectionlistitem'),
+      }).append(new DOM('a', {
+      }).html(item.label));
 
-      if (item.key === String(selectedValue)) { // convert selectedValue to string to catch 'null'/null case
-        optionElement.attr('selected', 'selected');
+      if (selectedValue == null) { // If there is no pre-selected value, select the first one
+        optionElement.addClass(this.prefixCss('selected'));
+        selectedValue = item.key; // Ensure no other item get selected
       }
 
-      this.selectElement.append(optionElement);
+      if (item.key === String(selectedValue)) { // convert selectedValue to string to catch 'null'/null case
+        optionElement.addClass(this.prefixCss('selected'));
+      }
+
+      optionElement.on('click', () => {
+        this.onItemSelectedEvent(item.key, true);
+      });
+
+      this.listElement.append(optionElement);
     }
   }
 
