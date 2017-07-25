@@ -119,8 +119,13 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * Removes all items from this selector.
    */
   clearItems() {
-    let items = this.items; // local copy for iteration after clear
-    this.items = []; // clear items
+    // local copy for iteration after clear
+    let items = this.items;
+    // clear items
+    this.items = [];
+
+    // clear the selection as the selected item is also removed
+    this.selectedItem = null;
 
     // fire events
     for (let item of items) {
