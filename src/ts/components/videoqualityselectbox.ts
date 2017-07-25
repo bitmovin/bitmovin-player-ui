@@ -16,6 +16,11 @@ export class VideoQualitySelectBox extends SelectBox {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
+    let selectCurrentVideoQuality = () => {
+      let data = player.getDownloadedVideoData();
+      this.selectItem(data.isAuto ? 'auto' : data.id);
+    };
+
     let updateVideoQualities = () => {
       let videoQualities = player.getAvailableVideoQualities();
 
@@ -33,6 +38,9 @@ export class VideoQualitySelectBox extends SelectBox {
       for (let videoQuality of videoQualities) {
         this.addItem(videoQuality.id, videoQuality.label);
       }
+
+      // Select initial quality
+      selectCurrentVideoQuality();
     };
 
     this.onItemSelected.subscribe((sender: VideoQualitySelectBox, value: string) => {
@@ -44,10 +52,7 @@ export class VideoQualitySelectBox extends SelectBox {
     // Update qualities when a new source is loaded
     player.addEventHandler(player.EVENT.ON_READY, updateVideoQualities);
     // Update quality selection when quality is changed (from outside)
-    player.addEventHandler(player.EVENT.ON_VIDEO_DOWNLOAD_QUALITY_CHANGE, () => {
-      let data = player.getDownloadedVideoData();
-      this.selectItem(data.isAuto ? 'auto' : data.id);
-    });
+    player.addEventHandler(player.EVENT.ON_VIDEO_DOWNLOAD_QUALITY_CHANGE, selectCurrentVideoQuality);
 
     // Populate qualities at startup
     updateVideoQualities();
