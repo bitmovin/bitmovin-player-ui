@@ -1,5 +1,3 @@
-import {ColorUtils} from './colorutils';
-
 export namespace StorageUtils {
   let hasLocalStorageCache: boolean;
 
@@ -58,8 +56,6 @@ export namespace StorageUtils {
     }
   }
 
-  const ColorUtilsColorMarker = 'ColorUtils.Color::';
-
   /**
    * Stores an object into localStorage. The object will be serialized to JSON. The following types are supported
    * in addition to the default types:
@@ -70,13 +66,7 @@ export namespace StorageUtils {
    */
   export function setObject<T>(key: string, data: T): void {
     if (StorageUtils.hasLocalStorage()) {
-      let json = JSON.stringify(data, (key: string, value: any) => {
-        if (value instanceof ColorUtils.Color) {
-          return ColorUtilsColorMarker + value.toCSS();
-        }
-        return value;
-      });
-
+      let json = JSON.stringify(data);
       setItem(key, json);
     }
   }
@@ -94,13 +84,7 @@ export namespace StorageUtils {
       let json = getItem(key);
 
       if (key) {
-        let object = JSON.parse(json, (key: any, value: any) => {
-          if (typeof value === 'string' && value.indexOf(ColorUtilsColorMarker) === 0) {
-            return ColorUtils.colorFromCss(value.substr(ColorUtilsColorMarker.length));
-          }
-          return value;
-        });
-
+        let object = JSON.parse(json);
         return <T>object;
       }
     }

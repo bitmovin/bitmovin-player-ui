@@ -65,7 +65,6 @@ import {StringUtils} from './stringutils';
 import {PlayerUtils} from './playerutils';
 import {UIUtils} from './uiutils';
 import {BrowserUtils} from './browserutils';
-import {ColorUtils} from './colorutils';
 import {StorageUtils} from './storageutils';
 // HACK: gulp-tslint fails on unused files so we need this dummy import
 import {ArrayUtils as Dummy} from './utils'; // tslint:disable-line
@@ -107,7 +106,6 @@ if (typeof Object.assign !== 'function') {
   PlayerUtils,
   UIUtils,
   BrowserUtils,
-  ColorUtils,
   StorageUtils,
   // Components
   AdClickOverlay,
