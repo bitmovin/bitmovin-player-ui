@@ -302,8 +302,10 @@ declare namespace bitmovin {
     load(source: PlayerAPI.SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<PlayerAPI>;
     /**
      * Mutes the player if an audio track is available. Has no effect if the player is already muted.
+     *
+     * @param issuer the source of the mute command
      */
-    mute(): PlayerAPI;
+    mute(issuer?: string): PlayerAPI;
     /**
      * Pauses the video if it is playing. Has no effect if the player is already paused.
      */
@@ -346,8 +348,9 @@ declare namespace bitmovin {
      * not possible.
      *
      * @param time The time to seek to
+     * @param issuer the source of the seek command
      */
-    seek(time: number): boolean;
+    seek(time: number, issuer?: string): boolean;
     /**
      * Sets the audio track to the ID specified by trackID.
      * Available tracks can be retrieved with {@link #getAvailableAudio}.
@@ -435,8 +438,9 @@ declare namespace bitmovin {
      * Sets the player’s volume in the range of 0 (silent) to 100 (max volume). Unmutes a muted player.
      *
      * @param volume The volume to set between 0 and 100
+     * @param issuer the source of the setVolume command
      */
-    setVolume(volume: number): PlayerAPI;
+    setVolume(volume: number, issuer?: string): PlayerAPI;
     /**
      * Enables or disables stereo mode for VR content.
      *
@@ -455,16 +459,19 @@ declare namespace bitmovin {
      * value has to be within the timeShift window as specified by {@link #getMaxTimeShift}.
      *
      * @param offset The offset to timeshift to
+     * @param issuer The issuer of the timeShift command
      */
-    timeShift(offset: number): PlayerAPI;
+    timeShift(offset: number, issuer?: string): PlayerAPI;
     /**
      * Unloads the current video source.
      */
     unload(): PlayerAPI;
     /**
      * Unmutes the player if muted.
+     *
+     * @param issuer the issuer of the unmute command
      */
-    unmute(): PlayerAPI;
+    unmute(issuer?: string): PlayerAPI;
 
     fireEvent(event: PlayerAPI.EVENT, data: {}): void;
     /**
