@@ -25,6 +25,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
 
     this.onItemSelected.subscribe((sender: PlaybackSpeedSelectBox, value: string) => {
       player.setPlaybackSpeed(parseFloat(value));
+      this.selectedItem = value;
     });
 
     // when the player hits onReady again, adjust the playback speed selection with fallback to default 1
@@ -34,7 +35,6 @@ export class PlaybackSpeedSelectBox extends SelectBox {
         playbackSpeed = '1';
         this.selectItem(playbackSpeed);
       }
-      this.updateDomItems(playbackSpeed);
     });
   }
 }
