@@ -31,7 +31,14 @@ export class SubtitleSelectBox extends SelectBox {
 
     // React to API events
     player.addEventHandler(player.EVENT.ON_SUBTITLE_ADDED, (event: SubtitleAddedEvent) => {
-      this.addItem(event.subtitle.id, event.subtitle.label);
+      if (this.itemCount() === 0) {
+        // When a subtitle is dynamically added and it is the first one, we add all available subtitles which
+        // includes the "off"-item and makes the subtitle select box visible.
+        updateSubtitles();
+      } else {
+        // If the subtitle select box is already initialized, we just add the new one to the existing ones.
+        this.addItem(event.subtitle.id, event.subtitle.label);
+      }
     });
     player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, (event: SubtitleChangedEvent) => {
       this.selectItem(event.targetSubtitle.id);

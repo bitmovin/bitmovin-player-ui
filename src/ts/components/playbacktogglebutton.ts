@@ -1,7 +1,7 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
 import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
-import {PlayerUtils} from '../utils';
+import {PlayerUtils} from '../playerutils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 
 /**

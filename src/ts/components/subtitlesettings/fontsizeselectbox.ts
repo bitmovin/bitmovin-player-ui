@@ -1,38 +1,41 @@
-import {SubtitleSettingSelectBoxConfig, SubtitleSettingSelectBox} from './subtitlesettingselectbox';
+import {SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
-import {StorageUtils} from '../../utils';
 
 /**
  * A select box providing a selection of different font colors.
  */
 export class FontSizeSelectBox extends SubtitleSettingSelectBox {
 
-  constructor(config: SubtitleSettingSelectBoxConfig) {
-    super(config);
-  }
-
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem('0.5', '50%');
-    this.addItem('0.75', '75%');
-    this.addItem('1', '100%');
-    this.addItem('1.5', '150%');
-    this.addItem('2', '200%');
-    this.addItem('3', '300%');
-    this.addItem('4', '400%');
+    this.addItem(null, 'default');
+    this.addItem('50', '50%');
+    this.addItem('75', '75%');
+    this.addItem('100', '100%');
+    this.addItem('150', '150%');
+    this.addItem('200', '200%');
+    this.addItem('300', '300%');
+    this.addItem('400', '400%');
 
-    this.selectItem('1');
-
-    if (StorageUtils.hasLocalStorage()) {
-      let fontCoefficient = window.localStorage.getItem('fontCoefficient');
-      if (fontCoefficient != null) {
-        this.selectItem(fontCoefficient);
+    this.settingsManager.fontSize.onChanged.subscribe((sender, property) => {
+      if (property.isSet()) {
+        this.toggleOverlayClass('fontsize-' + property.value);
+      } else {
+        this.toggleOverlayClass(null);
       }
-    }
 
-    this.onItemSelected.subscribe((sender: FontSizeSelectBox, value: string) => {
-      this.overlay.setFontSize(Number(value));
+      // Select the item in case the property was set from outside
+      this.selectItem(property.value);
     });
+
+    this.onItemSelected.subscribe((sender, key: string) => {
+      this.settingsManager.fontSize.value = key;
+    });
+
+    // Load initial value
+    if (this.settingsManager.fontSize.isSet()) {
+      this.selectItem(this.settingsManager.fontSize.value);
+    }
   }
 }

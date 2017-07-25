@@ -1,7 +1,8 @@
 import {LabelConfig, Label} from './label';
 import {UIInstanceManager} from '../uimanager';
-import {StringUtils, PlayerUtils} from '../utils';
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
+import {PlayerUtils} from '../playerutils';
+import {StringUtils} from '../stringutils';
 
 export enum PlaybackTimeLabelMode {
   CurrentTime,
@@ -144,5 +145,13 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         this.setText(`${currentTime} / ${totalTime}`);
         break;
     }
+  }
+
+  /**
+   * Sets the current time format
+   * @param timeFormat the time format
+   */
+  protected setTimeFormat(timeFormat: string): void {
+    this.timeFormat = timeFormat;
   }
 }

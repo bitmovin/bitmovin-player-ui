@@ -2,7 +2,7 @@ import {Container, ContainerConfig} from './container';
 import {Label, LabelConfig} from './label';
 import {Component, ComponentConfig} from './component';
 import {UIInstanceManager, SeekPreviewArgs} from '../uimanager';
-import {StringUtils} from '../utils';
+import {StringUtils} from '../stringutils';
 import {ImageLoader} from '../imageloader';
 
 /**

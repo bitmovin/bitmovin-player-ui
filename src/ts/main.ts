@@ -8,6 +8,7 @@ import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktim
 import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {SeekBar} from './components/seekbar';
 import {SelectBox} from './components/selectbox';
+import {ItemSelectionList} from './components/itemselectionlist';
 import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {ToggleButton} from './components/togglebutton';
@@ -60,7 +61,15 @@ import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitle
 import {SubtitleSettingsPanel} from './components/subtitlesettings/subtitlesettingspanel';
 import {WindowColorSelectBox} from './components/subtitlesettings/windowcolorselectbox';
 import {WindowOpacitySelectBox} from './components/subtitlesettings/windowopacityselectbox';
-import {ArrayUtils, StringUtils, PlayerUtils, UIUtils, BrowserUtils, ColorUtils, StorageUtils} from './utils';
+import {ArrayUtils} from './arrayutils';
+import {StringUtils} from './stringutils';
+import {PlayerUtils} from './playerutils';
+import {UIUtils} from './uiutils';
+import {BrowserUtils} from './browserutils';
+import {StorageUtils} from './storageutils';
+// HACK: gulp-tslint fails on unused files so we need this dummy import
+import {ArrayUtils as Dummy} from './utils'; // tslint:disable-line
+import {SubtitleSettingsResetButton} from './components/subtitlesettings/subtitlesettingsresetbutton';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -98,7 +107,6 @@ if (typeof Object.assign !== 'function') {
   PlayerUtils,
   UIUtils,
   BrowserUtils,
-  ColorUtils,
   StorageUtils,
   // Components
   AdClickOverlay,
@@ -134,6 +142,7 @@ if (typeof Object.assign !== 'function') {
   SeekBar,
   SeekBarLabel,
   SelectBox,
+  ItemSelectionList,
   SettingsPanel,
   SettingsPanelItem,
   SettingsToggleButton,
@@ -166,5 +175,6 @@ if (typeof Object.assign !== 'function') {
     SubtitleSettingsPanel,
     WindowColorSelectBox,
     WindowOpacitySelectBox,
+    SubtitleSettingsResetButton,
   },
 };

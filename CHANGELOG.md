@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.8.0]
+
+### Added
+- Adds a `VolumeToggleButton` to the small screen UI
+
+### Changed
+- Moved all subtitle styling to CSS (default subtitle style is not overwritten any longer)
+
+### Fixed
+- Fix clearing of container components with `Container#removeComponents` (fixes sticky/duplicate subtitle issue)
+- Fix updating container components with `Container#updateComponents` (fixes empty subtitles in IE11)
+- Fix handling of duplicate subtitle cues (same text at same time) in `SubtitleOverlay` (fixes another sticky subtitle issue)
+- Fix clearing of recommendations in `RecommendationOverlay` (fixes duplicate recommendations issue)
+- Reset selected value in `ListSelector` when the items are cleared
+- Updating selected value in `PlaybackSpeedSelectBox` when player is ready
+- Fix video quality options for progressive streams (removed 'auto' option, preferred quality preselected)
+
 ## [2.7.1]
 
 ### Changed
@@ -187,6 +204,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[2.8.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.7.1...v2.8.0
 [2.7.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.5.1...v2.6.0

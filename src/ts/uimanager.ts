@@ -15,7 +15,6 @@ import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
 import {SubtitleSettingsPanel} from './components/subtitlesettings/subtitlesettingspanel';
 import {SubtitleSettingsLabel} from './components/subtitlesettings/subtitlesettingslabel';
 import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
-import {SubtitleSettingsCloseButton} from './components/subtitlesettings/subtitlesettingsclosebutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
@@ -37,7 +36,6 @@ import {AdClickOverlay} from './components/adclickoverlay';
 import EVENT = bitmovin.PlayerAPI.EVENT;
 import PlayerEventCallback = bitmovin.PlayerAPI.PlayerEventCallback;
 import AdStartedEvent = bitmovin.PlayerAPI.AdStartedEvent;
-import {ArrayUtils, UIUtils, BrowserUtils} from './utils';
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
@@ -49,23 +47,15 @@ import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 import {Spacer} from './components/spacer';
+import {UIUtils} from './uiutils';
+import {ArrayUtils} from './arrayutils';
+import {BrowserUtils} from './browserutils';
 
 export interface UIRecommendationConfig {
   title: string;
   url: string;
   thumbnail?: string;
   duration?: number;
-}
-
-export interface UISubtitleConfig {
-  backgroundColor?: string;
-  characterEdge?: string;
-  fontCoefficient?: number;
-  fontColor?: string;
-  fontFamily?: string;
-  fontStyle?: string;
-  fontVariant?: string;
-  windowColor?: string;
 }
 
 export interface TimelineMarker {
@@ -85,7 +75,6 @@ export interface UIConfig {
     markers?: TimelineMarker[];
   };
   recommendations?: UIRecommendationConfig[];
-  subtitles?: UISubtitleConfig;
 }
 
 /**
@@ -417,11 +406,6 @@ export namespace UIManager.Factory {
   function modernUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
-    let subtitleSettingsPanel = new SubtitleSettingsPanel({
-      hidden: true,
-      overlay: subtitleOverlay,
-    });
-
     let settingsPanel = new SettingsPanel({
       components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -432,21 +416,22 @@ export namespace UIManager.Factory {
       hidden: true,
     });
 
+    let subtitleSettingsPanel = new SubtitleSettingsPanel({
+      hidden: true,
+      overlay: subtitleOverlay,
+      settingsPanel: settingsPanel,
+    });
+
     let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
+
     settingsPanel.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
-
-    let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
-      subtitleSettingsPanel: subtitleSettingsPanel,
-      settingsPanel: settingsPanel,
-    });
-    subtitleSettingsPanel.addComponent(new SettingsPanelItem(null, subtitleSettingsCloseButton));
 
     let controlBar = new ControlBar({
       components: [
@@ -528,11 +513,7 @@ export namespace UIManager.Factory {
 
   function modernSmallScreenUI() {
     let subtitleOverlay = new SubtitleOverlay();
-    let subtitleSettingsPanel = new SubtitleSettingsPanel({
-      hidden: true,
-      hideDelay: -1,
-      overlay: subtitleOverlay,
-    });
+
     let settingsPanel = new SettingsPanel({
       components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
@@ -543,21 +524,24 @@ export namespace UIManager.Factory {
       hidden: true,
       hideDelay: -1,
     });
+
+    let subtitleSettingsPanel = new SubtitleSettingsPanel({
+      hidden: true,
+      hideDelay: -1,
+      overlay: subtitleOverlay,
+      settingsPanel: settingsPanel,
+    });
+
     let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
       subtitleSettingsPanel: subtitleSettingsPanel,
       settingsPanel: settingsPanel,
     });
+
     settingsPanel.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
-
-    let subtitleSettingsCloseButton = new SubtitleSettingsCloseButton({
-      subtitleSettingsPanel: subtitleSettingsPanel,
-      settingsPanel: settingsPanel,
-    });
-    subtitleSettingsPanel.addComponent(new SettingsPanelItem(null, subtitleSettingsCloseButton));
 
     settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
     subtitleSettingsPanel.addComponent(new CloseButton({ target: subtitleSettingsPanel }));
@@ -587,6 +571,7 @@ export namespace UIManager.Factory {
             new MetadataLabel({ content: MetadataLabelContent.Title }),
             new CastToggleButton(),
             new VRToggleButton(),
+            new VolumeToggleButton(),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
           ],

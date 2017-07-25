@@ -1,6 +1,6 @@
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
-import {StringUtils} from '../utils';
+import {StringUtils} from '../stringutils';
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
