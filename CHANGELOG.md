@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Adds a `VolumeToggleButton` to the small screen UI
 
+### Changed
+- Moved all subtitle styling to CSS (default subtitle style is not overwritten any longer)
+
 ### Fixed
 - Fix clearing of container components with `Container#removeComponents` (fixes sticky/duplicate subtitle issue)
 - Fix updating container components with `Container#updateComponents` (fixes empty subtitles in IE11)
