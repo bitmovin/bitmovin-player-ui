@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fix updating container components with `Container#updateComponents` (fixes empty subtitles in IE11)
 - Fix handling of duplicate subtitle cues (same text at same time) in `SubtitleOverlay` (fixes another sticky subtitle issue)
 - Fix clearing of recommendations in `RecommendationOverlay` (fixes duplicate recommendations issue)
+- Reset selected value in `ListSelector` when the items are cleared
+- Updating selected value in `PlaybackSpeedSelectBox` when player is ready
 
 ## [2.7.1]
 
