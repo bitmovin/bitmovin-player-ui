@@ -43,7 +43,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     let minWidth = 0;
 
     let liveClickHandler = () => {
-      player.timeShift(0);
+      player.timeShift(0, 'ui');
     };
 
     let updateLiveState = () => {
