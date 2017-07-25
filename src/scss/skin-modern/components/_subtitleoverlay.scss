@@ -20,10 +20,6 @@
   transition: height $animation-duration-short ease-out;
   width: 60%;
 
-  .#{$prefix}-container-wrapper {
-    position: absolute;
-  }
-
   .#{$prefix}-ui-subtitle-label {
     @include text-border($subtitle-text-border-color);
 
