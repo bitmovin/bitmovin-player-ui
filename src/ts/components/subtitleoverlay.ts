@@ -109,7 +109,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       }
 
       let ratio =   1 / width;
-      cea608fontSize = (new DOM(player.getFigure()).width()) * (0.8 / 32) * ratio;
+      cea608fontSize = (new DOM(player.getFigure()).width()) * (0.6 / 32) * ratio;
     };
     uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
