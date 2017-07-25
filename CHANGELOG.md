@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fix clearing of recommendations in `RecommendationOverlay` (fixes duplicate recommendations issue)
 - Reset selected value in `ListSelector` when the items are cleared
 - Updating selected value in `PlaybackSpeedSelectBox` when player is ready
+- Fix video quality options for progressive streams (removed 'auto' option, preferred quality preselected)
 
 ## [2.7.1]
 
