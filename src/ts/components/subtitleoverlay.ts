@@ -4,6 +4,7 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
+import {DOM} from '../dom';
 
 /**
  * Overlays the player to display subtitles.
@@ -15,6 +16,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private previewSubtitle: SubtitleLabel;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
+  private static readonly CEA608_NUM_COLUMN = 32;
+  private static readonly CEA608_WIDTH = 0.6;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -37,22 +40,24 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let cea608fontSize = 1;
 
     let generateCea608Ratio = () => {
+      let dummyText = 'aaaaaaaaaa'
       let label = new SubtitleLabel({
         // One letter label used to calculate the height wifth ratio of the font
         // Works because we are using a monospace font for cea 608
         // Using a longer string increases precision due to width being an integer
-        text: 'aaaaaaaaaa',
+        text: dummyText,
       });
       let domElement = label.getDomElement();
       domElement.addClass(cea608CssClass);
-      domElement.css('color', 'rgba(0, 0, 0, 0)');
-      domElement.css('font-size', '1px');
+      domElement.css({
+        'color': 'rgba(0, 0, 0, 0)',
+        'font-size': '1px'
+      });
       this.addComponent(label);
       this.updateComponents();
       this.show();
 
-      // 10 is the length of the string used above
-      let width = domElement.width() / 10;
+      let width = domElement.width() / dummyText.length;
 
       this.removeComponent(label);
       this.updateComponents();
@@ -60,24 +65,26 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.hide();
       }
 
-      let ratio =   1 / width;
-      cea608fontSize = (new DOM(player.getFigure()).width()) * (0.6 / 32) * ratio;
+      let ratio = 1 / width;
+      cea608fontSize = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMN) * ratio;
     };
     uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
+      // If there is positionning data we assume we have CEA-608 style captions
+      let isCEA608 = event.position != null;
 
-      // In this block all the logic for CEA-608 captions is applied
-      // It's based on the assertion that a cue with position metadata
-      // is CEA-608
-      if (event.position != null) {
+      // In this block all the logic for CEA-608 captions is applied.
+      if (isCEA608) {
         let domElement = labelToAdd.getDomElement();
-        domElement.css('left', `${event.position.column * 0.6}em`);
-        // 6.66 = 100/15 the number of possible lines
-        domElement.css('top', `${event.position.row * 6.66}%`);
-        domElement.css('font-size', `${cea608fontSize}px`);
+        domElement.css({
+          'left': `${event.position.column * 0.6}em`,
+          // 6.66 = 100/15 the number of possible lines
+          'top': `${event.position.row * 6.66}%`,
+          'font-size': `${cea608fontSize}px`
+        });
         domElement.addClass(cea608CssClass);
       }
       if (this.previewSubtitleActive) {
