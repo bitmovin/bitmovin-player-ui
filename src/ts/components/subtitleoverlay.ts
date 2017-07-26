@@ -14,8 +14,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private subtitleManager: ActiveSubtitleManager;
   private previewSubtitleActive: boolean;
   private previewSubtitle: SubtitleLabel;
+  private cea608fontSize: number;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
+  private static readonly CLASS_CEA_608 = 'cea608';
   private static readonly CEA608_NUM_COLUMN = 32;
   private static readonly CEA608_WIDTH = 0.6;
 
@@ -36,56 +38,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
-    let cea608CssClass = this.prefixCss('cea608');
-    let cea608fontSize = 1;
-
-    let generateCea608Ratio = () => {
-      let dummyText = 'aaaaaaaaaa';
-      let label = new SubtitleLabel({
-        // One letter label used to calculate the height wifth ratio of the font
-        // Works because we are using a monospace font for cea 608
-        // Using a longer string increases precision due to width being an integer
-        text: dummyText,
-      });
-      let domElement = label.getDomElement();
-      domElement.addClass(cea608CssClass);
-      domElement.css({
-        'color': 'rgba(0, 0, 0, 0)',
-        'font-size': '30px',
-        'line-height': '30px',
-        'top': '0',
-        'left': '0',
-      });
-      this.addComponent(label);
-      this.updateComponents();
-      this.show();
-
-      let width = domElement.width() / dummyText.length;
-      let height = domElement.height();
-
-      this.removeComponent(label);
-      this.updateComponents();
-      if (!subtitleManager.hasCues) {
-        this.hide();
-      }
-
-      let ratio = height / width;
-      cea608fontSize = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMN) * ratio;
-
-      for (let label of this.getComponents()) {
-        if (label instanceof SubtitleLabel) {
-          // Only element with left property are cea-608
-          if (label.isCEA608) {
-            let domElement = label.getDomElement();
-            domElement.css({
-              'font-size': `${cea608fontSize}px`,
-            });
-          }
-        }
-      }
-    };
-    uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
-    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
+    this.configureCea608Captions(player, uimanager);
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
@@ -99,9 +52,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
           'left': `${event.position.column * 0.6}em`,
           // 6.66 = 100/15 the number of possible lines
           'top': `${event.position.row * 6.66}%`,
-          'font-size': `${cea608fontSize}px`,
+          'font-size': `${this.cea608fontSize}px`,
         });
-        domElement.addClass(cea608CssClass);
+        domElement.addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
       }
       if (this.previewSubtitleActive) {
         this.removeComponent(this.previewSubtitle);
@@ -155,6 +108,57 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     // Init
     subtitleClearHandler();
+  }
+
+  configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+
+    let generateCea608Ratio = () => {
+      let dummyText = 'aaaaaaaaaa';
+      let label = new SubtitleLabel({
+        // One letter label used to calculate the height wifth ratio of the font
+        // Works because we are using a monospace font for cea 608
+        // Using a longer string increases precision due to width being an integer
+        text: dummyText,
+      });
+      let domElement = label.getDomElement();
+      domElement.addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
+      domElement.css({
+        'color': 'rgba(0, 0, 0, 0)',
+        'font-size': '30px',
+        'line-height': '30px',
+        'top': '0',
+        'left': '0',
+      });
+      this.addComponent(label);
+      this.updateComponents();
+      this.show();
+
+      let width = domElement.width() / dummyText.length;
+      let height = domElement.height();
+
+      this.removeComponent(label);
+      this.updateComponents();
+      if (!this.subtitleManager.hasCues) {
+        this.hide();
+      }
+
+      let ratio = height / width;
+      this.cea608fontSize = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMN) * ratio;
+
+      for (let label of this.getComponents()) {
+        if (label instanceof SubtitleLabel) {
+          // Only element with left property are cea-608
+          if (label.isCEA608) {
+            let domElement = label.getDomElement();
+            domElement.css({
+              'font-size': `${this.cea608fontSize}px`,
+            });
+          }
+        }
+      }
+    };
+    uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
   }
 
   enablePreviewSubtitleLabel(): void {
