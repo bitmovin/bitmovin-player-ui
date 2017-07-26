@@ -40,7 +40,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let cea608fontSize = 1;
 
     let generateCea608Ratio = () => {
-      let dummyText = 'aaaaaaaaaa'
+      let dummyText = 'aaaaaaaaaa';
       let label = new SubtitleLabel({
         // One letter label used to calculate the height wifth ratio of the font
         // Works because we are using a monospace font for cea 608
@@ -61,7 +61,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.show();
 
       let width = domElement.width() / dummyText.length;
-      let height = domElement.height()
+      let height = domElement.height();
 
       this.removeComponent(label);
       this.updateComponents();
@@ -71,6 +71,18 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       let ratio = height / width;
       cea608fontSize = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMN) * ratio;
+
+      for (let label of this.getComponents()) {
+        if (label instanceof SubtitleLabel) {
+          let domElement = label.getDomElement();
+          // Only element with left property are cea-608
+          if (domElement.css('left') != null) {
+            domElement.css({
+              'font-size': `${cea608fontSize}px`,
+            });
+          }
+        }
+      }
     };
     uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
@@ -87,7 +99,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
           'left': `${event.position.column * 0.6}em`,
           // 6.66 = 100/15 the number of possible lines
           'top': `${event.position.row * 6.66}%`,
-          'font-size': `${cea608fontSize}px`
+          'font-size': `${cea608fontSize}px`,
         });
         domElement.addClass(cea608CssClass);
       }
