@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- Fix `animate-slide-in-from-bottom` mixin
+- Fix `animate-slide-in-from-bottom` SCSS mixin (fixes missing VolumeSlider slide-in animation of VolumeControlButton in the legacy skin)
 
 ## [2.8.1]
 
