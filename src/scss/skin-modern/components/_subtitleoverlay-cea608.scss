@@ -1,7 +1,7 @@
 .#{$prefix}-ui-subtitle-overlay {
   .#{$prefix}-cea608 {
     font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
-    position: fixed;
+    position: absolute;
     text-transform: uppercase;
   }
 }
