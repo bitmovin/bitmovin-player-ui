@@ -104,15 +104,7 @@ declare namespace bitmovin {
       time: number;
     }
 
-    interface UserInteractionEvent extends PlayerEvent {
-
-      /**
-       * The issuer who lead to the triggering of this event
-       */
-      issuer?: string;
-    }
-
-    interface SeekEvent extends UserInteractionEvent {
+    interface SeekEvent extends PlayerEvent {
       /**
        * The current position (in seconds)
        */
@@ -123,7 +115,7 @@ declare namespace bitmovin {
       seekTarget: number;
     }
 
-    interface VolumeChangedEvent extends UserInteractionEvent {
+    interface VolumeChangedEvent extends PlayerEvent {
       /**
        * The volume before the event has been triggered
        */

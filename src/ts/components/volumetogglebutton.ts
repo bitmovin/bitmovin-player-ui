@@ -41,9 +41,9 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.onClick.subscribe(() => {
       if (player.isMuted()) {
-        player.unmute('ui');
+        player.unmute();
       } else {
-        player.mute('ui');
+        player.mute();
       }
     });
 
