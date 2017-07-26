@@ -51,13 +51,17 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       domElement.addClass(cea608CssClass);
       domElement.css({
         'color': 'rgba(0, 0, 0, 0)',
-        'font-size': '1px'
+        'font-size': '30px',
+        'line-height': '30px',
+        'top': '0',
+        'left': '0',
       });
       this.addComponent(label);
       this.updateComponents();
       this.show();
 
       let width = domElement.width() / dummyText.length;
+      let height = domElement.height()
 
       this.removeComponent(label);
       this.updateComponents();
@@ -65,7 +69,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.hide();
       }
 
-      let ratio = 1 / width;
+      let ratio = height / width;
       cea608fontSize = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMN) * ratio;
     };
     uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
