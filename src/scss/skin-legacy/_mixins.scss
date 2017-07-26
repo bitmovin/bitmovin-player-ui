@@ -43,7 +43,7 @@
 
 @mixin animate-slide-in-from-bottom($max-height, $duration: $animation-duration, $inner-selector: '') {
   // Animate show
-  #{$inner-selector} {
+  & #{$inner-selector} {
     max-height: $max-height;
     transition: max-height $duration ease-in;
   }
