@@ -74,9 +74,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       for (let label of this.getComponents()) {
         if (label instanceof SubtitleLabel) {
-          let domElement = label.getDomElement();
           // Only element with left property are cea-608
-          if (domElement.css('left') != null) {
+          if (label.isCEA608) {
+            let domElement = label.getDomElement();
             domElement.css({
               'font-size': `${cea608fontSize}px`,
             });
@@ -90,10 +90,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
       // If there is positionning data we assume we have CEA-608 style captions
-      let isCEA608 = event.position != null;
+      labelToAdd.isCEA608 = event.position != null;
 
       // In this block all the logic for CEA-608 captions is applied.
-      if (isCEA608) {
+      if (labelToAdd.isCEA608) {
         let domElement = labelToAdd.getDomElement();
         domElement.css({
           'left': `${event.position.column * 0.6}em`,
@@ -184,12 +184,22 @@ interface ActiveSubtitleCueMap {
 
 class SubtitleLabel extends Label<LabelConfig> {
 
+  private _isCEA608: boolean = false;
+
   constructor(config: LabelConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitle-label',
     }, this.config);
+  }
+
+  get isCEA608(): boolean {
+    return this._isCEA608;
+  }
+
+  set isCEA608(isCEA608: boolean) {
+    this._isCEA608 = isCEA608;
   }
 }
 
