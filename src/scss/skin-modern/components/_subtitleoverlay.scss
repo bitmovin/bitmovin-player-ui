@@ -6,19 +6,14 @@
 
   @include hidden;
 
-  align-items: flex-end;
-  display: flex;
+  bottom: 2em;
   font-size: 1.2em;
-  height: 86%;
-  justify-content: center;
-  margin: auto 20%;
+  left: 3em;
   pointer-events: none;
   position: absolute;
+  right: 3em;
   text-align: center;
-  top: 50%;
-  transform: translate(0%, -50%);
-  transition: height $animation-duration-short ease-out;
-  width: 60%;
+  transition: bottom $animation-duration-short ease-out;
 
   .#{$prefix}-ui-subtitle-label {
     @include text-border($subtitle-text-border-color);
@@ -34,7 +29,7 @@
   }
 
   &.#{$prefix}-controlbar-visible {
-    height: 70%;
-    transition: height $animation-duration-short ease-in;
+    bottom: 5em;
+    transition: bottom $animation-duration-short ease-in;
   }
 }

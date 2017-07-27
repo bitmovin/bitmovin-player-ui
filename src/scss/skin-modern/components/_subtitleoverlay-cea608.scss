@@ -1,7 +1,23 @@
-.#{$prefix}-ui-subtitle-overlay {
-  .#{$prefix}-cea608 {
+.#{$prefix}-ui-subtitle-overlay &.#{$prefix}-cea608 {
+  align-items: flex-end;
+  display: flex;
+  height: 86%;
+  justify-content: center;
+  margin: auto 20%;
+  pointer-events: none;
+  top: 50%;
+  transform: translate(0%, -50%);
+  transition: height $animation-duration-short ease-out;
+  width: 60%;
+
+  .#{$prefix}-ui-subtitle-label {
     font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
     position: absolute;
     text-transform: uppercase;
+  }
+
+  &.#{$prefix}-controlbar-visible {
+    height: 70%;
+    transition: height $animation-duration-short ease-in;
   }
 }

@@ -54,7 +54,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
           'top': `${event.position.row * 6.66}%`,
           'font-size': `${this.cea608fontSize}px`,
         });
-        domElement.addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
+        this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
       }
       if (this.previewSubtitleActive) {
         this.removeComponent(this.previewSubtitle);
