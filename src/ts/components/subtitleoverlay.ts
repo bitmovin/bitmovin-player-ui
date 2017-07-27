@@ -172,9 +172,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     });
 
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
+    let reset = () => {
       this.getDomElement().removeClass(SubtitleOverlay.CLASS_CEA_608);
-    });
+    }
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, reset)
+    player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, reset)
   }
 
   enablePreviewSubtitleLabel(): void {
