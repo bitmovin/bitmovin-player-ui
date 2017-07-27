@@ -14,17 +14,19 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private subtitleManager: ActiveSubtitleManager;
   private previewSubtitleActive: boolean;
   private previewSubtitle: SubtitleLabel;
-  private cea608fontSize: number;
+  private cea608lineHeight: number;
   private isCEA608: boolean = false;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
   private static readonly CEA608_NUM_COLUMN = 32;
   private static readonly CEA608_WIDTH = 0.8;
+  private static readonly CEA608_FONT_SPACING = 1.11;
   // Takes into account the letter spacing
-  private static readonly CEA608_FONT_COEF = 0.606;
+  private static readonly CEA608_FONT_COEF = 0.64;
   // 6.66 = 100/15 the number of possible lines
   private static readonly CEA608_LINE_COEF = 6.66;
+  private static readonly CEA608_LINE_TO_FONT_SIZE = 0.9;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -108,6 +110,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
 
+    let ratio = 1;
     let generateCea608Ratio = () => {
       let dummyText = 'aaaaaaaaaa';
       let label = new SubtitleLabel({
@@ -138,16 +141,16 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.hide();
       }
 
-      let ratio = height / width;
-      this.cea608fontSize = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMN) * ratio;
+      ratio = height / width;
+      this.cea608lineHeight = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMN) * ratio * SubtitleOverlay.CEA608_FONT_SPACING;
 
-      for (let label of this.getComponents()) {
-        if (label instanceof SubtitleLabel) {
-          // Only element with left property are cea-608
-          if (label.isCEA608) {
+      if (this.isCEA608) {
+        for (let label of this.getComponents()) {
+          if (label instanceof SubtitleLabel) {
+            // Only element with left property are cea-608
             let domElement = label.getDomElement();
             domElement.css({
-              'font-size': `${this.cea608fontSize}px`,
+              'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
             });
           }
         }
@@ -167,9 +170,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
       let domElement = labelToAdd.getDomElement();
       domElement.css({
-        'left': `${event.position.column * SubtitleOverlay.CEA608_FONT_COEF}em`,
+        'left': `${event.position.column / ratio}em`,
         'top': `${event.position.row * SubtitleOverlay.CEA608_LINE_COEF}%`,
-        'font-size': `${this.cea608fontSize}px`,
+        'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
       });
 
       this.addLabel(labelToAdd);
