@@ -20,8 +20,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
   private static readonly CEA608_NUM_COLUMN = 32;
-  private static readonly CEA608_WIDTH = 0.6;
-  private static readonly CEA608_FONT_COEF = 0.6;
+  private static readonly CEA608_WIDTH = 0.8;
+  // Takes into account the letter spacing
+  private static readonly CEA608_FONT_COEF = 0.606;
   // 6.66 = 100/15 the number of possible lines
   private static readonly CEA608_LINE_COEF = 6.66;
 

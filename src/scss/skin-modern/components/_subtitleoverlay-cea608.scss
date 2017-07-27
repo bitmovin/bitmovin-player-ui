@@ -5,16 +5,17 @@
   height: 86%;
   justify-content: center;
   left: unset;
-  margin: auto 20%;
+  margin: auto 10%;
   pointer-events: none;
   right: unset;
   top: 50%;
   transform: translate(0%, -50%);
   transition: height $animation-duration-short ease-out;
-  width: 60%;
+  width: 80%;
 
   .#{$prefix}-ui-subtitle-label {
     font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
+    letter-spacing: 0.01em;
     position: absolute;
     text-transform: uppercase;
   }
