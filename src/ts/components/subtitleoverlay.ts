@@ -15,6 +15,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private previewSubtitleActive: boolean;
   private previewSubtitle: SubtitleLabel;
   private cea608fontSize: number;
+  private isCEA608: boolean = false;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
@@ -40,6 +41,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
+
+      if (this.isCEA608) {
+        // Another event handler process vue in case of CEA-608 captions
+        return
+      }
       // If there is positionning data we assume we have CEA-608 style captions
       labelToAdd.isCEA608 = event.position != null;
 
@@ -151,6 +157,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       if (event.position == null) {
         return
       }
+      if (!this.isCEA608) {
+        this.isCEA608 = true;
+        this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
+        generateCea608Ratio()
+      }
       let domElement = labelToAdd.getDomElement();
       domElement.css({
         'left': `${event.position.column * 0.6}em`,
@@ -158,7 +169,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         'top': `${event.position.row * 6.66}%`,
         'font-size': `${this.cea608fontSize}px`,
       });
-      this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
+
       this.addLabel(labelToAdd);
     });
   }
