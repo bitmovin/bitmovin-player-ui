@@ -46,18 +46,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
 
-      if (this.isCEA608) {
-        // Another event handler process vue in case of CEA-608 captions
-        return;
+      if (this.previewSubtitleActive) {
+        this.removeComponent(this.previewSubtitle);
       }
-      // If there is positionning data we assume we have CEA-608 style captions
-      labelToAdd.isCEA608 = event.position != null;
+      this.addComponent(labelToAdd);
+      this.updateComponents();
 
-      // CEA-608 labels with positionning are handled in another eventHandler
-      if (labelToAdd.isCEA608) {
-        return;
-      }
-      this.addLabel(labelToAdd);
+      this.show();
     });
     player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
@@ -107,7 +102,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-
     let ratio = 1;
     let generateCea608Ratio = () => {
       let dummyText = 'aaaaaaaaaa';
@@ -157,10 +151,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
-      let labelToAdd = this.subtitleManager.getCue(event);
       if (event.position == null) {
         return;
       }
+
+      let labelToAdd = this.subtitleManager.getCue(event);
+
       if (!this.isCEA608) {
         this.isCEA608 = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
@@ -172,23 +168,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         'top': `${event.position.row * SubtitleOverlay.CEA608_LINE_COEF}%`,
         'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
       });
-
-      this.addLabel(labelToAdd);
     });
 
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
       this.getDomElement().removeClass(SubtitleOverlay.CLASS_CEA_608);
     });
-  }
-
-  private addLabel(labelToAdd: SubtitleLabel): void {
-    if (this.previewSubtitleActive) {
-      this.removeComponent(this.previewSubtitle);
-    }
-    this.addComponent(labelToAdd);
-    this.updateComponents();
-
-    this.show();
   }
 
   enablePreviewSubtitleLabel(): void {
