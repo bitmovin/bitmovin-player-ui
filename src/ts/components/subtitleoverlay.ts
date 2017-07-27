@@ -38,31 +38,16 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
-    this.configureCea608Captions(player, uimanager);
-
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = subtitleManager.cueEnter(event);
       // If there is positionning data we assume we have CEA-608 style captions
       labelToAdd.isCEA608 = event.position != null;
 
-      // In this block all the logic for CEA-608 captions is applied.
+      // CEA-608 labels with positionning are handled in another eventHandler
       if (labelToAdd.isCEA608) {
-        let domElement = labelToAdd.getDomElement();
-        domElement.css({
-          'left': `${event.position.column * 0.6}em`,
-          // 6.66 = 100/15 the number of possible lines
-          'top': `${event.position.row * 6.66}%`,
-          'font-size': `${this.cea608fontSize}px`,
-        });
-        this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
+        return;
       }
-      if (this.previewSubtitleActive) {
-        this.removeComponent(this.previewSubtitle);
-      }
-      this.addComponent(labelToAdd);
-      this.updateComponents();
-
-      this.show();
+      this.addLabel(labelToAdd);
     });
     player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
@@ -106,6 +91,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     });
 
+    this.configureCea608Captions(player, uimanager);
     // Init
     subtitleClearHandler();
   }
@@ -159,6 +145,32 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     };
     uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
+
+    player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
+      let labelToAdd = this.subtitleManager.getCue(event);
+      if (event.position == null) {
+        return
+      }
+      let domElement = labelToAdd.getDomElement();
+      domElement.css({
+        'left': `${event.position.column * 0.6}em`,
+        // 6.66 = 100/15 the number of possible lines
+        'top': `${event.position.row * 6.66}%`,
+        'font-size': `${this.cea608fontSize}px`,
+      });
+      this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
+      this.addLabel(labelToAdd);
+    });
+  }
+
+  private addLabel(labelToAdd: SubtitleLabel): void {
+    if (this.previewSubtitleActive) {
+      this.removeComponent(this.previewSubtitle);
+    }
+    this.addComponent(labelToAdd);
+    this.updateComponents();
+
+    this.show();
   }
 
   enablePreviewSubtitleLabel(): void {
@@ -252,6 +264,21 @@ class ActiveSubtitleManager {
     this.activeSubtitleCueCount++;
 
     return label;
+  }
+
+  /**
+   * Returns the label associated with an already added cue.
+   * @param event
+   * @return {SubtitleLabel}
+   */
+  getCue(event: SubtitleCueEvent): SubtitleLabel {
+    let id = ActiveSubtitleManager.calculateId(event);
+    let activeSubtitleCues = this.activeSubtitleCueMap[id];
+    if (activeSubtitleCues && activeSubtitleCues.length > 0) {
+      return activeSubtitleCues[0].label;
+    } else {
+      return null;
+    }
   }
 
   /**
