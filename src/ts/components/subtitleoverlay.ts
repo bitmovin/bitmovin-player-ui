@@ -155,19 +155,21 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         return;
       }
 
-      let labelToAdd = this.subtitleManager.getCue(event);
+      let labels = this.subtitleManager.getCues(event);
 
       if (!this.isCEA608) {
         this.isCEA608 = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
         generateCea608Ratio();
       }
-      let domElement = labelToAdd.getDomElement();
-      domElement.css({
-        'left': `${event.position.column / ratio}em`,
-        'top': `${event.position.row * SubtitleOverlay.CEA608_LINE_COEF}%`,
-        'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
-      });
+      for (let label of labels) {
+        let domElement = label.getDomElement();
+        domElement.css({
+          'left': `${event.position.column / ratio}em`,
+          'top': `${event.position.row * SubtitleOverlay.CEA608_LINE_COEF}%`,
+          'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
+        });
+      }
     });
 
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
@@ -273,11 +275,11 @@ class ActiveSubtitleManager {
    * @param event
    * @return {SubtitleLabel}
    */
-  getCue(event: SubtitleCueEvent): SubtitleLabel {
+  getCues(event: SubtitleCueEvent): SubtitleLabel[] {
     let id = ActiveSubtitleManager.calculateId(event);
     let activeSubtitleCues = this.activeSubtitleCueMap[id];
     if (activeSubtitleCues && activeSubtitleCues.length > 0) {
-      return activeSubtitleCues[0].label;
+      return activeSubtitleCues.map((cue) => cue.label);
     } else {
       return null;
     }
