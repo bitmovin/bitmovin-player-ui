@@ -21,6 +21,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CLASS_CEA_608 = 'cea608';
   private static readonly CEA608_NUM_COLUMN = 32;
   private static readonly CEA608_WIDTH = 0.6;
+  private static readonly CEA608_FONT_COEF = 0.6;
+  // 6.66 = 100/15 the number of possible lines
+  private static readonly CEA608_LINE_COEF = 6.66;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -149,7 +152,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         }
       }
     };
-    uimanager.onConfigured.subscribeOnce(generateCea608Ratio);
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
@@ -164,13 +166,16 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
       let domElement = labelToAdd.getDomElement();
       domElement.css({
-        'left': `${event.position.column * 0.6}em`,
-        // 6.66 = 100/15 the number of possible lines
-        'top': `${event.position.row * 6.66}%`,
+        'left': `${event.position.column * SubtitleOverlay.CEA608_FONT_COEF}em`,
+        'top': `${event.position.row * SubtitleOverlay.CEA608_LINE_COEF}%`,
         'font-size': `${this.cea608fontSize}px`,
       });
 
       this.addLabel(labelToAdd);
+    });
+
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
+      this.getDomElement().removeClass(SubtitleOverlay.CLASS_CEA_608)
     });
   }
 
