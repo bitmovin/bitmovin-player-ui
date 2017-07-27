@@ -22,8 +22,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CEA608_NUM_COLUMN = 32;
   private static readonly CEA608_WIDTH = 0.8;
   private static readonly CEA608_FONT_SPACING = 1.11;
-  // Takes into account the letter spacing
-  private static readonly CEA608_FONT_COEF = 0.64;
   // 6.66 = 100/15 the number of possible lines
   private static readonly CEA608_LINE_COEF = 6.66;
   private static readonly CEA608_LINE_TO_FONT_SIZE = 0.9;
@@ -50,7 +48,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       if (this.isCEA608) {
         // Another event handler process vue in case of CEA-608 captions
-        return
+        return;
       }
       // If there is positionning data we assume we have CEA-608 style captions
       labelToAdd.isCEA608 = event.position != null;
@@ -161,12 +159,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       let labelToAdd = this.subtitleManager.getCue(event);
       if (event.position == null) {
-        return
+        return;
       }
       if (!this.isCEA608) {
         this.isCEA608 = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-        generateCea608Ratio()
+        generateCea608Ratio();
       }
       let domElement = labelToAdd.getDomElement();
       domElement.css({
@@ -179,7 +177,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     });
 
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
-      this.getDomElement().removeClass(SubtitleOverlay.CLASS_CEA_608)
+      this.getDomElement().removeClass(SubtitleOverlay.CLASS_CEA_608);
     });
   }
 

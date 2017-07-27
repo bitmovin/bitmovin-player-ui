@@ -1,3 +1,4 @@
+// sass-lint:disable force-element-nesting
 .#{$prefix}-ui-subtitle-overlay.#{$prefix}-cea608 {
   align-items: flex-end;
   bottom: unset;
@@ -15,14 +16,14 @@
 
   .#{$prefix}-ui-subtitle-label {
     font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
-    letter-spacing: 0.11em;
+    letter-spacing: .11em;
     position: absolute;
     text-transform: uppercase;
   }
 
   &.#{$prefix}-controlbar-visible {
+    bottom: unset;
     height: 70%;
     transition: height $animation-duration-short ease-in;
-    bottom: unset;
   }
 }
