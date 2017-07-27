@@ -19,11 +19,16 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
+  // The number of column in a cea608 line
   private static readonly CEA608_NUM_COLUMN = 32;
+  // 80% is the width of the space wher CEA608 captions are displayed
   private static readonly CEA608_WIDTH = 0.8;
+  // The actual font width is 1 + 0.11 letter-spacing
   private static readonly CEA608_FONT_SPACING = 1.11;
   // 6.66 = 100/15 the number of possible lines
   private static readonly CEA608_LINE_COEF = 6.66;
+  // To avoid having the font too big and overlap, while still have the proper width,
+  // the font must be sized down, the width is then compensated by letter-spacing
   private static readonly CEA608_LINE_TO_FONT_SIZE = 0.9;
 
   constructor(config: ContainerConfig = {}) {
