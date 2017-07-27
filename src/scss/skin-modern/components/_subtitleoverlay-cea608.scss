@@ -1,10 +1,13 @@
-.#{$prefix}-ui-subtitle-overlay &.#{$prefix}-cea608 {
+.#{$prefix}-ui-subtitle-overlay.#{$prefix}-cea608 {
   align-items: flex-end;
+  bottom: unset;
   display: flex;
   height: 86%;
   justify-content: center;
+  left: unset;
   margin: auto 20%;
   pointer-events: none;
+  right: unset;
   top: 50%;
   transform: translate(0%, -50%);
   transition: height $animation-duration-short ease-out;
@@ -19,5 +22,6 @@
   &.#{$prefix}-controlbar-visible {
     height: 70%;
     transition: height $animation-duration-short ease-in;
+    bottom: unset;
   }
 }
