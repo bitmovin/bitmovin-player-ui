@@ -368,7 +368,7 @@ export class UIManager {
 
     // Some components initialize their state on ON_READY. When the UI is loaded after the player is already ready,
     // they will never receive the event so we fire it from here in such cases.
-    if (!player.isReady()) {
+    if (player.isReady()) {
       player.fireEventInUI(player.EVENT.ON_READY, {});
     }
 
