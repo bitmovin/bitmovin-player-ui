@@ -167,8 +167,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         updateCEA608FontSize();
       }
       for (let label of labels) {
-        let domElement = label.getDomElement();
-        domElement.css({
+        label.getDomElement().css({
           'left': `${event.position.column / ratio}em`,
           'top': `${event.position.row * SubtitleOverlay.CEA608_LINE_COEF}%`,
           'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
@@ -178,6 +177,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     let reset = () => {
       this.getDomElement().removeClass(SubtitleOverlay.CLASS_CEA_608);
+      this.isCEA608 = false;
     };
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, reset);
     player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, reset);
