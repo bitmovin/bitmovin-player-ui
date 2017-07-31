@@ -1,7 +1,6 @@
 import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
-import VideoDownloadQualityChangeEvent = bitmovin.PlayerAPI.VideoDownloadQualityChangeEvent;
 
 /**
  * A select box providing a selection between 'auto' and the available video qualities.
@@ -20,7 +19,7 @@ export class VideoQualitySelectBox extends SelectBox {
     let selectCurrentVideoQuality = () => {
       if (player.getVideoQuality) {
         // Since player 7.3.1
-        this.selectItem(player.getVideoQuality().id)
+        this.selectItem(player.getVideoQuality().id);
       } else {
         // Backwards compatibility for players <= 7.3.0
         // TODO remove in next major release

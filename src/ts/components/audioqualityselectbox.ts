@@ -17,7 +17,7 @@ export class AudioQualitySelectBox extends SelectBox {
     let selectCurrentAudioQuality = () => {
       if (player.getAudioQuality) {
         // Since player 7.3.1
-        this.selectItem(player.getAudioQuality().id)
+        this.selectItem(player.getAudioQuality().id);
       } else {
         // Backwards compatibility for players <= 7.3.0
         // TODO remove in next major release
