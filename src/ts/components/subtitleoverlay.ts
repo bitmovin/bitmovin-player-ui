@@ -108,7 +108,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     let ratio = 1;
-    let generateCea608Ratio = () => {
+    let updateCEA608FontSize = () => {
       let dummyText = 'aaaaaaaaaa';
       let label = new SubtitleLabel({
         // One letter label used to calculate the height wifth ratio of the font
@@ -117,7 +117,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         text: dummyText,
       });
       let domElement = label.getDomElement();
-      domElement.addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
       domElement.css({
         'color': 'rgba(0, 0, 0, 0)',
         'font-size': '30px',
@@ -153,7 +152,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         }
       }
     };
-    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, generateCea608Ratio);
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, updateCEA608FontSize);
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       if (event.position == null) {
@@ -165,7 +164,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       if (!this.isCEA608) {
         this.isCEA608 = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-        generateCea608Ratio();
+        updateCEA608FontSize();
       }
       for (let label of labels) {
         let domElement = label.getDomElement();
@@ -211,22 +210,12 @@ interface ActiveSubtitleCueMap {
 
 class SubtitleLabel extends Label<LabelConfig> {
 
-  private _isCEA608: boolean = false;
-
   constructor(config: LabelConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitle-label',
     }, this.config);
-  }
-
-  get isCEA608(): boolean {
-    return this._isCEA608;
-  }
-
-  set isCEA608(isCEA608: boolean) {
-    this._isCEA608 = isCEA608;
   }
 }
 
