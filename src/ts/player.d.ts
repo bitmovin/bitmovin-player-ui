@@ -364,6 +364,10 @@ declare namespace bitmovin {
      */
     setAudioQuality(audioQualityID: string): PlayerAPI;
     /**
+     * Gets the currently set audio quality.
+     */
+    getAudioQuality(): PlayerAPI.AudioQuality;
+    /**
      * Sets authentication data which is sent along with the licensing call. Can be used to add more
      * information for a 3rd party licensing backend. The data be any type or object as needed by the
      * 3rd party licensing backend.
@@ -431,6 +435,10 @@ declare namespace bitmovin {
      * @param videoQualityID ID defined in the MPD or 'auto'
      */
     setVideoQuality(videoQualityID: string): PlayerAPI;
+    /**
+     * Gets the currently set video quality.
+     */
+    getVideoQuality(): PlayerAPI.VideoQuality;
     /**
      * Sets the player’s volume in the range of 0 (silent) to 100 (max volume). Unmutes a muted player.
      *
