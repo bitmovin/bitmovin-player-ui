@@ -143,6 +143,7 @@ export class UIManager {
   private currentUi: InternalUIInstanceManager;
   private config: UIConfig;
   private managerPlayerWrapper: PlayerWrapper;
+  private isReady: boolean = false;
 
   /**
    * Creates a UI manager with a single UI variant that will be permanently shown.
@@ -262,6 +263,7 @@ export class UIManager {
             if (adStartedEvent && !player.isAd()) {
               adStartedEvent = null;
             }
+            this.isReady = true;
         }
       }
 
@@ -333,6 +335,12 @@ export class UIManager {
 
           this.currentUi.getUI().show();
         }
+      }
+
+      // fire ON_READY if we missed it from the player
+      if (this.isReady === false && this.currentUi.getWrappedPlayer().isReady()) {
+        this.currentUi.getWrappedPlayer().fireEventInUI(this.player.EVENT.ON_READY, {});
+        this.isReady = true;
       }
     };
 
