@@ -229,6 +229,6 @@ gulp.task('npm-prepare', ['build-prod'], function() {
   ]);
 });
 
-// Export the paths object to allow customization (e.g. js output filename) from other gulpfiles that imports
-// and reuse the tasks in here.
+// Export the paths object to allow customization (e.g. js output filename) from other gulpfiles that import
+// and reuse the tasks from here.
 module.exports.paths = paths;
