@@ -44,6 +44,7 @@ var paths = {
     html: './dist',
     js: './dist/js',
     jsframework: './dist/js/framework',
+    jsmain: 'bitmovinplayer-ui.js',
     css: './dist/css'
   }
 };
@@ -115,7 +116,7 @@ gulp.task('browserify', function() {
 
   // Compile output JS file
   var stream = browserifyBundle
-  .pipe(source('bitmovinplayer-ui.js'))
+  .pipe(source(paths.target.jsmain))
   .pipe(replace('{{VERSION}}', npmPackage.version))
   .pipe(buffer()) // required for production/sourcemaps
   .pipe(gulp.dest(paths.target.js));
