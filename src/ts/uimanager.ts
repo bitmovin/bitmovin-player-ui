@@ -358,11 +358,19 @@ export class UIManager {
 
   private addUi(ui: InternalUIInstanceManager): void {
     let dom = ui.getUI().getDomElement();
+    let player = ui.getWrappedPlayer();
+
     ui.configureControls();
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
     this.uiContainerElement.append(dom);
+
+    // Some components initialize their state on ON_READY. When the UI is loaded after the player is already ready,
+    // they will never receive the event so we fire it from here in such cases.
+    if (player.isReady()) {
+      player.fireEventInUI(player.EVENT.ON_READY, {});
+    }
 
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
     // might not be fully configured and e.g. do not have a size.
