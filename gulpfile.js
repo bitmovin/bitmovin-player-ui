@@ -225,3 +225,7 @@ gulp.task('npm-prepare', ['build-prod'], function() {
     tsResult.js.pipe(gulp.dest(paths.target.jsframework))
   ]);
 });
+
+// Export the paths object to allow customization (e.g. js output filename) from other gulpfiles that imports
+// and reuse the tasks in here.
+module.exports.paths = paths;
