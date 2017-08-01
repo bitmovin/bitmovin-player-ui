@@ -24,6 +24,7 @@ declare namespace bitmovin {
       ON_AUDIO_CHANGED: EVENT;
       ON_AUDIO_ADDED: EVENT;
       ON_AUDIO_REMOVED: EVENT;
+      ON_AUDIO_QUALITY_CHANGED: EVENT;
       ON_AUDIO_DOWNLOAD_QUALITY_CHANGE: EVENT;
       ON_AUDIO_DOWNLOAD_QUALITY_CHANGED: EVENT;
       ON_AUDIO_PLAYBACK_QUALITY_CHANGED: EVENT;
@@ -71,6 +72,7 @@ declare namespace bitmovin {
       ON_TIME_SHIFTED: EVENT;
       ON_UNMUTED: EVENT;
       ON_VIDEO_ADAPTATION: EVENT;
+      ON_VIDEO_QUALITY_CHANGED: EVENT;
       ON_VIDEO_DOWNLOAD_QUALITY_CHANGE: EVENT;
       ON_VIDEO_DOWNLOAD_QUALITY_CHANGED: EVENT;
       ON_VIDEO_PLAYBACK_QUALITY_CHANGED: EVENT;
@@ -177,7 +179,7 @@ declare namespace bitmovin {
       targetSubtitle: Subtitle;
     }
 
-    interface MediaDownloadQualityChangeEvent<Q extends Quality> extends PlayerEvent {
+    interface MediaQualityChangeEvent<Q extends Quality> extends PlayerEvent {
       /**
        * Previous quality or null if no quality was set before.
        */
@@ -196,16 +198,22 @@ declare namespace bitmovin {
       targetQualityId: string;
     }
 
-    interface VideoDownloadQualityChangeEvent extends MediaDownloadQualityChangeEvent<VideoQuality> {
+    interface VideoQualityChangeEvent extends MediaQualityChangeEvent<VideoQuality> {
     }
 
-    interface AudioDownloadQualityChangeEvent extends MediaDownloadQualityChangeEvent<AudioQuality> {
+    interface AudioQualityChangeEvent extends MediaQualityChangeEvent<AudioQuality> {
     }
 
-    interface VideoDownloadQualityChangedEvent extends MediaDownloadQualityChangeEvent<VideoQuality> {
+    interface VideoDownloadQualityChangeEvent extends MediaQualityChangeEvent<VideoQuality> {
     }
 
-    interface AudioDownloadQualityChangedEvent extends MediaDownloadQualityChangeEvent<AudioQuality> {
+    interface AudioDownloadQualityChangeEvent extends MediaQualityChangeEvent<AudioQuality> {
+    }
+
+    interface VideoDownloadQualityChangedEvent extends MediaQualityChangeEvent<VideoQuality> {
+    }
+
+    interface AudioDownloadQualityChangedEvent extends MediaQualityChangeEvent<AudioQuality> {
     }
 
     interface MediaPlaybackQualityChangeEvent<Q extends Quality> extends PlayerEvent {
