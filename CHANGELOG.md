@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.8.3]
+
+### Changed
+- Use new quality change API in `AudioQualitySelectBox` and `VideoQualitySelectBox` for player >= 7.3.1 (selection is now synced with player-API `set[Audio|Video]Quality` calls)
+
 ## [2.8.2]
+
+Release of this version went wrong and it was unpublished from NPM.
 
 ### Fixed
 - Fix `animate-slide-in-from-bottom` SCSS mixin (fixes missing `VolumeSlider` slide-in animation of `VolumeControlButton` in the legacy skin)
@@ -215,6 +222,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[2.8.3]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.8.2...v2.8.3
 [2.8.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.8.1...v2.8.2
 [2.8.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.8.0...v2.8.1
 [2.8.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.7.1...v2.8.0
