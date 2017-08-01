@@ -32,6 +32,7 @@ var browserSync = require('browser-sync');
 var merge = require('merge2');
 var nativeTslint = require('tslint');
 var npmPackage = require('./package.json');
+var path = require('path');
 
 var paths = {
   source: {
@@ -44,6 +45,7 @@ var paths = {
     html: './dist',
     js: './dist/js',
     jsframework: './dist/js/framework',
+    jsmain: 'bitmovinplayer-ui.js',
     css: './dist/css'
   }
 };
@@ -115,7 +117,7 @@ gulp.task('browserify', function() {
 
   // Compile output JS file
   var stream = browserifyBundle
-  .pipe(source('bitmovinplayer-ui.js'))
+  .pipe(source(paths.target.jsmain))
   .pipe(replace('{{VERSION}}', npmPackage.version))
   .pipe(buffer()) // required for production/sourcemaps
   .pipe(gulp.dest(paths.target.js));
@@ -136,7 +138,9 @@ gulp.task('browserify', function() {
 gulp.task('sass', function() {
   var stream = gulp.src(paths.source.sass)
   .pipe(sourcemaps.init())
-  .pipe(sass().on('error', sass.logError))
+  .pipe(sass({
+    includePaths: [path.join(__dirname, 'node_modules')]
+  }).on('error', sass.logError))
   .pipe(postcss([
     autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}),
     postcssSVG()
@@ -224,3 +228,7 @@ gulp.task('npm-prepare', ['build-prod'], function() {
     tsResult.js.pipe(gulp.dest(paths.target.jsframework))
   ]);
 });
+
+// Export the paths object to allow customization (e.g. js output filename) from other gulpfiles that import
+// and reuse the tasks from here.
+module.exports.paths = paths;
