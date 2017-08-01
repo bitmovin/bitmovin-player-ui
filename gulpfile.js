@@ -32,6 +32,7 @@ var browserSync = require('browser-sync');
 var merge = require('merge2');
 var nativeTslint = require('tslint');
 var npmPackage = require('./package.json');
+var path = require('path');
 
 var paths = {
   source: {
@@ -137,7 +138,9 @@ gulp.task('browserify', function() {
 gulp.task('sass', function() {
   var stream = gulp.src(paths.source.sass)
   .pipe(sourcemaps.init())
-  .pipe(sass().on('error', sass.logError))
+  .pipe(sass({
+    includePaths: [path.join(__dirname, 'node_modules')]
+  }).on('error', sass.logError))
   .pipe(postcss([
     autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}),
     postcssSVG()
