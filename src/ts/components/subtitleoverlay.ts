@@ -155,7 +155,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, updateCEA608FontSize);
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
-      if (event.position == null) {
+      let isCEA608 = event.position != null;
+      if (!isCEA608) {
+        // Skip all non-CEA608 cues
         return;
       }
 
