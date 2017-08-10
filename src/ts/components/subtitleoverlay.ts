@@ -19,9 +19,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
-  // The number of column in a cea608 line
-  private static readonly CEA608_NUM_COLUMN = 32;
-  // 80% is the width of the space wher CEA608 captions are displayed
+  // The number of columns in a cea608 line
+  private static readonly CEA608_NUM_COLUMNS = 32;
+  // 80% is the width of the space where CEA608 captions are displayed
   private static readonly CEA608_WIDTH = 0.8;
   // The actual font width is 1 + 0.11 letter-spacing
   private static readonly CEA608_FONT_SPACING = 1.11;
@@ -111,7 +111,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let updateCEA608FontSize = () => {
       let dummyText = 'aaaaaaaaaa';
       let label = new SubtitleLabel({
-        // One letter label used to calculate the height wifth ratio of the font
+        // One letter label used to calculate the height width ratio of the font
         // Works because we are using a monospace font for cea 608
         // Using a longer string increases precision due to width being an integer
         text: dummyText,
@@ -138,7 +138,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
 
       ratio = height / width;
-      this.cea608lineHeight = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMN) * ratio * SubtitleOverlay.CEA608_FONT_SPACING;
+      this.cea608lineHeight = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMNS) * ratio * SubtitleOverlay.CEA608_FONT_SPACING;
 
       if (this.isCEA608) {
         for (let label of this.getComponents()) {
@@ -178,7 +178,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     });
 
     let reset = () => {
-      this.getDomElement().removeClass(SubtitleOverlay.CLASS_CEA_608);
+      this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
       this.isCEA608 = false;
     };
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, reset);
