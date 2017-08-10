@@ -139,7 +139,12 @@ gulp.task('sass', function() {
   var stream = gulp.src(paths.source.sass)
   .pipe(sourcemaps.init())
   .pipe(sass({
-    includePaths: [path.join(__dirname, 'node_modules')]
+    includePaths: [
+      // Includes node_modules of the current module
+      path.join(__dirname, 'node_modules'),
+      // Includes node_modules of the current module, or, if used as a dependency in a supermodule where this
+      // gulpfile is reused, includes node_modules of the supermodule
+      './node_modules'],
   }).on('error', sass.logError))
   .pipe(postcss([
     autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}),
