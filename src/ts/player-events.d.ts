@@ -482,7 +482,10 @@ declare namespace bitmovin {
       html?: string;
       region?: string;
       regionStyle?: string;
-      position?: string;
+      position?: {
+        row: number;
+        column: number;
+      };
     }
 
     interface PlayerEventCallback {
