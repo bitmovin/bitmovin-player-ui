@@ -14,7 +14,7 @@ export class AudioTrackSelectBox extends SelectBox {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let audioTrackHandler = () => {
+    let selectCurrentAudioTrack = () => {
       let currentAudioTrack = player.getAudio();
 
       // HLS streams don't always provide this, so we have to check
@@ -36,7 +36,7 @@ export class AudioTrackSelectBox extends SelectBox {
       // Select the correct audio track after the tracks have been added
       // This is also important in case we missed the `ON_AUDIO_CHANGED` event, e.g. when `playback.audioLanguage`
       // is configured but the event is fired before the UI is created.
-      audioTrackHandler();
+      selectCurrentAudioTrack();
     };
 
     this.onItemSelected.subscribe((sender: AudioTrackSelectBox, value: string) => {
@@ -44,7 +44,7 @@ export class AudioTrackSelectBox extends SelectBox {
     });
 
     // Update selection when selected track has changed
-    player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, audioTrackHandler);
+    player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, selectCurrentAudioTrack);
     // Update tracks when source goes away
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateAudioTracks);
     // Update tracks when a new source is loaded
