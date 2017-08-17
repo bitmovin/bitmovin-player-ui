@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Support CEA-608 subtitle positioning
 
+### Fixed
+- Select correct audio track after updating the items in `AudioTrackSelectBox`
+
 ## [2.8.3]
 
 ### Changed
