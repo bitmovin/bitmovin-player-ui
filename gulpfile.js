@@ -62,7 +62,9 @@ var catchBrowserifyErrors = false;
 var production = false;
 
 // Deletes the target directory containing all generated files
-gulp.task('clean', del.bind(null, [paths.target.html]));
+gulp.task('clean', function() {
+  return del([paths.target.html]);
+});
 
 // TypeScript linting
 gulp.task('lint-ts', function() {
@@ -131,7 +133,7 @@ gulp.task('browserify', function() {
     .pipe(gulp.dest(paths.target.js));
   }
 
-  stream.pipe(browserSync.reload({stream: true}));
+  return stream.pipe(browserSync.reload({stream: true}));
 });
 
 // Compiles SASS stylesheets to CSS stylesheets in the target directory, adds autoprefixes and creates sourcemaps
@@ -165,7 +167,7 @@ gulp.task('sass', function() {
     .pipe(gulp.dest(paths.target.css));
   }
 
-  stream.pipe(browserSync.reload({stream: true}));
+  return stream.pipe(browserSync.reload({stream: true}));
 });
 
 // Builds the complete project from the sources into the target directory
