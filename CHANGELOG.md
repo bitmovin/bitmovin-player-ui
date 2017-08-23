@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Support CEA-608 subtitle positioning
+- Added the issuer parameter to player calls which support it (seek, timeshift, mute, unmute, setVolume)
 
 ### Fixed
 - Select correct audio track after updating the items in `AudioTrackSelectBox`
