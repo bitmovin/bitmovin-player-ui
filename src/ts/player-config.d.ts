@@ -505,42 +505,10 @@ declare namespace bitmovin {
        */
       aspectratio?: string;
       /**
-       * Whether controls are displayed or not. If no controls are displayed, this JavaScript API can be
-       * used to control the player. Can be true (default) or false.
-       */
-      controls?: boolean;
-      /**
-       * Can be used to disable auto-hiding the controls by setting this value to false. Default is true.
-       */
-      autoHideControls?: boolean;
-      /**
-       * Can be used to disable (i.e. never show) the overlay in pause or stopped mode by setting this
-       * value to false. Default is true.
-       */
-      playOverlay?: boolean;
-      /**
-       * Can be used to disable all keyboard commands by setting this value to false. Default is true.
-       */
-      keyboard?: boolean;
-      /**
-       * Can be used to disable click (toggle play/pause) and double click (toggle fullscreen) mouse events
-       * by setting this value to false. Default is true.
-       */
-      mouse?: boolean;
-      /**
        * A short hand function to disable/enable controls, playOverlay, subtitles, keyboard,
        * and mouse. It is not possible to override this setting with one of the mentioned attributes.
        */
       ux?: boolean;
-      /**
-       * If set to true, active subtitles won’t be displayed, but still exposed in the onCueEnter and
-       * onCueExit events.
-       */
-      subtitlesHidden?: boolean;
-      /**
-       * Can be used enable/disable visible error messages. Default is true (enabled).
-       */
-      showErrors?: boolean;
     }
 
     interface ContextMenuEntry {
