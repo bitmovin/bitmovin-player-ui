@@ -69,6 +69,14 @@
             </p>
         </div>
 
+        <div class="card-block">
+            <h4 class="card-title">
+                Stats
+            </h4>
+
+            <p class="card-text" id="userAgent"></p>
+        </div>
+
     </div>
 </div>
 
@@ -435,6 +443,9 @@
     var factoryMethod = $(this).val();
     uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
   });
+
+  // Populate stats
+  $('#userAgent').html(navigator.userAgent);
 
 </script>
 </body>
