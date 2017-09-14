@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Update `AudioQualitySelectBox`/`VideoQualitySelectBox` entries when the period of a source changes
+
 ### Changed
 - Export bundled UI (`bitmovinplayer-ui.js`) as UMD module (instead of global module)
 
