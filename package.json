@@ -38,6 +38,7 @@
     "merge2": "^1.0.3",
     "postcss-svg": "^1.0.6",
     "run-sequence": "^1.2.2",
+    "stream-combiner2": "^1.1.1",
     "tsify": "^2.0.2",
     "tslint": "^5.4.3",
     "typescript": "^2.4.1",
