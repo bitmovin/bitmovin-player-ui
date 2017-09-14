@@ -610,6 +610,10 @@ declare namespace bitmovin {
        */
       disableDownloadCancelling?: boolean;
       /**
+       * Specifies whether the player preloads the content or not. Can be true (default) or false.
+       */
+      preload?: boolean;
+      /**
        * Lower and upper bitrate boundaries. Values should generally be strings with mbps (megabits per second), kbps
        * (kilobits per second), or bps (bits per second) units (e.g. '5000kbps'). Only the values 0 (no limitation for
        * lower boundaries) and Infinity (no limitation for upper boundaries) are not required to be strings.
