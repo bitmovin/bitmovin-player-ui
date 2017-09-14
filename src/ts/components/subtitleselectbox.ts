@@ -51,6 +51,8 @@ export class SubtitleSelectBox extends SelectBox {
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateSubtitles);
     // Update subtitles when a new source is loaded
     player.addEventHandler(player.EVENT.ON_READY, updateSubtitles);
+    // Update subtitles when the period within a source changes
+    player.addEventHandler(player.EVENT.ON_PERIOD_SWITCHED, updateSubtitles);
 
     // Populate subtitles at startup
     updateSubtitles();
