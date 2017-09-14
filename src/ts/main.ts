@@ -96,7 +96,9 @@ if (typeof Object.assign !== 'function') {
 }
 
 // Expose classes to window
-(window as any).bitmovin.playerui = {
+let w = window as any;
+w.bitmovin = w.bitmovin || {};
+w.bitmovin.playerui = {
   version: '{{VERSION}}',
   // Management
   UIManager,
