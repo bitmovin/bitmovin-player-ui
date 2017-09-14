@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Changed
+- Export bundled UI (`bitmovinplayer-ui.js`) as UMD module (instead of global module)
+
 ### Fixed
 - Fix `Uncaught TypeError` when `require`ing UI before player
+- Don't write UI into global namespace (`bitmovin.playerui`) when loaded as module with `require`
 
 ## [2.9.0]
 

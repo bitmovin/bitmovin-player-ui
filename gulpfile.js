@@ -55,7 +55,8 @@ var browserifyInstance = browserify({
   debug: true,
   entries: paths.source.tsmain,
   cache: {},
-  packageCache: {}
+  packageCache: {},
+  standalone: 'bitmovin.playerui',
 }).plugin(tsify);
 
 var catchBrowserifyErrors = false;
