@@ -95,8 +95,7 @@ if (typeof Object.assign !== 'function') {
   };
 }
 
-// Expose classes to window
-(window as any).bitmovin.playerui = {
+const playerui = {
   version: '{{VERSION}}',
   // Management
   UIManager,
@@ -178,3 +177,8 @@ if (typeof Object.assign !== 'function') {
     SubtitleSettingsResetButton,
   },
 };
+
+// Export UI as UMD module
+// This goes together with the Browserify "--standalone bitmovin.playerui" config option (in the gulpfile)
+declare const module: any;
+module.exports = playerui;

@@ -514,6 +514,10 @@ declare namespace bitmovin {
      * Exit picture in picture mode.
      */
     exitPictureInPicture(): PlayerAPI;
+    /**
+     * Starts preloading the content of the currently loaded source.
+     */
+    preload(): PlayerAPI;
 
     VR: {
       CONTENT_TYPE: {
@@ -621,6 +625,16 @@ declare namespace bitmovin {
     }
 
     /**
+     * Describes the role of a media track, e.g. an {@link AudioTrack}.
+     */
+    interface MediaTrackRole {
+      schemeIdUri: string;
+      value?: string;
+      id?: string;
+      [key: string]: string;
+    }
+
+    /**
      * Definition of an audio track.
      */
     interface AudioTrack {
@@ -636,6 +650,10 @@ declare namespace bitmovin {
        * The text used to represent this track to the user (e.g. in the UI).
        */
       label: string;
+      /**
+       * The optional roles of the track.
+       */
+      role?: MediaTrackRole[];
     }
 
     /**

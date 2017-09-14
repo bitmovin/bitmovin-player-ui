@@ -33,6 +33,7 @@ var merge = require('merge2');
 var nativeTslint = require('tslint');
 var npmPackage = require('./package.json');
 var path = require('path');
+var combine = require('stream-combiner2');
 
 var paths = {
   source: {
@@ -50,16 +51,26 @@ var paths = {
   }
 };
 
+var replacements = [
+  ['{{VERSION}}', npmPackage.version],
+];
+
 var browserifyInstance = browserify({
   basedir: '.',
   debug: true,
   entries: paths.source.tsmain,
   cache: {},
-  packageCache: {}
+  packageCache: {},
+  standalone: 'bitmovin.playerui',
 }).plugin(tsify);
 
 var catchBrowserifyErrors = false;
 var production = false;
+
+function replaceAll() {
+  var replacementStreams = replacements.map(function(replacement) { return replace(replacement[0], replacement[1]); });
+  return combine.apply(this, replacementStreams);
+}
 
 // Deletes the target directory containing all generated files
 gulp.task('clean', function() {
@@ -120,7 +131,7 @@ gulp.task('browserify', function() {
   // Compile output JS file
   var stream = browserifyBundle
   .pipe(source(paths.target.jsmain))
-  .pipe(replace('{{VERSION}}', npmPackage.version))
+  .pipe(replaceAll())
   .pipe(buffer()) // required for production/sourcemaps
   .pipe(gulp.dest(paths.target.js));
 
@@ -232,7 +243,7 @@ gulp.task('npm-prepare', ['build-prod'], function() {
 
   return merge([
     tsResult.dts.pipe(gulp.dest(paths.target.jsframework)),
-    tsResult.js.pipe(gulp.dest(paths.target.jsframework))
+    tsResult.js.pipe(replaceAll()).pipe(gulp.dest(paths.target.jsframework))
   ]);
 });
 
