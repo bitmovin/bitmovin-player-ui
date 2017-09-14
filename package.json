@@ -1,6 +1,6 @@
 {
   "name": "bitmovin-player-ui",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "Bitmovin Player UI Framework",
   "main": "dist/js/framework/main.js",
   "scripts": {
