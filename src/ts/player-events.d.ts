@@ -483,6 +483,14 @@ declare namespace bitmovin {
       stereo: boolean;
     }
 
+    interface VRViewingDirectionChangeEvent extends PlayerEvent {
+      direction: bitmovin.PlayerAPI.VR.ViewingDirection;
+    }
+
+    interface VRViewingDirectionChangedEvent extends VRViewingDirectionChangeEvent {
+      //
+    }
+
     interface SubtitleCueEvent extends PlayerEvent {
       start: number;
       end: number;

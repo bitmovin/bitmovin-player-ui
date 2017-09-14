@@ -514,6 +514,10 @@ declare namespace bitmovin {
      * Exit picture in picture mode.
      */
     exitPictureInPicture(): PlayerAPI;
+    /**
+     * Starts preloading the content of the currently loaded source.
+     */
+    preload(): PlayerAPI;
 
     VR: {
       CONTENT_TYPE: {
