@@ -233,7 +233,7 @@ gulp.task('npm-prepare', ['build-prod'], function() {
 
   return merge([
     tsResult.dts.pipe(gulp.dest(paths.target.jsframework)),
-    tsResult.js.pipe(gulp.dest(paths.target.jsframework))
+    tsResult.js.pipe(replace('{{VERSION}}', npmPackage.version)).pipe(gulp.dest(paths.target.jsframework))
   ]);
 });
 
