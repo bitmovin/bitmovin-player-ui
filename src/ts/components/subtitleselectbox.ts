@@ -1,9 +1,6 @@
 import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
-import SubtitleAddedEvent = bitmovin.PlayerAPI.SubtitleAddedEvent;
-import SubtitleChangedEvent = bitmovin.PlayerAPI.SubtitleChangedEvent;
-import SubtitleRemovedEvent = bitmovin.PlayerAPI.SubtitleRemovedEvent;
 
 /**
  * A select box providing a selection between available subtitle and caption tracks.
