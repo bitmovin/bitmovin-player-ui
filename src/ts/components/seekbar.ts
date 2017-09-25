@@ -848,6 +848,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // value calculated from the size. This required size is not known when it is hidden.
     // For such cases, we refresh the position here in onShow because here it is guaranteed that the component knows
     // its size and can set the position correctly.
-    this.refreshPlaybackPosition();
+    // Some css component use an animation to setup, to make sure it's finished we add a timeout of 300ms which correspond to the 0.3s value (see $animation-duration in _variable.scss)
+    setTimeout( this.refreshPlaybackPosition, 300);
   }
 }
