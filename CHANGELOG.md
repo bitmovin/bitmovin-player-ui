@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- Fix legacy volume seekbar not visible when set at the lowest
+- Fix legacy volume seekbar always defaulting to 100% after hiding and showing again
+
 ## [2.10.0]
 
 ### Added
