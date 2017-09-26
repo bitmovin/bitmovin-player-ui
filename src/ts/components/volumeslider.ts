@@ -70,17 +70,27 @@ export class VolumeSlider extends SeekBar {
     // Update the volume slider marker when the player resized, a source is loaded and player is ready,
     // or the UI is configured. Check the seekbar for a detailed description.
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => {
-      this.refreshPlaybackPosition();
+      this.refreshPlaybackPosition(true);
     });
     player.addEventHandler(player.EVENT.ON_READY, () => {
-      this.refreshPlaybackPosition();
+      this.refreshPlaybackPosition(true);
     });
     uimanager.onConfigured.subscribe(() => {
-      this.refreshPlaybackPosition();
+      this.refreshPlaybackPosition(true);
     });
 
     // Init volume bar
     volumeChangeHandler();
+  }
+
+  /**
+   * Refreshes the playback position. This is needed because subclassing {@link seekBar} is a hack
+   * @param refresh controls wether or not to actually refresh the position, to prevent the parent class forcing extra refresh
+   */
+  protected refreshPlaybackPosition(refresh: boolean = false) {
+    if (refresh) {
+      super.refreshPlaybackPosition();
+    }
   }
 
   private detectVolumeControlAvailability(player: bitmovin.PlayerAPI): boolean {
