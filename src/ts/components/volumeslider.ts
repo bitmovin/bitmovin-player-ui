@@ -84,8 +84,9 @@ export class VolumeSlider extends SeekBar {
   }
 
   /**
-   * Refreshes the playback position. This is needed because subclassing {@link seekBar} is a hack
-   * @param refresh controls wether or not to actually refresh the position, to prevent the parent class forcing extra refresh
+   * Refreshes the volume slider's position.
+   * This is needed because we want to avoid the default behavior of {@link SeekBar.onShowEvent}, which is to refresh the slider position when it appears because that screws up our volume slider's position.
+   * To avoid it we override this method and add a conditional flag that defaults to false, avoiding the update from all calls coming from the base class ({@link SeekBar}). We can still request updates if we supply true.
    */
   protected refreshPlaybackPosition(refresh: boolean = false) {
     if (refresh) {

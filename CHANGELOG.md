@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- Fix legacy volume seekbar not visible when set at the lowest
-- Fix legacy volume seekbar always defaulting to 100% after hiding and showing again
+- Vertical `VolumeSlider` knob in legacy skin was not visible when set to a low volume 
+- Legacy skin's `VolumeSlider` knob was always rendered at 100% when appearing after being hidden
 
 ## [2.10.0]
 
