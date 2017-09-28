@@ -8,8 +8,6 @@
   position: relative;
 
   .#{$prefix}-ui-volumeslider {
-    @include animate-slide-in-from-bottom(6em, $animation-duration / 2);
-
     background-color: $controlbar-background-color;
     bottom: 100%;
     height: 6em;

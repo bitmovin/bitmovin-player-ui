@@ -136,11 +136,16 @@
       .#{$prefix}-seekbar-playbackposition-marker {
         @extend %bar-vertical;
         border-right: 0;
-        border-top: $position-marker-width solid $color-white;
-        height: 0;
-        // offset position marker to center it on mouse pointer and make it visible on both the bottommost and topmost positions
-        margin-bottom: -$position-marker-width / 2;
+        height: $position-marker-width;
         width: auto;
+
+        &::after {
+          background: $color-white;
+          content: '';
+          display: block;
+          height: $position-marker-width;
+          width: 100%;
+        }
       }
     }
   }

@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Changed
+- Removed `VolumeControlButton`'s `VolumeSlider` slide-in animation in the legacy skin to fix the slider knob at 100% bug
+
+### Fixed
+- Vertical `VolumeSlider` knob in legacy skin was not visible when set to a low volume 
+- Legacy skin's `VolumeSlider` knob was always rendered at 100% when appearing after being hidden
+
 ## [2.10.0]
 
 ### Added
