@@ -140,12 +140,11 @@
         width: auto;
 
         &::after {
-          display: inline-block;
-          height: $position-marker-width;
-          width: 100%;
           background: $color-white;
           content: '';
-          transform: translateY(-$position-marker-width);
+          display: block;
+          height: $position-marker-width;
+          width: 100%;
         }
       }
     }

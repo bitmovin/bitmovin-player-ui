@@ -702,10 +702,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPosition(this.seekBarPlaybackPosition, percent);
 
     // Set position of the marker
-    let totalSize = (this.config.vertical ? (this.seekBar.height() - this.seekBarPlaybackPositionMarker.height()) : this.seekBar.width())
+    let totalSize = (this.config.vertical ? (this.seekBar.height() - this.seekBarPlaybackPositionMarker.height()) : this.seekBar.width());
     let px = (totalSize) / 100 * percent;
     if (this.config.vertical) {
-      px = this.seekBar.height() - px;
+      px = this.seekBar.height() - px - this.seekBarPlaybackPositionMarker.height();
     }
     let style = this.config.vertical ?
       // -ms-transform required for IE9
