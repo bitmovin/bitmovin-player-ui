@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Vertical `VolumeSlider` knob in legacy skin was not visible when set to a low volume 
 - Legacy skin's `VolumeSlider` knob was always rendered at 100% when appearing after being hidden
+- Avoid `ItemSelectionList` DOM recreation on item selection to avoid unexpected events (e.g. `mouseenter`)
 
 ## [2.10.0]
 
