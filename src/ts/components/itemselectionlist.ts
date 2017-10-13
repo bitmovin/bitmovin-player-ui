@@ -3,6 +3,8 @@ import {DOM} from '../dom';
 
 export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
 
+  private static readonly CLASS_SELECTED = 'selected';
+
   private listElement: DOM;
 
   constructor(config: ListSelectorConfig = {}) {
@@ -34,27 +36,52 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
     // Delete all children
     this.listElement.empty();
 
+    let selectedListItem: DOM = null;
+
+    const selectItem = (listItem: DOM) => {
+      listItem.addClass(this.prefixCss(ItemSelectionList.CLASS_SELECTED));
+    };
+
+    const deselectItem = (listItem: DOM) => {
+      listItem.removeClass(this.prefixCss(ItemSelectionList.CLASS_SELECTED));
+    };
+
     for (let item of this.items) {
-      let optionElement = new DOM('li', {
+      let listItem = new DOM('li', {
         'type': 'li',
         'class': this.prefixCss('ui-selectionlistitem'),
       }).append(new DOM('a', {
       }).html(item.label));
 
-      if (selectedValue == null) { // If there is no pre-selected value, select the first one
-        optionElement.addClass(this.prefixCss('selected'));
-        selectedValue = item.key; // Ensure no other item get selected
+      if (!selectedListItem) {
+        if (selectedValue == null) { // If there is no pre-selected value, select the first one
+          selectedListItem = listItem;
+        } else if (String(selectedValue) === item.key) { // convert selectedValue to string to catch 'null'/null case
+          selectedListItem = listItem;
+        }
       }
 
-      if (item.key === String(selectedValue)) { // convert selectedValue to string to catch 'null'/null case
-        optionElement.addClass(this.prefixCss('selected'));
-      }
+      // Handle list item selections
+      listItem.on('click', () => {
+        // Deselect the previous item (if there was a selected item)
+        if (selectedListItem) {
+          deselectItem(selectedListItem);
+        }
 
-      optionElement.on('click', () => {
-        this.onItemSelectedEvent(item.key, true);
+        // Select the clicked item
+        selectedListItem = listItem;
+        selectItem(listItem);
+
+        // Fire the event
+        this.onItemSelectedEvent(item.key, false);
       });
 
-      this.listElement.append(optionElement);
+      // Select default item
+      if (selectedListItem) {
+        selectItem(selectedListItem);
+      }
+
+      this.listElement.append(listItem);
     }
   }
 
