@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.10.1]
+
+### Changed
+- Removed `VolumeControlButton`'s `VolumeSlider` slide-in animation in the legacy skin to fix the slider knob at 100% bug
+
+### Fixed
+- Vertical `VolumeSlider` knob in legacy skin was not visible when set to a low volume 
+- Legacy skin's `VolumeSlider` knob was always rendered at 100% when appearing after being hidden
+- Avoid `ItemSelectionList` DOM recreation on item selection to avoid unexpected events (e.g. `mouseenter`)
+
 ## [2.10.0]
 
 ### Added
@@ -246,6 +256,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[2.10.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.10.0...v2.10.1
 [2.10.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.9.0...v2.10.0
 [2.9.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.8.3...v2.9.0
 [2.8.3]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.8.2...v2.8.3
