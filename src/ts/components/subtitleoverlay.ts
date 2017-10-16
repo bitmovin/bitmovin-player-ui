@@ -23,8 +23,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CEA608_NUM_ROWS = 15;
   // The number of columns in a cea608 grid
   private static readonly CEA608_NUM_COLUMNS = 32;
-  // 80% is the width of the space where CEA608 captions are displayed
-  private static readonly CEA608_WIDTH = 0.8;
   // The actual font width is 1 + 0.11 letter-spacing
   private static readonly CEA608_FONT_SPACING = 1.11;
   // The offset in percent for one row (which is also the height of a row)
@@ -141,7 +139,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
 
       ratio = height / width;
-      this.cea608lineHeight = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMNS) * ratio * SubtitleOverlay.CEA608_FONT_SPACING;
+      this.cea608lineHeight = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * ratio * SubtitleOverlay.CEA608_FONT_SPACING;
 
       if (this.isCEA608) {
         for (let label of this.getComponents()) {
