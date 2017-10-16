@@ -117,11 +117,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         text: dummyText,
       });
       dummyLabel.getDomElement().css({
-        'color': 'rgba(0, 0, 0, 0)',
         'font-size': '30px',
         'line-height': '30px',
-        'top': '0',
-        'left': '0',
       });
       this.addComponent(dummyLabel);
       this.updateComponents();
