@@ -380,7 +380,36 @@
       return player.scheduleAd(
         'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
         'ima', {timeOffset: player.getCurrentTime() + 5});
-    }
+    },
+    'CEA-608 subtitle test pattern (60 secs)': function() {
+      const cueEnter = function(text, row, column) {
+        var cue = {
+          text: text,
+          position: {
+            row: row,
+            column: column,
+          },
+        };
+        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        return cue;
+      };
+
+      const cueExit = function(cue) {
+        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+      };
+
+      // Create list of cues and display them
+      var cues = [];
+      var text = 'Test';
+      for (var row = 0; row < 15; row++) {
+        cues.push(cueEnter(text, row, 0));
+        cues.push(cueEnter(text, row, 15 - text.length / 2));
+        cues.push(cueEnter(text, row, 31 - text.length));
+      }
+
+      // Remove cues after some time
+      setInterval(function() { cues.forEach(function(cue) { cueExit(cue); }); }, 60000);
+    },
   };
   $.each(actions, function(title, handler) {
     $('#actions').append($('<button type="button" class="btn btn-primary btn-sm">' + title + '</button>').click(function() {printResult(handler(), title);})).append(' ');
