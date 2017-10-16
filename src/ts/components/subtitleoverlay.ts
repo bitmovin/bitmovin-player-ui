@@ -103,38 +103,39 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    let ratio = 1;
-    let updateCEA608FontSize = () => {
-      let dummyText = 'aaaaaaaaaa';
-      let label = new SubtitleLabel({
+    // The aspect ratio of a letter of the used font (used to calculate the font size)
+    let fontSizeRatio = 1;
+
+    const updateCEA608FontSize = () => {
+      const dummyText = 'dummyStringToMeasureFontSizeRatio';
+      const dummyLabel = new SubtitleLabel({
         // One letter label used to calculate the height width ratio of the font
         // Works because we are using a monospace font for cea 608
         // Using a longer string increases precision due to width being an integer
         text: dummyText,
       });
-      let domElement = label.getDomElement();
-      domElement.css({
+      dummyLabel.getDomElement().css({
         'color': 'rgba(0, 0, 0, 0)',
         'font-size': '30px',
         'line-height': '30px',
         'top': '0',
         'left': '0',
       });
-      this.addComponent(label);
+      this.addComponent(dummyLabel);
       this.updateComponents();
       this.show();
 
-      let width = domElement.width() / dummyText.length;
-      let height = domElement.height();
+      const dummyLabelCharWidth = dummyLabel.getDomElement().width() / dummyText.length;
+      const dummyLabelCharHeight = dummyLabel.getDomElement().height();
+      fontSizeRatio = dummyLabelCharHeight / dummyLabelCharWidth;
 
-      this.removeComponent(label);
+      this.removeComponent(dummyLabel);
       this.updateComponents();
       if (!this.subtitleManager.hasCues) {
         this.hide();
       }
 
-      ratio = height / width;
-      this.cea608lineHeight = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * ratio;
+      this.cea608lineHeight = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * fontSizeRatio;
 
       if (this.isCEA608) {
         // Update font-size of all active subtitle labels
@@ -150,13 +151,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, updateCEA608FontSize);
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
-      let isCEA608 = event.position != null;
+      const isCEA608 = event.position != null;
       if (!isCEA608) {
         // Skip all non-CEA608 cues
         return;
       }
 
-      let labels = this.subtitleManager.getCues(event);
+      const labels = this.subtitleManager.getCues(event);
 
       if (!this.isCEA608) {
         this.isCEA608 = true;
@@ -165,14 +166,14 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
       for (let label of labels) {
         label.getDomElement().css({
-          'left': `${event.position.column / ratio}em`,
+          'left': `${event.position.column / fontSizeRatio}em`,
           'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
           'font-size': `${this.cea608lineHeight}px`,
         });
       }
     });
 
-    let reset = () => {
+    const reset = () => {
       this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
       this.isCEA608 = false;
     };
