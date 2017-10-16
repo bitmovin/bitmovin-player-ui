@@ -1,6 +1,8 @@
 .#{$prefix}-ui-subtitle-overlay {
   &.#{$prefix}-cea608 {
 
+    top: 2em;
+
     .#{$prefix}-ui-subtitle-label {
       font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
       line-height: 1em;
