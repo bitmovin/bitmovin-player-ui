@@ -19,14 +19,16 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
-  // The number of columns in a cea608 line
+  // The number of rows in a cea608 grid
+  private static readonly CEA608_NUM_ROWS = 15;
+  // The number of columns in a cea608 grid
   private static readonly CEA608_NUM_COLUMNS = 32;
   // 80% is the width of the space where CEA608 captions are displayed
   private static readonly CEA608_WIDTH = 0.8;
   // The actual font width is 1 + 0.11 letter-spacing
   private static readonly CEA608_FONT_SPACING = 1.11;
   // The offset in percent for one row (which is also the height of a row)
-  private static readonly CEA608_ROW_OFFSET = 6.25;
+  private static readonly CEA608_ROW_OFFSET = 100 / (SubtitleOverlay.CEA608_NUM_ROWS + 1);
   // To avoid having the font too big and overlap, while still have the proper width,
   // the font must be sized down, the width is then compensated by letter-spacing
   private static readonly CEA608_LINE_TO_FONT_SIZE = 0.9;
