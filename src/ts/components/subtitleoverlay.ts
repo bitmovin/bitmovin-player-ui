@@ -137,11 +137,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.cea608lineHeight = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * ratio;
 
       if (this.isCEA608) {
+        // Update font-size of all active subtitle labels
         for (let label of this.getComponents()) {
           if (label instanceof SubtitleLabel) {
-            // Only element with left property are cea-608
-            let domElement = label.getDomElement();
-            domElement.css({
+            label.getDomElement().css({
               'font-size': `${this.cea608lineHeight}px`,
             });
           }
