@@ -25,8 +25,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CEA608_WIDTH = 0.8;
   // The actual font width is 1 + 0.11 letter-spacing
   private static readonly CEA608_FONT_SPACING = 1.11;
-  // 6.25 = 100/16 because there's 15 possible lines
-  private static readonly CEA608_LINE_COEF = 6.25;
+  // The offset in percent for one row (which is also the height of a row)
+  private static readonly CEA608_ROW_OFFSET = 6.25;
   // To avoid having the font too big and overlap, while still have the proper width,
   // the font must be sized down, the width is then compensated by letter-spacing
   private static readonly CEA608_LINE_TO_FONT_SIZE = 0.9;
@@ -172,7 +172,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       for (let label of labels) {
         label.getDomElement().css({
           'left': `${event.position.column / ratio}em`,
-          'top': `${event.position.row * SubtitleOverlay.CEA608_LINE_COEF}%`,
+          'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
           'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
         });
       }
