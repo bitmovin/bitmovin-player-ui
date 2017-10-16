@@ -23,13 +23,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CEA608_NUM_ROWS = 15;
   // The number of columns in a cea608 grid
   private static readonly CEA608_NUM_COLUMNS = 32;
-  // The actual font width is 1 + 0.11 letter-spacing
-  private static readonly CEA608_FONT_SPACING = 1.11;
   // The offset in percent for one row (which is also the height of a row)
   private static readonly CEA608_ROW_OFFSET = 100 / (SubtitleOverlay.CEA608_NUM_ROWS + 1);
-  // To avoid having the font too big and overlap, while still have the proper width,
-  // the font must be sized down, the width is then compensated by letter-spacing
-  private static readonly CEA608_LINE_TO_FONT_SIZE = 0.9;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -139,7 +134,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
 
       ratio = height / width;
-      this.cea608lineHeight = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * ratio * SubtitleOverlay.CEA608_FONT_SPACING;
+      this.cea608lineHeight = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * ratio;
 
       if (this.isCEA608) {
         for (let label of this.getComponents()) {
@@ -147,7 +142,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
             // Only element with left property are cea-608
             let domElement = label.getDomElement();
             domElement.css({
-              'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
+              'font-size': `${this.cea608lineHeight}px`,
             });
           }
         }
@@ -173,7 +168,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         label.getDomElement().css({
           'left': `${event.position.column / ratio}em`,
           'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
-          'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
+          'font-size': `${this.cea608lineHeight}px`,
         });
       }
     });
