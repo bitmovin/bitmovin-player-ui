@@ -14,8 +14,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private subtitleManager: ActiveSubtitleManager;
   private previewSubtitleActive: boolean;
   private previewSubtitle: SubtitleLabel;
-  private cea608lineHeight: number;
-  private isCEA608: boolean = false;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
@@ -105,6 +103,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     // The aspect ratio of a letter of the used font (used to calculate the font size)
     let fontSizeRatio = 1;
+    // The calculated font size
+    let fontSize = 0;
+    // Flag telling if the CEA-608 mode is enabled
+    let enabled = false;
 
     const updateCEA608FontSize = () => {
       const dummyText = 'dummyStringToMeasureFontSizeRatio';
@@ -135,14 +137,14 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.hide();
       }
 
-      this.cea608lineHeight = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * fontSizeRatio;
+      fontSize = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * fontSizeRatio;
 
-      if (this.isCEA608) {
+      if (enabled) {
         // Update font-size of all active subtitle labels
         for (let label of this.getComponents()) {
           if (label instanceof SubtitleLabel) {
             label.getDomElement().css({
-              'font-size': `${this.cea608lineHeight}px`,
+              'font-size': `${fontSize}px`,
             });
           }
         }
@@ -159,8 +161,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       const labels = this.subtitleManager.getCues(event);
 
-      if (!this.isCEA608) {
-        this.isCEA608 = true;
+      if (!enabled) {
+        enabled = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
         updateCEA608FontSize();
       }
@@ -168,14 +170,14 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         label.getDomElement().css({
           'left': `${event.position.column / fontSizeRatio}em`,
           'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
-          'font-size': `${this.cea608lineHeight}px`,
+          'font-size': `${fontSize}px`,
         });
       }
     });
 
     const reset = () => {
       this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-      this.isCEA608 = false;
+      enabled = false;
     };
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, reset);
     player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, reset);
