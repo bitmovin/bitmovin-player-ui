@@ -22,7 +22,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   // The number of columns in a cea608 grid
   private static readonly CEA608_NUM_COLUMNS = 32;
   // The offset in percent for one row (which is also the height of a row)
-  private static readonly CEA608_ROW_OFFSET = 100 / (SubtitleOverlay.CEA608_NUM_ROWS + 1);
+  private static readonly CEA608_ROW_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_ROWS;
+  // The offset in percent for one column (which is also the width of a column)
+  private static readonly CEA608_COLUMN_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_COLUMNS;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -165,7 +167,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
       for (let label of labels) {
         label.getDomElement().css({
-          'left': `${event.position.column / fontSizeRatio}em`,
+          'left': `${event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET}%`,
           'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
           'font-size': `${fontSize}px`,
         });
