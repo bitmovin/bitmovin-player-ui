@@ -103,8 +103,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    // The aspect ratio of a letter of the used font (used to calculate the font size)
-    let fontSizeRatio = 1;
     // The calculated font size
     let fontSize = 0;
     // Flag telling if the CEA-608 mode is enabled
@@ -128,7 +126,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       const dummyLabelCharWidth = dummyLabel.getDomElement().width() / dummyText.length;
       const dummyLabelCharHeight = dummyLabel.getDomElement().height();
-      fontSizeRatio = dummyLabelCharHeight / dummyLabelCharWidth;
 
       this.removeComponent(dummyLabel);
       this.updateComponents();
@@ -136,7 +133,23 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.hide();
       }
 
-      fontSize = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * fontSizeRatio;
+      // The size ratio of the letter grid
+      const fontGridSizeRatio = (dummyLabelCharHeight * SubtitleOverlay.CEA608_NUM_ROWS) /
+        (dummyLabelCharWidth * SubtitleOverlay.CEA608_NUM_COLUMNS);
+      // The size ratio of the available space for the grid
+      const subtitleOverlaySizeRatio = this.getDomElement().width() / this.getDomElement().height();
+
+      if (subtitleOverlaySizeRatio > fontGridSizeRatio) {
+        // When the available space is wider than the text grid, the font size is simply
+        // determined by the height of the available space.
+        fontSize = this.getDomElement().height() / SubtitleOverlay.CEA608_NUM_ROWS;
+      } else {
+        // When the available space is not wide enough, texts would vertically overlap if we take
+        // the height as a base for the font size, so we need to limit the height. We do that
+        // by determining the font size by the width of the available space.
+        const fontSizeRatio = dummyLabelCharHeight / dummyLabelCharWidth;
+        fontSize = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * fontSizeRatio;
+      }
 
       if (enabled) {
         // Update font-size of all active subtitle labels
