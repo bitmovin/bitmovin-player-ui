@@ -1,30 +1,20 @@
 .#{$prefix}-ui-subtitle-overlay {
   &.#{$prefix}-cea608 {
-    align-items: flex-end;
-    bottom: unset;
-    display: flex;
-    height: 86%;
-    justify-content: center;
-    left: unset;
-    margin: auto 10%;
-    pointer-events: none;
-    right: unset;
-    top: 50%;
-    transform: translate(0%, -50%);
-    transition: height $animation-duration-short ease-out;
-    width: 80%;
 
     .#{$prefix}-ui-subtitle-label {
       font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
-      letter-spacing: .11em;
+      line-height: 1em;
       position: absolute;
       text-transform: uppercase;
     }
 
     &.#{$prefix}-controlbar-visible {
-      bottom: unset;
-      height: 70%;
-      transition: height $animation-duration-short ease-in;
+      // Disable the make-space-for-controlbar mechanism
+      // We don't want CEA-608 subtitles to make space for the controlbar because they're
+      // positioned absolutely in relation to the video picture and thus cannot just move
+      // somewhere else.
+      bottom: 2em;
+      transition: none;
     }
   }
 }
