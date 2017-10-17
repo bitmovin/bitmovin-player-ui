@@ -157,15 +157,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         fontLetterSpacing = 0;
       }
 
-      if (enabled) {
-        // Update font-size of all active subtitle labels
-        for (let label of this.getComponents()) {
-          if (label instanceof SubtitleLabel) {
-            label.getDomElement().css({
-              'font-size': `${fontSize}px`,
-              'letter-spacing': `${fontLetterSpacing}px`,
-            });
-          }
+      // Update font-size of all active subtitle labels
+      for (let label of this.getComponents()) {
+        if (label instanceof SubtitleLabel) {
+          label.getDomElement().css({
+            'font-size': `${fontSize}px`,
+            'letter-spacing': `${fontLetterSpacing}px`,
+          });
         }
       }
     };
