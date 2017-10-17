@@ -197,6 +197,15 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
       enabled = false;
     };
+
+    player.addEventHandler(player.EVENT.ON_CUE_EXIT, () => {
+      if (!this.subtitleManager.hasCues) {
+        // Disable CEA-608 mode when all subtitles are gone (to allow correct formatting and
+        // display of other types of subtitles, e.g. the formatting preview subtitle)
+        reset();
+      }
+    });
+
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, reset);
     player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, reset);
   }
