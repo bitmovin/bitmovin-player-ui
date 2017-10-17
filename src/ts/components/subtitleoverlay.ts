@@ -43,6 +43,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.subtitleManager = subtitleManager;
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
+      // Sanitize invalid positioning data
+      // Sometimes the positions are undefined, we assume them to be zero
+      event.position.row = event.position.row || 0;
+      event.position.column = event.position.column || 0;
+
       let labelToAdd = subtitleManager.cueEnter(event);
 
       if (this.previewSubtitleActive) {
