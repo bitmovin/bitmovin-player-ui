@@ -403,8 +403,8 @@
       for (var row = 0; row < 15; row++) {
         var text = 'Test' + (row + 1);
         cues.push(cueEnter(text, row, 0));
-        cues.push(cueEnter(text, row, 15 - text.length / 2));
-        cues.push(cueEnter(text, row, 31 - text.length));
+        cues.push(cueEnter(text, row, 15 - text.length / 2 + 1));
+        cues.push(cueEnter(text, row, 31 - text.length + 1));
       }
 
       // Remove cues after some time
