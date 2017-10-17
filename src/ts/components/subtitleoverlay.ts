@@ -109,22 +109,18 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let enabled = false;
 
     const updateCEA608FontSize = () => {
-      const dummyText = 'dummyStringToMeasureFontSizeRatio';
-      const dummyLabel = new SubtitleLabel({
-        // One letter label used to calculate the height width ratio of the font
-        // Works because we are using a monospace font for cea 608
-        // Using a longer string increases precision due to width being an integer
-        text: dummyText,
-      });
+      const dummyLabel = new SubtitleLabel({ text: 'X' });
       dummyLabel.getDomElement().css({
-        'font-size': '30px',
-        'line-height': '30px',
+        // By using a large font size we do not need to use multiple letters and can get still an
+        // accurate measurement even though the returned size is an integer value
+        'font-size': '200px',
+        'line-height': '200px',
       });
       this.addComponent(dummyLabel);
       this.updateComponents();
       this.show();
 
-      const dummyLabelCharWidth = dummyLabel.getDomElement().width() / dummyText.length;
+      const dummyLabelCharWidth = dummyLabel.getDomElement().width();
       const dummyLabelCharHeight = dummyLabel.getDomElement().height();
 
       this.removeComponent(dummyLabel);
