@@ -410,6 +410,17 @@
       // Remove cues after some time
       setInterval(function() { cues.forEach(function(cue) { cueExit(cue); }); }, 60000);
     },
+    'Animate player size/height (needs player 7.5)': function() {
+      var playerFigure = player.getFigure();
+      var initialHeight = playerFigure.offsetHeight;
+      var minHeight = 300;
+      var maxHeight = 1400;
+
+      $(playerFigure)
+      .animate({height: minHeight}, 1000)
+      .animate({height: maxHeight}, 1000)
+      .animate({height: initialHeight}, 1000);
+    },
   };
   $.each(actions, function(title, handler) {
     $('#actions').append($('<button type="button" class="btn btn-primary btn-sm">' + title + '</button>').click(function() {printResult(handler(), title);})).append(' ');
