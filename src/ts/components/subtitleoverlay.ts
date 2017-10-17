@@ -105,6 +105,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     // The calculated font size
     let fontSize = 0;
+    // The required letter spacing spread the text characters evenly across the grid
+    let fontLetterSpacing = 0;
     // Flag telling if the CEA-608 mode is enabled
     let enabled = false;
 
@@ -122,6 +124,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       const dummyLabelCharWidth = dummyLabel.getDomElement().width();
       const dummyLabelCharHeight = dummyLabel.getDomElement().height();
+      const fontSizeRatio = dummyLabelCharWidth / dummyLabelCharHeight;
 
       this.removeComponent(dummyLabel);
       this.updateComponents();
@@ -139,12 +142,17 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         // When the available space is wider than the text grid, the font size is simply
         // determined by the height of the available space.
         fontSize = this.getDomElement().height() / SubtitleOverlay.CEA608_NUM_ROWS;
+
+        // Calculate the additional letter spacing required to evenly spread the text across the grid's width
+        const gridSlotWidth = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS;
+        const fontCharWidth = fontSize * fontSizeRatio;
+        fontLetterSpacing = gridSlotWidth - fontCharWidth;
       } else {
         // When the available space is not wide enough, texts would vertically overlap if we take
         // the height as a base for the font size, so we need to limit the height. We do that
         // by determining the font size by the width of the available space.
-        const fontSizeRatio = dummyLabelCharHeight / dummyLabelCharWidth;
-        fontSize = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS * fontSizeRatio;
+        fontSize = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS / fontSizeRatio;
+        fontLetterSpacing = 0;
       }
 
       if (enabled) {
@@ -153,6 +161,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
           if (label instanceof SubtitleLabel) {
             label.getDomElement().css({
               'font-size': `${fontSize}px`,
+              'letter-spacing': `${fontLetterSpacing}px`,
             });
           }
         }
@@ -179,6 +188,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
           'left': `${event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET}%`,
           'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
           'font-size': `${fontSize}px`,
+          'letter-spacing': `${fontLetterSpacing}px`,
         });
       }
     });
