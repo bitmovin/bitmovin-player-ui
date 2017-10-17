@@ -4,7 +4,6 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
-import {DOM} from '../dom';
 
 /**
  * Overlays the player to display subtitles.
