@@ -107,6 +107,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let fontSize = 0;
     // The required letter spacing spread the text characters evenly across the grid
     let fontLetterSpacing = 0;
+    // Flag telling if a font size calculation is required of if the current values are valid
+    let fontSizeCalculationRequired = true;
     // Flag telling if the CEA-608 mode is enabled
     let enabled = false;
 
@@ -167,7 +169,14 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         }
       }
     };
-    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, updateCEA608FontSize);
+
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => {
+      if (enabled) {
+        updateCEA608FontSize();
+      } else {
+        fontSizeCalculationRequired = true;
+      }
+    });
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
       const isCEA608 = event.position != null;
@@ -181,7 +190,15 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       if (!enabled) {
         enabled = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-        updateCEA608FontSize();
+
+        // We conditionally update the font size by this flag here to avoid updating every time a subtitle
+        // is added into an empty overlay. Because we reset the overlay when all subtitles are gone, this
+        // would trigger an unnecessary update every time, but it's only required under certain conditions,
+        // e.g. after the player size has changed.
+        if (fontSizeCalculationRequired) {
+          updateCEA608FontSize();
+          fontSizeCalculationRequired = false;
+        }
       }
       for (let label of labels) {
         label.getDomElement().css({
