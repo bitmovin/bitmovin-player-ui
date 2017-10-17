@@ -135,8 +135,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
 
       // The size ratio of the letter grid
-      const fontGridSizeRatio = (dummyLabelCharHeight * SubtitleOverlay.CEA608_NUM_ROWS) /
-        (dummyLabelCharWidth * SubtitleOverlay.CEA608_NUM_COLUMNS);
+      const fontGridSizeRatio = (dummyLabelCharWidth * SubtitleOverlay.CEA608_NUM_COLUMNS) /
+        (dummyLabelCharHeight * SubtitleOverlay.CEA608_NUM_ROWS);
       // The size ratio of the available space for the grid
       const subtitleOverlaySizeRatio = this.getDomElement().width() / this.getDomElement().height();
 
