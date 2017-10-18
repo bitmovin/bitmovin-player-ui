@@ -125,6 +125,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         // accurate measurement even though the returned size is an integer value
         'font-size': '200px',
         'line-height': '200px',
+        'display': 'hidden',
       });
       this.addComponent(dummyLabel);
       this.updateComponents();
