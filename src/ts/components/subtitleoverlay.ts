@@ -4,7 +4,6 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
-import {DOM} from '../dom';
 
 /**
  * Overlays the player to display subtitles.
@@ -14,22 +13,17 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private subtitleManager: ActiveSubtitleManager;
   private previewSubtitleActive: boolean;
   private previewSubtitle: SubtitleLabel;
-  private cea608lineHeight: number;
-  private isCEA608: boolean = false;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
-  // The number of columns in a cea608 line
+  // The number of rows in a cea608 grid
+  private static readonly CEA608_NUM_ROWS = 15;
+  // The number of columns in a cea608 grid
   private static readonly CEA608_NUM_COLUMNS = 32;
-  // 80% is the width of the space where CEA608 captions are displayed
-  private static readonly CEA608_WIDTH = 0.8;
-  // The actual font width is 1 + 0.11 letter-spacing
-  private static readonly CEA608_FONT_SPACING = 1.11;
-  // 6.66 = 100/15 the number of possible lines
-  private static readonly CEA608_LINE_COEF = 6.66;
-  // To avoid having the font too big and overlap, while still have the proper width,
-  // the font must be sized down, the width is then compensated by letter-spacing
-  private static readonly CEA608_LINE_TO_FONT_SIZE = 0.9;
+  // The offset in percent for one row (which is also the height of a row)
+  private static readonly CEA608_ROW_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_ROWS;
+  // The offset in percent for one column (which is also the width of a column)
+  private static readonly CEA608_COLUMN_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_COLUMNS;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -49,6 +43,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.subtitleManager = subtitleManager;
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
+      // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
+      if (event.position) {
+        // Sometimes the positions are undefined, we assume them to be zero
+        event.position.row = event.position.row || 0;
+        event.position.column = event.position.column || 0;
+      }
+
       let labelToAdd = subtitleManager.cueEnter(event);
 
       if (this.previewSubtitleActive) {
@@ -108,80 +109,125 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    let ratio = 1;
-    let updateCEA608FontSize = () => {
-      let dummyText = 'aaaaaaaaaa';
-      let label = new SubtitleLabel({
-        // One letter label used to calculate the height width ratio of the font
-        // Works because we are using a monospace font for cea 608
-        // Using a longer string increases precision due to width being an integer
-        text: dummyText,
+    // The calculated font size
+    let fontSize = 0;
+    // The required letter spacing spread the text characters evenly across the grid
+    let fontLetterSpacing = 0;
+    // Flag telling if a font size calculation is required of if the current values are valid
+    let fontSizeCalculationRequired = true;
+    // Flag telling if the CEA-608 mode is enabled
+    let enabled = false;
+
+    const updateCEA608FontSize = () => {
+      const dummyLabel = new SubtitleLabel({ text: 'X' });
+      dummyLabel.getDomElement().css({
+        // By using a large font size we do not need to use multiple letters and can get still an
+        // accurate measurement even though the returned size is an integer value
+        'font-size': '200px',
+        'line-height': '200px',
+        'visibility': 'hidden',
       });
-      let domElement = label.getDomElement();
-      domElement.css({
-        'color': 'rgba(0, 0, 0, 0)',
-        'font-size': '30px',
-        'line-height': '30px',
-        'top': '0',
-        'left': '0',
-      });
-      this.addComponent(label);
+      this.addComponent(dummyLabel);
       this.updateComponents();
       this.show();
 
-      let width = domElement.width() / dummyText.length;
-      let height = domElement.height();
+      const dummyLabelCharWidth = dummyLabel.getDomElement().width();
+      const dummyLabelCharHeight = dummyLabel.getDomElement().height();
+      const fontSizeRatio = dummyLabelCharWidth / dummyLabelCharHeight;
 
-      this.removeComponent(label);
+      this.removeComponent(dummyLabel);
       this.updateComponents();
       if (!this.subtitleManager.hasCues) {
         this.hide();
       }
 
-      ratio = height / width;
-      this.cea608lineHeight = (new DOM(player.getFigure()).width()) * (SubtitleOverlay.CEA608_WIDTH / SubtitleOverlay.CEA608_NUM_COLUMNS) * ratio * SubtitleOverlay.CEA608_FONT_SPACING;
+      // The size ratio of the letter grid
+      const fontGridSizeRatio = (dummyLabelCharWidth * SubtitleOverlay.CEA608_NUM_COLUMNS) /
+        (dummyLabelCharHeight * SubtitleOverlay.CEA608_NUM_ROWS);
+      // The size ratio of the available space for the grid
+      const subtitleOverlaySizeRatio = this.getDomElement().width() / this.getDomElement().height();
 
-      if (this.isCEA608) {
-        for (let label of this.getComponents()) {
-          if (label instanceof SubtitleLabel) {
-            // Only element with left property are cea-608
-            let domElement = label.getDomElement();
-            domElement.css({
-              'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
-            });
-          }
+      if (subtitleOverlaySizeRatio > fontGridSizeRatio) {
+        // When the available space is wider than the text grid, the font size is simply
+        // determined by the height of the available space.
+        fontSize = this.getDomElement().height() / SubtitleOverlay.CEA608_NUM_ROWS;
+
+        // Calculate the additional letter spacing required to evenly spread the text across the grid's width
+        const gridSlotWidth = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS;
+        const fontCharWidth = fontSize * fontSizeRatio;
+        fontLetterSpacing = gridSlotWidth - fontCharWidth;
+      } else {
+        // When the available space is not wide enough, texts would vertically overlap if we take
+        // the height as a base for the font size, so we need to limit the height. We do that
+        // by determining the font size by the width of the available space.
+        fontSize = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS / fontSizeRatio;
+        fontLetterSpacing = 0;
+      }
+
+      // Update font-size of all active subtitle labels
+      for (let label of this.getComponents()) {
+        if (label instanceof SubtitleLabel) {
+          label.getDomElement().css({
+            'font-size': `${fontSize}px`,
+            'letter-spacing': `${fontLetterSpacing}px`,
+          });
         }
       }
     };
-    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, updateCEA608FontSize);
+
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => {
+      if (enabled) {
+        updateCEA608FontSize();
+      } else {
+        fontSizeCalculationRequired = true;
+      }
+    });
 
     player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
-      let isCEA608 = event.position != null;
+      const isCEA608 = event.position != null;
       if (!isCEA608) {
         // Skip all non-CEA608 cues
         return;
       }
 
-      let labels = this.subtitleManager.getCues(event);
+      const labels = this.subtitleManager.getCues(event);
 
-      if (!this.isCEA608) {
-        this.isCEA608 = true;
+      if (!enabled) {
+        enabled = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-        updateCEA608FontSize();
+
+        // We conditionally update the font size by this flag here to avoid updating every time a subtitle
+        // is added into an empty overlay. Because we reset the overlay when all subtitles are gone, this
+        // would trigger an unnecessary update every time, but it's only required under certain conditions,
+        // e.g. after the player size has changed.
+        if (fontSizeCalculationRequired) {
+          updateCEA608FontSize();
+          fontSizeCalculationRequired = false;
+        }
       }
       for (let label of labels) {
         label.getDomElement().css({
-          'left': `${event.position.column / ratio}em`,
-          'top': `${event.position.row * SubtitleOverlay.CEA608_LINE_COEF}%`,
-          'font-size': `${SubtitleOverlay.CEA608_LINE_TO_FONT_SIZE * this.cea608lineHeight}px`,
+          'left': `${event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET}%`,
+          'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
+          'font-size': `${fontSize}px`,
+          'letter-spacing': `${fontLetterSpacing}px`,
         });
       }
     });
 
-    let reset = () => {
+    const reset = () => {
       this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-      this.isCEA608 = false;
+      enabled = false;
     };
+
+    player.addEventHandler(player.EVENT.ON_CUE_EXIT, () => {
+      if (!this.subtitleManager.hasCues) {
+        // Disable CEA-608 mode when all subtitles are gone (to allow correct formatting and
+        // display of other types of subtitles, e.g. the formatting preview subtitle)
+        reset();
+      }
+    });
+
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, reset);
     player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, reset);
   }
@@ -236,14 +282,20 @@ class ActiveSubtitleManager {
    * Calculates a unique ID for a subtitle cue, which is needed to associate an ON_CUE_ENTER with its ON_CUE_EXIT
    * event so we can remove the correct subtitle in ON_CUE_EXIT when multiple subtitles are active at the same time.
    * The start time plus the text should make a unique identifier, and in the only case where a collision
-   * can happen, two similar texts will be displayed at a similar time.
+   * can happen, two similar texts will be displayed at a similar time and a similar position (or without position).
    * The start time should always be known, because it is required to schedule the ON_CUE_ENTER event. The end time
    * must not necessarily be known and therefore cannot be used for the ID.
    * @param event
    * @return {string}
    */
   private static calculateId(event: SubtitleCueEvent): string {
-    return event.start + event.text;
+    let id = event.start + '-' + event.text;
+
+    if (event.position) {
+      id += '-' + event.position.row + '-' + event.position.column;
+    }
+
+    return id;
   }
 
   /**

@@ -28,6 +28,7 @@
     }
   }
 
+  // Move the subtitle up above the controlbar when it appears to avoid them overlapping
   &.#{$prefix}-controlbar-visible {
     bottom: 5em;
     transition: bottom $animation-duration-short ease-in;
