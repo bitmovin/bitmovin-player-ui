@@ -410,6 +410,53 @@
       // Remove cues after some time
       setInterval(function() { cues.forEach(function(cue) { cueExit(cue); }); }, 60000);
     },
+    'CEA-608 subtitle test pattern 2': function() {
+      const cueEnter = function(text, row, column) {
+        var cue = {
+          text: text,
+          position: {
+            row: row,
+            column: column,
+          },
+        };
+        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        return cue;
+      };
+
+      const cueExit = function(cue) {
+        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+      };
+
+      // Create list of cues and display them
+      var cues = [];
+      var column = 0;
+      var text = 'XOXOXOXOXOXOXOX XOXOXOXOXOXOXOXO';
+
+      const enqueue = function() {
+        for (var row = 0; row < 15; row++) {
+          cues.push(cueEnter(text.substr(0, 32 - column), row, column));
+
+          if (column >= 2) {
+            cues.push(cueEnter(text.substr(0, column - 1), row, 0));
+          }
+        }
+
+        // Remove cues after some time
+        setTimeout(function() {
+          cues.forEach(function(cue) { cueExit(cue); });
+
+          cues = [];
+
+          if (column < 32) {
+            enqueue();
+          }
+
+          column++;
+        }, 500);
+      };
+
+      enqueue();
+    },
     'Animate player size/height (needs player 7.5)': function() {
       var playerFigure = player.getFigure();
       var initialHeight = playerFigure.offsetHeight;

@@ -8,6 +8,7 @@
       line-height: 1em;
       position: absolute;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     &.#{$prefix}-controlbar-visible {
