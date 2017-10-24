@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## develop
-- `PlaybackToggleButton` now also listens to ON_PLAYING in addition of ON_PLAY
+
+### Changed
+- `PlaybackToggleButton` now also listens to `ON_PLAYING` in addition to `ON_PLAY`
 
 ## [2.10.3]
 
