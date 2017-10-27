@@ -141,26 +141,29 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.hide();
       }
 
+      const subtitleOverlayWidth = this.getDomElement().width();
+      const subtitleOverlayHeight = this.getDomElement().height();
+
       // The size ratio of the letter grid
       const fontGridSizeRatio = (dummyLabelCharWidth * SubtitleOverlay.CEA608_NUM_COLUMNS) /
         (dummyLabelCharHeight * SubtitleOverlay.CEA608_NUM_ROWS);
       // The size ratio of the available space for the grid
-      const subtitleOverlaySizeRatio = this.getDomElement().width() / this.getDomElement().height();
+      const subtitleOverlaySizeRatio = subtitleOverlayWidth / subtitleOverlayHeight;
 
       if (subtitleOverlaySizeRatio > fontGridSizeRatio) {
         // When the available space is wider than the text grid, the font size is simply
         // determined by the height of the available space.
-        fontSize = this.getDomElement().height() / SubtitleOverlay.CEA608_NUM_ROWS;
+        fontSize = subtitleOverlayHeight / SubtitleOverlay.CEA608_NUM_ROWS;
 
         // Calculate the additional letter spacing required to evenly spread the text across the grid's width
-        const gridSlotWidth = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS;
+        const gridSlotWidth = subtitleOverlayWidth / SubtitleOverlay.CEA608_NUM_COLUMNS;
         const fontCharWidth = fontSize * fontSizeRatio;
         fontLetterSpacing = gridSlotWidth - fontCharWidth;
       } else {
         // When the available space is not wide enough, texts would vertically overlap if we take
         // the height as a base for the font size, so we need to limit the height. We do that
         // by determining the font size by the width of the available space.
-        fontSize = this.getDomElement().width() / SubtitleOverlay.CEA608_NUM_COLUMNS / fontSizeRatio;
+        fontSize = subtitleOverlayWidth / SubtitleOverlay.CEA608_NUM_COLUMNS / fontSizeRatio;
         fontLetterSpacing = 0;
       }
 
