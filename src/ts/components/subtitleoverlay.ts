@@ -141,7 +141,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.hide();
       }
 
-      const subtitleOverlayWidth = this.getDomElement().width();
+      // We subtract 1px here to avoid line breaks at the right border of the subtitle overlay that can happen
+      // when texts contain whitespaces. It's probably some kind of pixel rounding issue in the browser's
+      // layouting, but the actual reason could not be determined. Aiming for a target width - 1px solves the issue.
+      const subtitleOverlayWidth = this.getDomElement().width() - 1;
       const subtitleOverlayHeight = this.getDomElement().height();
 
       // The size ratio of the letter grid
