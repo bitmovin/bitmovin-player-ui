@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Changed
+- Remove `nowrap` from CEA-608 style to correctly render multiline cues
+
 ## [2.10.3]
 
 ### Fixed
@@ -271,6 +276,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.10.3...develop
 [2.10.3]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.10.2...v2.10.3
 [2.10.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.10.1...v2.10.2
 [2.10.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.10.0...v2.10.1
