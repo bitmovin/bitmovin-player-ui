@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Remove `nowrap` from CEA-608 style to correctly render multiline cues
 - `PlaybackToggleButton` now also listens to `ON_PLAYING` in addition to `ON_PLAY`
+- `PlaybackToggleButton` now also listens to `ON_SOURCE_LOADED` and `ON_SOURCE_UNLOADED` to properly react to a new source which might not be playing
 
 ## [2.10.3]
 
