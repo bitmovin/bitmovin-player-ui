@@ -130,15 +130,11 @@ export class SeekBar extends Component<SeekBarConfig> {
       return;
     }
 
-    let playbackNotInitialized = true;
     let isPlaying = false;
     let isSeeking = false;
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEvent = null, forceUpdate: boolean = false) => {
-      // Once this handler os called, playback has been started and we set the flag to false
-      playbackNotInitialized = false;
-
       if (isSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
@@ -485,8 +481,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     this.seekBarMarkersContainer = seekBarChapterMarkersContainer;
 
-    seekBar.append(seekBarBackdrop, seekBarBufferLevel, seekBarSeekPosition,
-      seekBarPlaybackPosition, seekBarChapterMarkersContainer, seekBarPlaybackPositionMarker);
+    seekBar.append(this.seekBarBackdrop, this.seekBarBufferPosition, this.seekBarSeekPosition,
+      this.seekBarPlaybackPosition, this.seekBarMarkersContainer, this.seekBarPlaybackPositionMarker);
 
     let seeking = false;
 
