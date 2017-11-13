@@ -430,7 +430,7 @@
       // Create list of cues and display them
       var cues = [];
       var column = 0;
-      var text = 'XOXOXOXOXOXOXOX XOXOXOXOXOXOXOXO';
+      var text = 'XOXOX XOXO OXOX XOXOXOXOXOX XOXO';
 
       const enqueue = function() {
         for (var row = 0; row < 15; row++) {
@@ -453,6 +453,50 @@
 
           column++;
         }, 500);
+      };
+
+      enqueue();
+    },
+    'subtitle test pattern': function() {
+      const cueEnter = function(text) {
+        var cue = {
+          text: text,
+        };
+        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        return cue;
+      };
+
+      const cueExit = function(cue) {
+        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+      };
+
+      var cues = [];
+      var allowedChars = 'xoxoxoxoxoxo ';
+
+      const enqueue = function() {
+        // Create array of random length
+        var chars = new Array(Math.floor(Math.random() * 70)).fill(0);
+        // Populate array with random chars
+        chars = chars.map(function() {
+          var charIndex = Math.floor(Math.random() * allowedChars.length);
+          return allowedChars.substr(charIndex, 1);
+        });
+        // Join array chars to string
+        var text = chars.join('');
+
+        // Add new cue
+        cues.push(cueEnter(text));
+
+        // Remove oldest cue
+        if (cues.length > 4) {
+          cueExit(cues[0]);
+          cues = cues.slice(1);
+        }
+
+        // Remove cues after some time
+        setTimeout(function() {
+          enqueue();
+        }, 200);
       };
 
       enqueue();
