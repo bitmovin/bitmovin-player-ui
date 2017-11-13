@@ -32,7 +32,7 @@ export class SubtitleSettingsPanel extends SettingsPanel {
 
     this.overlay = config.overlay;
 
-    let manager = new SubtitleSettingsManager(this.overlay);
+    let manager = new SubtitleSettingsManager();
 
     this.config = this.mergeConfig(config, {
       components: <Component<ComponentConfig>[]>[
