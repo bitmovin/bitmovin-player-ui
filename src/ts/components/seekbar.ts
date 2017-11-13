@@ -481,8 +481,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     this.seekBarMarkersContainer = seekBarChapterMarkersContainer;
 
-    seekBar.append(this.seekBarBackdrop, this.seekBarBufferLevel, this.seekBarSeekPosition,
-      this.seekBarPlaybackPosition, this.seekBarChapterMarkersContainer, this.seekBarPlaybackPositionMarker);
+    seekBar.append(this.seekBarBackdrop, this.seekBarBufferPosition, this.seekBarSeekPosition,
+      this.seekBarPlaybackPosition, this.seekBarMarkersContainer, this.seekBarPlaybackPositionMarker);
 
     let seeking = false;
 
