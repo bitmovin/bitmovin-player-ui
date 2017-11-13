@@ -113,6 +113,7 @@
   }
 
   // Adjustments for screen width x <= 600
+  // sass-lint:disable no-empty-rulesets
   &.#{$prefix}-layout-max-width-400,
   &.#{$prefix}-layout-max-width-600 {
     // none yet
