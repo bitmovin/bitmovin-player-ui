@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - `PlaybackToggleButton` now also listens to `ON_SOURCE_LOADED` and `ON_SOURCE_UNLOADED` to properly update the playback state when the source changes
 
+### Fixed
+- Unnecessary line breaks in CEA-608 texts
+
 ## [2.10.4]
 
 ### Changed
