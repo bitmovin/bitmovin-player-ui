@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - `PlaybackToggleButton` now also listens to `ON_SOURCE_LOADED` and `ON_SOURCE_UNLOADED` to properly update the playback state when the source changes
 - Update package dependencies
+- Apply CEA-608 style to subtitles before they are added to the DOM to avoid "style flickering"
 
 ### Fixed
 - Unnecessary line breaks in CEA-608 texts
