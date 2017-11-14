@@ -382,7 +382,7 @@
         'ima', {timeOffset: player.getCurrentTime() + 5});
     },
     'CEA-608 subtitle test pattern (60 secs)': function() {
-      const cueEnter = function(text, row, column) {
+      var cueEnter = function(text, row, column) {
         var cue = {
           text: text,
           position: {
@@ -394,7 +394,7 @@
         return cue;
       };
 
-      const cueExit = function(cue) {
+      var cueExit = function(cue) {
         player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
       };
 
@@ -411,7 +411,7 @@
       setInterval(function() { cues.forEach(function(cue) { cueExit(cue); }); }, 60000);
     },
     'CEA-608 subtitle test pattern 2': function() {
-      const cueEnter = function(text, row, column) {
+      var cueEnter = function(text, row, column) {
         var cue = {
           text: text,
           position: {
@@ -423,7 +423,7 @@
         return cue;
       };
 
-      const cueExit = function(cue) {
+      var cueExit = function(cue) {
         player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
       };
 
@@ -432,7 +432,7 @@
       var column = 0;
       var text = 'XOXOX XOXO OXOX XOXOXOXOXOX XOXO';
 
-      const enqueue = function() {
+      var enqueue = function() {
         for (var row = 0; row < 15; row++) {
           cues.push(cueEnter(text.substr(0, 32 - column), row, column));
 
@@ -458,7 +458,7 @@
       enqueue();
     },
     'subtitle test pattern': function() {
-      const cueEnter = function(text) {
+      var cueEnter = function(text) {
         var cue = {
           text: text,
         };
@@ -466,14 +466,14 @@
         return cue;
       };
 
-      const cueExit = function(cue) {
+      var cueExit = function(cue) {
         player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
       };
 
       var cues = [];
       var allowedChars = 'xoxoxoxoxoxo ';
 
-      const enqueue = function() {
+      var enqueue = function() {
         // Create array of random length
         var chars = new Array(Math.floor(Math.random() * 70)).fill(0);
         // Populate array with random chars
