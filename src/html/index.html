@@ -382,7 +382,7 @@
         'ima', {timeOffset: player.getCurrentTime() + 5});
     },
     'CEA-608 subtitle test pattern (60 secs)': function() {
-      const cueEnter = function(text, row, column) {
+      var cueEnter = function(text, row, column) {
         var cue = {
           text: text,
           position: {
@@ -394,7 +394,7 @@
         return cue;
       };
 
-      const cueExit = function(cue) {
+      var cueExit = function(cue) {
         player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
       };
 
@@ -411,7 +411,7 @@
       setInterval(function() { cues.forEach(function(cue) { cueExit(cue); }); }, 60000);
     },
     'CEA-608 subtitle test pattern 2': function() {
-      const cueEnter = function(text, row, column) {
+      var cueEnter = function(text, row, column) {
         var cue = {
           text: text,
           position: {
@@ -423,16 +423,16 @@
         return cue;
       };
 
-      const cueExit = function(cue) {
+      var cueExit = function(cue) {
         player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
       };
 
       // Create list of cues and display them
       var cues = [];
       var column = 0;
-      var text = 'XOXOXOXOXOXOXOX XOXOXOXOXOXOXOXO';
+      var text = 'XOXOX XOXO OXOX XOXOXOXOXOX XOXO';
 
-      const enqueue = function() {
+      var enqueue = function() {
         for (var row = 0; row < 15; row++) {
           cues.push(cueEnter(text.substr(0, 32 - column), row, column));
 
@@ -453,6 +453,50 @@
 
           column++;
         }, 500);
+      };
+
+      enqueue();
+    },
+    'subtitle test pattern': function() {
+      var cueEnter = function(text) {
+        var cue = {
+          text: text,
+        };
+        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        return cue;
+      };
+
+      var cueExit = function(cue) {
+        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+      };
+
+      var cues = [];
+      var allowedChars = 'xoxoxoxoxoxo ';
+
+      var enqueue = function() {
+        // Create array of random length
+        var chars = new Array(Math.floor(Math.random() * 70)).fill(0);
+        // Populate array with random chars
+        chars = chars.map(function() {
+          var charIndex = Math.floor(Math.random() * allowedChars.length);
+          return allowedChars.substr(charIndex, 1);
+        });
+        // Join array chars to string
+        var text = chars.join('');
+
+        // Add new cue
+        cues.push(cueEnter(text));
+
+        // Remove oldest cue
+        if (cues.length > 4) {
+          cueExit(cues[0]);
+          cues = cues.slice(1);
+        }
+
+        // Remove cues after some time
+        setTimeout(function() {
+          enqueue();
+        }, 200);
       };
 
       enqueue();

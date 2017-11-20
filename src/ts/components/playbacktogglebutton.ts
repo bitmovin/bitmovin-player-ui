@@ -47,6 +47,9 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
       // Since player 7.3. Not really necessary but just in case we ever miss the ON_PLAY event.
       player.addEventHandler(player.EVENT.ON_PLAYING, playbackStateHandler);
     }
+    // after unloading + loading a new source, the player might be in a different playing state (from playing into stopped)
+    player.addEventHandler(player.EVENT.ON_SOURCE_LOADED, playbackStateHandler);
+    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, playbackStateHandler);
     // when playback finishes, player turns to paused mode
     player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler);
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, playbackStateHandler);

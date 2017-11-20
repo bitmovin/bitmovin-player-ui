@@ -1,6 +1,5 @@
 import {StorageUtils} from '../../storageutils';
 import {Component, ComponentConfig} from '../component';
-import {SubtitleOverlay} from '../subtitleoverlay';
 import {EventDispatcher, Event} from '../../eventdispatcher';
 
 interface SubtitleSettings {
@@ -21,7 +20,6 @@ interface Properties {
 
 export class SubtitleSettingsManager {
 
-  private overlay: SubtitleOverlay;
   private userSettings: SubtitleSettings;
   private localStorageKey: string;
 
@@ -37,8 +35,7 @@ export class SubtitleSettingsManager {
     windowOpacity: new SubtitleSettingsProperty<string>(this),
   };
 
-  constructor(overlay: SubtitleOverlay) {
-    this.overlay = overlay;
+  constructor() {
     this.userSettings = {};
     this.localStorageKey = DummyComponent.instance().prefixCss('subtitlesettings');
 

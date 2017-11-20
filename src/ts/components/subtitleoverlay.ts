@@ -4,6 +4,7 @@ import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
+import { EventDispatcher } from '../eventdispatcher';
 
 /**
  * Overlays the player to display subtitles.
@@ -13,6 +14,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private subtitleManager: ActiveSubtitleManager;
   private previewSubtitleActive: boolean;
   private previewSubtitle: SubtitleLabel;
+
+  private preprocessLabelEventCallback = new EventDispatcher<SubtitleCueEvent, SubtitleLabel>();
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
@@ -51,6 +54,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
 
       let labelToAdd = subtitleManager.cueEnter(event);
+
+      this.preprocessLabelEventCallback.dispatch(event, labelToAdd);
 
       if (this.previewSubtitleActive) {
         this.removeComponent(this.previewSubtitle);
@@ -143,8 +148,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       // We subtract 1px here to avoid line breaks at the right border of the subtitle overlay that can happen
       // when texts contain whitespaces. It's probably some kind of pixel rounding issue in the browser's
-      // layouting, but the actual reason could not be determined. Aiming for a target width - 1px solves the issue.
-      const subtitleOverlayWidth = this.getDomElement().width() - 1;
+      // layouting, but the actual reason could not be determined. Aiming for a target width - 1px would work in
+      // most browsers, but Safari has a "quantized" font size rendering with huge steps in between so we need
+      // to subtract some more pixels to avoid line breaks there as well.
+      const subtitleOverlayWidth = this.getDomElement().width() - 10;
       const subtitleOverlayHeight = this.getDomElement().height();
 
       // The size ratio of the letter grid
@@ -189,14 +196,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     });
 
-    player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
+    this.preprocessLabelEventCallback.subscribe((event: SubtitleCueEvent, label: SubtitleLabel) => {
       const isCEA608 = event.position != null;
       if (!isCEA608) {
         // Skip all non-CEA608 cues
         return;
       }
-
-      const labels = this.subtitleManager.getCues(event);
 
       if (!enabled) {
         enabled = true;
@@ -211,14 +216,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
           fontSizeCalculationRequired = false;
         }
       }
-      for (let label of labels) {
-        label.getDomElement().css({
-          'left': `${event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET}%`,
-          'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
-          'font-size': `${fontSize}px`,
-          'letter-spacing': `${fontLetterSpacing}px`,
-        });
-      }
+
+      label.getDomElement().css({
+        'left': `${event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET}%`,
+        'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
+        'font-size': `${fontSize}px`,
+        'letter-spacing': `${fontLetterSpacing}px`,
+      });
     });
 
     const reset = () => {
