@@ -73,7 +73,9 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // An exception is made for live streams without a timeshift window, because here we "stop" playback instead
       // of pausing it (from a UI perspective), so we keep the live edge indicator on because a play would always
       // resume at the live edge.
-      if (player.getTimeShift() === 0 && (!player.isPaused() || player.getMaxTimeShift() === 0)) {
+      const isTimeshifted = player.getTimeShift() < 0;
+      const isTimeshiftAvailable = player.getMaxTimeShift() < 0;
+      if (!isTimeshifted && (!player.isPaused() || !isTimeshiftAvailable)) {
         this.getDomElement().addClass(liveEdgeCssClass);
       } else {
         this.getDomElement().removeClass(liveEdgeCssClass);
