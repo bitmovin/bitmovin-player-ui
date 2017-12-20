@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Update `SeekBar` playback position of live streams with DVR window while playback is paused
+
 ### Fixed
 - Stop `SeekBar` smooth playback position updates on `ON_PLAYBACK_FINISHED`
 
