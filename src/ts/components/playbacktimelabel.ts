@@ -68,6 +68,10 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     };
 
     let updateLiveTimeshiftState = () => {
+      if (!live) {
+        return;
+      }
+
       // The player is only at the live edge iff the stream is not shifted and it is actually playing or playback has
       // never been started (meaning it isn't paused). A player that is paused is always behind the live edge.
       // An exception is made for live streams without a timeshift window, because here we "stop" playback instead
