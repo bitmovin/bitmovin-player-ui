@@ -70,7 +70,10 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     let updateLiveTimeshiftState = () => {
       // The player is only at the live edge iff the stream is not shifted and it is actually playing or playback has
       // never been started (meaning it isn't paused). A player that is paused is always behind the live edge.
-      if (player.getTimeShift() === 0 && !player.isPaused()) {
+      // An exception is made for live streams without a timeshift window, because here we "stop" playback instead
+      // of pausing it (from a UI perspective), so we keep the live edge indicator on because a play would always
+      // resume at the live edge.
+      if (player.getTimeShift() === 0 && (!player.isPaused() || player.getMaxTimeShift() === 0)) {
         this.getDomElement().addClass(liveEdgeCssClass);
       } else {
         this.getDomElement().removeClass(liveEdgeCssClass);
