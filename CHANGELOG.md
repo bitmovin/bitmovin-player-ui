@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Stop `SeekBar` smooth playback position updates on `ON_PLAYBACK_FINISHED`
+- Centered `SeekBar` and `VolumeSlider` drag handles and make sure that all layers of the underlying bar have the same height
 
 ## [2.10.5]
 
