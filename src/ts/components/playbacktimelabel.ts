@@ -68,7 +68,18 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     };
 
     let updateLiveTimeshiftState = () => {
-      if (player.getTimeShift() === 0) {
+      if (!live) {
+        return;
+      }
+
+      // The player is only at the live edge iff the stream is not shifted and it is actually playing or playback has
+      // never been started (meaning it isn't paused). A player that is paused is always behind the live edge.
+      // An exception is made for live streams without a timeshift window, because here we "stop" playback instead
+      // of pausing it (from a UI perspective), so we keep the live edge indicator on because a play would always
+      // resume at the live edge.
+      const isTimeshifted = player.getTimeShift() < 0;
+      const isTimeshiftAvailable = player.getMaxTimeShift() < 0;
+      if (!isTimeshifted && (!player.isPaused() || !isTimeshiftAvailable)) {
         this.getDomElement().addClass(liveEdgeCssClass);
       } else {
         this.getDomElement().removeClass(liveEdgeCssClass);
@@ -104,6 +115,8 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
     player.addEventHandler(player.EVENT.ON_TIME_SHIFT, updateLiveTimeshiftState);
     player.addEventHandler(player.EVENT.ON_TIME_SHIFTED, updateLiveTimeshiftState);
+    player.addEventHandler(player.EVENT.ON_PLAY, updateLiveTimeshiftState);
+    player.addEventHandler(player.EVENT.ON_PAUSED, updateLiveTimeshiftState);
 
     let init = () => {
       // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content

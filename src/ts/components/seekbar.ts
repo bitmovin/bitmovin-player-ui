@@ -198,6 +198,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // update playback position of Cast playback
     player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
 
+    this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
     // Seek handling
     player.addEventHandler(player.EVENT.ON_SEEK, () => {
@@ -317,6 +318,26 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.configureMarkers(player, uimanager);
   }
 
+  /**
+   * Update seekbar while a live stream with DVR window is paused.
+   * The playback position stays still and the position indicator visually moves towards the back.
+   */
+  private configureLivePausedTimeshiftUpdater(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager,
+                                              playbackPositionHandler: () => void): void {
+    // Regularly update the playback position while the timeout is active
+    const pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
+
+    // Start updater when a live stream with timeshift window is paused
+    player.addEventHandler(player.EVENT.ON_PAUSED, () => {
+      if (player.isLive() && player.getMaxTimeShift() < 0) {
+        pausedTimeshiftUpdater.start();
+      }
+    });
+
+    // Stop updater when playback continues (no matter if the updater was started before)
+    player.addEventHandler(player.EVENT.ON_PLAY, () => pausedTimeshiftUpdater.clear());
+  }
+
   private configureSmoothPlaybackPositionUpdater(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     /*
      * Playback position update
@@ -372,6 +393,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
     player.addEventHandler(player.EVENT.ON_PAUSED, stopSmoothPlaybackPositionUpdater);
     player.addEventHandler(player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, stopSmoothPlaybackPositionUpdater);
     player.addEventHandler(player.EVENT.ON_SEEKED, () => {
       currentTimeSeekBar = player.getCurrentTime();
     });
