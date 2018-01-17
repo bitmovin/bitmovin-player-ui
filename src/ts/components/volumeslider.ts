@@ -107,7 +107,6 @@ export class VolumeSlider extends SeekBar {
     dummyVideoElement.appendChild(dummyAudioSource);
     // try setting the volume to 0.9 and if it's still 1 we are on a volume control restricted device
     dummyVideoElement.volume = 0.9;
-    // alert('volume after alteration: ' + dummyVideoElement.volume);
     return dummyVideoElement.volume !== 1;
   }
 }
