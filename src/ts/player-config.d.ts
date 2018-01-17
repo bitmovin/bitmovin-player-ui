@@ -392,7 +392,7 @@ declare namespace bitmovin {
       hls?: string;
       /**
        * An URL to a Microsoft Smooth Streaming Manifest (normally ends with .ism/Manifest but can also be a .xml)
-       * Supported by player version 7.5
+       * @since 7.5
        */
       smooth?: string;
       /**
