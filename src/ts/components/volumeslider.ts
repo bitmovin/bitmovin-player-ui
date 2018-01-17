@@ -44,7 +44,7 @@ export class VolumeSlider extends SeekBar {
 
     let config = <VolumeSliderConfig>this.getConfig();
 
-    if (config.hideIfVolumeControlProhibited && !this.detectVolumeControlAvailability(player)) {
+    if (config.hideIfVolumeControlProhibited && !this.detectVolumeControlAvailability()) {
       this.hide();
 
       // We can just return from here, because the user will never interact with the control and any configured
@@ -93,7 +93,7 @@ export class VolumeSlider extends SeekBar {
     volumeChangeHandler();
   }
 
-  private detectVolumeControlAvailability(player: bitmovin.PlayerAPI): boolean {
+  private detectVolumeControlAvailability(): boolean {
     /*
      * "On iOS devices, the audio level is always under the user’s physical control. The volume property is not
      * settable in JavaScript. Reading the volume property always returns 1."
