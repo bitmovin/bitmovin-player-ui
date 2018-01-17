@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Added Smooth Streaming to the source config 
+
 ### Fixed
 - Positioning of `SeekBar` markers was broken due to style changes in 2.11.0
 

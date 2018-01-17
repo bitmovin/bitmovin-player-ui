@@ -391,6 +391,11 @@ declare namespace bitmovin {
        */
       hls?: string;
       /**
+       * An URL to a Microsoft Smooth Streaming Manifest (normally ends with .ism/Manifest but can also be a .xml)
+       * Supported by player version 7.5+
+       */
+      smooth?: string;
+      /**
        * An Array of objects to video files, used for progressive download as fallback. Is only used when all
        * other methods fail. Multiple progressive files can be used, e.g. .mp4 and .webm files to support as
        * many browsers as possible.
