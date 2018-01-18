@@ -20,16 +20,6 @@ export class VolumeSlider extends SeekBar {
 
   private static readonly issuerName = 'ui';
 
-  /**
-   * Small MP3 from https://mrcoles.com/detecting-html5-audio-autoplay/
-   * @type {string}
-   */
-  public static readonly dummyAudioSource: string = 'data:audio/mpeg;base64,/+MYxAAAAANIAUAAAASEEB/jwOFM/0MM/90b/+R' +
-    'hST//w4NFwOjf///PZu////9lns5GFDv//l9GlUIEEIAAAgIg8Ir/JGq3/+MYxDsLIj5QMYcoAP0dv9HIjUcH//yYSg+CIbkGP//8w0bLVjUP///' +
-    '3Z0x5QCAv/yLjwtGKTEFNRTMuOTeqqqqqqqqqqqqq/+MYxEkNmdJkUYc4AKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq' +
-    'qqqqqqqqqqqqqqqqqqqqqqqqq';
-
-
   constructor(config: SeekBarConfig = {}) {
     super(config);
 
@@ -103,7 +93,6 @@ export class VolumeSlider extends SeekBar {
     // probe a dummy video element with a minimal audio source
     const dummyVideoElement = document.createElement('video');
     const dummyAudioSource = document.createElement('source');
-    dummyAudioSource.src = VolumeSlider.dummyAudioSource;
     dummyVideoElement.appendChild(dummyAudioSource);
     // try setting the volume to 0.9 and if it's still 1 we are on a volume control restricted device
     dummyVideoElement.volume = 0.9;
