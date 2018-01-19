@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Positioning of `SeekBar` markers was broken due to style changes in 2.11.0
 
 ### Changed
-- The volume slider now does not probe the volume setting capabilities on the player but on a dummy element to avoid muted autoplay getting paused
+- Execute volume control availability test on dummy media element to prevent unexpected interference with muted autoplay
 
 ## [2.11.0]
 
