@@ -90,12 +90,10 @@ export class VolumeSlider extends SeekBar {
      * https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/Device-SpecificConsiderations/Device-SpecificConsiderations.html
      */
     // as muted autoplay gets paused as soon as we unmute it, we may not touch the volume of the actual player so we
-    // probe a dummy video element with a minimal audio source
-    const dummyVideoElement = document.createElement('video');
-    const dummyAudioSource = document.createElement('source');
-    dummyVideoElement.appendChild(dummyAudioSource);
-    // try setting the volume to 0.9 and if it's still 1 we are on a volume control restricted device
-    dummyVideoElement.volume = 0.9;
-    return dummyVideoElement.volume !== 1;
+    // probe a dummy audio element
+    const dummyAudioElement = document.createElement('audio');
+    // try setting the volume to 0.7 and if it's still 1 we are on a volume control restricted device
+    dummyAudioElement.volume = 0.7;
+    return dummyAudioElement.volume !== 1;
   }
 }
