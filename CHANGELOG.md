@@ -6,11 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
-### Fixed
-- Positioning of `SeekBar` markers was broken due to style changes in 2.11.0
-
 ### Changed
 - Execute volume control availability test on dummy media element to prevent unexpected interference with muted autoplay
+
+### Fixed
+- Positioning of `SeekBar` markers was broken due to style changes in 2.11.0
 
 ## [2.11.0]
 
