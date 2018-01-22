@@ -91,9 +91,9 @@ export class VolumeSlider extends SeekBar {
      */
     // as muted autoplay gets paused as soon as we unmute it, we may not touch the volume of the actual player so we
     // probe a dummy audio element
-    const dummyAudioElement = document.createElement('audio');
+    const dummyVideoElement = document.createElement('video');
     // try setting the volume to 0.7 and if it's still 1 we are on a volume control restricted device
-    dummyAudioElement.volume = 0.7;
-    return dummyAudioElement.volume !== 1;
+    dummyVideoElement.volume = 0.7;
+    return dummyVideoElement.volume !== 1;
   }
 }
