@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
 ## [2.12.0]
 
 ### Changed
@@ -307,6 +309,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.12.0...develop
 [2.12.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.10.5...v2.11.0
 [2.10.5]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.10.4...v2.10.5
