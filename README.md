@@ -11,7 +11,7 @@ Beside the Git repository, the UI framework is also available through the follow
 
 The UI framework and default skin bundled with the latest player release are always available via CDN. This is the recommended way if you just want to work with the predefined UI components. All components will be available in the `bitmovin.playerui` namespace.
 
- * JavaScript library: `//bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer-ui.js` 
+ * JavaScript library: `//bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer-ui.js`
  * CSS default skin: `//bitmovin-a.akamaihd.net/bitmovin-player/stable/7/bitmovinplayer-ui.css`
 
 ### NPM
@@ -33,7 +33,7 @@ The UI framework is also available in the NPM repository and comes with all sour
   * `gulp serve` to open test page in browser, build and reload changed files automatically
   * `gulp lint` to lint TypeScript and SASS files
   * `gulp build-prod` to build project with minified files into `dist` directory
-  
+
 To just take a look at the project, also run `gulp serve`. For changes, check our [CHANGELOG](CHANGELOG.md).
 
 ## Contributing
@@ -42,7 +42,7 @@ Pull requests are welcome! Please check the [contribution guidelines](CONTRIBUTI
 
 ## Introduction
 
-This repository contains the Bitmovin Player UI framework introduced with the 7.0 release. 
+This repository contains the Bitmovin Player UI framework introduced with the 7.0 release.
 It is designed as a flexible and modularized layer on the player API that replaces the old integrated monolithic UI, enabling customers and users of the player to easily customize the UI to their needs in design, structure, and functionality. It makes it extremely easy and straightforward to add additional control components and we encourage our users to proactively contribute to our codebase.
 
 The framework basically consists of a `UIManager` that handles initialization and destruction of the UI, and components extending the `Component` base class. Components provide specific functionality (e.g. `PlaybackToggleButton`, `ControlBar`, `SeekBar`, `SubtitleOverlay`) and usually consist of two files, a TypeScript `.ts` file containing control code and API interaction with the player, and a SASS `.scss` file containing the visual style.
@@ -150,12 +150,12 @@ Here is an example on how to display a special UI in fullscreen mode:
 ```js
 bitmovin.player('player-id').setup(config).then(function (player) {
   var myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi);
-  
+
   player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, function () {
     myUiManager.release();
     myUiManager = new bitmovin.playerui.UIManager(player, myFullscreenUi);
   });
-  
+
   player.addEventHandler(player.EVENT.ON_FULLSCREEN_EXIT, function () {
     myUiManager.release();
     myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi);
@@ -240,6 +240,44 @@ var myUiManager = new bitmovin.playerui.UIManager(player, myUi, myUiConfig);
 ```
 
 All of the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.
+
+### UI Translations
+
+You can use either  a built-in locale or provide your own translation.
+
+**Buil-it locales**
+
+Right now `en` and `de` locales are supported. For example
+```js
+var config = {...};
+var uiConfig = { locale: 'de' };
+
+bitmovin.player('player-id').setup(config).then(function (player) {
+  var myUiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
+});
+```
+
+**Custom translation**
+
+Alternatively, you can provide your own translation with mappings for the default UI language. Take a look at `src/ts/translations/en.ts` file. Any missing translations will use english as the default.
+
+```js
+var config = {...};
+var uiConfig = {
+  ...,
+  translations: {
+    settings: {
+      //videoQuality: 'Videoqualität',
+      audioQuality: 'Audioqualität'
+    }
+  }
+};
+
+bitmovin.player('player-id').setup(config).then(function (player) {
+  var myUiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
+});
+// Since videoQuality key is not provided, it will use english translation 'Video Quality' as a default
+```
 
 ### UI Playground
 
