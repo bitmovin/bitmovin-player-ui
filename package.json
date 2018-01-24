@@ -45,5 +45,11 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.93",
+    "@types/lodash-es": "^4.17.0",
+    "lodash": "^4.17.4",
+    "lodash-es": "^4.17.4"
   }
 }

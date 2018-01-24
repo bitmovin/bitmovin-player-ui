@@ -14,6 +14,10 @@ import {UIInstanceManager} from '../../uimanager';
 import {SubtitleSettingsManager} from './subtitlesettingsmanager';
 import {SubtitleSettingsCloseButton} from './subtitlesettingsclosebutton';
 import {SubtitleSettingsResetButton} from './subtitlesettingsresetbutton';
+import i18n from '../../i18n';
+
+// Interfaces and types
+import { FontPanelLabels } from '../../translations/translation-types';
 
 export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
   overlay: SubtitleOverlay;
@@ -33,34 +37,36 @@ export class SubtitleSettingsPanel extends SettingsPanel {
     this.overlay = config.overlay;
 
     let manager = new SubtitleSettingsManager();
+    // Quick lang getters
+    const i18fonts: FontPanelLabels = i18n.q.settings.fonts;
 
     this.config = this.mergeConfig(config, {
       components: <Component<ComponentConfig>[]>[
-        new SettingsPanelItem('Font size', new FontSizeSelectBox({
+        new SettingsPanelItem(i18fonts.fontSize, new FontSizeSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem('Font family', new FontFamilySelectBox({
+        new SettingsPanelItem(i18fonts.fontFamily, new FontFamilySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem('Font color', new FontColorSelectBox({
+        new SettingsPanelItem(i18fonts.fontColor, new FontColorSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem('Font opacity', new FontOpacitySelectBox({
+        new SettingsPanelItem(i18fonts.fontOpacity, new FontOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem('Character edge', new CharacterEdgeSelectBox({
+        new SettingsPanelItem(i18fonts.characterEdge, new CharacterEdgeSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem('Background color', new BackgroundColorSelectBox({
+        new SettingsPanelItem(i18fonts.backgroundColor, new BackgroundColorSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem('Background opacity', new BackgroundOpacitySelectBox({
+        new SettingsPanelItem(i18fonts.backgroundOpacity, new BackgroundOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem('Window color', new WindowColorSelectBox({
+        new SettingsPanelItem(i18fonts.windowColor, new WindowColorSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({
+        new SettingsPanelItem(i18fonts.windowOpacity, new WindowOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
         new SettingsPanelItem(new SubtitleSettingsCloseButton({

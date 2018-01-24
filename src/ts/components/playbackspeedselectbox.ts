@@ -1,6 +1,7 @@
 import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
+import i18n from '../i18n';
 
 /**
  * A select box providing a selection of different playback speeds.
@@ -16,7 +17,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
 
     this.addItem('0.25', '0.25x');
     this.addItem('0.5', '0.5x');
-    this.addItem('1', 'Normal');
+    this.addItem('1', i18n.q.labels.normal);
     this.addItem('1.5', '1.5x');
     this.addItem('2', '2x');
 
