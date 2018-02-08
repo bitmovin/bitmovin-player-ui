@@ -721,6 +721,12 @@ declare namespace bitmovin {
        * an offset and a tag property.
        */
       schedule?: { [name: string]: AdvertisingScheduleItem; };
+      /**
+       * If set to true, mid-roll ads are only played during normal playback. Seeking to a time after the
+       * mid-roll ads doesn't trigger ad playback.
+       * @since 7.1
+       */
+      allowSeekingOverMidRollAds?: boolean;
     }
 
     interface LocationConfig {

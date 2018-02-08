@@ -717,6 +717,11 @@ declare namespace bitmovin {
        * TODO is that the same as {@link StyleConfig}?
        */
       style?: Object;
+      /**
+       * Specifies the time in seconds until the ad can be skipped.
+       * If set, overwrites the skip offset specified in the ad manifest (VAST and VPAID, not IMA)
+       */
+      skipOffset?: number;
     }
 
     /**
@@ -956,6 +961,45 @@ declare namespace bitmovin {
        * ON_VR_VIEWING_DIRECTION_CHANGE event is triggered.
        */
       getViewingDirectionChangeThreshold(): number;
+
+      /**
+       * Sets the vertical field of view in degrees.
+       * @param {Number} fieldOfView - The vertical field of view in degrees.
+       * @return {Boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      setVerticalFieldOfView(fieldOfView: number): boolean;
+
+      /**
+       * Gets the vertical field of view in degrees.
+       * @return {Number} - The vertical field of view in degrees.
+       */
+      getVerticalFieldOfView(): number;
+
+      /**
+       * Sets the horizontal field of view in degrees.
+       * @param {Number} fieldOfView - The horizontal field of view in degrees.
+       * @return {Boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      setHorizontalFieldOfView(fieldOfView: number): boolean;
+
+      /**
+       * Gets the horizontal field of view in degrees.
+       * @return {Number} - The horizontal field of view in degrees.
+       */
+      getHorizontalFieldOfView(): number;
+
+      /**
+       * Applies a zoom factor to the current field of view.
+       * @param {number} factor - The zoom factor to apply.
+       * @return {Boolean} - True, if the VRHandler is ready, false otherwise.
+       */
+      zoom(factor: number): boolean;
+
+      /**
+       * Returns the current zoom factor.
+       * @returns {number} - The current zoom factor, if the VRHandler is ready, -1 otherwise.
+       */
+      getZoom(): number;
     }
 
     namespace VR {
