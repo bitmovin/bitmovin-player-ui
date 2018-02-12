@@ -37,6 +37,12 @@ declare namespace bitmovin {
         EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
       },
     };
+
+    network: {
+      REQUEST_TYPE: PlayerAPI.HttpRequestType,
+      REQUEST_METHOD: PlayerAPI.HttpRequestMethod,
+      RESPONSE_TYPE: PlayerAPI.HttpResponseType,
+    };
   }
 
   // tslint:disable-next-line:no-unused-variable

@@ -771,6 +771,131 @@ declare namespace bitmovin {
       delay?: number;
     }
 
+    /**
+     * Values the `HttpRequestType` property can have in the network API config callbacks.
+     */
+    enum HttpRequestType {
+      MANIFEST_DASH,
+      MANIFEST_HLS_MASTER,
+      MANIFEST_HLS_VARIANT,
+      MANIFEST_SMOOTH,
+      MANIFEST_ADS,
+
+      MEDIA_AUDIO,
+      MEDIA_VIDEO,
+      MEDIA_SUBTITLES,
+      MEDIA_THUMBNAILS,
+
+      DRM_LICENSE_WIDEVINE,
+      DRM_LICENSE_PLAYREADY,
+      DRM_LICENSE_FAIRPLAY,
+      DRM_LICENSE_PRIMETIME,
+      DRM_LICENSE_CLEARKEY,
+
+      DRM_CERTIFICATE_FAIRPLAY,
+
+      KEY_HLS_AES,
+    }
+
+    enum HttpResponseType {
+      ARRAYBUFFER,
+      BLOB,
+      DOCUMENT,
+      JSON,
+      TEXT,
+    }
+
+    /**
+     * Allowed types of the {@link HttpRequest.body}
+     */
+    type HttpRequestBody = ArrayBuffer | ArrayBufferView | Blob | FormData | string | Document | URLSearchParams;
+
+    /**
+     * Possible types of {@link HttpResponse.body}
+     */
+    type HttpResponseBody = string | ArrayBuffer | Blob | Object | Document;
+
+    /**
+     * Allowed HTTP request method
+     */
+    enum HttpRequestMethod {
+      GET,
+      POST,
+      HEAD,
+    }
+
+    interface HttpRequest {
+      /**
+       * HTTP method of the request
+       */
+      method: HttpRequestMethod;
+      /**
+       * URL of the request
+       */
+      url: string;
+      /**
+       * Headers of this request
+       */
+      headers: Header[];
+      /**
+       * Request body to send to the server (optional).
+       */
+      body?: HttpRequestBody;
+      /**
+       * Type we expect the {@link HttpResponse.body} to be.
+       */
+      responseType: HttpResponseType;
+      /**
+       * The credentials property as used in the `fetch` API and mapped to the `XmlHttpRequest` as follows:
+       * <pre>
+       * 'include' ... withCredentials = true
+       * 'omit'    ... withCredentials = false
+       * </pre>
+       */
+      credentials: 'omit' | 'same-origin' | 'include';
+    }
+
+    interface HttpResponse<ResponseBody extends HttpResponseBody> {
+      /**
+       * Corresponding request object of this response
+       */
+      request: HttpRequest;
+      /**
+       * URL of the actual request. May differ from {@link HttpRequest.url} when redirects have happened.
+       */
+      url: string;
+      /**
+       * Headers of the response.
+       */
+      headers: Header[];
+      /**
+       * HTTP status code
+       */
+      status: number;
+      /**
+       * Status text provided by the server or default value if not present in response.
+       */
+      statusText: string;
+      /**
+       * Body of the response with type defined by {@link HttpRequest.responseType} (optional).
+       */
+      body?: ResponseBody;
+      /**
+       * Amount of bytes of the response body (optional).
+       */
+      length?: number;
+    }
+
+    interface NetworkConfig {
+      preprocessHttpRequest?: (type: HttpRequestType, request: HttpRequest) => Promise<HttpRequest>;
+      sendHttpRequest?: <T extends HttpResponseBody>(type: HttpRequestType, request: HttpRequest) =>
+        Promise<HttpResponse<T>>;
+      retryHttpRequest?: <T extends HttpResponseBody>(type: HttpRequestType, response: HttpResponse<T>, retry: number) =>
+        Promise<HttpRequest>;
+      preprocessHttpResponse?: <T extends HttpResponseBody>(type: HttpRequestType, response: HttpResponse<T>) =>
+        Promise<HttpResponse<T>>;
+    }
+
     interface Config {
       /**
        * Mandatory. A personal key can be found in the bitmovin portal and should be specified here as string.
@@ -823,6 +948,10 @@ declare namespace bitmovin {
        * Licensing configuration.
        */
       licensing?: LicensingConfig;
+      /**
+       * Network configuration.
+       */
+      network?: NetworkConfig;
     }
   }
 }
