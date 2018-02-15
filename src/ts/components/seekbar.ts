@@ -122,6 +122,10 @@ export class SeekBar extends Component<SeekBarConfig> {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
 
+    // Apply scaling transform to the backdrop bar to have all bars rendered similarly
+    // (the call must be up here to be executed for the volume slider as well)
+    this.setPosition(this.seekBarBackdrop, 100);
+
     if (!configureSeek) {
       // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
       // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
@@ -312,7 +316,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
     this.setSeekPosition(0);
-    this.setPosition(this.seekBarBackdrop, 100); // Apply scaling transform to have all bars rendered similarly
     if (this.config.smoothPlaybackPositionUpdateIntervalMs !== SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED) {
       this.configureSmoothPlaybackPositionUpdater(player, uimanager);
     }
