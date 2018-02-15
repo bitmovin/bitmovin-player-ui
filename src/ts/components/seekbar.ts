@@ -764,13 +764,14 @@ export class SeekBar extends Component<SeekBarConfig> {
   private setPosition(element: DOM, percent: number) {
     let scale = percent / 100;
 
-    // When the scale is exactly 1, browsers seem to render the elements differently and the height gets slightly off,
-    // leading to mismatching heights when e.g. the buffer level bar has a width of 1 and the playback position bar has
-    // a width < 1. A jittering buffer level around 1 leads to an even worse flickering effect.
+    // When the scale is exactly 1 or very near 1 (and the browser internally rounds it to 1), browsers seem to render
+    // the elements differently and the height gets slightly off, leading to mismatching heights when e.g. the buffer
+    // level bar has a width of 1 and the playback position bar has a width < 1. A jittering buffer level around 1
+    // leads to an even worse flickering effect.
     // Various changes in CSS styling and DOM hierarchy did not solve the issue so the workaround is to avoid a scale
     // of exactly 1.
-    if (scale === 1.0) {
-      scale = 0.999999;
+    if (scale >= 0.99999 && scale <= 1.00001) {
+      scale = 0.99999;
     }
 
     let style = this.config.vertical ?
