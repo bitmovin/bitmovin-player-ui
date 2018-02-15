@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Fixed
+- Flickering heights of `SeekBar` and `VolumeSlider` bar indicators
+
 ## [2.12.0]
 
 ### Changed
