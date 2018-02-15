@@ -312,6 +312,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
     this.setSeekPosition(0);
+    this.setPosition(this.seekBarBackdrop, 100); // Apply scaling transform to have all bars rendered similarly
     if (this.config.smoothPlaybackPositionUpdateIntervalMs !== SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED) {
       this.configureSmoothPlaybackPositionUpdater(player, uimanager);
     }
