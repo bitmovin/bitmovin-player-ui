@@ -122,6 +122,10 @@ export class SeekBar extends Component<SeekBarConfig> {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
 
+    // Apply scaling transform to the backdrop bar to have all bars rendered similarly
+    // (the call must be up here to be executed for the volume slider as well)
+    this.setPosition(this.seekBarBackdrop, 100);
+
     if (!configureSeek) {
       // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
       // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
@@ -763,6 +767,17 @@ export class SeekBar extends Component<SeekBarConfig> {
    */
   private setPosition(element: DOM, percent: number) {
     let scale = percent / 100;
+
+    // When the scale is exactly 1 or very near 1 (and the browser internally rounds it to 1), browsers seem to render
+    // the elements differently and the height gets slightly off, leading to mismatching heights when e.g. the buffer
+    // level bar has a width of 1 and the playback position bar has a width < 1. A jittering buffer level around 1
+    // leads to an even worse flickering effect.
+    // Various changes in CSS styling and DOM hierarchy did not solve the issue so the workaround is to avoid a scale
+    // of exactly 1.
+    if (scale >= 0.99999 && scale <= 1.00001) {
+      scale = 0.99999;
+    }
+
     let style = this.config.vertical ?
       // -ms-transform required for IE9
       { 'transform': 'scaleY(' + scale + ')', '-ms-transform': 'scaleY(' + scale + ')' } :
