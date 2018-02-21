@@ -35,7 +35,7 @@ export class Timeout {
    * Clears the timeout. The callback will not be called if clear is called during the timeout.
    */
   clear(): void {
-    clearTimeout(this.timeoutHandle);
+    this.clearInternal();
   }
 
   /**
@@ -45,7 +45,7 @@ export class Timeout {
     let lastScheduleTime = 0;
     let delayAdjust = 0;
 
-    this.clear();
+    this.clearInternal();
 
     let internalCallback = () => {
       this.callback();
@@ -69,5 +69,9 @@ export class Timeout {
 
     lastScheduleTime = Date.now();
     this.timeoutHandle = setTimeout(internalCallback, this.delay);
+  }
+
+  private clearInternal(): void {
+    clearTimeout(this.timeoutHandle);
   }
 }

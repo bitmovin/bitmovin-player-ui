@@ -86,6 +86,9 @@ declare namespace bitmovin {
       ON_AIRPLAY_AVAILABLE: EVENT;
       ON_VR_VIEWING_DIRECTION_CHANGE: EVENT;
       ON_VR_VIEWING_DIRECTION_CHANGED: EVENT;
+      ON_DESTROY: EVENT;
+      ON_AD_BREAK_STARTED: EVENT;
+      ON_AD_BREAK_FINISHED: EVENT;
     }
 
     interface PlayerEvent {
@@ -283,6 +286,7 @@ declare namespace bitmovin {
        * ID of the representation this segment belongs to
        */
       representationId: string;
+      EXPERIMENTAL?: any;
     }
 
     interface MetadataEvent extends PlayerEvent {
@@ -506,6 +510,44 @@ declare namespace bitmovin {
 
     interface PlayerEventCallback {
       (event: PlayerEvent): void;
+    }
+
+    interface AdStartedEvent extends PlayerEvent {
+      /**
+       * The target URL to open once the user clicks on the ad
+       * @since v4.2
+       */
+      clickThroughUrl: string;
+      /**
+       * The index of the ad in the queue
+       * @since v6.0
+       */
+      indexInQueue: number;
+      clientType: string;
+      /**
+       * The duration of the ad
+       * @since v6.0
+       */
+      duration: number;
+      /**
+       * The skip offset of the ad
+       * @since v6.0
+       */
+      skipOffset: number;
+      timeOffset: string;
+      adMessage?: string;
+      skipMessage?: SkipMessage;
+    }
+
+    interface TimeShiftEvent extends UserInteractionEvent {
+      /**
+       * The position from which we start the timeshift (currentTime before the timeshift)
+       */
+      position: number;
+      /**
+       * The position to which we want to jump for the timeshift ( currentTime after timeshift has completed)
+       */
+      target: number;
     }
   }
 }
