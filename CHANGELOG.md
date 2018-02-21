@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Flickering heights of `SeekBar` and `VolumeSlider` bar indicators
+- "Concurrent" modification of event handlers in `EventDispatcher` when a handler is unsubscribed by a handler
 
 ## [2.12.0]
 
