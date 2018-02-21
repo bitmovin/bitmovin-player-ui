@@ -91,6 +91,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
    */
   unsubscribe(listener: EventListener<Sender, Args>): boolean {
     // Iterate through listeners, compare with parameter, and remove if found
+    // NOTE: In case we ever remove all matching listeners instead of just the first, we need to reverse-iterate here
     for (let i = 0; i < this.listeners.length; i++) {
       let subscribedListener = this.listeners[i];
       if (subscribedListener.listener === listener) {
