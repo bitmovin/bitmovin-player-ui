@@ -124,7 +124,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
     // listeners are shifted within the array).
     // This means that listener x+1 will still be called if unsubscribed from within the handler of listener x, as well
     // as listener y+1 will not be called when subscribed from within the handler of listener y.
-    // Array.slice(0) is the fasted array copy method according to: https://stackoverflow.com/a/21514254/370252
+    // Array.slice(0) is the fastest array copy method according to: https://stackoverflow.com/a/21514254/370252
     const listeners = this.listeners.slice(0);
     for (let listener of listeners) {
       listener.fire(sender, args);
