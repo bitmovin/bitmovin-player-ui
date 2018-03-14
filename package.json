@@ -37,6 +37,7 @@
     "gulp-uglify": "^2.0.0",
     "merge2": "^1.2.0",
     "postcss-svg": "^1.0.6",
+    "preact": "^8.2.7",
     "run-sequence": "^1.2.2",
     "stream-combiner2": "^1.1.1",
     "tsify": "^2.0.2",
