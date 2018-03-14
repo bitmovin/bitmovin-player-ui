@@ -1,6 +1,8 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
+import { LabelElement } from './labelelement';
+import { render, h } from "preact";
 
 /**
  * Configuration interface for a {@link Label} component.
@@ -40,16 +42,15 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
   }
 
   protected toDomElement(): DOM {
-    let labelElement = new DOM('span', {
-      'id': this.config.id,
-      'class': this.getCssClasses(),
-    }).html(this.text);
-
-    labelElement.on('click', () => {
-      this.onClickEvent();
+    const vdom = h(LabelElement, {
+      id: this.config.id,
+      cssClass: this.getCssClasses(),
+      text: this.text,
+      onClick: this.onClickEvent,
     });
+    const dom = render(vdom, null);
 
-    return labelElement;
+    return new DOM(dom as HTMLElement);
   }
 
   /**
