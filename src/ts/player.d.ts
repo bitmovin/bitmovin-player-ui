@@ -39,9 +39,9 @@ declare namespace bitmovin {
     };
 
     network: {
-      REQUEST_TYPE: PlayerAPI.HttpRequestType,
-      REQUEST_METHOD: PlayerAPI.HttpRequestMethod,
-      RESPONSE_TYPE: PlayerAPI.HttpResponseType,
+      REQUEST_TYPE: typeof PlayerAPI.HttpRequestType,
+      REQUEST_METHOD: typeof PlayerAPI.HttpRequestMethod,
+      RESPONSE_TYPE: typeof PlayerAPI.HttpResponseType,
     };
   }
 
