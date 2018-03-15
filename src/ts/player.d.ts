@@ -529,6 +529,10 @@ declare namespace bitmovin {
      * Starts preloading the content of the currently loaded source.
      */
     preload(): PlayerAPI;
+    /**
+     * Returns the currently buffered time ranges of the video element.
+     */
+    getBufferedRanges(): PlayerAPI.TimeRange[];
 
     VR: {
       CONTENT_TYPE: {
