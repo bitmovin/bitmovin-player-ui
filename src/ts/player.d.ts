@@ -39,9 +39,9 @@ declare namespace bitmovin {
     };
 
     network: {
-      REQUEST_TYPE: PlayerAPI.HttpRequestType,
-      REQUEST_METHOD: PlayerAPI.HttpRequestMethod,
-      RESPONSE_TYPE: PlayerAPI.HttpResponseType,
+      REQUEST_TYPE: typeof PlayerAPI.HttpRequestType,
+      REQUEST_METHOD: typeof PlayerAPI.HttpRequestMethod,
+      RESPONSE_TYPE: typeof PlayerAPI.HttpResponseType,
     };
   }
 
@@ -358,6 +358,11 @@ declare namespace bitmovin {
      */
     seek(time: number, issuer?: string): boolean;
     /**
+     * Returns the time range that is currently valid for seeking.
+     * @since v7.1
+     */
+    getSeekableRange(): PlayerAPI.TimeRange;
+    /**
      * Sets the audio track to the ID specified by trackID.
      * Available tracks can be retrieved with {@link #getAvailableAudio}.
      *
@@ -524,6 +529,10 @@ declare namespace bitmovin {
      * Starts preloading the content of the currently loaded source.
      */
     preload(): PlayerAPI;
+    /**
+     * Returns the currently buffered time ranges of the video element.
+     */
+    getBufferedRanges(): PlayerAPI.TimeRange[];
 
     VR: {
       CONTENT_TYPE: {
@@ -628,6 +637,17 @@ declare namespace bitmovin {
        * The heights of the video representation.
        */
       height: number;
+    }
+
+    export interface TimeRange {
+      /**
+       * The start of the range
+       */
+      start: number;
+      /**
+       * The end of the range.
+       */
+      end: number;
     }
 
     /**

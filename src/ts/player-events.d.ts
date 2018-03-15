@@ -37,6 +37,7 @@ declare namespace bitmovin {
       ON_CAST_STOPPED: EVENT;
       ON_CAST_PLAYBACK_FINISHED: EVENT;
       ON_CAST_TIME_UPDATED: EVENT;
+      ON_CUE_PARSED: EVENT;
       ON_CUE_ENTER: EVENT;
       ON_CUE_UPDATE: EVENT;
       ON_CUE_EXIT: EVENT;
@@ -548,6 +549,10 @@ declare namespace bitmovin {
        * The position to which we want to jump for the timeshift ( currentTime after timeshift has completed)
        */
       target: number;
+    }
+
+    interface SubtitleCueParsedEvent extends SubtitleCueEvent {
+
     }
   }
 }

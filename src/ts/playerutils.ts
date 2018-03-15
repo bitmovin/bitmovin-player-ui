@@ -13,10 +13,6 @@ export namespace PlayerUtils {
     FINISHED,
   }
 
-  export function isSourceLoaded(player: bitmovin.PlayerAPI): boolean {
-    return player.getConfig().source !== undefined;
-  }
-
   export function isTimeShiftAvailable(player: bitmovin.PlayerAPI): boolean {
     return player.isLive() && player.getMaxTimeShift() !== 0;
   }
@@ -28,7 +24,7 @@ export namespace PlayerUtils {
       return PlayerState.PLAYING;
     } else if (player.isPaused()) {
       return PlayerState.PAUSED;
-    } else if (isSourceLoaded(player)) {
+    } else if (player.isReady()) {
       return PlayerState.PREPARED;
     } else {
       return PlayerState.IDLE;

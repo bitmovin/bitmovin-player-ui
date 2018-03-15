@@ -7,7 +7,12 @@ export class Timeout {
   private delay: number;
   private callback: () => void;
   private repeat: boolean;
-  private timeoutHandle: number;
+  // There's two setTimeout declarations, one on Window which returns type "number" and one in NodeJS which returns
+  // type "Timer". For unknown reasons builds on Jenkins fail due to a type mismatch when we use type "number" here,
+  // although it works on other platforms (e.g. Windows, Codeship).
+  // To work around the issue we use type "any". The type does not matter anyway because we're not working with
+  // this value except providing it to clearTimeout.
+  private timeoutHandle: any;
 
   /**
    * Creates a new timeout callback handler.
