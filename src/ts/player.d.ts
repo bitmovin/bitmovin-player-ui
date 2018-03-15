@@ -358,6 +358,11 @@ declare namespace bitmovin {
      */
     seek(time: number, issuer?: string): boolean;
     /**
+     * Returns the time range that is currently valid for seeking.
+     * @since v7.1
+     */
+    getSeekableRange(): PlayerAPI.TimeRange;
+    /**
      * Sets the audio track to the ID specified by trackID.
      * Available tracks can be retrieved with {@link #getAvailableAudio}.
      *
@@ -628,6 +633,17 @@ declare namespace bitmovin {
        * The heights of the video representation.
        */
       height: number;
+    }
+
+    export interface TimeRange {
+      /**
+       * The start of the range
+       */
+      start: number;
+      /**
+       * The end of the range.
+       */
+      end: number;
     }
 
     /**
