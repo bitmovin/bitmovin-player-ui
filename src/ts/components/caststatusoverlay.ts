@@ -3,6 +3,7 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import CastWaitingForDeviceEvent = bitmovin.PlayerAPI.CastWaitingForDeviceEvent;
 import CastStartedEvent = bitmovin.PlayerAPI.CastStartedEvent;
+import i18n from '../i18n';
 
 /**
  * Overlays the player and displays the status of a Cast session.
@@ -31,7 +32,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
         this.show();
         // Get device name and update status text while connecting
         let castDeviceName = event.castPayload.deviceName;
-        this.statusLabel.setText(`Connecting to <strong>${castDeviceName}</strong>...`);
+        this.statusLabel.setText(i18n.q.messages.connectingTo(castDeviceName));
       });
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, (event: CastStartedEvent) => {
       // Session is started or resumed
@@ -39,7 +40,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
       // here too
       this.show();
       let castDeviceName = event.deviceName;
-      this.statusLabel.setText(`Playing on <strong>${castDeviceName}</strong>`);
+      this.statusLabel.setText(i18n.q.messages.playingOn(castDeviceName));
     });
     player.addEventHandler(player.EVENT.ON_CAST_STOPPED, (event) => {
       // Cast session gone, hide the status panel

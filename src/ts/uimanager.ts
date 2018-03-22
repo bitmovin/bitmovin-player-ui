@@ -50,6 +50,10 @@ import {Spacer} from './components/spacer';
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
+import i18n from './i18n';
+
+// Interfaces and types
+import { Panel } from './translations/translation-types';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -396,30 +400,43 @@ export class UIManager {
     this.managerPlayerWrapper.clearEventHandlers();
   }
 }
+// For the lack of a better place, a wip helper to configure a UI language
+function configureUiLanguage(config: any): void {
+  if (config.locale !== undefined) {
+    i18n.setLocale(config.locale);
+  }
+  if (config.translation !== undefined) {
+    i18n.addTranslation(config.translation);
+  }
+}
+
 
 export namespace UIManager.Factory {
 
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    configureUiLanguage(config);
     return UIManager.Factory.buildModernUI(player, config);
   }
 
   export function buildDefaultSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    configureUiLanguage(config);
     return UIManager.Factory.buildModernSmallScreenUI(player, config);
   }
 
   export function buildDefaultCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    configureUiLanguage(config);
     return UIManager.Factory.buildModernCastReceiverUI(player, config);
   }
 
   function modernUI() {
     let subtitleOverlay = new SubtitleOverlay();
-
+    const i18panel: Panel = i18n.q.settings.panel;
     let settingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+        new SettingsPanelItem(i18panel.videoQuality, new VideoQualitySelectBox()),
+        new SettingsPanelItem(i18panel.speed, new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem(i18panel.audioTrack, new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18panel.audioQuality, new AudioQualitySelectBox()),
       ],
       hidden: true,
     });
@@ -437,7 +454,7 @@ export namespace UIManager.Factory {
 
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSettingsLabel({text: i18n.q.labels.subtitles, opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
 
@@ -495,7 +512,7 @@ export namespace UIManager.Factory {
         new PlaybackToggleOverlay(),
         new Container({
           components: [
-            new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
+            new AdMessageLabel({ text: i18n.q.messages.remainingTime }),
             new AdSkipButton(),
           ],
           cssClass: 'ui-ads-status',
@@ -522,12 +539,13 @@ export namespace UIManager.Factory {
   function modernSmallScreenUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
+    const i18panel: Panel = i18n.q.settings.panel;
     let settingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+        new SettingsPanelItem(i18panel.videoQuality, new VideoQualitySelectBox()),
+        new SettingsPanelItem(i18panel.speed, new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem(i18panel.audioTrack, new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18panel.audioQuality, new AudioQualitySelectBox()),
       ],
       hidden: true,
       hideDelay: -1,
@@ -547,7 +565,7 @@ export namespace UIManager.Factory {
 
     settingsPanel.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSettingsLabel({text: i18n.q.labels.subtitles, opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
     ));
 
@@ -609,7 +627,7 @@ export namespace UIManager.Factory {
         }),
         new Container({
           components: [
-            new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
+            new AdMessageLabel({ text: i18n.q.messages.remainingTime }),
             new AdSkipButton(),
           ],
           cssClass: 'ui-ads-status',
@@ -687,12 +705,13 @@ export namespace UIManager.Factory {
   }
 
   function legacyUI() {
+    const i18panel: Panel = i18n.q.settings.panel;
     let settingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
+        new SettingsPanelItem(i18panel.videoQuality, new VideoQualitySelectBox()),
+        new SettingsPanelItem(i18panel.audioTrack, new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18panel.audioQuality, new AudioQualitySelectBox()),
+        new SettingsPanelItem(i18n.q.labels.subtitles, new SubtitleSelectBox()),
       ],
       hidden: true,
     });
@@ -766,12 +785,13 @@ export namespace UIManager.Factory {
   }
 
   function legacyTestUI() {
+    const i18panel: Panel = i18n.q.settings.panel;
     let settingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
+        new SettingsPanelItem(i18panel.videoQuality, new VideoQualitySelectBox()),
+        new SettingsPanelItem(i18panel.audioTrack, new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18panel.audioQuality, new AudioQualitySelectBox()),
+        new SettingsPanelItem(i18n.q.labels.subtitles, new SubtitleSelectBox()),
       ],
       hidden: true,
     });
@@ -1179,4 +1199,3 @@ class PlayerWrapper {
     }
   }
 }
-

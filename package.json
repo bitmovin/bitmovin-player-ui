@@ -4,7 +4,7 @@
   "description": "Bitmovin Player UI Framework",
   "main": "dist/js/framework/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha  --require coffeescript/register --require ts-node/register --require babel-core/register --reporter spec 'test/**/*.{js,ts,coffee}'",
     "prepublish": "gulp npm-prepare"
   },
   "repository": {
@@ -19,8 +19,11 @@
   "homepage": "https://github.com/bitmovin/bitmovin-player-ui#readme",
   "devDependencies": {
     "autoprefixer": "^6.5.2",
+    "babel-core": "^6.26.0",
     "browser-sync": "^2.18.13",
     "browserify": "^13.1.1",
+    "chai": "^4.1.2",
+    "coffeescript": "^2.1.1",
     "cssnano": "^3.8.0",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
@@ -36,14 +39,23 @@
     "gulp-typescript": "^3.2.3",
     "gulp-uglify": "^2.0.0",
     "merge2": "^1.2.0",
+    "mocha": "^4.1.0",
     "postcss-svg": "^1.0.6",
     "run-sequence": "^1.2.2",
+    "should": "^13.2.1",
     "stream-combiner2": "^1.1.1",
+    "ts-node": "^4.1.0",
     "tsify": "^2.0.2",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.93",
+    "@types/lodash-es": "^4.17.0",
+    "lodash": "^4.17.4",
+    "lodash-es": "^4.17.4"
   }
 }

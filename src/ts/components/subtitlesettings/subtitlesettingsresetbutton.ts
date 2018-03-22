@@ -1,6 +1,7 @@
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleSettingsManager} from './subtitlesettingsmanager';
 import {Button, ButtonConfig} from '../button';
+import i18n from '../../i18n';
 
 export interface SubtitleSettingsResetButtonConfig extends ButtonConfig {
   settingsManager: SubtitleSettingsManager;
@@ -16,7 +17,7 @@ export class SubtitleSettingsResetButton extends Button<ButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitlesettingsresetbutton',
-      text: 'Reset',
+      text: i18n.q.labels.reset,
     }, this.config);
   }
 
