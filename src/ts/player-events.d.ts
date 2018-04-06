@@ -90,6 +90,7 @@ declare namespace bitmovin {
       ON_DESTROY: EVENT;
       ON_AD_BREAK_STARTED: EVENT;
       ON_AD_BREAK_FINISHED: EVENT;
+      ON_PLAYBACK_SPEED_CHANGED: EVENT;
     }
 
     interface PlayerEvent {
@@ -507,6 +508,11 @@ declare namespace bitmovin {
         row: number;
         column: number;
       };
+    }
+
+    interface PlaybackSpeedChangeEvent extends PlayerEvent {
+      from: number;
+      to: number;
     }
 
     interface PlayerEventCallback {
