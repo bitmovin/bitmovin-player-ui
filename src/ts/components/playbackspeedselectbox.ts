@@ -6,9 +6,11 @@ import {UIInstanceManager} from '../uimanager';
  * A select box providing a selection of different playback speeds.
  */
 export class PlaybackSpeedSelectBox extends SelectBox {
+  protected defaultPlaybackSpeeds: number[];
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
+    this.defaultPlaybackSpeeds = [0.25, 0.5, 1, 1.5, 2];
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
@@ -39,18 +41,21 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     if (!this.selectItem(speed)) {
       // a playback speed was set which is not in the list, add it to the list to show it to the user
       this.clearItems();
-      this.addItem(speed, `${speed}x`);
-      this.addDefaultItems();
+      this.addDefaultItems([Number(speed)]);
       this.selectItem(speed);
     }
   }
 
-  addDefaultItems() {
-    this.addItem('0.25', '0.25x');
-    this.addItem('0.5', '0.5x');
-    this.addItem('1', 'Normal');
-    this.addItem('1.5', '1.5x');
-    this.addItem('2', '2x');
+  addDefaultItems(customItems: number[] = []) {
+    const sortedSpeeds = this.defaultPlaybackSpeeds.concat(customItems).sort();
+
+    sortedSpeeds.forEach(element => {
+      if (element !== 1) {
+        this.addItem(String(element), `${element}x`);
+      } else {
+        this.addItem(String(element), 'Normal');
+      }
+    });
   }
 
   clearItems() {
