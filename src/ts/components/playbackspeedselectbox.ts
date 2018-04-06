@@ -21,32 +21,27 @@ export class PlaybackSpeedSelectBox extends SelectBox {
       this.selectItem(value);
     });
 
-    let setDefaultValue = (): void => {
-      let playbackSpeed = String(player.getPlaybackSpeed());
-      if (!this.selectItem(playbackSpeed)) {
-        playbackSpeed = '1';
-        this.selectItem(playbackSpeed);
-      }
+    const setDefaultValue = (): void => {
+      const playbackSpeed = String(player.getPlaybackSpeed());
+      this.setSpeed(playbackSpeed);
     };
 
-    setDefaultValue();
-
-    // when the player hits onReady again, adjust the playback speed selection with fallback to default 1
+    // when the player hits onReady again, adjust the playback speed selection
     player.addEventHandler(player.EVENT.ON_READY, setDefaultValue);
 
     if (player.EVENT.ON_PLAYBACK_SPEED_CHANGED) {
       // Since player 7.7.0
-      player.addEventHandler(player.EVENT.ON_PLAYBACK_SPEED_CHANGED, () => {
-        const speed = String(player.getPlaybackSpeed());
+      player.addEventHandler(player.EVENT.ON_PLAYBACK_SPEED_CHANGED, setDefaultValue);
+    }
+  }
 
-        if (!this.selectItem(speed)) {
-          // a playback speed was set which is not in the list, add it to the list to show it to the user
-          this.clearItems();
-          this.addItem(speed, `${speed}x`);
-          this.addDefaultItems();
-          this.selectItem(speed);
-        }
-      });
+  setSpeed(speed: string): void {
+    if (!this.selectItem(speed)) {
+      // a playback speed was set which is not in the list, add it to the list to show it to the user
+      this.clearItems();
+      this.addItem(speed, `${speed}x`);
+      this.addDefaultItems();
+      this.selectItem(speed);
     }
   }
 
