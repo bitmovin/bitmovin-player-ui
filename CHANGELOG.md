@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [development]
+
+### Added
+- Subscribe to the `ON_PLAYBACK_SPEED_CHANGED` event to display the correct speed in the selector
+
 ## [2.13.0]
 
 ### Changed
