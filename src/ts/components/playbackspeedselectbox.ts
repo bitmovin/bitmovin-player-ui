@@ -24,7 +24,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     });
 
     const setDefaultValue = (): void => {
-      const playbackSpeed = String(player.getPlaybackSpeed());
+      const playbackSpeed = player.getPlaybackSpeed();
       this.setSpeed(playbackSpeed);
     };
 
@@ -37,16 +37,16 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     }
   }
 
-  setSpeed(speed: string): void {
-    if (!this.selectItem(speed)) {
+  setSpeed(speed: number): void {
+    if (!this.selectItem(String(speed))) {
       // a playback speed was set which is not in the list, add it to the list to show it to the user
       this.clearItems();
-      this.addDefaultItems([Number(speed)]);
-      this.selectItem(speed);
+      this.addDefaultItems([speed]);
+      this.selectItem(String(speed));
     }
   }
 
-  addDefaultItems(customItems: number[] = []) {
+  addDefaultItems(customItems: number[] = []): void {
     const sortedSpeeds = this.defaultPlaybackSpeeds.concat(customItems).sort();
 
     sortedSpeeds.forEach(element => {
@@ -58,7 +58,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     });
   }
 
-  clearItems() {
+  clearItems(): void {
     this.items = [];
     this.selectedItem = null;
   }
