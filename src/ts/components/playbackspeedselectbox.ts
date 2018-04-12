@@ -32,7 +32,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     player.addEventHandler(player.EVENT.ON_READY, setDefaultValue);
 
     if (player.EVENT.ON_PLAYBACK_SPEED_CHANGED) {
-      // Since player 7.7.0
+      // Since player 7.8.0
       player.addEventHandler(player.EVENT.ON_PLAYBACK_SPEED_CHANGED, setDefaultValue);
     }
   }
