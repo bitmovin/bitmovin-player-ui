@@ -337,16 +337,16 @@ export class UIManager {
     };
 
     // Listen to the following events to trigger UI variant resolution
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_READY, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAY, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PAUSED, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_ERROR, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAYER_RESIZE, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_ENTER, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_EXIT, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_READY, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_PLAY, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_PAUSED, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_AD_ERROR, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_PLAYER_RESIZE, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_FULLSCREEN_ENTER, resolveUiVariant);
+    this.managerPlayerWrapper.getPlayer().on(this.player.EVENT.ON_FULLSCREEN_EXIT, resolveUiVariant);
 
     // Initialize the UI
     resolveUiVariant(null);
@@ -1116,9 +1116,9 @@ class PlayerWrapper {
       }
     }
 
-    // Explicitly add a wrapper method for 'addEventHandler' that adds added event handlers to the event list
-    wrapper.addEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
-      player.addEventHandler(eventType, callback);
+    // Explicitly add a wrapper method for 'on' that adds added event handlers to the event list
+    wrapper.on = (eventType: EVENT, callback: PlayerEventCallback) => {
+      player.on(eventType, callback);
 
       if (!this.eventHandlers[eventType]) {
         this.eventHandlers[eventType] = [];
@@ -1129,9 +1129,9 @@ class PlayerWrapper {
       return wrapper;
     };
 
-    // Explicitly add a wrapper method for 'removeEventHandler' that removes removed event handlers from the event list
-    wrapper.removeEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
-      player.removeEventHandler(eventType, callback);
+    // Explicitly add a wrapper method for 'off' that removes removed event handlers from the event list
+    wrapper.off = (eventType: EVENT, callback: PlayerEventCallback) => {
+      player.off(eventType, callback);
 
       if (this.eventHandlers[eventType]) {
         ArrayUtils.remove(this.eventHandlers[eventType], callback);
@@ -1174,7 +1174,7 @@ class PlayerWrapper {
   clearEventHandlers(): void {
     for (let eventType in this.eventHandlers) {
       for (let callback of this.eventHandlers[eventType]) {
-        this.player.removeEventHandler(eventType, callback);
+        this.player.off(eventType, callback);
       }
     }
   }

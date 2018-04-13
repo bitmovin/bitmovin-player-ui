@@ -97,7 +97,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }, 200);
     });
 
-    player.addEventHandler(player.EVENT.ON_PLAY, () => {
+    player.on(player.EVENT.ON_PLAY, () => {
       // Playback has really started, we can disable the flag to switch to normal toggle button handling
       firstPlay = false;
     });
@@ -112,9 +112,9 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         this.show();
       }
     };
-    player.addEventHandler(player.EVENT.ON_CAST_START, castInitializationHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_STARTED, castInitializationHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
+    player.on(player.EVENT.ON_CAST_START, castInitializationHandler);
+    player.on(player.EVENT.ON_CAST_STARTED, castInitializationHandler);
+    player.on(player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
   }
 
   protected toDomElement(): DOM {

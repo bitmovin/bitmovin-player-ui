@@ -548,9 +548,9 @@
       var eventName = checkbox.data('event');
 
       if (checked) {
-        player.addEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+        player.on(bitmovin.player.EVENT[eventName], eventConsoleLogger);
       } else {
-        player.removeEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+        player.off(bitmovin.player.EVENT[eventName], eventConsoleLogger);
       }
     });
 

@@ -29,11 +29,11 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     };
 
     // when the player hits onReady again, adjust the playback speed selection
-    player.addEventHandler(player.EVENT.ON_READY, setDefaultValue);
+    player.on(player.EVENT.ON_READY, setDefaultValue);
 
     if (player.EVENT.ON_PLAYBACK_SPEED_CHANGED) {
       // Since player 7.8.0
-      player.addEventHandler(player.EVENT.ON_PLAYBACK_SPEED_CHANGED, setDefaultValue);
+      player.on(player.EVENT.ON_PLAYBACK_SPEED_CHANGED, setDefaultValue);
     }
   }
 

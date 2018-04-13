@@ -55,19 +55,19 @@ export class VideoQualitySelectBox extends SelectBox {
     });
 
     // Update qualities when source goes away
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateVideoQualities);
+    player.on(player.EVENT.ON_SOURCE_UNLOADED, updateVideoQualities);
     // Update qualities when a new source is loaded
-    player.addEventHandler(player.EVENT.ON_READY, updateVideoQualities);
+    player.on(player.EVENT.ON_READY, updateVideoQualities);
     // Update qualities when the period within a source changes
-    player.addEventHandler(player.EVENT.ON_PERIOD_SWITCHED, updateVideoQualities);
+    player.on(player.EVENT.ON_PERIOD_SWITCHED, updateVideoQualities);
     // Update quality selection when quality is changed (from outside)
     if (player.EVENT.ON_VIDEO_QUALITY_CHANGED) {
       // Since player 7.3.1
-      player.addEventHandler(player.EVENT.ON_VIDEO_QUALITY_CHANGED, selectCurrentVideoQuality);
+      player.on(player.EVENT.ON_VIDEO_QUALITY_CHANGED, selectCurrentVideoQuality);
     } else {
       // Backwards compatibility for players <= 7.3.0
       // TODO remove in next major release
-      player.addEventHandler(player.EVENT.ON_VIDEO_DOWNLOAD_QUALITY_CHANGE, selectCurrentVideoQuality);
+      player.on(player.EVENT.ON_VIDEO_DOWNLOAD_QUALITY_CHANGE, selectCurrentVideoQuality);
     }
   }
 

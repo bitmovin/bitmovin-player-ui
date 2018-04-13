@@ -151,12 +151,12 @@ Here is an example on how to display a special UI in fullscreen mode:
 bitmovin.player('player-id').setup(config).then(function (player) {
   var myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi);
   
-  player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, function () {
+  player.on(player.EVENT.ON_FULLSCREEN_ENTER, function () {
     myUiManager.release();
     myUiManager = new bitmovin.playerui.UIManager(player, myFullscreenUi);
   });
   
-  player.addEventHandler(player.EVENT.ON_FULLSCREEN_EXIT, function () {
+  player.on(player.EVENT.ON_FULLSCREEN_EXIT, function () {
     myUiManager.release();
     myUiManager = new bitmovin.playerui.UIManager(player, myWindowUi);
   });

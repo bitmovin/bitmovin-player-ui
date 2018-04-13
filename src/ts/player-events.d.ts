@@ -4,7 +4,7 @@ declare namespace bitmovin {
 
     /**
      * The events that are exposed by the player API are strings.
-     * Events can be subscribed to through {@link Player#addEventHandler}.
+     * Events can be subscribed to through {@link Player#on}.
      * TODO rename enum to Event (camel case)
      */
     type EVENT = string;

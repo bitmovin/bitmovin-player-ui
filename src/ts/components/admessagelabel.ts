@@ -29,18 +29,18 @@ export class AdMessageLabel extends Label<LabelConfig> {
       text = event.adMessage || text;
       updateMessageHandler();
 
-      player.addEventHandler(player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
-      player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
+      player.on(player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
+      player.on(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
     };
 
     let adEndHandler = () => {
-      player.removeEventHandler(player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
-      player.removeEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
+      player.off(player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
+      player.off(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
     };
 
-    player.addEventHandler(player.EVENT.ON_AD_STARTED, adStartHandler);
-    player.addEventHandler(player.EVENT.ON_AD_SKIPPED, adEndHandler);
-    player.addEventHandler(player.EVENT.ON_AD_ERROR, adEndHandler);
-    player.addEventHandler(player.EVENT.ON_AD_FINISHED, adEndHandler);
+    player.on(player.EVENT.ON_AD_STARTED, adStartHandler);
+    player.on(player.EVENT.ON_AD_SKIPPED, adEndHandler);
+    player.on(player.EVENT.ON_AD_ERROR, adEndHandler);
+    player.on(player.EVENT.ON_AD_FINISHED, adEndHandler);
   }
 }
