@@ -66,7 +66,7 @@ declare namespace bitmovin {
      * @param eventType The type of event to subscribe to.
      * @param callback The event callback handler that will be called when the event fires.
      */
-    on(eventType: PlayerAPI.EVENT, callback:PlayerAPI.PlayerEventCallback): void;
+    on(eventType: PlayerAPI.EVENT, callback: PlayerAPI.PlayerEventCallback): void;
     /**
      * Sends custom metadata to Bitmovin's Cast receiver app.
      *
