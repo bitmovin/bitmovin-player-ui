@@ -57,8 +57,16 @@ declare namespace bitmovin {
      *
      * @param eventType The type of event to subscribe to.
      * @param callback The event callback handler that will be called when the event fires.
+     * @deprecated Replaced by {@link PlayerAPI.on}
      */
     addEventHandler(eventType: PlayerAPI.EVENT, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    /**
+     * Subscribes an event handler to a player event.
+     *
+     * @param eventType The type of event to subscribe to.
+     * @param callback The event callback handler that will be called when the event fires.
+     */
+    on(eventType: PlayerAPI.EVENT, callback:PlayerAPI.PlayerEventCallback): void;
     /**
      * Sends custom metadata to Bitmovin's Cast receiver app.
      *
@@ -326,9 +334,17 @@ declare namespace bitmovin {
      *
      * @param eventType The event to remove the handler from
      * @param callback The callback handler to remove
+     * @deprecated Replaced by {@link PlayerAPI.off}
      */
     // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
     removeEventHandler(eventType: PlayerAPI.EVENT | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    /**
+     * Removes a handler for a player event.
+     *
+     * @param eventType The event to remove the handler from
+     * @param callback The callback handler to remove
+     */
+    off(eventType: PlayerAPI.EVENT, callback: PlayerAPI.PlayerEventCallback): void;
     /**
      * Removes the existing subtitle/caption track with the track ID specified by trackID. If the track is
      * currently active, it will be deactivated and then removed. If no track with the given ID exists,
