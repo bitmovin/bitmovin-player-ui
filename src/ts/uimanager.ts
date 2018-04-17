@@ -1118,7 +1118,13 @@ class PlayerWrapper {
 
     // Explicitly add a wrapper method for 'addEventHandler' that adds added event handlers to the event list
     wrapper.addEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
-      player.addEventHandler(eventType, callback);
+      // in player V8 addEventHandler was replaced by on
+      if (player.on) {
+        (player as any).on(eventType, callback);
+      } else {
+        // keep backward compatibility for versions <7.7
+        player.addEventHandler(eventType, callback);
+      }
 
       if (!this.eventHandlers[eventType]) {
         this.eventHandlers[eventType] = [];
@@ -1131,7 +1137,12 @@ class PlayerWrapper {
 
     // Explicitly add a wrapper method for 'removeEventHandler' that removes removed event handlers from the event list
     wrapper.removeEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
-      player.removeEventHandler(eventType, callback);
+      if (player.off) {
+        player.off(eventType, callback);
+      } else {
+        // keep backward compatibility for versions <7.7
+        player.removeEventHandler(eventType, callback);
+      }
 
       if (this.eventHandlers[eventType]) {
         ArrayUtils.remove(this.eventHandlers[eventType], callback);
