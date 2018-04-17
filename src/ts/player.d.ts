@@ -58,7 +58,7 @@ declare namespace bitmovin {
      * @param eventType The type of event to subscribe to.
      * @param callback The event callback handler that will be called when the event fires.
      *
-     * @deprecated since 7.7, use {@link PlayerAPI#on} instead
+     * @deprecated since 7.7, use {@link PlayerAPI.on} instead
      */
     addEventHandler(eventType: PlayerAPI.EVENT, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
@@ -338,7 +338,7 @@ declare namespace bitmovin {
      * @param eventType The event to remove the handler from
      * @param callback The callback handler to remove
      *
-     * @deprecated since 7.7, use {@link PlayerAPI#off} instead
+     * @deprecated since 7.7, use {@link PlayerAPI.off} instead
      */
     // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
     removeEventHandler(eventType: PlayerAPI.EVENT | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
