@@ -1120,7 +1120,7 @@ class PlayerWrapper {
     wrapper.addEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
       // in player V8 addEventHandler was replaced by on
       if (player.on) {
-        (player as any).on(eventType, callback);
+        player.on(eventType, callback);
       } else {
         // keep backward compatibility for versions <7.7
         player.addEventHandler(eventType, callback);
