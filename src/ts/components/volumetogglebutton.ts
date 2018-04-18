@@ -9,10 +9,14 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
+    const defaultConfig: ToggleButtonConfig = {
       cssClass: 'ui-volumetogglebutton',
       text: 'Volume/Mute',
-    }, this.config);
+      onClass: 'muted',
+      offClass: 'unmuted',
+    };
+
+    this.config = this.mergeConfig(config, defaultConfig, this.config);
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {

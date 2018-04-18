@@ -14,7 +14,7 @@
     background-image: svg('assets/skin-modern/images/music-low.svg');
   }
 
-  &.#{$prefix}-on {
+  &.#{$prefix}-muted {
     background-image: svg('assets/skin-modern/images/music-off.svg');
   }
 }
