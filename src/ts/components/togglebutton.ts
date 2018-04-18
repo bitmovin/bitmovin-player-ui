@@ -6,6 +6,14 @@ import {NoArgs, EventDispatcher, Event} from '../eventdispatcher';
  */
 export interface ToggleButtonConfig extends ButtonConfig {
   /**
+   * The CSS class that marks the on-state of the button.
+   */
+  onClass?: string;
+  /**
+   * The CSS class that marks the off-state of the button.
+   */
+  offClass?: string;
+  /**
    * The text on the button.
    */
   text?: string;
@@ -15,9 +23,6 @@ export interface ToggleButtonConfig extends ButtonConfig {
  * A button that can be toggled between 'on' and 'off' states.
  */
 export class ToggleButton<Config extends ToggleButtonConfig> extends Button<ToggleButtonConfig> {
-
-  private static readonly CLASS_ON = 'on';
-  private static readonly CLASS_OFF = 'off';
 
   private onState: boolean;
 
@@ -30,9 +35,13 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
   constructor(config: ToggleButtonConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
+    const defaultConfig: ToggleButtonConfig = {
       cssClass: 'ui-togglebutton',
-    }, this.config);
+      onClass: 'on',
+      offClass: 'off',
+    };
+
+    this.config = this.mergeConfig(config, defaultConfig, this.config);
   }
 
   /**
@@ -40,9 +49,11 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
    */
   on() {
     if (this.isOff()) {
+      const config = this.getConfig() as ToggleButtonConfig;
+
       this.onState = true;
-      this.getDomElement().removeClass(this.prefixCss(ToggleButton.CLASS_OFF));
-      this.getDomElement().addClass(this.prefixCss(ToggleButton.CLASS_ON));
+      this.getDomElement().removeClass(this.prefixCss(config.offClass));
+      this.getDomElement().addClass(this.prefixCss(config.onClass));
 
       this.onToggleEvent();
       this.onToggleOnEvent();
@@ -54,9 +65,11 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
    */
   off() {
     if (this.isOn()) {
+      const config = this.getConfig() as ToggleButtonConfig;
+
       this.onState = false;
-      this.getDomElement().removeClass(this.prefixCss(ToggleButton.CLASS_ON));
-      this.getDomElement().addClass(this.prefixCss(ToggleButton.CLASS_OFF));
+      this.getDomElement().removeClass(this.prefixCss(config.onClass));
+      this.getDomElement().addClass(this.prefixCss(config.offClass));
 
       this.onToggleEvent();
       this.onToggleOffEvent();
