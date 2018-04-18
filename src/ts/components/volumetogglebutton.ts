@@ -41,6 +41,14 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
     let volumeLevelHandler = () => {
       const volumeLevelTens = Math.ceil(player.getVolume() / 10);
       this.getDomElement().data(this.prefixCss('volume-level-tens'), String(volumeLevelTens));
+
+      // When the volume is turned down to zero, switch into the mute state of the button. This avoids the usability
+      // issue where the volume is turned down to zero, the button shows the muted icon but is not really unmuted, and
+      // the next button press would switch it into the mute state, visually staying the same which would seem like
+      // an expected unmute did not work.
+      if (volumeLevelTens === 0) {
+        this.off();
+      }
     };
 
     player.addEventHandler(player.EVENT.ON_MUTED, muteStateHandler);
