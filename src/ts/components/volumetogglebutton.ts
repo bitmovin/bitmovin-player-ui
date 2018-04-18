@@ -37,6 +37,9 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
       } else {
         this.getDomElement().removeClass(this.prefixCss('low'));
       }
+
+      const volumeLevelTens = Math.round(player.getVolume() / 10);
+      this.getDomElement().data(this.prefixCss('volume-level-tens'), String(volumeLevelTens));
     };
 
     player.addEventHandler(player.EVENT.ON_MUTED, muteStateHandler);
