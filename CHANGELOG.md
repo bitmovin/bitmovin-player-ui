@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [development]
 
+License change from LGPLv3 to MIT.
+
 ### Added
 - Subscribe to the `ON_PLAYBACK_SPEED_CHANGED` event to display the correct speed in the `PlaybackSpeedSelectBox`
 - Prefer `on`/`off` over `addEventHandler`/`removeEventHandler` with player version 7.8+ to avoid deprecation log messages
