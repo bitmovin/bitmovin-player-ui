@@ -31,13 +31,6 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     let volumeLevelHandler = () => {
-      // Toggle low class to display low volume icon below 50% volume
-      if (player.getVolume() < 50) {
-        this.getDomElement().addClass(this.prefixCss('low'));
-      } else {
-        this.getDomElement().removeClass(this.prefixCss('low'));
-      }
-
       const volumeLevelTens = Math.round(player.getVolume() / 10);
       this.getDomElement().data(this.prefixCss('volume-level-tens'), String(volumeLevelTens));
     };
