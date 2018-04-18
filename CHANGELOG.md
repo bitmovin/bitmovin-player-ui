@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Renamed `VolumeToggleButton` mute state marker CSS class names from `off`/`on` to `unmuted`/`muted`
 - Change `VolumeToggleButton` into mute state when the player volume is set to `0` (avoids transitions from zero volume to muted)
 - Set player volume to `10` when the player is unmuted and the volume is below `10` (avoids transitions from muted to zero volume)
+- Removed volume level animation from `VolumeSlider`
 
 ### Fixed
 - Initialize `ToggleButton` state at UI configuration
