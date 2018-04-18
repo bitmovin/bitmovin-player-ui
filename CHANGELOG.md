@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [development]
 
+License change from LGPLv3 to MIT.
+
 ### Added
 - Subscribe to the `ON_PLAYBACK_SPEED_CHANGED` event to display the correct speed in the `PlaybackSpeedSelectBox`
+- Prefer `on`/`off` over `addEventHandler`/`removeEventHandler` with player version 7.8+ to avoid deprecation log messages
 - `data-bmpui-volume-level-tens` attribute on `VolumeToggleButton` for more granular styling of the volume icon
 - `onClass`/`offClass` configuration properties in `ToggleButtonConfig` to allow customizing the state marker CSS class names
 

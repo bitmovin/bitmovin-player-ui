@@ -12,7 +12,7 @@
     "url": "git+https://github.com/bitmovin/bitmovin-player-ui.git"
   },
   "author": "Bitmovin",
-  "license": "LGPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/bitmovin/bitmovin-player-ui/issues"
   },
