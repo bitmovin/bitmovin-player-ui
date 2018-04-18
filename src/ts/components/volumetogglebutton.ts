@@ -25,6 +25,14 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
     let muteStateHandler = () => {
       if (player.isMuted()) {
         this.on();
+
+        // When the volume is unmuted and the volume level is veeeery low, we increase it to 10%. This especially helps
+        // in the case when the volume is first turned down to 0 and then the player is muted; when the player gets
+        // unmuted it would switch to volume level 0 which would seem like unmuting did not work, and increasing the
+        // level a bit helps to overcome this issue.
+        if (player.getVolume() < 10) {
+          player.setVolume(10);
+        }
       } else {
         this.off();
       }
