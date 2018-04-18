@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [development]
 
 ### Added
-- Support for `on`/`off` replacing `addEventHandler`/`removeEventHandler` in player Version 8
+- Prefer `on`/`off` over `addEventHandler`/`removeEventHandler` with player version 7.8+ to avoid deprecation log messages
 
 ## [2.13.0]
 
