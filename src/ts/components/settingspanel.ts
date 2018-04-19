@@ -77,11 +77,9 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       // Attach marker class to last visible item
       let lastShownItem = null;
       for (let component of this.getItems()) {
-        if (component instanceof SettingsPanelItem) {
-          component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
-          if (component.isShown()) {
-            lastShownItem = component;
-          }
+        component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
+        if (component.isShown()) {
+          lastShownItem = component;
         }
       }
       if (lastShownItem) {
@@ -89,9 +87,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       }
     };
     for (let component of this.getItems()) {
-      if (component instanceof SettingsPanelItem) {
-        component.onActiveChanged.subscribe(settingsStateChangedHandler);
-      }
+      component.onActiveChanged.subscribe(settingsStateChangedHandler);
     }
   }
 
@@ -118,7 +114,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   }
 
   private getItems(): SettingsPanelItem[] {
-    return <SettingsPanelItem[]>this.config.components;
+    return <SettingsPanelItem[]>this.config.components.filter(component => component instanceof SettingsPanelItem);
   }
 
   protected onSettingsStateChangedEvent() {
