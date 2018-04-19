@@ -45,11 +45,8 @@ export class VolumeSlider extends SeekBar {
     let volumeChangeHandler = () => {
       if (player.isMuted()) {
         this.setPlaybackPosition(0);
-        this.setBufferPosition(0);
       } else {
         this.setPlaybackPosition(player.getVolume());
-
-        this.setBufferPosition(player.getVolume());
       }
     };
 

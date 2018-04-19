@@ -7,5 +7,9 @@
     .#{$prefix}-seekbar-playbackposition-marker {
       background-image: svg('assets/skin-modern/images/dot-volume.svg');
     }
+
+    .#{$prefix}-seekbar-bufferlevel {
+      display: none;
+    }
   }
 }

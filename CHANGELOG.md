@@ -11,6 +11,18 @@ License change from LGPLv3 to MIT.
 ### Added
 - Subscribe to the `ON_PLAYBACK_SPEED_CHANGED` event to display the correct speed in the `PlaybackSpeedSelectBox`
 - Prefer `on`/`off` over `addEventHandler`/`removeEventHandler` with player version 7.8+ to avoid deprecation log messages
+- `data-bmpui-volume-level-tens` attribute on `VolumeToggleButton` for more granular styling of the volume icon
+- `onClass`/`offClass` configuration properties in `ToggleButtonConfig` to allow customizing the state marker CSS class names
+
+### Changed
+- Removed `bmpui-low` marker class from `VolumeToggleButton` (replaced by `data-bmpui-volume-level-tens` attribute)
+- Renamed `VolumeToggleButton` mute state marker CSS class names from `off`/`on` to `unmuted`/`muted`
+- Change `VolumeToggleButton` into mute state when the player volume is set to `0` (avoids transitions from zero volume to muted)
+- Set player volume to `10` when the player is unmuted and the volume is below `10` (avoids transitions from muted to zero volume)
+- Removed volume level animation from `VolumeSlider`
+
+### Fixed
+- Initialize `ToggleButton` state at UI configuration
 
 ## [2.13.0]
 
