@@ -23,6 +23,7 @@ License change from LGPLv3 to MIT.
 
 ### Fixed
 - Initialize `ToggleButton` state at UI configuration
+- `SettingsPanel` attempted to check `isActive` on non-`SettingsPanelItem` components (e.g. `CloseButton`)
 
 ## [2.13.0]
 
