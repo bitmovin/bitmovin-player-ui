@@ -25,6 +25,7 @@ License change from LGPLv3 to MIT.
 - Initialize `ToggleButton` state at UI configuration
 - `SettingsPanel` attempted to check `isActive` on non-`SettingsPanelItem` components (e.g. `CloseButton`)
 - User interaction passthrough from `HugePlaybackToggleButton` to player when autoplay is blocked
+- `SeekBar` bar levels and scrubber positioning in Android 4.4 WebView
 
 ## [2.13.0]
 

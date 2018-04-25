@@ -21,6 +21,7 @@
     %bar {
       // sass-lint:disable no-vendor-prefixes
       -ms-transform-origin: 0 0; // required for IE9
+      -webkit-transform-origin: 0 0; // required for Android 4.4 WebView
       bottom: 0;
       height: $bar-height;
       left: 0;
