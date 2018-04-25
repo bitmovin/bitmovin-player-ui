@@ -13,7 +13,6 @@ License change from LGPLv3 to MIT.
 - Prefer `on`/`off` over `addEventHandler`/`removeEventHandler` with player version 7.8+ to avoid deprecation log messages
 - `data-bmpui-volume-level-tens` attribute on `VolumeToggleButton` for more granular styling of the volume icon
 - `onClass`/`offClass` configuration properties in `ToggleButtonConfig` to allow customizing the state marker CSS class names
-- handling for blocked autoplay in the `hugeplaybacktogglebutton`
 
 ### Changed
 - Removed `bmpui-low` marker class from `VolumeToggleButton` (replaced by `data-bmpui-volume-level-tens` attribute)
@@ -25,6 +24,7 @@ License change from LGPLv3 to MIT.
 ### Fixed
 - Initialize `ToggleButton` state at UI configuration
 - `SettingsPanel` attempted to check `isActive` on non-`SettingsPanelItem` components (e.g. `CloseButton`)
+- User interaction passthrough from `HugePlaybackToggleButton` to player when autoplay is blocked
 
 ## [2.13.0]
 
