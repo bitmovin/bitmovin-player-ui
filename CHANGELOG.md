@@ -24,6 +24,7 @@ License change from LGPLv3 to MIT.
 ### Fixed
 - Initialize `ToggleButton` state at UI configuration
 - `SettingsPanel` attempted to check `isActive` on non-`SettingsPanelItem` components (e.g. `CloseButton`)
+- User interaction passthrough from `HugePlaybackToggleButton` to player when autoplay is blocked
 
 ## [2.13.0]
 

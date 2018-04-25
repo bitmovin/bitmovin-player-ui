@@ -163,6 +163,17 @@ declare namespace bitmovin {
       message: string;
     }
 
+    interface WarningEvent extends PlayerEvent {
+      /**
+       * The error code used to identify the occurred error
+       */
+      code: number;
+      /**
+       * The error message to explain the reason for the error
+       */
+      message: string;
+    }
+
     interface AudioChangedEvent extends PlaybackEvent {
       /**
        * Previous audio track
