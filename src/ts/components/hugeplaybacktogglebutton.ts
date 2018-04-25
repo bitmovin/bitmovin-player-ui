@@ -103,9 +103,9 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       firstPlay = false;
     });
 
-    player.addEventHandler(player.EVENT.ON_WARNING, (ev: WarningEvent) => {
+    player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
       // 5008 == Playback could not be started
-      if (ev.code === 5008) {
+      if (event.code === 5008) {
         // if playback could not be started, reset the first play flag as we need the user interaction to start
         firstPlay = true;
       }
