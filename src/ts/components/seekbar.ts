@@ -731,8 +731,17 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
     let style = this.config.vertical ?
       // -ms-transform required for IE9
-      { 'transform': 'translateY(' + px + 'px)', '-ms-transform': 'translateY(' + px + 'px)' } :
-      { 'transform': 'translateX(' + px + 'px)', '-ms-transform': 'translateX(' + px + 'px)' };
+      // -webkit-transform required for Android 4.4 WebView
+      {
+        'transform': 'translateY(' + px + 'px)',
+        '-ms-transform': 'translateY(' + px + 'px)',
+        '-webkit-transform': 'translateY(' + px + 'px)',
+      } :
+      {
+        'transform': 'translateX(' + px + 'px)',
+        '-ms-transform': 'translateX(' + px + 'px)',
+        '-webkit-transform': 'translateX(' + px + 'px)',
+      };
     this.seekBarPlaybackPositionMarker.css(style);
   }
 
@@ -780,8 +789,17 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let style = this.config.vertical ?
       // -ms-transform required for IE9
-      { 'transform': 'scaleY(' + scale + ')', '-ms-transform': 'scaleY(' + scale + ')' } :
-      { 'transform': 'scaleX(' + scale + ')', '-ms-transform': 'scaleX(' + scale + ')' };
+      // -webkit-transform required for Android 4.4 WebView
+      {
+        'transform': 'scaleY(' + scale + ')',
+        '-ms-transform': 'scaleY(' + scale + ')',
+        '-webkit-transform': 'scaleY(' + scale + ')',
+      } :
+      {
+        'transform': 'scaleX(' + scale + ')',
+        '-ms-transform': 'scaleX(' + scale + ')',
+        '-webkit-transform': 'scaleX(' + scale + ')',
+      };
     element.css(style);
   }
 

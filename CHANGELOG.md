@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.14.0]
+
+License change from LGPLv3 to MIT.
+
+### Added
+- Subscribe to the `ON_PLAYBACK_SPEED_CHANGED` event to display the correct speed in the `PlaybackSpeedSelectBox`
+- Prefer `on`/`off` over `addEventHandler`/`removeEventHandler` with player version 7.8+ to avoid deprecation log messages
+- `data-bmpui-volume-level-tens` attribute on `VolumeToggleButton` for more granular styling of the volume icon
+- `onClass`/`offClass` configuration properties in `ToggleButtonConfig` to allow customizing the state marker CSS class names
+
+### Changed
+- Removed `bmpui-low` marker class from `VolumeToggleButton` (replaced by `data-bmpui-volume-level-tens` attribute)
+- Renamed `VolumeToggleButton` mute state marker CSS class names from `off`/`on` to `unmuted`/`muted`
+- Change `VolumeToggleButton` into mute state when the player volume is set to `0` (avoids transitions from zero volume to muted)
+- Set player volume to `10` when the player is unmuted and the volume is below `10` (avoids transitions from muted to zero volume)
+- Removed volume level animation from `VolumeSlider`
+
+### Fixed
+- Initialize `ToggleButton` state at UI configuration
+- `SettingsPanel` attempted to check `isActive` on non-`SettingsPanelItem` components (e.g. `CloseButton`)
+- User interaction passthrough from `HugePlaybackToggleButton` to player when autoplay is blocked
+- `SeekBar` bar levels and scrubber positioning in Android 4.4 WebView
+
 ## [2.13.0]
 
 ### Changed
@@ -318,6 +341,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[2.14.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.12.1...v2.13.0
 [2.12.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.12.0...v2.12.1
 [2.12.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.11.0...v2.12.0

@@ -90,6 +90,7 @@ declare namespace bitmovin {
       ON_DESTROY: EVENT;
       ON_AD_BREAK_STARTED: EVENT;
       ON_AD_BREAK_FINISHED: EVENT;
+      ON_PLAYBACK_SPEED_CHANGED: EVENT;
     }
 
     interface PlayerEvent {
@@ -152,6 +153,17 @@ declare namespace bitmovin {
     }
 
     interface ErrorEvent extends PlayerEvent {
+      /**
+       * The error code used to identify the occurred error
+       */
+      code: number;
+      /**
+       * The error message to explain the reason for the error
+       */
+      message: string;
+    }
+
+    interface WarningEvent extends PlayerEvent {
       /**
        * The error code used to identify the occurred error
        */
@@ -507,6 +519,11 @@ declare namespace bitmovin {
         row: number;
         column: number;
       };
+    }
+
+    interface PlaybackSpeedChangeEvent extends PlayerEvent {
+      from: number;
+      to: number;
     }
 
     interface PlayerEventCallback {
