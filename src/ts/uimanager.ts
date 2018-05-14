@@ -40,6 +40,7 @@ import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
 import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
+import {HugePlaybackToggleButton} from './components/hugeplaybacktogglebutton';
 import {CloseButton} from './components/closebutton';
 import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 import {Label} from './components/label';
@@ -848,6 +849,8 @@ export class UIInstanceManager {
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
+    onInitialPlay: new EventDispatcher<HugePlaybackToggleButton, NoArgs>(),
+    onInitialPlayClick: new EventDispatcher<HugePlaybackToggleButton, NoArgs>(),
     onSeek: new EventDispatcher<SeekBar, NoArgs>(),
     onSeekPreview: new EventDispatcher<SeekBar, SeekPreviewArgs>(),
     onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
@@ -946,6 +949,22 @@ export class UIInstanceManager {
    */
   get onControlsHide(): EventDispatcher<UIContainer, NoArgs> {
     return this.events.onControlsHide;
+  }
+
+  /**
+   * Fires when the video actually plays for the first time.
+   * @returns {EventDispatcher}
+   */
+  get onInitialPlay(): EventDispatcher<HugePlaybackToggleButton, NoArgs> {
+      return this.events.onInitialPlay;
+    }
+
+  /**
+   * Fires when the UI huge play ui is click for the first time.
+   * @returns {EventDispatcher}
+   */
+  get onInitialPlayClick(): EventDispatcher<HugePlaybackToggleButton, NoArgs> {
+    return this.events.onInitialPlayClick;
   }
 
   protected clearEventHandlers(): void {
