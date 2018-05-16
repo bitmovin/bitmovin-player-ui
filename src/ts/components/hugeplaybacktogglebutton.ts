@@ -69,7 +69,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         // If we disable the flag here, onClick was triggered programmatically instead of by a user interaction, and
         // playback is blocked (e.g. on mobile devices due to the programmatic play() call), we loose the chance to
         // ever start playback through a user interaction again with this button.
-        togglePlayback();
+        uimanager.onInitialPlayClick.dispatch(this);
         return;
       }
 
@@ -100,6 +100,9 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     player.addEventHandler(player.EVENT.ON_PLAY, () => {
       // Playback has really started, we can disable the flag to switch to normal toggle button handling
+      if (firstPlay) {
+        uimanager.onInitialPlay.dispatch(this);
+      }
       firstPlay = false;
     });
 

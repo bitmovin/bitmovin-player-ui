@@ -13,7 +13,7 @@ export interface UIContainerConfig extends ContainerConfig {
   /**
    * The delay in milliseconds after which the control bar will be hidden when there is no user interaction.
    * Set to -1 for the UI to be always shown.
-   * Default: 5 seconds (5000)
+   * Default: 2 seconds (2000)
    */
   hideDelay?: number;
 }
@@ -39,7 +39,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     this.config = this.mergeConfig(config, <UIContainerConfig>{
       cssClass: 'ui-uicontainer',
-      hideDelay: 5000,
+      hideDelay: 2000,
     }, this.config);
   }
 
