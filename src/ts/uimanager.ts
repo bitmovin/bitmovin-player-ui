@@ -24,7 +24,7 @@ import {VolumeSlider} from './components/volumeslider';
 import {SubtitleSelectBox} from './components/subtitleselectbox';
 import {SubtitleOverlay} from './components/subtitleoverlay';
 import {VolumeControlButton} from './components/volumecontrolbutton';
-import {CastToggleButton} from './components/casttogglebutton';
+import {CastToggleContainer} from './components/casttogglecontainer';
 import {CastStatusOverlay} from './components/caststatusoverlay';
 import {ErrorMessageOverlay} from './components/errormessageoverlay';
 import {TitleBar} from './components/titlebar';
@@ -462,7 +462,7 @@ export namespace UIManager.Factory {
             new Spacer(),
             new PictureInPictureToggleButton(),
             new AirPlayToggleButton(),
-            new CastToggleButton(),
+            new CastToggleContainer(),
             new VRToggleButton(),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
@@ -578,7 +578,7 @@ export namespace UIManager.Factory {
         new TitleBar({
           components: [
             new MetadataLabel({ content: MetadataLabelContent.Title }),
-            new CastToggleButton(),
+            new CastToggleContainer(),
             new VRToggleButton(),
             new VolumeToggleButton(),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
@@ -707,7 +707,7 @@ export namespace UIManager.Factory {
         new VRToggleButton(),
         new VolumeControlButton(),
         new SettingsToggleButton({ settingsPanel: settingsPanel }),
-        new CastToggleButton(),
+        new CastToggleContainer(),
         new FullscreenToggleButton(),
       ],
     });
@@ -788,7 +788,7 @@ export namespace UIManager.Factory {
         new VolumeControlButton(),
         new VolumeControlButton({ vertical: false }),
         new SettingsToggleButton({ settingsPanel: settingsPanel }),
-        new CastToggleButton(),
+        new CastToggleContainer(),
         new FullscreenToggleButton(),
       ],
     });
@@ -956,8 +956,8 @@ export class UIInstanceManager {
    * @returns {EventDispatcher}
    */
   get onInitialPlay(): EventDispatcher<HugePlaybackToggleButton, NoArgs> {
-      return this.events.onInitialPlay;
-    }
+    return this.events.onInitialPlay;
+  }
 
   /**
    * Fires when the UI huge play ui is click for the first time.

@@ -22,7 +22,7 @@ import {Label} from './components/label';
 import {AudioQualitySelectBox} from './components/audioqualityselectbox';
 import {AudioTrackSelectBox} from './components/audiotrackselectbox';
 import {CastStatusOverlay} from './components/caststatusoverlay';
-import {CastToggleButton} from './components/casttogglebutton';
+import {CastToggleContainer} from './components/casttogglecontainer';
 import {Component} from './components/component';
 import {ErrorMessageOverlay} from './components/errormessageoverlay';
 import {RecommendationOverlay} from './components/recommendationoverlay';
@@ -117,7 +117,7 @@ const playerui = {
   BufferingOverlay,
   Button,
   CastStatusOverlay,
-  CastToggleButton,
+  CastToggleContainer,
   CastUIContainer,
   ClickOverlay,
   CloseButton,

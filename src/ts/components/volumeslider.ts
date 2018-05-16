@@ -81,16 +81,9 @@ export class VolumeSlider extends SeekBar {
   }
 
   private detectVolumeControlAvailability(): boolean {
-    /*
-     * "On iOS devices, the audio level is always under the user’s physical control. The volume property is not
-     * settable in JavaScript. Reading the volume property always returns 1."
-     * https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/Device-SpecificConsiderations/Device-SpecificConsiderations.html
-     */
-    // as muted autoplay gets paused as soon as we unmute it, we may not touch the volume of the actual player so we
-    // probe a dummy audio element
-    const dummyVideoElement = document.createElement('video');
-    // try setting the volume to 0.7 and if it's still 1 we are on a volume control restricted device
-    dummyVideoElement.volume = 0.7;
-    return dummyVideoElement.volume !== 1;
+    // We have removed bitmovin's check for iOS lack of volume control
+    // If support for this feature is needed in the future,
+    // please refer to bitmovin's original repo.
+    return true;
   }
 }
