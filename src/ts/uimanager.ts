@@ -314,36 +314,15 @@ export class UIManager {
     return this.config;
   }
 
-  resolveUiVariant(context: Partial<UIConditionContext> = {}, onShow?: (context: UIConditionContext) => void): void {
-    // Determine the current context for which the UI variant will be resolved
-    const defaultContext: UIConditionContext = {
-      isAd: false,
-      isAdWithUI: false,
-      adClientType: null,
-      isFullscreen: this.player.isFullscreen(),
-      isMobile: BrowserUtils.isMobile,
-      isPlaying: this.player.isPlaying(),
-      width: this.uiContainerElement.width(),
-      documentWidth: document.body.clientWidth,
-    };
+  getUiVariants(): UIVariant[] {
+    return this.uiVariants;
+  }
 
-    // Overwrite properties of the default context with passed in context properties
-    const switchingContext = { ...defaultContext, ...context };
+  switchToUiVariant(uiVariant: UIVariant, onShow?: () => void): void {
+    let uiVariantIndex = this.uiVariants.indexOf(uiVariant);
 
-    // Fire the event and allow modification of the context before it is used to resolve the UI variant
-    this.events.onUiVariantResolve.dispatch(this, switchingContext);
-
-    let nextUi: InternalUIInstanceManager = null;
+    const nextUi: InternalUIInstanceManager = this.uiInstanceManagers[uiVariantIndex];
     let uiVariantChanged = false;
-
-    // Select new UI variant
-    // If no variant condition is fulfilled, we switch to *no* UI
-    for (let uiVariant of this.uiVariants) {
-      if (uiVariant.condition == null || uiVariant.condition(switchingContext) === true) {
-        nextUi = this.uiInstanceManagers[this.uiVariants.indexOf(uiVariant)];
-        break;
-      }
-    }
 
     // Determine if the UI variant is changing
     if (nextUi !== this.currentUi) {
@@ -371,12 +350,49 @@ export class UIManager {
         }
 
         if (onShow) {
-          onShow(switchingContext);
+          onShow();
         }
 
         this.currentUi.getUI().show();
       }
     }
+  }
+
+  resolveUiVariant(context: Partial<UIConditionContext> = {}, onShow?: (context: UIConditionContext) => void): void {
+    // Determine the current context for which the UI variant will be resolved
+    const defaultContext: UIConditionContext = {
+      isAd: false,
+      isAdWithUI: false,
+      adClientType: null,
+      isFullscreen: this.player.isFullscreen(),
+      isMobile: BrowserUtils.isMobile,
+      isPlaying: this.player.isPlaying(),
+      width: this.uiContainerElement.width(),
+      documentWidth: document.body.clientWidth,
+    };
+
+    // Overwrite properties of the default context with passed in context properties
+    const switchingContext = { ...defaultContext, ...context };
+
+    // Fire the event and allow modification of the context before it is used to resolve the UI variant
+    this.events.onUiVariantResolve.dispatch(this, switchingContext);
+
+    let nextUiVariant: UIVariant = null;
+
+    // Select new UI variant
+    // If no variant condition is fulfilled, we switch to *no* UI
+    for (let uiVariant of this.uiVariants) {
+      if (uiVariant.condition == null || uiVariant.condition(switchingContext) === true) {
+        nextUiVariant = uiVariant;
+        break;
+      }
+    }
+
+    this.switchToUiVariant(nextUiVariant, () => {
+      if (onShow) {
+        onShow(switchingContext);
+      }
+    });
   }
 
   private addUi(ui: InternalUIInstanceManager): void {
