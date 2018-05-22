@@ -144,6 +144,10 @@ export class UIManager {
   private config: UIConfig;
   private managerPlayerWrapper: PlayerWrapper;
 
+  private events = {
+    onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
+  };
+
   /**
    * Creates a UI manager with a single UI variant that will be permanently shown.
    * @param player the associated player of this UI
@@ -312,6 +316,9 @@ export class UIManager {
     // Overwrite properties of the default context with passed in context properties
     const switchingContext = { ...defaultContext, ...context };
 
+    // Fire the event and allow modification of the context before it is used to resolve the UI variant
+    this.events.onUiVariantResolve.dispatch(this, switchingContext);
+
     let nextUi: InternalUIInstanceManager = null;
     let uiVariantChanged = false;
 
@@ -396,6 +403,15 @@ export class UIManager {
       this.releaseUi(uiInstanceManager);
     }
     this.managerPlayerWrapper.clearEventHandlers();
+  }
+
+  /**
+   * Fires just before UI variants are about to be resolved and the UI variant is possibly switched.
+   * Can be used to modify the {@link UIConditionContext} before resolving is done.
+   * @returns {EventDispatcher<UIManager, UIConditionContext>}
+   */
+  get onUiVariantResolve(): EventDispatcher<UIManager, UIConditionContext> {
+    return this.events.onUiVariantResolve;
   }
 }
 
