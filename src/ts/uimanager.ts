@@ -169,19 +169,7 @@ export class UIManager {
     if (playerUiOrUiVariants instanceof UIContainer) {
       // Single-UI constructor has been called, transform arguments to UIVariant[] signature
       let playerUi = <UIContainer>playerUiOrUiVariants;
-      let adsUi = null;
-
       let uiVariants = [];
-
-      // Add the ads UI if defined
-      if (adsUi) {
-        uiVariants.push({
-          ui: adsUi,
-          condition: (context: UIConditionContext) => {
-            return context.isAdWithUI;
-          },
-        });
-      }
 
       // Add the default player UI
       uiVariants.push({ ui: playerUi });
