@@ -314,10 +314,19 @@ export class UIManager {
     return this.config;
   }
 
+  /**
+   * Returns the list of UI variants as passed into the constructor of {@link UIManager}.
+   * @returns {UIVariant[]} the list of available UI variants
+   */
   getUiVariants(): UIVariant[] {
     return this.uiVariants;
   }
 
+  /**
+   * Switches to a UI variant from the list returned by {@link getUiVariants}.
+   * @param {UIVariant} uiVariant the UI variant to switch to
+   * @param {() => void} onShow a callback that is executed just before the new UI variant is shown
+   */
   switchToUiVariant(uiVariant: UIVariant, onShow?: () => void): void {
     let uiVariantIndex = this.uiVariants.indexOf(uiVariant);
 
@@ -358,6 +367,14 @@ export class UIManager {
     }
   }
 
+  /**
+   * Triggers a UI variant switch as triggered by events when automatic switching is enabled. It allows to overwrite
+   * properties of the {@link UIConditionContext}.
+   * @param {Partial<UIConditionContext>} context an optional set of properties that overwrite properties of the
+   *   automatically determined context
+   * @param {(context: UIConditionContext) => void} onShow a callback that is executed just before the new UI variant
+   *   is shown (if a switch is happening)
+   */
   resolveUiVariant(context: Partial<UIConditionContext> = {}, onShow?: (context: UIConditionContext) => void): void {
     // Determine the current context for which the UI variant will be resolved
     const defaultContext: UIConditionContext = {
@@ -436,7 +453,8 @@ export class UIManager {
   }
 
   /**
-   * Fires just before UI variants are about to be resolved and the UI variant is possibly switched.
+   * Fires just before UI variants are about to be resolved and the UI variant is possibly switched. It is fired when
+   * the switch is triggered from an automatic switch and when calling {@link resolveUiVariant}.
    * Can be used to modify the {@link UIConditionContext} before resolving is done.
    * @returns {EventDispatcher<UIManager, UIConditionContext>}
    */
