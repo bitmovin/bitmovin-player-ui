@@ -521,7 +521,7 @@ declare namespace bitmovin {
       };
     }
 
-    interface PlaybackSpeedChangeEvent extends PlayerEvent {
+    interface PlaybackSpeedChangedEvent extends PlayerEvent {
       from: number;
       to: number;
     }
