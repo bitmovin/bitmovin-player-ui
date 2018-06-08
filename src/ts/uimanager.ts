@@ -75,6 +75,13 @@ export interface UIConfig {
     markers?: TimelineMarker[];
   };
   recommendations?: UIRecommendationConfig[];
+  /**
+   * Specifies if the UI variants should be resolved and switched automatically upon certain player events. The default
+   * is `true`. Should be set to `false` if purely manual switching through {@link UIManager.resolveUiVariant} is
+   * desired. A hybrid approach can be used by setting this to `true` (or leaving the default) and overriding
+   * automatic switches through a {@link UIManager.onUiVariantResolve} event handler.
+   */
+  autoUiVariantResolve?: boolean;
 }
 
 /**
@@ -144,6 +151,10 @@ export class UIManager {
   private config: UIConfig;
   private managerPlayerWrapper: PlayerWrapper;
 
+  private events = {
+    onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
+  };
+
   /**
    * Creates a UI manager with a single UI variant that will be permanently shown.
    * @param player the associated player of this UI
@@ -169,19 +180,7 @@ export class UIManager {
     if (playerUiOrUiVariants instanceof UIContainer) {
       // Single-UI constructor has been called, transform arguments to UIVariant[] signature
       let playerUi = <UIContainer>playerUiOrUiVariants;
-      let adsUi = null;
-
       let uiVariants = [];
-
-      // Add the ads UI if defined
-      if (adsUi) {
-        uiVariants.push({
-          ui: adsUi,
-          condition: (context: UIConditionContext) => {
-            return context.isAdWithUI;
-          },
-        });
-      }
 
       // Add the default player UI
       uiVariants.push({ ui: playerUi });
@@ -233,8 +232,12 @@ export class UIManager {
       throw Error('Invalid UI variant order: the default UI (without condition) must be at the end of the list');
     }
 
+    // Switch on auto UI resolving by default
+    if (config.autoUiVariantResolve === undefined) {
+      config.autoUiVariantResolve = true;
+    }
+
     let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
-    let isMobile = BrowserUtils.isMobile;
 
     // Dynamically select a UI variant that matches the current UI condition.
     let resolveUiVariant = (event: PlayerEvent) => {
@@ -269,84 +272,39 @@ export class UIManager {
       let ad = adStartedEvent != null;
       let adWithUI = ad && adStartedEvent.clientType === 'vast';
 
-      // Determine the current context for which the UI variant will be resolved
-      let context: UIConditionContext = {
+      this.resolveUiVariant({
         isAd: ad,
         isAdWithUI: adWithUI,
         adClientType: ad ? adStartedEvent.clientType : null,
-        isFullscreen: this.player.isFullscreen(),
-        isMobile: isMobile,
-        isPlaying: this.player.isPlaying(),
-        width: this.uiContainerElement.width(),
-        documentWidth: document.body.clientWidth,
-      };
-
-      let nextUi: InternalUIInstanceManager = null;
-      let uiVariantChanged = false;
-
-      // Select new UI variant
-      // If no variant condition is fulfilled, we switch to *no* UI
-      for (let uiVariant of this.uiVariants) {
-        if (uiVariant.condition == null || uiVariant.condition(context) === true) {
-          nextUi = this.uiInstanceManagers[this.uiVariants.indexOf(uiVariant)];
-          break;
+      }, (context) => {
+        // If this is an ad UI, we need to relay the saved ON_AD_STARTED event data so ad components can configure
+        // themselves for the current ad.
+        if (context.isAd) {
+          /* Relay the ON_AD_STARTED event to the ads UI
+           *
+           * Because the ads UI is initialized in the ON_AD_STARTED handler, i.e. when the ON_AD_STARTED event has
+           * already been fired, components in the ads UI that listen for the ON_AD_STARTED event never receive it.
+           * Since this can break functionality of components that rely on this event, we relay the event to the
+           * ads UI components with the following call.
+           */
+          this.currentUi.getWrappedPlayer().fireEventInUI(this.player.EVENT.ON_AD_STARTED, adStartedEvent);
         }
-      }
-
-      // Determine if the UI variant is changing
-      if (nextUi !== this.currentUi) {
-        uiVariantChanged = true;
-        // console.log('switched from ', this.currentUi ? this.currentUi.getUI() : 'none',
-        //   ' to ', nextUi ? nextUi.getUI() : 'none');
-      }
-
-      // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
-      if (uiVariantChanged) {
-        // Hide the currently active UI variant
-        if (this.currentUi) {
-          this.currentUi.getUI().hide();
-        }
-
-        // Assign the new UI variant as current UI
-        this.currentUi = nextUi;
-
-        // When we switch to a different UI instance, there's some additional stuff to manage. If we do not switch
-        // to an instance, we're done here.
-        if (this.currentUi != null) {
-          // Add the UI to the DOM (and configure it) the first time it is selected
-          if (!this.currentUi.isConfigured()) {
-            this.addUi(this.currentUi);
-          }
-
-          // If this is an ad UI, we need to relay the saved ON_AD_STARTED event data so ad components can configure
-          // themselves for the current ad.
-          if (context.isAd) {
-            /* Relay the ON_AD_STARTED event to the ads UI
-             *
-             * Because the ads UI is initialized in the ON_AD_STARTED handler, i.e. when the ON_AD_STARTED event has
-             * already been fired, components in the ads UI that listen for the ON_AD_STARTED event never receive it.
-             * Since this can break functionality of components that rely on this event, we relay the event to the
-             * ads UI components with the following call.
-             */
-            this.currentUi.getWrappedPlayer().fireEventInUI(this.player.EVENT.ON_AD_STARTED, adStartedEvent);
-          }
-
-          this.currentUi.getUI().show();
-        }
-      }
+      });
     };
 
     // Listen to the following events to trigger UI variant resolution
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_READY, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAY, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PAUSED, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_ERROR, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAYER_RESIZE, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_ENTER, resolveUiVariant);
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_EXIT, resolveUiVariant);
+    if (config.autoUiVariantResolve) {
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_READY, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAY, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PAUSED, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_ERROR, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAYER_RESIZE, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_ENTER, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_EXIT, resolveUiVariant);
+    }
 
     // Initialize the UI
     resolveUiVariant(null);
@@ -354,6 +312,104 @@ export class UIManager {
 
   getConfig(): UIConfig {
     return this.config;
+  }
+
+  /**
+   * Returns the list of UI variants as passed into the constructor of {@link UIManager}.
+   * @returns {UIVariant[]} the list of available UI variants
+   */
+  getUiVariants(): UIVariant[] {
+    return this.uiVariants;
+  }
+
+  /**
+   * Switches to a UI variant from the list returned by {@link getUiVariants}.
+   * @param {UIVariant} uiVariant the UI variant to switch to
+   * @param {() => void} onShow a callback that is executed just before the new UI variant is shown
+   */
+  switchToUiVariant(uiVariant: UIVariant, onShow?: () => void): void {
+    let uiVariantIndex = this.uiVariants.indexOf(uiVariant);
+
+    const nextUi: InternalUIInstanceManager = this.uiInstanceManagers[uiVariantIndex];
+    let uiVariantChanged = false;
+
+    // Determine if the UI variant is changing
+    if (nextUi !== this.currentUi) {
+      uiVariantChanged = true;
+      // console.log('switched from ', this.currentUi ? this.currentUi.getUI() : 'none',
+      //   ' to ', nextUi ? nextUi.getUI() : 'none');
+    }
+
+    // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
+    if (uiVariantChanged) {
+      // Hide the currently active UI variant
+      if (this.currentUi) {
+        this.currentUi.getUI().hide();
+      }
+
+      // Assign the new UI variant as current UI
+      this.currentUi = nextUi;
+
+      // When we switch to a different UI instance, there's some additional stuff to manage. If we do not switch
+      // to an instance, we're done here.
+      if (this.currentUi != null) {
+        // Add the UI to the DOM (and configure it) the first time it is selected
+        if (!this.currentUi.isConfigured()) {
+          this.addUi(this.currentUi);
+        }
+
+        if (onShow) {
+          onShow();
+        }
+
+        this.currentUi.getUI().show();
+      }
+    }
+  }
+
+  /**
+   * Triggers a UI variant switch as triggered by events when automatic switching is enabled. It allows to overwrite
+   * properties of the {@link UIConditionContext}.
+   * @param {Partial<UIConditionContext>} context an optional set of properties that overwrite properties of the
+   *   automatically determined context
+   * @param {(context: UIConditionContext) => void} onShow a callback that is executed just before the new UI variant
+   *   is shown (if a switch is happening)
+   */
+  resolveUiVariant(context: Partial<UIConditionContext> = {}, onShow?: (context: UIConditionContext) => void): void {
+    // Determine the current context for which the UI variant will be resolved
+    const defaultContext: UIConditionContext = {
+      isAd: false,
+      isAdWithUI: false,
+      adClientType: null,
+      isFullscreen: this.player.isFullscreen(),
+      isMobile: BrowserUtils.isMobile,
+      isPlaying: this.player.isPlaying(),
+      width: this.uiContainerElement.width(),
+      documentWidth: document.body.clientWidth,
+    };
+
+    // Overwrite properties of the default context with passed in context properties
+    const switchingContext = { ...defaultContext, ...context };
+
+    // Fire the event and allow modification of the context before it is used to resolve the UI variant
+    this.events.onUiVariantResolve.dispatch(this, switchingContext);
+
+    let nextUiVariant: UIVariant = null;
+
+    // Select new UI variant
+    // If no variant condition is fulfilled, we switch to *no* UI
+    for (let uiVariant of this.uiVariants) {
+      if (uiVariant.condition == null || uiVariant.condition(switchingContext) === true) {
+        nextUiVariant = uiVariant;
+        break;
+      }
+    }
+
+    this.switchToUiVariant(nextUiVariant, () => {
+      if (onShow) {
+        onShow(switchingContext);
+      }
+    });
   }
 
   private addUi(ui: InternalUIInstanceManager): void {
@@ -394,6 +450,16 @@ export class UIManager {
       this.releaseUi(uiInstanceManager);
     }
     this.managerPlayerWrapper.clearEventHandlers();
+  }
+
+  /**
+   * Fires just before UI variants are about to be resolved and the UI variant is possibly switched. It is fired when
+   * the switch is triggered from an automatic switch and when calling {@link resolveUiVariant}.
+   * Can be used to modify the {@link UIConditionContext} before resolving is done.
+   * @returns {EventDispatcher<UIManager, UIConditionContext>}
+   */
+  get onUiVariantResolve(): EventDispatcher<UIManager, UIConditionContext> {
+    return this.events.onUiVariantResolve;
   }
 }
 

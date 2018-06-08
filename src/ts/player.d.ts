@@ -677,7 +677,7 @@ declare namespace bitmovin {
       schemeIdUri: string;
       value?: string;
       id?: string;
-      [key: string]: string;
+      [key: string]: string | undefined;
     }
 
     /**
