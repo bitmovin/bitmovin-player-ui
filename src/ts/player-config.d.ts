@@ -293,8 +293,8 @@ declare namespace bitmovin {
        */
       transitionTime?: number;
       /**
-       * The maximum displacement speed in degrees per second. Default values are 90°/s for keyboard controls, and Infinity
-       * for mouse and API controls.
+       * The maximum displacement speed in degrees per second. Default values are 90°/s for keyboard controls, and
+       * Infinity for mouse and API controls.
        */
       maxDisplacementSpeed?: number;
     }
@@ -630,20 +630,20 @@ declare namespace bitmovin {
         maxSelectableVideoBitrate?: number | string;
       };
       /**
-       * A callback function to customize the player's adaptation logic that is called before the player tries to download
-       * a new video segment.
-       * @param data An object carrying the <code>suggested</code> attribute, holding the suggested representation/quality
-       *   ID the player would select
+       * A callback function to customize the player's adaptation logic that is called before the player tries to
+       * download a new video segment.
+       * @param data An object carrying the <code>suggested</code> attribute, holding the suggested
+       *   representation/quality ID the player would select
        * @return A valid representation/quality ID which the player should use, based on your custom logic (or
        *   <code>data.suggested</code> to switch to the suggested quality)
        * @see PlayerAPI#getAvailableVideoQualities to get a list of all available video qualities
        */
       onVideoAdaptation?: (data: { suggested: string }) => string;
       /**
-       * A callback function to customize the player's adaptation logic that is called before the player tries to download
-       * a new audio segment.
-       * @param data An object carrying the <code>suggested</code> attribute, holding the suggested representation/quality
-       *   ID the player would select
+       * A callback function to customize the player's adaptation logic that is called before the player tries to
+       * download a new audio segment.
+       * @param data An object carrying the <code>suggested</code> attribute, holding the suggested
+       *   representation/quality ID the player would select
        * @return A valid representation/quality ID which the player should use, based on your custom logic (or
        *   <code>data.suggested</code> to switch to the suggested quality)
        * @see PlayerAPI#getAvailableAudioQualities to get a list of all available audio qualities
@@ -886,10 +886,59 @@ declare namespace bitmovin {
       length?: number;
     }
 
+    interface HttpResponseTiming {
+      /**
+       * The timestamp at which the request was opened.
+       */
+      openedTimestamp?: number;
+      /**
+       * The timestamp at which the headers where received.
+       */
+      headersReceivedTimestamp?: number;
+      /**
+       * The timestamp of the current progress event.
+       */
+      progressTimestamp?: number;
+      /**
+       * The timestamp at which the request was finished.
+       */
+      doneTimestamp?: number;
+    }
+
+    interface RequestProgress {
+      loadedBytes: number;
+      totalBytes: number;
+      responseTiming?: HttpResponseTiming;
+    }
+
+    /**
+     * This interfaces needs to be implemented and returned by {@link NetworkConfig.sendHttpRequest} and can be used
+     * to implement custom network request implementations. The default implementation of the player uses
+     * `XMLHttpRequest`.
+     */
+    interface RequestController<T> {
+      /**
+       * Is called by the player if it wants to cancel the current request (e.g. on seek)
+       */
+      cancel(): void;
+
+      /**
+       * Provides the data transfer progress to the player (if available).
+       * @param {(requestProgress: RequestProgress) => void} listener
+       */
+      setProgressListener(listener: (requestProgress: RequestProgress) => void): void;
+
+      /**
+       * Returns a Promise that resolves with the actual {@link HttpResponse}
+       * @returns {Promise<HttpResponse<T>>}
+       */
+      getResponse(): Promise<HttpResponse<T>>;
+    }
+
     interface NetworkConfig {
       preprocessHttpRequest?: (type: HttpRequestType, request: HttpRequest) => Promise<HttpRequest>;
-      sendHttpRequest?: <T extends HttpResponseBody>(type: HttpRequestType, request: HttpRequest) =>
-        Promise<HttpResponse<T>>;
+      sendHttpRequest?: <T extends HttpResponseBody>(type: HttpRequestType,
+                                                     request: HttpRequest) => RequestController<T>;
       retryHttpRequest?: <T extends HttpResponseBody>(type: HttpRequestType, response: HttpResponse<T>, retry: number) =>
         Promise<HttpRequest>;
       preprocessHttpResponse?: <T extends HttpResponseBody>(type: HttpRequestType, response: HttpResponse<T>) =>

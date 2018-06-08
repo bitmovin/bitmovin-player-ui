@@ -48,8 +48,10 @@ declare namespace bitmovin {
       ON_FULLSCREEN_EXIT: EVENT;
       ON_HIDE_CONTROLS: EVENT;
       ON_METADATA: EVENT;
+      ON_METADATA_PARSED: EVENT;
       ON_MUTED: EVENT;
       ON_PAUSED: EVENT;
+      ON_PERIOD_SWITCH: EVENT;
       ON_PERIOD_SWITCHED: EVENT;
       ON_PLAY: EVENT;
       ON_PLAYING: EVENT;
@@ -302,15 +304,60 @@ declare namespace bitmovin {
       EXPERIMENTAL?: any;
     }
 
+    enum MetadataType {
+      /**
+       * HLS `#EXT-X-CUE-OUT`, `#EXT-X-CUE-OUT-CONT` and `#EXT-X-CUE-IN` tags are surfaced with this type.
+       */
+      CUETAG,
+      /**
+       * DASH `EventStream` events (also known as `MPD Events`) are surfaced with this type.
+       */
+      EVENT_STREAM,
+      /**
+       * All custom, i.e. unknown/unsupported HLS tags are surfaced with this type.
+       */
+      CUSTOM,
+      /**
+       * HLS `#EXT-X-SCTE35` tags are surfaced with this type.
+       */
+      SCTE,
+      /**
+       * ID3 tags from MPEG-2 Transport Stream container formats are surfaced with this type.
+       * See {@link MetadataType.EMSG} for the MP4 equivalent.
+       */
+      ID3,
+      /**
+       * EMSG data from MP4 container formats are surfaced with this type.
+       * See {@link MetadataType.ID3} for the MPEG-2 TS equivalent.
+       */
+      EMSG,
+      /**
+       * Used for custom messages between the sender and the remote receiver, such as a Chromecast receiver app.
+       * Refer to {@link PlayerAPI.addMetadata} for details.
+       */
+      CAST,
+    }
+
     interface MetadataEvent extends PlayerEvent {
       /**
        * ID3 and EMSG (<span class="highlight">[new in v4.2]</span>) are supported types.
        */
-      metadataType: string;
+      metadataType: MetadataType;
       /**
        * The metadata object as encountered in the stream.
        */
       metadata: Object;
+      /**
+       * The start time of the event.
+       */
+      start?: number;
+      /**
+       * The end time of the event.
+       */
+      end?: number;
+    }
+
+    export interface MetadataParsedEvent extends MetadataEvent {
     }
 
     interface AdaptationEvent extends PlayerEvent {
@@ -569,7 +616,7 @@ declare namespace bitmovin {
     }
 
     interface SubtitleCueParsedEvent extends SubtitleCueEvent {
-
+      subtitleId: string;
     }
   }
 }
