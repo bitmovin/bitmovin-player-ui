@@ -139,4 +139,19 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     return buttonElement;
   }
+
+  /**
+   * Enables or disables the play state transition animations of the play button image. Can be used to suppress
+   * animations.
+   * @param {boolean} enabled true to enable the animations (default), false to disable them
+   */
+  protected setTransitionAnimationsEnabled(enabled: boolean): void {
+    const noTransitionAnimationsClass = this.prefixCss('no-transition-animations');
+
+    if (enabled) {
+      this.getDomElement().removeClass(noTransitionAnimationsClass);
+    } else if (!this.getDomElement().hasClass(noTransitionAnimationsClass)) {
+      this.getDomElement().addClass(noTransitionAnimationsClass);
+    }
+  }
 }
