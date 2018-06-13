@@ -124,6 +124,14 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     player.addEventHandler(player.EVENT.ON_CAST_START, castInitializationHandler);
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, castInitializationHandler);
     player.addEventHandler(player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
+
+    // Hide the play button animation when the UI is loaded (it should only be animated on state changes)
+    this.setTransitionAnimationsEnabled(false);
+
+    // Enable the transition animations when the play state changes for the first time
+    this.onToggle.subscribeOnce(() => {
+      this.setTransitionAnimationsEnabled(true);
+    });
   }
 
   protected toDomElement(): DOM {
