@@ -133,30 +133,23 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       this.setTransitionAnimationsEnabled(true);
     });
 
-    // Hide the play button when autoplay is enabled
-    // (This only works when the UI is initialized fast enough to receive the ON_READY event from the player setup)
-    player.addEventHandler(player.EVENT.ON_READY, (e) => {
-      const playerConfig = player.getConfig();
-      const isAutoplayEnabled = playerConfig && playerConfig.playback && Boolean(playerConfig.playback.autoplay);
+    const isAutoplayEnabled = player.getConfig().playback && Boolean(player.getConfig().playback.autoplay);
+    // We only know if an autoplay attempt is upcoming if the player is not yet ready. It the player is already ready,
+    // the attempt might be upcoming or might have already happened, and we have no way of knowing that.
+    const isAutoplayUpcoming = !player.isReady() && isAutoplayEnabled;
 
-      // A "real" player event is one fired by the player itself
-      // We must be careful not to do this for UI-emitted ON_READY events because that can happen after the autoplay
-      // attempt has already been made and if the attempt was blocked we must not hide the play button, but we have
-      // no way of knowing that.
-      const isRealPlayerEvent = !(e as any).uiSourced;
+    // Hide the play button when the player is already playing or autoplay is upcoming
+    if (player.isPlaying() || isAutoplayUpcoming) {
+      // Hide the play button (switch to playing state)
+      this.on();
+      // Disable the animation of the playing state switch
+      this.setTransitionAnimationsEnabled(false);
 
-      if (isAutoplayEnabled && isRealPlayerEvent) {
-        // Hide the play button (switch to playing state)
-        this.on();
-        // Disable the animation of the playing state switch
-        this.setTransitionAnimationsEnabled(false);
-
-        // Enable the animation for the next state change
-        this.onToggle.subscribeOnce(() => {
-          this.setTransitionAnimationsEnabled(true);
-        });
-      }
-    });
+      // Enable the animation for the next state change
+      this.onToggle.subscribeOnce(() => {
+        this.setTransitionAnimationsEnabled(true);
+      });
+    }
   }
 
   protected toDomElement(): DOM {
