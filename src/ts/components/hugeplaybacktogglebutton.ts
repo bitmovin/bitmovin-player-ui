@@ -125,13 +125,18 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, castInitializationHandler);
     player.addEventHandler(player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
 
-    // Hide the play button animation when the UI is loaded (it should only be animated on state changes)
-    this.setTransitionAnimationsEnabled(false);
+    const suppressPlayButtonTransitionAnimation = () => {
+      // Disable the current animation
+      this.setTransitionAnimationsEnabled(false);
 
-    // Enable the transition animations when the play state changes for the first time
-    this.onToggle.subscribeOnce(() => {
-      this.setTransitionAnimationsEnabled(true);
-    });
+      // Enable the transition animations for the next state change
+      this.onToggle.subscribeOnce(() => {
+        this.setTransitionAnimationsEnabled(true);
+      });
+    };
+
+    // Hide the play button animation when the UI is loaded (it should only be animated on state changes)
+    suppressPlayButtonTransitionAnimation();
 
     const isAutoplayEnabled = player.getConfig().playback && Boolean(player.getConfig().playback.autoplay);
     // We only know if an autoplay attempt is upcoming if the player is not yet ready. It the player is already ready,
@@ -143,12 +148,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       // Hide the play button (switch to playing state)
       this.on();
       // Disable the animation of the playing state switch
-      this.setTransitionAnimationsEnabled(false);
-
-      // Enable the animation for the next state change
-      this.onToggle.subscribeOnce(() => {
-        this.setTransitionAnimationsEnabled(true);
-      });
+      suppressPlayButtonTransitionAnimation();
     }
   }
 
