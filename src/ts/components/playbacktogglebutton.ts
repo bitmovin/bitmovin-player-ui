@@ -3,6 +3,7 @@ import {UIInstanceManager} from '../uimanager';
 import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {PlayerUtils} from '../playerutils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
+import WarningEvent = bitmovin.PlayerAPI.WarningEvent;
 
 /**
  * A button that toggles between playback and pause.
@@ -56,6 +57,14 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.addEventHandler(player.EVENT.ON_CAST_PLAYING, playbackStateHandler);
     player.addEventHandler(player.EVENT.ON_CAST_PAUSED, playbackStateHandler);
     player.addEventHandler(player.EVENT.ON_CAST_PLAYBACK_FINISHED, playbackStateHandler);
+
+    // When a playback attempt is rejected with warning 5008, we switch the button state back to off
+    // This is required for blocked autoplay, because there is no ON_PAUSED event in such case
+    player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
+      if (event.code === 5008) {
+        this.off();
+      }
+    });
 
     // Detect absence of timeshifting on live streams and add tagging class to convert button icons to play/stop
     let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
