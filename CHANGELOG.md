@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Animate `HugePlaybackToggleButton` only on state changes (not when UI is initially loaded)
-- Hide `HugePlaybackToggleButton` play animation when `config.playback.autoplay` is enabled
+- Hide `HugePlaybackToggleButton` play animation when `config.playback.autoplay` is enabled or the player is already playing
 
 ## [2.15.0]
 
