@@ -149,6 +149,13 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       this.on();
       // Disable the animation of the playing state switch
       suppressPlayButtonTransitionAnimation();
+
+      // Show the play button without an animation if a play attempt is blocked
+      player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
+        if (event.code === 5008) {
+          suppressPlayButtonTransitionAnimation();
+        }
+      });
     }
   }
 
