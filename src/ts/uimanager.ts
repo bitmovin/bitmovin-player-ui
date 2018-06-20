@@ -58,8 +58,18 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
+/**
+ * Marks a position on the playback timeline, e.g. a chapter or an ad break.
+ */
 export interface TimelineMarker {
+  /**
+   * The time in the playback timeline (e.g. {@link SeekBar}) that should be marked.
+   */
   time: number;
+  /**
+   * Optional title text of the marked position, e.g. a chapter name.
+   * Will be rendered in the {@link SeekBarLabel} attached to a {@link SeekBar}.
+   */
   title?: string;
 }
 
