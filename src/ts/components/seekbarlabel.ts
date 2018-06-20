@@ -51,6 +51,8 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
+    let appliedMarkerCssClasses: string[] = [];
+
     uimanager.onSeekPreview.subscribeRateLimited((sender, args: SeekPreviewArgs) => {
       if (player.isLive()) {
         let maxTimeShift = player.getMaxTimeShift();
@@ -68,6 +70,19 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         let time = player.getDuration() * (percentage / 100);
         this.setTime(time);
         this.setThumbnail(player.getThumb(time));
+      }
+
+      // Remove CSS classes from previous marker
+      if (appliedMarkerCssClasses.length > 0) {
+        this.getDomElement().removeClass(appliedMarkerCssClasses.join(' '));
+        appliedMarkerCssClasses = [];
+      }
+
+      // Add CSS classes of current marker
+      if (args.marker) {
+        const cssClasses = (args.marker.cssClasses || []).map(cssClass => this.prefixCss(cssClass));
+        this.getDomElement().addClass(cssClasses.join(' '));
+        appliedMarkerCssClasses = cssClasses;
       }
     }, 100);
 
