@@ -432,6 +432,7 @@ export class SeekBar extends Component<SeekBarConfig> {
           this.timelineMarkers.push({
             time: 100 / player.getDuration() * marker.time, // convert time to percentage
             title: marker.title,
+            cssClasses: marker.cssClasses,
           });
         }
       }
@@ -608,8 +609,11 @@ export class SeekBar extends Component<SeekBarConfig> {
   protected updateMarkers(): void {
     this.seekBarMarkersContainer.empty();
     for (let marker of this.timelineMarkers) {
+      const markerClasses = ['seekbar-marker'].concat(marker.cssClasses || [])
+        .map(cssClass => this.prefixCss(cssClass));
+
       this.seekBarMarkersContainer.append(new DOM('div', {
-        'class': this.prefixCss('seekbar-marker'),
+        'class': markerClasses.join(' '),
         'data-marker-time': String(marker.time),
         'data-marker-title': String(marker.title),
       }).css({
