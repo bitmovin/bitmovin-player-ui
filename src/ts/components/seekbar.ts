@@ -410,7 +410,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   private configureMarkers(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     let clearMarkers = () => {
       this.timelineMarkers = [];
-      this.updateMarkers();
+      this.updateMarkers(player);
     };
 
     let setupMarkers = () => {
@@ -425,20 +425,12 @@ export class SeekBar extends Component<SeekBarConfig> {
       let markers = hasMarkersInUiConfig ? uimanager.getConfig().metadata.markers :
         hasMarkersInPlayerConfig ? player.getConfig().source.markers : null;
 
-      // Generate timeline markers from the config if we have markers and if we have a duration
-      // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
-      if (markers && player.getDuration() !== Infinity) {
-        for (let marker of markers) {
-          this.timelineMarkers.push({
-            time: 100 / player.getDuration() * marker.time, // convert time to percentage
-            title: marker.title,
-            cssClasses: marker.cssClasses,
-          });
-        }
+      for (let marker of markers) {
+        this.timelineMarkers.push(marker);
       }
 
       // Populate the timeline with the markers
-      this.updateMarkers();
+      this.updateMarkers(player);
     };
 
     // Add markers when a source is loaded
@@ -606,18 +598,29 @@ export class SeekBar extends Component<SeekBarConfig> {
     return seekBarContainer;
   }
 
-  protected updateMarkers(): void {
+  protected updateMarkers(player: bitmovin.PlayerAPI): void {
     this.seekBarMarkersContainer.empty();
+
+    const duration = player.getDuration();
+
+    if (duration === Infinity) {
+      // Don't generate timeline markers if we don't yet have a duration
+      // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
+      return;
+    }
+
     for (let marker of this.timelineMarkers) {
       const markerClasses = ['seekbar-marker'].concat(marker.cssClasses || [])
         .map(cssClass => this.prefixCss(cssClass));
+
+      const markerPositionPercentage = 100 / duration * marker.time;
 
       this.seekBarMarkersContainer.append(new DOM('div', {
         'class': markerClasses.join(' '),
         'data-marker-time': String(marker.time),
         'data-marker-title': String(marker.title),
       }).css({
-        'width': marker.time + '%',
+        'width': markerPositionPercentage + '%',
       }));
     }
   }
