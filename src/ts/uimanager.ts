@@ -71,6 +71,17 @@ export interface TimelineMarker {
    * Will be rendered in the {@link SeekBarLabel} attached to a {@link SeekBar}.
    */
   title?: string;
+  /**
+   * Optional CSS classes that are applied to the marker on a {@link SeekBar} and can be used to
+   * differentiate different types of markers by their style (e.g. different color of chapter markers
+   * and ad break markers).
+   * The CSS classes are also propagated to a connected {@link SeekBarLabel}.
+   *
+   * Multiple classes can be added to allow grouping of markers into types (e.g. chapter markers,
+   * ad break markers) by a shared class and still identify and style each marker with distinct
+   * classes (e.g. `['marker-type-chapter', 'chapter-number-1']`).
+   */
+  cssClasses?: string[];
 }
 
 export interface UIConfig {
