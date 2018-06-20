@@ -425,7 +425,12 @@ export class DOM {
   addClass(className: string): DOM {
     this.forEach((element) => {
       if (element.classList) {
-        element.classList.add(className);
+        const classNames = className.split(' ')
+          .filter(className => className.length > 0);
+
+        if (classNames.length > 0) {
+          element.classList.add(...classNames);
+        }
       }
       else {
         element.className += ' ' + className;
@@ -443,7 +448,12 @@ export class DOM {
   removeClass(className: string): DOM {
     this.forEach((element) => {
       if (element.classList) {
-        element.classList.remove(className);
+        const classNames = className.split(' ')
+          .filter(className => className.length > 0);
+
+        if (classNames.length > 0) {
+          element.classList.remove(...classNames);
+        }
       }
       else {
         element.className = element.className.replace(
