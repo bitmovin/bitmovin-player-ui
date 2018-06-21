@@ -44,6 +44,7 @@ export interface SeekPreviewEventArgs extends SeekPreviewArgs {
 export interface SeekBarMarker {
   marker: TimelineMarker;
   position: number;
+  duration?: number;
 }
 
 /**
@@ -430,8 +431,9 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
 
       for (let marker of uimanager.getConfig().metadata.markers) {
-        const position = 100 / duration * marker.time; // convert absolute time to percentage
-        this.timelineMarkers.push({ marker, position });
+        const markerPosition = 100 / duration * marker.time; // convert absolute time to percentage
+        const markerDuration = 100 / duration * marker.duration;
+        this.timelineMarkers.push({ marker, position: markerPosition, duration: markerDuration });
       }
 
       // Populate the timeline with the markers
@@ -442,6 +444,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.ON_READY, setupMarkers);
     // Remove markers when unloaded
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, clearMarkers);
+    // Remove markers when unloaded
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => this.updateMarkers());
     // Update markers when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(() => setupMarkers());
 
@@ -608,17 +612,27 @@ export class SeekBar extends Component<SeekBarConfig> {
   protected updateMarkers(): void {
     this.seekBarMarkersContainer.empty();
 
+    const seekBarWidthPx = this.seekBar.width();
+
     for (let marker of this.timelineMarkers) {
       const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
         .map(cssClass => this.prefixCss(cssClass));
+
+      const cssProperties: {[propertyName: string]: string} = {
+        'width': marker.position + '%',
+      };
+
+      if (marker.duration > 0) {
+        const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
+        cssProperties['border-right-width'] = markerWidthPx + 'px';
+        cssProperties['margin-left'] = '0';
+      }
 
       this.seekBarMarkersContainer.append(new DOM('div', {
         'class': markerClasses.join(' '),
         'data-marker-time': String(marker.marker.time),
         'data-marker-title': String(marker.marker.title),
-      }).css({
-        'width': marker.position + '%',
-      }));
+      }).css(cssProperties));
     }
   }
 

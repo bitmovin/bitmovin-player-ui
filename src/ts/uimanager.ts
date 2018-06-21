@@ -67,6 +67,10 @@ export interface TimelineMarker {
    */
   time: number;
   /**
+   * Optional duration that makes the marker mark an interval instead of a single moment in time.
+   */
+  duration?: number;
+  /**
    * Optional title text of the marked position, e.g. a chapter name.
    * Will be rendered in the {@link SeekBarLabel} attached to a {@link SeekBar}.
    */
