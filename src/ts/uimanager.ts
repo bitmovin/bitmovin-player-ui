@@ -106,6 +106,15 @@ export interface UIConfig {
   autoUiVariantResolve?: boolean;
 }
 
+export interface InternalUIConfig extends UIConfig {
+  events: {
+    /**
+     * Fires when the configuration has been updated/changed.
+     */
+    onUpdated: EventDispatcher<UIManager, void>;
+  }
+}
+
 /**
  * The context that will be passed to a {@link UIConditionResolver} to determine if it's conditions fulfil the context.
  */
@@ -170,7 +179,7 @@ export class UIManager {
   private uiVariants: UIVariant[];
   private uiInstanceManagers: InternalUIInstanceManager[];
   private currentUi: InternalUIInstanceManager;
-  private config: UIConfig;
+  private config: InternalUIConfig;
   private managerPlayerWrapper: PlayerWrapper;
 
   private events = {
@@ -217,6 +226,9 @@ export class UIManager {
     this.player = player;
     this.config = {
       ...config,
+      events: {
+        onUpdated: new EventDispatcher<UIManager, void>(),
+      },
     };
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
@@ -252,6 +264,12 @@ export class UIManager {
     };
 
     updateConfig();
+
+    // Update the configuration when a new source is loaded
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_SOURCE_LOADED, () => {
+      updateConfig();
+      this.config.events.onUpdated.dispatch(this);
+    });
 
     if (config.container) {
       // Unfortunately "uiContainerElement = new DOM(config.container)" will not accept the container with
@@ -967,7 +985,7 @@ export interface SeekPreviewArgs extends NoArgs {
 export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
   private ui: UIContainer;
-  private config: UIConfig;
+  private config: InternalUIConfig;
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
@@ -981,13 +999,13 @@ export class UIInstanceManager {
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
-  constructor(player: PlayerAPI, ui: UIContainer, config: UIConfig = {}) {
+  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
   }
 
-  getConfig(): UIConfig {
+  getConfig(): InternalUIConfig {
     return this.config;
   }
 
