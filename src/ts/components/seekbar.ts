@@ -416,16 +416,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let setupMarkers = () => {
       clearMarkers();
 
-      let hasMarkersInUiConfig = uimanager.getConfig().metadata && uimanager.getConfig().metadata.markers
-        && uimanager.getConfig().metadata.markers.length > 0;
-      let hasMarkersInPlayerConfig = player.getConfig().source && player.getConfig().source.markers
-        && player.getConfig().source.markers.length > 0;
-
-      // Take markers from the UI config. If no markers defined, try to take them from the player's source config.
-      let markers = hasMarkersInUiConfig ? uimanager.getConfig().metadata.markers :
-        hasMarkersInPlayerConfig ? player.getConfig().source.markers : null;
-
-      for (let marker of markers) {
+      for (let marker of uimanager.getConfig().metadata.markers) {
         this.timelineMarkers.push(marker);
       }
 

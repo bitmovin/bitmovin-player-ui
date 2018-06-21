@@ -95,6 +95,7 @@ export interface UIConfig {
     description?: string;
     markers?: TimelineMarker[];
   };
+  // TODO move recommendations into metadata in next major release
   recommendations?: UIRecommendationConfig[];
   /**
    * Specifies if the UI variants should be resolved and switched automatically upon certain player events. The default
@@ -214,8 +215,43 @@ export class UIManager {
     }
 
     this.player = player;
-    this.config = config;
+    this.config = {
+      ...config,
+    };
     this.managerPlayerWrapper = new PlayerWrapper(player);
+
+    /**
+     * Gathers configuration data from the UI config and player source config and creates a merged UI config
+     * that is used throughout the UI instance.
+     */
+    const updateConfig = () => {
+      const playerSourceConfig = player.getConfig().source || {};
+
+      const uiConfig = { ...config };
+      uiConfig.metadata = uiConfig.metadata || {};
+
+      // Extract the UI-related config properties from the source config
+      const playerSourceUiConfig: UIConfig = {
+        metadata: {
+          // TODO move metadata into source.metadata namespace in player v8
+          title: playerSourceConfig.title,
+          description: playerSourceConfig.description,
+          markers: playerSourceConfig.markers,
+        },
+        recommendations: playerSourceConfig.recommendations,
+      };
+
+      // Player source config takes precedence over the UI config, because the config in the source is attached
+      // to a source which changes with every player.load, whereas the UI config stays the same for the whole
+      // lifetime of the player instance.
+      this.config.metadata = this.config.metadata || {};
+      this.config.metadata.title = playerSourceUiConfig.metadata.title || uiConfig.metadata.title;
+      this.config.metadata.description = playerSourceUiConfig.metadata.description || uiConfig.metadata.description;
+      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiConfig.metadata.markers || [];
+      this.config.recommendations = playerSourceUiConfig.recommendations || uiConfig.recommendations || [];
+    };
+
+    updateConfig();
 
     if (config.container) {
       // Unfortunately "uiContainerElement = new DOM(config.container)" will not accept the container with
