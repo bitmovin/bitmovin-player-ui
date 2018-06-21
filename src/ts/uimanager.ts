@@ -536,6 +536,35 @@ export class UIManager {
   get onUiVariantResolve(): EventDispatcher<UIManager, UIConditionContext> {
     return this.events.onUiVariantResolve;
   }
+
+  /**
+   * Returns the list of all added markers in undefined order.
+   */
+  getTimelineMarkers(): TimelineMarker[] {
+    return this.config.metadata.markers;
+  }
+
+  /**
+   * Adds a marker to the timeline. Does not check for duplicates/overlaps at the `time`.
+   */
+  addTimelineMarker(timelineMarker: TimelineMarker): void {
+    this.config.metadata.markers.push(timelineMarker);
+    this.config.events.onUpdated.dispatch(this);
+  }
+
+  /**
+   * Removes a marker from the timeline (by reference) and returns `true` if the marker has
+   * been part of the timeline and successfully removed, or `false` if the marker could not
+   * be found and thus not removed.
+   */
+  removeTimelineMarker(timelineMarker: TimelineMarker): boolean {
+    if (ArrayUtils.remove(this.config.metadata.markers, timelineMarker) === timelineMarker) {
+      this.config.events.onUpdated.dispatch(this);
+      return true;
+    }
+
+    return false;
+  }
 }
 
 export namespace UIManager.Factory {
