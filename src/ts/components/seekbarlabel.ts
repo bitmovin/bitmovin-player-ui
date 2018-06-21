@@ -61,8 +61,8 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       } else {
         let percentage = 0;
         if (args.marker) {
-          percentage = args.marker.time;
-          this.setTitleText(args.marker.title);
+          percentage = args.marker.position;
+          this.setTitleText(args.marker.marker.title);
         } else {
           percentage = args.position;
           this.setTitleText(null);
@@ -80,7 +80,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
       // Add CSS classes of current marker
       if (args.marker) {
-        const cssClasses = (args.marker.cssClasses || []).map(cssClass => this.prefixCss(cssClass));
+        const cssClasses = (args.marker.marker.cssClasses || []).map(cssClass => this.prefixCss(cssClass));
         this.getDomElement().addClass(cssClasses.join(' '));
         appliedMarkerCssClasses = cssClasses;
       }

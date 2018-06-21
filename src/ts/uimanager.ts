@@ -6,7 +6,7 @@ import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {FullscreenToggleButton} from './components/fullscreentogglebutton';
 import {VRToggleButton} from './components/vrtogglebutton';
 import {VolumeToggleButton} from './components/volumetogglebutton';
-import {SeekBar} from './components/seekbar';
+import { SeekBar, SeekBarMarker } from './components/seekbar';
 import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktimelabel';
 import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
@@ -1005,7 +1005,7 @@ export interface SeekPreviewArgs extends NoArgs {
   /**
    * The timeline marker associated with the current position, if existing.
    */
-  marker?: TimelineMarker;
+  marker?: SeekBarMarker;
 }
 
 /**
