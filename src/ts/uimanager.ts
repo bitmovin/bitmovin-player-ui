@@ -1030,6 +1030,7 @@ export class UIInstanceManager {
     onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
     onPreviewControlsHide: new EventDispatcher<UIContainer, CancelEventArgs>(),
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
+    onRelease: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
   constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig) {
@@ -1122,6 +1123,14 @@ export class UIInstanceManager {
     return this.events.onControlsHide;
   }
 
+  /**
+   * Fires when the UI controls are released.
+   * @returns {EventDispatcher}
+   */
+  get onRelease(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onRelease;
+  }
+
   protected clearEventHandlers(): void {
     this.playerWrapper.clearEventHandlers();
 
@@ -1189,6 +1198,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
   releaseControls(): void {
     // Do not call release methods if the components have never been configured; this can result in exceptions
     if (this.configured) {
+      this.onRelease.dispatch(this.getUI());
       this.releaseControlsTree(this.getUI());
       this.configured = false;
     }
