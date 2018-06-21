@@ -638,18 +638,23 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected getMarkerAtPosition(percentage: number): SeekBarMarker | null {
-    let snappedMarker: SeekBarMarker = null;
-    let snappingRange = 1;
+    const snappingRange = 1;
+
     if (this.timelineMarkers.length > 0) {
       for (let marker of this.timelineMarkers) {
-        if (percentage >= marker.position - snappingRange && percentage <= marker.position + snappingRange) {
-          snappedMarker = marker;
-          break;
+        if (marker.duration > 0
+          && percentage >= marker.position - snappingRange
+          && percentage <= marker.position + marker.duration + snappingRange) {
+          return marker;
+        }
+        else if (percentage >= marker.position - snappingRange
+          && percentage <= marker.position + snappingRange) {
+          return marker;
         }
       }
     }
 
-    return snappedMarker;
+    return null;
   }
 
   /**
@@ -867,15 +872,34 @@ export class SeekBar extends Component<SeekBarConfig> {
   protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
     let snappedMarker = this.getMarkerAtPosition(percentage);
 
+    let seekPositionPercentage = percentage;
+
+    if (snappedMarker) {
+      if (snappedMarker.duration > 0) {
+        if (percentage < snappedMarker.position) {
+          // Snap the position to the start of the interval if the seek is within the left snap margin
+          // We know that we are within a snap margin when we are outside the marker interval but still
+          // have a snappedMarker
+          seekPositionPercentage = snappedMarker.position;
+        } else if (percentage > snappedMarker.position + snappedMarker.duration) {
+          // Snap the position to the end of the interval if the seek is within the right snap margin
+          seekPositionPercentage = snappedMarker.position + snappedMarker.duration;
+        }
+      } else {
+        // Position markers always snap to their marker position
+        seekPositionPercentage = snappedMarker.position;
+      }
+    }
+
     if (this.label) {
       this.label.getDomElement().css({
-        'left': (snappedMarker ? snappedMarker.position : percentage) + '%',
+        'left': seekPositionPercentage + '%',
       });
     }
 
     this.seekBarEvents.onSeekPreview.dispatch(this, {
       scrubbing: scrubbing,
-      position: percentage,
+      position: seekPositionPercentage,
       marker: snappedMarker,
     });
   }
