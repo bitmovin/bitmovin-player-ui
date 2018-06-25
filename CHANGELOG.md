@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Consolidated configuration management of `UIConfig` from components into `UIManager`
 - Configuration from the player source now takes precedence over the configuration passed into the `UIManager`
 
+### Fixed
+- IE & Firefox could leave active/hovered select boxes floating after the parent container was hidden.
+
 ## [2.15.0]
 
 ### Added
