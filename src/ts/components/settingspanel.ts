@@ -99,19 +99,18 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    */
   private hideHoveredSelectBoxes() {
     this.getItems().forEach((item: SettingsPanelItem) => {
-      if (item.isActive()) {
-        if ((item as any).setting instanceof SelectBox) {
-          const selBox: HTMLElement = (item as any).setting.getDomElement().get()[0];
-          const oldDisplay = selBox.style.display;
-          // updating the display to none marks the select-box as inactive, so it will be hidden with the rest
-          // we just have to make sure to reset this as soon as possible
-          selBox.style.display = 'none';
-          if (window.requestAnimationFrame) {
-            requestAnimationFrame(() => { selBox.style.display = oldDisplay; });
-          } else {
-            // IE9 has no requestAnimationFrame, just use setTimeout(0)
-            setTimeout(() => { selBox.style.display = oldDisplay; }, 0);
-          }
+      if (item.isActive() && (item as any).setting instanceof SelectBox) {
+        const selectBox = (item as any).setting as SelectBox;
+        const oldDisplay = selectBox.getDomElement().css('display');
+        // updating the display to none marks the select-box as inactive, so it will be hidden with the rest
+        // we just have to make sure to reset this as soon as possible
+        selectBox.getDomElement().css('display', 'none');
+        if (window.requestAnimationFrame) {
+          requestAnimationFrame(() => { selectBox.getDomElement().css('display', oldDisplay); });
+        } else {
+          // IE9 has no requestAnimationFrame, set the value directly. It has no optimization about ignoring DOM-changes
+          // between animationFrames
+          selectBox.getDomElement().css('display', oldDisplay);
         }
       }
     });
