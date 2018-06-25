@@ -642,11 +642,13 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     if (this.timelineMarkers.length > 0) {
       for (let marker of this.timelineMarkers) {
+        // Handle interval markers
         if (marker.duration > 0
           && percentage >= marker.position - snappingRange
           && percentage <= marker.position + marker.duration + snappingRange) {
           return marker;
         }
+        // Handle position markers
         else if (percentage >= marker.position - snappingRange
           && percentage <= marker.position + snappingRange) {
           return marker;
