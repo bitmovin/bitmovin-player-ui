@@ -116,7 +116,7 @@ export interface InternalUIConfig extends UIConfig {
      * Fires when the configuration has been updated/changed.
      */
     onUpdated: EventDispatcher<UIManager, void>;
-  }
+  };
 }
 
 /**
