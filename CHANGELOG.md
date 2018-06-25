@@ -8,10 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Revert state of `PlaybackToggleButton` to paused if a play attempt is rejected (`ON_WARNING 5008`; e.g. in case of autoplay)
+- `UIManager` API to dynamically manage `SeekBar` markers: `getTimelineMarkers`, `addTimelineMarker`, `removeTimelineMarker` ([#103](https://github.com/bitmovin/bitmovin-player-ui/issues/103))
+- Interval marking with added property `TimelineMarker.duration` ([#103](https://github.com/bitmovin/bitmovin-player-ui/issues/103))
+- Custom CSS classes on markers in `SeekBar` and `SeekBarLabel` through `TimelineMarker.cssClasses` ([#103](https://github.com/bitmovin/bitmovin-player-ui/issues/103))
 
 ### Changed
 - Animate `HugePlaybackToggleButton` only on state changes (not when UI is initially loaded)
 - Hide `HugePlaybackToggleButton` play animation when `config.playback.autoplay` is enabled or the player is already playing
+- Consolidated configuration management of `UIConfig` from components into `UIManager`
+- Configuration from the player source now takes precedence over the configuration passed into the `UIManager`
 
 ## [2.15.0]
 

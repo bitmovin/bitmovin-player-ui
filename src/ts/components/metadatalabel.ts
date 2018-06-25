@@ -47,18 +47,10 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     let init = () => {
       switch (config.content) {
         case MetadataLabelContent.Title:
-          if (uiconfig && uiconfig.metadata && uiconfig.metadata.title) {
-            this.setText(uiconfig.metadata.title);
-          } else if (player.getConfig().source && player.getConfig().source.title) {
-            this.setText(player.getConfig().source.title);
-          }
+          this.setText(uiconfig.metadata.title);
           break;
         case MetadataLabelContent.Description:
-          if (uiconfig && uiconfig.metadata && uiconfig.metadata.description) {
-            this.setText(uiconfig.metadata.description);
-          } else if (player.getConfig().source && player.getConfig().source.description) {
-            this.setText(player.getConfig().source.description);
-          }
+          this.setText(uiconfig.metadata.description);
           break;
       }
     };

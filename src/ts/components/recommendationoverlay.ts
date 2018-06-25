@@ -40,18 +40,9 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     let setupRecommendations = () => {
       clearRecommendations();
 
-      let hasRecommendationsInUiConfig = uimanager.getConfig().recommendations
-        && uimanager.getConfig().recommendations.length > 0;
-      let hasRecommendationsInPlayerConfig = player.getConfig().source && player.getConfig().source.recommendations
-        && player.getConfig().source.recommendations.length > 0;
+      const recommendations = uimanager.getConfig().recommendations;
 
-      // Take markers from the UI config. If no markers defined, try to take them from the player's source config.
-      let recommendations = hasRecommendationsInUiConfig ? uimanager.getConfig().recommendations :
-        hasRecommendationsInPlayerConfig ? player.getConfig().source.recommendations : null;
-
-      // Generate timeline markers from the config if we have markers and if we have a duration
-      // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
-      if (recommendations) {
+      if (recommendations.length > 0) {
         let index = 1;
         for (let item of recommendations) {
           this.addComponent(new RecommendationItem({
