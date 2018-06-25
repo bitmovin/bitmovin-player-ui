@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Configuration from the player source now takes precedence over the configuration passed into the `UIManager`
 
 ### Fixed
-- IE & Firefox could leave active/hovered select boxes floating after the parent container was hidden.
+- IE & Firefox could leave the dropdown panel of an active/hovered `SelectBox` floating after the parent container was hidden.
 
 ## [2.15.0]
 
