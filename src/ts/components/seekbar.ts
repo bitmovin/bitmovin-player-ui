@@ -444,7 +444,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.ON_READY, setupMarkers);
     // Remove markers when unloaded
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, clearMarkers);
-    // Remove markers when unloaded
+    // Update markers when the size of the seekbar changes
     player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => this.updateMarkers());
     // Update markers when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(setupMarkers);
