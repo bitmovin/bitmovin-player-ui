@@ -13,9 +13,8 @@ export interface ListItem {
 /**
  * Filter function that can be used to filter out list items added through {@link ListSelector.addItem}.
  *
- * Using this does not make a lot of sense when items are added from outside because the added items can be
- * controlled anyway, but it does make sense to be used in conjunction with subclasses that populate
- * themselves automatically via the player API, e.g. {@link SubtitleSelectBox}.
+ * This is intended to be used in conjunction with subclasses that populate themselves automatically
+ * via the player API, e.g. {@link SubtitleSelectBox}.
  */
 export interface ListItemFilter {
   /**
@@ -29,9 +28,8 @@ export interface ListItemFilter {
 /**
  * Translator function to translate labels of list items added through {@link ListSelector.addItem}.
  *
- * Using this does not make a lot of sense when items are added from outside because the added items can be
- * controlled anyway, but it does make sense to be used in conjunction with subclasses that populate
- * themselves automatically via the player API, e.g. {@link SubtitleSelectBox}.
+ * This is intended to be used in conjunction with subclasses that populate themselves automatically
+ * via the player API, e.g. {@link SubtitleSelectBox}.
  */
 export interface ListItemLabelTranslator {
   /**
