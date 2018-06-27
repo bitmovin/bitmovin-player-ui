@@ -124,6 +124,40 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     player.addEventHandler(player.EVENT.ON_CAST_START, castInitializationHandler);
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, castInitializationHandler);
     player.addEventHandler(player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
+
+    const suppressPlayButtonTransitionAnimation = () => {
+      // Disable the current animation
+      this.setTransitionAnimationsEnabled(false);
+
+      // Enable the transition animations for the next state change
+      this.onToggle.subscribeOnce(() => {
+        this.setTransitionAnimationsEnabled(true);
+      });
+    };
+
+    // Hide the play button animation when the UI is loaded (it should only be animated on state changes)
+    suppressPlayButtonTransitionAnimation();
+
+    const isAutoplayEnabled = player.getConfig().playback && Boolean(player.getConfig().playback.autoplay);
+    // We only know if an autoplay attempt is upcoming if the player is not yet ready. It the player is already ready,
+    // the attempt might be upcoming or might have already happened, but we don't have to handle that because we can
+    // simply rely on isPlaying and the play state events.
+    const isAutoplayUpcoming = !player.isReady() && isAutoplayEnabled;
+
+    // Hide the play button when the player is already playing or autoplay is upcoming
+    if (player.isPlaying() || isAutoplayUpcoming) {
+      // Hide the play button (switch to playing state)
+      this.on();
+      // Disable the animation of the playing state switch
+      suppressPlayButtonTransitionAnimation();
+
+      // Show the play button without an animation if a play attempt is blocked
+      player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
+        if (event.code === 5008) {
+          suppressPlayButtonTransitionAnimation();
+        }
+      });
+    }
   }
 
   protected toDomElement(): DOM {
@@ -138,5 +172,20 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     }));
 
     return buttonElement;
+  }
+
+  /**
+   * Enables or disables the play state transition animations of the play button image. Can be used to suppress
+   * animations.
+   * @param {boolean} enabled true to enable the animations (default), false to disable them
+   */
+  protected setTransitionAnimationsEnabled(enabled: boolean): void {
+    const noTransitionAnimationsClass = this.prefixCss('no-transition-animations');
+
+    if (enabled) {
+      this.getDomElement().removeClass(noTransitionAnimationsClass);
+    } else if (!this.getDomElement().hasClass(noTransitionAnimationsClass)) {
+      this.getDomElement().addClass(noTransitionAnimationsClass);
+    }
   }
 }

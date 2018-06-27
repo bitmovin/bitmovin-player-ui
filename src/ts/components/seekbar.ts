@@ -41,6 +41,12 @@ export interface SeekPreviewEventArgs extends SeekPreviewArgs {
   scrubbing: boolean;
 }
 
+export interface SeekBarMarker {
+  marker: TimelineMarker;
+  position: number;
+  duration?: number;
+}
+
 /**
  * A seek bar to seek within the player's media. It displays the current playback position, amount of buffed data, seek
  * target, and keeps status about an ongoing seek.
@@ -69,7 +75,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private label: SeekBarLabel;
 
-  private timelineMarkers: TimelineMarker[];
+  private timelineMarkers: SeekBarMarker[];
 
   /**
    * Buffer of the the current playback position. The position must be buffered in case the element
@@ -416,24 +422,18 @@ export class SeekBar extends Component<SeekBarConfig> {
     let setupMarkers = () => {
       clearMarkers();
 
-      let hasMarkersInUiConfig = uimanager.getConfig().metadata && uimanager.getConfig().metadata.markers
-        && uimanager.getConfig().metadata.markers.length > 0;
-      let hasMarkersInPlayerConfig = player.getConfig().source && player.getConfig().source.markers
-        && player.getConfig().source.markers.length > 0;
+      const duration = player.getDuration();
 
-      // Take markers from the UI config. If no markers defined, try to take them from the player's source config.
-      let markers = hasMarkersInUiConfig ? uimanager.getConfig().metadata.markers :
-        hasMarkersInPlayerConfig ? player.getConfig().source.markers : null;
+      if (duration === Infinity) {
+        // Don't generate timeline markers if we don't yet have a duration
+        // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
+        return;
+      }
 
-      // Generate timeline markers from the config if we have markers and if we have a duration
-      // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
-      if (markers && player.getDuration() !== Infinity) {
-        for (let marker of markers) {
-          this.timelineMarkers.push({
-            time: 100 / player.getDuration() * marker.time, // convert time to percentage
-            title: marker.title,
-          });
-        }
+      for (let marker of uimanager.getConfig().metadata.markers) {
+        const markerPosition = 100 / duration * marker.time; // convert absolute time to percentage
+        const markerDuration = 100 / duration * marker.duration;
+        this.timelineMarkers.push({ marker, position: markerPosition, duration: markerDuration });
       }
 
       // Populate the timeline with the markers
@@ -444,6 +444,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.ON_READY, setupMarkers);
     // Remove markers when unloaded
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, clearMarkers);
+    // Update markers when the size of the seekbar changes
+    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => this.updateMarkers());
+    // Update markers when a marker is added or removed
+    uimanager.getConfig().events.onUpdated.subscribe(setupMarkers);
+    uimanager.onRelease.subscribe(() => uimanager.getConfig().events.onUpdated.unsubscribe(setupMarkers));
 
     // Init markers at startup
     setupMarkers();
@@ -537,7 +542,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       seeking = false;
 
       // Fire seeked event
-      this.onSeekedEvent(snappedChapter ? snappedChapter.time : targetPercentage);
+      this.onSeekedEvent(snappedChapter ? snappedChapter.position : targetPercentage);
     };
 
     // A seek always start with a touchstart or mousedown directly on the seekbar.
@@ -607,30 +612,51 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   protected updateMarkers(): void {
     this.seekBarMarkersContainer.empty();
+
+    const seekBarWidthPx = this.seekBar.width();
+
     for (let marker of this.timelineMarkers) {
+      const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
+        .map(cssClass => this.prefixCss(cssClass));
+
+      const cssProperties: {[propertyName: string]: string} = {
+        'width': marker.position + '%',
+      };
+
+      if (marker.duration > 0) {
+        const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
+        cssProperties['border-right-width'] = markerWidthPx + 'px';
+        cssProperties['margin-left'] = '0';
+      }
+
       this.seekBarMarkersContainer.append(new DOM('div', {
-        'class': this.prefixCss('seekbar-marker'),
-        'data-marker-time': String(marker.time),
-        'data-marker-title': String(marker.title),
-      }).css({
-        'width': marker.time + '%',
-      }));
+        'class': markerClasses.join(' '),
+        'data-marker-time': String(marker.marker.time),
+        'data-marker-title': String(marker.marker.title),
+      }).css(cssProperties));
     }
   }
 
-  protected getMarkerAtPosition(percentage: number): TimelineMarker | null {
-    let snappedMarker: TimelineMarker = null;
-    let snappingRange = 1;
+  protected getMarkerAtPosition(percentage: number): SeekBarMarker | null {
+    const snappingRange = 1;
+
     if (this.timelineMarkers.length > 0) {
       for (let marker of this.timelineMarkers) {
-        if (percentage >= marker.time - snappingRange && percentage <= marker.time + snappingRange) {
-          snappedMarker = marker;
-          break;
+        // Handle interval markers
+        if (marker.duration > 0
+          && percentage >= marker.position - snappingRange
+          && percentage <= marker.position + marker.duration + snappingRange) {
+          return marker;
+        }
+        // Handle position markers
+        else if (percentage >= marker.position - snappingRange
+          && percentage <= marker.position + snappingRange) {
+          return marker;
         }
       }
     }
 
-    return snappedMarker;
+    return null;
   }
 
   /**
@@ -848,15 +874,34 @@ export class SeekBar extends Component<SeekBarConfig> {
   protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
     let snappedMarker = this.getMarkerAtPosition(percentage);
 
+    let seekPositionPercentage = percentage;
+
+    if (snappedMarker) {
+      if (snappedMarker.duration > 0) {
+        if (percentage < snappedMarker.position) {
+          // Snap the position to the start of the interval if the seek is within the left snap margin
+          // We know that we are within a snap margin when we are outside the marker interval but still
+          // have a snappedMarker
+          seekPositionPercentage = snappedMarker.position;
+        } else if (percentage > snappedMarker.position + snappedMarker.duration) {
+          // Snap the position to the end of the interval if the seek is within the right snap margin
+          seekPositionPercentage = snappedMarker.position + snappedMarker.duration;
+        }
+      } else {
+        // Position markers always snap to their marker position
+        seekPositionPercentage = snappedMarker.position;
+      }
+    }
+
     if (this.label) {
       this.label.getDomElement().css({
-        'left': (snappedMarker ? snappedMarker.time : percentage) + '%',
+        'left': seekPositionPercentage + '%',
       });
     }
 
     this.seekBarEvents.onSeekPreview.dispatch(this, {
       scrubbing: scrubbing,
-      position: percentage,
+      position: seekPositionPercentage,
       marker: snappedMarker,
     });
   }

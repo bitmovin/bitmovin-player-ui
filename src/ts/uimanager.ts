@@ -6,7 +6,7 @@ import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {FullscreenToggleButton} from './components/fullscreentogglebutton';
 import {VRToggleButton} from './components/vrtogglebutton';
 import {VolumeToggleButton} from './components/volumetogglebutton';
-import {SeekBar} from './components/seekbar';
+import { SeekBar, SeekBarMarker } from './components/seekbar';
 import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktimelabel';
 import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
@@ -58,9 +58,34 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
+/**
+ * Marks a position on the playback timeline, e.g. a chapter or an ad break.
+ */
 export interface TimelineMarker {
+  /**
+   * The time in the playback timeline (e.g. {@link SeekBar}) that should be marked.
+   */
   time: number;
+  /**
+   * Optional duration that makes the marker mark an interval instead of a single moment in time.
+   */
+  duration?: number;
+  /**
+   * Optional title text of the marked position, e.g. a chapter name.
+   * Will be rendered in the {@link SeekBarLabel} attached to a {@link SeekBar}.
+   */
   title?: string;
+  /**
+   * Optional CSS classes that are applied to the marker on a {@link SeekBar} and can be used to
+   * differentiate different types of markers by their style (e.g. different color of chapter markers
+   * and ad break markers).
+   * The CSS classes are also propagated to a connected {@link SeekBarLabel}.
+   *
+   * Multiple classes can be added to allow grouping of markers into types (e.g. chapter markers,
+   * ad break markers) by a shared class and still identify and style each marker with distinct
+   * classes (e.g. `['marker-type-chapter', 'chapter-number-1']`).
+   */
+  cssClasses?: string[];
 }
 
 export interface UIConfig {
@@ -74,6 +99,7 @@ export interface UIConfig {
     description?: string;
     markers?: TimelineMarker[];
   };
+  // TODO move recommendations into metadata in next major release
   recommendations?: UIRecommendationConfig[];
   /**
    * Specifies if the UI variants should be resolved and switched automatically upon certain player events. The default
@@ -82,6 +108,15 @@ export interface UIConfig {
    * automatic switches through a {@link UIManager.onUiVariantResolve} event handler.
    */
   autoUiVariantResolve?: boolean;
+}
+
+export interface InternalUIConfig extends UIConfig {
+  events: {
+    /**
+     * Fires when the configuration has been updated/changed.
+     */
+    onUpdated: EventDispatcher<UIManager, void>;
+  };
 }
 
 /**
@@ -148,7 +183,7 @@ export class UIManager {
   private uiVariants: UIVariant[];
   private uiInstanceManagers: InternalUIInstanceManager[];
   private currentUi: InternalUIInstanceManager;
-  private config: UIConfig;
+  private config: InternalUIConfig;
   private managerPlayerWrapper: PlayerWrapper;
 
   private events = {
@@ -193,8 +228,52 @@ export class UIManager {
     }
 
     this.player = player;
-    this.config = config;
+    this.config = {
+      ...config,
+      events: {
+        onUpdated: new EventDispatcher<UIManager, void>(),
+      },
+    };
     this.managerPlayerWrapper = new PlayerWrapper(player);
+
+    /**
+     * Gathers configuration data from the UI config and player source config and creates a merged UI config
+     * that is used throughout the UI instance.
+     */
+    const updateConfig = () => {
+      const playerSourceConfig = player.getConfig().source || {};
+
+      const uiConfig = { ...config };
+      uiConfig.metadata = uiConfig.metadata || {};
+
+      // Extract the UI-related config properties from the source config
+      const playerSourceUiConfig: UIConfig = {
+        metadata: {
+          // TODO move metadata into source.metadata namespace in player v8
+          title: playerSourceConfig.title,
+          description: playerSourceConfig.description,
+          markers: playerSourceConfig.markers,
+        },
+        recommendations: playerSourceConfig.recommendations,
+      };
+
+      // Player source config takes precedence over the UI config, because the config in the source is attached
+      // to a source which changes with every player.load, whereas the UI config stays the same for the whole
+      // lifetime of the player instance.
+      this.config.metadata = this.config.metadata || {};
+      this.config.metadata.title = playerSourceUiConfig.metadata.title || uiConfig.metadata.title;
+      this.config.metadata.description = playerSourceUiConfig.metadata.description || uiConfig.metadata.description;
+      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiConfig.metadata.markers || [];
+      this.config.recommendations = playerSourceUiConfig.recommendations || uiConfig.recommendations || [];
+    };
+
+    updateConfig();
+
+    // Update the configuration when a new source is loaded
+    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_SOURCE_LOADED, () => {
+      updateConfig();
+      this.config.events.onUpdated.dispatch(this);
+    });
 
     if (config.container) {
       // Unfortunately "uiContainerElement = new DOM(config.container)" will not accept the container with
@@ -460,6 +539,35 @@ export class UIManager {
    */
   get onUiVariantResolve(): EventDispatcher<UIManager, UIConditionContext> {
     return this.events.onUiVariantResolve;
+  }
+
+  /**
+   * Returns the list of all added markers in undefined order.
+   */
+  getTimelineMarkers(): TimelineMarker[] {
+    return this.config.metadata.markers;
+  }
+
+  /**
+   * Adds a marker to the timeline. Does not check for duplicates/overlaps at the `time`.
+   */
+  addTimelineMarker(timelineMarker: TimelineMarker): void {
+    this.config.metadata.markers.push(timelineMarker);
+    this.config.events.onUpdated.dispatch(this);
+  }
+
+  /**
+   * Removes a marker from the timeline (by reference) and returns `true` if the marker has
+   * been part of the timeline and successfully removed, or `false` if the marker could not
+   * be found and thus not removed.
+   */
+  removeTimelineMarker(timelineMarker: TimelineMarker): boolean {
+    if (ArrayUtils.remove(this.config.metadata.markers, timelineMarker) === timelineMarker) {
+      this.config.events.onUpdated.dispatch(this);
+      return true;
+    }
+
+    return false;
   }
 }
 
@@ -901,7 +1009,7 @@ export interface SeekPreviewArgs extends NoArgs {
   /**
    * The timeline marker associated with the current position, if existing.
    */
-  marker?: TimelineMarker;
+  marker?: SeekBarMarker;
 }
 
 /**
@@ -910,7 +1018,7 @@ export interface SeekPreviewArgs extends NoArgs {
 export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
   private ui: UIContainer;
-  private config: UIConfig;
+  private config: InternalUIConfig;
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
@@ -922,15 +1030,16 @@ export class UIInstanceManager {
     onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
     onPreviewControlsHide: new EventDispatcher<UIContainer, CancelEventArgs>(),
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
+    onRelease: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
-  constructor(player: PlayerAPI, ui: UIContainer, config: UIConfig = {}) {
+  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
   }
 
-  getConfig(): UIConfig {
+  getConfig(): InternalUIConfig {
     return this.config;
   }
 
@@ -1014,6 +1123,14 @@ export class UIInstanceManager {
     return this.events.onControlsHide;
   }
 
+  /**
+   * Fires when the UI controls are released.
+   * @returns {EventDispatcher}
+   */
+  get onRelease(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onRelease;
+  }
+
   protected clearEventHandlers(): void {
     this.playerWrapper.clearEventHandlers();
 
@@ -1081,6 +1198,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
   releaseControls(): void {
     // Do not call release methods if the components have never been configured; this can result in exceptions
     if (this.configured) {
+      this.onRelease.dispatch(this.getUI());
       this.releaseControlsTree(this.getUI());
       this.configured = false;
     }
