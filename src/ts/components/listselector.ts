@@ -48,6 +48,7 @@ export interface ListItemLabelTranslator {
 export interface ListSelectorConfig extends ComponentConfig {
   items?: ListItem[];
   filter?: ListItemFilter;
+  translator?: ListItemLabelTranslator;
 }
 
 export abstract class ListSelector<Config extends ListSelectorConfig> extends Component<ListSelectorConfig> {
