@@ -81,8 +81,15 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param label the (human-readable) label of the item to add
    */
   addItem(key: string, label: string) {
+    const listItem = { key: key, label: label };
+
+    // Apply filter function
+    if (this.config.filter && !this.config.filter(listItem)) {
+      return;
+    }
+
     this.removeItem(key); // Try to remove key first to get overwrite behavior and avoid duplicate keys
-    this.items.push({ key: key, label: label });
+    this.items.push(listItem);
     this.onItemAddedEvent(key);
   }
 
