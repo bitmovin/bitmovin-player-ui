@@ -105,6 +105,11 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       return;
     }
 
+    // Apply translator function
+    if (this.config.translator) {
+      listItem.label = this.config.translator(listItem);
+    }
+
     this.removeItem(key); // Try to remove key first to get overwrite behavior and avoid duplicate keys
     this.items.push(listItem);
     this.onItemAddedEvent(key);
