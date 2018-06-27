@@ -11,6 +11,22 @@ export interface ListItem {
 }
 
 /**
+ * Filter function that can be used to filter out list items added through {@link ListSelector.addItem}.
+ *
+ * Using this does not make a lot of sense when items are added from outside because the added items can be
+ * controlled anyway, but it does make sense to be used in conjunction with subclasses that populate
+ * themselves automatically via the player API, e.g. {@link SubtitleSelectBox}.
+ */
+export interface ListItemFilter {
+  /**
+   * Takes a list item and decides whether it should pass or be discarded.
+   * @param {ListItem} listItem the item to apply the filter to
+   * @returns {boolean} true to let the item pass through the filter, false to discard the item
+   */
+  (listItem: ListItem): boolean;
+}
+
+/**
  * Configuration interface for a {@link ListSelector}.
  */
 export interface ListSelectorConfig extends ComponentConfig {
