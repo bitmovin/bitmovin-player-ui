@@ -11,10 +11,42 @@ export interface ListItem {
 }
 
 /**
+ * Filter function that can be used to filter out list items added through {@link ListSelector.addItem}.
+ *
+ * This is intended to be used in conjunction with subclasses that populate themselves automatically
+ * via the player API, e.g. {@link SubtitleSelectBox}.
+ */
+export interface ListItemFilter {
+  /**
+   * Takes a list item and decides whether it should pass or be discarded.
+   * @param {ListItem} listItem the item to apply the filter to
+   * @returns {boolean} true to let the item pass through the filter, false to discard the item
+   */
+  (listItem: ListItem): boolean;
+}
+
+/**
+ * Translator function to translate labels of list items added through {@link ListSelector.addItem}.
+ *
+ * This is intended to be used in conjunction with subclasses that populate themselves automatically
+ * via the player API, e.g. {@link SubtitleSelectBox}.
+ */
+export interface ListItemLabelTranslator {
+  /**
+   * Takes a list item, optionally changes the label, and returns the new label.
+   * @param {ListItem} listItem the item to translate
+   * @returns {string} the translated or original label
+   */
+  (listItem: ListItem): string;
+}
+
+/**
  * Configuration interface for a {@link ListSelector}.
  */
 export interface ListSelectorConfig extends ComponentConfig {
   items?: ListItem[];
+  filter?: ListItemFilter;
+  translator?: ListItemLabelTranslator;
 }
 
 export abstract class ListSelector<Config extends ListSelectorConfig> extends Component<ListSelectorConfig> {
@@ -64,8 +96,20 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param label the (human-readable) label of the item to add
    */
   addItem(key: string, label: string) {
+    const listItem = { key: key, label: label };
+
+    // Apply filter function
+    if (this.config.filter && !this.config.filter(listItem)) {
+      return;
+    }
+
+    // Apply translator function
+    if (this.config.translator) {
+      listItem.label = this.config.translator(listItem);
+    }
+
     this.removeItem(key); // Try to remove key first to get overwrite behavior and avoid duplicate keys
-    this.items.push({ key: key, label: label });
+    this.items.push(listItem);
     this.onItemAddedEvent(key);
   }
 
