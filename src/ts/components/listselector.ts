@@ -31,6 +31,7 @@ export interface ListItemFilter {
  */
 export interface ListSelectorConfig extends ComponentConfig {
   items?: ListItem[];
+  filter?: ListItemFilter;
 }
 
 export abstract class ListSelector<Config extends ListSelectorConfig> extends Component<ListSelectorConfig> {
