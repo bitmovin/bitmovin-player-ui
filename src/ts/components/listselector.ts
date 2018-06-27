@@ -27,6 +27,22 @@ export interface ListItemFilter {
 }
 
 /**
+ * Translator function to translate labels of list items added through {@link ListSelector.addItem}.
+ *
+ * Using this does not make a lot of sense when items are added from outside because the added items can be
+ * controlled anyway, but it does make sense to be used in conjunction with subclasses that populate
+ * themselves automatically via the player API, e.g. {@link SubtitleSelectBox}.
+ */
+export interface ListItemLabelTranslator {
+  /**
+   * Takes a list item, optionally changes the label, and returns the new label.
+   * @param {ListItem} listItem the item to translate
+   * @returns {string} the translated or original label
+   */
+  (listItem: ListItem): string;
+}
+
+/**
  * Configuration interface for a {@link ListSelector}.
  */
 export interface ListSelectorConfig extends ComponentConfig {
