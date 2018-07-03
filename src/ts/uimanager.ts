@@ -661,7 +661,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernAdsUI() {
+  export function modernAdsUI() {
     return new UIContainer({
       components: [
         new BufferingOverlay(),
@@ -693,7 +693,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernSmallScreenUI() {
+  export function modernSmallScreenUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
     let settingsPanel = new SettingsPanel({
@@ -768,7 +768,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernSmallScreenAdsUI() {
+  export function modernSmallScreenAdsUI() {
     return new UIContainer({
       components: [
         new BufferingOverlay(),
@@ -793,7 +793,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernCastReceiverUI() {
+  export function modernCastReceiverUI() {
     let controlBar = new ControlBar({
       components: [
         new Container({
@@ -998,6 +998,97 @@ export namespace UIManager.Factory {
 
   export function buildLegacyTestUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(player, legacyTestUI(), config);
+  }
+}
+
+// Separate the demos from the other factories.
+// The others are more like different 'styles' than some variants with different features
+export namespace UIManager.Demo.Factory {
+  export function buildDemoWithSeparateAudioSubtitlesButtons(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    // show smallScreen UI only on mobile/handheld devices
+    let smallScreenSwitchWidth = 600;
+
+    return new UIManager(player, [{
+      ui: UIManager.Factory.modernSmallScreenAdsUI(),
+      condition: (context: UIConditionContext) => {
+        return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
+      },
+    }, {
+      ui: UIManager.Factory.modernAdsUI(),
+      condition: (context: UIConditionContext) => {
+        return context.isAdWithUI;
+      },
+    }, {
+      ui: UIManager.Factory.modernSmallScreenUI(),
+      condition: (context: UIConditionContext) => {
+        return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
+      },
+    }, {
+      ui: modernUIWithSeparateAudioSubtitlesButtons(),
+    }], config);
+  }
+
+  function modernUIWithSeparateAudioSubtitlesButtons() {
+    let subtitleOverlay = new SubtitleOverlay();
+
+    let settingsPanel = new SettingsPanel({
+      components: [
+        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
+        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+      ],
+      hidden: true,
+    });
+
+    let controlBar = new ControlBar({
+      components: [
+        settingsPanel,
+        new Container({
+          components: [
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+            new SeekBar({ label: new SeekBarLabel() }),
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+          ],
+          cssClasses: ['controlbar-top'],
+        }),
+        new Container({
+          components: [
+            new PlaybackToggleButton(),
+            new VolumeToggleButton(),
+            new VolumeSlider(),
+            new Spacer(),
+            new PictureInPictureToggleButton(),
+            new AirPlayToggleButton(),
+            new CastToggleButton(),
+            new VRToggleButton(),
+            new AudioTrackSelectBox({
+              cssClasses: ['my-audio-track-selection-demo'],
+            }),
+            new SubtitleSelectBox({
+              cssClasses: ['my-subtitle-selection-demo'],
+            }),
+            new SettingsToggleButton({ settingsPanel: settingsPanel }),
+            new FullscreenToggleButton(),
+          ],
+          cssClasses: ['controlbar-bottom'],
+        }),
+      ],
+    });
+
+    return new UIContainer({
+      components: [
+        subtitleOverlay,
+        new BufferingOverlay(),
+        new PlaybackToggleOverlay(),
+        new CastStatusOverlay(),
+        controlBar,
+        new TitleBar(),
+        new RecommendationOverlay(),
+        new Watermark(),
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-modern'],
+    });
   }
 }
 

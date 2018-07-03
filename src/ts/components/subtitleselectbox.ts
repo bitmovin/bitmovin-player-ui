@@ -34,7 +34,10 @@ export class SubtitleSelectBox extends SelectBox {
     };
 
     this.onItemSelected.subscribe((sender: SubtitleSelectBox, value: string) => {
+      // called twice? first time with null as String second time with NULL
       player.setSubtitle(value === 'null' ? null : value);
+      const subtitleActive = !(value === 'null' || value === null);
+      this.setSubtitleActivatedClass(subtitleActive);
     });
 
     // React to API events
@@ -50,5 +53,19 @@ export class SubtitleSelectBox extends SelectBox {
 
     // Populate subtitles at startup
     updateSubtitles();
+  }
+
+  /**
+   * Add a css class when subtitles are activated
+   * @param {boolean} activated
+   */
+  private setSubtitleActivatedClass(activated: boolean): void {
+    const subtitleActivatedClass = this.prefixCss('subtitles-on');
+
+    if (!activated) {
+      this.getDomElement().removeClass(subtitleActivatedClass);
+    } else if (!this.getDomElement().hasClass(subtitleActivatedClass)) {
+      this.getDomElement().addClass(subtitleActivatedClass);
+    }
   }
 }

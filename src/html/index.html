@@ -564,15 +564,37 @@
       uiFactoryMethods.push(member);
     }
   }
+
+  const configUISelect = $('#config-ui');
+
+  // Collect all UI Demos
+  const uiDemos = [];
+  for (const member in bitmovin.playerui.UIManager.Demo.Factory) {
+    if (typeof bitmovin.playerui.UIManager.Demo.Factory[member]=== 'function' && member.indexOf('buildDemo') === 0) {
+      uiDemos.push(member);
+    }
+  }
+
   // Fill the UI factory method select box
   $.each(uiFactoryMethods, function(key, value) {
-    $('#config-ui').append($('<option></option>').attr('value', value).text(value));
+    configUISelect.append($('<option></option>').attr('value', value).text(value));
   });
+  // put all demos in own select-opt-group
+  let demoGroup = $('<optgroup label="Demos" />');
+  $.each(uiDemos, function(key, value) {
+    $('<option></option>').attr('value', value).text(value).appendTo(demoGroup);
+  });
+  demoGroup.appendTo(configUISelect);
+
   // Refresh UI when a factory is selected
-  $('#config-ui').change(function() {
+  configUISelect.change(function() {
     uiManager.release();
-    var factoryMethod = $(this).val();
-    uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
+    const factoryMethod = $(this).val();
+    if (factoryMethod.indexOf('buildDemo') === 0) {
+      uiManager = bitmovin.playerui.UIManager.Demo.Factory[factoryMethod](player, uiConfig);
+    } else {
+      uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
+    }
   });
 
   // Populate stats

@@ -1,0 +1,37 @@
+// demo for extracted audio tracks and subtitle settings from the settings panel direct into the controlBar
+@import '../variables';
+
+.#{$prefix}-ui-selectbox {
+
+  &.#{$prefix}-my-audio-track-selection-demo {
+    appearance: none;
+    background-image: svg('assets/skin-modern/images/audi-tracks.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    color: transparent;
+    width: 24px;
+
+    &:hover {
+      @include svg-icon-shadow;
+    }
+  }
+
+  &.#{$prefix}-my-subtitle-selection-demo {
+    appearance: none;
+    background-image: svg('assets/skin-modern/images/subtitles.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    color: transparent;
+    width: 24px;
+
+    &.#{$prefix}-subtitles-on {
+      background-image: svg('assets/skin-modern/images/subtitlesX.svg');
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    &:hover {
+      @include svg-icon-shadow;
+    }
+  }
+}
