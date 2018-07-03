@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Added
+- Add demo for extracted audio tracks and subtitle settings from the settings panel direct into the controlBar
+- Add CSS class on `SubtitleSelectBox` when a subtitle is selected
+
 ## [2.16.0]
 
 ### Added
