@@ -3,33 +3,39 @@
 
 .#{$prefix}-ui-selectbox {
 
-  &.#{$prefix}-my-audio-track-selection-demo, &.#{$prefix}-my-subtitle-selection-demo  {
+  &.#{$prefix}-my-audio-track-selection-demo,
+  &.#{$prefix}-my-subtitle-selection-demo  {
     appearance: none;
     background-position: center;
     background-repeat: no-repeat;
     color: transparent;
-    min-width: 24px;
     max-width: 24px;
+    min-width: 24px;
 
     &:hover {
       @include svg-icon-shadow;
     }
 
-    // IE hacks to remove default styles from select box
+    // IE11 hacks to remove default styles from select box
     // removes style in focused state
-    &:focus::-ms-value {
-      display: none;
-      color: black;
-      background: red;
+    &:focus {
+      // sass-lint:disable no-vendor-prefixes
+      ::-ms-value {
+        display: none;
+      }
     }
+
     // removes style in normal state
+    // sass-lint:disable no-vendor-prefixes
     &::-ms-value {
       display: none;
     }
+
     // removes drop down button
+    // sass-lint:disable no-vendor-prefixes
     &::-ms-expand {
-      display: none;
       border-radius: 5px;
+      display: none;
       padding: 5px;
     }
   }
