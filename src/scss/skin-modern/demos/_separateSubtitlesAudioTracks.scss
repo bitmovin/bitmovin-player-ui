@@ -3,35 +3,46 @@
 
 .#{$prefix}-ui-selectbox {
 
-  &.#{$prefix}-my-audio-track-selection-demo {
+  &.#{$prefix}-my-audio-track-selection-demo, &.#{$prefix}-my-subtitle-selection-demo  {
     appearance: none;
-    background-image: svg('assets/skin-modern/images/audi-tracks.svg');
     background-position: center;
     background-repeat: no-repeat;
     color: transparent;
-    width: 24px;
+    min-width: 24px;
+    max-width: 24px;
 
     &:hover {
       @include svg-icon-shadow;
+    }
+
+    // IE hacks to remove default styles from select box
+    // removes style in focused state
+    &:focus::-ms-value {
+      display: none;
+      color: black;
+      background: red;
+    }
+    // removes style in normal state
+    &::-ms-value {
+      display: none;
+    }
+    // removes drop down button
+    &::-ms-expand {
+      display: none;
+      border-radius: 5px;
+      padding: 5px;
     }
   }
 
+  &.#{$prefix}-my-audio-track-selection-demo {
+    background-image: svg('assets/skin-modern/images/audi-tracks.svg');
+  }
+
   &.#{$prefix}-my-subtitle-selection-demo {
-    appearance: none;
     background-image: svg('assets/skin-modern/images/subtitles.svg');
-    background-position: center;
-    background-repeat: no-repeat;
-    color: transparent;
-    width: 24px;
 
     &.#{$prefix}-subtitles-on {
       background-image: svg('assets/skin-modern/images/subtitlesX.svg');
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-
-    &:hover {
-      @include svg-icon-shadow;
     }
   }
 }
