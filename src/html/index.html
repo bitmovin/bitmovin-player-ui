@@ -565,11 +565,11 @@
     }
   }
 
-  const configUISelect = $('#config-ui');
+  var configUISelect = $('#config-ui');
 
   // Collect all UI Demos
-  const uiDemos = [];
-  for (const member in bitmovin.playerui.UIManager.Demo.Factory) {
+  var uiDemos = [];
+  for (var member in bitmovin.playerui.UIManager.Demo.Factory) {
     if (typeof bitmovin.playerui.UIManager.Demo.Factory[member]=== 'function' && member.indexOf('buildDemo') === 0) {
       uiDemos.push(member);
     }
@@ -589,7 +589,7 @@
   // Refresh UI when a factory is selected
   configUISelect.change(function() {
     uiManager.release();
-    const factoryMethod = $(this).val();
+    var factoryMethod = $(this).val();
     if (factoryMethod.indexOf('buildDemo') === 0) {
       uiManager = bitmovin.playerui.UIManager.Demo.Factory[factoryMethod](player, uiConfig);
     } else {
