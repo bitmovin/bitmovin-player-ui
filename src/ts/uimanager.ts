@@ -50,6 +50,9 @@ import {Spacer} from './components/spacer';
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
+import {SubtitlesListBox} from './components/subtitleslistbox';
+import {ListBoxWrapper} from './components/listboxwrapper';
+import {SubtitleListBoxToggleButton} from './components/subtitlelistboxtogglebutton';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -1040,6 +1043,13 @@ export namespace UIManager.Demo.Factory {
       hidden: true,
     });
 
+    let subtitlesListBox = new SubtitlesListBox({
+      hidden: true,
+    });
+    let subtitlesListBoxToggleButton = new SubtitleListBoxToggleButton({
+      listBox: subtitlesListBox,
+    });
+
     let controlBar = new ControlBar({
       components: [
         settingsPanel,
@@ -1061,11 +1071,9 @@ export namespace UIManager.Demo.Factory {
             new AirPlayToggleButton(),
             new CastToggleButton(),
             new VRToggleButton(),
-            new AudioTrackSelectBox({
-              cssClasses: ['my-audio-track-selection-demo'],
-            }),
-            new SubtitleSelectBox({
-              cssClasses: ['my-subtitle-selection-demo'],
+            new ListBoxWrapper({
+              listBoxToggleButton: subtitlesListBoxToggleButton,
+              listBox: subtitlesListBox,
             }),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
