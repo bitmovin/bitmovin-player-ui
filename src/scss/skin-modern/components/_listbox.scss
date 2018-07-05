@@ -1,0 +1,61 @@
+@import '../variables';
+@import '../mixins';
+
+%ui-listbox {
+  @extend %ui-container;
+  @include hidden-animated;
+
+  $background-color: transparentize($color-background, .15);
+
+  background-color: $background-color;
+  bottom: 5em;
+  left: -4.5em; // (width / 2) - (toggle button width / 2)
+  min-width: 10em;
+  padding: 0;
+  position: absolute;
+
+  // bottom arrow from http://www.cssarrowplease.com/
+  &::after {
+    border: solid transparent;
+    border-color: transparent;
+    border-top-color: $background-color;
+    border-width: 1em;
+    content: ' ';
+    height: 0;
+    left: 4em;
+    pointer-events: none;
+    position: absolute;
+    top: 100%;
+    width: 0;
+  }
+
+  .#{$prefix}-ui-listboxitem-wrapper {
+    &.#{$prefix}-ui-listboxitem-wrapper-selected {
+      background-color: transparentize($color-highlight, .3);
+    }
+
+    .#{$prefix}-ui-listboxitem-button {
+      @extend %ui-button;
+
+      border-bottom: 1px solid transparentize($color-secondary, .7);
+      font-size: .8em;
+      height: 100%;
+      padding: .5em 0;
+      width: 100%;
+
+      .#{$prefix}-label {
+        display: inherit;
+      }
+
+      &:hover {
+        background-color: transparentize($color-highlight, .15);
+      }
+
+      &:last-child {
+        border-bottom: 0;
+      }
+    }
+  }
+}
+
+
