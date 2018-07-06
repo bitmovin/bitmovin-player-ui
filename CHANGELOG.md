@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- Apply the IE/Firefox workaround for a hovered dropdown panel of a `SelectBox` when the UI hides
+
 ## [2.16.0]
 
 ### Added
