@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- Apply the IE/Firefox workaround for a hovered dropdown panel of a  `SelectBox` on the `onControlsHide` event too
+- Apply the IE/Firefox workaround for a hovered dropdown panel of a `SelectBox` when the UI hides
 
 ## [2.16.0]
 
