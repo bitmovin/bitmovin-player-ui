@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- Airplay and Picture in Picture toggle buttons for the `modernSmallScreenUI`
+- Airplay toggle button to the `modernSmallScreenUI` on MacOS and iOS devices.
+- Picture in Picture toggle button for the `modernSmallScreenUI` on MacOS and iOS devices.
 
 ## [2.16.0]
 
