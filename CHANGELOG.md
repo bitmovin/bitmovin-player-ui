@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Display `AirPlayToggleButton` on `modernSmallScreenUI` for MacOS devices
 - Display `PictureInPictureToggleButton` on `modernSmallScreenUI` for MacOS devices
 
+### Fixed
+- Apply the IE/Firefox workaround for a hovered dropdown panel of a `SelectBox` when the UI hides
+
 ## [2.16.0]
 
 ### Added
