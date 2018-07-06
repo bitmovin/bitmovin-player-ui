@@ -47,13 +47,13 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
 
+    uimanager.onControlsHide.subscribe(() => this.hideHoveredSelectBoxes());
+
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
         this.hide();
         this.hideHoveredSelectBoxes();
       });
-
-      uimanager.onControlsHide.subscribe(this.hideHoveredSelectBoxes);
 
       this.onShow.subscribe(() => {
         // Activate timeout when shown
@@ -99,7 +99,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    * when the settings panel fades out while an item of a select box is still hovered, the select box will not fade out
    * while the settings panel does. This would leave a floating select box, which is just weird
    */
-  private hideHoveredSelectBoxes = () => {
+  private hideHoveredSelectBoxes(): void {
     this.getItems().forEach((item: SettingsPanelItem) => {
       if (item.isActive() && (item as any).setting instanceof SelectBox) {
         const selectBox = (item as any).setting as SelectBox;
@@ -116,7 +116,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         }
       }
     });
-  };
+  }
 
   release(): void {
     super.release();
