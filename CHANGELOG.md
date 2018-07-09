@@ -11,11 +11,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Display `PictureInPictureToggleButton` on `modernSmallScreenUI` for MacOS devices
 - New option `UIConfig.playbackSpeedSelectionEnabled` to show/hide `PlaybackSpeedSelectBox` within the `SettingsPanel`
 
-### Fixed
-- Apply the IE/Firefox workaround for a hovered dropdown panel of a `SelectBox` when the UI hides
-
 ### Changed
 - `PlaybackSpeedSelectBox` is no longer visible within the `SettingsPanel` by default
+
+### Fixed
+- Apply the IE/Firefox workaround for a hovered dropdown panel of a `SelectBox` when the UI hides
 
 ## [2.16.0]
 
