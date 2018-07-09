@@ -71,8 +71,6 @@ import {StorageUtils} from './storageutils';
 import {ArrayUtils as Dummy} from './utils'; // tslint:disable-line
 import {SubtitleSettingsResetButton} from './components/subtitlesettings/subtitlesettingsresetbutton';
 import {ListBox} from './components/listbox';
-import {ListBoxToggleButton} from './components/listboxtogglebutton';
-import {ListBoxWrapper} from './components/listboxwrapper';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -133,8 +131,6 @@ const playerui = {
   HugeReplayButton,
   Label,
   ListBox,
-  ListBoxToggleButton,
-  ListBoxWrapper,
   MetadataLabel,
   MetadataLabelContent,
   PictureInPictureToggleButton,

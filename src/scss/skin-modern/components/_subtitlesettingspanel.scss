@@ -1,0 +1,53 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-subtitles-settings-panel {
+  @extend %ui-container;
+
+  @include hidden-animated;
+
+  $background-color: transparentize($color-background, .15);
+
+  background-color: $background-color;
+  bottom: 6em;
+  padding: 0;
+  position: absolute;
+  right: 3em;
+  width: 7em;
+
+  // bottom arrow from http://www.cssarrowplease.com/
+  &::after {
+    border: solid transparent;
+    border-color: transparent;
+    border-top-color: $background-color;
+    border-width: 1em;
+    content: ' ';
+    height: 0;
+    left: 7%;
+    margin-left: 2em;
+    pointer-events: none;
+    position: absolute;
+    top: 100%;
+    width: 0;
+  }
+
+  .#{$prefix}-container-wrapper {
+    overflow-y: auto;
+
+    // Controls (e.g. listbox)
+    .#{$prefix}-ui-subtitles-listbox {
+      @extend %ui-listbox;
+    }
+  }
+
+  .#{$prefix}-ui-settings-panel-item {
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+}
+
+// Remove margin inherited from controlbar
+.#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
+  margin: 0;
+}

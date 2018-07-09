@@ -1,29 +1,9 @@
-import {UIInstanceManager} from '../uimanager';
 import {Button, ButtonConfig} from './button';
 import {ListSelector, ListSelectorConfig} from './listselector';
 import {DOM} from '../dom';
-import {Timeout} from '../timeout';
-
-export interface ListBoxConfig extends ListSelectorConfig {
-  /**
-   * The delay in milliseconds after which the settings panel will be hidden when there is no user interaction.
-   * Set to -1 to disable automatic hiding.
-   * Default: 3 seconds (3000)
-   */
-  hideDelay?: number;
-  /**
-   * Flag if the ListBox should disappear when an item got selected
-   * Default: true
-   */
-  hideOnSelection?: boolean;
-}
 
 /**
- * A custom select box like element to select a single item out of a list of available items.
- * To have the `ListBoxToggleButton` and the `ListBox` bundled together in the UI
- * it should be included within an `ListBoxWrapper`.
- *
- * The trigger to open the `ListBox` is a `ListBoxToggleButton`.
+ * A element to select a single item out of a list of available items.
  *
  * DOM example:
  * <code>
@@ -37,50 +17,18 @@ export interface ListBoxConfig extends ListSelectorConfig {
  *   </div
  * </code>
  */
-export class ListBox extends ListSelector<ListBoxConfig> {
+export class ListBox extends ListSelector<ListSelectorConfig> {
   private listBoxElement: DOM;
-  private hideTimeout: Timeout;
 
   private static readonly SELECTED_LIST_BOX_ITEM_CLASS = 'ui-listboxitem-wrapper-selected';
   private static readonly LIST_BOX_ITEM_WRAPPER_CLASS = 'ui-listboxitem-wrapper';
 
-  constructor(config: ListBoxConfig = {}) {
+  constructor(config: ListSelectorConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-listbox',
-      hideOnSelection: true,
-      hideDelay: 3000,
-    } as ListBoxConfig, this.config);
-  }
-
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    super.configure(player, uimanager);
-
-    // TODO: extract timeout handling and combine with settingspanel.ts (extract also config interface)
-    const hideDelay = (this.config as ListBoxConfig).hideDelay;
-    if (hideDelay > -1) {
-      this.hideTimeout = new Timeout(hideDelay, () => {
-        this.hide();
-      });
-
-      this.onShow.subscribe(() => {
-        // Activate timeout when shown
-        this.hideTimeout.start();
-      });
-      this.getDomElement().on('mouseenter', () => {
-        // On mouse enter clear the timeout
-        this.hideTimeout.clear();
-      });
-      this.getDomElement().on('mouseleave', () => {
-        // On mouse leave activate the timeout
-        this.hideTimeout.reset();
-      });
-      this.onHide.subscribe(() => {
-        // Clear timeout when hidden from outside
-        this.hideTimeout.clear();
-      });
-    }
+    } as ListSelectorConfig, this.config);
   }
 
   protected toDomElement(): DOM {
@@ -127,8 +75,6 @@ export class ListBox extends ListSelector<ListBoxConfig> {
   }
 
   protected handleSelectionChange(sender: ListBoxItemButton) {
-    if ((this.getConfig() as ListBoxConfig).hideOnSelection)
-      this.hide();
     this.onItemSelectedEvent(sender.key);
   }
 
