@@ -108,6 +108,11 @@ export interface UIConfig {
    * automatic switches through a {@link UIManager.onUiVariantResolve} event handler.
    */
   autoUiVariantResolve?: boolean;
+  /**
+   * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
+   * Default: false
+   */
+  playbackSpeedSelectionEnabled?: boolean;
 }
 
 export interface InternalUIConfig extends UIConfig {
