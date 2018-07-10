@@ -50,7 +50,7 @@ import {Spacer} from './components/spacer';
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
-import {SubtitlesListBox} from './components/subtitleslistbox';
+import {SubtitleListBox} from './components/subtitlelistbox';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -1041,10 +1041,10 @@ export namespace UIManager.Demo.Factory {
       hidden: true,
     });
 
-    let subtitlesListBox = new SubtitlesListBox();
+    let subtitleListBox = new SubtitleListBox();
     let subtitleSettingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('', subtitlesListBox), // empty string to do not display a label
+        new SettingsPanelItem('', subtitleListBox), // empty string to do not display a label
       ],
       cssClass: 'ui-subtitles-settings-panel',
       hidden: true,
