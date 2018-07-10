@@ -108,6 +108,11 @@ export interface UIConfig {
    * automatic switches through a {@link UIManager.onUiVariantResolve} event handler.
    */
   autoUiVariantResolve?: boolean;
+  /**
+   * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
+   * Default: false
+   */
+  playbackSpeedSelectionEnabled?: boolean;
 }
 
 export interface InternalUIConfig extends UIConfig {
@@ -753,6 +758,8 @@ export namespace UIManager.Factory {
             new MetadataLabel({ content: MetadataLabelContent.Title }),
             new CastToggleButton(),
             new VRToggleButton(),
+            new PictureInPictureToggleButton(),
+            new AirPlayToggleButton(),
             new VolumeToggleButton(),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
