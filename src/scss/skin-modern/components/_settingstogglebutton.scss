@@ -1,16 +1,22 @@
 @import '../variables';
 @import '../mixins';
 
-%ui-settingstogglebutton {
+%ui-togglebutton {
   @extend %ui-button;
 
   &:hover {
     @include svg-icon-shadow;
   }
+
+  &.#{$prefix}-on {
+    &:hover {
+      @include svg-icon-on-shadow;
+    }
+  }
 }
 
 .#{$prefix}-ui-settingstogglebutton {
-  @extend %ui-settingstogglebutton;
+  @extend %ui-togglebutton;
 
   background-image: svg('assets/skin-modern/images/settings.svg');
 
