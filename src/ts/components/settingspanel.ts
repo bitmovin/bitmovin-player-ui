@@ -7,6 +7,7 @@ import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
+import {PlaybackSpeedSelectBox} from './playbackspeedselectbox';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -208,8 +209,12 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
           minItemsToDisplay = 3;
         }
 
-        // Hide the setting if no meaningful choice is available
         if (this.setting.itemCount() < minItemsToDisplay) {
+          // Hide the setting if no meaningful choice is available
+          this.hide();
+        } else if (this.setting instanceof PlaybackSpeedSelectBox
+          && !uimanager.getConfig().playbackSpeedSelectionEnabled) {
+          // Hide the PlaybackSpeedSelectBox if disabled in config
           this.hide();
         } else {
           this.show();
