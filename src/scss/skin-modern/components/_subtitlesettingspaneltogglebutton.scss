@@ -2,7 +2,8 @@
 @import '../variables';
 
 .#{$prefix}-ui-subtitles-settings-toggle-button {
-  @extend %ui-button;
+  @extend %ui-settingstogglebutton;
+
   background-image: svg('assets/skin-modern/images/subtitles.svg');
 
   &.#{$prefix}-on {

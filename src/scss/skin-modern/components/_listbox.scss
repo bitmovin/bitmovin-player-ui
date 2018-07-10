@@ -4,32 +4,32 @@
 %ui-listbox {
   @extend %ui-container;
 
-  .#{$prefix}-ui-listboxitem-wrapper {
-    &.#{$prefix}-ui-listboxitem-wrapper-selected {
+  .#{$prefix}-ui-listboxitem-button {
+    @extend %ui-button;
+
+    font-size: .8em;
+    height: 100%;
+    padding: .5em 2em;
+    width: 100%;
+
+    .#{$prefix}-label {
+      display: inherit;
+    }
+
+    &.#{$prefix}-ui-listboxitem-button-selected {
       background-color: transparentize($color-highlight, .3);
     }
 
-    .#{$prefix}-ui-listboxitem-button {
-      @extend %ui-button;
+    &:hover {
+      background-color: transparentize($color-highlight, .15);
+    }
 
-      font-size: .8em;
-      height: 100%;
-      padding: .5em 2em;
-      width: 100%;
-
-      .#{$prefix}-label {
-        display: inherit;
-      }
-
-      &:hover {
-        background-color: transparentize($color-highlight, .15);
-      }
-
-      &:last-child {
-        border-bottom: 0;
-      }
+    &:last-child {
+      border-bottom: 0;
     }
   }
 }
 
-
+.#{$prefix}-ui-listbox {
+  @extend %ui-listbox;
+}

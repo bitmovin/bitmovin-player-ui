@@ -1,7 +1,7 @@
 @import '../variables';
 @import '../mixins';
 
-.#{$prefix}-ui-settings-panel {
+%ui-settings-panel {
   @extend %ui-container;
 
   @include hidden-animated;
@@ -68,6 +68,10 @@
       display: none;
     }
   }
+}
+
+.#{$prefix}-ui-settings-panel {
+  @extend %ui-settings-panel;
 }
 
 // Remove margin inherited from controlbar

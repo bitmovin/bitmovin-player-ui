@@ -1,0 +1,6 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-subtitles-listbox {
+  @extend %ui-listbox;
+}
