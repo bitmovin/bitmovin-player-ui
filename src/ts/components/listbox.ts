@@ -20,8 +20,7 @@ import {DOM} from '../dom';
 export class ListBox extends ListSelector<ListSelectorConfig> {
   private listBoxElement: DOM;
 
-  private static readonly SELECTED_LIST_BOX_ITEM_CLASS = 'ui-listboxitem-wrapper-selected';
-  private static readonly LIST_BOX_ITEM_WRAPPER_CLASS = 'ui-listboxitem-wrapper';
+  private static readonly SELECTED_LIST_BOX_ITEM_CLASS = 'ui-listboxitem-button-selected';
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
@@ -49,28 +48,25 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
 
     // Add updated children
     for (let item of this.items) {
-      let rowElement = new DOM('div', {
-        'class': this.prefixCss(ListBox.LIST_BOX_ITEM_WRAPPER_CLASS),
-      });
-      let itemElement = new ListBoxItemButton({
+      let itemButton = new ListBoxItemButton({
         key: item.key,
         text: item.label,
       });
-      itemElement.onClick.subscribe((sender) => {
+
+      itemButton.onClick.subscribe((sender) => {
         this.handleSelectionChange(<ListBoxItemButton>sender);
       });
-      rowElement.append(itemElement.getDomElement());
 
       const selectedItemClass = this.prefixCss(ListBox.SELECTED_LIST_BOX_ITEM_CLASS);
-
+      const itemElement = itemButton.getDomElement();
       // convert selectedValue and item.key to string to catch 'null'/null case
       if (String(item.key) === String(selectedValue)) {
-        if (!rowElement.hasClass(selectedItemClass)) {
-          rowElement.addClass(selectedItemClass);
+        if (!itemElement.hasClass(selectedItemClass)) {
+          itemElement.addClass(selectedItemClass);
         }
       }
 
-      this.listBoxElement.append(rowElement);
+      this.listBoxElement.append(itemElement);
     }
   }
 
