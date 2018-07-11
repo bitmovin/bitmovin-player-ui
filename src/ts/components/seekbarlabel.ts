@@ -136,31 +136,50 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       // We use the thumbnail image loader to make sure the thumbnail is loaded and it's size is known before be can
       // calculate the CSS properties and set them on the element.
       this.thumbnailImageLoader.load(thumbnail.url, (url, width, height) => {
-        let thumbnailCountX = width / thumbnail.w;
-        let thumbnailCountY = height / thumbnail.h;
-
-        let thumbnailIndexX = thumbnail.x / thumbnail.w;
-        let thumbnailIndexY = thumbnail.y / thumbnail.h;
-
-        let sizeX = 100 * thumbnailCountX;
-        let sizeY = 100 * thumbnailCountY;
-
-        let offsetX = 100 * thumbnailIndexX;
-        let offsetY = 100 * thumbnailIndexY;
-
-        let aspectRatio = 1 / thumbnail.w * thumbnail.h;
-
-        // The thumbnail size is set by setting the CSS 'width' and 'padding-bottom' properties. 'padding-bottom' is
-        // used because it is relative to the width and can be used to set the aspect ratio of the thumbnail.
-        // A default value for width is set in the stylesheet and can be overwritten from there or anywhere else.
-        thumbnailElement.css({
-          'display': 'inherit',
-          'background-image': `url(${thumbnail.url})`,
-          'padding-bottom': `${100 * aspectRatio}%`,
-          'background-size': `${sizeX}% ${sizeY}%`,
-          'background-position': `-${offsetX}% -${offsetY}%`,
-        });
+        if (['x', 'y', 'w', 'h'].every((key) => thumbnail.hasOwnProperty(key))) {
+          thumbnailElement.css(this.thumbnailCssSprite(thumbnail, width, height));
+        } else {
+          thumbnailElement.css(this.thumbnailCssSingeImage(thumbnail, width, height));
+        }
       });
     }
+  }
+
+  private thumbnailCssSprite(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): any {
+    let thumbnailCountX = width / (thumbnail.w || 1);
+    let thumbnailCountY = height / (thumbnail.h || 1);
+
+    let thumbnailIndexX = (thumbnail.x || 0) / thumbnail.w;
+    let thumbnailIndexY = thumbnail.y / thumbnail.h;
+
+    let sizeX = 100 * thumbnailCountX;
+    let sizeY = 100 * thumbnailCountY;
+
+    let offsetX = 100 * thumbnailIndexX;
+    let offsetY = 100 * thumbnailIndexY;
+
+    let aspectRatio = 1 / thumbnail.w * thumbnail.h;
+
+    // The thumbnail size is set by setting the CSS 'width' and 'padding-bottom' properties. 'padding-bottom' is
+    // used because it is relative to the width and can be used to set the aspect ratio of the thumbnail.
+    // A default value for width is set in the stylesheet and can be overwritten from there or anywhere else.
+    return {
+      'display': 'inherit',
+      'background-image': `url(${thumbnail.url})`,
+      'padding-bottom': `${100 * aspectRatio}%`,
+      'background-size': `${sizeX}% ${sizeY}%`,
+      'background-position': `-${offsetX}% -${offsetY}%`,
+    };
+  }
+
+  private thumbnailCssSingeImage(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): any {
+    let aspectRatio = 1 / width * height;
+
+    return {
+      'display': 'inherit',
+      'background-image': `url(${thumbnail.url})`,
+      'padding-bottom': `${100 * aspectRatio}%`,
+      'background-size': `100% 100%`,
+    };
   }
 }
