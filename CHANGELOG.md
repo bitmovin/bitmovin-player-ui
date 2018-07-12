@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- Rendering of single-image thumbnails when position and size properties are missing.
+- Rendering of single-image thumbnails
 
 ## [2.17.0]
 
