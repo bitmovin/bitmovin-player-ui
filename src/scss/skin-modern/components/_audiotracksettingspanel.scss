@@ -1,10 +1,10 @@
 @import '../variables';
 @import '../mixins';
 
-.#{$prefix}-ui-subtitle-settings-panel {
+.#{$prefix}-ui-audiotrack-settings-panel {
   @extend %ui-settings-panel;
 
-  right: 3em;
+  right: 5em;
   width: 7em;
 
   > .#{$prefix}-container-wrapper {

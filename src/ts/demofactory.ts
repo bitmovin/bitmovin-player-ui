@@ -29,6 +29,7 @@ import {TitleBar} from './components/titlebar';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import PlayerAPI = bitmovin.PlayerAPI;
 import {SubtitleListBox} from './components/subtitlelistbox';
+import {AudioTrackListBox} from './components/audiotracklistbox';
 
 export namespace DemoFactory {
 
@@ -73,12 +74,22 @@ export namespace DemoFactory {
       components: [
         new SettingsPanelItem('', subtitleListBox), // empty string to do not display a label
       ],
-      cssClass: 'ui-subtitles-settings-panel',
+      cssClass: 'ui-subtitle-settings-panel',
+      hidden: true,
+    });
+
+    let audioTrackListBox = new AudioTrackListBox();
+    let audioTrackSettingsPanel = new SettingsPanel({
+      components: [
+        new SettingsPanelItem('', audioTrackListBox),
+      ],
+      cssClass: 'ui-audiotrack-settings-panel',
       hidden: true,
     });
 
     let controlBar = new ControlBar({
       components: [
+        audioTrackSettingsPanel,
         subtitleSettingsPanel,
         settingsPanel,
         new Container({
@@ -100,8 +111,12 @@ export namespace DemoFactory {
             new CastToggleButton(),
             new VRToggleButton(),
             new SettingsToggleButton({
+              settingsPanel: audioTrackSettingsPanel,
+              cssClass: 'ui-audiotrack-setting-toggle-button',
+            }),
+            new SettingsToggleButton({
               settingsPanel: subtitleSettingsPanel,
-              cssClass: 'ui-subtitles-setting-toggle-button',
+              cssClass: 'ui-subtitle-setting-toggle-button',
             }),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
