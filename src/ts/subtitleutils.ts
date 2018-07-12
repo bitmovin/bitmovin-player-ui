@@ -1,6 +1,4 @@
 import {ListSelector, ListSelectorConfig} from './components/listselector';
-import {SubtitleListBox} from './components/subtitlelistbox';
-import {SubtitleSelectBox} from './components/subtitleselectbox';
 
 /**
  * Helper class to handle all subtitle related events

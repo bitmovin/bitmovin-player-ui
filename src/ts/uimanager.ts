@@ -50,7 +50,6 @@ import {Spacer} from './components/spacer';
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
-import {SubtitleListBox} from './components/subtitlelistbox';
 
 export interface UIRecommendationConfig {
   title: string;
