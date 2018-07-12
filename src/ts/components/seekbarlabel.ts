@@ -180,6 +180,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       'background-image': `url(${thumbnail.url})`,
       'padding-bottom': `${100 * aspectRatio}%`,
       'background-size': `100% 100%`,
+      'background-position': `0 0`,
     };
   }
 }
