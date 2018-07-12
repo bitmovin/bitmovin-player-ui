@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Added
+- Icon for `Subtitles`
+- Icon for `AudioTracks`
+- Demo section within the UI variants in the `Playground`
+- Demo for extracted `Subtitles` and `Audiotracks` from the `SettingsPanel`
+
 ## [2.17.0]
 
 ### Added
