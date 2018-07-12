@@ -1,7 +1,7 @@
 @import '../variables';
 @import '../mixins';
 
-%ui-togglebutton {
+%ui-settingstogglebutton {
   @extend %ui-button;
 
   &:hover {
@@ -16,7 +16,7 @@
 }
 
 .#{$prefix}-ui-settingstogglebutton {
-  @extend %ui-togglebutton;
+  @extend %ui-settingstogglebutton;
 
   background-image: svg('assets/skin-modern/images/settings.svg');
 

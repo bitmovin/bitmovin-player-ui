@@ -1,8 +1,8 @@
 // demo for extracted audio tracks and subtitle settings from the settings panel direct into the controlBar
 @import '../variables';
 
-.#{$prefix}-ui-subtitles-settings-toggle-button {
-  @extend %ui-togglebutton;
+.#{$prefix}-ui-subtitles-setting-toggle-button {
+  @extend %ui-settingstogglebutton;
 
   background-image: svg('assets/skin-modern/images/subtitles.svg');
 

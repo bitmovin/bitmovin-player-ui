@@ -1074,7 +1074,7 @@ export namespace UIManager.Demo.Factory {
             new VRToggleButton(),
             new SettingsToggleButton({
               settingsPanel: subtitleSettingsPanel,
-              cssClass: 'ui-subtitles-settings-toggle-button',
+              cssClass: 'ui-subtitles-setting-toggle-button',
             }),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
