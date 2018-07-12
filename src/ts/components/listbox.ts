@@ -58,6 +58,8 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
       });
 
       const selectedItemClass = this.prefixCss(ListBox.SELECTED_LIST_BOX_ITEM_CLASS);
+      // These buttons are not in the component tree
+      // see comment: https://github.com/bitmovin/bitmovin-player-ui/pull/122#discussion_r201958260
       const itemElement = itemButton.getDomElement();
       // convert selectedValue and item.key to string to catch 'null'/null case
       if (String(item.key) === String(selectedValue)) {

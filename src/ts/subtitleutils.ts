@@ -8,10 +8,11 @@ import {SubtitleSelectBox} from './components/subtitleselectbox';
  * This class listens to player events as well as the `ListSelector` event if selection changed
  */
 export class SubtitleSwitchHandler {
+
   private player: bitmovin.PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
 
-  constructor(player: bitmovin.PlayerAPI, element: SubtitleListBox | SubtitleSelectBox) {
+  constructor(player: bitmovin.PlayerAPI, element: ListSelector<ListSelectorConfig>) {
     this.player = player;
     this.listElement = element;
 
@@ -21,13 +22,13 @@ export class SubtitleSwitchHandler {
     callback();
   }
 
-  bindSelectionEvent(): void {
+  private bindSelectionEvent(): void {
     this.listElement.onItemSelected.subscribe((_, value: string) => {
       this.player.setSubtitle(value === 'null' ? null : value);
     });
   }
 
-  bindPlayerEvents(): void {
+  private bindPlayerEvents(): void {
     this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_ADDED, this.buildUpdateSubtitlesCallback());
     this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_CHANGED, this.buildSelectCurrentSubtitleCallback());
     this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_REMOVED, this.buildUpdateSubtitlesCallback());
@@ -39,7 +40,7 @@ export class SubtitleSwitchHandler {
     this.player.addEventHandler(this.player.EVENT.ON_PERIOD_SWITCHED, this.buildUpdateSubtitlesCallback());
   }
 
-  buildUpdateSubtitlesCallback(): () => void {
+  private buildUpdateSubtitlesCallback(): () => void {
     return () => {
       this.listElement.clearItems();
 
@@ -53,7 +54,7 @@ export class SubtitleSwitchHandler {
     };
   }
 
-  buildSelectCurrentSubtitleCallback(): () => void {
+  private buildSelectCurrentSubtitleCallback(): () => void {
     return () => {
       let currentSubtitle = this.player.getSubtitle();
 
