@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- Create CSS properties for sprite and single images differently
+- Rendering of single-image thumbnails when position and size properties are missing.
 
 ## [2.17.0]
 
