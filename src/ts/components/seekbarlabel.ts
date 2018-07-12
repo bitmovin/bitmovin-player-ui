@@ -4,6 +4,7 @@ import {Component, ComponentConfig} from './component';
 import {UIInstanceManager, SeekPreviewArgs} from '../uimanager';
 import {StringUtils} from '../stringutils';
 import {ImageLoader} from '../imageloader';
+import {CssProperties} from '../dom';
 
 /**
  * Configuration interface for a {@link SeekBarLabel}.
@@ -145,7 +146,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     }
   }
 
-  private thumbnailCssSprite(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): any {
+  private thumbnailCssSprite(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): CssProperties {
     let thumbnailCountX = width / thumbnail.w;
     let thumbnailCountY = height / thumbnail.h;
 
@@ -172,7 +173,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     };
   }
 
-  private thumbnailCssSingleImage(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): any {
+  private thumbnailCssSingleImage(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): CssProperties {
     let aspectRatio = 1 / width * height;
 
     return {
