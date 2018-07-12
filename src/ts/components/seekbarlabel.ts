@@ -146,10 +146,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   }
 
   private thumbnailCssSprite(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): any {
-    let thumbnailCountX = width / (thumbnail.w || 1);
-    let thumbnailCountY = height / (thumbnail.h || 1);
+    let thumbnailCountX = width / thumbnail.w;
+    let thumbnailCountY = height / thumbnail.h;
 
-    let thumbnailIndexX = (thumbnail.x || 0) / thumbnail.w;
+    let thumbnailIndexX = thumbnail.x / thumbnail.w;
     let thumbnailIndexY = thumbnail.y / thumbnail.h;
 
     let sizeX = 100 * thumbnailCountX;
