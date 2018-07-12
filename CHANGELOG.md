@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- Add demo for extracted audio tracks and subtitle settings from the settings panel direct into the controlBar
-- Add CSS class on `SubtitleSelectBox` when a subtitle is selected
+- Icon for `Subtitles`
+- Icon for `AudioTracks`
+- Demo section within the UI variants in the `Playground`
+- Demo for extracted `Subtitles` and `Audiotracks` from the `SettingsPanel`
 
 ## [2.17.0]
 
