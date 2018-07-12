@@ -15,22 +15,6 @@
   position: absolute;
   right: 2em;
 
-  // bottom arrow from http://www.cssarrowplease.com/
-  &::after {
-    border: solid transparent;
-    border-color: transparent;
-    border-top-color: $background-color;
-    border-width: 1em;
-    content: ' ';
-    height: 0;
-    left: 50%;
-    margin-left: 6em;
-    pointer-events: none;
-    position: absolute;
-    top: 100%;
-    width: 0;
-  }
-
   > .#{$prefix}-container-wrapper {
     margin: .5em;
     overflow-y: auto;

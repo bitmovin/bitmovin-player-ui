@@ -7,12 +7,6 @@
   right: 3em;
   width: 7em;
 
-  // bottom arrow from http://www.cssarrowplease.com/
-  &::after {
-    left: 7%;
-    margin-left: 2em;
-  }
-
   > .#{$prefix}-container-wrapper {
     margin: 0;
 
