@@ -109,6 +109,11 @@ export interface UIConfig {
    * automatic switches through a {@link UIManager.onUiVariantResolve} event handler.
    */
   autoUiVariantResolve?: boolean;
+  /**
+   * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
+   * Default: false
+   */
+  playbackSpeedSelectionEnabled?: boolean;
 }
 
 export interface InternalUIConfig extends UIConfig {
@@ -754,6 +759,8 @@ export namespace UIManager.Factory {
             new MetadataLabel({ content: MetadataLabelContent.Title }),
             new CastToggleButton(),
             new VRToggleButton(),
+            new PictureInPictureToggleButton(),
+            new AirPlayToggleButton(),
             new VolumeToggleButton(),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),
@@ -999,105 +1006,6 @@ export namespace UIManager.Factory {
 
   export function buildLegacyTestUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(player, legacyTestUI(), config);
-  }
-}
-
-// Separate the demos from the other factories.
-// The others are more like different 'styles' than some variants with different features
-export namespace UIManager.Demo.Factory {
-  export function buildDemoWithSeparateAudioSubtitlesButtons(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    // show smallScreen UI only on mobile/handheld devices
-    let smallScreenSwitchWidth = 600;
-
-    return new UIManager(player, [{
-      ui: UIManager.Factory.modernSmallScreenAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
-      },
-    }, {
-      ui: UIManager.Factory.modernAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAdWithUI;
-      },
-    }, {
-      ui: UIManager.Factory.modernSmallScreenUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
-      },
-    }, {
-      ui: modernUIWithSeparateAudioSubtitlesButtons(),
-    }], config);
-  }
-
-  function modernUIWithSeparateAudioSubtitlesButtons() {
-    let subtitleOverlay = new SubtitleOverlay();
-
-    let settingsPanel = new SettingsPanel({
-      components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-      ],
-      hidden: true,
-    });
-
-    let subtitleListBox = new SubtitleListBox();
-    let subtitleSettingsPanel = new SettingsPanel({
-      components: [
-        new SettingsPanelItem('', subtitleListBox), // empty string to do not display a label
-      ],
-      cssClass: 'ui-subtitles-settings-panel',
-      hidden: true,
-    });
-
-    let controlBar = new ControlBar({
-      components: [
-        subtitleSettingsPanel,
-        settingsPanel,
-        new Container({
-          components: [
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
-          ],
-          cssClasses: ['controlbar-top'],
-        }),
-        new Container({
-          components: [
-            new PlaybackToggleButton(),
-            new VolumeToggleButton(),
-            new VolumeSlider(),
-            new Spacer(),
-            new PictureInPictureToggleButton(),
-            new AirPlayToggleButton(),
-            new CastToggleButton(),
-            new VRToggleButton(),
-            new SettingsToggleButton({
-              settingsPanel: subtitleSettingsPanel,
-              cssClass: 'ui-subtitles-setting-toggle-button',
-            }),
-            new SettingsToggleButton({ settingsPanel: settingsPanel }),
-            new FullscreenToggleButton(),
-          ],
-          cssClasses: ['controlbar-bottom'],
-        }),
-      ],
-    });
-
-    return new UIContainer({
-      components: [
-        subtitleOverlay,
-        new BufferingOverlay(),
-        new PlaybackToggleOverlay(),
-        new CastStatusOverlay(),
-        controlBar,
-        new TitleBar(),
-        new RecommendationOverlay(),
-        new Watermark(),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-modern'],
-    });
   }
 }
 

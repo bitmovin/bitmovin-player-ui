@@ -8,6 +8,7 @@ import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {ListBox} from './listbox';
+import {PlaybackSpeedSelectBox} from './playbackspeedselectbox';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -47,6 +48,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     super.configure(player, uimanager);
 
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
+
+    uimanager.onControlsHide.subscribe(() => this.hideHoveredSelectBoxes());
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
@@ -98,7 +101,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    * when the settings panel fades out while an item of a select box is still hovered, the select box will not fade out
    * while the settings panel does. This would leave a floating select box, which is just weird
    */
-  private hideHoveredSelectBoxes() {
+  private hideHoveredSelectBoxes(): void {
     this.getItems().forEach((item: SettingsPanelItem) => {
       if (item.isActive() && (item as any).setting instanceof SelectBox) {
         const selectBox = (item as any).setting as SelectBox;
@@ -207,8 +210,12 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
           minItemsToDisplay = 3;
         }
 
-        // Hide the setting if no meaningful choice is available
         if (this.setting.itemCount() < minItemsToDisplay) {
+          // Hide the setting if no meaningful choice is available
+          this.hide();
+        } else if (this.setting instanceof PlaybackSpeedSelectBox
+          && !uimanager.getConfig().playbackSpeedSelectionEnabled) {
+          // Hide the PlaybackSpeedSelectBox if disabled in config
           this.hide();
         } else {
           this.show();

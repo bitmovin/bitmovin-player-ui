@@ -66,7 +66,7 @@ declare namespace bitmovin {
      * @param eventType The type of event to subscribe to.
      * @param callback The event callback handler that will be called when the event fires.
      *
-     * @since v7.7
+     * @since v7.8
      */
     on(eventType: PlayerAPI.EVENT, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
@@ -346,7 +346,7 @@ declare namespace bitmovin {
      * @param eventType The event to remove the handler from
      * @param callback The callback handler to remove
      *
-     * @since v7.7
+     * @since v7.8
      */
     off(eventType: PlayerAPI.EVENT | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**

@@ -569,8 +569,8 @@
 
   // Collect all UI Demos
   var uiDemos = [];
-  for (var member in bitmovin.playerui.UIManager.Demo.Factory) {
-    if (typeof bitmovin.playerui.UIManager.Demo.Factory[member]=== 'function' && member.indexOf('buildDemo') === 0) {
+  for (var member in bitmovin.playerui.DemoFactory) {
+    if (typeof bitmovin.playerui.DemoFactory[member] === 'function' && member.indexOf('buildDemo') === 0) {
       uiDemos.push(member);
     }
   }
@@ -591,7 +591,7 @@
     uiManager.release();
     var factoryMethod = $(this).val();
     if (factoryMethod.indexOf('buildDemo') === 0) {
-      uiManager = bitmovin.playerui.UIManager.Demo.Factory[factoryMethod](player, uiConfig);
+      uiManager = bitmovin.playerui.DemoFactory[factoryMethod](player, uiConfig);
     } else {
       uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
     }
