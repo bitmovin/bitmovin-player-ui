@@ -139,7 +139,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         if (['x', 'y', 'w', 'h'].every((key) => thumbnail.hasOwnProperty(key))) {
           thumbnailElement.css(this.thumbnailCssSprite(thumbnail, width, height));
         } else {
-          thumbnailElement.css(this.thumbnailCssSingeImage(thumbnail, width, height));
+          thumbnailElement.css(this.thumbnailCssSingleImage(thumbnail, width, height));
         }
       });
     }
@@ -172,7 +172,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     };
   }
 
-  private thumbnailCssSingeImage(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): any {
+  private thumbnailCssSingleImage(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): any {
     let aspectRatio = 1 / width * height;
 
     return {
