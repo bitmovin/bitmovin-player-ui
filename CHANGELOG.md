@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add demo for extracted audio tracks and subtitle settings from the settings panel direct into the controlBar
 - Add CSS class on `SubtitleSelectBox` when a subtitle is selected
 
+## [2.17.0]
+
+### Added
+- `AirPlayToggleButton` to `modernSmallScreenUI` for MacOS devices
+- `PictureInPictureToggleButton` to `modernSmallScreenUI` for MacOS devices
+- `UIConfig.playbackSpeedSelectionEnabled` option to show/hide `PlaybackSpeedSelectBox` within the `SettingsPanel`
+
+### Changed
+- `PlaybackSpeedSelectBox` is no longer visible within the `SettingsPanel` by default
+
+### Fixed
+- Apply the IE/Firefox workaround of v2.16.0 to hide the hovered dropdown panel of a `SelectBox` also when the UI hides
+
 ## [2.16.0]
 
 ### Added
@@ -371,6 +384,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[2.17.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.16.0...v2.17.0
 [2.16.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.15.0...v2.16.0
 [2.15.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.14.0...v2.15.0
 [2.14.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.13.0...v2.14.0
