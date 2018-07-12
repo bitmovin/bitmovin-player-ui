@@ -5,6 +5,7 @@ import {UIInstanceManager, SeekPreviewArgs} from '../uimanager';
 import {StringUtils} from '../stringutils';
 import {ImageLoader} from '../imageloader';
 import {CssProperties} from '../dom';
+import Thumbnail = bitmovin.PlayerAPI.Thumbnail;
 
 /**
  * Configuration interface for a {@link SeekBarLabel}.
@@ -122,7 +123,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * Sets or removes a thumbnail on the label.
    * @param thumbnail the thumbnail to display on the label or null to remove a displayed thumbnail
    */
-  setThumbnail(thumbnail: bitmovin.PlayerAPI.Thumbnail = null) {
+  setThumbnail(thumbnail: Thumbnail = null) {
     let thumbnailElement = this.thumbnail.getDomElement();
 
     if (thumbnail == null) {
@@ -146,7 +147,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     }
   }
 
-  private thumbnailCssSprite(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): CssProperties {
+  private thumbnailCssSprite(thumbnail: Thumbnail, width: number, height: number): CssProperties {
     let thumbnailCountX = width / thumbnail.w;
     let thumbnailCountY = height / thumbnail.h;
 
@@ -173,7 +174,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     };
   }
 
-  private thumbnailCssSingleImage(thumbnail: bitmovin.PlayerAPI.Thumbnail, width: number, height: number): CssProperties {
+  private thumbnailCssSingleImage(thumbnail: Thumbnail, width: number, height: number): CssProperties {
     let aspectRatio = 1 / width * height;
 
     return {
