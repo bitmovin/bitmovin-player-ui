@@ -138,7 +138,9 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       // We use the thumbnail image loader to make sure the thumbnail is loaded and it's size is known before be can
       // calculate the CSS properties and set them on the element.
       this.thumbnailImageLoader.load(thumbnail.url, (url, width, height) => {
-        if (['x', 'y', 'w', 'h'].every((key) => thumbnail.hasOwnProperty(key))) {
+        // can be checked like that because x/y/w/h are either all present or none
+        // https://www.w3.org/TR/media-frags/#naming-space
+        if (thumbnail.x !== undefined) {
           thumbnailElement.css(this.thumbnailCssSprite(thumbnail, width, height));
         } else {
           thumbnailElement.css(this.thumbnailCssSingleImage(thumbnail, width, height));
