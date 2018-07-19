@@ -94,7 +94,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.addEventHandler(player.EVENT.SubtitleChanged, subtitleClearHandler);
     player.addEventHandler(player.EVENT.Seek, subtitleClearHandler);
     player.addEventHandler(player.EVENT.TimeShift, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, subtitleClearHandler);
+    player.addEventHandler(player.EVENT.PlaybackFinished, subtitleClearHandler);
     player.addEventHandler(player.EVENT.SourceUnloaded, subtitleClearHandler);
 
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {

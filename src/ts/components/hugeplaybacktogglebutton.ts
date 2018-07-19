@@ -103,7 +103,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       firstPlay = false;
     });
 
-    player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
+    player.addEventHandler(player.EVENT.Warning, (event: WarningEvent) => {
       // 5008 == Playback could not be started
       if (event.code === 5008) {
         // if playback could not be started, reset the first play flag as we need the user interaction to start
@@ -152,7 +152,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       suppressPlayButtonTransitionAnimation();
 
       // Show the play button without an animation if a play attempt is blocked
-      player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
+      player.addEventHandler(player.EVENT.Warning, (event: WarningEvent) => {
         if (event.code === 5008) {
           suppressPlayButtonTransitionAnimation();
         }

@@ -52,15 +52,12 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.addEventHandler(player.EVENT.SourceLoaded, playbackStateHandler);
     player.addEventHandler(player.EVENT.SourceUnloaded, playbackStateHandler);
     // when playback finishes, player turns to paused mode
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler);
+    player.addEventHandler(player.EVENT.PlaybackFinished, playbackStateHandler);
     player.addEventHandler(player.EVENT.CastStarted, playbackStateHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, playbackStateHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, playbackStateHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_PLAYBACK_FINISHED, playbackStateHandler);
 
     // When a playback attempt is rejected with warning 5008, we switch the button state back to off
     // This is required for blocked autoplay, because there is no Paused event in such case
-    player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
+    player.addEventHandler(player.EVENT.Warning, (event: WarningEvent) => {
       if (event.code === 5008) {
         this.off();
       }

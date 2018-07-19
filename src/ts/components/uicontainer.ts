@@ -173,7 +173,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       removeStates();
       container.addClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
     });
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, () => {
+    player.addEventHandler(player.EVENT.PlaybackFinished, () => {
       removeStates();
       container.addClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
     });

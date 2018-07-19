@@ -111,7 +111,6 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
     player.addEventHandler(player.EVENT.TimeChanged, playbackTimeHandler);
     player.addEventHandler(player.EVENT.Seeked, playbackTimeHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackTimeHandler);
 
     player.addEventHandler(player.EVENT.TimeShift, updateLiveTimeshiftState);
     player.addEventHandler(player.EVENT.TimeShifted, updateLiveTimeshiftState);

@@ -205,8 +205,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.addEventHandler(player.EVENT.TimeShifted, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
     player.addEventHandler(player.EVENT.SegmentRequestFinished, playbackPositionHandler);
-    // update playback position of Cast playback
-    player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, playbackPositionHandler);
 
     this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
@@ -400,10 +398,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     };
 
     player.addEventHandler(player.EVENT.Play, startSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, startSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.Playing, startSmoothPlaybackPositionUpdater);
     player.addEventHandler(player.EVENT.Paused, stopSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, stopSmoothPlaybackPositionUpdater);
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, stopSmoothPlaybackPositionUpdater);
+    player.addEventHandler(player.EVENT.PlaybackFinished, stopSmoothPlaybackPositionUpdater);
     player.addEventHandler(player.EVENT.Seeked, () => {
       currentTimeSeekBar = player.getCurrentTime();
     });

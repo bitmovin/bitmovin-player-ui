@@ -57,12 +57,10 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       updateSkipMessageHandler();
 
       player.addEventHandler(player.EVENT.TimeChanged, updateSkipMessageHandler);
-      player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
     };
 
     let adEndHandler = () => {
       player.removeEventHandler(player.EVENT.TimeChanged, updateSkipMessageHandler);
-      player.removeEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateSkipMessageHandler);
     };
 
     player.addEventHandler(player.EVENT.AdStarted, adStartHandler);

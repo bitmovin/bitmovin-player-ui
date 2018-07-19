@@ -64,7 +64,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
       this.hide();
     });
     // Display recommendations when playback has finished
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, () => {
+    player.addEventHandler(player.EVENT.PlaybackFinished, () => {
       // Dismiss ON_PLAYBACK_FINISHED events at the end of ads
       // TODO remove this workaround once issue #1278 is solved
       if (player.isAd()) {

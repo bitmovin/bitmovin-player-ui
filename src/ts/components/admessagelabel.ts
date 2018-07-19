@@ -30,12 +30,10 @@ export class AdMessageLabel extends Label<LabelConfig> {
       updateMessageHandler();
 
       player.addEventHandler(player.EVENT.TimeChanged, updateMessageHandler);
-      player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
     };
 
     let adEndHandler = () => {
       player.removeEventHandler(player.EVENT.TimeChanged, updateMessageHandler);
-      player.removeEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
     };
 
     player.addEventHandler(player.EVENT.AdStarted, adStartHandler);
