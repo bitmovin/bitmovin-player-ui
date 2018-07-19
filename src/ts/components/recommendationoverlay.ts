@@ -57,9 +57,9 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     };
 
     // Add recommendation when a source is loaded
-    player.addEventHandler(player.EVENT.ON_READY, setupRecommendations);
+    player.addEventHandler(player.EVENT.Ready, setupRecommendations);
     // Remove recommendations and hide overlay when source is unloaded
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
+    player.addEventHandler(player.EVENT.SourceUnloaded, () => {
       clearRecommendations();
       this.hide();
     });
@@ -74,7 +74,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
       this.show();
     });
     // Hide recommendations when playback starts, e.g. a restart
-    player.addEventHandler(player.EVENT.ON_PLAY, () => {
+    player.addEventHandler(player.EVENT.Play, () => {
       this.hide();
     });
 

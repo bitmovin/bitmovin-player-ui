@@ -978,33 +978,33 @@ declare namespace bitmovin {
       moveViewingDirection(direction: VR.Vec3): boolean;
 
       /**
-       * Sets the minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events. The default value is
+       * Sets the minimal interval between consecutive VRViewingDirectionChange events. The default value is
        * 250ms.
-       * @param {number} interval - The minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       * @param {number} interval - The minimal interval between consecutive VRViewingDirectionChange events.
        * @return {boolean} - True, if the VRHandler is ready, false otherwise.
        */
       setViewingDirectionChangeEventInterval(interval: number): boolean;
 
       /**
-       * Gets the minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
-       * @return {Number} - The minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       * Gets the minimal interval between consecutive VRViewingDirectionChange events.
+       * @return {Number} - The minimal interval between consecutive VRViewingDirectionChange events.
        */
       getViewingDirectionChangeEventInterval(): number;
 
       /**
-       * Sets the number of degrees that the viewport can change before the ON_VR_VIEWING_DIRECTION_CHANGE event is
+       * Sets the number of degrees that the viewport can change before the VRViewingDirectionChange event is
        * triggered. The default value is 5°.
        * @param {Number} threshold - The threshold in degrees that the viewport can change before the
-       * ON_VR_VIEWING_DIRECTION_CHANGE event is triggered.
+       * VRViewingDirectionChange event is triggered.
        * @return {Boolean} - True, if the VRHandler is ready, false otherwise.
        */
       setViewingDirectionChangeThreshold(threshold: number): boolean;
 
       /**
-       * Gets the number of degrees that the viewport can change before the ON_VR_VIEWING_DIRECTION_CHANGE event is
+       * Gets the number of degrees that the viewport can change before the VRViewingDirectionChange event is
        * triggered.
        * @return {Number} - The threshold in degrees that the viewport can change before the
-       * ON_VR_VIEWING_DIRECTION_CHANGE event is triggered.
+       * VRViewingDirectionChange event is triggered.
        */
       getViewingDirectionChangeThreshold(): number;
 
