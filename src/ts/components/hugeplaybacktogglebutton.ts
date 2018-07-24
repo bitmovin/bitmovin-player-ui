@@ -24,7 +24,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     super.configure(player, uimanager, false);
 
     let togglePlayback = () => {
-      if (player.isPlaying()) {
+      if (player.isPlaying() || this.isPlayInitiated) {
         player.pause('ui');
       } else {
         player.play('ui');
