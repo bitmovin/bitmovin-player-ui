@@ -62,8 +62,8 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     // Init label
     init();
     // Reinit label when a new source is loaded
-    player.addEventHandler(player.EVENT.SourceLoaded, init);
+    player.addEventHandler(player.Event.SourceLoaded, init);
     // Clear labels when source is unloaded
-    player.addEventHandler(player.EVENT.SourceUnloaded, unload);
+    player.addEventHandler(player.Event.SourceUnloaded, unload);
   }
 }

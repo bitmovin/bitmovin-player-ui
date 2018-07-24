@@ -59,7 +59,7 @@ declare namespace bitmovin {
      * @param eventType The type of event to subscribe to.
      * @param callback The event callback handler that will be called when the event fires.
      */
-    addEventHandler(eventType: PlayerAPI.EVENT, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    addEventHandler(eventType: PlayerAPI.Event, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
      * Subscribes an event handler to a player event.
      *
@@ -68,7 +68,7 @@ declare namespace bitmovin {
      *
      * @since v7.8
      */
-    on(eventType: PlayerAPI.EVENT, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    on(eventType: PlayerAPI.Event, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
      * Sends custom metadata to Bitmovin's Cast receiver app.
      *
@@ -339,7 +339,7 @@ declare namespace bitmovin {
      * @param callback The callback handler to remove
      */
     // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
-    removeEventHandler(eventType: PlayerAPI.EVENT | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    removeEventHandler(eventType: PlayerAPI.Event | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
      * Removes a handler for a player event.
      *
@@ -348,7 +348,7 @@ declare namespace bitmovin {
      *
      * @since v7.8
      */
-    off(eventType: PlayerAPI.EVENT | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    off(eventType: PlayerAPI.Event | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
      * Removes the existing subtitle/caption track with the track ID specified by trackID. If the track is
      * currently active, it will be deactivated and then removed. If no track with the given ID exists,
@@ -512,11 +512,11 @@ declare namespace bitmovin {
      */
     unmute(issuer?: string): PlayerAPI;
 
-    fireEvent(event: PlayerAPI.EVENT, data: {}): void;
+    fireEvent(event: PlayerAPI.Event, data: {}): void;
     /**
      * All available events of the player.
      */
-    EVENT: PlayerAPI.EventList;
+    Event: PlayerAPI.EventList;
     /**
      * The version number of the player.
      */

@@ -48,21 +48,21 @@ export class AudioQualitySelectBox extends SelectBox {
     });
 
     // Update qualities when audio track has changed
-    player.addEventHandler(player.EVENT.AudioChanged, updateAudioQualities);
+    player.addEventHandler(player.Event.AudioChanged, updateAudioQualities);
     // Update qualities when source goes away
-    player.addEventHandler(player.EVENT.SourceUnloaded, updateAudioQualities);
+    player.addEventHandler(player.Event.SourceUnloaded, updateAudioQualities);
     // Update qualities when a new source is loaded
-    player.addEventHandler(player.EVENT.Ready, updateAudioQualities);
+    player.addEventHandler(player.Event.Ready, updateAudioQualities);
     // Update qualities when the period within a source changes
-    player.addEventHandler(player.EVENT.PeriodSwitched, updateAudioQualities);
+    player.addEventHandler(player.Event.PeriodSwitched, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
-    if (player.EVENT.AudioQualityChanged) {
+    if (player.Event.AudioQualityChanged) {
       // Since player 7.3.1
-      player.addEventHandler(player.EVENT.AudioQualityChanged, selectCurrentAudioQuality);
+      player.addEventHandler(player.Event.AudioQualityChanged, selectCurrentAudioQuality);
     } else {
       // Backwards compatibility for players <= 7.3.0
       // TODO remove in next major release
-      player.addEventHandler(player.EVENT.AudioDownloadQualityChange, selectCurrentAudioQuality);
+      player.addEventHandler(player.Event.AudioDownloadQualityChange, selectCurrentAudioQuality);
     }
   }
 }

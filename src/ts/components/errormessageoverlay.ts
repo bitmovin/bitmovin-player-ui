@@ -98,7 +98,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
     let config = <ErrorMessageOverlayConfig>this.getConfig();
 
-    player.addEventHandler(player.EVENT.Error, (event: ErrorEvent) => {
+    player.addEventHandler(player.Event.Error, (event: ErrorEvent) => {
       let message = event.message;
 
       // Process message translations
@@ -124,7 +124,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
       this.show();
     });
 
-    player.addEventHandler(player.EVENT.SourceLoaded, (event: PlayerEvent) => {
+    player.addEventHandler(player.Event.SourceLoaded, (event: PlayerEvent) => {
       if (this.isShown()) {
         this.tvNoiseBackground.stop();
         this.hide();

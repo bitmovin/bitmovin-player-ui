@@ -390,12 +390,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.EVENT.CueEnter, cue);
+        player.fireEvent(player.Event.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.EVENT.CueExit, cue);
+        player.fireEvent(player.Event.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -419,12 +419,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.EVENT.CueEnter, cue);
+        player.fireEvent(player.Event.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.EVENT.CueExit, cue);
+        player.fireEvent(player.Event.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -462,12 +462,12 @@
         var cue = {
           text: text,
         };
-        player.fireEvent(player.EVENT.CueEnter, cue);
+        player.fireEvent(player.Event.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.EVENT.CueExit, cue);
+        player.fireEvent(player.Event.CueExit, cue);
       };
 
       var cues = [];

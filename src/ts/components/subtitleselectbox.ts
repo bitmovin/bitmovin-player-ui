@@ -38,15 +38,15 @@ export class SubtitleSelectBox extends SelectBox {
     });
 
     // React to API events
-    player.addEventHandler(player.EVENT.SubtitleAdded, updateSubtitles);
-    player.addEventHandler(player.EVENT.SubtitleChanged, selectCurrentSubtitle);
-    player.addEventHandler(player.EVENT.SubtitleRemoved, updateSubtitles);
+    player.addEventHandler(player.Event.SubtitleAdded, updateSubtitles);
+    player.addEventHandler(player.Event.SubtitleChanged, selectCurrentSubtitle);
+    player.addEventHandler(player.Event.SubtitleRemoved, updateSubtitles);
     // Update subtitles when source goes away
-    player.addEventHandler(player.EVENT.SourceUnloaded, updateSubtitles);
+    player.addEventHandler(player.Event.SourceUnloaded, updateSubtitles);
     // Update subtitles when a new source is loaded
-    player.addEventHandler(player.EVENT.Ready, updateSubtitles);
+    player.addEventHandler(player.Event.Ready, updateSubtitles);
     // Update subtitles when the period within a source changes
-    player.addEventHandler(player.EVENT.PeriodSwitched, updateSubtitles);
+    player.addEventHandler(player.Event.PeriodSwitched, updateSubtitles);
 
     // Populate subtitles at startup
     updateSubtitles();

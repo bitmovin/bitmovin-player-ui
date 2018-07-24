@@ -42,7 +42,7 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.addEventHandler(player.EVENT.AirplayAvailable, airPlayAvailableHandler);
+    player.addEventHandler(player.Event.AirplayAvailable, airPlayAvailableHandler);
 
     // Startup init
     airPlayAvailableHandler(); // Hide button if AirPlay is not available

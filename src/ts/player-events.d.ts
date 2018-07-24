@@ -4,87 +4,87 @@ declare namespace bitmovin {
 
     /**
      * The events that are exposed by the player API are strings.
-     * Events can be subscribed to through {@link Player#addEventHandler}.
+     * Events can be subscribed to through {@link Player#on}.
      * TODO rename enum to Event (camel case)
      */
-    type EVENT = string;
+    type Event = string;
     /**
      * All available events of the player
      */
     interface EventList {
-      AdBreakStarted: EVENT;
-      AdBreakFinished: EVENT;
-      AdClicked: EVENT;
-      AdError: EVENT;
-      AdFinished: EVENT;
-      AdLinearityChanged: EVENT;
-      AdManifestLoaded: EVENT;
-      AdScheduled: EVENT;
-      AdSkipped: EVENT;
-      AdStarted: EVENT;
-      AudioAdaptation: EVENT;
-      AudioChanged: EVENT;
-      AudioAdded: EVENT;
-      AudioRemoved: EVENT;
-      AudioQualityChanged: EVENT;
-      AudioDownloadQualityChange: EVENT;
-      AudioDownloadQualityChanged: EVENT;
-      AudioPlaybackQualityChanged: EVENT;
-      CastAvailable: EVENT;
-      CastStart: EVENT;
-      CastStarted: EVENT;
-      CastWaitingForDevice: EVENT;
-      CastStopped: EVENT;
-      CueParsed: EVENT;
-      CueEnter: EVENT;
-      CueUpdate: EVENT;
-      CueExit: EVENT;
-      Destroy: EVENT;
-      DownloadFinished: EVENT;
-      DVRWindowExceeded: EVENT;
-      Error: EVENT;
-      FullscreenEnter: EVENT;
-      FullscreenExit: EVENT;
-      Metadata: EVENT;
-      MetadataParsed: EVENT;
-      Muted: EVENT;
-      Paused: EVENT;
-      PeriodSwitch: EVENT;
-      PeriodSwitched: EVENT;
-      Play: EVENT;
-      Playing: EVENT;
-      PlaybackFinished: EVENT;
-      PlaybackSpeedChanged: EVENT;
-      PlayerResize: EVENT;
-      Ready: EVENT;
-      Seek: EVENT;
-      Seeked: EVENT;
-      SegmentPlayback: EVENT;
-      SegmentRequestFinished: EVENT;
-      SourceLoaded: EVENT;
-      SourceUnloaded: EVENT;
-      StallStarted: EVENT;
-      StallEnded: EVENT;
-      SubtitleAdded: EVENT;
-      SubtitleChanged: EVENT;
-      SubtitleRemoved: EVENT;
-      TimeChanged: EVENT;
-      TimeShift: EVENT;
-      TimeShifted: EVENT;
-      Unmuted: EVENT;
-      VideoAdaptation: EVENT;
-      VideoQualityChanged: EVENT;
-      VideoDownloadQualityChange: EVENT;
-      VideoDownloadQualityChanged: EVENT;
-      VideoPlaybackQualityChanged: EVENT;
-      VolumeChanged: EVENT;
-      VRStereoChanged: EVENT;
-      Warning: EVENT;
-      PictureInPictureEnter: EVENT;
-      PictureInPictureExit: EVENT;
-      AirplayAvailable: EVENT;
-      VRViewingDirectionChange: EVENT;
-      VRViewingDirectionChanged: EVENT;
+      AdBreakStarted: Event;
+      AdBreakFinished: Event;
+      AdClicked: Event;
+      AdError: Event;
+      AdFinished: Event;
+      AdLinearityChanged: Event;
+      AdManifestLoaded: Event;
+      AdScheduled: Event;
+      AdSkipped: Event;
+      AdStarted: Event;
+      AudioAdaptation: Event;
+      AudioChanged: Event;
+      AudioAdded: Event;
+      AudioRemoved: Event;
+      AudioQualityChanged: Event;
+      AudioDownloadQualityChange: Event;
+      AudioDownloadQualityChanged: Event;
+      AudioPlaybackQualityChanged: Event;
+      CastAvailable: Event;
+      CastStart: Event;
+      CastStarted: Event;
+      CastWaitingForDevice: Event;
+      CastStopped: Event;
+      CueParsed: Event;
+      CueEnter: Event;
+      CueUpdate: Event;
+      CueExit: Event;
+      Destroy: Event;
+      DownloadFinished: Event;
+      DVRWindowExceeded: Event;
+      Error: Event;
+      FullscreenEnter: Event;
+      FullscreenExit: Event;
+      Metadata: Event;
+      MetadataParsed: Event;
+      Muted: Event;
+      Paused: Event;
+      PeriodSwitch: Event;
+      PeriodSwitched: Event;
+      Play: Event;
+      Playing: Event;
+      PlaybackFinished: Event;
+      PlaybackSpeedChanged: Event;
+      PlayerResize: Event;
+      Ready: Event;
+      Seek: Event;
+      Seeked: Event;
+      SegmentPlayback: Event;
+      SegmentRequestFinished: Event;
+      SourceLoaded: Event;
+      SourceUnloaded: Event;
+      StallStarted: Event;
+      StallEnded: Event;
+      SubtitleAdded: Event;
+      SubtitleChanged: Event;
+      SubtitleRemoved: Event;
+      TimeChanged: Event;
+      TimeShift: Event;
+      TimeShifted: Event;
+      Unmuted: Event;
+      VideoAdaptation: Event;
+      VideoQualityChanged: Event;
+      VideoDownloadQualityChange: Event;
+      VideoDownloadQualityChanged: Event;
+      VideoPlaybackQualityChanged: Event;
+      VolumeChanged: Event;
+      VRStereoChanged: Event;
+      Warning: Event;
+      PictureInPictureEnter: Event;
+      PictureInPictureExit: Event;
+      AirplayAvailable: Event;
+      VRViewingDirectionChange: Event;
+      VRViewingDirectionChanged: Event;
     }
 
     interface PlayerEvent {
@@ -95,7 +95,7 @@ declare namespace bitmovin {
       /**
        * Event type, e.g. 'onPlay'
        */
-      type?: EVENT;
+      type?: Event;
     }
 
     interface PlaybackEvent extends PlayerEvent {
