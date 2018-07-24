@@ -12,7 +12,7 @@ declare namespace bitmovin {
     /**
      * All available events of the player.
      */
-    EVENT: bitmovin.PlayerAPI.EventList;
+    Event: bitmovin.PlayerAPI.EventList;
     /**
      * The version number of the player.
      */
