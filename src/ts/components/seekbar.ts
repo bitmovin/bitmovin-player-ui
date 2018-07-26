@@ -232,6 +232,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     player.addEventHandler(player.EVENT.ON_SEEK, onPlayerSeek);
     player.addEventHandler(player.EVENT.ON_SEEKED, onPlayerSeeked);
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFT, onPlayerSeek);
+    player.addEventHandler(player.EVENT.ON_TIME_SHIFTED, onPlayerSeeked);
 
     let seek = (percentage: number) => {
       if (player.isLive()) {
