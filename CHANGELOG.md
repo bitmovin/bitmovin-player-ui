@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Rendering of single-image thumbnails
+- Local storage detection in Firefox
 
 ## [2.17.0]
 
