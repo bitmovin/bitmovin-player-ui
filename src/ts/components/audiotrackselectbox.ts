@@ -34,7 +34,7 @@ export class AudioTrackSelectBox extends SelectBox {
       }
 
       // Select the correct audio track after the tracks have been added
-      // This is also important in case we missed the `ON_AUDIO_CHANGED` event, e.g. when `playback.audioLanguage`
+      // This is also important in case we missed the `AudioChanged` event, e.g. when `playback.audioLanguage`
       // is configured but the event is fired before the UI is created.
       selectCurrentAudioTrack();
     };
@@ -44,17 +44,17 @@ export class AudioTrackSelectBox extends SelectBox {
     });
 
     // Update selection when selected track has changed
-    player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, selectCurrentAudioTrack);
+    player.addEventHandler(player.Event.AudioChanged, selectCurrentAudioTrack);
     // Update tracks when source goes away
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateAudioTracks);
+    player.addEventHandler(player.Event.SourceUnloaded, updateAudioTracks);
     // Update tracks when a new source is loaded
-    player.addEventHandler(player.EVENT.ON_READY, updateAudioTracks);
+    player.addEventHandler(player.Event.Ready, updateAudioTracks);
     // Update tracks when the period within a source changes
-    player.addEventHandler(player.EVENT.ON_PERIOD_SWITCHED, updateAudioTracks);
+    player.addEventHandler(player.Event.PeriodSwitched, updateAudioTracks);
     // Update tracks when a track is added or removed (since player 7.1.4)
-    if (player.EVENT.ON_AUDIO_ADDED && player.EVENT.ON_AUDIO_REMOVED) {
-      player.addEventHandler(player.EVENT.ON_AUDIO_ADDED, updateAudioTracks);
-      player.addEventHandler(player.EVENT.ON_AUDIO_REMOVED, updateAudioTracks);
+    if (player.Event.AudioAdded && player.Event.AudioRemoved) {
+      player.addEventHandler(player.Event.AudioAdded, updateAudioTracks);
+      player.addEventHandler(player.Event.AudioRemoved, updateAudioTracks);
     }
 
     // Populate tracks at startup
