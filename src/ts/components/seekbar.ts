@@ -211,18 +211,24 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
     // Seek handling
-    player.addEventHandler(player.EVENT.ON_SEEK, () => {
+    let onPlayerSeek = () => {
       this.setSeeking(true);
-    });
-    player.addEventHandler(player.EVENT.ON_SEEKED, () => {
+    };
+
+    let onPlayerSeeked = () => {
       this.setSeeking(false);
-    });
-    player.addEventHandler(player.EVENT.ON_TIME_SHIFT, () => {
-      this.setSeeking(true);
-    });
-    player.addEventHandler(player.EVENT.ON_TIME_SHIFTED, () => {
-      this.setSeeking(false);
-    });
+      restorePlayingState();
+    };
+
+    let restorePlayingState = function() {
+      // Continue playback after seek if player was playing when seek started
+      if (isPlaying) {
+        player.play('ui');
+      }
+    };
+
+    player.addEventHandler(player.EVENT.ON_SEEK, onPlayerSeek);
+    player.addEventHandler(player.EVENT.ON_SEEKED, onPlayerSeeked);
 
     let seek = (percentage: number) => {
       if (player.isLive()) {
@@ -260,11 +266,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Do the seek
       seek(percentage);
-
-      // Continue playback after seek if player was playing when seek started
-      if (isPlaying) {
-        player.play('ui');
-      }
 
       // Notify UI manager of finished seek
       uimanager.onSeeked.dispatch(sender);
