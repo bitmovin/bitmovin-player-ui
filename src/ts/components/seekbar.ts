@@ -141,11 +141,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     let isPlaying = false;
-    let isSeeking = false;
+    let isUserSeeking = false;
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEvent = null, forceUpdate: boolean = false) => {
-      if (isSeeking) {
+      if (isUserSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
       }
@@ -238,7 +238,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     };
     this.onSeek.subscribe((sender) => {
-      isSeeking = true; // track seeking status so we can catch events from seek preview seeks
+      isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
 
       // Notify UI manager of started seek
       uimanager.onSeek.dispatch(sender);
@@ -262,7 +262,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     }, 200);
     this.onSeeked.subscribe((sender, percentage) => {
-      isSeeking = false;
+      isUserSeeking = false;
 
       // Do the seek
       seek(percentage);
