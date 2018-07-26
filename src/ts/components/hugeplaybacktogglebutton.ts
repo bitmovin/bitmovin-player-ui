@@ -65,7 +65,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       // by the user. A deferred playback start through the timeout below is not considered as user action and
       // therefore ignored by mobile browsers.
       if (firstPlay) {
-        // Try to start playback. Then we wait for ON_PLAY and only when it arrives, we disable the firstPlay flag.
+        // Try to start playback. Then we wait for Play and only when it arrives, we disable the firstPlay flag.
         // If we disable the flag here, onClick was triggered programmatically instead of by a user interaction, and
         // playback is blocked (e.g. on mobile devices due to the programmatic play() call), we loose the chance to
         // ever start playback through a user interaction again with this button.
@@ -98,12 +98,12 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }, 200);
     });
 
-    player.addEventHandler(player.EVENT.ON_PLAY, () => {
+    player.addEventHandler(player.Event.Play, () => {
       // Playback has really started, we can disable the flag to switch to normal toggle button handling
       firstPlay = false;
     });
 
-    player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
+    player.addEventHandler(player.Event.Warning, (event: WarningEvent) => {
       // 5008 == Playback could not be started
       if (event.code === 5008) {
         // if playback could not be started, reset the first play flag as we need the user interaction to start
@@ -113,7 +113,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     // Hide button while initializing a Cast session
     let castInitializationHandler = (event: PlayerEvent) => {
-      if (event.type === player.EVENT.ON_CAST_START) {
+      if (event.type === player.Event.CastStart) {
         // Hide button when session is being initialized
         this.hide();
       } else {
@@ -121,9 +121,9 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         this.show();
       }
     };
-    player.addEventHandler(player.EVENT.ON_CAST_START, castInitializationHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_STARTED, castInitializationHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
+    player.addEventHandler(player.Event.CastStart, castInitializationHandler);
+    player.addEventHandler(player.Event.CastStarted, castInitializationHandler);
+    player.addEventHandler(player.Event.CastStopped, castInitializationHandler);
 
     const suppressPlayButtonTransitionAnimation = () => {
       // Disable the current animation
@@ -152,7 +152,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       suppressPlayButtonTransitionAnimation();
 
       // Show the play button without an animation if a play attempt is blocked
-      player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
+      player.addEventHandler(player.Event.Warning, (event: WarningEvent) => {
         if (event.code === 5008) {
           suppressPlayButtonTransitionAnimation();
         }

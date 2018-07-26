@@ -337,12 +337,12 @@ declare namespace bitmovin {
        */
       cardboard?: string;
       /**
-       * The threshold in degrees that the viewport can change before the ON_VR_VIEWING_DIRECTION_CHANGE event is
+       * The threshold in degrees that the viewport can change before the VRViewingDirectionChange event is
        * triggered.
        */
       viewingDirectionChangeThreshold?: number;
       /**
-       * The minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       * The minimal interval between consecutive VRViewingDirectionChange events.
        */
       viewingDirectionChangeEventInterval?: number;
       /**

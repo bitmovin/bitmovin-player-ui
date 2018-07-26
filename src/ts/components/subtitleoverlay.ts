@@ -45,7 +45,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
-    player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
+    player.addEventHandler(player.Event.CueEnter, (event: SubtitleCueEvent) => {
       // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
       if (event.position) {
         // Sometimes the positions are undefined, we assume them to be zero
@@ -65,7 +65,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.show();
     });
-    player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
+    player.addEventHandler(player.Event.CueExit, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
 
       if (labelToRemove) {
@@ -90,12 +90,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
     };
 
-    player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_SEEK, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, subtitleClearHandler);
+    player.addEventHandler(player.Event.AudioChanged, subtitleClearHandler);
+    player.addEventHandler(player.Event.SubtitleChanged, subtitleClearHandler);
+    player.addEventHandler(player.Event.Seek, subtitleClearHandler);
+    player.addEventHandler(player.Event.TimeShift, subtitleClearHandler);
+    player.addEventHandler(player.Event.PlaybackFinished, subtitleClearHandler);
+    player.addEventHandler(player.Event.SourceUnloaded, subtitleClearHandler);
 
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
@@ -188,7 +188,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     };
 
-    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => {
+    player.addEventHandler(player.Event.PlayerResize, () => {
       if (enabled) {
         updateCEA608FontSize();
       } else {
@@ -230,7 +230,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       enabled = false;
     };
 
-    player.addEventHandler(player.EVENT.ON_CUE_EXIT, () => {
+    player.addEventHandler(player.Event.CueExit, () => {
       if (!this.subtitleManager.hasCues) {
         // Disable CEA-608 mode when all subtitles are gone (to allow correct formatting and
         // display of other types of subtitles, e.g. the formatting preview subtitle)
@@ -238,8 +238,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     });
 
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, reset);
-    player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, reset);
+    player.addEventHandler(player.Event.SourceUnloaded, reset);
+    player.addEventHandler(player.Event.SubtitleChanged, reset);
   }
 
   enablePreviewSubtitleLabel(): void {
@@ -289,11 +289,11 @@ class ActiveSubtitleManager {
   }
 
   /**
-   * Calculates a unique ID for a subtitle cue, which is needed to associate an ON_CUE_ENTER with its ON_CUE_EXIT
-   * event so we can remove the correct subtitle in ON_CUE_EXIT when multiple subtitles are active at the same time.
+   * Calculates a unique ID for a subtitle cue, which is needed to associate an CueEnter with its CueExit
+   * event so we can remove the correct subtitle in CueExit when multiple subtitles are active at the same time.
    * The start time plus the text should make a unique identifier, and in the only case where a collision
    * can happen, two similar texts will be displayed at a similar time and a similar position (or without position).
-   * The start time should always be known, because it is required to schedule the ON_CUE_ENTER event. The end time
+   * The start time should always be known, because it is required to schedule the CueEnter event. The end time
    * must not necessarily be known and therefore cannot be used for the ID.
    * @param event
    * @return {string}
@@ -362,7 +362,7 @@ class ActiveSubtitleManager {
        * with the same id, there is no way to know which one of the cues is to be deleted, so we just hope that FIFO
        * works fine. Theoretically it can happen that two cues with colliding ids are removed at different times, in
        * the wrong order. This rare case has yet to be observed. If it ever gets an issue, we can take the unstable
-       * cue end time (which can change between ON_CUE_ENTER and ON_CUE_EXIT IN ON_CUE_UPDATE) and use it as an
+       * cue end time (which can change between CueEnter and CueExit IN CueUpdate) and use it as an
        * additional hint to try and remove the correct one of the colliding cues.
        */
       let activeSubtitleCue = activeSubtitleCues.shift();
