@@ -59,6 +59,7 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
 
     player.addEventHandler(player.Event.StallStarted, showOverlay);
     player.addEventHandler(player.Event.StallEnded, hideOverlay);
+    player.addEventHandler(player.Event.Play, showOverlay);
     player.addEventHandler(player.Event.Playing, hideOverlay);
     player.addEventHandler(player.Event.Seek, showOverlay);
     player.addEventHandler(player.Event.Seeked, hideOverlay);
