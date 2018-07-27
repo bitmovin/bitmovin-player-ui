@@ -231,7 +231,7 @@ declare namespace bitmovin {
      * Returns a thumbnail image for a certain time or null if there is no thumbnail available.
      * @param time the media time for which the thumbnail should be returned
      */
-    getThumb(time: number): PlayerAPI.Thumbnail;
+    getThumbnail(time: number): PlayerAPI.Thumbnail;
     /**
      * Returns the current time shift offset to the live edge in seconds. Only applicable to live streams.
      */
@@ -594,11 +594,11 @@ declare namespace bitmovin {
       /**
        * Width of the thumbnail.
        */
-      w: number;
+      width: number;
       /**
        * Height of the thumbnail.
        */
-      h: number;
+      height: number;
       /**
        * Index of the thumbnail in its spritesheet.
        */
