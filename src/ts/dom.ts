@@ -101,15 +101,6 @@ export class DOM {
   /**
    * Gets the HTML elements that this DOM instance currently holds.
    * @returns {HTMLElement[]} the raw HTML elements
-   * @deprecated use {@link #get()} instead
-   */
-  getElements(): HTMLElement[] {
-    return this.get();
-  }
-
-  /**
-   * Gets the HTML elements that this DOM instance currently holds.
-   * @returns {HTMLElement[]} the raw HTML elements
    */
   get(): HTMLElement[];
   /**
