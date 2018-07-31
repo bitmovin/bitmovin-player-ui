@@ -489,7 +489,6 @@ export class UIManager {
 
   private addUi(ui: InternalUIInstanceManager): void {
     let dom = ui.getUI().getDomElement();
-    let player = ui.getWrappedPlayer();
 
     ui.configureControls();
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization

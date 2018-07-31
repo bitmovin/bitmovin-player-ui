@@ -67,7 +67,7 @@ declare namespace bitmovin {
     exports: {
       Network: typeof bitmovin.player.Network;
       Event: typeof bitmovin.PlayerAPI.Event;
-    }
+    };
     /**
      * Subscribes an event handler to a player event.
      *
