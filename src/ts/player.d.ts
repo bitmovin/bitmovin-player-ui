@@ -3,55 +3,71 @@
 
 declare namespace bitmovin {
 
+  import Config = bitmovin.PlayerAPI.Config;
+
   interface PlayerStatic {
     /**
-     * Creates and returns a new player instance attached to the provided DOM element ID.
-     * @param domElementID the ID of the DOM (i.e. HTML) element that the player should be added to
+     * Creates and returns a new player instance attached to the provided DOM element.
      */
-    (domElementID: string): bitmovin.PlayerAPI;
-    /**
-     * All available events of the player.
-     */
-    Event: bitmovin.PlayerAPI.EventList;
+    new (containerElement: HTMLElement, config: Config): bitmovin.PlayerAPI;
+
     /**
      * The version number of the player.
      */
     version: string;
-
-    VR: {
-      CONTENT_TYPE: {
-        SINGLE: PlayerAPI.VR.ContentType,
-        TAB: PlayerAPI.VR.ContentType,
-        SBS: PlayerAPI.VR.ContentType,
-      },
-      STATE: {
-        READY: PlayerAPI.VR.State,
-        PLAYING: PlayerAPI.VR.State,
-        ERROR: PlayerAPI.VR.State,
-        UNINITIALIZED: PlayerAPI.VR.State,
-      },
-      TRANSITION_TIMING_TYPE: {
-        NONE: PlayerAPI.VR.TransitionTimingType,
-        EASE_IN: PlayerAPI.VR.TransitionTimingType,
-        EASE_OUT: PlayerAPI.VR.TransitionTimingType,
-        EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
-      },
-    };
-
-    network: {
-      REQUEST_TYPE: typeof PlayerAPI.HttpRequestType,
-      REQUEST_METHOD: typeof PlayerAPI.HttpRequestMethod,
-      RESPONSE_TYPE: typeof PlayerAPI.HttpResponseType,
-    };
   }
 
-  // tslint:disable-next-line:no-unused-variable
-  const player: PlayerStatic;
+  namespace player {
+    const Player: PlayerStatic;
+
+    namespace Network {
+      enum HttpRequestMethod {
+        GET,
+        POS,
+        HEAD,
+      }
+
+      enum HttpRequestType {
+        MANIFEST_DASH,
+        MANIFEST_HLS_MASTER,
+        MANIFEST_HLS_VARIANT,
+        MANIFEST_SMOOTH,
+        MANIFEST_ADS,
+
+        MEDIA_AUDIO,
+        MEDIA_VIDEO,
+        MEDIA_SUBTITLES,
+        MEDIA_THUMBNAILS,
+
+        DRM_LICENSE_WIDEVINE,
+        DRM_LICENSE_PLAYREADY,
+        DRM_LICENSE_FAIRPLAY,
+        DRM_LICENSE_PRIMETIME,
+        DRM_LICENSE_CLEARKEY,
+
+        DRM_CERTIFICATE_FAIRPLAY,
+
+        KEY_HLS_AES,
+      }
+
+      enum HttpResponseType {
+        ARRAYBUFFER,
+        BLOB,
+        DOCUMENT,
+        JSON,
+        TEXT,
+      }
+    }
+  }
 
   /**
    * Bitmovin Player instance members.
    */
   interface PlayerAPI {
+    exports: {
+      Network: typeof bitmovin.player.Network;
+      Event: typeof bitmovin.PlayerAPI.Event;
+    }
     /**
      * Subscribes an event handler to a player event.
      *
@@ -494,12 +510,6 @@ declare namespace bitmovin {
      * @param issuer the issuer of the unmute command
      */
     unmute(issuer?: string): PlayerAPI;
-
-    fireEvent(event: PlayerAPI.Event, data: {}): void;
-    /**
-     * All available events of the player.
-     */
-    Event: PlayerAPI.EventList;
     /**
      * The version number of the player.
      */
