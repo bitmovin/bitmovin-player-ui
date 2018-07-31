@@ -155,31 +155,31 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     let removeStates = () => {
-      container.removeClass(stateClassNames[PlayerUtils.PlayerState.IDLE]);
-      container.removeClass(stateClassNames[PlayerUtils.PlayerState.PREPARED]);
-      container.removeClass(stateClassNames[PlayerUtils.PlayerState.PLAYING]);
-      container.removeClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
-      container.removeClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.Idle]);
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.Prepared]);
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.Playing]);
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.Paused]);
+      container.removeClass(stateClassNames[PlayerUtils.PlayerState.Finished]);
     };
     player.on(player.exports.Event.Ready, () => {
       removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.PREPARED]);
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.Prepared]);
     });
     player.on(player.exports.Event.Play, () => {
       removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.PLAYING]);
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.Playing]);
     });
     player.on(player.exports.Event.Paused, () => {
       removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.Paused]);
     });
     player.on(player.exports.Event.PlaybackFinished, () => {
       removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.Finished]);
     });
     player.on(player.exports.Event.SourceUnloaded, () => {
       removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.IDLE]);
+      container.addClass(stateClassNames[PlayerUtils.PlayerState.Idle]);
     });
     // Init in current player state
     container.addClass(stateClassNames[PlayerUtils.getState(player)]);

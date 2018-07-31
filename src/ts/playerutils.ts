@@ -6,11 +6,11 @@ export namespace PlayerUtils {
   import PlayerAPI = bitmovin.PlayerAPI;
 
   export enum PlayerState {
-    IDLE,
-    PREPARED,
-    PLAYING,
-    PAUSED,
-    FINISHED,
+    Idle,
+    Prepared,
+    Playing,
+    Paused,
+    Finished,
   }
 
   export function isTimeShiftAvailable(player: bitmovin.PlayerAPI): boolean {
@@ -19,15 +19,15 @@ export namespace PlayerUtils {
 
   export function getState(player: PlayerAPI): PlayerState {
     if (player.hasEnded()) {
-      return PlayerState.FINISHED;
+      return PlayerState.Finished;
     } else if (player.isPlaying()) {
-      return PlayerState.PLAYING;
+      return PlayerState.Playing;
     } else if (player.isPaused()) {
-      return PlayerState.PAUSED;
+      return PlayerState.Paused;
     } else if (player.isReady()) {
-      return PlayerState.PREPARED;
+      return PlayerState.Prepared;
     } else {
-      return PlayerState.IDLE;
+      return PlayerState.Idle;
     }
   }
 
