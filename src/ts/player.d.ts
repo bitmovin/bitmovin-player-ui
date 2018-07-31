@@ -304,25 +304,17 @@ declare namespace bitmovin {
      */
     isPlaying(): boolean;
     /**
-     * Returns true if the player has finished initialization and is ready to use and to handle other API calls.
-     */
-    isReady(): boolean;
-    /**
-     * Returns true if the setup call has already been successfully called.
-     */
-    isSetup(): boolean;
-    /**
      * Returns true if the player is currently stalling due to an empty buffer.
      */
     isStalled(): boolean;
     /**
      * Sets a new video source.
      *
-     * @param source A source object as specified in player configuration during {@link #setup}
+     * @param source A source object
      * @param forceTechnology Forces the player to use the specified playback and streaming technology
      * @param disableSeeking If set, seeking will be disabled
      */
-    load(source: PlayerAPI.SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<PlayerAPI>;
+    load(source: PlayerAPI.SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<void>;
     /**
      * Mutes the player if an audio track is available. Has no effect if the player is already muted.
      *
@@ -446,13 +438,6 @@ declare namespace bitmovin {
      * @param trackID The ID if the desired subtitle track or null to disable subtitles
      */
     setSubtitle(trackID: string): PlayerAPI;
-    /**
-     * Sets up a new player instance with the given configuration, as specified in player configuration documentation.
-     *
-     * @param userConfig User-supplied configuration of the player
-     * @param forceTechnology Forces the player to use the specified playback and streaming technology
-     */
-    setup(userConfig: PlayerAPI.Config, forceTechnology?: string): Promise<PlayerAPI>;
     /**
      * Passes an HTML video element to the player, which should be used in case of non-Flash playback.
      * Needs to be called before {@link #setup}. Has no effect if the Flash fallback is selected.

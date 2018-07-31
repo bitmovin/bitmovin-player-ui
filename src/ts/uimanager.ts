@@ -497,12 +497,6 @@ export class UIManager {
      * undesirable at this time. */
     this.uiContainerElement.append(dom);
 
-    // Some components initialize their state on ON_READY. When the UI is loaded after the player is already ready,
-    // they will never receive the event so we fire it from here in such cases.
-    if (player.isReady()) {
-      player.fireEventInUI(player.exports.Event.Ready, {});
-    }
-
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
     // might not be fully configured and e.g. do not have a size.
     // https://swizec.com/blog/how-to-properly-wait-for-dom-elements-to-show-up-in-modern-browsers/swizec/6663
