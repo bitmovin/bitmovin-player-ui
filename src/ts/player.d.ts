@@ -201,8 +201,7 @@ declare namespace bitmovin {
      */
     getPlayerType(): string;
     /**
-     * Creates a snapshot of the current video frame.
-     * TODO is it possible to take a snapshot of DRM protected content?
+     * Creates a snapshot of the current video frame of non-DRM content.
      *
      * @param type The type of image snapshot to capture. Allowed values are 'image/jpeg' and 'image/webp'.
      * TODO convert type to enum
