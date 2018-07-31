@@ -269,7 +269,7 @@ export class UIManager {
     updateConfig();
 
     // Update the configuration when a new source is loaded
-    this.managerPlayerWrapper.getPlayer().on(this.player.Event.SourceLoaded, () => {
+    this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.SourceLoaded, () => {
       updateConfig();
       this.config.events.onUpdated.dispatch(this);
     });
@@ -327,19 +327,19 @@ export class UIManager {
       if (event != null) {
         switch (event.type) {
           // When the ad starts, we store the event data
-          case player.Event.AdStarted:
+          case player.exports.Event.AdStarted:
             adStartedEvent = <AdStartedEvent>event;
             break;
           // When the ad ends, we delete the event data
-          case player.Event.AdFinished:
-          case player.Event.AdSkipped:
-          case player.Event.AdError:
+          case player.exports.Event.AdFinished:
+          case player.exports.Event.AdSkipped:
+          case player.exports.Event.AdError:
             adStartedEvent = null;
             break;
           // When a new source is loaded during ad playback, there will be no ad end event so we detect the end
           // of the ad playback by checking isAd() in ON_READY, because ON_READY always arrives when the source
           // changes.
-          case player.Event.Ready:
+          case player.exports.Event.Ready:
             if (adStartedEvent && !player.isAd()) {
               adStartedEvent = null;
             }
@@ -363,23 +363,23 @@ export class UIManager {
            * Since this can break functionality of components that rely on this event, we relay the event to the
            * ads UI components with the following call.
            */
-          this.currentUi.getWrappedPlayer().fireEventInUI(this.player.Event.AdStarted, adStartedEvent);
+          this.currentUi.getWrappedPlayer().fireEventInUI(this.player.exports.Event.AdStarted, adStartedEvent);
         }
       });
     };
 
     // Listen to the following events to trigger UI variant resolution
     if (config.autoUiVariantResolve) {
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.Ready, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.Play, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.Paused, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.AdStarted, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.AdFinished, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.AdSkipped, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.AdError, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.PlayerResize, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.FullscreenEnter, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.Event.FullscreenExit, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Ready, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Play, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Paused, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdStarted, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdFinished, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdSkipped, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdError, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.PlayerResize, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.FullscreenEnter, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.FullscreenExit, resolveUiVariant);
     }
 
     // Initialize the UI
@@ -500,7 +500,7 @@ export class UIManager {
     // Some components initialize their state on ON_READY. When the UI is loaded after the player is already ready,
     // they will never receive the event so we fire it from here in such cases.
     if (player.isReady()) {
-      player.fireEventInUI(player.Event.Ready, {});
+      player.fireEventInUI(player.exports.Event.Ready, {});
     }
 
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements

@@ -194,31 +194,31 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     // Update seekbar upon these events
     // init playback position when the player is ready
-    player.on(player.Event.Ready, playbackPositionHandler);
+    player.on(player.exports.Event.Ready, playbackPositionHandler);
     // update playback position when it changes
-    player.on(player.Event.TimeChanged, playbackPositionHandler);
+    player.on(player.exports.Event.TimeChanged, playbackPositionHandler);
     // update bufferlevel when buffering is complete
-    player.on(player.Event.StallEnded, playbackPositionHandler);
+    player.on(player.exports.Event.StallEnded, playbackPositionHandler);
     // update playback position when a seek has finished
-    player.on(player.Event.Seeked, playbackPositionHandler);
+    player.on(player.exports.Event.Seeked, playbackPositionHandler);
     // update playback position when a timeshift has finished
-    player.on(player.Event.TimeShifted, playbackPositionHandler);
+    player.on(player.exports.Event.TimeShifted, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
-    player.on(player.Event.SegmentRequestFinished, playbackPositionHandler);
+    player.on(player.exports.Event.SegmentRequestFinished, playbackPositionHandler);
 
     this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
     // Seek handling
-    player.on(player.Event.Seek, () => {
+    player.on(player.exports.Event.Seek, () => {
       this.setSeeking(true);
     });
-    player.on(player.Event.Seeked, () => {
+    player.on(player.exports.Event.Seeked, () => {
       this.setSeeking(false);
     });
-    player.on(player.Event.TimeShift, () => {
+    player.on(player.exports.Event.TimeShift, () => {
       this.setSeeking(true);
     });
-    player.on(player.Event.TimeShifted, () => {
+    player.on(player.exports.Event.TimeShifted, () => {
       this.setSeeking(false);
     });
 
@@ -302,7 +302,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     // Refresh the playback position when the player resized or the UI is configured. The playback position marker
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
-    player.on(player.Event.PlayerResize, () => {
+    player.on(player.exports.Event.PlayerResize, () => {
       this.refreshPlaybackPosition();
     });
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
@@ -312,7 +312,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     // It can also happen that the value changes once the player is ready, or when a new source is loaded, so we need
     // to update on Ready too
-    player.on(player.Event.Ready, () => {
+    player.on(player.exports.Event.Ready, () => {
       this.refreshPlaybackPosition();
     });
 
@@ -336,14 +336,14 @@ export class SeekBar extends Component<SeekBarConfig> {
     const pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
 
     // Start updater when a live stream with timeshift window is paused
-    player.on(player.Event.Paused, () => {
+    player.on(player.exports.Event.Paused, () => {
       if (player.isLive() && player.getMaxTimeShift() < 0) {
         pausedTimeshiftUpdater.start();
       }
     });
 
     // Stop updater when playback continues (no matter if the updater was started before)
-    player.on(player.Event.Play, () => pausedTimeshiftUpdater.clear());
+    player.on(player.exports.Event.Play, () => pausedTimeshiftUpdater.clear());
   }
 
   private configureSmoothPlaybackPositionUpdater(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
@@ -397,11 +397,11 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.smoothPlaybackPositionUpdater.clear();
     };
 
-    player.on(player.Event.Play, startSmoothPlaybackPositionUpdater);
-    player.on(player.Event.Playing, startSmoothPlaybackPositionUpdater);
-    player.on(player.Event.Paused, stopSmoothPlaybackPositionUpdater);
-    player.on(player.Event.PlaybackFinished, stopSmoothPlaybackPositionUpdater);
-    player.on(player.Event.Seeked, () => {
+    player.on(player.exports.Event.Play, startSmoothPlaybackPositionUpdater);
+    player.on(player.exports.Event.Playing, startSmoothPlaybackPositionUpdater);
+    player.on(player.exports.Event.Paused, stopSmoothPlaybackPositionUpdater);
+    player.on(player.exports.Event.PlaybackFinished, stopSmoothPlaybackPositionUpdater);
+    player.on(player.exports.Event.Seeked, () => {
       currentTimeSeekBar = player.getCurrentTime();
     });
 
@@ -438,11 +438,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     };
 
     // Add markers when a source is loaded
-    player.on(player.Event.Ready, setupMarkers);
+    player.on(player.exports.Event.Ready, setupMarkers);
     // Remove markers when unloaded
-    player.on(player.Event.SourceUnloaded, clearMarkers);
+    player.on(player.exports.Event.SourceUnloaded, clearMarkers);
     // Update markers when the size of the seekbar changes
-    player.on(player.Event.PlayerResize, () => this.updateMarkers());
+    player.on(player.exports.Event.PlayerResize, () => this.updateMarkers());
     // Update markers when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(setupMarkers);
     uimanager.onRelease.subscribe(() => uimanager.getConfig().events.onUpdated.unsubscribe(setupMarkers));

@@ -109,13 +109,13 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    player.on(player.Event.TimeChanged, playbackTimeHandler);
-    player.on(player.Event.Seeked, playbackTimeHandler);
+    player.on(player.exports.Event.TimeChanged, playbackTimeHandler);
+    player.on(player.exports.Event.Seeked, playbackTimeHandler);
 
-    player.on(player.Event.TimeShift, updateLiveTimeshiftState);
-    player.on(player.Event.TimeShifted, updateLiveTimeshiftState);
-    player.on(player.Event.Play, updateLiveTimeshiftState);
-    player.on(player.Event.Paused, updateLiveTimeshiftState);
+    player.on(player.exports.Event.TimeShift, updateLiveTimeshiftState);
+    player.on(player.exports.Event.TimeShifted, updateLiveTimeshiftState);
+    player.on(player.exports.Event.Play, updateLiveTimeshiftState);
+    player.on(player.exports.Event.Paused, updateLiveTimeshiftState);
 
     let init = () => {
       // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content
@@ -132,7 +132,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // Update time after the format has been set
       playbackTimeHandler();
     };
-    player.on(player.Event.Ready, init);
+    player.on(player.exports.Event.Ready, init);
 
     init();
   }

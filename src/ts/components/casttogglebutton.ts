@@ -40,17 +40,17 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.on(player.Event.CastAvailable, castAvailableHander);
+    player.on(player.exports.Event.CastAvailable, castAvailableHander);
 
     // Toggle button 'on' state
-    player.on(player.Event.CastWaitingForDevice, () => {
+    player.on(player.exports.Event.CastWaitingForDevice, () => {
       this.on();
     });
-    player.on(player.Event.CastStarted, () => {
+    player.on(player.exports.Event.CastStarted, () => {
       // When a session is resumed, there is no CastStart event, so we also need to toggle here for such cases
       this.on();
     });
-    player.on(player.Event.CastStopped, () => {
+    player.on(player.exports.Event.CastStopped, () => {
       this.off();
     });
 

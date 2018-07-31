@@ -98,12 +98,12 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }, 200);
     });
 
-    player.on(player.Event.Play, () => {
+    player.on(player.exports.Event.Play, () => {
       // Playback has really started, we can disable the flag to switch to normal toggle button handling
       firstPlay = false;
     });
 
-    player.on(player.Event.Warning, (event: WarningEvent) => {
+    player.on(player.exports.Event.Warning, (event: WarningEvent) => {
       // 5008 == Playback could not be started
       if (event.code === 5008) {
         // if playback could not be started, reset the first play flag as we need the user interaction to start
@@ -113,7 +113,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     // Hide button while initializing a Cast session
     let castInitializationHandler = (event: PlayerEvent) => {
-      if (event.type === player.Event.CastStart) {
+      if (event.type === player.exports.Event.CastStart) {
         // Hide button when session is being initialized
         this.hide();
       } else {
@@ -121,9 +121,9 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         this.show();
       }
     };
-    player.on(player.Event.CastStart, castInitializationHandler);
-    player.on(player.Event.CastStarted, castInitializationHandler);
-    player.on(player.Event.CastStopped, castInitializationHandler);
+    player.on(player.exports.Event.CastStart, castInitializationHandler);
+    player.on(player.exports.Event.CastStarted, castInitializationHandler);
+    player.on(player.exports.Event.CastStopped, castInitializationHandler);
 
     const suppressPlayButtonTransitionAnimation = () => {
       // Disable the current animation
@@ -152,7 +152,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       suppressPlayButtonTransitionAnimation();
 
       // Show the play button without an animation if a play attempt is blocked
-      player.on(player.Event.Warning, (event: WarningEvent) => {
+      player.on(player.exports.Event.Warning, (event: WarningEvent) => {
         if (event.code === 5008) {
           suppressPlayButtonTransitionAnimation();
         }

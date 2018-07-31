@@ -46,13 +46,13 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
       }
     };
 
-    player.on(player.Event.Ready, pipAvailableHander);
+    player.on(player.exports.Event.Ready, pipAvailableHander);
 
     // Toggle button 'on' state
-    player.on(player.Event.PictureInPictureEnter, () => {
+    player.on(player.exports.Event.PictureInPictureEnter, () => {
       this.on();
     });
-    player.on(player.Event.PictureInPictureExit, () => {
+    player.on(player.exports.Event.PictureInPictureExit, () => {
       this.off();
     });
 

@@ -40,14 +40,14 @@ export class AudioQualitySelectBox extends SelectBox {
     });
 
     // Update qualities when audio track has changed
-    player.on(player.Event.AudioChanged, updateAudioQualities);
+    player.on(player.exports.Event.AudioChanged, updateAudioQualities);
     // Update qualities when source goes away
-    player.on(player.Event.SourceUnloaded, updateAudioQualities);
+    player.on(player.exports.Event.SourceUnloaded, updateAudioQualities);
     // Update qualities when a new source is loaded
-    player.on(player.Event.Ready, updateAudioQualities);
+    player.on(player.exports.Event.Ready, updateAudioQualities);
     // Update qualities when the period within a source changes
-    player.on(player.Event.PeriodSwitched, updateAudioQualities);
+    player.on(player.exports.Event.PeriodSwitched, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
-    player.on(player.Event.AudioQualityChanged, selectCurrentAudioQuality);
+    player.on(player.exports.Event.AudioQualityChanged, selectCurrentAudioQuality);
   }
 }

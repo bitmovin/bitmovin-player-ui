@@ -44,16 +44,16 @@ export class AudioTrackSelectBox extends SelectBox {
     });
 
     // Update selection when selected track has changed
-    player.on(player.Event.AudioChanged, selectCurrentAudioTrack);
+    player.on(player.exports.Event.AudioChanged, selectCurrentAudioTrack);
     // Update tracks when source goes away
-    player.on(player.Event.SourceUnloaded, updateAudioTracks);
+    player.on(player.exports.Event.SourceUnloaded, updateAudioTracks);
     // Update tracks when a new source is loaded
-    player.on(player.Event.Ready, updateAudioTracks);
+    player.on(player.exports.Event.Ready, updateAudioTracks);
     // Update tracks when the period within a source changes
-    player.on(player.Event.PeriodSwitched, updateAudioTracks);
+    player.on(player.exports.Event.PeriodSwitched, updateAudioTracks);
     // Update tracks when a track is added or removed
-    player.on(player.Event.AudioAdded, updateAudioTracks);
-    player.on(player.Event.AudioRemoved, updateAudioTracks);
+    player.on(player.exports.Event.AudioAdded, updateAudioTracks);
+    player.on(player.exports.Event.AudioRemoved, updateAudioTracks);
 
     // Populate tracks at startup
     updateAudioTracks();
