@@ -659,18 +659,51 @@ declare namespace bitmovin {
       mobile?: AdaptationConfig;
     }
 
-    export interface AdvertisingConfig {
+    interface AdvertisingConfig {
       /**
        * Defines a collection of ad breaks which will be played at the specified position in each {@link AdBreakConfig}.
        */
-      adBreaks: AdConfig[];
+      adBreaks?: AdConfig[];
       /**
-       * Defines the configuration for the ad module.
+       * Specifies the amount of milliseconds before the loading of an ad from a given ad manifest times out.
+       * Default is 8000.
        */
-      adModuleConfig: AdvertisingModuleConfig;
+      videoLoadTimeout?: number;
+      /**
+       * Defines an object with two functions which will be called if an ad break is about to start or when ads are seeked
+       * over. If this property is not set manually, then only the last ad that was seeked over will be played.
+       */
+      strategy?: RestrictStrategy;
+      /**
+       * Defines an array of UI elements that can be used by the AdvertisingModule to only display the desired UI elements
+       * when an ad is active.
+       */
+      allowedUiElements?: string[];
+      /**
+       * Defines a function which returns a container that is used for displaying ads.
+       */
+      adContainer?: () => HTMLElement;
+      /**
+       * Defines a function which returns an array of containers for the ad module to fill with companion ads.
+       */
+      companionAdContainers?: () => HTMLElement[];
     }
 
-    export interface AdConfig {
+    interface RestrictStrategy {
+      /**
+       * A callback function that will be called every time an ad break is about to start. The return value decides whether
+       * the ad break will actually start playing or be discarded.
+       */
+      shouldPlayAdBreak: (toPlay: AdBreak) => boolean;
+
+      /**
+       * A callback function that will be called after every seek where ad breaks were scheduled in between the
+       * original time and the seek target. The return value decides which ad breaks will be played after the seek
+       */
+      shouldPlaySkippedAdBreaks: (skipped: AdBreak[], from: number, to: number) => AdBreak[];
+    }
+
+    interface AdConfig {
       /**
        * Specifies whether the main video content should be paused for the ad breaks or if the ad break replaces the video
        * content for its duration.
@@ -678,7 +711,7 @@ declare namespace bitmovin {
       replaceContent?: boolean;
     }
 
-    export interface AdTag {
+    interface AdTag {
       /**
        * Defines the path to an ad manifest. If the tag is a VMAP manifest, the resulting ad breaks will be scheduled as
        * described in the manifest, otherwise the ad breaks will be handled as pre-roll ads if no further information is
@@ -691,7 +724,7 @@ declare namespace bitmovin {
       type: 'vast' | 'vmap' | 'vpaid';
     }
 
-    export interface AdTagConfig extends AdConfig {
+    interface AdTagConfig extends AdConfig {
       /**
        * Defines the url and type of the ad manifest. If the tag is a VAST or VPAID manifest, then more specific scheduling
        * options can be defined in the {@link AdBreakConfig}.
@@ -708,7 +741,7 @@ declare namespace bitmovin {
       fallbackTags?:  AdTag[];
     }
 
-    export interface AdBreakConfig extends AdTagConfig {
+    interface AdBreakConfig extends AdTagConfig {
       /**
        * Unique identifier of the ad break. Used to be able to identify and discard the ad break dynamically.
        */
@@ -740,13 +773,13 @@ declare namespace bitmovin {
     }
 
     // not part of PlayerConfiguration
-    export interface AdBreak extends AdConfig {
+    interface AdBreak extends AdConfig {
       scheduleTime: number;
       ads?: Ad[];
     }
 
     // not part of PlayerConfiguration
-    export interface Ad {
+    interface Ad {
       isLinear: boolean;
       id?: string;
       clickThroughUrl?: string;
@@ -754,49 +787,9 @@ declare namespace bitmovin {
     }
 
     // not part of PlayerConfiguration
-    export interface CompanionAd {
+    interface CompanionAd {
       width: number;
       height: number;
-    }
-
-    export interface AdvertisingModuleConfig {
-      /**
-       * Specifies the amount of milliseconds before the loading of an ad from a given ad manifest times out.
-       * Default is 8000.
-       */
-      videoLoadTimeout: number;
-      /**
-       * Defines an object with two functions which will be called if an ad break is about to start or when ads are seeked
-       * over.
-       */
-      strategy: RestrictStrategy;
-      /**
-       * Defines an array of UI elements that can be used by the AdvertisingModule to only display the desired UI elements
-       * when an ad is active.
-       */
-      allowedUiElements?: string[];
-      /**
-       * Defines a function which returns a container that is used for displaying ads.
-       */
-      adContainer?: () => HTMLElement;
-      /**
-       * Defines a function which returns an array of containers for the ad module to fill with companion ads.
-       */
-      companionAdContainers?: () => HTMLElement[];
-    }
-
-    export interface RestrictStrategy {
-      /**
-       * A callback function that will be called every time an ad break is about to start. The return value decides whether
-       * the ad break will actually start playing or be discarded.
-       */
-      shouldPlayAdBreak: (toPlay: AdBreak) => boolean;
-
-      /**
-       * A callback function that will be called after every seek where ad breaks were scheduled in between the
-       * original time and the seek target. The return value decides which ad breaks will be played after the seek
-       */
-      shouldPlaySkippedAdBreaks: (skipped: AdBreak[], from: number, to: number) => AdBreak[];
     }
 
     interface LocationConfig {
