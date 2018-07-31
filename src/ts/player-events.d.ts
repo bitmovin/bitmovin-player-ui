@@ -3,88 +3,82 @@ declare namespace bitmovin {
   namespace PlayerAPI {
 
     /**
-     * The events that are exposed by the player API are strings.
-     * Events can be subscribed to through {@link Player#on}.
-     * TODO rename enum to Event (camel case)
-     */
-    type Event = string;
-    /**
      * All available events of the player
      */
-    interface EventList {
-      AdBreakStarted: Event;
-      AdBreakFinished: Event;
-      AdClicked: Event;
-      AdError: Event;
-      AdFinished: Event;
-      AdLinearityChanged: Event;
-      AdManifestLoaded: Event;
-      AdScheduled: Event;
-      AdSkipped: Event;
-      AdStarted: Event;
-      AudioAdaptation: Event;
-      AudioChanged: Event;
-      AudioAdded: Event;
-      AudioRemoved: Event;
-      AudioQualityChanged: Event;
-      AudioDownloadQualityChange: Event;
-      AudioDownloadQualityChanged: Event;
-      AudioPlaybackQualityChanged: Event;
-      CastAvailable: Event;
-      CastStart: Event;
-      CastStarted: Event;
-      CastWaitingForDevice: Event;
-      CastStopped: Event;
-      CueParsed: Event;
-      CueEnter: Event;
-      CueUpdate: Event;
-      CueExit: Event;
-      Destroy: Event;
-      DownloadFinished: Event;
-      DVRWindowExceeded: Event;
-      Error: Event;
-      FullscreenEnter: Event;
-      FullscreenExit: Event;
-      Metadata: Event;
-      MetadataParsed: Event;
-      Muted: Event;
-      Paused: Event;
-      PeriodSwitch: Event;
-      PeriodSwitched: Event;
-      Play: Event;
-      Playing: Event;
-      PlaybackFinished: Event;
-      PlaybackSpeedChanged: Event;
-      PlayerResize: Event;
-      Ready: Event;
-      Seek: Event;
-      Seeked: Event;
-      SegmentPlayback: Event;
-      SegmentRequestFinished: Event;
-      SourceLoaded: Event;
-      SourceUnloaded: Event;
-      StallStarted: Event;
-      StallEnded: Event;
-      SubtitleAdded: Event;
-      SubtitleChanged: Event;
-      SubtitleRemoved: Event;
-      TimeChanged: Event;
-      TimeShift: Event;
-      TimeShifted: Event;
-      Unmuted: Event;
-      VideoAdaptation: Event;
-      VideoQualityChanged: Event;
-      VideoDownloadQualityChange: Event;
-      VideoDownloadQualityChanged: Event;
-      VideoPlaybackQualityChanged: Event;
-      VolumeChanged: Event;
-      VRStereoChanged: Event;
-      Warning: Event;
-      PictureInPictureEnter: Event;
-      PictureInPictureExit: Event;
-      AirplayAvailable: Event;
-      VRViewingDirectionChange: Event;
-      VRViewingDirectionChanged: Event;
+    enum Event {
+      AdBreakStarted,
+      AdBreakFinished,
+      AdClicked,
+      AdError,
+      AdFinished,
+      AdLinearityChanged,
+      AdManifestLoaded,
+      AdScheduled,
+      AdSkipped,
+      AdStarted,
+      AudioAdaptation,
+      AudioChanged,
+      AudioAdded,
+      AudioRemoved,
+      AudioQualityChanged,
+      AudioDownloadQualityChange,
+      AudioDownloadQualityChanged,
+      AudioPlaybackQualityChanged,
+      CastAvailable,
+      CastStart,
+      CastStarted,
+      CastWaitingForDevice,
+      CastStopped,
+      CueParsed,
+      CueEnter,
+      CueUpdate,
+      CueExit,
+      Destroy,
+      DownloadFinished,
+      DVRWindowExceeded,
+      Error,
+      FullscreenEnter,
+      FullscreenExit,
+      Metadata,
+      MetadataParsed,
+      Muted,
+      Paused,
+      PeriodSwitch,
+      PeriodSwitched,
+      Play,
+      Playing,
+      PlaybackFinished,
+      PlaybackSpeedChanged,
+      PlayerResize,
+      Ready,
+      Seek,
+      Seeked,
+      SegmentPlayback,
+      SegmentRequestFinished,
+      SourceLoaded,
+      SourceUnloaded,
+      StallStarted,
+      StallEnded,
+      SubtitleAdded,
+      SubtitleChanged,
+      SubtitleRemoved,
+      TimeChanged,
+      TimeShift,
+      TimeShifted,
+      Unmuted,
+      VideoAdaptation,
+      VideoQualityChanged,
+      VideoDownloadQualityChange,
+      VideoDownloadQualityChanged,
+      VideoPlaybackQualityChanged,
+      VolumeChanged,
+      VRStereoChanged,
+      Warning,
+      PictureInPictureEnter,
+      PictureInPictureExit,
+      AirplayAvailable,
+      VRViewingDirectionChange,
+      VRViewingDirectionChanged,
     }
 
     interface PlayerEvent {

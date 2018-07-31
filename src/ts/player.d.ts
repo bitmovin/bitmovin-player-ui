@@ -3,63 +3,71 @@
 
 declare namespace bitmovin {
 
+  import Config = bitmovin.PlayerAPI.Config;
+
   interface PlayerStatic {
     /**
-     * Creates and returns a new player instance attached to the provided DOM element ID.
-     * @param domElementID the ID of the DOM (i.e. HTML) element that the player should be added to
+     * Creates and returns a new player instance attached to the provided DOM element.
      */
-    (domElementID: string): bitmovin.PlayerAPI;
-    /**
-     * All available events of the player.
-     */
-    Event: bitmovin.PlayerAPI.EventList;
+    new (containerElement: HTMLElement, config: Config): bitmovin.PlayerAPI;
+
     /**
      * The version number of the player.
      */
     version: string;
-
-    VR: {
-      CONTENT_TYPE: {
-        SINGLE: PlayerAPI.VR.ContentType,
-        TAB: PlayerAPI.VR.ContentType,
-        SBS: PlayerAPI.VR.ContentType,
-      },
-      STATE: {
-        READY: PlayerAPI.VR.State,
-        PLAYING: PlayerAPI.VR.State,
-        ERROR: PlayerAPI.VR.State,
-        UNINITIALIZED: PlayerAPI.VR.State,
-      },
-      TRANSITION_TIMING_TYPE: {
-        NONE: PlayerAPI.VR.TransitionTimingType,
-        EASE_IN: PlayerAPI.VR.TransitionTimingType,
-        EASE_OUT: PlayerAPI.VR.TransitionTimingType,
-        EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
-      },
-    };
-
-    network: {
-      REQUEST_TYPE: typeof PlayerAPI.HttpRequestType,
-      REQUEST_METHOD: typeof PlayerAPI.HttpRequestMethod,
-      RESPONSE_TYPE: typeof PlayerAPI.HttpResponseType,
-    };
   }
 
-  // tslint:disable-next-line:no-unused-variable
-  const player: PlayerStatic;
+  namespace player {
+    const Player: PlayerStatic;
+
+    namespace Network {
+      enum HttpRequestMethod {
+        GET,
+        POS,
+        HEAD,
+      }
+
+      enum HttpRequestType {
+        MANIFEST_DASH,
+        MANIFEST_HLS_MASTER,
+        MANIFEST_HLS_VARIANT,
+        MANIFEST_SMOOTH,
+        MANIFEST_ADS,
+
+        MEDIA_AUDIO,
+        MEDIA_VIDEO,
+        MEDIA_SUBTITLES,
+        MEDIA_THUMBNAILS,
+
+        DRM_LICENSE_WIDEVINE,
+        DRM_LICENSE_PLAYREADY,
+        DRM_LICENSE_FAIRPLAY,
+        DRM_LICENSE_PRIMETIME,
+        DRM_LICENSE_CLEARKEY,
+
+        DRM_CERTIFICATE_FAIRPLAY,
+
+        KEY_HLS_AES,
+      }
+
+      enum HttpResponseType {
+        ARRAYBUFFER,
+        BLOB,
+        DOCUMENT,
+        JSON,
+        TEXT,
+      }
+    }
+  }
 
   /**
    * Bitmovin Player instance members.
    */
   interface PlayerAPI {
-    /**
-     * Subscribes an event handler to a player event.
-     * This will be replaced by {@link PlayerAPI.on} in version 8
-     *
-     * @param eventType The type of event to subscribe to.
-     * @param callback The event callback handler that will be called when the event fires.
-     */
-    addEventHandler(eventType: PlayerAPI.Event, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    exports: {
+      Network: typeof bitmovin.player.Network;
+      Event: typeof bitmovin.PlayerAPI.Event;
+    };
     /**
      * Subscribes an event handler to a player event.
      *
@@ -201,8 +209,7 @@ declare namespace bitmovin {
      */
     getPlayerType(): string;
     /**
-     * Creates a snapshot of the current video frame.
-     * TODO is it possible to take a snapshot of DRM protected content?
+     * Creates a snapshot of the current video frame of non-DRM content.
      *
      * @param type The type of image snapshot to capture. Allowed values are 'image/jpeg' and 'image/webp'.
      * TODO convert type to enum
@@ -231,7 +238,7 @@ declare namespace bitmovin {
      * Returns a thumbnail image for a certain time or null if there is no thumbnail available.
      * @param time the media time for which the thumbnail should be returned
      */
-    getThumb(time: number): PlayerAPI.Thumbnail;
+    getThumbnail(time: number): PlayerAPI.Thumbnail;
     /**
      * Returns the current time shift offset to the live edge in seconds. Only applicable to live streams.
      */
@@ -297,25 +304,17 @@ declare namespace bitmovin {
      */
     isPlaying(): boolean;
     /**
-     * Returns true if the player has finished initialization and is ready to use and to handle other API calls.
-     */
-    isReady(): boolean;
-    /**
-     * Returns true if the setup call has already been successfully called.
-     */
-    isSetup(): boolean;
-    /**
      * Returns true if the player is currently stalling due to an empty buffer.
      */
     isStalled(): boolean;
     /**
      * Sets a new video source.
      *
-     * @param source A source object as specified in player configuration during {@link #setup}
+     * @param source A source object
      * @param forceTechnology Forces the player to use the specified playback and streaming technology
      * @param disableSeeking If set, seeking will be disabled
      */
-    load(source: PlayerAPI.SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<PlayerAPI>;
+    load(source: PlayerAPI.SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<void>;
     /**
      * Mutes the player if an audio track is available. Has no effect if the player is already muted.
      *
@@ -333,21 +332,13 @@ declare namespace bitmovin {
     play(issuer?: string): PlayerAPI;
     /**
      * Removes a handler for a player event.
-     * This will be replaced by {@link PlayerAPI.off} in version 8
-     *
-     * @param eventType The event to remove the handler from
-     * @param callback The callback handler to remove
-     */
-    // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
-    removeEventHandler(eventType: PlayerAPI.Event | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
-    /**
-     * Removes a handler for a player event.
      *
      * @param eventType The event to remove the handler from
      * @param callback The callback handler to remove
      *
      * @since v7.8
      */
+    // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
     off(eventType: PlayerAPI.Event | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
      * Removes the existing subtitle/caption track with the track ID specified by trackID. If the track is
@@ -448,13 +439,6 @@ declare namespace bitmovin {
      */
     setSubtitle(trackID: string): PlayerAPI;
     /**
-     * Sets up a new player instance with the given configuration, as specified in player configuration documentation.
-     *
-     * @param userConfig User-supplied configuration of the player
-     * @param forceTechnology Forces the player to use the specified playback and streaming technology
-     */
-    setup(userConfig: PlayerAPI.Config, forceTechnology?: string): Promise<PlayerAPI>;
-    /**
      * Passes an HTML video element to the player, which should be used in case of non-Flash playback.
      * Needs to be called before {@link #setup}. Has no effect if the Flash fallback is selected.
      *
@@ -511,12 +495,6 @@ declare namespace bitmovin {
      * @param issuer the issuer of the unmute command
      */
     unmute(issuer?: string): PlayerAPI;
-
-    fireEvent(event: PlayerAPI.Event, data: {}): void;
-    /**
-     * All available events of the player.
-     */
-    Event: PlayerAPI.EventList;
     /**
      * The version number of the player.
      */
@@ -594,11 +572,11 @@ declare namespace bitmovin {
       /**
        * Width of the thumbnail.
        */
-      w: number;
+      width: number;
       /**
        * Height of the thumbnail.
        */
-      h: number;
+      height: number;
       /**
        * Index of the thumbnail in its spritesheet.
        */

@@ -63,12 +63,12 @@ export class CastUIContainer extends UIContainer {
       }
     };
 
-    player.addEventHandler(player.Event.Ready, showUiWithTimeout);
-    player.addEventHandler(player.Event.SourceLoaded, showUiWithTimeout);
-    player.addEventHandler(player.Event.Play, showUiWithTimeout);
-    player.addEventHandler(player.Event.Paused, showUiPermanently);
-    player.addEventHandler(player.Event.Seek, showUiPermanently);
-    player.addEventHandler(player.Event.Seeked, showUiAfterSeek);
+    player.on(player.exports.Event.Ready, showUiWithTimeout);
+    player.on(player.exports.Event.SourceLoaded, showUiWithTimeout);
+    player.on(player.exports.Event.Play, showUiWithTimeout);
+    player.on(player.exports.Event.Paused, showUiPermanently);
+    player.on(player.exports.Event.Seek, showUiPermanently);
+    player.on(player.exports.Event.Seeked, showUiAfterSeek);
   }
 
   release(): void {
