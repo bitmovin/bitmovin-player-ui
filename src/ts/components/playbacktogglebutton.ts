@@ -55,13 +55,10 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
       playbackStateHandler(e);
     });
 
-    if (player.Event.Playing) {
-      // Since player 7.3
-      player.addEventHandler(player.Event.Playing, (e) => {
-        this.isPlayInitiated = false;
-        playbackStateHandler(e);
-      });
-    }
+    player.addEventHandler(player.Event.Playing, (e) => {
+      this.isPlayInitiated = false;
+      playbackStateHandler(e);
+    });
     // after unloading + loading a new source, the player might be in a different playing state (from playing into stopped)
     player.addEventHandler(player.Event.SourceLoaded, playbackStateHandler);
     player.addEventHandler(player.Event.SourceUnloaded, playbackStateHandler);

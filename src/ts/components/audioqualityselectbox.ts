@@ -15,15 +15,7 @@ export class AudioQualitySelectBox extends SelectBox {
     super.configure(player, uimanager);
 
     let selectCurrentAudioQuality = () => {
-      if (player.getAudioQuality) {
-        // Since player 7.3.1
-        this.selectItem(player.getAudioQuality().id);
-      } else {
-        // Backwards compatibility for players <= 7.3.0
-        // TODO remove in next major release
-        let data = player.getDownloadedAudioData();
-        this.selectItem(data.isAuto ? 'auto' : data.id);
-      }
+      this.selectItem(player.getAudioQuality().id);
     };
 
     let updateAudioQualities = () => {
@@ -56,13 +48,6 @@ export class AudioQualitySelectBox extends SelectBox {
     // Update qualities when the period within a source changes
     player.addEventHandler(player.Event.PeriodSwitched, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
-    if (player.Event.AudioQualityChanged) {
-      // Since player 7.3.1
-      player.addEventHandler(player.Event.AudioQualityChanged, selectCurrentAudioQuality);
-    } else {
-      // Backwards compatibility for players <= 7.3.0
-      // TODO remove in next major release
-      player.addEventHandler(player.Event.AudioDownloadQualityChange, selectCurrentAudioQuality);
-    }
+    player.addEventHandler(player.Event.AudioQualityChanged, selectCurrentAudioQuality);
   }
 }

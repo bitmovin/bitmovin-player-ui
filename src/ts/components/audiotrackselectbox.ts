@@ -51,11 +51,9 @@ export class AudioTrackSelectBox extends SelectBox {
     player.addEventHandler(player.Event.Ready, updateAudioTracks);
     // Update tracks when the period within a source changes
     player.addEventHandler(player.Event.PeriodSwitched, updateAudioTracks);
-    // Update tracks when a track is added or removed (since player 7.1.4)
-    if (player.Event.AudioAdded && player.Event.AudioRemoved) {
-      player.addEventHandler(player.Event.AudioAdded, updateAudioTracks);
-      player.addEventHandler(player.Event.AudioRemoved, updateAudioTracks);
-    }
+    // Update tracks when a track is added or removed
+    player.addEventHandler(player.Event.AudioAdded, updateAudioTracks);
+    player.addEventHandler(player.Event.AudioRemoved, updateAudioTracks);
 
     // Populate tracks at startup
     updateAudioTracks();

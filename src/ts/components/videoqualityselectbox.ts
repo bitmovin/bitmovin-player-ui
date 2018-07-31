@@ -17,15 +17,7 @@ export class VideoQualitySelectBox extends SelectBox {
     super.configure(player, uimanager);
 
     let selectCurrentVideoQuality = () => {
-      if (player.getVideoQuality) {
-        // Since player 7.3.1
-        this.selectItem(player.getVideoQuality().id);
-      } else {
-        // Backwards compatibility for players <= 7.3.0
-        // TODO remove in next major release
-        let data = player.getDownloadedVideoData();
-        this.selectItem(data.isAuto ? 'auto' : data.id);
-      }
+      this.selectItem(player.getVideoQuality().id);
     };
 
     let updateVideoQualities = () => {
@@ -61,14 +53,7 @@ export class VideoQualitySelectBox extends SelectBox {
     // Update qualities when the period within a source changes
     player.addEventHandler(player.Event.PeriodSwitched, updateVideoQualities);
     // Update quality selection when quality is changed (from outside)
-    if (player.Event.VideoQualityChanged) {
-      // Since player 7.3.1
-      player.addEventHandler(player.Event.VideoQualityChanged, selectCurrentVideoQuality);
-    } else {
-      // Backwards compatibility for players <= 7.3.0
-      // TODO remove in next major release
-      player.addEventHandler(player.Event.VideoDownloadQualityChange, selectCurrentVideoQuality);
-    }
+    player.addEventHandler(player.Event.VideoQualityChanged, selectCurrentVideoQuality);
   }
 
   /**
