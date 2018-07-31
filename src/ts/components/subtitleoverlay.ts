@@ -45,7 +45,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
-    player.addEventHandler(player.Event.CueEnter, (event: SubtitleCueEvent) => {
+    player.on(player.Event.CueEnter, (event: SubtitleCueEvent) => {
       // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
       if (event.position) {
         // Sometimes the positions are undefined, we assume them to be zero
@@ -65,7 +65,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.show();
     });
-    player.addEventHandler(player.Event.CueExit, (event: SubtitleCueEvent) => {
+    player.on(player.Event.CueExit, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
 
       if (labelToRemove) {
@@ -90,12 +90,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
     };
 
-    player.addEventHandler(player.Event.AudioChanged, subtitleClearHandler);
-    player.addEventHandler(player.Event.SubtitleChanged, subtitleClearHandler);
-    player.addEventHandler(player.Event.Seek, subtitleClearHandler);
-    player.addEventHandler(player.Event.TimeShift, subtitleClearHandler);
-    player.addEventHandler(player.Event.PlaybackFinished, subtitleClearHandler);
-    player.addEventHandler(player.Event.SourceUnloaded, subtitleClearHandler);
+    player.on(player.Event.AudioChanged, subtitleClearHandler);
+    player.on(player.Event.SubtitleChanged, subtitleClearHandler);
+    player.on(player.Event.Seek, subtitleClearHandler);
+    player.on(player.Event.TimeShift, subtitleClearHandler);
+    player.on(player.Event.PlaybackFinished, subtitleClearHandler);
+    player.on(player.Event.SourceUnloaded, subtitleClearHandler);
 
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
@@ -188,7 +188,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     };
 
-    player.addEventHandler(player.Event.PlayerResize, () => {
+    player.on(player.Event.PlayerResize, () => {
       if (enabled) {
         updateCEA608FontSize();
       } else {
@@ -230,7 +230,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       enabled = false;
     };
 
-    player.addEventHandler(player.Event.CueExit, () => {
+    player.on(player.Event.CueExit, () => {
       if (!this.subtitleManager.hasCues) {
         // Disable CEA-608 mode when all subtitles are gone (to allow correct formatting and
         // display of other types of subtitles, e.g. the formatting preview subtitle)
@@ -238,8 +238,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     });
 
-    player.addEventHandler(player.Event.SourceUnloaded, reset);
-    player.addEventHandler(player.Event.SubtitleChanged, reset);
+    player.on(player.Event.SourceUnloaded, reset);
+    player.on(player.Event.SubtitleChanged, reset);
   }
 
   enablePreviewSubtitleLabel(): void {

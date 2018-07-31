@@ -45,30 +45,30 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     // Call handler upon these events
-    player.addEventHandler(player.Event.Play, (e) => {
+    player.on(player.Event.Play, (e) => {
       this.isPlayInitiated = true;
       playbackStateHandler(e);
     });
 
-    player.addEventHandler(player.Event.Paused, (e) => {
+    player.on(player.Event.Paused, (e) => {
       this.isPlayInitiated = false;
       playbackStateHandler(e);
     });
 
-    player.addEventHandler(player.Event.Playing, (e) => {
+    player.on(player.Event.Playing, (e) => {
       this.isPlayInitiated = false;
       playbackStateHandler(e);
     });
     // after unloading + loading a new source, the player might be in a different playing state (from playing into stopped)
-    player.addEventHandler(player.Event.SourceLoaded, playbackStateHandler);
-    player.addEventHandler(player.Event.SourceUnloaded, playbackStateHandler);
+    player.on(player.Event.SourceLoaded, playbackStateHandler);
+    player.on(player.Event.SourceUnloaded, playbackStateHandler);
     // when playback finishes, player turns to paused mode
-    player.addEventHandler(player.Event.PlaybackFinished, playbackStateHandler);
-    player.addEventHandler(player.Event.CastStarted, playbackStateHandler);
+    player.on(player.Event.PlaybackFinished, playbackStateHandler);
+    player.on(player.Event.CastStarted, playbackStateHandler);
 
     // When a playback attempt is rejected with warning 5008, we switch the button state back to off
     // This is required for blocked autoplay, because there is no Paused event in such case
-    player.addEventHandler(player.Event.Warning, (event: WarningEvent) => {
+    player.on(player.Event.Warning, (event: WarningEvent) => {
       if (event.code === 5008) {
         this.isPlayInitiated = false;
         this.off();

@@ -57,14 +57,14 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     };
 
     // Add recommendation when a source is loaded
-    player.addEventHandler(player.Event.Ready, setupRecommendations);
+    player.on(player.Event.Ready, setupRecommendations);
     // Remove recommendations and hide overlay when source is unloaded
-    player.addEventHandler(player.Event.SourceUnloaded, () => {
+    player.on(player.Event.SourceUnloaded, () => {
       clearRecommendations();
       this.hide();
     });
     // Display recommendations when playback has finished
-    player.addEventHandler(player.Event.PlaybackFinished, () => {
+    player.on(player.Event.PlaybackFinished, () => {
       // Dismiss ON_PLAYBACK_FINISHED events at the end of ads
       // TODO remove this workaround once issue #1278 is solved
       if (player.isAd()) {
@@ -74,7 +74,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
       this.show();
     });
     // Hide recommendations when playback starts, e.g. a restart
-    player.addEventHandler(player.Event.Play, () => {
+    player.on(player.Event.Play, () => {
       this.hide();
     });
 

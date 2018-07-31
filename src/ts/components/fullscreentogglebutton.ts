@@ -26,8 +26,8 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.addEventHandler(player.Event.FullscreenEnter, fullscreenStateHandler);
-    player.addEventHandler(player.Event.FullscreenExit, fullscreenStateHandler);
+    player.on(player.Event.FullscreenEnter, fullscreenStateHandler);
+    player.on(player.Event.FullscreenExit, fullscreenStateHandler);
 
     this.onClick.subscribe(() => {
       if (player.isFullscreen()) {

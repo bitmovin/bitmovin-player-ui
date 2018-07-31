@@ -29,8 +29,8 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     };
 
     // when the player hits onReady again, adjust the playback speed selection
-    player.addEventHandler(player.Event.Ready, setDefaultValue);
-    player.addEventHandler(player.Event.PlaybackSpeedChanged, setDefaultValue);
+    player.on(player.Event.Ready, setDefaultValue);
+    player.on(player.Event.PlaybackSpeedChanged, setDefaultValue);
   }
 
   setSpeed(speed: number): void {

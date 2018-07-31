@@ -49,10 +49,10 @@ export namespace PlayerUtils {
         this.detect();
       };
       // Try to detect timeshift availability in Ready, which works for DASH streams
-      player.addEventHandler(player.Event.Ready, timeShiftDetector);
+      player.on(player.Event.Ready, timeShiftDetector);
       // With HLS/NativePlayer streams, getMaxTimeShift can be 0 before the buffer fills, so we need to additionally
       // check timeshift availability in TimeChanged
-      player.addEventHandler(player.Event.TimeChanged, timeShiftDetector);
+      player.on(player.Event.TimeChanged, timeShiftDetector);
     }
 
     detect(): void {
@@ -102,15 +102,15 @@ export namespace PlayerUtils {
         this.detect();
       };
       // Initialize when player is ready
-      player.addEventHandler(player.Event.Ready, liveDetector);
+      player.on(player.Event.Ready, liveDetector);
       // Re-evaluate when playback starts
-      player.addEventHandler(player.Event.Play, liveDetector);
+      player.on(player.Event.Play, liveDetector);
 
       // HLS live detection workaround for Android:
       // Also re-evaluate during playback, because that is when the live flag might change.
       // (Doing it only in Android Chrome saves unnecessary overhead on other plattforms)
       if (BrowserUtils.isAndroid && BrowserUtils.isChrome) {
-        player.addEventHandler(player.Event.TimeChanged, liveDetector);
+        player.on(player.Event.TimeChanged, liveDetector);
       }
     }
 

@@ -136,7 +136,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       isSeeking = false;
       this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
     });
-    player.addEventHandler(player.Event.CastStarted, () => {
+    player.on(player.Event.CastStarted, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
     });
   }
@@ -161,23 +161,23 @@ export class UIContainer extends Container<UIContainerConfig> {
       container.removeClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
       container.removeClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
     };
-    player.addEventHandler(player.Event.Ready, () => {
+    player.on(player.Event.Ready, () => {
       removeStates();
       container.addClass(stateClassNames[PlayerUtils.PlayerState.PREPARED]);
     });
-    player.addEventHandler(player.Event.Play, () => {
+    player.on(player.Event.Play, () => {
       removeStates();
       container.addClass(stateClassNames[PlayerUtils.PlayerState.PLAYING]);
     });
-    player.addEventHandler(player.Event.Paused, () => {
+    player.on(player.Event.Paused, () => {
       removeStates();
       container.addClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
     });
-    player.addEventHandler(player.Event.PlaybackFinished, () => {
+    player.on(player.Event.PlaybackFinished, () => {
       removeStates();
       container.addClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
     });
-    player.addEventHandler(player.Event.SourceUnloaded, () => {
+    player.on(player.Event.SourceUnloaded, () => {
       removeStates();
       container.addClass(stateClassNames[PlayerUtils.PlayerState.IDLE]);
     });
@@ -185,10 +185,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     container.addClass(stateClassNames[PlayerUtils.getState(player)]);
 
     // Fullscreen marker class
-    player.addEventHandler(player.Event.FullscreenEnter, () => {
+    player.on(player.Event.FullscreenEnter, () => {
       container.addClass(this.prefixCss(UIContainer.FULLSCREEN));
     });
-    player.addEventHandler(player.Event.FullscreenExit, () => {
+    player.on(player.Event.FullscreenExit, () => {
       container.removeClass(this.prefixCss(UIContainer.FULLSCREEN));
     });
     // Init fullscreen state
@@ -197,10 +197,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     // Buffering marker class
-    player.addEventHandler(player.Event.StallStarted, () => {
+    player.on(player.Event.StallStarted, () => {
       container.addClass(this.prefixCss(UIContainer.BUFFERING));
     });
-    player.addEventHandler(player.Event.StallEnded, () => {
+    player.on(player.Event.StallEnded, () => {
       container.removeClass(this.prefixCss(UIContainer.BUFFERING));
     });
     // Init buffering state
@@ -209,10 +209,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     // RemoteControl marker class
-    player.addEventHandler(player.Event.CastStarted, () => {
+    player.on(player.Event.CastStarted, () => {
       container.addClass(this.prefixCss(UIContainer.REMOTE_CONTROL));
     });
-    player.addEventHandler(player.Event.CastStopped, () => {
+    player.on(player.Event.CastStopped, () => {
       container.removeClass(this.prefixCss(UIContainer.REMOTE_CONTROL));
     });
     // Init RemoteControl state
@@ -247,7 +247,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         container.addClass(this.prefixCss('layout-max-width-1200'));
       }
     };
-    player.addEventHandler(player.Event.PlayerResize, (e: PlayerResizeEvent) => {
+    player.on(player.Event.PlayerResize, (e: PlayerResizeEvent) => {
       // Convert strings (with "px" suffix) to ints
       let width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
       let height = Math.round(Number(e.height.substring(0, e.height.length - 2)));

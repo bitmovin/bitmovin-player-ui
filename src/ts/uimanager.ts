@@ -269,7 +269,7 @@ export class UIManager {
     updateConfig();
 
     // Update the configuration when a new source is loaded
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.SourceLoaded, () => {
+    this.managerPlayerWrapper.getPlayer().on(this.player.Event.SourceLoaded, () => {
       updateConfig();
       this.config.events.onUpdated.dispatch(this);
     });
@@ -370,16 +370,16 @@ export class UIManager {
 
     // Listen to the following events to trigger UI variant resolution
     if (config.autoUiVariantResolve) {
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.Ready, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.Play, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.Paused, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.AdStarted, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.AdFinished, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.AdSkipped, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.AdError, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.PlayerResize, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.FullscreenEnter, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.Event.FullscreenExit, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.Ready, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.Play, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.Paused, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.AdStarted, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.AdFinished, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.AdSkipped, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.AdError, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.PlayerResize, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.FullscreenEnter, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.Event.FullscreenExit, resolveUiVariant);
     }
 
     // Initialize the UI
@@ -1299,8 +1299,8 @@ class PlayerWrapper {
       }
     }
 
-    // Explicitly add a wrapper method for 'addEventHandler' that adds added event handlers to the event list
-    wrapper.addEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
+    // Explicitly add a wrapper method for 'on' that adds added event handlers to the event list
+    wrapper.on = (eventType: EVENT, callback: PlayerEventCallback) => {
       player.on(eventType, callback);
 
       if (!this.eventHandlers[eventType]) {
@@ -1312,8 +1312,8 @@ class PlayerWrapper {
       return wrapper;
     };
 
-    // Explicitly add a wrapper method for 'removeEventHandler' that removes removed event handlers from the event list
-    wrapper.removeEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
+    // Explicitly add a wrapper method for 'off' that removes removed event handlers from the event list
+    wrapper.off = (eventType: EVENT, callback: PlayerEventCallback) => {
       player.off(eventType, callback);
 
       if (this.eventHandlers[eventType]) {
@@ -1357,7 +1357,7 @@ class PlayerWrapper {
   clearEventHandlers(): void {
     for (let eventType in this.eventHandlers) {
       for (let callback of this.eventHandlers[eventType]) {
-        this.player.removeEventHandler(eventType, callback);
+        this.player.off(eventType, callback);
       }
     }
   }
