@@ -38,9 +38,10 @@ export class AdClickOverlay extends ClickOverlay {
       player.pause('ui-content-click');
 
       // Notify the player of the clicked ad
-      player.fireEvent(player.Event.AdClicked, {
-        clickThroughUrl: clickThroughUrl,
-      });
+      // TODO add a callback to AdStarted to allow the ads renderer to signal a clickThroughUrl click
+      // player.fireEvent(player.exports.Event.AdClicked, {
+      //   clickThroughUrl: clickThroughUrl,
+      // });
     });
   }
 }
