@@ -711,6 +711,8 @@ declare namespace bitmovin {
       replaceContent?: boolean;
     }
 
+    type AdTagType = 'vast' | 'vmap' | 'vpaid';
+
     interface AdTag {
       /**
        * Defines the path to an ad manifest. If the tag is a VMAP manifest, the resulting ad breaks will be scheduled as
