@@ -22,6 +22,8 @@ declare namespace bitmovin {
       AdScheduled: Event;
       AdSkipped: Event;
       AdStarted: Event;
+      OverlayAdStarted: Event;
+      AdQuartile: Event;
       AudioAdaptation: Event;
       AudioChanged: Event;
       AudioAdded: Event;

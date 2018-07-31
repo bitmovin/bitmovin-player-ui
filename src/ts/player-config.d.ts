@@ -659,54 +659,62 @@ declare namespace bitmovin {
       mobile?: AdaptationConfig;
     }
 
-    interface AdvertisingScheduleItem {
+    export interface AdvertisingConfig {
       /**
-       * Specifies which ad client to use, like e.g., VAST or VPAID.
+       * Defines a collection of ad breaks which will be played at the specified position in each {@link AdBreakConfig}.
        */
-      client?: string;
+      adBreaks: AdConfig[];
       /**
-       * Defines when the ad shall be played. Supports the same values as {@link AdvertisingConfig#offset}.
+       * Defines the configuration for the ad module.
        */
-      offset: string;
-      /**
-       * Defines the path to the ad manifest.
-       */
-      tag: string;
+      adModuleConfig: AdvertisingModuleConfig;
     }
 
-    interface AdvertisingConfig {
+    export interface AdConfig {
       /**
-       * Mandatory. Specifies which ad client to use, like e.g., VAST or VPAID.
+       * Specifies whether the main video content should be paused for the ad breaks or if the ad break replaces the video
+       * content for its duration.
        */
-      client: string;
+      replaceContent?: boolean;
+    }
+
+    export interface AdTag {
       /**
-       * Specifies the time in seconds, how much the VAST tag is loaded prior to the ad playback. By default
-       * the VAST tag is loaded at player startup.
+       * Defines the path to an ad manifest. If the tag is a VMAP manifest, the resulting ad breaks will be scheduled as
+       * described in the manifest, otherwise the ad breaks will be handled as pre-roll ads if no further information is
+       * specified in the {@link AdBreakConfig.position} property.
        */
-      adCallOffset?: number;
+      url: string;
       /**
-       * Defines a custom message that will be displayed to the user instead of the progress bar during
-       * ad playback. The predefined placeholder xx can be used to show the remaining seconds of the ad.
+       * Specifies whether the ad tag is a VAST, VMAP or VPAID tag. VMAP tags will be loaded immediately after scheduling.
        */
-      admessage?: string;
+      type: 'vast' | 'vmap' | 'vpaid';
+    }
+
+    export interface AdTagConfig extends AdConfig {
       /**
-       * Defines a custom message that will be displayed to the user as a skip button.
+       * Defines the url and type of the ad manifest. If the tag is a VAST or VPAID manifest, then more specific scheduling
+       * options can be defined in the {@link AdBreakConfig}.
        */
-      skipmessage?: SkipMessage;
+      tag: AdTag;
       /**
-       * Specifies that cookies are send along with the ad request. The server needs to explicitly accept
-       * them for CORS requests, otherwise the request will fail.
+       * If set, the ad tag will be processed and rescheduled automatically when a new source is loaded.
        */
-      withCredentials?: boolean;
+      persistent?: boolean;
       /**
-       * Defines the path to an ad manifest. Can be used to schedule a single ad without setting the {@link #schedule}
-       * property, that will be played at the time defined in the {@link #offset} property.
-       * It will be played as pre-roll add by default if no offset is set, or when as schedule with additional ads
-       * is provided.
+       * Defines a list of fallback ad tags which will be tried one after the other if the original ad tag does not provide
+       * a valid response.
        */
-      tag?: string;
+      fallbackTags?:  AdTag[];
+    }
+
+    export interface AdBreakConfig extends AdTagConfig {
       /**
-       * Defines when the ad shall be played.
+       * Unique identifier of the ad break. Used to be able to identify and discard the ad break dynamically.
+       */
+      id: string;
+      /**
+       * Defines when the ad break shall be started. Default is 'pre'.
        *
        * Allowed values are:
        * - 'pre': pre-roll ad
@@ -715,18 +723,80 @@ declare namespace bitmovin {
        * - percentage of the entire video duration: '25%', '50%' (mid-roll ad)
        * - timecode [hh:mm:ss.mmm]: '00:10:30.000', '01:00:00.000' (mid-roll ad)
        */
-      offset?: string;
+      position: string;
       /**
-       * Contains one or more ad breaks. Each ad break defines when an ad shall be played and must contain
-       * an offset and a tag property.
+       * Specifies how many seconds before the ad break would start playing should the ad tag (and if possible the media
+       * files of the resulting ad response) start pre-loading.
        */
-      schedule?: { [name: string]: AdvertisingScheduleItem; };
+      preloadOffset?: number;
       /**
-       * If set to true, mid-roll ads are only played during normal playback. Seeking to a time after the
-       * mid-roll ads doesn't trigger ad playback.
-       * @since 7.1
+       * Specifies how many seconds the ad break should replace of the main video content.
        */
-      allowSeekingOverMidRollAds?: boolean;
+      replaceDuration?: number;
+      /**
+       * Specifies after how many seconds the ad break may be skipped.
+       */
+      skipAfter?: number;
+    }
+
+    // not part of PlayerConfiguration
+    export interface AdBreak extends AdConfig {
+      scheduleTime: number;
+      ads?: Ad[];
+    }
+
+    // not part of PlayerConfiguration
+    export interface Ad {
+      isLinear: boolean;
+      id?: string;
+      clickThroughUrl?: string;
+      companionAds?: CompanionAd[];
+    }
+
+    // not part of PlayerConfiguration
+    export interface CompanionAd {
+      width: number;
+      height: number;
+    }
+
+    export interface AdvertisingModuleConfig {
+      /**
+       * Specifies the amount of milliseconds before the loading of an ad from a given ad manifest times out.
+       * Default is 8000.
+       */
+      videoLoadTimeout: number;
+      /**
+       * Defines an object with two functions which will be called if an ad break is about to start or when ads are seeked
+       * over.
+       */
+      strategy: RestrictStrategy;
+      /**
+       * Defines an array of UI elements that can be used by the AdvertisingModule to only display the desired UI elements
+       * when an ad is active.
+       */
+      allowedUiElements?: string[];
+      /**
+       * Defines a function which returns a container that is used for displaying ads.
+       */
+      adContainer?: () => HTMLElement;
+      /**
+       * Defines a function which returns an array of containers for the ad module to fill with companion ads.
+       */
+      companionAdContainers?: () => HTMLElement[];
+    }
+
+    export interface RestrictStrategy {
+      /**
+       * A callback function that will be called every time an ad break is about to start. The return value decides whether
+       * the ad break will actually start playing or be discarded.
+       */
+      shouldPlayAdBreak: (toPlay: AdBreak) => boolean;
+
+      /**
+       * A callback function that will be called after every seek where ad breaks were scheduled in between the
+       * original time and the seek target. The return value decides which ad breaks will be played after the seek
+       */
+      shouldPlaySkippedAdBreaks: (skipped: AdBreak[], from: number, to: number) => AdBreak[];
     }
 
     interface LocationConfig {
