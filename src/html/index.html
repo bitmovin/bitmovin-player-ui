@@ -202,7 +202,6 @@
 
   var config = {
     key: 'YOUR KEY HERE',
-    source: sources.fullyFeatured,
     style: {
       ux: false
     },
@@ -252,9 +251,9 @@
   var player;
   var uiManager;
   var playerSetup = function(config) {
-    player = bitmovin.player.Player('player');
+    player = new bitmovin.player.Player(document.getElementById('player'), config);
 
-    player.setup(config).then(function() {
+    player.load(sources.fullyFeatured).then(function() {
       // Add UI to loaded player
       uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
     }, function(errorEvent) {
