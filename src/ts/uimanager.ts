@@ -133,12 +133,6 @@ export interface UIConditionContext {
    */
   isAd: boolean;
   /**
-   * Tells if the ad allows a UI. This is currently only true for VAST ads and cannot be used to differentiate between
-   * different ad clients (i.e. to display different UIs for different ad clients).
-   * @deprecated Will be removed in an upcoming major release, use {@link #adClientType} instead.
-   */
-  isAdWithUI: boolean;
-  /**
    * Tells the ad client (e.g. 'vast, 'ima') if {@link #isAd} is true.
    */
   adClientType: string;
@@ -354,11 +348,9 @@ export class UIManager {
 
       // Detect if an ad has started
       let ad = adStartedEvent != null;
-      let adWithUI = ad && adStartedEvent.clientType === 'vast';
 
       this.resolveUiVariant({
         isAd: ad,
-        isAdWithUI: adWithUI,
         adClientType: ad ? adStartedEvent.clientType : null,
       }, (context) => {
         // If this is an ad UI, we need to relay the saved ON_AD_STARTED event data so ad components can configure
@@ -463,7 +455,6 @@ export class UIManager {
     // Determine the current context for which the UI variant will be resolved
     const defaultContext: UIConditionContext = {
       isAd: false,
-      isAdWithUI: false,
       adClientType: null,
       isFullscreen: this.player.isFullscreen(),
       isMobile: BrowserUtils.isMobile,
@@ -835,12 +826,13 @@ export namespace UIManager.Factory {
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
-        return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
+        return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAd
+          && context.adClientType === 'vast';
       },
     }, {
       ui: modernAdsUI(),
       condition: (context: UIConditionContext) => {
-        return context.isAdWithUI;
+        return context.isAd && context.adClientType === 'vast';
       },
     }, {
       ui: modernSmallScreenUI(),
@@ -856,7 +848,7 @@ export namespace UIManager.Factory {
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
-        return context.isAdWithUI;
+        return context.isAd && context.adClientType === 'vast';
       },
     }, {
       ui: modernSmallScreenUI(),
@@ -992,7 +984,7 @@ export namespace UIManager.Factory {
     return new UIManager(player, [{
       ui: legacyAdsUI(),
       condition: (context: UIConditionContext) => {
-        return context.isAdWithUI;
+        return context.isAd && context.adClientType === 'vast';
       },
     }, {
       ui: legacyUI(),
