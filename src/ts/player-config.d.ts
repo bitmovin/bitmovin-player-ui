@@ -723,7 +723,7 @@ declare namespace bitmovin {
       /**
        * Specifies whether the ad tag is a VAST, VMAP or VPAID tag. VMAP tags will be loaded immediately after scheduling.
        */
-      type: 'vast' | 'vmap' | 'vpaid';
+      type: AdTagType;
     }
 
     interface AdTagConfig extends AdConfig {
