@@ -441,41 +441,37 @@ declare namespace bitmovin {
     }
 
     interface AdManifestLoadedEvent extends PlayerEvent {
-      manifest: string;
+      /**
+       * The ad break for which the ad manifest was loaded.
+       */
+      adBreak: AdBreak;
     }
 
-    interface AdScheduledEvent extends PlayerEvent {
+    interface AdBreakStartedEvent extends PlayerEvent {
       /**
-       * The total number of scheduled ads.
+       * The ad break that just started.
        */
-      numAds: number;
+      adBreak: AdBreak;
     }
 
     interface AdStartedEvent extends PlayerEvent {
       /**
-       * The target URL to open once the user clicks on the ad
-       * @since v4.2
+       * The ad that just started.
        */
-      clickThroughUrl: string;
+      ad: Ad;
+    }
+
+    enum AdQuartile {
+      FIRST_QUARTILE = 'firstQuartile',
+      MIDPOINT = 'midpoint',
+      THIRD_QUARTILE = 'thirdQuartile',
+    }
+
+    interface AdQuartileEvent extends PlayerEvent {
       /**
-       * The index of the ad in the queue
-       * @since v6.0
+       * Quartile that has already been watched by the user.
        */
-      indexInQueue: number;
-      clientType: string;
-      /**
-       * The duration of the ad
-       * @since v6.0
-       */
-      duration: number;
-      /**
-       * The skip offset of the ad
-       * @since v6.0
-       */
-      skipOffset: number;
-      timeOffset: string;
-      adMessage?: string;
-      skipMessage?: SkipMessage;
+      quartile: AdQuartile;
     }
 
     interface AdClickedEvent extends PlayerEvent {
