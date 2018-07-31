@@ -141,11 +141,12 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     let isPlaying = false;
-    let isSeeking = false;
+    let isUserSeeking = false;
+    let isPlayerSeeking = false;
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEvent = null, forceUpdate: boolean = false) => {
-      if (isSeeking) {
+      if (isUserSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
       }
@@ -209,18 +210,28 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
     // Seek handling
-    player.on(player.exports.Event.Seek, () => {
+    let onPlayerSeek = () => {
+      isPlayerSeeking = true;
       this.setSeeking(true);
-    });
-    player.on(player.exports.Event.Seeked, () => {
+    };
+
+    let onPlayerSeeked = () => {
+      isPlayerSeeking = false;
       this.setSeeking(false);
-    });
-    player.on(player.exports.Event.TimeShift, () => {
-      this.setSeeking(true);
-    });
-    player.on(player.exports.Event.TimeShifted, () => {
-      this.setSeeking(false);
-    });
+      restorePlayingState();
+    };
+
+    let restorePlayingState = function() {
+      // Continue playback after seek if player was playing when seek started
+      if (isPlaying) {
+        player.play('ui');
+      }
+    };
+
+    player.on(player.exports.Event.Seek, onPlayerSeek);
+    player.on(player.exports.Event.Seeked, onPlayerSeeked);
+    player.on(player.exports.Event.TimeShift, onPlayerSeek);
+    player.on(player.exports.Event.TimeShifted, onPlayerSeeked);
 
     let seek = (percentage: number) => {
       if (player.isLive()) {
@@ -230,18 +241,21 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     };
     this.onSeek.subscribe((sender) => {
-      isSeeking = true; // track seeking status so we can catch events from seek preview seeks
+      isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
 
       // Notify UI manager of started seek
       uimanager.onSeek.dispatch(sender);
 
-      // Save current playback state
-      isPlaying = player.isPlaying();
+      // Save current playback state before performing the seek
+      if (!isPlayerSeeking) {
+        isPlaying = player.isPlaying();
 
-      // Pause playback while seeking
-      if (isPlaying) {
-        player.pause('ui');
+        // Pause playback while seeking
+        if (isPlaying) {
+          player.pause('ui');
+        }
       }
+
     });
     this.onSeekPreview.subscribe((sender: SeekBar, args: SeekPreviewEventArgs) => {
       // Notify UI manager of seek preview
@@ -254,15 +268,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     }, 200);
     this.onSeeked.subscribe((sender, percentage) => {
-      isSeeking = false;
+      isUserSeeking = false;
 
       // Do the seek
       seek(percentage);
-
-      // Continue playback after seek if player was playing when seek started
-      if (isPlaying) {
-        player.play('ui');
-      }
 
       // Notify UI manager of finished seek
       uimanager.onSeeked.dispatch(sender);
