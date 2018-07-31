@@ -33,7 +33,7 @@ import {RecommendationOverlay} from './components/recommendationoverlay';
 import {AdMessageLabel} from './components/admessagelabel';
 import {AdSkipButton} from './components/adskipbutton';
 import {AdClickOverlay} from './components/adclickoverlay';
-import EVENT = bitmovin.PlayerAPI.Event;
+import Event = bitmovin.PlayerAPI.Event;
 import PlayerEventCallback = bitmovin.PlayerAPI.PlayerEventCallback;
 import AdStartedEvent = bitmovin.PlayerAPI.AdStartedEvent;
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
@@ -1232,7 +1232,7 @@ interface WrappedPlayer extends PlayerAPI {
    * @param event the event to fire
    * @param data data to send with the event
    */
-  fireEventInUI(event: EVENT, data: {}): void;
+  fireEventInUI(event: Event, data: {}): void;
 }
 
 /**
@@ -1300,7 +1300,7 @@ class PlayerWrapper {
     }
 
     // Explicitly add a wrapper method for 'on' that adds added event handlers to the event list
-    wrapper.on = (eventType: EVENT, callback: PlayerEventCallback) => {
+    wrapper.on = (eventType: Event, callback: PlayerEventCallback) => {
       player.on(eventType, callback);
 
       if (!this.eventHandlers[eventType]) {
@@ -1313,7 +1313,7 @@ class PlayerWrapper {
     };
 
     // Explicitly add a wrapper method for 'off' that removes removed event handlers from the event list
-    wrapper.off = (eventType: EVENT, callback: PlayerEventCallback) => {
+    wrapper.off = (eventType: Event, callback: PlayerEventCallback) => {
       player.off(eventType, callback);
 
       if (this.eventHandlers[eventType]) {
@@ -1323,7 +1323,7 @@ class PlayerWrapper {
       return wrapper;
     };
 
-    wrapper.fireEventInUI = (event: EVENT, data: {}) => {
+    wrapper.fireEventInUI = (event: Event, data: {}) => {
       if (this.eventHandlers[event]) { // check if there are handlers for this event registered
         // Extend the data object with default values to convert it to a {@link PlayerEvent} object.
         let playerEventData = <PlayerEvent>Object.assign({}, {
