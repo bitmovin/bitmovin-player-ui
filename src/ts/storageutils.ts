@@ -8,8 +8,9 @@ export namespace StorageUtils {
 
     // hasLocalStorage is used to safely ensure we can use localStorage
     // taken from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
-    let storage = window['localStorage'];
+    let storage: any = { length: 0 };
     try {
+      storage = window['localStorage'];
       let x = '__storage_test__';
       storage.setItem(x, x);
       storage.removeItem(x);

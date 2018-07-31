@@ -19,6 +19,7 @@ This major release is adjusted to the changed API of Bitmovin Player v8.
 
 ### Fixed
 - Rendering of single-image thumbnails
+- Local storage detection in Firefox
 
 ## [2.17.0]
 
