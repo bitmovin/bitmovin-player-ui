@@ -605,8 +605,8 @@ declare namespace bitmovin {
     }
 
     interface ViewModeChangedEvent extends PlayerEvent {
-      from: ViewMode,
-      to: ViewMode,
+      from: ViewMode;
+      to: ViewMode;
     }
   }
 }
