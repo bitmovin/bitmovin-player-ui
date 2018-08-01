@@ -5,6 +5,8 @@ declare namespace bitmovin {
     /**
      * All available events of the player
      */
+    import ViewMode = bitmovin.player.ViewMode;
+
     enum Event {
       AdBreakStarted,
       AdBreakFinished,
@@ -37,8 +39,6 @@ declare namespace bitmovin {
       DownloadFinished,
       DVRWindowExceeded,
       Error,
-      FullscreenEnter,
-      FullscreenExit,
       Metadata,
       MetadataParsed,
       Muted,
@@ -74,11 +74,10 @@ declare namespace bitmovin {
       VolumeChanged,
       VRStereoChanged,
       Warning,
-      PictureInPictureEnter,
-      PictureInPictureExit,
       AirplayAvailable,
       VRViewingDirectionChange,
       VRViewingDirectionChanged,
+      ViewModeChanged,
     }
 
     interface PlayerEvent {
@@ -603,6 +602,11 @@ declare namespace bitmovin {
 
     interface SubtitleCueParsedEvent extends SubtitleCueEvent {
       subtitleId: string;
+    }
+
+    interface ViewModeChangedEvent extends PlayerEvent {
+      from: ViewMode,
+      to: ViewMode,
     }
   }
 }

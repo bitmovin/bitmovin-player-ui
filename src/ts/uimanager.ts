@@ -378,8 +378,7 @@ export class UIManager {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdSkipped, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdError, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.PlayerResize, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.FullscreenEnter, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.FullscreenExit, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.ViewModeChanged, resolveUiVariant);
     }
 
     // Initialize the UI
@@ -456,7 +455,7 @@ export class UIManager {
     const defaultContext: UIConditionContext = {
       isAd: false,
       adClientType: null,
-      isFullscreen: this.player.isFullscreen(),
+      isFullscreen: this.player.getViewMode() === this.player.exports.ViewMode.Fullscreen,
       isMobile: BrowserUtils.isMobile,
       isPlaying: this.player.isPlaying(),
       width: this.uiContainerElement.width(),

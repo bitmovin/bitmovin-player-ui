@@ -4,6 +4,8 @@
 declare namespace bitmovin {
 
   import Config = bitmovin.PlayerAPI.Config;
+  import ViewMode = bitmovin.player.ViewMode;
+  import ViewModeOptions = bitmovin.PlayerAPI.ViewModeOptions;
 
   interface PlayerStatic {
     /**
@@ -58,6 +60,12 @@ declare namespace bitmovin {
         TEXT,
       }
     }
+
+    enum ViewMode {
+      Inline,
+      Fullscreen,
+      PictureInPicture,
+    }
   }
 
   /**
@@ -67,6 +75,7 @@ declare namespace bitmovin {
     exports: {
       Network: typeof bitmovin.player.Network;
       Event: typeof bitmovin.PlayerAPI.Event;
+      ViewMode: typeof bitmovin.player.ViewMode;
     };
     /**
      * Subscribes an event handler to a player event.
@@ -110,14 +119,6 @@ declare namespace bitmovin {
      * Unloads the player and removes all inserted HTML elements and event handlers.
      */
     destroy(): void;
-    /**
-     * Switch player to fullscreen mode. Has no effect if already in fullscreen.
-     */
-    enterFullscreen(): void;
-    /**
-     * Exit player fullscreen mode. Has no effect if not in fullscreen.
-     */
-    exitFullscreen(): void;
     /**
      * Returns the currently used audio track.
      */
@@ -283,10 +284,6 @@ declare namespace bitmovin {
      * @param drmSystem A KeySystem string to test against
      */
     isDRMSupported(drmSystem: string): Promise<string>;
-    /**
-     * Returns true if the player is currently in fullscreen mode.
-     */
-    isFullscreen(): boolean;
     /**
      * Return true if the displayed video is a live stream.
      */
@@ -508,22 +505,6 @@ declare namespace bitmovin {
      */
     showAirplayTargetPicker(): PlayerAPI;
     /**
-     * Checks if macOS picture in picture mode is available.
-     */
-    isPictureInPictureAvailable(): boolean;
-    /**
-     * Returns the status of picture in picture mode.
-     */
-    isPictureInPicture(): boolean;
-    /**
-     * Enter picture in picture mode.
-     */
-    enterPictureInPicture(): PlayerAPI;
-    /**
-     * Exit picture in picture mode.
-     */
-    exitPictureInPicture(): PlayerAPI;
-    /**
      * Starts preloading the content of the currently loaded source.
      */
     preload(): PlayerAPI;
@@ -531,6 +512,12 @@ declare namespace bitmovin {
      * Returns the currently buffered time ranges of the video element.
      */
     getBufferedRanges(): PlayerAPI.TimeRange[];
+
+    getViewMode(): ViewMode;
+
+    isViewModeAvailable(viewMode: ViewMode): boolean;
+
+    setViewMode(viewMode: ViewMode, options?: ViewModeOptions): void;
 
     VR: {
       CONTENT_TYPE: {
@@ -556,6 +543,10 @@ declare namespace bitmovin {
   }
 
   namespace PlayerAPI {
+
+    interface ViewModeOptions {
+      fullscreenElement?: HTMLElement;
+    }
 
     /**
      * Properties of a thumbnail out of a seeking thumbnail preview definition.

@@ -32,10 +32,10 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     };
 
     let toggleFullscreen = () => {
-      if (player.isFullscreen()) {
-        player.exitFullscreen();
+      if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
+        player.setViewMode(player.exports.ViewMode.Inline);
       } else {
-        player.enterFullscreen();
+        player.setViewMode(player.exports.ViewMode.Fullscreen);
       }
     };
 

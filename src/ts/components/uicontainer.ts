@@ -185,14 +185,15 @@ export class UIContainer extends Container<UIContainerConfig> {
     container.addClass(stateClassNames[PlayerUtils.getState(player)]);
 
     // Fullscreen marker class
-    player.on(player.exports.Event.FullscreenEnter, () => {
-      container.addClass(this.prefixCss(UIContainer.FULLSCREEN));
-    });
-    player.on(player.exports.Event.FullscreenExit, () => {
-      container.removeClass(this.prefixCss(UIContainer.FULLSCREEN));
+    player.on(player.exports.Event.ViewModeChanged, () => {
+      if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
+        container.addClass(this.prefixCss(UIContainer.FULLSCREEN));
+      } else {
+        container.removeClass(this.prefixCss(UIContainer.FULLSCREEN));
+      }
     });
     // Init fullscreen state
-    if (player.isFullscreen()) {
+    if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
       container.addClass(this.prefixCss(UIContainer.FULLSCREEN));
     }
 
