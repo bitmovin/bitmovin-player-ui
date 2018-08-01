@@ -15,7 +15,7 @@ This major release is adjusted to the changed API of Bitmovin Player v8.
 - Everything deprecated in 2.x
 - Player v7 feature detections and compatibility fallbacks
 
-## [develop]
+## [2.17.1]
 
 ### Fixed
 - Rendering of single-image thumbnails
@@ -395,6 +395,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 - 2017-02-03
 - First release
 
+[2.17.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.17.0...v2.17.1
 [2.17.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.16.0...v2.17.0
 [2.16.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.15.0...v2.16.0
 [2.15.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.14.0...v2.15.0
