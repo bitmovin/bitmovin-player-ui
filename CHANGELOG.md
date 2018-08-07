@@ -8,10 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - UI element `ListBox` to display multiple selectable items
-- Icon for Subtitles
-- Icon for AudioTracks
-- Demo section within the UI variants in the Playground
-- Demo for extracted Subtitles and Audiotracks from the `SettingsPanel`
+- Icon for subtitles
+- Icon for audio tracks
+- Demo section within the UI variants in the playground
+- Demo with separate `SettingsPanel`s for subtitles and audio tracks
 
 ## [2.17.1]
 
