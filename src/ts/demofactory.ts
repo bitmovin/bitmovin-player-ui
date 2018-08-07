@@ -112,11 +112,11 @@ export namespace DemoFactory {
             new VRToggleButton(),
             new SettingsToggleButton({
               settingsPanel: audioTrackSettingsPanel,
-              cssClass: 'ui-audiotrack-setting-toggle-button',
+              cssClass: 'ui-audiotracksettingstogglebutton',
             }),
             new SettingsToggleButton({
               settingsPanel: subtitleSettingsPanel,
-              cssClass: 'ui-subtitle-setting-toggle-button',
+              cssClass: 'ui-subtitlesettingstogglebutton',
             }),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
             new FullscreenToggleButton(),

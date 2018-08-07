@@ -3,13 +3,14 @@
 
 %ui-listbox {
   @extend %ui-container;
+    margin: .5em;
 
   .#{$prefix}-ui-listboxitem-button {
     @extend %ui-button;
 
     font-size: .8em;
     height: 100%;
-    padding: .5em 2em;
+    padding: .5em;
     width: 100%;
 
     .#{$prefix}-label {

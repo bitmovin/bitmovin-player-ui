@@ -4,7 +4,6 @@
 .#{$prefix}-ui-audiotrack-settings-panel {
   @extend %ui-settings-panel;
 
-  right: 5em;
   width: 7em;
 
   > .#{$prefix}-container-wrapper {

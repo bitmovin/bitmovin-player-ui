@@ -10,7 +10,7 @@ export class SubtitleListBox extends ListBox {
   constructor(config: ListSelectorConfig = {}) {
     super(config);
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitle-listbox',
+      cssClass: 'ui-listbox',
     }, this.config);
   }
 
