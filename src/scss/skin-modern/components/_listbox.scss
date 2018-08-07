@@ -3,7 +3,7 @@
 
 %ui-listbox {
   @extend %ui-container;
-    margin: .5em;
+  margin: .5em;
 
   .#{$prefix}-ui-listboxitem-button {
     @extend %ui-button;
