@@ -658,7 +658,7 @@ declare namespace bitmovin {
     /**
      * Adaptation configurations for different platforms.
      */
-    interface AdaptationPlatformConfig {
+    interface AdaptationPlatformConfig extends AdaptationConfig {
       desktop?: AdaptationConfig;
       mobile?: AdaptationConfig;
     }
