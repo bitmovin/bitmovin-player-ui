@@ -16,8 +16,7 @@ export class SubtitleSwitchHandler {
 
     this.bindSelectionEvent();
     this.bindPlayerEvents();
-    const callback = this.buildUpdateSubtitlesCallback();
-    callback();
+    this.updateSubtitles();
   }
 
   private bindSelectionEvent(): void {
@@ -27,38 +26,39 @@ export class SubtitleSwitchHandler {
   }
 
   private bindPlayerEvents(): void {
-    this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_ADDED, this.buildUpdateSubtitlesCallback());
-    this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_CHANGED, this.buildSelectCurrentSubtitleCallback());
-    this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_REMOVED, this.buildUpdateSubtitlesCallback());
+    const updateSubtitlesCallback = (): void => {
+      this.updateSubtitles();
+    };
+
+    this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_ADDED, updateSubtitlesCallback);
+    this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_CHANGED, () => {
+      this.selectCurrentSubtitle();
+    });
+    this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_REMOVED, updateSubtitlesCallback);
     // Update subtitles when source goes away
-    this.player.addEventHandler(this.player.EVENT.ON_SOURCE_UNLOADED, this.buildUpdateSubtitlesCallback());
+    this.player.addEventHandler(this.player.EVENT.ON_SOURCE_UNLOADED, updateSubtitlesCallback);
     // Update subtitles when a new source is loaded
-    this.player.addEventHandler(this.player.EVENT.ON_READY, this.buildUpdateSubtitlesCallback());
+    this.player.addEventHandler(this.player.EVENT.ON_READY, updateSubtitlesCallback);
     // Update subtitles when the period within a source changes
-    this.player.addEventHandler(this.player.EVENT.ON_PERIOD_SWITCHED, this.buildUpdateSubtitlesCallback());
+    this.player.addEventHandler(this.player.EVENT.ON_PERIOD_SWITCHED, updateSubtitlesCallback);
   }
 
-  private buildUpdateSubtitlesCallback(): () => void {
-    return () => {
-      this.listElement.clearItems();
+  private updateSubtitles(): void {
+    this.listElement.clearItems();
 
-      for (let subtitle of this.player.getAvailableSubtitles()) {
-        this.listElement.addItem(subtitle.id, subtitle.label);
-      }
+    for (let subtitle of this.player.getAvailableSubtitles()) {
+      this.listElement.addItem(subtitle.id, subtitle.label);
+    }
 
-      // Select the correct subtitle after the subtitles have been added
-      const callback = this.buildSelectCurrentSubtitleCallback();
-      callback();
-    };
+    // Select the correct subtitle after the subtitles have been added
+    this.selectCurrentSubtitle();
   }
 
-  private buildSelectCurrentSubtitleCallback(): () => void {
-    return () => {
-      let currentSubtitle = this.player.getSubtitle();
+  private selectCurrentSubtitle() {
+    let currentSubtitle = this.player.getSubtitle();
 
-      if (currentSubtitle) {
-        this.listElement.selectItem(currentSubtitle.id);
-      }
-    };
+    if (currentSubtitle) {
+      this.listElement.selectItem(currentSubtitle.id);
+    }
   }
 }
