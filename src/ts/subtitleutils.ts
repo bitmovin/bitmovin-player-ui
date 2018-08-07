@@ -26,9 +26,7 @@ export class SubtitleSwitchHandler {
   }
 
   private bindPlayerEvents(): void {
-    const updateSubtitlesCallback = (): void => {
-      this.updateSubtitles();
-    };
+    const updateSubtitlesCallback = (): void => this.updateSubtitles();
 
     this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_ADDED, updateSubtitlesCallback);
     this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_CHANGED, () => {

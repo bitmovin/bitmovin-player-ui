@@ -26,9 +26,7 @@ export class AudioTrackSwitchHandler {
   }
 
   private bindPlayerEvents(): void {
-    const updateAudioTracksCallback = (): void => {
-      this.updateAudioTracks();
-    };
+    const updateAudioTracksCallback = (): void => this.updateAudioTracks();
     // Update selection when selected track has changed
     this.player.addEventHandler(this.player.EVENT.ON_AUDIO_CHANGED, () => {
       this.selectCurrentAudioTrack();
