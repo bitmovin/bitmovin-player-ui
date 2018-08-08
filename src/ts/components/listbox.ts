@@ -7,12 +7,8 @@ import {DOM} from '../dom';
  *
  * DOM example:
  * <code>
- *   <div class='ui-listbox>
- *     <div class='ui-listboxitem-wrapper>
- *       <div class='ui-listboxitem'>
- *         <button class='ui-listboxitem-button'>label</button>
- *       </div>
- *     </div>
+ *   <div class='ui-listbox'>
+ *     <button class='ui-listbox-button'>label</button>
  *     ...
  *   </div
  * </code>
