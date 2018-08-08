@@ -278,7 +278,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       updateLayoutSizeClasses(width, height);
     });
     // Init layout state
-    updateLayoutSizeClasses(new DOM(player.getFigure()).width(), new DOM(player.getFigure()).height());
+    updateLayoutSizeClasses(new DOM(player.getContainer()).width(), new DOM(player.getContainer()).height());
   }
 
   release(): void {
