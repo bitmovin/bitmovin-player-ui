@@ -752,6 +752,7 @@ export namespace UIManager.Factory {
         new BufferingOverlay(),
         new CastStatusOverlay(),
         new PlaybackToggleOverlay(),
+        new RecommendationOverlay(),
         controlBar,
         new TitleBar({
           components: [
@@ -767,7 +768,6 @@ export namespace UIManager.Factory {
         }),
         settingsPanel,
         subtitleSettingsPanel,
-        new RecommendationOverlay(),
         new Watermark(),
         new ErrorMessageOverlay(),
       ],
