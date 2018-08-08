@@ -4,7 +4,7 @@
 %ui-listbox {
   @extend %ui-container;
 
-  .#{$prefix}-ui-listboxitem-button {
+  .#{$prefix}-ui-listbox-button {
     @extend %ui-button;
 
     font-size: .8em;
@@ -16,7 +16,7 @@
       display: inherit;
     }
 
-    &.#{$prefix}-ui-listboxitem-button-selected {
+    &.#{$prefix}-ui-listbox-button-selected {
       background-color: transparentize($color-highlight, .3);
     }
 

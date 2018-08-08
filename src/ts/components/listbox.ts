@@ -20,7 +20,7 @@ import {DOM} from '../dom';
 export class ListBox extends ListSelector<ListSelectorConfig> {
   private listBoxElement: DOM;
 
-  private static readonly SELECTED_LIST_BOX_ITEM_CLASS = 'ui-listboxitem-button-selected';
+  private static readonly SELECTED_LIST_BOX_ITEM_CLASS = 'ui-listbox-button-selected';
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
@@ -107,7 +107,7 @@ export class ListBoxItemButton extends Button<ListBoxItemButtonConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-listboxitem-button',
+      cssClass: 'ui-listbox-button',
     }, this.config);
   }
 
