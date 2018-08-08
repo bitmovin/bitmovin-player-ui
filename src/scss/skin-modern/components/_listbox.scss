@@ -16,7 +16,7 @@
       display: inherit;
     }
 
-    &.#{$prefix}-ui-listbox-button-selected {
+    &.#{$prefix}-selected {
       background-color: transparentize($color-highlight, .3);
     }
 

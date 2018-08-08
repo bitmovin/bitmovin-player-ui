@@ -1,4 +1,4 @@
-import {Button, ButtonConfig} from './button';
+import { ToggleButton, ToggleButtonConfig } from './togglebutton';
 import {ListSelector, ListSelectorConfig} from './listselector';
 import {DOM} from '../dom';
 
@@ -19,8 +19,6 @@ import {DOM} from '../dom';
  */
 export class ListBox extends ListSelector<ListSelectorConfig> {
   private listBoxElement: DOM;
-
-  private static readonly SELECTED_LIST_BOX_ITEM_CLASS = 'ui-listbox-button-selected';
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
@@ -57,15 +55,12 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
         this.handleSelectionChange(<ListBoxItemButton>sender);
       });
 
-      const selectedItemClass = this.prefixCss(ListBox.SELECTED_LIST_BOX_ITEM_CLASS);
       // These buttons are not in the component tree
       // see comment: https://github.com/bitmovin/bitmovin-player-ui/pull/122#discussion_r201958260
       const itemElement = itemButton.getDomElement();
       // convert selectedValue and item.key to string to catch 'null'/null case
       if (String(item.key) === String(selectedValue)) {
-        if (!itemElement.hasClass(selectedItemClass)) {
-          itemElement.addClass(selectedItemClass);
-        }
+        itemButton.on();
       }
 
       this.listBoxElement.append(itemElement);
@@ -94,20 +89,22 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
   }
 }
 
-interface ListBoxItemButtonConfig extends ButtonConfig {
+interface ListBoxItemButtonConfig extends ToggleButtonConfig {
   /**
    * key to identify selected item. Similar to the value attribute of an select option.
    */
   key: string;
 }
 
-class ListBoxItemButton extends Button<ListBoxItemButtonConfig> {
+class ListBoxItemButton extends ToggleButton<ListBoxItemButtonConfig> {
 
   constructor(config: ListBoxItemButtonConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
+    this.config = this.mergeConfig<ToggleButtonConfig>(config, {
       cssClass: 'ui-listbox-button',
+      onClass: 'selected',
+      offClass: '',
     }, this.config);
   }
 
