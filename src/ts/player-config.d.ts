@@ -664,112 +664,40 @@ declare namespace bitmovin {
     }
 
     interface AdvertisingConfig {
-      /**
-       * Defines a collection of ad breaks which will be played at the specified position in each {@link AdBreakConfig}.
-       */
       adBreaks?: AdConfig[];
-      /**
-       * Specifies the amount of milliseconds before the loading of an ad from a given ad manifest times out.
-       * Default is 8000.
-       */
       videoLoadTimeout?: number;
-      /**
-       * Defines an object with two functions which will be called if an ad break is about to start or when ads are seeked
-       * over. If this property is not set manually, then only the last ad that was seeked over will be played.
-       */
       strategy?: RestrictStrategy;
-      /**
-       * Defines an array of UI elements that can be used by the AdvertisingModule to only display the desired UI elements
-       * when an ad is active.
-       */
       allowedUiElements?: string[];
-      /**
-       * Defines a function which returns a container that is used for displaying ads.
-       */
       adContainer?: () => HTMLElement;
-      /**
-       * Defines a function which returns an array of containers for the ad module to fill with companion ads.
-       */
       companionAdContainers?: () => HTMLElement[];
     }
 
     interface RestrictStrategy {
-      /**
-       * A callback function that will be called every time an ad break is about to start. The return value decides whether
-       * the ad break will actually start playing or be discarded.
-       */
       shouldPlayAdBreak: (toPlay: AdBreak) => boolean;
-
-      /**
-       * A callback function that will be called after every seek where ad breaks were scheduled in between the
-       * original time and the seek target. The return value decides which ad breaks will be played after the seek
-       */
       shouldPlaySkippedAdBreaks: (skipped: AdBreak[], from: number, to: number) => AdBreak[];
     }
 
     interface AdConfig {
-      /**
-       * Specifies how many seconds the ad break(s) should replace of the main video content.
-       */
       replaceContentDuration?: number;
     }
 
     type AdTagType = 'vast' | 'vmap' | 'vpaid';
 
     interface AdTag {
-      /**
-       * Defines the path to an ad manifest. If the tag is a VMAP manifest, the resulting ad breaks will be scheduled as
-       * described in the manifest, otherwise the ad breaks will be handled as pre-roll ads if no further information is
-       * specified in the {@link AdBreakConfig.position} property.
-       */
       url: string;
-      /**
-       * Specifies whether the ad tag is a VAST, VMAP or VPAID tag. VMAP tags will be loaded immediately after scheduling.
-       */
       type: AdTagType;
     }
 
     interface AdTagConfig extends AdConfig {
-      /**
-       * Defines the url and type of the ad manifest. If the tag is a VAST or VPAID manifest, then more specific scheduling
-       * options can be defined in the {@link AdBreakConfig}.
-       */
       tag: AdTag;
-      /**
-       * If set, the ad tag will be processed and rescheduled automatically when a new source is loaded.
-       */
       persistent?: boolean;
-      /**
-       * Defines a list of fallback ad tags which will be tried one after the other if the original ad tag does not provide
-       * a valid response.
-       */
       fallbackTags?:  AdTag[];
     }
 
     interface AdBreakConfig extends AdTagConfig {
-      /**
-       * Unique identifier of the ad break. Used to be able to identify and discard the ad break dynamically.
-       */
       id: string;
-      /**
-       * Defines when the ad break shall be started. Default is 'pre'.
-       *
-       * Allowed values are:
-       * - 'pre': pre-roll ad
-       * - 'post': post-roll ad
-       * - fractional seconds: '10', '12.5' (mid-roll ad)
-       * - percentage of the entire video duration: '25%', '50%' (mid-roll ad)
-       * - timecode [hh:mm:ss.mmm]: '00:10:30.000', '01:00:00.000' (mid-roll ad)
-       */
       position: string;
-      /**
-       * Specifies how many seconds before the ad break would start playing should the ad tag (and if possible the media
-       * files of the resulting ad response) start pre-loading.
-       */
       preloadOffset?: number;
-      /**
-       * Specifies after how many seconds the ad break may be skipped.
-       */
       skipAfter?: number;
     }
 
