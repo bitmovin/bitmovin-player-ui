@@ -179,7 +179,7 @@ declare namespace bitmovin {
      */
     getDuration(): number;
     /**
-     * Returns the figure element that the player is embedded in, if the player is set up, or null otherwise.
+     * Returns the html element that the player is embedded in, which has been provided in the player constructor.
      */
     getContainer(): HTMLElement;
     /**
