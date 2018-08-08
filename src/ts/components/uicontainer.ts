@@ -4,7 +4,7 @@ import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
 import PlayerResizeEvent = bitmovin.PlayerAPI.PlayerResizeEvent;
-import {CancelEventArgs} from '../eventdispatcher';
+import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -33,6 +33,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   private static readonly CONTROLS_HIDDEN = 'controls-hidden';
 
   private uiHideTimeout: Timeout;
+  private playerStateChange: EventDispatcher<UIContainer, PlayerUtils.PlayerState>;
 
   constructor(config: UIContainerConfig) {
     super(config);
@@ -41,6 +42,8 @@ export class UIContainer extends Container<UIContainerConfig> {
       cssClass: 'ui-uicontainer',
       hideDelay: 5000,
     }, this.config);
+
+    this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
@@ -165,6 +168,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     const updateState = (state: PlayerUtils.PlayerState) => {
       removeStates();
       container.addClass(stateClassNames[state]);
+      this.playerStateChange.dispatch(this, state);
     };
 
     player.addEventHandler(player.EVENT.ON_READY, () => {
