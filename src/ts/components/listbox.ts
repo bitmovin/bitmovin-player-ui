@@ -72,7 +72,7 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
     }
   }
 
-  protected handleSelectionChange(sender: ListBoxItemButton) {
+  private handleSelectionChange(sender: ListBoxItemButton) {
     this.onItemSelectedEvent(sender.key);
   }
 
@@ -94,14 +94,14 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
   }
 }
 
-export interface ListBoxItemButtonConfig extends ButtonConfig {
+interface ListBoxItemButtonConfig extends ButtonConfig {
   /**
    * key to identify selected item. Similar to the value attribute of an select option.
    */
   key: string;
 }
 
-export class ListBoxItemButton extends Button<ListBoxItemButtonConfig> {
+class ListBoxItemButton extends Button<ListBoxItemButtonConfig> {
 
   constructor(config: ListBoxItemButtonConfig) {
     super(config);
