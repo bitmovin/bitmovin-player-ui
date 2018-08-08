@@ -1,5 +1,4 @@
 import {ListBox} from './listbox';
-import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
 import {AudioTrackSwitchHandler} from '../audiotrackutils';
 
