@@ -663,74 +663,63 @@ declare namespace bitmovin {
       mobile?: AdaptationConfig;
     }
 
-    interface AdvertisingScheduleItem {
-      /**
-       * Specifies which ad client to use, like e.g., VAST or VPAID.
-       */
-      client?: string;
-      /**
-       * Defines when the ad shall be played. Supports the same values as {@link AdvertisingConfig#offset}.
-       */
-      offset: string;
-      /**
-       * Defines the path to the ad manifest.
-       */
-      tag: string;
+    interface AdvertisingConfig {
+      adBreaks?: AdConfig[];
+      videoLoadTimeout?: number;
+      strategy?: RestrictStrategy;
+      allowedUiElements?: string[];
+      adContainer?: () => HTMLElement;
+      companionAdContainers?: () => HTMLElement[];
     }
 
-    interface AdvertisingConfig {
-      /**
-       * Mandatory. Specifies which ad client to use, like e.g., VAST or VPAID.
-       */
-      client: string;
-      /**
-       * Specifies the time in seconds, how much the VAST tag is loaded prior to the ad playback. By default
-       * the VAST tag is loaded at player startup.
-       */
-      adCallOffset?: number;
-      /**
-       * Defines a custom message that will be displayed to the user instead of the progress bar during
-       * ad playback. The predefined placeholder xx can be used to show the remaining seconds of the ad.
-       */
-      admessage?: string;
-      /**
-       * Defines a custom message that will be displayed to the user as a skip button.
-       */
-      skipmessage?: SkipMessage;
-      /**
-       * Specifies that cookies are send along with the ad request. The server needs to explicitly accept
-       * them for CORS requests, otherwise the request will fail.
-       */
-      withCredentials?: boolean;
-      /**
-       * Defines the path to an ad manifest. Can be used to schedule a single ad without setting the {@link #schedule}
-       * property, that will be played at the time defined in the {@link #offset} property.
-       * It will be played as pre-roll add by default if no offset is set, or when as schedule with additional ads
-       * is provided.
-       */
-      tag?: string;
-      /**
-       * Defines when the ad shall be played.
-       *
-       * Allowed values are:
-       * - 'pre': pre-roll ad
-       * - 'post': post-roll ad
-       * - fractional seconds: '10', '12.5' (mid-roll ad)
-       * - percentage of the entire video duration: '25%', '50%' (mid-roll ad)
-       * - timecode [hh:mm:ss.mmm]: '00:10:30.000', '01:00:00.000' (mid-roll ad)
-       */
-      offset?: string;
-      /**
-       * Contains one or more ad breaks. Each ad break defines when an ad shall be played and must contain
-       * an offset and a tag property.
-       */
-      schedule?: { [name: string]: AdvertisingScheduleItem; };
-      /**
-       * If set to true, mid-roll ads are only played during normal playback. Seeking to a time after the
-       * mid-roll ads doesn't trigger ad playback.
-       * @since 7.1
-       */
-      allowSeekingOverMidRollAds?: boolean;
+    interface RestrictStrategy {
+      shouldPlayAdBreak: (toPlay: AdBreak) => boolean;
+      shouldPlaySkippedAdBreaks: (skipped: AdBreak[], from: number, to: number) => AdBreak[];
+    }
+
+    interface AdConfig {
+      replaceContentDuration?: number;
+    }
+
+    type AdTagType = 'vast' | 'vmap' | 'vpaid';
+
+    interface AdTag {
+      url: string;
+      type: AdTagType;
+    }
+
+    interface AdTagConfig extends AdConfig {
+      tag: AdTag;
+      persistent?: boolean;
+      fallbackTags?:  AdTag[];
+    }
+
+    interface AdBreakConfig extends AdTagConfig {
+      id: string;
+      position: string;
+      preloadOffset?: number;
+      skipAfter?: number;
+    }
+
+    // not part of PlayerConfiguration
+    interface AdBreak extends AdConfig {
+      scheduleTime: number;
+      ads?: Ad[];
+    }
+
+    // not part of PlayerConfiguration
+    interface Ad {
+      isLinear: boolean;
+      id?: string;
+      clickThroughUrl?: string;
+      mediaFileUrl?: string;
+      companionAds?: CompanionAd[];
+    }
+
+    // not part of PlayerConfiguration
+    interface CompanionAd {
+      width: number;
+      height: number;
     }
 
     interface LocationConfig {
