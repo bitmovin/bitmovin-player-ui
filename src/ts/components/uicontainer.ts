@@ -68,6 +68,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
 
+    const hidingPrevented = (): boolean => {
+      return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
+    };
+
     let showUi = () => {
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
@@ -75,7 +79,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         isUiShown = true;
       }
       // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
-      if (!isSeeking && !player.isCasting()) {
+      if (!isSeeking && !player.isCasting() && !hidingPrevented()) {
         this.uiHideTimeout.start();
       }
     };
@@ -128,7 +132,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     container.on('mouseleave', () => {
       // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not hide
       // the UI in such cases
-      if (!isSeeking) {
+      if (!isSeeking && !hidingPrevented()) {
         this.uiHideTimeout.start();
       }
     });
