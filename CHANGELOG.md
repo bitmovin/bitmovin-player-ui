@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.18.0]
+## [2.18.0] (2018-08-08)
 
 ### Added
 - UI element `ListBox` to display multiple selectable items
@@ -18,13 +18,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - SmallScreenUI: Move `RecommendationOverlay` behind `TitleBar` to avoid hidden `FullscreenToggleButton` in replay screen and prevent smartphone users from exiting fullscreen
 - SmallScreenUI: Do not hide controls in replay screen
 
-## [2.17.1]
+## [2.17.1] (2018-08-01)
 
 ### Fixed
 - Rendering of single-image thumbnails
 - Local storage detection in Firefox
 
-## [2.17.0]
+## [2.17.0] (2018-07-10)
 
 ### Added
 - `AirPlayToggleButton` to `modernSmallScreenUI` for MacOS devices
@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Apply the IE/Firefox workaround of v2.16.0 to hide the hovered dropdown panel of a `SelectBox` also when the UI hides
 
-## [2.16.0]
+## [2.16.0] (2018-06-27)
 
 ### Added
 - Revert state of `PlaybackToggleButton` to paused if a play attempt is rejected (`ON_WARNING 5008`; e.g. in case of autoplay)
@@ -56,12 +56,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - IE & Firefox could leave the dropdown panel of an active/hovered `SelectBox` floating after the parent container (e.g. `SettingsPanel`) was hidden
 
-## [2.15.0]
+## [2.15.0] (2018-06-08)
 
 ### Added
 - `UIManager` API to switch UI variants: `UIConfig.autoUiVariantResolve`, `onUiVariantResolve` event, `getUiVariants`, `resolveUiVariant`, `switchToUiVariant` ([#102](https://github.com/bitmovin/bitmovin-player-ui/pull/102))
 
-## [2.14.0]
+## [2.14.0] (2018-05-02)
 
 License change from LGPLv3 to MIT.
 
@@ -84,18 +84,18 @@ License change from LGPLv3 to MIT.
 - User interaction passthrough from `HugePlaybackToggleButton` to player when autoplay is blocked
 - `SeekBar` bar levels and scrubber positioning in Android 4.4 WebView
 
-## [2.13.0]
+## [2.13.0] (2018-03-15)
 
 ### Changed
 - Consistent UI's prepared state detection by only looking at the player's ready state
 
-## [2.12.1]
+## [2.12.1] (2018-02-21)
 
 ### Fixed
 - Flickering heights of `SeekBar` and `VolumeSlider` bar indicators
 - "Concurrent" modification of event handlers in `EventDispatcher` when a handler is unsubscribed by a handler
 
-## [2.12.0]
+## [2.12.0] (2018-01-22)
 
 ### Changed
 - Execute volume control availability test on dummy media element to prevent unexpected interference with muted autoplay
@@ -103,7 +103,7 @@ License change from LGPLv3 to MIT.
 ### Fixed
 - Positioning of `SeekBar` markers was broken due to style changes in 2.11.0
 
-## [2.11.0]
+## [2.11.0] (2017-12-22)
 
 ### Added
 - Update `SeekBar` playback position of live streams with DVR window while playback is paused
@@ -115,7 +115,7 @@ License change from LGPLv3 to MIT.
 - Stop `SeekBar` smooth playback position updates on `ON_PLAYBACK_FINISHED`
 - Centered `SeekBar` and `VolumeSlider` drag handles and make sure that all layers of the underlying bar have the same height
 
-## [2.10.5]
+## [2.10.5] (2017-11-20)
 
 ### Changed
 - `PlaybackToggleButton` now also listens to `ON_SOURCE_LOADED` and `ON_SOURCE_UNLOADED` to properly update the playback state when the source changes
@@ -125,18 +125,18 @@ License change from LGPLv3 to MIT.
 ### Fixed
 - Unnecessary line breaks in CEA-608 texts
 
-## [2.10.4]
+## [2.10.4] (2017-10-30)
 
 ### Changed
 - Remove `nowrap` from CEA-608 style to correctly render multiline cues
 - `PlaybackToggleButton` now also listens to `ON_PLAYING` in addition to `ON_PLAY`
 
-## [2.10.3]
+## [2.10.3] (2017-10-20)
 
 ### Fixed
 - Handling of whitespaces in CEA-608 texts
 
-## [2.10.2]
+## [2.10.2] (2017-10-19)
 
 ### Changed
 - Rewritten CEA-608 text layouting
@@ -146,7 +146,7 @@ License change from LGPLv3 to MIT.
 ### Fixed
 - Overlapping CEA-608 texts with large player aspect ratios
 
-## [2.10.1]
+## [2.10.1] (2017-10-13)
 
 ### Changed
 - Removed `VolumeControlButton`'s `VolumeSlider` slide-in animation in the legacy skin to fix the slider knob at 100% bug
@@ -156,7 +156,7 @@ License change from LGPLv3 to MIT.
 - Legacy skin's `VolumeSlider` knob was always rendered at 100% when appearing after being hidden
 - Avoid `ItemSelectionList` DOM recreation on item selection to avoid unexpected events (e.g. `mouseenter`)
 
-## [2.10.0]
+## [2.10.0] (2017-09-14)
 
 ### Added
 - Update `AudioQualitySelectBox`/`VideoQualitySelectBox` entries when the period of a source changes
@@ -168,7 +168,7 @@ License change from LGPLv3 to MIT.
 - Fix `Uncaught TypeError` when `require`ing UI before player
 - Don't write UI into global namespace (`bitmovin.playerui`) when loaded as module with `require`
 
-## [2.9.0]
+## [2.9.0] (2017-08-24)
 
 ### Added
 - Support CEA-608 subtitle positioning
@@ -180,12 +180,12 @@ License change from LGPLv3 to MIT.
 ### Fixed
 - Select correct audio track after updating the items in `AudioTrackSelectBox`
 
-## [2.8.3]
+## [2.8.3] (2017-08-01)
 
 ### Changed
 - Use new quality change API in `AudioQualitySelectBox` and `VideoQualitySelectBox` for player >= 7.3.1 (selection is now synced with player-API `set[Audio|Video]Quality` calls)
 
-## [2.8.2]
+## [2.8.2] (2017-08-01)
 
 Release of this version went wrong and it was unpublished from NPM.
 
@@ -193,12 +193,12 @@ Release of this version went wrong and it was unpublished from NPM.
 - Fix `animate-slide-in-from-bottom` SCSS mixin (fixes missing `VolumeSlider` slide-in animation of `VolumeControlButton` in the legacy skin)
 - Fire `ON_READY` event if UI is loaded after player is ready to initialize all components correctly
 
-## [2.8.1]
+## [2.8.1] (2017-07-26)
 
 ### Fixed
 - Early quality selection in `AudioQualitySelectBox`/`VideoQualitySelectBox` before `ON_READY` broke players <= 7.2.5
 
-## [2.8.0]
+## [2.8.0] (2017-07-25)
 
 ### Added
 - Adds a `VolumeToggleButton` to the small screen UI
@@ -215,19 +215,19 @@ Release of this version went wrong and it was unpublished from NPM.
 - Updating selected value in `PlaybackSpeedSelectBox` when player is ready
 - Fix video quality options for progressive streams (removed 'auto' option, preferred quality preselected)
 
-## [2.7.1]
+## [2.7.1] (2017-07-06)
 
 ### Changed
 - Throttled high-frequency API calls to the player from the `VolumeSlider` and `SeekBarLabel`
 
-## [2.7.0]
+## [2.7.0] (2017-06-28)
 
 ### Added
 - Add support for FCC compliant closed captions. Adds options on how captions are displayed, and a SubtitleSettingsPanel with the possibility to update the settings while playing the video.
 - Add UI version property to global namespace (`bitmovin.playerui.version`)
 - Add `UIConfig#container` config property to specify a custom place in the DOM where the UI will be put into. Can be used to place it somewhere else beside the default player figure.
 
-## [2.6.0]
+## [2.6.0] (2017-06-27)
 
 ### Added
 - Add an option to keep the UI always visible by setting the `UIContainerConfig#hideTimeout` to -1
@@ -235,11 +235,11 @@ Release of this version went wrong and it was unpublished from NPM.
 ### Changed
 - Thumbnail size is no longer determined by the physical image size and can now be arbitrarily set by CSS
 
-## [2.5.1]
+## [2.5.1] (2017-06-26)
 
 No functional changes. Improves player API declarations, code linting configuration, and adds [contribution guidelines](CONTRIBUTING.md).
 
-## [2.5.0]
+## [2.5.0] (2017-06-13)
 
 ### Added
 - Add `UIConditionContext#adClientType` to be able to switch to different UI variants for different ad types
@@ -253,7 +253,7 @@ No functional changes. Improves player API declarations, code linting configurat
 - Stop rendering loop of the `ErrorMessageOverlay` background canvas when UI is released
 - Fix wrapped control bar in modern skin on iOS 8.2
 
-## [2.4.0]
+## [2.4.0] (2017-06-08)
 
 ### Changed
 - Resolve UI variants on `ON_READY`
@@ -262,7 +262,7 @@ No functional changes. Improves player API declarations, code linting configurat
 ### Fixed
 - Fix subtitle line breaking
 
-## [2.3.0]
+## [2.3.0] (2017-06-01)
 
 UI does not crash any more when used with player 7.0, all other restrictions explained in [2.0.0](#200) still apply.
 
@@ -281,7 +281,7 @@ UI does not crash any more when used with player 7.0, all other restrictions exp
 - Fix missing audio track selection box in Safari with player 7.1.2 and 7.1.3
 - Fix error in `SubtitleOverlay` when trying to remove an already cleared subtitle cue
 
-## [2.2.0]
+## [2.2.0] (2017-05-05)
 
 ### Added
 - Add `Container#removeComponents()` to remove all child components of a container
@@ -295,12 +295,12 @@ UI does not crash any more when used with player 7.0, all other restrictions exp
 ### Fixed
 - Clear `SubtitleOverlay` when playback is finished
 
-## [2.1.1]
+## [2.1.1] (2017-05-03)
 
 ### Fixed
 - Update playback position / volume indicator position in `SeekBar`/`VolumeSlider` when component is shown
 
-## [2.1.0]
+## [2.1.0] (2017-05-02)
 
 ### Added
 - Add `remote-control` marker class to `UIContainer` that is applied during an active remote control session (e.g. Cast session)
@@ -313,24 +313,24 @@ UI does not crash any more when used with player 7.0, all other restrictions exp
 ### Fixed
 - Fix hiding of `HugePlaybackToggleButton` during Cast session initialization
 
-## [2.0.4]
+## [2.0.4] (2017-04-28)
 
 ### Added
 - Add `ErrorMessageOverlayConfig#messages` to translate and customize error messages in the `ErrorMessageOverlay`
 
-## [2.0.3]
+## [2.0.3] (2017-04-25)
 
 No functional changes. Fixes typo in the changelog.
 
-## [2.0.2]
+## [2.0.2] (2017-04-25)
 
 No functional changes. Adds a `prepublish` script to the NPM package so an incomplete version like `2.0.0` cannot happen to be published again.
 
-## [2.0.1]
+## [2.0.1] (2017-04-24)
 
 No functional changes. Fixes an incomplete NPM package published for `2.0.0`, which has been unpublished.
 
-## [2.0.0]
+## [2.0.0] (2017-04-24)
 
 Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary, it can still be used with player 7.0, but certain restriction apply: Casting will not work correctly due to API improvements and a removed workaround, new components based on added API calls will fail (`AirPlayToggleButton`, `PictureInPictureToggleButton`) and need to be removed from the default UI, seeking before playback won't work due to a removed workaround, and audio/video quality changes through the API won't be picked up by the select boxes due to misnamed events.
 
@@ -391,11 +391,11 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 - Fix wrong `UIContainer` playback state class when creating UI in other states than idle and prepared
 - Correctly initialize `VolumeToggleButton` low/high volume icon state
 
-## [1.0.1] - 2017-02-10
+## [1.0.1] (2017-02-10)
 ### Fixed
 - Fix thumbnail preview on the seekbar label
 
-## 1.0.0 - 2017-02-03
+## 1.0.0 (2017-02-03)
 - First release
 
 [2.18.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.17.1...v2.18.0
