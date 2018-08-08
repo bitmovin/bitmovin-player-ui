@@ -151,8 +151,12 @@ export class UIContainer extends Container<UIContainerConfig> {
     this.playerStateChange.subscribe((_, state) => {
       playerState = state;
       if (hidingPrevented()) {
+        // Entering a player state that prevents hiding and forces the controls to be shown
         this.uiHideTimeout.clear();
         showUi();
+      } else {
+        // Entering a player state that allows hiding
+        this.uiHideTimeout.start();
       }
     });
   }
