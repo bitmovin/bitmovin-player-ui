@@ -282,7 +282,7 @@ export class UIManager {
       this.uiContainerElement = config.container instanceof HTMLElement ?
         new DOM(config.container) : new DOM(config.container);
     } else {
-      this.uiContainerElement = new DOM(player.getFigure());
+      this.uiContainerElement = new DOM(player.getContainer());
     }
 
     // Create UI instance managers for the UI variants

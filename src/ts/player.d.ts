@@ -181,7 +181,7 @@ declare namespace bitmovin {
     /**
      * Returns the figure element that the player is embedded in, if the player is set up, or null otherwise.
      */
-    getFigure(): HTMLElement;
+    getContainer(): HTMLElement;
     /**
      * Returns the manifest file.
      */
