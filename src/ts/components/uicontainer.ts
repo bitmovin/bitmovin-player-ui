@@ -66,6 +66,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isUiShown = false;
     let isSeeking = false;
     let isFirstTouch = true;
+    let playerState: PlayerUtils.PlayerState;
 
     let showUi = () => {
       if (!isUiShown) {
@@ -142,6 +143,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
+    });
+    this.playerStateChange.subscribe((_, state) => {
+      playerState = state;
     });
   }
 
