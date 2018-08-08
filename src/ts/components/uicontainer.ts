@@ -4,7 +4,7 @@ import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
 import PlayerResizeEvent = bitmovin.PlayerAPI.PlayerResizeEvent;
-import {CancelEventArgs} from '../eventdispatcher';
+import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -16,6 +16,7 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: 5 seconds (5000)
    */
   hideDelay?: number;
+  hidePlayerStateExceptions?: PlayerUtils.PlayerState[];
 }
 
 /**
@@ -33,6 +34,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   private static readonly CONTROLS_HIDDEN = 'controls-hidden';
 
   private uiHideTimeout: Timeout;
+  private playerStateChange: EventDispatcher<UIContainer, PlayerUtils.PlayerState>;
 
   constructor(config: UIContainerConfig) {
     super(config);
@@ -41,6 +43,8 @@ export class UIContainer extends Container<UIContainerConfig> {
       cssClass: 'ui-uicontainer',
       hideDelay: 5000,
     }, this.config);
+
+    this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
@@ -62,6 +66,11 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isUiShown = false;
     let isSeeking = false;
     let isFirstTouch = true;
+    let playerState: PlayerUtils.PlayerState;
+
+    const hidingPrevented = (): boolean => {
+      return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
+    };
 
     let showUi = () => {
       if (!isUiShown) {
@@ -70,7 +79,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         isUiShown = true;
       }
       // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
-      if (!isSeeking && !player.isCasting()) {
+      if (!isSeeking && !player.isCasting() && !hidingPrevented()) {
         this.uiHideTimeout.start();
       }
     };
@@ -123,7 +132,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     container.on('mouseleave', () => {
       // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not hide
       // the UI in such cases
-      if (!isSeeking) {
+      if (!isSeeking && !hidingPrevented()) {
         this.uiHideTimeout.start();
       }
     });
@@ -138,6 +147,17 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
+    });
+    this.playerStateChange.subscribe((_, state) => {
+      playerState = state;
+      if (hidingPrevented()) {
+        // Entering a player state that prevents hiding and forces the controls to be shown
+        this.uiHideTimeout.clear();
+        showUi();
+      } else {
+        // Entering a player state that allows hiding
+        this.uiHideTimeout.start();
+      }
     });
   }
 
@@ -161,28 +181,30 @@ export class UIContainer extends Container<UIContainerConfig> {
       container.removeClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
       container.removeClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
     };
-    player.addEventHandler(player.EVENT.ON_READY, () => {
+
+    const updateState = (state: PlayerUtils.PlayerState) => {
       removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.PREPARED]);
+      container.addClass(stateClassNames[state]);
+      this.playerStateChange.dispatch(this, state);
+    };
+
+    player.addEventHandler(player.EVENT.ON_READY, () => {
+      updateState(PlayerUtils.PlayerState.PREPARED);
     });
     player.addEventHandler(player.EVENT.ON_PLAY, () => {
-      removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.PLAYING]);
+      updateState(PlayerUtils.PlayerState.PLAYING);
     });
     player.addEventHandler(player.EVENT.ON_PAUSED, () => {
-      removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
+      updateState(PlayerUtils.PlayerState.PAUSED);
     });
     player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, () => {
-      removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
+      updateState(PlayerUtils.PlayerState.FINISHED);
     });
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
-      removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.IDLE]);
+      updateState(PlayerUtils.PlayerState.IDLE);
     });
     // Init in current player state
-    container.addClass(stateClassNames[PlayerUtils.getState(player)]);
+    updateState(PlayerUtils.getState(player));
 
     // Fullscreen marker class
     player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, () => {
