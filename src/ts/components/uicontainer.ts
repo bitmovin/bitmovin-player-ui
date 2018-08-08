@@ -16,6 +16,7 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: 5 seconds (5000)
    */
   hideDelay?: number;
+  hidePlayerStateExceptions?: PlayerUtils.PlayerState[];
 }
 
 /**
