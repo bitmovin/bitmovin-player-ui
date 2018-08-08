@@ -709,10 +709,9 @@ declare namespace bitmovin {
 
     interface AdConfig {
       /**
-       * Specifies whether the main video content should be paused for the ad breaks or if the ad break replaces the video
-       * content for its duration.
+       * Specifies how many seconds the ad break(s) should replace of the main video content.
        */
-      replaceContent?: boolean;
+      replaceContentDuration?: number;
     }
 
     type AdTagType = 'vast' | 'vmap' | 'vpaid';
@@ -769,10 +768,6 @@ declare namespace bitmovin {
        */
       preloadOffset?: number;
       /**
-       * Specifies how many seconds the ad break should replace of the main video content.
-       */
-      replaceDuration?: number;
-      /**
        * Specifies after how many seconds the ad break may be skipped.
        */
       skipAfter?: number;
@@ -789,6 +784,7 @@ declare namespace bitmovin {
       isLinear: boolean;
       id?: string;
       clickThroughUrl?: string;
+      mediaFileUrl?: string;
       companionAds?: CompanionAd[];
     }
 
