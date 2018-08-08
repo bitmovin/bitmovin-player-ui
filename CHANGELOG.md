@@ -12,9 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Icon for audio tracks
 - Demo section within the UI variants in the playground
 - Demo with separate `SettingsPanel`s for subtitles and audio tracks
+- `UIContainerConfig.hidePlayerStateExceptions` option to configure player states in which the controls will not be hidden
 
 ### Changed
 - SmallScreenUI: Move `RecommendationOverlay` behind `TitleBar` to avoid hidden `FullscreenToggleButton` in replay screen and prevent smartphone users from exiting fullscreen
+- SmallScreenUI: Do not hide controls in replay screen
 
 ## [2.17.1]
 

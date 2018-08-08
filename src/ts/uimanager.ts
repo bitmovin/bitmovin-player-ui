@@ -50,6 +50,7 @@ import {Spacer} from './components/spacer';
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
+import { PlayerUtils } from './playerutils';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -772,6 +773,7 @@ export namespace UIManager.Factory {
         new ErrorMessageOverlay(),
       ],
       cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen'],
+      hidePlayerStateExceptions: [PlayerUtils.PlayerState.FINISHED],
     });
   }
 
