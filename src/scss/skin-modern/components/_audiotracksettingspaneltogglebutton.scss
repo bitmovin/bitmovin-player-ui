@@ -1,0 +1,12 @@
+// demo for extracted audio tracks and subtitle settings from the settings panel direct into the controlBar
+@import '../variables';
+
+.#{$prefix}-ui-audiotracksettingstogglebutton {
+  @extend %ui-settingstogglebutton;
+
+  background-image: svg('assets/skin-modern/images/audio-tracks.svg');
+
+  &.#{$prefix}-on {
+    background-image: svg('assets/skin-modern/images/audio-tracksX.svg');
+  }
+}

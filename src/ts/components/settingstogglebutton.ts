@@ -1,6 +1,8 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {SettingsPanel} from './settingspanel';
 import {UIInstanceManager} from '../uimanager';
+import {Component, ComponentConfig} from './component';
+import {ArrayUtils} from '../arrayutils';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -22,6 +24,8 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
  * A button that toggles visibility of a settings panel.
  */
 export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfig> {
+
+  private visibleSettingsPanels: SettingsPanel[] = [];
 
   constructor(config: SettingsToggleButtonConfig) {
     super(config);
@@ -45,6 +49,13 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     let settingsPanel = config.settingsPanel;
 
     this.onClick.subscribe(() => {
+      // only hide other `SettingsPanel`s if a new one will be opened
+      if (!settingsPanel.isShown()) {
+        // Hide all open SettingsPanels before opening this button's panel
+        // (We need to iterate a copy because hiding them will automatically remove themselves from the array
+        // due to the subscribeOnce above)
+        this.visibleSettingsPanels.slice().forEach(settingsPanel => settingsPanel.hide());
+      }
       settingsPanel.toggleHidden();
     });
     settingsPanel.onShow.subscribe(() => {
@@ -54,6 +65,15 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides
       this.off();
+    });
+
+    // Ensure that only one `SettingPanel` is visible at once
+    // Keep track of shown SettingsPanels
+    uimanager.onComponentShow.subscribe((sender: Component<ComponentConfig>) => {
+      if (sender instanceof SettingsPanel) {
+        this.visibleSettingsPanels.push(sender);
+        sender.onHide.subscribeOnce(() => ArrayUtils.remove(this.visibleSettingsPanels, sender));
+      }
     });
 
     // Handle automatic hiding of the button if there are no settings for the user to interact with

@@ -70,6 +70,10 @@ import {StorageUtils} from './storageutils';
 // HACK: gulp-tslint fails on unused files so we need this dummy import
 import {ArrayUtils as Dummy} from './utils'; // tslint:disable-line
 import {SubtitleSettingsResetButton} from './components/subtitlesettings/subtitlesettingsresetbutton';
+import {ListBox} from './components/listbox';
+import {DemoFactory} from './demofactory';
+import {SubtitleListBox} from './components/subtitlelistbox';
+import {AudioTrackListBox} from './components/audiotracklistbox';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -124,11 +128,13 @@ const playerui = {
   Component,
   Container,
   ControlBar,
+  DemoFactory,
   ErrorMessageOverlay,
   FullscreenToggleButton,
   HugePlaybackToggleButton,
   HugeReplayButton,
   Label,
+  ListBox,
   MetadataLabel,
   MetadataLabelContent,
   PictureInPictureToggleButton,
@@ -157,6 +163,8 @@ const playerui = {
   VolumeToggleButton,
   VRToggleButton,
   Watermark,
+  SubtitleListBox,
+  AudioTrackListBox,
   // Subtitle related components
   subtitlesettings: {
     BackgroundColorSelectBox,

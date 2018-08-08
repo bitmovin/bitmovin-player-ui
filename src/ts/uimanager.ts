@@ -666,7 +666,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernAdsUI() {
+  export function modernAdsUI() {
     return new UIContainer({
       components: [
         new BufferingOverlay(),
@@ -698,7 +698,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernSmallScreenUI() {
+  export function modernSmallScreenUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
     let settingsPanel = new SettingsPanel({
@@ -775,7 +775,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernSmallScreenAdsUI() {
+  export function modernSmallScreenAdsUI() {
     return new UIContainer({
       components: [
         new BufferingOverlay(),
@@ -800,7 +800,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernCastReceiverUI() {
+  export function modernCastReceiverUI() {
     let controlBar = new ControlBar({
       components: [
         new Container({
