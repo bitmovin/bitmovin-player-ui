@@ -1,6 +1,7 @@
 import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
+import {SubtitleSwitchHandler} from '../subtitleutils';
 
 /**
  * A select box providing a selection between available subtitle and caption tracks.
@@ -14,41 +15,6 @@ export class SubtitleSelectBox extends SelectBox {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let selectCurrentSubtitle = () => {
-      let currentSubtitle = player.getSubtitle();
-
-      if (currentSubtitle) {
-        this.selectItem(currentSubtitle.id);
-      }
-    };
-
-    let updateSubtitles = () => {
-      this.clearItems();
-
-      for (let subtitle of player.getAvailableSubtitles()) {
-        this.addItem(subtitle.id, subtitle.label);
-      }
-
-      // Select the correct subtitle after the subtitles have been added
-      selectCurrentSubtitle();
-    };
-
-    this.onItemSelected.subscribe((sender: SubtitleSelectBox, value: string) => {
-      player.setSubtitle(value === 'null' ? null : value);
-    });
-
-    // React to API events
-    player.on(player.exports.Event.SubtitleAdded, updateSubtitles);
-    player.on(player.exports.Event.SubtitleChanged, selectCurrentSubtitle);
-    player.on(player.exports.Event.SubtitleRemoved, updateSubtitles);
-    // Update subtitles when source goes away
-    player.on(player.exports.Event.SourceUnloaded, updateSubtitles);
-    // Update subtitles when a new source is loaded
-    player.on(player.exports.Event.Ready, updateSubtitles);
-    // Update subtitles when the period within a source changes
-    player.on(player.exports.Event.PeriodSwitched, updateSubtitles);
-
-    // Populate subtitles at startup
-    updateSubtitles();
+    new SubtitleSwitchHandler(player, this);
   }
 }

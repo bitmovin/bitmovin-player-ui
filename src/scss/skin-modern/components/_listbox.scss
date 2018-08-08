@@ -1,0 +1,37 @@
+@import '../variables';
+@import '../mixins';
+
+%ui-listbox {
+  @extend %ui-container;
+
+  .#{$prefix}-ui-listbox-button {
+    @extend %ui-button;
+
+    display: block;
+    font-size: .8em;
+    height: 100%;
+    min-width: 10em;
+    padding: .5em;
+    width: 100%;
+
+    .#{$prefix}-label {
+      display: inherit;
+    }
+
+    &.#{$prefix}-selected {
+      background-color: transparentize($color-highlight, .3);
+    }
+
+    &:hover {
+      background-color: transparentize($color-highlight, .15);
+    }
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+}
+
+.#{$prefix}-ui-listbox {
+  @extend %ui-listbox;
+}

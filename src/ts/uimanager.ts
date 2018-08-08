@@ -50,6 +50,7 @@ import {Spacer} from './components/spacer';
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
+import { PlayerUtils } from './playerutils';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -649,7 +650,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernAdsUI() {
+  export function modernAdsUI() {
     return new UIContainer({
       components: [
         new BufferingOverlay(),
@@ -681,7 +682,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernSmallScreenUI() {
+  export function modernSmallScreenUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
     let settingsPanel = new SettingsPanel({
@@ -735,6 +736,7 @@ export namespace UIManager.Factory {
         new BufferingOverlay(),
         new CastStatusOverlay(),
         new PlaybackToggleOverlay(),
+        new RecommendationOverlay(),
         controlBar,
         new TitleBar({
           components: [
@@ -750,15 +752,15 @@ export namespace UIManager.Factory {
         }),
         settingsPanel,
         subtitleSettingsPanel,
-        new RecommendationOverlay(),
         new Watermark(),
         new ErrorMessageOverlay(),
       ],
       cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen'],
+      hidePlayerStateExceptions: [PlayerUtils.PlayerState.Finished],
     });
   }
 
-  function modernSmallScreenAdsUI() {
+  export function modernSmallScreenAdsUI() {
     return new UIContainer({
       components: [
         new BufferingOverlay(),
@@ -783,7 +785,7 @@ export namespace UIManager.Factory {
     });
   }
 
-  function modernCastReceiverUI() {
+  export function modernCastReceiverUI() {
     let controlBar = new ControlBar({
       components: [
         new Container({

@@ -1,7 +1,7 @@
 @import '../variables';
 @import '../mixins';
 
-.#{$prefix}-ui-settings-panel {
+%ui-settings-panel {
   @extend %ui-container;
 
   @include hidden-animated;
@@ -9,27 +9,10 @@
   $background-color: transparentize($color-background, .15);
 
   background-color: $background-color;
-  bottom: 6em;
-  //overflow: hidden;
+  bottom: 5em;
   padding: 0;
   position: absolute;
   right: 2em;
-
-  // bottom arrow from http://www.cssarrowplease.com/
-  &::after {
-    border: solid transparent;
-    border-color: transparent;
-    border-top-color: $background-color;
-    border-width: 1em;
-    content: ' ';
-    height: 0;
-    left: 50%;
-    margin-left: 6em;
-    pointer-events: none;
-    position: absolute;
-    top: 100%;
-    width: 0;
-  }
 
   > .#{$prefix}-container-wrapper {
     margin: .5em;
@@ -57,7 +40,6 @@
 
   .#{$prefix}-ui-settings-panel-item {
     border-bottom: 1px solid transparentize($color-secondary, .7);
-    margin: 0 1em;
     padding: .5em 0;
 
     &.#{$prefix}-last {
@@ -68,6 +50,10 @@
       display: none;
     }
   }
+}
+
+.#{$prefix}-ui-settings-panel {
+  @extend %ui-settings-panel;
 }
 
 // Remove margin inherited from controlbar
