@@ -6,23 +6,8 @@
 
   width: 7em;
 
-  > .#{$prefix}-container-wrapper {
-    margin: 0;
-
-    .#{$prefix}-container-wrapper > * {
-      &.#{$prefix}-ui-label {
-        display: none;
-      }
-    }
-  }
-
   .#{$prefix}-ui-settings-panel-item {
     margin: 0;
     padding: 0;
   }
-}
-
-// Remove margin inherited from controlbar
-.#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
-  margin: 0;
 }

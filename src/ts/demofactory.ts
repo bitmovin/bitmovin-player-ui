@@ -72,7 +72,7 @@ export namespace DemoFactory {
     let subtitleListBox = new SubtitleListBox();
     let subtitleSettingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('', subtitleListBox), // empty string to do not display a label
+        new SettingsPanelItem(null, subtitleListBox),
       ],
       cssClass: 'ui-subtitle-settings-panel',
       hidden: true,
@@ -81,7 +81,7 @@ export namespace DemoFactory {
     let audioTrackListBox = new AudioTrackListBox();
     let audioTrackSettingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('', audioTrackListBox),
+        new SettingsPanelItem(null, audioTrackListBox),
       ],
       cssClass: 'ui-audiotrack-settings-panel',
       hidden: true,
