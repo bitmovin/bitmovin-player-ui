@@ -40,7 +40,6 @@
 
   .#{$prefix}-ui-settings-panel-item {
     border-bottom: 1px solid transparentize($color-secondary, .7);
-    margin: 0 1em;
     padding: .5em 0;
 
     &.#{$prefix}-last {

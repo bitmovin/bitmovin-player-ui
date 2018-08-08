@@ -74,7 +74,6 @@ export namespace DemoFactory {
       components: [
         new SettingsPanelItem(null, subtitleListBox),
       ],
-      cssClass: 'ui-subtitle-settings-panel',
       hidden: true,
     });
 
@@ -83,7 +82,6 @@ export namespace DemoFactory {
       components: [
         new SettingsPanelItem(null, audioTrackListBox),
       ],
-      cssClass: 'ui-audiotrack-settings-panel',
       hidden: true,
     });
 
