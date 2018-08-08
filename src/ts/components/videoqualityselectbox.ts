@@ -17,15 +17,7 @@ export class VideoQualitySelectBox extends SelectBox {
     super.configure(player, uimanager);
 
     let selectCurrentVideoQuality = () => {
-      if (player.getVideoQuality) {
-        // Since player 7.3.1
-        this.selectItem(player.getVideoQuality().id);
-      } else {
-        // Backwards compatibility for players <= 7.3.0
-        // TODO remove in next major release
-        let data = player.getDownloadedVideoData();
-        this.selectItem(data.isAuto ? 'auto' : data.id);
-      }
+      this.selectItem(player.getVideoQuality().id);
     };
 
     let updateVideoQualities = () => {
@@ -55,20 +47,13 @@ export class VideoQualitySelectBox extends SelectBox {
     });
 
     // Update qualities when source goes away
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, updateVideoQualities);
+    player.on(player.exports.Event.SourceUnloaded, updateVideoQualities);
     // Update qualities when a new source is loaded
-    player.addEventHandler(player.EVENT.ON_READY, updateVideoQualities);
+    player.on(player.exports.Event.Ready, updateVideoQualities);
     // Update qualities when the period within a source changes
-    player.addEventHandler(player.EVENT.ON_PERIOD_SWITCHED, updateVideoQualities);
+    player.on(player.exports.Event.PeriodSwitched, updateVideoQualities);
     // Update quality selection when quality is changed (from outside)
-    if (player.EVENT.ON_VIDEO_QUALITY_CHANGED) {
-      // Since player 7.3.1
-      player.addEventHandler(player.EVENT.ON_VIDEO_QUALITY_CHANGED, selectCurrentVideoQuality);
-    } else {
-      // Backwards compatibility for players <= 7.3.0
-      // TODO remove in next major release
-      player.addEventHandler(player.EVENT.ON_VIDEO_DOWNLOAD_QUALITY_CHANGE, selectCurrentVideoQuality);
-    }
+    player.on(player.exports.Event.VideoQualityChanged, selectCurrentVideoQuality);
   }
 
   /**

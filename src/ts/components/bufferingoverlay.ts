@@ -57,9 +57,15 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
       this.hide();
     };
 
-    player.addEventHandler(player.EVENT.ON_STALL_STARTED, showOverlay);
-    player.addEventHandler(player.EVENT.ON_STALL_ENDED, hideOverlay);
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, hideOverlay);
+    player.on(player.exports.Event.StallStarted, showOverlay);
+    player.on(player.exports.Event.StallEnded, hideOverlay);
+    player.on(player.exports.Event.Play, showOverlay);
+    player.on(player.exports.Event.Playing, hideOverlay);
+    player.on(player.exports.Event.Seek, showOverlay);
+    player.on(player.exports.Event.Seeked, hideOverlay);
+    player.on(player.exports.Event.TimeShift, showOverlay);
+    player.on(player.exports.Event.TimeShifted, hideOverlay);
+    player.on(player.exports.Event.SourceUnloaded, hideOverlay);
 
     // Show overlay if player is already stalled at init
     if (player.isStalled()) {

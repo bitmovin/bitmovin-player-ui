@@ -40,12 +40,13 @@ export namespace DemoFactory {
     return new UIManager(player, [{
       ui: UIManager.Factory.modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
-        return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
+        return context.isMobile && context.documentWidth < smallScreenSwitchWidth
+          && context.isAd && context.adClientType === 'vast';
       },
     }, {
       ui: UIManager.Factory.modernAdsUI(),
       condition: (context: UIConditionContext) => {
-        return context.isAdWithUI;
+        return context.isAd && context.adClientType === 'vast';
       },
     }, {
       ui: UIManager.Factory.modernSmallScreenUI(),

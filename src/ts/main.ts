@@ -67,8 +67,6 @@ import {PlayerUtils} from './playerutils';
 import {UIUtils} from './uiutils';
 import {BrowserUtils} from './browserutils';
 import {StorageUtils} from './storageutils';
-// HACK: gulp-tslint fails on unused files so we need this dummy import
-import {ArrayUtils as Dummy} from './utils'; // tslint:disable-line
 import {SubtitleSettingsResetButton} from './components/subtitlesettings/subtitlesettingsresetbutton';
 import {ListBox} from './components/listbox';
 import {DemoFactory} from './demofactory';

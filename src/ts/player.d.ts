@@ -3,63 +3,80 @@
 
 declare namespace bitmovin {
 
+  import Config = bitmovin.PlayerAPI.Config;
+  import ViewMode = bitmovin.player.ViewMode;
+  import ViewModeOptions = bitmovin.PlayerAPI.ViewModeOptions;
+
   interface PlayerStatic {
     /**
-     * Creates and returns a new player instance attached to the provided DOM element ID.
-     * @param domElementID the ID of the DOM (i.e. HTML) element that the player should be added to
+     * Creates and returns a new player instance attached to the provided DOM element.
      */
-    (domElementID: string): bitmovin.PlayerAPI;
-    /**
-     * All available events of the player.
-     */
-    EVENT: bitmovin.PlayerAPI.EventList;
+    new (containerElement: HTMLElement, config: Config): bitmovin.PlayerAPI;
+
     /**
      * The version number of the player.
      */
     version: string;
-
-    VR: {
-      CONTENT_TYPE: {
-        SINGLE: PlayerAPI.VR.ContentType,
-        TAB: PlayerAPI.VR.ContentType,
-        SBS: PlayerAPI.VR.ContentType,
-      },
-      STATE: {
-        READY: PlayerAPI.VR.State,
-        PLAYING: PlayerAPI.VR.State,
-        ERROR: PlayerAPI.VR.State,
-        UNINITIALIZED: PlayerAPI.VR.State,
-      },
-      TRANSITION_TIMING_TYPE: {
-        NONE: PlayerAPI.VR.TransitionTimingType,
-        EASE_IN: PlayerAPI.VR.TransitionTimingType,
-        EASE_OUT: PlayerAPI.VR.TransitionTimingType,
-        EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
-      },
-    };
-
-    network: {
-      REQUEST_TYPE: typeof PlayerAPI.HttpRequestType,
-      REQUEST_METHOD: typeof PlayerAPI.HttpRequestMethod,
-      RESPONSE_TYPE: typeof PlayerAPI.HttpResponseType,
-    };
   }
 
-  // tslint:disable-next-line:no-unused-variable
-  const player: PlayerStatic;
+  namespace player {
+    const Player: PlayerStatic;
+
+    namespace Network {
+      enum HttpRequestMethod {
+        GET,
+        POS,
+        HEAD,
+      }
+
+      enum HttpRequestType {
+        MANIFEST_DASH,
+        MANIFEST_HLS_MASTER,
+        MANIFEST_HLS_VARIANT,
+        MANIFEST_SMOOTH,
+        MANIFEST_ADS,
+
+        MEDIA_AUDIO,
+        MEDIA_VIDEO,
+        MEDIA_SUBTITLES,
+        MEDIA_THUMBNAILS,
+
+        DRM_LICENSE_WIDEVINE,
+        DRM_LICENSE_PLAYREADY,
+        DRM_LICENSE_FAIRPLAY,
+        DRM_LICENSE_PRIMETIME,
+        DRM_LICENSE_CLEARKEY,
+
+        DRM_CERTIFICATE_FAIRPLAY,
+
+        KEY_HLS_AES,
+      }
+
+      enum HttpResponseType {
+        ARRAYBUFFER,
+        BLOB,
+        DOCUMENT,
+        JSON,
+        TEXT,
+      }
+    }
+
+    enum ViewMode {
+      Inline,
+      Fullscreen,
+      PictureInPicture,
+    }
+  }
 
   /**
    * Bitmovin Player instance members.
    */
   interface PlayerAPI {
-    /**
-     * Subscribes an event handler to a player event.
-     * This will be replaced by {@link PlayerAPI.on} in version 8
-     *
-     * @param eventType The type of event to subscribe to.
-     * @param callback The event callback handler that will be called when the event fires.
-     */
-    addEventHandler(eventType: PlayerAPI.EVENT, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    exports: {
+      Network: typeof bitmovin.player.Network;
+      Event: typeof bitmovin.PlayerAPI.Event;
+      ViewMode: typeof bitmovin.player.ViewMode;
+    };
     /**
      * Subscribes an event handler to a player event.
      *
@@ -68,7 +85,7 @@ declare namespace bitmovin {
      *
      * @since v7.8
      */
-    on(eventType: PlayerAPI.EVENT, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    on(eventType: PlayerAPI.Event, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
      * Sends custom metadata to Bitmovin's Cast receiver app.
      *
@@ -102,14 +119,6 @@ declare namespace bitmovin {
      * Unloads the player and removes all inserted HTML elements and event handlers.
      */
     destroy(): void;
-    /**
-     * Switch player to fullscreen mode. Has no effect if already in fullscreen.
-     */
-    enterFullscreen(): void;
-    /**
-     * Exit player fullscreen mode. Has no effect if not in fullscreen.
-     */
-    exitFullscreen(): void;
     /**
      * Returns the currently used audio track.
      */
@@ -170,9 +179,9 @@ declare namespace bitmovin {
      */
     getDuration(): number;
     /**
-     * Returns the figure element that the player is embedded in, if the player is set up, or null otherwise.
+     * Returns the html element that the player is embedded in, which has been provided in the player constructor.
      */
-    getFigure(): HTMLElement;
+    getContainer(): HTMLElement;
     /**
      * Returns the manifest file.
      */
@@ -201,8 +210,7 @@ declare namespace bitmovin {
      */
     getPlayerType(): string;
     /**
-     * Creates a snapshot of the current video frame.
-     * TODO is it possible to take a snapshot of DRM protected content?
+     * Creates a snapshot of the current video frame of non-DRM content.
      *
      * @param type The type of image snapshot to capture. Allowed values are 'image/jpeg' and 'image/webp'.
      * TODO convert type to enum
@@ -231,7 +239,7 @@ declare namespace bitmovin {
      * Returns a thumbnail image for a certain time or null if there is no thumbnail available.
      * @param time the media time for which the thumbnail should be returned
      */
-    getThumb(time: number): PlayerAPI.Thumbnail;
+    getThumbnail(time: number): PlayerAPI.Thumbnail;
     /**
      * Returns the current time shift offset to the live edge in seconds. Only applicable to live streams.
      */
@@ -277,10 +285,6 @@ declare namespace bitmovin {
      */
     isDRMSupported(drmSystem: string): Promise<string>;
     /**
-     * Returns true if the player is currently in fullscreen mode.
-     */
-    isFullscreen(): boolean;
-    /**
      * Return true if the displayed video is a live stream.
      */
     isLive(): boolean;
@@ -297,25 +301,17 @@ declare namespace bitmovin {
      */
     isPlaying(): boolean;
     /**
-     * Returns true if the player has finished initialization and is ready to use and to handle other API calls.
-     */
-    isReady(): boolean;
-    /**
-     * Returns true if the setup call has already been successfully called.
-     */
-    isSetup(): boolean;
-    /**
      * Returns true if the player is currently stalling due to an empty buffer.
      */
     isStalled(): boolean;
     /**
      * Sets a new video source.
      *
-     * @param source A source object as specified in player configuration during {@link #setup}
+     * @param source A source object
      * @param forceTechnology Forces the player to use the specified playback and streaming technology
      * @param disableSeeking If set, seeking will be disabled
      */
-    load(source: PlayerAPI.SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<PlayerAPI>;
+    load(source: PlayerAPI.SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<void>;
     /**
      * Mutes the player if an audio track is available. Has no effect if the player is already muted.
      *
@@ -333,22 +329,14 @@ declare namespace bitmovin {
     play(issuer?: string): PlayerAPI;
     /**
      * Removes a handler for a player event.
-     * This will be replaced by {@link PlayerAPI.off} in version 8
-     *
-     * @param eventType The event to remove the handler from
-     * @param callback The callback handler to remove
-     */
-    // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
-    removeEventHandler(eventType: PlayerAPI.EVENT | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
-    /**
-     * Removes a handler for a player event.
      *
      * @param eventType The event to remove the handler from
      * @param callback The callback handler to remove
      *
      * @since v7.8
      */
-    off(eventType: PlayerAPI.EVENT | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
+    off(eventType: PlayerAPI.Event | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
      * Removes the existing subtitle/caption track with the track ID specified by trackID. If the track is
      * currently active, it will be deactivated and then removed. If no track with the given ID exists,
@@ -448,13 +436,6 @@ declare namespace bitmovin {
      */
     setSubtitle(trackID: string): PlayerAPI;
     /**
-     * Sets up a new player instance with the given configuration, as specified in player configuration documentation.
-     *
-     * @param userConfig User-supplied configuration of the player
-     * @param forceTechnology Forces the player to use the specified playback and streaming technology
-     */
-    setup(userConfig: PlayerAPI.Config, forceTechnology?: string): Promise<PlayerAPI>;
-    /**
      * Passes an HTML video element to the player, which should be used in case of non-Flash playback.
      * Needs to be called before {@link #setup}. Has no effect if the Flash fallback is selected.
      *
@@ -511,12 +492,6 @@ declare namespace bitmovin {
      * @param issuer the issuer of the unmute command
      */
     unmute(issuer?: string): PlayerAPI;
-
-    fireEvent(event: PlayerAPI.EVENT, data: {}): void;
-    /**
-     * All available events of the player.
-     */
-    EVENT: PlayerAPI.EventList;
     /**
      * The version number of the player.
      */
@@ -530,22 +505,6 @@ declare namespace bitmovin {
      */
     showAirplayTargetPicker(): PlayerAPI;
     /**
-     * Checks if macOS picture in picture mode is available.
-     */
-    isPictureInPictureAvailable(): boolean;
-    /**
-     * Returns the status of picture in picture mode.
-     */
-    isPictureInPicture(): boolean;
-    /**
-     * Enter picture in picture mode.
-     */
-    enterPictureInPicture(): PlayerAPI;
-    /**
-     * Exit picture in picture mode.
-     */
-    exitPictureInPicture(): PlayerAPI;
-    /**
      * Starts preloading the content of the currently loaded source.
      */
     preload(): PlayerAPI;
@@ -553,6 +512,12 @@ declare namespace bitmovin {
      * Returns the currently buffered time ranges of the video element.
      */
     getBufferedRanges(): PlayerAPI.TimeRange[];
+
+    getViewMode(): ViewMode;
+
+    isViewModeAvailable(viewMode: ViewMode): boolean;
+
+    setViewMode(viewMode: ViewMode, options?: ViewModeOptions): void;
 
     VR: {
       CONTENT_TYPE: {
@@ -579,6 +544,10 @@ declare namespace bitmovin {
 
   namespace PlayerAPI {
 
+    interface ViewModeOptions {
+      fullscreenElement?: HTMLElement;
+    }
+
     /**
      * Properties of a thumbnail out of a seeking thumbnail preview definition.
      */
@@ -594,11 +563,11 @@ declare namespace bitmovin {
       /**
        * Width of the thumbnail.
        */
-      w: number;
+      width: number;
       /**
        * Height of the thumbnail.
        */
-      h: number;
+      height: number;
       /**
        * Index of the thumbnail in its spritesheet.
        */
@@ -978,33 +947,33 @@ declare namespace bitmovin {
       moveViewingDirection(direction: VR.Vec3): boolean;
 
       /**
-       * Sets the minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events. The default value is
+       * Sets the minimal interval between consecutive VRViewingDirectionChange events. The default value is
        * 250ms.
-       * @param {number} interval - The minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       * @param {number} interval - The minimal interval between consecutive VRViewingDirectionChange events.
        * @return {boolean} - True, if the VRHandler is ready, false otherwise.
        */
       setViewingDirectionChangeEventInterval(interval: number): boolean;
 
       /**
-       * Gets the minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
-       * @return {Number} - The minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       * Gets the minimal interval between consecutive VRViewingDirectionChange events.
+       * @return {Number} - The minimal interval between consecutive VRViewingDirectionChange events.
        */
       getViewingDirectionChangeEventInterval(): number;
 
       /**
-       * Sets the number of degrees that the viewport can change before the ON_VR_VIEWING_DIRECTION_CHANGE event is
+       * Sets the number of degrees that the viewport can change before the VRViewingDirectionChange event is
        * triggered. The default value is 5°.
        * @param {Number} threshold - The threshold in degrees that the viewport can change before the
-       * ON_VR_VIEWING_DIRECTION_CHANGE event is triggered.
+       * VRViewingDirectionChange event is triggered.
        * @return {Boolean} - True, if the VRHandler is ready, false otherwise.
        */
       setViewingDirectionChangeThreshold(threshold: number): boolean;
 
       /**
-       * Gets the number of degrees that the viewport can change before the ON_VR_VIEWING_DIRECTION_CHANGE event is
+       * Gets the number of degrees that the viewport can change before the VRViewingDirectionChange event is
        * triggered.
        * @return {Number} - The threshold in degrees that the viewport can change before the
-       * ON_VR_VIEWING_DIRECTION_CHANGE event is triggered.
+       * VRViewingDirectionChange event is triggered.
        */
       getViewingDirectionChangeThreshold(): number;
 
