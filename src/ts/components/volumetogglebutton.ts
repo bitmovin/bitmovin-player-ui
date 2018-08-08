@@ -51,9 +51,9 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.addEventHandler(player.Event.Muted, muteStateHandler);
-    player.addEventHandler(player.Event.Unmuted, muteStateHandler);
-    player.addEventHandler(player.Event.VolumeChanged, volumeLevelHandler);
+    player.on(player.exports.Event.Muted, muteStateHandler);
+    player.on(player.exports.Event.Unmuted, muteStateHandler);
+    player.on(player.exports.Event.VolumeChanged, volumeLevelHandler);
 
     this.onClick.subscribe(() => {
       if (player.isMuted()) {

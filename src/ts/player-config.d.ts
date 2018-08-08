@@ -2,6 +2,10 @@ declare namespace bitmovin {
 
   namespace PlayerAPI {
 
+    import HttpRequestMethod = bitmovin.player.Network.HttpRequestMethod;
+    import HttpResponseType = bitmovin.player.Network.HttpResponseType;
+    import HttpRequestType = bitmovin.player.Network.HttpRequestType;
+
     interface ProgressiveSourceConfig {
       /**
        * The URL to the progressive video file.
@@ -654,7 +658,7 @@ declare namespace bitmovin {
     /**
      * Adaptation configurations for different platforms.
      */
-    interface AdaptationPlatformConfig {
+    interface AdaptationPlatformConfig extends AdaptationConfig {
       desktop?: AdaptationConfig;
       mobile?: AdaptationConfig;
     }
@@ -837,40 +841,6 @@ declare namespace bitmovin {
     }
 
     /**
-     * Values the `HttpRequestType` property can have in the network API config callbacks.
-     */
-    enum HttpRequestType {
-      MANIFEST_DASH,
-      MANIFEST_HLS_MASTER,
-      MANIFEST_HLS_VARIANT,
-      MANIFEST_SMOOTH,
-      MANIFEST_ADS,
-
-      MEDIA_AUDIO,
-      MEDIA_VIDEO,
-      MEDIA_SUBTITLES,
-      MEDIA_THUMBNAILS,
-
-      DRM_LICENSE_WIDEVINE,
-      DRM_LICENSE_PLAYREADY,
-      DRM_LICENSE_FAIRPLAY,
-      DRM_LICENSE_PRIMETIME,
-      DRM_LICENSE_CLEARKEY,
-
-      DRM_CERTIFICATE_FAIRPLAY,
-
-      KEY_HLS_AES,
-    }
-
-    enum HttpResponseType {
-      ARRAYBUFFER,
-      BLOB,
-      DOCUMENT,
-      JSON,
-      TEXT,
-    }
-
-    /**
      * Allowed types of the {@link HttpRequest.body}
      */
     type HttpRequestBody = ArrayBuffer | ArrayBufferView | Blob | FormData | string | Document | URLSearchParams;
@@ -879,15 +849,6 @@ declare namespace bitmovin {
      * Possible types of {@link HttpResponse.body}
      */
     type HttpResponseBody = string | ArrayBuffer | Blob | Object | Document;
-
-    /**
-     * Allowed HTTP request method
-     */
-    enum HttpRequestMethod {
-      GET,
-      POST,
-      HEAD,
-    }
 
     interface HttpRequest {
       /**

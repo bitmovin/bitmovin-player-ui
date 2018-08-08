@@ -14,7 +14,7 @@ export class AdClickOverlay extends ClickOverlay {
       || !player.getConfig().advertising.hasOwnProperty('clickThroughEnabled')
       || player.getConfig().advertising.clickThroughEnabled;
 
-    player.addEventHandler(player.Event.AdStarted, (event: bitmovin.PlayerAPI.AdStartedEvent) => {
+    player.on(player.exports.Event.AdStarted, (event: bitmovin.PlayerAPI.AdStartedEvent) => {
       clickThroughUrl = event.clickThroughUrl;
 
       if (clickThroughEnabled) {
@@ -29,18 +29,19 @@ export class AdClickOverlay extends ClickOverlay {
     let adFinishedHandler = () => {
       this.setUrl(null);
     };
-    player.addEventHandler(player.Event.AdFinished, adFinishedHandler);
-    player.addEventHandler(player.Event.AdSkipped, adFinishedHandler);
-    player.addEventHandler(player.Event.AdError, adFinishedHandler);
+    player.on(player.exports.Event.AdFinished, adFinishedHandler);
+    player.on(player.exports.Event.AdSkipped, adFinishedHandler);
+    player.on(player.exports.Event.AdError, adFinishedHandler);
 
     this.onClick.subscribe(() => {
       // Pause the ad when overlay is clicked
       player.pause('ui-content-click');
 
       // Notify the player of the clicked ad
-      player.fireEvent(player.Event.AdClicked, {
-        clickThroughUrl: clickThroughUrl,
-      });
+      // TODO add a callback to AdStarted to allow the ads renderer to signal a clickThroughUrl click
+      // player.fireEvent(player.exports.Event.AdClicked, {
+      //   clickThroughUrl: clickThroughUrl,
+      // });
     });
   }
 }

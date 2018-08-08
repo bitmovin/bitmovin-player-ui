@@ -202,7 +202,6 @@
 
   var config = {
     key: 'YOUR KEY HERE',
-    source: sources.fullyFeatured,
     style: {
       ux: false
     },
@@ -247,14 +246,15 @@
 //      {title: 'Recommendation 11', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 435},
 //      {title: 'Recommendation 12: Ain\'t no better video than this', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 34}
 //    ],
+      playbackSpeedSelectionEnabled: true
   };
 
   var player;
   var uiManager;
   var playerSetup = function(config) {
-    player = bitmovin.player.Player('player');
+    player = new bitmovin.player.Player(document.getElementById('player'), config);
 
-    player.setup(config).then(function() {
+    player.load(sources.fullyFeatured).then(function() {
       // Add UI to loaded player
       uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
     }, function(errorEvent) {
@@ -564,15 +564,37 @@
       uiFactoryMethods.push(member);
     }
   }
+
+  var configUISelect = $('#config-ui');
+
+  // Collect all UI Demos
+  var uiDemos = [];
+  for (var member in bitmovin.playerui.DemoFactory) {
+    if (typeof bitmovin.playerui.DemoFactory[member] === 'function' && member.indexOf('buildDemo') === 0) {
+      uiDemos.push(member);
+    }
+  }
+
   // Fill the UI factory method select box
   $.each(uiFactoryMethods, function(key, value) {
-    $('#config-ui').append($('<option></option>').attr('value', value).text(value));
+    configUISelect.append($('<option></option>').attr('value', value).text(value));
   });
+  // put all demos in own select-opt-group
+  let demoGroup = $('<optgroup label="Demos" />');
+  $.each(uiDemos, function(key, value) {
+    $('<option></option>').attr('value', value).text(value).appendTo(demoGroup);
+  });
+  demoGroup.appendTo(configUISelect);
+
   // Refresh UI when a factory is selected
-  $('#config-ui').change(function() {
+  configUISelect.change(function() {
     uiManager.release();
     var factoryMethod = $(this).val();
-    uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
+    if (factoryMethod.indexOf('buildDemo') === 0) {
+      uiManager = bitmovin.playerui.DemoFactory[factoryMethod](player, uiConfig);
+    } else {
+      uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
+    }
   });
 
   // Populate stats

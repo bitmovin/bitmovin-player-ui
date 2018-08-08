@@ -7,6 +7,7 @@ import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
+import {ListBox} from './listbox';
 import {PlaybackSpeedSelectBox} from './playbackspeedselectbox';
 
 /**
@@ -194,9 +195,9 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
   }
 
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    if (this.setting instanceof SelectBox) {
+    if (this.setting instanceof SelectBox || this.setting instanceof ListBox) {
       let handleConfigItemChanged = () => {
-        if (! (this.setting instanceof SelectBox)) {
+        if (!(this.setting instanceof SelectBox) && !(this.setting instanceof ListBox)) {
           return;
         }
         // The minimum number of items that must be available for the setting to be displayed

@@ -15,15 +15,7 @@ export class AudioQualitySelectBox extends SelectBox {
     super.configure(player, uimanager);
 
     let selectCurrentAudioQuality = () => {
-      if (player.getAudioQuality) {
-        // Since player 7.3.1
-        this.selectItem(player.getAudioQuality().id);
-      } else {
-        // Backwards compatibility for players <= 7.3.0
-        // TODO remove in next major release
-        let data = player.getDownloadedAudioData();
-        this.selectItem(data.isAuto ? 'auto' : data.id);
-      }
+      this.selectItem(player.getAudioQuality().id);
     };
 
     let updateAudioQualities = () => {
@@ -48,21 +40,14 @@ export class AudioQualitySelectBox extends SelectBox {
     });
 
     // Update qualities when audio track has changed
-    player.addEventHandler(player.Event.AudioChanged, updateAudioQualities);
+    player.on(player.exports.Event.AudioChanged, updateAudioQualities);
     // Update qualities when source goes away
-    player.addEventHandler(player.Event.SourceUnloaded, updateAudioQualities);
+    player.on(player.exports.Event.SourceUnloaded, updateAudioQualities);
     // Update qualities when a new source is loaded
-    player.addEventHandler(player.Event.Ready, updateAudioQualities);
+    player.on(player.exports.Event.Ready, updateAudioQualities);
     // Update qualities when the period within a source changes
-    player.addEventHandler(player.Event.PeriodSwitched, updateAudioQualities);
+    player.on(player.exports.Event.PeriodSwitched, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
-    if (player.Event.AudioQualityChanged) {
-      // Since player 7.3.1
-      player.addEventHandler(player.Event.AudioQualityChanged, selectCurrentAudioQuality);
-    } else {
-      // Backwards compatibility for players <= 7.3.0
-      // TODO remove in next major release
-      player.addEventHandler(player.Event.AudioDownloadQualityChange, selectCurrentAudioQuality);
-    }
+    player.on(player.exports.Event.AudioQualityChanged, selectCurrentAudioQuality);
   }
 }
