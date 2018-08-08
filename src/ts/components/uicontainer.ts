@@ -161,28 +161,29 @@ export class UIContainer extends Container<UIContainerConfig> {
       container.removeClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
       container.removeClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
     };
-    player.addEventHandler(player.EVENT.ON_READY, () => {
+
+    const updateState = (state: PlayerUtils.PlayerState) => {
       removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.PREPARED]);
+      container.addClass(stateClassNames[state]);
+    };
+
+    player.addEventHandler(player.EVENT.ON_READY, () => {
+      updateState(PlayerUtils.PlayerState.PREPARED);
     });
     player.addEventHandler(player.EVENT.ON_PLAY, () => {
-      removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.PLAYING]);
+      updateState(PlayerUtils.PlayerState.PLAYING);
     });
     player.addEventHandler(player.EVENT.ON_PAUSED, () => {
-      removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.PAUSED]);
+      updateState(PlayerUtils.PlayerState.PAUSED);
     });
     player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, () => {
-      removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.FINISHED]);
+      updateState(PlayerUtils.PlayerState.FINISHED);
     });
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
-      removeStates();
-      container.addClass(stateClassNames[PlayerUtils.PlayerState.IDLE]);
+      updateState(PlayerUtils.PlayerState.IDLE);
     });
     // Init in current player state
-    container.addClass(stateClassNames[PlayerUtils.getState(player)]);
+    updateState(PlayerUtils.getState(player));
 
     // Fullscreen marker class
     player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, () => {
