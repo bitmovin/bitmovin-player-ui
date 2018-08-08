@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [2.18.0] (2018-08-08)
 
 ### Added
-- UI element `ListBox` to display multiple selectable items
+- UI element `ListBox` to display multiple selectable items ([#121](https://github.com/bitmovin/bitmovin-player-ui/issues/121))
 - Icon for subtitles
 - Icon for audio tracks
 - Demo section within the UI variants in the playground
