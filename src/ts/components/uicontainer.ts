@@ -150,6 +150,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     this.playerStateChange.subscribe((_, state) => {
       playerState = state;
+      if (hidingPrevented()) {
+        this.uiHideTimeout.clear();
+        showUi();
+      }
     });
   }
 
