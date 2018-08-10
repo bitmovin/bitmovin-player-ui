@@ -95,13 +95,6 @@ declare namespace bitmovin {
      */
     addMetadata(metadataType: string, metadata: any): void;
     /**
-     * Adds a new external subtitle/caption track. The track is only added to the available tracks but
-     * not activated. Call {@link #setSubtitle} to activate it.
-     *
-     * @param subtitle the subtitle to add
-     */
-    addSubtitle(subtitle: PlayerAPI.SubtitleTrack): PlayerAPI;
-    /**
      * Stops a running Cast session (i.e. {@link #isCasting} returns true). Has no effect if {@link #isCasting}
      * returns false.
      */
@@ -143,10 +136,6 @@ declare namespace bitmovin {
      * Returns a list of available license servers.
      */
     getAvailableLicenseServers(): string[];
-    /**
-     * Returns an array of all available subtitle/caption tracks.
-     */
-    getAvailableSubtitles(): PlayerAPI.SubtitleTrack[];
     /**
      * Returns an array containing all available video qualities the player can adapt between.
      */
@@ -222,10 +211,6 @@ declare namespace bitmovin {
      * TODO convert to enum, see {@link SupportedTech#streaming}
      */
     getStreamType(): string;
-    /**
-     * Returns the currently used subtitle track.
-     */
-    getSubtitle(): PlayerAPI.SubtitleTrack;
     /**
      * Tests and retrieves a list of all supported DRM systems in the current user agent.
      */
@@ -338,15 +323,6 @@ declare namespace bitmovin {
     // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
     off(eventType: PlayerAPI.Event | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
     /**
-     * Removes the existing subtitle/caption track with the track ID specified by trackID. If the track is
-     * currently active, it will be deactivated and then removed. If no track with the given ID exists,
-     * the call will be ignored.
-     * To disable an active subtitle track, call {@link #setSubtitle} with null.
-     *
-     * @param subtitleTrackID The ID of the subtitle to remove
-     */
-    removeSubtitle(subtitleTrackID: string): PlayerAPI;
-    /**
      * Schedules an ad for playback.
      *
      * @param adManifestUrl URL to the ad manifest
@@ -428,13 +404,6 @@ declare namespace bitmovin {
      * @param queryParameters The list of query parameter key/value pairs
      */
     setQueryParameters(queryParameters: { [key: string]: string; }): PlayerAPI;
-    /**
-     * Sets the subtitle track to the ID specified by trackID. A list can be retrieved by calling
-     * {@link #getAvailableSubtitles}. Using null as ID disables subtitles.
-     *
-     * @param trackID The ID if the desired subtitle track or null to disable subtitles
-     */
-    setSubtitle(trackID: string): PlayerAPI;
     /**
      * Passes an HTML video element to the player, which should be used in case of non-Flash playback.
      * Needs to be called before {@link #setup}. Has no effect if the Flash fallback is selected.
@@ -540,6 +509,8 @@ declare namespace bitmovin {
     };
 
     vr: PlayerAPI.PlayerVRAPI;
+
+    subtitles: PlayerAPI.PlayerSubtitlesAPI;
   }
 
   namespace PlayerAPI {
@@ -1169,6 +1140,14 @@ declare namespace bitmovin {
          */
         rotateCounterclockwise?: string[];
       }
+    }
+
+    interface PlayerSubtitlesAPI {
+      add(subtitle: SubtitleTrack): void;
+      remove(subtitleID: string): void;
+      list(): SubtitleTrack[];
+      enable(subtitleID: string, exclusive?: boolean): void;
+      disable(subtitleID: string): void;
     }
   }
 }
