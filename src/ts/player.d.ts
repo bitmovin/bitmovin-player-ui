@@ -100,7 +100,7 @@ declare namespace bitmovin {
      *
      * @param subtitle the subtitle to add
      */
-    addSubtitle(subtitle: PlayerAPI.Subtitle): PlayerAPI;
+    addSubtitle(subtitle: PlayerAPI.SubtitleTrack): PlayerAPI;
     /**
      * Stops a running Cast session (i.e. {@link #isCasting} returns true). Has no effect if {@link #isCasting}
      * returns false.
@@ -146,7 +146,7 @@ declare namespace bitmovin {
     /**
      * Returns an array of all available subtitle/caption tracks.
      */
-    getAvailableSubtitles(): PlayerAPI.Subtitle[];
+    getAvailableSubtitles(): PlayerAPI.SubtitleTrack[];
     /**
      * Returns an array containing all available video qualities the player can adapt between.
      */
@@ -225,7 +225,7 @@ declare namespace bitmovin {
     /**
      * Returns the currently used subtitle track.
      */
-    getSubtitle(): PlayerAPI.Subtitle;
+    getSubtitle(): PlayerAPI.SubtitleTrack;
     /**
      * Tests and retrieves a list of all supported DRM systems in the current user agent.
      */
@@ -760,7 +760,7 @@ declare namespace bitmovin {
     /**
      * Definition of a subtitle/caption track.
      */
-    interface Subtitle {
+    interface SubtitleTrack {
       /**
        * Used to identify and set the subtitle track.
        */

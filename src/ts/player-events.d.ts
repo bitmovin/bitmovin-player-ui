@@ -185,11 +185,11 @@ declare namespace bitmovin {
       /**
        * Previous subtitle
        */
-      sourceSubtitle: Subtitle;
+      sourceSubtitle: SubtitleTrack;
       /**
        * New subtitle
        */
-      targetSubtitle: Subtitle;
+      targetSubtitle: SubtitleTrack;
     }
 
     interface MediaQualityChangeEvent<Q extends Quality> extends PlayerEvent {
@@ -513,7 +513,7 @@ declare namespace bitmovin {
       /**
        * The added subtitle object
        */
-      subtitle: Subtitle;
+      subtitle: SubtitleTrack;
     }
 
     interface SubtitleRemovedEvent extends PlayerEvent {

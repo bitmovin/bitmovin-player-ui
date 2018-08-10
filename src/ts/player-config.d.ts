@@ -379,7 +379,7 @@ declare namespace bitmovin {
        * A function that generates a label for a subtitle.
        * @param subtitle The subtitle for which the label should be generated.
        */
-      subtitles?: (subtitle: Subtitle) => string;
+      subtitles?: (subtitle: SubtitleTrack) => string;
     }
 
     interface SourceConfig {
