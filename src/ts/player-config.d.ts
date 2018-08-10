@@ -1,5 +1,3 @@
-import { UIConfig } from './uimanager';
-
 declare namespace bitmovin {
 
   namespace PlayerAPI {
@@ -948,7 +946,7 @@ declare namespace bitmovin {
        * Network configuration.
        */
       network?: NetworkConfig;
-      ui?: UIConfig | false;
+      ui?: object | false;
     }
   }
 }
