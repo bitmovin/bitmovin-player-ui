@@ -29,7 +29,10 @@ export class SubtitleSwitchHandler {
     const updateSubtitlesCallback = (): void => this.updateSubtitles();
 
     this.player.on(this.player.exports.Event.SubtitleAdded, updateSubtitlesCallback);
-    this.player.on(this.player.exports.Event.SubtitleChanged, () => {
+    this.player.on(this.player.exports.Event.SubtitleEnabled, () => {
+      this.selectCurrentSubtitle();
+    });
+    this.player.on(this.player.exports.Event.SubtitleDisabled, () => {
       this.selectCurrentSubtitle();
     });
     this.player.on(this.player.exports.Event.SubtitleRemoved, updateSubtitlesCallback);
