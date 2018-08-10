@@ -1351,7 +1351,7 @@ class PlayerWrapper {
   clearEventHandlers(): void {
     for (let eventType in this.eventHandlers) {
       for (let callback of this.eventHandlers[eventType]) {
-        this.player.off(eventType, callback);
+        this.player.off(eventType as any as PlayerAPI.Event, callback);
       }
     }
   }

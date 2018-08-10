@@ -379,7 +379,7 @@ declare namespace bitmovin {
        * A function that generates a label for a subtitle.
        * @param subtitle The subtitle for which the label should be generated.
        */
-      subtitles?: (subtitle: Subtitle) => string;
+      subtitles?: (subtitle: SubtitleTrack) => string;
     }
 
     interface SourceConfig {
@@ -450,9 +450,13 @@ declare namespace bitmovin {
       };
     }
 
-    interface PlaybackTech {
-      player: string;
-      streaming: string;
+    interface Technology {
+      player: PlayerType;
+      streaming: StreamType;
+    }
+
+    interface QueryParameters {
+      [name: string]: string;
     }
 
     interface PlaybackConfig {
@@ -490,7 +494,7 @@ declare namespace bitmovin {
        * An array of objects to specify the player and streaming technology order to use. If the first is
        * supported, this technologies are used. If not, the second is tried etc.
        */
-      preferredTech?: PlaybackTech[];
+      preferredTech?: Technology[];
 
     }
 
