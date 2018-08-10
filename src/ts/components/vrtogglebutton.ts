@@ -30,7 +30,8 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     let isVRStereoAvailable = () => {
-      return player.getVRStatus().contentType !== 'none';
+      let config = player.getConfig();
+      return player.vr && config.source.vr.contentType !== 'none';
     };
 
     let vrStateHandler = (ev: PlayerEvent) => {
@@ -42,7 +43,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
       if (isVRConfigured() && isVRStereoAvailable()) {
         this.show(); // show button in case it is hidden
 
-        if (player.getVRStatus().isStereo) {
+        if (player.vr && player.vr.getStereo()) {
           this.on();
         } else {
           this.off();
@@ -73,7 +74,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
           console.log('No VR content');
         }
       } else {
-        if (player.getVRStatus().isStereo) {
+        if (player.vr && player.vr.getStereo()) {
           player.setVRStereo(false);
         } else {
           player.setVRStereo(true);

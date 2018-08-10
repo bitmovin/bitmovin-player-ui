@@ -6,6 +6,7 @@ declare namespace bitmovin {
   import Config = bitmovin.PlayerAPI.Config;
   import ViewMode = bitmovin.player.ViewMode;
   import ViewModeOptions = bitmovin.PlayerAPI.ViewModeOptions;
+  import Subtitle = bitmovin.PlayerAPI.SubtitleTrack;
 
   interface PlayerStatic {
     /**
@@ -25,7 +26,7 @@ declare namespace bitmovin {
     namespace Network {
       enum HttpRequestMethod {
         GET,
-        POS,
+        POST,
         HEAD,
       }
 
@@ -66,326 +67,446 @@ declare namespace bitmovin {
       Fullscreen,
       PictureInPicture,
     }
+
+    enum LogLevel {
+      DEBUG,
+      LOG,
+      WARN,
+      ERROR,
+      OFF,
+    }
   }
+
+  interface PlayerExports {
+    readonly Event: typeof PlayerAPI.Event;
+    readonly LogLevel: typeof player.LogLevel;
+    readonly Network: typeof player.Network;
+    readonly PlayerAPINotAvailableException: any;
+    readonly ViewMode: typeof ViewMode;
+  }
+
+  type PlayerType = 'html5' | 'flash' | 'native' | 'native-flash' | 'unknown';
+
+  type StreamType = 'progressive' | 'dash' | 'hls' | 'smooth' | 'unknown';
 
   /**
    * Bitmovin Player instance members.
    */
   interface PlayerAPI {
-    exports: {
-      Network: typeof bitmovin.player.Network;
-      Event: typeof bitmovin.PlayerAPI.Event;
-      ViewMode: typeof bitmovin.player.ViewMode;
-    };
+
     /**
-     * Subscribes an event handler to a player event.
+     * The version number of the player.
+     */
+    readonly version: string;
+
+    /**
+     * The VR API.
+     */
+    readonly vr: PlayerAPI.PlayerVRAPI;
+
+    readonly subtitles: PlayerAPI.PlayerSubtitlesAPI;
+
+    /**
+     * Exports from the player core as a convenience fallback for non-modular code.
+     * It is recommended to use ES6 imports instead.
+     *
+     * Usage:
+     *
+     * ```ts
+     * import { Player } from 'bitmovin-player';
+     * const player = new player.Player(...);
+     * player.on(player.exports.Event.Ready, () => ...);
+     * ```
+     *
+     * Recommended approach:
+     *
+     * ```ts
+     * import { Player, Event } from 'bitmovin-player';
+     * const player = new player.Player(...);
+     * player.on(Event.Ready, () => ...);
+     * ```
+     *
+     * @deprecated It is recommended to use ES6 imports instead
+     */
+    readonly exports: PlayerExports;
+
+    /**
+     * Subscribes an event handler to a player event. This method was called `addEventHandler` in previous
+     * player versions.
      *
      * @param eventType The type of event to subscribe to.
      * @param callback The event callback handler that will be called when the event fires.
-     *
      * @since v7.8
      */
-    on(eventType: PlayerAPI.Event, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    on(eventType: PlayerAPI.Event, callback: PlayerAPI.PlayerEventCallback): void;
     /**
-     * Sends custom metadata to Bitmovin's Cast receiver app.
+     * Sends custom metadata to a remote receiver app (e.g. Chromecast).
      *
      * @param metadataType The type of the metadata. Currently only 'CAST' is supported.
-     * TODO validate why it says 'CAST' here and if it shouldn't be 'cast' (lowercase) instead
      * @param metadata The custom data to send to the receiver.
+     * @return True if it was successful.
+     * @since v4.0
      */
-    addMetadata(metadataType: string, metadata: any): void;
+    addMetadata(metadataType: string, metadata: any): boolean;
     /**
      * Stops a running Cast session (i.e. {@link #isCasting} returns true). Has no effect if {@link #isCasting}
      * returns false.
+     * @since v4.0
      */
-    castStop(): PlayerAPI;
+    castStop(): void;
     /**
      * Initiates casting the current video to a Cast-compatible device. The user has to choose the target device.
+     * @since v4.0
      */
-    castVideo(): PlayerAPI;
+    castVideo(): void;
     /**
-     * Removes all existing query parameters as specified in {@link #setQueryParameters} or
-     * {@link Config#tweaks#query_parameters}.
+     * Removes all existing query parameters as specified in {@link setQueryParameters} or
+     * {@link TweaksConfig.query_parameters}.
+     * @since v4.0
      */
-    clearQueryParameters(): PlayerAPI;
+    clearQueryParameters(): void;
     /**
      * Unloads the player and removes all inserted HTML elements and event handlers.
+     *
+     * @return Promise resolves when the player has cleaned up all its event handlers & resources
+     * @since v8.0
      */
-    destroy(): void;
+    destroy(): Promise<void>;
     /**
      * Returns the currently used audio track.
+     * @since v4.0
      */
-    getAudio(): PlayerAPI.AudioTrack;
+    getAudio(): AudioTrack;
     /**
      * Returns the seconds of already buffered audio data or null if no audio source is loaded.
+     * @since v4.0
      */
     getAudioBufferLength(): number | null;
     /**
-     * Returns an array of all available audio tracks.
+     * Returns the currently selected audio quality. One of the elements of {@link getAvailableAudioQualities}.
+     * @since v7.3.1
      */
-    getAvailableAudio(): PlayerAPI.AudioTrack[];
+    getAudioQuality(): PlayerAPI.AudioQuality;
+    /**
+     * Returns an array of all available audio tracks.
+     * @since v4.0
+     */
+    getAvailableAudio(): AudioTrack[];
     /**
      * Returns an array of all available audio qualities the player can adapt between.
+     * @since v4.0
      */
     getAvailableAudioQualities(): PlayerAPI.AudioQuality[];
     /**
      * Returns a list of available impression servers.
+     * @since v4.0
      */
     getAvailableImpressionServers(): string[];
     /**
      * Returns a list of available license servers.
+     * @since v4.0
      */
     getAvailableLicenseServers(): string[];
     /**
      * Returns an array containing all available video qualities the player can adapt between.
+     * @since v4.0
      */
     getAvailableVideoQualities(): PlayerAPI.VideoQuality[];
     /**
      * Returns the config object of the current player instance.
      *
      * @param mergedConfig true to return the config expanded with all default values, false to return the user
-     *   config passed to {@link #setup}
+     *   config passed to {@link setup}
+     * @return The current user or merged player config.
+     * @since v4.0
      */
     getConfig(mergedConfig?: boolean): any;
     /**
+     * Returns the html element that the player is embedded in, which has been provided in the player constructor.
+     * @since v8.0
+     */
+    getContainer(): HTMLElement;
+    /**
      * Returns the current playback time in seconds of the video.
+     * @since v4.0
      */
     getCurrentTime(): number;
     /**
      * Returns data about the last downloaded audio segment.
+     * @since v4.0
      */
     getDownloadedAudioData(): PlayerAPI.DownloadedAudioData;
     /**
      * Returns data about the last downloaded video segment.
+     * @since v4.0
      */
     getDownloadedVideoData(): PlayerAPI.DownloadedVideoData;
     /**
      * Returns the total number of dropped frames since playback started.
+     * @since v4.0
      */
     getDroppedFrames(): number;
     /**
      * Returns the total duration in seconds of the current video or {@code Infinity} if it’s a live stream.
+     * @since v4.0
      */
     getDuration(): number;
     /**
-     * Returns the html element that the player is embedded in, which has been provided in the player constructor.
+     * Returns the used DASH or HLS manifest file.
+     *
+     * Previous player versions (v4.2-v7.0) returned an object for DASH and a string for HLS, this has been corrected
+     * in v7.1.
+     *
+     * @since v7.1
      */
-    getContainer(): HTMLElement;
-    /**
-     * Returns the manifest file.
-     */
-    getManifest(): Object;
+    getManifest(): string;
     /**
      * Returns the limit in seconds for time shift. Is either negative or 0 and applicable to live streams only.
+     * @since v4.0
      */
     getMaxTimeShift(): number;
     /**
-     * Returns data about the currently played audio segment.
+     * Returns data about the currently playing audio segment.
+     * @since v4.0
      */
     getPlaybackAudioData(): PlayerAPI.AudioQuality;
     /**
      * Returns the current playback speed of the player. 1 is the default playback speed, values
      * between 0 and 1 refer to slow motion and values greater than 1 refer to fast forward. Values less or
      * equal zero are ignored.
+     * @since v4.0
      */
     getPlaybackSpeed(): number;
     /**
-     * Returns data about the currently played video segment.
+     * Returns data about the currently playing video segment.
+     * @since v4.0
      */
     getPlaybackVideoData(): PlayerAPI.VideoQuality;
     /**
-     * Returns the currently used rendering mode. Possible values are html5, flash, and native.
-     * TODO convert to enum, see {@link SupportedTech#player}
+     * Returns the currently used rendering mode. See {@link PlayerType} for details of the valid values.
+     * @since v4.0
      */
-    getPlayerType(): string;
+    getPlayerType(): PlayerType;
     /**
-     * Creates a snapshot of the current video frame of non-DRM content.
+     * Creates a snapshot of the current video frame.
+     * Snapshots cannot be taken from DRM protected content and the Flash fallback.
      *
      * @param type The type of image snapshot to capture. Allowed values are 'image/jpeg' and 'image/webp'.
-     * TODO convert type to enum
      * @param quality A number between 0 and 1 indicating the image quality.
+     * @since v4.0
      */
-    getSnapshot(type?: string, quality?: number): PlayerAPI.Snapshot;
+    getSnapshot(type?: string, quality?: number): PlayerAPI.Snapshot; // TODO convert type to enum
     /**
-     * Returns the currently used streaming technology. Possible values are currently dash, hls, and progressive.
-     * TODO convert to enum, see {@link SupportedTech#streaming}
+     * Returns the currently used streaming technology. See {@link StreamType} for details of the valid values.
+     * @since v4.0
      */
-    getStreamType(): string;
+    getStreamType(): StreamType;
     /**
      * Tests and retrieves a list of all supported DRM systems in the current user agent.
+     * @returns A Promise that resolves to an array of strings with the supported DRM systems after fulfillment.
+     * Should never be rejected.
+     * @since v4.1
      */
     getSupportedDRM(): Promise<string[]>;
     /**
      * Returns an array of objects denoting a player and streaming technology combination supported on
      * the current platform. The order in the array is the order which will be used to play a stream.
+     * @since v4.0
      */
-    getSupportedTech(): PlayerAPI.SupportedTech[];
+    getSupportedTech(): PlayerAPI.Technology[];
     /**
      * Returns a thumbnail image for a certain time or null if there is no thumbnail available.
+     * Requires a configured thumbnails track in {@link SourceConfig.thumbnailTrack}.
      * @param time the media time for which the thumbnail should be returned
+     * @returns A thumbnail if a thumbnails track is configured and a thumbnail exists for the specified time, else null
+     * @since v8.0
      */
     getThumbnail(time: number): PlayerAPI.Thumbnail;
     /**
      * Returns the current time shift offset to the live edge in seconds. Only applicable to live streams.
+     * @since v4.0
      */
     getTimeShift(): number;
     /**
      * Returns the stalled time in seconds since playback started.
+     * @since v4.0
      */
     getTotalStalledTime(): number;
     /**
      * Returns the seconds of already buffered video data or null if no video source is loaded.
+     * @since v4.0
      */
     getVideoBufferLength(): number | null;
     /**
+     * Returns the currently selected video quality. One of the elements of {@link getAvailableVideoQualities}.
+     * @since v7.3.1
+     */
+    getVideoQuality(): PlayerAPI.VideoQuality;
+    /**
      * Returns the player’s volume between 0 (silent) and 100 (max volume).
+     * @since v4.0
      */
     getVolume(): number;
     /**
-     * Returns the current VR playback status.
-     */
-    getVRStatus(): PlayerAPI.VR.Status;
-    /**
      * Returns true if the video has ended.
+     * @since v4.0
      */
     hasEnded(): boolean;
     /**
-     * Returns true while an ad is played back, false otherwise.
+     * Returns true while an ad is played back or content playback has been paused for ad playback, false otherwise.
+     * @param pending If true, isAd will return true if the content playback has been paused for
+     * playback of a pending ad
+     * @since v6.1
      */
-    isAd(): boolean;
+    isAd(pending?: boolean): boolean;
     /**
      * Returns true if casting to another device (such as a ChromeCast) is available, otherwise false.
-     * Please note that this function only returns true after the onCastAvailable event has fired.
+     * Please note that this function only returns true after the {@link Event.CastAvailable} event has fired.
+     * @since v5.2
      */
     isCastAvailable(): boolean;
     /**
      * Returns true if the video is currently casted to a device and not played in the browser,
      * or false if the video is played locally.
+     * @since v4.0
      */
     isCasting(): boolean;
     /**
      * Checks if a DRM system is supported in the current user agent.
      *
      * @param drmSystem A KeySystem string to test against
+     * @returns Resolves with the DRM system string if it is supported, or rejects with an error message if not
+     * @since v4.1
      */
     isDRMSupported(drmSystem: string): Promise<string>;
     /**
      * Return true if the displayed video is a live stream.
+     * @since v4.0
      */
     isLive(): boolean;
     /**
      * Returns true if the player has been muted.
+     * @since v4.0
      */
     isMuted(): boolean;
     /**
      * Returns true if the player has started playback but is currently paused.
+     * @since v4.0
      */
     isPaused(): boolean;
     /**
      * Returns true if the player is currently playing, i.e. has started and is not paused.
+     * @since v4.0
      */
     isPlaying(): boolean;
     /**
      * Returns true if the player is currently stalling due to an empty buffer.
+     * @since v4.0
      */
     isStalled(): boolean;
     /**
-     * Sets a new video source.
+     * Sets a new video source and returns a promise which resolves to the player.
      *
-     * @param source A source object
-     * @param forceTechnology Forces the player to use the specified playback and streaming technology
+     * @param source A source object as specified in player configuration during {@link setup}
+     * @param forceTechnology Forces the player to use the specified playback and streaming technology. The specified
+     * technologies have to be separated by a period (e.g. 'html5.hls'). A list of valid combinations can retrieved
+     * by calling {@link getSupportedTech}.
      * @param disableSeeking If set, seeking will be disabled
+     * @since v4.0
      */
     load(source: PlayerAPI.SourceConfig, forceTechnology?: string, disableSeeking?: boolean): Promise<void>;
     /**
      * Mutes the player if an audio track is available. Has no effect if the player is already muted.
      *
-     * @param issuer the source of the mute command
+     * @param issuer The issuer of the API call that will be passed to events triggered by this call
+     * @since v4.0
      */
-    mute(issuer?: string): PlayerAPI;
+    mute(issuer?: string): void;
     /**
      * Pauses the video if it is playing. Has no effect if the player is already paused.
+     *
+     * @param issuer The issuer of the API call that will be passed to events triggered by this call
+     * @since v4.0
      */
-    pause(issuer?: string): PlayerAPI;
+    pause(issuer?: string): void;
     /**
      * Starts playback or resumes after being paused. No need to call it if the player is setup with
-     * autoplay attribute ({@link Config#playback#autoplay}). Has no effect if the player is already playing.
+     * autoplay attribute ({@link PlaybackConfig.autoplay}). Has no effect if the player is already playing.
+     * @returns a Promise which resolves as soon as playback has actually started. This promise can reject
+     * if play is prohibited by the browser (a missing user interaction for example)
+     * @param issuer The issuer of the API call that will be passed to events triggered by this call
+     * @since v4.0
      */
-    play(issuer?: string): PlayerAPI;
+    play(issuer?: string): Promise<void>;
     /**
-     * Removes a handler for a player event.
+     * Removes a handler for a player event. This method was called `removeEventHandler` in previous
+     * player versions.
      *
      * @param eventType The event to remove the handler from
      * @param callback The callback handler to remove
-     *
      * @since v7.8
      */
-    // TODO remove string type option (this is a temporary hack for PlayerWrapper#clearEventHandlers)
-    off(eventType: PlayerAPI.Event | string, callback: PlayerAPI.PlayerEventCallback): PlayerAPI;
+    off(eventType: PlayerAPI.Event, callback: PlayerAPI.PlayerEventCallback): void;
     /**
      * Schedules an ad for playback.
      *
-     * @param adManifestUrl URL to the ad manifest
-     * @param adType Always 'vast' (for now)
-     * TODO convert adType to enum? (if ad systems should be pluggable and they are therefore not statically defined,
-     *   keep it as string)
-     * @param options Optional ad parameters
+     * @param adManifestUrl URL to the ad manifest. The array is used for ad waterfalling: all entries beyond the first
+     * are fallbacks if the previous ones did not work.
+     * @param client the type of ad to be played.
+     * @param options Optional options for ad playback.
+     * @since v4.2
+     * @return `true` if scheduling the ad was successful, `false` otherwise.
      */
-    scheduleAd(adManifestUrl: string, adType: string, options?: PlayerAPI.ScheduleAdOptions): void;
-    /**
-     * Seeks to the given playback time specified by the parameter time in seconds. Must not be greater
-     * than the total duration of the video. Has no effect when watching a live stream as seeking is
-     * not possible.
-     *
-     * @param time The time to seek to
-     * @param issuer the source of the seek command
-     */
-    seek(time: number, issuer?: string): boolean;
+    scheduleAd(adManifestUrl: string, client: string, options?: PlayerAPI.ScheduleAdOptions): boolean;
     /**
      * Returns the time range that is currently valid for seeking.
      * @since v7.1
      */
     getSeekableRange(): PlayerAPI.TimeRange;
     /**
+     * Seeks to the given playback time specified by the parameter time in seconds. Must not be greater
+     * than the total duration of the video. Has no effect when watching a live stream as seeking is
+     * not possible.
+     *
+     * @param time The time to seek to
+     * @param issuer The issuer of the API call that will be passed to events triggered by this call
+     * @since v4.0
+     */
+    seek(time: number, issuer?: string): boolean;
+    /**
      * Sets the audio track to the ID specified by trackID.
-     * Available tracks can be retrieved with {@link #getAvailableAudio}.
+     * Available tracks can be retrieved with {@link getAvailableAudio}.
      *
      * @param trackID The ID of the audio track to activate
+     * @since v4.0
      */
-    setAudio(trackID: string): PlayerAPI;
+    setAudio(trackID: string): void;
     /**
      * Manually sets the audio stream to a fixed quality, identified by ID. Has to be an ID defined in
      * the MPD or the keyword 'auto'. Auto resets to dynamic switching. A list with valid IDs can be
-     * retrieved by calling {@link #getAvailableAudioQualities}.
+     * retrieved by calling {@link getAvailableAudioQualities}.
      *
      * @param audioQualityID The ID of the desired audio quality or 'auto' for dynamic switching
+     * @since v4.0
      */
-    setAudioQuality(audioQualityID: string): PlayerAPI;
-    /**
-     * Gets the currently set audio quality.
-     */
-    getAudioQuality(): PlayerAPI.AudioQuality;
+    setAudioQuality(audioQualityID: string): void;
     /**
      * Sets authentication data which is sent along with the licensing call. Can be used to add more
      * information for a 3rd party licensing backend. The data be any type or object as needed by the
      * 3rd party licensing backend.
      *
      * @param customData Data which should be sent with the licensing call
+     * @since v4.2
      */
     setAuthentication(customData: any): void;
     /**
-     * Sets the number of the last segment that the player is allowed to request.
-     * Only working with Segment Template manifests.
-     *
-     * @param lastSegmentNum The number of the last segment to request
-     */
-    setLastSegment(lastSegmentNum: number): PlayerAPI;
-    /**
+     * [<i>HTML5 only</i>]
      * Sets the playback speed of the player. Fast forward as well as slow motion is supported.
      * Slow motion is used by values between 0 and 1, fast forward by values greater than 1.
      *
-     * @see #getPlaybackSpeed
+     * @see {@link getPlaybackSpeed}
      * @param speed A playback speed factor greater than 0
+     * @since v4.0
      */
     setPlaybackSpeed(speed: number): void;
     /**
@@ -394,6 +515,7 @@ declare namespace bitmovin {
      * @param url The URL to the poster image
      * @param keepPersistent Flag to set the poster image persistent so it is also displayed during playback (useful
      *   for audio-only playback)
+     * @since v4.3
      */
     setPosterImage(url: string, keepPersistent: boolean): void;
     /**
@@ -402,115 +524,135 @@ declare namespace bitmovin {
      * parameter name and the values as parameter values.
      *
      * @param queryParameters The list of query parameter key/value pairs
+     * @since v4.1
      */
-    setQueryParameters(queryParameters: { [key: string]: string; }): PlayerAPI;
+    setQueryParameters(queryParameters: PlayerAPI.QueryParameters): void;
     /**
      * Passes an HTML video element to the player, which should be used in case of non-Flash playback.
-     * Needs to be called before {@link #setup}. Has no effect if the Flash fallback is selected.
+     * Needs to be called before {@link setup}. Has no effect if the Flash fallback is selected.
      *
      * @param videoElement The HTML video element to use
+     * @since v5.1
      */
     setVideoElement(videoElement: HTMLElement): void;
     /**
      * Manually sets the video stream to a fixed quality, identified by ID. Has to be an ID defined in
      * the MPD or the keyword 'auto'. Auto resets to dynamic switching. A list with valid IDs can be retrieved
-     * by calling {@link #getAvailableVideoQualities}.
+     * by calling {@link getAvailableVideoQualities}.
      *
      * @param videoQualityID ID defined in the MPD or 'auto'
+     * @since v4.0
      */
-    setVideoQuality(videoQualityID: string): PlayerAPI;
-    /**
-     * Gets the currently set video quality.
-     */
-    getVideoQuality(): PlayerAPI.VideoQuality;
+    setVideoQuality(videoQualityID: string): void;
     /**
      * Sets the player’s volume in the range of 0 (silent) to 100 (max volume). Unmutes a muted player.
      *
      * @param volume The volume to set between 0 and 100
-     * @param issuer the source of the setVolume command
+     * @param issuer The issuer of the API call that will be passed to events triggered by this call
+     * @since v4.0
      */
-    setVolume(volume: number, issuer?: string): PlayerAPI;
+    setVolume(volume: number, issuer?: string): void;
     /**
      * Enables or disables stereo mode for VR content.
      *
      * @param enableStereo true to enable stereo, false to disable
      * @returns true if stereo mode was successfully set, else false
+     * @since v6.0
      */
     setVRStereo(enableStereo: boolean): boolean;
     /**
      * Skips the current ad. Has no effect if ad is not skippable or if no ad is played back.
+     * @returns True if skipping the ad was successful.
+     * @since v4.0
      */
-    skipAd(): void;
+    skipAd(): boolean;
     /**
-     * Shifts the time to the given offset in seconds from the live edge. Has to be within {@link #getMaxTimeShift}
+     * Shifts the time to the given offset in seconds from the live edge. Has to be within {@link getMaxTimeShift}
      * (which is a negative value) and 0. Only works in live streams.
-     * New in v4.3: The offset can be positive and is then interpreted as a UNIX timestamp in seconds. The
-     * value has to be within the timeShift window as specified by {@link #getMaxTimeShift}.
+     * <span class='highlight'>[new in v4.3]</span>: The offset can be positive and is then interpreted as a UNIX
+     * timestamp in seconds. The value has to be within the timeShift window as specified by {@link getMaxTimeShift}.
      *
      * @param offset The offset to timeshift to
-     * @param issuer The issuer of the timeShift command
+     * @param issuer The issuer of the API call that will be passed to events triggered by this call
+     * @since v4.0
      */
-    timeShift(offset: number, issuer?: string): PlayerAPI;
+    timeShift(offset: number, issuer?: string): void;
     /**
      * Unloads the current video source.
+     * @since v4.0
      */
-    unload(): PlayerAPI;
+    unload(): Promise<void>;
     /**
      * Unmutes the player if muted.
      *
-     * @param issuer the issuer of the unmute command
+     * @param issuer The issuer of the API call that will be passed to events triggered by this call
+     * @since v4.0
      */
-    unmute(issuer?: string): PlayerAPI;
-    /**
-     * The version number of the player.
-     */
-    version: string;
+    unmute(issuer?: string): void;
     /**
      * Checks if Apple AirPlay support is available.
+     * @since v7.1
      */
     isAirplayAvailable(): boolean;
     /**
      * Shows the airplay playback target picker.
+     * @since v7.1
      */
-    showAirplayTargetPicker(): PlayerAPI;
-    /**
-     * Starts preloading the content of the currently loaded source.
-     */
-    preload(): PlayerAPI;
+    showAirplayTargetPicker(): void;
     /**
      * Returns the currently buffered time ranges of the video element.
+     * @since v6.1
      */
     getBufferedRanges(): PlayerAPI.TimeRange[];
+    /**
+     * Returns infos for segments that can be requested by the player
+     * @returns {SegmentMap}
+     * @since v7.2
+     */
+    getAvailableSegments(): any;
+    /**
+     * Starts preloading the content of the currently loaded source.
+     * @since v6.1
+     */
+    preload(): void;
+    /**
+     * Sets the level of player log outputs.
+     * @param level Log level, allowed values are "debug", "log", "warn", "error" and "off"
+     * @since v6.1
+     */
+    setLogLevel(level: player.LogLevel): void;
 
-    getViewMode(): ViewMode;
+    /**
+     * Returns the used HTML5 video element or the Flash object if the fallback is used.
+     *
+     * @returns The HTML5 video element or the Flash object which is used by the player
+     */
+    getVideoElement(): HTMLVideoElement | HTMLObjectElement;
 
+    /**
+     * Tests if a particular {@link ViewMode} is available for selection with {@link setViewMode}.
+     * @param {ViewMode} viewMode the view mode to test
+     * @returns {boolean} `true` if the tested view mode is available, else `false`
+     * @since v8.0
+     */
     isViewModeAvailable(viewMode: ViewMode): boolean;
 
+    /**
+     * Sets the player to a particular {@link ViewMode}. Will only work if the selected view mode is available and
+     * {@link isViewModeAvailable} returns `true`, else this call will be ignored. If successful, a
+     * {@link Event.ViewModeChanged} will be fired.
+     * @param {ViewMode} viewMode the view mode to switch the player into
+     * @param {ViewModeOptions} options additional optional parameters for view modes
+     * @since v8.0
+     */
     setViewMode(viewMode: ViewMode, options?: ViewModeOptions): void;
 
-    VR: {
-      CONTENT_TYPE: {
-        SINGLE: PlayerAPI.VR.ContentType,
-        TAB: PlayerAPI.VR.ContentType,
-        SBS: PlayerAPI.VR.ContentType,
-      },
-      STATE: {
-        READY: PlayerAPI.VR.State,
-        PLAYING: PlayerAPI.VR.State,
-        ERROR: PlayerAPI.VR.State,
-        UNINITIALIZED: PlayerAPI.VR.State,
-      },
-      TRANSITION_TIMING_TYPE: {
-        NONE: PlayerAPI.VR.TransitionTimingType,
-        EASE_IN: PlayerAPI.VR.TransitionTimingType,
-        EASE_OUT: PlayerAPI.VR.TransitionTimingType,
-        EASE_IN_OUT: PlayerAPI.VR.TransitionTimingType,
-      },
-    };
-
-    vr: PlayerAPI.PlayerVRAPI;
-
-    subtitles: PlayerAPI.PlayerSubtitlesAPI;
+    /**
+     * Gets the active {@link ViewMode}.
+     * @returns {ViewMode} the view mode that is currently active
+     * @since v8.0
+     */
+    getViewMode(): ViewMode;
   }
 
   namespace PlayerAPI {
