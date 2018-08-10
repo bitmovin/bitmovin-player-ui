@@ -783,6 +783,7 @@ declare namespace bitmovin {
        * TODO check why this is missing from the API docs
        */
       isFragmented?: boolean;
+      enabled?: boolean;
     }
 
     /**
