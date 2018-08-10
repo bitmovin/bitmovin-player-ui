@@ -1,3 +1,5 @@
+import { UIConfig } from './uimanager';
+
 declare namespace bitmovin {
 
   namespace PlayerAPI {
@@ -513,11 +515,6 @@ declare namespace bitmovin {
        * and aspect ratio should be given. Defaults to 16:9.
        */
       aspectratio?: string;
-      /**
-       * A short hand function to disable/enable controls, playOverlay, subtitles, keyboard,
-       * and mouse. It is not possible to override this setting with one of the mentioned attributes.
-       */
-      ux?: boolean;
     }
 
     interface ContextMenuEntry {
@@ -951,6 +948,7 @@ declare namespace bitmovin {
        * Network configuration.
        */
       network?: NetworkConfig;
+      ui?: UIConfig | false;
     }
   }
 }
