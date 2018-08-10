@@ -22,7 +22,12 @@ export class SubtitleSwitchHandler {
   private bindSelectionEvent(): void {
     this.listElement.onItemSelected.subscribe((_, value: string) => {
       // TODO add support for multiple concurrent subtitle selections
-      this.player.subtitles.enable(value, true);
+      if (value === 'null') {
+        const currentSubtitle = this.player.subtitles.list().filter((subtitle) => subtitle.enabled).pop();
+        this.player.subtitles.disable(currentSubtitle.id);
+      } else {
+        this.player.subtitles.enable(value, true);
+      }
     });
   }
 
@@ -52,6 +57,8 @@ export class SubtitleSwitchHandler {
       // Subtitles API not available (yet)
       return;
     }
+
+    this.listElement.addItem('null', 'off');
 
     for (let subtitle of this.player.subtitles.list()) {
       this.listElement.addItem(subtitle.id, subtitle.label);
