@@ -183,7 +183,7 @@ declare namespace bitmovin {
      * Returns the currently used audio track.
      * @since v4.0
      */
-    getAudio(): AudioTrack;
+    getAudio(): PlayerAPI.AudioTrack;
     /**
      * Returns the seconds of already buffered audio data or null if no audio source is loaded.
      * @since v4.0
@@ -198,7 +198,7 @@ declare namespace bitmovin {
      * Returns an array of all available audio tracks.
      * @since v4.0
      */
-    getAvailableAudio(): AudioTrack[];
+    getAvailableAudio(): PlayerAPI.AudioTrack[];
     /**
      * Returns an array of all available audio qualities the player can adapt between.
      * @since v4.0
