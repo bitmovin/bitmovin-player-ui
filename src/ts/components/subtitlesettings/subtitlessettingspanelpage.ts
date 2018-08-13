@@ -1,37 +1,37 @@
+import {SettingsPanelPage, SettingsPanelPageBackButton} from '../settingspanelpage';
 import {SettingsPanel, SettingsPanelConfig, SettingsPanelItem} from '../settingspanel';
+import {SubtitleOverlay} from '../subtitleoverlay';
+import {ContainerConfig} from '../container';
+import {SubtitleSettingsManager} from './subtitlesettingsmanager';
+import {Component, ComponentConfig} from '../component';
+import {FontSizeSelectBox} from './fontsizeselectbox';
+import {FontFamilySelectBox} from './fontfamilyselectbox';
 import {FontColorSelectBox} from './fontcolorselectbox';
 import {FontOpacitySelectBox} from './fontopacityselectbox';
-import {FontFamilySelectBox} from './fontfamilyselectbox';
-import {FontSizeSelectBox} from './fontsizeselectbox';
+import {CharacterEdgeSelectBox} from './characteredgeselectbox';
 import {BackgroundColorSelectBox} from './backgroundcolorselectbox';
 import {BackgroundOpacitySelectBox} from './backgroundopacityselectbox';
 import {WindowColorSelectBox} from './windowcolorselectbox';
 import {WindowOpacitySelectBox} from './windowopacityselectbox';
-import {CharacterEdgeSelectBox} from './characteredgeselectbox';
-import {SubtitleOverlay} from '../subtitleoverlay';
-import {Component, ComponentConfig} from '../component';
-import {UIInstanceManager} from '../../uimanager';
-import {SubtitleSettingsManager} from './subtitlesettingsmanager';
 import {SubtitleSettingsCloseButton} from './subtitlesettingsclosebutton';
 import {SubtitleSettingsResetButton} from './subtitlesettingsresetbutton';
+import {UIInstanceManager} from '../../uimanager';
 
-export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
+export interface SubtitleSettingsPanelPageConfig extends ContainerConfig {
+  settingsPanel: SettingsPanel,
   overlay: SubtitleOverlay;
-  settingsPanel: SettingsPanel;
 }
 
-/**
- * @deprecated
- * SubtitleSettingsPanel is a settings panel specific to subtitles settings
- **/
-export class SubtitleSettingsPanel extends SettingsPanel {
+export class SubtitlesSettingsPanelPage extends SettingsPanelPage {
 
-  private overlay: SubtitleOverlay;
+  private readonly overlay: SubtitleOverlay;
+  private readonly settingsPanel: SettingsPanel;
 
-  constructor(config: SubtitleSettingsPanelConfig) {
+  constructor(config: SubtitleSettingsPanelPageConfig) {
     super(config);
 
     this.overlay = config.overlay;
+    this.settingsPanel = config.settingsPanel;
 
     let manager = new SubtitleSettingsManager();
 
@@ -64,8 +64,9 @@ export class SubtitleSettingsPanel extends SettingsPanel {
         new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(new SubtitleSettingsCloseButton({
-          subtitleSettingsPanel: this, settingsPanel: config.settingsPanel,
+        new SettingsPanelItem(new SettingsPanelPageBackButton({
+          container: this.settingsPanel,
+          text: 'back',
         }), new SubtitleSettingsResetButton({
           settingsManager: manager,
         })),
@@ -76,6 +77,8 @@ export class SubtitleSettingsPanel extends SettingsPanel {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
+
+    // TODO: change events
     this.onShow.subscribe(() => {
       this.overlay.enablePreviewSubtitleLabel();
     });

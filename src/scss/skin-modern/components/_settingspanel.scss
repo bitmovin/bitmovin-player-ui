@@ -6,6 +6,8 @@
 
   @include hidden-animated;
 
+  transition: height .35s cubic-bezier(.4,0,.2,1), width .35s cubic-bezier(.4,0,.2,1);
+
   $background-color: transparentize($color-background, .15);
 
   background-color: $background-color;
@@ -59,4 +61,32 @@
 // Remove margin inherited from controlbar
 .#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
   margin: 0;
+}
+
+// TODO: extract
+.#{$prefix}-ui-settings-panel-page {
+  display: none;
+
+  //&.transition-out {
+  //  &.left {
+  //    margin-left: -100%;
+  //    transition: 5s;
+  //  }
+  //}
+  //
+  //&.transition-in {
+  //  &.from-right {
+  //    margin-left: 100%;
+  //    display: block;
+  //  }
+  //  &.left {
+  //    margin-left: 0;
+  //    transition: 5s;
+  //  }
+  //}
+
+  &.active {
+    transition: visibility 2s;
+    display: block;
+  }
 }

@@ -9,6 +9,7 @@ import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {ListBox} from './listbox';
 import {PlaybackSpeedSelectBox} from './playbackspeedselectbox';
+import {SettingsPanelPage} from './settingspanelpage';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -27,7 +28,9 @@ export interface SettingsPanelConfig extends ContainerConfig {
  */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
-  private static readonly CLASS_LAST = 'last';
+  // navigation handling
+  private activePageIndex = 0;
+  private navigationStack: SettingsPanelPage[] = [];
 
   private settingsPanelEvents = {
     onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>(),
@@ -53,6 +56,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
+        this.resetNavigation(); // reset navigation
         this.hide();
         this.hideHoveredSelectBoxes();
       });
@@ -72,28 +76,73 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       this.onHide.subscribe(() => {
         // Clear timeout when hidden from outside
         this.hideTimeout.clear();
+        // Reset navigation
+        this.resetNavigation();
       });
     }
 
-    // Fire event when the state of a settings-item has changed
-    let settingsStateChangedHandler = () => {
-      this.onSettingsStateChangedEvent();
-
-      // Attach marker class to last visible item
-      let lastShownItem = null;
-      for (let component of this.getItems()) {
-        component.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_LAST));
-        if (component.isShown()) {
-          lastShownItem = component;
-        }
-      }
-      if (lastShownItem) {
-        lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_LAST));
-      }
+    // keep backwards compatibility by creating a page if all elements are items
+    // TODO: not working yet
+    const isTypeOfSettingsPanelItem = (currentValue: Component<ComponentConfig>) => {
+      return currentValue instanceof SettingsPanelItem;
     };
-    for (let component of this.getItems()) {
-      component.onActiveChanged.subscribe(settingsStateChangedHandler);
+    if (this.getComponents().every(isTypeOfSettingsPanelItem)) {
+      let mainPage = new SettingsPanelPage({
+        components: this.getComponents(),
+      });
+      this.config.components = [mainPage];
     }
+    // else asume all pages
+
+    this.updateActivePageClass();
+  }
+
+  private updateActivePageClass(): void {
+
+    // TODO: animation here
+
+    this.getPages().forEach((page: SettingsPanelPage, index) => {
+      if (index === this.activePageIndex) {
+        page.getDomElement().addClass('active');
+      } else {
+        page.getDomElement().removeClass('active');
+      }
+    });
+  }
+
+  setActivePageIndex(index: number): void {
+    this.activePageIndex = index;
+    this.navigationStack.push(this.getPages()[index]);
+    this.updateActivePageClass();
+  }
+
+  setActivePage(page: SettingsPanelPage): void {
+    const index = this.getPages().indexOf(page);
+    this.setActivePageIndex(index);
+  }
+
+  // navigate to root page
+  popToRootSettingsPanelPage(): void {
+    this.resetNavigation();
+  }
+
+  popSettingsPanelPage() {
+    // pop one navigation item from stack
+    this.navigationStack.pop(); // remove current page
+    const targetPage = this.navigationStack.slice(-1)[0];
+
+    if (targetPage !== undefined) {
+      this.setActivePage(targetPage);
+    } else {
+      // fallback to root
+      this.popToRootSettingsPanelPage();
+    }
+  }
+
+  private resetNavigation(): void {
+    this.navigationStack = [];
+    this.activePageIndex = 0;
+    this.updateActivePageClass();
   }
 
   /**
@@ -102,7 +151,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    * while the settings panel does. This would leave a floating select box, which is just weird
    */
   private hideHoveredSelectBoxes(): void {
-    this.getItems().forEach((item: SettingsPanelItem) => {
+    // TODO: check if activePage is enough?
+    this.getComputedItems().forEach((item: SettingsPanelItem) => {
       if (item.isActive() && (item as any).setting instanceof SelectBox) {
         const selectBox = (item as any).setting as SelectBox;
         const oldDisplay = selectBox.getDomElement().css('display');
@@ -133,17 +183,24 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    * @returns {boolean} true if there are active settings, false if the panel is functionally empty to a user
    */
   hasActiveSettings(): boolean {
-    for (let component of this.getItems()) {
-      if (component.isActive()) {
-        return true;
-      }
-    }
-
-    return false;
+    return this.getRootPage().hasActiveSettings();
   }
 
-  private getItems(): SettingsPanelItem[] {
-    return <SettingsPanelItem[]>this.config.components.filter(component => component instanceof SettingsPanelItem);
+  getPages(): SettingsPanelPage[] {
+    return <SettingsPanelPage[]>this.config.components.filter(component => component instanceof SettingsPanelPage);
+  }
+
+  // collect all items from all pages (see hideHoveredSelectBoxes)
+  private getComputedItems(): SettingsPanelItem[] {
+    const allItems: SettingsPanelItem[] = [];
+    for (let page of this.getPages()) {
+      allItems.push(...page.getItems());
+    }
+    return allItems;
+  }
+
+  private getRootPage(): SettingsPanelPage {
+    return this.getPages()[0];
   }
 
   protected onSettingsStateChangedEvent() {

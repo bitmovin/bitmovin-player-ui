@@ -2,14 +2,15 @@ import {LabelConfig} from '../label';
 import {Container, ContainerConfig} from '../container';
 import {SubtitleSettingsOpenButton} from './subtitlesettingsopenbutton';
 import {DOM} from '../../dom';
+import {SubtitleSettingsPanelPageOpenButton} from '../settingspanelpage';
 
 export interface SubtitleSettingsLabelConfig extends LabelConfig {
-  opener: SubtitleSettingsOpenButton;
+  opener: SubtitleSettingsPanelPageOpenButton | SubtitleSettingsOpenButton;
 }
 
 export class SubtitleSettingsLabel extends Container<ContainerConfig> {
 
-  private opener: SubtitleSettingsOpenButton;
+  private opener: SubtitleSettingsPanelPageOpenButton | SubtitleSettingsOpenButton;
 
   private text: string;
 
