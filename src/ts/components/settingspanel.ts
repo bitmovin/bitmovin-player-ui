@@ -98,9 +98,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   }
 
   private updateActivePageClass(): void {
-
-    // TODO: animation here
-
     this.getPages().forEach((page: SettingsPanelPage, index) => {
       if (index === this.activePageIndex) {
         page.getDomElement().addClass('active');
@@ -110,10 +107,55 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     });
   }
 
+  private animateNavigation(targetPage: SettingsPanelPage) {
+    // workaround to enable css transition for elements with auto width / height property
+
+    const htmlElement = this.getDomElement().get(0);
+    // ensure container has real width / height
+    if (htmlElement.style.width === '' || htmlElement.style.height === '') {
+      this.getDomElement().css('width', this.getDomElement().css('width'));
+      this.getDomElement().css('height', this.getDomElement().css('height'));
+    }
+
+    const clone = targetPage.getDomElement().get(0).cloneNode(true) as HTMLElement;
+    // append to parent so we get the "real" size
+    // TODO: append to container wrapper
+    const containerWrapper = targetPage.getDomElement().get(0).parentNode;
+    containerWrapper.appendChild(clone);
+    // set clone visible
+    clone.style.display = 'block';
+
+    let widthOffset = 0;
+    let heightOffset = 0;
+
+    // TODO: improve
+    let elementsWithMargins: HTMLElement[] = [htmlElement, containerWrapper, targetPage.getDomElement().get(0)] as HTMLElement[];
+    for (let element of elementsWithMargins) {
+      const computedStyles = getComputedStyle(element);
+      widthOffset += Number(computedStyles.paddingLeft.replace(/[^\d\.\-]/g, '')) + Number(computedStyles.paddingRight.replace(/[^\d\.\-]/g, ''));
+      widthOffset += Number(computedStyles.marginLeft.replace(/[^\d\.\-]/g, '')) + Number(computedStyles.marginRight.replace(/[^\d\.\-]/g, ''));
+      heightOffset += Number(computedStyles.paddingTop.replace(/[^\d\.\-]/g, '')) + Number(computedStyles.paddingBottom.replace(/[^\d\.\-]/g, ''));
+      heightOffset += Number(computedStyles.marginTop.replace(/[^\d\.\-]/g, '')) + Number(computedStyles.marginBottom.replace(/[^\d\.\-]/g, ''));
+    }
+
+    const width = clone.scrollWidth + widthOffset;
+    const height = clone.scrollHeight + heightOffset;
+
+    // Remove from the DOM
+    clone.remove();
+
+    this.getDomElement().css('width', width + 'px');
+    this.getDomElement().css('height', height + 'px');
+  }
+
   setActivePageIndex(index: number): void {
-    this.activePageIndex = index;
-    this.navigationStack.push(this.getPages()[index]);
-    this.updateActivePageClass();
+    if (index !== this.activePageIndex) {
+      const targetPage = this.getPages()[index];
+      this.animateNavigation(targetPage);
+      this.activePageIndex = index;
+      this.navigationStack.push(targetPage);
+      this.updateActivePageClass();
+    }
   }
 
   setActivePage(page: SettingsPanelPage): void {
@@ -142,6 +184,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   private resetNavigation(): void {
     this.navigationStack = [];
     this.activePageIndex = 0;
+    this.animateNavigation(this.getRootPage());
     this.updateActivePageClass();
   }
 

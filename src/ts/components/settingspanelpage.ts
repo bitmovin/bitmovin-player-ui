@@ -84,38 +84,12 @@ export class SettingsPanelNavigatorButton extends Button<ButtonConfig> {
   }
 
   back() {
-    this.animateToTargetPage();
     this.container.popSettingsPanelPage();
   }
 
   navigateToTarget() {
-    this.animateToTargetPage();
     this.container.setActivePage(this.targetPage);
   }
-
-  animateToTargetPage() {
-
-    // TODO: ensure container has width / height (for first animation)
-
-    const target = this.targetPage || this.container.getPages()[0];
-
-    const clone = target.getDomElement().get(0).cloneNode(true) as HTMLElement;
-
-    this.container.getDomElement().get(0).appendChild(clone);
-
-    clone.style.display = 'block';
-    // TODO: respect padding ?????
-    const newWidth = clone.clientWidth;
-    const newHeight = clone.clientHeight + 10;
-
-    clone.remove();
-
-    console.log('width', newWidth, 'height', newHeight);
-
-    this.container.getDomElement().css('width', newWidth + 'px');
-    this.container.getDomElement().css('height', newHeight + 'px');
-  }
-
 }
 
 export class SettingsPanelPageBackButton extends SettingsPanelNavigatorButton {
