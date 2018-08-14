@@ -34,6 +34,10 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   private activePageIndex = 0;
   private navigationStack: SettingsPanelPage[] = [];
 
+  /**
+   * Needed for backwards compatibility
+   * @deprecated
+   */
   private settingsPanelEvents = {
     onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>(),
   };
@@ -97,6 +101,11 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         this.resetNavigation();
       });
     }
+
+    // pass event from root page through for backwards compatibility
+    this.getRootPage().onSettingsStateChanged.subscribe(() => {
+      this.onSettingsStateChangedEvent();
+    });
 
     this.updateActivePageClass();
   }
@@ -264,6 +273,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   /**
    * Gets the event that is fired when one or more {@link SettingsPanelItem items} have changed state.
+   * @deprecated
    * @returns {Event<SettingsPanel, NoArgs>}
    */
   get onSettingsStateChanged(): Event<SettingsPanel, NoArgs> {

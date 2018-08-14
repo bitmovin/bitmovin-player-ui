@@ -8,8 +8,8 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
 
   private static readonly CLASS_LAST = 'last';
 
-  private settingsPanelEvents = {
-    onSettingsStateChanged: new EventDispatcher<SettingsPanel, NoArgs>(),
+  private settingsPanelPageEvents = {
+    onSettingsStateChanged: new EventDispatcher<SettingsPanelPage, NoArgs>(),
   };
 
   constructor(config: ContainerConfig) {
@@ -25,7 +25,7 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
 
     // Fire event when the state of a settings-item has changed
     let settingsStateChangedHandler = () => {
-      // this.onSettingsStateChangedEvent();
+      this.onSettingsStateChangedEvent();
 
       // Attach marker class to last visible item
       let lastShownItem = null;
@@ -56,6 +56,14 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
 
   getItems(): SettingsPanelItem[] {
     return <SettingsPanelItem[]>this.config.components.filter(component => component instanceof SettingsPanelItem);
+  }
+
+  onSettingsStateChangedEvent() {
+    this.settingsPanelPageEvents.onSettingsStateChanged.dispatch(this);
+  }
+
+  get onSettingsStateChanged(): Event<SettingsPanelPage, NoArgs> {
+    return this.settingsPanelPageEvents.onSettingsStateChanged.getEvent();
   }
 }
 
