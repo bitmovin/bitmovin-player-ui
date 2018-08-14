@@ -4,9 +4,12 @@
 %ui-settings-panel {
   @extend %ui-container;
 
-  @include hidden-animated;
-
-  transition: height .35s cubic-bezier(.4,0,.2,1), width .35s cubic-bezier(.4,0,.2,1);
+  @include hidden-animated-with-additional-transitions($animation-duration,
+          (
+                  height: (.35s, cubic-bezier(.4, 0, .2, 1)),
+                  width: (.35s, cubic-bezier(.4, 0, .2, 1))
+          )
+  );
 
   $background-color: transparentize($color-background, .15);
 
@@ -24,34 +27,6 @@
     > * {
       margin: 0 .5em;
     }
-
-    // A "line" in the panel: a container holding a label + control
-    .#{$prefix}-container-wrapper > * {
-      // Labels
-      &.#{$prefix}-ui-label {
-        display: inline-block;
-        font-size: .8em;
-        width: 9em;
-      }
-
-      // Controls (e.g. selectbox)
-      &.#{$prefix}-ui-selectbox {
-        width: 12em;
-      }
-    }
-  }
-
-  .#{$prefix}-ui-settings-panel-item {
-    border-bottom: 1px solid transparentize($color-secondary, .7);
-    padding: .5em 0;
-
-    &.#{$prefix}-last {
-      border-bottom: 0;
-    }
-
-    &.#{$prefix}-hidden {
-      display: none;
-    }
   }
 }
 
@@ -62,32 +37,4 @@
 // Remove margin inherited from controlbar
 .#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
   margin: 0;
-}
-
-// TODO: extract
-.#{$prefix}-ui-settings-panel-page {
-  display: none;
-
-  //&.transition-out {
-  //  &.left {
-  //    margin-left: -100%;
-  //    transition: 5s;
-  //  }
-  //}
-  //
-  //&.transition-in {
-  //  &.from-right {
-  //    margin-left: 100%;
-  //    display: block;
-  //  }
-  //  &.left {
-  //    margin-left: 0;
-  //    transition: 5s;
-  //  }
-  //}
-
-  &.active {
-    transition: visibility 2s;
-    display: block;
-  }
 }
