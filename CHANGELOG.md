@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [support-v2]
+
+### Fixed
+- Missing custom `SkipMessage` texts while playing an advertisement
+
 ## [2.18.0] (2018-08-08)
 
 ### Added
