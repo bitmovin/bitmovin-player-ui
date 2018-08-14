@@ -41,6 +41,17 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   constructor(config: SettingsPanelConfig) {
     super(config);
 
+    const isTypeOfSettingsPanelItem = (currentValue: Component<ComponentConfig>) => {
+      return currentValue instanceof SettingsPanelItem;
+    };
+    if (this.getComponents().every(isTypeOfSettingsPanelItem)) {
+      let mainPage = new SettingsPanelPage({
+        components: this.getComponents(),
+      });
+      this.config.components = [mainPage];
+      config.components = this.config.components;
+    }
+
     this.config = this.mergeConfig<SettingsPanelConfig>(config, {
       cssClass: 'ui-settings-panel',
       hideDelay: 3000,
@@ -80,19 +91,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         this.resetNavigation();
       });
     }
-
-    // keep backwards compatibility by creating a page if all elements are items
-    // TODO: not working yet
-    const isTypeOfSettingsPanelItem = (currentValue: Component<ComponentConfig>) => {
-      return currentValue instanceof SettingsPanelItem;
-    };
-    if (this.getComponents().every(isTypeOfSettingsPanelItem)) {
-      let mainPage = new SettingsPanelPage({
-        components: this.getComponents(),
-      });
-      this.config.components = [mainPage];
-    }
-    // else asume all pages
 
     this.updateActivePageClass();
   }
