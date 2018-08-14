@@ -32,17 +32,17 @@
  * );
  */
 @mixin hidden-animated-with-additional-transitions($duration: $animation-duration, $transitions: ()) {
-  $transitionsString: hidden-animated-transition($duration);
-  @each $property, $propertyOptions in $transitions {
-    $propertySettings: $property;
-    @each $option in $propertyOptions {
-      $propertySettings: $propertySettings $option;
+  $transitions-string: hidden-animated-transition($duration);
+  @each $property, $property-options in $transitions {
+    $property-settings: $property;
+    @each $option in $property-options {
+      $property-settings: $property-settings $option;
     }
-    $transitionsString: $transitionsString, $propertySettings;
+    $transitions-string: $transitions-string, $property-settings;
   }
 
   @include hidden-animated($duration);
-  transition: $transitionsString;
+  transition: $transitions-string;
 }
 
 // Cover the whole parent element

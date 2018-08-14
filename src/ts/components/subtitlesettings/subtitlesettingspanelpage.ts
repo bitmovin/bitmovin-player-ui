@@ -1,5 +1,5 @@
 import {SettingsPanelPage} from '../settingspanelpage';
-import {SettingsPanel, SettingsPanelConfig, SettingsPanelItem} from '../settingspanel';
+import {SettingsPanel, SettingsPanelItem} from '../settingspanel';
 import {SubtitleOverlay} from '../subtitleoverlay';
 import {ContainerConfig} from '../container';
 import {SubtitleSettingsManager} from './subtitlesettingsmanager';

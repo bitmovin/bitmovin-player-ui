@@ -5,10 +5,10 @@
   @extend %ui-container;
 
   @include hidden-animated-with-additional-transitions($animation-duration,
-          (
-                  height: (.35s, cubic-bezier(.4, 0, .2, 1)),
-                  width: (.35s, cubic-bezier(.4, 0, .2, 1))
-          )
+    (
+      height: (.35s, cubic-bezier(.4, 0, .2, 1)),
+      width: (.35s, cubic-bezier(.4, 0, .2, 1))
+    )
   );
 
   $background-color: transparentize($color-background, .15);
