@@ -21,6 +21,12 @@ export interface SettingsPanelConfig extends ContainerConfig {
    * Default: 3 seconds (3000)
    */
   hideDelay?: number;
+
+  /**
+   * Flag to specify if there should be an animation when switching SettingsPanelPages.
+   * Default: true
+   */
+  pageTransitionAnimation?: boolean;
 }
 
 /**
@@ -65,6 +71,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.config = this.mergeConfig<SettingsPanelConfig>(config, {
       cssClass: 'ui-settings-panel',
       hideDelay: 3000,
+      pageTransitionAnimation: true,
     }, this.config);
   }
 
@@ -165,6 +172,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   }
 
   private animateNavigation(targetPage: SettingsPanelPage) {
+    if (!(this.config as SettingsPanelConfig).pageTransitionAnimation)
+      return;
     // workaround to enable css transition for elements with auto width / height property
     // css transition does not work with auto properties by definition so we need to calculate 'real'
     // width / height values to have a nice looking animation
