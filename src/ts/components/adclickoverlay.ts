@@ -12,7 +12,7 @@ export class AdClickOverlay extends ClickOverlay {
     let clickThroughUrl = <string>null;
     let clickThroughEnabled = !player.getConfig().advertising
       || !player.getConfig().advertising.hasOwnProperty('clickThroughEnabled')
-      || player.getConfig().advertising.clickThroughEnabled;
+      || (player.getConfig().advertising as any).clickThroughEnabled;
 
     player.on(player.exports.Event.AdStarted, (event: bitmovin.PlayerAPI.AdStartedEvent) => {
       clickThroughUrl = event.clickThroughUrl;

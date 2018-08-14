@@ -142,7 +142,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     // We only know if an autoplay attempt is upcoming if the player is not yet ready. It the player is already ready,
     // the attempt might be upcoming or might have already happened, but we don't have to handle that because we can
     // simply rely on isPlaying and the play state events.
-    const isAutoplayUpcoming = !player.getConfig(true).source && isAutoplayEnabled;
+    const isAutoplayUpcoming = !player.getSource() && isAutoplayEnabled;
 
     // Hide the play button when the player is already playing or autoplay is upcoming
     if (player.isPlaying() || isAutoplayUpcoming) {
