@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- Missing custom `SkipMessage` texts while playing an advertisement
+
+## [3.0.0 alpha]
+
+This major release is adjusted to the changed API of Bitmovin Player v8.
+
+### Changed
+- Player type definitions updated to player v8
+
+### Removed
+- Everything deprecated in 2.x
+- Player v7 feature detections and compatibility fallbacks
+
 ## [2.18.0] (2018-08-08)
 
 ### Added

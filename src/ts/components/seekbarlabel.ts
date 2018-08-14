@@ -68,7 +68,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         }
         let time = player.getDuration() * (args.position / 100);
         this.setTime(time);
-        this.setThumbnail(player.getThumb(time));
+        this.setThumbnail(player.getThumbnail(time));
       }
 
       // Remove CSS classes from previous marker
@@ -91,7 +91,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
     };
 
-    player.addEventHandler(player.EVENT.ON_READY, init);
+    player.on(player.exports.Event.Ready, init);
     init();
   }
 
@@ -150,11 +150,11 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   }
 
   private thumbnailCssSprite(thumbnail: Thumbnail, width: number, height: number): CssProperties {
-    let thumbnailCountX = width / thumbnail.w;
-    let thumbnailCountY = height / thumbnail.h;
+    let thumbnailCountX = width / thumbnail.width;
+    let thumbnailCountY = height / thumbnail.height;
 
-    let thumbnailIndexX = thumbnail.x / thumbnail.w;
-    let thumbnailIndexY = thumbnail.y / thumbnail.h;
+    let thumbnailIndexX = thumbnail.x / thumbnail.width;
+    let thumbnailIndexY = thumbnail.y / thumbnail.height;
 
     let sizeX = 100 * thumbnailCountX;
     let sizeY = 100 * thumbnailCountY;
@@ -162,7 +162,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     let offsetX = 100 * thumbnailIndexX;
     let offsetY = 100 * thumbnailIndexY;
 
-    let aspectRatio = 1 / thumbnail.w * thumbnail.h;
+    let aspectRatio = 1 / thumbnail.width * thumbnail.height;
 
     // The thumbnail size is set by setting the CSS 'width' and 'padding-bottom' properties. 'padding-bottom' is
     // used because it is relative to the width and can be used to set the aspect ratio of the thumbnail.

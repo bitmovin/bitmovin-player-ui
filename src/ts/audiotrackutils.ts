@@ -28,20 +28,18 @@ export class AudioTrackSwitchHandler {
   private bindPlayerEvents(): void {
     const updateAudioTracksCallback = (): void => this.updateAudioTracks();
     // Update selection when selected track has changed
-    this.player.addEventHandler(this.player.EVENT.ON_AUDIO_CHANGED, () => {
+    this.player.on(this.player.exports.Event.AudioChanged, () => {
       this.selectCurrentAudioTrack();
     });
     // Update tracks when source goes away
-    this.player.addEventHandler(this.player.EVENT.ON_SOURCE_UNLOADED, updateAudioTracksCallback);
+    this.player.on(this.player.exports.Event.SourceUnloaded, updateAudioTracksCallback);
     // Update tracks when a new source is loaded
-    this.player.addEventHandler(this.player.EVENT.ON_READY, updateAudioTracksCallback);
+    this.player.on(this.player.exports.Event.Ready, updateAudioTracksCallback);
     // Update tracks when the period within a source changes
-    this.player.addEventHandler(this.player.EVENT.ON_PERIOD_SWITCHED, updateAudioTracksCallback);
-    // Update tracks when a track is added or removed (since player 7.1.4)
-    if (this.player.EVENT.ON_AUDIO_ADDED && this.player.EVENT.ON_AUDIO_REMOVED) {
-      this.player.addEventHandler(this.player.EVENT.ON_AUDIO_ADDED, updateAudioTracksCallback);
-      this.player.addEventHandler(this.player.EVENT.ON_AUDIO_REMOVED, updateAudioTracksCallback);
-    }
+    this.player.on(this.player.exports.Event.PeriodSwitched, updateAudioTracksCallback);
+    // Update tracks when a track is added or removed
+    this.player.on(this.player.exports.Event.AudioAdded, updateAudioTracksCallback);
+    this.player.on(this.player.exports.Event.AudioRemoved, updateAudioTracksCallback);
   }
 
   private updateAudioTracks() {

@@ -2,6 +2,10 @@ declare namespace bitmovin {
 
   namespace PlayerAPI {
 
+    import HttpRequestMethod = bitmovin.player.Network.HttpRequestMethod;
+    import HttpResponseType = bitmovin.player.Network.HttpResponseType;
+    import HttpRequestType = bitmovin.player.Network.HttpRequestType;
+
     interface ProgressiveSourceConfig {
       /**
        * The URL to the progressive video file.
@@ -337,12 +341,12 @@ declare namespace bitmovin {
        */
       cardboard?: string;
       /**
-       * The threshold in degrees that the viewport can change before the ON_VR_VIEWING_DIRECTION_CHANGE event is
+       * The threshold in degrees that the viewport can change before the VRViewingDirectionChange event is
        * triggered.
        */
       viewingDirectionChangeThreshold?: number;
       /**
-       * The minimal interval between consecutive ON_VR_VIEWING_DIRECTION_CHANGE events.
+       * The minimal interval between consecutive VRViewingDirectionChange events.
        */
       viewingDirectionChangeEventInterval?: number;
       /**
@@ -375,7 +379,7 @@ declare namespace bitmovin {
        * A function that generates a label for a subtitle.
        * @param subtitle The subtitle for which the label should be generated.
        */
-      subtitles?: (subtitle: Subtitle) => string;
+      subtitles?: (subtitle: SubtitleTrack) => string;
     }
 
     interface SourceConfig {
@@ -446,9 +450,17 @@ declare namespace bitmovin {
       };
     }
 
-    interface PlaybackTech {
-      player: string;
-      streaming: string;
+    interface Technology {
+      player: PlayerType;
+      streaming: StreamType;
+    }
+
+    interface PreferredTechnology extends Technology {
+      exclude?: boolean;
+    }
+
+    interface QueryParameters {
+      [name: string]: string;
     }
 
     interface PlaybackConfig {
@@ -486,7 +498,7 @@ declare namespace bitmovin {
        * An array of objects to specify the player and streaming technology order to use. If the first is
        * supported, this technologies are used. If not, the second is tried etc.
        */
-      preferredTech?: PlaybackTech[];
+      preferredTech?: PreferredTechnology[];
 
     }
 
@@ -509,11 +521,6 @@ declare namespace bitmovin {
        * and aspect ratio should be given. Defaults to 16:9.
        */
       aspectratio?: string;
-      /**
-       * A short hand function to disable/enable controls, playOverlay, subtitles, keyboard,
-       * and mouse. It is not possible to override this setting with one of the mentioned attributes.
-       */
-      ux?: boolean;
     }
 
     interface ContextMenuEntry {
@@ -654,79 +661,68 @@ declare namespace bitmovin {
     /**
      * Adaptation configurations for different platforms.
      */
-    interface AdaptationPlatformConfig {
+    interface AdaptationPlatformConfig extends AdaptationConfig {
       desktop?: AdaptationConfig;
       mobile?: AdaptationConfig;
     }
 
-    interface AdvertisingScheduleItem {
-      /**
-       * Specifies which ad client to use, like e.g., VAST or VPAID.
-       */
-      client?: string;
-      /**
-       * Defines when the ad shall be played. Supports the same values as {@link AdvertisingConfig#offset}.
-       */
-      offset: string;
-      /**
-       * Defines the path to the ad manifest.
-       */
-      tag: string;
+    interface AdvertisingConfig {
+      adBreaks?: AdConfig[];
+      videoLoadTimeout?: number;
+      strategy?: RestrictStrategy;
+      allowedUiElements?: string[];
+      adContainer?: () => HTMLElement;
+      companionAdContainers?: () => HTMLElement[];
     }
 
-    interface AdvertisingConfig {
-      /**
-       * Mandatory. Specifies which ad client to use, like e.g., VAST or VPAID.
-       */
-      client: string;
-      /**
-       * Specifies the time in seconds, how much the VAST tag is loaded prior to the ad playback. By default
-       * the VAST tag is loaded at player startup.
-       */
-      adCallOffset?: number;
-      /**
-       * Defines a custom message that will be displayed to the user instead of the progress bar during
-       * ad playback. The predefined placeholder xx can be used to show the remaining seconds of the ad.
-       */
-      admessage?: string;
-      /**
-       * Defines a custom message that will be displayed to the user as a skip button.
-       */
-      skipmessage?: SkipMessage;
-      /**
-       * Specifies that cookies are send along with the ad request. The server needs to explicitly accept
-       * them for CORS requests, otherwise the request will fail.
-       */
-      withCredentials?: boolean;
-      /**
-       * Defines the path to an ad manifest. Can be used to schedule a single ad without setting the {@link #schedule}
-       * property, that will be played at the time defined in the {@link #offset} property.
-       * It will be played as pre-roll add by default if no offset is set, or when as schedule with additional ads
-       * is provided.
-       */
-      tag?: string;
-      /**
-       * Defines when the ad shall be played.
-       *
-       * Allowed values are:
-       * - 'pre': pre-roll ad
-       * - 'post': post-roll ad
-       * - fractional seconds: '10', '12.5' (mid-roll ad)
-       * - percentage of the entire video duration: '25%', '50%' (mid-roll ad)
-       * - timecode [hh:mm:ss.mmm]: '00:10:30.000', '01:00:00.000' (mid-roll ad)
-       */
-      offset?: string;
-      /**
-       * Contains one or more ad breaks. Each ad break defines when an ad shall be played and must contain
-       * an offset and a tag property.
-       */
-      schedule?: { [name: string]: AdvertisingScheduleItem; };
-      /**
-       * If set to true, mid-roll ads are only played during normal playback. Seeking to a time after the
-       * mid-roll ads doesn't trigger ad playback.
-       * @since 7.1
-       */
-      allowSeekingOverMidRollAds?: boolean;
+    interface RestrictStrategy {
+      shouldPlayAdBreak: (toPlay: AdBreak) => boolean;
+      shouldPlaySkippedAdBreaks: (skipped: AdBreak[], from: number, to: number) => AdBreak[];
+    }
+
+    interface AdConfig {
+      replaceContentDuration?: number;
+    }
+
+    type AdTagType = 'vast' | 'vmap' | 'vpaid';
+
+    interface AdTag {
+      url: string;
+      type: AdTagType;
+    }
+
+    interface AdTagConfig extends AdConfig {
+      tag: AdTag;
+      persistent?: boolean;
+      fallbackTags?:  AdTag[];
+    }
+
+    interface AdBreakConfig extends AdTagConfig {
+      id: string;
+      position: string;
+      preloadOffset?: number;
+      skipAfter?: number;
+    }
+
+    // not part of PlayerConfiguration
+    interface AdBreak extends AdConfig {
+      scheduleTime: number;
+      ads?: Ad[];
+    }
+
+    // not part of PlayerConfiguration
+    interface Ad {
+      isLinear: boolean;
+      id?: string;
+      clickThroughUrl?: string;
+      mediaFileUrl?: string;
+      companionAds?: CompanionAd[];
+    }
+
+    // not part of PlayerConfiguration
+    interface CompanionAd {
+      width: number;
+      height: number;
     }
 
     interface LocationConfig {
@@ -772,40 +768,6 @@ declare namespace bitmovin {
     }
 
     /**
-     * Values the `HttpRequestType` property can have in the network API config callbacks.
-     */
-    enum HttpRequestType {
-      MANIFEST_DASH,
-      MANIFEST_HLS_MASTER,
-      MANIFEST_HLS_VARIANT,
-      MANIFEST_SMOOTH,
-      MANIFEST_ADS,
-
-      MEDIA_AUDIO,
-      MEDIA_VIDEO,
-      MEDIA_SUBTITLES,
-      MEDIA_THUMBNAILS,
-
-      DRM_LICENSE_WIDEVINE,
-      DRM_LICENSE_PLAYREADY,
-      DRM_LICENSE_FAIRPLAY,
-      DRM_LICENSE_PRIMETIME,
-      DRM_LICENSE_CLEARKEY,
-
-      DRM_CERTIFICATE_FAIRPLAY,
-
-      KEY_HLS_AES,
-    }
-
-    enum HttpResponseType {
-      ARRAYBUFFER,
-      BLOB,
-      DOCUMENT,
-      JSON,
-      TEXT,
-    }
-
-    /**
      * Allowed types of the {@link HttpRequest.body}
      */
     type HttpRequestBody = ArrayBuffer | ArrayBufferView | Blob | FormData | string | Document | URLSearchParams;
@@ -814,15 +776,6 @@ declare namespace bitmovin {
      * Possible types of {@link HttpResponse.body}
      */
     type HttpResponseBody = string | ArrayBuffer | Blob | Object | Document;
-
-    /**
-     * Allowed HTTP request method
-     */
-    enum HttpRequestMethod {
-      GET,
-      POST,
-      HEAD,
-    }
 
     interface HttpRequest {
       /**
@@ -1001,6 +954,7 @@ declare namespace bitmovin {
        * Network configuration.
        */
       network?: NetworkConfig;
+      ui?: object | false;
     }
   }
 }

@@ -80,7 +80,7 @@
     </div>
 </div>
 
-<script src="https://bitmovin-a.akamaihd.net/bitmovin-player/stable/7.4/bitmovinplayer.js"></script>
+<script src="https://bitmovin-a.akamaihd.net/bitmovin-player/nightly/2018/bitmovinplayer.js"></script>
 <script src="js/bitmovinplayer-ui.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
@@ -202,10 +202,7 @@
 
   var config = {
     key: 'YOUR KEY HERE',
-    source: sources.fullyFeatured,
-    style: {
-      ux: false
-    },
+    ui: false,
     cast: {
       enable: true
     },
@@ -253,9 +250,9 @@
   var player;
   var uiManager;
   var playerSetup = function(config) {
-    player = bitmovin.player('player');
+    player = new bitmovin.player.Player(document.getElementById('player'), config);
 
-    player.setup(config).then(function() {
+    player.load(sources.fullyFeatured).then(function() {
       // Add UI to loaded player
       uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
     }, function(errorEvent) {
@@ -391,12 +388,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        player.fireEvent(player.Event.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+        player.fireEvent(player.Event.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -420,12 +417,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        player.fireEvent(player.Event.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+        player.fireEvent(player.Event.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -463,12 +460,12 @@
         var cue = {
           text: text,
         };
-        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        player.fireEvent(player.Event.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+        player.fireEvent(player.Event.CueExit, cue);
       };
 
       var cues = [];
@@ -537,7 +534,7 @@
   });
   // Add a checkbox for each event to toggle logging to console
   var eventIndex = 0;
-  for (var event in bitmovin.player.EVENT) {
+  for (var event in bitmovin.player.Event) {
     var checkbox = $('<input>', {
       'type': 'checkbox',
       'id': 'config-events-' + (eventIndex++)
@@ -549,9 +546,9 @@
       var eventName = checkbox.data('event');
 
       if (checked) {
-        player.addEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+        player.on(bitmovin.player.Event[eventName], eventConsoleLogger);
       } else {
-        player.removeEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+        player.off(bitmovin.player.Event[eventName], eventConsoleLogger);
       }
     });
 

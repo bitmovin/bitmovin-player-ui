@@ -3,96 +3,83 @@ declare namespace bitmovin {
   namespace PlayerAPI {
 
     /**
-     * The events that are exposed by the player API are strings.
-     * Events can be subscribed to through {@link Player#addEventHandler}.
-     * TODO rename enum to Event (camel case)
-     */
-    type EVENT = string;
-    /**
      * All available events of the player
      */
-    interface EventList {
-      ON_AD_CLICKED: EVENT;
-      ON_AD_ERROR: EVENT;
-      ON_AD_FINISHED: EVENT;
-      ON_AD_LINEARITY_CHANGED: EVENT;
-      ON_AD_MANIFEST_LOADED: EVENT;
-      ON_AD_SCHEDULED: EVENT;
-      ON_AD_SKIPPED: EVENT;
-      ON_AD_STARTED: EVENT;
-      ON_AUDIO_ADAPTATION: EVENT;
-      ON_AUDIO_CHANGED: EVENT;
-      ON_AUDIO_ADDED: EVENT;
-      ON_AUDIO_REMOVED: EVENT;
-      ON_AUDIO_QUALITY_CHANGED: EVENT;
-      ON_AUDIO_DOWNLOAD_QUALITY_CHANGE: EVENT;
-      ON_AUDIO_DOWNLOAD_QUALITY_CHANGED: EVENT;
-      ON_AUDIO_PLAYBACK_QUALITY_CHANGED: EVENT;
-      ON_CAST_AVAILABLE: EVENT;
-      ON_CAST_START: EVENT;
-      ON_CAST_WAITING_FOR_DEVICE: EVENT;
-      ON_CAST_STARTED: EVENT;
-      ON_CAST_PLAYING: EVENT;
-      ON_CAST_PAUSED: EVENT;
-      ON_CAST_STOPPED: EVENT;
-      ON_CAST_PLAYBACK_FINISHED: EVENT;
-      ON_CAST_TIME_UPDATED: EVENT;
-      ON_CUE_PARSED: EVENT;
-      ON_CUE_ENTER: EVENT;
-      ON_CUE_UPDATE: EVENT;
-      ON_CUE_EXIT: EVENT;
-      ON_DOWNLOAD_FINISHED: EVENT;
-      ON_DVR_WINDOW_EXCEEDED: EVENT;
-      ON_ERROR: EVENT;
-      ON_FULLSCREEN_ENTER: EVENT;
-      ON_FULLSCREEN_EXIT: EVENT;
-      ON_HIDE_CONTROLS: EVENT;
-      ON_METADATA: EVENT;
-      ON_METADATA_PARSED: EVENT;
-      ON_MUTED: EVENT;
-      ON_PAUSED: EVENT;
-      ON_PERIOD_SWITCH: EVENT;
-      ON_PERIOD_SWITCHED: EVENT;
-      ON_PLAY: EVENT;
-      ON_PLAYING: EVENT;
-      ON_PLAYBACK_FINISHED: EVENT;
-      ON_PLAYER_RESIZE: EVENT;
-      ON_READY: EVENT;
-      ON_SEEK: EVENT;
-      ON_SEEKED: EVENT;
-      ON_SEGMENT_PLAYBACK: EVENT;
-      ON_SEGMENT_REQUEST_FINISHED: EVENT;
-      ON_SHOW_CONTROLS: EVENT;
-      ON_SOURCE_LOADED: EVENT;
-      ON_SOURCE_UNLOADED: EVENT;
-      ON_STALL_STARTED: EVENT;
-      ON_STALL_ENDED: EVENT;
-      ON_SUBTITLE_ADDED: EVENT;
-      ON_SUBTITLE_CHANGED: EVENT;
-      ON_SUBTITLE_REMOVED: EVENT;
-      ON_TIME_CHANGED: EVENT;
-      ON_TIME_SHIFT: EVENT;
-      ON_TIME_SHIFTED: EVENT;
-      ON_UNMUTED: EVENT;
-      ON_VIDEO_ADAPTATION: EVENT;
-      ON_VIDEO_QUALITY_CHANGED: EVENT;
-      ON_VIDEO_DOWNLOAD_QUALITY_CHANGE: EVENT;
-      ON_VIDEO_DOWNLOAD_QUALITY_CHANGED: EVENT;
-      ON_VIDEO_PLAYBACK_QUALITY_CHANGED: EVENT;
-      ON_VOLUME_CHANGED: EVENT;
-      ON_VR_ERROR: EVENT;
-      ON_VR_MODE_CHANGED: EVENT;
-      ON_VR_STEREO_CHANGED: EVENT;
-      ON_WARNING: EVENT;
-      ON_PICTURE_IN_PICTURE_ENTER: EVENT;
-      ON_PICTURE_IN_PICTURE_EXIT: EVENT;
-      ON_AIRPLAY_AVAILABLE: EVENT;
-      ON_VR_VIEWING_DIRECTION_CHANGE: EVENT;
-      ON_VR_VIEWING_DIRECTION_CHANGED: EVENT;
-      ON_DESTROY: EVENT;
-      ON_AD_BREAK_STARTED: EVENT;
-      ON_AD_BREAK_FINISHED: EVENT;
-      ON_PLAYBACK_SPEED_CHANGED: EVENT;
+    import ViewMode = bitmovin.player.ViewMode;
+
+    enum Event {
+      AdBreakStarted,
+      AdBreakFinished,
+      AdClicked,
+      AdError,
+      AdFinished,
+      AdLinearityChanged,
+      AdManifestLoaded,
+      AdScheduled,
+      AdSkipped,
+      AdStarted,
+      OverlayAdStarted,
+      AdQuartile,
+      AudioAdaptation,
+      AudioChanged,
+      AudioAdded,
+      AudioRemoved,
+      AudioQualityChanged,
+      AudioDownloadQualityChange,
+      AudioDownloadQualityChanged,
+      AudioPlaybackQualityChanged,
+      CastAvailable,
+      CastStart,
+      CastStarted,
+      CastWaitingForDevice,
+      CastStopped,
+      CueParsed,
+      CueEnter,
+      CueUpdate,
+      CueExit,
+      Destroy,
+      DownloadFinished,
+      DVRWindowExceeded,
+      Error,
+      Metadata,
+      MetadataParsed,
+      Muted,
+      Paused,
+      PeriodSwitch,
+      PeriodSwitched,
+      Play,
+      Playing,
+      PlaybackFinished,
+      PlaybackSpeedChanged,
+      PlayerResize,
+      Ready,
+      Seek,
+      Seeked,
+      SegmentPlayback,
+      SegmentRequestFinished,
+      SourceLoaded,
+      SourceUnloaded,
+      StallStarted,
+      StallEnded,
+      SubtitleAdded,
+      SubtitleChanged,
+      SubtitleRemoved,
+      TimeChanged,
+      TimeShift,
+      TimeShifted,
+      Unmuted,
+      VideoAdaptation,
+      VideoQualityChanged,
+      VideoDownloadQualityChange,
+      VideoDownloadQualityChanged,
+      VideoPlaybackQualityChanged,
+      VolumeChanged,
+      VRStereoChanged,
+      Warning,
+      AirplayAvailable,
+      VRViewingDirectionChange,
+      VRViewingDirectionChanged,
+      ViewModeChanged,
     }
 
     interface PlayerEvent {
@@ -103,7 +90,7 @@ declare namespace bitmovin {
       /**
        * Event type, e.g. 'onPlay'
        */
-      type?: EVENT;
+      type?: Event;
     }
 
     interface PlaybackEvent extends PlayerEvent {
@@ -198,11 +185,11 @@ declare namespace bitmovin {
       /**
        * Previous subtitle
        */
-      sourceSubtitle: Subtitle;
+      sourceSubtitle: SubtitleTrack;
       /**
        * New subtitle
        */
-      targetSubtitle: Subtitle;
+      targetSubtitle: SubtitleTrack;
     }
 
     interface MediaQualityChangeEvent<Q extends Quality> extends PlayerEvent {
@@ -447,41 +434,37 @@ declare namespace bitmovin {
     }
 
     interface AdManifestLoadedEvent extends PlayerEvent {
-      manifest: string;
+      /**
+       * The ad break for which the ad manifest was loaded.
+       */
+      adBreak: AdBreak;
     }
 
-    interface AdScheduledEvent extends PlayerEvent {
+    interface AdBreakStartedEvent extends PlayerEvent {
       /**
-       * The total number of scheduled ads.
+       * The ad break that just started.
        */
-      numAds: number;
+      adBreak: AdBreak;
     }
 
     interface AdStartedEvent extends PlayerEvent {
       /**
-       * The target URL to open once the user clicks on the ad
-       * @since v4.2
+       * The ad that just started.
        */
-      clickThroughUrl: string;
+      ad: Ad;
+    }
+
+    enum AdQuartile {
+      FIRST_QUARTILE = 'firstQuartile',
+      MIDPOINT = 'midpoint',
+      THIRD_QUARTILE = 'thirdQuartile',
+    }
+
+    interface AdQuartileEvent extends PlayerEvent {
       /**
-       * The index of the ad in the queue
-       * @since v6.0
+       * Quartile that has already been watched by the user.
        */
-      indexInQueue: number;
-      clientType: string;
-      /**
-       * The duration of the ad
-       * @since v6.0
-       */
-      duration: number;
-      /**
-       * The skip offset of the ad
-       * @since v6.0
-       */
-      skipOffset: number;
-      timeOffset: string;
-      adMessage?: string;
-      skipMessage?: SkipMessage;
+      quartile: AdQuartile;
     }
 
     interface AdClickedEvent extends PlayerEvent {
@@ -530,7 +513,7 @@ declare namespace bitmovin {
       /**
        * The added subtitle object
        */
-      subtitle: Subtitle;
+      subtitle: SubtitleTrack;
     }
 
     interface SubtitleRemovedEvent extends PlayerEvent {
@@ -617,6 +600,11 @@ declare namespace bitmovin {
 
     interface SubtitleCueParsedEvent extends SubtitleCueEvent {
       subtitleId: string;
+    }
+
+    interface ViewModeChangedEvent extends PlayerEvent {
+      from: ViewMode;
+      to: ViewMode;
     }
   }
 }
