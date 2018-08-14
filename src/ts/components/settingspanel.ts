@@ -84,7 +84,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
-        this.resetNavigation(); // reset navigation
         this.hide();
         this.hideHoveredSelectBoxes();
       });

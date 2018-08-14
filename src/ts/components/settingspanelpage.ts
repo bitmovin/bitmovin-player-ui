@@ -1,7 +1,6 @@
 import {Container, ContainerConfig} from './container';
-import {SettingsPanel, SettingsPanelItem} from './settingspanel';
-import {UIInstanceManager, UIManager} from '../uimanager';
-import {Button, ButtonConfig} from './button';
+import {SettingsPanelItem} from './settingspanel';
+import {UIInstanceManager} from '../uimanager';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 
 export class SettingsPanelPage extends Container<ContainerConfig> {
@@ -82,72 +81,5 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
 
   get onInactive(): Event<SettingsPanelPage, NoArgs> {
     return this.settingsPanelPageEvents.onInactive.getEvent();
-  }
-}
-
-export interface SettingsPanelNavigatorConfig extends ButtonConfig {
-  container: SettingsPanel;
-  targetPage?: SettingsPanelPage;
-}
-
-export class SettingsPanelNavigatorButton extends Button<SettingsPanelNavigatorConfig> {
-  private readonly container: SettingsPanel;
-  private readonly targetPage?: SettingsPanelPage;
-
-  constructor(config: SettingsPanelNavigatorConfig) {
-    super(config);
-    this.config = this.mergeConfig(config, {
-
-    }, this.config);
-
-    this.container = (this.config as SettingsPanelNavigatorConfig).container;
-    this.targetPage = (this.config as SettingsPanelNavigatorConfig).targetPage;
-  }
-
-  popPage() {
-    this.container.popSettingsPanelPage();
-  }
-
-  pushTargetPage() {
-    this.container.setActivePage(this.targetPage);
-  }
-}
-
-export class SettingsPanelPageBackButton extends SettingsPanelNavigatorButton {
-
-  constructor(config: SettingsPanelNavigatorConfig) {
-    super(config);
-
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitlesettingsclosebutton',
-      text: 'Back',
-    }, this.config);
-  }
-
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    super.configure(player, uimanager);
-
-    this.onClick.subscribe(() => {
-      this.popPage();
-    });
-  }
-}
-
-export class SubtitleSettingsPanelPageOpenButton extends SettingsPanelNavigatorButton {
-  constructor(config: SettingsPanelNavigatorConfig) {
-    super(config);
-
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitlesettingsopenbutton',
-      text: 'Subtitles settings',
-    }, this.config);
-  }
-
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
-    super.configure(player, uimanager);
-
-    this.onClick.subscribe(() => {
-      this.pushTargetPage();
-    });
   }
 }

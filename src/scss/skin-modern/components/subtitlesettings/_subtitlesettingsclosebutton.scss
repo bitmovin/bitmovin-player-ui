@@ -1,25 +1,5 @@
 @import '../../variables';
 
 .#{$prefix}-ui-subtitlesettingsclosebutton {
-  @extend %ui-button;
-
-  font-size: .8em;
-  position: relative;
-  width: 9em;
-
-  .#{$prefix}-label {
-    display: inline-block;
-
-    &::before {
-      border-bottom: .2em solid $color-primary;
-      border-left: .2em solid $color-primary;
-      content: '';
-      height: .6em;
-      margin-left: -.8em;
-      position: absolute;
-      top: .5em;
-      transform: rotate(45deg);
-      width: .6em;
-    }
-  }
+  @extend %ui-settingspanelpagebackbutton;
 }

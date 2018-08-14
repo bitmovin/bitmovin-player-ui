@@ -1,4 +1,4 @@
-import {SettingsPanelPage, SettingsPanelPageBackButton} from '../settingspanelpage';
+import {SettingsPanelPage} from '../settingspanelpage';
 import {SettingsPanel, SettingsPanelConfig, SettingsPanelItem} from '../settingspanel';
 import {SubtitleOverlay} from '../subtitleoverlay';
 import {ContainerConfig} from '../container';
@@ -15,6 +15,7 @@ import {WindowColorSelectBox} from './windowcolorselectbox';
 import {WindowOpacitySelectBox} from './windowopacityselectbox';
 import {SubtitleSettingsResetButton} from './subtitlesettingsresetbutton';
 import {UIInstanceManager} from '../../uimanager';
+import {SettingsPanelPageBackButton} from '../settingspanelpagebackbutton';
 
 export interface SubtitleSettingsPanelPageConfig extends ContainerConfig {
   settingsPanel: SettingsPanel;
@@ -65,7 +66,7 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
         })),
         new SettingsPanelItem(new SettingsPanelPageBackButton({
           container: this.settingsPanel,
-          text: 'back',
+          text: 'Back',
         }), new SubtitleSettingsResetButton({
           settingsManager: manager,
         })),

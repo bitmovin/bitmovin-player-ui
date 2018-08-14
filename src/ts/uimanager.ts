@@ -51,8 +51,9 @@ import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { PlayerUtils } from './playerutils';
-import {SettingsPanelPage, SubtitleSettingsPanelPageOpenButton} from './components/settingspanelpage';
+import {SettingsPanelPage} from './components/settingspanelpage';
 import {SubtitleSettingsPanelPage} from './components/subtitlesettings/subtitlesettingspanelpage';
+import {SettingsPanelPageOpenButton} from './components/settingspanelpageopenbutton';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -600,7 +601,7 @@ export namespace UIManager.Factory {
       overlay: subtitleOverlay,
     });
 
-    let subtitleSettingsOpenButton = new SubtitleSettingsPanelPageOpenButton({
+    let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
       text: 'open',
@@ -716,7 +717,7 @@ export namespace UIManager.Factory {
       overlay: subtitleOverlay,
     });
 
-    let subtitleSettingsOpenButton = new SubtitleSettingsPanelPageOpenButton({
+    let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
       text: 'open',
