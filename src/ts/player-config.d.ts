@@ -905,10 +905,6 @@ declare namespace bitmovin {
        */
       key?: string;
       /**
-       * Mandatory. Contains information to the video source, e.g. dash, hls, progressive fallback.
-       */
-      source?: SourceConfig;
-      /**
        * Playback config settings.
        */
       playback?: PlaybackConfig;

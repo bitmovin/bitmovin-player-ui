@@ -232,7 +232,7 @@ declare namespace bitmovin {
      * @return The current user or merged player config.
      * @since v4.0
      */
-    getConfig(mergedConfig?: boolean): any;
+    getConfig(mergedConfig?: boolean): PlayerAPI.Config;
     /**
      * Returns the html element that the player is embedded in, which has been provided in the player constructor.
      * @since v8.0
@@ -688,6 +688,13 @@ declare namespace bitmovin {
      * @since v8.0
      */
     getViewMode(): ViewMode;
+
+    /**
+     * Gets the source that was loaded via a successfully finished {@link load} call or `null` if no source is loaded
+     * or a load is in progress.
+     * @returns {SourceConfig | null} the loaded source or `null` if no source is loaded
+     */
+    getSource(): PlayerAPI.SourceConfig | null;
   }
 
   namespace PlayerAPI {
