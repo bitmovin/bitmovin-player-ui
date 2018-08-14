@@ -28,6 +28,8 @@ export interface SettingsPanelConfig extends ContainerConfig {
  */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
+  private static readonly ACTIVE_PAGE_CLASS = 'active';
+
   // navigation handling
   private activePageIndex = 0;
   private navigationStack: SettingsPanelPage[] = [];
@@ -98,62 +100,19 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   private updateActivePageClass(): void {
     this.getPages().forEach((page: SettingsPanelPage, index) => {
       if (index === this.activePageIndex) {
-        page.getDomElement().addClass('active');
+        page.getDomElement().addClass(SettingsPanel.ACTIVE_PAGE_CLASS);
       } else {
-        page.getDomElement().removeClass('active');
+        page.getDomElement().removeClass(SettingsPanel.ACTIVE_PAGE_CLASS);
       }
     });
   }
 
-  private animateNavigation(targetPage: SettingsPanelPage) {
-    // workaround to enable css transition for elements with auto width / height property
-
-    const htmlElement = this.getDomElement().get(0);
-    // ensure container has real width / height
-    if (htmlElement.style.width === '' || htmlElement.style.height === '') {
-      this.getDomElement().css('width', this.getDomElement().css('width'));
-      this.getDomElement().css('height', this.getDomElement().css('height'));
-    }
-
-    const clone = targetPage.getDomElement().get(0).cloneNode(true) as HTMLElement;
-    // append to parent so we get the "real" size
-    // TODO: append to container wrapper
-    const containerWrapper = targetPage.getDomElement().get(0).parentNode;
-    containerWrapper.appendChild(clone);
-    // set clone visible
-    clone.style.display = 'block';
-
-    let widthOffset = 0;
-    let heightOffset = 0;
-
-    // TODO: improve
-    let elementsWithMargins: HTMLElement[] = [htmlElement, containerWrapper, targetPage.getDomElement().get(0)] as HTMLElement[];
-    for (let element of elementsWithMargins) {
-      const computedStyles = getComputedStyle(element);
-      widthOffset += Number(computedStyles.paddingLeft.replace(/[^\d\.\-]/g, '')) + Number(computedStyles.paddingRight.replace(/[^\d\.\-]/g, ''));
-      widthOffset += Number(computedStyles.marginLeft.replace(/[^\d\.\-]/g, '')) + Number(computedStyles.marginRight.replace(/[^\d\.\-]/g, ''));
-      heightOffset += Number(computedStyles.paddingTop.replace(/[^\d\.\-]/g, '')) + Number(computedStyles.paddingBottom.replace(/[^\d\.\-]/g, ''));
-      heightOffset += Number(computedStyles.marginTop.replace(/[^\d\.\-]/g, '')) + Number(computedStyles.marginBottom.replace(/[^\d\.\-]/g, ''));
-    }
-
-    const width = clone.scrollWidth + widthOffset;
-    const height = clone.scrollHeight + heightOffset;
-
-    // Remove from the DOM
-    clone.remove();
-
-    this.getDomElement().css('width', width + 'px');
-    this.getDomElement().css('height', height + 'px');
-  }
-
   setActivePageIndex(index: number): void {
-    if (index !== this.activePageIndex) {
-      const targetPage = this.getPages()[index];
-      this.animateNavigation(targetPage);
-      this.activePageIndex = index;
-      this.navigationStack.push(targetPage);
-      this.updateActivePageClass();
-    }
+    const targetPage = this.getPages()[index];
+    this.animateNavigation(targetPage);
+    this.activePageIndex = index;
+    this.navigationStack.push(targetPage);
+    this.updateActivePageClass();
   }
 
   setActivePage(page: SettingsPanelPage): void {
@@ -186,13 +145,64 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.updateActivePageClass();
   }
 
+  private animateNavigation(targetPage: SettingsPanelPage) {
+    // workaround to enable css transition for elements with auto width / height property
+    // css transition does not work with auto properties by definition so we need to calculate 'real'
+    // width / height values to have a nice looking animation
+
+    const domElement = this.getDomElement();
+    const htmlElement = domElement.get(0);
+    // ensure container has real width / height (for first animation)
+    if (htmlElement.style.width === '' || htmlElement.style.height === '') {
+      domElement.css('width', domElement.css('width'));
+      domElement.css('height', domElement.css('height'));
+    }
+
+    const targetPageHtmlElement = targetPage.getDomElement().get(0);
+    const clone = targetPageHtmlElement.cloneNode(true) as HTMLElement;
+    // append to parent so we get the 'real' size
+    const containerWrapper = targetPageHtmlElement.parentNode;
+    containerWrapper.appendChild(clone);
+    // set clone visible
+    clone.style.display = 'block';
+
+    let widthOffset = 0;
+    let heightOffset = 0;
+
+    // getComputedStyle will return values like '100px' so we need to extract the number
+    const getNumberOfCss = (value: String) => {
+      return Number(value.replace(/[^\d\.\-]/g, ''));
+    };
+
+    // to calculate final width / height of container we need to include the padding / margin as well
+    let elementsWithMargins: HTMLElement[] = [htmlElement, containerWrapper, targetPageHtmlElement] as HTMLElement[];
+    for (let element of elementsWithMargins) {
+      const computedStyles = getComputedStyle(element);
+      // add padding
+      widthOffset += getNumberOfCss(computedStyles.paddingLeft) + getNumberOfCss(computedStyles.paddingRight);
+      heightOffset += getNumberOfCss(computedStyles.paddingTop) + getNumberOfCss(computedStyles.paddingBottom);
+      // add margins
+      widthOffset += getNumberOfCss(computedStyles.marginLeft) + getNumberOfCss(computedStyles.marginRight);
+      heightOffset += getNumberOfCss(computedStyles.marginTop) + getNumberOfCss(computedStyles.marginBottom);
+    }
+
+    const width = clone.scrollWidth + widthOffset;
+    const height = clone.scrollHeight + heightOffset;
+
+    // remove clone from the DOM
+    clone.remove();
+
+    // set 'real' width / height
+    domElement.css('width', width + 'px');
+    domElement.css('height', height + 'px');
+  }
+
   /**
    * Hack for IE + Firefox
    * when the settings panel fades out while an item of a select box is still hovered, the select box will not fade out
    * while the settings panel does. This would leave a floating select box, which is just weird
    */
   private hideHoveredSelectBoxes(): void {
-    // TODO: check if activePage is enough?
     this.getComputedItems().forEach((item: SettingsPanelItem) => {
       if (item.isActive() && (item as any).setting instanceof SelectBox) {
         const selectBox = (item as any).setting as SelectBox;
