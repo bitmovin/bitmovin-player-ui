@@ -43,9 +43,13 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   constructor(config: SettingsPanelConfig) {
     super(config);
 
+    // Add backwards compatibility
+    // When all components are a type of SettingsPanelItem create a single SettingsPanelPage
+    // and work with this newly created page
     const isTypeOfSettingsPanelItem = (currentValue: Component<ComponentConfig>) => {
       return currentValue instanceof SettingsPanelItem;
     };
+
     if (this.getComponents().every(isTypeOfSettingsPanelItem)) {
       let mainPage = new SettingsPanelPage({
         components: this.getComponents(),
