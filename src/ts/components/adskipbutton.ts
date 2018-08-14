@@ -45,15 +45,15 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       // Update the skip message on the button
       if (player.getCurrentTime() < adEvent.skipOffset) {
         this.setText(
-          StringUtils.replaceAdMessagePlaceholders(config.skipMessage.countdown, adEvent.skipOffset, player));
+          StringUtils.replaceAdMessagePlaceholders(skipMessage.countdown, adEvent.skipOffset, player));
       } else {
-        this.setText(config.skipMessage.skip);
+        this.setText(skipMessage.skip);
       }
     };
 
     let adStartHandler = (event: bitmovin.PlayerAPI.AdStartedEvent) => {
       adEvent = event;
-      skipMessage = adEvent.skipMessage || skipMessage;
+      skipMessage = adEvent.skipMessage || config.skipMessage;
       updateSkipMessageHandler();
 
       player.on(player.exports.Event.TimeChanged, updateSkipMessageHandler);
