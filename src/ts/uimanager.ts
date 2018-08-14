@@ -51,12 +51,7 @@ import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { PlayerUtils } from './playerutils';
-import {
-  SettingsPanelPage,
-  SettingsPanelPageBacker,
-  SettingsPanelPageOpener,
-  SubtitleSettingsPanelPageOpenButton
-} from './components/settingspanelpage';
+import {SettingsPanelPage, SubtitleSettingsPanelPageOpenButton} from './components/settingspanelpage';
 import {SubtitlesSettingsPanelPage} from './components/subtitlesettings/subtitlessettingspanelpage';
 
 export interface UIRecommendationConfig {
