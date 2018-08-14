@@ -241,7 +241,7 @@ export class UIManager {
      * that is used throughout the UI instance.
      */
     const updateConfig = () => {
-      const playerSourceConfig = player.getConfig().source || {};
+      const playerSourceConfig = player.getSource() || {};
 
       const uiConfig = { ...config };
       uiConfig.metadata = uiConfig.metadata || {};
@@ -252,9 +252,9 @@ export class UIManager {
           // TODO move metadata into source.metadata namespace in player v8
           title: playerSourceConfig.title,
           description: playerSourceConfig.description,
-          markers: playerSourceConfig.markers,
+          markers: (playerSourceConfig as any).markers,
         },
-        recommendations: playerSourceConfig.recommendations,
+        recommendations: (playerSourceConfig as any).recommendations,
       };
 
       // Player source config takes precedence over the UI config, because the config in the source is attached
