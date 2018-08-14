@@ -72,6 +72,10 @@ import {ListBox} from './components/listbox';
 import {DemoFactory} from './demofactory';
 import {SubtitleListBox} from './components/subtitlelistbox';
 import {AudioTrackListBox} from './components/audiotracklistbox';
+import {SettingsPanelPage} from './components/settingspanelpage';
+import {SettingsPanelPageBackButton} from './components/settingspanelpagebackbutton';
+import {SettingsPanelPageOpenButton} from './components/settingspanelpageopenbutton';
+import {SubtitleSettingsPanelPage} from './components/subtitlesettings/subtitlesettingspanelpage';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -147,6 +151,9 @@ const playerui = {
   SelectBox,
   ItemSelectionList,
   SettingsPanel,
+  SettingsPanelPage,
+  SettingsPanelPageBackButton,
+  SettingsPanelPageOpenButton,
   SettingsPanelItem,
   SettingsToggleButton,
   Spacer,
@@ -178,6 +185,7 @@ const playerui = {
     SubtitleSettingsLabel,
     SubtitleSettingsOpenButton,
     SubtitleSettingsPanel,
+    SubtitleSettingsPanelPage,
     WindowColorSelectBox,
     WindowOpacitySelectBox,
     SubtitleSettingsResetButton,
