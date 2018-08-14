@@ -10,6 +10,8 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
 
   private settingsPanelPageEvents = {
     onSettingsStateChanged: new EventDispatcher<SettingsPanelPage, NoArgs>(),
+    onActive: new EventDispatcher<SettingsPanelPage, NoArgs>(),
+    onInactive: new EventDispatcher<SettingsPanelPage, NoArgs>(),
   };
 
   constructor(config: ContainerConfig) {
@@ -65,6 +67,22 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
   get onSettingsStateChanged(): Event<SettingsPanelPage, NoArgs> {
     return this.settingsPanelPageEvents.onSettingsStateChanged.getEvent();
   }
+
+  onActiveEvent() {
+    this.settingsPanelPageEvents.onActive.dispatch(this);
+  }
+
+  get onActive(): Event<SettingsPanelPage, NoArgs> {
+    return this.settingsPanelPageEvents.onActive.getEvent();
+  }
+
+  onInactiveEvent() {
+    this.settingsPanelPageEvents.onInactive.dispatch(this);
+  }
+
+  get onInactive(): Event<SettingsPanelPage, NoArgs> {
+    return this.settingsPanelPageEvents.onInactive.getEvent();
+  }
 }
 
 export interface SettingsPanelNavigatorConfig extends ButtonConfig {
@@ -72,7 +90,7 @@ export interface SettingsPanelNavigatorConfig extends ButtonConfig {
   targetPage?: SettingsPanelPage;
 }
 
-export class SettingsPanelNavigatorButton extends Button<ButtonConfig> {
+export class SettingsPanelNavigatorButton extends Button<SettingsPanelNavigatorConfig> {
   private readonly container: SettingsPanel;
   private readonly targetPage?: SettingsPanelPage;
 
@@ -86,16 +104,11 @@ export class SettingsPanelNavigatorButton extends Button<ButtonConfig> {
     this.targetPage = (this.config as SettingsPanelNavigatorConfig).targetPage;
   }
 
-  // TODO: naming
-  navigateToRoot() {
-    this.container.popToRootSettingsPanelPage();
-  }
-
-  back() {
+  popPage() {
     this.container.popSettingsPanelPage();
   }
 
-  navigateToTarget() {
+  pushTargetPage() {
     this.container.setActivePage(this.targetPage);
   }
 }
@@ -115,7 +128,7 @@ export class SettingsPanelPageBackButton extends SettingsPanelNavigatorButton {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {
-      this.back();
+      this.popPage();
     });
   }
 }
@@ -134,7 +147,7 @@ export class SubtitleSettingsPanelPageOpenButton extends SettingsPanelNavigatorB
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {
-      this.navigateToTarget();
+      this.pushTargetPage();
     });
   }
 }

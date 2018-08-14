@@ -126,6 +126,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.activePageIndex = index;
     this.navigationStack.push(targetPage);
     this.updateActivePageClass();
+    targetPage.onActiveEvent();
   }
 
   setActivePage(page: SettingsPanelPage): void {
@@ -140,7 +141,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   popSettingsPanelPage() {
     // pop one navigation item from stack
-    this.navigationStack.pop(); // remove current page
+    const currentPage = this.navigationStack.pop(); // remove current page
     const targetPage = this.navigationStack.slice(-1)[0];
 
     if (targetPage !== undefined) {
@@ -149,9 +150,14 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       // fallback to root
       this.popToRootSettingsPanelPage();
     }
+    currentPage.onInactiveEvent();
   }
 
   private resetNavigation(): void {
+    const currentPage = this.navigationStack.slice(-1)[0];
+    if (currentPage) {
+      currentPage.onInactiveEvent();
+    }
     this.navigationStack = [];
     this.activePageIndex = 0;
     this.animateNavigation(this.getRootPage());

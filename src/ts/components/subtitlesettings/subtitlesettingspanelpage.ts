@@ -13,16 +13,15 @@ import {BackgroundColorSelectBox} from './backgroundcolorselectbox';
 import {BackgroundOpacitySelectBox} from './backgroundopacityselectbox';
 import {WindowColorSelectBox} from './windowcolorselectbox';
 import {WindowOpacitySelectBox} from './windowopacityselectbox';
-import {SubtitleSettingsCloseButton} from './subtitlesettingsclosebutton';
 import {SubtitleSettingsResetButton} from './subtitlesettingsresetbutton';
 import {UIInstanceManager} from '../../uimanager';
 
 export interface SubtitleSettingsPanelPageConfig extends ContainerConfig {
-  settingsPanel: SettingsPanel,
+  settingsPanel: SettingsPanel;
   overlay: SubtitleOverlay;
 }
 
-export class SubtitlesSettingsPanelPage extends SettingsPanelPage {
+export class SubtitleSettingsPanelPage extends SettingsPanelPage {
 
   private readonly overlay: SubtitleOverlay;
   private readonly settingsPanel: SettingsPanel;
@@ -77,13 +76,11 @@ export class SubtitlesSettingsPanelPage extends SettingsPanelPage {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-
-    // TODO: change events
-    this.onShow.subscribe(() => {
+    this.onActive.subscribe(() => {
       this.overlay.enablePreviewSubtitleLabel();
     });
 
-    this.onHide.subscribe(() => {
+    this.onInactive.subscribe(() => {
       this.overlay.removePreviewSubtitleLabel();
     });
   }

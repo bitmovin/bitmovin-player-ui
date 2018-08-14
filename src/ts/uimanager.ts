@@ -52,7 +52,7 @@ import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { PlayerUtils } from './playerutils';
 import {SettingsPanelPage, SubtitleSettingsPanelPageOpenButton} from './components/settingspanelpage';
-import {SubtitlesSettingsPanelPage} from './components/subtitlesettings/subtitlessettingspanelpage';
+import {SubtitleSettingsPanelPage} from './components/subtitlesettings/subtitlesettingspanelpage';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -595,7 +595,7 @@ export namespace UIManager.Factory {
       hidden: true,
     });
 
-    let subtitleSettingsPanelPage = new SubtitlesSettingsPanelPage({
+    let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
       settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
     });
