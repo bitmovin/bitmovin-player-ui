@@ -294,6 +294,15 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   get onSettingsStateChanged(): Event<SettingsPanel, NoArgs> {
     return this.settingsPanelEvents.onSettingsStateChanged.getEvent();
   }
+
+  addComponent(component: Component<ComponentConfig>) {
+    if (component instanceof SettingsPanelPage) {
+      super.addComponent(component);
+    } else {
+      // backwards compatibility
+      this.getRootPage().addComponent(component);
+    }
+  }
 }
 
 /**

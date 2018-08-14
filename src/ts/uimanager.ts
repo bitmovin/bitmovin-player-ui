@@ -694,37 +694,44 @@ export namespace UIManager.Factory {
   export function modernSmallScreenUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
-    let settingsPanel = new SettingsPanel({
+    let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
         new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
         new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
         new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
         new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
       ],
-      hidden: true,
-      hideDelay: -1,
     });
 
-    let subtitleSettingsPanel = new SubtitleSettingsPanel({
+    let settingsPanel = new SettingsPanel({
+      components: [
+        mainSettingsPanelPage,
+      ],
       hidden: true,
-      hideDelay: -1,
+      pageTransitionAnimation: false,
+    });
+
+    let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
+      settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
-      settingsPanel: settingsPanel,
     });
 
-    let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
-      subtitleSettingsPanel: subtitleSettingsPanel,
-      settingsPanel: settingsPanel,
+    let subtitleSettingsOpenButton = new SubtitleSettingsPanelPageOpenButton({
+      targetPage: subtitleSettingsPanelPage,
+      container: settingsPanel,
+      text: 'open',
     });
 
-    settingsPanel.addComponent(
+    mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox()
-    ));
+      ));
+
+    settingsPanel.addComponent(subtitleSettingsPanelPage);
 
     settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
-    subtitleSettingsPanel.addComponent(new CloseButton({ target: subtitleSettingsPanel }));
+    subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
 
     let controlBar = new ControlBar({
       components: [
@@ -760,7 +767,6 @@ export namespace UIManager.Factory {
           ],
         }),
         settingsPanel,
-        subtitleSettingsPanel,
         new Watermark(),
         new ErrorMessageOverlay(),
       ],
