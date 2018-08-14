@@ -433,24 +433,11 @@ declare namespace bitmovin {
       isInit: boolean;
     }
 
-    interface AdManifestLoadedEvent extends PlayerEvent {
-      /**
-       * The ad break for which the ad manifest was loaded.
-       */
+    interface AdBreakEvent extends PlayerEvent {
       adBreak: AdBreak;
     }
 
-    interface AdBreakStartedEvent extends PlayerEvent {
-      /**
-       * The ad break that just started.
-       */
-      adBreak: AdBreak;
-    }
-
-    interface AdStartedEvent extends PlayerEvent {
-      /**
-       * The ad that just started.
-       */
+    interface AdEvent extends PlayerEvent {
       ad: Ad;
     }
 
