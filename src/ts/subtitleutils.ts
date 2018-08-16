@@ -21,7 +21,13 @@ export class SubtitleSwitchHandler {
 
   private bindSelectionEvent(): void {
     this.listElement.onItemSelected.subscribe((_, value: string) => {
-      this.player.setSubtitle(value === 'null' ? null : value);
+      // TODO add support for multiple concurrent subtitle selections
+      if (value === 'null') {
+        const currentSubtitle = this.player.subtitles.list().filter((subtitle) => subtitle.enabled).pop();
+        this.player.subtitles.disable(currentSubtitle.id);
+      } else {
+        this.player.subtitles.enable(value, true);
+      }
     });
   }
 
@@ -29,7 +35,10 @@ export class SubtitleSwitchHandler {
     const updateSubtitlesCallback = (): void => this.updateSubtitles();
 
     this.player.on(this.player.exports.Event.SubtitleAdded, updateSubtitlesCallback);
-    this.player.on(this.player.exports.Event.SubtitleChanged, () => {
+    this.player.on(this.player.exports.Event.SubtitleEnabled, () => {
+      this.selectCurrentSubtitle();
+    });
+    this.player.on(this.player.exports.Event.SubtitleDisabled, () => {
       this.selectCurrentSubtitle();
     });
     this.player.on(this.player.exports.Event.SubtitleRemoved, updateSubtitlesCallback);
@@ -44,7 +53,14 @@ export class SubtitleSwitchHandler {
   private updateSubtitles(): void {
     this.listElement.clearItems();
 
-    for (let subtitle of this.player.getAvailableSubtitles()) {
+    if (!this.player.subtitles) {
+      // Subtitles API not available (yet)
+      return;
+    }
+
+    this.listElement.addItem('null', 'off');
+
+    for (let subtitle of this.player.subtitles.list()) {
       this.listElement.addItem(subtitle.id, subtitle.label);
     }
 
@@ -53,7 +69,7 @@ export class SubtitleSwitchHandler {
   }
 
   private selectCurrentSubtitle() {
-    let currentSubtitle = this.player.getSubtitle();
+    let currentSubtitle = this.player.subtitles.list().filter((subtitle) => subtitle.enabled).pop();
 
     if (currentSubtitle) {
       this.listElement.selectItem(currentSubtitle.id);

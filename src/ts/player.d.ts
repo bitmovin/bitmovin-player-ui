@@ -104,6 +104,8 @@ declare namespace bitmovin {
      */
     readonly vr: PlayerAPI.PlayerVRAPI;
 
+    readonly subtitles: PlayerAPI.PlayerSubtitlesAPI;
+
     /**
      * Exports from the player core as a convenience fallback for non-modular code.
      * It is recommended to use ES6 imports instead.
@@ -147,16 +149,7 @@ declare namespace bitmovin {
      */
     addMetadata(metadataType: string, metadata: any): boolean;
     /**
-     * Adds a new external subtitle/caption track. The track is only added to the available tracks but
-     * not activated. If the ID already exists, the existing subtitle/caption track is overwritten with
-     * the new one. Call {@link setSubtitle} to activate it.
-     *
-     * @param subtitle the subtitle to add
-     * @since v4.0
-     */
-    addSubtitle(subtitle: Subtitle): void;
-    /**
-     * Stops a running Cast session (i.e. {@link isCasting} returns true). Has no effect if {@link isCasting}
+     * Stops a running Cast session (i.e. {@link #isCasting} returns true). Has no effect if {@link #isCasting}
      * returns false.
      * @since v4.0
      */
@@ -214,11 +207,6 @@ declare namespace bitmovin {
      * @since v4.0
      */
     getAvailableLicenseServers(): string[];
-    /**
-     * Returns an array of all available subtitle/caption tracks.
-     * @since v4.0
-     */
-    getAvailableSubtitles(): PlayerAPI.SubtitleTrack[];
     /**
      * Returns an array containing all available video qualities the player can adapt between.
      * @since v4.0
@@ -313,11 +301,6 @@ declare namespace bitmovin {
      * @since v4.0
      */
     getStreamType(): StreamType;
-    /**
-     * Returns the currently used subtitle/caption track.
-     * @since v4.0
-     */
-    getSubtitle(): PlayerAPI.SubtitleTrack;
     /**
      * Tests and retrieves a list of all supported DRM systems in the current user agent.
      * @returns A Promise that resolves to an array of strings with the supported DRM systems after fulfillment.
@@ -465,16 +448,6 @@ declare namespace bitmovin {
      */
     off(eventType: PlayerAPI.Event, callback: PlayerAPI.PlayerEventCallback): void;
     /**
-     * Removes the existing subtitle/caption track with the track ID specified by trackID. If the track is
-     * currently active, it will be deactivated and then removed. If no track with the given ID exists,
-     * the call will be ignored.
-     * To disable an active subtitle track, call {@link setSubtitle} with null.
-     *
-     * @param subtitleTrackID The ID of the subtitle to remove
-     * @since v4.0
-     */
-    removeSubtitle(subtitleTrackID: string): void;
-    /**
      * Schedules an ad for playback.
      *
      * @param adManifestUrl URL to the ad manifest. The array is used for ad waterfalling: all entries beyond the first
@@ -554,14 +527,6 @@ declare namespace bitmovin {
      * @since v4.1
      */
     setQueryParameters(queryParameters: PlayerAPI.QueryParameters): void;
-    /**
-     * Sets the subtitle track to the ID specified by trackID. A list can be retrieved by calling
-     * {@link getAvailableSubtitles}. Using null as ID disables subtitles.
-     *
-     * @param trackID The ID if the desired subtitle track or null to disable subtitles
-     * @since v4.0
-     */
-    setSubtitle(trackID: string): void;
     /**
      * Passes an HTML video element to the player, which should be used in case of non-Flash playback.
      * Needs to be called before {@link setup}. Has no effect if the Flash fallback is selected.
@@ -940,6 +905,7 @@ declare namespace bitmovin {
        * TODO check why this is missing from the API docs
        */
       isFragmented?: boolean;
+      enabled?: boolean;
     }
 
     /**
@@ -1325,6 +1291,14 @@ declare namespace bitmovin {
          */
         rotateCounterclockwise?: string[];
       }
+    }
+
+    interface PlayerSubtitlesAPI {
+      add(subtitle: SubtitleTrack): void;
+      remove(subtitleID: string): void;
+      list(): SubtitleTrack[];
+      enable(subtitleID: string, exclusive?: boolean): void;
+      disable(subtitleID: string): void;
     }
   }
 }
