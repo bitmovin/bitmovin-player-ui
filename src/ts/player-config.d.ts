@@ -455,6 +455,10 @@ declare namespace bitmovin {
       streaming: StreamType;
     }
 
+    interface PreferredTechnology extends Technology {
+      exclude?: boolean;
+    }
+
     interface QueryParameters {
       [name: string]: string;
     }
@@ -494,7 +498,7 @@ declare namespace bitmovin {
        * An array of objects to specify the player and streaming technology order to use. If the first is
        * supported, this technologies are used. If not, the second is tried etc.
        */
-      preferredTech?: Technology[];
+      preferredTech?: PreferredTechnology[];
 
     }
 
@@ -900,10 +904,6 @@ declare namespace bitmovin {
        * Do not forget to enter all your domains (subdomains are included) in your account.
        */
       key?: string;
-      /**
-       * Mandatory. Contains information to the video source, e.g. dash, hls, progressive fallback.
-       */
-      source?: SourceConfig;
       /**
        * Playback config settings.
        */
