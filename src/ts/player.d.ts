@@ -912,10 +912,17 @@ declare namespace bitmovin {
       streaming: string;
     }
 
+    interface Track {
+      /**
+       * The URL to the associated file.
+       */
+      url: string;
+    }
+
     /**
      * Definition of a subtitle/caption track.
      */
-    interface SubtitleTrack {
+    interface SubtitleTrack extends Track {
       /**
        * Used to identify and set the subtitle track.
        */
@@ -928,11 +935,6 @@ declare namespace bitmovin {
        * The text used to represent this track to the user (e.g. in the UI).
        */
       label: string;
-      /**
-       * The URL to the subtitle track.
-       * TODO check why this is missing from the API docs
-       */
-      url: string;
       /**
        * Only used for fragmented subtitles in HLS
        * TODO check why this is missing from the API docs

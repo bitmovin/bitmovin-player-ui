@@ -382,6 +382,9 @@ declare namespace bitmovin {
       subtitles?: (subtitle: SubtitleTrack) => string;
     }
 
+    export interface ThumbnailTrack extends Track {
+    }
+
     interface SourceConfig {
       /**
        * The URL to the MPEG-DASH manifest file (MPD, Media Presentation Description) for the video to play.
@@ -420,9 +423,13 @@ declare namespace bitmovin {
        */
       options?: SourceConfigOptions;
       /**
-       * An array of objects with timed data.
+       * An array of external subtitle tracks.
        */
-      tracks?: SourceConfigTrack[];
+      subtitleTracks?: SubtitleTrack[];
+      /**
+       * A thumbnail track.
+       */
+      thumbnailTrack?: ThumbnailTrack;
       /**
        * Configuration for VR and omnidirectional (360°) video.
        */
