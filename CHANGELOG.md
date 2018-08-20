@@ -26,6 +26,9 @@ This major release is adjusted to the changed API of Bitmovin Player v8.
 - Everything deprecated in 2.x
 - Player v7 feature detections and compatibility fallbacks
 
+### Fixed
+- Missing custom `SkipMessage` texts while playing an advertisement
+
 ## [2.18.0] (2018-08-08)
 
 ### Added

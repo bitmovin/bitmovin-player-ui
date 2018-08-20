@@ -62,8 +62,11 @@ declare namespace bitmovin {
       StallStarted,
       StallEnded,
       SubtitleAdded,
-      SubtitleChanged,
       SubtitleRemoved,
+      SubtitleEnable,
+      SubtitleEnabled,
+      SubtitleDisable,
+      SubtitleDisabled,
       TimeChanged,
       TimeShift,
       TimeShifted,
@@ -179,17 +182,6 @@ declare namespace bitmovin {
        * The concerned audio track
        */
       track: AudioTrack;
-    }
-
-    interface SubtitleChangedEvent extends PlaybackEvent {
-      /**
-       * Previous subtitle
-       */
-      sourceSubtitle: SubtitleTrack;
-      /**
-       * New subtitle
-       */
-      targetSubtitle: SubtitleTrack;
     }
 
     interface MediaQualityChangeEvent<Q extends Quality> extends PlayerEvent {
@@ -509,18 +501,8 @@ declare namespace bitmovin {
 
     }
 
-    interface SubtitleAddedEvent extends PlayerEvent {
-      /**
-       * The added subtitle object
-       */
+    interface SubtitleEvent extends PlayerEvent {
       subtitle: SubtitleTrack;
-    }
-
-    interface SubtitleRemovedEvent extends PlayerEvent {
-      /**
-       * The ID of the removed subtitle
-       */
-      subtitleId: string;
     }
 
     interface VRStereoChangedEvent extends PlayerEvent {

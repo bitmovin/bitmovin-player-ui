@@ -91,7 +91,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     };
 
     player.on(player.exports.Event.AudioChanged, subtitleClearHandler);
-    player.on(player.exports.Event.SubtitleChanged, subtitleClearHandler);
+    player.on(player.exports.Event.SubtitleEnabled, subtitleClearHandler);
+    player.on(player.exports.Event.SubtitleDisabled, subtitleClearHandler);
     player.on(player.exports.Event.Seek, subtitleClearHandler);
     player.on(player.exports.Event.TimeShift, subtitleClearHandler);
     player.on(player.exports.Event.PlaybackFinished, subtitleClearHandler);
@@ -239,7 +240,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     });
 
     player.on(player.exports.Event.SourceUnloaded, reset);
-    player.on(player.exports.Event.SubtitleChanged, reset);
+    player.on(player.exports.Event.SubtitleEnabled, reset);
+    player.on(player.exports.Event.SubtitleDisabled, reset);
   }
 
   enablePreviewSubtitleLabel(): void {

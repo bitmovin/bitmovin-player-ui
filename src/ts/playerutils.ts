@@ -24,7 +24,7 @@ export namespace PlayerUtils {
       return PlayerState.Playing;
     } else if (player.isPaused()) {
       return PlayerState.Paused;
-    } else if (player.getConfig(true).source) {
+    } else if (player.getSource() != null) {
       return PlayerState.Prepared;
     } else {
       return PlayerState.Idle;
