@@ -9,11 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Paging support for `SettingsPanel` to enable navigation to sub-settings
 
-### Changed
-- Deprecate `SubtitleSettingsPanel` in favour of `SubtitleSettingsPanelPage` to use with the new navigation feature of `SettingsPanel`
-
-### Fixed
-- Missing custom `SkipMessage` texts while playing an advertisement
+### Removed
+- `SubtitleSettingsPanel` in favour of `SubtitleSettingsPanelPage` to use with the new navigation feature of `SettingsPanel`
 
 ## [3.0.0 alpha]
 

@@ -53,12 +53,8 @@ import {FontColorSelectBox} from './components/subtitlesettings/fontcolorselectb
 import {FontFamilySelectBox} from './components/subtitlesettings/fontfamilyselectbox';
 import {FontOpacitySelectBox} from './components/subtitlesettings/fontopacityselectbox';
 import {FontSizeSelectBox} from './components/subtitlesettings/fontsizeselectbox';
-import {SubtitleSettingsButton} from './components/subtitlesettings/subtitlesettingsbutton';
-import {SubtitleSettingsCloseButton} from './components/subtitlesettings/subtitlesettingsclosebutton';
 import {SubtitleSettingSelectBox} from './components/subtitlesettings/subtitlesettingselectbox';
 import {SubtitleSettingsLabel} from './components/subtitlesettings/subtitlesettingslabel';
-import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
-import {SubtitleSettingsPanel} from './components/subtitlesettings/subtitlesettingspanel';
 import {WindowColorSelectBox} from './components/subtitlesettings/windowcolorselectbox';
 import {WindowOpacitySelectBox} from './components/subtitlesettings/windowopacityselectbox';
 import {ArrayUtils} from './arrayutils';
@@ -179,12 +175,8 @@ const playerui = {
     FontFamilySelectBox,
     FontOpacitySelectBox,
     FontSizeSelectBox,
-    SubtitleSettingsButton,
-    SubtitleSettingsCloseButton,
     SubtitleSettingSelectBox,
     SubtitleSettingsLabel,
-    SubtitleSettingsOpenButton,
-    SubtitleSettingsPanel,
     SubtitleSettingsPanelPage,
     WindowColorSelectBox,
     WindowOpacitySelectBox,
