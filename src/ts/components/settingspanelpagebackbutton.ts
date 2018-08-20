@@ -1,9 +1,9 @@
 import {UIInstanceManager} from '../uimanager';
-import {SettingsPanelNavigatorButton, SettingsPanelNavigatorConfig} from './settingspanelnavigatorbutton';
+import {SettingsPanelPageNavigatorButton, SettingsPanelPageNavigatorConfig} from './settingspanelpagenavigatorbutton';
 
-export class SettingsPanelPageBackButton extends SettingsPanelNavigatorButton {
+export class SettingsPanelPageBackButton extends SettingsPanelPageNavigatorButton {
 
-  constructor(config: SettingsPanelNavigatorConfig) {
+  constructor(config: SettingsPanelPageNavigatorConfig) {
     super(config);
 
     this.config = this.mergeConfig(config, {

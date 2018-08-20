@@ -3,9 +3,9 @@ import {SettingsPanel} from './settingspanel';
 import {SettingsPanelPage} from './settingspanelpage';
 
 /**
- * Configuration interface for a {@link SettingsPanelNavigatorButton}
+ * Configuration interface for a {@link SettingsPanelPageNavigatorButton}
  */
-export interface SettingsPanelNavigatorConfig extends ButtonConfig {
+export interface SettingsPanelPageNavigatorConfig extends ButtonConfig {
   /**
    * Container `SettingsPanel` where the navigation takes place
    */
@@ -17,16 +17,16 @@ export interface SettingsPanelNavigatorConfig extends ButtonConfig {
   targetPage?: SettingsPanelPage;
 }
 
-export class SettingsPanelNavigatorButton extends Button<SettingsPanelNavigatorConfig> {
+export class SettingsPanelPageNavigatorButton extends Button<SettingsPanelPageNavigatorConfig> {
   private readonly container: SettingsPanel;
   private readonly targetPage?: SettingsPanelPage;
 
-  constructor(config: SettingsPanelNavigatorConfig) {
+  constructor(config: SettingsPanelPageNavigatorConfig) {
     super(config);
     this.config = this.mergeConfig(config, {}, this.config);
 
-    this.container = (this.config as SettingsPanelNavigatorConfig).container;
-    this.targetPage = (this.config as SettingsPanelNavigatorConfig).targetPage;
+    this.container = (this.config as SettingsPanelPageNavigatorConfig).container;
+    this.targetPage = (this.config as SettingsPanelPageNavigatorConfig).targetPage;
   }
 
   /**
