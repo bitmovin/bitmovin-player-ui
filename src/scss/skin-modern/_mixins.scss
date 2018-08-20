@@ -1,4 +1,5 @@
 @import 'variables';
+
 @function hidden-animated-transition($duration) {
   @return opacity $duration, visibility 0s;
 }
@@ -20,6 +21,7 @@
     visibility: hidden;
   }
 }
+
 /*
  * this will use the existing `hidden-animated` mixin and add additional transitions properties
  *

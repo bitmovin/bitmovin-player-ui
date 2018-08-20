@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- Paging support for `SettingsPanel` to enable navigation to sub-settings
+- Paging support for `SettingsPanel` via `SettingsPanelPage` to enable navigation to sub-settings
 
 ### Removed
 - `SubtitleSettingsPanel` in favour of `SubtitleSettingsPanelPage` to use with the new navigation feature of `SettingsPanel`

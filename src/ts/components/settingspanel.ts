@@ -128,11 +128,13 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   setActivePageIndex(index: number): void {
     const targetPage = this.getPages()[index];
-    this.animateNavigation(targetPage);
-    this.activePageIndex = index;
-    this.navigationStack.push(targetPage);
-    this.updateActivePageClass();
-    targetPage.onActiveEvent();
+    if (targetPage !== undefined) {
+      this.animateNavigation(targetPage);
+      this.activePageIndex = index;
+      this.navigationStack.push(targetPage);
+      this.updateActivePageClass();
+      targetPage.onActiveEvent();
+    }
   }
 
   setActivePage(page: SettingsPanelPage): void {
@@ -140,7 +142,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.setActivePageIndex(index);
   }
 
-  // navigate to root page
   popToRootSettingsPanelPage(): void {
     this.resetNavigation();
   }
@@ -148,7 +149,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   popSettingsPanelPage() {
     // pop one navigation item from stack
     const currentPage = this.navigationStack.pop(); // remove current page
-    const targetPage = this.navigationStack.slice(-1)[0];
+    const targetPage = this.navigationStack.slice(-1)[0]; // pick target page without removing it
 
     if (targetPage !== undefined) {
       this.setActivePage(targetPage);
@@ -181,11 +182,15 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     const htmlElement = domElement.get(0);
     // ensure container has real width / height (for first animation)
     if (htmlElement.style.width === '' || htmlElement.style.height === '') {
-      domElement.css('width', domElement.css('width'));
-      domElement.css('height', domElement.css('height'));
+      domElement.css({
+        'width': domElement.css('width'),
+        'height': domElement.css('height'),
+      });
     }
 
     const targetPageHtmlElement = targetPage.getDomElement().get(0);
+    // clone the targetPage DOM element so that we can calculate the width / height how they will be after
+    // switching the page. We are using a clone to prevent (mostly styling) side-effects on the real DOM element
     const clone = targetPageHtmlElement.cloneNode(true) as HTMLElement;
     // append to parent so we get the 'real' size
     const containerWrapper = targetPageHtmlElement.parentNode;
@@ -220,8 +225,10 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     clone.remove();
 
     // set 'real' width / height
-    domElement.css('width', width + 'px');
-    domElement.css('height', height + 'px');
+    domElement.css({
+      'width': width + 'px',
+      'height': height + 'px',
+    });
   }
 
   /**
