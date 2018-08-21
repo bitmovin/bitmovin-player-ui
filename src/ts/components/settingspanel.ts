@@ -222,7 +222,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     const height = clone.scrollHeight + heightOffset;
 
     // remove clone from the DOM
-    clone.remove();
+    clone.parentElement.removeChild(clone); // .remove() is not working in IE
 
     // set 'real' width / height
     domElement.css({
