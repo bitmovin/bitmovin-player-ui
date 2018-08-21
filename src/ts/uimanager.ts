@@ -497,7 +497,7 @@ export class UIManager {
      * undesirable at this time. */
     this.uiContainerElement.append(dom);
 
-    // Some components initialize their state on ON_READY. When the UI is loaded after the player is already ready,
+    // Some components initialize their state on Ready. When the UI is loaded after the player is already ready,
     // they will never receive the event so we fire it from here in such cases.
     if (player) {
       player.fireEventInUI(player.exports.Event.Ready, {});
