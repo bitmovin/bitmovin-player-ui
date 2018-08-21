@@ -189,7 +189,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     };
 
-    player.on(player.exports.Event.PlayerResize, () => {
+    player.on(player.exports.Event.PlayerResized, () => {
       if (enabled) {
         updateCEA608FontSize();
       } else {

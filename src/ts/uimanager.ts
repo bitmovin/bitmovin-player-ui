@@ -378,7 +378,7 @@ export class UIManager {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdFinished, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdSkipped, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdError, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.PlayerResize, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.PlayerResized, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.ViewModeChanged, resolveUiVariant);
     }
 

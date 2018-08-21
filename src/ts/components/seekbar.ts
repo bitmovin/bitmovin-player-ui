@@ -311,7 +311,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     // Refresh the playback position when the player resized or the UI is configured. The playback position marker
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
-    player.on(player.exports.Event.PlayerResize, () => {
+    player.on(player.exports.Event.PlayerResized, () => {
       this.refreshPlaybackPosition();
     });
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
@@ -451,7 +451,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // Remove markers when unloaded
     player.on(player.exports.Event.SourceUnloaded, clearMarkers);
     // Update markers when the size of the seekbar changes
-    player.on(player.exports.Event.PlayerResize, () => this.updateMarkers());
+    player.on(player.exports.Event.PlayerResized, () => this.updateMarkers());
     // Update markers when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(setupMarkers);
     uimanager.onRelease.subscribe(() => uimanager.getConfig().events.onUpdated.unsubscribe(setupMarkers));

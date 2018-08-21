@@ -51,7 +51,7 @@ declare namespace bitmovin {
       Playing,
       PlaybackFinished,
       PlaybackSpeedChanged,
-      PlayerResize,
+      PlayerResized,
       Ready,
       Seek,
       Seeked,
