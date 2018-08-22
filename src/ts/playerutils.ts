@@ -48,7 +48,7 @@ export namespace PlayerUtils {
       let timeShiftDetector = () => {
         this.detect();
       };
-      // Try to detect timeshift availability in Ready, which works for DASH streams
+      // Try to detect timeshift availability when source is loaded, which works for DASH streams
       player.on(player.exports.Event.SourceLoaded, timeShiftDetector);
       // With HLS/NativePlayer streams, getMaxTimeShift can be 0 before the buffer fills, so we need to additionally
       // check timeshift availability in TimeChanged

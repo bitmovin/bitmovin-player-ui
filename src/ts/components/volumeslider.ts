@@ -64,7 +64,7 @@ export class VolumeSlider extends SeekBar {
       player.setVolume(percentage, VolumeSlider.issuerName);
     });
 
-    // Update the volume slider marker when the player resized, a source is loaded and player is ready,
+    // Update the volume slider marker when the player resized, a source is loaded,
     // or the UI is configured. Check the seekbar for a detailed description.
     player.on(player.exports.Event.PlayerResized, () => {
       this.refreshPlaybackPosition();
