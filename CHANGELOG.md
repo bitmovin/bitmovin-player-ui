@@ -10,6 +10,7 @@ This major release is adjusted to the changed API of Bitmovin Player v8.
 
 ### Changed
 - Player type definitions updated to player v8
+- `play` and `pause` calls during seeking now have the issuer `ui-seek` instead of `ui`
 
 ### Removed
 - Everything deprecated in 2.x
