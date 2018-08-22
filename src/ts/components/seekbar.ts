@@ -194,8 +194,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     };
 
     // Update seekbar upon these events
-    // init playback position when a source is loaded
-    player.on(player.exports.Event.SourceLoaded, playbackPositionHandler);
+    // init playback position when the player is ready
+    player.on(player.exports.Event.Ready, playbackPositionHandler);
     // update playback position when it changes
     player.on(player.exports.Event.TimeChanged, playbackPositionHandler);
     // update bufferlevel when buffering is complete
