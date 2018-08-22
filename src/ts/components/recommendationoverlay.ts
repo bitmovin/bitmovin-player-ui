@@ -67,7 +67,8 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     player.on(player.exports.Event.PlaybackFinished, () => {
       // Dismiss ON_PLAYBACK_FINISHED events at the end of ads
       // TODO remove this workaround once issue #1278 is solved
-      if (player.isAd()) {
+      if (player.ads.isLinearAdActive()) {
+        console.log('was ad');
         return;
       }
 

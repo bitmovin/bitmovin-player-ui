@@ -341,7 +341,7 @@ export class UIManager {
           // of the ad playback by checking isAd() in ON_READY, because ON_READY always arrives when the source
           // changes.
           case player.exports.Event.Ready:
-            if (adStartedEvent && !player.isAd()) {
+            if (adStartedEvent && !player.ads.isLinearAdActive()) {
               adStartedEvent = null;
             }
         }
