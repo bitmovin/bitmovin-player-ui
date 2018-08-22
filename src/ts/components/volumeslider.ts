@@ -50,7 +50,7 @@ export class VolumeSlider extends SeekBar {
       }
     };
 
-    player.on(player.exports.Event.Ready, volumeChangeHandler);
+    player.on(player.exports.Event.SourceLoaded, volumeChangeHandler);
     player.on(player.exports.Event.VolumeChanged, volumeChangeHandler);
     player.on(player.exports.Event.Muted, volumeChangeHandler);
     player.on(player.exports.Event.Unmuted, volumeChangeHandler);
@@ -69,7 +69,7 @@ export class VolumeSlider extends SeekBar {
     player.on(player.exports.Event.PlayerResized, () => {
       this.refreshPlaybackPosition();
     });
-    player.on(player.exports.Event.Ready, () => {
+    player.on(player.exports.Event.SourceLoaded, () => {
       this.refreshPlaybackPosition();
     });
     uimanager.onConfigured.subscribe(() => {

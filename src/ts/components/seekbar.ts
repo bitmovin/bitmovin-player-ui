@@ -194,8 +194,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     };
 
     // Update seekbar upon these events
-    // init playback position when the player is ready
-    player.on(player.exports.Event.Ready, playbackPositionHandler);
+    // init playback position when a source is loaded
+    player.on(player.exports.Event.SourceLoaded, playbackPositionHandler);
     // update playback position when it changes
     player.on(player.exports.Event.TimeChanged, playbackPositionHandler);
     // update bufferlevel when buffering is complete
@@ -319,9 +319,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     uimanager.onConfigured.subscribe(() => {
       this.refreshPlaybackPosition();
     });
-    // It can also happen that the value changes once the player is ready, or when a new source is loaded, so we need
-    // to update on Ready too
-    player.on(player.exports.Event.Ready, () => {
+    // It can also happen when a new source is loaded
+    player.on(player.exports.Event.SourceLoaded, () => {
       this.refreshPlaybackPosition();
     });
 
@@ -447,7 +446,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     };
 
     // Add markers when a source is loaded
-    player.on(player.exports.Event.Ready, setupMarkers);
+    player.on(player.exports.Event.SourceLoaded, setupMarkers);
     // Remove markers when unloaded
     player.on(player.exports.Event.SourceUnloaded, clearMarkers);
     // Update markers when the size of the seekbar changes

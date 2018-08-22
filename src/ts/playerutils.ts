@@ -49,7 +49,7 @@ export namespace PlayerUtils {
         this.detect();
       };
       // Try to detect timeshift availability in Ready, which works for DASH streams
-      player.on(player.exports.Event.Ready, timeShiftDetector);
+      player.on(player.exports.Event.SourceLoaded, timeShiftDetector);
       // With HLS/NativePlayer streams, getMaxTimeShift can be 0 before the buffer fills, so we need to additionally
       // check timeshift availability in TimeChanged
       player.on(player.exports.Event.TimeChanged, timeShiftDetector);
@@ -101,8 +101,8 @@ export namespace PlayerUtils {
       let liveDetector = () => {
         this.detect();
       };
-      // Initialize when player is ready
-      player.on(player.exports.Event.Ready, liveDetector);
+      // Initialize when source is loaded
+      player.on(player.exports.Event.SourceLoaded, liveDetector);
       // Re-evaluate when playback starts
       player.on(player.exports.Event.Play, liveDetector);
 

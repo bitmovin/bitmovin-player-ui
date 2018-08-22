@@ -338,9 +338,8 @@ export class UIManager {
             adStartedEvent = null;
             break;
           // When a new source is loaded during ad playback, there will be no ad end event so we detect the end
-          // of the ad playback by checking isAd() in ON_READY, because ON_READY always arrives when the source
-          // changes.
-          case player.exports.Event.Ready:
+          // of the ad playback by checking isAd().
+          case player.exports.Event.SourceLoaded:
             if (adStartedEvent && !player.isAd()) {
               adStartedEvent = null;
             }
@@ -371,7 +370,7 @@ export class UIManager {
 
     // Listen to the following events to trigger UI variant resolution
     if (config.autoUiVariantResolve) {
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Ready, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.SourceLoaded, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Play, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Paused, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdStarted, resolveUiVariant);
@@ -497,10 +496,10 @@ export class UIManager {
      * undesirable at this time. */
     this.uiContainerElement.append(dom);
 
-    // Some components initialize their state on Ready. When the UI is loaded after the player is already ready,
+    // Some components initialize their state on SourceLoaded. When the UI is loaded after the source is already loaded,
     // they will never receive the event so we fire it from here in such cases.
-    if (player) {
-      player.fireEventInUI(player.exports.Event.Ready, {});
+    if (player.getSource()) {
+      player.fireEventInUI(player.exports.Event.SourceLoaded, {});
     }
 
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
