@@ -224,7 +224,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     let restorePlayingState = function() {
       // Continue playback after seek if player was playing when seek started
       if (isPlaying) {
-        player.play('ui');
+        // use the same issuer here as in the pause on seek
+        player.play('ui-seek');
       }
     };
 
@@ -252,7 +253,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Pause playback while seeking
         if (isPlaying) {
-          player.pause('ui');
+          // use a different issuer here, as play/pause on seek is not "really" triggerd by the user
+          player.pause('ui-seek');
         }
       }
 
