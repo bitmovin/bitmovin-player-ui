@@ -132,7 +132,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // Update time after the format has been set
       playbackTimeHandler();
     };
-    player.on(player.exports.Event.Ready, init);
+    player.on(player.exports.Event.SourceLoaded, init);
 
     init();
   }

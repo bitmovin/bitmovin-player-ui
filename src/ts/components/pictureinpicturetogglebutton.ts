@@ -40,7 +40,7 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
       }
     };
 
-    player.on(player.exports.Event.Ready, pipAvailableHander);
+    player.on(player.exports.Event.SourceLoaded, pipAvailableHander);
 
     // Toggle button 'on' state
     player.on(player.exports.Event.ViewModeChanged, () => {
