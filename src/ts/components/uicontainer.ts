@@ -188,7 +188,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       this.playerStateChange.dispatch(this, state);
     };
 
-    player.on(player.exports.Event.Ready, () => {
+    player.on(player.exports.Event.SourceLoaded, () => {
       updateState(PlayerUtils.PlayerState.Prepared);
     });
     player.on(player.exports.Event.Play, () => {

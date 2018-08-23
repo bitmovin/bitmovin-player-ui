@@ -57,7 +57,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     };
 
     // Add recommendation when a source is loaded
-    player.on(player.exports.Event.Ready, setupRecommendations);
+    player.on(player.exports.Event.SourceLoaded, setupRecommendations);
     // Remove recommendations and hide overlay when source is unloaded
     player.on(player.exports.Event.SourceUnloaded, () => {
       clearRecommendations();
