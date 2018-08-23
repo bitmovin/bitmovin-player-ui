@@ -340,7 +340,7 @@ export class UIManager {
           // When a new source is loaded during ad playback, there will be no ad end event so we detect the end
           // of the ad playback by checking isAd().
           case player.exports.Event.SourceLoaded:
-            if (adStartedEvent && !player.isAd()) {
+            if (adStartedEvent && !player.ads.isLinearAdActive()) {
               adStartedEvent = null;
             }
         }
