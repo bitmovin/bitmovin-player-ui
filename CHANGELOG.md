@@ -9,9 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Default error description for existing error codes
 
-### Changed
-- The `ErrorMessageTranslator` receives a `description` alongside the `ErrorEvent` object
-
 ## [3.0.0 alpha]
 
 This major release is adjusted to the changed API of Bitmovin Player v8.
