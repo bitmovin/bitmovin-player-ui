@@ -7,7 +7,7 @@ import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {ErrorEventUtil} from '../erroreventutil';
 
 export interface ErrorMessageTranslator {
-  (description: string, error: ErrorEvent): string;
+  (error: ErrorEvent): string;
 }
 
 export interface ErrorMessageMap {
@@ -20,16 +20,15 @@ export interface ErrorMessageMap {
 export interface ErrorMessageOverlayConfig extends ContainerConfig {
   /**
    * Allows overwriting of the error messages displayed in the overlay for customization and localization.
-   * This is either a function that receives a human readable error description and any {@link ErrorEvent}
-   * as parameter and translates error description, or a map of error codes that overwrites specific error messages
-   * with a plain string or a function that receives a human readable error description and the {@link ErrorEvent}
-   * as parameter and returns a customized string.
+   * This is either a function that receives any {@link ErrorEvent} as parameter and translates error messages,
+   * or a map of error codes that overwrites specific error messages with a plain string or a function that
+   * receives the {@link ErrorEvent} as parameter and returns a customized string.
    * The translation functions can be used to extract data (e.g. parameters) from the original error message.
    *
    * Example 1 (catch-all translation function):
    * <code>
    * errorMessageOverlayConfig = {
-   *   messages: function(description, error) {
+   *   messages: function(error) {
    *     switch (error.code) {
    *       // Overwrite error 1000 'Unknown error'
    *       case 1000:
@@ -37,6 +36,7 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
    *
    *       // Transform error 1201 'The downloaded manifest is invalid' to uppercase
    *       case 1201:
+   *         var description = ErrorEventUtil.defaultErrorMessagesMapping[error.code];
    *         return description.toUpperCase();
    *
    *       // Customize error 1207 'The manifest could not be loaded'
@@ -58,12 +58,13 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
    *     1000: 'Houston, we have a problem',
    *
    *     // Transform error 1201 'Unsupported manifest format' to uppercase
-   *     1201: function(description, error) {
+   *     1201: function(error) {
+   *       var description = ErrorEventUtil.defaultErrorMessagesMapping[error.code];
    *       return description.toUpperCase();
    *     },
    *
    *     // Customize error 1207 'The manifest could not be loaded'
-   *     1207: function(description, error) {
+   *     1207: function(error) {
    *       var statusCode = error.data.statusCode;
    *       return 'Manifest loading failed with HTTP error ' + statusCode;
    *     }
@@ -101,25 +102,22 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     let config = <ErrorMessageOverlayConfig>this.getConfig();
 
     player.on(player.exports.Event.Error, (event: ErrorEvent) => {
-      let description = ErrorEventUtil.defaultErrorMessagesMapping[event.code] as string;
+      let message = ErrorEventUtil.defaultErrorMessageTranslator(event);
 
-      let name = event.name;
-      let message = description + '\n(' + name + ')'; // default error message style
-
-      // Custom error message handling
+      // Process message translations
       if (config.messages) {
         if (typeof config.messages === 'function') {
-          // Custom function for all errors
-          message = config.messages(description, event);
+          // Translation function for all errors
+          message = config.messages(event);
         } else if (config.messages[event.code]) {
-          // Messages is not a function, so it must be a map of strings or functions
+          // It's not a translation function, so it must be a map of strings or translation functions
           let customMessage = config.messages[event.code];
 
           if (typeof customMessage === 'string') {
             message = customMessage;
           } else {
-            // The message is a function, so we call it
-            message = customMessage(description, event);
+            // The message is a translation function, so we call it
+            message = customMessage(event);
           }
         }
       }

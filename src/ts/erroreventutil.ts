@@ -1,4 +1,5 @@
-import {ErrorMessageMap} from './components/errormessageoverlay';
+import {ErrorMessageMap, ErrorMessageTranslator} from './components/errormessageoverlay';
+import ErrorEvent = bitmovin.PlayerAPI.ErrorEvent;
 
 export namespace ErrorEventUtil {
   export const defaultErrorMessagesMapping: ErrorMessageMap = {
@@ -57,5 +58,11 @@ export namespace ErrorEventUtil {
     1203: 'The stream type is not supported',
     1000: 'Error is unknown',
     2100: 'Player technology not compatible with VR playback',
+  };
+
+  export const defaultErrorMessageTranslator: ErrorMessageTranslator = (error: ErrorEvent) => {
+    const errorMessage = ErrorEventUtil.defaultErrorMessagesMapping[error.code];
+    const errorIdentifier = error.name;
+    return `${errorMessage}\n(${errorIdentifier})`; // default error message style
   };
 }
