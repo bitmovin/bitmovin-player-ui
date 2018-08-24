@@ -18,11 +18,12 @@
     right: 3em;
     text-align: center;
     user-select: text;
+    white-space: pre-line; // enable linebreak in text
 
-    // Vertically center the label (not exactly, but works for single line errors)
+    // Vertically center the label
     & {
-      margin-top: -1em;
       top: 50%;
+      transform: translateY(-50%);
     }
 
     ul {
