@@ -2,7 +2,10 @@ import {ErrorMessageMap, ErrorMessageTranslator} from './components/errormessage
 import ErrorEvent = bitmovin.PlayerAPI.ErrorEvent;
 
 export namespace ErrorEventUtil {
-  export const defaultErrorMessagesMapping: ErrorMessageMap = {
+  const unknownErrorName = 'UNKNOWN';
+  const unknownErrorMessage = 'Unknown Error';
+
+  export const defaultErrorMessages: ErrorMessageMap = {
     1001: 'The player API is not available after a call to PlayerAPI.destroy.',
     2010: 'The certificate is not valid',
     2002: 'License request failed',
@@ -61,8 +64,8 @@ export namespace ErrorEventUtil {
   };
 
   export const defaultErrorMessageTranslator: ErrorMessageTranslator = (error: ErrorEvent) => {
-    const errorMessage = ErrorEventUtil.defaultErrorMessagesMapping[error.code];
-    const errorIdentifier = error.name;
+    const errorMessage = ErrorEventUtil.defaultErrorMessages[error.code] || unknownErrorMessage;
+    const errorIdentifier = error.name || unknownErrorName ;
     return `${errorMessage}\n(${errorIdentifier})`; // default error message style
   };
 }

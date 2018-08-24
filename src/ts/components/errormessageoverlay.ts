@@ -36,7 +36,7 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
    *
    *       // Transform error 1201 'The downloaded manifest is invalid' to uppercase
    *       case 1201:
-   *         var description = ErrorEventUtil.defaultErrorMessagesMapping[error.code];
+   *         var description = ErrorEventUtil.defaultErrorMessages[error.code];
    *         return description.toUpperCase();
    *
    *       // Customize error 1207 'The manifest could not be loaded'
@@ -59,7 +59,7 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
    *
    *     // Transform error 1201 'Unsupported manifest format' to uppercase
    *     1201: function(error) {
-   *       var description = ErrorEventUtil.defaultErrorMessagesMapping[error.code];
+   *       var description = ErrorEventUtil.defaultErrorMessages[error.code];
    *       return description.toUpperCase();
    *     },
    *
@@ -105,15 +105,15 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
       let message = ErrorEventUtil.defaultErrorMessageTranslator(event);
 
       // errorMessages configured in `UIConfig` take precedence `ErrorMessageOverlayConfig`
-      let customErrorMessages = uimanager.getConfig().errorMessages || config.messages;
+      let errorMessages = uimanager.getConfig().errorMessages || config.messages;
       // Process message translations
-      if (customErrorMessages) {
-        if (typeof customErrorMessages === 'function') {
+      if (errorMessages) {
+        if (typeof errorMessages === 'function') {
           // Translation function for all errors
-          message = customErrorMessages(event);
-        } else if (customErrorMessages[event.code]) {
+          message = errorMessages(event);
+        } else if (errorMessages[event.code]) {
           // It's not a translation function, so it must be a map of strings or translation functions
-          let customMessage = customErrorMessages[event.code];
+          let customMessage = errorMessages[event.code];
 
           if (typeof customMessage === 'string') {
             message = customMessage;
