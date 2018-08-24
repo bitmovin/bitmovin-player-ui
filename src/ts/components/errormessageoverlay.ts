@@ -104,14 +104,16 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     player.on(player.exports.Event.Error, (event: ErrorEvent) => {
       let message = ErrorEventUtil.defaultErrorMessageTranslator(event);
 
+      // errorMessages configured in `UIConfig` take precedence `ErrorMessageOverlayConfig`
+      let customErrorMessages = uimanager.getConfig().errorMessages || config.messages;
       // Process message translations
-      if (config.messages) {
-        if (typeof config.messages === 'function') {
+      if (customErrorMessages) {
+        if (typeof customErrorMessages === 'function') {
           // Translation function for all errors
-          message = config.messages(event);
-        } else if (config.messages[event.code]) {
+          message = customErrorMessages(event);
+        } else if (customErrorMessages[event.code]) {
           // It's not a translation function, so it must be a map of strings or translation functions
-          let customMessage = config.messages[event.code];
+          let customMessage = customErrorMessages[event.code];
 
           if (typeof customMessage === 'string') {
             message = customMessage;

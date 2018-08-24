@@ -26,7 +26,7 @@ import {SubtitleOverlay} from './components/subtitleoverlay';
 import {VolumeControlButton} from './components/volumecontrolbutton';
 import {CastToggleButton} from './components/casttogglebutton';
 import {CastStatusOverlay} from './components/caststatusoverlay';
-import {ErrorMessageOverlay} from './components/errormessageoverlay';
+import {ErrorMessageMap, ErrorMessageOverlay, ErrorMessageTranslator} from './components/errormessageoverlay';
 import {TitleBar} from './components/titlebar';
 import PlayerAPI = bitmovin.PlayerAPI;
 import {RecommendationOverlay} from './components/recommendationoverlay';
@@ -114,6 +114,11 @@ export interface UIConfig {
    * Default: false
    */
   playbackSpeedSelectionEnabled?: boolean;
+  /**
+   * Provide customized errorMessages
+   * For an example have a look at {@link ErrorMessageOverlay}
+   */
+  errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
 }
 
 export interface InternalUIConfig extends UIConfig {
