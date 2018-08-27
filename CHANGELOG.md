@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Added
+- Default `ErrorMessageTranslator` with english error messages for the `ErrorMessageOverlay`
+- `UIConfig.errorMessages` to allow customization of error messages via custom `ErrorMessageTranslator` | `ErrorMessageMap`
+
 ## [3.0.0 alpha]
 
 This major release is adjusted to the changed API of Bitmovin Player v8.
