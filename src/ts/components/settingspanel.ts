@@ -34,7 +34,7 @@ export interface SettingsPanelConfig extends ContainerConfig {
  */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
-  private static readonly ACTIVE_PAGE_CLASS = 'active';
+  private static readonly CLASS_ACTIVE_PAGE = 'active';
 
   // navigation handling
   private activePageIndex = 0;
@@ -119,9 +119,9 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   private updateActivePageClass(): void {
     this.getPages().forEach((page: SettingsPanelPage, index) => {
       if (index === this.activePageIndex) {
-        page.getDomElement().addClass(SettingsPanel.ACTIVE_PAGE_CLASS);
+        page.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
       } else {
-        page.getDomElement().removeClass(SettingsPanel.ACTIVE_PAGE_CLASS);
+        page.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
       }
     });
   }
