@@ -1,9 +1,7 @@
 import {ErrorMessageMap, ErrorMessageTranslator} from './components/errormessageoverlay';
 import ErrorEvent = bitmovin.PlayerAPI.ErrorEvent;
 
-export namespace ErrorEventUtil {
-  const unknownErrorName = 'UNKNOWN';
-  const unknownErrorMessage = 'Unknown Error';
+export namespace ErrorUtils {
 
   export const defaultErrorMessages: ErrorMessageMap = {
     1001: 'The player API is not available after a call to PlayerAPI.destroy.',
@@ -64,8 +62,14 @@ export namespace ErrorEventUtil {
   };
 
   export const defaultErrorMessageTranslator: ErrorMessageTranslator = (error: ErrorEvent) => {
-    const errorMessage = ErrorEventUtil.defaultErrorMessages[error.code] || unknownErrorMessage;
-    const errorIdentifier = error.name || unknownErrorName ;
-    return `${errorMessage}\n(${errorIdentifier})`; // default error message style
+    const errorMessage = ErrorUtils.defaultErrorMessages[error.code];
+
+    if (errorMessage) {
+      // Use the error message text if there is one
+      return `${errorMessage}\n(${error.name})`; // default error message style
+    } else {
+      // Fallback to error code/name if no message is defined
+      return `${error.code} ${error.name}`;
+    }
   };
 }

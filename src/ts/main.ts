@@ -72,6 +72,7 @@ import {ListBox} from './components/listbox';
 import {DemoFactory} from './demofactory';
 import {SubtitleListBox} from './components/subtitlelistbox';
 import {AudioTrackListBox} from './components/audiotracklistbox';
+import {ErrorUtils} from './errorutils';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -109,6 +110,7 @@ const playerui = {
   UIUtils,
   BrowserUtils,
   StorageUtils,
+  ErrorUtils,
   // Components
   AdClickOverlay,
   AdMessageLabel,

@@ -4,7 +4,7 @@ import {UIInstanceManager} from '../uimanager';
 import ErrorEvent = bitmovin.PlayerAPI.ErrorEvent;
 import {TvNoiseCanvas} from './tvnoisecanvas';
 import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
-import {ErrorEventUtil} from '../erroreventutil';
+import {ErrorUtils} from '../errorutils';
 
 export interface ErrorMessageTranslator {
   (error: ErrorEvent): string;
@@ -36,7 +36,7 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
    *
    *       // Transform error 1201 'The downloaded manifest is invalid' to uppercase
    *       case 1201:
-   *         var description = ErrorEventUtil.defaultErrorMessages[error.code];
+   *         var description = ErrorUtils.defaultErrorMessages[error.code];
    *         return description.toUpperCase();
    *
    *       // Customize error 1207 'The manifest could not be loaded'
@@ -59,7 +59,7 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
    *
    *     // Transform error 1201 'Unsupported manifest format' to uppercase
    *     1201: function(error) {
-   *       var description = ErrorEventUtil.defaultErrorMessages[error.code];
+   *       var description = ErrorUtils.defaultErrorMessages[error.code];
    *       return description.toUpperCase();
    *     },
    *
@@ -102,7 +102,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     let config = <ErrorMessageOverlayConfig>this.getConfig();
 
     player.on(player.exports.Event.Error, (event: ErrorEvent) => {
-      let message = ErrorEventUtil.defaultErrorMessageTranslator(event);
+      let message = ErrorUtils.defaultErrorMessageTranslator(event);
 
       // errorMessages configured in `UIConfig` take precedence `ErrorMessageOverlayConfig`
       let errorMessages = uimanager.getConfig().errorMessages || config.messages;
