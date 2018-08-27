@@ -150,9 +150,13 @@ declare namespace bitmovin {
        */
       code: number;
       /**
-       * The error message to explain the reason for the error
+       * The error name to explain the reason for the error
        */
-      message: string;
+      name: string;
+      /**
+       * Additional data
+       */
+      data?: { [key: string]: any; };
     }
 
     interface WarningEvent extends PlayerEvent {
