@@ -9,7 +9,7 @@ import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {SeekBar} from './components/seekbar';
 import {SelectBox} from './components/selectbox';
 import {ItemSelectionList} from './components/itemselectionlist';
-import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
+import {SettingsPanel} from './components/settingspanel';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {ToggleButton} from './components/togglebutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
@@ -72,6 +72,7 @@ import {SettingsPanelPage} from './components/settingspanelpage';
 import {SettingsPanelPageBackButton} from './components/settingspanelpagebackbutton';
 import {SettingsPanelPageOpenButton} from './components/settingspanelpageopenbutton';
 import {SubtitleSettingsPanelPage} from './components/subtitlesettings/subtitlesettingspanelpage';
+import {SettingsPanelItem} from './components/settingspanelitem';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign

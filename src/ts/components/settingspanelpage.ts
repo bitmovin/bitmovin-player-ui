@@ -1,8 +1,11 @@
 import {Container, ContainerConfig} from './container';
-import {SettingsPanelItem} from './settingspanel';
+import {SettingsPanelItem} from './settingspanelitem';
 import {UIInstanceManager} from '../uimanager';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 
+/**
+ * A panel containing a list of {@link SettingsPanelItem items} that represent labelled settings.
+ */
 export class SettingsPanelPage extends Container<ContainerConfig> {
 
   private static readonly CLASS_LAST = 'last';

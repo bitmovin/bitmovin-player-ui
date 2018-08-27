@@ -1,5 +1,5 @@
 import {SettingsPanelPage} from '../settingspanelpage';
-import {SettingsPanel, SettingsPanelItem} from '../settingspanel';
+import {SettingsPanel} from '../settingspanel';
 import {SubtitleOverlay} from '../subtitleoverlay';
 import {ContainerConfig} from '../container';
 import {SubtitleSettingsManager} from './subtitlesettingsmanager';
@@ -16,6 +16,7 @@ import {WindowOpacitySelectBox} from './windowopacityselectbox';
 import {SubtitleSettingsResetButton} from './subtitlesettingsresetbutton';
 import {UIInstanceManager} from '../../uimanager';
 import {SettingsPanelPageBackButton} from '../settingspanelpagebackbutton';
+import {SettingsPanelItem} from '../settingspanelitem';
 
 export interface SubtitleSettingsPanelPageConfig extends ContainerConfig {
   settingsPanel: SettingsPanel;

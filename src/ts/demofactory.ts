@@ -14,7 +14,7 @@ import {CastStatusOverlay} from './components/caststatusoverlay';
 import {UIContainer} from './components/uicontainer';
 import {Watermark} from './components/watermark';
 import {SubtitleOverlay} from './components/subtitleoverlay';
-import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
+import {SettingsPanel} from './components/settingspanel';
 import {SeekBarLabel} from './components/seekbarlabel';
 import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
@@ -30,6 +30,8 @@ import {BufferingOverlay} from './components/bufferingoverlay';
 import PlayerAPI = bitmovin.PlayerAPI;
 import {SubtitleListBox} from './components/subtitlelistbox';
 import {AudioTrackListBox} from './components/audiotracklistbox';
+import {SettingsPanelItem} from './components/settingspanelitem';
+import {SettingsPanelPage} from './components/settingspanelpage';
 
 export namespace DemoFactory {
 
@@ -63,9 +65,13 @@ export namespace DemoFactory {
 
     let settingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+        new SettingsPanelPage({
+          components: [
+            new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
+            // new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
+            new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+          ],
+        }),
       ],
       hidden: true,
     });
@@ -73,7 +79,11 @@ export namespace DemoFactory {
     let subtitleListBox = new SubtitleListBox();
     let subtitleSettingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem(null, subtitleListBox),
+        new SettingsPanelPage({
+          components: [
+            new SettingsPanelItem(null, subtitleListBox),
+          ],
+        }),
       ],
       hidden: true,
     });
@@ -81,7 +91,11 @@ export namespace DemoFactory {
     let audioTrackListBox = new AudioTrackListBox();
     let audioTrackSettingsPanel = new SettingsPanel({
       components: [
-        new SettingsPanelItem(null, audioTrackListBox),
+        new SettingsPanelPage({
+          components: [
+            new SettingsPanelItem(null, audioTrackListBox),
+          ],
+        }),
       ],
       hidden: true,
     });

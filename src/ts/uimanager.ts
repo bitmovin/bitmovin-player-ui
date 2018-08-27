@@ -11,7 +11,7 @@ import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktim
 import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {SettingsToggleButton} from './components/settingstogglebutton';
-import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
+import {SettingsPanel} from './components/settingspanel';
 import {SubtitleSettingsLabel} from './components/subtitlesettings/subtitlesettingslabel';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {Watermark} from './components/watermark';
@@ -52,6 +52,7 @@ import { PlayerUtils } from './playerutils';
 import {SettingsPanelPage} from './components/settingspanelpage';
 import {SubtitleSettingsPanelPage} from './components/subtitlesettings/subtitlesettingspanelpage';
 import {SettingsPanelPageOpenButton} from './components/settingspanelpageopenbutton';
+import {SettingsPanelItem} from './components/settingspanelitem';
 
 export interface UIRecommendationConfig {
   title: string;
