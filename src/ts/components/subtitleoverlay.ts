@@ -5,6 +5,7 @@ import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
 import { EventDispatcher } from '../eventdispatcher';
+import {DOM} from '../dom';
 
 /**
  * Overlays the player to display subtitles.
@@ -65,6 +66,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.show();
     });
+
     player.on(player.exports.Event.CueExit, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
 
@@ -318,9 +320,22 @@ class ActiveSubtitleManager {
   cueEnter(event: SubtitleCueEvent): SubtitleLabel {
     let id = ActiveSubtitleManager.calculateId(event);
 
+    let generateImageTagText = (imageData: string): string => {
+      if (!imageData) {
+        return;
+      }
+
+      const imgTag = new DOM('img', {
+        src: imageData,
+      });
+      imgTag.css('width', '100%');
+      return imgTag.get()[0].outerHTML; // return the html as string
+    };
+
     let label = new SubtitleLabel({
-      // Prefer the HTML subtitle text if set, else use the plain text
-      text: event.html || event.text,
+      // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
+      // else use the plain text
+      text: event.html || generateImageTagText(event.image) || event.text,
     });
 
     // Create array for id if it does not exist
