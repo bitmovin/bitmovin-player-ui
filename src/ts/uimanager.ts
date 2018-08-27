@@ -116,7 +116,7 @@ export interface UIConfig {
   playbackSpeedSelectionEnabled?: boolean;
   /**
    * Provide customized errorMessages
-   * For an example have a look at {@link ErrorMessageOverlay}
+   * For an example have a look at {@link ErrorMessageOverlayConfig.messages}
    */
   errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
 }
