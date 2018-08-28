@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Paging support for `SettingsPanel` via `SettingsPanelPage` to enable navigation to sub-settings
+- Default `ErrorMessageTranslator` with english error messages for the `ErrorMessageOverlay`
+- `UIConfig.errorMessages` to allow customization of error messages via custom `ErrorMessageTranslator` | `ErrorMessageMap`
 
 ### Removed
 - `SubtitleSettingsPanel` in favour of `SubtitleSettingsPanelPage` to use with the new navigation feature of `SettingsPanel`
@@ -18,6 +20,7 @@ This major release is adjusted to the changed API of Bitmovin Player v8.
 
 ### Changed
 - Player type definitions updated to player v8
+- `play` and `pause` calls during seeking now have the issuer `ui-seek` instead of `ui`
 
 ### Removed
 - Everything deprecated in 2.x

@@ -34,7 +34,7 @@ export class AudioTrackSwitchHandler {
     // Update tracks when source goes away
     this.player.on(this.player.exports.Event.SourceUnloaded, updateAudioTracksCallback);
     // Update tracks when a new source is loaded
-    this.player.on(this.player.exports.Event.Ready, updateAudioTracksCallback);
+    this.player.on(this.player.exports.Event.SourceLoaded, updateAudioTracksCallback);
     // Update tracks when the period within a source changes
     this.player.on(this.player.exports.Event.PeriodSwitched, updateAudioTracksCallback);
     // Update tracks when a track is added or removed

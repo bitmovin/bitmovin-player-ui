@@ -51,7 +51,7 @@ declare namespace bitmovin {
       Playing,
       PlaybackFinished,
       PlaybackSpeedChanged,
-      PlayerResize,
+      PlayerResized,
       Ready,
       Seek,
       Seeked,
@@ -150,9 +150,13 @@ declare namespace bitmovin {
        */
       code: number;
       /**
-       * The error message to explain the reason for the error
+       * The error name to explain the reason for the error
        */
-      message: string;
+      name: string;
+      /**
+       * Additional data
+       */
+      data?: { [key: string]: any; };
     }
 
     interface WarningEvent extends PlayerEvent {
@@ -425,24 +429,11 @@ declare namespace bitmovin {
       isInit: boolean;
     }
 
-    interface AdManifestLoadedEvent extends PlayerEvent {
-      /**
-       * The ad break for which the ad manifest was loaded.
-       */
+    interface AdBreakEvent extends PlayerEvent {
       adBreak: AdBreak;
     }
 
-    interface AdBreakStartedEvent extends PlayerEvent {
-      /**
-       * The ad break that just started.
-       */
-      adBreak: AdBreak;
-    }
-
-    interface AdStartedEvent extends PlayerEvent {
-      /**
-       * The ad that just started.
-       */
+    interface AdEvent extends PlayerEvent {
       ad: Ad;
     }
 

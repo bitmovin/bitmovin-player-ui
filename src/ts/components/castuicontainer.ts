@@ -63,7 +63,6 @@ export class CastUIContainer extends UIContainer {
       }
     };
 
-    player.on(player.exports.Event.Ready, showUiWithTimeout);
     player.on(player.exports.Event.SourceLoaded, showUiWithTimeout);
     player.on(player.exports.Event.Play, showUiWithTimeout);
     player.on(player.exports.Event.Paused, showUiPermanently);

@@ -224,7 +224,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     let restorePlayingState = function() {
       // Continue playback after seek if player was playing when seek started
       if (isPlaying) {
-        player.play('ui');
+        // use the same issuer here as in the pause on seek
+        player.play('ui-seek');
       }
     };
 
@@ -252,7 +253,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Pause playback while seeking
         if (isPlaying) {
-          player.pause('ui');
+          // use a different issuer here, as play/pause on seek is not "really" triggerd by the user
+          player.pause('ui-seek');
         }
       }
 
@@ -311,7 +313,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     // Refresh the playback position when the player resized or the UI is configured. The playback position marker
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
-    player.on(player.exports.Event.PlayerResize, () => {
+    player.on(player.exports.Event.PlayerResized, () => {
       this.refreshPlaybackPosition();
     });
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
@@ -319,9 +321,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     uimanager.onConfigured.subscribe(() => {
       this.refreshPlaybackPosition();
     });
-    // It can also happen that the value changes once the player is ready, or when a new source is loaded, so we need
-    // to update on Ready too
-    player.on(player.exports.Event.Ready, () => {
+    // It can also happen when a new source is loaded
+    player.on(player.exports.Event.SourceLoaded, () => {
       this.refreshPlaybackPosition();
     });
 
@@ -447,11 +448,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     };
 
     // Add markers when a source is loaded
-    player.on(player.exports.Event.Ready, setupMarkers);
+    player.on(player.exports.Event.SourceLoaded, setupMarkers);
     // Remove markers when unloaded
     player.on(player.exports.Event.SourceUnloaded, clearMarkers);
     // Update markers when the size of the seekbar changes
-    player.on(player.exports.Event.PlayerResize, () => this.updateMarkers());
+    player.on(player.exports.Event.PlayerResized, () => this.updateMarkers());
     // Update markers when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(setupMarkers);
     uimanager.onRelease.subscribe(() => uimanager.getConfig().events.onUpdated.unsubscribe(setupMarkers));

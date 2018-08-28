@@ -107,6 +107,11 @@ declare namespace bitmovin {
     readonly subtitles: PlayerAPI.PlayerSubtitlesAPI;
 
     /**
+     * The Ads API.
+     */
+    readonly ads: PlayerAPI.PlayerAdvertisingAPI;
+
+    /**
      * Exports from the player core as a convenience fallback for non-modular code.
      * It is recommended to use ES6 imports instead.
      *
@@ -1299,6 +1304,49 @@ declare namespace bitmovin {
       list(): SubtitleTrack[];
       enable(subtitleID: string, exclusive?: boolean): void;
       disable(subtitleID: string): void;
+    }
+
+    interface PlayerAdvertisingAPI {
+      /**
+       * Schedules resulting ad break(s) of an ad config for playback.
+       *
+       * @param adConfig The ad configuration used to schedule one or more ad breaks.
+       * @since v8.0
+       * @return Promise that resolves with the ad breaks that were scheduled as a result of the given ad config.
+       */
+      schedule(adConfig: AdConfig): Promise<AdBreak[]>;
+      /**
+       * Skips the current ad. Has no effect if the ad is not skippable or if no ad is active.
+       * @since v8.0
+       */
+      skip(): void;
+      /**
+       * Returns all scheduled ad breaks.
+       *
+       * @since v8.0
+       * @return Array containing all the scheduled ad breaks.
+       */
+      list(): AdBreak[];
+      /**
+       * Returns the currently active ad break.
+       *
+       * @since v8.0
+       * @return AdBreak
+       */
+      getActiveAdBreak(): AdBreak;
+      /**
+       * Discards all scheduled ad breaks with the given ID. Also stops the current ad break if it has the same ID.
+       *
+       * @param adBreakId The ID which shall be removed from the scheduled ad breaks.
+       * @since v8.0
+       */
+      discardAdBreak(adBreakId: string): void;
+      /**
+       * Returns true if a linear ad is currently active (playing or paused). Returns false otherwise.
+       *
+       * @since v8.0
+       */
+      isLinearAdActive(): boolean;
     }
   }
 }

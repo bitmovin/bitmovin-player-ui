@@ -188,7 +188,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       this.playerStateChange.dispatch(this, state);
     };
 
-    player.on(player.exports.Event.Ready, () => {
+    player.on(player.exports.Event.SourceLoaded, () => {
       updateState(PlayerUtils.PlayerState.Prepared);
     });
     player.on(player.exports.Event.Play, () => {
@@ -270,7 +270,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         container.addClass(this.prefixCss('layout-max-width-1200'));
       }
     };
-    player.on(player.exports.Event.PlayerResize, (e: PlayerResizeEvent) => {
+    player.on(player.exports.Event.PlayerResized, (e: PlayerResizeEvent) => {
       // Convert strings (with "px" suffix) to ints
       let width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
       let height = Math.round(Number(e.height.substring(0, e.height.length - 2)));

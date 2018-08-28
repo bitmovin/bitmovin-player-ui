@@ -45,7 +45,7 @@ export class SubtitleSwitchHandler {
     // Update subtitles when source goes away
     this.player.on(this.player.exports.Event.SourceUnloaded, updateSubtitlesCallback);
     // Update subtitles when a new source is loaded
-    this.player.on(this.player.exports.Event.Ready, updateSubtitlesCallback);
+    this.player.on(this.player.exports.Event.SourceLoaded, updateSubtitlesCallback);
     // Update subtitles when the period within a source changes
     this.player.on(this.player.exports.Event.PeriodSwitched, updateSubtitlesCallback);
   }

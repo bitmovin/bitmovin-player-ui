@@ -24,7 +24,7 @@ import {SubtitleOverlay} from './components/subtitleoverlay';
 import {VolumeControlButton} from './components/volumecontrolbutton';
 import {CastToggleButton} from './components/casttogglebutton';
 import {CastStatusOverlay} from './components/caststatusoverlay';
-import {ErrorMessageOverlay} from './components/errormessageoverlay';
+import {ErrorMessageMap, ErrorMessageOverlay, ErrorMessageTranslator} from './components/errormessageoverlay';
 import {TitleBar} from './components/titlebar';
 import PlayerAPI = bitmovin.PlayerAPI;
 import {RecommendationOverlay} from './components/recommendationoverlay';
@@ -116,6 +116,11 @@ export interface UIConfig {
    * Default: false
    */
   playbackSpeedSelectionEnabled?: boolean;
+  /**
+   * Provide customized errorMessages
+   * For an example have a look at {@link ErrorMessageOverlayConfig.messages}
+   */
+  errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
 }
 
 export interface InternalUIConfig extends UIConfig {
@@ -340,10 +345,9 @@ export class UIManager {
             adStartedEvent = null;
             break;
           // When a new source is loaded during ad playback, there will be no ad end event so we detect the end
-          // of the ad playback by checking isAd() in ON_READY, because ON_READY always arrives when the source
-          // changes.
-          case player.exports.Event.Ready:
-            if (adStartedEvent && !player.isAd()) {
+          // of the ad playback by checking isAd().
+          case player.exports.Event.SourceLoaded:
+            if (adStartedEvent && !player.ads.isLinearAdActive()) {
               adStartedEvent = null;
             }
         }
@@ -373,14 +377,14 @@ export class UIManager {
 
     // Listen to the following events to trigger UI variant resolution
     if (config.autoUiVariantResolve) {
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Ready, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.SourceLoaded, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Play, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Paused, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdStarted, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdFinished, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdSkipped, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdError, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.PlayerResize, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.PlayerResized, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.ViewModeChanged, resolveUiVariant);
     }
 
@@ -491,12 +495,19 @@ export class UIManager {
 
   private addUi(ui: InternalUIInstanceManager): void {
     let dom = ui.getUI().getDomElement();
+    let player = ui.getWrappedPlayer();
 
     ui.configureControls();
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
     this.uiContainerElement.append(dom);
+
+    // Some components initialize their state on SourceLoaded. When the UI is loaded after the source is already loaded,
+    // they will never receive the event so we fire it from here in such cases.
+    if (player.getSource()) {
+      player.fireEventInUI(player.exports.Event.SourceLoaded, {});
+    }
 
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
     // might not be fully configured and e.g. do not have a size.

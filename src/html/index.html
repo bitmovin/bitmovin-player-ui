@@ -168,34 +168,24 @@
   };
 
   var advertisingConfig = {
-    forceSinglePlayer: false,
-    //clickThroughEnabled: false,
-    client: 'vast',
-    admessage: 'staring contest (ಠ_ಠ) ... hold on for {remainingTime} seconds',
-    skipmessage: {
-      countdown: '┏(-_-)┛┗(-_-﻿ )┓┗(-_-)┛┏(-_-)┓ ({remainingTime})',
-      skip: 'SKIP'
-    },
-    schedule: {
-      'ad-skippable': {
-        offset: 'pre',
-        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
+    adBreaks: [
+      {
+        tag: {
+          // skippable
+          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+          type: 'vast',
+        },
+        position: 'pre',
       },
-      'ad-nonskippable': {
-        offset: '15',
-        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
-      },
-      'ad-skippable-ima': {
-        client: 'ima',
-        offset: '30',
-        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
-      },
-      'ad-nonskippable-ima': {
-        client: 'ima',
-        offset: '45',
-        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
+      {
+        tag: {
+          // nonskippable
+          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
+          type: 'vast',
+        },
+        position: '10',
       }
-    }
+    ]
   };
   var adsEnabled = false;
 
