@@ -9,7 +9,7 @@ import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {SeekBar} from './components/seekbar';
 import {SelectBox} from './components/selectbox';
 import {ItemSelectionList} from './components/itemselectionlist';
-import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
+import {SettingsPanel} from './components/settingspanel';
 import {SettingsToggleButton} from './components/settingstogglebutton';
 import {ToggleButton} from './components/togglebutton';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
@@ -53,12 +53,8 @@ import {FontColorSelectBox} from './components/subtitlesettings/fontcolorselectb
 import {FontFamilySelectBox} from './components/subtitlesettings/fontfamilyselectbox';
 import {FontOpacitySelectBox} from './components/subtitlesettings/fontopacityselectbox';
 import {FontSizeSelectBox} from './components/subtitlesettings/fontsizeselectbox';
-import {SubtitleSettingsButton} from './components/subtitlesettings/subtitlesettingsbutton';
-import {SubtitleSettingsCloseButton} from './components/subtitlesettings/subtitlesettingsclosebutton';
 import {SubtitleSettingSelectBox} from './components/subtitlesettings/subtitlesettingselectbox';
 import {SubtitleSettingsLabel} from './components/subtitlesettings/subtitlesettingslabel';
-import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
-import {SubtitleSettingsPanel} from './components/subtitlesettings/subtitlesettingspanel';
 import {WindowColorSelectBox} from './components/subtitlesettings/windowcolorselectbox';
 import {WindowOpacitySelectBox} from './components/subtitlesettings/windowopacityselectbox';
 import {ArrayUtils} from './arrayutils';
@@ -72,6 +68,11 @@ import {ListBox} from './components/listbox';
 import {DemoFactory} from './demofactory';
 import {SubtitleListBox} from './components/subtitlelistbox';
 import {AudioTrackListBox} from './components/audiotracklistbox';
+import {SettingsPanelPage} from './components/settingspanelpage';
+import {SettingsPanelPageBackButton} from './components/settingspanelpagebackbutton';
+import {SettingsPanelPageOpenButton} from './components/settingspanelpageopenbutton';
+import {SubtitleSettingsPanelPage} from './components/subtitlesettings/subtitlesettingspanelpage';
+import {SettingsPanelItem} from './components/settingspanelitem';
 import {ErrorUtils} from './errorutils';
 
 // Object.assign polyfill for ES5/IE9
@@ -149,6 +150,9 @@ const playerui = {
   SelectBox,
   ItemSelectionList,
   SettingsPanel,
+  SettingsPanelPage,
+  SettingsPanelPageBackButton,
+  SettingsPanelPageOpenButton,
   SettingsPanelItem,
   SettingsToggleButton,
   Spacer,
@@ -174,12 +178,9 @@ const playerui = {
     FontFamilySelectBox,
     FontOpacitySelectBox,
     FontSizeSelectBox,
-    SubtitleSettingsButton,
-    SubtitleSettingsCloseButton,
     SubtitleSettingSelectBox,
     SubtitleSettingsLabel,
-    SubtitleSettingsOpenButton,
-    SubtitleSettingsPanel,
+    SubtitleSettingsPanelPage,
     WindowColorSelectBox,
     WindowOpacitySelectBox,
     SubtitleSettingsResetButton,

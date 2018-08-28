@@ -1,6 +1,6 @@
-@import '../../variables';
+@import '../variables';
 
-.#{$prefix}-ui-subtitlesettingsclosebutton {
+%ui-settingspanelpagebackbutton {
   @extend %ui-button;
 
   font-size: .8em;
@@ -22,4 +22,8 @@
       width: .6em;
     }
   }
+}
+
+.#{$prefix}-ui-settingspanelpagebackbutton {
+  @extend %ui-settingspanelpagebackbutton;
 }
