@@ -1,7 +1,7 @@
-@import '../../variables';
-@import '../../mixins';
+@import '../variables';
+@import '../mixins';
 
-.#{$prefix}-ui-subtitlesettingsopenbutton {
+%ui-settingspanelpageopenbutton {
   @extend %ui-button;
 
   background-image: svg('assets/skin-modern/images/settings.svg');
@@ -14,4 +14,8 @@
   &.#{$prefix}-on {
     background-image: svg('assets/skin-modern/images/settingsX.svg');
   }
+}
+
+.#{$prefix}-ui-settingspanelpageopenbutton {
+  @extend %ui-settingspanelpageopenbutton;
 }

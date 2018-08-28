@@ -80,7 +80,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     if (config.autoHideWhenNoActiveSettings) {
       // Setup handler to show/hide button when the settings change
       let settingsPanelItemsChangedHandler = () => {
-        if (settingsPanel.hasActiveSettings()) {
+        if (settingsPanel.rootPageHasActiveSettings()) {
           if (this.isHidden()) {
             this.show();
           }
