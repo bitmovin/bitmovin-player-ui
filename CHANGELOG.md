@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- The image attribute from a `SubtitleCueEvent` event will now be used to generate a html tag if the html attributes is empty
+- Support for image subtitles
 - Default `ErrorMessageTranslator` with english error messages for the `ErrorMessageOverlay`
 - `UIConfig.errorMessages` to allow customization of error messages via custom `ErrorMessageTranslator` | `ErrorMessageMap`
 
