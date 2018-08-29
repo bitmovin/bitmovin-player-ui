@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [support-v2]
 
+### Added
+- Support for image subtitles
+
 ### Fixed
 - Missing custom `SkipMessage` texts while playing an advertisement
 
