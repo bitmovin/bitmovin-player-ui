@@ -345,7 +345,7 @@ class ActiveSubtitleManager {
       src: imageData,
     });
     imgTag.css('width', '100%');
-    return imgTag.get()[0].outerHTML; // return the html as string
+    return imgTag.get(0).outerHTML; // return the html as string
   }
 
   /**
