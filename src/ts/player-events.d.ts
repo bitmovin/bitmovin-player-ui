@@ -516,6 +516,7 @@ declare namespace bitmovin {
       end: number;
       text: string;
       html?: string;
+      image?: string;
       region?: string;
       regionStyle?: string;
       position?: {
