@@ -42,8 +42,9 @@ import { PlayerUtils } from './playerutils';
 import { Label } from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
 import { VolumeControlButton } from './components/volumecontrolbutton';
-import { UIConditionContext, UIConfig, UIManager } from './uimanager';
+import { UIConditionContext, UIManager } from './uimanager';
 import PlayerAPI = bitmovin.PlayerAPI;
+import { UIConfig } from './uiconfig';
 
 export namespace UIFactory {
 
