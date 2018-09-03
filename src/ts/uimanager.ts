@@ -14,6 +14,7 @@ import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
+import { UIFactory } from './uifactory';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -532,6 +533,14 @@ export class UIManager {
 
     return false;
   }
+}
+
+/**
+ * Export the {@link UIFactory} as `UIManager.Factory` for backwards compatibility with the UI module in player v8 RCs.
+ * @deprecated remove with UI v4
+ */
+export namespace UIManager {
+  export import Factory = UIFactory;
 }
 
 export interface SeekPreviewArgs extends NoArgs {
