@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 - `SubtitleSettingsPanel` in favour of `SubtitleSettingsPanelPage` to use with the new navigation feature of `SettingsPanel`
 
+### Fixed
+- Type definitions are now generated correctly and referenced from `package.json`
+
 ## [3.0.0 alpha]
 
 This major release is adjusted to the changed API of Bitmovin Player v8.
