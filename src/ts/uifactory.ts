@@ -323,7 +323,7 @@ export namespace UIFactory {
           && context.adClientType === 'vast';
       },
     }, {
-    // TODO reimplement ads UI for native ads player v8 module 
+    // TODO reimplement ads UI for native ads player v8 module
     //   ui: modernAdsUI(),
     //   condition: (context: UIConditionContext) => {
     //     return context.isAd && context.adClientType === 'vast';
