@@ -1,4 +1,5 @@
 import {ListSelector, ListSelectorConfig} from './components/listselector';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Helper class to handle all subtitle related events
@@ -7,10 +8,10 @@ import {ListSelector, ListSelectorConfig} from './components/listselector';
  */
 export class SubtitleSwitchHandler {
 
-  private player: bitmovin.PlayerAPI;
+  private player: PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
 
-  constructor(player: bitmovin.PlayerAPI, element: ListSelector<ListSelectorConfig>) {
+  constructor(player: PlayerAPI, element: ListSelector<ListSelectorConfig>) {
     this.player = player;
     this.listElement = element;
 

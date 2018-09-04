@@ -26,14 +26,10 @@ import {CastToggleButton} from './components/casttogglebutton';
 import {CastStatusOverlay} from './components/caststatusoverlay';
 import {ErrorMessageMap, ErrorMessageOverlay, ErrorMessageTranslator} from './components/errormessageoverlay';
 import {TitleBar} from './components/titlebar';
-import PlayerAPI = bitmovin.PlayerAPI;
 import {RecommendationOverlay} from './components/recommendationoverlay';
 import {AdMessageLabel} from './components/admessagelabel';
 import {AdSkipButton} from './components/adskipbutton';
 import {AdClickOverlay} from './components/adclickoverlay';
-import Event = bitmovin.PlayerAPI.Event;
-import PlayerEventCallback = bitmovin.PlayerAPI.PlayerEventCallback;
-import AdStartedEvent = bitmovin.PlayerAPI.AdStartedEvent;
 import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import {CastUIContainer} from './components/castuicontainer';
@@ -41,7 +37,6 @@ import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
 import {CloseButton} from './components/closebutton';
 import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 import {Label} from './components/label';
-import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {AirPlayToggleButton} from './components/airplaytogglebutton';
 import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
 import {Spacer} from './components/spacer';
@@ -53,6 +48,7 @@ import {SettingsPanelPage} from './components/settingspanelpage';
 import {SubtitleSettingsPanelPage} from './components/subtitlesettings/subtitlesettingspanelpage';
 import {SettingsPanelPageOpenButton} from './components/settingspanelpageopenbutton';
 import {SettingsPanelItem} from './components/settingspanelitem';
+import { PlayerAPI, Event, Events, PlayerEventCallback } from 'bitmovin-player';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -323,10 +319,10 @@ export class UIManager {
       config.autoUiVariantResolve = true;
     }
 
-    let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
+    let adStartedEvent: Events.AdBreakEvent = null; // keep the event stored here during ad playback
 
     // Dynamically select a UI variant that matches the current UI condition.
-    let resolveUiVariant = (event: PlayerEvent) => {
+    let resolveUiVariant = (event: Events.PlayerEvent) => {
       // Make sure that the ON_AD_STARTED event data is persisted through ad playback in case other events happen
       // in the meantime, e.g. player resize. We need to store this data because there is no other way to find out
       // ad details (e.g. the ad client) while an ad is playing.
@@ -336,7 +332,7 @@ export class UIManager {
         switch (event.type) {
           // When the ad starts, we store the event data
           case player.exports.Event.AdStarted:
-            adStartedEvent = <AdStartedEvent>event;
+            adStartedEvent = <Events.AdBreakEvent>event;
             break;
           // When the ad ends, we delete the event data
           case player.exports.Event.AdFinished:
@@ -358,7 +354,7 @@ export class UIManager {
 
       this.resolveUiVariant({
         isAd: ad,
-        adClientType: ad ? adStartedEvent.clientType : null,
+        adClientType: null,
       }, (context) => {
         // If this is an ad UI, we need to relay the saved ON_AD_STARTED event data so ad components can configure
         // themselves for the current ad.
@@ -1346,7 +1342,7 @@ class PlayerWrapper {
     wrapper.fireEventInUI = (event: Event, data: {}) => {
       if (this.eventHandlers[event]) { // check if there are handlers for this event registered
         // Extend the data object with default values to convert it to a {@link PlayerEvent} object.
-        let playerEventData = <PlayerEvent>Object.assign({}, {
+        let playerEventData = <Events.PlayerEvent>Object.assign({}, {
           timestamp: Date.now(),
           type: event,
           // Add a marker property so the UI can detect UI-internal player events
@@ -1377,7 +1373,7 @@ class PlayerWrapper {
   clearEventHandlers(): void {
     for (let eventType in this.eventHandlers) {
       for (let callback of this.eventHandlers[eventType]) {
-        this.player.off(eventType as any as PlayerAPI.Event, callback);
+        this.player.off(eventType as Event, callback);
       }
     }
   }

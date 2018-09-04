@@ -1,9 +1,8 @@
 import {Event, EventDispatcher, NoArgs} from './eventdispatcher';
 import {BrowserUtils} from './browserutils';
+import { PlayerAPI } from 'bitmovin-player';
 
 export namespace PlayerUtils {
-
-  import PlayerAPI = bitmovin.PlayerAPI;
 
   export enum PlayerState {
     Idle,
@@ -13,7 +12,7 @@ export namespace PlayerUtils {
     Finished,
   }
 
-  export function isTimeShiftAvailable(player: bitmovin.PlayerAPI): boolean {
+  export function isTimeShiftAvailable(player: PlayerAPI): boolean {
     return player.isLive() && player.getMaxTimeShift() !== 0;
   }
 

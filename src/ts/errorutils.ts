@@ -1,5 +1,5 @@
 import {ErrorMessageMap, ErrorMessageTranslator} from './components/errormessageoverlay';
-import ErrorEvent = bitmovin.PlayerAPI.ErrorEvent;
+import { Events } from 'bitmovin-player';
 
 export namespace ErrorUtils {
 
@@ -67,7 +67,7 @@ export namespace ErrorUtils {
     3100: 'An Advertising module error has occurred. Refer to the attached AdvertisingError.',
   };
 
-  export const defaultErrorMessageTranslator: ErrorMessageTranslator = (error: ErrorEvent) => {
+  export const defaultErrorMessageTranslator: ErrorMessageTranslator = (error: Events.ErrorEvent) => {
     const errorMessage = ErrorUtils.defaultErrorMessages[error.code];
 
     if (errorMessage) {

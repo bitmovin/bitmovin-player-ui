@@ -7,7 +7,7 @@ import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
-import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
+import { PlayerAPI, Events } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -125,7 +125,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
 
     // Apply scaling transform to the backdrop bar to have all bars rendered similarly
@@ -145,7 +145,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isPlayerSeeking = false;
 
     // Update playback and buffer positions
-    let playbackPositionHandler = (event: PlayerEvent = null, forceUpdate: boolean = false) => {
+    let playbackPositionHandler = (event: Events.PlayerEvent = null, forceUpdate: boolean = false) => {
       if (isUserSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
@@ -340,7 +340,7 @@ export class SeekBar extends Component<SeekBarConfig> {
    * Update seekbar while a live stream with DVR window is paused.
    * The playback position stays still and the position indicator visually moves towards the back.
    */
-  private configureLivePausedTimeshiftUpdater(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager,
+  private configureLivePausedTimeshiftUpdater(player: PlayerAPI, uimanager: UIInstanceManager,
                                               playbackPositionHandler: () => void): void {
     // Regularly update the playback position while the timeout is active
     const pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
@@ -356,7 +356,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.Event.Play, () => pausedTimeshiftUpdater.clear());
   }
 
-  private configureSmoothPlaybackPositionUpdater(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  private configureSmoothPlaybackPositionUpdater(player: PlayerAPI, uimanager: UIInstanceManager): void {
     /*
      * Playback position update
      *
@@ -420,7 +420,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
-  private configureMarkers(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  private configureMarkers(player: PlayerAPI, uimanager: UIInstanceManager): void {
     let clearMarkers = () => {
       this.timelineMarkers = [];
       this.updateMarkers();

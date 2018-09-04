@@ -1,12 +1,13 @@
 import {ClickOverlay} from './clickoverlay';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI, Events } from 'bitmovin-player';
 
 /**
  * A simple click capture overlay for clickThroughUrls of ads.
  */
 export class AdClickOverlay extends ClickOverlay {
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let clickThroughUrl = <string>null;
@@ -14,8 +15,8 @@ export class AdClickOverlay extends ClickOverlay {
       || !player.getConfig().advertising.hasOwnProperty('clickThroughEnabled')
       || (player.getConfig().advertising as any).clickThroughEnabled;
 
-    player.on(player.exports.Event.AdStarted, (event: bitmovin.PlayerAPI.AdStartedEvent) => {
-      clickThroughUrl = event.clickThroughUrl;
+    player.on(player.exports.Event.AdStarted, (event: Events.AdEvent) => {
+      clickThroughUrl = null; // TODO event.clickThroughUrl;
 
       if (clickThroughEnabled) {
         this.setUrl(clickThroughUrl);

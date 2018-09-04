@@ -1,6 +1,7 @@
 import {Button, ButtonConfig} from './button';
 import {NoArgs, EventDispatcher, Event} from '../eventdispatcher';
 import { UIInstanceManager } from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for a toggle button component.
@@ -45,7 +46,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     this.config = this.mergeConfig(config, defaultConfig, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     const config = this.getConfig() as ToggleButtonConfig;
     this.getDomElement().addClass(this.prefixCss(config.offClass));
   }

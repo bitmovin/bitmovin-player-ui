@@ -1,6 +1,7 @@
 import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A select box providing a selection between 'auto' and the available audio qualities.
@@ -11,7 +12,7 @@ export class AudioQualitySelectBox extends SelectBox {
     super(config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let selectCurrentAudioQuality = () => {

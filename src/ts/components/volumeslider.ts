@@ -1,5 +1,6 @@
 import {SeekBar, SeekBarConfig} from './seekbar';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
@@ -29,7 +30,7 @@ export class VolumeSlider extends SeekBar {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager, false);
 
     let config = <VolumeSliderConfig>this.getConfig();

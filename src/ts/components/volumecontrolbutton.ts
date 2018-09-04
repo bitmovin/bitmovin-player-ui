@@ -3,6 +3,7 @@ import {VolumeSlider} from './volumeslider';
 import {VolumeToggleButton} from './volumetogglebutton';
 import {UIInstanceManager} from '../uimanager';
 import {Timeout} from '../timeout';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for a {@link VolumeControlButton}.
@@ -50,7 +51,7 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
     }, <VolumeControlButtonConfig>this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let volumeToggleButton = this.getVolumeToggleButton();

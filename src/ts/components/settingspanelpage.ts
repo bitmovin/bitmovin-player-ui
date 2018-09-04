@@ -2,6 +2,7 @@ import {Container, ContainerConfig} from './container';
 import {SettingsPanelItem} from './settingspanelitem';
 import {UIInstanceManager} from '../uimanager';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A panel containing a list of {@link SettingsPanelItem items} that represent labelled settings.
@@ -24,7 +25,7 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     // Fire event when the state of a settings-item has changed

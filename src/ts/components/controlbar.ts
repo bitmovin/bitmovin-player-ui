@@ -2,6 +2,7 @@ import {ContainerConfig, Container} from './container';
 import {UIInstanceManager} from '../uimanager';
 import {UIUtils} from '../uiutils';
 import {Spacer} from './spacer';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link ControlBar}.
@@ -25,7 +26,7 @@ export class ControlBar extends Container<ControlBarConfig> {
     }, <ControlBarConfig>this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     // Counts how many components are hovered and block hiding of the control bar

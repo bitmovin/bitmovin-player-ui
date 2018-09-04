@@ -1,5 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A button that toggles the player between windowed and fullscreen view.
@@ -15,7 +16,7 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let fullscreenStateHandler = () => {

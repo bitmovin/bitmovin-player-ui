@@ -1,11 +1,12 @@
 import {Container, ContainerConfig} from './container';
 import {UIInstanceManager} from '../uimanager';
-import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
 import { EventDispatcher } from '../eventdispatcher';
 import {DOM} from '../dom';
+import { PlayerAPI, Events } from 'bitmovin-player';
+import SubtitleCueEvent = Events.SubtitleCueEvent;
 
 /**
  * Overlays the player to display subtitles.
@@ -16,7 +17,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private previewSubtitleActive: boolean;
   private previewSubtitle: SubtitleLabel;
 
-  private preprocessLabelEventCallback = new EventDispatcher<SubtitleCueEvent, SubtitleLabel>();
+  private preprocessLabelEventCallback = new EventDispatcher<Events.SubtitleCueEvent, SubtitleLabel>();
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
@@ -40,7 +41,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let subtitleManager = new ActiveSubtitleManager();
@@ -116,7 +117,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     subtitleClearHandler();
   }
 
-  configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configureCea608Captions(player: PlayerAPI, uimanager: UIInstanceManager): void {
     // The calculated font size
     let fontSize = 0;
     // The required letter spacing spread the text characters evenly across the grid

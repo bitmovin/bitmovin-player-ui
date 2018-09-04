@@ -3,6 +3,7 @@ import {UIInstanceManager} from '../uimanager';
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import {PlayerUtils} from '../playerutils';
 import {StringUtils} from '../stringutils';
+import { PlayerAPI } from 'bitmovin-player';
 
 export enum PlaybackTimeLabelMode {
   CurrentTime,
@@ -33,7 +34,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <PlaybackTimeLabelConfig>this.getConfig();

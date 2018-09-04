@@ -2,6 +2,7 @@ import {ContainerConfig, Container} from './container';
 import {UIInstanceManager} from '../uimanager';
 import {Component, ComponentConfig} from './component';
 import {Timeout} from '../timeout';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link BufferingOverlay} component.
@@ -39,7 +40,7 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <BufferingOverlayConfig>this.getConfig();

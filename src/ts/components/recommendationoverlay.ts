@@ -4,6 +4,7 @@ import {DOM} from '../dom';
 import {UIInstanceManager, UIRecommendationConfig} from '../uimanager';
 import {StringUtils} from '../stringutils';
 import {HugeReplayButton} from './hugereplaybutton';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Overlays the player and displays recommended videos.
@@ -24,7 +25,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let clearRecommendations = () => {

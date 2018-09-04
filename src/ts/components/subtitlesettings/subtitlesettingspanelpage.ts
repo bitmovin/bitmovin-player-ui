@@ -17,6 +17,7 @@ import {SubtitleSettingsResetButton} from './subtitlesettingsresetbutton';
 import {UIInstanceManager} from '../../uimanager';
 import {SettingsPanelPageBackButton} from '../settingspanelpagebackbutton';
 import {SettingsPanelItem} from '../settingspanelitem';
+import { PlayerAPI } from 'bitmovin-player';
 
 export interface SubtitleSettingsPanelPageConfig extends ContainerConfig {
   settingsPanel: SettingsPanel;
@@ -75,7 +76,7 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.onActive.subscribe(() => {

@@ -1,5 +1,6 @@
 import {LabelConfig, Label} from './label';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Enumerates the types of content that the {@link MetadataLabel} can display.
@@ -38,7 +39,7 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <MetadataLabelConfig>this.getConfig();

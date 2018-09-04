@@ -1,6 +1,7 @@
 import {UIInstanceManager} from '../../uimanager';
 import {SubtitleSettingsManager} from './subtitlesettingsmanager';
 import {Button, ButtonConfig} from '../button';
+import { PlayerAPI } from 'bitmovin-player';
 
 export interface SubtitleSettingsResetButtonConfig extends ButtonConfig {
   settingsManager: SubtitleSettingsManager;
@@ -20,7 +21,7 @@ export class SubtitleSettingsResetButton extends Button<ButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {

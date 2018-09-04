@@ -3,8 +3,8 @@ import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
-import PlayerResizeEvent = bitmovin.PlayerAPI.PlayerResizeEvent;
 import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
+import { PlayerAPI, Events } from 'bitmovin-player';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -47,14 +47,14 @@ export class UIContainer extends Container<UIContainerConfig> {
     this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.configureUIShowHide(player, uimanager);
     this.configurePlayerStates(player, uimanager);
   }
 
-  private configureUIShowHide(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  private configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
     let container = this.getDomElement();
     let config = <UIContainerConfig>this.getConfig();
 
@@ -161,7 +161,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
   }
 
-  private configurePlayerStates(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  private configurePlayerStates(player: PlayerAPI, uimanager: UIInstanceManager): void {
     let container = this.getDomElement();
 
     // Convert player states into CSS class names
@@ -270,7 +270,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         container.addClass(this.prefixCss('layout-max-width-1200'));
       }
     };
-    player.on(player.exports.Event.PlayerResized, (e: PlayerResizeEvent) => {
+    player.on(player.exports.Event.PlayerResized, (e: Events.PlayerResizedEvent) => {
       // Convert strings (with "px" suffix) to ints
       let width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
       let height = Math.round(Number(e.height.substring(0, e.height.length - 2)));

@@ -1,12 +1,13 @@
 import {SubtitleSettingSelectBox} from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A select box providing a selection of different background opacity.
  */
 export class WindowOpacitySelectBox extends SubtitleSettingSelectBox {
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.addItem(null, 'default');

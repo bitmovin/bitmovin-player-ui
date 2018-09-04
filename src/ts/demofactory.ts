@@ -27,11 +27,11 @@ import {VideoQualitySelectBox} from './components/videoqualityselectbox';
 import {UIConditionContext, UIConfig, UIManager} from './uimanager';
 import {TitleBar} from './components/titlebar';
 import {BufferingOverlay} from './components/bufferingoverlay';
-import PlayerAPI = bitmovin.PlayerAPI;
 import {SubtitleListBox} from './components/subtitlelistbox';
 import {AudioTrackListBox} from './components/audiotracklistbox';
 import {SettingsPanelItem} from './components/settingspanelitem';
 import {SettingsPanelPage} from './components/settingspanelpage';
+import { PlayerAPI } from 'bitmovin-player';
 
 export namespace DemoFactory {
 
