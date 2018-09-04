@@ -32,7 +32,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
     let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
     let skipMessage = config.skipMessage;
-    let adEvent = <Events.AdEvent>null;
+    // TODO let adEvent = <Events.AdEvent>null;
     let skipOffset = 0; // TODO adEvent.skipOffset;
 
     let updateSkipMessageHandler = () => {
@@ -53,7 +53,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     };
 
     let adStartHandler = (event: Events.AdEvent) => {
-      adEvent = event;
+      // TODO adEvent = event;
       skipMessage = config.skipMessage; // TODO adEvent.skipMessage || config.skipMessage;
       updateSkipMessageHandler();
 
