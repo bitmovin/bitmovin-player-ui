@@ -80,7 +80,7 @@
     </div>
 </div>
 
-<script src="https://bitmovin-a.akamaihd.net/bitmovin-player/nightly/2018/bitmovinplayer.js"></script>
+<script src="https://bitmovin-a.akamaihd.net/bitmovin-player/staging/8/bitmovinplayer.js"></script>
 <script src="js/bitmovinplayer-ui.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
@@ -243,7 +243,7 @@
 
     player.load(sources.fullyFeatured).then(function() {
       // Add UI to loaded player
-      uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
+      uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
     }, function(errorEvent) {
       // Play setup failed, and there's no player UI yet to display the error in
       console.log(errorEvent);
@@ -546,8 +546,8 @@
 
   // Collect all UI factory methods which are basically the different built-in skins and skin types
   var uiFactoryMethods = [];
-  for (var member in bitmovin.playerui.UIManager.Factory) {
-    if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function' && member.indexOf('build') === 0) {
+  for (var member in bitmovin.playerui.UIFactory) {
+    if (typeof bitmovin.playerui.UIFactory[member] == 'function' && member.indexOf('build') === 0) {
       uiFactoryMethods.push(member);
     }
   }
@@ -580,7 +580,7 @@
     if (factoryMethod.indexOf('buildDemo') === 0) {
       uiManager = bitmovin.playerui.DemoFactory[factoryMethod](player, uiConfig);
     } else {
-      uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
+      uiManager = bitmovin.playerui.UIFactory[factoryMethod](player, uiConfig);
     }
   });
 

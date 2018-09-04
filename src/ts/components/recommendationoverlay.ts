@@ -1,9 +1,10 @@
 import {ContainerConfig, Container} from './container';
 import {Component, ComponentConfig} from './component';
 import {DOM} from '../dom';
-import {UIInstanceManager, UIRecommendationConfig} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
 import {HugeReplayButton} from './hugereplaybutton';
+import { UIRecommendationConfig } from '../uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**

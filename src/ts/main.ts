@@ -73,6 +73,7 @@ import {SettingsPanelPageOpenButton} from './components/settingspanelpageopenbut
 import {SubtitleSettingsPanelPage} from './components/subtitlesettings/subtitlesettingspanelpage';
 import {SettingsPanelItem} from './components/settingspanelitem';
 import {ErrorUtils} from './errorutils';
+import { UIFactory } from './uifactory';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -103,6 +104,9 @@ const playerui = {
   // Management
   UIManager,
   UIInstanceManager,
+  // Factories
+  UIFactory,
+  DemoFactory,
   // Utils
   ArrayUtils,
   StringUtils,
@@ -128,7 +132,6 @@ const playerui = {
   Component,
   Container,
   ControlBar,
-  DemoFactory,
   ErrorMessageOverlay,
   FullscreenToggleButton,
   HugePlaybackToggleButton,
