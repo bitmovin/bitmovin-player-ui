@@ -26,10 +26,12 @@ export interface InternalUIConfig extends UIConfig {
 export interface UIConditionContext {
   /**
    * Tells if the player is loading or playing an ad.
+   * @deprecated to be updated for the upcoming native ads player v8 module
    */
   isAd: boolean;
   /**
    * Tells the ad client (e.g. 'vast, 'ima') if {@link #isAd} is true.
+   * @deprecated to be updated for the upcoming native ads player v8 module
    */
   adClientType: string;
   /**

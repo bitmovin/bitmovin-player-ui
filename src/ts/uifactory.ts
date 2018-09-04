@@ -323,11 +323,12 @@ export namespace UIFactory {
           && context.adClientType === 'vast';
       },
     }, {
-      ui: modernAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAd && context.adClientType === 'vast';
-      },
-    }, {
+    // TODO reimplement ads UI for native ads player v8 module 
+    //   ui: modernAdsUI(),
+    //   condition: (context: UIConditionContext) => {
+    //     return context.isAd && context.adClientType === 'vast';
+    //   },
+    // }, {
       ui: modernSmallScreenUI(),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
@@ -339,11 +340,12 @@ export namespace UIFactory {
 
   export function buildModernSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(player, [{
-      ui: modernSmallScreenAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAd && context.adClientType === 'vast';
-      },
-    }, {
+    // TODO reimplement ads UI for native ads player v8 module
+    //   ui: modernSmallScreenAdsUI(),
+    //   condition: (context: UIConditionContext) => {
+    //     return context.isAd && context.adClientType === 'vast';
+    //   },
+    // }, {
       ui: modernSmallScreenUI(),
     }], config);
   }
