@@ -24,7 +24,7 @@ import {VolumeToggleButton} from './components/volumetogglebutton';
 import {PlaybackToggleButton} from './components/playbacktogglebutton';
 import {SeekBar} from './components/seekbar';
 import {VideoQualitySelectBox} from './components/videoqualityselectbox';
-import {UIConditionContext, UIConfig, UIManager} from './uimanager';
+import {UIConditionContext, UIManager} from './uimanager';
 import {TitleBar} from './components/titlebar';
 import {BufferingOverlay} from './components/bufferingoverlay';
 import PlayerAPI = bitmovin.PlayerAPI;
@@ -32,6 +32,8 @@ import {SubtitleListBox} from './components/subtitlelistbox';
 import {AudioTrackListBox} from './components/audiotracklistbox';
 import {SettingsPanelItem} from './components/settingspanelitem';
 import {SettingsPanelPage} from './components/settingspanelpage';
+import { UIFactory } from './uifactory';
+import { UIConfig } from './uiconfig';
 
 export namespace DemoFactory {
 
@@ -40,18 +42,18 @@ export namespace DemoFactory {
     let smallScreenSwitchWidth = 600;
 
     return new UIManager(player, [{
-      ui: UIManager.Factory.modernSmallScreenAdsUI(),
+      ui: UIFactory.modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth
           && context.isAd && context.adClientType === 'vast';
       },
     }, {
-      ui: UIManager.Factory.modernAdsUI(),
+      ui: UIFactory.modernAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isAd && context.adClientType === 'vast';
       },
     }, {
-      ui: UIManager.Factory.modernSmallScreenUI(),
+      ui: UIFactory.modernSmallScreenUI(),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
       },

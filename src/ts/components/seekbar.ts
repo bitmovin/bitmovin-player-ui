@@ -2,12 +2,13 @@ import {Component, ComponentConfig} from './component';
 import {DOM} from '../dom';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {SeekBarLabel} from './seekbarlabel';
-import {UIInstanceManager, TimelineMarker, SeekPreviewArgs} from '../uimanager';
+import {UIInstanceManager, SeekPreviewArgs} from '../uimanager';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
+import { TimelineMarker } from '../uiconfig';
 
 /**
  * Configuration interface for the {@link SeekBar} component.

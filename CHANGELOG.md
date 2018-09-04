@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Default `ErrorMessageTranslator` with english error messages for the `ErrorMessageOverlay`
 - `UIConfig.errorMessages` to allow customization of error messages via custom `ErrorMessageTranslator` | `ErrorMessageMap`
 
+### Changed
+- Extracted `UIManager.Factory` to separate `UIFactory`
+- Moved `UIConfig`, `TimelineMarker`, and `UIRecommendationConfig` from `uimanager.ts` to `uiconfig.ts`
+
 ### Removed
 - `SubtitleSettingsPanel` in favour of `SubtitleSettingsPanelPage` to use with the new navigation feature of `SettingsPanel`
 
