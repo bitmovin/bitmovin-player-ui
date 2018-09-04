@@ -2,7 +2,8 @@
   "name": "bitmovin-player-ui",
   "version": "3.0.0-a1pha.4",
   "description": "Bitmovin Player UI Framework",
-  "main": "dist/js/framework/main.js",
+  "main": "./dist/js/framework/main.js",
+  "types": "./dist/js/framework/main.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish": "gulp npm-prepare"
