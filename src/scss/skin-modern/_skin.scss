@@ -52,42 +52,42 @@
   font-size: $font-size;
   text-align: left;
   user-select: none;
-}
 
-&.#{$prefix}-player-state-idle {
-  .#{$prefix}-ui-controlbar,
-  .#{$prefix}-ui-titlebar,
-  .#{$prefix}-ui-hugeplaybacktogglebutton {
-    display: none;
-  }
-}
-
-&.#{$prefix}-player-state-finished {
-  .#{$prefix}-ui-controlbar,
-  .#{$prefix}-ui-hugeplaybacktogglebutton {
-    display: none;
-  }
-}
-
-.#{$prefix}-text-right {
-  text-align: right;
-}
-
-// sass-lint:disable force-element-nesting
-&.#{$prefix}-layout-max-width-400 {
-  // Hide the description in ultra tiny players to not clog the UI too much
-  .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {
-    display: none;
-  }
-}
-
-&.#{$prefix}-layout-max-width-400,
-&.#{$prefix}-layout-max-width-600 {
-  .#{$prefix}-ui-hugeplaybacktogglebutton {
-    font-size: .7em;
+  &.#{$prefix}-player-state-idle {
+    .#{$prefix}-ui-controlbar,
+    .#{$prefix}-ui-titlebar,
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      display: none;
+    }
   }
 
-  .#{$prefix}-ui-watermark {
-    font-size: .7em;
+  &.#{$prefix}-player-state-finished {
+    .#{$prefix}-ui-controlbar,
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      display: none;
+    }
+  }
+
+  .#{$prefix}-text-right {
+    text-align: right;
+  }
+
+  // sass-lint:disable force-element-nesting
+  &.#{$prefix}-layout-max-width-400 {
+    // Hide the description in ultra tiny players to not clog the UI too much
+    .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {
+      display: none;
+    }
+  }
+
+  &.#{$prefix}-layout-max-width-400,
+  &.#{$prefix}-layout-max-width-600 {
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      font-size: .7em;
+    }
+
+    .#{$prefix}-ui-watermark {
+      font-size: .7em;
+    }
   }
 }
