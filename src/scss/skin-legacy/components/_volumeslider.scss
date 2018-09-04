@@ -1,9 +1,0 @@
-.#{$prefix}-ui-volumeslider {
-  @extend %ui-seekbar;
-
-  .#{$prefix}-seekbar {
-    .#{$prefix}-seekbar-bufferlevel {
-      display: none;
-    }
-  }
-}
