@@ -91,7 +91,9 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
     };
 
-    player.on(player.exports.Event.SourceLoaded, init);
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(init);
     init();
   }
 

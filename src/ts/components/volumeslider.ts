@@ -50,10 +50,12 @@ export class VolumeSlider extends SeekBar {
       }
     };
 
-    player.on(player.exports.Event.SourceLoaded, volumeChangeHandler);
     player.on(player.exports.Event.VolumeChanged, volumeChangeHandler);
     player.on(player.exports.Event.Muted, volumeChangeHandler);
     player.on(player.exports.Event.Unmuted, volumeChangeHandler);
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(volumeChangeHandler);
 
     this.onSeekPreview.subscribeRateLimited((sender, args) => {
       if (args.scrubbing) {
@@ -69,10 +71,13 @@ export class VolumeSlider extends SeekBar {
     player.on(player.exports.Event.PlayerResized, () => {
       this.refreshPlaybackPosition();
     });
-    player.on(player.exports.Event.SourceLoaded, () => {
+    uimanager.onConfigured.subscribe(() => {
       this.refreshPlaybackPosition();
     });
-    uimanager.onConfigured.subscribe(() => {
+
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(() => {
       this.refreshPlaybackPosition();
     });
 

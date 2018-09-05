@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Paging support for `SettingsPanel` via `SettingsPanelPage` to enable navigation to sub-settings
 - Default `ErrorMessageTranslator` with english error messages for the `ErrorMessageOverlay`
 - `UIConfig.errorMessages` to allow customization of error messages via custom `ErrorMessageTranslator` | `ErrorMessageMap`
+- Support to initialize `UIManger` with a player where the source wasn't yet loaded
 
 ### Changed
 - Extracted `UIManager.Factory` to separate `UIFactory`

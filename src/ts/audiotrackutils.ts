@@ -1,4 +1,5 @@
 import {ListSelector, ListSelectorConfig} from './components/listselector';
+import { InternalUIConfig, UIInstanceManager, UIManager } from './uimanager';
 
 /**
  * Helper class to handle all audio tracks related events
@@ -9,10 +10,12 @@ export class AudioTrackSwitchHandler {
 
   private player: bitmovin.PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
+  private uimanager: UIInstanceManager;
 
-  constructor(player: bitmovin.PlayerAPI, element: ListSelector<ListSelectorConfig>) {
+  constructor(player: bitmovin.PlayerAPI, element: ListSelector<ListSelectorConfig>, uimanager: UIInstanceManager) {
     this.player = player;
     this.listElement = element;
+    this.uimanager = uimanager;
 
     this.bindSelectionEvent();
     this.bindPlayerEvents();
@@ -33,13 +36,14 @@ export class AudioTrackSwitchHandler {
     });
     // Update tracks when source goes away
     this.player.on(this.player.exports.Event.SourceUnloaded, updateAudioTracksCallback);
-    // Update tracks when a new source is loaded
-    this.player.on(this.player.exports.Event.SourceLoaded, updateAudioTracksCallback);
     // Update tracks when the period within a source changes
     this.player.on(this.player.exports.Event.PeriodSwitched, updateAudioTracksCallback);
     // Update tracks when a track is added or removed
     this.player.on(this.player.exports.Event.AudioAdded, updateAudioTracksCallback);
     this.player.on(this.player.exports.Event.AudioRemoved, updateAudioTracksCallback);
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    this.uimanager.getConfig().events.onUpdated.subscribe(updateAudioTracksCallback);
   }
 
   private updateAudioTracks() {

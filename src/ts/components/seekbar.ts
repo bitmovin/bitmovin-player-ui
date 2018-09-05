@@ -9,6 +9,7 @@ import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChang
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import { TimelineMarker } from '../uiconfig';
+import set = Reflect.set;
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -297,7 +298,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       playbackPositionHandler(null, true);
       this.refreshPlaybackPosition();
     };
-    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player);
+    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       isLive = args.live;
       switchVisibility(isLive, hasTimeShift);
@@ -325,6 +326,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     // It can also happen when a new source is loaded
     player.on(player.exports.Event.SourceLoaded, () => {
       this.refreshPlaybackPosition();
+    });
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(() => {
+      playbackPositionHandler();
     });
 
     // Initialize seekbar
@@ -448,13 +454,12 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.updateMarkers();
     };
 
-    // Add markers when a source is loaded
-    player.on(player.exports.Event.SourceLoaded, setupMarkers);
     // Remove markers when unloaded
     player.on(player.exports.Event.SourceUnloaded, clearMarkers);
     // Update markers when the size of the seekbar changes
     player.on(player.exports.Event.PlayerResized, () => this.updateMarkers());
-    // Update markers when a marker is added or removed
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
     uimanager.getConfig().events.onUpdated.subscribe(setupMarkers);
     uimanager.onRelease.subscribe(() => uimanager.getConfig().events.onUpdated.unsubscribe(setupMarkers));
 

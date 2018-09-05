@@ -15,6 +15,6 @@ export class AudioTrackSelectBox extends SelectBox {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    new AudioTrackSwitchHandler(player, this);
+    new AudioTrackSwitchHandler(player, this, uimanager);
   }
 }

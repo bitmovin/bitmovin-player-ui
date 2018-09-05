@@ -65,8 +65,9 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.on(player.exports.Event.Warning, vrStateHandler);
     // Hide button when VR source goes away
     player.on(player.exports.Event.SourceUnloaded, vrButtonVisibilityHandler);
-    // Show button when a new source is loaded and it's VR
-    player.on(player.exports.Event.SourceLoaded, vrButtonVisibilityHandler);
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(vrButtonVisibilityHandler);
 
     this.onClick.subscribe(() => {
       if (!isVRStereoAvailable()) {

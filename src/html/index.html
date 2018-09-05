@@ -240,12 +240,13 @@
   var playerSetup = function(config) {
     player = new bitmovin.player.Player(document.getElementById('player'), config);
 
+    // Add UI
+    uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
+
     player.load(sources.fullyFeatured).then(function() {
-      // Add UI to loaded player
-      uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
+      console.log('source successful loaded');
     }, function(errorEvent) {
-      // Play setup failed, and there's no player UI yet to display the error in
-      console.log(errorEvent);
+      console.log('error while loading source', errorEvent);
     });
   };
 

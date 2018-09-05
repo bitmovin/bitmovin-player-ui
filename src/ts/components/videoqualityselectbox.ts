@@ -48,12 +48,14 @@ export class VideoQualitySelectBox extends SelectBox {
 
     // Update qualities when source goes away
     player.on(player.exports.Event.SourceUnloaded, updateVideoQualities);
-    // Update qualities when a new source is loaded
-    player.on(player.exports.Event.SourceLoaded, updateVideoQualities);
     // Update qualities when the period within a source changes
     player.on(player.exports.Event.PeriodSwitched, updateVideoQualities);
     // Update quality selection when quality is changed (from outside)
     player.on(player.exports.Event.VideoQualityChanged, selectCurrentVideoQuality);
+
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(updateVideoQualities);
   }
 
   /**

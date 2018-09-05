@@ -63,11 +63,14 @@ export class CastUIContainer extends UIContainer {
       }
     };
 
-    player.on(player.exports.Event.SourceLoaded, showUiWithTimeout);
     player.on(player.exports.Event.Play, showUiWithTimeout);
     player.on(player.exports.Event.Paused, showUiPermanently);
     player.on(player.exports.Event.Seek, showUiPermanently);
     player.on(player.exports.Event.Seeked, showUiAfterSeek);
+
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(showUiWithTimeout);
   }
 
   release(): void {

@@ -61,9 +61,11 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
 
     // Init label
     init();
-    // Reinit label when a new source is loaded
-    player.on(player.exports.Event.SourceLoaded, init);
     // Clear labels when source is unloaded
     player.on(player.exports.Event.SourceUnloaded, unload);
+
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(init);
   }
 }

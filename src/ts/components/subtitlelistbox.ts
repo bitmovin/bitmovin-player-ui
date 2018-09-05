@@ -10,6 +10,6 @@ export class SubtitleListBox extends ListBox {
   configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    new SubtitleSwitchHandler(player, this);
+    new SubtitleSwitchHandler(player, this, uimanager);
   }
 }

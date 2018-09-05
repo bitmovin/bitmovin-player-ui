@@ -203,6 +203,11 @@ export class UIContainer extends Container<UIContainerConfig> {
     player.on(player.exports.Event.SourceUnloaded, () => {
       updateState(PlayerUtils.PlayerState.Idle);
     });
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(() => {
+      updateState(PlayerUtils.getState(player));
+    });
     // Init in current player state
     updateState(PlayerUtils.getState(player));
 

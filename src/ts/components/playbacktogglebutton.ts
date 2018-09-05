@@ -30,7 +30,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     let isSeeking = false;
 
     // Handler to update button state based on player state
-    let playbackStateHandler = (event: PlayerEvent) => {
+    let playbackStateHandler = () => {
       // If the UI is currently seeking, playback is temporarily stopped but the buttons should
       // not reflect that and stay as-is (e.g indicate playback while seeking).
       if (isSeeking) {
@@ -47,20 +47,23 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     // Call handler upon these events
     player.on(player.exports.Event.Play, (e) => {
       this.isPlayInitiated = true;
-      playbackStateHandler(e);
+      playbackStateHandler();
     });
 
     player.on(player.exports.Event.Paused, (e) => {
       this.isPlayInitiated = false;
-      playbackStateHandler(e);
+      playbackStateHandler();
     });
 
     player.on(player.exports.Event.Playing, (e) => {
       this.isPlayInitiated = false;
-      playbackStateHandler(e);
+      playbackStateHandler();
     });
     // after unloading + loading a new source, the player might be in a different playing state (from playing into stopped)
     player.on(player.exports.Event.SourceLoaded, playbackStateHandler);
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(playbackStateHandler);
     player.on(player.exports.Event.SourceUnloaded, playbackStateHandler);
     // when playback finishes, player turns to paused mode
     player.on(player.exports.Event.PlaybackFinished, playbackStateHandler);
@@ -110,6 +113,6 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     });
 
     // Startup init
-    playbackStateHandler(null);
+    playbackStateHandler();
   }
 }

@@ -43,11 +43,13 @@ export class AudioQualitySelectBox extends SelectBox {
     player.on(player.exports.Event.AudioChanged, updateAudioQualities);
     // Update qualities when source goes away
     player.on(player.exports.Event.SourceUnloaded, updateAudioQualities);
-    // Update qualities when a new source is loaded
-    player.on(player.exports.Event.SourceLoaded, updateAudioQualities);
     // Update qualities when the period within a source changes
     player.on(player.exports.Event.PeriodSwitched, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
     player.on(player.exports.Event.AudioQualityChanged, selectCurrentAudioQuality);
+
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(updateAudioQualities);
   }
 }

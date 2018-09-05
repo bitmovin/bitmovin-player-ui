@@ -86,7 +86,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player);
+    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       live = args.live;
       updateLiveState();
@@ -132,7 +132,9 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // Update time after the format has been set
       playbackTimeHandler();
     };
-    player.on(player.exports.Event.SourceLoaded, init);
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(init);
 
     init();
   }

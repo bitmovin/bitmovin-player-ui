@@ -40,7 +40,9 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
       }
     };
 
-    player.on(player.exports.Event.SourceLoaded, pipAvailableHander);
+    // Listen to the UI event when components need to update them-self
+    // Will also be triggered on player.exports.Event.SourceLoaded
+    uimanager.getConfig().events.onUpdated.subscribe(pipAvailableHander);
 
     // Toggle button 'on' state
     player.on(player.exports.Event.ViewModeChanged, () => {
