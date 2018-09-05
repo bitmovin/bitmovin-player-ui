@@ -68,7 +68,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     // When a playback attempt is rejected with warning 5008, we switch the button state back to off
     // This is required for blocked autoplay, because there is no Paused event in such case
     player.on(player.exports.Event.Warning, (event: WarningEvent) => {
-      if (event.code === 5008) {
+      if (event.code === player.exports.WarningCode.PLAYBACK_COULD_NOT_BE_STARTED) {
         this.isPlayInitiated = false;
         this.off();
       }

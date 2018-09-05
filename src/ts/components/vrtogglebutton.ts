@@ -34,7 +34,8 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     let vrStateHandler = (ev: PlayerEvent) => {
-      if (ev.type === player.exports.Event.Warning && (ev as WarningEvent).code !== 5006) {
+      if (ev.type === player.exports.Event.Warning
+        && (ev as WarningEvent).code !== player.exports.WarningCode.VR_RENDERING_ERROR) {
         // a code of 5006 signals a VR Error, so don't do anything on other warnings
         return;
       }
