@@ -41,7 +41,6 @@ import { MetadataLabel, MetadataLabelContent } from './components/metadatalabel'
 import { PlayerUtils } from './playerutils';
 import { Label } from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
-import { VolumeControlButton } from './components/volumecontrolbutton';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
@@ -139,7 +138,6 @@ export namespace UIFactory {
         new Watermark(),
         new ErrorMessageOverlay(),
       ],
-      cssClasses: ['ui-skin-modern'],
     });
   }
 
@@ -171,7 +169,7 @@ export namespace UIFactory {
           ],
         }),
       ],
-      cssClasses: ['ui-skin-modern', 'ui-skin-ads'],
+      cssClasses: ['ui-skin-ads'],
     });
   }
 
@@ -254,7 +252,7 @@ export namespace UIFactory {
         new Watermark(),
         new ErrorMessageOverlay(),
       ],
-      cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen'],
+      cssClasses: ['ui-skin-smallscreen'],
       hidePlayerStateExceptions: [PlayerUtils.PlayerState.Finished],
     });
   }
@@ -280,7 +278,7 @@ export namespace UIFactory {
           cssClass: 'ui-ads-status',
         }),
       ],
-      cssClasses: ['ui-skin-modern', 'ui-skin-ads', 'ui-skin-smallscreen'],
+      cssClasses: ['ui-skin-ads', 'ui-skin-smallscreen'],
     });
   }
 
@@ -308,7 +306,7 @@ export namespace UIFactory {
         new TitleBar({ keepHiddenWithoutMetadata: true }),
         new ErrorMessageOverlay(),
       ],
-      cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver'],
+      cssClasses: ['ui-skin-cast-receiver'],
     });
   }
 
@@ -352,145 +350,5 @@ export namespace UIFactory {
 
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(player, modernCastReceiverUI(), config);
-  }
-
-  function legacyUI() {
-    let settingsPanel = new SettingsPanel({
-      components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-      ],
-      hidden: true,
-    });
-
-    let controlBar = new ControlBar({
-      components: [
-        settingsPanel,
-        new PlaybackToggleButton(),
-        new SeekBar({ label: new SeekBarLabel() }),
-        new PlaybackTimeLabel(),
-        new VRToggleButton(),
-        new VolumeControlButton(),
-        new SettingsToggleButton({ settingsPanel: settingsPanel }),
-        new CastToggleButton(),
-        new FullscreenToggleButton(),
-      ],
-    });
-
-    return new UIContainer({
-      components: [
-        new SubtitleOverlay(),
-        new CastStatusOverlay(),
-        new PlaybackToggleOverlay(),
-        new Watermark(),
-        new RecommendationOverlay(),
-        controlBar,
-        new TitleBar(),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-legacy'],
-    });
-  }
-
-  function legacyAdsUI() {
-    return new UIContainer({
-      components: [
-        new AdClickOverlay(),
-        new ControlBar({
-          components: [
-            new PlaybackToggleButton(),
-            new AdMessageLabel(),
-            new VolumeControlButton(),
-            new FullscreenToggleButton(),
-          ],
-        }),
-        new AdSkipButton(),
-      ],
-      cssClasses: ['ui-skin-legacy', 'ui-skin-ads'],
-    });
-  }
-
-  function legacyCastReceiverUI() {
-    let controlBar = new ControlBar({
-      components: [
-        new SeekBar(),
-        new PlaybackTimeLabel(),
-      ],
-    });
-
-    return new UIContainer({
-      components: [
-        new SubtitleOverlay(),
-        new PlaybackToggleOverlay(),
-        new Watermark(),
-        controlBar,
-        new TitleBar(),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-legacy', 'ui-skin-cast-receiver'],
-    });
-  }
-
-  function legacyTestUI() {
-    let settingsPanel = new SettingsPanel({
-      components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-      ],
-      hidden: true,
-    });
-
-    let controlBar = new ControlBar({
-      components: [settingsPanel,
-        new PlaybackToggleButton(),
-        new SeekBar({ label: new SeekBarLabel() }),
-        new PlaybackTimeLabel(),
-        new VRToggleButton(),
-        new VolumeToggleButton(),
-        new VolumeSlider(),
-        new VolumeControlButton(),
-        new VolumeControlButton({ vertical: false }),
-        new SettingsToggleButton({ settingsPanel: settingsPanel }),
-        new CastToggleButton(),
-        new FullscreenToggleButton(),
-      ],
-    });
-
-    return new UIContainer({
-      components: [
-        new SubtitleOverlay(),
-        new CastStatusOverlay(),
-        new PlaybackToggleOverlay(),
-        new Watermark(),
-        new RecommendationOverlay(),
-        controlBar,
-        new TitleBar(),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-legacy'],
-    });
-  }
-
-  export function buildLegacyUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, [{
-      ui: legacyAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAd && context.adClientType === 'vast';
-      },
-    }, {
-      ui: legacyUI(),
-    }], config);
-  }
-
-  export function buildLegacyCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, legacyCastReceiverUI(), config);
-  }
-
-  export function buildLegacyTestUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, legacyTestUI(), config);
   }
 }

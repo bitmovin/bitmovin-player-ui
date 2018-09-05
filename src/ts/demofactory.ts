@@ -153,7 +153,6 @@ export namespace DemoFactory {
         new Watermark(),
         new ErrorMessageOverlay(),
       ],
-      cssClasses: ['ui-skin-modern'],
     });
   }
 }

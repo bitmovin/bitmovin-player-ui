@@ -1,9 +1,0 @@
-%ui-label {
-  @extend %ui-component;
-
-  white-space: nowrap;
-}
-
-.#{$prefix}-ui-label {
-  @extend %ui-label;
-}
