@@ -89,6 +89,9 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       // Set time format depending on source duration
       this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
+      // Set initial state of title and thumbnail to handle sourceLoaded when switching to a live-stream
+      this.setTitleText(null);
+      this.setThumbnail(null);
     };
 
     player.on(player.exports.Event.SourceLoaded, init);
