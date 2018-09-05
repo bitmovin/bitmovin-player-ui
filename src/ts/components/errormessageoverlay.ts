@@ -3,7 +3,7 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {TvNoiseCanvas} from './tvnoisecanvas';
 import {ErrorUtils} from '../errorutils';
-import { ErrorEvent, PlayerAPI, PlayerEvent } from 'bitmovin-player';
+import { ErrorEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 
 export interface ErrorMessageTranslator {
   (error: ErrorEvent): string;
@@ -128,7 +128,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
       this.show();
     });
 
-    player.on(player.exports.Event.SourceLoaded, (event: PlayerEvent) => {
+    player.on(player.exports.Event.SourceLoaded, (event: PlayerEventBase) => {
       if (this.isShown()) {
         this.tvNoiseBackground.stop();
         this.hide();

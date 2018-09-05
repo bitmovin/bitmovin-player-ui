@@ -8,7 +8,7 @@ import {PlayerUtils} from '../playerutils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import { TimelineMarker } from '../uiconfig';
-import { PlayerAPI, PlayerEvent } from 'bitmovin-player';
+import { PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -146,7 +146,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isPlayerSeeking = false;
 
     // Update playback and buffer positions
-    let playbackPositionHandler = (event: PlayerEvent = null, forceUpdate: boolean = false) => {
+    let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
       if (isUserSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;

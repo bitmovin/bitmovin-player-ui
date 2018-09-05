@@ -9,7 +9,7 @@ import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { UIFactory } from './uifactory';
 import { TimelineMarker, UIConfig } from './uiconfig';
-import { PlayerAPI, Event, PlayerEventCallback, AdBreakEvent, PlayerEvent } from 'bitmovin-player';
+import { PlayerAPI, PlayerEventCallback, AdBreakEvent, PlayerEventBase, PlayerEvent } from 'bitmovin-player';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -216,7 +216,7 @@ export class UIManager {
     let adStartedEvent: AdBreakEvent = null; // keep the event stored here during ad playback
 
     // Dynamically select a UI variant that matches the current UI condition.
-    let resolveUiVariant = (event: PlayerEvent) => {
+    let resolveUiVariant = (event: PlayerEventBase) => {
       // Make sure that the ON_AD_STARTED event data is persisted through ad playback in case other events happen
       // in the meantime, e.g. player resize. We need to store this data because there is no other way to find out
       // ad details (e.g. the ad client) while an ad is playing.
@@ -703,7 +703,7 @@ interface WrappedPlayer extends PlayerAPI {
    * @param event the event to fire
    * @param data data to send with the event
    */
-  fireEventInUI(event: Event, data: {}): void;
+  fireEventInUI(event: PlayerEvent, data: {}): void;
 }
 
 /**
@@ -771,7 +771,7 @@ class PlayerWrapper {
     }
 
     // Explicitly add a wrapper method for 'on' that adds added event handlers to the event list
-    wrapper.on = (eventType: Event, callback: PlayerEventCallback) => {
+    wrapper.on = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
       player.on(eventType, callback);
 
       if (!this.eventHandlers[eventType]) {
@@ -784,7 +784,7 @@ class PlayerWrapper {
     };
 
     // Explicitly add a wrapper method for 'off' that removes removed event handlers from the event list
-    wrapper.off = (eventType: Event, callback: PlayerEventCallback) => {
+    wrapper.off = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
       player.off(eventType, callback);
 
       if (this.eventHandlers[eventType]) {
@@ -794,10 +794,10 @@ class PlayerWrapper {
       return wrapper;
     };
 
-    wrapper.fireEventInUI = (event: Event, data: {}) => {
+    wrapper.fireEventInUI = (event: PlayerEvent, data: {}) => {
       if (this.eventHandlers[event]) { // check if there are handlers for this event registered
-        // Extend the data object with default values to convert it to a {@link PlayerEvent} object.
-        let playerEventData = <PlayerEvent>Object.assign({}, {
+        // Extend the data object with default values to convert it to a {@link PlayerEventBase} object.
+        let playerEventData = <PlayerEventBase>Object.assign({}, {
           timestamp: Date.now(),
           type: event,
           // Add a marker property so the UI can detect UI-internal player events
@@ -828,7 +828,7 @@ class PlayerWrapper {
   clearEventHandlers(): void {
     for (let eventType in this.eventHandlers) {
       for (let callback of this.eventHandlers[eventType]) {
-        this.player.off(eventType as Event, callback);
+        this.player.off(eventType as PlayerEvent, callback);
       }
     }
   }

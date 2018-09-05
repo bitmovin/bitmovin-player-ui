@@ -2,7 +2,7 @@ import {ToggleButtonConfig} from './togglebutton';
 import {PlaybackToggleButton} from './playbacktogglebutton';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
-import { PlayerAPI, PlayerEvent, WarningEvent } from 'bitmovin-player';
+import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
 
 /**
  * A button that overlays the video and toggles between playback and pause.
@@ -111,7 +111,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     });
 
     // Hide button while initializing a Cast session
-    let castInitializationHandler = (event: PlayerEvent) => {
+    let castInitializationHandler = (event: PlayerEventBase) => {
       if (event.type === player.exports.Event.CastStart) {
         // Hide button when session is being initialized
         this.hide();

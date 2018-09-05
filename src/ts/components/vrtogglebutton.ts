@@ -1,6 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
-import { PlayerAPI, PlayerEvent, WarningEvent } from 'bitmovin-player';
+import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
 
 /**
  * A button that toggles the video view between normal/mono and VR/stereo.
@@ -33,7 +33,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
       return player.vr && Boolean(source.vr);
     };
 
-    let vrStateHandler = (ev: PlayerEvent) => {
+    let vrStateHandler = (ev: PlayerEventBase) => {
       if (ev.type === player.exports.Event.Warning
         && (ev as WarningEvent).code !== player.exports.WarningCode.VR_RENDERING_ERROR) {
         // a code of 5006 signals a VR Error, so don't do anything on other warnings
