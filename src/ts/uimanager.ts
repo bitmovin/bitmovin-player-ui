@@ -82,7 +82,8 @@ export class UIManager {
   private uiVariants: UIVariant[];
   private uiInstanceManagers: InternalUIInstanceManager[];
   private currentUi: InternalUIInstanceManager;
-  private config: InternalUIConfig;
+  private uiconfig: UIConfig;
+  private mergedConfig: InternalUIConfig;
   private managerPlayerWrapper: PlayerWrapper;
 
   private events = {
@@ -127,7 +128,8 @@ export class UIManager {
     }
 
     this.player = player;
-    this.config = {
+    this.uiconfig = config;
+    this.mergedConfig = {
       ...config,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
@@ -141,9 +143,7 @@ export class UIManager {
      */
     const updateConfig = () => {
       const playerSourceConfig = player.getSource() || {};
-
-      const uiConfig = { ...config };
-      uiConfig.metadata = uiConfig.metadata || {};
+      this.mergedConfig.metadata = JSON.parse(JSON.stringify(this.uiconfig.metadata || {}));
 
       // Extract the UI-related config properties from the source config
       const playerSourceUiConfig: UIConfig = {
@@ -159,11 +159,10 @@ export class UIManager {
       // Player source config takes precedence over the UI config, because the config in the source is attached
       // to a source which changes with every player.load, whereas the UI config stays the same for the whole
       // lifetime of the player instance.
-      this.config.metadata = this.config.metadata || {};
-      this.config.metadata.title = playerSourceUiConfig.metadata.title || uiConfig.metadata.title;
-      this.config.metadata.description = playerSourceUiConfig.metadata.description || uiConfig.metadata.description;
-      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiConfig.metadata.markers || [];
-      this.config.recommendations = playerSourceUiConfig.recommendations || uiConfig.recommendations || [];
+      this.mergedConfig.metadata.title = playerSourceUiConfig.metadata.title || this.uiconfig.metadata.title;
+      this.mergedConfig.metadata.description = playerSourceUiConfig.metadata.description || this.uiconfig.metadata.description;
+      this.mergedConfig.metadata.markers = playerSourceUiConfig.metadata.markers || this.uiconfig.metadata.markers || [];
+      this.mergedConfig.recommendations = playerSourceUiConfig.recommendations || this.uiconfig.recommendations || [];
     };
 
     updateConfig();
@@ -171,7 +170,7 @@ export class UIManager {
     // Update the configuration when a new source is loaded
     this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.SourceLoaded, () => {
       updateConfig();
-      this.config.events.onUpdated.dispatch(this);
+      this.mergedConfig.events.onUpdated.dispatch(this);
     });
 
     if (config.container) {
@@ -194,7 +193,7 @@ export class UIManager {
         uiVariantsWithoutCondition.push(uiVariant);
       }
       // Create the instance manager for a UI variant
-      this.uiInstanceManagers.push(new InternalUIInstanceManager(player, uiVariant.ui, this.config));
+      this.uiInstanceManagers.push(new InternalUIInstanceManager(player, uiVariant.ui, this.mergedConfig));
     }
     // Make sure that there is only one UI variant without a condition
     // It does not make sense to have multiple variants without condition, because only the first one in the list
@@ -285,7 +284,7 @@ export class UIManager {
   }
 
   getConfig(): UIConfig {
-    return this.config;
+    return this.mergedConfig;
   }
 
   /**
@@ -439,15 +438,15 @@ export class UIManager {
    * Returns the list of all added markers in undefined order.
    */
   getTimelineMarkers(): TimelineMarker[] {
-    return this.config.metadata.markers;
+    return this.uiconfig.metadata.markers;
   }
 
   /**
    * Adds a marker to the timeline. Does not check for duplicates/overlaps at the `time`.
    */
   addTimelineMarker(timelineMarker: TimelineMarker): void {
-    this.config.metadata.markers.push(timelineMarker);
-    this.config.events.onUpdated.dispatch(this);
+    this.mergedConfig.metadata.markers.push(timelineMarker);
+    this.mergedConfig.events.onUpdated.dispatch(this);
   }
 
   /**
@@ -456,8 +455,8 @@ export class UIManager {
    * be found and thus not removed.
    */
   removeTimelineMarker(timelineMarker: TimelineMarker): boolean {
-    if (ArrayUtils.remove(this.config.metadata.markers, timelineMarker) === timelineMarker) {
-      this.config.events.onUpdated.dispatch(this);
+    if (ArrayUtils.remove(this.uiconfig.metadata.markers, timelineMarker) === timelineMarker) {
+      this.mergedConfig.events.onUpdated.dispatch(this);
       return true;
     }
 
