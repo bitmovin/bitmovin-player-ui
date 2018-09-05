@@ -9,7 +9,7 @@ import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { UIFactory } from './uifactory';
 import { TimelineMarker, UIConfig } from './uiconfig';
-import { PlayerAPI, Event, Events, PlayerEventCallback } from 'bitmovin-player';
+import { PlayerAPI, Event, PlayerEventCallback, AdBreakEvent, PlayerEvent } from 'bitmovin-player';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -213,10 +213,10 @@ export class UIManager {
       config.autoUiVariantResolve = true;
     }
 
-    let adStartedEvent: Events.AdBreakEvent = null; // keep the event stored here during ad playback
+    let adStartedEvent: AdBreakEvent = null; // keep the event stored here during ad playback
 
     // Dynamically select a UI variant that matches the current UI condition.
-    let resolveUiVariant = (event: Events.PlayerEvent) => {
+    let resolveUiVariant = (event: PlayerEvent) => {
       // Make sure that the ON_AD_STARTED event data is persisted through ad playback in case other events happen
       // in the meantime, e.g. player resize. We need to store this data because there is no other way to find out
       // ad details (e.g. the ad client) while an ad is playing.
@@ -226,7 +226,7 @@ export class UIManager {
         switch (event.type) {
           // When the ad starts, we store the event data
           case player.exports.Event.AdStarted:
-            adStartedEvent = <Events.AdBreakEvent>event;
+            adStartedEvent = <AdBreakEvent>event;
             break;
           // When the ad ends, we delete the event data
           case player.exports.Event.AdFinished:
@@ -797,7 +797,7 @@ class PlayerWrapper {
     wrapper.fireEventInUI = (event: Event, data: {}) => {
       if (this.eventHandlers[event]) { // check if there are handlers for this event registered
         // Extend the data object with default values to convert it to a {@link PlayerEvent} object.
-        let playerEventData = <Events.PlayerEvent>Object.assign({}, {
+        let playerEventData = <PlayerEvent>Object.assign({}, {
           timestamp: Date.now(),
           type: event,
           // Add a marker property so the UI can detect UI-internal player events

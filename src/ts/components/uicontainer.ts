@@ -4,7 +4,7 @@ import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
 import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
-import { PlayerAPI, Events } from 'bitmovin-player';
+import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -270,7 +270,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         container.addClass(this.prefixCss('layout-max-width-1200'));
       }
     };
-    player.on(player.exports.Event.PlayerResized, (e: Events.PlayerResizedEvent) => {
+    player.on(player.exports.Event.PlayerResized, (e: PlayerResizedEvent) => {
       // Convert strings (with "px" suffix) to ints
       let width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
       let height = Math.round(Number(e.height.substring(0, e.height.length - 2)));

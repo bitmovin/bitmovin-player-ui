@@ -1,7 +1,7 @@
 import {ButtonConfig, Button} from './button';
 import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
-import { PlayerAPI, Events } from 'bitmovin-player';
+import { AdEvent, PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
@@ -52,7 +52,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       }
     };
 
-    let adStartHandler = (event: Events.AdEvent) => {
+    let adStartHandler = (event: AdEvent) => {
       // TODO adEvent = event;
       skipMessage = config.skipMessage; // TODO adEvent.skipMessage || config.skipMessage;
       updateSkipMessageHandler();

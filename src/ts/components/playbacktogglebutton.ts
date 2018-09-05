@@ -2,7 +2,7 @@ import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
 import {PlayerUtils} from '../playerutils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
-import { PlayerAPI, Events } from 'bitmovin-player';
+import { PlayerAPI, PlayerEvent, WarningEvent } from 'bitmovin-player';
 
 /**
  * A button that toggles between playback and pause.
@@ -29,7 +29,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     let isSeeking = false;
 
     // Handler to update button state based on player state
-    let playbackStateHandler = (event: Events.PlayerEvent) => {
+    let playbackStateHandler = (event: PlayerEvent) => {
       // If the UI is currently seeking, playback is temporarily stopped but the buttons should
       // not reflect that and stay as-is (e.g indicate playback while seeking).
       if (isSeeking) {
@@ -67,7 +67,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     // When a playback attempt is rejected with warning 5008, we switch the button state back to off
     // This is required for blocked autoplay, because there is no Paused event in such case
-    player.on(player.exports.Event.Warning, (event: Events.WarningEvent) => {
+    player.on(player.exports.Event.Warning, (event: WarningEvent) => {
       if (event.code === 5008) {
         this.isPlayInitiated = false;
         this.off();

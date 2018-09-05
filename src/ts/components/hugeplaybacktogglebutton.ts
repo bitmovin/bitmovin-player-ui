@@ -2,7 +2,7 @@ import {ToggleButtonConfig} from './togglebutton';
 import {PlaybackToggleButton} from './playbacktogglebutton';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
-import { PlayerAPI, Events } from 'bitmovin-player';
+import { PlayerAPI, PlayerEvent, WarningEvent } from 'bitmovin-player';
 
 /**
  * A button that overlays the video and toggles between playback and pause.
@@ -102,7 +102,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       firstPlay = false;
     });
 
-    player.on(player.exports.Event.Warning, (event: Events.WarningEvent) => {
+    player.on(player.exports.Event.Warning, (event: WarningEvent) => {
       // 5008 == Playback could not be started
       if (event.code === 5008) {
         // if playback could not be started, reset the first play flag as we need the user interaction to start
@@ -111,7 +111,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     });
 
     // Hide button while initializing a Cast session
-    let castInitializationHandler = (event: Events.PlayerEvent) => {
+    let castInitializationHandler = (event: PlayerEvent) => {
       if (event.type === player.exports.Event.CastStart) {
         // Hide button when session is being initialized
         this.hide();
@@ -151,7 +151,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       suppressPlayButtonTransitionAnimation();
 
       // Show the play button without an animation if a play attempt is blocked
-      player.on(player.exports.Event.Warning, (event: Events.WarningEvent) => {
+      player.on(player.exports.Event.Warning, (event: WarningEvent) => {
         if (event.code === 5008) {
           suppressPlayButtonTransitionAnimation();
         }
