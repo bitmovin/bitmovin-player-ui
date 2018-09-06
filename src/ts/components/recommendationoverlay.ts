@@ -5,6 +5,7 @@ import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
 import {HugeReplayButton} from './hugereplaybutton';
 import { UIRecommendationConfig } from '../uiconfig';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Overlays the player and displays recommended videos.
@@ -25,7 +26,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let clearRecommendations = () => {
@@ -58,18 +59,18 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     };
 
     // Add recommendation when a source is loaded
-    player.on(player.exports.Event.SourceLoaded, setupRecommendations);
+    player.on(player.exports.PlayerEvent.SourceLoaded, setupRecommendations);
     // Remove recommendations and hide overlay when source is unloaded
-    player.on(player.exports.Event.SourceUnloaded, () => {
+    player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
       clearRecommendations();
       this.hide();
     });
     // Display recommendations when playback has finished
-    player.on(player.exports.Event.PlaybackFinished, () => {
+    player.on(player.exports.PlayerEvent.PlaybackFinished, () => {
       this.show();
     });
     // Hide recommendations when playback starts, e.g. a restart
-    player.on(player.exports.Event.Play, () => {
+    player.on(player.exports.PlayerEvent.Play, () => {
       this.hide();
     });
 

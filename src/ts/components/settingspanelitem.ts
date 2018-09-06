@@ -8,6 +8,7 @@ import {ListBox} from './listbox';
 import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {PlaybackSpeedSelectBox} from './playbackspeedselectbox';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * An item for a {@link SettingsPanelPage},
@@ -44,7 +45,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     this.addComponent(this.setting);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     if (this.setting instanceof SelectBox || this.setting instanceof ListBox) {
       let handleConfigItemChanged = () => {
         if (!(this.setting instanceof SelectBox) && !(this.setting instanceof ListBox)) {

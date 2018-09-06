@@ -1,4 +1,3 @@
-/// <reference path='player.d.ts' />
 export const version: string = '{{VERSION}}';
 // Management
 export { UIManager, UIInstanceManager } from './uimanager';

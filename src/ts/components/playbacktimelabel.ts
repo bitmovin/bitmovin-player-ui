@@ -3,6 +3,7 @@ import {UIInstanceManager} from '../uimanager';
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import {PlayerUtils} from '../playerutils';
 import {StringUtils} from '../stringutils';
+import { PlayerAPI } from 'bitmovin-player';
 
 export enum PlaybackTimeLabelMode {
   CurrentTime,
@@ -33,7 +34,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <PlaybackTimeLabelConfig>this.getConfig();
@@ -109,13 +110,13 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    player.on(player.exports.Event.TimeChanged, playbackTimeHandler);
-    player.on(player.exports.Event.Seeked, playbackTimeHandler);
+    player.on(player.exports.PlayerEvent.TimeChanged, playbackTimeHandler);
+    player.on(player.exports.PlayerEvent.Seeked, playbackTimeHandler);
 
-    player.on(player.exports.Event.TimeShift, updateLiveTimeshiftState);
-    player.on(player.exports.Event.TimeShifted, updateLiveTimeshiftState);
-    player.on(player.exports.Event.Play, updateLiveTimeshiftState);
-    player.on(player.exports.Event.Paused, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.TimeShift, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.TimeShifted, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.Play, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.Paused, updateLiveTimeshiftState);
 
     let init = () => {
       // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content
@@ -132,7 +133,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // Update time after the format has been set
       playbackTimeHandler();
     };
-    player.on(player.exports.Event.SourceLoaded, init);
+    player.on(player.exports.PlayerEvent.SourceLoaded, init);
 
     init();
   }

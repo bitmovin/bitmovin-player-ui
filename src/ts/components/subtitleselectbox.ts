@@ -2,6 +2,7 @@ import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
 import {SubtitleSwitchHandler} from '../subtitleutils';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A select box providing a selection between available subtitle and caption tracks.
@@ -12,7 +13,7 @@ export class SubtitleSelectBox extends SelectBox {
     super(config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     new SubtitleSwitchHandler(player, this);

@@ -5,6 +5,7 @@ import {Timeout} from '../timeout';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import {SettingsPanelPage} from './settingspanelpage';
 import {SettingsPanelItem} from './settingspanelitem';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -51,7 +52,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference

@@ -5,7 +5,7 @@ import {UIInstanceManager, SeekPreviewArgs} from '../uimanager';
 import {StringUtils} from '../stringutils';
 import {ImageLoader} from '../imageloader';
 import {CssProperties} from '../dom';
-import Thumbnail = bitmovin.PlayerAPI.Thumbnail;
+import { PlayerAPI, Thumbnail } from 'bitmovin-player';
 
 /**
  * Configuration interface for a {@link SeekBarLabel}.
@@ -50,7 +50,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let appliedMarkerCssClasses: string[] = [];
@@ -94,7 +94,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       this.setThumbnail(null);
     };
 
-    player.on(player.exports.Event.SourceLoaded, init);
+    player.on(player.exports.PlayerEvent.SourceLoaded, init);
     init();
   }
 
