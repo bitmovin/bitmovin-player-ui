@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Type definitions are now generated correctly and referenced from `package.json`
-- Remained timeline markers from previous source
+- Update timeline markers when loading a new source
 - Flickering playback position indicator when switching to a live-stream
 
 ## [3.0.0 alpha]

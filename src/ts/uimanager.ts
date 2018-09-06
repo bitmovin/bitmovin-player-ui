@@ -438,7 +438,7 @@ export class UIManager {
    * Returns the list of all added markers in undefined order.
    */
   getTimelineMarkers(): TimelineMarker[] {
-    return this.uiconfig.metadata.markers;
+    return this.mergedConfig.metadata.markers;
   }
 
   /**
@@ -455,7 +455,7 @@ export class UIManager {
    * be found and thus not removed.
    */
   removeTimelineMarker(timelineMarker: TimelineMarker): boolean {
-    if (ArrayUtils.remove(this.uiconfig.metadata.markers, timelineMarker) === timelineMarker) {
+    if (ArrayUtils.remove(this.mergedConfig.metadata.markers, timelineMarker) === timelineMarker) {
       this.mergedConfig.events.onUpdated.dispatch(this);
       return true;
     }
