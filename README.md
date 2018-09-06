@@ -67,7 +67,7 @@ When using the built-in UI, you can style it to your linking with CSS by overwri
 
 It is possible to override which `js` and `css` files the player loads for its internal UI with the `ui` and `ui_css` properties in the `location` section of the player configuration. This is a simple way to supply a customized UI without the overhead of managing an external UI instance, and especially helpful for supplying a custom script which otherwise cannot be overridden like the CSS styles can. The paths to the `ui` (`js`) and `ui_css` (obviously `css`) files can be absolute or relative. Both are optional and do not need to be specified together.
 
-The player constructs its internal UI instance from the `UIManager.Factory.buildDefaultUI(player)` factory method, so this entry point must exist for this approach to work. The base class of the UI skin (e.g. the default `bmpui-ui-skin-modern`) must also match between the JS and CSS.
+The player constructs its internal UI instance from the `UIFactory.buildDefaultUI(player)` factory method, so this entry point must exist for this approach to work.
 
 ```js
 import { Player } from 'bitmovin-player';
@@ -87,9 +87,9 @@ const player = new Player(document.getElementById('container-id'), config);
 
 To use the player with an external custom UI instance, you need to deactivate the built-in UI (set `ui: false`), include the necessary `js` and `css` files into your HTML and create and attach your own UI instance with the `UIManager`.
 
- * Deactivate the built-in UI by setting `ux: false` in the `style` config of the player ([Player Configuration Guide](https://bitmovin.com/player-documentation/player-configuration/))
+ * Deactivate the built-in UI by setting `ui: false` in the config of the player ([Player Configuration Guide](https://bitmovin.com/player-documentation/player-configuration/))
  * Build the UI framework (e.g. `gulp build-prod`) and include `bitmovinplayer-ui.min.js` and `bitmovinplayer-ui.min.css` (or their non-minified counterparts) from the `dist` directory
- * Create your own UI instance with the `UIManager.Factory` once the player is loaded (or [load a custom UI structure](#building-a-custom-ui-structure))
+ * Create your own UI instance with the `UIFactory` once the player is loaded (or [load a custom UI structure](#building-a-custom-ui-structure))
 
 ```js
 import { Player } from 'bitmovin-player';
@@ -101,12 +101,12 @@ const config = {
 };
 
 const player = new Player(document.getElementById('container-id'), config);
-const myUiManager =UIFactory.buildDefaultUI(player);
+const myUiManager = UIFactory.buildDefaultUI(player);
 ```
 
 ### Building a custom UI structure
 
-Instead of using predefined UI structures from the `UIManager.Factory`, you can easily create a custom structure. For examples on how to create such UI structures, take a look at the `UIManager.Factory`.
+Instead of using predefined UI structures from the `UIFactory`, you can easily create a custom structure. For examples on how to create such UI structures, take a look at the `UIFactory` or `DemoFactory`.
 
 A simple example on how to create a custom UI with our default skin that only contains a playback toggle overlay (an overlay with a large playback toggle button) looks as follows:
 
