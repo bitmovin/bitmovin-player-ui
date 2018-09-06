@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 - `SubtitleSettingsPanel` in favour of `SubtitleSettingsPanelPage` to use with the new navigation feature of `SettingsPanel`
 - Player v6 legacy skin (`skin-legacy`) and its UI variants
+- Disabled the ads UI variants because there is no ads module in player v8 yet that requires a UI (ads UI will be reintroduced with an upcoming release)
 
 ### Fixed
 - Type definitions are now generated correctly and referenced from `package.json`
