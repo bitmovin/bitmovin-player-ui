@@ -395,8 +395,8 @@ export class UIManager {
      * undesirable at this time. */
     this.uiContainerElement.append(dom);
 
-    // Some components initialized their state on SourceLoaded. When the UI is loaded after the source is already loaded,
-    // they will never receive the event so we fire the onUpdated instead and each component can listen to this instead.
+    // Some components initialized their state on SourceLoaded. When the UI is loaded after a source was loaded,
+    // we need to tell the components to initialize themselves
     if (player.getSource()) {
       this.config.events.onUpdated.dispatch(this);
     }

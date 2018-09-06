@@ -104,8 +104,6 @@ export namespace PlayerUtils {
       let liveDetector = () => {
         this.detect();
       };
-      // Listen to the UI event when components need to update them-self
-      // Will also be triggered on player.exports.Event.SourceLoaded
       this.uimanager.getConfig().events.onUpdated.subscribe(liveDetector);
       // Re-evaluate when playback starts
       player.on(player.exports.Event.Play, liveDetector);

@@ -9,7 +9,6 @@ import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChang
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import { TimelineMarker } from '../uiconfig';
-import set = Reflect.set;
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -327,8 +326,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.Event.SourceLoaded, () => {
       this.refreshPlaybackPosition();
     });
-    // Listen to the UI event when components need to update them-self
-    // Will also be triggered on player.exports.Event.SourceLoaded
+    // Add markers when a source is loaded or update when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(() => {
       playbackPositionHandler();
     });
@@ -458,8 +456,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.Event.SourceUnloaded, clearMarkers);
     // Update markers when the size of the seekbar changes
     player.on(player.exports.Event.PlayerResized, () => this.updateMarkers());
-    // Listen to the UI event when components need to update them-self
-    // Will also be triggered on player.exports.Event.SourceLoaded
     uimanager.getConfig().events.onUpdated.subscribe(setupMarkers);
     uimanager.onRelease.subscribe(() => uimanager.getConfig().events.onUpdated.unsubscribe(setupMarkers));
 

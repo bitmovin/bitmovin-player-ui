@@ -132,8 +132,6 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // Update time after the format has been set
       playbackTimeHandler();
     };
-    // Listen to the UI event when components need to update them-self
-    // Will also be triggered on player.exports.Event.SourceLoaded
     uimanager.getConfig().events.onUpdated.subscribe(init);
 
     init();

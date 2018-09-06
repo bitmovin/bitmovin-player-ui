@@ -54,8 +54,6 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.on(player.exports.Event.Muted, muteStateHandler);
     player.on(player.exports.Event.Unmuted, muteStateHandler);
     player.on(player.exports.Event.VolumeChanged, volumeLevelHandler);
-    // Listen to the UI event when components need to update them-self
-    // Will also be triggered on player.exports.Event.SourceLoaded
     uimanager.getConfig().events.onUpdated.subscribe(() => {
       muteStateHandler();
       volumeLevelHandler();

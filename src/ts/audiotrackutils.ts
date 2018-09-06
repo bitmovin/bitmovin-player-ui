@@ -41,8 +41,6 @@ export class AudioTrackSwitchHandler {
     // Update tracks when a track is added or removed
     this.player.on(this.player.exports.Event.AudioAdded, updateAudioTracksCallback);
     this.player.on(this.player.exports.Event.AudioRemoved, updateAudioTracksCallback);
-    // Listen to the UI event when components need to update them-self
-    // Will also be triggered on player.exports.Event.SourceLoaded
     this.uimanager.getConfig().events.onUpdated.subscribe(updateAudioTracksCallback);
   }
 

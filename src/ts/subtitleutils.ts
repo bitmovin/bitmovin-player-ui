@@ -49,8 +49,6 @@ export class SubtitleSwitchHandler {
     this.player.on(this.player.exports.Event.SourceUnloaded, updateSubtitlesCallback);
     // Update subtitles when the period within a source changes
     this.player.on(this.player.exports.Event.PeriodSwitched, updateSubtitlesCallback);
-    // Listen to the UI event when components need to update them-self
-    // Will also be triggered on player.exports.Event.SourceLoaded
     this.uimanager.getConfig().events.onUpdated.subscribe(updateSubtitlesCallback);
   }
 

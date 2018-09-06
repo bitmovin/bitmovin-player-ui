@@ -61,8 +61,6 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     });
     // after unloading + loading a new source, the player might be in a different playing state (from playing into stopped)
     player.on(player.exports.Event.SourceLoaded, playbackStateHandler);
-    // Listen to the UI event when components need to update them-self
-    // Will also be triggered on player.exports.Event.SourceLoaded
     uimanager.getConfig().events.onUpdated.subscribe(playbackStateHandler);
     player.on(player.exports.Event.SourceUnloaded, playbackStateHandler);
     // when playback finishes, player turns to paused mode
