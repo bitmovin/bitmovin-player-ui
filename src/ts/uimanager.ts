@@ -82,8 +82,7 @@ export class UIManager {
   private uiVariants: UIVariant[];
   private uiInstanceManagers: InternalUIInstanceManager[];
   private currentUi: InternalUIInstanceManager;
-  private uiconfig: UIConfig;
-  private mergedConfig: InternalUIConfig;
+  private config: InternalUIConfig; // Conjunction of provided uiConfig and sourceConfig from the player
   private managerPlayerWrapper: PlayerWrapper;
 
   private events = {
@@ -111,7 +110,7 @@ export class UIManager {
    * @param config optional UI configuration
    */
   constructor(player: PlayerAPI, uiVariants: UIVariant[], config?: UIConfig);
-  constructor(player: PlayerAPI, playerUiOrUiVariants: UIContainer | UIVariant[], config: UIConfig = {}) {
+  constructor(player: PlayerAPI, playerUiOrUiVariants: UIContainer | UIVariant[], uiconfig: UIConfig = {}) {
     if (playerUiOrUiVariants instanceof UIContainer) {
       // Single-UI constructor has been called, transform arguments to UIVariant[] signature
       let playerUi = <UIContainer>playerUiOrUiVariants;
@@ -128,9 +127,8 @@ export class UIManager {
     }
 
     this.player = player;
-    this.uiconfig = config;
-    this.mergedConfig = {
-      ...config,
+    this.config = {
+      ...uiconfig,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
@@ -143,7 +141,7 @@ export class UIManager {
      */
     const updateConfig = () => {
       const playerSourceConfig = player.getSource() || {};
-      this.mergedConfig.metadata = JSON.parse(JSON.stringify(this.uiconfig.metadata || {}));
+      this.config.metadata = JSON.parse(JSON.stringify(uiconfig.metadata || {}));
 
       // Extract the UI-related config properties from the source config
       const playerSourceUiConfig: UIConfig = {
@@ -159,10 +157,10 @@ export class UIManager {
       // Player source config takes precedence over the UI config, because the config in the source is attached
       // to a source which changes with every player.load, whereas the UI config stays the same for the whole
       // lifetime of the player instance.
-      this.mergedConfig.metadata.title = playerSourceUiConfig.metadata.title || this.uiconfig.metadata.title;
-      this.mergedConfig.metadata.description = playerSourceUiConfig.metadata.description || this.uiconfig.metadata.description;
-      this.mergedConfig.metadata.markers = playerSourceUiConfig.metadata.markers || this.uiconfig.metadata.markers || [];
-      this.mergedConfig.recommendations = playerSourceUiConfig.recommendations || this.uiconfig.recommendations || [];
+      this.config.metadata.title = playerSourceUiConfig.metadata.title || uiconfig.metadata.title;
+      this.config.metadata.description = playerSourceUiConfig.metadata.description || uiconfig.metadata.description;
+      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [];
+      this.config.recommendations = playerSourceUiConfig.recommendations || uiconfig.recommendations || [];
     };
 
     updateConfig();
@@ -170,15 +168,15 @@ export class UIManager {
     // Update the configuration when a new source is loaded
     this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.SourceLoaded, () => {
       updateConfig();
-      this.mergedConfig.events.onUpdated.dispatch(this);
+      this.config.events.onUpdated.dispatch(this);
     });
 
-    if (config.container) {
+    if (uiconfig.container) {
       // Unfortunately "uiContainerElement = new DOM(config.container)" will not accept the container with
       // string|HTMLElement type directly, although it accepts both types, so we need to spit these two cases up here.
       // TODO check in upcoming TS versions if the container can be passed in directly, or fix the constructor
-      this.uiContainerElement = config.container instanceof HTMLElement ?
-        new DOM(config.container) : new DOM(config.container);
+      this.uiContainerElement = uiconfig.container instanceof HTMLElement ?
+        new DOM(uiconfig.container) : new DOM(uiconfig.container);
     } else {
       this.uiContainerElement = new DOM(player.getContainer());
     }
@@ -193,7 +191,7 @@ export class UIManager {
         uiVariantsWithoutCondition.push(uiVariant);
       }
       // Create the instance manager for a UI variant
-      this.uiInstanceManagers.push(new InternalUIInstanceManager(player, uiVariant.ui, this.mergedConfig));
+      this.uiInstanceManagers.push(new InternalUIInstanceManager(player, uiVariant.ui, this.config));
     }
     // Make sure that there is only one UI variant without a condition
     // It does not make sense to have multiple variants without condition, because only the first one in the list
@@ -210,8 +208,8 @@ export class UIManager {
     }
 
     // Switch on auto UI resolving by default
-    if (config.autoUiVariantResolve === undefined) {
-      config.autoUiVariantResolve = true;
+    if (uiconfig.autoUiVariantResolve === undefined) {
+      uiconfig.autoUiVariantResolve = true;
     }
 
     let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
@@ -267,7 +265,7 @@ export class UIManager {
     };
 
     // Listen to the following events to trigger UI variant resolution
-    if (config.autoUiVariantResolve) {
+    if (uiconfig.autoUiVariantResolve) {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.SourceLoaded, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Play, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Paused, resolveUiVariant);
@@ -284,7 +282,7 @@ export class UIManager {
   }
 
   getConfig(): UIConfig {
-    return this.mergedConfig;
+    return this.config;
   }
 
   /**
@@ -438,15 +436,15 @@ export class UIManager {
    * Returns the list of all added markers in undefined order.
    */
   getTimelineMarkers(): TimelineMarker[] {
-    return this.mergedConfig.metadata.markers;
+    return this.config.metadata.markers;
   }
 
   /**
    * Adds a marker to the timeline. Does not check for duplicates/overlaps at the `time`.
    */
   addTimelineMarker(timelineMarker: TimelineMarker): void {
-    this.mergedConfig.metadata.markers.push(timelineMarker);
-    this.mergedConfig.events.onUpdated.dispatch(this);
+    this.config.metadata.markers.push(timelineMarker);
+    this.config.events.onUpdated.dispatch(this);
   }
 
   /**
@@ -455,8 +453,8 @@ export class UIManager {
    * be found and thus not removed.
    */
   removeTimelineMarker(timelineMarker: TimelineMarker): boolean {
-    if (ArrayUtils.remove(this.mergedConfig.metadata.markers, timelineMarker) === timelineMarker) {
-      this.mergedConfig.events.onUpdated.dispatch(this);
+    if (ArrayUtils.remove(this.config.metadata.markers, timelineMarker) === timelineMarker) {
+      this.config.events.onUpdated.dispatch(this);
       return true;
     }
 
