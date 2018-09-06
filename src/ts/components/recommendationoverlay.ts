@@ -58,8 +58,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
       }
     };
 
-    // Add recommendation when a source is loaded
-    player.on(player.exports.PlayerEvent.SourceLoaded, setupRecommendations);
+    uimanager.getConfig().events.onUpdated.subscribe(setupRecommendations);
     // Remove recommendations and hide overlay when source is unloaded
     player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
       clearRecommendations();

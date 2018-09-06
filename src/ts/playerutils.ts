@@ -1,5 +1,6 @@
 import {Event, EventDispatcher, NoArgs} from './eventdispatcher';
 import {BrowserUtils} from './browserutils';
+import { UIInstanceManager } from './uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 
 export namespace PlayerUtils {
@@ -92,16 +93,17 @@ export namespace PlayerUtils {
     private player: PlayerAPI;
     private live: boolean;
     private liveChangedEvent = new EventDispatcher<PlayerAPI, LiveStreamDetectorEventArgs>();
+    private uimanager: UIInstanceManager;
 
-    constructor(player: PlayerAPI) {
+    constructor(player: PlayerAPI, uimanager: UIInstanceManager) {
       this.player = player;
+      this.uimanager = uimanager;
       this.live = undefined;
 
       let liveDetector = () => {
         this.detect();
       };
-      // Initialize when source is loaded
-      player.on(player.exports.PlayerEvent.SourceLoaded, liveDetector);
+      this.uimanager.getConfig().events.onUpdated.subscribe(liveDetector);
       // Re-evaluate when playback starts
       player.on(player.exports.PlayerEvent.Play, liveDetector);
 

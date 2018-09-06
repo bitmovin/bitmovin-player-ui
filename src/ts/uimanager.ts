@@ -393,10 +393,9 @@ export class UIManager {
      * undesirable at this time. */
     this.uiContainerElement.append(dom);
 
-    // Some components initialize their state on SourceLoaded. When the UI is loaded after the source is already loaded,
-    // they will never receive the event so we fire it from here in such cases.
+    // When the UI is loaded after a source was loaded, we need to tell the components to initialize themselves
     if (player.getSource()) {
-      player.fireEventInUI(player.exports.PlayerEvent.SourceLoaded, {});
+      this.config.events.onUpdated.dispatch(this);
     }
 
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements

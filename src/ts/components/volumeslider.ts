@@ -51,10 +51,10 @@ export class VolumeSlider extends SeekBar {
       }
     };
 
-    player.on(player.exports.PlayerEvent.SourceLoaded, volumeChangeHandler);
     player.on(player.exports.PlayerEvent.VolumeChanged, volumeChangeHandler);
     player.on(player.exports.PlayerEvent.Muted, volumeChangeHandler);
     player.on(player.exports.PlayerEvent.Unmuted, volumeChangeHandler);
+    uimanager.getConfig().events.onUpdated.subscribe(volumeChangeHandler);
 
     this.onSeekPreview.subscribeRateLimited((sender, args) => {
       if (args.scrubbing) {
@@ -70,10 +70,11 @@ export class VolumeSlider extends SeekBar {
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
       this.refreshPlaybackPosition();
     });
-    player.on(player.exports.PlayerEvent.SourceLoaded, () => {
+    uimanager.onConfigured.subscribe(() => {
       this.refreshPlaybackPosition();
     });
-    uimanager.onConfigured.subscribe(() => {
+
+    uimanager.getConfig().events.onUpdated.subscribe(() => {
       this.refreshPlaybackPosition();
     });
 

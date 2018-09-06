@@ -1,4 +1,5 @@
 import {ListSelector, ListSelectorConfig} from './components/listselector';
+import { UIInstanceManager } from './uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**
@@ -10,10 +11,12 @@ export class AudioTrackSwitchHandler {
 
   private player: PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
+  private uimanager: UIInstanceManager;
 
-  constructor(player: PlayerAPI, element: ListSelector<ListSelectorConfig>) {
+  constructor(player: PlayerAPI, element: ListSelector<ListSelectorConfig>, uimanager: UIInstanceManager) {
     this.player = player;
     this.listElement = element;
+    this.uimanager = uimanager;
 
     this.bindSelectionEvent();
     this.bindPlayerEvents();
@@ -34,13 +37,12 @@ export class AudioTrackSwitchHandler {
     });
     // Update tracks when source goes away
     this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, updateAudioTracksCallback);
-    // Update tracks when a new source is loaded
-    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, updateAudioTracksCallback);
     // Update tracks when the period within a source changes
     this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, updateAudioTracksCallback);
     // Update tracks when a track is added or removed
     this.player.on(this.player.exports.PlayerEvent.AudioAdded, updateAudioTracksCallback);
     this.player.on(this.player.exports.PlayerEvent.AudioRemoved, updateAudioTracksCallback);
+    this.uimanager.getConfig().events.onUpdated.subscribe(updateAudioTracksCallback);
   }
 
   private updateAudioTracks() {

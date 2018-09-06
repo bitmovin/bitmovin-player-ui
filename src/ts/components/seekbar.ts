@@ -297,7 +297,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       playbackPositionHandler(null, true);
       this.refreshPlaybackPosition();
     };
-    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player);
+    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       isLive = args.live;
       switchVisibility(isLive, hasTimeShift);
@@ -325,6 +325,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     // It can also happen when a new source is loaded
     player.on(player.exports.PlayerEvent.SourceLoaded, () => {
       this.refreshPlaybackPosition();
+    });
+    // Add markers when a source is loaded or update when a marker is added or removed
+    uimanager.getConfig().events.onUpdated.subscribe(() => {
+      playbackPositionHandler();
     });
 
     // Initialize seekbar
@@ -448,13 +452,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.updateMarkers();
     };
 
-    // Add markers when a source is loaded
-    player.on(player.exports.PlayerEvent.SourceLoaded, setupMarkers);
     // Remove markers when unloaded
     player.on(player.exports.PlayerEvent.SourceUnloaded, clearMarkers);
     // Update markers when the size of the seekbar changes
     player.on(player.exports.PlayerEvent.PlayerResized, () => this.updateMarkers());
-    // Update markers when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(setupMarkers);
     uimanager.onRelease.subscribe(() => uimanager.getConfig().events.onUpdated.unsubscribe(setupMarkers));
 

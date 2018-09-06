@@ -1,4 +1,5 @@
 import {ListSelector, ListSelectorConfig} from './components/listselector';
+import { UIInstanceManager } from './uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**
@@ -10,10 +11,12 @@ export class SubtitleSwitchHandler {
 
   private player: PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
+  private uimanager: UIInstanceManager;
 
-  constructor(player: PlayerAPI, element: ListSelector<ListSelectorConfig>) {
+  constructor(player: PlayerAPI, element: ListSelector<ListSelectorConfig>, uimanager: UIInstanceManager) {
     this.player = player;
     this.listElement = element;
+    this.uimanager = uimanager;
 
     this.bindSelectionEvent();
     this.bindPlayerEvents();
@@ -45,10 +48,9 @@ export class SubtitleSwitchHandler {
     this.player.on(this.player.exports.PlayerEvent.SubtitleRemoved, updateSubtitlesCallback);
     // Update subtitles when source goes away
     this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, updateSubtitlesCallback);
-    // Update subtitles when a new source is loaded
-    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, updateSubtitlesCallback);
     // Update subtitles when the period within a source changes
     this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, updateSubtitlesCallback);
+    this.uimanager.getConfig().events.onUpdated.subscribe(updateSubtitlesCallback);
   }
 
   private updateSubtitles(): void {

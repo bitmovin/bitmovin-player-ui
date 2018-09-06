@@ -64,11 +64,12 @@ export class CastUIContainer extends UIContainer {
       }
     };
 
-    player.on(player.exports.PlayerEvent.SourceLoaded, showUiWithTimeout);
     player.on(player.exports.PlayerEvent.Play, showUiWithTimeout);
     player.on(player.exports.PlayerEvent.Paused, showUiPermanently);
     player.on(player.exports.PlayerEvent.Seek, showUiPermanently);
     player.on(player.exports.PlayerEvent.Seeked, showUiAfterSeek);
+
+    uimanager.getConfig().events.onUpdated.subscribe(showUiWithTimeout);
   }
 
   release(): void {
