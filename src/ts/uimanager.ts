@@ -80,7 +80,7 @@ export class UIManager {
   private uiVariants: UIVariant[];
   private uiInstanceManagers: InternalUIInstanceManager[];
   private currentUi: InternalUIInstanceManager;
-  private config: InternalUIConfig;
+  private config: InternalUIConfig; // Conjunction of provided uiConfig and sourceConfig from the player
   private managerPlayerWrapper: PlayerWrapper;
 
   private events = {
@@ -91,9 +91,9 @@ export class UIManager {
    * Creates a UI manager with a single UI variant that will be permanently shown.
    * @param player the associated player of this UI
    * @param ui the UI to add to the player
-   * @param config optional UI configuration
+   * @param uiconfig optional UI configuration
    */
-  constructor(player: PlayerAPI, ui: UIContainer, config?: UIConfig);
+  constructor(player: PlayerAPI, ui: UIContainer, uiconfig?: UIConfig);
   /**
    * Creates a UI manager with a list of UI variants that will be dynamically selected and switched according to
    * the context of the UI.
@@ -105,10 +105,10 @@ export class UIManager {
    *
    * @param player the associated player of this UI
    * @param uiVariants a list of UI variants that will be dynamically switched
-   * @param config optional UI configuration
+   * @param uiconfig optional UI configuration
    */
-  constructor(player: PlayerAPI, uiVariants: UIVariant[], config?: UIConfig);
-  constructor(player: PlayerAPI, playerUiOrUiVariants: UIContainer | UIVariant[], config: UIConfig = {}) {
+  constructor(player: PlayerAPI, uiVariants: UIVariant[], uiconfig?: UIConfig);
+  constructor(player: PlayerAPI, playerUiOrUiVariants: UIContainer | UIVariant[], uiconfig: UIConfig = {}) {
     if (playerUiOrUiVariants instanceof UIContainer) {
       // Single-UI constructor has been called, transform arguments to UIVariant[] signature
       let playerUi = <UIContainer>playerUiOrUiVariants;
@@ -126,7 +126,7 @@ export class UIManager {
 
     this.player = player;
     this.config = {
-      ...config,
+      ...uiconfig,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
@@ -139,9 +139,7 @@ export class UIManager {
      */
     const updateConfig = () => {
       const playerSourceConfig = player.getSource() || {};
-
-      const uiConfig = { ...config };
-      uiConfig.metadata = uiConfig.metadata || {};
+      this.config.metadata = JSON.parse(JSON.stringify(uiconfig.metadata || {}));
 
       // Extract the UI-related config properties from the source config
       const playerSourceUiConfig: UIConfig = {
@@ -157,11 +155,10 @@ export class UIManager {
       // Player source config takes precedence over the UI config, because the config in the source is attached
       // to a source which changes with every player.load, whereas the UI config stays the same for the whole
       // lifetime of the player instance.
-      this.config.metadata = this.config.metadata || {};
-      this.config.metadata.title = playerSourceUiConfig.metadata.title || uiConfig.metadata.title;
-      this.config.metadata.description = playerSourceUiConfig.metadata.description || uiConfig.metadata.description;
-      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiConfig.metadata.markers || [];
-      this.config.recommendations = playerSourceUiConfig.recommendations || uiConfig.recommendations || [];
+      this.config.metadata.title = playerSourceUiConfig.metadata.title || uiconfig.metadata.title;
+      this.config.metadata.description = playerSourceUiConfig.metadata.description || uiconfig.metadata.description;
+      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [];
+      this.config.recommendations = playerSourceUiConfig.recommendations || uiconfig.recommendations || [];
     };
 
     updateConfig();
@@ -172,12 +169,12 @@ export class UIManager {
       this.config.events.onUpdated.dispatch(this);
     });
 
-    if (config.container) {
+    if (uiconfig.container) {
       // Unfortunately "uiContainerElement = new DOM(config.container)" will not accept the container with
       // string|HTMLElement type directly, although it accepts both types, so we need to spit these two cases up here.
       // TODO check in upcoming TS versions if the container can be passed in directly, or fix the constructor
-      this.uiContainerElement = config.container instanceof HTMLElement ?
-        new DOM(config.container) : new DOM(config.container);
+      this.uiContainerElement = uiconfig.container instanceof HTMLElement ?
+        new DOM(uiconfig.container) : new DOM(uiconfig.container);
     } else {
       this.uiContainerElement = new DOM(player.getContainer());
     }
@@ -209,8 +206,8 @@ export class UIManager {
     }
 
     // Switch on auto UI resolving by default
-    if (config.autoUiVariantResolve === undefined) {
-      config.autoUiVariantResolve = true;
+    if (uiconfig.autoUiVariantResolve === undefined) {
+      uiconfig.autoUiVariantResolve = true;
     }
 
     let adStartedEvent: AdEvent = null; // keep the event stored here during ad playback
@@ -266,7 +263,7 @@ export class UIManager {
     };
 
     // Listen to the following events to trigger UI variant resolution
-    if (config.autoUiVariantResolve) {
+    if (uiconfig.autoUiVariantResolve) {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Play, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Paused, resolveUiVariant);
