@@ -97,12 +97,12 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }, 200);
     });
 
-    player.on(player.exports.Event.Play, () => {
+    player.on(player.exports.PlayerEvent.Play, () => {
       // Playback has really started, we can disable the flag to switch to normal toggle button handling
       firstPlay = false;
     });
 
-    player.on(player.exports.Event.Warning, (event: WarningEvent) => {
+    player.on(player.exports.PlayerEvent.Warning, (event: WarningEvent) => {
       // 5008 == Playback could not be started
       if (event.code === player.exports.WarningCode.PLAYBACK_COULD_NOT_BE_STARTED) {
         // if playback could not be started, reset the first play flag as we need the user interaction to start
@@ -112,7 +112,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     // Hide button while initializing a Cast session
     let castInitializationHandler = (event: PlayerEventBase) => {
-      if (event.type === player.exports.Event.CastStart) {
+      if (event.type === player.exports.PlayerEvent.CastStart) {
         // Hide button when session is being initialized
         this.hide();
       } else {
@@ -120,9 +120,9 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         this.show();
       }
     };
-    player.on(player.exports.Event.CastStart, castInitializationHandler);
-    player.on(player.exports.Event.CastStarted, castInitializationHandler);
-    player.on(player.exports.Event.CastStopped, castInitializationHandler);
+    player.on(player.exports.PlayerEvent.CastStart, castInitializationHandler);
+    player.on(player.exports.PlayerEvent.CastStarted, castInitializationHandler);
+    player.on(player.exports.PlayerEvent.CastStopped, castInitializationHandler);
 
     const suppressPlayButtonTransitionAnimation = () => {
       // Disable the current animation
@@ -151,7 +151,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       suppressPlayButtonTransitionAnimation();
 
       // Show the play button without an animation if a play attempt is blocked
-      player.on(player.exports.Event.Warning, (event: WarningEvent) => {
+      player.on(player.exports.PlayerEvent.Warning, (event: WarningEvent) => {
         if (event.code === player.exports.WarningCode.PLAYBACK_COULD_NOT_BE_STARTED) {
           suppressPlayButtonTransitionAnimation();
         }

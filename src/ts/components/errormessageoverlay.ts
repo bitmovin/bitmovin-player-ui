@@ -100,7 +100,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
     let config = <ErrorMessageOverlayConfig>this.getConfig();
 
-    player.on(player.exports.Event.Error, (event: ErrorEvent) => {
+    player.on(player.exports.PlayerEvent.Error, (event: ErrorEvent) => {
       let message = ErrorUtils.defaultErrorMessageTranslator(event);
 
       // errorMessages configured in `UIConfig` take precedence `ErrorMessageOverlayConfig`
@@ -128,7 +128,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
       this.show();
     });
 
-    player.on(player.exports.Event.SourceLoaded, (event: PlayerEventBase) => {
+    player.on(player.exports.PlayerEvent.SourceLoaded, (event: PlayerEventBase) => {
       if (this.isShown()) {
         this.tvNoiseBackground.stop();
         this.hide();

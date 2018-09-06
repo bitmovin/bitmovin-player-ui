@@ -145,7 +145,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       isSeeking = false;
       this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
     });
-    player.on(player.exports.Event.CastStarted, () => {
+    player.on(player.exports.PlayerEvent.CastStarted, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
     });
     this.playerStateChange.subscribe((_, state) => {
@@ -188,26 +188,26 @@ export class UIContainer extends Container<UIContainerConfig> {
       this.playerStateChange.dispatch(this, state);
     };
 
-    player.on(player.exports.Event.SourceLoaded, () => {
+    player.on(player.exports.PlayerEvent.SourceLoaded, () => {
       updateState(PlayerUtils.PlayerState.Prepared);
     });
-    player.on(player.exports.Event.Play, () => {
+    player.on(player.exports.PlayerEvent.Play, () => {
       updateState(PlayerUtils.PlayerState.Playing);
     });
-    player.on(player.exports.Event.Paused, () => {
+    player.on(player.exports.PlayerEvent.Paused, () => {
       updateState(PlayerUtils.PlayerState.Paused);
     });
-    player.on(player.exports.Event.PlaybackFinished, () => {
+    player.on(player.exports.PlayerEvent.PlaybackFinished, () => {
       updateState(PlayerUtils.PlayerState.Finished);
     });
-    player.on(player.exports.Event.SourceUnloaded, () => {
+    player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
       updateState(PlayerUtils.PlayerState.Idle);
     });
     // Init in current player state
     updateState(PlayerUtils.getState(player));
 
     // Fullscreen marker class
-    player.on(player.exports.Event.ViewModeChanged, () => {
+    player.on(player.exports.PlayerEvent.ViewModeChanged, () => {
       if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
         container.addClass(this.prefixCss(UIContainer.FULLSCREEN));
       } else {
@@ -220,10 +220,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     // Buffering marker class
-    player.on(player.exports.Event.StallStarted, () => {
+    player.on(player.exports.PlayerEvent.StallStarted, () => {
       container.addClass(this.prefixCss(UIContainer.BUFFERING));
     });
-    player.on(player.exports.Event.StallEnded, () => {
+    player.on(player.exports.PlayerEvent.StallEnded, () => {
       container.removeClass(this.prefixCss(UIContainer.BUFFERING));
     });
     // Init buffering state
@@ -232,10 +232,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
 
     // RemoteControl marker class
-    player.on(player.exports.Event.CastStarted, () => {
+    player.on(player.exports.PlayerEvent.CastStarted, () => {
       container.addClass(this.prefixCss(UIContainer.REMOTE_CONTROL));
     });
-    player.on(player.exports.Event.CastStopped, () => {
+    player.on(player.exports.PlayerEvent.CastStopped, () => {
       container.removeClass(this.prefixCss(UIContainer.REMOTE_CONTROL));
     });
     // Init RemoteControl state
@@ -270,7 +270,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         container.addClass(this.prefixCss('layout-max-width-1200'));
       }
     };
-    player.on(player.exports.Event.PlayerResized, (e: PlayerResizedEvent) => {
+    player.on(player.exports.PlayerEvent.PlayerResized, (e: PlayerResizedEvent) => {
       // Convert strings (with "px" suffix) to ints
       let width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
       let height = Math.round(Number(e.height.substring(0, e.height.length - 2)));

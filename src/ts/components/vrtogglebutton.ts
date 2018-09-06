@@ -34,7 +34,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     let vrStateHandler = (ev: PlayerEventBase) => {
-      if (ev.type === player.exports.Event.Warning
+      if (ev.type === player.exports.PlayerEvent.Warning
         && (ev as WarningEvent).code !== player.exports.WarningCode.VR_RENDERING_ERROR) {
         // a code of 5006 signals a VR Error, so don't do anything on other warnings
         return;
@@ -61,12 +61,12 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.on(player.exports.Event.VRStereoChanged, vrStateHandler);
-    player.on(player.exports.Event.Warning, vrStateHandler);
+    player.on(player.exports.PlayerEvent.VRStereoChanged, vrStateHandler);
+    player.on(player.exports.PlayerEvent.Warning, vrStateHandler);
     // Hide button when VR source goes away
-    player.on(player.exports.Event.SourceUnloaded, vrButtonVisibilityHandler);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, vrButtonVisibilityHandler);
     // Show button when a new source is loaded and it's VR
-    player.on(player.exports.Event.SourceLoaded, vrButtonVisibilityHandler);
+    player.on(player.exports.PlayerEvent.SourceLoaded, vrButtonVisibilityHandler);
 
     this.onClick.subscribe(() => {
       if (!isVRStereoAvailable()) {

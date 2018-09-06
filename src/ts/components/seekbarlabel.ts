@@ -91,7 +91,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
     };
 
-    player.on(player.exports.Event.SourceLoaded, init);
+    player.on(player.exports.PlayerEvent.SourceLoaded, init);
     init();
   }
 

@@ -35,20 +35,20 @@ export class SubtitleSwitchHandler {
   private bindPlayerEvents(): void {
     const updateSubtitlesCallback = (): void => this.updateSubtitles();
 
-    this.player.on(this.player.exports.Event.SubtitleAdded, updateSubtitlesCallback);
-    this.player.on(this.player.exports.Event.SubtitleEnabled, () => {
+    this.player.on(this.player.exports.PlayerEvent.SubtitleAdded, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SubtitleEnabled, () => {
       this.selectCurrentSubtitle();
     });
-    this.player.on(this.player.exports.Event.SubtitleDisabled, () => {
+    this.player.on(this.player.exports.PlayerEvent.SubtitleDisabled, () => {
       this.selectCurrentSubtitle();
     });
-    this.player.on(this.player.exports.Event.SubtitleRemoved, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SubtitleRemoved, updateSubtitlesCallback);
     // Update subtitles when source goes away
-    this.player.on(this.player.exports.Event.SourceUnloaded, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, updateSubtitlesCallback);
     // Update subtitles when a new source is loaded
-    this.player.on(this.player.exports.Event.SourceLoaded, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, updateSubtitlesCallback);
     // Update subtitles when the period within a source changes
-    this.player.on(this.player.exports.Event.PeriodSwitched, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, updateSubtitlesCallback);
   }
 
   private updateSubtitles(): void {

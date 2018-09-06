@@ -51,10 +51,10 @@ export class VolumeSlider extends SeekBar {
       }
     };
 
-    player.on(player.exports.Event.SourceLoaded, volumeChangeHandler);
-    player.on(player.exports.Event.VolumeChanged, volumeChangeHandler);
-    player.on(player.exports.Event.Muted, volumeChangeHandler);
-    player.on(player.exports.Event.Unmuted, volumeChangeHandler);
+    player.on(player.exports.PlayerEvent.SourceLoaded, volumeChangeHandler);
+    player.on(player.exports.PlayerEvent.VolumeChanged, volumeChangeHandler);
+    player.on(player.exports.PlayerEvent.Muted, volumeChangeHandler);
+    player.on(player.exports.PlayerEvent.Unmuted, volumeChangeHandler);
 
     this.onSeekPreview.subscribeRateLimited((sender, args) => {
       if (args.scrubbing) {
@@ -67,10 +67,10 @@ export class VolumeSlider extends SeekBar {
 
     // Update the volume slider marker when the player resized, a source is loaded,
     // or the UI is configured. Check the seekbar for a detailed description.
-    player.on(player.exports.Event.PlayerResized, () => {
+    player.on(player.exports.PlayerEvent.PlayerResized, () => {
       this.refreshPlaybackPosition();
     });
-    player.on(player.exports.Event.SourceLoaded, () => {
+    player.on(player.exports.PlayerEvent.SourceLoaded, () => {
       this.refreshPlaybackPosition();
     });
     uimanager.onConfigured.subscribe(() => {

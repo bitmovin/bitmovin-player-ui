@@ -57,17 +57,17 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       skipMessage = config.skipMessage; // TODO adEvent.skipMessage || config.skipMessage;
       updateSkipMessageHandler();
 
-      player.on(player.exports.Event.TimeChanged, updateSkipMessageHandler);
+      player.on(player.exports.PlayerEvent.TimeChanged, updateSkipMessageHandler);
     };
 
     let adEndHandler = () => {
-      player.off(player.exports.Event.TimeChanged, updateSkipMessageHandler);
+      player.off(player.exports.PlayerEvent.TimeChanged, updateSkipMessageHandler);
     };
 
-    player.on(player.exports.Event.AdStarted, adStartHandler);
-    player.on(player.exports.Event.AdSkipped, adEndHandler);
-    player.on(player.exports.Event.AdError, adEndHandler);
-    player.on(player.exports.Event.AdFinished, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdStarted, adStartHandler);
+    player.on(player.exports.PlayerEvent.AdSkipped, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdError, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdFinished, adEndHandler);
 
     this.onClick.subscribe(() => {
       // Try to skip the ad (this only works if it is skippable so we don't need to take extra care of that here)
