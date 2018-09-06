@@ -71,11 +71,11 @@ The player constructs its internal UI instance from the `UIManager.Factory.build
 
 ```js
 const config = {
-    ...,
-    location: {
-        ui: '//domain.tld/path/to/bitmovinplayer-ui.js',
-        ui_css: 'styles/bitmovinplayer-ui.css',
-    },
+  ...,
+  location: {
+    ui: '//domain.tld/path/to/bitmovinplayer-ui.js',
+    ui_css: 'styles/bitmovinplayer-ui.css',
+  },
 };
 
 const player = new bitmovin.player.Player(document.getElementById('container-id'), config);
@@ -91,8 +91,8 @@ To use the player with an external custom UI instance, you need to deactivate th
 
 ```js
 const config = {
-    ...,
-    ui: false, // disable the built-in UI
+  ...,
+  ui: false, // disable the built-in UI
 };
 
 const player = new bitmovin.player.Player(document.getElementById('container-id'), config);
