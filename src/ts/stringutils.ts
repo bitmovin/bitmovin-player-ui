@@ -1,3 +1,5 @@
+import { PlayerAPI } from 'bitmovin-player';
+
 export namespace StringUtils {
 
   export let FORMAT_HHMMSS: string = 'hh:mm:ss';
@@ -66,7 +68,7 @@ export namespace StringUtils {
    * @param player the player to get the time data from
    * @returns {string} the ad message with filled placeholders
    */
-  export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: bitmovin.PlayerAPI) {
+  export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: PlayerAPI) {
     let adMessagePlaceholderRegex = new RegExp(
       '\\{(remainingTime|playedTime|adDuration)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g'

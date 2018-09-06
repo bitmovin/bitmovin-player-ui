@@ -1,12 +1,13 @@
 import {ClickOverlay} from './clickoverlay';
 import {UIInstanceManager} from '../uimanager';
+import { AdEvent, PlayerAPI } from 'bitmovin-player';
 
 /**
  * A simple click capture overlay for clickThroughUrls of ads.
  */
 export class AdClickOverlay extends ClickOverlay {
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let clickThroughUrl = <string>null;
@@ -14,8 +15,8 @@ export class AdClickOverlay extends ClickOverlay {
       || !player.getConfig().advertising.hasOwnProperty('clickThroughEnabled')
       || (player.getConfig().advertising as any).clickThroughEnabled;
 
-    player.on(player.exports.Event.AdStarted, (event: bitmovin.PlayerAPI.AdStartedEvent) => {
-      clickThroughUrl = event.clickThroughUrl;
+    player.on(player.exports.PlayerEvent.AdStarted, (event: AdEvent) => {
+      clickThroughUrl = null; // TODO event.clickThroughUrl;
 
       if (clickThroughEnabled) {
         this.setUrl(clickThroughUrl);
@@ -29,9 +30,9 @@ export class AdClickOverlay extends ClickOverlay {
     let adFinishedHandler = () => {
       this.setUrl(null);
     };
-    player.on(player.exports.Event.AdFinished, adFinishedHandler);
-    player.on(player.exports.Event.AdSkipped, adFinishedHandler);
-    player.on(player.exports.Event.AdError, adFinishedHandler);
+    player.on(player.exports.PlayerEvent.AdFinished, adFinishedHandler);
+    player.on(player.exports.PlayerEvent.AdSkipped, adFinishedHandler);
+    player.on(player.exports.PlayerEvent.AdError, adFinishedHandler);
 
     this.onClick.subscribe(() => {
       // Pause the ad when overlay is clicked
@@ -39,7 +40,7 @@ export class AdClickOverlay extends ClickOverlay {
 
       // Notify the player of the clicked ad
       // TODO add a callback to AdStarted to allow the ads renderer to signal a clickThroughUrl click
-      // player.fireEvent(player.exports.Event.AdClicked, {
+      // player.fireEvent(player.exports.PlayerEvent.AdClicked, {
       //   clickThroughUrl: clickThroughUrl,
       // });
     });

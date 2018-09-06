@@ -1,5 +1,5 @@
 import {ErrorMessageMap, ErrorMessageTranslator} from './components/errormessageoverlay';
-import ErrorEvent = bitmovin.PlayerAPI.ErrorEvent;
+import { ErrorEvent } from 'bitmovin-player';
 
 export namespace ErrorUtils {
 

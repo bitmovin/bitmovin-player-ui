@@ -1,5 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A button that toggles Apple macOS picture-in-picture mode.
@@ -15,7 +16,7 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {
@@ -40,10 +41,10 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
       }
     };
 
-    player.on(player.exports.Event.SourceLoaded, pipAvailableHander);
+    player.on(player.exports.PlayerEvent.SourceLoaded, pipAvailableHander);
 
     // Toggle button 'on' state
-    player.on(player.exports.Event.ViewModeChanged, () => {
+    player.on(player.exports.PlayerEvent.ViewModeChanged, () => {
       if (player.getViewMode() === player.exports.ViewMode.PictureInPicture) {
         this.on();
       } else {

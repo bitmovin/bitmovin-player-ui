@@ -1,11 +1,11 @@
 import {Container, ContainerConfig} from './container';
 import {UIInstanceManager} from '../uimanager';
-import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
 import { EventDispatcher } from '../eventdispatcher';
 import {DOM} from '../dom';
+import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
 
 /**
  * Overlays the player to display subtitles.
@@ -40,13 +40,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
-    player.on(player.exports.Event.CueEnter, (event: SubtitleCueEvent) => {
+    player.on(player.exports.PlayerEvent.CueEnter, (event: SubtitleCueEvent) => {
       // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
       if (event.position) {
         // Sometimes the positions are undefined, we assume them to be zero
@@ -67,7 +67,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.show();
     });
 
-    player.on(player.exports.Event.CueExit, (event: SubtitleCueEvent) => {
+    player.on(player.exports.PlayerEvent.CueExit, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
 
       if (labelToRemove) {
@@ -92,13 +92,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
     };
 
-    player.on(player.exports.Event.AudioChanged, subtitleClearHandler);
-    player.on(player.exports.Event.SubtitleEnabled, subtitleClearHandler);
-    player.on(player.exports.Event.SubtitleDisabled, subtitleClearHandler);
-    player.on(player.exports.Event.Seek, subtitleClearHandler);
-    player.on(player.exports.Event.TimeShift, subtitleClearHandler);
-    player.on(player.exports.Event.PlaybackFinished, subtitleClearHandler);
-    player.on(player.exports.Event.SourceUnloaded, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.AudioChanged, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.SubtitleDisabled, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.Seek, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.TimeShift, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.PlaybackFinished, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, subtitleClearHandler);
 
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
@@ -116,7 +116,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     subtitleClearHandler();
   }
 
-  configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configureCea608Captions(player: PlayerAPI, uimanager: UIInstanceManager): void {
     // The calculated font size
     let fontSize = 0;
     // The required letter spacing spread the text characters evenly across the grid
@@ -191,7 +191,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     };
 
-    player.on(player.exports.Event.PlayerResized, () => {
+    player.on(player.exports.PlayerEvent.PlayerResized, () => {
       if (enabled) {
         updateCEA608FontSize();
       } else {
@@ -233,7 +233,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       enabled = false;
     };
 
-    player.on(player.exports.Event.CueExit, () => {
+    player.on(player.exports.PlayerEvent.CueExit, () => {
       if (!this.subtitleManager.hasCues) {
         // Disable CEA-608 mode when all subtitles are gone (to allow correct formatting and
         // display of other types of subtitles, e.g. the formatting preview subtitle)
@@ -241,9 +241,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     });
 
-    player.on(player.exports.Event.SourceUnloaded, reset);
-    player.on(player.exports.Event.SubtitleEnabled, reset);
-    player.on(player.exports.Event.SubtitleDisabled, reset);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, reset);
+    player.on(player.exports.PlayerEvent.SubtitleEnabled, reset);
+    player.on(player.exports.PlayerEvent.SubtitleDisabled, reset);
   }
 
   enablePreviewSubtitleLabel(): void {

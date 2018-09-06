@@ -1,6 +1,7 @@
 import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A select box providing a selection between 'auto' and the available audio qualities.
@@ -11,7 +12,7 @@ export class AudioQualitySelectBox extends SelectBox {
     super(config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let selectCurrentAudioQuality = () => {
@@ -40,14 +41,14 @@ export class AudioQualitySelectBox extends SelectBox {
     });
 
     // Update qualities when audio track has changed
-    player.on(player.exports.Event.AudioChanged, updateAudioQualities);
+    player.on(player.exports.PlayerEvent.AudioChanged, updateAudioQualities);
     // Update qualities when source goes away
-    player.on(player.exports.Event.SourceUnloaded, updateAudioQualities);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, updateAudioQualities);
     // Update qualities when a new source is loaded
-    player.on(player.exports.Event.SourceLoaded, updateAudioQualities);
+    player.on(player.exports.PlayerEvent.SourceLoaded, updateAudioQualities);
     // Update qualities when the period within a source changes
-    player.on(player.exports.Event.PeriodSwitched, updateAudioQualities);
+    player.on(player.exports.PlayerEvent.PeriodSwitched, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
-    player.on(player.exports.Event.AudioQualityChanged, selectCurrentAudioQuality);
+    player.on(player.exports.PlayerEvent.AudioQualityChanged, selectCurrentAudioQuality);
   }
 }
