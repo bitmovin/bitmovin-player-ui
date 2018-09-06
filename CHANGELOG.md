@@ -15,10 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Extracted `UIManager.Factory` to separate `UIFactory`
 - Moved `UIConfig`, `TimelineMarker`, and `UIRecommendationConfig` from `uimanager.ts` to `uiconfig.ts`
+- Replaced local player type definitions with type definitions from the [bitmovin-player NPM package](https://www.npmjs.com/package/bitmovin-player)
 
 ### Removed
 - `SubtitleSettingsPanel` in favour of `SubtitleSettingsPanelPage` to use with the new navigation feature of `SettingsPanel`
 - Player v6 legacy skin (`skin-legacy`) and its UI variants
+- Disabled the ads UI variants because there is no ads module in player v8 yet that requires a UI (ads UI will be reintroduced with an upcoming release)
 
 ### Fixed
 - Type definitions are now generated correctly and referenced from `package.json`

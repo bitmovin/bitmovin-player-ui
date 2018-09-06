@@ -4,16 +4,12 @@ import {Component, ComponentConfig} from './components/component';
 import {Container} from './components/container';
 import { SeekBar, SeekBarMarker } from './components/seekbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
-import PlayerAPI = bitmovin.PlayerAPI;
-import Event = bitmovin.PlayerAPI.Event;
-import PlayerEventCallback = bitmovin.PlayerAPI.PlayerEventCallback;
-import AdStartedEvent = bitmovin.PlayerAPI.AdStartedEvent;
-import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { UIFactory } from './uifactory';
 import { TimelineMarker, UIConfig } from './uiconfig';
+import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent } from 'bitmovin-player';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -30,10 +26,12 @@ export interface InternalUIConfig extends UIConfig {
 export interface UIConditionContext {
   /**
    * Tells if the player is loading or playing an ad.
+   * @deprecated to be updated for the upcoming native ads player v8 module
    */
   isAd: boolean;
   /**
    * Tells the ad client (e.g. 'vast, 'ima') if {@link #isAd} is true.
+   * @deprecated to be updated for the upcoming native ads player v8 module
    */
   adClientType: string;
   /**
@@ -169,7 +167,7 @@ export class UIManager {
     updateConfig();
 
     // Update the configuration when a new source is loaded
-    this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.SourceLoaded, () => {
+    this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, () => {
       updateConfig();
       this.config.events.onUpdated.dispatch(this);
     });
@@ -215,10 +213,10 @@ export class UIManager {
       config.autoUiVariantResolve = true;
     }
 
-    let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
+    let adStartedEvent: AdEvent = null; // keep the event stored here during ad playback
 
     // Dynamically select a UI variant that matches the current UI condition.
-    let resolveUiVariant = (event: PlayerEvent) => {
+    let resolveUiVariant = (event: PlayerEventBase) => {
       // Make sure that the ON_AD_STARTED event data is persisted through ad playback in case other events happen
       // in the meantime, e.g. player resize. We need to store this data because there is no other way to find out
       // ad details (e.g. the ad client) while an ad is playing.
@@ -227,18 +225,18 @@ export class UIManager {
       if (event != null) {
         switch (event.type) {
           // When the ad starts, we store the event data
-          case player.exports.Event.AdStarted:
-            adStartedEvent = <AdStartedEvent>event;
+          case player.exports.PlayerEvent.AdStarted:
+            adStartedEvent = <AdEvent>event;
             break;
           // When the ad ends, we delete the event data
-          case player.exports.Event.AdFinished:
-          case player.exports.Event.AdSkipped:
-          case player.exports.Event.AdError:
+          case player.exports.PlayerEvent.AdFinished:
+          case player.exports.PlayerEvent.AdSkipped:
+          case player.exports.PlayerEvent.AdError:
             adStartedEvent = null;
             break;
           // When a new source is loaded during ad playback, there will be no ad end event so we detect the end
           // of the ad playback by checking isAd().
-          case player.exports.Event.SourceLoaded:
+          case player.exports.PlayerEvent.SourceLoaded:
             if (adStartedEvent && !player.ads.isLinearAdActive()) {
               adStartedEvent = null;
             }
@@ -250,7 +248,7 @@ export class UIManager {
 
       this.resolveUiVariant({
         isAd: ad,
-        adClientType: ad ? adStartedEvent.clientType : null,
+        adClientType: null,
       }, (context) => {
         // If this is an ad UI, we need to relay the saved ON_AD_STARTED event data so ad components can configure
         // themselves for the current ad.
@@ -262,22 +260,22 @@ export class UIManager {
            * Since this can break functionality of components that rely on this event, we relay the event to the
            * ads UI components with the following call.
            */
-          this.currentUi.getWrappedPlayer().fireEventInUI(this.player.exports.Event.AdStarted, adStartedEvent);
+          this.currentUi.getWrappedPlayer().fireEventInUI(this.player.exports.PlayerEvent.AdStarted, adStartedEvent);
         }
       });
     };
 
     // Listen to the following events to trigger UI variant resolution
     if (config.autoUiVariantResolve) {
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.SourceLoaded, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Play, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.Paused, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdStarted, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdFinished, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdSkipped, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.AdError, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.PlayerResized, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.Event.ViewModeChanged, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Play, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Paused, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdStarted, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdFinished, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdSkipped, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdError, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.PlayerResized, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.ViewModeChanged, resolveUiVariant);
     }
 
     // Initialize the UI
@@ -704,7 +702,7 @@ interface WrappedPlayer extends PlayerAPI {
    * @param event the event to fire
    * @param data data to send with the event
    */
-  fireEventInUI(event: Event, data: {}): void;
+  fireEventInUI(event: PlayerEvent, data: {}): void;
 }
 
 /**
@@ -772,7 +770,7 @@ class PlayerWrapper {
     }
 
     // Explicitly add a wrapper method for 'on' that adds added event handlers to the event list
-    wrapper.on = (eventType: Event, callback: PlayerEventCallback) => {
+    wrapper.on = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
       player.on(eventType, callback);
 
       if (!this.eventHandlers[eventType]) {
@@ -785,7 +783,7 @@ class PlayerWrapper {
     };
 
     // Explicitly add a wrapper method for 'off' that removes removed event handlers from the event list
-    wrapper.off = (eventType: Event, callback: PlayerEventCallback) => {
+    wrapper.off = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
       player.off(eventType, callback);
 
       if (this.eventHandlers[eventType]) {
@@ -795,10 +793,10 @@ class PlayerWrapper {
       return wrapper;
     };
 
-    wrapper.fireEventInUI = (event: Event, data: {}) => {
+    wrapper.fireEventInUI = (event: PlayerEvent, data: {}) => {
       if (this.eventHandlers[event]) { // check if there are handlers for this event registered
-        // Extend the data object with default values to convert it to a {@link PlayerEvent} object.
-        let playerEventData = <PlayerEvent>Object.assign({}, {
+        // Extend the data object with default values to convert it to a {@link PlayerEventBase} object.
+        let playerEventData = <PlayerEventBase>Object.assign({}, {
           timestamp: Date.now(),
           type: event,
           // Add a marker property so the UI can detect UI-internal player events
@@ -829,7 +827,7 @@ class PlayerWrapper {
   clearEventHandlers(): void {
     for (let eventType in this.eventHandlers) {
       for (let callback of this.eventHandlers[eventType]) {
-        this.player.off(eventType as any as PlayerAPI.Event, callback);
+        this.player.off(eventType as PlayerEvent, callback);
       }
     }
   }

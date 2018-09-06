@@ -1,7 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
-import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
-import WarningEvent = bitmovin.PlayerAPI.WarningEvent;
+import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
 
 /**
  * A button that toggles the video view between normal/mono and VR/stereo.
@@ -17,7 +16,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let isVRConfigured = () => {
@@ -34,9 +33,9 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
       return player.vr && Boolean(source.vr);
     };
 
-    let vrStateHandler = (ev: PlayerEvent) => {
-      if (ev.type === player.exports.Event.Warning && (ev as WarningEvent).code !== 5006) {
-        // a code of 5006 signals a VR Error, so don't do anything on other warnings
+    let vrStateHandler = (ev: PlayerEventBase) => {
+      if (ev.type === player.exports.PlayerEvent.Warning
+        && (ev as WarningEvent).code !== player.exports.WarningCode.VR_RENDERING_ERROR) {
         return;
       }
 
@@ -61,10 +60,10 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.on(player.exports.Event.VRStereoChanged, vrStateHandler);
-    player.on(player.exports.Event.Warning, vrStateHandler);
+    player.on(player.exports.PlayerEvent.VRStereoChanged, vrStateHandler);
+    player.on(player.exports.PlayerEvent.Warning, vrStateHandler);
     // Hide button when VR source goes away
-    player.on(player.exports.Event.SourceUnloaded, vrButtonVisibilityHandler);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, vrButtonVisibilityHandler);
     uimanager.getConfig().events.onUpdated.subscribe(vrButtonVisibilityHandler);
 
     this.onClick.subscribe(() => {
@@ -74,9 +73,9 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
         }
       } else {
         if (player.vr && player.vr.getStereo()) {
-          player.setVRStereo(false);
+          player.vr.setStereo(false);
         } else {
-          player.setVRStereo(true);
+          player.vr.setStereo(true);
         }
       }
     });

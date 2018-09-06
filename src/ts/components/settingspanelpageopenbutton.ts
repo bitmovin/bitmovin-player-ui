@@ -1,5 +1,6 @@
 import {UIInstanceManager} from '../uimanager';
 import {SettingsPanelPageNavigatorButton, SettingsPanelPageNavigatorConfig} from './settingspanelpagenavigatorbutton';
+import { PlayerAPI } from 'bitmovin-player';
 
 export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButton {
   constructor(config: SettingsPanelPageNavigatorConfig) {
@@ -11,7 +12,7 @@ export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButto
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {

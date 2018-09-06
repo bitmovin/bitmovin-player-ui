@@ -42,8 +42,8 @@ import { PlayerUtils } from './playerutils';
 import { Label } from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
-import PlayerAPI = bitmovin.PlayerAPI;
 import { UIConfig } from './uiconfig';
+import { PlayerAPI } from 'bitmovin-player';
 
 export namespace UIFactory {
 
@@ -321,11 +321,12 @@ export namespace UIFactory {
           && context.adClientType === 'vast';
       },
     }, {
-      ui: modernAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAd && context.adClientType === 'vast';
-      },
-    }, {
+    // TODO reimplement ads UI for native ads player v8 module
+    //   ui: modernAdsUI(),
+    //   condition: (context: UIConditionContext) => {
+    //     return context.isAd && context.adClientType === 'vast';
+    //   },
+    // }, {
       ui: modernSmallScreenUI(),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
@@ -337,11 +338,12 @@ export namespace UIFactory {
 
   export function buildModernSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(player, [{
-      ui: modernSmallScreenAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAd && context.adClientType === 'vast';
-      },
-    }, {
+    // TODO reimplement ads UI for native ads player v8 module
+    //   ui: modernSmallScreenAdsUI(),
+    //   condition: (context: UIConditionContext) => {
+    //     return context.isAd && context.adClientType === 'vast';
+    //   },
+    // }, {
       ui: modernSmallScreenUI(),
     }], config);
   }

@@ -1,6 +1,7 @@
 import {UIContainer, UIContainerConfig} from './uicontainer';
 import {UIInstanceManager} from '../uimanager';
 import {Timeout} from '../timeout';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * The base container for Cast receivers that contains all of the UI and takes care that the UI is shown on
@@ -14,7 +15,7 @@ export class CastUIContainer extends UIContainer {
     super(config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <UIContainerConfig>this.getConfig();
@@ -63,10 +64,10 @@ export class CastUIContainer extends UIContainer {
       }
     };
 
-    player.on(player.exports.Event.Play, showUiWithTimeout);
-    player.on(player.exports.Event.Paused, showUiPermanently);
-    player.on(player.exports.Event.Seek, showUiPermanently);
-    player.on(player.exports.Event.Seeked, showUiAfterSeek);
+    player.on(player.exports.PlayerEvent.Play, showUiWithTimeout);
+    player.on(player.exports.PlayerEvent.Paused, showUiPermanently);
+    player.on(player.exports.PlayerEvent.Seek, showUiPermanently);
+    player.on(player.exports.PlayerEvent.Seeked, showUiAfterSeek);
 
     uimanager.getConfig().events.onUpdated.subscribe(showUiWithTimeout);
   }

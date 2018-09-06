@@ -1,6 +1,7 @@
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
+import { AdEvent, PlayerAPI } from 'bitmovin-player';
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
@@ -16,7 +17,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = this.getConfig();
@@ -26,20 +27,20 @@ export class AdMessageLabel extends Label<LabelConfig> {
       this.setText(StringUtils.replaceAdMessagePlaceholders(text, null, player));
     };
 
-    let adStartHandler = (event: bitmovin.PlayerAPI.AdStartedEvent) => {
-      text = event.adMessage || config.text;
+    let adStartHandler = (event: AdEvent) => {
+      text = config.text; // TODO event.adMessage || config.text;
       updateMessageHandler();
 
-      player.on(player.exports.Event.TimeChanged, updateMessageHandler);
+      player.on(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);
     };
 
     let adEndHandler = () => {
-      player.off(player.exports.Event.TimeChanged, updateMessageHandler);
+      player.off(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);
     };
 
-    player.on(player.exports.Event.AdStarted, adStartHandler);
-    player.on(player.exports.Event.AdSkipped, adEndHandler);
-    player.on(player.exports.Event.AdError, adEndHandler);
-    player.on(player.exports.Event.AdFinished, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdStarted, adStartHandler);
+    player.on(player.exports.PlayerEvent.AdSkipped, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdError, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdFinished, adEndHandler);
   }
 }

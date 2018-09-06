@@ -1,13 +1,13 @@
 import {ButtonConfig, Button} from './button';
 import {UIInstanceManager} from '../uimanager';
-import SkipMessage = bitmovin.PlayerAPI.SkipMessage;
 import {StringUtils} from '../stringutils';
+import { AdEvent, PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
  */
 export interface AdSkipButtonConfig extends ButtonConfig {
-  skipMessage?: SkipMessage;
+  skipMessage?: any; // TODO SkipMessage;
 }
 
 /**
@@ -27,50 +27,51 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
     let skipMessage = config.skipMessage;
-    let adEvent = <bitmovin.PlayerAPI.AdStartedEvent>null;
+    // TODO let adEvent = <Events.AdEvent>null;
+    let skipOffset = 0; // TODO adEvent.skipOffset;
 
     let updateSkipMessageHandler = () => {
       // Display this button only if ad is skippable
-      if (adEvent.skipOffset) {
+      if (skipOffset) {
         this.show();
       } else {
         this.hide();
       }
 
       // Update the skip message on the button
-      if (player.getCurrentTime() < adEvent.skipOffset) {
+      if (player.getCurrentTime() < skipOffset) {
         this.setText(
-          StringUtils.replaceAdMessagePlaceholders(skipMessage.countdown, adEvent.skipOffset, player));
+          StringUtils.replaceAdMessagePlaceholders(skipMessage.countdown, skipOffset, player));
       } else {
         this.setText(skipMessage.skip);
       }
     };
 
-    let adStartHandler = (event: bitmovin.PlayerAPI.AdStartedEvent) => {
-      adEvent = event;
-      skipMessage = adEvent.skipMessage || config.skipMessage;
+    let adStartHandler = (event: AdEvent) => {
+      // TODO adEvent = event;
+      skipMessage = config.skipMessage; // TODO adEvent.skipMessage || config.skipMessage;
       updateSkipMessageHandler();
 
-      player.on(player.exports.Event.TimeChanged, updateSkipMessageHandler);
+      player.on(player.exports.PlayerEvent.TimeChanged, updateSkipMessageHandler);
     };
 
     let adEndHandler = () => {
-      player.off(player.exports.Event.TimeChanged, updateSkipMessageHandler);
+      player.off(player.exports.PlayerEvent.TimeChanged, updateSkipMessageHandler);
     };
 
-    player.on(player.exports.Event.AdStarted, adStartHandler);
-    player.on(player.exports.Event.AdSkipped, adEndHandler);
-    player.on(player.exports.Event.AdError, adEndHandler);
-    player.on(player.exports.Event.AdFinished, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdStarted, adStartHandler);
+    player.on(player.exports.PlayerEvent.AdSkipped, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdError, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdFinished, adEndHandler);
 
     this.onClick.subscribe(() => {
       // Try to skip the ad (this only works if it is skippable so we don't need to take extra care of that here)
-      player.skipAd();
+      player.ads.skip();
     });
   }
 }

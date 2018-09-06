@@ -1,5 +1,6 @@
 import {ListSelector, ListSelectorConfig} from './components/listselector';
-import { InternalUIConfig, UIInstanceManager, UIManager } from './uimanager';
+import { UIInstanceManager } from './uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Helper class to handle all subtitle related events
@@ -8,11 +9,11 @@ import { InternalUIConfig, UIInstanceManager, UIManager } from './uimanager';
  */
 export class SubtitleSwitchHandler {
 
-  private player: bitmovin.PlayerAPI;
+  private player: PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
   private uimanager: UIInstanceManager;
 
-  constructor(player: bitmovin.PlayerAPI, element: ListSelector<ListSelectorConfig>, uimanager: UIInstanceManager) {
+  constructor(player: PlayerAPI, element: ListSelector<ListSelectorConfig>, uimanager: UIInstanceManager) {
     this.player = player;
     this.listElement = element;
     this.uimanager = uimanager;
@@ -37,18 +38,18 @@ export class SubtitleSwitchHandler {
   private bindPlayerEvents(): void {
     const updateSubtitlesCallback = (): void => this.updateSubtitles();
 
-    this.player.on(this.player.exports.Event.SubtitleAdded, updateSubtitlesCallback);
-    this.player.on(this.player.exports.Event.SubtitleEnabled, () => {
+    this.player.on(this.player.exports.PlayerEvent.SubtitleAdded, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SubtitleEnabled, () => {
       this.selectCurrentSubtitle();
     });
-    this.player.on(this.player.exports.Event.SubtitleDisabled, () => {
+    this.player.on(this.player.exports.PlayerEvent.SubtitleDisabled, () => {
       this.selectCurrentSubtitle();
     });
-    this.player.on(this.player.exports.Event.SubtitleRemoved, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SubtitleRemoved, updateSubtitlesCallback);
     // Update subtitles when source goes away
-    this.player.on(this.player.exports.Event.SourceUnloaded, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, updateSubtitlesCallback);
     // Update subtitles when the period within a source changes
-    this.player.on(this.player.exports.Event.PeriodSwitched, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, updateSubtitlesCallback);
     this.uimanager.getConfig().events.onUpdated.subscribe(updateSubtitlesCallback);
   }
 
