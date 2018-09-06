@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [support-v2]
 
+## [2.19.0] (2018-09-06)
+
 ### Added
 - Support for image subtitles
 
