@@ -20,7 +20,7 @@
   "homepage": "https://github.com/bitmovin/bitmovin-player-ui#readme",
   "devDependencies": {
     "autoprefixer": "^6.5.2",
-    "bitmovin-player": "^8.0.0-rc3",
+    "bitmovin-player": "^8.0.0-rc4",
     "browser-sync": "^2.24.7",
     "browserify": "^13.1.1",
     "cssnano": "^3.8.0",
