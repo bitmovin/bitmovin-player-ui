@@ -415,7 +415,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.Seeked, () => {
       currentTimeSeekBar = player.getCurrentTime();
     });
-    player.on(player.exports.Event.SourceUnloaded, stopSmoothPlaybackPositionUpdater);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, stopSmoothPlaybackPositionUpdater);
 
     if (player.isPlaying()) {
       startSmoothPlaybackPositionUpdater();
