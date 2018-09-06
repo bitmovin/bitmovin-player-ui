@@ -93,9 +93,9 @@ export class UIManager {
    * Creates a UI manager with a single UI variant that will be permanently shown.
    * @param player the associated player of this UI
    * @param ui the UI to add to the player
-   * @param config optional UI configuration
+   * @param uiconfig optional UI configuration
    */
-  constructor(player: PlayerAPI, ui: UIContainer, config?: UIConfig);
+  constructor(player: PlayerAPI, ui: UIContainer, uiconfig?: UIConfig);
   /**
    * Creates a UI manager with a list of UI variants that will be dynamically selected and switched according to
    * the context of the UI.
@@ -107,9 +107,9 @@ export class UIManager {
    *
    * @param player the associated player of this UI
    * @param uiVariants a list of UI variants that will be dynamically switched
-   * @param config optional UI configuration
+   * @param uiconfig optional UI configuration
    */
-  constructor(player: PlayerAPI, uiVariants: UIVariant[], config?: UIConfig);
+  constructor(player: PlayerAPI, uiVariants: UIVariant[], uiconfig?: UIConfig);
   constructor(player: PlayerAPI, playerUiOrUiVariants: UIContainer | UIVariant[], uiconfig: UIConfig = {}) {
     if (playerUiOrUiVariants instanceof UIContainer) {
       // Single-UI constructor has been called, transform arguments to UIVariant[] signature
