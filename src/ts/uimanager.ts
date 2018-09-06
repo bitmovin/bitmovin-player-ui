@@ -9,7 +9,7 @@ import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { UIFactory } from './uifactory';
 import { TimelineMarker, UIConfig } from './uiconfig';
-import { PlayerAPI, PlayerEventCallback, AdBreakEvent, PlayerEventBase, PlayerEvent } from 'bitmovin-player';
+import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent } from 'bitmovin-player';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -213,7 +213,7 @@ export class UIManager {
       config.autoUiVariantResolve = true;
     }
 
-    let adStartedEvent: AdBreakEvent = null; // keep the event stored here during ad playback
+    let adStartedEvent: AdEvent = null; // keep the event stored here during ad playback
 
     // Dynamically select a UI variant that matches the current UI condition.
     let resolveUiVariant = (event: PlayerEventBase) => {
@@ -226,7 +226,7 @@ export class UIManager {
         switch (event.type) {
           // When the ad starts, we store the event data
           case player.exports.PlayerEvent.AdStarted:
-            adStartedEvent = <AdBreakEvent>event;
+            adStartedEvent = <AdEvent>event;
             break;
           // When the ad ends, we delete the event data
           case player.exports.PlayerEvent.AdFinished:
