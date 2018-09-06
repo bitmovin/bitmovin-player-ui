@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [develop]
+## [3.0.0-rc1]
+
+This major release is adjusted to the changed API of Bitmovin Player v8.
 
 ### Added
 - Support for image subtitles
@@ -13,11 +15,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `UIConfig.errorMessages` to allow customization of error messages via custom `ErrorMessageTranslator` | `ErrorMessageMap`
 
 ### Changed
-- Extracted `UIManager.Factory` to separate `UIFactory`
+- `play` and `pause` calls during seeking now have the issuer `ui-seek` instead of `ui`
+- Extracted/renamed `UIManager.Factory` to `UIFactory`
 - Moved `UIConfig`, `TimelineMarker`, and `UIRecommendationConfig` from `uimanager.ts` to `uiconfig.ts`
 - Replaced local player type definitions with type definitions from the [bitmovin-player NPM package](https://www.npmjs.com/package/bitmovin-player)
 
 ### Removed
+- Everything deprecated in 2.x
+- Player v7 feature detections and compatibility fallbacks
 - `SubtitleSettingsPanel` in favour of `SubtitleSettingsPanelPage` to use with the new navigation feature of `SettingsPanel`
 - Player v6 legacy skin (`skin-legacy`) and its UI variants
 - Disabled the ads UI variants because there is no ads module in player v8 yet that requires a UI (ads UI will be reintroduced with an upcoming release)
@@ -26,21 +31,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Type definitions are now generated correctly and referenced from `package.json`
 - Update timeline markers when loading a new source
 - Flickering playback position indicator when switching to a live-stream
-
-## [3.0.0 alpha]
-
-This major release is adjusted to the changed API of Bitmovin Player v8.
-
-### Changed
-- Player type definitions updated to player v8
-- `play` and `pause` calls during seeking now have the issuer `ui-seek` instead of `ui`
-
-### Removed
-- Everything deprecated in 2.x
-- Player v7 feature detections and compatibility fallbacks
-
-### Fixed
-- Missing custom `SkipMessage` texts while playing an advertisement
 
 ## [2.18.0] (2018-08-08)
 
@@ -436,6 +426,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.0.0-rc1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.18.0...v3.0.0-rc1
 [2.18.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.17.1...v2.18.0
 [2.17.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.17.0...v2.17.1
 [2.17.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.16.0...v2.17.0
