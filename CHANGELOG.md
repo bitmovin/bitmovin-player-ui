@@ -10,7 +10,7 @@ This major release is adjusted to the changed API of Bitmovin Player v8.
 
 ### Added
 - Support for image subtitles
-- Paging support for `SettingsPanel` via `SettingsPanelPage` to enable navigation to sub-settings
+- Paging support for `SettingsPanel` via `SettingsPanelPage` to enable navigation to sub-settings ([#119](https://github.com/bitmovin/bitmovin-player-ui/issues/119))
 - Default `ErrorMessageTranslator` with english error messages for the `ErrorMessageOverlay`
 - `UIConfig.errorMessages` to allow customization of error messages via custom `ErrorMessageTranslator` | `ErrorMessageMap`
 
