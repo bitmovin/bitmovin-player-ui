@@ -1,10 +1,11 @@
 import {Container, ContainerConfig} from './container';
 import {UIInstanceManager} from '../uimanager';
-import SubtitleCueEvent = bitmovin.PlayerAPI.SubtitleCueEvent;
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
 import { EventDispatcher } from '../eventdispatcher';
+import {DOM} from '../dom';
+import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
 
 /**
  * Overlays the player to display subtitles.
@@ -39,13 +40,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
-    player.addEventHandler(player.EVENT.ON_CUE_ENTER, (event: SubtitleCueEvent) => {
+    player.on(player.exports.PlayerEvent.CueEnter, (event: SubtitleCueEvent) => {
       // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
       if (event.position) {
         // Sometimes the positions are undefined, we assume them to be zero
@@ -65,7 +66,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.show();
     });
-    player.addEventHandler(player.EVENT.ON_CUE_EXIT, (event: SubtitleCueEvent) => {
+
+    player.on(player.exports.PlayerEvent.CueExit, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
 
       if (labelToRemove) {
@@ -90,12 +92,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
     };
 
-    player.addEventHandler(player.EVENT.ON_AUDIO_CHANGED, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_SEEK, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_TIME_SHIFT, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, subtitleClearHandler);
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.AudioChanged, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.SubtitleDisabled, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.Seek, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.TimeShift, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.PlaybackFinished, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, subtitleClearHandler);
 
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
@@ -113,7 +116,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     subtitleClearHandler();
   }
 
-  configureCea608Captions(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configureCea608Captions(player: PlayerAPI, uimanager: UIInstanceManager): void {
     // The calculated font size
     let fontSize = 0;
     // The required letter spacing spread the text characters evenly across the grid
@@ -188,7 +191,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     };
 
-    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => {
+    player.on(player.exports.PlayerEvent.PlayerResized, () => {
       if (enabled) {
         updateCEA608FontSize();
       } else {
@@ -230,7 +233,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       enabled = false;
     };
 
-    player.addEventHandler(player.EVENT.ON_CUE_EXIT, () => {
+    player.on(player.exports.PlayerEvent.CueExit, () => {
       if (!this.subtitleManager.hasCues) {
         // Disable CEA-608 mode when all subtitles are gone (to allow correct formatting and
         // display of other types of subtitles, e.g. the formatting preview subtitle)
@@ -238,8 +241,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     });
 
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, reset);
-    player.addEventHandler(player.EVENT.ON_SUBTITLE_CHANGED, reset);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, reset);
+    player.on(player.exports.PlayerEvent.SubtitleEnabled, reset);
+    player.on(player.exports.PlayerEvent.SubtitleDisabled, reset);
   }
 
   enablePreviewSubtitleLabel(): void {
@@ -289,11 +293,11 @@ class ActiveSubtitleManager {
   }
 
   /**
-   * Calculates a unique ID for a subtitle cue, which is needed to associate an ON_CUE_ENTER with its ON_CUE_EXIT
-   * event so we can remove the correct subtitle in ON_CUE_EXIT when multiple subtitles are active at the same time.
+   * Calculates a unique ID for a subtitle cue, which is needed to associate an CueEnter with its CueExit
+   * event so we can remove the correct subtitle in CueExit when multiple subtitles are active at the same time.
    * The start time plus the text should make a unique identifier, and in the only case where a collision
    * can happen, two similar texts will be displayed at a similar time and a similar position (or without position).
-   * The start time should always be known, because it is required to schedule the ON_CUE_ENTER event. The end time
+   * The start time should always be known, because it is required to schedule the CueEnter event. The end time
    * must not necessarily be known and therefore cannot be used for the ID.
    * @param event
    * @return {string}
@@ -317,8 +321,9 @@ class ActiveSubtitleManager {
     let id = ActiveSubtitleManager.calculateId(event);
 
     let label = new SubtitleLabel({
-      // Prefer the HTML subtitle text if set, else use the plain text
-      text: event.html || event.text,
+      // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
+      // else use the plain text
+      text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
     });
 
     // Create array for id if it does not exist
@@ -329,6 +334,18 @@ class ActiveSubtitleManager {
     this.activeSubtitleCueCount++;
 
     return label;
+  }
+
+  private static generateImageTagText(imageData: string): string {
+    if (!imageData) {
+      return;
+    }
+
+    const imgTag = new DOM('img', {
+      src: imageData,
+    });
+    imgTag.css('width', '100%');
+    return imgTag.get(0).outerHTML; // return the html as string
   }
 
   /**
@@ -362,7 +379,7 @@ class ActiveSubtitleManager {
        * with the same id, there is no way to know which one of the cues is to be deleted, so we just hope that FIFO
        * works fine. Theoretically it can happen that two cues with colliding ids are removed at different times, in
        * the wrong order. This rare case has yet to be observed. If it ever gets an issue, we can take the unstable
-       * cue end time (which can change between ON_CUE_ENTER and ON_CUE_EXIT IN ON_CUE_UPDATE) and use it as an
+       * cue end time (which can change between CueEnter and CueExit IN CueUpdate) and use it as an
        * additional hint to try and remove the correct one of the colliding cues.
        */
       let activeSubtitleCue = activeSubtitleCues.shift();

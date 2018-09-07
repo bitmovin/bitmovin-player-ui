@@ -1,9 +1,11 @@
 import {ContainerConfig, Container} from './container';
 import {Component, ComponentConfig} from './component';
 import {DOM} from '../dom';
-import {UIInstanceManager, UIRecommendationConfig} from '../uimanager';
+import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
 import {HugeReplayButton} from './hugereplaybutton';
+import { UIRecommendationConfig } from '../uiconfig';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Overlays the player and displays recommended videos.
@@ -24,7 +26,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let clearRecommendations = () => {
@@ -56,25 +58,18 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
       }
     };
 
-    // Add recommendation when a source is loaded
-    player.addEventHandler(player.EVENT.ON_READY, setupRecommendations);
+    uimanager.getConfig().events.onUpdated.subscribe(setupRecommendations);
     // Remove recommendations and hide overlay when source is unloaded
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
+    player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
       clearRecommendations();
       this.hide();
     });
     // Display recommendations when playback has finished
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, () => {
-      // Dismiss ON_PLAYBACK_FINISHED events at the end of ads
-      // TODO remove this workaround once issue #1278 is solved
-      if (player.isAd()) {
-        return;
-      }
-
+    player.on(player.exports.PlayerEvent.PlaybackFinished, () => {
       this.show();
     });
     // Hide recommendations when playback starts, e.g. a restart
-    player.addEventHandler(player.EVENT.ON_PLAY, () => {
+    player.on(player.exports.PlayerEvent.Play, () => {
       this.hide();
     });
 

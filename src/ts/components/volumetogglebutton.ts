@@ -1,5 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
-import {UIInstanceManager} from '../uimanager';
+import { UIInstanceManager } from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A button that toggles audio muting.
@@ -19,7 +20,7 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
     this.config = this.mergeConfig(config, defaultConfig, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let muteStateHandler = () => {
@@ -51,9 +52,13 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.addEventHandler(player.EVENT.ON_MUTED, muteStateHandler);
-    player.addEventHandler(player.EVENT.ON_UNMUTED, muteStateHandler);
-    player.addEventHandler(player.EVENT.ON_VOLUME_CHANGED, volumeLevelHandler);
+    player.on(player.exports.PlayerEvent.Muted, muteStateHandler);
+    player.on(player.exports.PlayerEvent.Unmuted, muteStateHandler);
+    player.on(player.exports.PlayerEvent.VolumeChanged, volumeLevelHandler);
+    uimanager.getConfig().events.onUpdated.subscribe(() => {
+      muteStateHandler();
+      volumeLevelHandler();
+    });
 
     this.onClick.subscribe(() => {
       if (player.isMuted()) {

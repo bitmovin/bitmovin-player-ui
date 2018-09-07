@@ -1,0 +1,41 @@
+@import '../variables';
+
+%ui-settings-panel-page {
+  display: none;
+
+  &.#{$prefix}-active {
+    display: block;
+  }
+
+  // A "line" in the panel: a container holding a label + control
+  .#{$prefix}-container-wrapper > * {
+    // Labels
+    &.#{$prefix}-ui-label {
+      display: inline-block;
+      font-size: .8em;
+      width: 9em;
+    }
+
+    // Controls (e.g. selectbox)
+    &.#{$prefix}-ui-selectbox {
+      width: 12em;
+    }
+  }
+
+  .#{$prefix}-ui-settings-panel-item {
+    border-bottom: 1px solid transparentize($color-secondary, .7);
+    padding: .5em 0;
+
+    &.#{$prefix}-last {
+      border-bottom: 0;
+    }
+
+    &.#{$prefix}-hidden {
+      display: none;
+    }
+  }
+}
+
+.#{$prefix}-ui-settings-panel-page {
+  @extend %ui-settings-panel-page;
+}

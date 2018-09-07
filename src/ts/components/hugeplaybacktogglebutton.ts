@@ -2,8 +2,7 @@ import {ToggleButtonConfig} from './togglebutton';
 import {PlaybackToggleButton} from './playbacktogglebutton';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
-import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
-import WarningEvent = bitmovin.PlayerAPI.WarningEvent;
+import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
 
 /**
  * A button that overlays the video and toggles between playback and pause.
@@ -19,12 +18,12 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     // Update button state through API events
     super.configure(player, uimanager, false);
 
     let togglePlayback = () => {
-      if (player.isPlaying()) {
+      if (player.isPlaying() || this.isPlayInitiated) {
         player.pause('ui');
       } else {
         player.play('ui');
@@ -32,10 +31,10 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     };
 
     let toggleFullscreen = () => {
-      if (player.isFullscreen()) {
-        player.exitFullscreen();
+      if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
+        player.setViewMode(player.exports.ViewMode.Inline);
       } else {
-        player.enterFullscreen();
+        player.setViewMode(player.exports.ViewMode.Fullscreen);
       }
     };
 
@@ -65,7 +64,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       // by the user. A deferred playback start through the timeout below is not considered as user action and
       // therefore ignored by mobile browsers.
       if (firstPlay) {
-        // Try to start playback. Then we wait for ON_PLAY and only when it arrives, we disable the firstPlay flag.
+        // Try to start playback. Then we wait for Play and only when it arrives, we disable the firstPlay flag.
         // If we disable the flag here, onClick was triggered programmatically instead of by a user interaction, and
         // playback is blocked (e.g. on mobile devices due to the programmatic play() call), we loose the chance to
         // ever start playback through a user interaction again with this button.
@@ -98,22 +97,21 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }, 200);
     });
 
-    player.addEventHandler(player.EVENT.ON_PLAY, () => {
+    player.on(player.exports.PlayerEvent.Play, () => {
       // Playback has really started, we can disable the flag to switch to normal toggle button handling
       firstPlay = false;
     });
 
-    player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
-      // 5008 == Playback could not be started
-      if (event.code === 5008) {
+    player.on(player.exports.PlayerEvent.Warning, (event: WarningEvent) => {
+      if (event.code === player.exports.WarningCode.PLAYBACK_COULD_NOT_BE_STARTED) {
         // if playback could not be started, reset the first play flag as we need the user interaction to start
         firstPlay = true;
       }
     });
 
     // Hide button while initializing a Cast session
-    let castInitializationHandler = (event: PlayerEvent) => {
-      if (event.type === player.EVENT.ON_CAST_START) {
+    let castInitializationHandler = (event: PlayerEventBase) => {
+      if (event.type === player.exports.PlayerEvent.CastStart) {
         // Hide button when session is being initialized
         this.hide();
       } else {
@@ -121,9 +119,9 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         this.show();
       }
     };
-    player.addEventHandler(player.EVENT.ON_CAST_START, castInitializationHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_STARTED, castInitializationHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_STOPPED, castInitializationHandler);
+    player.on(player.exports.PlayerEvent.CastStart, castInitializationHandler);
+    player.on(player.exports.PlayerEvent.CastStarted, castInitializationHandler);
+    player.on(player.exports.PlayerEvent.CastStopped, castInitializationHandler);
 
     const suppressPlayButtonTransitionAnimation = () => {
       // Disable the current animation
@@ -142,7 +140,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     // We only know if an autoplay attempt is upcoming if the player is not yet ready. It the player is already ready,
     // the attempt might be upcoming or might have already happened, but we don't have to handle that because we can
     // simply rely on isPlaying and the play state events.
-    const isAutoplayUpcoming = !player.isReady() && isAutoplayEnabled;
+    const isAutoplayUpcoming = !player.getSource() && isAutoplayEnabled;
 
     // Hide the play button when the player is already playing or autoplay is upcoming
     if (player.isPlaying() || isAutoplayUpcoming) {
@@ -152,8 +150,8 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       suppressPlayButtonTransitionAnimation();
 
       // Show the play button without an animation if a play attempt is blocked
-      player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
-        if (event.code === 5008) {
+      player.on(player.exports.PlayerEvent.Warning, (event: WarningEvent) => {
+        if (event.code === player.exports.WarningCode.PLAYBACK_COULD_NOT_BE_STARTED) {
           suppressPlayButtonTransitionAnimation();
         }
       });

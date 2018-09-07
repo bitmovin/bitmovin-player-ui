@@ -1,6 +1,7 @@
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
+import { AdEvent, PlayerAPI } from 'bitmovin-player';
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
@@ -16,31 +17,30 @@ export class AdMessageLabel extends Label<LabelConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let text = this.getConfig().text;
+    let config = this.getConfig();
+    let text = config.text;
 
     let updateMessageHandler = () => {
       this.setText(StringUtils.replaceAdMessagePlaceholders(text, null, player));
     };
 
-    let adStartHandler = (event: bitmovin.PlayerAPI.AdStartedEvent) => {
-      text = event.adMessage || text;
+    let adStartHandler = (event: AdEvent) => {
+      text = config.text; // TODO event.adMessage || config.text;
       updateMessageHandler();
 
-      player.addEventHandler(player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
-      player.addEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
+      player.on(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);
     };
 
     let adEndHandler = () => {
-      player.removeEventHandler(player.EVENT.ON_TIME_CHANGED, updateMessageHandler);
-      player.removeEventHandler(player.EVENT.ON_CAST_TIME_UPDATED, updateMessageHandler);
+      player.off(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);
     };
 
-    player.addEventHandler(player.EVENT.ON_AD_STARTED, adStartHandler);
-    player.addEventHandler(player.EVENT.ON_AD_SKIPPED, adEndHandler);
-    player.addEventHandler(player.EVENT.ON_AD_ERROR, adEndHandler);
-    player.addEventHandler(player.EVENT.ON_AD_FINISHED, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdStarted, adStartHandler);
+    player.on(player.exports.PlayerEvent.AdSkipped, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdError, adEndHandler);
+    player.on(player.exports.PlayerEvent.AdFinished, adEndHandler);
   }
 }

@@ -6,7 +6,6 @@
     <title>Bitmovin Player UI Demo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
     <link rel="stylesheet" href="css/demo.css">
-    <link rel="stylesheet" href="css/bitmovinplayer-ui-legacy.css">
     <link rel="stylesheet" href="css/bitmovinplayer-ui.css">
 </head>
 <body>
@@ -80,7 +79,7 @@
     </div>
 </div>
 
-<script src="https://bitmovin-a.akamaihd.net/bitmovin-player/stable/7.4/bitmovinplayer.js"></script>
+<script src="https://bitmovin-a.akamaihd.net/bitmovin-player/staging/8/bitmovinplayer.js"></script>
 <script src="js/bitmovinplayer-ui.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
@@ -93,10 +92,9 @@
         {url: '//bitdash-a.akamaihd.net/content/sintel/Sintel.webm', type: 'video/webm'}
       ],
       poster: '//bitdash-a.akamaihd.net/content/sintel/poster.png',
-      tracks: [{
-        file: '//bitdash-a.akamaihd.net/content/sintel/sprite/sprite.vtt',
-        kind: 'thumbnails'
-      }],
+      thumbnailTrack: {
+        url: '//bitdash-a.akamaihd.net/content/sintel/sprite/sprite.vtt',
+      },
       title: 'Sintel',
       description: 'A woman, Sintel, is attacked while traveling through a wintry mountainside. After defeating her attacker and taking his spear, she finds refuge in a shaman\'s hut...',
       markers: [
@@ -155,10 +153,10 @@
       hls: '//bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8',
       progressive: '//bitdash-a.akamaihd.net/content/MI201109210084_1/MI201109210084_mpeg-4_hd_high_1080p25_10mbits.mp4',
       poster: '//bitdash-a.akamaihd.net/content/art-of-motion_drm/art-of-motion_poster.jpg',
-      tracks: [{
-        file: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.vtt',
-        kind: 'thumbnails'
-      }], userId: 'demo_html5_vts', videoId: 'art-of-motion'
+      thumbnailTrack: {
+        url: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.vtt',
+      },
+      userId: 'demo_html5_vts', videoId: 'art-of-motion'
     },
     live: {
       dash: 'http://bitcdn-kronehit-live.bitmovin.com/mpds/stream-full.php?streamkey=bitcodin&segmenthost=bitcdn-kronehit-live.bitmovin.com&liveoffset=20'
@@ -169,45 +167,32 @@
   };
 
   var advertisingConfig = {
-    forceSinglePlayer: false,
-    //clickThroughEnabled: false,
-    client: 'vast',
-    admessage: 'staring contest (ಠ_ಠ) ... hold on for {remainingTime} seconds',
-    skipmessage: {
-      countdown: '┏(-_-)┛┗(-_-﻿ )┓┗(-_-)┛┏(-_-)┓ ({remainingTime})',
-      skip: 'SKIP'
-    },
-    schedule: {
-      'ad-skippable': {
-        offset: 'pre',
-        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
+    adBreaks: [
+      {
+        tag: {
+          // skippable
+          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+          type: 'vast',
+        },
+        position: 'pre',
       },
-      'ad-nonskippable': {
-        offset: '15',
-        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
-      },
-      'ad-skippable-ima': {
-        client: 'ima',
-        offset: '30',
-        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]'
-      },
-      'ad-nonskippable-ima': {
-        client: 'ima',
-        offset: '45',
-        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]'
+      {
+        tag: {
+          // nonskippable
+          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
+          type: 'vast',
+        },
+        position: '10',
       }
-    }
+    ]
   };
   var adsEnabled = false;
 
   var config = {
     key: 'YOUR KEY HERE',
-    source: sources.fullyFeatured,
-    style: {
-      ux: false
-    },
-    cast: {
-      enable: true
+    ui: false,
+    remotecontrol: {
+      type: 'googlecast',
     },
     advertising: adsEnabled ? advertisingConfig : null
   };
@@ -253,14 +238,15 @@
   var player;
   var uiManager;
   var playerSetup = function(config) {
-    player = bitmovin.player('player');
+    player = new bitmovin.player.Player(document.getElementById('player'), config);
 
-    player.setup(config).then(function() {
-      // Add UI to loaded player
-      uiManager = bitmovin.playerui.UIManager.Factory.buildDefaultUI(player, uiConfig);
+    // Add UI
+    uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
+
+    player.load(sources.fullyFeatured).then(function() {
+      console.log('source successful loaded');
     }, function(errorEvent) {
-      // Play setup failed, and there's no player UI yet to display the error in
-      console.log(errorEvent);
+      console.log('error while loading source', errorEvent);
     });
   };
 
@@ -391,12 +377,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        player.fireEvent(player.Event.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+        player.fireEvent(player.Event.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -420,12 +406,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        player.fireEvent(player.Event.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+        player.fireEvent(player.Event.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -463,12 +449,12 @@
         var cue = {
           text: text,
         };
-        player.fireEvent(player.EVENT.ON_CUE_ENTER, cue);
+        player.fireEvent(player.Event.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.EVENT.ON_CUE_EXIT, cue);
+        player.fireEvent(player.Event.CueExit, cue);
       };
 
       var cues = [];
@@ -537,7 +523,7 @@
   });
   // Add a checkbox for each event to toggle logging to console
   var eventIndex = 0;
-  for (var event in bitmovin.player.EVENT) {
+  for (var event in bitmovin.player.Event) {
     var checkbox = $('<input>', {
       'type': 'checkbox',
       'id': 'config-events-' + (eventIndex++)
@@ -549,9 +535,9 @@
       var eventName = checkbox.data('event');
 
       if (checked) {
-        player.addEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+        player.on(bitmovin.player.Event[eventName], eventConsoleLogger);
       } else {
-        player.removeEventHandler(bitmovin.player.EVENT[eventName], eventConsoleLogger);
+        player.off(bitmovin.player.Event[eventName], eventConsoleLogger);
       }
     });
 
@@ -560,8 +546,8 @@
 
   // Collect all UI factory methods which are basically the different built-in skins and skin types
   var uiFactoryMethods = [];
-  for (var member in bitmovin.playerui.UIManager.Factory) {
-    if (typeof bitmovin.playerui.UIManager.Factory[member] == 'function' && member.indexOf('build') === 0) {
+  for (var member in bitmovin.playerui.UIFactory) {
+    if (typeof bitmovin.playerui.UIFactory[member] == 'function' && member.indexOf('build') === 0) {
       uiFactoryMethods.push(member);
     }
   }
@@ -594,7 +580,7 @@
     if (factoryMethod.indexOf('buildDemo') === 0) {
       uiManager = bitmovin.playerui.DemoFactory[factoryMethod](player, uiConfig);
     } else {
-      uiManager = bitmovin.playerui.UIManager.Factory[factoryMethod](player, uiConfig);
+      uiManager = bitmovin.playerui.UIFactory[factoryMethod](player, uiConfig);
     }
   });
 

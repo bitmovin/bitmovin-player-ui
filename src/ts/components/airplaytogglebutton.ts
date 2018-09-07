@@ -1,5 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A button that toggles Apple AirPlay.
@@ -15,7 +16,7 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     if (!player.isAirplayAvailable) {
@@ -42,7 +43,7 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.addEventHandler(player.EVENT.ON_AIRPLAY_AVAILABLE, airPlayAvailableHandler);
+    player.on(player.exports.PlayerEvent.AirplayAvailable, airPlayAvailableHandler);
 
     // Startup init
     airPlayAvailableHandler(); // Hide button if AirPlay is not available

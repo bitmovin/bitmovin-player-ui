@@ -1,4 +1,6 @@
 import {ListSelector, ListSelectorConfig} from './components/listselector';
+import { UIInstanceManager } from './uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Helper class to handle all subtitle related events
@@ -7,12 +9,14 @@ import {ListSelector, ListSelectorConfig} from './components/listselector';
  */
 export class SubtitleSwitchHandler {
 
-  private player: bitmovin.PlayerAPI;
+  private player: PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
+  private uimanager: UIInstanceManager;
 
-  constructor(player: bitmovin.PlayerAPI, element: ListSelector<ListSelectorConfig>) {
+  constructor(player: PlayerAPI, element: ListSelector<ListSelectorConfig>, uimanager: UIInstanceManager) {
     this.player = player;
     this.listElement = element;
+    this.uimanager = uimanager;
 
     this.bindSelectionEvent();
     this.bindPlayerEvents();
@@ -21,30 +25,45 @@ export class SubtitleSwitchHandler {
 
   private bindSelectionEvent(): void {
     this.listElement.onItemSelected.subscribe((_, value: string) => {
-      this.player.setSubtitle(value === 'null' ? null : value);
+      // TODO add support for multiple concurrent subtitle selections
+      if (value === 'null') {
+        const currentSubtitle = this.player.subtitles.list().filter((subtitle) => subtitle.enabled).pop();
+        this.player.subtitles.disable(currentSubtitle.id);
+      } else {
+        this.player.subtitles.enable(value, true);
+      }
     });
   }
 
   private bindPlayerEvents(): void {
     const updateSubtitlesCallback = (): void => this.updateSubtitles();
 
-    this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_ADDED, updateSubtitlesCallback);
-    this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_CHANGED, () => {
+    this.player.on(this.player.exports.PlayerEvent.SubtitleAdded, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SubtitleEnabled, () => {
       this.selectCurrentSubtitle();
     });
-    this.player.addEventHandler(this.player.EVENT.ON_SUBTITLE_REMOVED, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SubtitleDisabled, () => {
+      this.selectCurrentSubtitle();
+    });
+    this.player.on(this.player.exports.PlayerEvent.SubtitleRemoved, updateSubtitlesCallback);
     // Update subtitles when source goes away
-    this.player.addEventHandler(this.player.EVENT.ON_SOURCE_UNLOADED, updateSubtitlesCallback);
-    // Update subtitles when a new source is loaded
-    this.player.addEventHandler(this.player.EVENT.ON_READY, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, updateSubtitlesCallback);
     // Update subtitles when the period within a source changes
-    this.player.addEventHandler(this.player.EVENT.ON_PERIOD_SWITCHED, updateSubtitlesCallback);
+    this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, updateSubtitlesCallback);
+    this.uimanager.getConfig().events.onUpdated.subscribe(updateSubtitlesCallback);
   }
 
   private updateSubtitles(): void {
     this.listElement.clearItems();
 
-    for (let subtitle of this.player.getAvailableSubtitles()) {
+    if (!this.player.subtitles) {
+      // Subtitles API not available (yet)
+      return;
+    }
+
+    this.listElement.addItem('null', 'off');
+
+    for (let subtitle of this.player.subtitles.list()) {
       this.listElement.addItem(subtitle.id, subtitle.label);
     }
 
@@ -53,7 +72,7 @@ export class SubtitleSwitchHandler {
   }
 
   private selectCurrentSubtitle() {
-    let currentSubtitle = this.player.getSubtitle();
+    let currentSubtitle = this.player.subtitles.list().filter((subtitle) => subtitle.enabled).pop();
 
     if (currentSubtitle) {
       this.listElement.selectItem(currentSubtitle.id);

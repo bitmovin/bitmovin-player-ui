@@ -1,5 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A button that toggles Apple macOS picture-in-picture mode.
@@ -15,21 +16,15 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    if (!player.isPictureInPictureAvailable) {
-      // If the player does not support PIP (player 7.0), we just hide this component and skip configuration
-      this.hide();
-      return;
-    }
-
     this.onClick.subscribe(() => {
-      if (player.isPictureInPictureAvailable()) {
-        if (player.isPictureInPicture()) {
-          player.exitPictureInPicture();
+      if (player.isViewModeAvailable(player.exports.ViewMode.PictureInPicture)) {
+        if (player.getViewMode() === player.exports.ViewMode.PictureInPicture) {
+          player.setViewMode(player.exports.ViewMode.Inline);
         } else {
-          player.enterPictureInPicture();
+          player.setViewMode(player.exports.ViewMode.PictureInPicture);
         }
       } else {
         if (console) {
@@ -39,26 +34,27 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
     });
 
     let pipAvailableHander = () => {
-      if (player.isPictureInPictureAvailable()) {
+      if (player.isViewModeAvailable(player.exports.ViewMode.PictureInPicture)) {
         this.show();
       } else {
         this.hide();
       }
     };
 
-    player.addEventHandler(player.EVENT.ON_READY, pipAvailableHander);
+    uimanager.getConfig().events.onUpdated.subscribe(pipAvailableHander);
 
     // Toggle button 'on' state
-    player.addEventHandler(player.EVENT.ON_PICTURE_IN_PICTURE_ENTER, () => {
-      this.on();
-    });
-    player.addEventHandler(player.EVENT.ON_PICTURE_IN_PICTURE_EXIT, () => {
-      this.off();
+    player.on(player.exports.PlayerEvent.ViewModeChanged, () => {
+      if (player.getViewMode() === player.exports.ViewMode.PictureInPicture) {
+        this.on();
+      } else {
+        this.off();
+      }
     });
 
     // Startup init
     pipAvailableHander(); // Hide button if PIP not available
-    if (player.isPictureInPicture()) {
+    if (player.getViewMode() === player.exports.ViewMode.PictureInPicture) {
       this.on();
     }
   }

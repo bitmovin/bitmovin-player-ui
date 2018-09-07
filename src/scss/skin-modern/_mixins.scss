@@ -1,5 +1,9 @@
 @import 'variables';
 
+@function hidden-animated-transition($duration) {
+  @return opacity $duration, visibility 0s;
+}
+
 @mixin hidden {
   &.#{$prefix}-hidden {
     display: none;
@@ -8,7 +12,7 @@
 
 @mixin hidden-animated($duration: $animation-duration) {
   opacity: 1;
-  transition: opacity $duration, visibility 0s;
+  transition: hidden-animated-transition($duration);
   visibility: visible;
 
   &.#{$prefix}-hidden {
@@ -16,6 +20,31 @@
     transition: opacity $duration, visibility $duration;
     visibility: hidden;
   }
+}
+
+/*
+ * this will use the existing `hidden-animated` mixin and add additional transitions properties
+ *
+ * Example:
+ * @include hidden-animated-with-additional-transitions($animation-duration,
+ *         (
+ *                 height: (.35s, cubic-bezier(.4, 0, .2, 1)),
+ *                 width: (.35s, cubic-bezier(.4, 0, .2, 1))
+ *         )
+ * );
+ */
+@mixin hidden-animated-with-additional-transitions($duration: $animation-duration, $transitions: ()) {
+  $transitions-string: hidden-animated-transition($duration);
+  @each $property, $property-options in $transitions {
+    $property-settings: $property;
+    @each $option in $property-options {
+      $property-settings: $property-settings $option;
+    }
+    $transitions-string: $transitions-string, $property-settings;
+  }
+
+  @include hidden-animated($duration);
+  transition: $transitions-string;
 }
 
 // Cover the whole parent element

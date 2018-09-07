@@ -1,9 +1,9 @@
 import {ContainerConfig, Container} from './container';
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
-import ErrorEvent = bitmovin.PlayerAPI.ErrorEvent;
 import {TvNoiseCanvas} from './tvnoisecanvas';
-import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
+import {ErrorUtils} from '../errorutils';
+import { ErrorEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 
 export interface ErrorMessageTranslator {
   (error: ErrorEvent): string;
@@ -29,17 +29,18 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
    * errorMessageOverlayConfig = {
    *   messages: function(error) {
    *     switch (error.code) {
-   *       // Overwrite error 3000 'Unknown error'
-   *       case 3000:
+   *       // Overwrite error 1000 'Unknown error'
+   *       case 1000:
    *         return 'Houston, we have a problem'
    *
-   *       // Transform error 3001 'Unsupported manifest format' to uppercase
-   *       case 3001:
-   *         return error.message.toUpperCase();
+   *       // Transform error 1201 'The downloaded manifest is invalid' to uppercase
+   *       case 1201:
+   *         var description = ErrorUtils.defaultErrorMessages[error.code];
+   *         return description.toUpperCase();
    *
-   *       // Customize error 3006 'Could not load manifest, got HTTP status code XXX'
-   *       case 3006:
-   *         var statusCode = error.message.substring(46);
+   *       // Customize error 1207 'The manifest could not be loaded'
+   *       case 1207:
+   *         var statusCode = error.data.statusCode;
    *         return 'Manifest loading failed with HTTP error ' + statusCode;
    *     }
    *     // Return unmodified error message for all other errors
@@ -52,17 +53,18 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
    * <code>
    * errorMessageOverlayConfig = {
    *   messages: {
-   *     // Overwrite error 3000 'Unknown error'
-   *     3000: 'Houston, we have a problem',
+   *     // Overwrite error 1000 'Unknown error'
+   *     1000: 'Houston, we have a problem',
    *
-   *     // Transform error 3001 'Unsupported manifest format' to uppercase
-   *     3001: function(error) {
-   *       return error.message.toUpperCase();
+   *     // Transform error 1201 'Unsupported manifest format' to uppercase
+   *     1201: function(error) {
+   *       var description = ErrorUtils.defaultErrorMessages[error.code];
+   *       return description.toUpperCase();
    *     },
    *
-   *     // Customize error 3006 'Could not load manifest, got HTTP status code XXX'
-   *     3006: function(error) {
-   *       var statusCode = error.message.substring(46);
+   *     // Customize error 1207 'The manifest could not be loaded'
+   *     1207: function(error) {
+   *       var statusCode = error.data.statusCode;
    *       return 'Manifest loading failed with HTTP error ' + statusCode;
    *     }
    *   }
@@ -93,22 +95,24 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <ErrorMessageOverlayConfig>this.getConfig();
 
-    player.addEventHandler(player.EVENT.ON_ERROR, (event: ErrorEvent) => {
-      let message = event.message;
+    player.on(player.exports.PlayerEvent.Error, (event: ErrorEvent) => {
+      let message = ErrorUtils.defaultErrorMessageTranslator(event);
 
+      // errorMessages configured in `UIConfig` take precedence `ErrorMessageOverlayConfig`
+      let errorMessages = uimanager.getConfig().errorMessages || config.messages;
       // Process message translations
-      if (config.messages) {
-        if (typeof config.messages === 'function') {
+      if (errorMessages) {
+        if (typeof errorMessages === 'function') {
           // Translation function for all errors
-          message = config.messages(event);
-        } else if (config.messages[event.code]) {
+          message = errorMessages(event);
+        } else if (errorMessages[event.code]) {
           // It's not a translation function, so it must be a map of strings or translation functions
-          let customMessage = config.messages[event.code];
+          let customMessage = errorMessages[event.code];
 
           if (typeof customMessage === 'string') {
             message = customMessage;
@@ -124,7 +128,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
       this.show();
     });
 
-    player.addEventHandler(player.EVENT.ON_SOURCE_LOADED, (event: PlayerEvent) => {
+    player.on(player.exports.PlayerEvent.SourceLoaded, (event: PlayerEventBase) => {
       if (this.isShown()) {
         this.tvNoiseBackground.stop();
         this.hide();

@@ -1,6 +1,7 @@
 import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A select box providing a selection of different playback speeds.
@@ -13,7 +14,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     this.defaultPlaybackSpeeds = [0.25, 0.5, 1, 1.5, 2];
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.addDefaultItems();
@@ -28,13 +29,8 @@ export class PlaybackSpeedSelectBox extends SelectBox {
       this.setSpeed(playbackSpeed);
     };
 
-    // when the player hits onReady again, adjust the playback speed selection
-    player.addEventHandler(player.EVENT.ON_READY, setDefaultValue);
-
-    if (player.EVENT.ON_PLAYBACK_SPEED_CHANGED) {
-      // Since player 7.8.0
-      player.addEventHandler(player.EVENT.ON_PLAYBACK_SPEED_CHANGED, setDefaultValue);
-    }
+    player.on(player.exports.PlayerEvent.PlaybackSpeedChanged, setDefaultValue);
+    uimanager.getConfig().events.onUpdated.subscribe(setDefaultValue);
   }
 
   setSpeed(speed: number): void {

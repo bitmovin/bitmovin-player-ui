@@ -1,33 +1,33 @@
 import {Event, EventDispatcher, NoArgs} from './eventdispatcher';
 import {BrowserUtils} from './browserutils';
+import { UIInstanceManager } from './uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 export namespace PlayerUtils {
 
-  import PlayerAPI = bitmovin.PlayerAPI;
-
   export enum PlayerState {
-    IDLE,
-    PREPARED,
-    PLAYING,
-    PAUSED,
-    FINISHED,
+    Idle,
+    Prepared,
+    Playing,
+    Paused,
+    Finished,
   }
 
-  export function isTimeShiftAvailable(player: bitmovin.PlayerAPI): boolean {
+  export function isTimeShiftAvailable(player: PlayerAPI): boolean {
     return player.isLive() && player.getMaxTimeShift() !== 0;
   }
 
   export function getState(player: PlayerAPI): PlayerState {
     if (player.hasEnded()) {
-      return PlayerState.FINISHED;
+      return PlayerState.Finished;
     } else if (player.isPlaying()) {
-      return PlayerState.PLAYING;
+      return PlayerState.Playing;
     } else if (player.isPaused()) {
-      return PlayerState.PAUSED;
-    } else if (player.isReady()) {
-      return PlayerState.PREPARED;
+      return PlayerState.Paused;
+    } else if (player.getSource() != null) {
+      return PlayerState.Prepared;
     } else {
-      return PlayerState.IDLE;
+      return PlayerState.Idle;
     }
   }
 
@@ -48,11 +48,11 @@ export namespace PlayerUtils {
       let timeShiftDetector = () => {
         this.detect();
       };
-      // Try to detect timeshift availability in ON_READY, which works for DASH streams
-      player.addEventHandler(player.EVENT.ON_READY, timeShiftDetector);
+      // Try to detect timeshift availability when source is loaded, which works for DASH streams
+      player.on(player.exports.PlayerEvent.SourceLoaded, timeShiftDetector);
       // With HLS/NativePlayer streams, getMaxTimeShift can be 0 before the buffer fills, so we need to additionally
-      // check timeshift availability in ON_TIME_CHANGED
-      player.addEventHandler(player.EVENT.ON_TIME_CHANGED, timeShiftDetector);
+      // check timeshift availability in TimeChanged
+      player.on(player.exports.PlayerEvent.TimeChanged, timeShiftDetector);
     }
 
     detect(): void {
@@ -93,24 +93,25 @@ export namespace PlayerUtils {
     private player: PlayerAPI;
     private live: boolean;
     private liveChangedEvent = new EventDispatcher<PlayerAPI, LiveStreamDetectorEventArgs>();
+    private uimanager: UIInstanceManager;
 
-    constructor(player: PlayerAPI) {
+    constructor(player: PlayerAPI, uimanager: UIInstanceManager) {
       this.player = player;
+      this.uimanager = uimanager;
       this.live = undefined;
 
       let liveDetector = () => {
         this.detect();
       };
-      // Initialize when player is ready
-      player.addEventHandler(player.EVENT.ON_READY, liveDetector);
+      this.uimanager.getConfig().events.onUpdated.subscribe(liveDetector);
       // Re-evaluate when playback starts
-      player.addEventHandler(player.EVENT.ON_PLAY, liveDetector);
+      player.on(player.exports.PlayerEvent.Play, liveDetector);
 
       // HLS live detection workaround for Android:
       // Also re-evaluate during playback, because that is when the live flag might change.
       // (Doing it only in Android Chrome saves unnecessary overhead on other plattforms)
       if (BrowserUtils.isAndroid && BrowserUtils.isChrome) {
-        player.addEventHandler(player.EVENT.ON_TIME_CHANGED, liveDetector);
+        player.on(player.exports.PlayerEvent.TimeChanged, liveDetector);
       }
     }
 

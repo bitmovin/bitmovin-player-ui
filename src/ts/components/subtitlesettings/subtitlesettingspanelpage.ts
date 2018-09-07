@@ -1,36 +1,39 @@
-import {SettingsPanel, SettingsPanelConfig, SettingsPanelItem} from '../settingspanel';
+import {SettingsPanelPage} from '../settingspanelpage';
+import {SettingsPanel} from '../settingspanel';
+import {SubtitleOverlay} from '../subtitleoverlay';
+import {ContainerConfig} from '../container';
+import {SubtitleSettingsManager} from './subtitlesettingsmanager';
+import {Component, ComponentConfig} from '../component';
+import {FontSizeSelectBox} from './fontsizeselectbox';
+import {FontFamilySelectBox} from './fontfamilyselectbox';
 import {FontColorSelectBox} from './fontcolorselectbox';
 import {FontOpacitySelectBox} from './fontopacityselectbox';
-import {FontFamilySelectBox} from './fontfamilyselectbox';
-import {FontSizeSelectBox} from './fontsizeselectbox';
+import {CharacterEdgeSelectBox} from './characteredgeselectbox';
 import {BackgroundColorSelectBox} from './backgroundcolorselectbox';
 import {BackgroundOpacitySelectBox} from './backgroundopacityselectbox';
 import {WindowColorSelectBox} from './windowcolorselectbox';
 import {WindowOpacitySelectBox} from './windowopacityselectbox';
-import {CharacterEdgeSelectBox} from './characteredgeselectbox';
-import {SubtitleOverlay} from '../subtitleoverlay';
-import {Component, ComponentConfig} from '../component';
-import {UIInstanceManager} from '../../uimanager';
-import {SubtitleSettingsManager} from './subtitlesettingsmanager';
-import {SubtitleSettingsCloseButton} from './subtitlesettingsclosebutton';
 import {SubtitleSettingsResetButton} from './subtitlesettingsresetbutton';
+import {UIInstanceManager} from '../../uimanager';
+import {SettingsPanelPageBackButton} from '../settingspanelpagebackbutton';
+import {SettingsPanelItem} from '../settingspanelitem';
+import { PlayerAPI } from 'bitmovin-player';
 
-export interface SubtitleSettingsPanelConfig extends SettingsPanelConfig {
-  overlay: SubtitleOverlay;
+export interface SubtitleSettingsPanelPageConfig extends ContainerConfig {
   settingsPanel: SettingsPanel;
+  overlay: SubtitleOverlay;
 }
 
-/**
- * SubtitleSettingsPanel is a settings panel specific to subtitles settings
- **/
-export class SubtitleSettingsPanel extends SettingsPanel {
+export class SubtitleSettingsPanelPage extends SettingsPanelPage {
 
-  private overlay: SubtitleOverlay;
+  private readonly overlay: SubtitleOverlay;
+  private readonly settingsPanel: SettingsPanel;
 
-  constructor(config: SubtitleSettingsPanelConfig) {
+  constructor(config: SubtitleSettingsPanelPageConfig) {
     super(config);
 
     this.overlay = config.overlay;
+    this.settingsPanel = config.settingsPanel;
 
     let manager = new SubtitleSettingsManager();
 
@@ -63,8 +66,9 @@ export class SubtitleSettingsPanel extends SettingsPanel {
         new SettingsPanelItem('Window opacity', new WindowOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(new SubtitleSettingsCloseButton({
-          subtitleSettingsPanel: this, settingsPanel: config.settingsPanel,
+        new SettingsPanelItem(new SettingsPanelPageBackButton({
+          container: this.settingsPanel,
+          text: 'Back',
         }), new SubtitleSettingsResetButton({
           settingsManager: manager,
         })),
@@ -72,14 +76,14 @@ export class SubtitleSettingsPanel extends SettingsPanel {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.onShow.subscribe(() => {
+    this.onActive.subscribe(() => {
       this.overlay.enablePreviewSubtitleLabel();
     });
 
-    this.onHide.subscribe(() => {
+    this.onInactive.subscribe(() => {
       this.overlay.removePreviewSubtitleLabel();
     });
   }

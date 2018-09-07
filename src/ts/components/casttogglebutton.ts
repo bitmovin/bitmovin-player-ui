@@ -1,5 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A button that toggles casting to a Cast receiver.
@@ -15,7 +16,7 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {
@@ -40,17 +41,17 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    player.addEventHandler(player.EVENT.ON_CAST_AVAILABLE, castAvailableHander);
+    player.on(player.exports.PlayerEvent.CastAvailable, castAvailableHander);
 
     // Toggle button 'on' state
-    player.addEventHandler(player.EVENT.ON_CAST_WAITING_FOR_DEVICE, () => {
+    player.on(player.exports.PlayerEvent.CastWaitingForDevice, () => {
       this.on();
     });
-    player.addEventHandler(player.EVENT.ON_CAST_STARTED, () => {
-      // When a session is resumed, there is no ON_CAST_START event, so we also need to toggle here for such cases
+    player.on(player.exports.PlayerEvent.CastStarted, () => {
+      // When a session is resumed, there is no CastStart event, so we also need to toggle here for such cases
       this.on();
     });
-    player.addEventHandler(player.EVENT.ON_CAST_STOPPED, () => {
+    player.on(player.exports.PlayerEvent.CastStopped, () => {
       this.off();
     });
 

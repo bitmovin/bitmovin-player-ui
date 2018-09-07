@@ -1,5 +1,6 @@
 import {SeekBar, SeekBarConfig} from './seekbar';
 import {UIInstanceManager} from '../uimanager';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
@@ -29,7 +30,7 @@ export class VolumeSlider extends SeekBar {
     }, this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager, false);
 
     let config = <VolumeSliderConfig>this.getConfig();
@@ -50,10 +51,10 @@ export class VolumeSlider extends SeekBar {
       }
     };
 
-    player.addEventHandler(player.EVENT.ON_READY, volumeChangeHandler);
-    player.addEventHandler(player.EVENT.ON_VOLUME_CHANGED, volumeChangeHandler);
-    player.addEventHandler(player.EVENT.ON_MUTED, volumeChangeHandler);
-    player.addEventHandler(player.EVENT.ON_UNMUTED, volumeChangeHandler);
+    player.on(player.exports.PlayerEvent.VolumeChanged, volumeChangeHandler);
+    player.on(player.exports.PlayerEvent.Muted, volumeChangeHandler);
+    player.on(player.exports.PlayerEvent.Unmuted, volumeChangeHandler);
+    uimanager.getConfig().events.onUpdated.subscribe(volumeChangeHandler);
 
     this.onSeekPreview.subscribeRateLimited((sender, args) => {
       if (args.scrubbing) {
@@ -64,15 +65,16 @@ export class VolumeSlider extends SeekBar {
       player.setVolume(percentage, VolumeSlider.issuerName);
     });
 
-    // Update the volume slider marker when the player resized, a source is loaded and player is ready,
+    // Update the volume slider marker when the player resized, a source is loaded,
     // or the UI is configured. Check the seekbar for a detailed description.
-    player.addEventHandler(player.EVENT.ON_PLAYER_RESIZE, () => {
-      this.refreshPlaybackPosition();
-    });
-    player.addEventHandler(player.EVENT.ON_READY, () => {
+    player.on(player.exports.PlayerEvent.PlayerResized, () => {
       this.refreshPlaybackPosition();
     });
     uimanager.onConfigured.subscribe(() => {
+      this.refreshPlaybackPosition();
+    });
+
+    uimanager.getConfig().events.onUpdated.subscribe(() => {
       this.refreshPlaybackPosition();
     });
 

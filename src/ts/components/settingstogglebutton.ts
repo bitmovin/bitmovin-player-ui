@@ -3,6 +3,7 @@ import {SettingsPanel} from './settingspanel';
 import {UIInstanceManager} from '../uimanager';
 import {Component, ComponentConfig} from './component';
 import {ArrayUtils} from '../arrayutils';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -42,7 +43,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     }, <SettingsToggleButtonConfig>this.config);
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = <SettingsToggleButtonConfig>this.getConfig(); // TODO fix generics type inference
@@ -80,7 +81,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     if (config.autoHideWhenNoActiveSettings) {
       // Setup handler to show/hide button when the settings change
       let settingsPanelItemsChangedHandler = () => {
-        if (settingsPanel.hasActiveSettings()) {
+        if (settingsPanel.rootPageHasActiveSettings()) {
           if (this.isHidden()) {
             this.show();
           }

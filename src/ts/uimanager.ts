@@ -2,119 +2,14 @@ import {UIContainer} from './components/uicontainer';
 import {DOM} from './dom';
 import {Component, ComponentConfig} from './components/component';
 import {Container} from './components/container';
-import {PlaybackToggleButton} from './components/playbacktogglebutton';
-import {FullscreenToggleButton} from './components/fullscreentogglebutton';
-import {VRToggleButton} from './components/vrtogglebutton';
-import {VolumeToggleButton} from './components/volumetogglebutton';
 import { SeekBar, SeekBarMarker } from './components/seekbar';
-import {PlaybackTimeLabel, PlaybackTimeLabelMode} from './components/playbacktimelabel';
-import {ControlBar} from './components/controlbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
-import {SettingsToggleButton} from './components/settingstogglebutton';
-import {SettingsPanel, SettingsPanelItem} from './components/settingspanel';
-import {SubtitleSettingsPanel} from './components/subtitlesettings/subtitlesettingspanel';
-import {SubtitleSettingsLabel} from './components/subtitlesettings/subtitlesettingslabel';
-import {SubtitleSettingsOpenButton} from './components/subtitlesettings/subtitlesettingsopenbutton';
-import {VideoQualitySelectBox} from './components/videoqualityselectbox';
-import {Watermark} from './components/watermark';
-import {AudioQualitySelectBox} from './components/audioqualityselectbox';
-import {AudioTrackSelectBox} from './components/audiotrackselectbox';
-import {SeekBarLabel} from './components/seekbarlabel';
-import {VolumeSlider} from './components/volumeslider';
-import {SubtitleSelectBox} from './components/subtitleselectbox';
-import {SubtitleOverlay} from './components/subtitleoverlay';
-import {VolumeControlButton} from './components/volumecontrolbutton';
-import {CastToggleButton} from './components/casttogglebutton';
-import {CastStatusOverlay} from './components/caststatusoverlay';
-import {ErrorMessageOverlay} from './components/errormessageoverlay';
-import {TitleBar} from './components/titlebar';
-import PlayerAPI = bitmovin.PlayerAPI;
-import {RecommendationOverlay} from './components/recommendationoverlay';
-import {AdMessageLabel} from './components/admessagelabel';
-import {AdSkipButton} from './components/adskipbutton';
-import {AdClickOverlay} from './components/adclickoverlay';
-import EVENT = bitmovin.PlayerAPI.EVENT;
-import PlayerEventCallback = bitmovin.PlayerAPI.PlayerEventCallback;
-import AdStartedEvent = bitmovin.PlayerAPI.AdStartedEvent;
-import {PlaybackSpeedSelectBox} from './components/playbackspeedselectbox';
-import {BufferingOverlay} from './components/bufferingoverlay';
-import {CastUIContainer} from './components/castuicontainer';
-import {PlaybackToggleOverlay} from './components/playbacktoggleoverlay';
-import {CloseButton} from './components/closebutton';
-import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
-import {Label} from './components/label';
-import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
-import {AirPlayToggleButton} from './components/airplaytogglebutton';
-import {PictureInPictureToggleButton} from './components/pictureinpicturetogglebutton';
-import {Spacer} from './components/spacer';
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
-import { PlayerUtils } from './playerutils';
-
-export interface UIRecommendationConfig {
-  title: string;
-  url: string;
-  thumbnail?: string;
-  duration?: number;
-}
-
-/**
- * Marks a position on the playback timeline, e.g. a chapter or an ad break.
- */
-export interface TimelineMarker {
-  /**
-   * The time in the playback timeline (e.g. {@link SeekBar}) that should be marked.
-   */
-  time: number;
-  /**
-   * Optional duration that makes the marker mark an interval instead of a single moment in time.
-   */
-  duration?: number;
-  /**
-   * Optional title text of the marked position, e.g. a chapter name.
-   * Will be rendered in the {@link SeekBarLabel} attached to a {@link SeekBar}.
-   */
-  title?: string;
-  /**
-   * Optional CSS classes that are applied to the marker on a {@link SeekBar} and can be used to
-   * differentiate different types of markers by their style (e.g. different color of chapter markers
-   * and ad break markers).
-   * The CSS classes are also propagated to a connected {@link SeekBarLabel}.
-   *
-   * Multiple classes can be added to allow grouping of markers into types (e.g. chapter markers,
-   * ad break markers) by a shared class and still identify and style each marker with distinct
-   * classes (e.g. `['marker-type-chapter', 'chapter-number-1']`).
-   */
-  cssClasses?: string[];
-}
-
-export interface UIConfig {
-  /**
-   * Specifies the container in the DOM into which the UI will be added. Can be a CSS selector string or a
-   * HTMLElement object. By default, the player figure will be used ({@link PlayerAPI#getFigure}).
-   */
-  container?: string | HTMLElement;
-  metadata?: {
-    title?: string;
-    description?: string;
-    markers?: TimelineMarker[];
-  };
-  // TODO move recommendations into metadata in next major release
-  recommendations?: UIRecommendationConfig[];
-  /**
-   * Specifies if the UI variants should be resolved and switched automatically upon certain player events. The default
-   * is `true`. Should be set to `false` if purely manual switching through {@link UIManager.resolveUiVariant} is
-   * desired. A hybrid approach can be used by setting this to `true` (or leaving the default) and overriding
-   * automatic switches through a {@link UIManager.onUiVariantResolve} event handler.
-   */
-  autoUiVariantResolve?: boolean;
-  /**
-   * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
-   * Default: false
-   */
-  playbackSpeedSelectionEnabled?: boolean;
-}
+import { UIFactory } from './uifactory';
+import { TimelineMarker, UIConfig } from './uiconfig';
+import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent } from 'bitmovin-player';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -131,16 +26,12 @@ export interface InternalUIConfig extends UIConfig {
 export interface UIConditionContext {
   /**
    * Tells if the player is loading or playing an ad.
+   * @deprecated to be updated for the upcoming native ads player v8 module
    */
   isAd: boolean;
   /**
-   * Tells if the ad allows a UI. This is currently only true for VAST ads and cannot be used to differentiate between
-   * different ad clients (i.e. to display different UIs for different ad clients).
-   * @deprecated Will be removed in an upcoming major release, use {@link #adClientType} instead.
-   */
-  isAdWithUI: boolean;
-  /**
    * Tells the ad client (e.g. 'vast, 'ima') if {@link #isAd} is true.
+   * @deprecated to be updated for the upcoming native ads player v8 module
    */
   adClientType: string;
   /**
@@ -189,7 +80,7 @@ export class UIManager {
   private uiVariants: UIVariant[];
   private uiInstanceManagers: InternalUIInstanceManager[];
   private currentUi: InternalUIInstanceManager;
-  private config: InternalUIConfig;
+  private config: InternalUIConfig; // Conjunction of provided uiConfig and sourceConfig from the player
   private managerPlayerWrapper: PlayerWrapper;
 
   private events = {
@@ -200,9 +91,9 @@ export class UIManager {
    * Creates a UI manager with a single UI variant that will be permanently shown.
    * @param player the associated player of this UI
    * @param ui the UI to add to the player
-   * @param config optional UI configuration
+   * @param uiconfig optional UI configuration
    */
-  constructor(player: PlayerAPI, ui: UIContainer, config?: UIConfig);
+  constructor(player: PlayerAPI, ui: UIContainer, uiconfig?: UIConfig);
   /**
    * Creates a UI manager with a list of UI variants that will be dynamically selected and switched according to
    * the context of the UI.
@@ -214,10 +105,10 @@ export class UIManager {
    *
    * @param player the associated player of this UI
    * @param uiVariants a list of UI variants that will be dynamically switched
-   * @param config optional UI configuration
+   * @param uiconfig optional UI configuration
    */
-  constructor(player: PlayerAPI, uiVariants: UIVariant[], config?: UIConfig);
-  constructor(player: PlayerAPI, playerUiOrUiVariants: UIContainer | UIVariant[], config: UIConfig = {}) {
+  constructor(player: PlayerAPI, uiVariants: UIVariant[], uiconfig?: UIConfig);
+  constructor(player: PlayerAPI, playerUiOrUiVariants: UIContainer | UIVariant[], uiconfig: UIConfig = {}) {
     if (playerUiOrUiVariants instanceof UIContainer) {
       // Single-UI constructor has been called, transform arguments to UIVariant[] signature
       let playerUi = <UIContainer>playerUiOrUiVariants;
@@ -234,8 +125,12 @@ export class UIManager {
     }
 
     this.player = player;
+
+    // ensure that at least the metadata object does exist in the uiconfig
+    uiconfig.metadata = uiconfig.metadata ? uiconfig.metadata : {};
+
     this.config = {
-      ...config,
+      ...uiconfig,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
@@ -247,10 +142,8 @@ export class UIManager {
      * that is used throughout the UI instance.
      */
     const updateConfig = () => {
-      const playerSourceConfig = player.getConfig().source || {};
-
-      const uiConfig = { ...config };
-      uiConfig.metadata = uiConfig.metadata || {};
+      const playerSourceConfig = player.getSource() || {};
+      this.config.metadata = JSON.parse(JSON.stringify(uiconfig.metadata || {}));
 
       // Extract the UI-related config properties from the source config
       const playerSourceUiConfig: UIConfig = {
@@ -258,37 +151,36 @@ export class UIManager {
           // TODO move metadata into source.metadata namespace in player v8
           title: playerSourceConfig.title,
           description: playerSourceConfig.description,
-          markers: playerSourceConfig.markers,
+          markers: (playerSourceConfig as any).markers,
         },
-        recommendations: playerSourceConfig.recommendations,
+        recommendations: (playerSourceConfig as any).recommendations,
       };
 
       // Player source config takes precedence over the UI config, because the config in the source is attached
       // to a source which changes with every player.load, whereas the UI config stays the same for the whole
       // lifetime of the player instance.
-      this.config.metadata = this.config.metadata || {};
-      this.config.metadata.title = playerSourceUiConfig.metadata.title || uiConfig.metadata.title;
-      this.config.metadata.description = playerSourceUiConfig.metadata.description || uiConfig.metadata.description;
-      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiConfig.metadata.markers || [];
-      this.config.recommendations = playerSourceUiConfig.recommendations || uiConfig.recommendations || [];
+      this.config.metadata.title = playerSourceUiConfig.metadata.title || uiconfig.metadata.title;
+      this.config.metadata.description = playerSourceUiConfig.metadata.description || uiconfig.metadata.description;
+      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [];
+      this.config.recommendations = playerSourceUiConfig.recommendations || uiconfig.recommendations || [];
     };
 
     updateConfig();
 
     // Update the configuration when a new source is loaded
-    this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_SOURCE_LOADED, () => {
+    this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, () => {
       updateConfig();
       this.config.events.onUpdated.dispatch(this);
     });
 
-    if (config.container) {
+    if (uiconfig.container) {
       // Unfortunately "uiContainerElement = new DOM(config.container)" will not accept the container with
       // string|HTMLElement type directly, although it accepts both types, so we need to spit these two cases up here.
       // TODO check in upcoming TS versions if the container can be passed in directly, or fix the constructor
-      this.uiContainerElement = config.container instanceof HTMLElement ?
-        new DOM(config.container) : new DOM(config.container);
+      this.uiContainerElement = uiconfig.container instanceof HTMLElement ?
+        new DOM(uiconfig.container) : new DOM(uiconfig.container);
     } else {
-      this.uiContainerElement = new DOM(player.getFigure());
+      this.uiContainerElement = new DOM(player.getContainer());
     }
 
     // Create UI instance managers for the UI variants
@@ -318,14 +210,14 @@ export class UIManager {
     }
 
     // Switch on auto UI resolving by default
-    if (config.autoUiVariantResolve === undefined) {
-      config.autoUiVariantResolve = true;
+    if (uiconfig.autoUiVariantResolve === undefined) {
+      uiconfig.autoUiVariantResolve = true;
     }
 
-    let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
+    let adStartedEvent: AdEvent = null; // keep the event stored here during ad playback
 
     // Dynamically select a UI variant that matches the current UI condition.
-    let resolveUiVariant = (event: PlayerEvent) => {
+    let resolveUiVariant = (event: PlayerEventBase) => {
       // Make sure that the ON_AD_STARTED event data is persisted through ad playback in case other events happen
       // in the meantime, e.g. player resize. We need to store this data because there is no other way to find out
       // ad details (e.g. the ad client) while an ad is playing.
@@ -334,20 +226,19 @@ export class UIManager {
       if (event != null) {
         switch (event.type) {
           // When the ad starts, we store the event data
-          case player.EVENT.ON_AD_STARTED:
-            adStartedEvent = <AdStartedEvent>event;
+          case player.exports.PlayerEvent.AdStarted:
+            adStartedEvent = <AdEvent>event;
             break;
           // When the ad ends, we delete the event data
-          case player.EVENT.ON_AD_FINISHED:
-          case player.EVENT.ON_AD_SKIPPED:
-          case player.EVENT.ON_AD_ERROR:
+          case player.exports.PlayerEvent.AdFinished:
+          case player.exports.PlayerEvent.AdSkipped:
+          case player.exports.PlayerEvent.AdError:
             adStartedEvent = null;
             break;
           // When a new source is loaded during ad playback, there will be no ad end event so we detect the end
-          // of the ad playback by checking isAd() in ON_READY, because ON_READY always arrives when the source
-          // changes.
-          case player.EVENT.ON_READY:
-            if (adStartedEvent && !player.isAd()) {
+          // of the ad playback by checking isAd().
+          case player.exports.PlayerEvent.SourceLoaded:
+            if (adStartedEvent && !player.ads.isLinearAdActive()) {
               adStartedEvent = null;
             }
         }
@@ -355,12 +246,10 @@ export class UIManager {
 
       // Detect if an ad has started
       let ad = adStartedEvent != null;
-      let adWithUI = ad && adStartedEvent.clientType === 'vast';
 
       this.resolveUiVariant({
         isAd: ad,
-        isAdWithUI: adWithUI,
-        adClientType: ad ? adStartedEvent.clientType : null,
+        adClientType: null,
       }, (context) => {
         // If this is an ad UI, we need to relay the saved ON_AD_STARTED event data so ad components can configure
         // themselves for the current ad.
@@ -372,23 +261,22 @@ export class UIManager {
            * Since this can break functionality of components that rely on this event, we relay the event to the
            * ads UI components with the following call.
            */
-          this.currentUi.getWrappedPlayer().fireEventInUI(this.player.EVENT.ON_AD_STARTED, adStartedEvent);
+          this.currentUi.getWrappedPlayer().fireEventInUI(this.player.exports.PlayerEvent.AdStarted, adStartedEvent);
         }
       });
     };
 
     // Listen to the following events to trigger UI variant resolution
-    if (config.autoUiVariantResolve) {
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_READY, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAY, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PAUSED, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_STARTED, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_FINISHED, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_SKIPPED, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_AD_ERROR, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAYER_RESIZE, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_ENTER, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_FULLSCREEN_EXIT, resolveUiVariant);
+    if (uiconfig.autoUiVariantResolve) {
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Play, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Paused, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdStarted, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdFinished, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdSkipped, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdError, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.PlayerResized, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.ViewModeChanged, resolveUiVariant);
     }
 
     // Initialize the UI
@@ -464,9 +352,8 @@ export class UIManager {
     // Determine the current context for which the UI variant will be resolved
     const defaultContext: UIConditionContext = {
       isAd: false,
-      isAdWithUI: false,
       adClientType: null,
-      isFullscreen: this.player.isFullscreen(),
+      isFullscreen: this.player.getViewMode() === this.player.exports.ViewMode.Fullscreen,
       isMobile: BrowserUtils.isMobile,
       isPlaying: this.player.isPlaying(),
       width: this.uiContainerElement.width(),
@@ -507,10 +394,9 @@ export class UIManager {
      * undesirable at this time. */
     this.uiContainerElement.append(dom);
 
-    // Some components initialize their state on ON_READY. When the UI is loaded after the player is already ready,
-    // they will never receive the event so we fire it from here in such cases.
-    if (player.isReady()) {
-      player.fireEventInUI(player.EVENT.ON_READY, {});
+    // When the UI is loaded after a source was loaded, we need to tell the components to initialize themselves
+    if (player.getSource()) {
+      this.config.events.onUpdated.dispatch(this);
     }
 
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
@@ -574,439 +460,6 @@ export class UIManager {
     }
 
     return false;
-  }
-}
-
-export namespace UIManager.Factory {
-
-  export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return UIManager.Factory.buildModernUI(player, config);
-  }
-
-  export function buildDefaultSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return UIManager.Factory.buildModernSmallScreenUI(player, config);
-  }
-
-  export function buildDefaultCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return UIManager.Factory.buildModernCastReceiverUI(player, config);
-  }
-
-  function modernUI() {
-    let subtitleOverlay = new SubtitleOverlay();
-
-    let settingsPanel = new SettingsPanel({
-      components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-      ],
-      hidden: true,
-    });
-
-    let subtitleSettingsPanel = new SubtitleSettingsPanel({
-      hidden: true,
-      overlay: subtitleOverlay,
-      settingsPanel: settingsPanel,
-    });
-
-    let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
-      subtitleSettingsPanel: subtitleSettingsPanel,
-      settingsPanel: settingsPanel,
-    });
-
-    settingsPanel.addComponent(
-      new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox()
-    ));
-
-    let controlBar = new ControlBar({
-      components: [
-        settingsPanel,
-        subtitleSettingsPanel,
-        new Container({
-          components: [
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
-          ],
-          cssClasses: ['controlbar-top'],
-        }),
-        new Container({
-          components: [
-            new PlaybackToggleButton(),
-            new VolumeToggleButton(),
-            new VolumeSlider(),
-            new Spacer(),
-            new PictureInPictureToggleButton(),
-            new AirPlayToggleButton(),
-            new CastToggleButton(),
-            new VRToggleButton(),
-            new SettingsToggleButton({ settingsPanel: settingsPanel }),
-            new FullscreenToggleButton(),
-          ],
-          cssClasses: ['controlbar-bottom'],
-        }),
-      ],
-    });
-
-    return new UIContainer({
-      components: [
-        subtitleOverlay,
-        new BufferingOverlay(),
-        new PlaybackToggleOverlay(),
-        new CastStatusOverlay(),
-        controlBar,
-        new TitleBar(),
-        new RecommendationOverlay(),
-        new Watermark(),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-modern'],
-    });
-  }
-
-  export function modernAdsUI() {
-    return new UIContainer({
-      components: [
-        new BufferingOverlay(),
-        new AdClickOverlay(),
-        new PlaybackToggleOverlay(),
-        new Container({
-          components: [
-            new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
-            new AdSkipButton(),
-          ],
-          cssClass: 'ui-ads-status',
-        }),
-        new ControlBar({
-          components: [
-            new Container({
-              components: [
-                new PlaybackToggleButton(),
-                new VolumeToggleButton(),
-                new VolumeSlider(),
-                new Spacer(),
-                new FullscreenToggleButton(),
-              ],
-              cssClasses: ['controlbar-bottom'],
-            }),
-          ],
-        }),
-      ],
-      cssClasses: ['ui-skin-modern', 'ui-skin-ads'],
-    });
-  }
-
-  export function modernSmallScreenUI() {
-    let subtitleOverlay = new SubtitleOverlay();
-
-    let settingsPanel = new SettingsPanel({
-      components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-      ],
-      hidden: true,
-      hideDelay: -1,
-    });
-
-    let subtitleSettingsPanel = new SubtitleSettingsPanel({
-      hidden: true,
-      hideDelay: -1,
-      overlay: subtitleOverlay,
-      settingsPanel: settingsPanel,
-    });
-
-    let subtitleSettingsOpenButton = new SubtitleSettingsOpenButton({
-      subtitleSettingsPanel: subtitleSettingsPanel,
-      settingsPanel: settingsPanel,
-    });
-
-    settingsPanel.addComponent(
-      new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox()
-    ));
-
-    settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
-    subtitleSettingsPanel.addComponent(new CloseButton({ target: subtitleSettingsPanel }));
-
-    let controlBar = new ControlBar({
-      components: [
-        new Container({
-          components: [
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
-          ],
-          cssClasses: ['controlbar-top'],
-        }),
-      ],
-    });
-
-    return new UIContainer({
-      components: [
-        subtitleOverlay,
-        new BufferingOverlay(),
-        new CastStatusOverlay(),
-        new PlaybackToggleOverlay(),
-        new RecommendationOverlay(),
-        controlBar,
-        new TitleBar({
-          components: [
-            new MetadataLabel({ content: MetadataLabelContent.Title }),
-            new CastToggleButton(),
-            new VRToggleButton(),
-            new PictureInPictureToggleButton(),
-            new AirPlayToggleButton(),
-            new VolumeToggleButton(),
-            new SettingsToggleButton({ settingsPanel: settingsPanel }),
-            new FullscreenToggleButton(),
-          ],
-        }),
-        settingsPanel,
-        subtitleSettingsPanel,
-        new Watermark(),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen'],
-      hidePlayerStateExceptions: [PlayerUtils.PlayerState.FINISHED],
-    });
-  }
-
-  export function modernSmallScreenAdsUI() {
-    return new UIContainer({
-      components: [
-        new BufferingOverlay(),
-        new AdClickOverlay(),
-        new PlaybackToggleOverlay(),
-        new TitleBar({
-          components: [
-            // dummy label with no content to move buttons to the right
-            new Label({ cssClass: 'label-metadata-title' }),
-            new FullscreenToggleButton(),
-          ],
-        }),
-        new Container({
-          components: [
-            new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
-            new AdSkipButton(),
-          ],
-          cssClass: 'ui-ads-status',
-        }),
-      ],
-      cssClasses: ['ui-skin-modern', 'ui-skin-ads', 'ui-skin-smallscreen'],
-    });
-  }
-
-  export function modernCastReceiverUI() {
-    let controlBar = new ControlBar({
-      components: [
-        new Container({
-          components: [
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 }),
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
-          ],
-          cssClasses: ['controlbar-top'],
-        }),
-      ],
-    });
-
-    return new CastUIContainer({
-      components: [
-        new SubtitleOverlay(),
-        new BufferingOverlay(),
-        new PlaybackToggleOverlay(),
-        new Watermark(),
-        controlBar,
-        new TitleBar({ keepHiddenWithoutMetadata: true }),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver'],
-    });
-  }
-
-  export function buildModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    // show smallScreen UI only on mobile/handheld devices
-    let smallScreenSwitchWidth = 600;
-
-    return new UIManager(player, [{
-      ui: modernSmallScreenAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAdWithUI;
-      },
-    }, {
-      ui: modernAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAdWithUI;
-      },
-    }, {
-      ui: modernSmallScreenUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
-      },
-    }, {
-      ui: modernUI(),
-    }], config);
-  }
-
-  export function buildModernSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, [{
-      ui: modernSmallScreenAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAdWithUI;
-      },
-    }, {
-      ui: modernSmallScreenUI(),
-    }], config);
-  }
-
-  export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, modernCastReceiverUI(), config);
-  }
-
-  function legacyUI() {
-    let settingsPanel = new SettingsPanel({
-      components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-      ],
-      hidden: true,
-    });
-
-    let controlBar = new ControlBar({
-      components: [
-        settingsPanel,
-        new PlaybackToggleButton(),
-        new SeekBar({ label: new SeekBarLabel() }),
-        new PlaybackTimeLabel(),
-        new VRToggleButton(),
-        new VolumeControlButton(),
-        new SettingsToggleButton({ settingsPanel: settingsPanel }),
-        new CastToggleButton(),
-        new FullscreenToggleButton(),
-      ],
-    });
-
-    return new UIContainer({
-      components: [
-        new SubtitleOverlay(),
-        new CastStatusOverlay(),
-        new PlaybackToggleOverlay(),
-        new Watermark(),
-        new RecommendationOverlay(),
-        controlBar,
-        new TitleBar(),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-legacy'],
-    });
-  }
-
-  function legacyAdsUI() {
-    return new UIContainer({
-      components: [
-        new AdClickOverlay(),
-        new ControlBar({
-          components: [
-            new PlaybackToggleButton(),
-            new AdMessageLabel(),
-            new VolumeControlButton(),
-            new FullscreenToggleButton(),
-          ],
-        }),
-        new AdSkipButton(),
-      ],
-      cssClasses: ['ui-skin-legacy', 'ui-skin-ads'],
-    });
-  }
-
-  function legacyCastReceiverUI() {
-    let controlBar = new ControlBar({
-      components: [
-        new SeekBar(),
-        new PlaybackTimeLabel(),
-      ],
-    });
-
-    return new UIContainer({
-      components: [
-        new SubtitleOverlay(),
-        new PlaybackToggleOverlay(),
-        new Watermark(),
-        controlBar,
-        new TitleBar(),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-legacy', 'ui-skin-cast-receiver'],
-    });
-  }
-
-  function legacyTestUI() {
-    let settingsPanel = new SettingsPanel({
-      components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-        new SettingsPanelItem('Subtitles', new SubtitleSelectBox()),
-      ],
-      hidden: true,
-    });
-
-    let controlBar = new ControlBar({
-      components: [settingsPanel,
-        new PlaybackToggleButton(),
-        new SeekBar({ label: new SeekBarLabel() }),
-        new PlaybackTimeLabel(),
-        new VRToggleButton(),
-        new VolumeToggleButton(),
-        new VolumeSlider(),
-        new VolumeControlButton(),
-        new VolumeControlButton({ vertical: false }),
-        new SettingsToggleButton({ settingsPanel: settingsPanel }),
-        new CastToggleButton(),
-        new FullscreenToggleButton(),
-      ],
-    });
-
-    return new UIContainer({
-      components: [
-        new SubtitleOverlay(),
-        new CastStatusOverlay(),
-        new PlaybackToggleOverlay(),
-        new Watermark(),
-        new RecommendationOverlay(),
-        controlBar,
-        new TitleBar(),
-        new ErrorMessageOverlay(),
-      ],
-      cssClasses: ['ui-skin-legacy'],
-    });
-  }
-
-  export function buildLegacyUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, [{
-      ui: legacyAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAdWithUI;
-      },
-    }, {
-      ui: legacyUI(),
-    }], config);
-  }
-
-  export function buildLegacyCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, legacyCastReceiverUI(), config);
-  }
-
-  export function buildLegacyTestUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, legacyTestUI(), config);
   }
 }
 
@@ -1242,7 +695,7 @@ interface WrappedPlayer extends PlayerAPI {
    * @param event the event to fire
    * @param data data to send with the event
    */
-  fireEventInUI(event: EVENT, data: {}): void;
+  fireEventInUI(event: PlayerEvent, data: {}): void;
 }
 
 /**
@@ -1309,15 +762,9 @@ class PlayerWrapper {
       }
     }
 
-    // Explicitly add a wrapper method for 'addEventHandler' that adds added event handlers to the event list
-    wrapper.addEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
-      // in player V8 addEventHandler was replaced by on
-      if (player.on) {
-        player.on(eventType, callback);
-      } else {
-        // keep backward compatibility for versions <7.7
-        player.addEventHandler(eventType, callback);
-      }
+    // Explicitly add a wrapper method for 'on' that adds added event handlers to the event list
+    wrapper.on = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
+      player.on(eventType, callback);
 
       if (!this.eventHandlers[eventType]) {
         this.eventHandlers[eventType] = [];
@@ -1328,14 +775,9 @@ class PlayerWrapper {
       return wrapper;
     };
 
-    // Explicitly add a wrapper method for 'removeEventHandler' that removes removed event handlers from the event list
-    wrapper.removeEventHandler = (eventType: EVENT, callback: PlayerEventCallback) => {
-      if (player.off) {
-        player.off(eventType, callback);
-      } else {
-        // keep backward compatibility for versions <7.7
-        player.removeEventHandler(eventType, callback);
-      }
+    // Explicitly add a wrapper method for 'off' that removes removed event handlers from the event list
+    wrapper.off = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
+      player.off(eventType, callback);
 
       if (this.eventHandlers[eventType]) {
         ArrayUtils.remove(this.eventHandlers[eventType], callback);
@@ -1344,10 +786,10 @@ class PlayerWrapper {
       return wrapper;
     };
 
-    wrapper.fireEventInUI = (event: EVENT, data: {}) => {
+    wrapper.fireEventInUI = (event: PlayerEvent, data: {}) => {
       if (this.eventHandlers[event]) { // check if there are handlers for this event registered
-        // Extend the data object with default values to convert it to a {@link PlayerEvent} object.
-        let playerEventData = <PlayerEvent>Object.assign({}, {
+        // Extend the data object with default values to convert it to a {@link PlayerEventBase} object.
+        let playerEventData = <PlayerEventBase>Object.assign({}, {
           timestamp: Date.now(),
           type: event,
           // Add a marker property so the UI can detect UI-internal player events
@@ -1378,7 +820,7 @@ class PlayerWrapper {
   clearEventHandlers(): void {
     for (let eventType in this.eventHandlers) {
       for (let callback of this.eventHandlers[eventType]) {
-        this.player.removeEventHandler(eventType, callback);
+        this.player.off(eventType as PlayerEvent, callback);
       }
     }
   }

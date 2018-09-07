@@ -1,9 +1,8 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
-import PlayerEvent = bitmovin.PlayerAPI.PlayerEvent;
 import {PlayerUtils} from '../playerutils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
-import WarningEvent = bitmovin.PlayerAPI.WarningEvent;
+import { PlayerAPI, WarningEvent } from 'bitmovin-player';
 
 /**
  * A button that toggles between playback and pause.
@@ -11,6 +10,7 @@ import WarningEvent = bitmovin.PlayerAPI.WarningEvent;
 export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
 
   private static readonly CLASS_STOPTOGGLE = 'stoptoggle';
+  protected isPlayInitiated: boolean;
 
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
@@ -19,22 +19,24 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
       cssClass: 'ui-playbacktogglebutton',
       text: 'Play/Pause',
     }, this.config);
+
+    this.isPlayInitiated = false;
   }
 
-  configure(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager, handleClickEvent: boolean = true): void {
+  configure(player: PlayerAPI, uimanager: UIInstanceManager, handleClickEvent: boolean = true): void {
     super.configure(player, uimanager);
 
     let isSeeking = false;
 
     // Handler to update button state based on player state
-    let playbackStateHandler = (event: PlayerEvent) => {
+    let playbackStateHandler = () => {
       // If the UI is currently seeking, playback is temporarily stopped but the buttons should
       // not reflect that and stay as-is (e.g indicate playback while seeking).
       if (isSeeking) {
         return;
       }
 
-      if (player.isPlaying()) {
+      if (player.isPlaying() || this.isPlayInitiated) {
         this.on();
       } else {
         this.off();
@@ -42,26 +44,33 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     // Call handler upon these events
-    player.addEventHandler(player.EVENT.ON_PLAY, playbackStateHandler);
-    player.addEventHandler(player.EVENT.ON_PAUSED, playbackStateHandler);
-    if (player.EVENT.ON_PLAYING) {
-      // Since player 7.3. Not really necessary but just in case we ever miss the ON_PLAY event.
-      player.addEventHandler(player.EVENT.ON_PLAYING, playbackStateHandler);
-    }
+    player.on(player.exports.PlayerEvent.Play, (e) => {
+      this.isPlayInitiated = true;
+      playbackStateHandler();
+    });
+
+    player.on(player.exports.PlayerEvent.Paused, (e) => {
+      this.isPlayInitiated = false;
+      playbackStateHandler();
+    });
+
+    player.on(player.exports.PlayerEvent.Playing, (e) => {
+      this.isPlayInitiated = false;
+      playbackStateHandler();
+    });
     // after unloading + loading a new source, the player might be in a different playing state (from playing into stopped)
-    player.addEventHandler(player.EVENT.ON_SOURCE_LOADED, playbackStateHandler);
-    player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, playbackStateHandler);
+    player.on(player.exports.PlayerEvent.SourceLoaded, playbackStateHandler);
+    uimanager.getConfig().events.onUpdated.subscribe(playbackStateHandler);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, playbackStateHandler);
     // when playback finishes, player turns to paused mode
-    player.addEventHandler(player.EVENT.ON_PLAYBACK_FINISHED, playbackStateHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_STARTED, playbackStateHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_PLAYING, playbackStateHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_PAUSED, playbackStateHandler);
-    player.addEventHandler(player.EVENT.ON_CAST_PLAYBACK_FINISHED, playbackStateHandler);
+    player.on(player.exports.PlayerEvent.PlaybackFinished, playbackStateHandler);
+    player.on(player.exports.PlayerEvent.CastStarted, playbackStateHandler);
 
     // When a playback attempt is rejected with warning 5008, we switch the button state back to off
-    // This is required for blocked autoplay, because there is no ON_PAUSED event in such case
-    player.addEventHandler(player.EVENT.ON_WARNING, (event: WarningEvent) => {
-      if (event.code === 5008) {
+    // This is required for blocked autoplay, because there is no Paused event in such case
+    player.on(player.exports.PlayerEvent.Warning, (event: WarningEvent) => {
+      if (event.code === player.exports.WarningCode.PLAYBACK_COULD_NOT_BE_STARTED) {
+        this.isPlayInitiated = false;
         this.off();
       }
     });
@@ -84,7 +93,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
       // When a button event triggers a player API call, events are fired which in turn call the event handler
       // above that updated the button state.
       this.onClick.subscribe(() => {
-        if (player.isPlaying()) {
+        if (player.isPlaying() || this.isPlayInitiated) {
           player.pause('ui');
         } else {
           player.play('ui');
@@ -101,6 +110,6 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     });
 
     // Startup init
-    playbackStateHandler(null);
+    playbackStateHandler();
   }
 }
