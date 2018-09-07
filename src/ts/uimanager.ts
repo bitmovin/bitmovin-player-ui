@@ -125,6 +125,10 @@ export class UIManager {
     }
 
     this.player = player;
+
+    // ensure that at least the metadata object does exist in the uiconfig
+    uiconfig.metadata = uiconfig.metadata ? uiconfig.metadata : {};
+
     this.config = {
       ...uiconfig,
       events: {
