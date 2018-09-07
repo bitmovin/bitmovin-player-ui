@@ -459,14 +459,6 @@ export class UIManager {
   }
 }
 
-/**
- * Export the {@link UIFactory} as `UIManager.Factory` for backwards compatibility with the UI module in player v8 RCs.
- * @deprecated remove with UI v4
- */
-export namespace UIManager {
-  export import Factory = UIFactory;
-}
-
 export interface SeekPreviewArgs extends NoArgs {
   /**
    * The timeline position in percent where the event originates from.
