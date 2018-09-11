@@ -765,6 +765,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.config.vertical) {
       px = this.seekBar.height() - px - this.seekBarPlaybackPositionMarker.height();
     }
+
     let style = this.config.vertical ?
       // -ms-transform required for IE9
       // -webkit-transform required for Android 4.4 WebView
