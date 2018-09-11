@@ -47,6 +47,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
+    super.configure(player, uimanager);
     const config = this.getConfig() as ToggleButtonConfig;
     this.getDomElement().addClass(this.prefixCss(config.offClass));
   }

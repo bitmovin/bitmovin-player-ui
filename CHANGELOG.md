@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
+- Positioning of `SeekBar`/`VolumeSlider` markers improved
 - Crash of `UIManager.release` when player instance was already destroyed
 
 ## [3.0.0]

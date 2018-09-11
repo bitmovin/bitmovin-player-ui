@@ -78,6 +78,13 @@ export class VolumeSlider extends SeekBar {
       this.refreshPlaybackPosition();
     });
 
+    uimanager.onComponentShow.subscribe(() => {
+      this.refreshPlaybackPosition();
+    });
+    uimanager.onComponentHide.subscribe(() => {
+      this.refreshPlaybackPosition();
+    });
+
     // Init volume bar
     volumeChangeHandler();
   }
