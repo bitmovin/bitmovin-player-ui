@@ -65,10 +65,6 @@ export class SeekBar extends Component<SeekBarConfig> {
    * The CSS class that is added to the DOM element while the seek bar is in 'seeking' state.
    */
   private static readonly CLASS_SEEKING = 'seeking';
-  /**
-   * Offset for the translateX/translateY value applied when scrubbing in %
-   */
-  private static TRANSLATE_OFFSET = -50;
 
   private seekBar: DOM;
   private seekBarPlaybackPosition: DOM;
@@ -769,19 +765,19 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.config.vertical) {
       px = this.seekBar.height() - px - this.seekBarPlaybackPositionMarker.height();
     }
-    const propertyValueString = 'calc(' + SeekBar.TRANSLATE_OFFSET + '% + ' + px + 'px)';
+
     let style = this.config.vertical ?
       // -ms-transform required for IE9
       // -webkit-transform required for Android 4.4 WebView
       {
-        'transform': 'translateY(' + propertyValueString + ')',
-        '-ms-transform': 'translateY(' + propertyValueString + ')',
-        '-webkit-transform': 'translateY(' + propertyValueString + ')',
+        'transform': 'translateY(' + px + 'px)',
+        '-ms-transform': 'translateY(' + px + 'px)',
+        '-webkit-transform': 'translateY(' + px + 'px)',
       } :
       {
-        'transform': 'translateX(' + propertyValueString + ')',
-        '-ms-transform': 'translateX(' + propertyValueString + ')',
-        '-webkit-transform': 'translateX(' + propertyValueString + ')',
+        'transform': 'translateX(' + px + 'px)',
+        '-ms-transform': 'translateX(' + px + 'px)',
+        '-webkit-transform': 'translateX(' + px + 'px)',
       };
     this.seekBarPlaybackPositionMarker.css(style);
   }

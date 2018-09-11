@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Changed
-- Positioning of `SeekBar` markers improved
+- Positioning of `SeekBar`/`VolumeSlider` markers improved
 
 ## [3.0.0]
 
