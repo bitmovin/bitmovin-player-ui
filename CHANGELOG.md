@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
-### Changed
+### Fixed
 - Positioning of `SeekBar`/`VolumeSlider` markers improved
+- Crash of `UIManager.release` when player instance was already destroyed
 
 ## [3.0.0]
 
@@ -431,6 +432,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.0.0...develop
 [3.0.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.18.0...v3.0.0
 [2.18.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.17.1...v2.18.0
 [2.17.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.17.0...v2.17.1
