@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Changed
+- Positioning of `SeekBar` markers improved
+
 ## [3.0.0]
 
 Major release for Bitmovin Player 8, mainly adjusted to the changed player API. For player 7, please use UI v2.x.
