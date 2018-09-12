@@ -40,7 +40,7 @@ export interface TimelineMarker {
 export interface UIConfig {
   /**
    * Specifies the container in the DOM into which the UI will be added. Can be a CSS selector string or a
-   * HTMLElement object. By default, the player figure will be used ({@link PlayerAPI#getFigure}).
+   * HTMLElement object. By default, the player container will be used ({@link PlayerAPI#getContainer}).
    */
   container?: string | HTMLElement;
   metadata?: {
