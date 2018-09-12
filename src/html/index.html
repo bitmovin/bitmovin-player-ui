@@ -523,7 +523,7 @@
   });
   // Add a checkbox for each event to toggle logging to console
   var eventIndex = 0;
-  for (var event in bitmovin.player.Event) {
+  for (var event in bitmovin.player.PlayerEvent) {
     var checkbox = $('<input>', {
       'type': 'checkbox',
       'id': 'config-events-' + (eventIndex++)
@@ -535,9 +535,9 @@
       var eventName = checkbox.data('event');
 
       if (checked) {
-        player.on(bitmovin.player.Event[eventName], eventConsoleLogger);
+        player.on(bitmovin.player.PlayerEvent[eventName], eventConsoleLogger);
       } else {
-        player.off(bitmovin.player.Event[eventName], eventConsoleLogger);
+        player.off(bitmovin.player.PlayerEvent[eventName], eventConsoleLogger);
       }
     });
 

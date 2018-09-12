@@ -12,7 +12,7 @@
   width: 100%;
 
   $bar-inset: auto;
-  $bar-height: .2em;
+  $bar-height: .25em;
 
   .#{$prefix}-seekbar {
     height: 100%;
@@ -67,7 +67,7 @@
       background-image: svg('assets/skin-modern/images/dot-play.svg');
       background-position: center;
       background-repeat: no-repeat;
-      background-size: 1.6em;
+      background-size: 1.5em;
       height: 1em;
       left: -.5em;
       position: absolute;

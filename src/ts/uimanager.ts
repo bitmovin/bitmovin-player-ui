@@ -818,6 +818,18 @@ class PlayerWrapper {
    * Clears all registered event handlers from the player that were added through the wrapped player.
    */
   clearEventHandlers(): void {
+    try {
+      // Call the player API to check if the instance is still valid or already destroyed.
+      // This can be any call throwing the PlayerAPINotAvailableError when the player instance is destroyed.
+      this.player.getSource();
+    } catch (error) {
+      if (error instanceof this.player.exports.PlayerAPINotAvailableError) {
+        // We have detected that the player instance is already destroyed, so we clear the event handlers to avoid
+        // event handler unsubscription attempts (which would result in PlayerAPINotAvailableError errors).
+        this.eventHandlers = {};
+      }
+    }
+
     for (let eventType in this.eventHandlers) {
       for (let callback of this.eventHandlers[eventType]) {
         this.player.off(eventType as PlayerEvent, callback);
