@@ -377,7 +377,18 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
       currentTimeSeekBar += currentTimeUpdateDeltaSecs;
-      currentTimePlayer = player.getCurrentTime();
+
+      try {
+        currentTimePlayer = player.getCurrentTime();
+      } catch (error) {
+        // Detect if the player has been destroyed and stop updating if so
+        if (error instanceof player.exports.PlayerAPINotAvailableError) {
+          this.smoothPlaybackPositionUpdater.clear();
+        }
+
+        // If the current time cannot be read it makes no sense to continue
+        return;
+      }
 
       // Sync currentTime of seekbar to player
       let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
