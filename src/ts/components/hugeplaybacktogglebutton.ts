@@ -109,20 +109,6 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }
     });
 
-    // Hide button while initializing a Cast session
-    let castInitializationHandler = (event: PlayerEventBase) => {
-      if (event.type === player.exports.PlayerEvent.CastStart) {
-        // Hide button when session is being initialized
-        this.hide();
-      } else {
-        // Show button when session is established or initialization was aborted
-        this.show();
-      }
-    };
-    player.on(player.exports.PlayerEvent.CastStart, castInitializationHandler);
-    player.on(player.exports.PlayerEvent.CastStarted, castInitializationHandler);
-    player.on(player.exports.PlayerEvent.CastStopped, castInitializationHandler);
-
     const suppressPlayButtonTransitionAnimation = () => {
       // Disable the current animation
       this.setTransitionAnimationsEnabled(false);
