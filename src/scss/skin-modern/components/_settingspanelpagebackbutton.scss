@@ -7,20 +7,20 @@
   position: relative;
   width: 9em;
 
+  &::before {
+    border: solid $color-primary;
+    border-width: 0 .2em .2em 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(135deg);
+    width: .5em;
+    height: .5em;
+    top: -.1em;
+    left: -.3em;
+  }
+
   .#{$prefix}-label {
     display: inline-block;
-
-    &::before {
-      border-bottom: .2em solid $color-primary;
-      border-left: .2em solid $color-primary;
-      content: '';
-      height: .6em;
-      margin-left: -.8em;
-      position: absolute;
-      top: .5em;
-      transform: rotate(45deg);
-      width: .6em;
-    }
   }
 }
 

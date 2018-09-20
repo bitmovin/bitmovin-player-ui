@@ -7,7 +7,6 @@
   &::before {
     background-image: svg('assets/skin-modern/images/settings.svg');
   }
-  padding: .3em; // TODO: check this padding
 
   &:hover {
     @include svg-icon-shadow;
