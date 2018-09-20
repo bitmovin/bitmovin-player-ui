@@ -10,6 +10,7 @@
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   //line-height: 1em;
   //padding: 1em 1em .5em;
+  vertical-align: middle;
 
   .#{$prefix}-controlbar-top,
   .#{$prefix}-controlbar-bottom {
@@ -34,20 +35,18 @@
   }
 
 
-  .#{$prefix}-ui-container:last-of-type {
+  .#{$prefix}-ui-container:last-of-type > {
     .#{$prefix}-container-wrapper > * {
-      &:not(.#{$prefix}-ui-volumeslider) {
+      &:not(.#{$prefix}-ui-volumeslider):not(.#{$prefix}-ui-seekbar) {
         padding-bottom: 1.5rem;
       }
-    }
-  }
-
-  .#{$prefix}-controlbar-bottom {
-    > .#{$prefix}-container-wrapper {
-      .#{$prefix}-ui-volumeslider {
+      &.#{$prefix}-ui-volumeslider {
         padding: initial;
         margin: .5em;
         width: 5em;
+      }
+      &.#{$prefix}-ui-seekbar {
+        margin: .5em;
       }
     }
   }
