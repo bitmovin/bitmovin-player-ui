@@ -22,7 +22,9 @@
     }
   }
 
-  background-image: svg('assets/skin-modern/images/close.svg');
+  &::before {
+    background-image: svg('assets/skin-modern/images/close.svg');
+  }
 
   &:hover {
     @include svg-icon-shadow;

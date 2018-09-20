@@ -28,7 +28,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, <PlaybackTimeLabelConfig>{
-      cssClass: 'ui-playbacktimelabel',
+      cssClasses: ['ui-playbacktimelabel'],
       timeLabelMode: PlaybackTimeLabelMode.CurrentAndTotalTime,
       hideInLivePlayback: false,
     }, this.config);

@@ -4,9 +4,13 @@
 .#{$prefix}-ui-audiotracksettingstogglebutton {
   @extend %ui-settingstogglebutton;
 
-  background-image: svg('assets/skin-modern/images/audio-tracks.svg');
+  &::before {
+    background-image: svg('assets/skin-modern/images/audio-tracks.svg');
+  }
 
   &.#{$prefix}-on {
-    background-image: svg('assets/skin-modern/images/audio-tracksX.svg');
+    &::before {
+      background-image: svg('assets/skin-modern/images/audio-tracksX.svg');
+    }
   }
 }

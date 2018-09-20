@@ -238,14 +238,18 @@ export namespace UIFactory {
         controlBar,
         new TitleBar({
           components: [
-            new MetadataLabel({ content: MetadataLabelContent.Title }),
-            new CastToggleButton(),
-            new VRToggleButton(),
-            new PictureInPictureToggleButton(),
-            new AirPlayToggleButton(),
-            new VolumeToggleButton(),
-            new SettingsToggleButton({ settingsPanel: settingsPanel }),
-            new FullscreenToggleButton(),
+            new Container({
+              components: [
+                new MetadataLabel({ content: MetadataLabelContent.Title }),
+                new CastToggleButton(),
+                new VRToggleButton(),
+                new PictureInPictureToggleButton(),
+                new AirPlayToggleButton(),
+                new VolumeToggleButton(),
+                new SettingsToggleButton({ settingsPanel: settingsPanel }),
+                new FullscreenToggleButton(),
+              ],
+            }),
           ],
         }),
         settingsPanel,

@@ -8,37 +8,45 @@
   @include layout-align-bottom;
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
-  line-height: 1em;
-  padding: 1em 1em .5em;
+  //line-height: 1em;
+  //padding: 1em 1em .5em;
 
   .#{$prefix}-controlbar-top,
   .#{$prefix}-controlbar-bottom {
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: .5em;
     }
   }
 
-  .#{$prefix}-controlbar-top {
-    .#{$prefix}-ui-label {
-      font-size: .9em;
+  .#{$prefix}-ui-container > {
+    .#{$prefix}-container-wrapper > * {
+      &:first-child {
+        padding-left: 2rem;
+        &.#{$prefix}-ui-label {
+          // TODO: move to skin file, out of this one at least
+          margin-left: 5px; // to align it with our play button (does not apply for all buttons but it looks weird without)
+        }
+      }
+      &:last-child {
+        padding-right: 2rem;
+      }
     }
+  }
 
-    > .#{$prefix}-container-wrapper > * {
-      margin: 0 .5em;
+
+  .#{$prefix}-ui-container:last-of-type {
+    .#{$prefix}-container-wrapper > * {
+      &:not(.#{$prefix}-ui-volumeslider) {
+        padding-bottom: 1.5rem;
+      }
     }
   }
 
   .#{$prefix}-controlbar-bottom {
-    white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
-
     > .#{$prefix}-container-wrapper {
-      > * {
-        margin: 0 .25em;
-      }
-
       .#{$prefix}-ui-volumeslider {
-        margin: .25em .5em;
+        padding: initial;
+        margin: .5em;
         width: 5em;
       }
     }

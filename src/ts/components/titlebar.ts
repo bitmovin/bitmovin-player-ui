@@ -27,8 +27,16 @@ export class TitleBar extends Container<TitleBarConfig> {
       cssClass: 'ui-titlebar',
       hidden: true,
       components: [
-        new MetadataLabel({ content: MetadataLabelContent.Title }),
-        new MetadataLabel({ content: MetadataLabelContent.Description }),
+        new Container({
+          components: [
+            new MetadataLabel({ content: MetadataLabelContent.Title }),
+          ],
+        }),
+        new Container({
+          components: [
+            new MetadataLabel({ content: MetadataLabelContent.Description }),
+          ],
+        }),
       ],
       keepHiddenWithoutMetadata: false,
     }, <TitleBarConfig>this.config);

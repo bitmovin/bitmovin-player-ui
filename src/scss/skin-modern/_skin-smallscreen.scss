@@ -19,7 +19,7 @@
     }
 
     .#{$prefix}-ui-closebutton {
-      margin: 2em;
+      padding: 2em;
       position: absolute;
       right: 0;
       top: 0;
@@ -32,21 +32,8 @@
   }
 
   .#{$prefix}-ui-titlebar {
-    > .#{$prefix}-container-wrapper {
-      display: flex;
-
-      > * {
-        margin: 0 .25em;
-      }
-
-      .#{$prefix}-ui-label {
-        display: inline;
-        font-size: 1em;
-      }
-
-      .#{$prefix}-label-metadata-title {
-        width: 100%;
-      }
+    .#{$prefix}-ui-label {
+      font-size: 1em;
     }
   }
 

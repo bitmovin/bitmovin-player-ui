@@ -11,7 +11,8 @@
   font-size: 1em;
   height: 1.5em;
   min-width: 1.5em;
-  padding: 0;
+  box-sizing: content-box !important; // we need this here, otherwise the pseudo elements are not centered correctly but i need them centered
+  padding: .25em;
 
   .#{$prefix}-label {
     color: $color-primary;
@@ -19,6 +20,18 @@
   }
 
   @include hidden;
+
+  &::before {
+    content: '';
+    vertical-align: middle;
+    color: black;
+    position: relative;
+    display: inline-block;
+    background-repeat: no-repeat;
+    width: 1.5em;
+    height: 1.5em;
+  }
+
 }
 
 .#{$prefix}-ui-button {
