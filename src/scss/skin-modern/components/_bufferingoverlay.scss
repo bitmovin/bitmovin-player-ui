@@ -76,4 +76,10 @@
       }
     }
   }
+
+  &.#{$prefix}-hidden {
+    .#{$prefix}-ui-buffering-overlay-indicator {
+      display: none;
+    }
+  }
 }
