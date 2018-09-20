@@ -23,10 +23,6 @@
     .#{$prefix}-container-wrapper > * {
       &:first-child {
         padding-left: 2rem;
-        &.#{$prefix}-ui-label {
-          // TODO: move to skin file, out of this one at least
-          margin-left: 5px; // to align it with our play button (does not apply for all buttons but it looks weird without)
-        }
       }
       &:last-child {
         padding-right: 2rem;

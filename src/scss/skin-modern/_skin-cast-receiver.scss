@@ -8,6 +8,11 @@
   // Add title safe margins for overscan TV sets
   // 10% as recommended by the Cast docs: https://developers.google.com/cast/docs/custom_receiver#overscan
   &.#{$prefix}-ui-uicontainer {
+    .#{$prefix}-ui-container:last-of-type > {
+      .#{$prefix}-container-wrapper > * {
+        padding-bottom: 0 !important; // override jucier hit-boxes in other UI skins. :not operator has precedence so !important here is important
+      }
+    }
 
     %box {
       background: $background-color;
