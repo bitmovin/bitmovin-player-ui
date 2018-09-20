@@ -1,7 +1,8 @@
-import {Container, ContainerConfig} from './container';
-import {UIInstanceManager} from '../uimanager';
-import {MetadataLabel, MetadataLabelContent} from './metadatalabel';
+import { Container, ContainerConfig } from './container';
+import { UIInstanceManager } from '../uimanager';
+import { MetadataLabel, MetadataLabelContent } from './metadatalabel';
 import { PlayerAPI } from 'bitmovin-player';
+import { Component, ComponentConfig } from './component';
 
 /**
  * Configuration interface for a {@link TitleBar}.
@@ -53,7 +54,7 @@ export class TitleBar extends Container<TitleBarConfig> {
       hasMetadataText = false;
 
       // Iterate through metadata labels and check if at least one of them contains text
-      for (let component of this.getComponents()) {
+      for (let component of TitleBar.getLeavesComponents(this)) {
         if (component instanceof MetadataLabel) {
           if (!component.isEmpty()) {
             hasMetadataText = true;
@@ -74,7 +75,7 @@ export class TitleBar extends Container<TitleBarConfig> {
     };
 
     // Listen to text change events to update the hasMetadataText flag when the metadata dynamically changes
-    for (let component of this.getComponents()) {
+    for (let component of TitleBar.getLeavesComponents(this)) {
       if (component instanceof MetadataLabel) {
         component.onTextChanged.subscribe(checkMetadataTextAndUpdateVisibility);
       }
@@ -93,5 +94,21 @@ export class TitleBar extends Container<TitleBarConfig> {
 
     // init
     checkMetadataTextAndUpdateVisibility();
+  }
+
+  /**
+   * Collect all Leaves Components within the Container structure (Needed for keepHiddenWithoutMetadata)
+   * TODO: move to container if needed elsewhere
+   */
+  private static getLeavesComponents(parentComponent: Container<ContainerConfig>): Component<ComponentConfig>[] {
+    let childComponents = [];
+    for (let component of parentComponent.getComponents()) {
+      if (component instanceof Container) {
+        childComponents.push(...TitleBar.getLeavesComponents(component));
+      } else {
+        childComponents.push(component);
+      }
+    }
+    return childComponents;
   }
 }
