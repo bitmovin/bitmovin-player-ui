@@ -4,6 +4,7 @@
   @extend %ui-component;
 
   background-color: transparent;
+  background-origin: content-box;
   background-position: center;
   background-repeat: no-repeat;
   border: 0;

@@ -4,17 +4,13 @@
 .#{$prefix}-ui-fullscreentogglebutton {
   @extend %ui-button;
 
-  &::before {
-    background-image: svg('assets/skin-modern/images/fullscreen.svg');
-  }
+  background-image: svg('assets/skin-modern/images/fullscreen.svg');
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   &.#{$prefix}-on {
-    &::before {
-      background-image: svg('assets/skin-modern/images/fullscreenX.svg');
-    }
+    background-image: svg('assets/skin-modern/images/fullscreenX.svg');
   }
 }
