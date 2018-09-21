@@ -22,9 +22,12 @@
       right: $overscan-margin;
       width: auto;
 
-      .#{$prefix}-ui-container:last-of-type > {
-        .#{$prefix}-container-wrapper > * {
-          padding-bottom: 0 !important; // override jucier hit-boxes in other UI skins. :not operator has precedence so !important here is important
+      // sass-lint:disable nesting-depth
+      .#{$prefix}-ui-container {
+        &:last-of-type > {
+          .#{$prefix}-container-wrapper > * {
+            padding-bottom: 0;
+          }
         }
       }
     }
@@ -37,9 +40,12 @@
       top: $overscan-margin;
       width: auto;
 
-      .#{$prefix}-ui-container:first-of-type > {
-        .#{$prefix}-container-wrapper > * {
-          padding-top: 0 !important; // override jucier hit-boxes in other UI skins. :not operator has precedence so !important here is important
+      // sass-lint:disable nesting-depth
+      .#{$prefix}-ui-container {
+        &:first-of-type > {
+          .#{$prefix}-container-wrapper > * {
+            padding-top: 0;
+          }
         }
       }
     }

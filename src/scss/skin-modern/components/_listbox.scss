@@ -7,14 +7,14 @@
   .#{$prefix}-ui-listbox-button {
     @extend %ui-button;
 
-    &::before {
-      display: none;
-    }
-
     display: block;
     font-size: .8em;
     min-width: 10em;
     padding: .5em;
+
+    &::before {
+      display: none;
+    }
 
     .#{$prefix}-label {
       display: inherit;

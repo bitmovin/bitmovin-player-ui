@@ -6,8 +6,8 @@
   @include hidden;
 
   cursor: default;
-  white-space: nowrap;
   padding: .25em;
+  white-space: nowrap;
 }
 
 .#{$prefix}-ui-label {

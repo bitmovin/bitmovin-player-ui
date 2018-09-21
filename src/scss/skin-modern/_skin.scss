@@ -55,6 +55,7 @@
 
   // align -ui-playbacktimelabel with our play button in the default ui variant
   // this does not apply for all buttons / elements but it looks weird without
+  // sass-lint:disable force-pseudo-nesting nesting-depth
   &:not(.#{$prefix}-ui-skin-cast-receiver):not(.#{$prefix}-ui-skin-smallscreen) {
     .#{$prefix}-ui-controlbar {
       .#{$prefix}-ui-container > {

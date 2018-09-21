@@ -10,9 +10,22 @@
   background: linear-gradient(to top, $color-transparent, $color-background-bars);
   pointer-events: none;
 
-  .#{$prefix}-ui-container:first-of-type {
+  .#{$prefix}-ui-container {
+    &:first-of-type {
+      // sass-lint:disable nesting-depth
+      .#{$prefix}-container-wrapper > * {
+        padding-top: 1.5rem;
+      }
+    }
+
     .#{$prefix}-container-wrapper > * {
-      padding-top: 1.5rem;
+      &:first-child {
+        padding-left: 2rem;
+      }
+
+      &:last-child {
+        padding-right: 2rem;
+      }
     }
   }
 
@@ -24,23 +37,13 @@
     }
   }
 
-  .#{$prefix}-ui-container {
-    .#{$prefix}-container-wrapper > * {
-      &:first-child {
-        padding-left: 2rem;
-      }
-      &:last-child {
-        padding-right: 2rem;
-      }
-    }
-  }
-
-  .#{$prefix}-label-metadata-title, .#{$prefix}-label-metadata-description {
+  .#{$prefix}-label-metadata-title,
+  .#{$prefix}-label-metadata-description {
     cursor: default;
-    width: 100%;
     display: inline-block;
     text-shadow: 0 0 5px $color-black;
     white-space: normal;
+    width: 100%;
   }
 
   .#{$prefix}-label-metadata-title {

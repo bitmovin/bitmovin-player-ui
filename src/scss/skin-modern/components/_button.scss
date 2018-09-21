@@ -7,11 +7,12 @@
   background-position: center;
   background-repeat: no-repeat;
   border: 0;
+  // sass-lint:disable no-important
+  box-sizing: content-box !important;
   cursor: pointer;
   font-size: 1em;
   height: 1.5em;
   min-width: 1.5em;
-  box-sizing: content-box !important; // we need this here, otherwise the pseudo elements are not centered correctly but i need them centered
   padding: .25em;
 
   .#{$prefix}-label {
@@ -22,13 +23,13 @@
   @include hidden;
 
   &::before {
-    content: '';
-    vertical-align: middle;
-    position: relative;
-    display: inline-block;
     background-repeat: no-repeat;
-    width: 1.5em;
+    content: '';
+    display: inline-block;
     height: 1.5em;
+    position: relative;
+    vertical-align: middle;
+    width: 1.5em;
   }
 
 }

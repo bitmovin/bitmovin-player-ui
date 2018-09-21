@@ -8,8 +8,6 @@
   @include layout-align-bottom;
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
-  //line-height: 1em;
-  //padding: 1em 1em .5em;
   vertical-align: middle;
 
   .#{$prefix}-controlbar-top,
@@ -24,25 +22,32 @@
       &:first-child {
         padding-left: 2rem;
       }
+
       &:last-child {
         padding-right: 2rem;
       }
     }
   }
 
+  // sass-lint:disable nesting-depth
+  .#{$prefix}-ui-container {
+    &:last-of-type > {
+      .#{$prefix}-container-wrapper > * {
+        &:not(.#{$prefix}-ui-volumeslider) {
+          &:not(.#{$prefix}-ui-seekbar) {
+            padding-bottom: 1.5rem;
+          }
+        }
 
-  .#{$prefix}-ui-container:last-of-type > {
-    .#{$prefix}-container-wrapper > * {
-      &:not(.#{$prefix}-ui-volumeslider):not(.#{$prefix}-ui-seekbar) {
-        padding-bottom: 1.5rem;
-      }
-      &.#{$prefix}-ui-volumeslider {
-        padding: initial;
-        margin: .5em;
-        width: 5em;
-      }
-      &.#{$prefix}-ui-seekbar {
-        margin: .5em;
+        &.#{$prefix}-ui-volumeslider {
+          margin: .5em;
+          padding: initial;
+          width: 5em;
+        }
+
+        &.#{$prefix}-ui-seekbar {
+          margin: .5em;
+        }
       }
     }
   }
