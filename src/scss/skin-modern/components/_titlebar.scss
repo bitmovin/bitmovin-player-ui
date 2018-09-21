@@ -8,31 +8,50 @@
   @include layout-align-top;
 
   background: linear-gradient(to top, $color-transparent, $color-background-bars);
-  padding: .5em 1em 1em;
   pointer-events: none;
 
-  > .#{$prefix}-container-wrapper {
-    padding: .5em;
-    pointer-events: none;
-
-    .#{$prefix}-label-metadata {
-      pointer-events: none;
+  .#{$prefix}-ui-container {
+    &:first-of-type {
+      // sass-lint:disable nesting-depth
+      .#{$prefix}-container-wrapper > * {
+        padding-top: 1.5rem;
+      }
     }
 
-    .#{$prefix}-label-metadata-title {
-      cursor: default;
-      display: block;
-      font-size: 1.2em;
-      text-shadow: 0 0 5px $color-black;
-      white-space: normal;
-    }
+    .#{$prefix}-container-wrapper > * {
+      &:first-child {
+        padding-left: 2rem;
+      }
 
-    .#{$prefix}-label-metadata-description {
-      color: lighten($color-secondary, 30%);
-      cursor: default;
-      display: block;
-      text-shadow: 0 0 5px $color-black;
-      white-space: normal;
+      &:last-child {
+        padding-right: 2rem;
+      }
     }
   }
+
+  > .#{$prefix}-container-wrapper {
+    .#{$prefix}-ui-container {
+      > .#{$prefix}-container-wrapper {
+        display: flex;
+      }
+    }
+  }
+
+  .#{$prefix}-label-metadata-title,
+  .#{$prefix}-label-metadata-description {
+    cursor: default;
+    display: inline-block;
+    text-shadow: 0 0 5px $color-black;
+    white-space: normal;
+    width: 100%;
+  }
+
+  .#{$prefix}-label-metadata-title {
+    font-size: 1.2em;
+  }
+
+  .#{$prefix}-label-metadata-description {
+    color: lighten($color-secondary, 30%);
+  }
+
 }

@@ -8,6 +8,10 @@
   outline: none;
   width: 5em;
 
+  &::before {
+    display: none;
+  }
+
   .#{$prefix}-image {
     background-image: svg('assets/skin-modern/images/replayX.svg');
     background-position: center;

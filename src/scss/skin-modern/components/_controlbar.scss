@@ -8,38 +8,46 @@
   @include layout-align-bottom;
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
-  line-height: 1em;
-  padding: 1em 1em .5em;
+  vertical-align: middle;
 
   .#{$prefix}-controlbar-top,
   .#{$prefix}-controlbar-bottom {
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: .5em;
     }
   }
 
-  .#{$prefix}-controlbar-top {
-    .#{$prefix}-ui-label {
-      font-size: .9em;
-    }
-
-    > .#{$prefix}-container-wrapper > * {
-      margin: 0 .5em;
-    }
-  }
-
-  .#{$prefix}-controlbar-bottom {
-    white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
-
-    > .#{$prefix}-container-wrapper {
-      > * {
-        margin: 0 .25em;
+  .#{$prefix}-ui-container > {
+    .#{$prefix}-container-wrapper > * {
+      &:first-child {
+        padding-left: 2rem;
       }
 
-      .#{$prefix}-ui-volumeslider {
-        margin: .25em .5em;
-        width: 5em;
+      &:last-child {
+        padding-right: 2rem;
+      }
+    }
+  }
+
+  // sass-lint:disable nesting-depth
+  .#{$prefix}-ui-container {
+    &:last-of-type > {
+      .#{$prefix}-container-wrapper > * {
+        &:not(.#{$prefix}-ui-volumeslider) {
+          &:not(.#{$prefix}-ui-seekbar) {
+            padding-bottom: 1.5rem;
+          }
+        }
+
+        &.#{$prefix}-ui-volumeslider {
+          margin: .5em;
+          padding: initial;
+          width: 5em;
+        }
+
+        &.#{$prefix}-ui-seekbar {
+          margin: .5em;
+        }
       }
     }
   }

@@ -286,7 +286,9 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   release(): void {
     super.release();
-    this.uiHideTimeout.clear();
+    if (this.uiHideTimeout) { // will be never initialized if delay is set to -1
+      this.uiHideTimeout.clear();
+    }
   }
 
   protected toDomElement(): DOM {

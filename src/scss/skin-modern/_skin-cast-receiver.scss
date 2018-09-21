@@ -21,6 +21,15 @@
       left: $overscan-margin;
       right: $overscan-margin;
       width: auto;
+
+      // sass-lint:disable nesting-depth
+      .#{$prefix}-ui-container {
+        &:last-of-type > {
+          .#{$prefix}-container-wrapper > * {
+            padding-bottom: 0;
+          }
+        }
+      }
     }
 
     .#{$prefix}-ui-titlebar {
@@ -30,6 +39,15 @@
       right: $overscan-margin;
       top: $overscan-margin;
       width: auto;
+
+      // sass-lint:disable nesting-depth
+      .#{$prefix}-ui-container {
+        &:first-of-type > {
+          .#{$prefix}-container-wrapper > * {
+            padding-top: 0;
+          }
+        }
+      }
     }
 
     .#{$prefix}-ui-watermark {

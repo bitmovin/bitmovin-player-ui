@@ -4,14 +4,17 @@
   @extend %ui-component;
 
   background-color: transparent;
+  background-origin: content-box;
   background-position: center;
   background-repeat: no-repeat;
   border: 0;
+  // sass-lint:disable no-important
+  box-sizing: content-box !important;
   cursor: pointer;
   font-size: 1em;
   height: 1.5em;
   min-width: 1.5em;
-  padding: 0;
+  padding: .25em;
 
   .#{$prefix}-label {
     color: $color-primary;
@@ -19,6 +22,17 @@
   }
 
   @include hidden;
+
+  &::before {
+    background-repeat: no-repeat;
+    content: '';
+    display: inline-block;
+    height: 1.5em;
+    position: relative;
+    vertical-align: middle;
+    width: 1.5em;
+  }
+
 }
 
 .#{$prefix}-ui-button {

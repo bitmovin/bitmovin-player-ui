@@ -9,10 +9,12 @@
 
     display: block;
     font-size: .8em;
-    height: 100%;
     min-width: 10em;
     padding: .5em;
-    width: 100%;
+
+    &::before {
+      display: none;
+    }
 
     .#{$prefix}-label {
       display: inherit;

@@ -44,6 +44,10 @@
   overflow: hidden; // hide overflow from scale animation
   width: 8em;
 
+  &::before {
+    display: none; // hide button image here
+  }
+
   .#{$prefix}-image {
     background-image: svg('assets/skin-modern/images/play_big.svg');
     background-position: center;
