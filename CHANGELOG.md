@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Uncaught `PlayerAPINotAvailableError` in `SeekBar` position updater when player is destroyed
 - Unresponsive UI when a user canceled connection establishment to a Cast receiver
+- Avoid unnecessary animation when `BufferingOverlay` is hidden
+- Avoid unnecessary DOM modification when the text of a `Label` does not change
 
 ## [3.0.1]
 
