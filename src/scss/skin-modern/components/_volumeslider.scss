@@ -1,11 +1,14 @@
 @import '../variables';
+@import '../mixins';
 
 .#{$prefix}-ui-volumeslider {
   @extend %ui-seekbar;
 
   .#{$prefix}-seekbar {
     .#{$prefix}-seekbar-playbackposition-marker {
-      background-image: svg('assets/skin-modern/images/dot-volume.svg');
+      @include seekbar-position-marker($seekbar-height * 3 - 4px);
+      background-color: $color-highlight;
+      border: 0;
     }
 
     .#{$prefix}-seekbar-bufferlevel {
