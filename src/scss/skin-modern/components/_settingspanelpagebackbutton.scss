@@ -6,6 +6,8 @@
   font-size: .8em;
   position: relative;
   width: 9em;
+  padding-top: .25em;
+  padding-bottom: .25em;
 
   .#{$prefix}-label {
     display: inline-block;
@@ -17,7 +19,7 @@
       height: .6em;
       margin-left: -.8em;
       position: absolute;
-      top: .5em;
+      top: .6em;
       transform: rotate(45deg);
       width: .6em;
     }

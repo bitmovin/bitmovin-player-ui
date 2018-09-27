@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Avoid unnecessary animation when `BufferingOverlay` is hidden
 - Avoid unnecessary DOM modification when the text of a `Label` does not change
 
+### Changed
+- Margin to padding to improve hit-boxes
+
 ## [3.0.1]
 
 ### Fixed
