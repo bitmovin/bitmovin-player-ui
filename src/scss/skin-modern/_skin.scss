@@ -53,13 +53,6 @@
   text-align: left;
   user-select: none;
 
-  // Include padding and border in the element's total width and height
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
-
   &.#{$prefix}-player-state-idle {
     .#{$prefix}-ui-controlbar,
     .#{$prefix}-ui-titlebar,
