@@ -8,6 +8,7 @@
   @include layout-align-bottom;
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
+  box-sizing: border-box;
   line-height: 1em;
   padding: 1em 1em .5em;
 
