@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Avoid unnecessary DOM modification when the text of a `Label` does not change
 
 ### Changed
-- Margin to padding to improve hit-boxes
+- Improved `Button` hit-boxes by changing margins to paddings
 
 ## [3.0.1]
 
