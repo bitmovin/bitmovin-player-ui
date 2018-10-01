@@ -18,6 +18,10 @@
     display: none;
   }
 
+  &:focus {
+    outline: none;
+  }
+
   @include hidden;
 }
 
