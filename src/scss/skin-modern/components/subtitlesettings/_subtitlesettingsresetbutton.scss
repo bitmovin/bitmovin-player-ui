@@ -4,8 +4,6 @@
   @extend %ui-button;
 
   font-size: .8em;
-  padding-bottom: .25em;
-  padding-top: .25em;
   width: 12em;
 
   .#{$prefix}-label {
