@@ -16,7 +16,7 @@
   .#{$prefix}-controlbar-bottom {
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: .5em;
+      margin: .5em 0;
     }
   }
 
@@ -34,12 +34,9 @@
     white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
 
     > .#{$prefix}-container-wrapper {
-      > * {
-        margin: 0 .25em;
-      }
 
       .#{$prefix}-ui-volumeslider {
-        margin: .25em .5em;
+        margin: auto .5em;
         width: 5em;
       }
     }

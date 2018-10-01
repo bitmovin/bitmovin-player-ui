@@ -4,14 +4,17 @@
   @extend %ui-component;
 
   background-color: transparent;
+  background-origin: content-box;
   background-position: center;
   background-repeat: no-repeat;
+  background-size: 1.5em;
   border: 0;
+  box-sizing: content-box;
   cursor: pointer;
   font-size: 1em;
   height: 1.5em;
   min-width: 1.5em;
-  padding: 0;
+  padding: .25em;
 
   .#{$prefix}-label {
     color: $color-primary;
