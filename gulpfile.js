@@ -12,6 +12,7 @@ var tslint = require('gulp-tslint');
 var sassLint = require('gulp-sass-lint');
 var ts = require('gulp-typescript');
 var replace = require('gulp-replace');
+var header = require('gulp-header');
 
 // PostCSS plugins
 var postcssSVG = require('postcss-svg');
@@ -57,6 +58,7 @@ var paths = {
 
 var replacements = [
   ['{{VERSION}}', npmPackage.version],
+  ['{{PREFIX}}', cssPrefix],
 ];
 
 var browserifyInstance = browserify({
@@ -73,7 +75,7 @@ var production = false;
 
 function replaceAll() {
   var replacementStreams = replacements.map(function(replacement) { return replace(replacement[0], replacement[1]); });
-  return combine.apply(this, replacementStreams);
+  return combine.obj.apply(this, replacementStreams);
 }
 
 // Deletes the target directory containing all generated files
