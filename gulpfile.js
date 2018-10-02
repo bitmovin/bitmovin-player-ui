@@ -36,9 +36,11 @@ var npmPackage = require('./package.json');
 var path = require('path');
 var combine = require('stream-combiner2');
 
-const globalNamespace = 'bitmovin.playerui';
-const filename = 'bitmovinplayer-ui';
-const cssPrefix = 'bmpui';
+const outputnames = {
+  globalNamespace: 'bitmovin.playerui',
+  filename: 'bitmovinplayer-ui',
+  cssPrefix: 'bmpui',
+};
 
 var paths = {
   source: {
@@ -51,14 +53,14 @@ var paths = {
     html: './dist',
     js: './dist/js',
     jsframework: './dist/js/framework',
-    jsmain: `${filename}.js`,
+    jsmain: `${outputnames.filename}.js`,
     css: './dist/css'
   }
 };
 
 var replacements = [
   ['{{VERSION}}', npmPackage.version],
-  ['{{PREFIX}}', cssPrefix],
+  ['{{PREFIX}}', outputnames.cssPrefix],
 ];
 
 var browserifyInstance = browserify({
@@ -67,7 +69,7 @@ var browserifyInstance = browserify({
   entries: paths.source.tsmain,
   cache: {},
   packageCache: {},
-  standalone: globalNamespace,
+  standalone: outputnames.globalNamespace,
 }).plugin(tsify);
 
 var catchBrowserifyErrors = false;
@@ -157,7 +159,7 @@ gulp.task('browserify', function() {
 gulp.task('sass', function() {
   var stream = gulp.src(paths.source.sass)
   .pipe(sourcemaps.init())
-  .pipe(header(`$prefix: '${cssPrefix}';`)) // Overwrites declaration in _variables.scss
+  .pipe(header(`$prefix: '${outputnames.cssPrefix}';`)) // Overwrites declaration in _variables.scss
   .pipe(sass({
     includePaths: [
       // Includes node_modules of the current module
@@ -174,7 +176,7 @@ gulp.task('sass', function() {
   .pipe(rename(function(path) {
     // The original filename is defined by the scss source file
     if (path.basename === 'bitmovinplayer-ui') {
-      path.basename = filename;
+      path.basename = outputnames.filename;
     }
   }))
   .pipe(sourcemaps.write())
