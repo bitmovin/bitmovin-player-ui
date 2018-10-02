@@ -35,6 +35,8 @@ var npmPackage = require('./package.json');
 var path = require('path');
 var combine = require('stream-combiner2');
 
+const globalNamespace = 'bitmovin.playerui';
+
 var paths = {
   source: {
     html: ['./src/html/*.html'],
@@ -61,7 +63,7 @@ var browserifyInstance = browserify({
   entries: paths.source.tsmain,
   cache: {},
   packageCache: {},
-  standalone: 'bitmovin.playerui',
+  standalone: globalNamespace,
 }).plugin(tsify);
 
 var catchBrowserifyErrors = false;
