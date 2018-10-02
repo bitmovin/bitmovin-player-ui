@@ -36,6 +36,7 @@ var path = require('path');
 var combine = require('stream-combiner2');
 
 const globalNamespace = 'bitmovin.playerui';
+const filename = 'bitmovinplayer-ui';
 
 var paths = {
   source: {
@@ -48,7 +49,7 @@ var paths = {
     html: './dist',
     js: './dist/js',
     jsframework: './dist/js/framework',
-    jsmain: 'bitmovinplayer-ui.js',
+    jsmain: `${filename}.js`,
     css: './dist/css'
   }
 };
