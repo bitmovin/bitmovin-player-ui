@@ -35,11 +35,13 @@ var nativeTslint = require('tslint');
 var npmPackage = require('./package.json');
 var path = require('path');
 var combine = require('stream-combiner2');
+const argv = require('yargs').argv;
 
+// Output naming can be set via CLI parameters, e.g. --outputnames.globalNamespace=foo
 const outputnames = {
-  globalNamespace: 'bitmovin.playerui',
-  filename: 'bitmovinplayer-ui',
-  cssPrefix: 'bmpui',
+  globalNamespace: argv.outputnames && argv.outputnames.globalNamespace || 'bitmovin.playerui',
+  filename: argv.outputnames && argv.outputnames.filename || 'bitmovinplayer-ui',
+  cssPrefix: argv.outputnames && argv.outputnames.cssPrefix || 'bmpui',
 };
 
 var paths = {
