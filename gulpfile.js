@@ -167,6 +167,12 @@ gulp.task('sass', function() {
     postcssSVG()
   ]))
   .pipe(cssBase64())
+  .pipe(rename(function(path) {
+    // The original filename is defined by the scss source file
+    if (path.basename === 'bitmovinplayer-ui') {
+      path.basename = filename;
+    }
+  }))
   .pipe(sourcemaps.write())
   .pipe(gulp.dest(paths.target.css));
 
