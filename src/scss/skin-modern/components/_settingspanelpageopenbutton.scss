@@ -7,6 +7,7 @@
   background-image: svg('assets/skin-modern/images/settings.svg');
   max-height: .8em;
   padding: .3em 0;
+  vertical-align: bottom;
 
   &:hover {
     @include svg-icon-shadow;
