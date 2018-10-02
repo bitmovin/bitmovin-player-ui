@@ -37,6 +37,7 @@ var combine = require('stream-combiner2');
 
 const globalNamespace = 'bitmovin.playerui';
 const filename = 'bitmovinplayer-ui';
+const cssPrefix = 'bmpui';
 
 var paths = {
   source: {
@@ -154,6 +155,7 @@ gulp.task('browserify', function() {
 gulp.task('sass', function() {
   var stream = gulp.src(paths.source.sass)
   .pipe(sourcemaps.init())
+  .pipe(header(`$prefix: '${cssPrefix}';`)) // Overwrites declaration in _variables.scss
   .pipe(sass({
     includePaths: [
       // Includes node_modules of the current module
