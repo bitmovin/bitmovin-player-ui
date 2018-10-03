@@ -65,7 +65,7 @@
       @include seekbar-position-marker($seekbar-height * 3);
 
       background-color: transparentize($color-highlight, .5);
-      border: solid $color-highlight 3px;
+      border: solid $color-highlight 0.1875em;
       border-radius: 50%;
     }
 
@@ -74,7 +74,7 @@
 
       $marker-width: 2px;
 
-      height: $seekbar-height * 3 - 6px;
+      height: $seekbar-height * 3 - 0.375em;
 
       > .#{$prefix}-seekbar-marker {
         @extend %bar;
