@@ -1,4 +1,7 @@
 @import '../variables';
+@import '../mixins';
+
+$seekbar-height: 0.3125em;
 
 %ui-seekbar {
   @extend %ui-component;
@@ -12,19 +15,17 @@
   width: 100%;
 
   $bar-inset: auto;
-  $bar-height: .25em;
 
   .#{$prefix}-seekbar {
-    height: 100%;
-    position: relative;
 
     %bar {
       // sass-lint:disable no-vendor-prefixes
       -ms-transform-origin: 0 0; // required for IE9
       -webkit-transform-origin: 0 0; // required for Android 4.4 WebView
       bottom: 0;
-      height: $bar-height;
+      height: $seekbar-height;
       left: 0;
+      margin: auto;
       position: absolute;
       right: auto;
       top: 0;
@@ -63,15 +64,11 @@
 
     .#{$prefix}-seekbar-playbackposition-marker {
       @extend %bar;
+      @include seekbar-position-marker($seekbar-height * 3);
 
-      background-image: svg('assets/skin-modern/images/dot-play.svg');
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: 1.5em;
-      height: 1em;
-      left: -.5em;
-      position: absolute;
-      width: 1em;
+      background-color: transparentize($color-highlight, .5);
+      border: solid $color-highlight 0.1875em;
+      border-radius: 50%;
     }
 
     .#{$prefix}-seekbar-markers {
@@ -79,8 +76,7 @@
 
       $marker-width: 2px;
 
-      height: $bar-height * 2;
-      margin: $bar-inset 0;
+      height: $seekbar-height * 3 - 0.375em;
 
       > .#{$prefix}-seekbar-marker {
         @extend %bar;

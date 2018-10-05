@@ -116,3 +116,9 @@
 @mixin svg-icon-on-shadow {
   filter: drop-shadow(0 0 1px $color-highlight);
 }
+
+@mixin seekbar-position-marker($marker-dimension) {
+  height: $marker-dimension;
+  left: -$marker-dimension / 2;
+  width: $marker-dimension;
+}

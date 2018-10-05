@@ -9,14 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Customization of output naming via CLI parameters (see `outputnames` in `gulpfile.js`)
 
+### Changed
+- Improved `Button` hit-boxes by changing margins to paddings
+- `Seekbar`/`VolumeSlider` position markers changed from SVG to pure CSS to improve vertical alignment with bar
+
 ### Fixed
 - Uncaught `PlayerAPINotAvailableError` in `SeekBar` position updater when player is destroyed
 - Unresponsive UI when a user canceled connection establishment to a Cast receiver
 - Avoid unnecessary animation when `BufferingOverlay` is hidden
 - Avoid unnecessary DOM modification when the text of a `Label` does not change
-
-### Changed
-- Improved `Button` hit-boxes by changing margins to paddings
 
 ## [3.0.1]
 
