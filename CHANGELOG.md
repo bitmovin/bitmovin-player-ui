@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Customization of output naming via CLI parameters (see `outputnames` in `gulpfile.js`)
+
 ### Changed
+- Improved `Button` hit-boxes by changing margins to paddings
 - `Seekbar`/`VolumeSlider` position markers changed from SVG to pure CSS to improve vertical alignment with bar
 
 ### Fixed

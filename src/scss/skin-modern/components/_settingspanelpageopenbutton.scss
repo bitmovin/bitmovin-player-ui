@@ -5,7 +5,8 @@
   @extend %ui-button;
 
   background-image: svg('assets/skin-modern/images/settings.svg');
-  padding: .3em;
+  max-height: .8em;
+  padding: .3em 0;
 
   &:hover {
     @include svg-icon-shadow;
