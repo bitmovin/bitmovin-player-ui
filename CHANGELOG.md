@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Changed
+- `Seekbar`/`VolumeSlider` position markers changed from SVG to pure CSS to improve vertical alignment with bar
+
 ### Fixed
 - Uncaught `PlayerAPINotAvailableError` in `SeekBar` position updater when player is destroyed
 - Unresponsive UI when a user canceled connection establishment to a Cast receiver
