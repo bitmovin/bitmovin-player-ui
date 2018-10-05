@@ -1,5 +1,6 @@
 @import '../variables';
 @import '../mixins';
+@import './seekbar';
 
 .#{$prefix}-ui-volumeslider {
   @extend %ui-seekbar;
