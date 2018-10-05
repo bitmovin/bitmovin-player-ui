@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Customization of output naming via CLI parameters (see `outputnames` in `gulpfile.js`)
+
 ### Fixed
 - Uncaught `PlayerAPINotAvailableError` in `SeekBar` position updater when player is destroyed
 - Unresponsive UI when a user canceled connection establishment to a Cast receiver

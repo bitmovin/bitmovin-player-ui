@@ -12,6 +12,7 @@ var tslint = require('gulp-tslint');
 var sassLint = require('gulp-sass-lint');
 var ts = require('gulp-typescript');
 var replace = require('gulp-replace');
+var header = require('gulp-header');
 
 // PostCSS plugins
 var postcssSVG = require('postcss-svg');
@@ -34,6 +35,14 @@ var nativeTslint = require('tslint');
 var npmPackage = require('./package.json');
 var path = require('path');
 var combine = require('stream-combiner2');
+const argv = require('yargs').argv;
+
+// Output naming can be set via CLI parameters, e.g. --outputnames.globalNamespace=foo
+const outputnames = {
+  globalNamespace: argv.outputnames && argv.outputnames.globalNamespace || 'bitmovin.playerui',
+  filename: argv.outputnames && argv.outputnames.filename || 'bitmovinplayer-ui',
+  cssPrefix: argv.outputnames && argv.outputnames.cssPrefix || 'bmpui',
+};
 
 var paths = {
   source: {
@@ -46,13 +55,14 @@ var paths = {
     html: './dist',
     js: './dist/js',
     jsframework: './dist/js/framework',
-    jsmain: 'bitmovinplayer-ui.js',
+    jsmain: `${outputnames.filename}.js`,
     css: './dist/css'
   }
 };
 
 var replacements = [
   ['{{VERSION}}', npmPackage.version],
+  ['{{PREFIX}}', outputnames.cssPrefix],
 ];
 
 var browserifyInstance = browserify({
@@ -61,7 +71,7 @@ var browserifyInstance = browserify({
   entries: paths.source.tsmain,
   cache: {},
   packageCache: {},
-  standalone: 'bitmovin.playerui',
+  standalone: outputnames.globalNamespace,
 }).plugin(tsify);
 
 var catchBrowserifyErrors = false;
@@ -69,7 +79,7 @@ var production = false;
 
 function replaceAll() {
   var replacementStreams = replacements.map(function(replacement) { return replace(replacement[0], replacement[1]); });
-  return combine.apply(this, replacementStreams);
+  return combine.obj.apply(this, replacementStreams);
 }
 
 // Deletes the target directory containing all generated files
@@ -151,6 +161,7 @@ gulp.task('browserify', function() {
 gulp.task('sass', function() {
   var stream = gulp.src(paths.source.sass)
   .pipe(sourcemaps.init())
+  .pipe(header(`$prefix: '${outputnames.cssPrefix}';`)) // Overwrites declaration in _variables.scss
   .pipe(sass({
     includePaths: [
       // Includes node_modules of the current module
@@ -164,6 +175,12 @@ gulp.task('sass', function() {
     postcssSVG()
   ]))
   .pipe(cssBase64())
+  .pipe(rename(function(path) {
+    // The original filename is defined by the scss source file
+    if (path.basename === 'bitmovinplayer-ui') {
+      path.basename = outputnames.filename;
+    }
+  }))
   .pipe(sourcemaps.write())
   .pipe(gulp.dest(paths.target.css));
 
