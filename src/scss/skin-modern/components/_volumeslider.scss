@@ -7,7 +7,7 @@
 
   .#{$prefix}-seekbar {
     .#{$prefix}-seekbar-playbackposition-marker {
-      @include seekbar-position-marker($seekbar-height * 3 - 0.25em);
+      @include seekbar-position-marker($seekbar-height * 3 - .25em);
       background-color: $color-highlight;
       border: 0;
     }
