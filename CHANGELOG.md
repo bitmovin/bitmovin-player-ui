@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Unresponsive UI when a user canceled connection establishment to a Cast receiver
 - Avoid unnecessary animation when `BufferingOverlay` is hidden
 - Avoid unnecessary DOM modification when the text of a `Label` does not change
-- Offset positioning of `SettingsPanelPageOpenButton` in some Browsers
+- Positioning of `SettingsPanelPageOpenButton` in some browsers
 - `Timeout` could not be cleared from within the timeout callback function
 
 ## [3.0.1]
