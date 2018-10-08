@@ -12,12 +12,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Improved `Button` hit-boxes by changing margins to paddings
 - `Seekbar`/`VolumeSlider` position markers changed from SVG to pure CSS to improve vertical alignment with bar
+- `Timeout` rewritten for better efficiency
 
 ### Fixed
 - Uncaught `PlayerAPINotAvailableError` in `SeekBar` position updater when player is destroyed
 - Unresponsive UI when a user canceled connection establishment to a Cast receiver
 - Avoid unnecessary animation when `BufferingOverlay` is hidden
 - Avoid unnecessary DOM modification when the text of a `Label` does not change
+- `Timeout` could not be cleared from within the timeout callback function
 
 ## [3.0.1]
 
