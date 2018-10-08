@@ -1,7 +1,7 @@
 @import '../variables';
 @import '../mixins';
 
-$seekbar-height: 0.3125em;
+$seekbar-height: .3125em;
 
 %ui-seekbar {
   @extend %ui-component;
@@ -67,7 +67,7 @@ $seekbar-height: 0.3125em;
       @include seekbar-position-marker($seekbar-height * 3);
 
       background-color: transparentize($color-highlight, .5);
-      border: solid $color-highlight 0.1875em;
+      border: solid $color-highlight .1875em;
       border-radius: 50%;
     }
 
@@ -76,7 +76,7 @@ $seekbar-height: 0.3125em;
 
       $marker-width: 2px;
 
-      height: $seekbar-height * 3 - 0.375em;
+      height: $seekbar-height * 3 - .375em;
 
       > .#{$prefix}-seekbar-marker {
         @extend %bar;
