@@ -12,7 +12,7 @@ export class Timeout {
   // although it works on other platforms (e.g. Windows, Codeship).
   // To work around the issue we use type "any". The type does not matter anyway because we're not working with
   // this value except providing it to clearTimeout.
-  private timeoutHandle: any;
+  private timeoutOrIntervalId: any;
 
   /**
    * Creates a new timeout callback handler.
@@ -24,7 +24,7 @@ export class Timeout {
     this.delay = delay;
     this.callback = callback;
     this.repeat = repeat;
-    this.timeoutHandle = 0;
+    this.timeoutOrIntervalId = 0;
   }
 
   /**
@@ -47,36 +47,20 @@ export class Timeout {
    * Resets the passed timeout delay to zero. Can be used to defer the calling of the callback.
    */
   reset(): void {
-    let lastScheduleTime = 0;
-    let delayAdjust = 0;
-
     this.clearInternal();
 
-    let internalCallback = () => {
-      this.callback();
-
-      if (this.repeat) {
-        let now = Date.now();
-
-        // The time of one iteration from scheduling to executing the callback (usually a bit longer than the delay
-        // time)
-        let delta = now - lastScheduleTime;
-
-        // Calculate the delay adjustment for the next schedule to keep a steady delay interval over time
-        delayAdjust = this.delay - delta + delayAdjust;
-
-        lastScheduleTime = now;
-
-        // Schedule next execution by the adjusted delay
-        this.timeoutHandle = setTimeout(internalCallback, this.delay + delayAdjust);
-      }
-    };
-
-    lastScheduleTime = Date.now();
-    this.timeoutHandle = setTimeout(internalCallback, this.delay);
+    if (this.repeat) {
+      this.timeoutOrIntervalId = setInterval(this.callback, this.delay);
+    } else {
+      this.timeoutOrIntervalId = setTimeout(this.callback, this.delay);
+    }
   }
 
   private clearInternal(): void {
-    clearTimeout(this.timeoutHandle);
+    if (this.repeat) {
+      clearInterval(this.timeoutOrIntervalId);
+    } else {
+      clearTimeout(this.timeoutOrIntervalId);
+    }
   }
 }
