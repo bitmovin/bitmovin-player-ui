@@ -6,12 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [support-v2]
 
-### Changed
-- Use strings as value in select box options for subtitles
-
 ### Fixed
 - Avoid unnecessary animation when `BufferingOverlay` is hidden
 - Avoid unnecessary DOM modification when the text of a `Label` does not change
+- Handling of `null` keys in `SelectBox` (fixes subtitle deselection in IE11)
 
 ## [2.19.0] (2018-09-06)
 
