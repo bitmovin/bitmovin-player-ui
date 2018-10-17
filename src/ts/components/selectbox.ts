@@ -48,7 +48,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
     // Add updated children
     for (let item of this.items) {
       let optionElement = new DOM('option', {
-        'value': item.key,
+        'value': String(item.key),
       }).html(item.label);
 
       if (item.key === String(selectedValue)) { // convert selectedValue to string to catch 'null'/null case
