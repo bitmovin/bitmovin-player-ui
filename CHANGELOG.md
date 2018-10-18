@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Handling of `null` keys in `SelectBox` (fixes subtitle deselection in IE11)
+- Unintended start of playback while scrubbing on seekbar
 
 ## [3.1.0]
 
