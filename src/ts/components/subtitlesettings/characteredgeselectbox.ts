@@ -1,4 +1,4 @@
-import {SubtitleSettingSelectBox} from './subtitlesettingselectbox';
+import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 
@@ -6,6 +6,14 @@ import { PlayerAPI } from 'bitmovin-player';
  * A select box providing a selection of different character edge.
  */
 export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
+
+  constructor(config: SubtitleSettingSelectBoxConfig) {
+    super(config);
+
+    this.config = this.mergeConfig(config, {
+      cssClasses: ['ui-character-edge-selectbox'],
+    }, this.config);
+  }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
