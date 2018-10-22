@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- CSS selector to default elements
+
 ### Fixed
 - Handling of `null` keys in `SelectBox` (fixes subtitle deselection in IE11)
 
