@@ -13,10 +13,7 @@
   }
 
   &.#{$prefix}-unmuted {
-    &[data-#{$prefix}-volume-level-tens='0'] {
-      background-image: svg('assets/skin-modern/images/music-off.svg');
-    }
-
+    &[data-#{$prefix}-volume-level-tens='0'],
     &[data-#{$prefix}-volume-level-tens='1'],
     &[data-#{$prefix}-volume-level-tens='2'],
     &[data-#{$prefix}-volume-level-tens='3'],
