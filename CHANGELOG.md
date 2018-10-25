@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [support-v2]
 
+### Changed
+- Handle audio volume and mute state separately again (pre v2.14.0 behavior)
+
 ### Fixed
 - Avoid unnecessary animation when `BufferingOverlay` is hidden
 - Avoid unnecessary DOM modification when the text of a `Label` does not change
