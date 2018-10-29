@@ -11,7 +11,7 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-character-edge-selectbox'],
+      cssClasses: ['ui-subtitlesettingscharacteredgeselectbox'],
     }, this.config);
   }
 

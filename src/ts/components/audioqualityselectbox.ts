@@ -12,7 +12,7 @@ export class AudioQualitySelectBox extends SelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-audio-quality-selectbox'],
+      cssClasses: ['ui-audioqualityselectbox'],
     }, this.config);
   }
 

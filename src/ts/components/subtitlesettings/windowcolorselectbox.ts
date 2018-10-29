@@ -11,7 +11,7 @@ export class WindowColorSelectBox extends SubtitleSettingSelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-window-color-selectbox'],
+      cssClasses: ['ui-subtitlesettingswindowcolorselectbox'],
     }, this.config);
   }
 

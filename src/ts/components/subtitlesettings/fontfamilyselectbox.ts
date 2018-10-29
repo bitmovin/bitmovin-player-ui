@@ -11,7 +11,7 @@ export class FontFamilySelectBox extends SubtitleSettingSelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-font-family-selectbox'],
+      cssClasses: ['ui-subtitlesettingsfontfamilyselectbox'],
     }, this.config);
   }
 

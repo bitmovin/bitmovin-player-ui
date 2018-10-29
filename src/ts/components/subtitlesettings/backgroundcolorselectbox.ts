@@ -11,7 +11,7 @@ export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-background-color-selectbox'],
+      cssClasses: ['ui-subtitlesettingsbackgroundcolorselectbox'],
     }, this.config);
   }
 

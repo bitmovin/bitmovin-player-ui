@@ -14,7 +14,7 @@ export class VideoQualitySelectBox extends SelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-video-quality-selectbox'],
+      cssClasses: ['ui-videoqualityselectbox'],
     }, this.config);
   }
 

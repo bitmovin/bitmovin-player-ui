@@ -11,7 +11,7 @@ export class WindowOpacitySelectBox extends SubtitleSettingSelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-window-opacity-selectbox'],
+      cssClasses: ['ui-subtitlesettingswindowopacityselectbox'],
     }, this.config);
   }
 

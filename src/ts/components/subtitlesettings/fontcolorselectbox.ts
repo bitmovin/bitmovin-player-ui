@@ -11,7 +11,7 @@ export class FontColorSelectBox extends SubtitleSettingSelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-font-color-selectbox'],
+      cssClasses: ['ui-subtitlesettingsfontcolorselectbox'],
     }, this.config);
   }
 

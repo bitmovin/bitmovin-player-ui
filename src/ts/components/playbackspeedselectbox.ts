@@ -14,7 +14,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     this.defaultPlaybackSpeeds = [0.25, 0.5, 1, 1.5, 2];
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-playback-speed-selectbox'],
+      cssClasses: ['ui-playbackspeedselectbox'],
     }, this.config);
   }
 

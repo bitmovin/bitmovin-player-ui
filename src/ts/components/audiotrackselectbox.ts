@@ -13,7 +13,7 @@ export class AudioTrackSelectBox extends SelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-audio-track-selectbox'],
+      cssClasses: ['ui-audiotrackselectbox'],
     }, this.config);
   }
 

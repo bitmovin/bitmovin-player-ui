@@ -11,7 +11,7 @@ export class FontOpacitySelectBox extends SubtitleSettingSelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-font-opacity-selectbox'],
+      cssClasses: ['ui-subtitlesettingsfontopacityselectbox'],
     }, this.config);
   }
 

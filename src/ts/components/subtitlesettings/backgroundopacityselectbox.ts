@@ -11,7 +11,7 @@ export class BackgroundOpacitySelectBox extends SubtitleSettingSelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-background-opacity-selectbox'],
+      cssClasses: ['ui-subtitlesettingsbackgroundopacityselectbox'],
     }, this.config);
   }
 

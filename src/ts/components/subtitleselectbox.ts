@@ -13,7 +13,7 @@ export class SubtitleSelectBox extends SelectBox {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-subtitle-selectbox'],
+      cssClasses: ['ui-subtitleselectbox'],
     }, this.config);
   }
 
