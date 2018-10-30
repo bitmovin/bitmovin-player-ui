@@ -233,13 +233,10 @@ export class UIManager {
       this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
     }
 
-    // Switch on speed selector by default
-    if (config.playbackSpeedSelectionEnabled === undefined) {
-      config.playbackSpeedSelectionEnabled = true;
-    }
-
     this.player = player;
     this.config = {
+      playbackSpeedSelectionEnabled: true, // Switch on speed selector by default
+      autoUiVariantResolve: true, // Switch on auto UI resolving by default
       ...config,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
@@ -322,11 +319,6 @@ export class UIManager {
       throw Error('Invalid UI variant order: the default UI (without condition) must be at the end of the list');
     }
 
-    // Switch on auto UI resolving by default
-    if (config.autoUiVariantResolve === undefined) {
-      config.autoUiVariantResolve = true;
-    }
-
     let adStartedEvent: AdStartedEvent = null; // keep the event stored here during ad playback
 
     // Dynamically select a UI variant that matches the current UI condition.
@@ -383,7 +375,7 @@ export class UIManager {
     };
 
     // Listen to the following events to trigger UI variant resolution
-    if (config.autoUiVariantResolve) {
+    if (this.config.autoUiVariantResolve) {
       this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_READY, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PLAY, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().addEventHandler(this.player.EVENT.ON_PAUSED, resolveUiVariant);
