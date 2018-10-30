@@ -10,7 +10,7 @@ export interface VolumeSliderConfig extends SeekBarConfig {
    * browser or platform. This currently only applies to iOS.
    * Default: true
    */
-  hideIfVolumeControlProhibited: boolean;
+  hideIfVolumeControlProhibited?: boolean;
 }
 
 /**
@@ -20,7 +20,7 @@ export class VolumeSlider extends SeekBar {
 
   private static readonly issuerName = 'ui';
 
-  constructor(config: SeekBarConfig = {}) {
+  constructor(config: VolumeSliderConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, <VolumeSliderConfig>{
