@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [support-v2]
+## [2.20.0] (2018-10-30)
 
 ### Added
 - `VolumeController` to control and manage volume and mute state by multiple `Component`s in a single place
@@ -420,7 +420,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[support-v2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.19.0...support/v2.x
+[2.20.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.19.0...v2.20.0
 [2.19.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.18.0...v2.19.0
 [2.18.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.17.1...v2.18.0
 [2.17.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.17.0...v2.17.1
