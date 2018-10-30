@@ -7,7 +7,6 @@ import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
-import { UIFactory } from './uifactory';
 import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent } from 'bitmovin-player';
 
@@ -130,6 +129,8 @@ export class UIManager {
     uiconfig.metadata = uiconfig.metadata ? uiconfig.metadata : {};
 
     this.config = {
+      playbackSpeedSelectionEnabled: true, // Switch on speed selector by default
+      autoUiVariantResolve: true, // Switch on auto UI resolving by default
       ...uiconfig,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
@@ -209,11 +210,6 @@ export class UIManager {
       throw Error('Invalid UI variant order: the default UI (without condition) must be at the end of the list');
     }
 
-    // Switch on auto UI resolving by default
-    if (uiconfig.autoUiVariantResolve === undefined) {
-      uiconfig.autoUiVariantResolve = true;
-    }
-
     let adStartedEvent: AdEvent = null; // keep the event stored here during ad playback
 
     // Dynamically select a UI variant that matches the current UI condition.
@@ -267,7 +263,7 @@ export class UIManager {
     };
 
     // Listen to the following events to trigger UI variant resolution
-    if (uiconfig.autoUiVariantResolve) {
+    if (this.config.autoUiVariantResolve) {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Play, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Paused, resolveUiVariant);

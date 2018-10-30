@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - CSS selector to default elements
 
+### Changed
+- Set `UIConfig.playbackSpeedSelectionEnabled` to true per default
+
 ### Fixed
 - Handling of `null` keys in `SelectBox` (fixes subtitle deselection in IE11)
 - Unintended start of playback while scrubbing on seekbar
