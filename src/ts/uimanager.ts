@@ -111,7 +111,7 @@ export interface UIConfig {
   autoUiVariantResolve?: boolean;
   /**
    * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
-   * Default: false
+   * Default: true
    */
   playbackSpeedSelectionEnabled?: boolean;
 }
@@ -231,6 +231,11 @@ export class UIManager {
     else {
       // Default constructor (UIVariant[]) has been called
       this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
+    }
+
+    // Switch on speed selector by default
+    if (config.playbackSpeedSelectionEnabled === undefined) {
+      config.playbackSpeedSelectionEnabled = true;
     }
 
     this.player = player;
