@@ -15,9 +15,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Support for image subtitles
+- `VolumeController` to control and manage volume and mute state by multiple `Component`s in a single place
 
 ### Fixed
 - Missing custom `SkipMessage` texts while playing an advertisement
+- `VolumeToggleButton` interfered player API `setVolume`/`mute`/`unmute` calls
 
 ## [2.18.0] (2018-08-08)
 
