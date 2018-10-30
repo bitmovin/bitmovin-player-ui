@@ -69,6 +69,10 @@ export class VolumeController {
     this.setVolume(this.storedVolume);
   }
 
+  startTransition(): VolumeTransition {
+    return new VolumeTransition(this);
+  }
+
   onChangedEvent() {
     const playerMuted = this.isMuted();
     const playerVolume = this.getVolume();
@@ -84,5 +88,34 @@ export class VolumeController {
    */
   get onChanged(): Event<VolumeController, VolumeSettingChangedArgs> {
     return this.events.onChanged.getEvent();
+  }
+}
+
+export class VolumeTransition {
+
+  constructor(private controller: VolumeController) {
+    // Store the volume at the beginning of a volume change so we can recall it later in case we set the volume to
+    // zero and actually mute the player.
+    controller.storeVolume();
+  }
+
+  update(volume: number): void {
+    // Update the volume while transitioning so the user has a "live preview" of the desired target volume
+    this.controller.setVolume(volume);
+  }
+
+  finish(volume: number): void {
+    if (volume === 0) {
+      // When the volume is zero we essentially mute the volume so we recall the volume from the beginning of the
+      // transition and mute the player instead. Recalling is necessary to return to the actual audio volume
+      // when unmuting.
+      // We must first recall the volume and then mute, because recalling sets the volume on the player
+      // and setting a player volume > 0 unmutes the player in v7.
+      this.controller.recallVolume();
+      this.controller.setMuted(true);
+    } else {
+      this.controller.setVolume(volume);
+      this.controller.storeVolume();
+    }
   }
 }

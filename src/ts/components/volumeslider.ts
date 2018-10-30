@@ -1,6 +1,6 @@
 import {SeekBar, SeekBarConfig} from './seekbar';
 import {UIInstanceManager} from '../uimanager';
-import { VolumeController } from '../volumecontroller';
+import { VolumeController, VolumeTransition } from '../volumecontroller';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
@@ -51,26 +51,19 @@ export class VolumeSlider extends SeekBar {
       }
     });
 
+    let volumeTransition: VolumeTransition;
+
     this.onSeek.subscribe(() => {
-      // Store the volume at the beginning of a volume seek so we can recall it later in case we set the volume to
-      // zero and actually mute the player.
-      volumeController.storeVolume();
+       volumeTransition = volumeController.startTransition();
     });
     this.onSeekPreview.subscribeRateLimited((sender, args) => {
-      if (args.scrubbing) {
-        // Update the volume while seeking so the user has a "live preview" of the target volume
-        volumeController.setVolume(args.position);
+      if (args.scrubbing && volumeTransition) {
+        volumeTransition.update(args.position);
       }
     }, 50);
     this.onSeeked.subscribe((sender, percentage) => {
-      if (percentage === 0) {
-        // When the volume is zero we essentially mute the volume so we recall the volume from the beginning of the
-        // seek operation and mute the player instead. Recalling is necessary to return to the actual audio volume
-        // when unmuting.
-        volumeController.recallVolume();
-        volumeController.setMuted(true);
-      } else {
-        volumeController.setVolume(percentage);
+      if (volumeTransition) {
+        volumeTransition.finish(percentage);
       }
     });
 
