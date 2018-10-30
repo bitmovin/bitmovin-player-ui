@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `VolumeController` to control and manage volume and mute state by multiple `Component`s in a single place
 
+### Changed
+- Set `UIConfig.playbackSpeedSelectionEnabled` to true per default
+
 ### Fixed
 - Avoid unnecessary animation when `BufferingOverlay` is hidden
 - Avoid unnecessary DOM modification when the text of a `Label` does not change
