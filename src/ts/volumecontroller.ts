@@ -48,7 +48,13 @@ export class VolumeController {
   }
 
   toggleMuted(): void {
-    this.setMuted(!this.isMuted());
+    if (this.isMuted() || this.getVolume() === 0) {
+      // Unmuting from the mute or zero-volume state recalls the previously saved volume setting. Setting the
+      // volume automatically unmutes the player in v7.
+      this.recallVolume();
+    } else {
+      this.setMuted(true);
+    }
   }
 
   isMuted(): boolean {
