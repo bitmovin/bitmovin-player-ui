@@ -1,6 +1,6 @@
 import {SeekBar, SeekBarConfig} from './seekbar';
 import {UIInstanceManager} from '../uimanager';
-import { VolumeController, VolumeTransition } from '../volumecontroller';
+import { VolumeTransition } from '../volumecontroller';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
