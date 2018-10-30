@@ -70,7 +70,13 @@ export class VolumeController {
   }
 
   protected onChangedEvent() {
-    this.events.onChanged.dispatch(this, { volume: this.getVolume(), muted: this.isMuted() });
+    const playerMuted = this.isMuted();
+    const playerVolume = this.getVolume();
+
+    const uiMuted = playerMuted || playerVolume === 0;
+    const uiVolume = playerMuted ? 0 : playerVolume;
+
+    this.events.onChanged.dispatch(this, { volume: uiVolume, muted: uiMuted });
   }
 
   /**
