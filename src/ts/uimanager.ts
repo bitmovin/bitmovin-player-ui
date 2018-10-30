@@ -51,6 +51,7 @@ import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { PlayerUtils } from './playerutils';
+import { VolumeController } from './volumecontroller';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -123,6 +124,7 @@ export interface InternalUIConfig extends UIConfig {
      */
     onUpdated: EventDispatcher<UIManager, void>;
   };
+  volumeController: VolumeController;
 }
 
 /**
@@ -234,6 +236,7 @@ export class UIManager {
     }
 
     this.player = player;
+    this.managerPlayerWrapper = new PlayerWrapper(player);
     this.config = {
       playbackSpeedSelectionEnabled: true, // Switch on speed selector by default
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
@@ -241,8 +244,8 @@ export class UIManager {
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
+      volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
     };
-    this.managerPlayerWrapper = new PlayerWrapper(player);
 
     /**
      * Gathers configuration data from the UI config and player source config and creates a merged UI config
