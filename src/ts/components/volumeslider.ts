@@ -1,5 +1,6 @@
 import {SeekBar, SeekBarConfig} from './seekbar';
 import {UIInstanceManager} from '../uimanager';
+import { VolumeController } from '../volumecontroller';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
@@ -18,8 +19,6 @@ export interface VolumeSliderConfig extends SeekBarConfig {
  */
 export class VolumeSlider extends SeekBar {
 
-  private static readonly issuerName = 'ui';
-
   constructor(config: VolumeSliderConfig = {}) {
     super(config);
 
@@ -34,6 +33,8 @@ export class VolumeSlider extends SeekBar {
 
     let config = <VolumeSliderConfig>this.getConfig();
 
+    const volumeController = uimanager.getConfig().volumeController;
+
     if (config.hideIfVolumeControlProhibited && !this.detectVolumeControlAvailability()) {
       this.hide();
 
@@ -42,26 +43,21 @@ export class VolumeSlider extends SeekBar {
       return;
     }
 
-    let volumeChangeHandler = () => {
-      if (player.isMuted()) {
+    volumeController.onChanged.subscribe((_, args) => {
+      if (args.muted) {
         this.setPlaybackPosition(0);
       } else {
-        this.setPlaybackPosition(player.getVolume());
+        this.setPlaybackPosition(args.volume);
       }
-    };
-
-    player.addEventHandler(player.EVENT.ON_READY, volumeChangeHandler);
-    player.addEventHandler(player.EVENT.ON_VOLUME_CHANGED, volumeChangeHandler);
-    player.addEventHandler(player.EVENT.ON_MUTED, volumeChangeHandler);
-    player.addEventHandler(player.EVENT.ON_UNMUTED, volumeChangeHandler);
+    });
 
     this.onSeekPreview.subscribeRateLimited((sender, args) => {
       if (args.scrubbing) {
-        player.setVolume(args.position, VolumeSlider.issuerName);
+        volumeController.setVolume(args.position);
       }
     }, 50);
     this.onSeeked.subscribe((sender, percentage) => {
-      player.setVolume(percentage, VolumeSlider.issuerName);
+      volumeController.setVolume(percentage);
     });
 
     // Update the volume slider marker when the player resized, a source is loaded and player is ready,
@@ -75,9 +71,6 @@ export class VolumeSlider extends SeekBar {
     uimanager.onConfigured.subscribe(() => {
       this.refreshPlaybackPosition();
     });
-
-    // Init volume bar
-    volumeChangeHandler();
   }
 
   private detectVolumeControlAvailability(): boolean {
