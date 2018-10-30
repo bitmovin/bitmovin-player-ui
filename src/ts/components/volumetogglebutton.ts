@@ -36,7 +36,11 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
     });
 
     this.onClick.subscribe(() => {
-      volumeController.toggleMuted();
+      if (volumeController.isMuted() || volumeController.getVolume() === 0) {
+        volumeController.recallVolume();
+      } else {
+        volumeController.toggleMuted();
+      }
     });
   }
 }
