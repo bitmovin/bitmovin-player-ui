@@ -85,6 +85,9 @@ export class VolumeSlider extends SeekBar {
     uimanager.onConfigured.subscribe(() => {
       this.refreshPlaybackPosition();
     });
+
+    // Init
+    volumeController.onChangedEvent();
   }
 
   private detectVolumeControlAvailability(): boolean {

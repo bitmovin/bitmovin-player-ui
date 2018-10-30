@@ -69,7 +69,7 @@ export class VolumeController {
     this.setVolume(this.storedVolume);
   }
 
-  protected onChangedEvent() {
+  onChangedEvent() {
     const playerMuted = this.isMuted();
     const playerVolume = this.getVolume();
 

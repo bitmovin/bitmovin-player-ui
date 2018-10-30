@@ -42,5 +42,8 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
         volumeController.toggleMuted();
       }
     });
+
+    // Init
+    volumeController.onChangedEvent();
   }
 }
