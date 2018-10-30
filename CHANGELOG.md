@@ -6,20 +6,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [support-v2]
 
+### Added
+- `VolumeController` to control and manage volume and mute state by multiple `Component`s in a single place
+
 ### Fixed
 - Avoid unnecessary animation when `BufferingOverlay` is hidden
 - Avoid unnecessary DOM modification when the text of a `Label` does not change
 - Handling of `null` keys in `SelectBox` (fixes subtitle deselection in IE11)
+- `VolumeToggleButton` interfered player API `setVolume`/`mute`/`unmute` calls
 
 ## [2.19.0] (2018-09-06)
 
 ### Added
 - Support for image subtitles
-- `VolumeController` to control and manage volume and mute state by multiple `Component`s in a single place
 
 ### Fixed
 - Missing custom `SkipMessage` texts while playing an advertisement
-- `VolumeToggleButton` interfered player API `setVolume`/`mute`/`unmute` calls
 
 ## [2.18.0] (2018-08-08)
 
