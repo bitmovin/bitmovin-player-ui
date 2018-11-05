@@ -73,6 +73,7 @@ export class VolumeController {
    * Recalls (sets) the volume previously stored with {@link storeVolume}.
    */
   recallVolume(): void {
+    this.setMuted(this.storedVolume === 0);
     this.setVolume(this.storedVolume);
   }
 
@@ -108,6 +109,7 @@ export class VolumeTransition {
 
   update(volume: number): void {
     // Update the volume while transitioning so the user has a "live preview" of the desired target volume
+    this.controller.setMuted(false);
     this.controller.setVolume(volume);
   }
 
@@ -121,6 +123,7 @@ export class VolumeTransition {
       this.controller.recallVolume();
       this.controller.setMuted(true);
     } else {
+      this.controller.setMuted(false);
       this.controller.setVolume(volume);
       this.controller.storeVolume();
     }
