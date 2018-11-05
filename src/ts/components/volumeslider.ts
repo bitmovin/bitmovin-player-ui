@@ -1,6 +1,7 @@
 import {SeekBar, SeekBarConfig} from './seekbar';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { VolumeTransition } from '../volumecontroller';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
@@ -35,6 +36,8 @@ export class VolumeSlider extends SeekBar {
 
     let config = <VolumeSliderConfig>this.getConfig();
 
+    const volumeController = uimanager.getConfig().volumeController;
+
     if (config.hideIfVolumeControlProhibited && !this.detectVolumeControlAvailability()) {
       this.hide();
 
@@ -43,26 +46,28 @@ export class VolumeSlider extends SeekBar {
       return;
     }
 
-    let volumeChangeHandler = () => {
-      if (player.isMuted()) {
+    volumeController.onChanged.subscribe((_, args) => {
+      if (args.muted) {
         this.setPlaybackPosition(0);
       } else {
-        this.setPlaybackPosition(player.getVolume());
+        this.setPlaybackPosition(args.volume);
       }
-    };
+    });
 
-    player.on(player.exports.PlayerEvent.VolumeChanged, volumeChangeHandler);
-    player.on(player.exports.PlayerEvent.Muted, volumeChangeHandler);
-    player.on(player.exports.PlayerEvent.Unmuted, volumeChangeHandler);
-    uimanager.getConfig().events.onUpdated.subscribe(volumeChangeHandler);
+    let volumeTransition: VolumeTransition;
 
+    this.onSeek.subscribe(() => {
+      volumeTransition = volumeController.startTransition();
+    });
     this.onSeekPreview.subscribeRateLimited((sender, args) => {
-      if (args.scrubbing) {
-        player.setVolume(args.position, VolumeSlider.issuerName);
+      if (args.scrubbing && volumeTransition) {
+        volumeTransition.update(args.position);
       }
     }, 50);
     this.onSeeked.subscribe((sender, percentage) => {
-      player.setVolume(percentage, VolumeSlider.issuerName);
+      if (volumeTransition) {
+        volumeTransition.finish(percentage);
+      }
     });
 
     // Update the volume slider marker when the player resized, a source is loaded,
@@ -86,7 +91,7 @@ export class VolumeSlider extends SeekBar {
     });
 
     // Init volume bar
-    volumeChangeHandler();
+    volumeController.onChangedEvent();
   }
 
   private detectVolumeControlAvailability(): boolean {
