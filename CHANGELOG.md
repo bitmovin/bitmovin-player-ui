@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - CSS selector to default elements
+- `VolumeController` to control and manage volume and mute state by multiple `Component`s in a single place
 
 ### Changed
 - Set `UIConfig.playbackSpeedSelectionEnabled` to true per default
@@ -15,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Handling of `null` keys in `SelectBox` (fixes subtitle deselection in IE11)
 - Unintended start of playback while scrubbing on seekbar
+- `VolumeToggleButton` interfered player API `setVolume`/`mute`/`unmute` calls
 
 ## [3.1.0]
 
