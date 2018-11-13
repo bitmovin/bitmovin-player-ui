@@ -1,7 +1,7 @@
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
-import { AdEvent, PlayerAPI } from 'bitmovin-player';
+import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
@@ -28,7 +28,9 @@ export class AdMessageLabel extends Label<LabelConfig> {
     };
 
     let adStartHandler = (event: AdEvent) => {
-      text = config.text; // TODO event.adMessage || config.text;
+      let ad = event.ad as LinearAd;
+      text = ad.message || config.text;
+
       updateMessageHandler();
 
       player.on(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);

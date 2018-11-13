@@ -1,7 +1,7 @@
-import {ButtonConfig, Button} from './button';
-import {UIInstanceManager} from '../uimanager';
-import {StringUtils} from '../stringutils';
-import { AdEvent, PlayerAPI } from 'bitmovin-player';
+import { ButtonConfig, Button } from './button';
+import { UIInstanceManager } from '../uimanager';
+import { StringUtils } from '../stringutils';
+import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
@@ -14,6 +14,8 @@ export interface AdSkipButtonConfig extends ButtonConfig {
  * A button that is displayed during ads and can be used to skip the ad.
  */
 export class AdSkipButton extends Button<AdSkipButtonConfig> {
+
+  private static SKIPPABLE_IN_COUNTDOWN_CLASS = 'skippable-in-countdown';
 
   constructor(config: AdSkipButtonConfig = {}) {
     super(config);
@@ -32,12 +34,12 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
     let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
     let skipMessage = config.skipMessage;
-    // TODO let adEvent = <Events.AdEvent>null;
-    let skipOffset = 0; // TODO adEvent.skipOffset;
+    let skipOffset = -1;
 
     let updateSkipMessageHandler = () => {
       // Display this button only if ad is skippable
-      if (skipOffset) {
+      // non skippable ads will return -1 for skippableAfter
+      if (skipOffset >= 0) {
         this.show();
       } else {
         this.hide();
@@ -45,16 +47,19 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
       // Update the skip message on the button
       if (player.getCurrentTime() < skipOffset) {
-        this.setText(
-          StringUtils.replaceAdMessagePlaceholders(skipMessage.countdown, skipOffset, player));
+        this.setText(StringUtils.replaceAdMessagePlaceholders(skipMessage.countdown, skipOffset, player));
+        this.getDomElement().addClass(AdSkipButton.SKIPPABLE_IN_COUNTDOWN_CLASS);
       } else {
         this.setText(skipMessage.skip);
+        this.getDomElement().removeClass(AdSkipButton.SKIPPABLE_IN_COUNTDOWN_CLASS);
       }
     };
 
     let adStartHandler = (event: AdEvent) => {
-      // TODO adEvent = event;
-      skipMessage = config.skipMessage; // TODO adEvent.skipMessage || config.skipMessage;
+      let ad = event.ad as LinearAd;
+      skipOffset = ad.skippableAfter;
+      skipMessage = ad.skipMessage || config.skipMessage;
+
       updateSkipMessageHandler();
 
       player.on(player.exports.PlayerEvent.TimeChanged, updateSkipMessageHandler);

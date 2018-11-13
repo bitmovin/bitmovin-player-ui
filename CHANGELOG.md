@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - CSS selector to default elements
 - `VolumeController` to control and manage volume and mute state by multiple `Component`s in a single place
+- Ads UI support for player v8
+- `UIConditionContext#adRequiresUi` to distinguish if the current ad requires an external UI
 
 ### Changed
 - Set `UIConfig.playbackSpeedSelectionEnabled` to true per default
+
+### Removed
+- Deprecated `UIConditionContext#adClientType` as it's no longer supported from the v8 player
 
 ### Fixed
 - Handling of `null` keys in `SelectBox` (fixes subtitle deselection in IE11)
