@@ -24,7 +24,7 @@ export interface AdSkipButtonConfig extends ButtonConfig {
  */
 export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
-  private static SKIPPABLE_IN_COUNTDOWN_CLASS = 'skippable-in-countdown';
+  private static COUNTDOWN_ACTIVE_CLASS = 'countdown-active';
 
   constructor(config: AdSkipButtonConfig = {}) {
     super(config);
@@ -55,11 +55,11 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
       // Update the skip message on the button
       if (player.getCurrentTime() < skipOffset) {
-        this.getDomElement().addClass(AdSkipButton.SKIPPABLE_IN_COUNTDOWN_CLASS);
         this.setText(StringUtils.replaceAdMessagePlaceholders(untilSkippableMessage, skipOffset, player));
+        this.getDomElement().addClass(AdSkipButton.COUNTDOWN_ACTIVE_CLASS);
       } else {
-        this.getDomElement().removeClass(AdSkipButton.SKIPPABLE_IN_COUNTDOWN_CLASS);
         this.setText(skippableMessage);
+        this.getDomElement().removeClass(AdSkipButton.COUNTDOWN_ACTIVE_CLASS);
       }
     };
 

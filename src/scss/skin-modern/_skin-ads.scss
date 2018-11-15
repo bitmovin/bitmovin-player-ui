@@ -29,7 +29,7 @@
       }
 
       /* Let button look like it is not click-able during the skippable-in countdown */
-      &.skippable-in-countdown {
+      &.countdown-active {
         cursor: default;
         .#{$prefix}-label {
           &:hover {
