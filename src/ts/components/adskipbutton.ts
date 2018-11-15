@@ -7,7 +7,16 @@ import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
  * Configuration interface for the {@link AdSkipButton}.
  */
 export interface AdSkipButtonConfig extends ButtonConfig {
-  skipMessage?: any; // TODO SkipMessage;
+  /**
+   * Message which gets displayed during the countdown is active.
+   * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
+   */
+  untilSkippableMessage?: string;
+  /**
+   * Message displayed when the ad is skippable.
+   * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
+   */
+  skippableMessage?: string;
 }
 
 /**
@@ -22,10 +31,8 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
     this.config = this.mergeConfig(config, <AdSkipButtonConfig>{
       cssClass: 'ui-button-ad-skip',
-      skipMessage: {
-        countdown: 'Skip ad in {remainingTime}',
-        skip: 'Skip ad',
-      },
+      untilSkippableMessage: 'Skip ad in {remainingTime}',
+      skippableMessage: 'Skip ad',
     }, this.config);
   }
 
@@ -33,7 +40,8 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     super.configure(player, uimanager);
 
     let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
-    let skipMessage = config.skipMessage;
+    let untilSkippableMessage = config.untilSkippableMessage;
+    let skippableMessage = config.skippableMessage;
     let skipOffset = -1;
 
     let updateSkipMessageHandler = () => {
@@ -47,18 +55,19 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
       // Update the skip message on the button
       if (player.getCurrentTime() < skipOffset) {
-        this.setText(StringUtils.replaceAdMessagePlaceholders(skipMessage.countdown, skipOffset, player));
         this.getDomElement().addClass(AdSkipButton.SKIPPABLE_IN_COUNTDOWN_CLASS);
+        this.setText(StringUtils.replaceAdMessagePlaceholders(untilSkippableMessage, skipOffset, player));
       } else {
-        this.setText(skipMessage.skip);
         this.getDomElement().removeClass(AdSkipButton.SKIPPABLE_IN_COUNTDOWN_CLASS);
+        this.setText(skippableMessage);
       }
     };
 
     let adStartHandler = (event: AdEvent) => {
       let ad = event.ad as LinearAd;
       skipOffset = ad.skippableAfter;
-      skipMessage = ad.skipMessage || config.skipMessage;
+      untilSkippableMessage = ad.uiConfig && ad.uiConfig.untilSkippableMessage || config.untilSkippableMessage;
+      skippableMessage = ad.uiConfig && ad.uiConfig.skippableMessage || config.skippableMessage;
 
       updateSkipMessageHandler();
 

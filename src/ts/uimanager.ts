@@ -8,7 +8,7 @@ import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
-import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent } from 'bitmovin-player';
+import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
 
 export interface InternalUIConfig extends UIConfig {
@@ -243,11 +243,14 @@ export class UIManager {
 
       // Detect if an ad has started
       let isAd = adStartedEvent != null;
-      let adRequiresUi = isAd;
+      let adRequiresUi = false;
       if (isAd) {
         let ad = adStartedEvent.ad;
-        // for now preventing showing an ad if it's non linear but requesting an UI
-        adRequiresUi = ad.isLinear && ad.requiresUi;
+        // for now only linear ads can request an UI
+        if (ad.isLinear) {
+          let linearAd = ad as LinearAd;
+          adRequiresUi = linearAd.uiConfig && linearAd.uiConfig.requestsUi || false;
+        }
       }
 
       this.resolveUiVariant({
