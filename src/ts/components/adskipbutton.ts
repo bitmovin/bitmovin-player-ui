@@ -47,8 +47,10 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       if (player.getCurrentTime() < skipOffset) {
         this.setText(
           StringUtils.replaceAdMessagePlaceholders(skipMessage.countdown, skipOffset, player));
+        this.disable();
       } else {
         this.setText(skipMessage.skip);
+        this.enable();
       }
     };
 
