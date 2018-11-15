@@ -28,16 +28,6 @@
         }
       }
 
-      /* Let button look like it is not click-able during the skippable-in countdown */
-      &.countdown-active {
-        cursor: default;
-        .#{$prefix}-label {
-          &:hover {
-            text-decoration: none;
-          }
-        }
-      }
-
       // Add the dot between ad message and skip button
       &::before {
         color: $color-highlight;

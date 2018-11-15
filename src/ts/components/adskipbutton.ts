@@ -24,8 +24,6 @@ export interface AdSkipButtonConfig extends ButtonConfig {
  */
 export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
-  private static COUNTDOWN_ACTIVE_CLASS = 'countdown-active';
-
   constructor(config: AdSkipButtonConfig = {}) {
     super(config);
 
