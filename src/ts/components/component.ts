@@ -40,6 +40,12 @@ export interface ComponentConfig {
    * Default: false
    */
   hidden?: boolean;
+
+  /**
+   * Specifies if the component is enabled (interactive) or not.
+   * Default: false
+   */
+  disabled?: boolean;
 }
 
 export interface ComponentHoverChangedEventArgs extends NoArgs {
@@ -62,6 +68,12 @@ export class Component<Config extends ComponentConfig> {
   private static readonly CLASS_HIDDEN = 'hidden';
 
   /**
+   * The classname that is attached to the element when it is in the disabled state.
+   * @type {string}
+   */
+  private static readonly CLASS_DISABLED = 'disabled';
+
+  /**
    * Configuration object of this component.
    */
   protected config: Config;
@@ -75,6 +87,11 @@ export class Component<Config extends ComponentConfig> {
    * Flag that keeps track of the hidden state.
    */
   private hidden: boolean;
+
+  /**
+   * Flat that keeps track of the disabled state.
+   */
+  private disabled: boolean;
 
   /**
    * Flag that keeps track of the hover state.
@@ -143,6 +160,8 @@ export class Component<Config extends ComponentConfig> {
     onShow: new EventDispatcher<Component<Config>, NoArgs>(),
     onHide: new EventDispatcher<Component<Config>, NoArgs>(),
     onHoverChanged: new EventDispatcher<Component<Config>, ComponentHoverChangedEventArgs>(),
+    onEnabled: new EventDispatcher<Component<Config>, NoArgs>(),
+    onDisabled: new EventDispatcher<Component<Config>, NoArgs>(),
   };
 
   /**
@@ -159,6 +178,7 @@ export class Component<Config extends ComponentConfig> {
       cssClass: 'ui-component',
       cssClasses: [],
       hidden: false,
+      disabled: false,
     }, {});
   }
 
@@ -172,11 +192,18 @@ export class Component<Config extends ComponentConfig> {
    */
   initialize(): void {
     this.hidden = this.config.hidden;
+    this.disabled = this.config.disabled;
 
     // Hide the component at initialization if it is configured to be hidden
     if (this.isHidden()) {
       this.hidden = false; // Set flag to false for the following hide() call to work (hide() checks the flag)
       this.hide();
+    }
+
+    // Disable the component at initialization if it is configured to be disabled
+    if (this.isDisabled()) {
+      this.disabled = false; // Set flag to false for the following disable() call to work (disable() checks the flag)
+      this.disable();
     }
   }
 
@@ -345,6 +372,48 @@ export class Component<Config extends ComponentConfig> {
   }
 
   /**
+   * Disables the component.
+   * This method basically transfers the component into the disabled state. Actual disabling is done via CSS or child
+   * components. (e.g. Button needs to unsubscribe click listeners)
+   */
+  disable(): void {
+    if (!this.disabled) {
+      this.disabled = true;
+      this.getDomElement().addClass(this.prefixCss(Component.CLASS_DISABLED));
+      this.onDisabledEvent();
+    }
+  }
+
+  /**
+   * Enables the component.
+   * This method basically transfers the component into the enabled state. Actual enabling is done via CSS or child
+   * components. (e.g. Button needs to subscribe click listeners)
+   */
+  enable(): void {
+    if (this.disabled) {
+      this.getDomElement().removeClass(this.prefixCss(Component.CLASS_DISABLED));
+      this.disabled = false;
+      this.onEnabledEvent();
+    }
+  }
+
+  /**
+   * Determines if the component is disabled.
+   * @returns {boolean} true if the component is disabled, else false
+   */
+  isDisabled(): boolean {
+    return this.disabled;
+  }
+
+  /**
+   * Determines if the component is enabled.
+   * @returns {boolean} true if the component is enabled, else false
+   */
+  isEnabled(): boolean {
+    return !this.isDisabled();
+  }
+
+  /**
    * Determines if the component is currently hovered.
    * @returns {boolean} true if the component is hovered, else false
    */
@@ -366,6 +435,22 @@ export class Component<Config extends ComponentConfig> {
    */
   protected onHideEvent(): void {
     this.componentEvents.onHide.dispatch(this);
+  }
+
+  /**
+   * Fires the onEnabled event.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
+   */
+  protected onEnabledEvent(): void {
+    this.componentEvents.onEnabled.dispatch(this);
+  }
+
+  /**
+   * Fires the onDisabled event.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
+   */
+  protected onDisabledEvent(): void {
+    this.componentEvents.onDisabled.dispatch(this);
   }
 
   /**
@@ -393,6 +478,24 @@ export class Component<Config extends ComponentConfig> {
    */
   get onHide(): Event<Component<Config>, NoArgs> {
     return this.componentEvents.onHide.getEvent();
+  }
+
+  /**
+   * Gets the event that is fired when the component is enabling.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
+   * @returns {Event<Component<Config>, NoArgs>}
+   */
+  get onEnabled(): Event<Component<Config>, NoArgs> {
+    return this.componentEvents.onEnabled.getEvent();
+  }
+
+  /**
+   * Gets the event that is fired when the component is disabling.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
+   * @returns {Event<Component<Config>, NoArgs>}
+   */
+  get onDisabled(): Event<Component<Config>, NoArgs> {
+    return this.componentEvents.onDisabled.getEvent();
   }
 
   /**

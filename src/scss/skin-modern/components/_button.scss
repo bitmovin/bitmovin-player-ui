@@ -21,6 +21,21 @@
     display: none;
   }
 
+  &.#{$prefix}-disabled {
+    cursor: default;
+
+    &,
+    > * {
+      pointer-events: none;
+    }
+
+    .#{$prefix}-label {
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+
   @include hidden;
 }
 
