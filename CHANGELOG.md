@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Set `UIConfig.playbackSpeedSelectionEnabled` to true per default
 
 ### Removed
-- Deprecated `UIConditionContext#adClientType` as it's no longer supported from the v8 player
+- Deprecated `UIConditionContext#adClientType` as it's no longer supported by player v8
 
 ### Fixed
 - Handling of `null` keys in `SelectBox` (fixes subtitle deselection in IE11)
