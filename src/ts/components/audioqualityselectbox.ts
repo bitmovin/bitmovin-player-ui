@@ -55,6 +55,10 @@ export class AudioQualitySelectBox extends SelectBox {
     player.addEventHandler(player.EVENT.ON_READY, updateAudioQualities);
     // Update qualities when the period within a source changes
     player.addEventHandler(player.EVENT.ON_PERIOD_SWITCHED, updateAudioQualities);
+    // Update qualities when their availability changed
+    player.addEventHandler(player.EVENT.ON_AUDIO_QUALITY_ADDED, updateAudioQualities);
+    player.addEventHandler(player.EVENT.ON_AUDIO_QUALITY_REMOVED, updateAudioQualities);
+
     // Update quality selection when quality is changed (from outside)
     if (player.EVENT.ON_AUDIO_QUALITY_CHANGED) {
       // Since player 7.3.1
