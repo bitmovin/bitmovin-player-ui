@@ -2,6 +2,7 @@ import { ButtonConfig, Button } from './button';
 import { UIInstanceManager } from '../uimanager';
 import { StringUtils } from '../stringutils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
+import { LocalLinearAd } from './admessagelabel';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
@@ -62,7 +63,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     };
 
     let adStartHandler = (event: AdEvent) => {
-      let ad = event.ad as LinearAd;
+      let ad = event.ad as LocalLinearAd;
       skipOffset = ad.skippableAfter;
       untilSkippableMessage = ad.uiConfig && ad.uiConfig.untilSkippableMessage || config.untilSkippableMessage;
       skippableMessage = ad.uiConfig && ad.uiConfig.skippableMessage || config.skippableMessage;
