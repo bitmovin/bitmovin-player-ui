@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [support-v2]
 
 ### Added
-- Subscribe to `ON_VIDEO_QUALITY_ADDED`, `ON_VIDEO_QUALITY_REMOVED`, `ON_AUDIO_QUALITY_ADDED`, `ON_AUDIO_QUALITY_REMOVED` events to enable only available qualities
+- Support for `ON_VIDEO_QUALITY_ADDED`, `ON_VIDEO_QUALITY_REMOVED`, `ON_AUDIO_QUALITY_ADDED`, `ON_AUDIO_QUALITY_REMOVED` events in `AudioQualitySelectBox` / `VideoQualitySelectBox`
 
 ## [2.20.0] (2018-10-30)
 
