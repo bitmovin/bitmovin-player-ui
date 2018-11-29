@@ -8,8 +8,9 @@ import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
-import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent } from 'bitmovin-player';
+import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
+import { LocalLinearAd } from './components/admessagelabel';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -27,14 +28,12 @@ export interface InternalUIConfig extends UIConfig {
 export interface UIConditionContext {
   /**
    * Tells if the player is loading or playing an ad.
-   * @deprecated to be updated for the upcoming native ads player v8 module
    */
   isAd: boolean;
   /**
-   * Tells the ad client (e.g. 'vast, 'ima') if {@link #isAd} is true.
-   * @deprecated to be updated for the upcoming native ads player v8 module
+   * Tells if the current ad requires an external UI, if {@link #isAd} is true.
    */
-  adClientType: string;
+  adRequiresUi: boolean;
   /**
    * Tells if the player is currently in fullscreen mode.
    */
@@ -226,7 +225,7 @@ export class UIManager {
         switch (event.type) {
           // When the ad starts, we store the event data
           case player.exports.PlayerEvent.AdStarted:
-            adStartedEvent = <AdEvent>event;
+            adStartedEvent = event as AdEvent;
             break;
           // When the ad ends, we delete the event data
           case player.exports.PlayerEvent.AdFinished:
@@ -244,11 +243,20 @@ export class UIManager {
       }
 
       // Detect if an ad has started
-      let ad = adStartedEvent != null;
+      let isAd = adStartedEvent != null;
+      let adRequiresUi = false;
+      if (isAd) {
+        let ad = adStartedEvent.ad;
+        // for now only linear ads can request an UI
+        if (ad.isLinear) {
+          let linearAd = ad as LocalLinearAd;
+          adRequiresUi = linearAd.uiConfig && linearAd.uiConfig.requestsUi || false;
+        }
+      }
 
       this.resolveUiVariant({
-        isAd: ad,
-        adClientType: null,
+        isAd: isAd,
+        adRequiresUi: adRequiresUi,
       }, (context) => {
         // If this is an ad UI, we need to relay the saved ON_AD_STARTED event data so ad components can configure
         // themselves for the current ad.
@@ -351,7 +359,7 @@ export class UIManager {
     // Determine the current context for which the UI variant will be resolved
     const defaultContext: UIConditionContext = {
       isAd: false,
-      adClientType: null,
+      adRequiresUi: false,
       isFullscreen: this.player.getViewMode() === this.player.exports.ViewMode.Fullscreen,
       isMobile: BrowserUtils.isMobile,
       isPlaying: this.player.isPlaying(),

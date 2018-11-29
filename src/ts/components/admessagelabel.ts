@@ -1,7 +1,19 @@
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
-import { AdEvent, PlayerAPI } from 'bitmovin-player';
+import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
+
+export interface LocalLinearAdUiConfig {
+  requestsUi?: boolean;
+  message?: string;
+  untilSkippableMessage?: string;
+  skippableMessage?: string;
+}
+
+export interface LocalLinearAd extends LinearAd {
+  uiConfig?: LocalLinearAdUiConfig;
+  skippableAfter?: number;
+}
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
@@ -28,7 +40,9 @@ export class AdMessageLabel extends Label<LabelConfig> {
     };
 
     let adStartHandler = (event: AdEvent) => {
-      text = config.text; // TODO event.adMessage || config.text;
+      let uiConfig = (event.ad as LocalLinearAd).uiConfig;
+      text = uiConfig && uiConfig.message || config.text;
+
       updateMessageHandler();
 
       player.on(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);

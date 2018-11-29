@@ -11,9 +11,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `VolumeController` to control and manage volume and mute state by multiple `Component`s in a single place
 - `disable()` / `enable()` functionality to `Component`s
 - Preventing click event on a disabled `Button`
+- Ads UI support for player v8
+- `UIConditionContext#adRequiresUi` to distinguish if the current ad requires an external UI
 
 ### Changed
 - Set `UIConfig.playbackSpeedSelectionEnabled` to true per default
+
+### Removed
+- Deprecated `UIConditionContext#adClientType` as it's no longer supported by player v8
 
 ### Fixed
 - Handling of `null` keys in `SelectBox` (fixes subtitle deselection in IE11)
