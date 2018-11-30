@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [develop]
+## [3.2.0]
 
 ### Added
 - CSS selectors for all `SelectBox` components
@@ -471,6 +471,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.2.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.18.0...v3.0.0
