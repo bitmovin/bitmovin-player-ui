@@ -7,15 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- CSS selector to default elements
+- CSS selectors for all `SelectBox` components
 - `VolumeController` to control and manage volume and mute state by multiple `Component`s in a single place
 - `disable()` / `enable()` functionality to `Component`s
 - Preventing click event on a disabled `Button`
-- Ads UI support for player v8
-- `UIConditionContext#adRequiresUi` to distinguish if the current ad requires an external UI
+- Advertising UI support
+- `UIConditionContext.adRequiresUi` to distinguish if the current ad requires an external UI
 
 ### Changed
-- Set `UIConfig.playbackSpeedSelectionEnabled` to true per default
+- `UIConfig.playbackSpeedSelectionEnabled` is now `true` by default (as it was before v2.17.0)
 
 ### Removed
 - Deprecated `UIConditionContext#adClientType` as it's no longer supported by player v8
