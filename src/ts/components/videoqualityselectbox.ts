@@ -60,6 +60,10 @@ export class VideoQualitySelectBox extends SelectBox {
     player.addEventHandler(player.EVENT.ON_READY, updateVideoQualities);
     // Update qualities when the period within a source changes
     player.addEventHandler(player.EVENT.ON_PERIOD_SWITCHED, updateVideoQualities);
+    // Update qualities when their availability changed
+    player.addEventHandler(player.EVENT.ON_VIDEO_QUALITY_ADDED, updateVideoQualities);
+    player.addEventHandler(player.EVENT.ON_VIDEO_QUALITY_REMOVED, updateVideoQualities);
+
     // Update quality selection when quality is changed (from outside)
     if (player.EVENT.ON_VIDEO_QUALITY_CHANGED) {
       // Since player 7.3.1
