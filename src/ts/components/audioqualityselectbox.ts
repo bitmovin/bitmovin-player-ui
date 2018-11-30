@@ -10,6 +10,10 @@ export class AudioQualitySelectBox extends SelectBox {
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
+
+    this.config = this.mergeConfig(config, {
+      cssClasses: ['ui-audioqualityselectbox'],
+    }, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

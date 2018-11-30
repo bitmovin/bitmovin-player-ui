@@ -11,6 +11,10 @@ export class SubtitleSelectBox extends SelectBox {
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
+
+    this.config = this.mergeConfig(config, {
+      cssClasses: ['ui-subtitleselectbox'],
+    }, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

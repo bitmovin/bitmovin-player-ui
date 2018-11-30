@@ -59,7 +59,7 @@ export interface UIConfig {
   autoUiVariantResolve?: boolean;
   /**
    * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
-   * Default: false
+   * Default: true
    */
   playbackSpeedSelectionEnabled?: boolean;
   /**

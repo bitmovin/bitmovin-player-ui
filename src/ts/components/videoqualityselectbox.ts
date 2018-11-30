@@ -12,6 +12,10 @@ export class VideoQualitySelectBox extends SelectBox {
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
+
+    this.config = this.mergeConfig(config, {
+      cssClasses: ['ui-videoqualityselectbox'],
+    }, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

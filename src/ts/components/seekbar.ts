@@ -219,7 +219,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     let onPlayerSeeked = () => {
       isPlayerSeeking = false;
       this.setSeeking(false);
-      restorePlayingState();
     };
 
     let restorePlayingState = function() {
@@ -278,6 +277,9 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Notify UI manager of finished seek
       uimanager.onSeeked.dispatch(sender);
+
+      // Continue playback after seek if player was playing when seek started
+      restorePlayingState();
     });
 
     if (this.hasLabel()) {

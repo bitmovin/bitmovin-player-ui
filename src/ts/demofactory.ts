@@ -45,12 +45,12 @@ export namespace DemoFactory {
       ui: UIFactory.modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth
-          && context.isAd && context.adClientType === 'vast';
+          && context.isAd && context.adRequiresUi;
       },
     }, {
       ui: UIFactory.modernAdsUI(),
       condition: (context: UIConditionContext) => {
-        return context.isAd && context.adClientType === 'vast';
+        return context.isAd && context.adRequiresUi;
       },
     }, {
       ui: UIFactory.modernSmallScreenUI(),

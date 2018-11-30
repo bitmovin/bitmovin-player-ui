@@ -11,6 +11,10 @@ export class AudioTrackSelectBox extends SelectBox {
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
+
+    this.config = this.mergeConfig(config, {
+      cssClasses: ['ui-audiotrackselectbox'],
+    }, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
