@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+ - Support for `VideoQualityAdded`, `VideoQualityRemoved`, `AudioQualityAdded`, `AudioQualityRemoved` events in `AudioQualitySelectBox` / `VideoQualitySelectBox`
+
 ## [3.2.0]
 
 ### Added
