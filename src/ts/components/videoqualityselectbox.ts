@@ -58,7 +58,7 @@ export class VideoQualitySelectBox extends SelectBox {
     // Update quality selection when quality is changed (from outside)
     player.on(player.exports.PlayerEvent.VideoQualityChanged, selectCurrentVideoQuality);
 
-    if (player.exports.PlayerEvent.hasOwnProperty('VideoQualityAdded')) {
+    if ((player.exports.PlayerEvent as any).VideoQualityAdded) {
       // Update qualities when their availability changed
       // TODO: remove any cast after next player release
       player.on((player.exports.PlayerEvent as any).VideoQualityAdded, updateVideoQualities);

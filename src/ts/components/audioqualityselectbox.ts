@@ -52,7 +52,7 @@ export class AudioQualitySelectBox extends SelectBox {
     player.on(player.exports.PlayerEvent.PeriodSwitched, updateAudioQualities);
     // Update quality selection when quality is changed (from outside)
     player.on(player.exports.PlayerEvent.AudioQualityChanged, selectCurrentAudioQuality);
-    if (player.exports.PlayerEvent.hasOwnProperty('AudioQualityAdded')) {
+    if ((player.exports.PlayerEvent as any).AudioQualityAdded) {
       // Update qualities when their availability changed
       // TODO: remove any cast after next player release
       player.on((player.exports.PlayerEvent as any).AudioQualityAdded, updateAudioQualities);
