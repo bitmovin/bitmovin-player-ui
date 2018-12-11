@@ -239,6 +239,11 @@
   var playerSetup = function(config) {
     player = new bitmovin.player.Player(document.getElementById('player'), config);
 
+    // Update API method when a module namespace becomes available
+    player.on(player.exports.PlayerEvent.ModuleReady, function() {
+      updateApiMethods();
+    });
+
     // Add UI
     uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
 
