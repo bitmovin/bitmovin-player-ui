@@ -409,6 +409,10 @@
       });
     },
     'CEA-608 subtitle test pattern (60 secs)': function() {
+      // Get UIManager's internal player wrapper with fireEventInUI method
+      // NOTE: this is a hack that accesses a private property which can change any time, do not use in production!
+      var player = uiManager.currentUi.playerWrapper.getPlayer();
+
       var cueEnter = function(text, row, column) {
         var cue = {
           text: text,
@@ -417,12 +421,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.Event.CueEnter, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.Event.CueExit, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -438,6 +442,10 @@
       setInterval(function() { cues.forEach(function(cue) { cueExit(cue); }); }, 60000);
     },
     'CEA-608 subtitle test pattern 2': function() {
+      // Get UIManager's internal player wrapper with fireEventInUI method
+      // NOTE: this is a hack that accesses a private property which can change any time, do not use in production!
+      var player = uiManager.currentUi.playerWrapper.getPlayer();
+
       var cueEnter = function(text, row, column) {
         var cue = {
           text: text,
@@ -446,12 +454,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.Event.CueEnter, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.Event.CueExit, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -485,16 +493,20 @@
       enqueue();
     },
     'subtitle test pattern': function() {
+      // Get UIManager's internal player wrapper with fireEventInUI method
+      // NOTE: this is a hack that accesses a private property which can change any time, do not use in production!
+      var player = uiManager.currentUi.playerWrapper.getPlayer();
+
       var cueEnter = function(text) {
         var cue = {
           text: text,
         };
-        player.fireEvent(player.Event.CueEnter, cue);
+        player.fireEventInUI(player.exports.PlayerEvent.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.Event.CueExit, cue);
+        player.fireEventInUI(player.exports.PlayerEvent.CueExit, cue);
       };
 
       var cues = [];
