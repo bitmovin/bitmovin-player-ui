@@ -527,27 +527,27 @@
     });
   });
   // Add a checkbox for each event to toggle logging to console
-  var eventIndex = 0;
-  for (var event in bitmovin.player.PlayerEvent) {
+  Object.keys(bitmovin.player.PlayerEvent).forEach(function(eventName, eventIndex) {
+    var event = bitmovin.player.PlayerEvent[eventName];
+
     var checkbox = $('<input>', {
       'type': 'checkbox',
       'id': 'config-events-' + (eventIndex++)
-    }).data('event', event);
+    });
 
     checkbox.change(function() {
       var checkbox = $(this);
       var checked = checkbox.prop('checked');
-      var eventName = checkbox.data('event');
 
       if (checked) {
-        player.on(bitmovin.player.PlayerEvent[eventName], eventConsoleLogger);
+        player.on(event, eventConsoleLogger);
       } else {
-        player.off(bitmovin.player.PlayerEvent[eventName], eventConsoleLogger);
+        player.off(event, eventConsoleLogger);
       }
     });
 
-    $('#events').append($('<label>').append(checkbox).append(' ').append(event).append('&ensp;'));
-  }
+    $('#events').append($('<label>').append(checkbox).append(' ').append(eventName).append('&ensp;'));
+  });
 
   // Collect all UI factory methods which are basically the different built-in skins and skin types
   var uiFactoryMethods = [];
