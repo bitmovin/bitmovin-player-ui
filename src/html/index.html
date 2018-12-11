@@ -332,10 +332,10 @@
       playerSetup(config);
     },
     'Add subtitle': function() {
-      return player.addSubtitle({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', label: 'Test Subtitle'});
+      return player.subtitles.add({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', kind: 'subtitle', label: 'Test Subtitle'});
     },
     'Remove subtitle': function() {
-      return player.removeSubtitle('test');
+      return player.subtitles.remove('test');
     },
     'Schedule skippable VAST preroll ad': function() {
       return player.scheduleAd(
