@@ -362,8 +362,9 @@
   var actions = {
     'Recreate player': function() {
       var config = player.getConfig();
-      player.destroy();
-      playerSetup(config);
+      player.destroy().then(function() {
+        playerSetup(config);
+      });
     },
     'Add subtitle': function() {
       return player.subtitles.add({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', kind: 'subtitle', label: 'Test Subtitle'});
