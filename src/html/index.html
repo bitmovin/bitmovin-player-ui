@@ -329,7 +329,7 @@
           // Method lies within a namespace
           method = player[levels[0]][levels[1]];
         }
-        printResult(method(p), methodName);
+        printResult(method.call(player, p), methodName);
       });
     };
 
