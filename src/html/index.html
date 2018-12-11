@@ -264,14 +264,28 @@
     $('#function-call-output').html(JSON.stringify(result, null, 2));
   };
 
-  // Collect all API methods of the player object
-  var apiMethods = [];
-  for (var member in player) {
-    if (typeof player[member] == 'function') {
-      apiMethods.push(member);
-    }
+  function enumerateApiMethods() {
+    var enumerate = function (target) {
+      var members = [];
+      for (var member in target) {
+        if (typeof target[member] == 'function') {
+          members.push(member);
+        }
+      }
+      return members;
+    };
+
+    // Collect all API methods of the player object
+    var apiMethods = enumerate(player);
+    var namespaces = ['subtitles', 'ads', 'vr'];
+    namespaces.filter(function(namespaceName) { return player[namespaceName] != null; }).forEach(function (namespaceName) {
+      enumerate(player[namespaceName]).forEach(function (namespaceMember) {
+        apiMethods.push(namespaceName + '.' + namespaceMember);
+      });
+    });
+
+    return apiMethods.sort();
   }
-  apiMethods.sort();
 
   // Define custom parameters for testing API methods that take parameters
   var apiMethodParameters = {
@@ -286,45 +300,59 @@
     'setPlaybackSpeed': [0, 0.1, 0.25, 0.5, 1, 2, 4, 10],
   };
 
-  var addApiMethodButton = function(method, parameter) {
-    var parameterName = (typeof parameter == 'undefined' ? '' : parameter instanceof Array ? parameter[0] : parameter);
-    var button = $('<button class="btn btn-primary btn-sm">' + method + '(' + parameterName + ')' + '</button>');
-    $('#playback-controls').append(button).append(' ');
-    button.click(function() {
-      var p = parameter;
-      // If the parameter is an array, the actual parameter is located at index 1
-      if (p instanceof Array) {
-        p = p[1];
-      }
-      // If the parameter is a function, evaluate it first
-      if (typeof p == 'function') {
-        p = p();
-      }
-      // Execute method with parameter
-      printResult(player[method](p), method);
-    });
-  };
+  function updateApiMethods() {
+    console.log('updating api methods');
+    $('#playback-controls').empty(); // Remove old buttons
 
-  // Create buttons for all API methods and method/parameter combinations
-  $.each(apiMethods, function(key, method) {
-    if (apiMethodParameters.hasOwnProperty(method)) {
-      // We found custom parameter(s)
-      var parameters = apiMethodParameters[method];
-      if ($.isArray(parameters)) {
-        // There are multiple parameters in an array, add a call for each parameter
-        $.each(parameters, function(key, parameter) {
-          addApiMethodButton(method, parameter);
-        });
+    var addApiMethodButton = function(methodName, parameter) {
+      var parameterName = (typeof parameter == 'undefined' ? '' : parameter instanceof Array ? parameter[0] : parameter);
+      var button = $('<button class="btn btn-primary btn-sm">' + methodName + '(' + parameterName + ')' + '</button>');
+      $('#playback-controls').append(button).append(' ');
+      button.click(function() {
+        var p = parameter;
+        // If the parameter is an array, the actual parameter is located at index 1
+        if (p instanceof Array) {
+          p = p[1];
+        }
+        // If the parameter is a function, evaluate it first
+        if (typeof p == 'function') {
+          p = p();
+        }
+        // Execute method with parameter
+        var levels = methodName.split('.');
+        var method = player[methodName];
+        if (levels.length === 2) {
+          // Method lies within a namespace
+          method = player[levels[0]][levels[1]];
+        }
+        printResult(method(p), methodName);
+      });
+    };
+
+    var apiMethods = enumerateApiMethods();
+
+    // Create buttons for all API methods and method/parameter combinations
+    $.each(apiMethods, function(key, method) {
+      if (apiMethodParameters.hasOwnProperty(method)) {
+        // We found custom parameter(s)
+        var parameters = apiMethodParameters[method];
+        if ($.isArray(parameters)) {
+          // There are multiple parameters in an array, add a call for each parameter
+          $.each(parameters, function(key, parameter) {
+            addApiMethodButton(method, parameter);
+          });
+        } else {
+          // Just a single parameter, add the call
+          addApiMethodButton(method, parameters);
+        }
       } else {
-        // Just a single parameter, add the call
-        addApiMethodButton(method, parameters);
+        // No parameters defined, add a simple parameterless method call
+        addApiMethodButton(method);
       }
-    } else {
-      // No parameters defined, add a simple parameterless method call
-      addApiMethodButton(method);
-    }
-  });
+    });
+  }
 
+  updateApiMethods();
 
   var actions = {
     'Recreate player': function() {
