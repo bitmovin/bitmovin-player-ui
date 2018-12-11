@@ -493,13 +493,13 @@
 
       enqueue();
     },
-    'Animate player size/height (needs player 7.5)': function() {
-      var playerFigure = player.getFigure();
-      var initialHeight = playerFigure.offsetHeight;
+    'Animate player size/height': function() {
+      var playerContainer = player.getContainer();
+      var initialHeight = playerContainer.offsetHeight;
       var minHeight = 300;
       var maxHeight = 1400;
 
-      $(playerFigure)
+      $(playerContainer)
       .animate({height: minHeight}, 1000)
       .animate({height: maxHeight}, 1000)
       .animate({height: initialHeight}, 1000);
