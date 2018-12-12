@@ -380,22 +380,22 @@
         position: 'pre',
       });
     },
-    'Schedule skippable VAST ad in 5 secs': function() {
+    'Schedule skippable VAST ad in 2 secs': function() {
       return player.ads.schedule({
         tag: {
           url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
           type: 'vast',
         },
-        position: String(player.getCurrentTime() + 5),
+        position: String(player.getCurrentTime() + 2),
       });
     },
-    'Schedule nonskippable VAST ad in 5 secs': function() {
+    'Schedule nonskippable VAST ad in 2 secs': function() {
       return player.ads.schedule({
         tag: {
           url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
           type: 'vast',
         },
-        position: String(player.getCurrentTime() + 5),
+        position: String(player.getCurrentTime() + 2),
       });
     },
     'Schedule skippable VAST postroll ad': function() {
