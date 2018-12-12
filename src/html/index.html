@@ -270,7 +270,7 @@
   };
 
   function enumerateApiMethods() {
-    var enumerate = function (target) {
+    var enumerate = function(target) {
       var members = [];
       for (var member in target) {
         if (typeof target[member] == 'function') {
@@ -283,8 +283,8 @@
     // Collect all API methods of the player object
     var apiMethods = enumerate(player);
     var namespaces = ['subtitles', 'ads', 'vr'];
-    namespaces.filter(function(namespaceName) { return player[namespaceName] != null; }).forEach(function (namespaceName) {
-      enumerate(player[namespaceName]).forEach(function (namespaceMember) {
+    namespaces.filter(function(namespaceName) { return player[namespaceName] != null; }).forEach(function(namespaceName) {
+      enumerate(player[namespaceName]).forEach(function(namespaceMember) {
         apiMethods.push(namespaceName + '.' + namespaceMember);
       });
     });
@@ -369,7 +369,7 @@
       });
     },
     'Add subtitle': function() {
-      return player.subtitles.add({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', kind: 'subtitle', label: 'Test Subtitle'});
+      return player.subtitles.add({ url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', kind: 'subtitle', label: 'Test Subtitle' });
     },
     'Remove subtitle': function() {
       return player.subtitles.remove('test');
@@ -549,9 +549,9 @@
       var maxHeight = 1400;
 
       $(playerContainer)
-      .animate({height: minHeight}, 1000)
-      .animate({height: maxHeight}, 1000)
-      .animate({height: initialHeight}, 1000);
+      .animate({ height: minHeight }, 1000)
+      .animate({ height: maxHeight }, 1000)
+      .animate({ height: initialHeight }, 1000);
     },
   };
   $.each(actions, function(title, handler) {
@@ -581,7 +581,7 @@
 
     var checkbox = $('<input>', {
       'type': 'checkbox',
-      'id': 'config-events-' + (eventIndex++)
+      'id': 'config-events-' + (eventIndex++),
     });
 
     checkbox.change(function() {
