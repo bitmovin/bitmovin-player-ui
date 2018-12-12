@@ -318,13 +318,16 @@
       ['duration-1s', function() { return [player.getDuration() - 1]; }],
     ],
     'setPlaybackSpeed': [[, [0]], [, [0.1]], [, [0.25]], [, [0.5]], [, [1]], [, [2]], [, [4]], [, [10]]],
-    'buffer.getLevel': [
+  };
+
+  if (player.buffer /* added in player 8.1.0 */) {
+    apiMethodParameters['buffer.getLevel'] = [
       [, [bitmovin.player.BufferType.ForwardDuration, bitmovin.player.MediaType.Video]],
       [, [bitmovin.player.BufferType.ForwardDuration, bitmovin.player.MediaType.Audio]],
       [, [bitmovin.player.BufferType.BackwardDuration, bitmovin.player.MediaType.Video]],
       [, [bitmovin.player.BufferType.BackwardDuration, bitmovin.player.MediaType.Audio]],
-    ],
-  };
+    ];
+  }
 
   function updateApiMethods() {
     $('#playback-controls').empty(); // Remove old buttons
