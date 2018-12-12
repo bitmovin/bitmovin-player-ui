@@ -240,7 +240,7 @@
     player = new bitmovin.player.Player(document.getElementById('player'), config);
 
     // Update API methods when a module namespace becomes available
-    player.on(player.exports.PlayerEvent.ModuleReady, function() {
+    player.on(bitmovin.player.PlayerEvent.ModuleReady, function() {
       updateApiMethods();
     });
 
@@ -503,12 +503,12 @@
         var cue = {
           text: text,
         };
-        player.fireEventInUI(player.exports.PlayerEvent.CueEnter, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEventInUI(player.exports.PlayerEvent.CueExit, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueExit, cue);
       };
 
       var cues = [];
