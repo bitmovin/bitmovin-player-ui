@@ -294,34 +294,27 @@
 
   // Define custom parameters for testing API methods that take parameters
   var apiMethodParameters = {
-    'setVolume': [0, 50, 100, ['+10', function() { return player.getVolume() + 10; }]],
-    'seek': [0,
-      ['current+60s', function() { return player.getCurrentTime() + 60; }],
-      ['current+5min', function() { return player.getCurrentTime() + 60 * 5; }],
-      ['current-60s', function() { return player.getCurrentTime() - 60; }],
-      ['current-5min', function() { return player.getCurrentTime() - 60 * 5; }],
-      ['duration-1s', function() { return player.getDuration() - 1; }]
+    'setVolume': [[, [0]], [, [50]], [, [100]], ['+10', function() { return [player.getVolume() + 10]; }]],
+    'seek': [
+      [, [0]],
+      ['current+60s', function() { return [player.getCurrentTime() + 60]; }],
+      ['current+5min', function() { return [player.getCurrentTime() + 60 * 5]; }],
+      ['current-60s', function() { return [player.getCurrentTime() - 60]; }],
+      ['current-5min', function() { return [player.getCurrentTime() - 60 * 5]; }],
+      ['duration-1s', function() { return [player.getDuration() - 1]; }],
     ],
-    'setPlaybackSpeed': [0, 0.1, 0.25, 0.5, 1, 2, 4, 10],
+    'setPlaybackSpeed': [[, [0]], [, [0.1]], [, [0.25]], [, [0.5]], [, [1]], [, [2]], [, [4]], [, [10]]],
   };
 
   function updateApiMethods() {
     $('#playback-controls').empty(); // Remove old buttons
 
-    var addApiMethodButton = function(methodName, parameter) {
-      var parameterName = (typeof parameter == 'undefined' ? '' : parameter instanceof Array ? parameter[0] : parameter);
-      var button = $('<button class="btn btn-primary btn-sm">' + methodName + '(' + parameterName + ')' + '</button>');
+    var addApiMethodButton = function(methodName, parametersName, parameters) {
+      parameters = parameters || [];
+      parametersName = parametersName || String(parameters);
+      var button = $('<button class="btn btn-primary btn-sm">' + methodName + '(' + parametersName + ')' + '</button>');
       $('#playback-controls').append(button).append(' ');
       button.click(function() {
-        var p = parameter;
-        // If the parameter is an array, the actual parameter is located at index 1
-        if (p instanceof Array) {
-          p = p[1];
-        }
-        // If the parameter is a function, evaluate it first
-        if (typeof p == 'function') {
-          p = p();
-        }
         // Execute method with parameter
         var levels = methodName.split('.');
         var method = player[methodName];
@@ -329,29 +322,30 @@
           // Method lies within a namespace
           method = player[levels[0]][levels[1]];
         }
-        printResult(method.call(player, p), methodName);
+        printResult(method.apply(player, parameters), methodName);
       });
     };
 
-    var apiMethods = enumerateApiMethods();
+    enumerateApiMethods().forEach(function(apiMethod) {
+      if (apiMethodParameters[apiMethod]) {
+        apiMethodParameters[apiMethod].forEach(function(apiMethodCallDefinition) {
+          var name = apiMethodCallDefinition[0];
+          var parameters = apiMethodCallDefinition[1];
 
-    // Create buttons for all API methods and method/parameter combinations
-    $.each(apiMethods, function(key, method) {
-      if (apiMethodParameters.hasOwnProperty(method)) {
-        // We found custom parameter(s)
-        var parameters = apiMethodParameters[method];
-        if ($.isArray(parameters)) {
-          // There are multiple parameters in an array, add a call for each parameter
-          $.each(parameters, function(key, parameter) {
-            addApiMethodButton(method, parameter);
-          });
-        } else {
-          // Just a single parameter, add the call
-          addApiMethodButton(method, parameters);
-        }
+          // If the parameters are produced by a function, evaluate it first
+          if (typeof parameters === 'function') {
+            parameters = parameters();
+          }
+
+          if (!Array.isArray(parameters)) {
+            throw new Error('invalid method call definition - parameter(s) must be defined as array');
+          }
+
+          addApiMethodButton(apiMethod, name, parameters);
+        });
       } else {
         // No parameters defined, add a simple parameterless method call
-        addApiMethodButton(method);
+        addApiMethodButton(apiMethod);
       }
     });
   }
