@@ -70,6 +70,20 @@
 
         <div class="card-block">
             <h4 class="card-title">
+                Native &lt;video&gt; events
+                <small class="text-muted">Log events to the console</small>
+            </h4>
+
+            <p class="card-text" id="native-events">
+                <label>
+                    <input type="checkbox" id="config-native-events-all">
+                    All
+                </label>
+            </p>
+        </div>
+
+        <div class="card-block">
+            <h4 class="card-title">
                 Stats
             </h4>
 
@@ -608,6 +622,20 @@
     player.on(event, handler);
   }, function(event, handler) {
     player.off(event, handler);
+  });
+
+  var nativeVideoEvents = [
+    'abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'encrypted ', 'ended', 'error',
+    'interruptbegin', 'interruptend', 'loadeddata', 'loadedmetadata', 'loadstart', 'mozaudioavailable',
+    'pause', 'play', 'playing', 'progress', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend',
+    'timeupdate', 'volumechange', 'waiting',
+  ];
+  generateEventCheckboxes('#native-events', '#config-native-events-', nativeVideoEvents, function(eventName) {
+    return eventName;
+  }, function(event, handler) {
+    player.getVideoElement().addEventListener(event, handler);
+  }, function(event, handler) {
+    player.getVideoElement().removeEventListener(event, handler);
   });
 
   // Collect all UI factory methods which are basically the different built-in skins and skin types
