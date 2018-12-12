@@ -282,7 +282,7 @@
 
     // Collect all API methods of the player object
     var apiMethods = enumerate(player);
-    var namespaces = ['subtitles', 'ads', 'vr'];
+    var namespaces = ['subtitles', 'ads', 'vr', 'buffer'];
     namespaces.filter(function(namespaceName) { return player[namespaceName] != null; }).forEach(function(namespaceName) {
       enumerate(player[namespaceName]).forEach(function(namespaceMember) {
         apiMethods.push(namespaceName + '.' + namespaceMember);
@@ -304,6 +304,12 @@
       ['duration-1s', function() { return [player.getDuration() - 1]; }],
     ],
     'setPlaybackSpeed': [[, [0]], [, [0.1]], [, [0.25]], [, [0.5]], [, [1]], [, [2]], [, [4]], [, [10]]],
+    'buffer.getLevel': [
+      [, [bitmovin.player.BufferType.ForwardDuration, bitmovin.player.MediaType.Video]],
+      [, [bitmovin.player.BufferType.ForwardDuration, bitmovin.player.MediaType.Audio]],
+      [, [bitmovin.player.BufferType.BackwardDuration, bitmovin.player.MediaType.Video]],
+      [, [bitmovin.player.BufferType.BackwardDuration, bitmovin.player.MediaType.Audio]],
+    ],
   };
 
   function updateApiMethods() {
