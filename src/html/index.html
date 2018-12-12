@@ -628,13 +628,36 @@
     'interruptbegin', 'interruptend', 'loadeddata', 'loadedmetadata', 'loadstart', 'mozaudioavailable',
     'pause', 'play', 'playing', 'progress', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend',
     'timeupdate', 'volumechange', 'waiting',
+    'audioTracks.addtrack', 'audioTracks.removetrack',
+    'videoTracks.addtrack', 'videoTracks.removetrack',
+    'textTracks.addtrack', 'textTracks.removetrack',
   ];
   generateEventCheckboxes('#native-events', '#config-native-events-', nativeVideoEvents, function(eventName) {
     return eventName;
   }, function(event, handler) {
-    player.getVideoElement().addEventListener(event, handler);
+    var target = player.getVideoElement();
+
+    var splitEvent = event.split('.');
+    if (splitEvent.length === 2) {
+      target = target[splitEvent[0]];
+      event = splitEvent[1];
+    }
+
+    if (target) {
+      target.addEventListener(event, handler);
+    }
   }, function(event, handler) {
-    player.getVideoElement().removeEventListener(event, handler);
+    var target = player.getVideoElement();
+
+    var splitEvent = event.split('.');
+    if (splitEvent.length === 2) {
+      target = target[splitEvent[0]];
+      event = splitEvent[1];
+    }
+
+    if (target) {
+      target.removeEventListener(event, handler);
+    }
   }, 'video.');
 
   // Collect all UI factory methods which are basically the different built-in skins and skin types
