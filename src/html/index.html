@@ -329,9 +329,9 @@
   function updateApiMethods() {
     $('#playback-controls').empty(); // Remove old buttons
 
-    var addApiMethodButton = function(methodName, parametersName, parameters) {
-      parameters = parameters || [];
-      parametersName = parametersName || String(parameters);
+    var addApiMethodButton = function(methodName, parametersName, parametersGeneratorFn) {
+      parametersGeneratorFn = parametersGeneratorFn || function() { return []; };
+      parametersName = parametersName || '';
       var button = $('<button class="btn btn-primary btn-sm">' + methodName + '(' + parametersName + ')' + '</button>');
       $('#playback-controls').append(button).append(' ');
       button.click(function() {
@@ -342,7 +342,8 @@
           // Method lies within a namespace
           method = player[levels[0]][levels[1]];
         }
-        printResult(method.apply(player, parameters), methodName);
+        var evaluatedParameters = parametersGeneratorFn();
+        printResult(method.apply(player, evaluatedParameters), methodName);
       });
     };
 
@@ -351,17 +352,19 @@
         apiMethodParameters[apiMethod].forEach(function(apiMethodCallDefinition) {
           var name = apiMethodCallDefinition[0];
           var parameters = apiMethodCallDefinition[1];
+          var parametersGeneratorFn = null;
 
-          // If the parameters are produced by a function, evaluate it first
           if (typeof parameters === 'function') {
-            parameters = parameters();
+            parametersGeneratorFn = parameters;
+          } else if (Array.isArray(parameters)) {
+            name = name || String(parameters);
+            // Convert static parameters to generator function
+            parametersGeneratorFn = function() { return parameters; };
+          } else {
+            throw new Error('invalid method call definition - parameters must be defined as array or function returning an array');
           }
 
-          if (!Array.isArray(parameters)) {
-            throw new Error('invalid method call definition - parameter(s) must be defined as array');
-          }
-
-          addApiMethodButton(apiMethod, name, parameters);
+          addApiMethodButton(apiMethod, name, parametersGeneratorFn);
         });
       } else {
         // No parameters defined, add a simple parameterless method call
