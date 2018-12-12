@@ -359,6 +359,9 @@
   updateApiMethods();
 
   var actions = {
+    'Reload source': function() {
+      player.load(player.getSource());
+    },
     'Recreate player': function() {
       var config = player.getConfig();
       player.destroy().then(function() {
