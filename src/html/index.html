@@ -562,40 +562,52 @@
   var eventConsoleLogger = function(event) {
     console.log(event);
   };
-  $('#config-events-all').change(function() {
-    var checked = $(this).prop('checked');
 
-    $('#events input').each(function(index) {
-      // Skip first checkbox (the 'all' checkbox)
-      if (index === 0) {
-        return;
-      }
+  function generateEventCheckboxes(rootElementSelector, checkboxIdSelectorPrefix, eventNames, eventNameToValueFn, subscribeFn, unsubscribeFn) {
+    $(checkboxIdSelectorPrefix + 'all').change(function() {
+      var checked = $(this).prop('checked');
 
-      $(this).prop('checked', checked);
-      $(this).trigger("change");
-    });
-  });
-  // Add a checkbox for each event to toggle logging to console
-  Object.keys(bitmovin.player.PlayerEvent).sort().forEach(function(eventName, eventIndex) {
-    var event = bitmovin.player.PlayerEvent[eventName];
+      $(rootElementSelector + ' input').each(function(index) {
+        // Skip first checkbox (the 'all' checkbox)
+        if (index === 0) {
+          return;
+        }
 
-    var checkbox = $('<input>', {
-      'type': 'checkbox',
-      'id': 'config-events-' + (eventIndex++),
+        $(this).prop('checked', checked);
+        $(this).trigger("change");
+      });
     });
 
-    checkbox.change(function() {
-      var checkbox = $(this);
-      var checked = checkbox.prop('checked');
+    // Add a checkbox for each event to toggle logging to console
+    eventNames.sort().forEach(function(eventName, eventIndex) {
+      var event = eventNameToValueFn(eventName);
 
-      if (checked) {
-        player.on(event, eventConsoleLogger);
-      } else {
-        player.off(event, eventConsoleLogger);
-      }
+      var checkbox = $('<input>', {
+        'type': 'checkbox',
+        'id': checkboxIdSelectorPrefix + (eventIndex++),
+      });
+
+      checkbox.change(function() {
+        var checkbox = $(this);
+        var checked = checkbox.prop('checked');
+
+        if (checked) {
+          subscribeFn(event, eventConsoleLogger);
+        } else {
+          unsubscribeFn(event, eventConsoleLogger);
+        }
+      });
+
+      $(rootElementSelector).append($('<label>').append(checkbox).append(' ').append(eventName).append('&ensp;'));
     });
+  }
 
-    $('#events').append($('<label>').append(checkbox).append(' ').append(eventName).append('&ensp;'));
+  generateEventCheckboxes('#events', '#config-events-', Object.keys(bitmovin.player.PlayerEvent), function(eventName) {
+    return bitmovin.player.PlayerEvent[eventName];
+  }, function(event, handler) {
+    player.on(event, handler);
+  }, function(event, handler) {
+    player.off(event, handler);
   });
 
   // Collect all UI factory methods which are basically the different built-in skins and skin types
