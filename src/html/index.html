@@ -572,12 +572,7 @@
     $('#actions').append($('<button type="button" class="btn btn-primary btn-sm">' + title + '</button>').click(function() {printResult(handler(), title);})).append(' ');
   });
 
-
-  var eventConsoleLogger = function(event) {
-    console.log(event);
-  };
-
-  function generateEventCheckboxes(rootElementSelector, checkboxIdSelectorPrefix, eventNames, eventNameToValueFn, subscribeFn, unsubscribeFn) {
+  function generateEventCheckboxes(rootElementSelector, checkboxIdSelectorPrefix, eventNames, eventNameToValueFn, subscribeFn, unsubscribeFn, loggingPrefix) {
     $(checkboxIdSelectorPrefix + 'all').change(function() {
       var checked = $(this).prop('checked');
 
@@ -601,6 +596,10 @@
         'id': checkboxIdSelectorPrefix + (eventIndex++),
       });
 
+      var eventConsoleLogger = function(event) {
+        console.log(loggingPrefix + eventName, event);
+      };
+
       checkbox.change(function() {
         var checkbox = $(this);
         var checked = checkbox.prop('checked');
@@ -622,7 +621,7 @@
     player.on(event, handler);
   }, function(event, handler) {
     player.off(event, handler);
-  });
+  }, 'PlayerEvent.');
 
   var nativeVideoEvents = [
     'abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'encrypted ', 'ended', 'error',
@@ -636,7 +635,7 @@
     player.getVideoElement().addEventListener(event, handler);
   }, function(event, handler) {
     player.getVideoElement().removeEventListener(event, handler);
-  });
+  }, 'video.');
 
   // Collect all UI factory methods which are basically the different built-in skins and skin types
   var uiFactoryMethods = [];
