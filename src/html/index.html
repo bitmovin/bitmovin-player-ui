@@ -70,6 +70,20 @@
 
         <div class="card-block">
             <h4 class="card-title">
+                Native &lt;video&gt; events
+                <small class="text-muted">Log events to the console</small>
+            </h4>
+
+            <p class="card-text" id="native-events">
+                <label>
+                    <input type="checkbox" id="config-native-events-all">
+                    All
+                </label>
+            </p>
+        </div>
+
+        <div class="card-block">
+            <h4 class="card-title">
                 Stats
             </h4>
 
@@ -239,11 +253,16 @@
   var playerSetup = function(config) {
     player = new bitmovin.player.Player(document.getElementById('player'), config);
 
+    // Update API methods when a module namespace becomes available
+    player.on(bitmovin.player.PlayerEvent.ModuleReady, function() {
+      updateApiMethods();
+    });
+
     // Add UI
     uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
 
     player.load(sources.fullyFeatured).then(function() {
-      console.log('source successful loaded');
+      console.log('source successfully loaded');
     }, function(errorEvent) {
       console.log('error while loading source', errorEvent);
     });
@@ -264,110 +283,158 @@
     $('#function-call-output').html(JSON.stringify(result, null, 2));
   };
 
-  // Collect all API methods of the player object
-  var apiMethods = [];
-  for (var member in player) {
-    if (typeof player[member] == 'function') {
-      apiMethods.push(member);
-    }
+  function enumerateApiMethods() {
+    var enumerate = function(target) {
+      var members = [];
+      for (var member in target) {
+        if (typeof target[member] == 'function') {
+          members.push(member);
+        }
+      }
+      return members;
+    };
+
+    // Collect all API methods of the player object
+    var apiMethods = enumerate(player);
+    var namespaces = ['subtitles', 'ads', 'vr', 'buffer'];
+    namespaces.filter(function(namespaceName) { return player[namespaceName] != null; }).forEach(function(namespaceName) {
+      enumerate(player[namespaceName]).forEach(function(namespaceMember) {
+        apiMethods.push(namespaceName + '.' + namespaceMember);
+      });
+    });
+
+    return apiMethods.sort();
   }
 
   // Define custom parameters for testing API methods that take parameters
   var apiMethodParameters = {
-    'setVolume': [0, 50, 100, ['+10', function() { return player.getVolume() + 10; }]],
-    'seek': [0,
-      ['current+60s', function() { return player.getCurrentTime() + 60; }],
-      ['current+5min', function() { return player.getCurrentTime() + 60 * 5; }],
-      ['current-60s', function() { return player.getCurrentTime() - 60; }],
-      ['current-5min', function() { return player.getCurrentTime() - 60 * 5; }],
-      ['duration-1s', function() { return player.getDuration() - 1; }]
+    'setVolume': [[, [0]], [, [50]], [, [100]], ['+10', function() { return [player.getVolume() + 10]; }]],
+    'seek': [
+      [, [0]],
+      ['current+60s', function() { return [player.getCurrentTime() + 60]; }],
+      ['current+5min', function() { return [player.getCurrentTime() + 60 * 5]; }],
+      ['current-60s', function() { return [player.getCurrentTime() - 60]; }],
+      ['current-5min', function() { return [player.getCurrentTime() - 60 * 5]; }],
+      ['duration-1s', function() { return [player.getDuration() - 1]; }],
     ],
-    'setPlaybackSpeed': [0, 0.1, 0.25, 0.5, 1, 2, 4, 10],
+    'setPlaybackSpeed': [[, [0]], [, [0.1]], [, [0.25]], [, [0.5]], [, [1]], [, [2]], [, [4]], [, [10]]],
   };
 
-  var addApiMethodButton = function(method, parameter) {
-    var parameterName = (typeof parameter == 'undefined' ? '' : parameter instanceof Array ? parameter[0] : parameter);
-    var button = $('<button class="btn btn-primary btn-sm">' + method + '(' + parameterName + ')' + '</button>');
-    $('#playback-controls').append(button).append(' ');
-    button.click(function() {
-      var p = parameter;
-      // If the parameter is an array, the actual parameter is located at index 1
-      if (p instanceof Array) {
-        p = p[1];
-      }
-      // If the parameter is a function, evaluate it first
-      if (typeof p == 'function') {
-        p = p();
-      }
-      // Execute method with parameter
-      printResult(player[method](p), method);
-    });
-  };
+  if (player.buffer /* added in player 8.1.0 */) {
+    apiMethodParameters['buffer.getLevel'] = [
+      [, [bitmovin.player.BufferType.ForwardDuration, bitmovin.player.MediaType.Video]],
+      [, [bitmovin.player.BufferType.ForwardDuration, bitmovin.player.MediaType.Audio]],
+      [, [bitmovin.player.BufferType.BackwardDuration, bitmovin.player.MediaType.Video]],
+      [, [bitmovin.player.BufferType.BackwardDuration, bitmovin.player.MediaType.Audio]],
+    ];
+  }
 
-  // Create buttons for all API methods and method/parameter combinations
-  $.each(apiMethods, function(key, method) {
-    if (apiMethodParameters.hasOwnProperty(method)) {
-      // We found custom parameter(s)
-      var parameters = apiMethodParameters[method];
-      if ($.isArray(parameters)) {
-        // There are multiple parameters in an array, add a call for each parameter
-        $.each(parameters, function(key, parameter) {
-          addApiMethodButton(method, parameter);
+  function updateApiMethods() {
+    $('#playback-controls').empty(); // Remove old buttons
+
+    var addApiMethodButton = function(methodName, parametersName, parametersGeneratorFn) {
+      parametersGeneratorFn = parametersGeneratorFn || function() { return []; };
+      parametersName = parametersName || '';
+      var button = $('<button class="btn btn-primary btn-sm">' + methodName + '(' + parametersName + ')' + '</button>');
+      $('#playback-controls').append(button).append(' ');
+      button.click(function() {
+        // Execute method with parameter
+        var levels = methodName.split('.');
+        var method = player[methodName];
+        if (levels.length === 2) {
+          // Method lies within a namespace
+          method = player[levels[0]][levels[1]];
+        }
+        var evaluatedParameters = parametersGeneratorFn();
+        printResult(method.apply(player, evaluatedParameters), methodName);
+      });
+    };
+
+    enumerateApiMethods().forEach(function(apiMethod) {
+      if (apiMethodParameters[apiMethod]) {
+        apiMethodParameters[apiMethod].forEach(function(apiMethodCallDefinition) {
+          var name = apiMethodCallDefinition[0];
+          var parameters = apiMethodCallDefinition[1];
+          var parametersGeneratorFn = null;
+
+          if (typeof parameters === 'function') {
+            parametersGeneratorFn = parameters;
+          } else if (Array.isArray(parameters)) {
+            name = name || String(parameters);
+            // Convert static parameters to generator function
+            parametersGeneratorFn = function() { return parameters; };
+          } else {
+            throw new Error('invalid method call definition - parameters must be defined as array or function returning an array');
+          }
+
+          addApiMethodButton(apiMethod, name, parametersGeneratorFn);
         });
       } else {
-        // Just a single parameter, add the call
-        addApiMethodButton(method, parameters);
+        // No parameters defined, add a simple parameterless method call
+        addApiMethodButton(apiMethod);
       }
-    } else {
-      // No parameters defined, add a simple parameterless method call
-      addApiMethodButton(method);
-    }
-  });
+    });
+  }
 
+  updateApiMethods();
 
   var actions = {
+    'Reload source': function() {
+      player.load(player.getSource());
+    },
     'Recreate player': function() {
       var config = player.getConfig();
-      player.destroy();
-      playerSetup(config);
+      player.destroy().then(function() {
+        playerSetup(config);
+      });
     },
     'Add subtitle': function() {
-      return player.addSubtitle({url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', label: 'Test Subtitle'});
+      return player.subtitles.add({ url: 'http://bitdash-a.akamaihd.net/content/sintel/subtitles/subtitles_en.vtt', id: 'test', lang: 'ru', kind: 'subtitle', label: 'Test Subtitle' });
     },
     'Remove subtitle': function() {
-      return player.removeSubtitle('test');
+      return player.subtitles.remove('test');
     },
     'Schedule skippable VAST preroll ad': function() {
-      return player.scheduleAd(
-        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-        'vast', {timeOffset: 'pre'});
+      return player.ads.schedule({
+        tag: {
+          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+          type: 'vast',
+        },
+        position: 'pre',
+      });
     },
-    'Schedule skippable VAST ad in 5 secs': function() {
-      return player.scheduleAd(
-        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-        'vast', {timeOffset: player.getCurrentTime() + 5});
+    'Schedule skippable VAST ad in 2 secs': function() {
+      return player.ads.schedule({
+        tag: {
+          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+          type: 'vast',
+        },
+        position: String(player.getCurrentTime() + 2),
+      });
     },
-    'Schedule nonskippable VAST ad in 5 secs': function() {
-      return player.scheduleAd(
-        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
-        'vast', {timeOffset: player.getCurrentTime() + 5});
+    'Schedule nonskippable VAST ad in 2 secs': function() {
+      return player.ads.schedule({
+        tag: {
+          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
+          type: 'vast',
+        },
+        position: String(player.getCurrentTime() + 2),
+      });
     },
     'Schedule skippable VAST postroll ad': function() {
-      return player.scheduleAd(
-        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-        'vast', {timeOffset: 'post'});
-    },
-    'Schedule skippable IMA ad in 5 secs': function() {
-      return player.scheduleAd(
-        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-        'ima', {timeOffset: player.getCurrentTime() + 5});
-    },
-    'Schedule nonskippable IMA ad in 5 secs': function() {
-      return player.scheduleAd(
-        'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
-        'ima', {timeOffset: player.getCurrentTime() + 5});
+      return player.ads.schedule({
+        tag: {
+          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
+          type: 'vast',
+        },
+        position: 'post',
+      });
     },
     'CEA-608 subtitle test pattern (60 secs)': function() {
+      // Get UIManager's internal player wrapper with fireEventInUI method
+      // NOTE: this is a hack that accesses a private property which can change any time, do not use in production!
+      var player = uiManager.currentUi.playerWrapper.getPlayer();
+
       var cueEnter = function(text, row, column) {
         var cue = {
           text: text,
@@ -376,12 +443,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.Event.CueEnter, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.Event.CueExit, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -397,6 +464,10 @@
       setInterval(function() { cues.forEach(function(cue) { cueExit(cue); }); }, 60000);
     },
     'CEA-608 subtitle test pattern 2': function() {
+      // Get UIManager's internal player wrapper with fireEventInUI method
+      // NOTE: this is a hack that accesses a private property which can change any time, do not use in production!
+      var player = uiManager.currentUi.playerWrapper.getPlayer();
+
       var cueEnter = function(text, row, column) {
         var cue = {
           text: text,
@@ -405,12 +476,12 @@
             column: column,
           },
         };
-        player.fireEvent(player.Event.CueEnter, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.Event.CueExit, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueExit, cue);
       };
 
       // Create list of cues and display them
@@ -444,16 +515,20 @@
       enqueue();
     },
     'subtitle test pattern': function() {
+      // Get UIManager's internal player wrapper with fireEventInUI method
+      // NOTE: this is a hack that accesses a private property which can change any time, do not use in production!
+      var player = uiManager.currentUi.playerWrapper.getPlayer();
+
       var cueEnter = function(text) {
         var cue = {
           text: text,
         };
-        player.fireEvent(player.Event.CueEnter, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueEnter, cue);
         return cue;
       };
 
       var cueExit = function(cue) {
-        player.fireEvent(player.Event.CueExit, cue);
+        player.fireEventInUI(bitmovin.player.PlayerEvent.CueExit, cue);
       };
 
       var cues = [];
@@ -487,61 +562,109 @@
 
       enqueue();
     },
-    'Animate player size/height (needs player 7.5)': function() {
-      var playerFigure = player.getFigure();
-      var initialHeight = playerFigure.offsetHeight;
+    'Animate player size/height': function() {
+      var playerContainer = player.getContainer();
+      var initialHeight = playerContainer.offsetHeight;
       var minHeight = 300;
       var maxHeight = 1400;
 
-      $(playerFigure)
-      .animate({height: minHeight}, 1000)
-      .animate({height: maxHeight}, 1000)
-      .animate({height: initialHeight}, 1000);
+      $(playerContainer)
+      .animate({ height: minHeight }, 1000)
+      .animate({ height: maxHeight }, 1000)
+      .animate({ height: initialHeight }, 1000);
     },
   };
   $.each(actions, function(title, handler) {
     $('#actions').append($('<button type="button" class="btn btn-primary btn-sm">' + title + '</button>').click(function() {printResult(handler(), title);})).append(' ');
   });
 
+  function generateEventCheckboxes(rootElementSelector, checkboxIdSelectorPrefix, eventNames, eventNameToValueFn, subscribeFn, unsubscribeFn, loggingPrefix) {
+    $(checkboxIdSelectorPrefix + 'all').change(function() {
+      var checked = $(this).prop('checked');
 
-  var eventConsoleLogger = function(event) {
-    console.log(event);
-  };
-  $('#config-events-all').change(function() {
-    var checked = $(this).prop('checked');
+      $(rootElementSelector + ' input').each(function(index) {
+        // Skip first checkbox (the 'all' checkbox)
+        if (index === 0) {
+          return;
+        }
 
-    $('#events input').each(function(index) {
-      // Skip first checkbox (the 'all' checkbox)
-      if (index === 0) {
-        return;
-      }
-
-      $(this).prop('checked', checked);
-      $(this).trigger("change");
-    });
-  });
-  // Add a checkbox for each event to toggle logging to console
-  var eventIndex = 0;
-  for (var event in bitmovin.player.PlayerEvent) {
-    var checkbox = $('<input>', {
-      'type': 'checkbox',
-      'id': 'config-events-' + (eventIndex++)
-    }).data('event', event);
-
-    checkbox.change(function() {
-      var checkbox = $(this);
-      var checked = checkbox.prop('checked');
-      var eventName = checkbox.data('event');
-
-      if (checked) {
-        player.on(bitmovin.player.PlayerEvent[eventName], eventConsoleLogger);
-      } else {
-        player.off(bitmovin.player.PlayerEvent[eventName], eventConsoleLogger);
-      }
+        $(this).prop('checked', checked);
+        $(this).trigger("change");
+      });
     });
 
-    $('#events').append($('<label>').append(checkbox).append(' ').append(event).append('&ensp;'));
+    // Add a checkbox for each event to toggle logging to console
+    eventNames.sort().forEach(function(eventName, eventIndex) {
+      var event = eventNameToValueFn(eventName);
+
+      var checkbox = $('<input>', {
+        'type': 'checkbox',
+        'id': checkboxIdSelectorPrefix + (eventIndex++),
+      });
+
+      var eventConsoleLogger = function(event) {
+        console.log(loggingPrefix + eventName, event);
+      };
+
+      checkbox.change(function() {
+        var checkbox = $(this);
+        var checked = checkbox.prop('checked');
+
+        if (checked) {
+          subscribeFn(event, eventConsoleLogger);
+        } else {
+          unsubscribeFn(event, eventConsoleLogger);
+        }
+      });
+
+      $(rootElementSelector).append($('<label>').append(checkbox).append(' ').append(eventName).append('&ensp;'));
+    });
   }
+
+  generateEventCheckboxes('#events', '#config-events-', Object.keys(bitmovin.player.PlayerEvent), function(eventName) {
+    return bitmovin.player.PlayerEvent[eventName];
+  }, function(event, handler) {
+    player.on(event, handler);
+  }, function(event, handler) {
+    player.off(event, handler);
+  }, 'PlayerEvent.');
+
+  var nativeVideoEvents = [
+    'abort', 'canplay', 'canplaythrough', 'durationchange', 'emptied', 'encrypted ', 'ended', 'error',
+    'interruptbegin', 'interruptend', 'loadeddata', 'loadedmetadata', 'loadstart', 'mozaudioavailable',
+    'pause', 'play', 'playing', 'progress', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend',
+    'timeupdate', 'volumechange', 'waiting',
+    'audioTracks.addtrack', 'audioTracks.removetrack',
+    'videoTracks.addtrack', 'videoTracks.removetrack',
+    'textTracks.addtrack', 'textTracks.removetrack',
+  ];
+  generateEventCheckboxes('#native-events', '#config-native-events-', nativeVideoEvents, function(eventName) {
+    return eventName;
+  }, function(event, handler) {
+    var target = player.getVideoElement();
+
+    var splitEvent = event.split('.');
+    if (splitEvent.length === 2) {
+      target = target[splitEvent[0]];
+      event = splitEvent[1];
+    }
+
+    if (target) {
+      target.addEventListener(event, handler);
+    }
+  }, function(event, handler) {
+    var target = player.getVideoElement();
+
+    var splitEvent = event.split('.');
+    if (splitEvent.length === 2) {
+      target = target[splitEvent[0]];
+      event = splitEvent[1];
+    }
+
+    if (target) {
+      target.removeEventListener(event, handler);
+    }
+  }, 'video.');
 
   // Collect all UI factory methods which are basically the different built-in skins and skin types
   var uiFactoryMethods = [];
