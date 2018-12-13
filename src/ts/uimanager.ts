@@ -238,6 +238,15 @@ export class UIManager {
           // AdStarted -> ads UI.
           case player.exports.PlayerEvent.AdBreakFinished:
             adStartedEvent = null;
+            // When switching to a variant for the first time, a config.events.onUpdated event is fired to trigger a UI
+            // update of the new variant, because most components subscribe to this event to update themselves. When
+            // switching to the ads UI on the first AdStarted, all UI variants update themselves with the ad data, so
+            // when switching back to the "normal" UI it will carry properties of the ad instead of the main content.
+            // We thus fire this event here to force an UI update with the properties of the main content. This is
+            // basically a hack because the config.events.onUpdated event is abused in many places and not just used
+            // for config updates (e.g. adding a marker to the seekbar).
+            // TODO introduce an event that is fired when the playback content is updated, a switch to/from ads
+            this.config.events.onUpdated.dispatch(this);
             break;
           // When a new source is loaded during ad playback, there will be no Ad(Break)Finished event
           case player.exports.PlayerEvent.SourceLoaded:
