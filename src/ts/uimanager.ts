@@ -216,29 +216,33 @@ export class UIManager {
 
     // Dynamically select a UI variant that matches the current UI condition.
     let resolveUiVariant = (event: PlayerEventBase) => {
-      // Make sure that the ON_AD_STARTED event data is persisted through ad playback in case other events happen
+      // Make sure that the AdStarted event data is persisted through ad playback in case other events happen
       // in the meantime, e.g. player resize. We need to store this data because there is no other way to find out
-      // ad details (e.g. the ad client) while an ad is playing.
-      // Existing event data signals that an ad is currently active. We cannot use player.isAd() because it returns
-      // true on ad start and also on ad end events, which is problematic.
+      // ad details while an ad is playing (in v8.0 at least; from v8.1 there will be ads.getActiveAd()).
+      // Existing event data signals that an ad is currently active (instead of ads.isLinearAdActive()).
       if (event != null) {
         switch (event.type) {
-          // When the ad starts, we store the event data
+          // The ads UI is shown upon the first AdStarted event. Subsequent AdStarted events within an ad break
+          // will not change the condition context and thus not lead to undesired UI variant resolving.
+          // The ads UI is shown upon AdStarted instead of AdBreakStarted because there can be a loading delay
+          // between these two events in the player, and the AdBreakStarted event does not carry any metadata to
+          // initialize the ads UI, so it would be rendered in an uninitialized state for a certain amount of time.
+          // TODO show ads UI upon AdBreakStarted and display loading overlay between AdBreakStarted and first AdStarted
+          // TODO display loading overlay between AdFinished and next AdStarted
           case player.exports.PlayerEvent.AdStarted:
             adStartedEvent = event as AdEvent;
             break;
-          // When the ad ends, we delete the event data
-          case player.exports.PlayerEvent.AdFinished:
-          case player.exports.PlayerEvent.AdSkipped:
-          case player.exports.PlayerEvent.AdError:
+          // The ads UI is hidden only when the ad break is finished, i.e. not on AdFinished events. This way we keep
+          // the ads UI variant active throughout an ad break, as reacting to AdFinished would lead to undesired UI
+          // variant switching between two ads in an ad break, e.g. ads UI -> AdFinished -> content UI ->
+          // AdStarted -> ads UI.
+          case player.exports.PlayerEvent.AdBreakFinished:
             adStartedEvent = null;
             break;
-          // When a new source is loaded during ad playback, there will be no ad end event so we detect the end
-          // of the ad playback by checking isAd().
+          // When a new source is loaded during ad playback, there will be no Ad(Break)Finished event
           case player.exports.PlayerEvent.SourceLoaded:
-            if (adStartedEvent && !player.ads.isLinearAdActive()) {
-              adStartedEvent = null;
-            }
+            adStartedEvent = null;
+            break;
         }
       }
 
@@ -247,7 +251,7 @@ export class UIManager {
       let adRequiresUi = false;
       if (isAd) {
         let ad = adStartedEvent.ad;
-        // for now only linear ads can request an UI
+        // for now only linear ads can request a UI
         if (ad.isLinear) {
           let linearAd = ad as LocalLinearAd;
           adRequiresUi = linearAd.uiConfig && linearAd.uiConfig.requestsUi || false;
@@ -279,9 +283,7 @@ export class UIManager {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Play, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Paused, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdStarted, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdFinished, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdSkipped, resolveUiVariant);
-      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdError, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdBreakFinished, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.PlayerResized, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.ViewModeChanged, resolveUiVariant);
     }
