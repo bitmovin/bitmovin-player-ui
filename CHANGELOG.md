@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
  - Support for `VideoQualityAdded`, `VideoQualityRemoved`, `AudioQualityAdded`, `AudioQualityRemoved` events in `AudioQualitySelectBox` / `VideoQualitySelectBox`
 
+### Changed
+- Updated advertising UI support for player 8.1
+
 ## [3.2.0]
 
 ### Added
