@@ -10,7 +10,6 @@ import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
-import { LocalLinearAd } from './components/admessagelabel';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -262,7 +261,7 @@ export class UIManager {
         let ad = adStartedEvent.ad;
         // for now only linear ads can request a UI
         if (ad.isLinear) {
-          let linearAd = ad as LocalLinearAd;
+          let linearAd = ad as LinearAd;
           adRequiresUi = linearAd.uiConfig && linearAd.uiConfig.requestsUi || false;
         }
       }
