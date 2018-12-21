@@ -328,10 +328,14 @@ export namespace UIFactory {
     }, {
       ui: modernSmallScreenUI(),
       condition: (context: UIConditionContext) => {
-        return context.isMobile && context.documentWidth < smallScreenSwitchWidth;
+        return !context.isAd && !context.adRequiresUi && context.isMobile
+          && context.documentWidth < smallScreenSwitchWidth;
       },
     }, {
       ui: modernUI(),
+      condition: (context: UIConditionContext) => {
+        return !context.isAd && !context.adRequiresUi;
+      },
     }], config);
   }
 
@@ -343,6 +347,9 @@ export namespace UIFactory {
       },
     }, {
       ui: modernSmallScreenUI(),
+      condition: (context: UIConditionContext) => {
+        return !context.isAd && !context.adRequiresUi;
+      },
     }], config);
   }
 
