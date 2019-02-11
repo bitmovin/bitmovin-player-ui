@@ -16,7 +16,16 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: 5 seconds (5000)
    */
   hideDelay?: number;
+  /**
+   * An array of player states in which the UI will not be hidden, no matter what the {@link hideDelay} is.
+   */
   hidePlayerStateExceptions?: PlayerUtils.PlayerState[];
+  /**
+   * The HTML element on which user interaction events (e.g. mouse and touch events) will be tracked to detect
+   * interaction with the UI. These basically trigger showing and hiding of the UI.
+   * Default: the UI container itself
+   */
+  userInteractionEventSource?: HTMLElement;
 }
 
 /**
@@ -36,6 +45,9 @@ export class UIContainer extends Container<UIContainerConfig> {
   private uiHideTimeout: Timeout;
   private playerStateChange: EventDispatcher<UIContainer, PlayerUtils.PlayerState>;
 
+  private userInteractionEventSource: DOM;
+  private userInteractionEvents: { name: string, handler: EventListenerOrEventListenerObject }[];
+
   constructor(config: UIContainerConfig) {
     super(config);
 
@@ -48,6 +60,14 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
+    const config = <UIContainerConfig>this.getConfig();
+
+    if (config.userInteractionEventSource) {
+      this.userInteractionEventSource = new DOM(config.userInteractionEventSource);
+    } else {
+      this.userInteractionEventSource = this.getDomElement();
+    }
+
     super.configure(player, uimanager);
 
     this.configureUIShowHide(player, uimanager);
@@ -55,7 +75,6 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   private configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    let container = this.getDomElement();
     let config = <UIContainerConfig>this.getConfig();
 
     if (config.hideDelay === -1) {
@@ -105,37 +124,48 @@ export class UIContainer extends Container<UIContainerConfig> {
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
-    // On touch displays, the first touch reveals the UI
-    container.on('touchend', (e) => {
-      if (!isUiShown) {
-        // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI instead.
-        // The first touch is not prevented to let other listeners receive the event and trigger an initial action, e.g.
-        // the huge playback button can directly start playback instead of requiring a double tap which 1. reveals
-        // the UI and 2. starts playback.
-        if (isFirstTouch) {
-          isFirstTouch = false;
-        } else {
-          e.preventDefault();
+    this.userInteractionEvents = [{
+      // On touch displays, the first touch reveals the UI
+      name: 'touchend',
+      handler: (e) => {
+        if (!isUiShown) {
+          // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
+          // instead. The first touch is not prevented to let other listeners receive the event and trigger an
+          // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
+          // tap which 1. reveals the UI and 2. starts playback.
+          if (isFirstTouch) {
+            isFirstTouch = false;
+          } else {
+            e.preventDefault();
+          }
+          showUi();
         }
+      },
+    }, {
+      // When the mouse enters, we show the UI
+      name: 'mouseenter',
+      handler: () => {
         showUi();
-      }
-    });
-    // When the mouse enters, we show the UI
-    container.on('mouseenter', () => {
-      showUi();
-    });
-    // When the mouse moves within, we show the UI
-    container.on('mousemove', () => {
-      showUi();
-    });
-    // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
-    container.on('mouseleave', () => {
-      // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not hide
-      // the UI in such cases
-      if (!isSeeking && !hidingPrevented()) {
-        this.uiHideTimeout.start();
-      }
-    });
+      },
+    }, {
+      // When the mouse moves within, we show the UI
+      name: 'mousemove',
+      handler: () => {
+        showUi();
+      },
+    }, {
+      // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
+      name: 'mouseleave',
+      handler: () => {
+        // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
+        // hide the UI in such cases
+        if (!isSeeking && !hidingPrevented()) {
+          this.uiHideTimeout.start();
+        }
+      },
+    }];
+
+    this.userInteractionEvents.forEach((event) => this.userInteractionEventSource.on(event.name, event.handler));
 
     uimanager.onSeek.subscribe(() => {
       this.uiHideTimeout.clear(); // Don't hide UI while a seek is in progress
@@ -285,6 +315,10 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   release(): void {
+    // Explicitly unsubscribe user interaction event handlers because they could be attached to an external element
+    // that isn't owned by the UI and therefore not removed on release.
+    this.userInteractionEvents.forEach((event) => this.userInteractionEventSource.off(event.name, event.handler));
+
     super.release();
     this.uiHideTimeout.clear();
   }
