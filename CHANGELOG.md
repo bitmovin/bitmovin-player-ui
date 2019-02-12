@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- `UIContainerConfig.userInteractionEventSource` to allow tracking of user interaction events (to show/hide UI) on a custom element
+- `UIContainerConfig.userInteractionEventSource` to allow tracking of user interaction events (which toggle the visibility of certain components like the `ControlBar`) on a custom element
 
 ## [3.3.1]
 
