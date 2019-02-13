@@ -1,11 +1,11 @@
 # Bitmovin Player UI [![npm version](https://badge.fury.io/js/bitmovin-player-ui.svg)](https://badge.fury.io/js/bitmovin-player-ui) [![Build Status](https://travis-ci.org/bitmovin/bitmovin-player-ui.svg?branch=master)](https://travis-ci.org/bitmovin/bitmovin-player-ui)
 The Bitmovin Adaptive Streaming Player UI
 
-Read more about the usage, as well as other important information on Bitmovin's Adaptive Streaming Player itself at https://bitmovin.com/ and https://bitmovin.com/player-documentation/.
+Read more about the usage,  along with other important information about the Bitmovin's Adaptive Streaming Player at https://bitmovin.com/ and https://bitmovin.com/player-documentation/.
 
 ## Installation
 
-Beside the Git repository, the UI framework is also available through the following distribution channels:
+The UI framework is also available through the following distribution channels:
 
 ### CDN
 
@@ -34,7 +34,7 @@ The UI framework is also available in the NPM repository and comes with all sour
   * `gulp lint` to lint TypeScript and SASS files
   * `gulp build-prod` to build project with minified files into `dist` directory
   
-To just take a look at the project, also run `gulp serve`. For changes, check our [CHANGELOG](CHANGELOG.md). This UI framework version is for player v8. The UI framework for player v7 can be found in the `support/v2.x` branch.
+To take a look at the project, run `gulp serve`. For changes, check our [CHANGELOG](CHANGELOG.md). This UI framework version is for player v8. The UI framework for player v7 can be found in the `support/v2.x` branch.
 
 ## Contributing
 
@@ -51,7 +51,7 @@ A UI is defined by a tree of components, making up the UI *structure*, and their
 
 ## Customizing the UI
 
-There are basically three approaches to customize the UI:
+There are three approaches to customize the UI:
 
 1. Go with the built-in UI of the player and adjust the styling to your liking with CSS
 2. Keep the player managing the UI internally but tell it to load alternative UI CSS/JS files, e.g. your own build from this repository
@@ -139,7 +139,7 @@ const myUiManager = new UIManager(player, mySimpleUI);
 myUiManager.release();
 ```
 
-UIs can be added and removed anytime during the player's lifecycle, which means UIs can be dynamically adjusted to the player, e.g. by listening to events. It is also perfectly possible to manage multiple UIs in parallel.
+UIs can be added and removed anytime during the player's lifecycle, which means UIs can be dynamically adjusted to the player, e.g. by listening to events. It is also possible to manage multiple UIs in parallel.
 
 Here is an example on how to display a special UI in fullscreen mode:
 
@@ -238,7 +238,7 @@ const myUiConfig = {
 const myUiManager = new UIManager(player, myUi, myUiConfig);
 ```
 
-All of the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.
+All the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.
 
 ### UI Playground
 
