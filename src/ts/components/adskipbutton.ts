@@ -46,7 +46,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       // Display this button only if ad is skippable
       // non skippable ads will return -1 for skippableAfter for player version < v8.3.0
       if (!skipOffset || skipOffset < 0) {
-        this.hide()
+        this.hide();
         return;
       }
 
