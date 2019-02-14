@@ -44,12 +44,13 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
     let updateSkipMessageHandler = () => {
       // Display this button only if ad is skippable
-      // non skippable ads will return -1 for skippableAfter
-      if (skipOffset >= 0) {
-        this.show();
-      } else {
-        this.hide();
+      // non skippable ads will return -1 for skippableAfter for player version < v8.3.0
+      if (!skipOffset || skipOffset < 0) {
+        this.hide()
+        return;
       }
+
+      this.show();
 
       // Update the skip message on the button
       if (player.getCurrentTime() < skipOffset) {
