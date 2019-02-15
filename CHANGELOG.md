@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `UIContainerConfig.userInteractionEventSource` to allow tracking of user interaction events (which toggle the visibility of certain components like the `ControlBar`) on a custom element
 
 ### Changed
-- Hidden `SkipMessage` is not constantly updated anymore if an ad is playing and is not skippable
+- Hidden `adSkipButton` is not constantly updated anymore if a non skippable ad is playing
 
 ## [3.3.1]
 
