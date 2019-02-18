@@ -1,7 +1,7 @@
 # Bitmovin Player UI [![npm version](https://badge.fury.io/js/bitmovin-player-ui.svg)](https://badge.fury.io/js/bitmovin-player-ui) [![Build Status](https://travis-ci.org/bitmovin/bitmovin-player-ui.svg?branch=master)](https://travis-ci.org/bitmovin/bitmovin-player-ui)
 The Bitmovin Adaptive Streaming Player UI
 
-Read more about the usage,  along with other important information about the Bitmovin's Adaptive Streaming Player at https://bitmovin.com/ and https://bitmovin.com/player-documentation/.
+Read more about the usage, along with other important information about the Bitmovin Player at https://bitmovin.com/ and https://bitmovin.com/docs/player.
 
 ## Installation
 
