@@ -17,6 +17,9 @@
     .#{$prefix}-ui-settings-panel-item {
       text-align: left;
     }
+    // 
+    // .#{$prefix}-ui-watermark {
+    // }
 
     .#{$prefix}-ui-closebutton {
       margin: 2em;
@@ -27,9 +30,9 @@
   }
 
   // Do not display watermark in mobile view
-  .#{$prefix}-ui-watermark {
-    display: none;
-  }
+  // .#{$prefix}-ui-watermark {
+  //   display: none;
+  // }
 
   .#{$prefix}-ui-titlebar {
     > .#{$prefix}-container-wrapper {

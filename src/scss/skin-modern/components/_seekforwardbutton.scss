@@ -1,0 +1,30 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-seek-forward-button {
+  @extend %ui-button;
+
+  background-image: svg('assets/skin-modern/images/seek_forwardX.svg');
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    background-image: svg('assets/skin-modern/images/seek_forwardX.svg');
+  }
+}
+
+.#{$prefix}-ui-seek-backward-button {
+  @extend %ui-button;
+
+  background-image: svg('assets/skin-modern/images/seek_backwardX.svg');
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    background-image: svg('assets/skin-modern/images/seek_backwardX.svg');
+  }
+}

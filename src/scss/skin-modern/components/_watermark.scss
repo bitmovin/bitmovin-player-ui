@@ -3,13 +3,13 @@
 .#{$prefix}-ui-watermark {
   @extend %ui-clickoverlay;
 
-  $watermark-size: 4em;
+  $watermark-size: 2.5em;
 
-  background-image: svg('assets/skin-modern/images/logo.svg');
+  background-image: svg('assets/skin-modern/images/strawberry_cake_2.svg');
   height: $watermark-size;
   margin: 2em;
   opacity: .8;
-  position: absolute;
+  // position: absolute;
   right: 0;
   top: 0;
   width: $watermark-size;
