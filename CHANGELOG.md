@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `UIContainerConfig.userInteractionEventSource` to allow tracking of user interaction events (which toggle the visibility of certain components like the `ControlBar`) on a custom element
 
+### Changed
+- Avoid unnecessary updating of hidden `AdSkipButton`
+
 ## [3.3.1]
 
 ### Changed
