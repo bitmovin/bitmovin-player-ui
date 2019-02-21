@@ -6,7 +6,6 @@ var sourcemaps = require('gulp-sourcemaps');
 var cssBase64 = require('gulp-css-base64');
 var postcss = require('gulp-postcss');
 var uglify = require('gulp-uglify');
-var gif = require('gulp-if');
 var rename = require('gulp-rename');
 var tslint = require('gulp-tslint');
 var sassLint = require('gulp-sass-lint');
