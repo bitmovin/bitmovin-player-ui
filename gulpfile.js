@@ -206,10 +206,10 @@ gulp.task('default', gulp.series('build'));
 // Watches files for changes and runs their build tasks
 gulp.task('watch', function() {
   // Watch for changed html files
-  gulp.watch(paths.source.html, ['html']);
+  gulp.watch(paths.source.html).on('change', gulp.series('html'));
 
   // Watch SASS files
-  gulp.watch(paths.source.sass, ['sass']);
+  gulp.watch(paths.source.sass).on('change', gulp.series('sass'));
 
   // Watch files for changes through Browserify with Watchify
   catchBrowserifyErrors = true;
@@ -232,10 +232,10 @@ gulp.task('serve', gulp.series('build', function() {
     }
   });
 
-  gulp.watch(paths.source.sass, ['sass']);
-    gulp.watch(paths.source.html).on('change', function() { runSequence('html', browserSync.reload); });
-    catchBrowserifyErrors = true;
-    gulp.watch(paths.source.ts, ['browserify']);
+  gulp.watch(paths.source.sass).on('change', gulp.series('sass'));
+  gulp.watch(paths.source.html).on('change', gulp.series('html', browserSync.reload));
+  catchBrowserifyErrors = true;
+  gulp.watch(paths.source.ts).on('change', gulp.series('browserify'));
 }));
 
 // Prepares the project for a npm release
