@@ -27,7 +27,6 @@ var buffer = require('vinyl-buffer');
 
 // Various stuff
 var del = require('del');
-var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 var merge = require('merge2');
 var nativeTslint = require('tslint');
