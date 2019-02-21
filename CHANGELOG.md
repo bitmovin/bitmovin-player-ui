@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Avoid unnecessary updating of hidden `AdSkipButton`
+- Upgrade to Gulp 4 ([#208](https://github.com/bitmovin/bitmovin-player-ui/issues/208))
 
 ## [3.3.1]
 
