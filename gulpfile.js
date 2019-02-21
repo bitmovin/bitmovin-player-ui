@@ -196,7 +196,7 @@ gulp.task('sass', function() {
 gulp.task('build', gulp.series('clean', gulp.parallel('html', 'browserify', 'sass')));
 
 gulp.task('build-prod', gulp.series(function(callback) {
-  production = true
+  production = true;
   callback();
 }, 'lint', 'build'));
 
