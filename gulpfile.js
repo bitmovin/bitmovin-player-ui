@@ -6,7 +6,6 @@ var sourcemaps = require('gulp-sourcemaps');
 var cssBase64 = require('gulp-css-base64');
 var postcss = require('gulp-postcss');
 var uglify = require('gulp-uglify');
-var gif = require('gulp-if');
 var rename = require('gulp-rename');
 var tslint = require('gulp-tslint');
 var sassLint = require('gulp-sass-lint');
@@ -28,7 +27,6 @@ var buffer = require('vinyl-buffer');
 
 // Various stuff
 var del = require('del');
-var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 var merge = require('merge2');
 var nativeTslint = require('tslint');
@@ -116,11 +114,7 @@ gulp.task('lint-sass', function() {
 });
 
 // Runs all linters
-gulp.task('lint', function(callback) {
-  // this fails at first error so we can't run all linters sequentially with runSequence and then print the errors
-  runSequence('lint-ts', 'lint-sass', callback);
-  // TODO check in Gulp 4.0 if all linters can be run sequentially before aborting due to an error
-});
+gulp.task('lint', gulp.parallel('lint-ts', 'lint-sass'));
 
 // Copies html files to the target directory
 gulp.task('html', function() {
@@ -199,28 +193,22 @@ gulp.task('sass', function() {
 });
 
 // Builds the complete project from the sources into the target directory
-gulp.task('build', function(callback) {
-  // First run 'clean', then the other tasks
-  // TODO remove runSequence on Gulp 4.0 and use built in serial execution instead
-  runSequence('clean',
-    ['html', 'browserify', 'sass'],
-    callback);
-});
+gulp.task('build', gulp.series('clean', gulp.parallel('html', 'browserify', 'sass')));
 
-gulp.task('build-prod', function(callback) {
+gulp.task('build-prod', gulp.series(function(callback) {
   production = true;
-  runSequence('lint', 'build', callback);
-});
+  callback();
+}, 'lint', 'build'));
 
-gulp.task('default', ['build']);
+gulp.task('default', gulp.series('build'));
 
 // Watches files for changes and runs their build tasks
 gulp.task('watch', function() {
   // Watch for changed html files
-  gulp.watch(paths.source.html, ['html']);
+  gulp.watch(paths.source.html).on('change', gulp.series('html'));
 
   // Watch SASS files
-  gulp.watch(paths.source.sass, ['sass']);
+  gulp.watch(paths.source.sass).on('change', gulp.series('sass'));
 
   // Watch files for changes through Browserify with Watchify
   catchBrowserifyErrors = true;
@@ -234,26 +222,24 @@ gulp.task('watch', function() {
 });
 
 // Serves the project in the browser and updates it automatically on changes
-gulp.task('serve', function() {
-  runSequence(['build'], function() {
-    browserSync({
-      notify: false,
-      port: 9000,
-      server: {
-        baseDir: [paths.target.html]
-      }
-    });
-
-    gulp.watch(paths.source.sass, ['sass']);
-    gulp.watch(paths.source.html).on('change', function() { runSequence('html', browserSync.reload); });
-    catchBrowserifyErrors = true;
-    gulp.watch(paths.source.ts, ['browserify']);
+gulp.task('serve', gulp.series('build', function() {
+  browserSync({
+    notify: false,
+    port: 9000,
+    server: {
+      baseDir: [paths.target.html]
+    }
   });
-});
+
+  gulp.watch(paths.source.sass).on('change', gulp.series('sass'));
+  gulp.watch(paths.source.html).on('change', gulp.series('html', browserSync.reload));
+  catchBrowserifyErrors = true;
+  gulp.watch(paths.source.ts).on('change', gulp.series('browserify'));
+}));
 
 // Prepares the project for a npm release
 // After running this task, the project can be published to npm or installed from this folder.
-gulp.task('npm-prepare', ['build-prod'], function() {
+gulp.task('npm-prepare', gulp.series('build-prod', function() {
   // https://www.npmjs.com/package/gulp-typescript
   var tsProject = ts.createProject('tsconfig.json');
   var tsResult = gulp.src(paths.source.ts).pipe(tsProject());
@@ -262,7 +248,7 @@ gulp.task('npm-prepare', ['build-prod'], function() {
     tsResult.dts.pipe(gulp.dest(paths.target.jsframework)),
     tsResult.js.pipe(replaceAll()).pipe(gulp.dest(paths.target.jsframework))
   ]);
-});
+}));
 
 // Export the paths object to allow customization (e.g. js output filename) from other gulpfiles that import
 // and reuse the tasks from here.
