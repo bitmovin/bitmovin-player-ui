@@ -114,7 +114,7 @@ gulp.task('lint-sass', function() {
 });
 
 // Runs all linters
-gulp.task('lint', gulp.series('lint-ts', 'lint-sass'));
+gulp.task('lint', gulp.parallel('lint-ts', 'lint-sass'));
 
 // Copies html files to the target directory
 gulp.task('html', function() {
