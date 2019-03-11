@@ -360,7 +360,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     });
 
-    // Stop updater when playback continues or player is destroyed (no matter if the updater was started before)
+    // Stop updater when playback continues (no matter if the updater was started before)
     player.on(player.exports.PlayerEvent.Play, () => this.pausedTimeshiftUpdater.clear());
   }
 
