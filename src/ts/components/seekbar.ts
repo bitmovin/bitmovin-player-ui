@@ -484,6 +484,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.smoothPlaybackPositionUpdater) { // object must not necessarily exist, e.g. in volume slider subclass
       this.smoothPlaybackPositionUpdater.clear();
     }
+
+    if (this.pausedTimeshiftUpdater) {
+      this.pausedTimeshiftUpdater.clear();
+    }
   }
 
   protected toDomElement(): DOM {
