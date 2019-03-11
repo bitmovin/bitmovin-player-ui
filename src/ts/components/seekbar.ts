@@ -86,6 +86,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   private playbackPositionPercentage = 0;
 
   private smoothPlaybackPositionUpdater: Timeout;
+  private pausedTimeshiftUpdater: Timeout;
 
   // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
   private touchSupported = ('ontouchstart' in window);
@@ -350,17 +351,17 @@ export class SeekBar extends Component<SeekBarConfig> {
   private configureLivePausedTimeshiftUpdater(player: PlayerAPI, uimanager: UIInstanceManager,
                                               playbackPositionHandler: () => void): void {
     // Regularly update the playback position while the timeout is active
-    const pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
+     this.pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
 
     // Start updater when a live stream with timeshift window is paused
     player.on(player.exports.PlayerEvent.Paused, () => {
       if (player.isLive() && player.getMaxTimeShift() < 0) {
-        pausedTimeshiftUpdater.start();
+        this.pausedTimeshiftUpdater.start();
       }
     });
 
-    // Stop updater when playback continues (no matter if the updater was started before)
-    player.on(player.exports.PlayerEvent.Play, () => pausedTimeshiftUpdater.clear());
+    // Stop updater when playback continues or player is destroyed (no matter if the updater was started before)
+    player.on(player.exports.PlayerEvent.Play, () => this.pausedTimeshiftUpdater.clear());
   }
 
   private configureSmoothPlaybackPositionUpdater(player: PlayerAPI, uimanager: UIInstanceManager): void {
