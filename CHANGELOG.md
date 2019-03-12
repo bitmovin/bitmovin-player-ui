@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- Stopping timeshift offset updater of `SeekBar` when player is destroyed
+
 ## [3.4.0]
 
 ### Added
