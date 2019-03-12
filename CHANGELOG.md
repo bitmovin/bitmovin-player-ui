@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- Stopping time shift offset updater of `SeekbBar` when player is destroyed
+- Stopping timeshift offset updater of `SeekBar` when player is destroyed
 
 ## [3.4.0]
 
