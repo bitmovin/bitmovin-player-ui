@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Stopping timeshift offset updater of `SeekBar` when player is destroyed
+- Size of the `SeekbarLabel` by adding `box-sizing: border-box` to `.-seekbar-label-metadata` 
 
 ## [3.4.0]
 
