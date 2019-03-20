@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- `box-sizing: border-box` to `.-seekbar` to improve playback position marker
+
 ### Fixed
 - Stopping timeshift offset updater of `SeekBar` when player is destroyed
 
