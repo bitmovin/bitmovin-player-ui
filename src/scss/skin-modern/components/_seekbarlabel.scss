@@ -52,6 +52,7 @@
       .#{$prefix}-seekbar-label-metadata {
         background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
         bottom: 0;
+        box-sizing: border-box;
         display: block;
         padding: .5em;
         position: absolute;

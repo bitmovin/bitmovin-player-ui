@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+*
+* Copyright (C) 2019, bitmovin GmbH, All Rights Reserved
+*
+* This source code and its use and distribution, is subject to the terms
+* and conditions of the applicable license agreement.
+*
+-->
+<html lang="en">
+<head>
+    <title>Bitmovin Player UI Demo</title>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bitmovin Player -->
+    <script type="text/javascript" src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
+
+    <!-- UI -->
+    <script src="js/bitmovinplayer-ui.js"></script>
+    <link rel="stylesheet" href="css/bitmovinplayer-ui.css">
+
+    <style>
+        .player-wrapper {
+            width: 95%;
+            margin: 20px auto;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+        <a href="index.html"><- Back to playground</a>
+        <div class="player-wrapper">
+            <div id="player"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var conf = {
+        key: '',
+        ui: false,
+        playback: {
+            muted: true,
+            autoplay: true,
+        }
+    };
+
+    var source = {
+        dash: '//bitdash-a.akamaihd.net/content/MI201109210084_1/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd',
+        hls: '//bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8',
+        progressive: '//bitdash-a.akamaihd.net/content/MI201109210084_1/MI201109210084_mpeg-4_hd_high_1080p25_10mbits.mp4',
+        poster: '//bitdash-a.akamaihd.net/content/art-of-motion_drm/art-of-motion_poster.jpg',
+        thumbnailTrack: {
+            url: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.vtt',
+        },
+    };
+
+    var player = new bitmovin.player.Player(document.getElementById('player'), conf);
+    var uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, {});
+    player.load(source);
+</script>
+</body>
+</html>
