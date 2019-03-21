@@ -7,12 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- `box-sizing: border-box` to `.-seekbar` to improve playback position marker
-- `simple.html` to test plain UI css without bootstrap
+- `simple.html` to test plain UI CSS without Bootstrap
 
 ### Fixed
 - Stopping timeshift offset updater of `SeekBar` when player is destroyed
-- Size of the `SeekbarLabel` by adding `box-sizing: border-box` to `.-seekbar-label-metadata` 
+- `box-sizing` style of `SeekBar` and `SeekBarLabel` 
 
 ## [3.4.0]
 
