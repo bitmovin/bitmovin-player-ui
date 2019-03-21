@@ -23,6 +23,7 @@ $seekbar-height: .3125em;
       -ms-transform-origin: 0 0; // required for IE9
       -webkit-transform-origin: 0 0; // required for Android 4.4 WebView
       bottom: 0;
+      box-sizing: border-box;
       height: $seekbar-height;
       left: 0;
       margin: auto;

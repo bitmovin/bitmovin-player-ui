@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- `simple.html` to test plain UI CSS without Bootstrap
+
 ### Fixed
 - Stopping timeshift offset updater of `SeekBar` when player is destroyed
+- `box-sizing` style of `SeekBar` and `SeekBarLabel` 
 
 ## [3.4.0]
 
