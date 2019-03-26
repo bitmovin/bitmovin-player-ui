@@ -197,9 +197,6 @@ class EventListenerWrapper<Sender, Args> {
  */
 class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper<Sender, Args> {
 
-  // Timout in MS where the last seen event is delayed
-  private static NEXT_EVENT_TIMEOUT_MS = 50;
-
   private readonly rateMs: number;
   private readonly rateLimitingEventListener: EventListener<Sender, Args>;
 
@@ -207,7 +204,6 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
   private lastSeenEvent: any;
 
   private rateLimitTimout: Timeout;
-  private waitAndFireLastTimout: Timeout;
 
   // Boolean to track if rateLimit timeout is currently active
   private isRateLimiting: boolean = false;
@@ -217,49 +213,36 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
 
     this.rateMs = rateMs;
 
-    // delegating the received event
-    const fireEvent = (sender: Sender, args: Args) => {
-      this.fireSuper(sender, args);
-    };
-
     // starting limiting the events to the given value
     const startRateLimiting = () => {
-      if (this.lastSeenEvent) {
-        this.isRateLimiting = true;
-        this.rateLimitTimout.start();
-      }
+      this.isRateLimiting = true;
+      this.rateLimitTimout.start();
     };
-
-    // We need to wait a short time-windows to allow a current event to get delegated instead of the last saved one.
-    // Otherwise the lastSaveEvent will always be triggered after the rateLimiting.
-    this.waitAndFireLastTimout = new Timeout(RateLimitedEventListenerWrapper.NEXT_EVENT_TIMEOUT_MS, () => {
-      if (this.lastSeenEvent) {
-        fireEvent(this.lastSeenEvent.sender, this.lastSeenEvent.args);
-        startRateLimiting(); // start rateLimiting again to keep rate limit active even after firing the last seen event
-        this.lastSeenEvent = null;
-      }
-    });
 
     // timout for limiting the events
     this.rateLimitTimout = new Timeout(this.rateMs, () => {
-      this.waitAndFireLastTimout.start();
-      this.isRateLimiting = false;
+      if (this.lastSeenEvent) {
+        this.fireSuper(this.lastSeenEvent.sender, this.lastSeenEvent.args);
+        startRateLimiting(); // start rateLimiting again to keep rate limit active even after firing the last seen event
+        this.lastSeenEvent = null;
+      } else {
+        this.isRateLimiting = false;
+      }
     });
 
     // In case the events stopping during the rateLimiting we need to track the last seen one and delegate after the
     // rate limiting is finished. This prevents missing the last update due to the rate limit.
     this.rateLimitingEventListener = (sender: Sender, args: Args) => {
+      // only fire events if the rateLimiting is not running
+      if (this.shouldFireEvent()) {
+        this.fireSuper(sender, args);
+        startRateLimiting();
+      }
+
       this.lastSeenEvent = {
         sender: sender,
         args: args,
       };
-
-      // only fire events if the rateLimiting is not running
-      if (this.shouldFireEvent()) {
-        this.waitAndFireLastTimout.clear();
-        fireEvent(sender, args);
-        startRateLimiting();
-      }
     };
   }
 
