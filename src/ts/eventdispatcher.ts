@@ -108,6 +108,11 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
    * Removes all listeners from this dispatcher.
    */
   unsubscribeAll(): void {
+    // In case of RateLimitedEventListenerWrapper we need to make sure that the timeout callback won't be called
+    for (let listener of this.listeners) {
+      listener.clear();
+    }
+
     this.listeners = [];
   }
 
@@ -190,6 +195,10 @@ class EventListenerWrapper<Sender, Args> {
   isOnce(): boolean {
     return this.once;
   }
+
+  clear(): void {
+    // empty
+  }
 }
 
 /**
@@ -258,5 +267,10 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
   fire(sender: Sender, args: Args) {
     // Fire the internal rate-limiting listener instead of the external event listener
     this.rateLimitingEventListener(sender, args);
+  }
+
+  clear(): void {
+    super.clear();
+    this.rateLimitTimout.clear();
   }
 }
