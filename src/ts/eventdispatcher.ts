@@ -214,9 +214,6 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
 
   private rateLimitTimout: Timeout;
 
-  // Boolean to track if rateLimit timeout is currently active
-  private isRateLimiting: boolean = false;
-
   constructor(listener: EventListener<Sender, Args>, rateMs: number) {
     super(listener); // sets the event listener sink
 
@@ -224,7 +221,6 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
 
     // starting limiting the events to the given value
     const startRateLimiting = () => {
-      this.isRateLimiting = true;
       this.rateLimitTimout.start();
     };
 
@@ -234,8 +230,6 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
         this.fireSuper(this.lastSeenEvent.sender, this.lastSeenEvent.args);
         startRateLimiting(); // start rateLimiting again to keep rate limit active even after firing the last seen event
         this.lastSeenEvent = null;
-      } else {
-        this.isRateLimiting = false;
       }
     });
 
@@ -256,7 +250,7 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
   }
 
   private shouldFireEvent(): boolean {
-    return !this.isRateLimiting;
+    return !this.rateLimitTimout.isRunning();
   }
 
   private fireSuper(sender: Sender, args: Args) {
