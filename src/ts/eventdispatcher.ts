@@ -201,6 +201,11 @@ class EventListenerWrapper<Sender, Args> {
   }
 }
 
+interface EventAttributes<Sender, Args> {
+  sender: Sender;
+  args: Args;
+}
+
 /**
  * Extends the basic {@link EventListenerWrapper} with rate-limiting functionality.
  */
@@ -210,7 +215,7 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
   private readonly rateLimitingEventListener: EventListener<Sender, Args>;
 
   // save last seen event attributes
-  private lastSeenEvent: any;
+  private lastSeenEvent: EventAttributes<Sender, Args>;
 
   private rateLimitTimout: Timeout;
 
