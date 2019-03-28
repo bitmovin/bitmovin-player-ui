@@ -13,7 +13,7 @@ export class Timeout {
   // To work around the issue we use type "any". The type does not matter anyway because we're not working with
   // this value except providing it to clearTimeout.
   private timeoutOrIntervalId: any;
-  private running: boolean;
+  private active: boolean;
 
   /**
    * Creates a new timeout callback handler.
@@ -26,7 +26,7 @@ export class Timeout {
     this.callback = callback;
     this.repeat = repeat;
     this.timeoutOrIntervalId = 0;
-    this.running = false;
+    this.active = false;
   }
 
   /**
@@ -56,11 +56,11 @@ export class Timeout {
     } else {
       this.timeoutOrIntervalId = setTimeout(this.callback, this.delay);
     }
-    this.running = true;
+    this.active = true;
   }
 
-  isRunning(): boolean {
-    return this.running;
+  isActive(): boolean {
+    return this.active;
   }
 
   private clearInternal(): void {
@@ -69,6 +69,6 @@ export class Timeout {
     } else {
       clearTimeout(this.timeoutOrIntervalId);
     }
-    this.running = false;
+    this.active = false;
   }
 }

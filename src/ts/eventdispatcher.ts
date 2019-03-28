@@ -255,7 +255,7 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
   }
 
   private shouldFireEvent(): boolean {
-    return !this.rateLimitTimout.isRunning();
+    return !this.rateLimitTimout.isActive();
   }
 
   private fireSuper(sender: Sender, args: Args) {
