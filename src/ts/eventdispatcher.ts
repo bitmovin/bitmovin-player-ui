@@ -197,7 +197,6 @@ class EventListenerWrapper<Sender, Args> {
   }
 
   clear(): void {
-    // empty
   }
 }
 
