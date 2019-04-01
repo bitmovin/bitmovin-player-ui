@@ -96,6 +96,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
     for (let i = 0; i < this.listeners.length; i++) {
       let subscribedListener = this.listeners[i];
       if (subscribedListener.listener === listener) {
+        subscribedListener.clear();
         ArrayUtils.remove(this.listeners, subscribedListener);
         return true;
       }
