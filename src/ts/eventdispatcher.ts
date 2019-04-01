@@ -244,6 +244,7 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
       if (this.shouldFireEvent()) {
         this.fireSuper(sender, args);
         startRateLimiting();
+        return;
       }
 
       this.lastSeenEvent = {
