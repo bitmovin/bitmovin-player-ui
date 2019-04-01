@@ -54,7 +54,10 @@ export class Timeout {
     if (this.repeat) {
       this.timeoutOrIntervalId = setInterval(this.callback, this.delay);
     } else {
-      this.timeoutOrIntervalId = setTimeout(this.callback, this.delay);
+      this.timeoutOrIntervalId = setTimeout(() => {
+        this.active = false;
+        this.callback();
+      }, this.delay);
     }
     this.active = true;
   }
