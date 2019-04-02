@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [develop]
+## [3.4.2]
 
 ### Changed
 - Dispatch last event of a rate-limited event sequence to `Event.subscribeRateLimited` listeners
@@ -510,6 +510,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.4.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.1...v3.4.2
 [3.4.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.0...v3.4.1
 [3.4.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.3.1...v3.4.0
 [3.3.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.3.0...v3.3.1
