@@ -1,5 +1,5 @@
-import {SeekBar, SeekBarConfig} from './seekbar';
-import {UIInstanceManager} from '../uimanager';
+import { SeekBar, SeekBarConfig, SeekPreviewEventArgs } from './seekbar';
+import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { VolumeTransition } from '../volumecontroller';
 
@@ -21,6 +21,8 @@ export interface VolumeSliderConfig extends SeekBarConfig {
 export class VolumeSlider extends SeekBar {
 
   private static readonly issuerName = 'ui';
+
+  private volumeTransition: VolumeTransition;
 
   constructor(config: VolumeSliderConfig = {}) {
     super(config);
@@ -54,19 +56,14 @@ export class VolumeSlider extends SeekBar {
       }
     });
 
-    let volumeTransition: VolumeTransition;
-
     this.onSeek.subscribe(() => {
-      volumeTransition = volumeController.startTransition();
+      this.volumeTransition = volumeController.startTransition();
     });
-    this.onSeekPreview.subscribeRateLimited((sender, args) => {
-      if (args.scrubbing && volumeTransition) {
-        volumeTransition.update(args.position);
-      }
-    }, 50);
+
+    this.onSeekPreview.subscribeRateLimited(this.updateVolumeWhileScrubbing, 50);
     this.onSeeked.subscribe((sender, percentage) => {
-      if (volumeTransition) {
-        volumeTransition.finish(percentage);
+      if (this.volumeTransition) {
+        this.volumeTransition.finish(percentage);
       }
     });
 
@@ -94,6 +91,12 @@ export class VolumeSlider extends SeekBar {
     volumeController.onChangedEvent();
   }
 
+  private updateVolumeWhileScrubbing = (sender: VolumeSlider, args: SeekPreviewEventArgs) => {
+    if (args.scrubbing && this.volumeTransition) {
+      this.volumeTransition.update(args.position);
+    }
+  };
+
   private detectVolumeControlAvailability(): boolean {
     /*
      * "On iOS devices, the audio level is always under the user’s physical control. The volume property is not
@@ -106,5 +109,11 @@ export class VolumeSlider extends SeekBar {
     // try setting the volume to 0.7 and if it's still 1 we are on a volume control restricted device
     dummyVideoElement.volume = 0.7;
     return dummyVideoElement.volume !== 1;
+  }
+
+  release(): void {
+    super.release();
+
+    this.onSeekPreview.unsubscribe(this.updateVolumeWhileScrubbing);
   }
 }

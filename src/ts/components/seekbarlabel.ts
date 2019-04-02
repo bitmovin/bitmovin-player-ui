@@ -1,11 +1,12 @@
 import {Container, ContainerConfig} from './container';
 import {Label, LabelConfig} from './label';
 import {Component, ComponentConfig} from './component';
-import {UIInstanceManager, SeekPreviewArgs} from '../uimanager';
+import { UIInstanceManager } from '../uimanager';
 import {StringUtils} from '../stringutils';
 import {ImageLoader} from '../imageloader';
 import {CssProperties} from '../dom';
 import { PlayerAPI, Thumbnail } from 'bitmovin-player';
+import { SeekBar, SeekPreviewEventArgs } from './seekbar';
 
 /**
  * Configuration interface for a {@link SeekBarLabel}.
@@ -26,6 +27,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   private thumbnailImageLoader: ImageLoader;
 
   private timeFormat: string;
+
+  private appliedMarkerCssClasses: string[] = [];
+  private player: PlayerAPI;
+  private uiManager: UIInstanceManager;
 
   constructor(config: SeekBarLabelConfig = {}) {
     super(config);
@@ -53,37 +58,9 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let appliedMarkerCssClasses: string[] = [];
-
-    uimanager.onSeekPreview.subscribeRateLimited((sender, args: SeekPreviewArgs) => {
-      if (player.isLive()) {
-        let maxTimeShift = player.getMaxTimeShift();
-        let time = maxTimeShift - maxTimeShift * (args.position / 100);
-        this.setTime(time);
-      } else {
-        if (args.marker) {
-          this.setTitleText(args.marker.marker.title);
-        } else {
-          this.setTitleText(null);
-        }
-        let time = player.getDuration() * (args.position / 100);
-        this.setTime(time);
-        this.setThumbnail(player.getThumbnail(time));
-      }
-
-      // Remove CSS classes from previous marker
-      if (appliedMarkerCssClasses.length > 0) {
-        this.getDomElement().removeClass(appliedMarkerCssClasses.join(' '));
-        appliedMarkerCssClasses = [];
-      }
-
-      // Add CSS classes of current marker
-      if (args.marker) {
-        const cssClasses = (args.marker.marker.cssClasses || []).map(cssClass => this.prefixCss(cssClass));
-        this.getDomElement().addClass(cssClasses.join(' '));
-        appliedMarkerCssClasses = cssClasses;
-      }
-    }, 100);
+    this.player = player;
+    this.uiManager = uimanager;
+    uimanager.onSeekPreview.subscribeRateLimited(this.handleSeekPreview, 100);
 
     let init = () => {
       // Set time format depending on source duration
@@ -97,6 +74,36 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     uimanager.getConfig().events.onUpdated.subscribe(init);
     init();
   }
+
+  private handleSeekPreview = (sender: SeekBar, args: SeekPreviewEventArgs) => {
+    if (this.player.isLive()) {
+      let maxTimeShift = this.player.getMaxTimeShift();
+      let time = maxTimeShift - maxTimeShift * (args.position / 100);
+      this.setTime(time);
+    } else {
+      if (args.marker) {
+        this.setTitleText(args.marker.marker.title);
+      } else {
+        this.setTitleText(null);
+      }
+      let time = this.player.getDuration() * (args.position / 100);
+      this.setTime(time);
+      this.setThumbnail(this.player.getThumbnail(time));
+    }
+
+    // Remove CSS classes from previous marker
+    if (this.appliedMarkerCssClasses.length > 0) {
+      this.getDomElement().removeClass(this.appliedMarkerCssClasses.join(' '));
+      this.appliedMarkerCssClasses = [];
+    }
+
+    // Add CSS classes of current marker
+    if (args.marker) {
+      const cssClasses = (args.marker.marker.cssClasses || []).map(cssClass => this.prefixCss(cssClass));
+      this.getDomElement().addClass(cssClasses.join(' '));
+      this.appliedMarkerCssClasses = cssClasses;
+    }
+  };
 
   /**
    * Sets arbitrary text on the label.
@@ -189,5 +196,11 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       'background-size': `100% 100%`,
       'background-position': `0 0`,
     };
+  }
+
+  release(): void {
+    super.release();
+
+    this.uiManager.onSeekPreview.unsubscribe(this.handleSeekPreview);
   }
 }

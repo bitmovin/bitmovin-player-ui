@@ -78,6 +78,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private timelineMarkers: SeekBarMarker[];
 
+  private player: PlayerAPI;
+
   /**
    * Buffer of the the current playback position. The position must be buffered in case the element
    * needs to be refreshed with {@link #refreshPlaybackPosition}.
@@ -129,6 +131,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
+
+    this.player = player;
 
     // Apply scaling transform to the backdrop bar to have all bars rendered similarly
     // (the call must be up here to be executed for the volume slider as well)
@@ -235,13 +239,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeShift, onPlayerSeek);
     player.on(player.exports.PlayerEvent.TimeShifted, onPlayerSeeked);
 
-    let seek = (percentage: number) => {
-      if (player.isLive()) {
-        player.timeShift(player.getMaxTimeShift() - (player.getMaxTimeShift() * (percentage / 100)), 'ui');
-      } else {
-        player.seek(player.getDuration() * (percentage / 100), 'ui');
-      }
-    };
     this.onSeek.subscribe((sender) => {
       isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
 
@@ -264,17 +261,14 @@ export class SeekBar extends Component<SeekBarConfig> {
       // Notify UI manager of seek preview
       uimanager.onSeekPreview.dispatch(sender, args);
     });
-    this.onSeekPreview.subscribeRateLimited((sender: SeekBar, args: SeekPreviewEventArgs) => {
-      // Rate-limited scrubbing seek
-      if (args.scrubbing) {
-        seek(args.position);
-      }
-    }, 200);
+
+    // Rate-limited scrubbing seek
+    this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
     this.onSeeked.subscribe((sender, percentage) => {
       isUserSeeking = false;
 
       // Do the seek
-      seek(percentage);
+      this.seek(percentage);
 
       // Notify UI manager of finished seek
       uimanager.onSeeked.dispatch(sender);
@@ -343,6 +337,21 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
     this.configureMarkers(player, uimanager);
   }
+
+  private seekWhileScrubbing = (sender: SeekBar, args: SeekPreviewEventArgs) => {
+    if (args.scrubbing) {
+      this.seek(args.position);
+    }
+  };
+
+  private seek = (percentage: number) => {
+    if (this.player.isLive()) {
+      const maxTimeShift = this.player.getMaxTimeShift();
+      this.player.timeShift(maxTimeShift - (maxTimeShift * (percentage / 100)), 'ui');
+    } else {
+      this.player.seek(this.player.getDuration() * (percentage / 100), 'ui');
+    }
+  };
 
   /**
    * Update seekbar while a live stream with DVR window is paused.
@@ -488,6 +497,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.pausedTimeshiftUpdater) {
       this.pausedTimeshiftUpdater.clear();
     }
+
+    this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
   }
 
   protected toDomElement(): DOM {
