@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Changed
+- Dispatch last event of a rate-limited event sequence to `Event.subscribeRateLimited` listeners
+
+### Fixed
+- Inaccurate time within `SeekBarLabel` on seek preview
+
 ## [3.4.1]
 
 ### Added

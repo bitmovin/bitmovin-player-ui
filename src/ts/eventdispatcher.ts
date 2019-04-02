@@ -1,4 +1,5 @@
 import {ArrayUtils} from './arrayutils';
+import { Timeout } from './timeout';
 /**
  * Function interface for event listeners on the {@link EventDispatcher}.
  */
@@ -95,6 +96,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
     for (let i = 0; i < this.listeners.length; i++) {
       let subscribedListener = this.listeners[i];
       if (subscribedListener.listener === listener) {
+        subscribedListener.clear();
         ArrayUtils.remove(this.listeners, subscribedListener);
         return true;
       }
@@ -107,6 +109,11 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
    * Removes all listeners from this dispatcher.
    */
   unsubscribeAll(): void {
+    // In case of RateLimitedEventListenerWrapper we need to make sure that the timeout callback won't be called
+    for (let listener of this.listeners) {
+      listener.clear();
+    }
+
     this.listeners = [];
   }
 
@@ -189,6 +196,14 @@ class EventListenerWrapper<Sender, Args> {
   isOnce(): boolean {
     return this.once;
   }
+
+  clear(): void {
+  }
+}
+
+interface EventAttributes<Sender, Args> {
+  sender: Sender;
+  args: Args;
 }
 
 /**
@@ -196,26 +211,52 @@ class EventListenerWrapper<Sender, Args> {
  */
 class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper<Sender, Args> {
 
-  private rateMs: number;
-  private rateLimitingEventListener: EventListener<Sender, Args>;
+  private readonly rateMs: number;
+  private readonly rateLimitingEventListener: EventListener<Sender, Args>;
 
-  private lastFireTime: number;
+  // save last seen event attributes
+  private lastSeenEvent: EventAttributes<Sender, Args>;
+
+  private rateLimitTimout: Timeout;
 
   constructor(listener: EventListener<Sender, Args>, rateMs: number) {
     super(listener); // sets the event listener sink
 
     this.rateMs = rateMs;
-    this.lastFireTime = 0;
 
-    // Wrap the event listener with an event listener that does the rate-limiting
-    this.rateLimitingEventListener = (sender: Sender, args: Args) => {
-      if (Date.now() - this.lastFireTime > this.rateMs) {
-        // Only if enough time since the previous call has passed, call the
-        // actual event listener and record the current time
-        this.fireSuper(sender, args);
-        this.lastFireTime = Date.now();
-      }
+    // starting limiting the events to the given value
+    const startRateLimiting = () => {
+      this.rateLimitTimout.start();
     };
+
+    // timout for limiting the events
+    this.rateLimitTimout = new Timeout(this.rateMs, () => {
+      if (this.lastSeenEvent) {
+        this.fireSuper(this.lastSeenEvent.sender, this.lastSeenEvent.args);
+        startRateLimiting(); // start rateLimiting again to keep rate limit active even after firing the last seen event
+        this.lastSeenEvent = null;
+      }
+    });
+
+    // In case the events stopping during the rateLimiting we need to track the last seen one and delegate after the
+    // rate limiting is finished. This prevents missing the last update due to the rate limit.
+    this.rateLimitingEventListener = (sender: Sender, args: Args) => {
+      // only fire events if the rateLimiting is not running
+      if (this.shouldFireEvent()) {
+        this.fireSuper(sender, args);
+        startRateLimiting();
+        return;
+      }
+
+      this.lastSeenEvent = {
+        sender: sender,
+        args: args,
+      };
+    };
+  }
+
+  private shouldFireEvent(): boolean {
+    return !this.rateLimitTimout.isActive();
   }
 
   private fireSuper(sender: Sender, args: Args) {
@@ -226,5 +267,10 @@ class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper
   fire(sender: Sender, args: Args) {
     // Fire the internal rate-limiting listener instead of the external event listener
     this.rateLimitingEventListener(sender, args);
+  }
+
+  clear(): void {
+    super.clear();
+    this.rateLimitTimout.clear();
   }
 }
