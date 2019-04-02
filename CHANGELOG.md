@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Changed
+- Dispatch last event of a rate-limited event sequence to `Event.subscribeRateLimited` listeners
+
 ### Fixed
 - Inaccurate time within `SeekBarLabel` on seek preview
 
