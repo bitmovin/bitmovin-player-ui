@@ -42,11 +42,12 @@ export class UIContainer extends Container<UIContainerConfig> {
   private static readonly CONTROLS_SHOWN = 'controls-shown';
   private static readonly CONTROLS_HIDDEN = 'controls-hidden';
 
-  private uiHideTimeout: Timeout;
+  protected uiHideTimeout: Timeout;
   private playerStateChange: EventDispatcher<UIContainer, PlayerUtils.PlayerState>;
 
   private userInteractionEventSource: DOM;
   private userInteractionEvents: { name: string, handler: EventListenerOrEventListenerObject }[];
+  protected isUiShown: boolean = false;
 
   constructor(config: UIContainerConfig) {
     super(config);
@@ -74,7 +75,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     this.configurePlayerStates(player, uimanager);
   }
 
-  private configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
+  protected configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
     let config = <UIContainerConfig>this.getConfig();
 
     if (config.hideDelay === -1) {
@@ -82,7 +83,6 @@ export class UIContainer extends Container<UIContainerConfig> {
       return;
     }
 
-    let isUiShown = false;
     let isSeeking = false;
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
@@ -92,20 +92,20 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     let showUi = () => {
-      if (!isUiShown) {
+      if (!this.isUiShown) {
         // Let subscribers know that they should reveal themselves
         uimanager.onControlsShow.dispatch(this);
-        isUiShown = true;
+        this.isUiShown = true;
       }
       // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
       if (!isSeeking && !player.isCasting() && !hidingPrevented()) {
-        this.uiHideTimeout.start();
+        this.startHideTimer();
       }
     };
 
     let hideUi = () => {
       // Hide the UI only if it is shown, and if not casting
-      if (isUiShown && !player.isCasting()) {
+      if (this.isUiShown && !player.isCasting()) {
         // Issue a preview event to check if we are good to hide the controls
         let previewHideEventArgs = <CancelEventArgs>{};
         uimanager.onPreviewControlsHide.dispatch(this, previewHideEventArgs);
@@ -113,7 +113,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         if (!previewHideEventArgs.cancel) {
           // If the preview wasn't canceled, let subscribers know that they should now hide themselves
           uimanager.onControlsHide.dispatch(this);
-          isUiShown = false;
+          this.isUiShown = false;
         } else {
           // If the hide preview was canceled, continue to show UI
           showUi();
@@ -128,7 +128,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
       handler: (e) => {
-        if (!isUiShown) {
+        if (!this.isUiShown) {
           // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
           // instead. The first touch is not prevented to let other listeners receive the event and trigger an
           // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
@@ -160,7 +160,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
         // hide the UI in such cases
         if (!isSeeking && !hidingPrevented()) {
-          this.uiHideTimeout.start();
+          this.startHideTimer();
         }
       },
     }];
@@ -173,7 +173,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     uimanager.onSeeked.subscribe(() => {
       isSeeking = false;
-      this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+      this.startHideTimer(); // Re-enable UI hide timeout after a seek
     });
     player.on(player.exports.PlayerEvent.CastStarted, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
@@ -186,7 +186,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         showUi();
       } else {
         // Entering a player state that allows hiding
-        this.uiHideTimeout.start();
+        this.startHideTimer();
       }
     });
   }
@@ -312,6 +312,14 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     // Init layout state
     updateLayoutSizeClasses(new DOM(player.getContainer()).width(), new DOM(player.getContainer()).height());
+  }
+
+  private startHideTimer(): void {
+    if (!this.isUiShown) {
+      return;
+    }
+
+    this.uiHideTimeout.start();
   }
 
   release(): void {

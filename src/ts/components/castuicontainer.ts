@@ -15,9 +15,7 @@ export class CastUIContainer extends UIContainer {
     super(config);
   }
 
-  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    super.configure(player, uimanager);
-
+  protected configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
     let config = <UIContainerConfig>this.getConfig();
 
     /*
@@ -30,19 +28,17 @@ export class CastUIContainer extends UIContainer {
      * hide delay time.
      */
 
-    let isUiShown = false;
-
     let hideUi = () => {
       uimanager.onControlsHide.dispatch(this);
-      isUiShown = false;
+      this.isUiShown = false;
     };
 
     this.castUiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
     let showUi = () => {
-      if (!isUiShown) {
+      if (!this.isUiShown) {
         uimanager.onControlsShow.dispatch(this);
-        isUiShown = true;
+        this.isUiShown = true;
       }
     };
 
@@ -56,18 +52,10 @@ export class CastUIContainer extends UIContainer {
       this.castUiHideTimeout.start();
     };
 
-    let showUiAfterSeek = () => {
-      if (player.isPlaying()) {
-        showUiWithTimeout();
-      } else {
-        showUiPermanently();
-      }
-    };
-
-    player.on(player.exports.PlayerEvent.Play, showUiWithTimeout);
+    player.on(player.exports.PlayerEvent.Play, showUiPermanently);
+    player.on(player.exports.PlayerEvent.Playing, showUiWithTimeout);
     player.on(player.exports.PlayerEvent.Paused, showUiPermanently);
     player.on(player.exports.PlayerEvent.Seek, showUiPermanently);
-    player.on(player.exports.PlayerEvent.Seeked, showUiAfterSeek);
 
     uimanager.getConfig().events.onUpdated.subscribe(showUiWithTimeout);
   }
