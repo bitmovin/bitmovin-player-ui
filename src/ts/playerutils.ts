@@ -1,5 +1,5 @@
 import {Event, EventDispatcher, NoArgs} from './eventdispatcher';
-import {BrowserUtils} from './browserutils';
+import { BrowserUtils } from './browserutils';
 
 export namespace PlayerUtils {
 
@@ -106,10 +106,9 @@ export namespace PlayerUtils {
       // Re-evaluate when playback starts
       player.addEventHandler(player.EVENT.ON_PLAY, liveDetector);
 
-      // HLS live detection workaround for Android:
-      // Also re-evaluate during playback, because that is when the live flag might change.
-      // (Doing it only in Android Chrome saves unnecessary overhead on other plattforms)
-      if (BrowserUtils.isAndroid && BrowserUtils.isChrome) {
+      // Live detection workaround for Android and iOS:
+      // It could be that the isLive flag change to late in our native SDK's so we check the status also on time changed
+      if (BrowserUtils.isMobile) {
         player.addEventHandler(player.EVENT.ON_TIME_CHANGED, liveDetector);
       }
     }

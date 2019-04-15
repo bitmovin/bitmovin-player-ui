@@ -291,6 +291,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       isLive = args.live;
       switchVisibility(isLive, hasTimeShift);
+
+      this.updateSmoothPlaybackPositionUpdaterState(isLive);
     });
     let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
     timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe((sender, args: TimeShiftAvailabilityChangedArgs) => {
@@ -411,6 +413,14 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (player.isPlaying()) {
       startSmoothPlaybackPositionUpdater();
     }
+  }
+
+  private updateSmoothPlaybackPositionUpdaterState(isLive: Boolean): void {
+    if (!this.smoothPlaybackPositionUpdater) {
+      return;
+    }
+
+    isLive ? this.smoothPlaybackPositionUpdater.clear() : this.smoothPlaybackPositionUpdater.start();
   }
 
   private configureMarkers(player: bitmovin.PlayerAPI, uimanager: UIInstanceManager): void {

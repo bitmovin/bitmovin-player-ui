@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- Jumpy seekbar if isLive flag is set to late
+
 ## [2.21.0] (2018-11-30)
 
 ### Added
