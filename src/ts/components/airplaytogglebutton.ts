@@ -43,7 +43,7 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    let airPlayChangeHandler = () => {
+    let airPlayChangedHandler = () => {
       if (player.isAirplayActive()) {
         this.on();
       } else {
@@ -52,10 +52,10 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     player.on(player.exports.PlayerEvent.AirplayAvailable, airPlayAvailableHandler);
-    player.on(player.exports.PlayerEvent.AirplayChanged, airPlayChangeHandler);
+    player.on(player.exports.PlayerEvent.AirplayChanged, airPlayChangedHandler);
 
     // Startup init
     airPlayAvailableHandler(); // Hide button if AirPlay is not available
-    airPlayChangeHandler();
+    airPlayChangedHandler();
   }
 }
