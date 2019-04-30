@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- Crash of `UIContainer.release` when initialized with `hideDelay: -1`
+
 ## [3.4.3]
 
 ### Fixed
