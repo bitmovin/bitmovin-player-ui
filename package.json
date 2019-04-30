@@ -5,7 +5,7 @@
   "main": "./dist/js/framework/main.js",
   "types": "./dist/js/framework/main.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx jest",
     "prepublish": "gulp npm-prepare"
   },
   "repository": {
