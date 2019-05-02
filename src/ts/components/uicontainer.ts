@@ -317,10 +317,15 @@ export class UIContainer extends Container<UIContainerConfig> {
   release(): void {
     // Explicitly unsubscribe user interaction event handlers because they could be attached to an external element
     // that isn't owned by the UI and therefore not removed on release.
-    this.userInteractionEvents.forEach((event) => this.userInteractionEventSource.off(event.name, event.handler));
+    if (this.userInteractionEvents) {
+      this.userInteractionEvents.forEach((event) => this.userInteractionEventSource.off(event.name, event.handler));
+    }
 
     super.release();
-    this.uiHideTimeout.clear();
+
+    if (this.uiHideTimeout) {
+      this.uiHideTimeout.clear();
+    }
   }
 
   protected toDomElement(): DOM {
