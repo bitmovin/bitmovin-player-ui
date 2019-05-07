@@ -17,7 +17,7 @@ import {
 declare const global: any;
 export namespace MockHelper {
   export function getPlayerMock(): TestingPlayerAPI {
-    const eventHelper = new PlayerEventHelper();
+    const eventHelper = new EventEmitter();
 
     const PlayerMockClass: jest.Mock<TestingPlayerAPI> = jest.fn().mockImplementation(() => {
       return {
@@ -63,52 +63,7 @@ export interface TestingPlayerAPI extends PlayerAPI {
   eventEmitter: EventEmitter;
 }
 
-interface EventEmitter {
-  fireEvent<E extends PlayerEventBase>(event: E): void;
-
-  // Event Helper methods
-  firePlayEvent(): void;
-
-  firePauseEvent(): void;
-
-  firePlayingEvent(): void;
-
-  fireSourceUnloadedEvent(): void;
-
-  firePlaybackFinishedEvent(): void;
-
-  fireSeekEvent(seekTarget?: number): void;
-
-  fireSeekedEvent(): void;
-
-  fireTimeShiftEvent(): void;
-
-  fireTimeShiftedEvent(): void;
-
-  fireStallStartedEvent(): void;
-
-  fireStallEndedEvent(): void;
-
-  fireErrorEvent(): void;
-
-  fireAdBreakStartedEvent(startTime?: number, ads?: LinearAd[]): void;
-
-  fireAdStartedEvent(adData?: object): void;
-
-  fireAdFinishedEvent(): void;
-
-  fireAdBreakFinishedEvent(): void;
-
-  fireAdSkippedEvent(): void;
-
-  fireAdErrorEvent(): void;
-
-  fireVideoPlaybackQualityChangedEvent(bitrate: number): void;
-
-  fireAirPlayChangedEvent(): void;
-}
-
-class PlayerEventHelper implements EventEmitter {
+class EventEmitter {
   private eventHandlers: { [eventType: string]: PlayerEventCallback[]; } = {};
 
   public on(eventType: PlayerEvent, callback: PlayerEventCallback) {
