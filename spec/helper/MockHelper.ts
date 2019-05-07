@@ -13,9 +13,30 @@ import {
   TimeShiftEvent,
   VideoPlaybackQualityChangedEvent,
 } from 'bitmovin-player';
+import { UIInstanceManager } from '../../src/ts/uimanager';
 
-declare const global: any;
+jest.mock('../../src/ts/dom');
+
 export namespace MockHelper {
+  export function getUiInstanceManagerMock(): UIInstanceManager {
+    const eventDispatcherMock = {
+      subscribe: jest.fn(),
+    };
+
+    const UiInstanceManagerMockClass: jest.Mock<UIInstanceManager> = jest.fn().mockImplementation(() => ({
+      onConfigured: eventDispatcherMock,
+      getConfig: jest.fn().mockReturnValue({
+        events: {
+          onUpdated: eventDispatcherMock,
+        },
+      }),
+      onControlsShow: eventDispatcherMock,
+      onControlsHide: eventDispatcherMock,
+    }));
+
+    return new UiInstanceManagerMockClass();
+  }
+
   export function getPlayerMock(): TestingPlayerAPI {
     const eventHelper = new EventEmitter();
 
