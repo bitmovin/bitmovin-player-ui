@@ -4,8 +4,8 @@ node_js:
 before_script:
   - npm ci
 script:
-  - gulp build-prod
   - npm test
+  - gulp build-prod
 cache:
   yarn: true
 env:
