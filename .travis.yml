@@ -3,12 +3,9 @@ node_js:
   - '10'
 before_script:
   - npm ci
-jobs:
-  include:
-    - stage: test
-      script: npm test
-    - stage: build
-      script: gulp build-prod
+script:
+  - npm test
+  - gulp build-prod
 cache:
   yarn: true
 env:
