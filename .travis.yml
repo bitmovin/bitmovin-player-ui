@@ -3,7 +3,9 @@ node_js:
   - "6"
 before_script:
   - npm install -g gulp-cli
-script: gulp build-prod
+script:
+  - gulp build-prod
+  - npm test
 cache:
   yarn: true
 env:
