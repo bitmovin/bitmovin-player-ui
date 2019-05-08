@@ -21,21 +21,16 @@ describe('UIContainer', () => {
     });
 
     describe('with configured hide delay of -1', () => {
+      /* no exception expected */
       it('works without calling configure', () => {
-        // Ensure that we don't try to call something on undefined properties
-        expect((uiContainer as any).uiHideTimeout).toBeUndefined();
-        expect((uiContainer as any).userInteractionEvents).toBeUndefined();
-
         uiContainer.release();
       });
 
+      /* no exception expected */
       it('works with calling configure', () => {
         uiContainer.configure(playerMock, uiInstanceManagerMock);
 
         uiContainer.release();
-        // Ensure that we don't try to call something on undefined properties
-        expect((uiContainer as any).uiHideTimeout).toBeUndefined();
-        expect((uiContainer as any).userInteractionEvents).toBeUndefined();
       });
     });
   });
