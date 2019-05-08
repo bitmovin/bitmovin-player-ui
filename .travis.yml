@@ -1,9 +1,11 @@
 language: node_js
 node_js:
-  - "6"
+  - '10'
 before_script:
-  - npm install -g gulp-cli
-script: gulp build-prod
+  - npm ci
+script:
+  - npm test
+  - gulp build-prod
 cache:
   yarn: true
 env:
