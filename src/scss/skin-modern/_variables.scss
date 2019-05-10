@@ -10,12 +10,12 @@ $color-secondary: #999 !default;
 
 $color-background: #111 !default;
 $color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3) !default;
-$color-background-bars: transparentize($color-black, .3) !default;
+$color-background-bars: transparentize(yellow, .3) !default; //transparentize($color-black, .3) !default;
 
-$font-family: sans-serif !default;
+$font-family: verdana !default; //sans-serif !default;
 $font-size: 1em !default;
 
-$subtitle-text-color: #fff !default;
+$subtitle-text-color: #fefefe !default; //#fff !default;
 $subtitle-text-border-color: #000 !default;
 
 $animation-duration: .3s !default;
