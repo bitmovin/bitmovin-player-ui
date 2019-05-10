@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- Wrong state for live indicator when a `startTime` value is provided within the `SourceConfig` of the player
+
 ## [3.4.4]
 
 ### Fixed

@@ -14,6 +14,7 @@ import {
   VideoPlaybackQualityChangedEvent,
 } from 'bitmovin-player';
 import { UIInstanceManager } from '../../src/ts/uimanager';
+import { DOM } from '../../src/ts/dom';
 
 jest.mock('../../src/ts/dom');
 
@@ -35,6 +36,19 @@ export namespace MockHelper {
     }));
 
     return new UiInstanceManagerMockClass();
+  }
+
+  export function generateDOMMock(): DOM {
+    const DOMClass: jest.Mock<DOM> = jest.fn().mockImplementation(() => ({
+      addClass: jest.fn(),
+      removeClass: jest.fn(),
+      on: jest.fn(),
+      html: jest.fn(),
+      css: jest.fn(),
+      width: jest.fn(),
+    }));
+
+    return new DOMClass();
   }
 
   export function getPlayerMock(): TestingPlayerAPI {
@@ -66,6 +80,8 @@ export namespace MockHelper {
           return document.getElementById('player');
         }),
         getViewMode: jest.fn(),
+        getTimeShift: jest.fn(),
+        getMaxTimeShift: jest.fn(),
         hasEnded: jest.fn(),
         isStalled: jest.fn(),
         isCasting: jest.fn(),
