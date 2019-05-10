@@ -115,7 +115,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
     player.on(player.exports.PlayerEvent.TimeShift, updateLiveTimeshiftState);
     player.on(player.exports.PlayerEvent.TimeShifted, updateLiveTimeshiftState);
-    player.on(player.exports.PlayerEvent.Play, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.Playing, updateLiveTimeshiftState);
     player.on(player.exports.PlayerEvent.Paused, updateLiveTimeshiftState);
 
     let init = () => {
