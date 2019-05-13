@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.4.5]
+
+### Fixed
+- Wrong state for live indicator when a `startTime` value is provided within the `SourceConfig` of the player
+
 ## [3.4.4]
 
 ### Fixed
@@ -520,6 +525,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.4.5]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.4...v3.4.5
 [3.4.4]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.3...v3.4.4
 [3.4.3]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.2...v3.4.3
 [3.4.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.1...v3.4.2
