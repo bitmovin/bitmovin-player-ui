@@ -80,7 +80,10 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     return -1;
   }
 
-  // TODO
+  /**
+   * Returns all current items of this selector.
+   * * @returns {ListItem[]}
+   */
   getItems(): ListItem[] {
     return this.items;
   }
@@ -166,12 +169,21 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     return this.selectedItem;
   }
 
-  // TODO
+  /**
+   * Returns the items for the given key or undefined if no item with the given key exists.
+   * @param key the key of the item to return
+   * @returns {ListItem} the item with the requested key. Undefined if no item with the given key exists.
+   */
   getItemForKey(key: string): ListItem {
     return this.items.find((item) => item.key === key);
   }
 
-  // TODO
+  /**
+   * Synchronize the current items of this selector with the given once. This will remove and add items selectively.
+   * For each removed item the ItemRemovedEvent and for each added item the ItemAddedEvent will be triggered. Favour
+   * this method over using clearItems and adding all items again afterwards.
+   * @param newItems
+   */
   synchronizeItems(newItems: ListItem[]): void {
     newItems
       .filter((item) => !this.hasItem(item.key))
