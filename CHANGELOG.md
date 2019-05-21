@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Changed
+- `ListBox` no longer recreates itself after the list was updated
+
+### Fixed
+- UI not hiding after selecting an item within a `ListBox`
+
 ## [3.4.5]
 
 ### Fixed
