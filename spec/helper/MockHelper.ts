@@ -45,11 +45,12 @@ export namespace MockHelper {
   }
 
   export function getPlayerMock(): TestingPlayerAPI {
-    const eventHelper = new EventEmitter();
+    const eventHelper = new PlayerEventEmitter();
 
     const PlayerMockClass: jest.Mock<TestingPlayerAPI> = jest.fn().mockImplementation(() => {
       return {
         ads: jest.fn(),
+        subtitles: jest.fn(),
         getSource: jest.fn(),
         exports: {
           PlayerEvent,
