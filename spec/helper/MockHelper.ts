@@ -1,38 +1,31 @@
-import {
-  AdBreakEvent,
-  AdEvent,
-  AirplayChangedEvent,
-  ErrorEvent,
-  LinearAd,
-  PlaybackEvent,
-  PlayerAPI,
-  PlayerEvent,
-  PlayerEventBase,
-  PlayerEventCallback,
-  SeekEvent,
-  TimeShiftEvent,
-  VideoPlaybackQualityChangedEvent,
-} from 'bitmovin-player';
+import { PlayerAPI, PlayerEvent } from 'bitmovin-player';
 import { UIInstanceManager } from '../../src/ts/uimanager';
 import { DOM } from '../../src/ts/dom';
+import { PlayerEventEmitter } from './PlayerEventEmitter';
 
 jest.mock('../../src/ts/dom');
 
+export interface TestingPlayerAPI extends PlayerAPI {
+  eventEmitter: PlayerEventEmitter;
+}
+
 export namespace MockHelper {
-  export function getUiInstanceManagerMock(): UIInstanceManager {
-    const eventDispatcherMock = {
+  export function getEventDispatcherMock() {
+    return {
       subscribe: jest.fn(),
     };
+  }
 
+  export function getUiInstanceManagerMock(): UIInstanceManager {
     const UiInstanceManagerMockClass: jest.Mock<UIInstanceManager> = jest.fn().mockImplementation(() => ({
-      onConfigured: eventDispatcherMock,
+      onConfigured: getEventDispatcherMock(),
       getConfig: jest.fn().mockReturnValue({
         events: {
-          onUpdated: eventDispatcherMock,
+          onUpdated: getEventDispatcherMock(),
         },
       }),
-      onControlsShow: eventDispatcherMock,
-      onControlsHide: eventDispatcherMock,
+      onControlsShow: getEventDispatcherMock(),
+      onControlsHide: getEventDispatcherMock(),
     }));
 
     return new UiInstanceManagerMockClass();
