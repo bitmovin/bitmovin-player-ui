@@ -103,7 +103,6 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param key the key of the item to add
    * @param label the (human-readable) label of the item to add
    */
-  // TODO: support adding item
   addItem(key: string, label: string) {
     const listItem = { key: key, label: label };
 
