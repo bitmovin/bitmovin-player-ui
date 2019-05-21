@@ -62,7 +62,7 @@ export class SubtitleSwitchHandler {
   private removeSubtitle = (event: SubtitleEvent) => {
     const subtitle = event.subtitle;
     if (this.listElement.hasItem(subtitle.id)) {
-      this.listElement.removeItem(event.subtitle.id);
+      this.listElement.removeItem(subtitle.id);
     }
   };
 
