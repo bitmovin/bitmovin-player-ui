@@ -1,4 +1,6 @@
 export namespace BrowserUtils {
+  // set default value for navigator when using package in nodejs or ssr app
+  const navigator = typeof window === 'undefined' ? {userAgent: ''} : window.navigator;
 
   // isMobile only needs to be evaluated once (it cannot change during a browser session)
   // Mobile detection according to Mozilla recommendation: "In summary, we recommend looking for the string “Mobi”
