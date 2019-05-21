@@ -100,6 +100,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param key the key of the item to add
    * @param label the (human-readable) label of the item to add
    */
+  // TODO: support adding item
   addItem(key: string, label: string) {
     const listItem = { key: key, label: label };
 
@@ -113,6 +114,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       listItem.label = this.config.translator(listItem);
     }
 
+    // TODO: this should not trigger the onItemAdded event in my opinion
     this.removeItem(key); // Try to remove key first to get overwrite behavior and avoid duplicate keys
     this.items.push(listItem);
     this.onItemAddedEvent(key);
