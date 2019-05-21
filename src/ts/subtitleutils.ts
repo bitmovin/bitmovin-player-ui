@@ -88,12 +88,12 @@ export class SubtitleSwitchHandler {
     };
 
     const subtitles = this.player.subtitles.list();
-    const subtitlesToListItem = (subtitle: SubtitleTrack): ListItem => {
+    const subtitleToListItem = (subtitle: SubtitleTrack): ListItem => {
       return { key: subtitle.id, label: subtitle.label };
     };
 
     this.listElement.synchronizeItems([
-      offListItem, ...subtitles.map(subtitlesToListItem),
+      offListItem, ...subtitles.map(subtitleToListItem),
     ]);
   };
 }
