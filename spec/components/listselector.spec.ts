@@ -121,6 +121,17 @@ describe('ListSelector', () => {
     });
   });
 
+  describe('getItemForKey', () => {
+    it('returns requested item', () => {
+      listSelector.addItem('I-1', 'L-1');
+      expect(listSelector.getItemForKey('I-1')).toEqual({ key: 'I-1', label: 'L-1'});
+    });
+
+    it('returns undefined if key not found', () => {
+      expect(listSelector.getItemForKey('I-1')).toBeUndefined();
+    });
+  });
+
   describe('synchronizeItems', () => {
     const newItems: ListItem[] = [
       {
