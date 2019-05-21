@@ -80,6 +80,11 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     return -1;
   }
 
+  // TODO
+  getItems(): ListItem[] {
+    return this.items;
+  }
+
   /**
    * Checks if the specified item is part of this selector.
    * @param key the key of the item to check
