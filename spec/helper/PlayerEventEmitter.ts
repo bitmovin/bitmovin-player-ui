@@ -1,7 +1,8 @@
 import {
   AdBreakEvent,
   AdEvent,
-  AirplayChangedEvent,
+  AirplayChangedEvent, AudioChangedEvent,
+  AudioTrackEvent,
   ErrorEvent,
   LinearAd,
   PeriodSwitchedEvent,
@@ -266,5 +267,37 @@ export class PlayerEventEmitter {
       timestamp: Date.now(),
       type: PlayerEvent.PeriodSwitched,
     } as PeriodSwitchedEvent);
+  }
+
+  // Audio
+  fireAudioAddedEvent(id: string, label: string): void {
+    this.fireEvent<AudioTrackEvent>({
+      time: 0,
+      timestamp: Date.now(),
+      type: PlayerEvent.AudioAdded,
+      track: {
+        id,
+        label,
+      },
+    }as AudioTrackEvent);
+  }
+
+  fireAudioRemovedEvent(id: string): void {
+    this.fireEvent<AudioTrackEvent>({
+      time: 0,
+      timestamp: Date.now(),
+      type: PlayerEvent.AudioRemoved,
+      track: {
+        id,
+      },
+    } as AudioTrackEvent);
+  }
+
+  fireAudioChangedEvent(): void {
+    this.fireEvent<AudioChangedEvent>({
+      time: 0,
+      timestamp: Date.now(),
+      type: PlayerEvent.AudioChanged,
+    } as AudioChangedEvent);
   }
 }

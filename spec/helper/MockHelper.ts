@@ -76,6 +76,8 @@ export namespace MockHelper {
         getViewMode: jest.fn(),
         getTimeShift: jest.fn(),
         getMaxTimeShift: jest.fn(),
+        getAvailableAudio: jest.fn(),
+        getAudio: jest.fn(),
         hasEnded: jest.fn(),
         isStalled: jest.fn(),
         isCasting: jest.fn(),
