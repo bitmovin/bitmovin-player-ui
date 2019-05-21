@@ -89,7 +89,11 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
   };
 
   private refreshSelectedItem = () => {
-    // TODO: get's triggered twice
+    // This gets called twice because the first time is triggered when the user clicks on the ListBoxItemButton. And the
+    // second call comes from the player event when the actual item is selected (Subtitle / AudioTrack in this case).
+    // As this is a generic component we can't prohibit this behaviour. We need to tread this component as it acts
+    // independent form PlayerEvents and on the other hand we need to react to PlayerEvents as it could be triggered
+    // from outside.
 
     for (let item of this.items) {
       const component = this.getComponentForKey(item.key);
