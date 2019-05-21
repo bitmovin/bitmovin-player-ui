@@ -164,6 +164,11 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     return this.selectedItem;
   }
 
+  // TODO
+  getItemForKey(key: string): ListItem {
+    return this.items.find((item) => item.key === key);
+  }
+
   /**
    * Removes all items from this selector.
    */
