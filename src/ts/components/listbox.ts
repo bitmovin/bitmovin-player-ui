@@ -91,7 +91,6 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
   private refreshSelectedItem = () => {
     // TODO: get's triggered twice
 
-    debugger;
     for (let item of this.items) {
       const component = this.getComponentForKey(item.key);
       if (component) {
