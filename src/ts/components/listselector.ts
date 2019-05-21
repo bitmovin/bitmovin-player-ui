@@ -117,8 +117,9 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       listItem.label = this.config.translator(listItem);
     }
 
-    // TODO: this should not trigger the onItemAdded event in my opinion
-    this.removeItem(key); // Try to remove key first to get overwrite behavior and avoid duplicate keys
+    // Try to remove key first to get overwrite behavior and avoid duplicate keys
+    this.removeItem(key); // FIXME: This will trigger an ItemRemoved and an ItemAdded event which should not be the case
+
     this.items.push(listItem);
     this.onItemAddedEvent(key);
   }
