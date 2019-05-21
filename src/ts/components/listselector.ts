@@ -169,6 +169,17 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     return this.items.find((item) => item.key === key);
   }
 
+  // TODO
+  synchronizeItems(newItems: ListItem[]): void {
+    newItems
+      .filter((item) => !this.hasItem(item.key))
+      .map((item) => this.addItem(item.key, item.label));
+
+    this.items
+      .filter((item) => newItems.filter((i) => i.key === item.key).length === 0)
+      .map((item) => this.removeItem(item.key));
+  }
+
   /**
    * Removes all items from this selector.
    */
