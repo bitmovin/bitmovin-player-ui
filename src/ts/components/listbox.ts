@@ -63,7 +63,6 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
   }
 
   private removeListBoxDomItem = (_: ListBox, key: string) => {
-    console.log('[log event] onItemRemoved', this);
     const component = this.getComponentForKey(key);
     if (component) {
       component.getDomElement().remove();
@@ -72,7 +71,6 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
   };
 
   private addListBoxDomItem = (_: ListBox, key: string) => {
-    console.log('[log event] onItemAdded', this);
     const component = this.getComponentForKey(key);
     const newItem = this.getItemForKey(key);
     if (component) {
@@ -91,7 +89,7 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
   };
 
   private refreshSelectedItem = () => {
-    console.log('[log event] onItemSelected', this);
+    // TODO: get's triggered twice
 
     debugger;
     for (let item of this.items) {
