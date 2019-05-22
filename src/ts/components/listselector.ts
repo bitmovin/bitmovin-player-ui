@@ -179,7 +179,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   }
 
   /**
-   * Synchronize the current items of this selector with the given once. This will remove and add items selectively.
+   * Synchronize the current items of this selector with the given ones. This will remove and add items selectively.
    * For each removed item the ItemRemovedEvent and for each added item the ItemAddedEvent will be triggered. Favour
    * this method over using clearItems and adding all items again afterwards.
    * @param newItems
