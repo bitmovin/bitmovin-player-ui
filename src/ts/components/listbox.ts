@@ -16,7 +16,9 @@ import { ArrayUtils } from '../arrayutils';
  *   </div
  * </code>
  */
-// TODO: change to extends container in v4
+// TODO: change ListSelector to extends container in v4 to improve usage of ListBox.
+//       Currently we are creating the dom element of the list box with child elements manually here.
+//       But this functionality is already covered within the Container component.
 export class ListBox extends ListSelector<ListSelectorConfig> {
   private listBoxElement: DOM;
   private components: ListBoxItemButton[] = [];
