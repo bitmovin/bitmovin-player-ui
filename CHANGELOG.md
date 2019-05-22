@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [3.4.6]
 	
 ### Fixed
-- Allow npm package to be imported in server side app without `navigator` error.
+- Allow npm package to be imported in server side app without `navigator` error
 
 ## [3.4.5]
 
