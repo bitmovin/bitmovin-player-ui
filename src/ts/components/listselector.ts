@@ -117,7 +117,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     }
 
     // Try to remove key first to get overwrite behavior and avoid duplicate keys
-    this.removeItem(key); // FIXME: This will trigger an ItemRemoved and an ItemAdded event which should not be the case
+    this.removeItem(key); // This will trigger an ItemRemoved and an ItemAdded event
 
     this.items.push(listItem);
     this.onItemAddedEvent(key);
