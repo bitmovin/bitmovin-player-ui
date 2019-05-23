@@ -1,6 +1,6 @@
-import {ListSelector, ListSelectorConfig} from './components/listselector';
+import { ListItem, ListSelector, ListSelectorConfig } from './components/listselector';
 import { UIInstanceManager } from './uimanager';
-import { PlayerAPI } from 'bitmovin-player';
+import { AudioTrackEvent, PlayerAPI, AudioTrack } from 'bitmovin-player';
 
 /**
  * Helper class to handle all audio tracks related events
@@ -20,7 +20,8 @@ export class AudioTrackSwitchHandler {
 
     this.bindSelectionEvent();
     this.bindPlayerEvents();
-    this.updateAudioTracks();
+    this.refreshAudioTracks();
+    this.selectCurrentAudioTrack();
   }
 
   private bindSelectionEvent(): void {
@@ -30,41 +31,47 @@ export class AudioTrackSwitchHandler {
   }
 
   private bindPlayerEvents(): void {
-    const updateAudioTracksCallback = (): void => this.updateAudioTracks();
     // Update selection when selected track has changed
-    this.player.on(this.player.exports.PlayerEvent.AudioChanged, () => {
-      this.selectCurrentAudioTrack();
-    });
+    this.player.on(this.player.exports.PlayerEvent.AudioChanged, this.selectCurrentAudioTrack);
     // Update tracks when source goes away
-    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, updateAudioTracksCallback);
+    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, this.refreshAudioTracks);
     // Update tracks when the period within a source changes
-    this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, updateAudioTracksCallback);
+    this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, this.refreshAudioTracks);
     // Update tracks when a track is added or removed
-    this.player.on(this.player.exports.PlayerEvent.AudioAdded, updateAudioTracksCallback);
-    this.player.on(this.player.exports.PlayerEvent.AudioRemoved, updateAudioTracksCallback);
-    this.uimanager.getConfig().events.onUpdated.subscribe(updateAudioTracksCallback);
+    this.player.on(this.player.exports.PlayerEvent.AudioAdded, this.addAudioTrack);
+    this.player.on(this.player.exports.PlayerEvent.AudioRemoved, this.removeAudioTrack);
+    this.uimanager.getConfig().events.onUpdated.subscribe(this.refreshAudioTracks);
   }
 
-  private updateAudioTracks() {
-    this.listElement.clearItems();
-
-    // Add audio tracks
-    for (let audioTrack of this.player.getAvailableAudio()) {
+  private addAudioTrack = (event: AudioTrackEvent) => {
+    const audioTrack = event.track;
+    if (!this.listElement.hasItem(audioTrack.id)) {
       this.listElement.addItem(audioTrack.id, audioTrack.label);
     }
+  };
 
-    // Select the correct audio track after the tracks have been added
-    // This is also important in case we missed the `ON_AUDIO_CHANGED` event, e.g. when `playback.audioLanguage`
-    // is configured but the event is fired before the UI is created.
-    this.selectCurrentAudioTrack();
-  }
+  private removeAudioTrack = (event: AudioTrackEvent) => {
+    const audioTrack = event.track;
+    if (this.listElement.hasItem(audioTrack.id)) {
+      this.listElement.removeItem(audioTrack.id);
+    }
+  };
 
-  private selectCurrentAudioTrack() {
+  private selectCurrentAudioTrack = () => {
     let currentAudioTrack = this.player.getAudio();
 
     // HLS streams don't always provide this, so we have to check
     if (currentAudioTrack) {
       this.listElement.selectItem(currentAudioTrack.id);
     }
-  }
+  };
+
+  private refreshAudioTracks = () => {
+    const audioTracks = this.player.getAvailableAudio();
+    const audioTrackToListItem = (audioTrack: AudioTrack): ListItem => {
+      return { key: audioTrack.id, label: audioTrack.label };
+    };
+
+    this.listElement.synchronizeItems(audioTracks.map(audioTrackToListItem));
+  };
 }
