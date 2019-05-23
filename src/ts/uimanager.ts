@@ -719,7 +719,7 @@ interface WrappedPlayer extends PlayerAPI {
  * Wraps the player to track event handlers and provide a simple method to remove all registered event
  * handlers from the player.
  */
-class PlayerWrapper {
+export class PlayerWrapper {
 
   private player: PlayerAPI;
   private wrapper: WrappedPlayer;
@@ -763,8 +763,16 @@ class PlayerWrapper {
     for (let property of properties) {
       // Get an eventually existing property descriptor to differentiate between plain properties and properties with
       // getters/setters.
-      let propertyDescriptor: PropertyDescriptor = Object.getOwnPropertyDescriptor(player, property) ||
-        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(player), property);
+      const propertyDescriptor = ((target: PlayerAPI) => {
+        while (target) {
+          const propertyDescriptor = Object.getOwnPropertyDescriptor(target, property);
+          if (propertyDescriptor) {
+            return propertyDescriptor;
+          }
+          // Check if the PropertyDescriptor exists on a child prototype in case we have an inheritance of the player
+          target = Object.getPrototypeOf(target);
+        }
+      })(player);
 
       // If the property has getters/setters, wrap them accordingly...
       if (propertyDescriptor && (propertyDescriptor.get || propertyDescriptor.set)) {

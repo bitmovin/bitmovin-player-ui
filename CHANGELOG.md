@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Support for player instances which inherits from the `BitmovinPlayer`
+
 ### Changed
 - `ListBox` no longer recreates itself after the list was updated
 
