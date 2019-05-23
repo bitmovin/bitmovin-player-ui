@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - UI not hiding after selecting an item within a `ListBox`
 
+## [3.4.6]
+	
+### Fixed
+- Allow npm package to be imported in server side app without `navigator` error
+
 ## [3.4.5]
 
 ### Fixed
@@ -533,6 +538,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.4.6]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.5...v3.4.6
 [3.4.5]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.4...v3.4.5
 [3.4.4]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.3...v3.4.4
 [3.4.3]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.2...v3.4.3
