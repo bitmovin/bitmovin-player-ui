@@ -1,6 +1,9 @@
 import { ToggleButton, ToggleButtonConfig } from './togglebutton';
-import {ListSelector, ListSelectorConfig} from './listselector';
+import { ListItem, ListSelector, ListSelectorConfig } from './listselector';
 import {DOM} from '../dom';
+import { PlayerAPI } from 'bitmovin-player';
+import { UIInstanceManager } from '../uimanager';
+import { ArrayUtils } from '../arrayutils';
 
 /**
  * A element to select a single item out of a list of available items.
@@ -13,8 +16,12 @@ import {DOM} from '../dom';
  *   </div
  * </code>
  */
+// TODO: change ListSelector to extends container in v4 to improve usage of ListBox.
+//       Currently we are creating the dom element of the list box with child elements manually here.
+//       But this functionality is already covered within the Container component.
 export class ListBox extends ListSelector<ListSelectorConfig> {
   private listBoxElement: DOM;
+  private components: ListBoxItemButton[] = [];
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
@@ -24,6 +31,15 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
     } as ListSelectorConfig, this.config);
   }
 
+  public configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
+    // Subscribe before super call to receive initial events
+    this.onItemAdded.subscribe(this.addListBoxDomItem);
+    this.onItemRemoved.subscribe(this.removeListBoxDomItem);
+    this.onItemSelected.subscribe(this.refreshSelectedItem);
+
+    super.configure(player, uimanager);
+  }
+
   protected toDomElement(): DOM {
     let listBoxElement = new DOM('div', {
       'id': this.config.id,
@@ -31,58 +47,78 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
     });
 
     this.listBoxElement = listBoxElement;
-    this.updateDomItems();
+    this.createListBoxDomItems();
+    this.refreshSelectedItem();
 
     return listBoxElement;
   }
 
-  protected updateDomItems(selectedValue: string = null) {
+  private createListBoxDomItems() {
     // Delete all children
     this.listBoxElement.empty();
+    this.components = [];
 
     // Add updated children
     for (let item of this.items) {
-      let itemButton = new ListBoxItemButton({
-        key: item.key,
-        text: item.label,
+      this.addListBoxDomItem(this, item.key);
+    }
+  }
+
+  private removeListBoxDomItem = (_: ListBox, key: string) => {
+    const component = this.getComponentForKey(key);
+    if (component) {
+      component.getDomElement().remove();
+      ArrayUtils.remove(this.components, component);
+    }
+  };
+
+  private addListBoxDomItem = (_: ListBox, key: string) => {
+    const component = this.getComponentForKey(key);
+    const newItem = this.getItemForKey(key);
+    if (component) {
+      // Update existing component
+      component.setText(newItem.label);
+    } else {
+      const listBoxItemButton = this.buildListBoxItemButton(newItem);
+
+      listBoxItemButton.onClick.subscribe(() => {
+        this.handleSelectionChange(listBoxItemButton);
       });
 
-      itemButton.onClick.subscribe((sender) => {
-        this.handleSelectionChange(<ListBoxItemButton>sender);
-      });
+      this.components.push(listBoxItemButton);
+      this.listBoxElement.append(listBoxItemButton.getDomElement());
+    }
+  };
 
-      // These buttons are not in the component tree
-      // see comment: https://github.com/bitmovin/bitmovin-player-ui/pull/122#discussion_r201958260
-      const itemElement = itemButton.getDomElement();
-      // convert selectedValue and item.key to string to catch 'null'/null case
-      if (String(item.key) === String(selectedValue)) {
-        itemButton.on();
+  private refreshSelectedItem = () => {
+    // This gets called twice because the first time is triggered when the user clicks on the ListBoxItemButton. And the
+    // second call comes from the player event when the actual item is selected (Subtitle / AudioTrack in this case).
+    // As this is a generic component we can't prohibit this behaviour. We need to treat this component as it acts
+    // independent from PlayerEvents and on the other hand we need to react to PlayerEvents as it could be triggered
+    // from outside.
+
+    for (let item of this.items) {
+      const component = this.getComponentForKey(item.key);
+      if (component) {
+        String(component.key) === String(this.selectedItem) ? component.on() : component.off();
       }
-
-      this.listBoxElement.append(itemElement);
     }
+  };
+
+  private buildListBoxItemButton(listItem: ListItem): ListBoxItemButton {
+    return new ListBoxItemButton({
+      key: listItem.key,
+      text: listItem.label,
+    });
   }
 
-  private handleSelectionChange(sender: ListBoxItemButton) {
+  private getComponentForKey(key: string): ListBoxItemButton {
+    return this.components.find((c) => key === c.key);
+  }
+
+  private handleSelectionChange = (sender: ListBoxItemButton) => {
     this.onItemSelectedEvent(sender.key);
-  }
-
-  protected onItemAddedEvent(value: string) {
-    super.onItemAddedEvent(value);
-    this.updateDomItems(this.selectedItem);
-  }
-
-  protected onItemRemovedEvent(value: string) {
-    super.onItemRemovedEvent(value);
-    this.updateDomItems(this.selectedItem);
-  }
-
-  protected onItemSelectedEvent(value: string, updateDomItems: boolean = true) {
-    super.onItemSelectedEvent(value);
-    if (updateDomItems) {
-      this.updateDomItems(value);
-    }
-  }
+  };
 }
 
 interface ListBoxItemButtonConfig extends ToggleButtonConfig {
