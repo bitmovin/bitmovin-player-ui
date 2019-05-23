@@ -763,23 +763,16 @@ class PlayerWrapper {
     for (let property of properties) {
       // Get an eventually existing property descriptor to differentiate between plain properties and properties with
       // getters/setters.
-      const getPropertyDescriptor = (object: PlayerAPI): PropertyDescriptor => {
-        const propertyDescriptor = Object.getOwnPropertyDescriptor(object, property);
-        if (propertyDescriptor) {
-          return propertyDescriptor;
-        } else {
-          const childPrototype = Object.getPrototypeOf(object);
-          if (childPrototype) {
-            // Check if the PropertyDescriptor exists on a child prototype in case we have an inheritance of the player
-            return getPropertyDescriptor(childPrototype);
-          } else {
-            // No property descriptor found in any child prototype
-            return;
+      const propertyDescriptor = ((target: PlayerAPI) => {
+        while (target) {
+          const propertyDescriptor = Object.getOwnPropertyDescriptor(target, property);
+          if (propertyDescriptor) {
+            return propertyDescriptor;
           }
+          // Check if the PropertyDescriptor exists on a child prototype in case we have an inheritance of the player
+          target = Object.getPrototypeOf(target);
         }
-      };
-
-      const propertyDescriptor: PropertyDescriptor = getPropertyDescriptor(player);
+      })(player);
 
       // If the property has getters/setters, wrap them accordingly...
       if (propertyDescriptor && (propertyDescriptor.get || propertyDescriptor.set)) {
