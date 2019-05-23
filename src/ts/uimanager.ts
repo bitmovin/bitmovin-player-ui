@@ -719,7 +719,7 @@ interface WrappedPlayer extends PlayerAPI {
  * Wraps the player to track event handlers and provide a simple method to remove all registered event
  * handlers from the player.
  */
-class PlayerWrapper {
+export class PlayerWrapper {
 
   private player: PlayerAPI;
   private wrapper: WrappedPlayer;
