@@ -81,6 +81,14 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   }
 
   /**
+   * Returns all current items of this selector.
+   * * @returns {ListItem[]}
+   */
+  getItems(): ListItem[] {
+    return this.items;
+  }
+
+  /**
    * Checks if the specified item is part of this selector.
    * @param key the key of the item to check
    * @returns {boolean} true if the item is part of this selector, else false
@@ -108,7 +116,9 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       listItem.label = this.config.translator(listItem);
     }
 
-    this.removeItem(key); // Try to remove key first to get overwrite behavior and avoid duplicate keys
+    // Try to remove key first to get overwrite behavior and avoid duplicate keys
+    this.removeItem(key); // This will trigger an ItemRemoved and an ItemAdded event
+
     this.items.push(listItem);
     this.onItemAddedEvent(key);
   }
@@ -157,6 +167,31 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    */
   getSelectedItem(): string | null {
     return this.selectedItem;
+  }
+
+  /**
+   * Returns the items for the given key or undefined if no item with the given key exists.
+   * @param key the key of the item to return
+   * @returns {ListItem} the item with the requested key. Undefined if no item with the given key exists.
+   */
+  getItemForKey(key: string): ListItem {
+    return this.items.find((item) => item.key === key);
+  }
+
+  /**
+   * Synchronize the current items of this selector with the given ones. This will remove and add items selectively.
+   * For each removed item the ItemRemovedEvent and for each added item the ItemAddedEvent will be triggered. Favour
+   * this method over using clearItems and adding all items again afterwards.
+   * @param newItems
+   */
+  synchronizeItems(newItems: ListItem[]): void {
+    newItems
+      .filter((item) => !this.hasItem(item.key))
+      .forEach((item) => this.addItem(item.key, item.label));
+
+    this.items
+      .filter((item) => newItems.filter((i) => i.key === item.key).length === 0)
+      .forEach((item) => this.removeItem(item.key));
   }
 
   /**
