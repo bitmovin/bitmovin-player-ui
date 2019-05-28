@@ -58,10 +58,15 @@ export namespace StringUtils {
    * - %f - Inserts the time as a float.
    * - %0Nf - Inserts the time as a float with leading zeroes.
    * - %.Mf - Inserts the time as a float with M decimal places. Can be combined with %0Nf, e.g. %04.2f (the time
-   * 10.123
-   * would be printed as 0010.12).
+   * 10.123 would be printed as 0010.12).
    * - %hh:mm:ss
    * - %mm:ss
+   *
+   * Examples:
+   * - { text: 'Ad: {remainingTime%mm:ss} secs' }
+   * An input value of 100 would be displayed as: 'Ad: 01:40 secs'
+   * - { text: 'Ad: {remainingTime%f} secs' }
+   * An input value of 100 would be displayed as: 'Ad: 100.0 secs'
    *
    * @param adMessage an ad message with optional placeholders to fill
    * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
