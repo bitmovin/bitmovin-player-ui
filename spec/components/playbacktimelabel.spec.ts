@@ -1,6 +1,6 @@
 import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
 import { UIInstanceManager } from '../../src/ts/uimanager';
-import { PlaybackTimeLabel } from '../../src/ts/components/playbacktimelabel';
+import { PlaybackTimeLabel, PlaybackTimeLabelMode } from '../../src/ts/components/playbacktimelabel';
 
 const liveEdgeActiveCssClassName = 'ui-playbacktimelabel-live-edge';
 
@@ -13,14 +13,16 @@ describe('PlaybackTimeLabel', () => {
   beforeEach(() => {
     playerMock = MockHelper.getPlayerMock();
     uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
-
-    jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
-    jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(-20);
-
-    playbackTimeLabel = new PlaybackTimeLabel();
   });
 
   describe('live edge indicator', () => {
+    beforeEach(() => {
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
+      jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(-20);
+
+      playbackTimeLabel = new PlaybackTimeLabel();
+    });
+
     describe('switch to inactive', () => {
       let removeClassSpy: any;
       beforeEach(() => {
@@ -35,7 +37,6 @@ describe('PlaybackTimeLabel', () => {
         removeClassSpy = jest.spyOn(mockDomElement, 'removeClass');
         jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
         playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
-
       });
 
       it('on Playing event', () => {
@@ -45,6 +46,34 @@ describe('PlaybackTimeLabel', () => {
 
         expect(removeClassSpy).toHaveBeenCalledWith(expect.stringContaining(liveEdgeActiveCssClassName));
       });
+    });
+  });
+
+  describe('TimeLabelMode', () => {
+    it('displays the remaining time', () => {
+      playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime });
+
+      // Setup DOM Mock
+      const mockDomElement = MockHelper.generateDOMMock();
+      jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(100);
+      jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(30);
+
+      playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      expect(playbackTimeLabel.getText()).toEqual('01:10');
+    });
+
+    it('displays the total time', () => {
+      playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime });
+
+      // Setup DOM Mock
+      const mockDomElement = MockHelper.generateDOMMock();
+      jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(100);
+      playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      expect(playbackTimeLabel.getText()).toEqual('01:40');
     });
   });
 });
