@@ -110,19 +110,18 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   setActivePageIndex(index: number): void {
     const targetPage = this.getPages()[index];
     if (targetPage) {
-      this.animateNavigation(targetPage, () => {
-        this.activePageIndex = index;
+      this.animateNavigation(targetPage, this.getActivePage());
+      this.activePageIndex = index;
 
-        // When we are navigating back, the current page (from which we navigate away) was already removed from the
-        // navigationStack (in #popSettingsPanelPage). That means that the target page now is the last
-        // one in the navigationStack too. In this case we must not add it to the navigationStack again,
-        // otherwise we are trapped within the penultimate page.
-        if (this.navigationStack[this.navigationStack.length - 1] !== targetPage) {
-          this.navigationStack.push(targetPage);
-        }
+      // When we are navigating back, the current page (from which we navigate away) was already removed from the
+      // navigationStack (in #popSettingsPanelPage). That means that the target page now is the last
+      // one in the navigationStack too. In this case we must not add it to the navigationStack again,
+      // otherwise we are trapped within the penultimate page.
+      if (this.navigationStack[this.navigationStack.length - 1] !== targetPage) {
+        this.navigationStack.push(targetPage);
+      }
 
-        this.updateActivePageClass();
-      });
+      this.updateActivePageClass();
       targetPage.onActiveEvent();
     }
   }
@@ -156,15 +155,14 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       currentPage.onInactiveEvent();
     }
     this.navigationStack = [];
-    this.animateNavigation(this.getRootPage(), () => {
-      this.activePageIndex = 0;
-      this.updateActivePageClass();
-    });
+    this.animateNavigation(this.getRootPage(), this.getActivePage());
+    this.activePageIndex = 0;
+    this.updateActivePageClass();
   }
 
   // TODO: pass current page too. (Don't fetch it cause the currentIndex could be wrong already; Fix Side-effect)
   // TODO: find out if we can write a test for this
-  private animateNavigation(targetPage: SettingsPanelPage, transitionCallback: () => void) {
+  private animateNavigation(targetPage: SettingsPanelPage, sourcePage: SettingsPanelPage) {
     if (!(this.config as SettingsPanelConfig).pageTransitionAnimation) {
       return;
     }
@@ -177,8 +175,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     console.log('[log] settingsPanelWidth', settingsPanelWidth, 'settingsPanelHeight', settingsPanelHeight);
 
     // Calculate target size of the settings panel
-    const activePage = this.getActivePage();
-    activePage.getDomElement().css('display', 'none');
+    sourcePage.getDomElement().css('display', 'none');
     this.getDomElement().css({ width: '', height: '' }); // let css auto settings kick in again
 
     const targetPageHtmlElement = targetPage.getDomElement().get(0);
@@ -196,7 +193,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     // remove clone from the DOM
     clone.parentElement.removeChild(clone); // .remove() is not working in IE
-    activePage.getDomElement().css('display', '');
+    sourcePage.getDomElement().css('display', '');
 
     settingsPanelDomElement.css({
       width: settingsPanelWidth + 'px',
@@ -212,9 +209,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       width: targetSettingsPanelWidth + 'px',
       height: targetSettingsPanelHeight + 'px',
     });
-
-    // TODO: check when this needs to be called and if we actually need the callback in here
-    transitionCallback();
   }
 
   private forceBrowserReflow(): void {
