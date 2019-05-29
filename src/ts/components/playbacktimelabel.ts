@@ -6,13 +6,34 @@ import {StringUtils} from '../stringutils';
 import { PlayerAPI } from 'bitmovin-player';
 
 export enum PlaybackTimeLabelMode {
+  /**
+   * Displays the current time
+   */
   CurrentTime,
+  /**
+   * Displays the duration of the content
+   */
   TotalTime,
+  /**
+   * Displays the current time and the duration of the content
+   * Format: ${currentTime} / ${totalTime}
+   */
   CurrentAndTotalTime,
+  /**
+   * Displays the remaining time of the content
+   */
+  RemainingTime,
 }
 
 export interface PlaybackTimeLabelConfig extends LabelConfig {
+  /**
+   * The type of which time should be displayed in the label.
+   * Default: PlaybackTimeLabelMode.CurrentAndTotalTime
+   */
   timeLabelMode?: PlaybackTimeLabelMode;
+  /**
+   * Boolean if the label should be hidden in live playback
+   */
   hideInLivePlayback?: boolean;
 }
 
@@ -156,6 +177,10 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         break;
       case PlaybackTimeLabelMode.CurrentAndTotalTime:
         this.setText(`${currentTime} / ${totalTime}`);
+        break;
+      case PlaybackTimeLabelMode.RemainingTime:
+        let remainingTime = StringUtils.secondsToTime(durationSeconds - playbackSeconds, this.timeFormat);
+        this.setText(`${remainingTime}`);
         break;
     }
   }
