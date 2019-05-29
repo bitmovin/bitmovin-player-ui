@@ -199,9 +199,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       height: settingsPanelHeight + 'px',
     });
 
-
+    // We need to force the browser to reflow between setting the width and height that we actually get a animation
     this.forceBrowserReflow();
-
 
     // TODO: back navigation doesn't look perfect cause children doesn't animate nicely
     settingsPanelDomElement.css({
