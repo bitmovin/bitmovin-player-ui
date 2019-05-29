@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Improved documentation about time / number formats which can be used in `AdMessageLabel` placeholders
+- TypeScript update to 3.4.5
+- Improved generic type inheritance of `Component` `Config`s ([#74](https://github.com/bitmovin/bitmovin-player-ui/issues/74))
 
 ## [3.5.0]
 
@@ -19,8 +21,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - `ListBox` no longer recreates itself after the list was updated
-- TypeScript update to 3.4.5
-- Improved generic type inheritance of `Component` `Config`s ([#74](https://github.com/bitmovin/bitmovin-player-ui/issues/74))
 
 ### Fixed
 - UI not hiding after selecting an item within a `ListBox`
