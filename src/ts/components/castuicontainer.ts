@@ -18,7 +18,7 @@ export class CastUIContainer extends UIContainer {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <UIContainerConfig>this.getConfig();
+    let config = this.getConfig();
 
     /*
      * Show UI on Cast devices at certain playback events

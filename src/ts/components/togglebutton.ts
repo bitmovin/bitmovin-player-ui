@@ -48,7 +48,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
-    const config = this.getConfig() as ToggleButtonConfig;
+    const config = this.getConfig();
     this.getDomElement().addClass(this.prefixCss(config.offClass));
   }
 
@@ -57,7 +57,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
    */
   on() {
     if (this.isOff()) {
-      const config = this.getConfig() as ToggleButtonConfig;
+      const config = this.getConfig();
 
       this.onState = true;
       this.getDomElement().removeClass(this.prefixCss(config.offClass));
@@ -73,7 +73,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
    */
   off() {
     if (this.isOn()) {
-      const config = this.getConfig() as ToggleButtonConfig;
+      const config = this.getConfig();
 
       this.onState = false;
       this.getDomElement().removeClass(this.prefixCss(config.onClass));

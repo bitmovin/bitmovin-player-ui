@@ -42,7 +42,7 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <MetadataLabelConfig>this.getConfig();
+    let config = this.getConfig();
     let uiconfig = uimanager.getConfig();
 
     let init = () => {

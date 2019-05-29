@@ -57,7 +57,7 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
     let volumeToggleButton = this.getVolumeToggleButton();
     let volumeSlider = this.getVolumeSlider();
 
-    this.volumeSliderHideTimeout = new Timeout((<VolumeControlButtonConfig>this.getConfig()).hideDelay, () => {
+    this.volumeSliderHideTimeout = new Timeout(this.getConfig().hideDelay, () => {
       volumeSlider.hide();
     });
 

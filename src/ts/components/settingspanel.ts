@@ -55,7 +55,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
+    let config = this.getConfig();
 
     uimanager.onControlsHide.subscribe(() => this.hideHoveredSelectBoxes());
 

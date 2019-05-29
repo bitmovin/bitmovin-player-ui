@@ -100,7 +100,7 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
   }
 
   protected toDomElement(): DOM {
-    let config = (<RecommendationItemConfig>this.config).itemConfig; // TODO fix generics and get rid of cast
+    let config = this.config.itemConfig;
 
     let itemElement = new DOM('a', {
       'id': this.config.id,
