@@ -172,7 +172,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
     const settingsPanelWidth = settingsPanelHTMLElement.scrollWidth;
     const settingsPanelHeight = settingsPanelHTMLElement.scrollHeight;
-    console.log('[log] settingsPanelWidth', settingsPanelWidth, 'settingsPanelHeight', settingsPanelHeight);
 
     // Calculate target size of the settings panel
     sourcePage.getDomElement().css('display', 'none');
