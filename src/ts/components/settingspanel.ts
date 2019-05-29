@@ -1,10 +1,10 @@
-import {Container, ContainerConfig} from './container';
-import {SelectBox} from './selectbox';
-import {UIInstanceManager} from '../uimanager';
-import {Timeout} from '../timeout';
-import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
-import {SettingsPanelPage} from './settingspanelpage';
-import {SettingsPanelItem} from './settingspanelitem';
+import { Container, ContainerConfig } from './container';
+import { SelectBox } from './selectbox';
+import { UIInstanceManager } from '../uimanager';
+import { Timeout } from '../timeout';
+import { Event, EventDispatcher, NoArgs } from '../eventdispatcher';
+import { SettingsPanelPage } from './settingspanelpage';
+import { SettingsPanelItem } from './settingspanelitem';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**
@@ -103,13 +103,19 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     });
   }
 
+  private getActivePage(): SettingsPanelPage {
+    return this.getPages()[this.activePageIndex];
+  }
+
   setActivePageIndex(index: number): void {
     const targetPage = this.getPages()[index];
     if (targetPage) {
-      this.animateNavigation(targetPage);
-      this.activePageIndex = index;
-      this.navigationStack.push(targetPage);
-      this.updateActivePageClass();
+      this.animateNavigation(targetPage, () => {
+        this.activePageIndex = index;
+        // FIXME: don't push when navigating back otherwise we are trapped on the penultimate page :( (write a test)
+        this.navigationStack.push(targetPage);
+        this.updateActivePageClass();
+      });
       targetPage.onActiveEvent();
     }
   }
@@ -125,6 +131,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   popSettingsPanelPage() {
     // pop one navigation item from stack
+    debugger;
     const currentPage = this.navigationStack.pop(); // remove current page
     const targetPage = this.navigationStack[this.navigationStack.length - 1]; // pick target page without removing it
 
@@ -143,27 +150,30 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       currentPage.onInactiveEvent();
     }
     this.navigationStack = [];
-    this.activePageIndex = 0;
-    this.animateNavigation(this.getRootPage());
-    this.updateActivePageClass();
+    this.animateNavigation(this.getRootPage(), () => {
+      this.activePageIndex = 0;
+      this.updateActivePageClass();
+    });
   }
 
-  private animateNavigation(targetPage: SettingsPanelPage) {
-    if (!(this.config as SettingsPanelConfig).pageTransitionAnimation)
+  // TODO: pass current page too. (Don't fetch it cause the currentIndex could be wrong already; Fix Side-effect)
+  // TODO: find out if we can write a test for this
+  private animateNavigation(targetPage: SettingsPanelPage, transitionCallback: () => void) {
+    if (!(this.config as SettingsPanelConfig).pageTransitionAnimation) {
       return;
-    // workaround to enable css transition for elements with auto width / height property
-    // css transition does not work with auto properties by definition so we need to calculate 'real'
-    // width / height values to have a nice looking animation
-
-    const domElement = this.getDomElement();
-    const htmlElement = domElement.get(0);
-    // ensure container has real width / height (for first animation)
-    if (htmlElement.style.width === '' || htmlElement.style.height === '') {
-      domElement.css({
-        'width': domElement.css('width'),
-        'height': domElement.css('height'),
-      });
     }
+
+    const settingsPanelDomElement = this.getDomElement();
+    const settingsPanelHTMLElement = this.getDomElement().get(0);
+
+    const settingsPanelWidth = settingsPanelHTMLElement.scrollWidth;
+    const settingsPanelHeight = settingsPanelHTMLElement.scrollHeight;
+    console.log('[log] settingsPanelWidth', settingsPanelWidth, 'settingsPanelHeight', settingsPanelHeight);
+
+    // Calculate target size of the settings panel
+    const activePage = this.getActivePage();
+    activePage.getDomElement().css('display', 'none');
+    this.getDomElement().css({ width: '', height: '' }); // let css auto settings kick in again
 
     const targetPageHtmlElement = targetPage.getDomElement().get(0);
     // clone the targetPage DOM element so that we can calculate the width / height how they will be after
@@ -175,37 +185,36 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     // set clone visible
     clone.style.display = 'block';
 
-    let widthOffset = 0;
-    let heightOffset = 0;
-
-    // getComputedStyle will return values like '100px' so we need to extract the number
-    const getNumberOfCss = (value: String) => {
-      return Number(value.replace(/[^\d\.\-]/g, ''));
-    };
-
-    // to calculate final width / height of container we need to include the padding / margin as well
-    let elementsWithMargins: HTMLElement[] = [htmlElement, containerWrapper, targetPageHtmlElement] as HTMLElement[];
-    for (let element of elementsWithMargins) {
-      const computedStyles = getComputedStyle(element);
-      // add padding
-      widthOffset += getNumberOfCss(computedStyles.paddingLeft) + getNumberOfCss(computedStyles.paddingRight);
-      heightOffset += getNumberOfCss(computedStyles.paddingTop) + getNumberOfCss(computedStyles.paddingBottom);
-      // add margins
-      widthOffset += getNumberOfCss(computedStyles.marginLeft) + getNumberOfCss(computedStyles.marginRight);
-      heightOffset += getNumberOfCss(computedStyles.marginTop) + getNumberOfCss(computedStyles.marginBottom);
-    }
-
-    const width = clone.scrollWidth + widthOffset;
-    const height = clone.scrollHeight + heightOffset;
+    const targetSettingsPanelWidth = settingsPanelHTMLElement.scrollWidth;
+    const targetSettingsPanelHeight = settingsPanelHTMLElement.scrollHeight;
 
     // remove clone from the DOM
     clone.parentElement.removeChild(clone); // .remove() is not working in IE
+    activePage.getDomElement().css('display', '');
 
-    // set 'real' width / height
-    domElement.css({
-      'width': width + 'px',
-      'height': height + 'px',
+    settingsPanelDomElement.css({
+      width: settingsPanelWidth + 'px',
+      height: settingsPanelHeight + 'px',
     });
+
+
+    this.forceBrowserReflow();
+
+
+    // TODO: back navigation doesn't look perfect cause children doesn't animate nicely
+    settingsPanelDomElement.css({
+      width: targetSettingsPanelWidth + 'px',
+      height: targetSettingsPanelHeight + 'px',
+    });
+
+    // TODO: check when this needs to be called and if we actually need the callback in here
+    transitionCallback();
+  }
+
+  private forceBrowserReflow(): void {
+    // Force the browser to reflow the layout
+    // https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+    this.getDomElement().get(0).offsetLeft;
   }
 
   /**
@@ -222,7 +231,9 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         // we just have to make sure to reset this as soon as possible
         selectBox.getDomElement().css('display', 'none');
         if (window.requestAnimationFrame) {
-          requestAnimationFrame(() => { selectBox.getDomElement().css('display', oldDisplay); });
+          requestAnimationFrame(() => {
+            selectBox.getDomElement().css('display', oldDisplay);
+          });
         } else {
           // IE9 has no requestAnimationFrame, set the value directly. It has no optimization about ignoring DOM-changes
           // between animationFrames
