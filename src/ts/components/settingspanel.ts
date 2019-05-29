@@ -112,8 +112,15 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     if (targetPage) {
       this.animateNavigation(targetPage, () => {
         this.activePageIndex = index;
-        // FIXME: don't push when navigating back otherwise we are trapped on the penultimate page :( (write a test)
-        this.navigationStack.push(targetPage);
+
+        // When we are navigating back, the current page (from which we navigate away) was already removed from the
+        // navigationStack (in #popSettingsPanelPage). That means that the target page now is the last
+        // one in the navigationStack too. In this case we must not add it to the navigationStack again,
+        // otherwise we are trapped within the penultimate page.
+        if (this.navigationStack[this.navigationStack.length - 1] !== targetPage) {
+          this.navigationStack.push(targetPage);
+        }
+
         this.updateActivePageClass();
       });
       targetPage.onActiveEvent();
@@ -131,7 +138,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   popSettingsPanelPage() {
     // pop one navigation item from stack
-    debugger;
     const currentPage = this.navigationStack.pop(); // remove current page
     const targetPage = this.navigationStack[this.navigationStack.length - 1]; // pick target page without removing it
 
