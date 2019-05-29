@@ -103,7 +103,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     });
   }
 
-  private getActivePage(): SettingsPanelPage {
+  getActivePage(): SettingsPanelPage {
     return this.getPages()[this.activePageIndex];
   }
 
