@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `PlaybackTimeLabelMode.RemainingTime` to display the remaining time of the content
 
+### Changed
+- Improved documentation about time / number formats which can be used in `AdMessageLabel` placeholders
+
 ## [3.5.0]
 
 ### Added
