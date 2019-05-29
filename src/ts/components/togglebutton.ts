@@ -24,7 +24,7 @@ export interface ToggleButtonConfig extends ButtonConfig {
 /**
  * A button that can be toggled between 'on' and 'off' states.
  */
-export class ToggleButton<Config extends ToggleButtonConfig> extends Button<ToggleButtonConfig> {
+export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Config> {
 
   private onState: boolean;
 
@@ -34,7 +34,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
     onToggleOff: new EventDispatcher<ToggleButton<Config>, NoArgs>(),
   };
 
-  constructor(config: ToggleButtonConfig) {
+  constructor(config: Config) {
     super(config);
 
     const defaultConfig: ToggleButtonConfig = {
@@ -43,7 +43,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Togg
       offClass: 'off',
     };
 
-    this.config = this.mergeConfig(config, defaultConfig, this.config);
+    this.config = this.mergeConfig(config, defaultConfig as Config, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

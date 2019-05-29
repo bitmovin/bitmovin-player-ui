@@ -24,7 +24,7 @@ export class CloseButton extends Button<CloseButtonConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-closebutton',
       text: 'Close',
-    }, this.config);
+    } as CloseButtonConfig, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

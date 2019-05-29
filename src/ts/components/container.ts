@@ -31,7 +31,7 @@ export interface ContainerConfig extends ComponentConfig {
  *     </div>
  * </code>
  */
-export class Container<Config extends ContainerConfig> extends Component<ContainerConfig> {
+export class Container<Config extends ContainerConfig> extends Component<Config> {
 
   /**
    * A reference to the inner element that contains the components of the container.
@@ -46,7 +46,7 @@ export class Container<Config extends ContainerConfig> extends Component<Contain
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-container',
       components: [],
-    }, this.config);
+    } as Config, this.config);
 
     this.componentsToAdd = [];
     this.componentsToRemove = [];
