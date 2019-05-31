@@ -27,7 +27,7 @@ export interface SettingsPanelConfig extends ContainerConfig {
 }
 
 enum NavigationDirection {
-  Forward,
+  Forwards,
   Backwards,
 }
 
@@ -151,7 +151,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       return;
     }
 
-    this.navigateToPage(targetPage, this.getActivePage(), NavigationDirection.Forward);
+    this.navigateToPage(targetPage, this.getActivePage(), NavigationDirection.Forwards);
   }
 
   /**
@@ -245,7 +245,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   ): void {
     this.activePage = targetPage;
 
-    if (direction === NavigationDirection.Forward) {
+    if (direction === NavigationDirection.Forwards) {
       this.navigationStack.push(targetPage);
     } else {
       this.navigationStack.pop();
