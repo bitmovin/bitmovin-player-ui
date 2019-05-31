@@ -74,5 +74,15 @@ describe('SettingsPanel', () => {
         expect(settingsPanel.getActivePage()).toEqual(secondPage);
       });
     });
+
+    describe('popToRootSettingsPanelPage', () => {
+      it('navigates back to the root page', () => {
+        settingsPanel.setActivePage(secondPage);
+        settingsPanel.setActivePage(firstPage);
+
+        settingsPanel.popToRootSettingsPanelPage();
+        expect(settingsPanel.getActivePage()).toEqual(rootPage);
+      });
+    });
   });
 });
