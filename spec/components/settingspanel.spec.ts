@@ -95,12 +95,12 @@ describe('SettingsPanel', () => {
       });
     });
 
-    it('resets the navigation when the panel closes', () => {
+    it('resets the navigation when the panel opens', () => {
       settingsPanel.setActivePage(secondPage);
       settingsPanel.setActivePage(firstPage);
 
       // Fake hide event
-      (settingsPanel as any).componentEvents.onHide.dispatch(settingsPanel);
+      (settingsPanel as any).componentEvents.onShow.dispatch(settingsPanel);
       expect(settingsPanel.getActivePage()).toEqual(rootPage);
     });
   });
