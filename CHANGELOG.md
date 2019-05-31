@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Improved documentation about time / number formats which can be used in `AdMessageLabel` placeholders
 
+### Fixed
+- Incorrect calculation of `SettingsPanelPage` dimensions in transition animation
+- Navigation for more than two `SettingsPanelPage`s
+
 ## [3.5.0]
 
 ### Added
