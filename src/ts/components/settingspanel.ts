@@ -33,6 +33,26 @@ enum NavigationDirection {
 
 /**
  * A panel containing a list of {@link SettingsPanelPage items}.
+ *
+ * To configure pages just pass them in the components array.
+ *
+ * Example:
+ *  let settingsPanel = new SettingsPanel({
+ *    hidden: true,
+ *  });
+ *
+ *  let settingsPanelPage = new SettingsPanelPage({
+ *    components: […]
+ *  });
+ *
+ *  let secondSettingsPanelPage = new SettingsPanelPage({
+ *    components: […]
+ *  });
+ *
+ *  settingsPanel.addComponent(settingsPanelPage);
+ *  settingsPanel.addComponent(secondSettingsPanelPage);
+ *
+ * For an example how to navigate between pages @see SettingsPanelPageNavigatorButton
  */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
