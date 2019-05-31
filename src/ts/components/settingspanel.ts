@@ -160,7 +160,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.updateActivePageClass();
   }
 
-  // TODO: pass current page too. (Don't fetch it cause the currentIndex could be wrong already; Fix Side-effect)
   // TODO: find out if we can write a test for this
   private animateNavigation(targetPage: SettingsPanelPage, sourcePage: SettingsPanelPage) {
     if (!(this.config as SettingsPanelConfig).pageTransitionAnimation) {
@@ -202,7 +201,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     // We need to force the browser to reflow between setting the width and height that we actually get a animation
     this.forceBrowserReflow();
 
-    // TODO: back navigation doesn't look perfect cause children doesn't animate nicely
     settingsPanelDomElement.css({
       width: targetSettingsPanelWidth + 'px',
       height: targetSettingsPanelHeight + 'px',
