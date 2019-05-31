@@ -33,7 +33,7 @@ export class SubtitleSettingsLabel extends Container<ContainerConfig> {
       'class': this.getCssClasses(),
     }).append(
       new DOM('span', {}).html(this.text),
-      this.opener.getDomElement()
+      this.opener.getDomElement(),
     );
 
     return labelElement;
