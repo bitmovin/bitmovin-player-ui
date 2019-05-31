@@ -94,6 +94,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       });
 
       this.onShow.subscribe(() => {
+        // Reset navigation when te panel gets visible to avoid a weird animation when hiding
+        this.resetNavigation(true);
         // Activate timeout when shown
         this.hideTimeout.start();
       });
@@ -108,8 +110,9 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       this.onHide.subscribe(() => {
         // Clear timeout when hidden from outside
         this.hideTimeout.clear();
-        // Reset navigation
-        this.resetNavigation();
+        // Since we don't reset the actual navigation here we need to simulate a onInactive event in case some panel
+        // needs to do something when they become invisible / inactive.
+        this.activePage.onInactiveEvent();
       });
     }
 
@@ -151,14 +154,19 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       return;
     }
 
-    this.navigateToPage(targetPage, this.getActivePage(), NavigationDirection.Forwards);
+    this.navigateToPage(
+      targetPage,
+      this.getActivePage(),
+      NavigationDirection.Forwards,
+      !(this.config as SettingsPanelConfig).pageTransitionAnimation,
+    );
   }
 
   /**
    * Resets the navigation stack by navigating back to the root page and displaying it.
    */
   popToRootSettingsPanelPage(): void {
-    this.resetNavigation();
+    this.resetNavigation((this.config as SettingsPanelConfig).pageTransitionAnimation);
   }
 
   /**
@@ -177,7 +185,12 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       targetPage = this.getRootPage();
     }
 
-    this.navigateToPage(targetPage, this.activePage, NavigationDirection.Backwards);
+    this.navigateToPage(
+      targetPage,
+      this.activePage,
+      NavigationDirection.Backwards,
+      !(this.config as SettingsPanelConfig).pageTransitionAnimation,
+    );
   }
 
   /**
@@ -226,14 +239,17 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     });
   }
 
-  private resetNavigation(): void {
+  private resetNavigation(resetNavigationOnShow: boolean): void {
     const sourcePage = this.getActivePage();
     const rootPage = this.getRootPage();
     if (sourcePage) {
-      sourcePage.onInactiveEvent();
+      // Since the onInactiveEvent was already fired in the onHide we need to suppress it here
+      if (!resetNavigationOnShow) {
+        sourcePage.onInactiveEvent();
+      }
     }
     this.navigationStack = [];
-    this.animateNavigation(rootPage, sourcePage);
+    this.animateNavigation(rootPage, sourcePage, resetNavigationOnShow);
     this.activePage = rootPage;
     this.updateActivePageClass();
   }
@@ -242,6 +258,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     targetPage: SettingsPanelPage,
     sourcePage: SettingsPanelPage,
     direction: NavigationDirection,
+    skipAnimation: boolean,
   ): void {
     this.activePage = targetPage;
 
@@ -251,14 +268,22 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       this.navigationStack.pop();
     }
 
-    this.animateNavigation(targetPage, sourcePage);
+    this.animateNavigation(targetPage, sourcePage, skipAnimation);
 
     this.updateActivePageClass();
     targetPage.onActiveEvent();
     sourcePage.onInactiveEvent();
   }
 
-  private animateNavigation(targetPage: SettingsPanelPage, sourcePage: SettingsPanelPage) {
+  /**
+   * @param targetPage
+   * @param sourcePage
+   * @param skipAnimation This is just an internal flag if we want to have an animation. It is set true when we reset
+   * the navigation within the onShow callback of the settingsPanel. In this case we don't want an actual animation but
+   * the recalculation of the dimension of the settingsPanel.
+   * This is independent of the pageTransitionAnimation flag.
+   */
+  private animateNavigation(targetPage: SettingsPanelPage, sourcePage: SettingsPanelPage, skipAnimation: boolean) {
     if (!(this.config as SettingsPanelConfig).pageTransitionAnimation) {
       return;
     }
@@ -298,8 +323,10 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       height: settingsPanelHeight + 'px',
     });
 
-    // We need to force the browser to reflow between setting the width and height that we actually get a animation
-    this.forceBrowserReflow();
+    if (!skipAnimation) {
+      // We need to force the browser to reflow between setting the width and height that we actually get a animation
+      this.forceBrowserReflow();
+    }
 
     // set the values to the target dimension
     settingsPanelDomElement.css({
