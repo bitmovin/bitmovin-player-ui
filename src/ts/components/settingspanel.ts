@@ -131,7 +131,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   /**
    * Sets the
-   * @deprecated Use setActivePage instead
+   * @deprecated Use {@link setActivePage} instead
    * @param index
    */
   setActivePageIndex(index: number): void {
@@ -139,8 +139,10 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   }
 
   /**
-   * Adds the passed page to the navigation stack and make it visible. Do not use this method to navigate backwards!
-   * Results in no-op if the target pate is the current page.
+   * Adds the passed page to the navigation stack and makes it visible.
+   * Use {@link popSettingsPanelPage} to navigate backwards.
+   *
+   * Results in no-op if the target page is the current page.
    * @params page
    */
   setActivePage(targetPage: SettingsPanelPage): void {
@@ -153,15 +155,15 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   }
 
   /**
-   * Resets the navigation stack and navigate to the root page and make it visible
+   * Resets the navigation stack by navigating back to the root page and displaying it.
    */
   popToRootSettingsPanelPage(): void {
     this.resetNavigation();
   }
 
   /**
-   * Removes the current page form the navigation stack and make the previous one visible.
-   * Results in a no-op if we are already on the rootPage.
+   * Removes the current page from the navigation stack and makes the previous one visible.
+   * Results in a no-op if we are already on the root page.
    */
   popSettingsPanelPage() {
     if (this.navigationStack.length === 0) {
