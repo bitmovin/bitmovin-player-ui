@@ -18,12 +18,12 @@ describe('SettingsPanel', () => {
       settingsPanel = new SettingsPanel({
         components: [rootPage, firstPage, secondPage],
       });
+      const uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+      settingsPanel.configure(MockHelper.getPlayerMock(), uiInstanceManagerMock);
     });
 
     describe('popSettingsPanelPage', () => {
       it('pops from third page pack to root page one after popping two times', () => {
-        settingsPanel.configure(MockHelper.getPlayerMock(), MockHelper.getUiInstanceManagerMock());
-
         // Navigates to levels
         settingsPanel.setActivePage(firstPage);
         settingsPanel.setActivePage(secondPage);
@@ -34,6 +34,16 @@ describe('SettingsPanel', () => {
 
         // Expect to be back at the root page
         expect(settingsPanel.getActivePage()).toEqual(rootPage);
+      });
+
+      it('navigates back one level', () => {
+        settingsPanel.setActivePage(firstPage);
+        settingsPanel.setActivePage(secondPage);
+
+        // Popping to levels back again
+        settingsPanel.popSettingsPanelPage();
+
+        expect(settingsPanel.getActivePage()).toEqual(firstPage);
       });
     });
 
@@ -83,6 +93,15 @@ describe('SettingsPanel', () => {
         settingsPanel.popToRootSettingsPanelPage();
         expect(settingsPanel.getActivePage()).toEqual(rootPage);
       });
+    });
+
+    it('resets the navigation when the panel closes', () => {
+      settingsPanel.setActivePage(secondPage);
+      settingsPanel.setActivePage(firstPage);
+
+      // Fake hide event
+      (settingsPanel as any).componentEvents.onHide.dispatch(settingsPanel);
+      expect(settingsPanel.getActivePage()).toEqual(rootPage);
     });
   });
 });

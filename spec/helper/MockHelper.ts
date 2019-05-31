@@ -13,6 +13,7 @@ export namespace MockHelper {
   export function getEventDispatcherMock() {
     return {
       subscribe: jest.fn(),
+      dispatch: jest.fn(),
     };
   }
 
@@ -26,6 +27,7 @@ export namespace MockHelper {
       }),
       onControlsShow: getEventDispatcherMock(),
       onControlsHide: getEventDispatcherMock(),
+      onComponentHide: getEventDispatcherMock(),
     }));
 
     return new UiInstanceManagerMockClass();
