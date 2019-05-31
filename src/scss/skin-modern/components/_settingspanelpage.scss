@@ -13,14 +13,12 @@
     &.#{$prefix}-ui-label {
       display: inline-block;
       font-size: .8em;
-      // TODO: better text overflow handling
-      width: 42%;
+      width: 9em;
     }
 
     // Controls (e.g. selectbox)
     &.#{$prefix}-ui-selectbox {
-      // TODO: better text overflow handling
-      width: 58%;
+      width: 12em;
     }
   }
 
