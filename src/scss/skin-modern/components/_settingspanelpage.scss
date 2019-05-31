@@ -13,12 +13,13 @@
     &.#{$prefix}-ui-label {
       display: inline-block;
       font-size: .8em;
-      width: 9em;
+      width: 45%;
     }
 
     // Controls (e.g. selectbox)
     &.#{$prefix}-ui-selectbox {
-      width: 12em;
+      margin-left: 10%;
+      width: 45%;
     }
   }
 
