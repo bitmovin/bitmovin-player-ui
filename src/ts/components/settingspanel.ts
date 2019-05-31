@@ -6,6 +6,7 @@ import { Event, EventDispatcher, NoArgs } from '../eventdispatcher';
 import { SettingsPanelPage } from './settingspanelpage';
 import { SettingsPanelItem } from './settingspanelitem';
 import { PlayerAPI } from 'bitmovin-player';
+import { Component, ComponentConfig } from './component';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -25,6 +26,11 @@ export interface SettingsPanelConfig extends ContainerConfig {
   pageTransitionAnimation?: boolean;
 }
 
+enum NavigationDirection {
+  Forward,
+  Backwards,
+}
+
 /**
  * A panel containing a list of {@link SettingsPanelPage items}.
  */
@@ -33,7 +39,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   private static readonly CLASS_ACTIVE_PAGE = 'active';
 
   // navigation handling
-  private activePageIndex = 0;
+  private activePage: SettingsPanelPage;
   private navigationStack: SettingsPanelPage[] = [];
 
   private settingsPanelEvents = {
@@ -50,6 +56,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       hideDelay: 3000,
       pageTransitionAnimation: true,
     }, this.config);
+
+    this.activePage = this.getRootPage();
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -98,7 +106,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    * @return {SettingsPanelPage}
    */
   getActivePage(): SettingsPanelPage {
-    return this.getPages()[this.activePageIndex];
+    return this.activePage;
   }
 
   /**
@@ -107,32 +115,21 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    * @param index
    */
   setActivePageIndex(index: number): void {
-    // TODO: make this method private in v4 and add a second parameter if we are navigating back- or forwards
-    const targetPage = this.getPages()[index];
-    if (targetPage) {
-      this.animateNavigation(targetPage, this.getActivePage());
-      this.activePageIndex = index;
-
-      // When we are navigating back, the current page (from which we navigate away) was already removed from the
-      // navigationStack (in #popSettingsPanelPage). That means that the target page now is the last
-      // one in the navigationStack too. In this case we must not add it to the navigationStack again,
-      // otherwise we are trapped within the penultimate page. TODO: get rid of this check in v4 with the private method
-      if (this.navigationStack[this.navigationStack.length - 1] !== targetPage) {
-        this.navigationStack.push(targetPage);
-      }
-
-      this.updateActivePageClass();
-      targetPage.onActiveEvent();
-    }
+    this.setActivePage(this.getPages()[index]);
   }
 
   /**
    * Adds the passed page to the navigation stack and make it visible. Do not use this method to navigate backwards!
+   * Results in no-op if the target pate is the current page.
    * @params page
    */
-  setActivePage(page: SettingsPanelPage): void {
-    const index = this.getPages().indexOf(page);
-    this.setActivePageIndex(index);
+  setActivePage(targetPage: SettingsPanelPage): void {
+    if (targetPage === this.getActivePage()) {
+      console.warn('Page is already the current one ... skipping navigation');
+      return;
+    }
+
+    this.navigateToPage(targetPage, this.getActivePage(), NavigationDirection.Forward);
   }
 
   /**
@@ -143,20 +140,22 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   }
 
   /**
-   * Removes the current page form the navigation stack and make the previous one visible
+   * Removes the current page form the navigation stack and make the previous one visible.
+   * Results in a no-op if we are already on the rootPage.
    */
   popSettingsPanelPage() {
-    // pop one navigation item from stack
-    const currentPage = this.navigationStack.pop(); // remove current page
-    const targetPage = this.navigationStack[this.navigationStack.length - 1]; // pick target page without removing it
-
-    if (targetPage) {
-      this.setActivePage(targetPage);
-    } else {
-      // fallback to root
-      this.popToRootSettingsPanelPage();
+    if (this.navigationStack.length === 0) {
+      console.warn('Already on the root page ... skipping navigation');
+      return;
     }
-    currentPage.onInactiveEvent();
+
+    let targetPage = this.navigationStack[this.navigationStack.length - 2];
+    // The root part isn't part of the navigation stack so handle it explicitly here
+    if (!targetPage) {
+      targetPage = this.getRootPage();
+    }
+
+    this.navigateToPage(targetPage, this.activePage, NavigationDirection.Backwards);
   }
 
   /**
@@ -187,9 +186,17 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }
   }
 
+  // Support adding settingsPanelPages after initialization
+  addComponent(component: Component<ComponentConfig>) {
+    if (this.getPages().length === 0 && component instanceof SettingsPanelPage) {
+      this.activePage = component;
+    }
+    super.addComponent(component);
+  }
+
   private updateActivePageClass(): void {
-    this.getPages().forEach((page: SettingsPanelPage, index) => {
-      if (index === this.activePageIndex) {
+    this.getPages().forEach((page: SettingsPanelPage) => {
+      if (page === this.activePage) {
         page.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
       } else {
         page.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
@@ -198,14 +205,35 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   }
 
   private resetNavigation(): void {
-    const currentPage = this.navigationStack[this.navigationStack.length - 1];
-    if (currentPage) {
-      currentPage.onInactiveEvent();
+    const sourcePage = this.getActivePage();
+    const rootPage = this.getRootPage();
+    if (sourcePage) {
+      sourcePage.onInactiveEvent();
     }
     this.navigationStack = [];
-    this.animateNavigation(this.getRootPage(), this.getActivePage());
-    this.activePageIndex = 0;
+    this.animateNavigation(rootPage, sourcePage);
+    this.activePage = rootPage;
     this.updateActivePageClass();
+  }
+
+  private navigateToPage(
+    targetPage: SettingsPanelPage,
+    sourcePage: SettingsPanelPage,
+    direction: NavigationDirection,
+  ): void {
+    this.activePage = targetPage;
+
+    if (direction === NavigationDirection.Forward) {
+      this.navigationStack.push(targetPage);
+    } else {
+      this.navigationStack.pop();
+    }
+
+    this.animateNavigation(targetPage, sourcePage);
+
+    this.updateActivePageClass();
+    targetPage.onActiveEvent();
+    sourcePage.onInactiveEvent();
   }
 
   // TODO: find out if we can write a test for this
