@@ -256,7 +256,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     sourcePage.onInactiveEvent();
   }
 
-  // TODO: find out if we can write a test for this
   private animateNavigation(targetPage: SettingsPanelPage, sourcePage: SettingsPanelPage) {
     if (!(this.config as SettingsPanelConfig).pageTransitionAnimation) {
       return;
