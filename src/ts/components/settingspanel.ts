@@ -93,21 +93,21 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.updateActivePageClass();
   }
 
-  private updateActivePageClass(): void {
-    this.getPages().forEach((page: SettingsPanelPage, index) => {
-      if (index === this.activePageIndex) {
-        page.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
-      } else {
-        page.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
-      }
-    });
-  }
-
+  /**
+   * Returns the current active / visible page
+   * @return {SettingsPanelPage}
+   */
   getActivePage(): SettingsPanelPage {
     return this.getPages()[this.activePageIndex];
   }
 
+  /**
+   * Sets the
+   * @deprecated Use setActivePage instead
+   * @param index
+   */
   setActivePageIndex(index: number): void {
+    // TODO: make this method private in v4 and add a second parameter if we are navigating back- or forwards
     const targetPage = this.getPages()[index];
     if (targetPage) {
       this.animateNavigation(targetPage, this.getActivePage());
@@ -116,7 +116,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       // When we are navigating back, the current page (from which we navigate away) was already removed from the
       // navigationStack (in #popSettingsPanelPage). That means that the target page now is the last
       // one in the navigationStack too. In this case we must not add it to the navigationStack again,
-      // otherwise we are trapped within the penultimate page.
+      // otherwise we are trapped within the penultimate page. TODO: get rid of this check in v4 with the private method
       if (this.navigationStack[this.navigationStack.length - 1] !== targetPage) {
         this.navigationStack.push(targetPage);
       }
@@ -126,15 +126,25 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     }
   }
 
+  /**
+   * Adds the passed page to the navigation stack and make it visible. Do not use this method to navigate backwards!
+   * @params page
+   */
   setActivePage(page: SettingsPanelPage): void {
     const index = this.getPages().indexOf(page);
     this.setActivePageIndex(index);
   }
 
+  /**
+   * Resets the navigation stack and navigate to the root page and make it visible
+   */
   popToRootSettingsPanelPage(): void {
     this.resetNavigation();
   }
 
+  /**
+   * Removes the current page form the navigation stack and make the previous one visible
+   */
   popSettingsPanelPage() {
     // pop one navigation item from stack
     const currentPage = this.navigationStack.pop(); // remove current page
@@ -147,6 +157,44 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       this.popToRootSettingsPanelPage();
     }
     currentPage.onInactiveEvent();
+  }
+
+  /**
+   * Checks if there are active settings within the root page of the settings panel.
+   * An active setting is a setting that is visible and enabled, which the user can interact with.
+   * @returns {boolean} true if there are active settings, false if the panel is functionally empty to a user
+   */
+  rootPageHasActiveSettings(): boolean {
+    return this.getRootPage().hasActiveSettings();
+  }
+
+  /**
+   * Return all configured pages
+   * @returns {SettingsPanelPage[]}
+   */
+  getPages(): SettingsPanelPage[] {
+    return <SettingsPanelPage[]>this.config.components.filter(component => component instanceof SettingsPanelPage);
+  }
+
+  get onSettingsStateChanged(): Event<SettingsPanel, NoArgs> {
+    return this.settingsPanelEvents.onSettingsStateChanged.getEvent();
+  }
+
+  release(): void {
+    super.release();
+    if (this.hideTimeout) {
+      this.hideTimeout.clear();
+    }
+  }
+
+  private updateActivePageClass(): void {
+    this.getPages().forEach((page: SettingsPanelPage, index) => {
+      if (index === this.activePageIndex) {
+        page.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
+      } else {
+        page.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
+      }
+    });
   }
 
   private resetNavigation(): void {
@@ -243,26 +291,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     });
   }
 
-  release(): void {
-    super.release();
-    if (this.hideTimeout) {
-      this.hideTimeout.clear();
-    }
-  }
-
-  /**
-   * Checks if there are active settings within the root page of the settings panel.
-   * An active setting is a setting that is visible and enabled, which the user can interact with.
-   * @returns {boolean} true if there are active settings, false if the panel is functionally empty to a user
-   */
-  rootPageHasActiveSettings(): boolean {
-    return this.getRootPage().hasActiveSettings();
-  }
-
-  getPages(): SettingsPanelPage[] {
-    return <SettingsPanelPage[]>this.config.components.filter(component => component instanceof SettingsPanelPage);
-  }
-
   // collect all items from all pages (see hideHoveredSelectBoxes)
   private getComputedItems(): SettingsPanelItem[] {
     const allItems: SettingsPanelItem[] = [];
@@ -278,9 +306,5 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   protected onSettingsStateChangedEvent() {
     this.settingsPanelEvents.onSettingsStateChanged.dispatch(this);
-  }
-
-  get onSettingsStateChanged(): Event<SettingsPanel, NoArgs> {
-    return this.settingsPanelEvents.onSettingsStateChanged.getEvent();
   }
 }
