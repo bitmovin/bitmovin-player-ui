@@ -169,10 +169,11 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     const settingsPanelDomElement = this.getDomElement();
     const settingsPanelHTMLElement = this.getDomElement().get(0);
 
+    // get current dimension
     const settingsPanelWidth = settingsPanelHTMLElement.scrollWidth;
     const settingsPanelHeight = settingsPanelHTMLElement.scrollHeight;
 
-    // Calculate target size of the settings panel
+    // calculate target size of the settings panel
     sourcePage.getDomElement().css('display', 'none');
     this.getDomElement().css({ width: '', height: '' }); // let css auto settings kick in again
 
@@ -186,6 +187,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     // set clone visible
     clone.style.display = 'block';
 
+    // collect target dimension
     const targetSettingsPanelWidth = settingsPanelHTMLElement.scrollWidth;
     const targetSettingsPanelHeight = settingsPanelHTMLElement.scrollHeight;
 
@@ -193,6 +195,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     clone.parentElement.removeChild(clone); // .remove() is not working in IE
     sourcePage.getDomElement().css('display', '');
 
+    // set the values back to the current ones that the browser animates it (browsers don't animate 'auto' values)
     settingsPanelDomElement.css({
       width: settingsPanelWidth + 'px',
       height: settingsPanelHeight + 'px',
@@ -201,6 +204,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     // We need to force the browser to reflow between setting the width and height that we actually get a animation
     this.forceBrowserReflow();
 
+    // set the values to the target dimension
     settingsPanelDomElement.css({
       width: targetSettingsPanelWidth + 'px',
       height: targetSettingsPanelHeight + 'px',
