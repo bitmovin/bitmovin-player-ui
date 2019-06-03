@@ -96,6 +96,9 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       this.onShow.subscribe(() => {
         // Reset navigation when te panel gets visible to avoid a weird animation when hiding
         this.resetNavigation(true);
+        // Since we don't need to navigate to the root page again we need to fire the onActive event when the settings
+        // panel gets visible.
+        this.activePage.onActiveEvent();
         // Activate timeout when shown
         this.hideTimeout.start();
       });
