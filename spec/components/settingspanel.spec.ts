@@ -99,9 +99,70 @@ describe('SettingsPanel', () => {
       settingsPanel.setActivePage(secondPage);
       settingsPanel.setActivePage(firstPage);
 
-      // Fake hide event
+      // Fake show event
       (settingsPanel as any).componentEvents.onShow.dispatch(settingsPanel);
       expect(settingsPanel.getActivePage()).toEqual(rootPage);
+    });
+
+    describe('onInactiveEvent', () => {
+      it('fires for root page when we navigate to second page', () => {
+        const spy = jest.fn();
+        rootPage.onInactive.subscribe(spy);
+
+        settingsPanel.setActivePage(secondPage);
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('fires for second page when we navigate back', () => {
+        const spy = jest.fn();
+        secondPage.onInactive.subscribe(spy);
+
+        settingsPanel.setActivePage(secondPage);
+        settingsPanel.popSettingsPanelPage();
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('fires for current page if the settings panel hides', () => {
+        const spy = jest.fn();
+        secondPage.onInactive.subscribe(spy);
+
+        settingsPanel.setActivePage(secondPage);
+        // Fake hide event
+        (settingsPanel as any).componentEvents.onHide.dispatch(settingsPanel);
+        expect(spy).toHaveBeenCalled();
+      });
+    });
+
+    describe('onActiveEvent', () => {
+      it('fires for second page when we navigate to it', () => {
+        const spy = jest.fn();
+        secondPage.onActive.subscribe(spy);
+
+        settingsPanel.setActivePage(secondPage);
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('fires for root page when the settings panel gets visible', () => {
+        const spy = jest.fn();
+        rootPage.onActive.subscribe(spy);
+
+        // Fake show event
+        (settingsPanel as any).componentEvents.onShow.dispatch(settingsPanel);
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('fires for root page when the settings panel was hidden with another one', () => {
+        const spy = jest.fn();
+        rootPage.onActive.subscribe(spy);
+
+        settingsPanel.setActivePage(secondPage);
+        // Fake hide event
+        (settingsPanel as any).componentEvents.onHide.dispatch(settingsPanel);
+
+        // Fake show event
+        (settingsPanel as any).componentEvents.onShow.dispatch(settingsPanel);
+        expect(spy).toHaveBeenCalled();
+      });
     });
   });
 });
