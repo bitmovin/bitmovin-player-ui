@@ -76,7 +76,7 @@ export namespace StringUtils {
   export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: PlayerAPI) {
     let adMessagePlaceholderRegex = new RegExp(
       '\\{(remainingTime|playedTime|adDuration)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
-      'g'
+      'g',
     );
 
     return adMessage.replace(adMessagePlaceholderRegex, (formatString) => {
