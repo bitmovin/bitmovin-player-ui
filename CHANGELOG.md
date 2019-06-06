@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - TypeScript update to 3.4.5
 - Improved generic type inheritance of `Component` `Config`s ([#74](https://github.com/bitmovin/bitmovin-player-ui/issues/74))
 
+### Fixed
+- Incorrect calculation of `SettingsPanelPage` dimensions in transition animation
+- Navigation for more than two `SettingsPanelPage`s
+
 ## [3.5.0]
 
 ### Added

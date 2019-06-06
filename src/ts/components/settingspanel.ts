@@ -1,11 +1,12 @@
-import {Container, ContainerConfig} from './container';
-import {SelectBox} from './selectbox';
-import {UIInstanceManager} from '../uimanager';
-import {Timeout} from '../timeout';
-import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
-import {SettingsPanelPage} from './settingspanelpage';
-import {SettingsPanelItem} from './settingspanelitem';
+import { Container, ContainerConfig } from './container';
+import { SelectBox } from './selectbox';
+import { UIInstanceManager } from '../uimanager';
+import { Timeout } from '../timeout';
+import { Event, EventDispatcher, NoArgs } from '../eventdispatcher';
+import { SettingsPanelPage } from './settingspanelpage';
+import { SettingsPanelItem } from './settingspanelitem';
 import { PlayerAPI } from 'bitmovin-player';
+import { Component, ComponentConfig } from './component';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -25,15 +26,40 @@ export interface SettingsPanelConfig extends ContainerConfig {
   pageTransitionAnimation?: boolean;
 }
 
+enum NavigationDirection {
+  Forwards,
+  Backwards,
+}
+
 /**
  * A panel containing a list of {@link SettingsPanelPage items}.
+ *
+ * To configure pages just pass them in the components array.
+ *
+ * Example:
+ *  let settingsPanel = new SettingsPanel({
+ *    hidden: true,
+ *  });
+ *
+ *  let settingsPanelPage = new SettingsPanelPage({
+ *    components: […]
+ *  });
+ *
+ *  let secondSettingsPanelPage = new SettingsPanelPage({
+ *    components: […]
+ *  });
+ *
+ *  settingsPanel.addComponent(settingsPanelPage);
+ *  settingsPanel.addComponent(secondSettingsPanelPage);
+ *
+ * For an example how to navigate between pages @see SettingsPanelPageNavigatorButton
  */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   private static readonly CLASS_ACTIVE_PAGE = 'active';
 
   // navigation handling
-  private activePageIndex = 0;
+  private activePage: SettingsPanelPage;
   private navigationStack: SettingsPanelPage[] = [];
 
   private settingsPanelEvents = {
@@ -50,6 +76,8 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       hideDelay: 3000,
       pageTransitionAnimation: true,
     } as SettingsPanelConfig, this.config);
+
+    this.activePage = this.getRootPage();
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -66,6 +94,11 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       });
 
       this.onShow.subscribe(() => {
+        // Reset navigation when te panel gets visible to avoid a weird animation when hiding
+        this.resetNavigation(true);
+        // Since we don't need to navigate to the root page again we need to fire the onActive event when the settings
+        // panel gets visible.
+        this.activePage.onActiveEvent();
         // Activate timeout when shown
         this.hideTimeout.start();
       });
@@ -80,8 +113,9 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       this.onHide.subscribe(() => {
         // Clear timeout when hidden from outside
         this.hideTimeout.clear();
-        // Reset navigation
-        this.resetNavigation();
+        // Since we don't reset the actual navigation here we need to simulate a onInactive event in case some panel
+        // needs to do something when they become invisible / inactive.
+        this.activePage.onInactiveEvent();
       });
     }
 
@@ -93,9 +127,114 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.updateActivePageClass();
   }
 
+  /**
+   * Returns the current active / visible page
+   * @return {SettingsPanelPage}
+   */
+  getActivePage(): SettingsPanelPage {
+    return this.activePage;
+  }
+
+  /**
+   * Sets the
+   * @deprecated Use {@link setActivePage} instead
+   * @param index
+   */
+  setActivePageIndex(index: number): void {
+    this.setActivePage(this.getPages()[index]);
+  }
+
+  /**
+   * Adds the passed page to the navigation stack and makes it visible.
+   * Use {@link popSettingsPanelPage} to navigate backwards.
+   *
+   * Results in no-op if the target page is the current page.
+   * @params page
+   */
+  setActivePage(targetPage: SettingsPanelPage): void {
+    if (targetPage === this.getActivePage()) {
+      console.warn('Page is already the current one ... skipping navigation');
+      return;
+    }
+
+    this.navigateToPage(
+      targetPage,
+      this.getActivePage(),
+      NavigationDirection.Forwards,
+      !(this.config as SettingsPanelConfig).pageTransitionAnimation,
+    );
+  }
+
+  /**
+   * Resets the navigation stack by navigating back to the root page and displaying it.
+   */
+  popToRootSettingsPanelPage(): void {
+    this.resetNavigation((this.config as SettingsPanelConfig).pageTransitionAnimation);
+  }
+
+  /**
+   * Removes the current page from the navigation stack and makes the previous one visible.
+   * Results in a no-op if we are already on the root page.
+   */
+  popSettingsPanelPage() {
+    if (this.navigationStack.length === 0) {
+      console.warn('Already on the root page ... skipping navigation');
+      return;
+    }
+
+    let targetPage = this.navigationStack[this.navigationStack.length - 2];
+    // The root part isn't part of the navigation stack so handle it explicitly here
+    if (!targetPage) {
+      targetPage = this.getRootPage();
+    }
+
+    this.navigateToPage(
+      targetPage,
+      this.activePage,
+      NavigationDirection.Backwards,
+      !(this.config as SettingsPanelConfig).pageTransitionAnimation,
+    );
+  }
+
+  /**
+   * Checks if there are active settings within the root page of the settings panel.
+   * An active setting is a setting that is visible and enabled, which the user can interact with.
+   * @returns {boolean} true if there are active settings, false if the panel is functionally empty to a user
+   */
+  rootPageHasActiveSettings(): boolean {
+    return this.getRootPage().hasActiveSettings();
+  }
+
+  /**
+   * Return all configured pages
+   * @returns {SettingsPanelPage[]}
+   */
+  getPages(): SettingsPanelPage[] {
+    return <SettingsPanelPage[]>this.config.components.filter(component => component instanceof SettingsPanelPage);
+  }
+
+  get onSettingsStateChanged(): Event<SettingsPanel, NoArgs> {
+    return this.settingsPanelEvents.onSettingsStateChanged.getEvent();
+  }
+
+  release(): void {
+    super.release();
+    if (this.hideTimeout) {
+      this.hideTimeout.clear();
+    }
+  }
+
+  // Support adding settingsPanelPages after initialization
+  addComponent(component: Component<ComponentConfig>) {
+    if (this.getPages().length === 0 && component instanceof SettingsPanelPage) {
+      this.activePage = component;
+    }
+    super.addComponent(component);
+  }
+
   private updateActivePageClass(): void {
-    this.getPages().forEach((page: SettingsPanelPage, index) => {
-      if (index === this.activePageIndex) {
+    this.getPages().forEach((page: SettingsPanelPage) => {
+      if (page === this.activePage) {
         page.getDomElement().addClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
       } else {
         page.getDomElement().removeClass(this.prefixCss(SettingsPanel.CLASS_ACTIVE_PAGE));
@@ -103,67 +242,65 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     });
   }
 
-  setActivePageIndex(index: number): void {
-    const targetPage = this.getPages()[index];
-    if (targetPage) {
-      this.animateNavigation(targetPage);
-      this.activePageIndex = index;
-      this.navigationStack.push(targetPage);
-      this.updateActivePageClass();
-      targetPage.onActiveEvent();
-    }
-  }
-
-  setActivePage(page: SettingsPanelPage): void {
-    const index = this.getPages().indexOf(page);
-    this.setActivePageIndex(index);
-  }
-
-  popToRootSettingsPanelPage(): void {
-    this.resetNavigation();
-  }
-
-  popSettingsPanelPage() {
-    // pop one navigation item from stack
-    const currentPage = this.navigationStack.pop(); // remove current page
-    const targetPage = this.navigationStack[this.navigationStack.length - 1]; // pick target page without removing it
-
-    if (targetPage) {
-      this.setActivePage(targetPage);
-    } else {
-      // fallback to root
-      this.popToRootSettingsPanelPage();
-    }
-    currentPage.onInactiveEvent();
-  }
-
-  private resetNavigation(): void {
-    const currentPage = this.navigationStack[this.navigationStack.length - 1];
-    if (currentPage) {
-      currentPage.onInactiveEvent();
+  private resetNavigation(resetNavigationOnShow: boolean): void {
+    const sourcePage = this.getActivePage();
+    const rootPage = this.getRootPage();
+    if (sourcePage) {
+      // Since the onInactiveEvent was already fired in the onHide we need to suppress it here
+      if (!resetNavigationOnShow) {
+        sourcePage.onInactiveEvent();
+      }
     }
     this.navigationStack = [];
-    this.activePageIndex = 0;
-    this.animateNavigation(this.getRootPage());
+    this.animateNavigation(rootPage, sourcePage, resetNavigationOnShow);
+    this.activePage = rootPage;
     this.updateActivePageClass();
   }
 
-  private animateNavigation(targetPage: SettingsPanelPage) {
-    if (!(this.config as SettingsPanelConfig).pageTransitionAnimation)
-      return;
-    // workaround to enable css transition for elements with auto width / height property
-    // css transition does not work with auto properties by definition so we need to calculate 'real'
-    // width / height values to have a nice looking animation
+  private navigateToPage(
+    targetPage: SettingsPanelPage,
+    sourcePage: SettingsPanelPage,
+    direction: NavigationDirection,
+    skipAnimation: boolean,
+  ): void {
+    this.activePage = targetPage;
 
-    const domElement = this.getDomElement();
-    const htmlElement = domElement.get(0);
-    // ensure container has real width / height (for first animation)
-    if (htmlElement.style.width === '' || htmlElement.style.height === '') {
-      domElement.css({
-        'width': domElement.css('width'),
-        'height': domElement.css('height'),
-      });
+    if (direction === NavigationDirection.Forwards) {
+      this.navigationStack.push(targetPage);
+    } else {
+      this.navigationStack.pop();
     }
+
+    this.animateNavigation(targetPage, sourcePage, skipAnimation);
+
+    this.updateActivePageClass();
+    targetPage.onActiveEvent();
+    sourcePage.onInactiveEvent();
+  }
+
+  /**
+   * @param targetPage
+   * @param sourcePage
+   * @param skipAnimation This is just an internal flag if we want to have an animation. It is set true when we reset
+   * the navigation within the onShow callback of the settingsPanel. In this case we don't want an actual animation but
+   * the recalculation of the dimension of the settingsPanel.
+   * This is independent of the pageTransitionAnimation flag.
+   */
+  private animateNavigation(targetPage: SettingsPanelPage, sourcePage: SettingsPanelPage, skipAnimation: boolean) {
+    if (!(this.config as SettingsPanelConfig).pageTransitionAnimation) {
+      return;
+    }
+
+    const settingsPanelDomElement = this.getDomElement();
+    const settingsPanelHTMLElement = this.getDomElement().get(0);
+
+    // get current dimension
+    const settingsPanelWidth = settingsPanelHTMLElement.scrollWidth;
+    const settingsPanelHeight = settingsPanelHTMLElement.scrollHeight;
+
+    // calculate target size of the settings panel
+    sourcePage.getDomElement().css('display', 'none');
+    this.getDomElement().css({ width: '', height: '' }); // let css auto settings kick in again
 
     const targetPageHtmlElement = targetPage.getDomElement().get(0);
     // clone the targetPage DOM element so that we can calculate the width / height how they will be after
@@ -175,37 +312,36 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     // set clone visible
     clone.style.display = 'block';
 
-    let widthOffset = 0;
-    let heightOffset = 0;
-
-    // getComputedStyle will return values like '100px' so we need to extract the number
-    const getNumberOfCss = (value: String) => {
-      return Number(value.replace(/[^\d\.\-]/g, ''));
-    };
-
-    // to calculate final width / height of container we need to include the padding / margin as well
-    let elementsWithMargins: HTMLElement[] = [htmlElement, containerWrapper, targetPageHtmlElement] as HTMLElement[];
-    for (let element of elementsWithMargins) {
-      const computedStyles = getComputedStyle(element);
-      // add padding
-      widthOffset += getNumberOfCss(computedStyles.paddingLeft) + getNumberOfCss(computedStyles.paddingRight);
-      heightOffset += getNumberOfCss(computedStyles.paddingTop) + getNumberOfCss(computedStyles.paddingBottom);
-      // add margins
-      widthOffset += getNumberOfCss(computedStyles.marginLeft) + getNumberOfCss(computedStyles.marginRight);
-      heightOffset += getNumberOfCss(computedStyles.marginTop) + getNumberOfCss(computedStyles.marginBottom);
-    }
-
-    const width = clone.scrollWidth + widthOffset;
-    const height = clone.scrollHeight + heightOffset;
+    // collect target dimension
+    const targetSettingsPanelWidth = settingsPanelHTMLElement.scrollWidth;
+    const targetSettingsPanelHeight = settingsPanelHTMLElement.scrollHeight;
 
     // remove clone from the DOM
     clone.parentElement.removeChild(clone); // .remove() is not working in IE
+    sourcePage.getDomElement().css('display', '');
 
-    // set 'real' width / height
-    domElement.css({
-      'width': width + 'px',
-      'height': height + 'px',
+    // set the values back to the current ones that the browser animates it (browsers don't animate 'auto' values)
+    settingsPanelDomElement.css({
+      width: settingsPanelWidth + 'px',
+      height: settingsPanelHeight + 'px',
     });
+
+    if (!skipAnimation) {
+      // We need to force the browser to reflow between setting the width and height that we actually get a animation
+      this.forceBrowserReflow();
+    }
+
+    // set the values to the target dimension
+    settingsPanelDomElement.css({
+      width: targetSettingsPanelWidth + 'px',
+      height: targetSettingsPanelHeight + 'px',
+    });
+  }
+
+  private forceBrowserReflow(): void {
+    // Force the browser to reflow the layout
+    // https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+    this.getDomElement().get(0).offsetLeft;
   }
 
   /**
@@ -222,7 +358,9 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         // we just have to make sure to reset this as soon as possible
         selectBox.getDomElement().css('display', 'none');
         if (window.requestAnimationFrame) {
-          requestAnimationFrame(() => { selectBox.getDomElement().css('display', oldDisplay); });
+          requestAnimationFrame(() => {
+            selectBox.getDomElement().css('display', oldDisplay);
+          });
         } else {
           // IE9 has no requestAnimationFrame, set the value directly. It has no optimization about ignoring DOM-changes
           // between animationFrames
@@ -230,26 +368,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         }
       }
     });
-  }
-
-  release(): void {
-    super.release();
-    if (this.hideTimeout) {
-      this.hideTimeout.clear();
-    }
-  }
-
-  /**
-   * Checks if there are active settings within the root page of the settings panel.
-   * An active setting is a setting that is visible and enabled, which the user can interact with.
-   * @returns {boolean} true if there are active settings, false if the panel is functionally empty to a user
-   */
-  rootPageHasActiveSettings(): boolean {
-    return this.getRootPage().hasActiveSettings();
-  }
-
-  getPages(): SettingsPanelPage[] {
-    return <SettingsPanelPage[]>this.config.components.filter(component => component instanceof SettingsPanelPage);
   }
 
   // collect all items from all pages (see hideHoveredSelectBoxes)
@@ -267,9 +385,5 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
 
   protected onSettingsStateChangedEvent() {
     this.settingsPanelEvents.onSettingsStateChanged.dispatch(this);
-  }
-
-  get onSettingsStateChanged(): Event<SettingsPanel, NoArgs> {
-    return this.settingsPanelEvents.onSettingsStateChanged.getEvent();
   }
 }

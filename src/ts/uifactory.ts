@@ -92,7 +92,7 @@ export namespace UIFactory {
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox()
+        new SubtitleSelectBox(),
       ));
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);
@@ -207,7 +207,7 @@ export namespace UIFactory {
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox()
+        new SubtitleSelectBox(),
       ));
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);
