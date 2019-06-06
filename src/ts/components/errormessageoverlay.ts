@@ -98,7 +98,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <ErrorMessageOverlayConfig>this.getConfig();
+    let config = this.getConfig();
 
     player.on(player.exports.PlayerEvent.Error, (event: ErrorEvent) => {
       let message = ErrorUtils.defaultErrorMessageTranslator(event);

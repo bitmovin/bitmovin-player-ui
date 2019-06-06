@@ -36,7 +36,7 @@ export class SettingsPanelPageNavigatorButton extends Button<SettingsPanelPageNa
 
   constructor(config: SettingsPanelPageNavigatorConfig) {
     super(config);
-    this.config = this.mergeConfig(config, {}, this.config);
+    this.config = this.mergeConfig(config, {} as SettingsPanelPageNavigatorConfig, this.config);
 
     this.container = (this.config as SettingsPanelPageNavigatorConfig).container;
     this.targetPage = (this.config as SettingsPanelPageNavigatorConfig).targetPage;

@@ -71,11 +71,11 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   constructor(config: SettingsPanelConfig) {
     super(config);
 
-    this.config = this.mergeConfig<SettingsPanelConfig>(config, {
+    this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel',
       hideDelay: 3000,
       pageTransitionAnimation: true,
-    }, this.config);
+    } as SettingsPanelConfig, this.config);
 
     this.activePage = this.getRootPage();
   }
@@ -83,7 +83,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <SettingsPanelConfig>this.getConfig(); // TODO fix generics type inference
+    let config = this.getConfig();
 
     uimanager.onControlsHide.subscribe(() => this.hideHoveredSelectBoxes());
 

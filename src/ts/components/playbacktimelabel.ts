@@ -58,7 +58,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <PlaybackTimeLabelConfig>this.getConfig();
+    let config = this.getConfig();
     let live = false;
     let liveCssClass = this.prefixCss('ui-playbacktimelabel-live');
     let liveEdgeCssClass = this.prefixCss('ui-playbacktimelabel-live-edge');

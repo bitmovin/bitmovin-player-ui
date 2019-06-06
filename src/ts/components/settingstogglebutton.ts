@@ -46,7 +46,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <SettingsToggleButtonConfig>this.getConfig(); // TODO fix generics type inference
+    let config = this.getConfig();
     let settingsPanel = config.settingsPanel;
 
     this.onClick.subscribe(() => {

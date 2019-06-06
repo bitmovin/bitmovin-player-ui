@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Improved documentation about time / number formats which can be used in `AdMessageLabel` placeholders
+- TypeScript update to 3.4.5
+- Improved generic type inheritance of `Component` `Config`s ([#74](https://github.com/bitmovin/bitmovin-player-ui/issues/74))
 
 ### Fixed
 - Incorrect calculation of `SettingsPanelPage` dimensions in transition animation

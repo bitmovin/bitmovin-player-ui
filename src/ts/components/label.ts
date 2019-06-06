@@ -20,7 +20,7 @@ export interface LabelConfig extends ComponentConfig {
  *     <span class='ui-label'>...some text...</span>
  * </code>
  */
-export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
+export class Label<Config extends LabelConfig> extends Component<Config> {
 
   private text: string;
 
@@ -29,12 +29,12 @@ export class Label<Config extends LabelConfig> extends Component<LabelConfig> {
     onTextChanged: new EventDispatcher<Label<Config>, string>(),
   };
 
-  constructor(config: LabelConfig = {}) {
+  constructor(config: Config = {} as Config) {
     super(config);
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-label',
-    }, this.config);
+    } as Config, this.config);
 
     this.text = this.config.text;
   }

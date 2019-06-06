@@ -60,7 +60,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    const config = <UIContainerConfig>this.getConfig();
+    const config = this.getConfig();
 
     if (config.userInteractionEventSource) {
       this.userInteractionEventSource = new DOM(config.userInteractionEventSource);
@@ -75,7 +75,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   private configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    let config = <UIContainerConfig>this.getConfig();
+    let config = this.getConfig();
 
     if (config.hideDelay === -1) {
       uimanager.onConfigured.subscribe(() => uimanager.onControlsShow.dispatch(this));

@@ -1,7 +1,7 @@
 import {Container, ContainerConfig} from './container';
 import {Component, ComponentConfig} from './component';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
-import {Label} from './label';
+import { Label, LabelConfig } from './label';
 import {UIInstanceManager} from '../uimanager';
 import {SelectBox} from './selectbox';
 import {ListBox} from './listbox';
@@ -37,7 +37,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       if (label instanceof Component) {
         this.label = label;
       } else {
-        this.label = new Label({text: label});
+        this.label = new Label({text: label} as LabelConfig);
       }
       this.addComponent(this.label);
     }

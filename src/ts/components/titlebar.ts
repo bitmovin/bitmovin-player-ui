@@ -37,7 +37,7 @@ export class TitleBar extends Container<TitleBarConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <TitleBarConfig>this.getConfig();
+    let config = this.getConfig();
     let shouldBeShown = !this.isHidden();
     let hasMetadataText = true; // Flag to track if any metadata label contains text
 

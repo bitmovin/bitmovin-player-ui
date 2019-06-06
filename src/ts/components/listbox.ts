@@ -133,11 +133,11 @@ class ListBoxItemButton extends ToggleButton<ListBoxItemButtonConfig> {
   constructor(config: ListBoxItemButtonConfig) {
     super(config);
 
-    this.config = this.mergeConfig<ToggleButtonConfig>(config, {
+    this.config = this.mergeConfig(config, {
       cssClass: 'ui-listbox-button',
       onClass: 'selected',
       offClass: '',
-    }, this.config);
+    } as ListBoxItemButtonConfig, this.config);
   }
 
   get key(): string {

@@ -37,7 +37,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <AdSkipButtonConfig>this.getConfig(); // TODO get rid of generic cast
+    let config = this.getConfig();
     let untilSkippableMessage = config.untilSkippableMessage;
     let skippableMessage = config.skippableMessage;
     let skipOffset = -1;
