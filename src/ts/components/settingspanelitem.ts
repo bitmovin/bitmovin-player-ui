@@ -9,6 +9,7 @@ import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {PlaybackSpeedSelectBox} from './playbackspeedselectbox';
 import { PlayerAPI } from 'bitmovin-player';
+import { TranslatorFunction } from '../localisation/i18n';
 
 /**
  * An item for a {@link SettingsPanelPage},
@@ -37,7 +38,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       if (label instanceof Component) {
         this.label = label;
       } else {
-        this.label = new Label({text: label} as LabelConfig);
+        this.label = new Label<LabelConfig>({ text: (t: TranslatorFunction) => t(label) });
       }
       this.addComponent(this.label);
     }

@@ -1,4 +1,5 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/errormessageoverlay';
+import { Language } from './localisation/i18n';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -67,4 +68,7 @@ export interface UIConfig {
    * For an example have a look at {@link ErrorMessageOverlayConfig.messages}
    */
   errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
+
+  // TODO: docu
+  language?: Language;
 }

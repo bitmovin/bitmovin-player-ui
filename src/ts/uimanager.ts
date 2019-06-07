@@ -10,6 +10,7 @@ import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
+import { I18n, I18nAPI } from './localisation/i18n';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -499,6 +500,8 @@ export class UIInstanceManager {
   private ui: UIContainer;
   private config: InternalUIConfig;
 
+  private readonly i18nTranslator: I18nAPI;
+
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
     onSeek: new EventDispatcher<SeekBar, NoArgs>(),
@@ -516,6 +519,11 @@ export class UIInstanceManager {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
+    this.i18nTranslator = new I18n(this.config.language);
+  }
+
+  get translator(): I18nAPI {
+    return this.i18nTranslator;
   }
 
   getConfig(): InternalUIConfig {

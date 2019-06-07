@@ -17,7 +17,7 @@ export class SubtitleSettingsLabel extends Container<ContainerConfig> {
     super(config);
 
     this.opener = config.opener;
-    this.text = config.text;
+    this.text = config.text as string; // TODO: remove cast
 
     this.config = this.mergeConfig(<ContainerConfig>config, {
       cssClass: 'ui-label',

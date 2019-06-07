@@ -24,7 +24,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
     let text = config.text;
 
     let updateMessageHandler = () => {
-      this.setText(StringUtils.replaceAdMessagePlaceholders(text, null, player));
+      this.setText(StringUtils.replaceAdMessagePlaceholders(text as string, null, player)); // TODO: remove cast
     };
 
     let adStartHandler = (event: AdEvent) => {

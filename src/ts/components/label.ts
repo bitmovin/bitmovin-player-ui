@@ -1,6 +1,9 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
+import { PlayerAPI } from 'bitmovin-player';
+import { UIInstanceManager } from '../uimanager';
+import { Language, TranslatorFunction } from '../localisation/i18n';
 
 /**
  * Configuration interface for a {@link Label} component.
@@ -9,7 +12,11 @@ export interface LabelConfig extends ComponentConfig {
   /**
    * The text on the label.
    */
-  text?: string;
+  text?: string | LocalizableCallback;
+}
+
+export interface LocalizableCallback {
+  (t: TranslatorFunction): string;
 }
 
 /**
@@ -22,7 +29,7 @@ export interface LabelConfig extends ComponentConfig {
  */
 export class Label<Config extends LabelConfig> extends Component<Config> {
 
-  private text: string;
+  private text: string | LocalizableCallback;
 
   private labelEvents = {
     onClick: new EventDispatcher<Label<Config>, NoArgs>(),
@@ -39,11 +46,22 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     this.text = this.config.text;
   }
 
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
+    super.configure(player, uimanager);
+
+    // TODO: fix types
+    if (typeof this.text === 'function') {
+      this.setText((this.config.text as any)(uimanager.translator.t.bind(uimanager.translator)));
+    } else {
+      this.setText(this.config.text as string);
+    }
+  }
+
   protected toDomElement(): DOM {
     let labelElement = new DOM('span', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    }).html(this.text);
+    }).html(this.text as string); // TODO: remove cast and handle localization method
 
     labelElement.on('click', () => {
       this.onClickEvent();
@@ -57,6 +75,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * @param text
    */
   setText(text: string) {
+    // TODO: handle localization
     if (text === this.text) {
       return;
     }
@@ -71,7 +90,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * @return {string} The text on the label
    */
   getText(): string {
-    return this.text;
+    return this.text as string; // TODO: remove cast and handle localization
   }
 
   /**
