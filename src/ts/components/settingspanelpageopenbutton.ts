@@ -9,7 +9,7 @@ export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButto
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settingspanelpageopenbutton',
       text: 'open',
-    }, this.config);
+    } as SettingsPanelPageNavigatorConfig, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

@@ -36,13 +36,13 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClasses: ['label-metadata', 'label-metadata-' + MetadataLabelContent[config.content].toLowerCase()],
-    }, this.config);
+    } as MetadataLabelConfig, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <MetadataLabelConfig>this.getConfig();
+    let config = this.getConfig();
     let uiconfig = uimanager.getConfig();
 
     let init = () => {

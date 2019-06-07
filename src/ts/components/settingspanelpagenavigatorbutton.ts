@@ -17,13 +17,26 @@ export interface SettingsPanelPageNavigatorConfig extends ButtonConfig {
   targetPage?: SettingsPanelPage;
 }
 
+/**
+ * Can be used to navigate between SettingsPanelPages
+ *
+ * Example:
+ *  let settingPanelNavigationButton = new SettingsPanelPageNavigatorButton({
+ *    container: settingsPanel,
+ *    targetPage: settingsPanelPage,
+ *  });
+ *
+ *  settingsPanelPage.addComponent(settingPanelNavigationButton);
+ *
+ * Don't forget to add the settingPanelNavigationButton to the settingsPanelPage.
+ */
 export class SettingsPanelPageNavigatorButton extends Button<SettingsPanelPageNavigatorConfig> {
   private readonly container: SettingsPanel;
   private readonly targetPage?: SettingsPanelPage;
 
   constructor(config: SettingsPanelPageNavigatorConfig) {
     super(config);
-    this.config = this.mergeConfig(config, {}, this.config);
+    this.config = this.mergeConfig(config, {} as SettingsPanelPageNavigatorConfig, this.config);
 
     this.container = (this.config as SettingsPanelPageNavigatorConfig).container;
     this.targetPage = (this.config as SettingsPanelPageNavigatorConfig).targetPage;

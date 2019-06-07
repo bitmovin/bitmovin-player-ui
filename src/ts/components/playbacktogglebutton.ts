@@ -84,7 +84,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
         } else {
           this.getDomElement().removeClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
         }
-      }
+      },
     );
     timeShiftDetector.detect(); // Initial detection
 

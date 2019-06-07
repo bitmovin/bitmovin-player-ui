@@ -43,7 +43,7 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = <BufferingOverlayConfig>this.getConfig();
+    let config = this.getConfig();
 
     let overlayShowTimeout = new Timeout(config.showDelayMs, () => {
       this.show();

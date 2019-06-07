@@ -10,7 +10,7 @@ export class SettingsPanelPageBackButton extends SettingsPanelPageNavigatorButto
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settingspanelpagebackbutton',
       text: 'back',
-    }, this.config);
+    } as SettingsPanelPageNavigatorConfig, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

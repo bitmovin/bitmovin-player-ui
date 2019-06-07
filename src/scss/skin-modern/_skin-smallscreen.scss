@@ -8,6 +8,10 @@
     @include layout-cover;
     @include layout-center-children-in-container;
 
+    .#{$prefix}-ui-settings-panel-page {
+      min-width: 15em;
+    }
+
     display: flex;
 
     > .#{$prefix}-container-wrapper {

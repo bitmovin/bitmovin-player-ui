@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.6.0]
+
+### Added
+- `PlaybackTimeLabelMode.RemainingTime` to display the remaining time of the content
+
+### Changed
+- Improved documentation about time / number formats which can be used in `AdMessageLabel` placeholders
+- TypeScript update to 3.4.5
+- Improved generic type inheritance of `Component` `Config`s ([#74](https://github.com/bitmovin/bitmovin-player-ui/issues/74))
+
+### Fixed
+- Incorrect calculation of `SettingsPanelPage` dimensions in transition animation
+- Navigation for more than two `SettingsPanelPage`s
+
 ## [3.5.0]
 
 ### Added
@@ -541,6 +555,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.6.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.6...v3.5.0
 [3.4.6]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.5...v3.4.6
 [3.4.5]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.4...v3.4.5
