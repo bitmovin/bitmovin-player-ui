@@ -249,6 +249,7 @@ export class UIManager {
             break;
           // When a new source is loaded during ad playback, there will be no Ad(Break)Finished event
           case player.exports.PlayerEvent.SourceLoaded:
+          case player.exports.PlayerEvent.SourceUnloaded:
             adStartedEvent = null;
             break;
         }
@@ -288,6 +289,7 @@ export class UIManager {
     // Listen to the following events to trigger UI variant resolution
     if (this.config.autoUiVariantResolve) {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, resolveUiVariant);
+      this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceUnloaded, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Play, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Paused, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdStarted, resolveUiVariant);
