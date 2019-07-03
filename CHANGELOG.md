@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## development
+
+### Fixed
+- Ads UI not being hidden when the Player is unloaded during ad playback
+
 ## [3.6.0]
 
 ### Added
