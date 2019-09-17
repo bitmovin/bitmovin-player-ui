@@ -326,6 +326,10 @@ class ActiveSubtitleManager {
       text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
     });
 
+    if (event.regionStyle) {
+      label.getDomElement().attr('style', event.regionStyle + ';position:absolute');
+    }
+
     // Create array for id if it does not exist
     this.activeSubtitleCueMap[id] = this.activeSubtitleCueMap[id] || [];
 
