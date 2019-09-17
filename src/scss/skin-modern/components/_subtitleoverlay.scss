@@ -6,14 +6,20 @@
 
   @include hidden;
 
-  bottom: 2em;
+  bottom: 0;
   font-size: 1.2em;
-  left: 3em;
+  left: 0;
   pointer-events: none;
   position: absolute;
-  right: 3em;
+  right: 0;
   text-align: center;
   transition: bottom $animation-duration-short ease-out;
+  top: 0;
+
+  .#{$prefix}-container-wrapper {
+    width: 100%;
+    height: 100%;
+  }
 
   .#{$prefix}-ui-subtitle-label {
     @include text-border($subtitle-text-border-color);
