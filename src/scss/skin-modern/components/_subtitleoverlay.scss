@@ -16,6 +16,13 @@
   transition: bottom $animation-duration-short ease-out;
   top: 0;
 
+  &.#{$prefix}-default-subtitle {
+    bottom: 2em;
+    top: initial;
+    left: 3em;
+    right: 3em;
+  }
+
   .#{$prefix}-container-wrapper {
     width: 100%;
     height: 100%;

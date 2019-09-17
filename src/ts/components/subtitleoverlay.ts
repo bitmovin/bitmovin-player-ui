@@ -36,7 +36,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.previewSubtitle = new SubtitleLabel({ text: 'example subtitle' });
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitle-overlay',
+      cssClasses: ['ui-subtitle-overlay', 'default-subtitle'],
     }, this.config);
   }
 
@@ -52,6 +52,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         // Sometimes the positions are undefined, we assume them to be zero
         event.position.row = event.position.row || 0;
         event.position.column = event.position.column || 0;
+      }
+
+      if (event.region) {
+        this.getDomElement().removeClass(this.prefixCss('default-subtitle'));
       }
 
       let labelToAdd = subtitleManager.cueEnter(event);
