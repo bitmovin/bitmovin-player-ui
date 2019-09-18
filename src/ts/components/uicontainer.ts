@@ -85,6 +85,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isUiShown = false;
     let isSeeking = false;
     let isFirstTouch = true;
+    let isTouched = false;
     let playerState: PlayerUtils.PlayerState;
 
     const hidingPrevented = (): boolean => {
@@ -125,7 +126,15 @@ export class UIContainer extends Container<UIContainerConfig> {
     this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
     this.userInteractionEvents = [{
-      // On touch displays, the first touch reveals the UI
+      // As on touch displays some mouse events are fired too (mouseenter, mousemove), we track if we are currently in
+      // a touched phase and ignore the mouse events for better experience. We still want to add those listeners
+      // for displays which supports both mouse and touch
+      name: 'touchstart',
+      handler: () => {
+        isTouched = true;
+      },
+    }, {
+      // On touch displays, touching the container reveals the UI except for the very first touch which starts playback
       name: 'touchend',
       handler: (e) => {
         if (!isUiShown) {
@@ -135,28 +144,43 @@ export class UIContainer extends Container<UIContainerConfig> {
           // tap which 1. reveals the UI and 2. starts playback.
           if (isFirstTouch) {
             isFirstTouch = false;
+            return;
           } else {
             e.preventDefault();
           }
           showUi();
         }
+
+        isTouched = false;
       },
     }, {
       // When the mouse enters, we show the UI
       name: 'mouseenter',
       handler: () => {
+        if (isTouched) {
+          return;
+        }
+
         showUi();
       },
     }, {
       // When the mouse moves within, we show the UI
       name: 'mousemove',
       handler: () => {
+        if (isTouched) {
+          return;
+        }
+
         showUi();
       },
     }, {
       // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
       name: 'mouseleave',
       handler: () => {
+        if (isTouched) {
+          return;
+        }
+
         // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
         // hide the UI in such cases
         if (!isSeeking && !hidingPrevented()) {
