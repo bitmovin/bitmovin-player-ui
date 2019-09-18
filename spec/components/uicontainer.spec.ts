@@ -34,4 +34,46 @@ describe('UIContainer', () => {
       });
     });
   });
+
+  describe('user interaction handling', () => {
+    let uiContainer: UIContainer;
+    const jsEventCallbacks: { [eventName: string]: EventListener; } = {};
+
+    const prepareUserEventMocking = () => {
+      const userInteractionEventSource = uiContainer.getDomElement();
+
+      // Prepare event faking
+      userInteractionEventSource.on = (eventName: string, eventHandler: EventListener) => {
+        jsEventCallbacks[eventName] = eventHandler;
+        return userInteractionEventSource;
+      };
+    };
+
+    beforeEach(() => {
+      uiContainer = new UIContainer({
+        components: [],
+      });
+
+      prepareUserEventMocking();
+    });
+
+    it('does trigger onControlsShow on mouse move event', () => {
+      uiContainer.configure(playerMock, uiInstanceManagerMock);
+
+      // For this test it's fine to call without event object
+      jsEventCallbacks['mousemove'](null);
+
+      expect(uiInstanceManagerMock.onControlsShow.dispatch).toHaveBeenCalled();
+    });
+
+    it('does not trigger onControlsShow on mouse move event if we are in touch phase', () => {
+      uiContainer.configure(playerMock, uiInstanceManagerMock);
+
+      // For this test it's fine to call without event object
+      jsEventCallbacks['touchstart'](null);
+      jsEventCallbacks['mousemove'](null);
+
+      expect(uiInstanceManagerMock.onControlsShow.dispatch).not.toHaveBeenCalled();
+    });
+  });
 });
