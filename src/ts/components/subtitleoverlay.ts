@@ -20,6 +20,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
+  private static readonly CLASS_DEFAULT_SUBTITILE_POSITION = 'default-subtitle-position';
+  
   // The number of rows in a cea608 grid
   private static readonly CEA608_NUM_ROWS = 15;
   // The number of columns in a cea608 grid
@@ -36,7 +38,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.previewSubtitle = new SubtitleLabel({ text: 'example subtitle' });
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-subtitle-overlay', 'default-subtitle'],
+      cssClasses: ['ui-subtitle-overlay'],
     }, this.config);
   }
 
@@ -54,8 +56,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         event.position.column = event.position.column || 0;
       }
 
-      if (event.region) {
-        this.getDomElement().removeClass(this.prefixCss('default-subtitle'));
+      if (!event.region) {
+        this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_DEFAULT_SUBTITILE_POSITION));
       }
 
       let labelToAdd = subtitleManager.cueEnter(event);
@@ -94,6 +96,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       subtitleManager.clear();
       this.removeComponents();
       this.updateComponents();
+      this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_DEFAULT_SUBTITILE_POSITION));
     };
 
     player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleClearHandler);
