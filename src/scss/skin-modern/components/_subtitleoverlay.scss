@@ -16,7 +16,7 @@
   transition: bottom $animation-duration-short ease-out;
   top: 0;
 
-  &.#{$prefix}-default-subtitle-position {
+  &.#{$prefix}-subtitle-position-default {
     bottom: 2em;
     top: initial;
     left: 3em;
