@@ -21,7 +21,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
   private static readonly CLASS_DEFAULT_SUBTITILE_POSITION = 'default-subtitle-position';
-  
+
   // The number of rows in a cea608 grid
   private static readonly CEA608_NUM_ROWS = 15;
   // The number of columns in a cea608 grid
