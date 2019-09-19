@@ -66,7 +66,6 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isUiShown = false;
     let isSeeking = false;
     let isFirstTouch = true;
-    let isTouched = false;
     let playerState: PlayerUtils.PlayerState;
 
     const hidingPrevented = (): boolean => {
@@ -106,52 +105,31 @@ export class UIContainer extends Container<UIContainerConfig> {
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
-    // As on touch displays some mouse events are fired too (mouseenter, mousemove), we track if we are currently in
-    // a touched phase and ignore the mouse events for better experience. We still want to add those listeners
-    // for displays which supports both mouse and touch
-    container.on('touchstart', () => {
-      isTouched = true;
-    });
-    // On touch displays, touching the container reveals the UI except for the very first touch which starts playback
+    // On touch displays, the first touch reveals the UI
     container.on('touchend', (e) => {
       if (!isUiShown) {
-        // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
-        // instead. The first touch is not prevented to let other listeners receive the event and trigger an
-        // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
-        // tap which 1. reveals the UI and 2. starts playback.
+        // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI instead.
+        // The first touch is not prevented to let other listeners receive the event and trigger an initial action, e.g.
+        // the huge playback button can directly start playback instead of requiring a double tap which 1. reveals
+        // the UI and 2. starts playback.
         if (isFirstTouch) {
           isFirstTouch = false;
-          return;
         } else {
           e.preventDefault();
         }
         showUi();
       }
-
-      isTouched = false;
     });
     // When the mouse enters, we show the UI
     container.on('mouseenter', () => {
-      if (isTouched) {
-        return;
-      }
-
       showUi();
     });
     // When the mouse moves within, we show the UI
     container.on('mousemove', () => {
-      if (isTouched) {
-        return;
-      }
-
       showUi();
     });
     // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
     container.on('mouseleave', () => {
-      if (isTouched) {
-        return;
-      }
-
       // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not hide
       // the UI in such cases
       if (!isSeeking && !hidingPrevented()) {
