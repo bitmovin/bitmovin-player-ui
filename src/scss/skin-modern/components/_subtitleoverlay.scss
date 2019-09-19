@@ -23,11 +23,6 @@
     right: 3em;
   }
 
-  .#{$prefix}-container-wrapper {
-    width: 100%;
-    height: 100%;
-  }
-
   .#{$prefix}-ui-subtitle-label {
     @include text-border($subtitle-text-border-color);
 
