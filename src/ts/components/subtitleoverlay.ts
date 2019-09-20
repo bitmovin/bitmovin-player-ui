@@ -56,7 +56,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         event.position.column = event.position.column || 0;
       }
 
-      if (!event.region) {
+      if (event.region) {
+        this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_DEFAULT_SUBTITILE_POSITION));
+      } else {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_DEFAULT_SUBTITILE_POSITION));
       }
 
@@ -96,7 +98,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       subtitleManager.clear();
       this.removeComponents();
       this.updateComponents();
-      this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_DEFAULT_SUBTITILE_POSITION));
     };
 
     player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleClearHandler);
