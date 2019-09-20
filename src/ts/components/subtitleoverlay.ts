@@ -56,7 +56,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         event.position.column = event.position.column || 0;
       }
 
-      if (event.region) {
+      if (event.regionStyle) {
         this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_DEFAULT_SUBTITILE_POSITION));
       } else {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_DEFAULT_SUBTITILE_POSITION));
