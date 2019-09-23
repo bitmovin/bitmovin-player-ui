@@ -47,7 +47,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
-    let subtitleContainerManager = new SubtitleContainerManager(this);
+    let subtitleContainerManager = new SubtitleRegionContainerManager(this);
 
     player.on(player.exports.PlayerEvent.CueEnter, (event: SubtitleCueEvent) => {
       // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
@@ -419,7 +419,7 @@ class ActiveSubtitleManager {
   }
 }
 
-class SubtitleContainerManager {
+class SubtitleRegionContainerManager {
   private subtitleRegionContainers: { [region: string]: SubtitleRegionContainer } = {};
   private subtitleOverlay: SubtitleOverlay;
 
