@@ -42,6 +42,11 @@ export class UIContainer extends Container<UIContainerConfig> {
     this.config = this.mergeConfig(config, <UIContainerConfig>{
       cssClass: 'ui-uicontainer',
       hideDelay: 5000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.PREPARED,
+        PlayerUtils.PlayerState.PAUSED,
+        PlayerUtils.PlayerState.FINISHED,
+      ]
     }, this.config);
 
     this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
