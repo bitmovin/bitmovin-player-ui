@@ -773,7 +773,6 @@ export namespace UIManager.Factory {
         new ErrorMessageOverlay(),
       ],
       cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen'],
-      hidePlayerStateExceptions: [PlayerUtils.PlayerState.FINISHED],
     });
   }
 
