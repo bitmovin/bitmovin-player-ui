@@ -211,8 +211,6 @@ export class UIContainer extends Container<UIContainerConfig> {
     player.addEventHandler(player.EVENT.ON_SOURCE_UNLOADED, () => {
       updateState(PlayerUtils.PlayerState.IDLE);
     });
-    // Init in current player state
-    updateState(PlayerUtils.getState(player));
 
     // Fullscreen marker class
     player.addEventHandler(player.EVENT.ON_FULLSCREEN_ENTER, () => {
