@@ -78,8 +78,23 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   private handleSeekPreview = (sender: SeekBar, args: SeekPreviewEventArgs) => {
     if (this.player.isLive()) {
       let maxTimeShift = this.player.getMaxTimeShift();
-      let time = maxTimeShift - maxTimeShift * (args.position / 100);
-      this.setTime(time);
+      let timeShiftPreview = maxTimeShift - maxTimeShift * (args.position / 100);
+
+      this.setTime(timeShiftPreview);
+
+      // In case of a live stream the player expects the time passed into the getThumbnail as a wallClockTime and not
+      // as a relative timeShift value.
+      const convertTimeShiftPreviewToWallClockTime = (targetTimeShift: number): number => {
+        const currentTimeShift = this.player.getTimeShift();
+        const currentTime = this.player.getCurrentTime();
+
+        const wallClockTimeOfLiveEdge = currentTime - currentTimeShift;
+        return wallClockTimeOfLiveEdge + targetTimeShift;
+      };
+
+      const wallClockTime = convertTimeShiftPreviewToWallClockTime(timeShiftPreview);
+      this.setThumbnail(this.player.getThumbnail(wallClockTime));
+
     } else {
       if (args.marker) {
         this.setTitleText(args.marker.marker.title);
