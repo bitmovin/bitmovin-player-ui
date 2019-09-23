@@ -148,7 +148,10 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     uimanager.onSeeked.subscribe(() => {
       isSeeking = false;
-      this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+
+      if (!hidingPrevented()) {
+        this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+      }
     });
     player.addEventHandler(player.EVENT.ON_CAST_STARTED, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
