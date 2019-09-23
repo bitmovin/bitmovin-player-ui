@@ -16,24 +16,25 @@
   transition: bottom $animation-duration-short ease-out;
   top: 0;
 
-  &.#{$prefix}-subtitle-position-default {
+  .#{$prefix}-subtitle-position-default {
     bottom: 2em;
     top: initial;
     left: 3em;
     right: 3em;
+    position: absolute;
+
+    .#{$prefix}-subtitle-position-default .#{$prefix}-ui-subtitle-label {
+      &:nth-child(1n-1)::after {
+        content: '\A';
+        white-space: pre-line;
+      }
+    }
   }
 
   .#{$prefix}-ui-subtitle-label {
     @include text-border($subtitle-text-border-color);
 
     color: $subtitle-text-color;
-
-    // Break labels into separate lines
-    // sass-lint:disable force-pseudo-nesting
-    &:nth-child(1n-1)::after {
-      content: '\A';
-      white-space: pre-line;
-    }
   }
 
   // Move the subtitle up above the controlbar when it appears to avoid them overlapping
