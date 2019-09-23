@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Thumbnail preview support for live streams
+
 ### Changed
 - UI no longer hides in `Prepared`, `Paused` or `Finished` state
 
