@@ -148,6 +148,13 @@ export class PlayerEventEmitter {
     });
   }
 
+  fireSourceLoadedEvent(): void {
+    this.fireEvent<PlayerEventBase>({
+      timestamp: Date.now(),
+      type: PlayerEvent.SourceLoaded,
+    });
+  }
+
   fireSourceUnloadedEvent(): void {
     this.fireEvent<PlayerEventBase>({
       timestamp: Date.now(),
@@ -279,7 +286,7 @@ export class PlayerEventEmitter {
         id,
         label,
       },
-    }as AudioTrackEvent);
+    } as AudioTrackEvent);
   }
 
   fireAudioRemovedEvent(id: string): void {

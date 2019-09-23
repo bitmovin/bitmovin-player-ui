@@ -31,6 +31,8 @@ export namespace MockHelper {
       onComponentHide: getEventDispatcherMock(),
       onComponentShow: getEventDispatcherMock(),
       onSeekPreview: getEventDispatcherMock(),
+      onSeek: getEventDispatcherMock(),
+      onSeeked: getEventDispatcherMock(),
     }));
 
     return new UiInstanceManagerMockClass();
