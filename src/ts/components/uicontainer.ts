@@ -243,8 +243,6 @@ export class UIContainer extends Container<UIContainerConfig> {
     uimanager.getConfig().events.onUpdated.subscribe(() => {
       updateState(PlayerUtils.getState(player));
     });
-    // Init in current player state
-    updateState(PlayerUtils.getState(player));
 
     // Fullscreen marker class
     player.on(player.exports.PlayerEvent.ViewModeChanged, () => {
