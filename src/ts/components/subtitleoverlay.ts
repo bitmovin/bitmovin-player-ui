@@ -37,7 +37,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.previewSubtitle = new SubtitleLabel({ text: 'example subtitle' });
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-subtitle-overlay'],
+      cssClass: 'ui-subtitle-overlay',
     }, this.config);
   }
 
@@ -47,7 +47,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
-    let subtitleContainerManager = new SubtitleRegionContainerManager(this);
+    const subtitleContainerManager = new SubtitleRegionContainerManager(this);
 
     player.on(player.exports.PlayerEvent.CueEnter, (event: SubtitleCueEvent) => {
       // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
@@ -65,7 +65,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.removeComponent(this.previewSubtitle);
       }
 
-      subtitleContainerManager.wrap(labelToAdd, event);
+      subtitleContainerManager.addLabel(labelToAdd, event);
 
       this.updateComponents();
       this.show();
@@ -421,21 +421,19 @@ class ActiveSubtitleManager {
 
 class SubtitleRegionContainerManager {
   private subtitleRegionContainers: { [region: string]: SubtitleRegionContainer } = {};
-  private subtitleOverlay: SubtitleOverlay;
 
   /**
    * @param subtitleOverlay Reference to the subtitle overlay for adding and removing the containers.
    */
-  constructor(subtitleOverlay: SubtitleOverlay) {
+  constructor(private subtitleOverlay: SubtitleOverlay) {
     this.subtitleOverlay = subtitleOverlay;
   }
 
   /**
    * Removes a subtitle label from a container.
-   * @param labelToRemove
    */
-  public removeLabel(labelToRemove: SubtitleLabel): void {
-    for (let region in this.subtitleRegionContainers) {
+  removeLabel(labelToRemove: SubtitleLabel): void {
+    for (const region in this.subtitleRegionContainers) {
       this.subtitleRegionContainers[region].removeLabel(labelToRemove);
     }
   }
@@ -443,8 +441,8 @@ class SubtitleRegionContainerManager {
   /**
    * Removes all subtitle containers.
    */
-  public clear(): void {
-    for (let region in this.subtitleRegionContainers) {
+  clear(): void {
+    for (const region in this.subtitleRegionContainers) {
       this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[region]);
     }
 
@@ -457,9 +455,9 @@ class SubtitleRegionContainerManager {
    * @param label The subtitle label to wrap
    * @param event Subtitle cue event that contains the positoning information
    */
-  public wrap(label: SubtitleLabel, event: SubtitleCueEvent): void {
+  addLabel(label: SubtitleLabel, event: SubtitleCueEvent): void {
     const subtitleRegion = event.region || 'default';
-      if (!this.subtitleRegionContainers[subtitleRegion]) {
+    if (!this.subtitleRegionContainers[subtitleRegion]) {
       const regionContainer = new SubtitleRegionContainer({
         cssClass: `subtitle-position-${subtitleRegion}`,
       });
@@ -467,33 +465,34 @@ class SubtitleRegionContainerManager {
       this.subtitleRegionContainers[subtitleRegion] = regionContainer;
 
       if (event.regionStyle) {
-        regionContainer.getDomElement().attr('style', event.regionStyle + ';position:absolute');
+        regionContainer.getDomElement().attr('style', event.regionStyle);
       } else {
         // getDomElement needs to be called at least once to ensure the component exists
         regionContainer.getDomElement();
       }
+
+      for (const region in this.subtitleRegionContainers) {
+        this.subtitleOverlay.addComponent(this.subtitleRegionContainers[region]);
+      }
     }
 
-    this.subtitleRegionContainers[subtitleRegion].addComponent(label);
-
-    for (let region in this.subtitleRegionContainers) {
-      this.subtitleOverlay.addComponent(this.subtitleRegionContainers[region]);
-      this.subtitleRegionContainers[region].updateComponents();
-    }
+    this.subtitleRegionContainers[subtitleRegion].addLabel(label);
   }
 }
 
 class SubtitleRegionContainer extends Container<ContainerConfig> {
   constructor(config: ContainerConfig) {
-    super(config);
+    const mergedConfig = {...config, cssClasses: [config.cssClass, 'subtitle-region-container']};
+    super(mergedConfig);
   }
 
-  public removeLabel(labelToRemove: SubtitleLabel): void {
-    this.removeComponent(labelToRemove);
+  addLabel(labelToAdd: SubtitleLabel) {
+    this.addComponent(labelToAdd);
     this.updateComponents();
   }
 
-  public updateComponents(): void {
-    super.updateComponents();
+  removeLabel(labelToRemove: SubtitleLabel): void {
+    this.removeComponent(labelToRemove);
+    this.updateComponents();
   }
 }
