@@ -664,6 +664,12 @@ export namespace UIManager.Factory {
         new ErrorMessageOverlay(),
       ],
       cssClasses: ['ui-skin-modern'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.PREPARED,
+        PlayerUtils.PlayerState.PAUSED,
+        PlayerUtils.PlayerState.FINISHED,
+      ],
     });
   }
 
@@ -696,6 +702,12 @@ export namespace UIManager.Factory {
         }),
       ],
       cssClasses: ['ui-skin-modern', 'ui-skin-ads'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.PREPARED,
+        PlayerUtils.PlayerState.PAUSED,
+        PlayerUtils.PlayerState.FINISHED,
+      ],
     });
   }
 
@@ -773,6 +785,12 @@ export namespace UIManager.Factory {
         new ErrorMessageOverlay(),
       ],
       cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.PREPARED,
+        PlayerUtils.PlayerState.PAUSED,
+        PlayerUtils.PlayerState.FINISHED,
+      ],
     });
   }
 
@@ -798,6 +816,12 @@ export namespace UIManager.Factory {
         }),
       ],
       cssClasses: ['ui-skin-modern', 'ui-skin-ads', 'ui-skin-smallscreen'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.PREPARED,
+        PlayerUtils.PlayerState.PAUSED,
+        PlayerUtils.PlayerState.FINISHED,
+      ],
     });
   }
 
@@ -826,6 +850,12 @@ export namespace UIManager.Factory {
         new ErrorMessageOverlay(),
       ],
       cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.PREPARED,
+        PlayerUtils.PlayerState.PAUSED,
+        PlayerUtils.PlayerState.FINISHED,
+      ],
     });
   }
 
