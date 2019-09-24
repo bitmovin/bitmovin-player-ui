@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [develop]
+## [2.22.0] (2019-09-24)
 	
 ### Changed
 - UI no longer hides in `Prepared`, `Paused` or `Finished` state
@@ -430,6 +430,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[2.22.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.21.0...v2.22.0
 [2.21.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.20.0...v2.21.0
 [2.20.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.19.0...v2.20.0
 [2.19.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v2.18.0...v2.19.0
