@@ -420,7 +420,7 @@ class ActiveSubtitleManager {
 }
 
 class SubtitleRegionContainerManager {
-  private subtitleRegionContainers: { [region: string]: SubtitleRegionContainer } = {};
+  private subtitleRegionContainers: { [regionName: string]: SubtitleRegionContainer } = {};
 
   /**
    * @param subtitleOverlay Reference to the subtitle overlay for adding and removing the containers.
@@ -433,8 +433,8 @@ class SubtitleRegionContainerManager {
    * Removes a subtitle label from a container.
    */
   removeLabel(labelToRemove: SubtitleLabel): void {
-    for (const region in this.subtitleRegionContainers) {
-      this.subtitleRegionContainers[region].removeLabel(labelToRemove);
+    for (const regionName in this.subtitleRegionContainers) {
+      this.subtitleRegionContainers[regionName].removeLabel(labelToRemove);
     }
   }
 
@@ -442,8 +442,8 @@ class SubtitleRegionContainerManager {
    * Removes all subtitle containers.
    */
   clear(): void {
-    for (const region in this.subtitleRegionContainers) {
-      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[region]);
+    for (const regionName in this.subtitleRegionContainers) {
+      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[regionName]);
     }
 
     this.subtitleRegionContainers = {};
@@ -456,13 +456,13 @@ class SubtitleRegionContainerManager {
    * @param event Subtitle cue event that contains the positoning information
    */
   addLabel(label: SubtitleLabel, event: SubtitleCueEvent): void {
-    const subtitleRegion = event.region || 'default';
-    if (!this.subtitleRegionContainers[subtitleRegion]) {
+    const regionName = event.region || 'default';
+    if (!this.subtitleRegionContainers[regionName]) {
       const regionContainer = new SubtitleRegionContainer({
-        cssClass: `subtitle-position-${subtitleRegion}`,
+        cssClass: `subtitle-position-${regionName}`,
       });
 
-      this.subtitleRegionContainers[subtitleRegion] = regionContainer;
+      this.subtitleRegionContainers[regionName] = regionContainer;
 
       if (event.regionStyle) {
         regionContainer.getDomElement().attr('style', event.regionStyle);
@@ -471,12 +471,12 @@ class SubtitleRegionContainerManager {
         regionContainer.getDomElement();
       }
 
-      for (const region in this.subtitleRegionContainers) {
-        this.subtitleOverlay.addComponent(this.subtitleRegionContainers[region]);
+      for (const regionName in this.subtitleRegionContainers) {
+        this.subtitleOverlay.addComponent(this.subtitleRegionContainers[regionName]);
       }
     }
 
-    this.subtitleRegionContainers[subtitleRegion].addLabel(label);
+    this.subtitleRegionContainers[regionName].addLabel(label);
   }
 }
 
