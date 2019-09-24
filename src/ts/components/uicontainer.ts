@@ -173,7 +173,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     uimanager.onSeeked.subscribe(() => {
       isSeeking = false;
-      this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+      if (!hidingPrevented()) {
+        this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+      }
     });
     player.on(player.exports.PlayerEvent.CastStarted, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
@@ -236,8 +238,6 @@ export class UIContainer extends Container<UIContainerConfig> {
     uimanager.getConfig().events.onUpdated.subscribe(() => {
       updateState(PlayerUtils.getState(player));
     });
-    // Init in current player state
-    updateState(PlayerUtils.getState(player));
 
     // Fullscreen marker class
     player.on(player.exports.PlayerEvent.ViewModeChanged, () => {
