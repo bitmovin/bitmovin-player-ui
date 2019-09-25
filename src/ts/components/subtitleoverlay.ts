@@ -3,9 +3,9 @@ import {UIInstanceManager} from '../uimanager';
 import {Label, LabelConfig} from './label';
 import {ComponentConfig, Component} from './component';
 import {ControlBar} from './controlbar';
-import {EventDispatcher} from '../eventdispatcher';
+import { EventDispatcher } from '../eventdispatcher';
 import {DOM} from '../dom';
-import {PlayerAPI, SubtitleCueEvent} from 'bitmovin-player';
+import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
 
 /**
  * Overlays the player to display subtitles.
