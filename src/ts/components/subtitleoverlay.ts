@@ -481,9 +481,12 @@ class SubtitleRegionContainerManager {
 }
 
 class SubtitleRegionContainer extends Container<ContainerConfig> {
-  constructor(config: ContainerConfig) {
-    const mergedConfig = {...config, cssClasses: [config.cssClass, 'subtitle-region-container']};
-    super(mergedConfig);
+  constructor(config: ContainerConfig = {}) {
+    super(config);
+
+    this.config = this.mergeConfig(config, {
+      cssClasses: ['subtitle-region-container'],
+    }, this.config);
   }
 
   addLabel(labelToAdd: SubtitleLabel) {
