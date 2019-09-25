@@ -16,15 +16,15 @@
   transition: bottom $animation-duration-short ease-out;
   top: 0;
 
-  .#{$prefix}-subtitle-position-default {
-    bottom: 2em;
-    top: initial;
-    left: 3em;
-    right: 3em;
-  }
-
   .#{$prefix}-subtitle-region-container {
     position: absolute;
+
+    &.#{$prefix}-subtitle-position-default {
+      bottom: 2em;
+      top: initial;
+      left: 3em;
+      right: 3em;
+    }
   }
 
   .#{$prefix}-ui-subtitle-label {
