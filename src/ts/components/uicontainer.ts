@@ -197,6 +197,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     player.addEventHandler(player.EVENT.ON_PLAY, () => {
       updateState(PlayerUtils.PlayerState.PLAYING);
     });
+    player.addEventHandler(player.EVENT.ON_PLAYING, () => {
+      updateState(PlayerUtils.PlayerState.PLAYING);
+    });
     player.addEventHandler(player.EVENT.ON_PAUSED, () => {
       updateState(PlayerUtils.PlayerState.PAUSED);
     });
