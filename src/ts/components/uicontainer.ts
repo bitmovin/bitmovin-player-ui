@@ -226,6 +226,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     player.on(player.exports.PlayerEvent.Play, () => {
       updateState(PlayerUtils.PlayerState.Playing);
     });
+    player.on(player.exports.PlayerEvent.Playing, () => {
+      updateState(PlayerUtils.PlayerState.Playing);
+    });
     player.on(player.exports.PlayerEvent.Paused, () => {
       updateState(PlayerUtils.PlayerState.Paused);
     });
