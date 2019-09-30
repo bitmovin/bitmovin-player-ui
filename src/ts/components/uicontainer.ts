@@ -133,7 +133,7 @@ export class UIContainer extends Container<UIContainerConfig> {
           // instead. The first touch is not prevented to let other listeners receive the event and trigger an
           // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
           // tap which 1. reveals the UI and 2. starts playback.
-          if (isFirstTouch) {
+          if (isFirstTouch && !player.isPlaying()) {
             isFirstTouch = false;
           } else {
             e.preventDefault();
@@ -173,7 +173,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     uimanager.onSeeked.subscribe(() => {
       isSeeking = false;
-      this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+      if (!hidingPrevented()) {
+        this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+      }
     });
     player.on(player.exports.PlayerEvent.CastStarted, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
@@ -224,6 +226,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     player.on(player.exports.PlayerEvent.Play, () => {
       updateState(PlayerUtils.PlayerState.Playing);
     });
+    player.on(player.exports.PlayerEvent.Playing, () => {
+      updateState(PlayerUtils.PlayerState.Playing);
+    });
     player.on(player.exports.PlayerEvent.Paused, () => {
       updateState(PlayerUtils.PlayerState.Paused);
     });
@@ -236,8 +241,6 @@ export class UIContainer extends Container<UIContainerConfig> {
     uimanager.getConfig().events.onUpdated.subscribe(() => {
       updateState(PlayerUtils.getState(player));
     });
-    // Init in current player state
-    updateState(PlayerUtils.getState(player));
 
     // Fullscreen marker class
     player.on(player.exports.PlayerEvent.ViewModeChanged, () => {
