@@ -98,8 +98,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
     };
 
+    player.on(player.exports.PlayerEvent.AudioChanged, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SubtitleDisabled, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.Seek, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.TimeShift, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.PlaybackFinished, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SourceUnloaded, subtitleClearHandler);
 
