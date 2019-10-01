@@ -17,6 +17,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private previewSubtitle: SubtitleLabel;
 
   private preprocessLabelEventCallback = new EventDispatcher<SubtitleCueEvent, SubtitleLabel>();
+  private subtitleContainerManager: SubtitleRegionContainerManager;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
@@ -47,7 +48,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
-    const subtitleContainerManager = new SubtitleRegionContainerManager(this);
+    this.subtitleContainerManager = new SubtitleRegionContainerManager(this);
 
     player.on(player.exports.PlayerEvent.CueEnter, (event: SubtitleCueEvent) => {
       // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
@@ -62,10 +63,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.preprocessLabelEventCallback.dispatch(event, labelToAdd);
 
       if (this.previewSubtitleActive) {
-        this.removeComponent(this.previewSubtitle);
+        this.subtitleContainerManager.hidePreviewSubtitle(this.previewSubtitle);
       }
 
-      subtitleContainerManager.addLabel(labelToAdd, event);
+      this.subtitleContainerManager.addLabel(labelToAdd, event);
 
       this.updateComponents();
       this.show();
@@ -75,7 +76,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       let labelToRemove = subtitleManager.cueExit(event);
 
       if (labelToRemove) {
-        subtitleContainerManager.removeLabel(labelToRemove, event);
+        this.subtitleContainerManager.removeLabel(labelToRemove, event);
         this.updateComponents();
       }
 
@@ -83,7 +84,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         if (!this.previewSubtitleActive) {
           this.hide();
         } else {
-          this.addComponent(this.previewSubtitle);
+          this.subtitleContainerManager.showPreviewSubtitle(this.previewSubtitle);
           this.updateComponents();
         }
       }
@@ -91,7 +92,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     let subtitleClearHandler = () => {
       this.hide();
-      subtitleContainerManager.clear();
+      this.subtitleContainerManager.clear();
       subtitleManager.clear();
       this.removeComponents();
       this.updateComponents();
@@ -251,7 +252,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   enablePreviewSubtitleLabel(): void {
     this.previewSubtitleActive = true;
     if (!this.subtitleManager.hasCues) {
-      this.addComponent(this.previewSubtitle);
+      this.subtitleContainerManager.showPreviewSubtitle(this.previewSubtitle);
       this.updateComponents();
       this.show();
     }
@@ -259,7 +260,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   removePreviewSubtitleLabel(): void {
     this.previewSubtitleActive = false;
-    this.removeComponent(this.previewSubtitle);
+    this.subtitleContainerManager.hidePreviewSubtitle(this.previewSubtitle);
     this.updateComponents();
   }
 }
@@ -488,6 +489,14 @@ class SubtitleRegionContainerManager {
     }
 
     this.subtitleRegionContainers[regionName].addLabel(label);
+  }
+
+  showPreviewSubtitle(previewLabel: SubtitleLabel) {
+    this.addLabel(previewLabel, { region: 'default' } as SubtitleCueEvent);
+  }
+
+  hidePreviewSubtitle(previewLabel: SubtitleLabel)  {
+    this.removeLabel(previewLabel, { region: 'default' } as SubtitleCueEvent);
   }
 }
 
