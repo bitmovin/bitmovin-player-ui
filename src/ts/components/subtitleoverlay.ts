@@ -460,6 +460,7 @@ export class SubtitleRegionContainerManager {
     }
 
     this.subtitleRegionContainers = {};
+    this.labelsInRegionCount = {};
   }
 
   /**
