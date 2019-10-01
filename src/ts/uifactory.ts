@@ -44,6 +44,7 @@ import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n, createLocalizer, LocalizerType } from './localization';
 
 export namespace UIFactory {
 
@@ -59,15 +60,19 @@ export namespace UIFactory {
     return UIFactory.buildModernCastReceiverUI(player, config);
   }
 
-  function modernUI() {
-    let subtitleOverlay = new SubtitleOverlay();
+  function modernUI(localize: LocalizerType) {
 
+    let subtitleOverlay = new SubtitleOverlay();
+    /**
+     * @todo we should set it here!
+     * 'Video Quality'
+     */
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+        new SettingsPanelItem(localize('settings.videoQuality'), new VideoQualitySelectBox()),
+        new SettingsPanelItem(localize('settings.speed'), new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem(localize('settings.audioTrack'),new AudioTrackSelectBox()),
+        new SettingsPanelItem(localize('settings.audioQuality'), new AudioQualitySelectBox()),
       ],
     });
 
@@ -86,12 +91,12 @@ export namespace UIFactory {
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
-      text: 'open',
+      text: localize('settings.open'),
     });
 
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSettingsLabel({text: localize('settings.subtitles'), opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox(),
       ));
 
@@ -103,7 +108,7 @@ export namespace UIFactory {
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel() }),
+            new SeekBar({ label: new SeekBarLabel() }), // TODO: localize this
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top'],
@@ -340,9 +345,9 @@ export namespace UIFactory {
   }
 
   export function buildModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    const localizer = createLocalizer(config);
     // show smallScreen UI only on mobile/handheld devices
     let smallScreenSwitchWidth = 600;
-
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
@@ -361,7 +366,7 @@ export namespace UIFactory {
           && context.documentWidth < smallScreenSwitchWidth;
       },
     }, {
-      ui: modernUI(),
+      ui: modernUI(localizer),
       condition: (context: UIConditionContext) => {
         return !context.isAd && !context.adRequiresUi;
       },

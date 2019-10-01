@@ -10,7 +10,7 @@ import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
-import {i18n}from './localization';
+import {i18n, BitmovinPlayerUiVocabulary}from './localization';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -525,8 +525,9 @@ export class UIInstanceManager {
     return this.config;
   }
 
-  public get localize(selector: string, config: any) {
-    return i18n(this.getConfig(), selector, config);
+  public localize(selector: keyof BitmovinPlayerUiVocabulary, config?: any) {
+    const { localization } = this.getConfig();
+    return i18n(localization || undefined, selector, config);
   }
 
   getUI(): UIContainer {

@@ -1,4 +1,5 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/errormessageoverlay';
+import { BitmovinPlayerUiVocabulary } from './localization';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -37,6 +38,14 @@ export interface TimelineMarker {
   cssClasses?: string[];
 }
 
+export interface LocalizationSettings {
+  language: string;
+  languages: string[];
+  translations: {
+    [key: string]: BitmovinPlayerUiVocabulary;
+  };
+}
+
 export interface UIConfig {
   /**
    * Specifies the container in the DOM into which the UI will be added. Can be a CSS selector string or a
@@ -62,6 +71,10 @@ export interface UIConfig {
    * Default: true
    */
   playbackSpeedSelectionEnabled?: boolean;
+  /**
+   * TODO: update the comment here
+   */
+  localization?: LocalizationSettings;
   /**
    * Provide customized errorMessages
    * For an example have a look at {@link ErrorMessageOverlayConfig.messages}
