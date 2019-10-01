@@ -37,6 +37,11 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
 
     let manager = new SubtitleSettingsManager();
 
+    /**
+    * @todo: checkout here
+    */
+    console.log(this);
+
     this.config = this.mergeConfig(config, {
       components: <Component<ComponentConfig>[]>[
         new SettingsPanelItem('Font size', new FontSizeSelectBox({
