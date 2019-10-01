@@ -434,7 +434,6 @@ class SubtitleRegionContainerManager {
    * Removes a subtitle label from a container.
    */
   removeLabel(labelToRemove: SubtitleLabel, event: SubtitleCueEvent): void {
-
     for (const regionName in this.subtitleRegionContainers) {
       this.subtitleRegionContainers[regionName].removeLabel(labelToRemove);
     }
