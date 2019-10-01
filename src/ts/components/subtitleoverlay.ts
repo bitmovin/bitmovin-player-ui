@@ -423,7 +423,7 @@ class ActiveSubtitleManager {
   }
 }
 
-class SubtitleRegionContainerManager {
+export class SubtitleRegionContainerManager {
   private subtitleRegionContainers: { [regionName: string]: SubtitleRegionContainer } = {};
   private labelsInRegionCount: { [regionName: string]: number } = {};
 
