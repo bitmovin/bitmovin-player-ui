@@ -75,7 +75,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       let labelToRemove = subtitleManager.cueExit(event);
 
       if (labelToRemove) {
-        subtitleContainerManager.removeLabel(labelToRemove);
+        subtitleContainerManager.removeLabel(labelToRemove, event);
         this.updateComponents();
       }
 
@@ -421,6 +421,7 @@ class ActiveSubtitleManager {
 
 class SubtitleRegionContainerManager {
   private subtitleRegionContainers: { [regionName: string]: SubtitleRegionContainer } = {};
+  private labelsInRegionCount: { [regionName: string]: number } = {};
 
   /**
    * @param subtitleOverlay Reference to the subtitle overlay for adding and removing the containers.
@@ -432,9 +433,17 @@ class SubtitleRegionContainerManager {
   /**
    * Removes a subtitle label from a container.
    */
-  removeLabel(labelToRemove: SubtitleLabel): void {
+  removeLabel(labelToRemove: SubtitleLabel, event: SubtitleCueEvent): void {
+
     for (const regionName in this.subtitleRegionContainers) {
       this.subtitleRegionContainers[regionName].removeLabel(labelToRemove);
+    }
+    this.labelsInRegionCount[event.region]--;
+
+    // Remove container if no more labels are displayed
+    if (this.labelsInRegionCount[event.region] === 0) {
+      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[event.region]);
+      delete this.subtitleRegionContainers[event.region];
     }
   }
 
@@ -462,6 +471,7 @@ class SubtitleRegionContainerManager {
         cssClass: `subtitle-position-${regionName}`,
       });
 
+      this.labelsInRegionCount[regionName] = 1;
       this.subtitleRegionContainers[regionName] = regionContainer;
 
       if (event.regionStyle) {
@@ -474,6 +484,8 @@ class SubtitleRegionContainerManager {
       for (const regionName in this.subtitleRegionContainers) {
         this.subtitleOverlay.addComponent(this.subtitleRegionContainers[regionName]);
       }
+    } else {
+      this.labelsInRegionCount[regionName]++;
     }
 
     this.subtitleRegionContainers[regionName].addLabel(label);
