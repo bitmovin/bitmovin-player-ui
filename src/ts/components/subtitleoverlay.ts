@@ -63,7 +63,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.preprocessLabelEventCallback.dispatch(event, labelToAdd);
 
       if (this.previewSubtitleActive) {
-        this.subtitleContainerManager.hidePreviewSubtitle(this.previewSubtitle);
+        this.subtitleContainerManager.removeLabel(this.previewSubtitle);
       }
 
       this.subtitleContainerManager.addLabel(labelToAdd, event);
@@ -84,7 +84,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         if (!this.previewSubtitleActive) {
           this.hide();
         } else {
-          this.subtitleContainerManager.showPreviewSubtitle(this.previewSubtitle);
+          this.subtitleContainerManager.addLabel(this.previewSubtitle);
           this.updateComponents();
         }
       }
@@ -255,7 +255,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   enablePreviewSubtitleLabel(): void {
     this.previewSubtitleActive = true;
     if (!this.subtitleManager.hasCues) {
-      this.subtitleContainerManager.showPreviewSubtitle(this.previewSubtitle);
+      this.subtitleContainerManager.addLabel(this.previewSubtitle);
       this.updateComponents();
       this.show();
     }
@@ -263,7 +263,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   removePreviewSubtitleLabel(): void {
     this.previewSubtitleActive = false;
-    this.subtitleContainerManager.hidePreviewSubtitle(this.previewSubtitle);
+    this.subtitleContainerManager.removeLabel(this.previewSubtitle);
     this.updateComponents();
   }
 }
@@ -437,16 +437,17 @@ export class SubtitleRegionContainerManager {
   /**
    * Removes a subtitle label from a container.
    */
-  removeLabel(labelToRemove: SubtitleLabel, event: SubtitleCueEvent): void {
+  removeLabel(labelToRemove: SubtitleLabel, event?: SubtitleCueEvent): void {
+    const region = event && event.region || 'default';
     for (const regionName in this.subtitleRegionContainers) {
       this.subtitleRegionContainers[regionName].removeLabel(labelToRemove);
     }
-    this.labelsInRegionCount[event.region]--;
+    this.labelsInRegionCount[region]--;
 
     // Remove container if no more labels are displayed
-    if (this.labelsInRegionCount[event.region] === 0) {
-      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[event.region]);
-      delete this.subtitleRegionContainers[event.region];
+    if (this.labelsInRegionCount[region] === 0) {
+      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[region]);
+      delete this.subtitleRegionContainers[region];
     }
   }
 
@@ -467,8 +468,8 @@ export class SubtitleRegionContainerManager {
    * @param label The subtitle label to wrap
    * @param event Subtitle cue event that contains the positoning information
    */
-  addLabel(label: SubtitleLabel, event: SubtitleCueEvent): void {
-    const regionName = event.region || 'default';
+  addLabel(label: SubtitleLabel, event?: SubtitleCueEvent): void {
+    const regionName = event && event.region || 'default';
     if (!this.subtitleRegionContainers[regionName]) {
       const regionContainer = new SubtitleRegionContainer({
         cssClass: `subtitle-position-${regionName}`,
@@ -477,7 +478,7 @@ export class SubtitleRegionContainerManager {
       this.labelsInRegionCount[regionName] = 1;
       this.subtitleRegionContainers[regionName] = regionContainer;
 
-      if (event.regionStyle) {
+      if (event && event.regionStyle) {
         regionContainer.getDomElement().attr('style', event.regionStyle);
       } else {
         // getDomElement needs to be called at least once to ensure the component exists
@@ -492,14 +493,6 @@ export class SubtitleRegionContainerManager {
     }
 
     this.subtitleRegionContainers[regionName].addLabel(label);
-  }
-
-  showPreviewSubtitle(previewLabel: SubtitleLabel) {
-    this.addLabel(previewLabel, { region: 'default' } as SubtitleCueEvent);
-  }
-
-  hidePreviewSubtitle(previewLabel: SubtitleLabel)  {
-    this.removeLabel(previewLabel, { region: 'default' } as SubtitleCueEvent);
   }
 }
 
