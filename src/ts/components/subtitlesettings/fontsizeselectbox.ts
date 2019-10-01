@@ -17,8 +17,11 @@ export class FontSizeSelectBox extends SubtitleSettingSelectBox {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+    /**
+     * @todo: localize this 
+     */
 
-    this.addItem(null, 'default');
+    this.addItem(null, uimanager.localize('settings.default'));
     this.addItem('50', '50%');
     this.addItem('75', '75%');
     this.addItem('100', '100%');

@@ -60,14 +60,9 @@ export namespace UIFactory {
     return UIFactory.buildModernCastReceiverUI(player, config);
   }
 
-  function modernUI(localize: LocalizerType) {
 
-    let subtitleOverlay = new SubtitleOverlay();
-    /**
-     * @todo we should set it here!
-     * 'Video Quality'
-     */
-    let mainSettingsPanelPage = new SettingsPanelPage({
+  function createMainSettingsPanelPage(localize: LocalizerType) {
+    return new SettingsPanelPage({
       components: [
         new SettingsPanelItem(localize('settings.videoQuality'), new VideoQualitySelectBox()),
         new SettingsPanelItem(localize('settings.speed'), new PlaybackSpeedSelectBox()),
@@ -75,6 +70,16 @@ export namespace UIFactory {
         new SettingsPanelItem(localize('settings.audioQuality'), new AudioQualitySelectBox()),
       ],
     });
+  }
+
+  function modernUI(localize: LocalizerType) {
+
+    let subtitleOverlay = new SubtitleOverlay();
+    /**
+     * @todo we should set it here!
+     * 'Video Quality'
+     */
+    let mainSettingsPanelPage = createMainSettingsPanelPage(localize)
 
     let settingsPanel = new SettingsPanel({
       components: [
@@ -86,6 +91,7 @@ export namespace UIFactory {
     let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
       settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
+      localize
     });
 
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
@@ -152,7 +158,8 @@ export namespace UIFactory {
     });
   }
 
-  export function modernAdsUI() {
+  // TODO: Localize
+  export function modernAdsUI(localize: LocalizerType) {
     return new UIContainer({
       components: [
         new BufferingOverlay(),
@@ -190,17 +197,11 @@ export namespace UIFactory {
     });
   }
 
-  export function modernSmallScreenUI() {
+  // TODO: Localize
+  export function modernSmallScreenUI(localize: LocalizerType) {
     let subtitleOverlay = new SubtitleOverlay();
 
-    let mainSettingsPanelPage = new SettingsPanelPage({
-      components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
-      ],
-    });
+    let mainSettingsPanelPage = createMainSettingsPanelPage(localize);
 
     let settingsPanel = new SettingsPanel({
       components: [
@@ -213,6 +214,7 @@ export namespace UIFactory {
     let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
       settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
+      localize
     });
 
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
@@ -279,7 +281,8 @@ export namespace UIFactory {
     });
   }
 
-  export function modernSmallScreenAdsUI() {
+  // TODO: Localize
+  export function modernSmallScreenAdsUI(localize: LocalizerType) {
     return new UIContainer({
       components: [
         new BufferingOverlay(),
@@ -310,7 +313,8 @@ export namespace UIFactory {
     });
   }
 
-  export function modernCastReceiverUI() {
+  // TODO: Localize
+  export function modernCastReceiverUI(localize: LocalizerType) {
     let controlBar = new ControlBar({
       components: [
         new Container({
@@ -348,19 +352,22 @@ export namespace UIFactory {
     const localizer = createLocalizer(config);
     // show smallScreen UI only on mobile/handheld devices
     let smallScreenSwitchWidth = 600;
+    /**
+     * @todo cagin here
+     */
     return new UIManager(player, [{
-      ui: modernSmallScreenAdsUI(),
+      ui: modernSmallScreenAdsUI(localizer),
       condition: (context: UIConditionContext) => {
         return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAd
           && context.adRequiresUi;
       },
     }, {
-      ui: modernAdsUI(),
+      ui: modernAdsUI(localizer),
       condition: (context: UIConditionContext) => {
         return context.isAd && context.adRequiresUi;
       },
     }, {
-      ui: modernSmallScreenUI(),
+      ui: modernSmallScreenUI(localizer),
       condition: (context: UIConditionContext) => {
         return !context.isAd && !context.adRequiresUi && context.isMobile
           && context.documentWidth < smallScreenSwitchWidth;
@@ -374,13 +381,14 @@ export namespace UIFactory {
   }
 
   export function buildModernSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    const localizer = createLocalizer(config);
     return new UIManager(player, [{
-      ui: modernSmallScreenAdsUI(),
+      ui: modernSmallScreenAdsUI(localizer),
       condition: (context: UIConditionContext) => {
         return context.isAd && context.adRequiresUi;
       },
     }, {
-      ui: modernSmallScreenUI(),
+      ui: modernSmallScreenUI(localizer),
       condition: (context: UIConditionContext) => {
         return !context.isAd && !context.adRequiresUi;
       },
@@ -388,6 +396,7 @@ export namespace UIFactory {
   }
 
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, modernCastReceiverUI(), config);
+    const localizer = createLocalizer(config);
+    return new UIManager(player, modernCastReceiverUI(localizer), config);
   }
 }
