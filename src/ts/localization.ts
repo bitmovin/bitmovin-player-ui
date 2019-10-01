@@ -60,32 +60,6 @@ const vocabularyEn: BitmovinPlayerUiVocabulary = {
   'message.ads.timeRemaining': `Ad: {time} remaining`,
 };
 
-const vocabularyDe: BitmovinPlayerUiVocabulary = {
-  'meta.title': '',
-  'meta.description': '',
-  'settings.videoQuality': 'Video Qualität',
-  'settings.audioQuality': 'Audio Qualität',
-  'settings.audioTrack': 'Audio Track',
-  'settings.speed': 'Geschwindigkeit',
-  'settings.open': 'open',
-  'settings.back': 'Zu',
-  'settings.default': 'default',
-  'settings.subtitles': 'Subtites',
-  'settings.subtitles.font.size': 'Font size',
-  'settings.subtitles.font.family': 'Font family',
-  'settings.subtitles.font.color': 'Font color',
-  'settings.subtitles.font.opacity': 'Font opacity',
-  'settings.subtitles.characterEdge': 'Character edge',
-  'settings.subtitles.off': 'off',
-  'settings.subtitles.background.color': 'Background color',
-  'settings.subtitles.background.opacity': 'Background opacity',
-  'settings.subtitles.window.color': 'Window color',
-  'settings.subtitles.window.opacity': 'Window opacity',
-  'settings.reset': '',
-  'message.status.connecting': `Connecting to {name}`,
-  'message.ads.timeRemaining': `Ad: {time} remaining`,
-};
-
 export const defaultLocalizationSettings: LocalizationSettings = {
   language: 'en',
   languages: ['en'],
@@ -106,7 +80,7 @@ const extractVariablesFromTranslationString = (translation: string, config: any)
 export function i18n(settings: LocalizationSettings | null, selector: keyof BitmovinPlayerUiVocabulary, config: any = {}): string {
 
   const { language, translations } = settings != null ? settings : defaultLocalizationSettings;
-  const vocabulary: BitmovinPlayerUiVocabulary = translations[language];
+  const vocabulary: BitmovinPlayerUiVocabulary = {...vocabularyEn, ...translations[language] }; // spread to ensure we have default values if translation is not defined
   const rawTranslation: string = vocabulary[selector];
 
   if (rawTranslation ==  null) {
@@ -116,7 +90,7 @@ export function i18n(settings: LocalizationSettings | null, selector: keyof Bitm
   const translation = translationVariables.reduce((acc: string, {match, value}) => acc.replace(match, value), rawTranslation);
 
   return translation;
-};
+}
 
 export const createLocalizer = (config: UIConfig): LocalizerType => {
   const { localization} = config;

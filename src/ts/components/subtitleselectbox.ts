@@ -21,6 +21,5 @@ export class SubtitleSelectBox extends SelectBox {
     super.configure(player, uimanager);
 
     new SubtitleSwitchHandler(player, this, uimanager);
-
   }
 }

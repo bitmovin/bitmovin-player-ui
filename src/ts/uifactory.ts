@@ -76,10 +76,9 @@ export namespace UIFactory {
 
     let subtitleOverlay = new SubtitleOverlay();
     /**
-     * @todo we should set it here!
-     * 'Video Quality'
+     * @see: the localization is passed to modernUI function from buildModernUI function...
      */
-    let mainSettingsPanelPage = createMainSettingsPanelPage(localize)
+    let mainSettingsPanelPage = createMainSettingsPanelPage(localize);
 
     let settingsPanel = new SettingsPanel({
       components: [
@@ -91,7 +90,7 @@ export namespace UIFactory {
     let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
       settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
-      localize
+      localize,
     });
 
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({

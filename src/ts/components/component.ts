@@ -235,7 +235,6 @@ export class Component<Config extends ComponentConfig> {
     });
   }
 
-
   /**
    * Releases all resources and dependencies that the component holds. Player, DOM, and UIManager events are
    * automatically removed during release and do not explicitly need to be removed here.
