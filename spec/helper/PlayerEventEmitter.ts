@@ -11,6 +11,7 @@ import {
   PlayerEventBase,
   PlayerEventCallback,
   SeekEvent,
+  SubtitleCueEvent,
   SubtitleEvent,
   SubtitleTrack,
   TimeShiftEvent,
@@ -259,6 +260,26 @@ export class PlayerEventEmitter {
       timestamp: Date.now(),
       type: PlayerEvent.SubtitleEnabled,
     } as SubtitleEvent);
+  }
+
+  fireSubtitleCueEnterEvent(): void {
+    this.fireEvent<SubtitleCueEvent>({
+      subtitleId: 'subtitleId',
+      start: 0,
+      end: 10,
+      text: 'Test Subtitle',
+      type: PlayerEvent.CueEnter,
+    } as SubtitleCueEvent);
+  }
+
+  fireSubtitleCueExitEvent(): void {
+    this.fireEvent<SubtitleCueEvent>({
+      subtitleId: 'subtitleId',
+      start: 0,
+      end: 10,
+      text: 'Test Subtitle',
+      type: PlayerEvent.CueExit,
+    } as SubtitleCueEvent);
   }
 
   // Period switch
