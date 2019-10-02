@@ -138,6 +138,12 @@ export namespace UIFactory {
         new Watermark(),
         new ErrorMessageOverlay(),
       ],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
     });
   }
 
@@ -170,6 +176,12 @@ export namespace UIFactory {
         }),
       ],
       cssClasses: ['ui-skin-ads'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
     });
   }
 
@@ -253,7 +265,12 @@ export namespace UIFactory {
         new ErrorMessageOverlay(),
       ],
       cssClasses: ['ui-skin-smallscreen'],
-      hidePlayerStateExceptions: [PlayerUtils.PlayerState.Finished],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
     });
   }
 
@@ -279,6 +296,12 @@ export namespace UIFactory {
         }),
       ],
       cssClasses: ['ui-skin-ads', 'ui-skin-smallscreen'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
     });
   }
 
@@ -307,6 +330,12 @@ export namespace UIFactory {
         new ErrorMessageOverlay(),
       ],
       cssClasses: ['ui-skin-cast-receiver'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
     });
   }
 

@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Support for regions in TTML subtitles
 
+## [3.7.0]
+
+### Added
+- Thumbnail preview support for live streams
+
+### Changed
+- UI no longer hides in `Prepared`, `Paused` or `Finished` state
+
 ## [3.6.1]
 
 ### Fixed
@@ -565,6 +573,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.7.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.6.1...v3.7.0
 [3.6.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.6.0...v3.6.1
 [3.6.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.4.6...v3.5.0
