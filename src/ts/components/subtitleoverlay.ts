@@ -66,8 +66,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.subtitleContainerManager.removeLabel(this.previewSubtitle);
       }
 
-      this.subtitleContainerManager.addLabel(labelToAdd, event);
-
+      this.subtitleContainerManager.addLabel(labelToAdd);
       this.updateComponents();
       this.show();
     });
@@ -76,7 +75,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       let labelToRemove = subtitleManager.cueExit(event);
 
       if (labelToRemove) {
-        this.subtitleContainerManager.removeLabel(labelToRemove, event);
+        this.subtitleContainerManager.removeLabel(labelToRemove);
         this.updateComponents();
       }
 
@@ -277,14 +276,27 @@ interface ActiveSubtitleCueMap {
   [id: string]: ActiveSubtitleCue[];
 }
 
-class SubtitleLabel extends Label<LabelConfig> {
+interface SubtitleLabelConfig extends LabelConfig {
+  region?: string;
+  regionStyle?: string;
+}
 
-  constructor(config: LabelConfig = {}) {
+class SubtitleLabel extends Label<SubtitleLabelConfig> {
+
+  constructor(config: SubtitleLabelConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitle-label',
     }, this.config);
+  }
+
+  getRegion(): string {
+    return this.config.region;
+  }
+
+  getRegionStyle(): string {
+    return this.config.regionStyle;
   }
 }
 
@@ -330,6 +342,8 @@ class ActiveSubtitleManager {
       // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
       // else use the plain text
       text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
+      region: event.region,
+      regionStyle: event.regionStyle,
     });
 
     // Create array for id if it does not exist
@@ -425,7 +439,6 @@ class ActiveSubtitleManager {
 
 export class SubtitleRegionContainerManager {
   private subtitleRegionContainers: { [regionName: string]: SubtitleRegionContainer } = {};
-  private labelsInRegionCount: { [regionName: string]: number } = {};
 
   /**
    * @param subtitleOverlay Reference to the subtitle overlay for adding and removing the containers.
@@ -435,17 +448,45 @@ export class SubtitleRegionContainerManager {
   }
 
   /**
+   * Creates and wraps a subtitle label into a container div based on the subtitle region.
+   * If the subtitle has positioning information it is added to the container.
+   * @param label The subtitle label to wrap
+   */
+  addLabel(label: SubtitleLabel): void {
+    const regionName = label.getRegion() || 'default';
+    if (!this.subtitleRegionContainers[regionName]) {
+      const regionContainer = new SubtitleRegionContainer({
+        cssClass: `subtitle-position-${regionName}`,
+      });
+
+      this.subtitleRegionContainers[regionName] = regionContainer;
+
+      if (label.getRegionStyle()) {
+        regionContainer.getDomElement().attr('style', label.getRegionStyle());
+      } else {
+        // getDomElement needs to be called at least once to ensure the component exists
+        regionContainer.getDomElement();
+      }
+
+      for (const regionName in this.subtitleRegionContainers) {
+        this.subtitleOverlay.addComponent(this.subtitleRegionContainers[regionName]);
+      }
+    }
+
+    this.subtitleRegionContainers[regionName].addLabel(label);
+  }
+
+  /**
    * Removes a subtitle label from a container.
    */
-  removeLabel(labelToRemove: SubtitleLabel, event?: SubtitleCueEvent): void {
-    const region = event && event.region || 'default';
+  removeLabel(label: SubtitleLabel): void {
+    const region = label.getRegion() || 'default';
     for (const regionName in this.subtitleRegionContainers) {
-      this.subtitleRegionContainers[regionName].removeLabel(labelToRemove);
+      this.subtitleRegionContainers[regionName].removeLabel(label);
     }
-    this.labelsInRegionCount[region]--;
 
     // Remove container if no more labels are displayed
-    if (this.labelsInRegionCount[region] === 0) {
+    if (this.subtitleRegionContainers[region].isEmpty()) {
       this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[region]);
       delete this.subtitleRegionContainers[region];
     }
@@ -460,44 +501,12 @@ export class SubtitleRegionContainerManager {
     }
 
     this.subtitleRegionContainers = {};
-    this.labelsInRegionCount = {};
-  }
-
-  /**
-   * Creates and wraps a subtitle label into a container div based on the subtitle region.
-   * If the subtitle has positioning information it is added to the container.
-   * @param label The subtitle label to wrap
-   * @param event Subtitle cue event that contains the positoning information
-   */
-  addLabel(label: SubtitleLabel, event?: SubtitleCueEvent): void {
-    const regionName = event && event.region || 'default';
-    if (!this.subtitleRegionContainers[regionName]) {
-      const regionContainer = new SubtitleRegionContainer({
-        cssClass: `subtitle-position-${regionName}`,
-      });
-
-      this.labelsInRegionCount[regionName] = 1;
-      this.subtitleRegionContainers[regionName] = regionContainer;
-
-      if (event && event.regionStyle) {
-        regionContainer.getDomElement().attr('style', event.regionStyle);
-      } else {
-        // getDomElement needs to be called at least once to ensure the component exists
-        regionContainer.getDomElement();
-      }
-
-      for (const regionName in this.subtitleRegionContainers) {
-        this.subtitleOverlay.addComponent(this.subtitleRegionContainers[regionName]);
-      }
-    } else {
-      this.labelsInRegionCount[regionName]++;
-    }
-
-    this.subtitleRegionContainers[regionName].addLabel(label);
   }
 }
 
 class SubtitleRegionContainer extends Container<ContainerConfig> {
+  private labelCount = 0;
+
   constructor(config: ContainerConfig = {}) {
     super(config);
 
@@ -507,12 +516,18 @@ class SubtitleRegionContainer extends Container<ContainerConfig> {
   }
 
   addLabel(labelToAdd: SubtitleLabel) {
+    this.labelCount++;
     this.addComponent(labelToAdd);
     this.updateComponents();
   }
 
   removeLabel(labelToRemove: SubtitleLabel): void {
+    this.labelCount--;
     this.removeComponent(labelToRemove);
     this.updateComponents();
+  }
+
+  public isEmpty(): boolean {
+    return this.labelCount === 0;
   }
 }
