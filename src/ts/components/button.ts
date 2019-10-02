@@ -1,6 +1,7 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
+import localizer from '../localizer';
 
 /**
  * Configuration interface for a {@link Button} component.
@@ -31,14 +32,14 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
 
   protected toDomElement(): DOM {
     // Create the button element with the text label
+    let text = localizer.get(this.config.text);
     let buttonElement = new DOM('button', {
       'type': 'button',
       'id': this.config.id,
       'class': this.getCssClasses(),
     }).append(new DOM('span', {
       'class': this.prefixCss('label'),
-    }).html(this.config.text));
-
+    }).html(localizer.get(this.config.text)));
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', () => {
       this.onClickEvent();

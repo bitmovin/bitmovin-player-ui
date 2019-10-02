@@ -3,6 +3,7 @@ import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { LocalizerType } from '../localization';
 
 /**
  * Base configuration interface for a component.
@@ -182,6 +183,7 @@ export class Component<Config extends ComponentConfig> {
     }, {});
   }
 
+  public localize: LocalizerType;
   /**
    * Initializes the component, e.g. by applying config settings.
    * This method must not be called from outside the UI framework.
@@ -233,6 +235,8 @@ export class Component<Config extends ComponentConfig> {
     this.getDomElement().on('mouseleave', () => {
       this.onHoverChangedEvent(false);
     });
+
+    this.localize = (selector: string, config: any) => uimanager.localize(selector, config);
   }
 
   /**

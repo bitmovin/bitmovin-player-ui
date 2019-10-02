@@ -53,7 +53,9 @@ export class PlaybackSpeedSelectBox extends SelectBox {
       if (element !== 1) {
         this.addItem(String(element), `${element}x`);
       } else {
-        this.addItem(String(element), 'Normal');
+        this.addItem(String(element), localizer.get('Normal', {
+          language: 'en' // TODO: add language support
+        }));
       }
     });
   }

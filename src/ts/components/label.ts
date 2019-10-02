@@ -1,6 +1,7 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
+import localizer from '../localizer';
 
 /**
  * Configuration interface for a {@link Label} component.
@@ -39,11 +40,13 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     this.text = this.config.text;
   }
 
+
   protected toDomElement(): DOM {
+    console.log(this.localize);
     let labelElement = new DOM('span', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    }).html(this.text);
+    }).html(localizer.get(this.text));
 
     labelElement.on('click', () => {
       this.onClickEvent();

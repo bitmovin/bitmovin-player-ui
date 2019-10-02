@@ -2,6 +2,7 @@ import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import localizer from '../localizer''
 
 /**
  * A select box providing a selection between 'auto' and the available video qualities.
@@ -35,7 +36,7 @@ export class VideoQualitySelectBox extends SelectBox {
 
       if (this.hasAuto) {
         // Add entry for automatic quality switching (default setting)
-        this.addItem('auto', 'auto');
+        this.addItem('auto', localizer.get('auto'));
       }
 
       // Add video qualities

@@ -1,6 +1,7 @@
 import { ListItem, ListSelector, ListSelectorConfig } from './components/listselector';
 import { UIInstanceManager } from './uimanager';
 import { PlayerAPI, SubtitleEvent, SubtitleTrack } from 'bitmovin-player';
+import localizer from './localizer';
 
 /**
  * Helper class to handle all subtitle related events
@@ -84,7 +85,7 @@ export class SubtitleSwitchHandler {
 
     const offListItem: ListItem = {
       key: SubtitleSwitchHandler.SUBTITLES_OFF_KEY,
-      label: this.uimanager.localize('settings.subtitles.off'),
+      label: localizer.get('off'),
     };
 
     const subtitles = this.player.subtitles.list();
