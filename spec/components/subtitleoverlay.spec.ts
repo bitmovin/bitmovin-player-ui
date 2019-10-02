@@ -1,6 +1,6 @@
 import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
 import { UIInstanceManager } from '../../src/ts/uimanager';
-import {SubtitleOverlay, SubtitleRegionContainerManager } from '../../src/ts/components/subtitleoverlay';
+import { SubtitleOverlay, SubtitleRegionContainerManager } from '../../src/ts/components/subtitleoverlay';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -33,7 +33,6 @@ describe('SubtitleOverlay', () => {
       const mockDomElement = MockHelper.generateDOMMock();
       const removeLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'removeLabel');
       jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
-      jest.setTimeout(10);
       playerMock.eventEmitter.fireSubtitleCueExitEvent();
       expect(removeLabelSpy).toHaveBeenCalled();
     });
