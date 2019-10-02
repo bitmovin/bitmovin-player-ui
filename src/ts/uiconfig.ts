@@ -1,4 +1,5 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/errormessageoverlay';
+import {  BitmovinPlayerUiLocalizationConfig } from './localization/i18n';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -67,4 +68,8 @@ export interface UIConfig {
    * For an example have a look at {@link ErrorMessageOverlayConfig.messages}
    */
   errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
+  /**
+   * 
+   */
+  localization?: BitmovinPlayerUiLocalizationConfig;
 }

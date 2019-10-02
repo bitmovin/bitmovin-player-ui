@@ -4,12 +4,14 @@ export interface BitmovinPlayerUiVocabulary {
   [key: string]: string;
 }
 
+interface TranslanslationsType {
+  [key: string]: BitmovinPlayerUiVocabulary;
+}
+
 export interface BitmovinPlayerUiLocalizationConfig {
   language: string;
   fallbackLanguages?: string[]; // in the order they are given.
-  translations: {
-    [key: string]: BitmovinPlayerUiVocabulary;
-  },
+  translations: TranslanslationsType;
 }
 
 interface BitmovinPlayerUiTranslationConfig {
@@ -21,13 +23,12 @@ interface BitmovinPlayerUiTranslationConfig {
 //#endregion
 
 //#region Default Values
+const defaultTranslations = { 'en': {}}; // English translation is as same as the keys we provide.
 const defaultLocalizationConfig: BitmovinPlayerUiLocalizationConfig = {
   language: 'en',
-  translations: {
-    'en': {}, // English translation is as same as the keys we provide.
-  },
+  fallbackLanguages: ['en'],
+  translations: defaultTranslations,
 };
-
 //#endregion
 
 
@@ -35,9 +36,7 @@ const defaultLocalizationConfig: BitmovinPlayerUiLocalizationConfig = {
 
 class I18n {
   private language: string;
-  private lexicon: Map<string, BitmovinPlayerUiVocabulary>;
-  
-  private fallbackLanguages?: string[];
+  private vocabulary: BitmovinPlayerUiVocabulary;
 
 
   constructor(config: BitmovinPlayerUiLocalizationConfig) {
@@ -45,17 +44,27 @@ class I18n {
   }
 
 
-
   public setConfig(config: BitmovinPlayerUiLocalizationConfig) {
-    const { language, translations, fallbackLanguages} = config;
+    const { language  } = config;
     this.language = language;
-    this.lexicon = new Map(Object.keys(translations).map(k => [k, translations[k]]));
-    this.fallbackLanguages = fallbackLanguages;
-
+    const translations = { ...defaultTranslations, ...config.translations};
+    // we add 'en' as default fallback if doesn't exist
+    const fallbackLanguages = Array.from( new Set([...(config.fallbackLanguages || []), 'en'])); 
+    this.initializeVocabulary(language, translations, fallbackLanguages || [language]); // language is the default fallback.
   }
 
-  public setLanguage(language: string) {
-    this.language = language;
+  private initializeVocabulary(language: string, translations: TranslanslationsType, fallbackLanguages: string[]) {
+    const uniqueFallbacksArray = Array.from(new Set([
+      ...fallbackLanguages,
+      ...Object.keys(translations),
+    ])).filter(l => l !== this.language); // remove the current language to add it as last item
+
+    // reverse() so that we prioritize fallback languages over  the keys received translations translations.
+    this.vocabulary = [...uniqueFallbacksArray.reverse(), language] 
+      .reduce((vocab: BitmovinPlayerUiVocabulary, lang: string) => ({
+        ...vocab,
+        ...(translations[lang] || {}),
+    }), {});
   }
 
   private extractVariablesFromTranslationString(translation: string, values: {[key: string]: any} = {}) {
@@ -66,19 +75,10 @@ class I18n {
       .map(([match, key]) => ({ match, value: values[key]}));
   }
 
+
   public t(key: string, config: BitmovinPlayerUiTranslationConfig = {}): string {
-    const { values, language} = config;
-
-    const translationString = this.lexicon.get(language != null ? language : this.language)[key];
-
-    if (translationString == null) {
-      if (this.fallbackLanguages.length >= 1) {
-        /**
-         * @todo try fallback languages and return the one you find
-         */
-      }
-      return key; // return the key by default which is language: EN
-    }
+    const { values} = config;
+    const translationString = this.vocabulary[key] || key;
 
     const translationVariables = this.extractVariablesFromTranslationString(translationString, values);
     return translationVariables.reduce((acc: string, { match, value}) => acc.replace(match, value), translationString);
