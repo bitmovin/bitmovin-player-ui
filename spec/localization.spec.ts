@@ -11,6 +11,9 @@ import i18n from '../src/ts/localization/i18n';
 
 
 const fallbackTest = 'fallback test';
+const dynamicTest = 'dynamic';
+const dynamicEnTest = 'dynamic {value}';
+const dynamicDeTest = 'dynamisch {value}';
 const successEn = 'success';
 const successDe = 'erfolg';
 const successIt = 'successo';
@@ -25,9 +28,11 @@ const defaultConfig = {
     'en': {
       'test': successEn,
       [fallbackTest]: successEn,
+      [dynamicTest]: dynamicEnTest,
     },
     'de': {
         'test': successDe,
+        [dynamicTest]: dynamicDeTest,
     },
   },
 };
@@ -53,7 +58,6 @@ describe('Localization', () => {
     });
   });
 
-
   describe('Fallback\'s', () => {
 
     it('should fall back to `key` if it is not in vocabulary', () => {
@@ -70,7 +74,27 @@ describe('Localization', () => {
       expect(i18n.t(fallbackTest)).toEqual(successIt);
     });
 
-  })
+  });
 
+  describe('dynamic text translations', () => {
+    it('should insert value to dynamic text in english', () => {
+      expect(i18n.t(dynamicTest, { values: { value: 'Balloon'}})).toEqual(`dynamic Balloon`);
+    });
+
+    it('should insert value to dynamic text in German', () => {
+      i18n.setConfig({...defaultConfig, language: 'de'});
+      expect(i18n.t(dynamicTest, { values: { value: 'Balloon'}})).toEqual(`dynamisch Balloon`);
+    });
+    
+    it('should (fallback) insert value to dynamic text in english when localization key is not set', () => {
+      i18n.setConfig({...defaultConfig, language: 'it'});
+      expect(i18n.t(dynamicTest, { values: { value: 'Balloon'}})).toEqual(`dynamic Balloon`);
+    });
   
+    it('should (fallback) insert value to dynamic text in german when localization key is not set and German is prioritized', () => {
+      i18n.setConfig({...defaultConfig, language: 'it', fallbackLanguages: ['de', 'en']});
+      expect(i18n.t(dynamicTest, { values: { value: 'Balloon'}})).toEqual(`dynamisch Balloon`);
+    });
+  });
+
 });

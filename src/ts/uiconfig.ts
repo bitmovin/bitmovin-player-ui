@@ -69,7 +69,8 @@ export interface UIConfig {
    */
   errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
   /**
-   * 
+   * Provide configuration to support Multiple UI languages
+   * default language: 'en'
    */
   localization?: BitmovinPlayerUiLocalizationConfig;
 }
