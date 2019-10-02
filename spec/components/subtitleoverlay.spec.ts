@@ -6,7 +6,6 @@ let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
 let subtitleOverlay: SubtitleOverlay;
 
-jest.mock('../../src/ts/components/label');
 jest.mock('../../src/ts/components/container');
 
 let subtitleRegionContainerManagerMock: SubtitleRegionContainerManager;
