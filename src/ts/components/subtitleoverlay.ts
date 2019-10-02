@@ -291,11 +291,11 @@ class SubtitleLabel extends Label<SubtitleLabelConfig> {
     }, this.config);
   }
 
-  getRegion(): string {
+  get region(): string {
     return this.config.region;
   }
 
-  getRegionStyle(): string {
+  get regionStyle(): string {
     return this.config.regionStyle;
   }
 }
@@ -453,7 +453,7 @@ export class SubtitleRegionContainerManager {
    * @param label The subtitle label to wrap
    */
   addLabel(label: SubtitleLabel): void {
-    const regionName = label.getRegion() || 'default';
+    const regionName = label.region || 'default';
     if (!this.subtitleRegionContainers[regionName]) {
       const regionContainer = new SubtitleRegionContainer({
         cssClass: `subtitle-position-${regionName}`,
@@ -461,8 +461,8 @@ export class SubtitleRegionContainerManager {
 
       this.subtitleRegionContainers[regionName] = regionContainer;
 
-      if (label.getRegionStyle()) {
-        regionContainer.getDomElement().attr('style', label.getRegionStyle());
+      if (label.regionStyle) {
+        regionContainer.getDomElement().attr('style', label.regionStyle);
       } else {
         // getDomElement needs to be called at least once to ensure the component exists
         regionContainer.getDomElement();
@@ -480,7 +480,7 @@ export class SubtitleRegionContainerManager {
    * Removes a subtitle label from a container.
    */
   removeLabel(label: SubtitleLabel): void {
-    const region = label.getRegion() || 'default';
+    const region = label.region || 'default';
     for (const regionName in this.subtitleRegionContainers) {
       this.subtitleRegionContainers[regionName].removeLabel(label);
     }
