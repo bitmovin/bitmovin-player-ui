@@ -85,12 +85,12 @@ describe('Localization', () => {
       i18n.setConfig({...defaultConfig, language: 'de'});
       expect(i18n.t(dynamicTest, { values: { value: 'Balloon'}})).toEqual(`dynamisch Balloon`);
     });
-    
+
     it('should (fallback) insert value to dynamic text in english when localization key is not set', () => {
       i18n.setConfig({...defaultConfig, language: 'it'});
       expect(i18n.t(dynamicTest, { values: { value: 'Balloon'}})).toEqual(`dynamic Balloon`);
     });
-  
+
     it('should (fallback) insert value to dynamic text in german when localization key is not set and German is prioritized', () => {
       i18n.setConfig({...defaultConfig, language: 'it', fallbackLanguages: ['de', 'en']});
       expect(i18n.t(dynamicTest, { values: { value: 'Balloon'}})).toEqual(`dynamisch Balloon`);

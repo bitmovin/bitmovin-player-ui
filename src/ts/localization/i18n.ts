@@ -47,20 +47,28 @@ class I18n {
   public setConfig(config: BitmovinPlayerUiLocalizationConfig) {
     const { language  } = config;
     this.language = language;
+
     const translations = { ...defaultTranslations, ...config.translations};
-    // we add 'en' as default fallback if doesn't exist
-    const fallbackLanguages = Array.from( new Set([...(config.fallbackLanguages || []), 'en'])); 
-    this.initializeVocabulary(language, translations, fallbackLanguages || [language]); // language is the default fallback.
+    const fallbackLanguages = this.initializeFallbackLanguages(translations, config.fallbackLanguages);
+
+    this.initializeVocabulary(language, translations, fallbackLanguages);
+  }
+
+  private initializeFallbackLanguages(translations: TranslanslationsType, fallbackLanguages?: string[]) {
+    /**
+     * we extend fallback languages with user-defined translation keys.
+     * 'en' added statically to ensure it will be prioritized over the values of translation keys.
+     * new Set([]) will remove the duplicate and help us to add default fallbacks while respecting the order of user-defined fallbackLanguages
+     * removed 'translation' because it can't be fallback to itself.
+     */
+    return Array
+      .from(new Set([...(fallbackLanguages || []), 'en', ...Object.keys(translations)]))
+      .filter(l => l !== this.language);
   }
 
   private initializeVocabulary(language: string, translations: TranslanslationsType, fallbackLanguages: string[]) {
-    const uniqueFallbacksArray = Array.from(new Set([
-      ...fallbackLanguages,
-      ...Object.keys(translations),
-    ])).filter(l => l !== this.language); // remove the current language to add it as last item
-
-    // reverse() so that we prioritize fallback languages over  the keys received translations translations.
-    this.vocabulary = [...uniqueFallbacksArray.reverse(), language] 
+    // reverse() to ensure we prioritize user-defined fallbackLanguages right after current language.
+    this.vocabulary = [...fallbackLanguages.reverse(), language] 
       .reduce((vocab: BitmovinPlayerUiVocabulary, lang: string) => ({
         ...vocab,
         ...(translations[lang] || {}),
@@ -71,7 +79,7 @@ class I18n {
     const translationVariables = Array.from(translation.match(/{([A-Z]|[a-z])+}/g) || []); // looks for {anyValue}
 
     return translationVariables
-      .map(match => [match, match.slice(1, -1)]) 
+      .map(match => [match, match.slice(1, -1)])  // extract key for next step
       .map(([match, key]) => ({ match, value: values[key]}));
   }
 
