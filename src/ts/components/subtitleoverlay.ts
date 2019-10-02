@@ -17,9 +17,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private previewSubtitle: SubtitleLabel;
 
   private preprocessLabelEventCallback = new EventDispatcher<SubtitleCueEvent, SubtitleLabel>();
+  private subtitleContainerManager: SubtitleRegionContainerManager;
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
+
   // The number of rows in a cea608 grid
   private static readonly CEA608_NUM_ROWS = 15;
   // The number of columns in a cea608 grid
@@ -46,6 +48,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
+    this.subtitleContainerManager = new SubtitleRegionContainerManager(this);
+
     player.on(player.exports.PlayerEvent.CueEnter, (event: SubtitleCueEvent) => {
       // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
       if (event.position) {
@@ -59,11 +63,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.preprocessLabelEventCallback.dispatch(event, labelToAdd);
 
       if (this.previewSubtitleActive) {
-        this.removeComponent(this.previewSubtitle);
+        this.subtitleContainerManager.removeLabel(this.previewSubtitle);
       }
-      this.addComponent(labelToAdd);
-      this.updateComponents();
 
+      this.subtitleContainerManager.addLabel(labelToAdd);
+      this.updateComponents();
       this.show();
     });
 
@@ -71,7 +75,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       let labelToRemove = subtitleManager.cueExit(event);
 
       if (labelToRemove) {
-        this.removeComponent(labelToRemove);
+        this.subtitleContainerManager.removeLabel(labelToRemove);
         this.updateComponents();
       }
 
@@ -79,7 +83,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         if (!this.previewSubtitleActive) {
           this.hide();
         } else {
-          this.addComponent(this.previewSubtitle);
+          this.subtitleContainerManager.addLabel(this.previewSubtitle);
           this.updateComponents();
         }
       }
@@ -87,6 +91,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     let subtitleClearHandler = () => {
       this.hide();
+      this.subtitleContainerManager.clear();
       subtitleManager.clear();
       this.removeComponents();
       this.updateComponents();
@@ -249,7 +254,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   enablePreviewSubtitleLabel(): void {
     this.previewSubtitleActive = true;
     if (!this.subtitleManager.hasCues) {
-      this.addComponent(this.previewSubtitle);
+      this.subtitleContainerManager.addLabel(this.previewSubtitle);
       this.updateComponents();
       this.show();
     }
@@ -257,7 +262,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   removePreviewSubtitleLabel(): void {
     this.previewSubtitleActive = false;
-    this.removeComponent(this.previewSubtitle);
+    this.subtitleContainerManager.removeLabel(this.previewSubtitle);
     this.updateComponents();
   }
 }
@@ -271,14 +276,27 @@ interface ActiveSubtitleCueMap {
   [id: string]: ActiveSubtitleCue[];
 }
 
-class SubtitleLabel extends Label<LabelConfig> {
+interface SubtitleLabelConfig extends LabelConfig {
+  region?: string;
+  regionStyle?: string;
+}
 
-  constructor(config: LabelConfig = {}) {
+class SubtitleLabel extends Label<SubtitleLabelConfig> {
+
+  constructor(config: SubtitleLabelConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitle-label',
     }, this.config);
+  }
+
+  get region(): string {
+    return this.config.region;
+  }
+
+  get regionStyle(): string {
+    return this.config.regionStyle;
   }
 }
 
@@ -324,6 +342,8 @@ class ActiveSubtitleManager {
       // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
       // else use the plain text
       text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
+      region: event.region,
+      regionStyle: event.regionStyle,
     });
 
     // Create array for id if it does not exist
@@ -414,5 +434,100 @@ class ActiveSubtitleManager {
   clear(): void {
     this.activeSubtitleCueMap = {};
     this.activeSubtitleCueCount = 0;
+  }
+}
+
+export class SubtitleRegionContainerManager {
+  private subtitleRegionContainers: { [regionName: string]: SubtitleRegionContainer } = {};
+
+  /**
+   * @param subtitleOverlay Reference to the subtitle overlay for adding and removing the containers.
+   */
+  constructor(private subtitleOverlay: SubtitleOverlay) {
+    this.subtitleOverlay = subtitleOverlay;
+  }
+
+  /**
+   * Creates and wraps a subtitle label into a container div based on the subtitle region.
+   * If the subtitle has positioning information it is added to the container.
+   * @param label The subtitle label to wrap
+   */
+  addLabel(label: SubtitleLabel): void {
+    const regionName = label.region || 'default';
+    if (!this.subtitleRegionContainers[regionName]) {
+      const regionContainer = new SubtitleRegionContainer({
+        cssClass: `subtitle-position-${regionName}`,
+      });
+
+      this.subtitleRegionContainers[regionName] = regionContainer;
+
+      if (label.regionStyle) {
+        regionContainer.getDomElement().attr('style', label.regionStyle);
+      } else {
+        // getDomElement needs to be called at least once to ensure the component exists
+        regionContainer.getDomElement();
+      }
+
+      for (const regionName in this.subtitleRegionContainers) {
+        this.subtitleOverlay.addComponent(this.subtitleRegionContainers[regionName]);
+      }
+    }
+
+    this.subtitleRegionContainers[regionName].addLabel(label);
+  }
+
+  /**
+   * Removes a subtitle label from a container.
+   */
+  removeLabel(label: SubtitleLabel): void {
+    const region = label.region || 'default';
+    for (const regionName in this.subtitleRegionContainers) {
+      this.subtitleRegionContainers[regionName].removeLabel(label);
+    }
+
+    // Remove container if no more labels are displayed
+    if (this.subtitleRegionContainers[region].isEmpty()) {
+      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[region]);
+      delete this.subtitleRegionContainers[region];
+    }
+  }
+
+  /**
+   * Removes all subtitle containers.
+   */
+  clear(): void {
+    for (const regionName in this.subtitleRegionContainers) {
+      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[regionName]);
+    }
+
+    this.subtitleRegionContainers = {};
+  }
+}
+
+class SubtitleRegionContainer extends Container<ContainerConfig> {
+  private labelCount = 0;
+
+  constructor(config: ContainerConfig = {}) {
+    super(config);
+
+    this.config = this.mergeConfig(config, {
+      cssClasses: ['subtitle-region-container'],
+    }, this.config);
+  }
+
+  addLabel(labelToAdd: SubtitleLabel) {
+    this.labelCount++;
+    this.addComponent(labelToAdd);
+    this.updateComponents();
+  }
+
+  removeLabel(labelToRemove: SubtitleLabel): void {
+    this.labelCount--;
+    this.removeComponent(labelToRemove);
+    this.updateComponents();
+  }
+
+  public isEmpty(): boolean {
+    return this.labelCount === 0;
   }
 }
