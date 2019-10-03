@@ -47,20 +47,26 @@ class I18n {
 
 
   public setConfig(config: BitmovinPlayerUiLocalizationConfig) {
-    const { language  } = config;
+    const translations = { ...defaultTranslations, ...config.translations};
+    this.initializeLanguage(config.language, config.disableBrowserLanguageDetection, translations);
+    const fallbackLanguages = this.initializeFallbackLanguages(translations, config.fallbackLanguages);
+    this.initializeVocabulary(translations, fallbackLanguages);
+  }
 
-    if (config.disableBrowserLanguageDetection != null && config.disableBrowserLanguageDetection) {
-      this.language = language;
-    } else {
+  private initializeLanguage(language: string, disableBrowserLanguageDetection: boolean, translations: TranslanslationsType ) {
+    const shouldDetectLanguage = !(disableBrowserLanguageDetection != null && disableBrowserLanguageDetection);
+
+    if (shouldDetectLanguage) {
       let userLanguage = (window.navigator.language);
       userLanguage = userLanguage.slice(0, 2);
-      this.language = userLanguage;
+      // Check if  we also have it the language in the translations...
+      if (Object.keys(translations).findIndex((k) => k === userLanguage) !== -1) {
+        this.language = userLanguage;
+        return;
+      }
     }
 
-    const translations = { ...defaultTranslations, ...config.translations};
-    const fallbackLanguages = this.initializeFallbackLanguages(translations, config.fallbackLanguages);
-
-    this.initializeVocabulary(translations, fallbackLanguages);
+    this.language = language;
   }
 
   private initializeFallbackLanguages(translations: TranslanslationsType, fallbackLanguages?: string[]) {
