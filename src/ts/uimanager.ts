@@ -10,6 +10,7 @@ import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
+import i18n from './localization/i18n';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -128,6 +129,9 @@ export class UIManager {
 
     // ensure that at least the metadata object does exist in the uiconfig
     uiconfig.metadata = uiconfig.metadata ? uiconfig.metadata : {};
+    if (uiconfig != null && uiconfig.localization != null) {
+      i18n.setConfig(uiconfig.localization);
+    }
 
     this.config = {
       playbackSpeedSelectionEnabled: true, // Switch on speed selector by default

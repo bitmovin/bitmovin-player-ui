@@ -25,5 +25,6 @@
   "Window opacity": "Hintergrunddeckkraft (Textbox)",
   "Back": "Zurück",
   "Reset": "Zurücksetzen",
-  "Replay": "Wiederholen"
+  "Replay": "Wiederholen",
+  "This ad will end in {remainingTime} seconds.": "Diese Anzeige endet in {remainingTime} Sekunden"
 }

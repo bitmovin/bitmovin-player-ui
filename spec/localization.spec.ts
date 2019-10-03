@@ -1,12 +1,3 @@
-// allow customer to pass localization Config.
-// support static text
-// support dynamic texts 'some value {value}'
-// add support for forced language selection on specific components. (example: Audio.off should always be in english)
-// replace all existing texts
-// support addition of fallback languages.
-// expose addLanguage and setLanguage methods via UIManager to the customer.
-// set language to default language of user if exists
-// provide a vocabulary template for the customer to edit.
 import i18n from '../src/ts/localization/i18n';
 
 
@@ -20,6 +11,7 @@ const successIt = 'successo';
 
 const defaultConfig = {
   language: 'en',
+  disableBrowserLanguageDetection: true,
   translations: {
     'it': {
       'test': successIt,

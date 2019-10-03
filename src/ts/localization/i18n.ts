@@ -1,4 +1,5 @@
-import vocabularyDe from './DE.json';
+import vocabularyDe from './de.json';
+import vocabularyEn from './en.json';
 //#region Interface and Type definitions
 export interface BitmovinPlayerUiVocabulary {
   [key: string]: string;
@@ -11,6 +12,7 @@ interface TranslanslationsType {
 export interface BitmovinPlayerUiLocalizationConfig {
   language: string;
   fallbackLanguages?: string[]; // in the order they are given.
+  disableBrowserLanguageDetection?: boolean; // will disable 
   translations: TranslanslationsType;
 }
 
@@ -23,15 +25,15 @@ interface BitmovinPlayerUiTranslationConfig {
 //#endregion
 
 //#region Default Values
-const defaultTranslations = { 'en': {}}; // English translation is as same as the keys we provide.
+const defaultTranslations = { 'en': vocabularyEn}; // English translation is as same as the keys we provide.
 const defaultLocalizationConfig: BitmovinPlayerUiLocalizationConfig = {
-  language: 'de',
+  language: 'en',
   fallbackLanguages: ['en'],
-  // translations: defaultTranslations,
-  translations: {
-    ...defaultTranslations,
-    de: vocabularyDe
-  }
+  translations: defaultTranslations,
+  //translations: {
+  //  ...defaultTranslations,
+  //  de: vocabularyDe
+  //}
 };
 //#endregion
 
@@ -50,12 +52,19 @@ class I18n {
 
   public setConfig(config: BitmovinPlayerUiLocalizationConfig) {
     const { language  } = config;
-    this.language = language;
+
+    if (config.disableBrowserLanguageDetection != null && config.disableBrowserLanguageDetection) {
+      this.language = language;
+    } else {
+      let userLanguage = (window.navigator.language);
+      userLanguage = userLanguage.slice(0, 2);
+      this.language = userLanguage;
+    }
 
     const translations = { ...defaultTranslations, ...config.translations};
     const fallbackLanguages = this.initializeFallbackLanguages(translations, config.fallbackLanguages);
 
-    this.initializeVocabulary(language, translations, fallbackLanguages);
+    this.initializeVocabulary(translations, fallbackLanguages);
   }
 
   private initializeFallbackLanguages(translations: TranslanslationsType, fallbackLanguages?: string[]) {
@@ -70,9 +79,9 @@ class I18n {
       .filter(l => l !== this.language);
   }
 
-  private initializeVocabulary(language: string, translations: TranslanslationsType, fallbackLanguages: string[]) {
+  private initializeVocabulary(translations: TranslanslationsType, fallbackLanguages: string[]) {
     // reverse() to ensure we prioritize user-defined fallbackLanguages right after current language.
-    this.vocabulary = [...fallbackLanguages.reverse(), language] 
+    this.vocabulary = [...fallbackLanguages.reverse(), this.language] 
       .reduce((vocab: BitmovinPlayerUiVocabulary, lang: string) => ({
         ...vocab,
         ...(translations[lang] || {}),
@@ -92,9 +101,9 @@ class I18n {
     if (key == null) { // because sometimes we try to get DomElement without configuring the component...
       return undefined;
     }
+
     const { values} = config;
     const translationString = this.vocabulary[key] || key;
-    console.log(`${key}: ${translationString}`);
 
     const translationVariables = this.extractVariablesFromTranslationString(translationString, values);
     return translationVariables.reduce((acc: string, { match, value}) => acc.replace(match, value), translationString);
