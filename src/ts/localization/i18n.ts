@@ -1,4 +1,4 @@
-
+import vocabularyDe from './DE.json';
 //#region Interface and Type definitions
 export interface BitmovinPlayerUiVocabulary {
   [key: string]: string;
@@ -25,9 +25,13 @@ interface BitmovinPlayerUiTranslationConfig {
 //#region Default Values
 const defaultTranslations = { 'en': {}}; // English translation is as same as the keys we provide.
 const defaultLocalizationConfig: BitmovinPlayerUiLocalizationConfig = {
-  language: 'en',
+  language: 'de',
   fallbackLanguages: ['en'],
-  translations: defaultTranslations,
+  // translations: defaultTranslations,
+  translations: {
+    ...defaultTranslations,
+    de: vocabularyDe
+  }
 };
 //#endregion
 
@@ -85,8 +89,12 @@ class I18n {
 
 
   public t(key: string, config: BitmovinPlayerUiTranslationConfig = {}): string {
+    if (key == null) { // because sometimes we try to get DomElement without configuring the component...
+      return undefined;
+    }
     const { values} = config;
     const translationString = this.vocabulary[key] || key;
+    console.log(`${key}: ${translationString}`);
 
     const translationVariables = this.extractVariablesFromTranslationString(translationString, values);
     return translationVariables.reduce((acc: string, { match, value}) => acc.replace(match, value), translationString);

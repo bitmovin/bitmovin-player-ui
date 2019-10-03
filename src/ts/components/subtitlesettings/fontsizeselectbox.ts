@@ -1,6 +1,7 @@
 import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import i18n from '../../localization/i18n';
 
 /**
  * A select box providing a selection of different font colors.
@@ -18,7 +19,7 @@ export class FontSizeSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, 'default');
+    this.addItem(null, i18n.t('default'));
     this.addItem('50', '50%');
     this.addItem('75', '75%');
     this.addItem('100', '100%');

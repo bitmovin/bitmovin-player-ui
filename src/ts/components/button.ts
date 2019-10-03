@@ -1,6 +1,7 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
+import i18n from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Button} component.
@@ -37,7 +38,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       'class': this.getCssClasses(),
     }).append(new DOM('span', {
       'class': this.prefixCss('label'),
-    }).html(this.config.text));
+    }).html(i18n.t(this.config.text)));
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', () => {

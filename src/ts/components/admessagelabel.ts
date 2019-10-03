@@ -2,6 +2,7 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
+import i18n from '../localization/i18n';
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
@@ -13,7 +14,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-label-ad-message',
-      text: 'This ad will end in {remainingTime} seconds.',
+      text: i18n.t('This ad will end in {remainingTime} seconds.') ,
     }, this.config);
   }
 
@@ -24,6 +25,12 @@ export class AdMessageLabel extends Label<LabelConfig> {
     let text = config.text;
 
     let updateMessageHandler = () => {
+      /**
+       * @todo(cagin): Remove this comment
+       * open for discussion:
+       * do we really handle the `variable replacement if we have such methods in the StringUtils?
+        * this.setText(StringUtils.replaceAdMessagePlaceholders(text, null, player));
+       */
       this.setText(StringUtils.replaceAdMessagePlaceholders(text, null, player));
     };
 
