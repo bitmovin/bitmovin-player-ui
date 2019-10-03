@@ -30,10 +30,6 @@ const defaultLocalizationConfig: BitmovinPlayerUiLocalizationConfig = {
   language: 'en',
   fallbackLanguages: ['en'],
   translations: defaultTranslations,
-  //translations: {
-  //  ...defaultTranslations,
-  //  de: vocabularyDe
-  //}
 };
 //#endregion
 
@@ -98,7 +94,7 @@ class I18n {
 
 
   public t(key: string, config: BitmovinPlayerUiTranslationConfig = {}): string {
-    if (key == null) { // because sometimes we try to get DomElement without configuring the component...
+    if (key == null) { // because sometimes we call toDomElement() without configuring the component...
       return undefined;
     }
 

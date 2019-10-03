@@ -39,7 +39,8 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     /**
      * @todo(cagin): open question:
      * is it better to localize in `constructor` in `configure` or in `toDomElement`
-     * what is the difference there ?
+     * what is the difference there ? 
+     * my preference was to make it in toDomElement(). are there any pitfalls that I don't see`
      */
 
     this.text = this.config.text;
@@ -49,9 +50,6 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     let labelElement = new DOM('span', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-      /**
-       * @todo(cagin): checkout the custom label localization possibilities.
-       */
     }).html(i18n.t(this.text));
 
     labelElement.on('click', () => {
