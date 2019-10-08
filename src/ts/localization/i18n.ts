@@ -1,5 +1,72 @@
 import vocabularyDe from './de.json';
 import vocabularyEn from './en.json';
+
+
+
+interface BimovinUIVocabulary {
+  'settings': string;
+  'settings.fullscreen': string;
+  'settings.video.quality': string;
+  'settings.audio.quality': string;
+  'settings.audio.track': string;
+  'settings.speed': string;
+  'settings.playPause': string;
+  'settings.open': string;
+  'settings.audio.mute': string;
+  'settings.subtitles': string;
+  
+  'labels.pictureInPicture': string;
+  'labels.appleAirplay': string;
+  'labels.googleCast': string;
+  'labels.vr': string;
+  'labels.off': string;
+  'settings.subtitles.fontSize': string;
+  'settings.subtitles.fontFamily': string;
+  'settings.subtitles.fontColor': string;
+  'settings.subtitles.fontOpacity': string;
+  'settings.subtitles.characterEdge': string;
+  'settings.subtitles.background.color': string;
+  'settings.subtitles.background.opacity': string;
+  'settings.window.color': string;
+  'settings.window.opacity': string;
+  'labels.back': string;
+  'labels.reset': string;
+  'labels.replay': string;
+  'messages.ads.remainingTime': string;
+}
+
+
+const englishVocabulary: BimovinUIVocabulary = {
+  'settings': 'Settings',
+  'settings.fullscreen': 'Fullscreen',
+  'settings.video.quality': 'Video Quality',
+  'settings.audio.quality': 'Audio Quality',
+  'settings.audio.track': 'Audio Track',
+  'settings.speed': 'Speed',
+  'settings.playPause': 'Play/Pause',
+  'settings.open': 'open',
+  'settings.audio.mute': 'Volume/Mute',
+  'settings.subtitles': 'Subtitles',
+  'labels.pictureInPicture': 'Picture-in-Picture',
+  'labels.appleAirplay': 'Apple AirPlay',
+  'labels.googleCast': 'Google Cast',
+  'labels.vr': 'VR',
+  'labels.off': 'off',
+  'settings.subtitles.fontSize': 'Font size',
+  'settings.subtitles.fontFamily': 'Font family',
+  'settings.subtitles.fontColor': 'Font color',
+  'settings.subtitles.fontOpacity': 'Font opacity',
+  'settings.subtitles.characterEdge': 'Character edge',
+  'settings.subtitles.background.color': 'Background color',
+  'settings.subtitles.background.opacity': 'Background opacity',
+  'settings.window.color': 'Window color',
+  'settings.window.opacity': 'Window opacity',
+  'labels.back': 'Back',
+  'labels.reset': 'Reset',
+  'labels.replay': 'Replay',
+  'messages.ads.remainingTime': 'This ad will end in {remainingTime} seconds.'
+}
+
 //#region Interface and Type definitions
 export interface BitmovinPlayerUiVocabulary {
   [key: string]: string;
