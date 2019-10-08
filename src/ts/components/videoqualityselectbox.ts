@@ -45,7 +45,7 @@ export class VideoQualitySelectBox extends SelectBox {
          * @todo(cagin): Remove this question
          * Open question: Should we also translate(give possibility to translate) quality labels or speed labels?
          */
-        this.addItem(videoQuality.id, videoQuality.label); 
+        this.addItem(videoQuality.id, videoQuality.label);
       }
 
       // Select initial quality

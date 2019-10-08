@@ -12,14 +12,12 @@ interface TranslanslationsType {
 export interface BitmovinPlayerUiLocalizationConfig {
   language: string;
   fallbackLanguages?: string[]; // in the order they are given.
-  disableBrowserLanguageDetection?: boolean; // will disable 
+  disableBrowserLanguageDetection?: boolean; // will disable
   translations: TranslanslationsType;
 }
 
 interface BitmovinPlayerUiTranslationConfig {
-  values?: {
-    [key: string]: any;
-  },
+  values?: { [key: string]: any };
   language?: string;
 }
 //#endregion
@@ -83,7 +81,7 @@ class I18n {
 
   private initializeVocabulary(translations: TranslanslationsType, fallbackLanguages: string[]) {
     // reverse() to ensure we prioritize user-defined fallbackLanguages right after current language.
-    this.vocabulary = [...fallbackLanguages.reverse(), this.language] 
+    this.vocabulary = [...fallbackLanguages.reverse(), this.language]
       .reduce((vocab: BitmovinPlayerUiVocabulary, lang: string) => ({
         ...vocab,
         ...(translations[lang] || {}),
