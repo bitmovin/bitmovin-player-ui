@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop-v2]
+
+### Changed
+- Hide UI even a element in `ControlBar` is currently hovered
+
 ## [2.22.0] (2019-09-24)
 	
 ### Changed
