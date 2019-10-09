@@ -1,7 +1,5 @@
 import {ContainerConfig, Container} from './container';
 import {UIInstanceManager} from '../uimanager';
-import {UIUtils} from '../uiutils';
-import {Spacer} from './spacer';
 
 /**
  * Configuration interface for the {@link ControlBar}.
