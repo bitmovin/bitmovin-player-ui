@@ -306,6 +306,14 @@ export class UIManager {
     resolveUiVariant(null);
   }
 
+  /**
+   * Exposes i18n to user
+   * @returns {I18nApi}
+   */
+  get i18n() {
+    return i18n;
+  }
+
   getConfig(): UIConfig {
     return this.config;
   }
