@@ -1,4 +1,4 @@
-import { i18n } from '../src/ts/localization/i18n';
+import { getLocalizedText, i18n } from '../src/ts/localization/i18n';
 
 
 const fallbackTest = 'fallback test';
@@ -31,34 +31,34 @@ describe('Localization', () => {
 
   describe('Locale initialiization', () => {
     it('should use vocabulary \'en\'', () => {
-      expect(i18n.t('test')).toEqual(successEn);
+      expect(getLocalizedText(i18n.t('test'))).toEqual(successEn);
     });
 
     it('should use vocabulary \'de\'', () => {
       i18n.setConfig({...defaultConfig, language: 'de'});
-      expect(i18n.t('test')).toEqual(successDe);
+      expect(getLocalizedText(i18n.t('test'))).toEqual(successDe);
     });
 
     it('should use vocabulary \'it\'', () => {
       i18n.setConfig({...defaultConfig, language: 'it'});
-      expect(i18n.t('test')).toEqual(successIt);
+      expect(getLocalizedText(i18n.t('test'))).toEqual(successIt);
     });
   });
 
   describe('Fallback\'s', () => {
 
     it('should fall back to `key` if it is not in vocabulary', () => {
-      expect(i18n.t('some word')).toEqual('some word');
+      expect(getLocalizedText(i18n.t('some word'))).toEqual('some word');
     });
 
     it('should fall back to english unless defined otherwise', () => {
       i18n.setConfig({...defaultConfig, language: 'de'});
-      expect(i18n.t(fallbackTest)).toEqual(successEn);
+      expect(getLocalizedText(i18n.t(fallbackTest))).toEqual(successEn);
     });
 
     it('should fall back to italian since we prioritize `it` fallback over `en`', () => {
       i18n.setConfig({...defaultConfig, language: 'de', fallbackLanguages: ['it', 'en']});
-      expect(i18n.t(fallbackTest)).toEqual(successIt);
+      expect(getLocalizedText(i18n.t(fallbackTest))).toEqual(successIt);
     });
 
   });

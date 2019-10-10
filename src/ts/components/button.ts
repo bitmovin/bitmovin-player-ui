@@ -1,6 +1,7 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
+import { LocalizableText, getLocalizedText } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Button} component.
@@ -9,7 +10,7 @@ export interface ButtonConfig extends ComponentConfig {
   /**
    * The text on the button.
    */
-  text?: string;
+  text?: LocalizableText;
 }
 
 /**
@@ -37,7 +38,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       'class': this.getCssClasses(),
     }).append(new DOM('span', {
       'class': this.prefixCss('label'),
-    }).html(this.config.text));
+    }).html(getLocalizedText(this.config.text)));
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', () => {
@@ -51,8 +52,8 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
    * Sets text on the label of the button.
    * @param text the text to put into the label of the button
    */
-  setText(text: string): void {
-    this.getDomElement().find('.' + this.prefixCss('label')).html(text);
+  setText(text: LocalizableText): void {
+    this.getDomElement().find('.' + this.prefixCss('label')).html(getLocalizedText(text));
   }
 
   protected onClickEvent() {

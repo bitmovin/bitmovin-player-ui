@@ -1,14 +1,19 @@
-import I18nApi, {  LocalizationConfig } from './i18nApi';
+import I18nApi, {  LocalizationConfig, BitmovinPlayerUiTranslations } from './i18nApi';
 import vocabularyDe from './de.json';
 import vocabularyEn from './en.json';
 
-const defaultBitmovinPlayerUiTranslations = {
+
+type LocalizableCallback = () => string;
+type LocalizableText = string | LocalizableCallback;
+const getLocalizedText = (text: LocalizableText) => typeof text === 'function' ? text() : text;
+
+const defaultBitmovinPlayerUiTranslations: BitmovinPlayerUiTranslations = {
   'en': vocabularyEn,
   'de': vocabularyDe,
 };
 
 const defaultLocalizationConfig: LocalizationConfig = {
-  language: 'de',
+  language: 'en',
   fallbackLanguages: ['en'],
   disableBrowserLanguageDetection: true,
   translations: defaultBitmovinPlayerUiTranslations,
@@ -21,4 +26,6 @@ export {
   i18n,
   defaultBitmovinPlayerUiTranslations,
   defaultLocalizationConfig,
+  LocalizableText,
+  getLocalizedText,
 };

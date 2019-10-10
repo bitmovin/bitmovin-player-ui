@@ -78,7 +78,7 @@ interface StaticVocabulary {
 export type Vocabulary<V> =  V & Partial<StaticVocabulary>;
 type StringKeyMap = {[key: string]: string};
 
-interface BitmovinPlayerUiTranslations {
+export interface BitmovinPlayerUiTranslations {
   [key: string]: Vocabulary<StringKeyMap>;
 }
 
@@ -89,7 +89,6 @@ export interface LocalizationConfig {
   translations: BitmovinPlayerUiTranslations;
 }
 
-
 export default class I18nApi {
   private language: string;
   private vocabulary: Vocabulary<StringKeyMap>;
@@ -99,15 +98,25 @@ export default class I18nApi {
   }
 
   public setConfig(config: LocalizationConfig) {
-    console.group('initializing');
-    console.log(config);
-    const translations = { ...defaultBitmovinPlayerUiTranslations, ...config.translations};
+    const translations = this.mergeTranslationsWithDefaultTranslations(config.translations);
     this.initializeLanguage(config.language, config.disableBrowserLanguageDetection, translations);
     const fallbackLanguages = this.initializeFallbackLanguages(translations, config.fallbackLanguages);
     this.initializeVocabulary(translations, fallbackLanguages);
-    console.log(this.vocabulary)
-    console.log(this.language)
-    console.groupEnd();
+  }
+
+  private containsKey(obj: object, key: string) {
+    return Object.keys(obj).indexOf(key) !== -1;
+  }
+
+  private mergeTranslationsWithDefaultTranslations(translations: BitmovinPlayerUiTranslations) {
+    const rawTranslations: BitmovinPlayerUiTranslations = { ...defaultBitmovinPlayerUiTranslations, ...translations};
+    return Object.keys(rawTranslations).reduce((acc, key) => {
+      let translation: Vocabulary<StringKeyMap> = rawTranslations[key as string];
+      if (this.containsKey(defaultBitmovinPlayerUiTranslations, key) && this.containsKey(translations, key)) {
+        translation = {...defaultBitmovinPlayerUiTranslations[key], ...translations[key]};
+      }
+      return { ...acc, [key]: translation };
+    }, {} as BitmovinPlayerUiTranslations);
   }
 
   private initializeLanguage(language: string, disableBrowserLanguageDetection: boolean, translations: BitmovinPlayerUiTranslations) {
@@ -145,22 +154,18 @@ export default class I18nApi {
   }
 
   public t<V extends Vocabulary<StringKeyMap> = Vocabulary<StringKeyMap>>(key: keyof V) {
-    if (key == null) { // because sometimes we call toDomElement() without configuring the component...
-      return undefined;
-    }
-    let translationString = this.vocabulary[key as string | number];
-    if (key === 'labels.default') {
-      // console.log(key);
-      // console.log(this.language);
-      // console.log(this.vocabulary);
+    return () => {
+      if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
+        return undefined;
+      }
+      let translationString = this.vocabulary[key as string | number];
 
-    }
-
-    if (translationString == null) {
-      console.warn(`We haven't been able to find a translation provided for key: '${key}'... The value of the key will be set to '${key}'.\n Please provide correct value via 'config' if this was not intended.`);
-      translationString = key as string;
-    }
-    return translationString;
+      if (translationString == null) {
+        console.warn(`We haven't been able to find a translation provided for key: '${key}'... The value of the key will be set to '${key}'.\n Please provide correct value via 'config' if this was not intended.`);
+        translationString = key as string;
+      }
+      return translationString;
+    };
   }
 
 }

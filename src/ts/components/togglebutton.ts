@@ -2,6 +2,7 @@ import {Button, ButtonConfig} from './button';
 import {NoArgs, EventDispatcher, Event} from '../eventdispatcher';
 import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { LocalizableText } from '../localization/i18n';
 
 /**
  * Configuration interface for a toggle button component.
@@ -18,7 +19,7 @@ export interface ToggleButtonConfig extends ButtonConfig {
   /**
    * The text on the button.
    */
-  text?: string;
+  text?: LocalizableText;
 }
 
 /**

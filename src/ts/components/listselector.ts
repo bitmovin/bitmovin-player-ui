@@ -1,6 +1,7 @@
 import {Component, ComponentConfig} from './component';
 import {EventDispatcher, Event} from '../eventdispatcher';
 import {ArrayUtils} from '../arrayutils';
+import { LocalizableText, getLocalizedText, i18n } from '../localization/i18n';
 
 /**
  * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.
@@ -103,8 +104,8 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param key the key of the item to add
    * @param label the (human-readable) label of the item to add
    */
-  addItem(key: string, label: string) {
-    const listItem = { key: key, label: label };
+  addItem(key: string, label: LocalizableText) {
+    const listItem = { key: key, label: getLocalizedText(label)};
 
     // Apply filter function
     if (this.config.filter && !this.config.filter(listItem)) {
@@ -187,7 +188,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   synchronizeItems(newItems: ListItem[]): void {
     newItems
       .filter((item) => !this.hasItem(item.key))
-      .forEach((item) => this.addItem(item.key, item.label));
+      .forEach((item) => this.addItem(item.key, getLocalizedText(i18n.t(item.label))));
 
     this.items
       .filter((item) => newItems.filter((i) => i.key === item.key).length === 0)

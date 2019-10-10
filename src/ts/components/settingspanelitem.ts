@@ -9,6 +9,7 @@ import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {PlaybackSpeedSelectBox} from './playbackspeedselectbox';
 import { PlayerAPI } from 'bitmovin-player';
+import { LocalizableText } from '../localization/i18n';
 
 /**
  * An item for a {@link SettingsPanelPage},
@@ -24,7 +25,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
   };
 
-  constructor(label: string | Component<ComponentConfig>, setting: Component<ComponentConfig>, config: ContainerConfig = {}) {
+  constructor(label: LocalizableText | Component<ComponentConfig>, setting: Component<ComponentConfig>, config: ContainerConfig = {}) {
     super(config);
 
     this.setting = setting;

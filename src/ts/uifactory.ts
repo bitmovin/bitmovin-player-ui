@@ -343,7 +343,6 @@ export namespace UIFactory {
   export function buildModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     // show smallScreen UI only on mobile/handheld devices
     let smallScreenSwitchWidth = 600;
-    i18n.setConfig(config.localization);
 
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
@@ -371,7 +370,6 @@ export namespace UIFactory {
   }
 
   export function buildModernSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    i18n.setConfig(config.localization);
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
@@ -386,7 +384,6 @@ export namespace UIFactory {
   }
 
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    i18n.setConfig(config.localization);
     return new UIManager(player, modernCastReceiverUI(), config);
   }
 }
