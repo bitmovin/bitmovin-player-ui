@@ -1,6 +1,7 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles the video view between normal/mono and VR/stereo.
@@ -12,7 +13,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-vrtogglebutton',
-      text: 'VR',
+      text: i18n.t('labels.vr'),
     }, this.config);
   }
 

@@ -2,6 +2,7 @@ import {ButtonConfig, Button} from './button';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A button to play/replay a video.
@@ -13,7 +14,7 @@ export class HugeReplayButton extends Button<ButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-hugereplaybutton',
-      text: 'Replay',
+      text: i18n.t('labels.replay'),
     }, this.config);
   }
 

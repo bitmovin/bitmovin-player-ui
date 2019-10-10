@@ -10,7 +10,7 @@ import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
-import i18n from './localization/i18n';
+import { i18n } from './localization/i18n';
 
 export interface InternalUIConfig extends UIConfig {
   events: {

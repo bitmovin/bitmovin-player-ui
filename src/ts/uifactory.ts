@@ -44,6 +44,7 @@ import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from './localization/i18n';
 
 export namespace UIFactory {
 
@@ -64,10 +65,10 @@ export namespace UIFactory {
 
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+        new SettingsPanelItem(i18n.t('settings.video.quality'), new VideoQualitySelectBox()),
+        new SettingsPanelItem(i18n.t('settings.speed'), new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem(i18n.t('settings.audio.track'), new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18n.t('settings.audio.quality'), new AudioQualitySelectBox()),
       ],
     });
 
@@ -86,12 +87,12 @@ export namespace UIFactory {
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
-      text: 'open',
+      text: i18n.t('settings.open'),
     });
 
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSettingsLabel({text: i18n.t('settings.subtitles'), opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox(),
       ));
 
@@ -155,7 +156,7 @@ export namespace UIFactory {
         new PlaybackToggleOverlay(),
         new Container({
           components: [
-            new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
+            new AdMessageLabel({ text: i18n.t('messages.ads.remainingTime')}),
             new AdSkipButton(),
           ],
           cssClass: 'ui-ads-status',
@@ -190,10 +191,10 @@ export namespace UIFactory {
 
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
-        new SettingsPanelItem('Video Quality', new VideoQualitySelectBox()),
-        new SettingsPanelItem('Speed', new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem('Audio Track', new AudioTrackSelectBox()),
-        new SettingsPanelItem('Audio Quality', new AudioQualitySelectBox()),
+        new SettingsPanelItem(i18n.t('settings.video.quality'), new VideoQualitySelectBox()),
+        new SettingsPanelItem(i18n.t('settings.speed'), new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem(i18n.t('settings.audio.track'), new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18n.t('settings.audio.quality'), new AudioQualitySelectBox()),
       ],
     });
 
@@ -213,12 +214,12 @@ export namespace UIFactory {
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
-      text: 'open',
+      text: i18n.t('settings.open'),
     });
 
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: 'Subtitles', opener: subtitleSettingsOpenButton}),
+        new SubtitleSettingsLabel({text: i18n.t('settings.subtitles'), opener: subtitleSettingsOpenButton}),
         new SubtitleSelectBox(),
       ));
 
@@ -342,6 +343,7 @@ export namespace UIFactory {
   export function buildModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     // show smallScreen UI only on mobile/handheld devices
     let smallScreenSwitchWidth = 600;
+    i18n.setConfig(config.localization);
 
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
@@ -369,6 +371,7 @@ export namespace UIFactory {
   }
 
   export function buildModernSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    i18n.setConfig(config.localization);
     return new UIManager(player, [{
       ui: modernSmallScreenAdsUI(),
       condition: (context: UIConditionContext) => {
@@ -383,6 +386,7 @@ export namespace UIFactory {
   }
 
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    i18n.setConfig(config.localization);
     return new UIManager(player, modernCastReceiverUI(), config);
   }
 }

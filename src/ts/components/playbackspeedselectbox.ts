@@ -2,7 +2,7 @@ import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
-import i18n from '../localization/i18n';
+import { i18n } from '../localization/i18n';
 
 /**
  * A select box providing a selection of different playback speeds.
@@ -54,7 +54,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
       if (element !== 1) {
         this.addItem(String(element), `${element}x`);
       } else {
-        this.addItem(String(element), i18n.t('Normal'));
+        this.addItem(String(element), i18n.t('labels.normal'));
       }
     });
   }

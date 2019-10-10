@@ -1,7 +1,6 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
-import i18n from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Label} component.
@@ -36,12 +35,6 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-label',
     } as Config, this.config);
-    /**
-     * @todo(cagin): open question:
-     * is it better to localize in `constructor` in `configure` or in `toDomElement`
-     * what is the difference there ?
-     * my preference was to make it in toDomElement(). are there any pitfalls that I don't see`
-     */
     this.text = this.config.text;
   }
 
@@ -49,7 +42,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     let labelElement = new DOM('span', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    }).html(i18n.t(this.text));
+    }).html(this.text);
 
     labelElement.on('click', () => {
       this.onClickEvent();

@@ -3,6 +3,7 @@ import {PlaybackToggleButton} from './playbacktogglebutton';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A button that overlays the video and toggles between playback and pause.
@@ -14,7 +15,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-hugeplaybacktogglebutton',
-      text: 'Play/Pause',
+      text: i18n.t('settings.playPause'),
     }, this.config);
   }
 

@@ -1,6 +1,7 @@
 import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../../localization/i18n';
 
 /**
  * A select box providing a selection of different font family.
@@ -18,14 +19,14 @@ export class FontFamilySelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, 'default');
-    this.addItem('monospacedserif', 'monospaced serif');
-    this.addItem('proportionalserif', 'proportional serif');
-    this.addItem('monospacedsansserif', 'monospaced sans serif');
-    this.addItem('proportionalsansserif', 'proportional sans serif');
-    this.addItem('casual', 'casual');
-    this.addItem('cursive', 'cursive');
-    this.addItem('smallcapital', 'small capital');
+    this.addItem(null, i18n.t('labels.default'));
+    this.addItem('monospacedserif', i18n.t('settings.subtitles.font.family.monospacedserif'));
+    this.addItem('proportionalserif', i18n.t('settings.subtitles.font.family.proportionalserif'));
+    this.addItem('monospacedsansserif', i18n.t('settings.subtitles.font.family.monospacedsansserif'));
+    this.addItem('proportionalsansserif', i18n.t('settings.subtitles.font.family.proportionalserif'));
+    this.addItem('casual', i18n.t('settings.subtitles.font.family.casual'));
+    this.addItem('cursive', i18n.t('settings.subtitles.font.family.cursive'));
+    this.addItem('smallcapital', i18n.t('settings.subtitles.font.family.smallcapital'));
 
     this.settingsManager.fontFamily.onChanged.subscribe((sender, property) => {
       if (property.isSet()) {

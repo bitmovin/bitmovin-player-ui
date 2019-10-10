@@ -1,6 +1,7 @@
 import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../../localization/i18n';
 
 /**
  * A select box providing a selection of different background colors.
@@ -18,15 +19,17 @@ export class WindowColorSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, 'default');
-    this.addItem('white', 'white');
-    this.addItem('black', 'black');
-    this.addItem('red', 'red');
-    this.addItem('green', 'green');
-    this.addItem('blue', 'blue');
-    this.addItem('cyan', 'cyan');
-    this.addItem('yellow', 'yellow');
-    this.addItem('magenta', 'magenta');
+    this.addItem(null, i18n.t('labels.default'));
+    this.addItem('white', i18n.t('colors.white'));
+    this.addItem('black', i18n.t('colors.black'));
+    this.addItem('red', i18n.t('colors.red'));
+    this.addItem('green', i18n.t('colors.green'));
+    this.addItem('blue', i18n.t('colors.blue'));
+    this.addItem('cyan', i18n.t('colors.cyan'));
+    this.addItem('yellow', i18n.t('colors.yellow'));
+    this.addItem('magenta', i18n.t('colors.magenta'));
+
+
 
     let setColorAndOpacity = () => {
       if (this.settingsManager.windowColor.isSet() && this.settingsManager.windowOpacity.isSet()) {
