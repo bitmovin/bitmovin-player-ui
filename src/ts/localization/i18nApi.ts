@@ -1,38 +1,33 @@
-import { defaultBitmovinPlayerUiTranslations } from "./i18n";
+import { defaultBitmovinPlayerUiTranslations } from './i18n';
 
 interface StaticVocabulary {
   'settings': string;
   'settings.video.quality': string;
   'settings.audio.quality': string;
   'settings.audio.track': string;
-  'settings.audio.mute' : string;
-  // Window
-  'settings.window.color' : string;
-  'settings.window.opacity' : string;
-  // Subtitles
-  'settings.subtitles' : string;
-  'settings.subtitles.font.color' : string;
-  'settings.subtitles.font.opacity' : string;
-  'settings.subtitles.background.color' : string;
+  'settings.audio.mute': string;
+  'settings.window.color': string;
+  'settings.window.opacity': string;
+  'settings.subtitles': string;
+  'settings.subtitles.font.color': string;
+  'settings.subtitles.font.opacity': string;
+  'settings.subtitles.background.color': string;
   'settings.subtitles.background.opacity': string;
-  // Other Settings
-  'settings.fullscreen' : string;
+  'settings.fullscreen': string;
   'settings.speed': string;
-  'settings.playPause' : string;
+  'settings.playPause': string;
   'settings.open': string;
-  // Labels
   'labels.pictureInPicture': string;
-  'labels.appleAirplay' : string;
+  'labels.appleAirplay': string;
   'labels.googleCast': string;
-  'labels.vr' : string;
+  'labels.vr': string;
   'labels.off': string;
   'labels.auto': string;
-  'labels.back' : string;
+  'labels.back': string;
   'labels.reset': string;
   'labels.replay': string;
   'labels.normal': string;
   'labels.default': string;
-  // Colors
   'colors.white': string;
   'colors.black': string;
   'colors.red': string;
@@ -41,13 +36,11 @@ interface StaticVocabulary {
   'colors.cyan': string;
   'colors.yellow': string;
   'colors.magenta': string;
-  // opacity
   'opacity.100': string;
   'opacity.75': string;
   'opacity.50': string;
   'opacity.25': string;
   'opacity.0': string;
-  // fontSize
   'settings.subtitles.font.size': string;
   'settings.subtitles.font.size.50': string;
   'settings.subtitles.font.size.75': string;
@@ -56,13 +49,11 @@ interface StaticVocabulary {
   'settings.subtitles.font.size.200': string;
   'settings.subtitles.font.size.300': string;
   'settings.subtitles.font.size.400': string;
-  // character Edge
   'settings.subtitles.characterEdge': string;
   'settings.subtitles.characterEdge.raised': string;
   'settings.subtitles.characterEdge.depressed': string;
   'settings.subtitles.characterEdge.uniform': string;
   'settings.subtitles.characterEdge.dropshadowed': string;
-  // font Family
   'settings.subtitles.font.family': string;
   'settings.subtitles.font.family.monospacedserif': string;
   'settings.subtitles.font.family.proportionalserif': string;
@@ -71,7 +62,6 @@ interface StaticVocabulary {
   'settings.subtitles.font.family.casual': string;
   'settings.subtitles.font.family.cursive': string;
   'settings.subtitles.font.family.smallcapital': string;
-  // Messages
   'messages.ads.remainingTime': string;
 }
 
