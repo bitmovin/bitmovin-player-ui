@@ -22,7 +22,7 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
   autoHideWhenNoActiveSettings?: boolean;
 }
 
-/**f
+/**
  * A button that toggles visibility of a settings panel.
  */
 export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfig> {

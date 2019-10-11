@@ -1,7 +1,7 @@
 import { ListItem, ListSelector, ListSelectorConfig } from './components/listselector';
 import { UIInstanceManager } from './uimanager';
 import { AudioTrackEvent, PlayerAPI, AudioTrack } from 'bitmovin-player';
-import { i18n, getLocalizedText } from './localization/i18n';
+import { i18n } from './localization/i18n';
 
 /**
  * Helper class to handle all audio tracks related events
@@ -47,7 +47,7 @@ export class AudioTrackSwitchHandler {
   private addAudioTrack = (event: AudioTrackEvent) => {
     const audioTrack = event.track;
     if (!this.listElement.hasItem(audioTrack.id)) {
-      this.listElement.addItem(audioTrack.id, getLocalizedText(i18n.t(audioTrack.label)));
+      this.listElement.addItem(audioTrack.id, i18n.t(audioTrack.label));
     }
   };
 

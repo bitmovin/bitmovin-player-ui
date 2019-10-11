@@ -1,6 +1,6 @@
-import { defaultBitmovinPlayerUiTranslations } from './i18n';
+import { defaultTranslations, LocalizableText } from './i18n';
 
-interface StaticVocabulary {
+interface Vocab {
   'settings': string;
   'settings.video.quality': string;
   'settings.audio.quality': string;
@@ -65,15 +65,15 @@ interface StaticVocabulary {
   'messages.ads.remainingTime': string;
 }
 
-export type Vocabulary<V> =  V & Partial<StaticVocabulary>;
+export type CustomVocabulary<V> = V & Partial<Vocab>;
 type StringKeyMap = {[key: string]: string};
 
 export interface BitmovinPlayerUiTranslations {
-  [key: string]: Vocabulary<StringKeyMap>;
+  [key: string]: CustomVocabulary<StringKeyMap>;
 }
 
 export interface LocalizationConfig {
-  language: string;
+  language: 'en' | 'de' | string;
   fallbackLanguages?: string[];
   disableBrowserLanguageDetection?: boolean;
   translations: BitmovinPlayerUiTranslations;
@@ -81,7 +81,7 @@ export interface LocalizationConfig {
 
 export default class I18nApi {
   private language: string;
-  private vocabulary: Vocabulary<StringKeyMap>;
+  private vocabulary: CustomVocabulary<StringKeyMap>;
 
   constructor(config: LocalizationConfig) {
     this.setConfig(config);
@@ -90,7 +90,7 @@ export default class I18nApi {
   public setConfig(config: LocalizationConfig) {
     const translations = this.mergeTranslationsWithDefaultTranslations(config.translations);
     this.initializeLanguage(config.language, config.disableBrowserLanguageDetection, translations);
-    const fallbackLanguages = this.initializeFallbackLanguages(translations, config.fallbackLanguages);
+    const fallbackLanguages = this. getConfiguredFallbackLanguages(translations, config.fallbackLanguages);
     this.initializeVocabulary(translations, fallbackLanguages);
   }
 
@@ -99,17 +99,21 @@ export default class I18nApi {
   }
 
   private mergeTranslationsWithDefaultTranslations(translations: BitmovinPlayerUiTranslations) {
-    const rawTranslations: BitmovinPlayerUiTranslations = { ...defaultBitmovinPlayerUiTranslations, ...translations};
+    const rawTranslations: BitmovinPlayerUiTranslations = { ...defaultTranslations, ...translations};
     return Object.keys(rawTranslations).reduce((acc, key) => {
-      let translation: Vocabulary<StringKeyMap> = rawTranslations[key as string];
-      if (this.containsKey(defaultBitmovinPlayerUiTranslations, key) && this.containsKey(translations, key)) {
-        translation = {...defaultBitmovinPlayerUiTranslations[key], ...translations[key]};
+      let translation: CustomVocabulary<StringKeyMap> = rawTranslations[key as string];
+      if (this.containsKey(defaultTranslations, key) && this.containsKey(translations, key)) {
+        translation = {...defaultTranslations[key], ...translations[key]};
       }
       return { ...acc, [key]: translation };
     }, {} as BitmovinPlayerUiTranslations);
   }
 
-  private initializeLanguage(language: string, disableBrowserLanguageDetection: boolean, translations: BitmovinPlayerUiTranslations) {
+  private initializeLanguage(
+    language: string,
+    disableBrowserLanguageDetection: boolean,
+    translations: BitmovinPlayerUiTranslations,
+  ) {
     const shouldDetectLanguage = !(disableBrowserLanguageDetection != null && disableBrowserLanguageDetection);
 
     if (shouldDetectLanguage) {
@@ -125,7 +129,7 @@ export default class I18nApi {
     this.language = language;
   }
 
-  private initializeFallbackLanguages(translations: BitmovinPlayerUiTranslations, fallbackLanguages?: string[]) {
+  private getConfiguredFallbackLanguages(translations: BitmovinPlayerUiTranslations, fallbackLanguages?: string[]) {
     /**
      * we extend fallback languages with user-defined translation keys.
      * 'en' added statically to ensure it will be prioritized over the values of translation keys.
@@ -143,7 +147,7 @@ export default class I18nApi {
       .reduce((vocab, lang) => ({...vocab, ...(translations[lang] || {})}), {});
   }
 
-  public t<V extends Vocabulary<StringKeyMap> = Vocabulary<StringKeyMap>>(key: keyof V) {
+  public t<V extends CustomVocabulary<StringKeyMap> = CustomVocabulary<StringKeyMap>>(key: keyof V) {
     return () => {
       if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
         return undefined;
@@ -156,6 +160,11 @@ export default class I18nApi {
       }
       return translationString;
     };
+  }
+
+
+  public getLocalizedText(text: LocalizableText) {
+    return typeof text === 'function' ? text() : text;
   }
 
 }

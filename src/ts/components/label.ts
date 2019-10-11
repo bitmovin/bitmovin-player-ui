@@ -1,7 +1,7 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
-import { LocalizableText, getLocalizedText } from '../localization/i18n';
+import { LocalizableText, i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Label} component.
@@ -43,7 +43,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     let labelElement = new DOM('span', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    }).html(getLocalizedText(this.text));
+    }).html(i18n.getLocalizedText(this.text));
 
     labelElement.on('click', () => {
       this.onClickEvent();
@@ -62,8 +62,8 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     }
 
     this.text = text;
-    this.getDomElement().html(getLocalizedText(text));
-    this.onTextChangedEvent(getLocalizedText(text));
+    this.getDomElement().html(i18n.getLocalizedText(text));
+    this.onTextChangedEvent(i18n.getLocalizedText(text));
   }
 
   /**
@@ -71,7 +71,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * @return {string} The text on the label
    */
   getText(): string {
-    return getLocalizedText(this.text);
+    return i18n.getLocalizedText(this.text);
   }
 
   /**
