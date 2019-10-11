@@ -8,7 +8,7 @@ import { LocalizableText, i18n } from '../localization/i18n';
  */
 export interface LabelConfig extends ComponentConfig {
   /**
-   * The text on the label.
+   * The text as string or localize callback on the label.
    */
   text?: LocalizableText;
 }
@@ -62,8 +62,9 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     }
 
     this.text = text;
-    this.getDomElement().html(i18n.getLocalizedText(text));
-    this.onTextChangedEvent(i18n.getLocalizedText(text));
+    const localizedText = i18n.getLocalizedText(text);
+    this.getDomElement().html(localizedText);
+    this.onTextChangedEvent(localizedText);
   }
 
   /**

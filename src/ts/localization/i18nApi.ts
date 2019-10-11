@@ -114,7 +114,7 @@ export default class I18nApi {
     disableBrowserLanguageDetection: boolean,
     translations: BitmovinPlayerUiTranslations,
   ) {
-    const shouldDetectLanguage = !(disableBrowserLanguageDetection != null && disableBrowserLanguageDetection);
+    const shouldDetectLanguage = !Boolean(disableBrowserLanguageDetection);
 
     if (shouldDetectLanguage) {
       let userLanguage = (window.navigator.language);

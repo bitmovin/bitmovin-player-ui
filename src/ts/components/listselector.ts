@@ -8,7 +8,7 @@ import { LocalizableText, i18n } from '../localization/i18n';
  */
 export interface ListItem {
   key: string;
-  label: string;
+  label: LocalizableText;
 }
 
 /**
@@ -188,7 +188,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   synchronizeItems(newItems: ListItem[]): void {
     newItems
       .filter((item) => !this.hasItem(item.key))
-      .forEach((item) => this.addItem(item.key, i18n.getLocalizedText(i18n.t(item.label))));
+      .forEach((item) => this.addItem(item.key, item.label));
 
     this.items
       .filter((item) => newItems.filter((i) => i.key === item.key).length === 0)

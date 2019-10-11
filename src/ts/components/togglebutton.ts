@@ -17,7 +17,7 @@ export interface ToggleButtonConfig extends ButtonConfig {
    */
   offClass?: string;
   /**
-   * The text on the button.
+   * The text as string or as localize callback on the button.
    */
   text?: LocalizableText;
 }

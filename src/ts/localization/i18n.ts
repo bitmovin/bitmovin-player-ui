@@ -2,7 +2,6 @@ import I18nApi, { LocalizationConfig, BitmovinPlayerUiTranslations } from './i18
 import vocabularyDe from './languages/de.json';
 import vocabularyEn from './languages/en.json';
 
-
 type LocalizableCallback = () => string;
 type LocalizableText = string | LocalizableCallback;
 
@@ -17,7 +16,6 @@ const defaultLocalizationConfig: LocalizationConfig = {
   disableBrowserLanguageDetection: true,
   translations: defaultTranslations,
 };
-
 
 const i18n = new I18nApi(defaultLocalizationConfig);
 

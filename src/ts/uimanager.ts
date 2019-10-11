@@ -11,6 +11,7 @@ import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
 import { i18n } from './localization/i18n';
+import { CustomVocabulary } from './localization/i18nApi';
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -307,11 +308,11 @@ export class UIManager {
   }
 
   /**
-   * Exposes i18n to user
-   * @returns {I18nApi}
+   * Exposes i18n.t() to user
+   * @returns {I18nApi.t()}
    */
-  get i18n() {
-    return i18n;
+  static localize<V extends CustomVocabulary<{[key: string]: string}>>(key: keyof V) {
+    return i18n.t(key);
   }
 
   getConfig(): UIConfig {

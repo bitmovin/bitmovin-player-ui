@@ -8,7 +8,7 @@ import { LocalizableText , i18n} from '../localization/i18n';
  */
 export interface ButtonConfig extends ComponentConfig {
   /**
-   * The text on the button.
+   * The text as string or localize callback on the button.
    */
   text?: LocalizableText;
 }
