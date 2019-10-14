@@ -149,9 +149,8 @@ class I18n {
       .reduce((vocab, lang) => ({...vocab, ...(translations[lang] || {})}), {});
   }
 
-  private replaceVariableWithPlaceholderIfExists(text:string, config: any) {
+  private replaceVariableWithPlaceholderIfExists(text: string, config: any) {
     const matches = Array.from(text.match(new RegExp('{[a-zA-Z]+}')));
-
     if (matches.length === 0) {
       return text;
     }
