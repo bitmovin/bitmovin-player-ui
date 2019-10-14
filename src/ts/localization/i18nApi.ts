@@ -1,6 +1,6 @@
 import { defaultTranslations, LocalizableText } from './i18n';
 
-interface Vocab {
+interface Vocabulary {
   'settings': string;
   'settings.video.quality': string;
   'settings.audio.quality': string;
@@ -65,7 +65,7 @@ interface Vocab {
   'messages.ads.remainingTime': string;
 }
 
-export type CustomVocabulary<V> = V & Partial<Vocab>;
+export type CustomVocabulary<V> = V & Partial<Vocabulary>;
 type StringKeyMap = {[key: string]: string};
 
 export interface BitmovinPlayerUiTranslations {

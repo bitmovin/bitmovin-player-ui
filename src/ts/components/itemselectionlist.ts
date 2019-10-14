@@ -1,5 +1,6 @@
 import {ListSelector, ListSelectorConfig} from './listselector';
 import {DOM} from '../dom';
+import { i18n } from '../localization/i18n';
 
 export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
 
@@ -51,7 +52,7 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
         'type': 'li',
         'class': this.prefixCss('ui-selectionlistitem'),
       }).append(new DOM('a', {
-      }).html(item.label));
+      }).html(i18n.getLocalizedText(item.label)));
 
       if (!selectedListItem) {
         if (selectedValue == null) { // If there is no pre-selected value, select the first one
