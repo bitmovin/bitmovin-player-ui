@@ -1,5 +1,5 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/errormessageoverlay';
-import { LocalizationConfig } from './localization/i18nApi';
+import { LocalizationConfig } from './localization/i18n';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -41,7 +41,7 @@ export interface TimelineMarker {
 export interface UIConfig {
   /**
    * Specifies the container in the DOM into which the UI will be added. Can be a CSS selector string or a
-   * HTMLElement object. By default, the player container will be used ({@link PlayerAPI#getContainer})."
+   * HTMLElement object. By default, the player container will be used ({@link PlayerAPI#getContainer}).
    */
   container?: string | HTMLElement;
   metadata?: {
