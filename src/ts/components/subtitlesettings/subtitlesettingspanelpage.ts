@@ -61,10 +61,10 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
         new SettingsPanelItem(i18n.t('settings.subtitles.background.opacity'), new BackgroundOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.window.color'), new WindowColorSelectBox({
+        new SettingsPanelItem(i18n.t('settings.subtitles.window.color'), new WindowColorSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.window.opacity'), new WindowOpacitySelectBox({
+        new SettingsPanelItem(i18n.t('settings.subtitles.window.opacity'), new WindowOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
         new SettingsPanelItem(new SettingsPanelPageBackButton({

@@ -21,8 +21,6 @@ interface Vocabulary {
   'settings.audio.quality': string;
   'settings.audio.track': string;
   'settings.audio.mute': string;
-  'settings.window.color': string;
-  'settings.window.opacity': string;
   'settings.subtitles': string;
   'settings.subtitles.font.color': string;
   'settings.subtitles.font.opacity': string;
@@ -49,6 +47,8 @@ interface Vocabulary {
   'settings.subtitles.font.family.casual': string;
   'settings.subtitles.font.family.cursive': string;
   'settings.subtitles.font.family.smallcapital': string;
+  'settings.subtitles.window.color': string;
+  'settings.subtitles.window.opacity': string;
   'colors.white': string;
   'colors.black': string;
   'colors.red': string;

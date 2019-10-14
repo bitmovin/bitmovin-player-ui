@@ -1,7 +1,6 @@
 import { MockHelper } from './helper/MockHelper';
 import { ListSelector, ListSelectorConfig } from '../src/ts/components/listselector';
 import { AudioTrackSwitchHandler } from '../src/ts/audiotrackutils';
-import { i18n } from '../src/ts/localization/i18n';
 
 let playerMock = MockHelper.getPlayerMock();
 let audioTrackSwitchHandler: AudioTrackSwitchHandler;
@@ -52,7 +51,7 @@ describe('AudioUtils', () => {
 
     it('on audioAdded event', () => {
       playerMock.eventEmitter.fireAudioAddedEvent('a-3', 'A3');
-      expect(listSelectorMock.addItem).toHaveBeenCalledWith('a-3', i18n.t('A3'));
+      expect(listSelectorMock.addItem).toHaveBeenCalledWith('a-3', expect.any(Function)); // i18n.t in our case
     });
   });
 
