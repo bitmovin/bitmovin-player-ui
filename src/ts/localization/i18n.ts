@@ -1,5 +1,6 @@
 import vocabularyDe from './languages/de.json';
 import vocabularyEn from './languages/en.json';
+import { LocalizationConfig } from '../uiconfig.js';
 
 export const defaultTranslations: BitmovinPlayerUiTranslations = {
   'en': vocabularyEn,
@@ -88,16 +89,7 @@ export interface BitmovinPlayerUiTranslations {
   [key: string]: CustomVocabulary<StringKeyMap>;
 }
 
-/**
- * @todo (cagin): Add short documentation to  Interface.
- * -  also update Readme.md accordingly
- */
-export interface LocalizationConfig {
-  language?: 'en' | 'de' | string;
-  fallbackLanguages?: string[];
-  disableBrowserLanguageDetection?: boolean;
-  translations?: BitmovinPlayerUiTranslations;
-}
+
 
 export default class I18n {
   private language: string;

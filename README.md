@@ -240,6 +240,69 @@ const myUiManager = new UIManager(player, myUi, myUiConfig);
 
 All the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.
 
+### UI Localization
+UI can be localized by passing `localization` object to *uiConfig* while initializing UIManager. By default the player UI supports `english` and `german` and will set the language to `browsers preferred language` by default (if language has a vocabulary defined) if this behavior is not intended, you can easily disable it by adding `disableBrowserLanguageDetection: true` parameter to your Localization Config...
+
+```ts
+interface LocalizationConfig {
+  language?: 'en' | 'de' | string;
+  fallbackLanguages?: string[];
+  disableBrowserLanguageDetection?: boolean;
+  translations?: BitmovinPlayerUiTranslations;
+}
+
+const myLocalizationConfig: LocalizationConfig = {
+  language: 'de', // language that should be selected
+  disableBrowserLanguageDetection: true, // disables aut-detection and selection of browsers preffered language
+  translations: { // language: vocabulary pairs for the supported languages.
+    de: {
+      'settings': 'Einstellungen',
+      ...
+    },
+    'fr': {...}
+  }
+}
+
+const myUiConfig = {
+  ...,
+  translations: myLocalizationConfig
+};
+const myUiManager = new UIManager(player, myUi, myUiConfig);
+```
+
+UIManager has a `localize` function which can be used to translate `custom` labels or to add pre-defined sentences into a user-created component. Extension of the vocabulary can be done by adding a `custom` key to `translations`. if the `key` is not found in the vocabulary the translation value will be set to `key`...
+
+```ts
+const myLocaleConfig = {
+  ...
+  translations: {
+    en: {
+      'my.custom.key': 'my custom key',
+      'this will also act as a key': 'my custom key 2',
+    }
+    de: {
+      'my.custom.key': 'my german translation',
+    }
+  }
+};
+
+const label1 = new Label({ text: UIManager.localize('my.custom.key')});
+const label2 = new Label({ text: UIManager.localize('this will also act as a key')}); // this key exists in only 1 vocabulary that is why it will always display the same value unless it is also defined in the other languages.
+const label3 = new Label({ text: UIManager.localize('This is not included in vocabulary')}); // will return the key since it is not included in vocabulary
+```
+in the example above the translations will be made as:
+**language = 'en'**
+- label1: 'my custom key'
+- label2: 'my custom key 2'
+- label3: ''This is not included in vocabulary'
+**language = 'de'**
+- label1: 'my german translation'
+- label2: 'my custom key 2'
+- label3: ''This is not included in vocabulary'
+
+take a look at [en.json](https://github.com/bitmovin/bitmovin-player-ui/tree/feature/add_localization_support_to_ui/src/ts/localization/languages/en.json) and [de.json](https://github.com/bitmovin/bitmovin-player-ui/tree/feature/add_localization_support_to_ui/src/ts/localization/languages/de.json) for the default translations, static keys and how a language can be defined/updated...
+
+
 ### UI Playground
 
 The UI playground can be launched with `gulp serve` and opens a page in a local browser window. On this page, you can switch between different sources and UI styles, trigger API actions and observe events.
