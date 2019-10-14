@@ -241,20 +241,21 @@ const myUiManager = new UIManager(player, myUi, myUiConfig);
 All the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.
 
 ### UI Localization
-UI can be localized by passing `localization` object to *uiConfig* while initializing UIManager. By default the player UI supports `english` and `german` and will set the language to `browsers preferred language` by default (if language has a vocabulary defined) if this behavior is not intended, you can easily disable it by adding `browserLanguageDetection: false` parameter to your Localization Config...
+UI can be localized by using `UIManager.setLocalizationConfig()` function before initializing UIManager. By default the player UI supports *english* and *german* and will set the language to *browser's preferred language* by default (if preferred language has a vocabulary defined). If this behavior is not wanted, can easily disabled via setting `browserLanguageDetection` to `false` on your Localization Config...
+
+Please note that **You need to configure Localization before UIManager initialization** for translation to be successful, otherwise you will be configuring locale after the dom is rendered...
 
 ```ts
 interface LocalizationConfig {
   language?: 'en' | 'de' | string;
-  fallbackLanguages?: string[];
-  browserLanguageDetection?: boolean;
+  browserLanguageDetection?: boolean; // true by default
   translations?: BitmovinPlayerUiTranslations;
 }
 
 const myLocalizationConfig: LocalizationConfig = {
   language: 'de', // language that should be selected
-  browserLanguageDetection: false;// disables aut-detection and selection of browsers preffered language
-  translations: { // language: vocabulary pairs for the supported languages.
+  browserLanguageDetection: false;// disables auto language detection and selection of browsers preferred language
+  translations: { // [language: vocabulary] pairs for the supported languages.
     de: {
       'settings': 'Einstellungen',
       ...
@@ -263,14 +264,11 @@ const myLocalizationConfig: LocalizationConfig = {
   }
 }
 
-const myUiConfig = {
-  ...,
-  translations: myLocalizationConfig
-};
-const myUiManager = new UIManager(player, myUi, myUiConfig);
+UIManager.setLocalizationConfig(myLocalizationConfig);  // will configure localization for UI
+const myUiManager = new UIManager(...);
 ```
 
-UIManager has a `localize` function which can be used to translate `custom` labels or to add pre-defined sentences into a user-created component. Extension of the vocabulary can be done by adding a `custom` key to `translations`. if the `key` is not found in the vocabulary the translation value will be set to `key`...
+UIManager also has a `localize` function which can be used to translate *custom* labels or to add *pre-defined* sentences into a user-created component. Extension of the vocabulary can be done by adding a *custom* key to *translations*. if the *key* is not found in the vocabulary the translation value will be set to *key*...
 
 ```ts
 const myLocaleConfig = {

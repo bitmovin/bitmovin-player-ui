@@ -10,7 +10,20 @@ import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
-import { i18n, CustomVocabulary } from './localization/i18n';
+import { i18n, CustomVocabulary, BitmovinPlayerUiTranslations } from './localization/i18n';
+
+/**
+ * language: defines the preferred locale.
+ * fallbackLanguages[]: Array of languages which should be used as fallback languages if given word doesn't exist
+ * in the selected vocabulary (in the order they are given in the array.)
+ * browserLanguageDetection: (default: true) will  enable/disable auto-detection and selection of browsers preferred language
+ * translations: key-value pair of 'language' and 'vocabulary' definitions. this is where the user adds their custom languages/vocabularies
+ */
+export interface LocalizationConfig {
+  language?: 'en' | 'de' | string;
+  browserLanguageDetection?: boolean;
+  translations?: BitmovinPlayerUiTranslations;
+}
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -129,9 +142,6 @@ export class UIManager {
 
     // ensure that at least the metadata object does exist in the uiconfig
     uiconfig.metadata = uiconfig.metadata ? uiconfig.metadata : {};
-    if (uiconfig != null && uiconfig.localization != null) {
-      i18n.setConfig(uiconfig.localization);
-    }
 
     this.config = {
       playbackSpeedSelectionEnabled: true, // Switch on speed selector by default
@@ -307,11 +317,19 @@ export class UIManager {
   }
 
   /**
-   * Exposes i18n.t() to user
+   * Exposes i18n.t() function
    * @returns {I18nApi.t()}
    */
   static localize<V extends CustomVocabulary<{[key: string]: string}>>(key: keyof V) {
     return i18n.t(key);
+  }
+
+  /**
+   * Provide configuration to support Custom UI languages
+   * default language: 'en'
+   */
+  static setLocalizationConfig(localizationConfig: LocalizationConfig) {
+    i18n.setConfig(localizationConfig);
   }
 
   getConfig(): UIConfig {

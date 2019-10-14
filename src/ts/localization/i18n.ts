@@ -1,6 +1,6 @@
 import vocabularyDe from './languages/de.json';
 import vocabularyEn from './languages/en.json';
-import { LocalizationConfig } from '../uiconfig.js';
+import { LocalizationConfig } from '../uimanager.js';
 
 export const defaultTranslations: BitmovinPlayerUiTranslations = {
   'en': vocabularyEn,
@@ -94,7 +94,7 @@ class I18n {
     return obj.hasOwnProperty(key);
   }
 
-  private mergeTranslationsWithDefaultTranslations(translations: BitmovinPlayerUiTranslations) {
+  private mergeTranslationsWithDefaultTranslations(translations: BitmovinPlayerUiTranslations = {}) {
     const rawTranslations: BitmovinPlayerUiTranslations = { ...defaultTranslations, ...translations};
     return Object.keys(rawTranslations).reduce((acc, key) => {
       let translation: CustomVocabulary<Record<string, string>> = rawTranslations[key as string];

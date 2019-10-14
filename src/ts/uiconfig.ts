@@ -1,5 +1,4 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/errormessageoverlay';
-import {  BitmovinPlayerUiTranslations } from './localization/i18n';
 
 export interface UIRecommendationConfig {
   title: string;
@@ -8,18 +7,6 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
-/**
- * language: defines the preferred locale.
- * fallbackLanguages[]: Array of languages which should be used as fallback languages if given word doesn't exist
- * in the selected vocabulary (in the order they are given in the array.)
- * browserLanguageDetection: (default: true) will  enable/disable auto-detection and selection of browsers preferred language
- * translations: key-value pair of 'language' and 'vocabulary' definitions. this is where the user adds their custom languages/vocabularies
- */
-export interface LocalizationConfig {
-  language?: 'en' | 'de' | string;
-  browserLanguageDetection?: boolean;
-  translations?: BitmovinPlayerUiTranslations;
-}
 
 /**
  * Marks a position on the playback timeline, e.g. a chapter or an ad break.
@@ -81,9 +68,4 @@ export interface UIConfig {
    * For an example have a look at {@link ErrorMessageOverlayConfig.messages}
    */
   errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
-  /**
-   * Provide configuration to support Multiple UI languages
-   * default language: 'en'
-   */
-  localization?: LocalizationConfig;
 }

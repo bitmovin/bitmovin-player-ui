@@ -249,19 +249,12 @@
 //      {title: 'Recommendation 11', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 435},
 //      {title: 'Recommendation 12: Ain\'t no better video than this', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 34}
 //    ],
-    localization: {
-      language: 'en',
-      browserLanguageDetection: false,
-      translations: {
-        'de': {
-          'settings.subtitles': 'Custom Subtitle'
-        }
-      }
-    }
   };
 
   var player;
   var uiManager;
+  bitmovin.playerui.UIManager.setLocalizationConfig({ language: 'de', browserLanguageDetection: false});
+
   var playerSetup = function(config) {
     player = new bitmovin.player.Player(document.getElementById('player'), config);
 
