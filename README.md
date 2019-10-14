@@ -241,19 +241,19 @@ const myUiManager = new UIManager(player, myUi, myUiConfig);
 All the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.
 
 ### UI Localization
-UI can be localized by passing `localization` object to *uiConfig* while initializing UIManager. By default the player UI supports `english` and `german` and will set the language to `browsers preferred language` by default (if language has a vocabulary defined) if this behavior is not intended, you can easily disable it by adding `disableBrowserLanguageDetection: true` parameter to your Localization Config...
+UI can be localized by passing `localization` object to *uiConfig* while initializing UIManager. By default the player UI supports `english` and `german` and will set the language to `browsers preferred language` by default (if language has a vocabulary defined) if this behavior is not intended, you can easily disable it by adding `browserLanguageDetection: false` parameter to your Localization Config...
 
 ```ts
 interface LocalizationConfig {
   language?: 'en' | 'de' | string;
   fallbackLanguages?: string[];
-  disableBrowserLanguageDetection?: boolean;
+  browserLanguageDetection?: boolean;
   translations?: BitmovinPlayerUiTranslations;
 }
 
 const myLocalizationConfig: LocalizationConfig = {
   language: 'de', // language that should be selected
-  disableBrowserLanguageDetection: true, // disables aut-detection and selection of browsers preffered language
+  browserLanguageDetection: false;// disables aut-detection and selection of browsers preffered language
   translations: { // language: vocabulary pairs for the supported languages.
     de: {
       'settings': 'Einstellungen',
@@ -300,7 +300,7 @@ in the example above the translations will be made as:
 - label2: 'my custom key 2'
 - label3: ''This is not included in vocabulary'
 
-take a look at [en.json](https://github.com/bitmovin/bitmovin-player-ui/tree/feature/add_localization_support_to_ui/src/ts/localization/languages/en.json) and [de.json](https://github.com/bitmovin/bitmovin-player-ui/tree/feature/add_localization_support_to_ui/src/ts/localization/languages/de.json) for the default translations, static keys and how a language can be defined/updated...
+take a look at [en.json](./src/ts/localization/languages/en.json) and [de.json](./src/ts/localization/languages/de.json) for the default translations, static keys and how a language can be defined/updated...
 
 
 ### UI Playground

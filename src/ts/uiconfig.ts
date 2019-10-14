@@ -12,13 +12,13 @@ export interface UIRecommendationConfig {
  * language: defines the preferred locale.
  * fallbackLanguages[]: Array of languages which should be used as fallback languages if given word doesn't exist
  * in the selected vocabulary (in the order they are given in the array.)
- * disableBrowserLanguageDetection: (default: false) will  disable auto-detection and selection of browsers preferred language
+ * browserLanguageDetection: (default: true) will  enable/disable auto-detection and selection of browsers preferred language
  * translations: key-value pair of 'language' and 'vocabulary' definitions. this is where the user adds their custom languages/vocabularies
  */
 export interface LocalizationConfig {
   language?: 'en' | 'de' | string;
   fallbackLanguages?: string[];
-  disableBrowserLanguageDetection?: boolean;
+  browserLanguageDetection?: boolean;
   translations?: BitmovinPlayerUiTranslations;
 }
 

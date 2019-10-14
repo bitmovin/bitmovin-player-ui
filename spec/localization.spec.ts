@@ -7,7 +7,7 @@ const successIt = 'successo';
 
 const defaultConfig = {
   language: 'en',
-  disableBrowserLanguageDetection: true,
+  browserLanguageDetection: false,
   translations: {
     'it': {
       'test': successIt,

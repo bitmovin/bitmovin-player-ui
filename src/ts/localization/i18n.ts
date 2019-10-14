@@ -10,7 +10,6 @@ export const defaultTranslations: BitmovinPlayerUiTranslations = {
 export const defaultLocalizationConfig: LocalizationConfig = {
   language: 'en',
   fallbackLanguages: ['en'],
-  disableBrowserLanguageDetection: true,
   translations: defaultTranslations,
 };
 
@@ -83,37 +82,37 @@ interface Vocabulary {
 }
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;
-type StringKeyMap = {[key: string]: string};
 
 export interface BitmovinPlayerUiTranslations {
-  [key: string]: CustomVocabulary<StringKeyMap>;
+  [key: string]: CustomVocabulary<Record<string, string>>;
 }
 
 
 
-export default class I18n {
+class I18n {
   private language: string;
-  private vocabulary: CustomVocabulary<StringKeyMap>;
+  private vocabulary: CustomVocabulary<Record<string, string>>;
 
   constructor(config: LocalizationConfig) {
     this.setConfig(config);
   }
 
   public setConfig(config: LocalizationConfig) {
+    const browserLanguageDetection = config.browserLanguageDetection != null ? config.browserLanguageDetection : true;
     const translations = this.mergeTranslationsWithDefaultTranslations(config.translations);
-    this.initializeLanguage(config.language, config.disableBrowserLanguageDetection, translations);
+    this.initializeLanguage(config.language, browserLanguageDetection, translations);
     const fallbackLanguages = this. getConfiguredFallbackLanguages(translations, config.fallbackLanguages);
     this.initializeVocabulary(translations, fallbackLanguages);
   }
 
   private containsKey(obj: object, key: string) {
-    return Object.keys(obj).indexOf(key) !== -1;
+    return obj.hasOwnProperty(key);
   }
 
   private mergeTranslationsWithDefaultTranslations(translations: BitmovinPlayerUiTranslations) {
     const rawTranslations: BitmovinPlayerUiTranslations = { ...defaultTranslations, ...translations};
     return Object.keys(rawTranslations).reduce((acc, key) => {
-      let translation: CustomVocabulary<StringKeyMap> = rawTranslations[key as string];
+      let translation: CustomVocabulary<Record<string, string>> = rawTranslations[key as string];
       if (this.containsKey(defaultTranslations, key) && this.containsKey(translations, key)) {
         translation = {...defaultTranslations[key], ...translations[key]};
       }
@@ -123,22 +122,26 @@ export default class I18n {
 
   private initializeLanguage(
     language: string,
-    disableBrowserLanguageDetection: boolean,
+    browserLanguageDetectionEnabled: boolean,
     translations: BitmovinPlayerUiTranslations,
   ) {
-    const shouldDetectLanguage = !Boolean(disableBrowserLanguageDetection);
 
-    if (shouldDetectLanguage) {
-      let userLanguage = (window.navigator.language);
-      userLanguage = userLanguage.slice(0, 2);
-      // Check if  we also have it the language in the translations...
-      if (Object.keys(translations).findIndex((k) => k === userLanguage) !== -1) {
+    if (browserLanguageDetectionEnabled) {
+      const userLanguage = (window.navigator.language);
+
+      if (translations.hasOwnProperty(userLanguage)) {
         this.language = userLanguage;
+        return;
+      }
+      const shortenedUserLanguage = userLanguage.slice(0, 2);
+      if (translations.hasOwnProperty(shortenedUserLanguage)) {
+        this.language = shortenedUserLanguage;
         return;
       }
     }
 
     this.language = language;
+
   }
 
   private getConfiguredFallbackLanguages(translations: BitmovinPlayerUiTranslations, fallbackLanguages?: string[]) {
@@ -159,7 +162,7 @@ export default class I18n {
       .reduce((vocab, lang) => ({...vocab, ...(translations[lang] || {})}), {});
   }
 
-  public t<V extends CustomVocabulary<StringKeyMap> = CustomVocabulary<StringKeyMap>>(key: keyof V) {
+  public t<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(key: keyof V) {
     return () => {
       if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
         return undefined;
