@@ -30,7 +30,7 @@ describe('Localization', () => {
 
   describe('Locale initialiization', () => {
     it('uses vocabulary \'en\'', () => {
-      expect(i18n.getLocalizedText(i18n.t('test'))).toEqual(successEn)
+      expect(i18n.getLocalizedText(i18n.t('test'))).toEqual(successEn);
     });
 
     it('uses vocabulary \'de\'', () => {
@@ -46,7 +46,7 @@ describe('Localization', () => {
 
   describe('Language Fallback\'s', () => {
     it('falls back to `key` if it is not in vocabulary', () => {
-      expect(i18n.getLocalizedText(i18n.t('some word'))).toEqual('some word')
+      expect(i18n.getLocalizedText(i18n.t('some word'))).toEqual('some word');
     });
 
     it('falls back to english unless defined otherwise', () => {

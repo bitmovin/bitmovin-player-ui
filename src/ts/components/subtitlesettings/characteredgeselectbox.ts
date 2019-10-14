@@ -19,7 +19,7 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, i18n.t('labels.default')); //  'default'
+    this.addItem(null, i18n.t('default')); //  'default'
     this.addItem('raised', i18n.t('settings.subtitles.characterEdge.raised'));
     this.addItem('depressed', i18n.t('settings.subtitles.characterEdge.depressed'));
     this.addItem('uniform', i18n.t('settings.subtitles.characterEdge.uniform'));

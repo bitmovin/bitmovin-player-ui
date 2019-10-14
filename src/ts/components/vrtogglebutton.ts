@@ -13,7 +13,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-vrtogglebutton',
-      text: i18n.t('labels.vr'),
+      text: i18n.t('vr'),
     }, this.config);
   }
 

@@ -14,7 +14,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-label-ad-message',
-      text: i18n.t('messages.ads.remainingTime') ,
+      text: i18n.t('ads.remainingTime') ,
     }, this.config);
   }
 

@@ -69,7 +69,7 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
         })),
         new SettingsPanelItem(new SettingsPanelPageBackButton({
           container: this.settingsPanel,
-          text: i18n.t('labels.back'),
+          text: i18n.t('back'),
         }), new SubtitleSettingsResetButton({
           settingsManager: manager,
         })),

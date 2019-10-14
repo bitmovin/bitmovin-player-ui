@@ -66,7 +66,7 @@ export namespace UIFactory {
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
         new SettingsPanelItem(i18n.t('settings.video.quality'), new VideoQualitySelectBox()),
-        new SettingsPanelItem(i18n.t('settings.speed'), new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem(i18n.t('speed'), new PlaybackSpeedSelectBox()),
         new SettingsPanelItem(i18n.t('settings.audio.track'), new AudioTrackSelectBox()),
         new SettingsPanelItem(i18n.t('settings.audio.quality'), new AudioQualitySelectBox()),
       ],
@@ -87,7 +87,7 @@ export namespace UIFactory {
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
-      text: i18n.t('settings.open'),
+      text: i18n.t('open'),
     });
 
     mainSettingsPanelPage.addComponent(
@@ -156,7 +156,7 @@ export namespace UIFactory {
         new PlaybackToggleOverlay(),
         new Container({
           components: [
-            new AdMessageLabel({ text: i18n.t('messages.ads.remainingTime')}),
+            new AdMessageLabel({ text: i18n.t('ads.remainingTime')}),
             new AdSkipButton(),
           ],
           cssClass: 'ui-ads-status',
@@ -192,7 +192,7 @@ export namespace UIFactory {
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
         new SettingsPanelItem(i18n.t('settings.video.quality'), new VideoQualitySelectBox()),
-        new SettingsPanelItem(i18n.t('settings.speed'), new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem(i18n.t('speed'), new PlaybackSpeedSelectBox()),
         new SettingsPanelItem(i18n.t('settings.audio.track'), new AudioTrackSelectBox()),
         new SettingsPanelItem(i18n.t('settings.audio.quality'), new AudioQualitySelectBox()),
       ],
@@ -214,7 +214,7 @@ export namespace UIFactory {
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
-      text: i18n.t('settings.open'),
+      text: i18n.t('open'),
     });
 
     mainSettingsPanelPage.addComponent(

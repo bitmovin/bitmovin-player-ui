@@ -19,7 +19,7 @@ export class WindowColorSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, i18n.t('labels.default'));
+    this.addItem(null, i18n.t('default'));
     this.addItem('white', i18n.t('colors.white'));
     this.addItem('black', i18n.t('colors.black'));
     this.addItem('red', i18n.t('colors.red'));

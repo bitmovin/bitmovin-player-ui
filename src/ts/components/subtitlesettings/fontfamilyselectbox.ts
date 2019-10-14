@@ -19,7 +19,7 @@ export class FontFamilySelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, i18n.t('labels.default'));
+    this.addItem(null, i18n.t('default'));
     this.addItem('monospacedserif', i18n.t('settings.subtitles.font.family.monospacedserif'));
     this.addItem('proportionalserif', i18n.t('settings.subtitles.font.family.proportionalserif'));
     this.addItem('monospacedsansserif', i18n.t('settings.subtitles.font.family.monospacedsansserif'));
