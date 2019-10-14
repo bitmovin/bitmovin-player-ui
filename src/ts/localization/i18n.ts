@@ -9,7 +9,6 @@ export const defaultTranslations: BitmovinPlayerUiTranslations = {
 
 export const defaultLocalizationConfig: LocalizationConfig = {
   language: 'en',
-  fallbackLanguages: ['en'],
   translations: defaultTranslations,
 };
 
@@ -88,8 +87,7 @@ class I18n {
     const browserLanguageDetection = config.browserLanguageDetection != null ? config.browserLanguageDetection : true;
     const translations = this.mergeTranslationsWithDefaultTranslations(config.translations);
     this.initializeLanguage(config.language, browserLanguageDetection, translations);
-    const fallbackLanguages = this. getConfiguredFallbackLanguages(translations, config.fallbackLanguages);
-    this.initializeVocabulary(translations, fallbackLanguages);
+    this.initializeVocabulary(translations);
   }
 
   private containsKey(obj: object, key: string) {
@@ -131,21 +129,8 @@ class I18n {
 
   }
 
-  private getConfiguredFallbackLanguages(translations: BitmovinPlayerUiTranslations, fallbackLanguages?: string[]) {
-    /**
-     * we extend fallback languages with user-defined translation keys.
-     * 'en' added statically to ensure it will be prioritized over the values of translation keys.
-     * new Set([]) will remove the duplicate and help us to add default fallbacks while respecting the order of user-defined fallbackLanguages
-     * removed 'translation' because it can't be fallback to itself.
-     */
-    return Array
-      .from(new Set([...(fallbackLanguages || []), 'en', ...Object.keys(translations)]))
-      .filter(l => l !== this.language);
-  }
-
-  private initializeVocabulary(translations: BitmovinPlayerUiTranslations, fallbackLanguages: string[]) {
-    // reverse() to ensure we prioritize user-defined fallbackLanguages right after current language.
-    this.vocabulary = [...fallbackLanguages.reverse(), this.language]
+  private initializeVocabulary(translations: BitmovinPlayerUiTranslations) {
+    this.vocabulary = ['en', this.language]
       .reduce((vocab, lang) => ({...vocab, ...(translations[lang] || {})}), {});
   }
 

@@ -49,14 +49,9 @@ describe('Localization', () => {
       expect(i18n.getLocalizedText(i18n.t('some word'))).toEqual('some word');
     });
 
-    it('falls back to english unless defined otherwise', () => {
+    it('falls back to', () => {
       i18n.setConfig({ ...defaultConfig, language: 'de' });
       expect(i18n.getLocalizedText(i18n.t(fallbackTest))).toEqual(successEn);
-    });
-
-    it('falls back to italian since we prioritize `it` fallback over `en`', () => {
-      i18n.setConfig({ ...defaultConfig, language: 'de', fallbackLanguages: ['it', 'en'] });
-      expect(i18n.getLocalizedText(i18n.t(fallbackTest))).toEqual(successIt);
     });
   });
 });

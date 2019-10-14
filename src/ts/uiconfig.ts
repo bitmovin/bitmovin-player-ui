@@ -17,7 +17,6 @@ export interface UIRecommendationConfig {
  */
 export interface LocalizationConfig {
   language?: 'en' | 'de' | string;
-  fallbackLanguages?: string[];
   browserLanguageDetection?: boolean;
   translations?: BitmovinPlayerUiTranslations;
 }
