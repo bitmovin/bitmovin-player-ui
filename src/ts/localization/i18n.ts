@@ -27,13 +27,6 @@ interface Vocabulary {
   'settings.subtitles.background.color': string;
   'settings.subtitles.background.opacity': string;
   'settings.subtitles.font.size': string;
-  'settings.subtitles.font.size.50': string;
-  'settings.subtitles.font.size.75': string;
-  'settings.subtitles.font.size.100': string;
-  'settings.subtitles.font.size.150': string;
-  'settings.subtitles.font.size.200': string;
-  'settings.subtitles.font.size.300': string;
-  'settings.subtitles.font.size.400': string;
   'settings.subtitles.characterEdge': string;
   'settings.subtitles.characterEdge.raised': string;
   'settings.subtitles.characterEdge.depressed': string;
@@ -57,11 +50,7 @@ interface Vocabulary {
   'colors.cyan': string;
   'colors.yellow': string;
   'colors.magenta': string;
-  'opacity.100': string;
-  'opacity.75': string;
-  'opacity.50': string;
-  'opacity.25': string;
-  'opacity.0': string;
+  'percent': string;
   'settings': string;
   'ads.remainingTime': string;
   'pictureInPicture': string;
@@ -86,8 +75,6 @@ export type CustomVocabulary<V> = V & Partial<Vocabulary>;
 export interface BitmovinPlayerUiTranslations {
   [key: string]: CustomVocabulary<Record<string, string>>;
 }
-
-
 
 class I18n {
   private language: string;
@@ -162,7 +149,19 @@ class I18n {
       .reduce((vocab, lang) => ({...vocab, ...(translations[lang] || {})}), {});
   }
 
-  public t<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(key: keyof V) {
+  private replaceVariableWithPlaceholderIfExists(text:string, config: any) {
+    const matches = Array.from(text.match(new RegExp('{[a-zA-Z]+}')));
+
+    if (matches.length === 0) {
+      return text;
+    }
+
+    return matches
+      .map((m: string) => ({ match: m, key: m.slice(1, -1)}))
+      .reduce((str, {key, match}) => config.hasOwnProperty(key) ? str.replace(match, config[key]) : str, text);
+  }
+
+  public t<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(key: keyof V, config?: any) {
     return () => {
       if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
         return undefined;
@@ -170,9 +169,14 @@ class I18n {
       let translationString = this.vocabulary[key as string | number];
 
       if (translationString == null) {
-        console.warn(`We haven't been able to find a translation provided for key: '${key}'... The value of the key will be set to '${key}'.\n Please provide correct value via 'config' if this was not intended.`);
+        // console.warn(`We haven't been able to find a translation provided for key: '${key}'... The value of the key will be set to '${key}'.\n Please provide correct value via 'config' if this was not intended.`);
         translationString = key as string;
       }
+
+      if (config != null) {
+        translationString = this.replaceVariableWithPlaceholderIfExists(translationString, config);
+      }
+
       return translationString;
     };
   }

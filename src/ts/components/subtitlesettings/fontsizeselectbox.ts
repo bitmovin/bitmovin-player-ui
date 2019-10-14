@@ -20,13 +20,13 @@ export class FontSizeSelectBox extends SubtitleSettingSelectBox {
     super.configure(player, uimanager);
 
     this.addItem(null, i18n.t('default'));
-    this.addItem('50', i18n.t('settings.subtitles.font.size.50'));
-    this.addItem('75', i18n.t('settings.subtitles.font.size.75'));
-    this.addItem('100', i18n.t('settings.subtitles.font.size.100'));
-    this.addItem('150', i18n.t('settings.subtitles.font.size.150'));
-    this.addItem('200', i18n.t('settings.subtitles.font.size.200'));
-    this.addItem('300', i18n.t('settings.subtitles.font.size.300'));
-    this.addItem('400', i18n.t('settings.subtitles.font.size.400'));
+    this.addItem('50', i18n.t('percent', {value: 50}));
+    this.addItem('75', i18n.t('percent', {value: 75}));
+    this.addItem('100', i18n.t('percent', {value: 100}));
+    this.addItem('150', i18n.t('percent', {value: 150}));
+    this.addItem('200', i18n.t('percent', {value: 200}));
+    this.addItem('300', i18n.t('percent', {value: 300}));
+    this.addItem('400', i18n.t('percent', {value: 400}));
 
     this.settingsManager.fontSize.onChanged.subscribe((sender, property) => {
       if (property.isSet()) {
