@@ -16,6 +16,7 @@ const defaultConfig = {
     'en': {
       'test': successEn,
       [fallbackTest]: successEn,
+      'variableTest': `{value}`,
     },
     'de': {
       'test': successDe,
@@ -52,6 +53,13 @@ describe('Localization', () => {
     it('falls back to', () => {
       i18n.setConfig({ ...defaultConfig, language: 'de' });
       expect(i18n.getLocalizedText(i18n.t(fallbackTest))).toEqual(successEn);
+    });
+  });
+
+
+  describe('Variable Injection', () => {
+    it ('injects the value to string passed by config', () => {
+      expect(i18n.getLocalizedText(i18n.t('variableTest', { value: 1 }))).toEqual('1');
     });
   });
 });
