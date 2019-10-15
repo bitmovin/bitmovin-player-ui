@@ -105,7 +105,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param label the (human-readable) label of the item to add
    */
   addItem(key: string, label: LocalizableText) {
-    const listItem = { key: key, label: i18n.getLocalizedText(label) };
+    const listItem = { key: key, label: i18n.localize(label) };
 
     // Apply filter function
     if (this.config.filter && !this.config.filter(listItem)) {

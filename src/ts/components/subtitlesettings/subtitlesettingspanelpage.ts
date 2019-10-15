@@ -40,36 +40,36 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
 
     this.config = this.mergeConfig(config, {
       components: <Component<ComponentConfig>[]>[
-        new SettingsPanelItem(i18n.t('settings.subtitles.font.size'), new FontSizeSelectBox({
+        new SettingsPanelItem(i18n.getLocalizableCallback('settings.subtitles.font.size'), new FontSizeSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.subtitles.font.family'), new FontFamilySelectBox({
+        new SettingsPanelItem(i18n.getLocalizableCallback('settings.subtitles.font.family'), new FontFamilySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.subtitles.font.color'), new FontColorSelectBox({
+        new SettingsPanelItem(i18n.getLocalizableCallback('settings.subtitles.font.color'), new FontColorSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.subtitles.font.opacity'), new FontOpacitySelectBox({
+        new SettingsPanelItem(i18n.getLocalizableCallback('settings.subtitles.font.opacity'), new FontOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.subtitles.characterEdge'), new CharacterEdgeSelectBox({
+        new SettingsPanelItem(i18n.getLocalizableCallback('settings.subtitles.characterEdge'), new CharacterEdgeSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.subtitles.background.color'), new BackgroundColorSelectBox({
+        new SettingsPanelItem(i18n.getLocalizableCallback('settings.subtitles.background.color'), new BackgroundColorSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.subtitles.background.opacity'), new BackgroundOpacitySelectBox({
+        new SettingsPanelItem(i18n.getLocalizableCallback('settings.subtitles.background.opacity'), new BackgroundOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.subtitles.window.color'), new WindowColorSelectBox({
+        new SettingsPanelItem(i18n.getLocalizableCallback('settings.subtitles.window.color'), new WindowColorSelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
-        new SettingsPanelItem(i18n.t('settings.subtitles.window.opacity'), new WindowOpacitySelectBox({
+        new SettingsPanelItem(i18n.getLocalizableCallback('settings.subtitles.window.opacity'), new WindowOpacitySelectBox({
           overlay: this.overlay, settingsManager: manager,
         })),
         new SettingsPanelItem(new SettingsPanelPageBackButton({
           container: this.settingsPanel,
-          text: i18n.t('back'),
+          text: i18n.getLocalizableCallback('back'),
         }), new SubtitleSettingsResetButton({
           settingsManager: manager,
         })),

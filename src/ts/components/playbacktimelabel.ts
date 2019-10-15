@@ -76,7 +76,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // Attach/detach live marker class
       if (live) {
         this.getDomElement().addClass(liveCssClass);
-        this.setText(i18n.t('live'));
+        this.setText(i18n.getLocalizableCallback('live'));
         if (config.hideInLivePlayback) {
           this.hide();
         }

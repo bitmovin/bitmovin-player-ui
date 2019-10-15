@@ -39,7 +39,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
       // here too
       this.show();
       let castDeviceName = event.deviceName;
-      this.statusLabel.setText(i18n.t('playingOn', { castDeviceName }));
+      this.statusLabel.setText(i18n.getLocalizableCallback('playingOn', { castDeviceName }));
     });
     player.on(player.exports.PlayerEvent.CastStopped, (event) => {
       // Cast session gone, hide the status panel

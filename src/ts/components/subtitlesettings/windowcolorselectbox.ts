@@ -19,15 +19,15 @@ export class WindowColorSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, i18n.t('default'));
-    this.addItem('white', i18n.t('colors.white'));
-    this.addItem('black', i18n.t('colors.black'));
-    this.addItem('red', i18n.t('colors.red'));
-    this.addItem('green', i18n.t('colors.green'));
-    this.addItem('blue', i18n.t('colors.blue'));
-    this.addItem('cyan', i18n.t('colors.cyan'));
-    this.addItem('yellow', i18n.t('colors.yellow'));
-    this.addItem('magenta', i18n.t('colors.magenta'));
+    this.addItem(null, i18n.getLocalizableCallback('default'));
+    this.addItem('white', i18n.getLocalizableCallback('colors.white'));
+    this.addItem('black', i18n.getLocalizableCallback('colors.black'));
+    this.addItem('red', i18n.getLocalizableCallback('colors.red'));
+    this.addItem('green', i18n.getLocalizableCallback('colors.green'));
+    this.addItem('blue', i18n.getLocalizableCallback('colors.blue'));
+    this.addItem('cyan', i18n.getLocalizableCallback('colors.cyan'));
+    this.addItem('yellow', i18n.getLocalizableCallback('colors.yellow'));
+    this.addItem('magenta', i18n.getLocalizableCallback('colors.magenta'));
 
 
 

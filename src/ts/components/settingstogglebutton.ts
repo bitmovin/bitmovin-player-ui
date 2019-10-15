@@ -38,7 +38,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settingstogglebutton',
-      text: i18n.t('settings'),
+      text: i18n.getLocalizableCallback('settings'),
       settingsPanel: null,
       autoHideWhenNoActiveSettings: true,
     }, <SettingsToggleButtonConfig>this.config);

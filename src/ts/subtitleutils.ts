@@ -85,7 +85,7 @@ export class SubtitleSwitchHandler {
 
     const offListItem: ListItem = {
       key: SubtitleSwitchHandler.SUBTITLES_OFF_KEY,
-      label: i18n.t('off'),
+      label: i18n.getLocalizableCallback('off'),
     };
 
     const subtitles = this.player.subtitles.list();

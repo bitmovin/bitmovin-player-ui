@@ -18,7 +18,7 @@ export class SubtitleSettingsResetButton extends Button<ButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitlesettingsresetbutton',
-      text: i18n.t('reset'),
+      text: i18n.getLocalizableCallback('reset'),
     }, this.config);
   }
 

@@ -7,8 +7,9 @@ export const defaultTranslations: BitmovinPlayerUiTranslations = {
   'de': vocabularyDe,
 };
 
-export const defaultLocalizationConfig: LocalizationConfig = {
+const defaultLocalizationConfig: LocalizationConfig = {
   language: 'en',
+  browserLanguageDetection: true,
   translations: defaultTranslations,
 };
 
@@ -88,9 +89,9 @@ class I18n {
   }
 
   public setConfig(config: LocalizationConfig) {
-    const browserLanguageDetection = config.browserLanguageDetection != null ? config.browserLanguageDetection : true;
-    const translations = this.mergeTranslationsWithDefaultTranslations(config.translations);
-    this.initializeLanguage(config.language, browserLanguageDetection, translations);
+    const mergedConfig = { ...defaultLocalizationConfig, ...config };
+    const translations = this.mergeTranslationsWithDefaultTranslations(mergedConfig.translations);
+    this.initializeLanguage(mergedConfig.language, mergedConfig.browserLanguageDetection, translations);
     this.initializeVocabulary(translations);
   }
 
@@ -147,7 +148,7 @@ class I18n {
       .reduce((str, { key, match }) => config.hasOwnProperty(key) ? str.replace(match, config[key]) : str, text);
   }
 
-  public t<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(
+  public getLocalizableCallback<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(
     key: keyof V,
     config?: Record<string, string | number>,
     ) {
@@ -169,7 +170,7 @@ class I18n {
     };
   }
 
-  public getLocalizedText(text: LocalizableText) {
+  public localize(text: LocalizableText) {
     return typeof text === 'function' ? text() : text;
   }
 }

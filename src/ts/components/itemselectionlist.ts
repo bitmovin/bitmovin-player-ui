@@ -52,7 +52,7 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
         'type': 'li',
         'class': this.prefixCss('ui-selectionlistitem'),
       }).append(new DOM('a', {
-      }).html(i18n.getLocalizedText(item.label)));
+      }).html(i18n.localize(item.label)));
 
       if (!selectedListItem) {
         if (selectedValue == null) { // If there is no pre-selected value, select the first one

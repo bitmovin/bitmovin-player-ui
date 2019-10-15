@@ -30,7 +30,7 @@ export class AudioQualitySelectBox extends SelectBox {
       this.clearItems();
 
       // Add entry for automatic quality switching (default setting)
-      this.addItem('auto', i18n.t('auto'));
+      this.addItem('auto', i18n.getLocalizableCallback('auto'));
 
       // Add audio qualities
       for (let audioQuality of audioQualities) {

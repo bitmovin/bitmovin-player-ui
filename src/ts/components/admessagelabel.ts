@@ -14,7 +14,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-label-ad-message',
-      text: i18n.t('ads.remainingTime') ,
+      text: i18n.getLocalizableCallback('ads.remainingTime') ,
     }, this.config);
   }
 
@@ -25,7 +25,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
     let text = config.text;
 
     let updateMessageHandler = () => {
-      this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.getLocalizedText(text), null, player));
+      this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.localize(text), null, player));
     };
 
     let adStartHandler = (event: AdEvent) => {

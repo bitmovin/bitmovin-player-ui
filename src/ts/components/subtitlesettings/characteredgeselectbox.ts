@@ -19,11 +19,11 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, i18n.t('default'));
-    this.addItem('raised', i18n.t('settings.subtitles.characterEdge.raised'));
-    this.addItem('depressed', i18n.t('settings.subtitles.characterEdge.depressed'));
-    this.addItem('uniform', i18n.t('settings.subtitles.characterEdge.uniform'));
-    this.addItem('dropshadowed', i18n.t('settings.subtitles.characterEdge.dropshadowed'));
+    this.addItem(null, i18n.getLocalizableCallback('default'));
+    this.addItem('raised', i18n.getLocalizableCallback('settings.subtitles.characterEdge.raised'));
+    this.addItem('depressed', i18n.getLocalizableCallback('settings.subtitles.characterEdge.depressed'));
+    this.addItem('uniform', i18n.getLocalizableCallback('settings.subtitles.characterEdge.uniform'));
+    this.addItem('dropshadowed', i18n.getLocalizableCallback('settings.subtitles.characterEdge.dropshadowed'));
 
     this.settingsManager.characterEdge.onChanged.subscribe((sender, property) => {
       if (property.isSet()) {

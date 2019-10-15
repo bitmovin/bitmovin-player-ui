@@ -50,7 +50,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
     for (let item of this.items) {
       let optionElement = new DOM('option', {
         'value': String(item.key),
-      }).html(i18n.getLocalizedText(item.label));
+      }).html(i18n.localize(item.label));
 
       if (item.key === String(selectedValue)) { // convert selectedValue to string to catch 'null'/null case
         optionElement.attr('selected', 'selected');

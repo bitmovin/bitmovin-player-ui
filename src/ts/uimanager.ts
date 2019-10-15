@@ -317,11 +317,11 @@ export class UIManager {
   }
 
   /**
-   * Exposes i18n.t() function
-   * @returns {I18nApi.t()}
+   * Exposes i18n.getLocalizableCallback() function
+   * @returns {I18nApi.getLocalizableCallback()}
    */
   static localize<V extends CustomVocabulary<Record<string, string>>>(key: keyof V) {
-    return i18n.t(key);
+    return i18n.getLocalizableCallback(key);
   }
 
   /**
