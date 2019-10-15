@@ -4,6 +4,7 @@ import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import {PlayerUtils} from '../playerutils';
 import {StringUtils} from '../stringutils';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 export enum PlaybackTimeLabelMode {
   /**
@@ -75,7 +76,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // Attach/detach live marker class
       if (live) {
         this.getDomElement().addClass(liveCssClass);
-        this.setText('Live');
+        this.setText(i18n.t('live'));
         if (config.hideInLivePlayback) {
           this.hide();
         }

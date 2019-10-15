@@ -56,7 +56,6 @@ describe('Localization', () => {
     });
   });
 
-
   describe('Variable Injection', () => {
     it ('injects the value to string passed by config', () => {
       expect(i18n.getLocalizedText(i18n.t('variableTest', { value: 1 }))).toEqual('1');

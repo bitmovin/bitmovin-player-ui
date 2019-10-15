@@ -67,6 +67,10 @@ interface Vocabulary {
   'fullscreen': string;
   'speed': string;
   'playPause': string;
+  'live': string;
+  'subtitle.example': string;
+  'playingOn': string;
+
 }
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;

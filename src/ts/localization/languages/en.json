@@ -49,5 +49,8 @@
   "reset": "Reset",
   "replay": "Replay",
   "normal": "normal",
-  "default": "default"
+  "default": "default",
+  "live": "Live",
+  "subtitle.example": "example subtitle",
+  "playingOn": "Playing on <strong>{castDeviceName}</strong>"
 }
