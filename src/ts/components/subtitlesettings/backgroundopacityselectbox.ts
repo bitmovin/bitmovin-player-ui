@@ -20,11 +20,11 @@ export class BackgroundOpacitySelectBox extends SubtitleSettingSelectBox {
     super.configure(player, uimanager);
 
     this.addItem(null, i18n.t('default'));
-    this.addItem('100', i18n.t('percent', { value: 100}));
-    this.addItem('75', i18n.t('percent', { value: 75}));
-    this.addItem('50', i18n.t('percent', { value: 50}));
-    this.addItem('25', i18n.t('percent', { value: 25}));
-    this.addItem('0', i18n.t('percent', { value: 0}));
+    this.addItem('100', i18n.t('percent', { value: 100 }));
+    this.addItem('75', i18n.t('percent', { value: 75 }));
+    this.addItem('50', i18n.t('percent', { value: 50 }));
+    this.addItem('25', i18n.t('percent', { value: 25 }));
+    this.addItem('0', i18n.t('percent', { value: 0 }));
 
     this.onItemSelected.subscribe((sender, key: string) => {
       this.settingsManager.backgroundOpacity.value = key;

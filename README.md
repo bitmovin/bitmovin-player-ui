@@ -284,9 +284,9 @@ const myLocaleConfig = {
   }
 };
 
-const label1 = new Label({ text: UIManager.localize('my.custom.key')});
-const label2 = new Label({ text: UIManager.localize('this will also act as a key')}); // this key exists in only 1 vocabulary that is why it will always display the same value unless it is also defined in the other languages.
-const label3 = new Label({ text: UIManager.localize('This is not included in vocabulary')}); // will return the key since it is not included in vocabulary
+const label1 = new Label({ text: UIManager.localize('my.custom.key') });
+const label2 = new Label({ text: UIManager.localize('this will also act as a key') }); // this key exists in only 1 vocabulary that is why it will always display the same value unless it is also defined in the other languages.
+const label3 = new Label({ text: UIManager.localize('This is not included in vocabulary') }); // will return the key since it is not included in vocabulary
 ```
 in the example above the translations will be made as:
 **language = 'en'**

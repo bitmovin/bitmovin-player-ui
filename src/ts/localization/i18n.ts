@@ -95,14 +95,14 @@ class I18n {
   }
 
   private mergeTranslationsWithDefaultTranslations(translations: BitmovinPlayerUiTranslations = {}) {
-    const rawTranslations: BitmovinPlayerUiTranslations = { ...defaultTranslations, ...translations};
+    const rawTranslations: BitmovinPlayerUiTranslations = { ...defaultTranslations, ...translations };
     return Object.keys(rawTranslations).reduce((acc, key) => {
       let translation: CustomVocabulary<Record<string, string>> = rawTranslations[key as string];
       if (this.containsKey(defaultTranslations, key) && this.containsKey(translations, key)) {
-        translation = {...defaultTranslations[key], ...translations[key]};
+        translation = { ...defaultTranslations[key], ...translations[key] };
       }
       return { ...acc, [key]: translation };
-    }, {} as BitmovinPlayerUiTranslations);
+    }, {});
   }
 
   private initializeLanguage(
@@ -110,9 +110,8 @@ class I18n {
     browserLanguageDetectionEnabled: boolean,
     translations: BitmovinPlayerUiTranslations,
   ) {
-
     if (browserLanguageDetectionEnabled) {
-      const userLanguage = (window.navigator.language);
+      const userLanguage = window.navigator.language;
 
       if (translations.hasOwnProperty(userLanguage)) {
         this.language = userLanguage;
@@ -126,34 +125,35 @@ class I18n {
     }
 
     this.language = language;
-
   }
 
   private initializeVocabulary(translations: BitmovinPlayerUiTranslations) {
     this.vocabulary = ['en', this.language]
-      .reduce((vocab, lang) => ({...vocab, ...(translations[lang] || {})}), {});
+      .reduce((vocab, lang) => ({ ...vocab, ...(translations[lang] || {}) }), {});
   }
 
   private replaceVariableWithPlaceholderIfExists(text: string, config: any) {
-    const matches = Array.from(text.match(new RegExp('{[a-zA-Z]+}')));
+    const matches = Array.from(text.match(new RegExp('{[a-zA-Z0-9]+}')));
     if (matches.length === 0) {
       return text;
     }
 
     return matches
-      .map((m: string) => ({ match: m, key: m.slice(1, -1)}))
-      .reduce((str, {key, match}) => config.hasOwnProperty(key) ? str.replace(match, config[key]) : str, text);
+      .map((m: string) => ({ match: m, key: m.slice(1, -1) }))
+      .reduce((str, { key, match }) => config.hasOwnProperty(key) ? str.replace(match, config[key]) : str, text);
   }
 
-  public t<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(key: keyof V, config?: any) {
+  public t<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(
+    key: keyof V,
+    config?: Record<string, string | number>,
+    ) {
     return () => {
       if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
         return undefined;
       }
-      let translationString = this.vocabulary[key as string | number];
+      let translationString = this.vocabulary[key as string];
 
       if (translationString == null) {
-        // console.warn(`We haven't been able to find a translation provided for key: '${key}'... The value of the key will be set to '${key}'.\n Please provide correct value via 'config' if this was not intended.`);
         translationString = key as string;
       }
 

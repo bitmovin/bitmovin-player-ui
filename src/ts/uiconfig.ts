@@ -7,7 +7,6 @@ export interface UIRecommendationConfig {
   duration?: number;
 }
 
-
 /**
  * Marks a position on the playback timeline, e.g. a chapter or an ad break.
  */

@@ -320,7 +320,7 @@ export class UIManager {
    * Exposes i18n.t() function
    * @returns {I18nApi.t()}
    */
-  static localize<V extends CustomVocabulary<{[key: string]: string}>>(key: keyof V) {
+  static localize<V extends CustomVocabulary<Record<string, string>>>(key: keyof V) {
     return i18n.t(key);
   }
 
