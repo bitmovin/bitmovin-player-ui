@@ -33,5 +33,8 @@
   "colors.red": "rot",
   "colors.green": "grün",
   "colors.blue": "blau",
-  "colors.yellow": "gelb"
+  "colors.yellow": "gelb",
+  "subtitle.example": "Beispiel Untertitel",
+  "playingOn": "Spielt auf <strong>{castDeviceName}</strong>",
+  "connectingTo": "Verbindung mit <strong>{castDeviceName}</strong> wird hergestellt..."
 }

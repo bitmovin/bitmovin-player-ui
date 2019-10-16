@@ -71,6 +71,7 @@ interface Vocabulary {
   'live': string;
   'subtitle.example': string;
   'playingOn': string;
+  'connectingTo': string;
 
 }
 
@@ -151,7 +152,7 @@ class I18n {
   public getLocalizableCallback<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(
     key: keyof V,
     config?: Record<string, string | number>,
-    ) {
+  ) {
     return () => {
       if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
         return undefined;

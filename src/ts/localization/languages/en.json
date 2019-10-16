@@ -52,5 +52,6 @@
   "default": "default",
   "live": "Live",
   "subtitle.example": "example subtitle",
-  "playingOn": "Playing on <strong>{castDeviceName}</strong>"
+  "playingOn": "Playing on <strong>{castDeviceName}</strong>",
+  "connectingTo": "Connecting to <strong>{castDeviceName}</strong>..."
 }
