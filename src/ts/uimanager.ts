@@ -12,16 +12,18 @@ import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, 
 import { VolumeController } from './volumecontroller';
 import { i18n, CustomVocabulary, BitmovinPlayerUiTranslations } from './localization/i18n';
 
-/**
- * language: defines the preferred locale.
- * fallbackLanguages[]: Array of languages which should be used as fallback languages if given word doesn't exist
- * in the selected vocabulary (in the order they are given in the array.)
- * browserLanguageDetection: (default: true) will  enable/disable auto-detection and selection of browsers preferred language
- * translations: key-value pair of 'language' and 'vocabulary' definitions. this is where the user adds their custom languages/vocabularies
- */
 export interface LocalizationConfig {
+  /**
+   * defines the preferred locale
+   */
   language?: 'en' | 'de' | string;
+  /**
+   * (default: true) will  enable/disable auto-detection and selection of browsers preferred language
+   */
   browserLanguageDetection?: boolean;
+  /**
+   * key-value pair of 'language' and 'vocabulary' definitions. this is where the user adds their custom languages/vocabularies
+   */
   translations?: BitmovinPlayerUiTranslations;
 }
 
