@@ -34,7 +34,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     super(config);
 
     this.previewSubtitleActive = false;
-    this.previewSubtitle = new SubtitleLabel({ text: i18n.getLocalizableCallback('subtitle.example') });
+    this.previewSubtitle = new SubtitleLabel({ text: i18n.getLocalizer('subtitle.example') });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitle-overlay',

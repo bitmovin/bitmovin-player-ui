@@ -2,7 +2,7 @@ import vocabularyDe from './languages/de.json';
 import vocabularyEn from './languages/en.json';
 import { LocalizationConfig } from '../uimanager.js';
 
-export const defaultTranslations: BitmovinPlayerUiTranslations = {
+export const defaultVocabularies: Vocabularies = {
   'en': vocabularyEn,
   'de': vocabularyDe,
 };
@@ -10,7 +10,7 @@ export const defaultTranslations: BitmovinPlayerUiTranslations = {
 const defaultLocalizationConfig: LocalizationConfig = {
   language: 'en',
   browserLanguageDetection: true,
-  translations: defaultTranslations,
+  vocabularies: defaultVocabularies,
 };
 
 type LocalizableCallback = () => string;
@@ -76,7 +76,7 @@ interface Vocabulary {
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;
 
-export interface BitmovinPlayerUiTranslations {
+export interface Vocabularies {
   [key: string]: CustomVocabulary<Record<string, string>>;
 }
 
@@ -90,21 +90,21 @@ class I18n {
 
   public setConfig(config: LocalizationConfig) {
     const mergedConfig = { ...defaultLocalizationConfig, ...config };
-    const translations = this.mergeTranslationsWithDefaultTranslations(mergedConfig.translations);
-    this.initializeLanguage(mergedConfig.language, mergedConfig.browserLanguageDetection, translations);
-    this.initializeVocabulary(translations);
+    const vocabularies = this.mergevocabulariesWithdefaultVocabularies(mergedConfig.vocabularies);
+    this.initializeLanguage(mergedConfig.language, mergedConfig.browserLanguageDetection, vocabularies);
+    this.initializeVocabulary(vocabularies);
   }
 
   private containsKey(obj: object, key: string) {
     return obj.hasOwnProperty(key);
   }
 
-  private mergeTranslationsWithDefaultTranslations(translations: BitmovinPlayerUiTranslations = {}) {
-    const rawTranslations: BitmovinPlayerUiTranslations = { ...defaultTranslations, ...translations };
-    return Object.keys(rawTranslations).reduce((acc, key) => {
-      let translation: CustomVocabulary<Record<string, string>> = rawTranslations[key as string];
-      if (this.containsKey(defaultTranslations, key) && this.containsKey(translations, key)) {
-        translation = { ...defaultTranslations[key], ...translations[key] };
+  private mergevocabulariesWithdefaultVocabularies(vocabularies: Vocabularies = {}) {
+    const rawvocabularies: Vocabularies = { ...defaultVocabularies, ...vocabularies };
+    return Object.keys(rawvocabularies).reduce((acc, key) => {
+      let translation: CustomVocabulary<Record<string, string>> = rawvocabularies[key as string];
+      if (this.containsKey(defaultVocabularies, key) && this.containsKey(vocabularies, key)) {
+        translation = { ...defaultVocabularies[key], ...vocabularies[key] };
       }
       return { ...acc, [key]: translation };
     }, {});
@@ -113,17 +113,17 @@ class I18n {
   private initializeLanguage(
     language: string,
     browserLanguageDetectionEnabled: boolean,
-    translations: BitmovinPlayerUiTranslations,
+    vocabularies: Vocabularies,
   ) {
     if (browserLanguageDetectionEnabled) {
       const userLanguage = window.navigator.language;
 
-      if (translations.hasOwnProperty(userLanguage)) {
+      if (vocabularies.hasOwnProperty(userLanguage)) {
         this.language = userLanguage;
         return;
       }
       const shortenedUserLanguage = userLanguage.slice(0, 2);
-      if (translations.hasOwnProperty(shortenedUserLanguage)) {
+      if (vocabularies.hasOwnProperty(shortenedUserLanguage)) {
         this.language = shortenedUserLanguage;
         return;
       }
@@ -132,9 +132,9 @@ class I18n {
     this.language = language;
   }
 
-  private initializeVocabulary(translations: BitmovinPlayerUiTranslations) {
+  private initializeVocabulary(vocabularies: Vocabularies) {
     this.vocabulary = ['en', this.language]
-      .reduce((vocab, lang) => ({ ...vocab, ...(translations[lang] || {}) }), {});
+      .reduce((vocab, lang) => ({ ...vocab, ...(vocabularies[lang] || {}) }), {});
   }
 
   private replaceVariableWithPlaceholderIfExists(text: string, config: any) {
@@ -148,7 +148,7 @@ class I18n {
       .reduce((str, { key, match }) => config.hasOwnProperty(key) ? str.replace(match, config[key]) : str, text);
   }
 
-  public getLocalizableCallback<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(
+  public getLocalizer<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(
     key: keyof V,
     config?: Record<string, string | number>,
   ) {
@@ -156,17 +156,17 @@ class I18n {
       if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
         return undefined;
       }
-      let translationString = this.vocabulary[key as string];
+      let vocabulariestring = this.vocabulary[key as string];
 
-      if (translationString == null) {
-        translationString = key as string;
+      if (vocabulariestring == null) {
+        vocabulariestring = key as string;
       }
 
       if (config != null) {
-        translationString = this.replaceVariableWithPlaceholderIfExists(translationString, config);
+        vocabulariestring = this.replaceVariableWithPlaceholderIfExists(vocabulariestring, config);
       }
 
-      return translationString;
+      return vocabulariestring;
     };
   }
 

@@ -13,7 +13,7 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-piptogglebutton',
-      text: i18n.getLocalizableCallback('pictureInPicture'),
+      text: i18n.getLocalizer('pictureInPicture'),
     }, this.config);
   }
 

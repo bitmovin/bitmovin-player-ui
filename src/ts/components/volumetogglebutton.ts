@@ -13,7 +13,7 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     const defaultConfig: ToggleButtonConfig = {
       cssClass: 'ui-volumetogglebutton',
-      text: i18n.getLocalizableCallback('settings.audio.mute'),
+      text: i18n.getLocalizer('settings.audio.mute'),
       onClass: 'muted',
       offClass: 'unmuted',
     };

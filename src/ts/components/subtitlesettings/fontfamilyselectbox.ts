@@ -19,14 +19,14 @@ export class FontFamilySelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, i18n.getLocalizableCallback('default'));
-    this.addItem('monospacedserif', i18n.getLocalizableCallback('settings.subtitles.font.family.monospacedserif'));
-    this.addItem('proportionalserif', i18n.getLocalizableCallback('settings.subtitles.font.family.proportionalserif'));
-    this.addItem('monospacedsansserif', i18n.getLocalizableCallback('settings.subtitles.font.family.monospacedsansserif'));
-    this.addItem('proportionalsansserif', i18n.getLocalizableCallback('settings.subtitles.font.family.proportionalserif'));
-    this.addItem('casual', i18n.getLocalizableCallback('settings.subtitles.font.family.casual'));
-    this.addItem('cursive', i18n.getLocalizableCallback('settings.subtitles.font.family.cursive'));
-    this.addItem('smallcapital', i18n.getLocalizableCallback('settings.subtitles.font.family.smallcapital'));
+    this.addItem(null, i18n.getLocalizer('default'));
+    this.addItem('monospacedserif', i18n.getLocalizer('settings.subtitles.font.family.monospacedserif'));
+    this.addItem('proportionalserif', i18n.getLocalizer('settings.subtitles.font.family.proportionalserif'));
+    this.addItem('monospacedsansserif', i18n.getLocalizer('settings.subtitles.font.family.monospacedsansserif'));
+    this.addItem('proportionalsansserif', i18n.getLocalizer('settings.subtitles.font.family.proportionalserif'));
+    this.addItem('casual', i18n.getLocalizer('settings.subtitles.font.family.casual'));
+    this.addItem('cursive', i18n.getLocalizer('settings.subtitles.font.family.cursive'));
+    this.addItem('smallcapital', i18n.getLocalizer('settings.subtitles.font.family.smallcapital'));
 
     this.settingsManager.fontFamily.onChanged.subscribe((sender, property) => {
       if (property.isSet()) {

@@ -19,14 +19,14 @@ export class FontSizeSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, i18n.getLocalizableCallback('default'));
-    this.addItem('50', i18n.getLocalizableCallback('percent', { value: 50 }));
-    this.addItem('75', i18n.getLocalizableCallback('percent', { value: 75 }));
-    this.addItem('100', i18n.getLocalizableCallback('percent', { value: 100 }));
-    this.addItem('150', i18n.getLocalizableCallback('percent', { value: 150 }));
-    this.addItem('200', i18n.getLocalizableCallback('percent', { value: 200 }));
-    this.addItem('300', i18n.getLocalizableCallback('percent', { value: 300 }));
-    this.addItem('400', i18n.getLocalizableCallback('percent', { value: 400 }));
+    this.addItem(null, i18n.getLocalizer('default'));
+    this.addItem('50', i18n.getLocalizer('percent', { value: 50 }));
+    this.addItem('75', i18n.getLocalizer('percent', { value: 75 }));
+    this.addItem('100', i18n.getLocalizer('percent', { value: 100 }));
+    this.addItem('150', i18n.getLocalizer('percent', { value: 150 }));
+    this.addItem('200', i18n.getLocalizer('percent', { value: 200 }));
+    this.addItem('300', i18n.getLocalizer('percent', { value: 300 }));
+    this.addItem('400', i18n.getLocalizer('percent', { value: 400 }));
 
     this.settingsManager.fontSize.onChanged.subscribe((sender, property) => {
       if (property.isSet()) {

@@ -31,7 +31,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
         this.show();
         // Get device name and update status text while connecting
         let castDeviceName = event.castPayload.deviceName;
-        this.statusLabel.setText(i18n.getLocalizableCallback('connectingTo', { castDeviceName }));
+        this.statusLabel.setText(i18n.getLocalizer('connectingTo', { castDeviceName }));
       });
     player.on(player.exports.PlayerEvent.CastStarted, (event: CastStartedEvent) => {
       // Session is started or resumed
@@ -39,7 +39,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
       // here too
       this.show();
       let castDeviceName = event.deviceName;
-      this.statusLabel.setText(i18n.getLocalizableCallback('playingOn', { castDeviceName }));
+      this.statusLabel.setText(i18n.getLocalizer('playingOn', { castDeviceName }));
     });
     player.on(player.exports.PlayerEvent.CastStopped, (event) => {
       // Cast session gone, hide the status panel

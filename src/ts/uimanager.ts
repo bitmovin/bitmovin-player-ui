@@ -10,7 +10,7 @@ import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
-import { i18n, CustomVocabulary, BitmovinPlayerUiTranslations } from './localization/i18n';
+import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 
 export interface LocalizationConfig {
   /**
@@ -24,7 +24,7 @@ export interface LocalizationConfig {
   /**
    * key-value pair of 'language' and 'vocabulary' definitions. this is where the user adds their custom languages/vocabularies
    */
-  translations?: BitmovinPlayerUiTranslations;
+  vocabularies?: Vocabularies;
 }
 
 export interface InternalUIConfig extends UIConfig {
@@ -319,11 +319,11 @@ export class UIManager {
   }
 
   /**
-   * Exposes i18n.getLocalizableCallback() function
-   * @returns {I18nApi.getLocalizableCallback()}
+   * Exposes i18n.getLocalizer() function
+   * @returns {I18nApi.getLocalizer()}
    */
   static localize<V extends CustomVocabulary<Record<string, string>>>(key: keyof V) {
-    return i18n.getLocalizableCallback(key);
+    return i18n.getLocalizer(key);
   }
 
   /**

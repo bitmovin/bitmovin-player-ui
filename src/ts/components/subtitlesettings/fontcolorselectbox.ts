@@ -19,15 +19,15 @@ export class FontColorSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, i18n.getLocalizableCallback('default'));
-    this.addItem('white', i18n.getLocalizableCallback('colors.white'));
-    this.addItem('black', i18n.getLocalizableCallback('colors.black'));
-    this.addItem('red', i18n.getLocalizableCallback('colors.red'));
-    this.addItem('green', i18n.getLocalizableCallback('colors.green'));
-    this.addItem('blue', i18n.getLocalizableCallback('colors.blue'));
-    this.addItem('cyan', i18n.getLocalizableCallback('colors.cyan'));
-    this.addItem('yellow', i18n.getLocalizableCallback('colors.yellow'));
-    this.addItem('magenta', i18n.getLocalizableCallback('colors.magenta'));
+    this.addItem(null, i18n.getLocalizer('default'));
+    this.addItem('white', i18n.getLocalizer('colors.white'));
+    this.addItem('black', i18n.getLocalizer('colors.black'));
+    this.addItem('red', i18n.getLocalizer('colors.red'));
+    this.addItem('green', i18n.getLocalizer('colors.green'));
+    this.addItem('blue', i18n.getLocalizer('colors.blue'));
+    this.addItem('cyan', i18n.getLocalizer('colors.cyan'));
+    this.addItem('yellow', i18n.getLocalizer('colors.yellow'));
+    this.addItem('magenta', i18n.getLocalizer('colors.magenta'));
 
     let setColorAndOpacity = () => {
       if (this.settingsManager.fontColor.isSet() && this.settingsManager.fontOpacity.isSet()) {

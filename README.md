@@ -249,13 +249,13 @@ Please note that **You need to configure Localization before UIManager initializ
 interface LocalizationConfig {
   language?: 'en' | 'de' | string;
   browserLanguageDetection?: boolean; // true by default
-  translations?: BitmovinPlayerUiTranslations;
+  vocabularies?: Vocabularies;
 }
 
 const myLocalizationConfig: LocalizationConfig = {
   language: 'de', // language that should be selected
   browserLanguageDetection: false;// disables auto language detection and selection of browsers preferred language
-  translations: { // [language: vocabulary] pairs for the supported languages.
+  vocabularies: { // [language: vocabulary] pairs for the supported languages.
     de: {
       'settings': 'Einstellungen',
       ...
@@ -268,12 +268,12 @@ UIManager.setLocalizationConfig(myLocalizationConfig);  // will configure locali
 const myUiManager = new UIManager(...);
 ```
 
-UIManager also has a `localize` function which can be used to translate *custom* labels or to add *pre-defined* sentences into a user-created component. Extension of the vocabulary can be done by adding a *custom* key to *translations*. if the *key* is not found in the vocabulary the translation value will be set to *key*...
+UIManager also has a `localize` function which can be used to translate *custom* labels or to add *pre-defined* sentences into a user-created component. Extension of the vocabulary can be done by adding a *custom* key to *vocabularies*. if the *key* is not found in the vocabulary the translation value will be set to *key*...
 
 ```ts
 const myLocaleConfig = {
   ...
-  translations: {
+  vocabularies: {
     en: {
       'my.custom.key': 'my custom key',
       'this will also act as a key': 'my custom key 2',
@@ -288,7 +288,7 @@ const label1 = new Label({ text: UIManager.localize('my.custom.key') });
 const label2 = new Label({ text: UIManager.localize('this will also act as a key') }); // this key exists in only 1 vocabulary that is why it will always display the same value unless it is also defined in the other languages.
 const label3 = new Label({ text: UIManager.localize('This is not included in vocabulary') }); // will return the key since it is not included in vocabulary
 ```
-in the example above the translations will be made as:
+in the example above the vocabularies will be made as:
 **language = 'en'**
 - label1: 'my custom key'
 - label2: 'my custom key 2'
@@ -298,7 +298,7 @@ in the example above the translations will be made as:
 - label2: 'my custom key 2'
 - label3: ''This is not included in vocabulary'
 
-take a look at [en.json](./src/ts/localization/languages/en.json) and [de.json](./src/ts/localization/languages/de.json) for the default translations, static keys and how a language can be defined/updated...
+take a look at [en.json](./src/ts/localization/languages/en.json) and [de.json](./src/ts/localization/languages/de.json) for the default vocabularies, static keys and how a language can be defined/updated...
 
 
 ### UI Playground
