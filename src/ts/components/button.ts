@@ -1,7 +1,7 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
-import {LocalizableText , i18n} from '../localization/i18n';
+import { LocalizableText , i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Button} component.

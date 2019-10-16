@@ -1,7 +1,7 @@
 import {Component, ComponentConfig} from './component';
 import {EventDispatcher, Event} from '../eventdispatcher';
 import {ArrayUtils} from '../arrayutils';
-import {LocalizableText, i18n} from '../localization/i18n';
+import { LocalizableText, i18n } from '../localization/i18n';
 
 /**
  * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.
