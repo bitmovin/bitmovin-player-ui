@@ -13,8 +13,8 @@ const defaultLocalizationConfig: LocalizationConfig = {
   vocabularies: defaultVocabularies,
 };
 
-type LocalizableCallback = () => string;
-export type LocalizableText = string | LocalizableCallback;
+type Localizer = () => string;
+export type LocalizableText = string | Localizer;
 
 interface Vocabulary {
   'settings.video.quality': string;
@@ -151,7 +151,7 @@ class I18n {
   public getLocalizer<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(
     key: keyof V,
     config?: Record<string, string | number>,
-  ) {
+  ): Localizer {
     return () => {
       if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
         return undefined;
