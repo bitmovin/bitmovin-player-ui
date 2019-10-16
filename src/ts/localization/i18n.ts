@@ -170,7 +170,7 @@ class I18n {
     };
   }
 
-  public localize(text: LocalizableText) {
+  public performLocalization(text: LocalizableText) {
     return typeof text === 'function' ? text() : text;
   }
 }

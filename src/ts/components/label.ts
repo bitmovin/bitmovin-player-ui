@@ -43,7 +43,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     let labelElement = new DOM('span', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    }).html(i18n.localize(this.text));
+    }).html(i18n.performLocalization(this.text));
 
     labelElement.on('click', () => {
       this.onClickEvent();
@@ -62,7 +62,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     }
 
     this.text = text;
-    const localizedText = i18n.localize(text);
+    const localizedText = i18n.performLocalization(text);
     this.getDomElement().html(localizedText);
     this.onTextChangedEvent(localizedText);
   }
@@ -72,7 +72,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * @return {string} The text on the label
    */
   getText(): string {
-    return i18n.localize(this.text);
+    return i18n.performLocalization(this.text);
   }
 
   /**
