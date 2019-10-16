@@ -72,7 +72,6 @@ interface Vocabulary {
   'subtitle.example': string;
   'playingOn': string;
   'connectingTo': string;
-
 }
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;
