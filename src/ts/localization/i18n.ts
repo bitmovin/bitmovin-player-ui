@@ -9,7 +9,6 @@ export const defaultVocabularies: Vocabularies = {
 
 const defaultLocalizationConfig: LocalizationConfig = {
   language: 'en',
-  browserLanguageDetection: true,
   vocabularies: defaultVocabularies,
 };
 
@@ -90,8 +89,9 @@ class I18n {
 
   public setConfig(config: LocalizationConfig) {
     const mergedConfig = { ...defaultLocalizationConfig, ...config };
+    const detectBrowserLanguage = config.language === 'auto';
     const vocabularies = this.mergevocabulariesWithdefaultVocabularies(mergedConfig.vocabularies);
-    this.initializeLanguage(mergedConfig.language, mergedConfig.browserLanguageDetection, vocabularies);
+    this.initializeLanguage(mergedConfig.language, detectBrowserLanguage, vocabularies);
     this.initializeVocabulary(vocabularies);
   }
 
