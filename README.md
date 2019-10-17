@@ -241,65 +241,62 @@ const myUiManager = new UIManager(player, myUi, myUiConfig);
 All the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.
 
 ### UI Localization
-UI can be localized by using `UIManager.setLocalizationConfig()` function before initializing UIManager. By default the player UI supports *english* and *german* and will set the language to *browser's preferred language* by default (if preferred language has a vocabulary defined). If this behavior is not wanted, can easily disabled via setting `browserLanguageDetection` to `false` on your Localization Config...
 
-Please note that **You need to configure Localization before UIManager initialization** for translation to be successful, otherwise you will be configuring locale after the dom is rendered...
+The UI can be localized by calling `UIManager.setLocalizationConfig()` function before initializing a `UIManager`. It ships with English and German translations, and automatically selects the browser language with a fallback to English. Additional translations can be added via the `LocalizationConfig`, where the automatic language detection can also be disabled.
 
-```ts
-interface LocalizationConfig {
-  language?: 'en' | 'de' | string;
-  browserLanguageDetection?: boolean; // true by default
-  vocabularies?: Vocabularies;
-}
+Please note that the `LocalizationConfig` is a singleton for all UI instances, i.e. it is currently not possible to configure the UI language per `UIManager` instance. This is also the reason why `UIManager.setLocalizationConfig()` _must_ be called before creating a `UIManager` instance for the configuration to be applied as expected.
 
-const myLocalizationConfig: LocalizationConfig = {
-  language: 'de', // language that should be selected
-  browserLanguageDetection: false;// disables auto language detection and selection of browsers preferred language
-  vocabularies: { // [language: vocabulary] pairs for the supported languages.
+```js
+const myLocalizationConfig = {
+  // Select German translation
+  language: 'de',
+  // Disable automatic language detection from browser language
+  browserLanguageDetection: false,
+  vocabularies: {
     de: {
       'settings': 'Einstellungen',
       ...
     },
-    'fr': {...}
-  }
-}
+    'fr': {
+      ...
+    },
+  },
+};
 
-UIManager.setLocalizationConfig(myLocalizationConfig);  // will configure localization for UI
+// First we set the localization configuration
+UIManager.setLocalizationConfig(myLocalizationConfig);
+// Then we create a UI instance
 const myUiManager = new UIManager(...);
 ```
 
-UIManager also has a `localize` function which can be used to translate *custom* labels or to add *pre-defined* sentences into a user-created component. Extension of the vocabulary can be done by adding a *custom* key to *vocabularies*. if the *key* is not found in the vocabulary the translation value will be set to *key*...
+The `UIManager` also has a `localize` function which can be used to translate *custom* labels in user-created component instances. The vocabulary can be extended by adding *custom* keys to `LocalizationConfig.vocabularies`. If a *key* is not present in the vocabulary, `localize` will simply fallback to the *key*.
 
-```ts
-const myLocaleConfig = {
-  ...
+```js
+const myLocalizationConfig = {
+  ...,
   vocabularies: {
     en: {
       'my.custom.key': 'my custom key',
       'this will also act as a key': 'my custom key 2',
-    }
+    },
     de: {
       'my.custom.key': 'my german translation',
-    }
-  }
+    },
+  },
 };
 
 const label1 = new Label({ text: UIManager.localize('my.custom.key') });
-const label2 = new Label({ text: UIManager.localize('this will also act as a key') }); // this key exists in only 1 vocabulary that is why it will always display the same value unless it is also defined in the other languages.
-const label3 = new Label({ text: UIManager.localize('This is not included in vocabulary') }); // will return the key since it is not included in vocabulary
+
+// This key only exists in the English vocabulary, so it will be translated in English and
+// fallback to the key string in any other language
+const label2 = new Label({ text: UIManager.localize('this will also act as a key') });
+
+// This key does not exist in any vocabulary and will never be localized - it is basically the
+// same as setting the text directly (e.g. `{ text: 'This is not included in vocabulary' }`)
+const label3 = new Label({ text: UIManager.localize('This is not included in vocabulary') }); 
 ```
-in the example above the vocabularies will be made as:
-**language = 'en'**
-- label1: 'my custom key'
-- label2: 'my custom key 2'
-- label3: ''This is not included in vocabulary'
-**language = 'de'**
-- label1: 'my german translation'
-- label2: 'my custom key 2'
-- label3: ''This is not included in vocabulary'
 
-take a look at [en.json](./src/ts/localization/languages/en.json) and [de.json](./src/ts/localization/languages/de.json) for the default vocabularies, static keys and how a language can be defined/updated...
-
+The default vocabularies along with the keys can be found in the [languages folder](./src/ts/localization/languages).
 
 ### UI Playground
 
