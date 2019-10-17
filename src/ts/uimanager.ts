@@ -14,12 +14,13 @@ import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 
 export interface LocalizationConfig {
   /**
-   * default (en):  defines the preferred locale
-   * selecting it auto will  enable auto-detection and selection of browsers preferred language
+   * Sets the desired language, and falls back to 'en' if there is no vocabulary for the desired language. Setting it
+   * to "auto" will enable language detection from the browser's locale.
    */
   language?: 'auto' | 'en' | 'de' | string;
   /**
-   * key-value pair of 'language' and 'vocabulary' definitions. this is where the user adds their custom languages/vocabularies
+   * A map of `language` to {@link CustomVocabulary} definitions. Can be used to overwrite default translations and add
+   * custom strings or additional languages.
    */
   vocabularies?: Vocabularies;
 }
