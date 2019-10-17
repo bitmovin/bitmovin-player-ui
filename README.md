@@ -242,22 +242,21 @@ All the configuration properties are optional. If `metadata` is set, it overwrit
 
 ### UI Localization
 
-The UI can be localized by calling `UIManager.setLocalizationConfig()` function before initializing a `UIManager`. It ships with English and German translations, and automatically selects the browser language with a fallback to English. Additional translations can be added via the `LocalizationConfig`, where the automatic language detection can also be disabled.
+The UI can be localized by calling `UIManager.setLocalizationConfig()` function before initializing a `UIManager`. It ships with English and German translations und uses English by default. Additional translations can be added via the `LocalizationConfig`, where the automatic language detection can also be disabled.
 
 Please note that the `LocalizationConfig` is a singleton for all UI instances, i.e. it is currently not possible to configure the UI language per `UIManager` instance. This is also the reason why `UIManager.setLocalizationConfig()` _must_ be called before creating a `UIManager` instance for the configuration to be applied as expected.
 
 ```js
 const myLocalizationConfig = {
-  // Select German translation
-  language: 'de',
-  // Disable automatic language detection from browser language
-  browserLanguageDetection: false,
+  // Automatically select a language fitting the browser language
+  // (falls back to English if no language that matches the browser language is defined)
+  language: 'auto',
   vocabularies: {
     de: {
       'settings': 'Einstellungen',
       ...
     },
-    'fr': {
+    fr: {
       ...
     },
   },
