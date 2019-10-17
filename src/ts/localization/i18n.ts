@@ -95,18 +95,18 @@ class I18n {
     this.initializeVocabulary(vocabularies);
   }
 
-  private containsKey(obj: object, key: string) {
-    return obj.hasOwnProperty(key);
+  private static containsLanguage(vocabularies: Vocabularies, language: string) {
+    return vocabularies.hasOwnProperty(language);
   }
 
   private mergeVocabulariesWithDefaultVocabularies(vocabularies: Vocabularies = {}) {
-    const rawvocabularies: Vocabularies = { ...defaultVocabularies, ...vocabularies };
-    return Object.keys(rawvocabularies).reduce((acc, key) => {
-      let translation: CustomVocabulary<Record<string, string>> = rawvocabularies[key as string];
-      if (this.containsKey(defaultVocabularies, key) && this.containsKey(vocabularies, key)) {
-        translation = { ...defaultVocabularies[key], ...vocabularies[key] };
+    const rawVocabularies: Vocabularies = { ...defaultVocabularies, ...vocabularies };
+    return Object.keys(rawVocabularies).reduce((mergedVocabularies, language) => {
+      let vocabulary = rawVocabularies[language];
+      if (I18n.containsLanguage(defaultVocabularies, language) && I18n.containsLanguage(vocabularies, language)) {
+        vocabulary = { ...defaultVocabularies[language], ...vocabularies[language] };
       }
-      return { ...acc, [key]: translation };
+      return { ...mergedVocabularies, [language]: vocabulary };
     }, {});
   }
 
@@ -118,12 +118,12 @@ class I18n {
     if (browserLanguageDetectionEnabled) {
       const userLanguage = window.navigator.language;
 
-      if (vocabularies.hasOwnProperty(userLanguage)) {
+      if (I18n.containsLanguage(vocabularies, userLanguage)) {
         this.language = userLanguage;
         return;
       }
       const shortenedUserLanguage = userLanguage.slice(0, 2);
-      if (vocabularies.hasOwnProperty(shortenedUserLanguage)) {
+      if (I18n.containsLanguage(vocabularies, shortenedUserLanguage)) {
         this.language = shortenedUserLanguage;
         return;
       }
