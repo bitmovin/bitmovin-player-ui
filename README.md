@@ -249,7 +249,7 @@ Please note that the `LocalizationConfig` is a singleton for all UI instances, i
 ```js
 const myLocalizationConfig = {
   // Select German translation
-  language: 'de', // language that should be selected
+  language: 'de',
   // Disable automatic language detection from browser language
   browserLanguageDetection: false,
   vocabularies: {
