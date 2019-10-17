@@ -90,7 +90,7 @@ class I18n {
   public setConfig(config: LocalizationConfig) {
     const mergedConfig = { ...defaultLocalizationConfig, ...config };
     const detectBrowserLanguage = mergedConfig.language === 'auto';
-    const vocabularies = this.mergevocabulariesWithdefaultVocabularies(mergedConfig.vocabularies);
+    const vocabularies = this.mergeVocabulariesWithDefaultVocabularies(mergedConfig.vocabularies);
     this.initializeLanguage(mergedConfig.language, detectBrowserLanguage, vocabularies);
     this.initializeVocabulary(vocabularies);
   }
@@ -99,7 +99,7 @@ class I18n {
     return obj.hasOwnProperty(key);
   }
 
-  private mergevocabulariesWithdefaultVocabularies(vocabularies: Vocabularies = {}) {
+  private mergeVocabulariesWithDefaultVocabularies(vocabularies: Vocabularies = {}) {
     const rawvocabularies: Vocabularies = { ...defaultVocabularies, ...vocabularies };
     return Object.keys(rawvocabularies).reduce((acc, key) => {
       let translation: CustomVocabulary<Record<string, string>> = rawvocabularies[key as string];
