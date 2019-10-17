@@ -156,17 +156,17 @@ class I18n {
       if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
         return undefined;
       }
-      let vocabulariestring = this.vocabulary[key as string];
+      let vocabularyString = this.vocabulary[key as string];
 
-      if (vocabulariestring == null) {
-        vocabulariestring = key as string;
+      if (vocabularyString == null) {
+        vocabularyString = key as string;
       }
 
       if (config != null) {
-        vocabulariestring = this.replaceVariableWithPlaceholderIfExists(vocabulariestring, config);
+        vocabularyString = this.replaceVariableWithPlaceholderIfExists(vocabularyString, config);
       }
 
-      return vocabulariestring;
+      return vocabularyString;
     };
   }
 
