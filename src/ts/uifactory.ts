@@ -204,6 +204,7 @@ export namespace UIFactory {
       ],
       hidden: true,
       pageTransitionAnimation: false,
+      hideDelay: -1,
     });
 
     let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
