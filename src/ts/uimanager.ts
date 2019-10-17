@@ -10,6 +10,20 @@ import {BrowserUtils} from './browserutils';
 import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
+import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
+
+export interface LocalizationConfig {
+  /**
+   * Sets the desired language, and falls back to 'en' if there is no vocabulary for the desired language. Setting it
+   * to "auto" will enable language detection from the browser's locale.
+   */
+  language?: 'auto' | 'en' | 'de' | string;
+  /**
+   * A map of `language` to {@link CustomVocabulary} definitions. Can be used to overwrite default translations and add
+   * custom strings or additional languages.
+   */
+  vocabularies?: Vocabularies;
+}
 
 export interface InternalUIConfig extends UIConfig {
   events: {
@@ -300,6 +314,22 @@ export class UIManager {
 
     // Initialize the UI
     resolveUiVariant(null);
+  }
+
+  /**
+   * Exposes i18n.getLocalizer() function
+   * @returns {I18nApi.getLocalizer()}
+   */
+  static localize<V extends CustomVocabulary<Record<string, string>>>(key: keyof V) {
+    return i18n.getLocalizer(key);
+  }
+
+  /**
+   * Provide configuration to support Custom UI languages
+   * default language: 'en'
+   */
+  static setLocalizationConfig(localizationConfig: LocalizationConfig) {
+    i18n.setConfig(localizationConfig);
   }
 
   getConfig(): UIConfig {

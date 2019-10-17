@@ -4,6 +4,7 @@ import {UIInstanceManager} from '../uimanager';
 import {Component, ComponentConfig} from './component';
 import {ArrayUtils} from '../arrayutils';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -37,7 +38,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settingstogglebutton',
-      text: 'Settings',
+      text: i18n.getLocalizer('settings'),
       settingsPanel: null,
       autoHideWhenNoActiveSettings: true,
     }, <SettingsToggleButtonConfig>this.config);

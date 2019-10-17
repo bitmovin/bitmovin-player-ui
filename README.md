@@ -240,6 +240,63 @@ const myUiManager = new UIManager(player, myUi, myUiConfig);
 
 All the configuration properties are optional. If `metadata` is set, it overwrites the metadata of the player configuration. If `recommendations` is set, a list of recommendations is shown in the `RecommendationOverlay` at the end of playback. For this to work, the UI must contain a `RecommendationOverlay`, like the default player UI does.
 
+### UI Localization
+
+The UI can be localized by calling `UIManager.setLocalizationConfig()` function before initializing a `UIManager`. It ships with English and German translations und uses English by default. Additional translations can be added via the `LocalizationConfig`, where the automatic language detection can also be disabled.
+
+Please note that the `LocalizationConfig` is a singleton for all UI instances, i.e. it is currently not possible to configure the UI language per `UIManager` instance. This is also the reason why `UIManager.setLocalizationConfig()` _must_ be called before creating a `UIManager` instance for the configuration to be applied as expected.
+
+```js
+const myLocalizationConfig = {
+  // Automatically select a language fitting the browser language
+  // (falls back to English if no language that matches the browser language is defined)
+  language: 'auto',
+  vocabularies: {
+    de: {
+      'settings': 'Einstellungen',
+      ...
+    },
+    fr: {
+      ...
+    },
+  },
+};
+
+// First we set the localization configuration
+UIManager.setLocalizationConfig(myLocalizationConfig);
+// Then we create a UI instance
+const myUiManager = new UIManager(...);
+```
+
+The `UIManager` also has a `localize` function which can be used to translate *custom* labels in user-created component instances. The vocabulary can be extended by adding *custom* keys to `LocalizationConfig.vocabularies`. If a *key* is not present in the vocabulary, `localize` will simply fallback to the *key*.
+
+```js
+const myLocalizationConfig = {
+  ...,
+  vocabularies: {
+    en: {
+      'my.custom.key': 'my custom key',
+      'this will also act as a key': 'my custom key 2',
+    },
+    de: {
+      'my.custom.key': 'my german translation',
+    },
+  },
+};
+
+const label1 = new Label({ text: UIManager.localize('my.custom.key') });
+
+// This key only exists in the English vocabulary, so it will be translated in English and
+// fallback to the key string in any other language
+const label2 = new Label({ text: UIManager.localize('this will also act as a key') });
+
+// This key does not exist in any vocabulary and will never be localized - it is basically the
+// same as setting the text directly (e.g. `{ text: 'This is not included in vocabulary' }`)
+const label3 = new Label({ text: UIManager.localize('This is not included in vocabulary') }); 
+```
+
+The default vocabularies along with the keys can be found in the [languages folder](./src/ts/localization/languages).
+
 ### UI Playground
 
 The UI playground can be launched with `gulp serve` and opens a page in a local browser window. On this page, you can switch between different sources and UI styles, trigger API actions and observe events.

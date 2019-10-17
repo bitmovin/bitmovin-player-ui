@@ -2,6 +2,7 @@ import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {StringUtils} from '../stringutils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
@@ -13,7 +14,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-label-ad-message',
-      text: 'This ad will end in {remainingTime} seconds.',
+      text: i18n.getLocalizer('ads.remainingTime') ,
     }, this.config);
   }
 
@@ -24,7 +25,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
     let text = config.text;
 
     let updateMessageHandler = () => {
-      this.setText(StringUtils.replaceAdMessagePlaceholders(text, null, player));
+      this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(text), null, player));
     };
 
     let adStartHandler = (event: AdEvent) => {

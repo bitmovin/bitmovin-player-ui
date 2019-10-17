@@ -1,6 +1,7 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles Apple AirPlay.
@@ -12,7 +13,7 @@ export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-airplaytogglebutton',
-      text: 'Apple AirPlay',
+      text: i18n.getLocalizer('appleAirplay'),
     }, this.config);
   }
 

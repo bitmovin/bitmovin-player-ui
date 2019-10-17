@@ -2,6 +2,7 @@ import {LabelConfig} from '../label';
 import {Container, ContainerConfig} from '../container';
 import {DOM} from '../../dom';
 import {SettingsPanelPageOpenButton} from '../settingspanelpageopenbutton';
+import { LocalizableText, i18n } from '../../localization/i18n';
 
 export interface SubtitleSettingsLabelConfig extends LabelConfig {
   opener: SettingsPanelPageOpenButton;
@@ -11,7 +12,7 @@ export class SubtitleSettingsLabel extends Container<ContainerConfig> {
 
   private opener: SettingsPanelPageOpenButton;
 
-  private text: string;
+  private text: LocalizableText;
 
   constructor(config: SubtitleSettingsLabelConfig) {
     super(config);
@@ -32,7 +33,7 @@ export class SubtitleSettingsLabel extends Container<ContainerConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
     }).append(
-      new DOM('span', {}).html(this.text),
+      new DOM('span', {}).html(i18n.performLocalization(this.text)),
       this.opener.getDomElement(),
     );
 

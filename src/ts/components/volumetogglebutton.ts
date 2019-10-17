@@ -1,6 +1,7 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles audio muting.
@@ -12,7 +13,7 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     const defaultConfig: ToggleButtonConfig = {
       cssClass: 'ui-volumetogglebutton',
-      text: 'Volume/Mute',
+      text: i18n.getLocalizer('settings.audio.mute'),
       onClass: 'muted',
       offClass: 'unmuted',
     };

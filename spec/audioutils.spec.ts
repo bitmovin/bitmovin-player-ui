@@ -51,7 +51,7 @@ describe('AudioUtils', () => {
 
     it('on audioAdded event', () => {
       playerMock.eventEmitter.fireAudioAddedEvent('a-3', 'A3');
-      expect(listSelectorMock.addItem).toHaveBeenCalledWith('a-3', 'A3');
+      expect(listSelectorMock.addItem).toHaveBeenCalledWith('a-3', expect.any(Function)); // i18n.t in our case
     });
   });
 

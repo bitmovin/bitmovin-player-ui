@@ -6,6 +6,7 @@ import {ControlBar} from './controlbar';
 import { EventDispatcher } from '../eventdispatcher';
 import {DOM} from '../dom';
 import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * Overlays the player to display subtitles.
@@ -35,7 +36,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     super(config);
 
     this.previewSubtitleActive = false;
-    this.previewSubtitle = new SubtitleLabel({ text: 'example subtitle' });
+    this.previewSubtitle = new SubtitleLabel({ text: i18n.getLocalizer('subtitle.example') });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitle-overlay',

@@ -3,6 +3,7 @@ import {UIInstanceManager} from '../uimanager';
 import {PlayerUtils} from '../playerutils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import { PlayerAPI, WarningEvent } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles between playback and pause.
@@ -17,7 +18,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-playbacktogglebutton',
-      text: 'Play/Pause',
+      text: i18n.getLocalizer('playPause'),
     }, this.config);
 
     this.isPlayInitiated = false;

@@ -2,6 +2,7 @@ import {SelectBox} from './selectbox';
 import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A select box providing a selection between 'auto' and the available audio qualities.
@@ -29,7 +30,7 @@ export class AudioQualitySelectBox extends SelectBox {
       this.clearItems();
 
       // Add entry for automatic quality switching (default setting)
-      this.addItem('auto', 'auto');
+      this.addItem('auto', i18n.getLocalizer('auto'));
 
       // Add audio qualities
       for (let audioQuality of audioQualities) {

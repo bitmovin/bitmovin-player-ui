@@ -1,6 +1,7 @@
 import {UIInstanceManager} from '../uimanager';
 import {SettingsPanelPageNavigatorButton, SettingsPanelPageNavigatorConfig} from './settingspanelpagenavigatorbutton';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButton {
   constructor(config: SettingsPanelPageNavigatorConfig) {
@@ -8,7 +9,7 @@ export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButto
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settingspanelpageopenbutton',
-      text: 'open',
+      text: i18n.getLocalizer('open'),
     } as SettingsPanelPageNavigatorConfig, this.config);
   }
 
