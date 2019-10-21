@@ -138,7 +138,7 @@ class I18n {
   }
 
   private replaceVariableWithPlaceholderIfExists(text: string, config: any) {
-    const matches = Array.from(text.match(new RegExp('{[a-zA-Z0-9]+}')));
+    const matches = text.match(new RegExp('{[a-zA-Z0-9]+}', 'g'));
     if (matches.length === 0) {
       return text;
     }
