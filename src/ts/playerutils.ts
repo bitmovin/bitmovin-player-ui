@@ -38,7 +38,7 @@ export namespace PlayerUtils {
    */
   export function getCurrentTimeRelativeToSeekableRange(player: PlayerAPI): number {
     const currentTime = player.getCurrentTime();
-    if (this.player.isLive()) {
+    if (player.isLive()) {
       return currentTime;
     }
 
