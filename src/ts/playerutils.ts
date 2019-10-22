@@ -31,6 +31,20 @@ export namespace PlayerUtils {
     }
   }
 
+  /**
+   * Returns the currentTime - seekableRange.start. This ensures a user-friendly currentTime after a live stream
+   * transitioned to VoD.
+   * @param player
+   */
+  export function getCurrentTimeRelativeToSeekableRange(player: PlayerAPI): number {
+    const currentTime = player.getCurrentTime();
+    if (this.player.isLive()) {
+      return currentTime;
+    }
+
+    return currentTime - player.getSeekableRange().start;
+  }
+
   export interface TimeShiftAvailabilityChangedArgs extends NoArgs {
     timeShiftAvailable: boolean;
   }
