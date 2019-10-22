@@ -113,6 +113,11 @@ export namespace PlayerUtils {
       if (BrowserUtils.isAndroid && BrowserUtils.isChrome) {
         player.on(player.exports.PlayerEvent.TimeChanged, liveDetector);
       }
+
+      // TODO:
+      if (Boolean(player.exports.PlayerEvent.DurationChanged)) {
+        player.on(player.exports.PlayerEvent.DurationChanged, liveDetector);
+      }
     }
 
     detect(): void {
