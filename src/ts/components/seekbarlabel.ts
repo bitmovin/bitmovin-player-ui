@@ -103,7 +103,9 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       }
       let time = this.player.getDuration() * (args.position / 100);
       this.setTime(time);
-      this.setThumbnail(this.player.getThumbnail(time));
+
+      const absoluteSeekTarget = time + this.player.getSeekableRange().start;
+      this.setThumbnail(this.player.getThumbnail(absoluteSeekTarget));
     }
 
     // Remove CSS classes from previous marker
