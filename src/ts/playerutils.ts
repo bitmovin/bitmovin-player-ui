@@ -123,8 +123,8 @@ export namespace PlayerUtils {
         player.on(player.exports.PlayerEvent.TimeChanged, liveDetector);
       }
 
-      // TODO:
-      if (Boolean(player.exports.PlayerEvent.DurationChanged)) {
+      // DurationChanged event was introduced with player v8.19.1
+      if (player.exports.PlayerEvent.hasOwnProperty('DurationChanged')) {
         player.on(player.exports.PlayerEvent.DurationChanged, liveDetector);
       }
     }
