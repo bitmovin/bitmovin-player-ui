@@ -93,8 +93,20 @@ export namespace PlayerUtils {
 
   /**
    * Detects changes of the stream type, i.e. changes of the return value of the player#isLive method.
+   * Normally, a stream cannot change its type during playback, it's either VOD or live. Due to bugs on some
+   * platforms or browsers, it can still change. It is therefore unreliable to just check #isLive and this detector
+   * should be used as a workaround instead.
    *
-   * @deprecated use `PlayerEvent.DurationChanged` instead
+   * Additionally starting with player v8.19.0 we have the use-case that a live stream changes into a vod.
+   * The DurationChanged event indicates this switch.
+   *
+   * Known cases:
+   *
+   * - HLS VOD on Android 4.3
+   * Video duration is initially 'Infinity' and only gets available after playback starts, so streams are wrongly
+   * reported as 'live' before playback (the live-check in the player checks for infinite duration).
+   *
+   * @deprecated since UI v3.9.0 in combination with player v8.19.0 use PlayerEvent.DurationChanged instead
    *
    * TODO: remove this class in next major release
    */
@@ -124,7 +136,7 @@ export namespace PlayerUtils {
         player.on(player.exports.PlayerEvent.TimeChanged, liveDetector);
       }
 
-      // DurationChanged event was introduced with player v8.19.1
+      // DurationChanged event was introduced with player v8.19.0
       if (player.exports.PlayerEvent.DurationChanged) {
         player.on(player.exports.PlayerEvent.DurationChanged, liveDetector);
       }
