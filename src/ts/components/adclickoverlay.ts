@@ -2,10 +2,6 @@ import { ClickOverlay } from './clickoverlay';
 import { UIInstanceManager } from '../uimanager';
 import { Ad, AdEvent, PlayerAPI } from 'bitmovin-player';
 
-interface LocalAd extends Ad {
-  clickThroughUrlOpened?: () => void;
-}
-
 /**
  * A simple click capture overlay for clickThroughUrls of ads.
  */
@@ -17,7 +13,7 @@ export class AdClickOverlay extends ClickOverlay {
     let clickThroughCallback: () => void = null;
 
     player.on(player.exports.PlayerEvent.AdStarted, (event: AdEvent) => {
-      let ad = event.ad as LocalAd;
+      let ad = event.ad;
       this.setUrl(ad.clickThroughUrl);
       clickThroughCallback = ad.clickThroughUrlOpened;
     });
