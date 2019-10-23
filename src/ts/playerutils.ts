@@ -118,7 +118,7 @@ export namespace PlayerUtils {
 
       // HLS live detection workaround for Android:
       // Also re-evaluate during playback, because that is when the live flag might change.
-      // (Doing it only in Android Chrome saves unnecessary overhead on other plattforms)
+      // (Doing it only in Android Chrome saves unnecessary overhead on other platforms)
       if (BrowserUtils.isAndroid && BrowserUtils.isChrome) {
         player.on(player.exports.PlayerEvent.TimeChanged, liveDetector);
       }
