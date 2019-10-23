@@ -42,7 +42,8 @@ export namespace PlayerUtils {
       return currentTime;
     }
 
-    return currentTime - player.getSeekableRange().start;
+    const seekableRangeStart = player.getSeekableRange() && player.getSeekableRange().start || 0;
+    return currentTime - seekableRangeStart;
   }
 
   export interface TimeShiftAvailabilityChangedArgs extends NoArgs {
