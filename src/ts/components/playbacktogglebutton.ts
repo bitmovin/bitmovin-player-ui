@@ -1,7 +1,6 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
 import {PlayerUtils} from '../playerutils';
-import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import { PlayerAPI, WarningEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
@@ -76,18 +75,25 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     });
 
+    const updateLiveState = () => {
+      const showStopToggle = player.isLive() && !PlayerUtils.isTimeShiftAvailable(player);
+
+      if (showStopToggle) {
+        this.getDomElement().addClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
+      } else {
+        this.getDomElement().removeClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
+      }
+    };
+
     // Detect absence of timeshifting on live streams and add tagging class to convert button icons to play/stop
     let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
-    timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe(
-      (sender, args: TimeShiftAvailabilityChangedArgs) => {
-        if (!args.timeShiftAvailable) {
-          this.getDomElement().addClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
-        } else {
-          this.getDomElement().removeClass(this.prefixCss(PlaybackToggleButton.CLASS_STOPTOGGLE));
-        }
-      },
-    );
+    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
+
+    timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe(() => updateLiveState());
+    liveStreamDetector.onLiveChanged.subscribe(() => updateLiveState());
+
     timeShiftDetector.detect(); // Initial detection
+    liveStreamDetector.detect();
 
     if (handleClickEvent) {
       // Control player by button events

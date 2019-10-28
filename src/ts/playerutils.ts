@@ -31,6 +31,34 @@ export namespace PlayerUtils {
     }
   }
 
+  /**
+   * Returns the currentTime - seekableRange.start. This ensures a user-friendly currentTime after a live stream
+   * transitioned to VoD.
+   * @param player
+   */
+  export function getCurrentTimeRelativeToSeekableRange(player: PlayerAPI): number {
+    const currentTime = player.getCurrentTime();
+    if (player.isLive()) {
+      return currentTime;
+    }
+
+    const seekableRangeStart = PlayerUtils.getSeekableRangeStart(player, 0);
+    return currentTime - seekableRangeStart;
+  }
+
+  /**
+   * Returns the start value of the seekable range or the defaultValue if no seekableRange is present.
+   * For now this happens only in combination with Mobile SDKs.
+   *
+   * TODO: remove this function in next major release
+   *
+   * @param player
+   * @param defaultValue
+   */
+  export function getSeekableRangeStart(player: PlayerAPI, defaultValue: number = 0) {
+    return player.getSeekableRange() && player.getSeekableRange().start || defaultValue;
+  }
+
   export interface TimeShiftAvailabilityChangedArgs extends NoArgs {
     timeShiftAvailable: boolean;
   }
@@ -82,11 +110,18 @@ export namespace PlayerUtils {
    * platforms or browsers, it can still change. It is therefore unreliable to just check #isLive and this detector
    * should be used as a workaround instead.
    *
+   * Additionally starting with player v8.19.0 we have the use-case that a live stream changes into a vod.
+   * The DurationChanged event indicates this switch.
+   *
    * Known cases:
    *
    * - HLS VOD on Android 4.3
    * Video duration is initially 'Infinity' and only gets available after playback starts, so streams are wrongly
    * reported as 'live' before playback (the live-check in the player checks for infinite duration).
+   *
+   * @deprecated since UI v3.9.0 in combination with player v8.19.0 use PlayerEvent.DurationChanged instead
+   *
+   * TODO: remove this class in next major release
    */
   export class LiveStreamDetector {
 
@@ -109,9 +144,14 @@ export namespace PlayerUtils {
 
       // HLS live detection workaround for Android:
       // Also re-evaluate during playback, because that is when the live flag might change.
-      // (Doing it only in Android Chrome saves unnecessary overhead on other plattforms)
+      // (Doing it only in Android Chrome saves unnecessary overhead on other platforms)
       if (BrowserUtils.isAndroid && BrowserUtils.isChrome) {
         player.on(player.exports.PlayerEvent.TimeChanged, liveDetector);
+      }
+
+      // DurationChanged event was introduced with player v8.19.0
+      if (player.exports.PlayerEvent.DurationChanged) {
+        player.on(player.exports.PlayerEvent.DurationChanged, liveDetector);
       }
     }
 

@@ -171,7 +171,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.setBufferPosition(100);
       }
       else {
-        let playbackPositionPercentage = 100 / player.getDuration() * player.getCurrentTime();
+        let playbackPositionPercentage = 100 / player.getDuration() * this.getRelativeCurrentTime();
 
         let videoBufferLength = player.getVideoBufferLength();
         let audioBufferLength = player.getAudioBufferLength();
@@ -349,7 +349,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       const maxTimeShift = this.player.getMaxTimeShift();
       this.player.timeShift(maxTimeShift - (maxTimeShift * (percentage / 100)), 'ui');
     } else {
-      this.player.seek(this.player.getDuration() * (percentage / 100), 'ui');
+      const seekableRangeStart = PlayerUtils.getSeekableRangeStart(this.player, 0);
+      const relativeSeekTarget = this.player.getDuration() * (percentage / 100);
+      const absoluteSeekTarget = relativeSeekTarget + seekableRangeStart;
+      this.player.seek(absoluteSeekTarget, 'ui');
     }
   };
 
@@ -391,7 +394,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       currentTimeSeekBar += currentTimeUpdateDeltaSecs;
 
       try {
-        currentTimePlayer = player.getCurrentTime();
+        currentTimePlayer = this.getRelativeCurrentTime();
       } catch (error) {
         // Detect if the player has been destroyed and stop updating if so
         if (error instanceof player.exports.PlayerAPINotAvailableError) {
@@ -426,7 +429,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let startSmoothPlaybackPositionUpdater = () => {
       if (!player.isLive()) {
-        currentTimeSeekBar = player.getCurrentTime();
+        currentTimeSeekBar = this.getRelativeCurrentTime();
         this.smoothPlaybackPositionUpdater.start();
       }
     };
@@ -440,13 +443,17 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.Paused, stopSmoothPlaybackPositionUpdater);
     player.on(player.exports.PlayerEvent.PlaybackFinished, stopSmoothPlaybackPositionUpdater);
     player.on(player.exports.PlayerEvent.Seeked, () => {
-      currentTimeSeekBar = player.getCurrentTime();
+      currentTimeSeekBar = this.getRelativeCurrentTime();
     });
     player.on(player.exports.PlayerEvent.SourceUnloaded, stopSmoothPlaybackPositionUpdater);
 
     if (player.isPlaying()) {
       startSmoothPlaybackPositionUpdater();
     }
+  }
+
+  private getRelativeCurrentTime(): number {
+    return PlayerUtils.getCurrentTimeRelativeToSeekableRange(this.player);
   }
 
   private configureMarkers(player: PlayerAPI, uimanager: UIInstanceManager): void {

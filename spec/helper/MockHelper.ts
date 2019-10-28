@@ -25,6 +25,9 @@ export namespace MockHelper {
         events: {
           onUpdated: getEventDispatcherMock(),
         },
+        metadata: {
+          markers: [],
+        },
       }),
       onControlsShow: getEventDispatcherMock(),
       onControlsHide: getEventDispatcherMock(),
@@ -33,6 +36,7 @@ export namespace MockHelper {
       onSeekPreview: getEventDispatcherMock(),
       onSeek: getEventDispatcherMock(),
       onSeeked: getEventDispatcherMock(),
+      onRelease: getEventDispatcherMock(),
     }));
 
     return new UiInstanceManagerMockClass();
@@ -87,6 +91,11 @@ export namespace MockHelper {
         getAvailableAudio: jest.fn(),
         getAudio: jest.fn(),
         getThumbnail: jest.fn(),
+        getSeekableRange: jest.fn(() => {
+          return { start: 0, end: 0 };
+        }),
+        getVideoBufferLength: jest.fn(),
+        getAudioBufferLength: jest.fn(),
         hasEnded: jest.fn(),
         isStalled: jest.fn(),
         isCasting: jest.fn(),

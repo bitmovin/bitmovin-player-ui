@@ -118,7 +118,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
     let playbackTimeHandler = () => {
       if (!live && player.getDuration() !== Infinity) {
-        this.setTime(player.getCurrentTime(), player.getDuration());
+        this.setTime(PlayerUtils.getCurrentTimeRelativeToSeekableRange(player), player.getDuration());
       }
 
       // To avoid 'jumping' in the UI by varying label sizes due to non-monospaced fonts,

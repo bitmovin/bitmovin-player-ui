@@ -1,6 +1,7 @@
 import { MockHelper } from './helper/MockHelper';
 import { ListSelector, ListSelectorConfig } from '../src/ts/components/listselector';
 import { AudioTrackSwitchHandler } from '../src/ts/audiotrackutils';
+import { AudioTrack } from 'bitmovin-player';
 
 let playerMock = MockHelper.getPlayerMock();
 let audioTrackSwitchHandler: AudioTrackSwitchHandler;
@@ -27,19 +28,19 @@ describe('AudioUtils', () => {
         id: 'a-1',
         label: 'A1',
         lang: 'en',
-      },
+      } as AudioTrack,
       {
         id: 'a-2',
         label: 'A2',
         lang: 'de',
-      },
+      } as AudioTrack,
     ]);
 
     jest.spyOn(playerMock, 'getAudio').mockReturnValue({
       id: 'a-1',
       label: 'A1',
       lang: 'en',
-    });
+    } as AudioTrack);
 
     audioTrackSwitchHandler = new AudioTrackSwitchHandler(playerMock, listSelectorMock, uiManagerMock);
   });
@@ -87,12 +88,12 @@ describe('AudioUtils', () => {
           id: 'a-1',
           label: 'A1',
           lang: 'en',
-        },
+        } as AudioTrack,
         {
           id: 'a-3',
           label: 'A3',
           lang: 'fr',
-        },
+        } as AudioTrack,
       ]);
       playerMock.eventEmitter.firePeriodSwitchedEvent();
 
@@ -110,7 +111,7 @@ describe('AudioUtils', () => {
         id: 'a-2',
         label: 'A1',
         lang: 'en',
-      });
+      } as AudioTrack);
       playerMock.eventEmitter.fireAudioChangedEvent();
       expect(listSelectorMock.selectItem).toHaveBeenCalledWith('a-2');
     });
