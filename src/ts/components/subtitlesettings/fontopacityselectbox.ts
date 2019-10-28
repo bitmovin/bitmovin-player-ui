@@ -1,6 +1,7 @@
 import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './subtitlesettingselectbox';
 import {UIInstanceManager} from '../../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../../localization/i18n';
 
 /**
  * A select box providing a selection of different font colors.
@@ -18,11 +19,11 @@ export class FontOpacitySelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.addItem(null, 'default');
-    this.addItem('100', '100%');
-    this.addItem('75', '75%');
-    this.addItem('50', '50%');
-    this.addItem('25', '25%');
+    this.addItem(null, i18n.getLocalizer('default'));
+    this.addItem('100', i18n.getLocalizer('percent', { value: 100 }));
+    this.addItem('75', i18n.getLocalizer('percent', { value: 75 }));
+    this.addItem('50', i18n.getLocalizer('percent', { value: 50 }));
+    this.addItem('25', i18n.getLocalizer('percent', { value: 25 }));
 
     this.onItemSelected.subscribe((sender, key: string) => {
       this.settingsManager.fontOpacity.value = key;

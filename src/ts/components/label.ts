@@ -1,15 +1,16 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, Event, NoArgs} from '../eventdispatcher';
+import { LocalizableText, i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Label} component.
  */
 export interface LabelConfig extends ComponentConfig {
   /**
-   * The text on the label.
+   * The text as string or localize callback on the label.
    */
-  text?: string;
+  text?: LocalizableText;
 }
 
 /**
@@ -22,7 +23,7 @@ export interface LabelConfig extends ComponentConfig {
  */
 export class Label<Config extends LabelConfig> extends Component<Config> {
 
-  private text: string;
+  private text: LocalizableText;
 
   private labelEvents = {
     onClick: new EventDispatcher<Label<Config>, NoArgs>(),
@@ -35,7 +36,6 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-label',
     } as Config, this.config);
-
     this.text = this.config.text;
   }
 
@@ -43,7 +43,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     let labelElement = new DOM('span', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    }).html(this.text);
+    }).html(i18n.performLocalization(this.text));
 
     labelElement.on('click', () => {
       this.onClickEvent();
@@ -56,14 +56,15 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * Set the text on this label.
    * @param text
    */
-  setText(text: string) {
+  setText(text: LocalizableText) {
     if (text === this.text) {
       return;
     }
 
     this.text = text;
-    this.getDomElement().html(text);
-    this.onTextChangedEvent(text);
+    const localizedText = i18n.performLocalization(text);
+    this.getDomElement().html(localizedText);
+    this.onTextChangedEvent(localizedText);
   }
 
   /**
@@ -71,7 +72,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * @return {string} The text on the label
    */
   getText(): string {
-    return this.text;
+    return i18n.performLocalization(this.text);
   }
 
   /**

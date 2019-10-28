@@ -105,7 +105,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
       // errorMessages configured in `UIConfig` take precedence `ErrorMessageOverlayConfig`
       let errorMessages = uimanager.getConfig().errorMessages || config.messages;
-      // Process message translations
+      // Process message vocabularies
       if (errorMessages) {
         if (typeof errorMessages === 'function') {
           // Translation function for all errors

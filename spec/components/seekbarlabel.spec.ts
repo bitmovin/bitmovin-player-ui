@@ -76,6 +76,22 @@ describe('SeekBarLabel', () => {
 
         expect(playerMock.getThumbnail).toHaveBeenCalledWith(1);
       });
+
+      it('with correct seek target value respecting seekable range', () => {
+        jest.spyOn(playerMock, 'getSeekableRange').mockReturnValue({
+          start: 10,
+          end: 20,
+        });
+
+        let args: SeekPreviewEventArgs = {
+          scrubbing: false,
+          position: 10,
+        };
+
+        (seekbarLabel as any).handleSeekPreview(seekbarLabel, args);
+
+        expect(playerMock.getThumbnail).toHaveBeenCalledWith(11);
+      });
     });
   });
 });

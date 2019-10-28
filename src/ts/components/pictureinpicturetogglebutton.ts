@@ -1,6 +1,7 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles Apple macOS picture-in-picture mode.
@@ -12,7 +13,7 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-piptogglebutton',
-      text: 'Picture-in-Picture',
+      text: i18n.getLocalizer('pictureInPicture'),
     }, this.config);
   }
 

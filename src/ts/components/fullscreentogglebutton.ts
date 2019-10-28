@@ -1,6 +1,7 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles the player between windowed and fullscreen view.
@@ -12,7 +13,7 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-fullscreentogglebutton',
-      text: 'Fullscreen',
+      text: i18n.getLocalizer('fullscreen'),
     }, this.config);
   }
 

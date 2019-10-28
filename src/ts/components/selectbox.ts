@@ -1,5 +1,6 @@
 import {ListSelector, ListSelectorConfig} from './listselector';
 import {DOM} from '../dom';
+import { i18n } from '../localization/i18n';
 
 /**
  * A simple select box providing the possibility to select a single item out of a list of available items.
@@ -49,7 +50,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
     for (let item of this.items) {
       let optionElement = new DOM('option', {
         'value': String(item.key),
-      }).html(item.label);
+      }).html(i18n.performLocalization(item.label));
 
       if (item.key === String(selectedValue)) { // convert selectedValue to string to catch 'null'/null case
         optionElement.attr('selected', 'selected');

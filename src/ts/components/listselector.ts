@@ -1,13 +1,14 @@
 import {Component, ComponentConfig} from './component';
 import {EventDispatcher, Event} from '../eventdispatcher';
 import {ArrayUtils} from '../arrayutils';
+import { LocalizableText, i18n } from '../localization/i18n';
 
 /**
  * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.
  */
 export interface ListItem {
   key: string;
-  label: string;
+  label: LocalizableText;
 }
 
 /**
@@ -103,8 +104,8 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param key the key of the item to add
    * @param label the (human-readable) label of the item to add
    */
-  addItem(key: string, label: string) {
-    const listItem = { key: key, label: label };
+  addItem(key: string, label: LocalizableText) {
+    const listItem = { key: key, label: i18n.performLocalization(label) };
 
     // Apply filter function
     if (this.config.filter && !this.config.filter(listItem)) {

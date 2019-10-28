@@ -253,6 +253,8 @@
 
   var player;
   var uiManager;
+  bitmovin.playerui.UIManager.setLocalizationConfig({ language: 'en', browserLanguageDetection: false });
+
   var playerSetup = function(config) {
     player = new bitmovin.player.Player(document.getElementById('player'), config);
 

@@ -1,8 +1,10 @@
 import {
   AdBreakEvent,
   AdEvent,
-  AirplayChangedEvent, AudioChangedEvent,
+  AirplayChangedEvent,
+  AudioChangedEvent,
   AudioTrackEvent,
+  DurationChangedEvent,
   ErrorEvent,
   LinearAd,
   PeriodSwitchedEvent,
@@ -14,6 +16,7 @@ import {
   SubtitleCueEvent,
   SubtitleEvent,
   SubtitleTrack,
+  TimeChangedEvent,
   TimeShiftEvent,
   VideoPlaybackQualityChangedEvent
 } from 'bitmovin-player';
@@ -149,6 +152,15 @@ export class PlayerEventEmitter {
     });
   }
 
+  fireDurationChangedEvent(): void {
+    this.fireEvent<DurationChangedEvent>({
+      timestamp: Date.now(),
+      type: PlayerEvent.DurationChanged,
+      from: Infinity,
+      to: 200,
+    });
+  }
+
   fireSourceLoadedEvent(): void {
     this.fireEvent<PlayerEventBase>({
       timestamp: Date.now(),
@@ -230,6 +242,14 @@ export class PlayerEventEmitter {
       time: Date.now(),
       type: PlayerEvent.AirplayChanged,
       airplayEnabled: true,
+    });
+  }
+
+  fireTimeChangedEvent(time: number): void {
+    this.fireEvent<TimeChangedEvent>({
+      time,
+      timestamp: Date.now(),
+      type: PlayerEvent.TimeChanged,
     });
   }
 
