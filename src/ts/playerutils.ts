@@ -42,8 +42,21 @@ export namespace PlayerUtils {
       return currentTime;
     }
 
-    const seekableRangeStart = player.getSeekableRange() && player.getSeekableRange().start || 0;
+    const seekableRangeStart = PlayerUtils.getSeekableRangeStart(player, 0);
     return currentTime - seekableRangeStart;
+  }
+
+  /**
+   * Returns the start value of the seekable range or the defaultValue if no seekableRange is present.
+   * For now this happens only in combination with Mobile SDKs.
+   *
+   * TODO: remove this function in next major release
+   *
+   * @param player
+   * @param defaultValue
+   */
+  export function getSeekableRangeStart(player: PlayerAPI, defaultValue: number = 0) {
+    return player.getSeekableRange() && player.getSeekableRange().start || defaultValue;
   }
 
   export interface TimeShiftAvailabilityChangedArgs extends NoArgs {

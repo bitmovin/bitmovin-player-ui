@@ -7,6 +7,7 @@ import {ImageLoader} from '../imageloader';
 import {CssProperties} from '../dom';
 import { PlayerAPI, Thumbnail } from 'bitmovin-player';
 import { SeekBar, SeekPreviewEventArgs } from './seekbar';
+import { PlayerUtils } from '../playerutils';
 
 /**
  * Configuration interface for a {@link SeekBarLabel}.
@@ -104,7 +105,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       let time = this.player.getDuration() * (args.position / 100);
       this.setTime(time);
 
-      const seekableRangeStart = this.player.getSeekableRange() && this.player.getSeekableRange().start || 0;
+      const seekableRangeStart = PlayerUtils.getSeekableRangeStart(this.player, 0);
       const absoluteSeekTarget = time + seekableRangeStart;
       this.setThumbnail(this.player.getThumbnail(absoluteSeekTarget));
     }
