@@ -333,13 +333,15 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private calculatePlaybackPositionPercentage(relativeCurrentTime: number = this.getRelativeCurrentTime()) {
     if (this.player.isLive()) {
-      let maxTimeShift = this.player.getMaxTimeShift();
+      const maxTimeShift = this.player.getMaxTimeShift();
       if (maxTimeShift === 0) {
         // This case must be explicitly handled to avoid division by zero
         return 0;
       }
+
       return 100 - (100 / maxTimeShift * this.player.getTimeShift());
     }
+
     return 100 / this.player.getDuration() * relativeCurrentTime;
   }
 
