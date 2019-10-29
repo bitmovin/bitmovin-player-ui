@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Upgrade to Gulp 4
 
-
 ## [2.22.1] (2019-10-15)
 
 ### Changed
