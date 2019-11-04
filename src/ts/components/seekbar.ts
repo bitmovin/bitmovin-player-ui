@@ -157,7 +157,6 @@ export class SeekBar extends Component<SeekBarConfig> {
         return;
       }
 
-
       if (player.isLive()) {
         if (player.getMaxTimeShift() === 0) {	
           // This case must be explicitly handled to avoid division by zero	
@@ -169,8 +168,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Always show full buffer for live streams
         this.setBufferPosition(100);
-      }
-      else {
+      } else {
         let playbackPositionPercentage = 100 / player.getDuration() * this.getRelativeCurrentTime();
 
         let videoBufferLength = player.getVideoBufferLength();
@@ -308,7 +306,6 @@ export class SeekBar extends Component<SeekBarConfig> {
         switchVisibility(isLive, hasTimeShift);
       },
     );
-
     // Initial detection
     liveStreamDetector.detect();
     timeShiftDetector.detect();
@@ -364,7 +361,11 @@ export class SeekBar extends Component<SeekBarConfig> {
    * Update seekbar while a live stream with DVR window is paused.
    * The playback position stays still and the position indicator visually moves towards the back.
    */
-  private configureLivePausedTimeshiftUpdater(player: PlayerAPI, uimanager: UIInstanceManager, playbackPositionHandler: () => void): void {
+  private configureLivePausedTimeshiftUpdater(
+    player: PlayerAPI, 
+    uimanager: UIInstanceManager, 
+    playbackPositionHandler: () => void
+  ): void {
     // Regularly update the playback position while the timeout is active
     this.pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
 
@@ -396,7 +397,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
       currentTimeSeekBar += currentTimeUpdateDeltaSecs;
-      console.log('update!');
 
       try {
         currentTimePlayer = this.getRelativeCurrentTime();
@@ -429,7 +429,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
 
       let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
-
       this.setPlaybackPosition(playbackPositionPercentage);
     }, true);
 
