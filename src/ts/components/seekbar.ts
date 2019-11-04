@@ -157,14 +157,21 @@ export class SeekBar extends Component<SeekBarConfig> {
         return;
       }
 
-      const playbackPositionPercentage = this.calculatePlaybackPositionPercentage();
 
       if (player.isLive()) {
-        this.setPlaybackPosition(playbackPositionPercentage);
+        if (player.getMaxTimeShift() === 0) {	
+          // This case must be explicitly handled to avoid division by zero	
+          this.setPlaybackPosition(100);	
+        } else {	
+          let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());	
+          this.setPlaybackPosition(playbackPositionPercentage);	
+        }
+
         // Always show full buffer for live streams
         this.setBufferPosition(100);
       }
       else {
+        let playbackPositionPercentage = 100 / player.getDuration() * this.getRelativeCurrentTime();
 
         let videoBufferLength = player.getVideoBufferLength();
         let audioBufferLength = player.getAudioBufferLength();
@@ -333,20 +340,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.configureSmoothPlaybackPositionUpdater(player, uimanager);
     }
     this.configureMarkers(player, uimanager);
-  }
-
-  private calculatePlaybackPositionPercentage(relativeCurrentTime: number = this.getRelativeCurrentTime()) {
-    if (this.player.isLive()) {
-      const maxTimeShift = this.player.getMaxTimeShift();
-      if (maxTimeShift === 0) {
-        // This case must be explicitly handled to avoid division by zero
-        return 0;
-      }
-
-      return 100 - (100 / maxTimeShift * this.player.getTimeShift());
-    }
-
-    return 100 / this.player.getDuration() * relativeCurrentTime;
   }
 
   private seekWhileScrubbing = (sender: SeekBar, args: SeekPreviewEventArgs) => {
