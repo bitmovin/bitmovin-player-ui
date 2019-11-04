@@ -158,12 +158,12 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
 
       if (player.isLive()) {
-        if (player.getMaxTimeShift() === 0) {	
-          // This case must be explicitly handled to avoid division by zero	
-          this.setPlaybackPosition(100);	
-        } else {	
-          let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());	
-          this.setPlaybackPosition(playbackPositionPercentage);	
+        if (player.getMaxTimeShift() === 0) {
+          // This case must be explicitly handled to avoid division by zero
+          this.setPlaybackPosition(100);
+        } else {
+          let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
+          this.setPlaybackPosition(playbackPositionPercentage);
         }
 
         // Always show full buffer for live streams
@@ -362,9 +362,9 @@ export class SeekBar extends Component<SeekBarConfig> {
    * The playback position stays still and the position indicator visually moves towards the back.
    */
   private configureLivePausedTimeshiftUpdater(
-    player: PlayerAPI, 
-    uimanager: UIInstanceManager, 
-    playbackPositionHandler: () => void
+    player: PlayerAPI,
+    uimanager: UIInstanceManager,
+    playbackPositionHandler: () => void,
   ): void {
     // Regularly update the playback position while the timeout is active
     this.pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
