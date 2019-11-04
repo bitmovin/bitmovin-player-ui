@@ -290,6 +290,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       isLive = args.live;
+      if (isLive && this.smoothPlaybackPositionUpdater != null) {
+        this.smoothPlaybackPositionUpdater.clear();
+      }
       switchVisibility(isLive, hasTimeShift);
     });
     let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
@@ -298,6 +301,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         switchVisibility(isLive, hasTimeShift);
       },
     );
+
     // Initial detection
     liveStreamDetector.detect();
     timeShiftDetector.detect();
@@ -396,8 +400,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     let updateIntervalMs = 50;
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
+
     this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
       currentTimeSeekBar += currentTimeUpdateDeltaSecs;
+      console.log('update!');
 
       try {
         currentTimePlayer = this.getRelativeCurrentTime();
@@ -429,7 +435,9 @@ export class SeekBar extends Component<SeekBarConfig> {
         currentTimeSeekBar -= currentTimeUpdateDeltaSecs;
       }
 
-      this.setPlaybackPosition(this.calculatePlaybackPositionPercentage(currentTimeSeekBar));
+      let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
+
+      this.setPlaybackPosition(playbackPositionPercentage);
     }, true);
 
     let startSmoothPlaybackPositionUpdater = () => {
