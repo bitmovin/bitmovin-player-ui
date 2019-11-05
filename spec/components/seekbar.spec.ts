@@ -1,6 +1,9 @@
 import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
 import { SeekBar } from '../../src/ts/components/seekbar';
 import { UIInstanceManager } from '../../src/ts/uimanager';
+import { PlayerUtils } from '../../src/ts/playerutils';
+import { anyTypeAnnotation } from '@babel/types';
+import { Timeout } from '../../src/ts/timeout';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -12,7 +15,7 @@ describe('SeekBar', () => {
     playerMock = MockHelper.getPlayerMock();
     uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
 
-    seekbar = new SeekBar();
+    seekbar = new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: 1 });
   });
 
   describe('becomes visible when switching from live to vod', () => {
@@ -28,6 +31,24 @@ describe('SeekBar', () => {
       playerMock.eventEmitter.fireDurationChangedEvent();
 
       expect(showSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('disables smoothPlaybackPositionUpdater on Live Streams', () => {
+    it('clears smoothPlaybackPositionUpdater when AD is finished', () => {
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+      playerMock.eventEmitter.fireAdBreakStartedEvent();
+
+      const playbackUpdater: Timeout = (seekbar as any).smoothPlaybackPositionUpdater;
+      const clearSpy = jest.spyOn(playbackUpdater, 'clear');
+
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
+      playerMock.eventEmitter.fireAdBreakFinishedEvent();
+
+      expect(clearSpy).toHaveBeenCalled();
     });
   });
 });
