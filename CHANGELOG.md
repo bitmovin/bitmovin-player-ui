@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- UI Flickering back and forth on live streams after AD's
+
+### Changed
+- Seekbar doesn't use `SmoothPositionUpdater` on Live streams anymore.
+
 ## [3.9.0]
 
 ### Added
