@@ -765,9 +765,7 @@ export class PlayerWrapper {
     // (Object.getOwnPropertyNames(player) does not work with the player TypeScript class starting in 7.2)
     let members: string[] = [];
     for (let member in player) {
-      if ((player as any)[member]) {
-        members.push(member);
-      }
+      members.push(member);
     }
 
     // Split the members into methods and properties
