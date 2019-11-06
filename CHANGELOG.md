@@ -7,10 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- UI Flickering back and forth on live streams after AD's
-
-### Changed
-- Seekbar doesn't use `SmoothPositionUpdater` on Live streams anymore.
+- UI flickering back and forth on live streams after ads
 
 ## [3.9.0]
 

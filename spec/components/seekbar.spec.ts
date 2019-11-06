@@ -1,8 +1,6 @@
 import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
 import { SeekBar } from '../../src/ts/components/seekbar';
 import { UIInstanceManager } from '../../src/ts/uimanager';
-import { PlayerUtils } from '../../src/ts/playerutils';
-import { anyTypeAnnotation } from '@babel/types';
 import { Timeout } from '../../src/ts/timeout';
 
 let playerMock: TestingPlayerAPI;
