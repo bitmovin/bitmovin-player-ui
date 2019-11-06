@@ -764,11 +764,6 @@ export class PlayerWrapper {
     // Collect all members of the player (public API methods and properties of the player)
     // (Object.getOwnPropertyNames(player) does not work with the player TypeScript class starting in 7.2)
     let members: string[] = [];
-
-
-    // const mss = Object.keys(player).filter(key => player[key] != null);
-
-
     for (let member in player) {
       if ((player as any)[member]) {
         members.push(member);
@@ -779,17 +774,10 @@ export class PlayerWrapper {
     let methods = <any[]>[];
     let properties = <any[]>[];
 
-
-    console.log(player.getConfig());
-    console.log(player)
-    console.log(members);
-
     for (let member of members) {
-
       if (typeof (<any>player)[member] === 'function') {
         methods.push(member);
       } else {
-        // console.log("non-fn:member: ", member)
         properties.push(member);
       }
     }
@@ -800,7 +788,6 @@ export class PlayerWrapper {
     // Add function wrappers for all API methods that do nothing but calling the base method on the player
     for (let method of methods) {
       wrapper[method] = function() {
-        // console.log('called ' + method); // track method calls on the player
         return (<any>player)[method].apply(player, arguments);
       };
     }
