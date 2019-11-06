@@ -161,16 +161,14 @@ export class SeekBar extends Component<SeekBarConfig> {
         if (player.getMaxTimeShift() === 0) {
           // This case must be explicitly handled to avoid division by zero
           this.setPlaybackPosition(100);
-        }
-        else {
+        } else {
           let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
           this.setPlaybackPosition(playbackPositionPercentage);
         }
 
         // Always show full buffer for live streams
         this.setBufferPosition(100);
-      }
-      else {
+      } else {
         let playbackPositionPercentage = 100 / player.getDuration() * this.getRelativeCurrentTime();
 
         let videoBufferLength = player.getVideoBufferLength();
@@ -297,6 +295,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       isLive = args.live;
+      if (isLive && this.smoothPlaybackPositionUpdater != null) {
+        this.smoothPlaybackPositionUpdater.clear();
+      }
       switchVisibility(isLive, hasTimeShift);
     });
     let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
@@ -360,10 +361,13 @@ export class SeekBar extends Component<SeekBarConfig> {
    * Update seekbar while a live stream with DVR window is paused.
    * The playback position stays still and the position indicator visually moves towards the back.
    */
-  private configureLivePausedTimeshiftUpdater(player: PlayerAPI, uimanager: UIInstanceManager,
-                                              playbackPositionHandler: () => void): void {
+  private configureLivePausedTimeshiftUpdater(
+    player: PlayerAPI,
+    uimanager: UIInstanceManager,
+    playbackPositionHandler: () => void,
+  ): void {
     // Regularly update the playback position while the timeout is active
-     this.pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
+    this.pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
 
     // Start updater when a live stream with timeshift window is paused
     player.on(player.exports.PlayerEvent.Paused, () => {

@@ -153,6 +153,10 @@ export namespace PlayerUtils {
       if (player.exports.PlayerEvent.DurationChanged) {
         player.on(player.exports.PlayerEvent.DurationChanged, liveDetector);
       }
+
+      // Ad video's isLive() might be different than the actual video's isLive().
+      player.on(player.exports.PlayerEvent.AdBreakStarted, liveDetector);
+      player.on(player.exports.PlayerEvent.AdBreakFinished, liveDetector);
     }
 
     detect(): void {
