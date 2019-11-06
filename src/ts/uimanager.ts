@@ -786,6 +786,7 @@ export class PlayerWrapper {
     // Add function wrappers for all API methods that do nothing but calling the base method on the player
     for (let method of methods) {
       wrapper[method] = function() {
+        // console.log('called ' + member); // track method calls on the player
         return (<any>player)[method].apply(player, arguments);
       };
     }
