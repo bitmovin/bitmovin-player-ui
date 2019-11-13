@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Additional build step to copy json files to production build
+
 ### Fixed
 - UI flickering back and forth on live streams after ads
+- i18n module missing files error
 
 ## [3.9.0]
 

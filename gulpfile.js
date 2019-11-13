@@ -86,7 +86,7 @@ gulp.task('clean', function() {
   return del([paths.target.html]);
 });
 
-
+// Copies the JSON files to dist path
 gulp.task('copy-json', function() {
   return gulp.src(paths.source.json).pipe(gulp.dest(paths.target.jsframework));
 });
