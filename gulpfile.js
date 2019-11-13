@@ -47,7 +47,8 @@ var paths = {
     html: ['./src/html/*.html'],
     tsmain: ['./src/ts/main.ts'],
     ts: ['./src/ts/**/*.ts'],
-    sass: ['./src/scss/**/*.scss']
+    sass: ['./src/scss/**/*.scss'],
+    json: ['./src/ts/**/*.json']
   },
   target: {
     html: './dist',
@@ -83,6 +84,11 @@ function replaceAll() {
 // Deletes the target directory containing all generated files
 gulp.task('clean', function() {
   return del([paths.target.html]);
+});
+
+
+gulp.task('copy-json', function() {
+  return gulp.src(paths.source.json).pipe(gulp.dest(paths.target.jsframework));
 });
 
 // TypeScript linting
@@ -198,7 +204,7 @@ gulp.task('build', gulp.series('clean', gulp.parallel('html', 'browserify', 'sas
 gulp.task('build-prod', gulp.series(function(callback) {
   production = true;
   callback();
-}, 'lint', 'build'));
+}, 'lint', 'build', 'copy-json'));
 
 gulp.task('default', gulp.series('build'));
 
@@ -243,6 +249,9 @@ gulp.task('npm-prepare', gulp.series('build-prod', function() {
   // https://www.npmjs.com/package/gulp-typescript
   var tsProject = ts.createProject('tsconfig.json');
   var tsResult = gulp.src(paths.source.ts).pipe(tsProject());
+  /**
+   * @todo: add the build step here 
+   */
 
   return merge([
     tsResult.dts.pipe(gulp.dest(paths.target.jsframework)),
