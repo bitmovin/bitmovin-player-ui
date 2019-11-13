@@ -31,12 +31,18 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
   }
 
   protected toDomElement(): DOM {
-    // Create the button element with the text label
-    let buttonElement = new DOM('button', {
+    let buttonElementAttributes: {[name: string]: string} = {
       'type': 'button',
       'id': this.config.id,
       'class': this.getCssClasses(),
-    }).append(new DOM('span', {
+    }
+
+    if (this.config.role != null) {
+      buttonElementAttributes['role'] = this.config.role;
+    }
+
+    // Create the button element with the text label
+    let buttonElement = new DOM('button', buttonElementAttributes).append(new DOM('span', {
       'class': this.prefixCss('label'),
     }).html(i18n.performLocalization(this.config.text)));
 

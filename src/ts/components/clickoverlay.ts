@@ -20,6 +20,7 @@ export class ClickOverlay extends Button<ClickOverlayConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-clickoverlay',
+      role: this.config.role,
     }, <ClickOverlayConfig>this.config);
   }
 

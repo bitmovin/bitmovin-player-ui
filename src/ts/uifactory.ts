@@ -90,10 +90,12 @@ export namespace UIFactory {
       text: i18n.getLocalizer('open'),
     });
 
+    const subtitleSelectBox = new SubtitleSelectBox();
+
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: i18n.getLocalizer('settings.subtitles'), opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox(),
+        new SubtitleSettingsLabel({text: i18n.getLocalizer('settings.subtitles'), opener: subtitleSettingsOpenButton, for: subtitleSelectBox.getConfig().id}),
+        subtitleSelectBox,
       ));
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);
@@ -104,7 +106,7 @@ export namespace UIFactory {
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel() }),
+            new SeekBar({ label: new SeekBarLabel(), 'aria-controls': 'video-seekbar' }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top'],
@@ -218,10 +220,16 @@ export namespace UIFactory {
       text: i18n.getLocalizer('open'),
     });
 
+    const subtitleSelectBox = new SubtitleSelectBox();
+
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: i18n.getLocalizer('settings.subtitles'), opener: subtitleSettingsOpenButton}),
-        new SubtitleSelectBox(),
+          new SubtitleSettingsLabel({
+            text: i18n.getLocalizer('settings.subtitles'),
+            opener: subtitleSettingsOpenButton,
+            for: subtitleSelectBox.getConfig().id,
+          }),
+        subtitleSelectBox,
       ));
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);
@@ -234,7 +242,7 @@ export namespace UIFactory {
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel() }),
+            new SeekBar({ label: new SeekBarLabel(), 'aria-controls': 'video-seekbar' }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top'],
@@ -313,7 +321,7 @@ export namespace UIFactory {
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 }),
+            new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 , 'aria-controls': 'video-seekbar'}),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top'],

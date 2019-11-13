@@ -79,7 +79,9 @@ export class DOM {
 
       for (let attributeName in attributes) {
         let attributeValue = attributes[attributeName];
-        element.setAttribute(attributeName, attributeValue);
+        if (attributeValue != null) {
+          element.setAttribute(attributeName, attributeValue);
+        }
       }
 
       this.elements = [element];
@@ -248,6 +250,16 @@ export class DOM {
     else {
       return this.getAttr(attribute);
     }
+  }
+
+  /**
+   * Removes the attribute of the element.
+   * @param attribute
+   */
+  removeAttr(attribute: string) {
+    this.forEach((element) => {
+      element.removeAttribute(attribute);
+    })
   }
 
   private getAttr(attribute: string): string | null {

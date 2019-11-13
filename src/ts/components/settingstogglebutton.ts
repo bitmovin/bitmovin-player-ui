@@ -41,6 +41,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       text: i18n.getLocalizer('settings'),
       settingsPanel: null,
       autoHideWhenNoActiveSettings: true,
+      role: 'img',
     }, <SettingsToggleButtonConfig>this.config);
   }
 
@@ -49,6 +50,10 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
 
     let config = this.getConfig();
     let settingsPanel = config.settingsPanel;
+
+    this.getDomElement().attr('aria-haspopup', 'true');
+    this.getDomElement().attr('aria-controls', 'ui-settings');
+    this.getDomElement().attr('aria-expanded', 'false');
 
     this.onClick.subscribe(() => {
       // only hide other `SettingsPanel`s if a new one will be opened
@@ -63,10 +68,12 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     settingsPanel.onShow.subscribe(() => {
       // Set toggle status to on when the settings panel shows
       this.on();
+      this.getDomElement().attr('aria-expanded', 'true');
     });
     settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides
       this.off();
+      this.getDomElement().attr('aria-expanded', 'false');
     });
 
     // Ensure that only one `SettingPanel` is visible at once

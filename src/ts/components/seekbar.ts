@@ -9,6 +9,7 @@ import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChang
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import { TimelineMarker } from '../uiconfig';
 import { PlayerAPI, PlayerEventBase } from 'bitmovin-player';
+import { StringUtils } from '../stringutils';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -30,6 +31,12 @@ export interface SeekBarConfig extends ComponentConfig {
    * Default: 50 (50ms = 20fps).
    */
   smoothPlaybackPositionUpdateIntervalMs?: number;
+
+  /**
+   * WCAG20 standard - denotes which elements in a page an interactive element or set of elements has control
+   * over and affects them.
+   */
+  'aria-controls'?: string;
 }
 
 /**
@@ -80,6 +87,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private player: PlayerAPI;
 
+  private sliderType: 'vod' | 'live' | 'default';
+
   /**
    * Buffer of the the current playback position. The position must be buffered in case the element
    * needs to be refreshed with {@link #refreshPlaybackPosition}.
@@ -115,6 +124,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       cssClass: 'ui-seekbar',
       vertical: false,
       smoothPlaybackPositionUpdateIntervalMs: 50,
+      'aria-controls': this.config["aria-controls"],
     }, this.config);
 
     this.label = this.config.label;
@@ -129,6 +139,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
+  private setAriaSliderMinMax(min: string, max: string) {
+    this.seekBar.attr('aria-valuemin', min);
+    this.seekBar.attr('aria-valuemax', max);
+  }
+
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
 
@@ -139,6 +154,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPosition(this.seekBarBackdrop, 100);
 
     if (!configureSeek) {
+      this.sliderType = 'default';
+      this.setAriaSliderMinMax('0', '100');
       // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
       // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
       // This is actually a hack, the proper solution would be for both seek bar and volume sliders to extend
@@ -164,6 +181,8 @@ export class SeekBar extends Component<SeekBarConfig> {
         } else {
           let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
           this.setPlaybackPosition(playbackPositionPercentage);
+          this.sliderType = 'live';
+          this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
         }
 
         // Always show full buffer for live streams
@@ -194,6 +213,9 @@ export class SeekBar extends Component<SeekBarConfig> {
         }
 
         this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
+
+        this.sliderType = 'vod';
+        this.setAriaSliderMinMax('0', StringUtils.secondsToTime(player.getDuration()));
       }
     };
 
@@ -524,6 +546,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let seekBar = new DOM('div', {
       'class': this.prefixCss('seekbar'),
+      'role': 'slider',
+      'aria-controls': this.config["aria-controls"],
     });
     this.seekBar = seekBar;
 
@@ -567,6 +591,20 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let seeking = false;
 
+    const setAriaSliderValue = (e: MouseEvent | TouchEvent) => {
+      let currentSeekValue;
+
+      if (this.sliderType === 'live') {
+        currentSeekValue = Math.floor(this.getOffset(e) * this.player.getMaxTimeShift());
+      } else if (this.sliderType === 'vod') {
+        currentSeekValue = StringUtils.secondsToTime(Math.floor(this.getOffset(e) * this.player.getDuration()));
+      } else {
+        currentSeekValue = Math.floor(this.getOffset(e) * 100);
+      }
+
+      this.seekBar.attr('aria-valuenow', currentSeekValue.toString());
+    };
+
     // Define handler functions so we can attach/remove them later
     let mouseTouchMoveHandler = (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
@@ -577,7 +615,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.setSeekPosition(targetPercentage);
       this.setPlaybackPosition(targetPercentage);
       this.onSeekPreviewEvent(targetPercentage, true);
+
+      setAriaSliderValue(e);
     };
+
     let mouseTouchUpHandler = (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
 
@@ -590,6 +631,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       this.setSeeking(false);
       seeking = false;
+
+      setAriaSliderValue(e);
 
       // Fire seeked event
       this.onSeekedEvent(snappedChapter ? snappedChapter.position : targetPercentage);
@@ -613,6 +656,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Fire seeked event
       this.onSeekEvent();
+
+      setAriaSliderValue(e);
 
       // Add handler to track the seek operation over the whole document
       new DOM(document).on(isTouchEvent ? 'touchmove' : 'mousemove', mouseTouchMoveHandler);

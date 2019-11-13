@@ -30,6 +30,7 @@ export class VolumeSlider extends SeekBar {
     this.config = this.mergeConfig(config, <VolumeSliderConfig>{
       cssClass: 'ui-volumeslider',
       hideIfVolumeControlProhibited: true,
+      'aria-controls': 'volume',
     }, this.config);
   }
 

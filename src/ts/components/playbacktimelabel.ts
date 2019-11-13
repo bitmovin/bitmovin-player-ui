@@ -119,6 +119,8 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     let playbackTimeHandler = () => {
       if (!live && player.getDuration() !== Infinity) {
         this.setTime(PlayerUtils.getCurrentTimeRelativeToSeekableRange(player), player.getDuration());
+      } else {
+        this.getDomElement().removeAttr('aria-label');
       }
 
       // To avoid 'jumping' in the UI by varying label sizes due to non-monospaced fonts,
@@ -172,16 +174,20 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     switch ((<PlaybackTimeLabelConfig>this.config).timeLabelMode) {
       case PlaybackTimeLabelMode.CurrentTime:
         this.setText(`${currentTime}`);
+        this.getDomElement().attr('aria-label', `Video, current time: ${currentTime}`);
         break;
       case PlaybackTimeLabelMode.TotalTime:
         this.setText(`${totalTime}`);
+        this.getDomElement().attr('aria-label', `Video, total time: ${totalTime}`);
         break;
       case PlaybackTimeLabelMode.CurrentAndTotalTime:
         this.setText(`${currentTime} / ${totalTime}`);
+        this.getDomElement().attr('aria-label', `Video, current and total time: ${currentTime} / ${totalTime}`);
         break;
       case PlaybackTimeLabelMode.RemainingTime:
         let remainingTime = StringUtils.secondsToTime(durationSeconds - playbackSeconds, this.timeFormat);
         this.setText(`${remainingTime}`);
+        this.getDomElement().attr('aria-label', `Video, remaining time: ${remainingTime}`);
         break;
     }
   }

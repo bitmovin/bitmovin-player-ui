@@ -46,6 +46,11 @@ export interface ComponentConfig {
    * Default: false
    */
   disabled?: boolean;
+
+  /**
+   * Specifies the component role for WCAG20 standard
+   */
+  role?: string;
 }
 
 export interface ComponentHoverChangedEventArgs extends NoArgs {
@@ -255,6 +260,7 @@ export class Component<Config extends ComponentConfig> {
     let element = new DOM(this.config.tag, {
       'id': this.config.id,
       'class': this.getCssClasses(),
+      'role': this.config.role,
     });
 
     return element;

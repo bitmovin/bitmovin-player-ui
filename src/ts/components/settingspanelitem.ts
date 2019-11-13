@@ -38,7 +38,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       if (label instanceof Component) {
         this.label = label;
       } else {
-        this.label = new Label({text: label} as LabelConfig);
+        this.label = new Label({text: label, for: this.setting.getConfig().id} as LabelConfig);
       }
       this.addComponent(this.label);
     }
