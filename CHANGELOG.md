@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - UI flickering back and forth on live streams after ads
-- Not playing live asset
+- Not playing live asset sample
 
 ## [3.9.0]
 
