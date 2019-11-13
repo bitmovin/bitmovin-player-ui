@@ -249,9 +249,6 @@ gulp.task('npm-prepare', gulp.series('build-prod', function() {
   // https://www.npmjs.com/package/gulp-typescript
   var tsProject = ts.createProject('tsconfig.json');
   var tsResult = gulp.src(paths.source.ts).pipe(tsProject());
-  /**
-   * @todo: add the build step here 
-   */
 
   return merge([
     tsResult.dts.pipe(gulp.dest(paths.target.jsframework)),
