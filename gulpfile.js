@@ -199,12 +199,12 @@ gulp.task('sass', function() {
 });
 
 // Builds the complete project from the sources into the target directory
-gulp.task('build', gulp.series('clean', gulp.parallel('html', 'browserify', 'sass')));
+gulp.task('build', gulp.series('clean', gulp.parallel('html', 'browserify', 'sass',  'copy-json')));
 
 gulp.task('build-prod', gulp.series(function(callback) {
   production = true;
   callback();
-}, 'lint', 'build', 'copy-json'));
+}, 'lint', 'build'));
 
 gulp.task('default', gulp.series('build'));
 
