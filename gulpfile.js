@@ -199,7 +199,7 @@ gulp.task('sass', function() {
 });
 
 // Builds the complete project from the sources into the target directory
-gulp.task('build', gulp.series('clean', gulp.parallel('html', 'browserify', 'sass',  'copy-json')));
+gulp.task('build', gulp.series('clean', gulp.parallel('html', 'browserify', 'sass')));
 
 gulp.task('build-prod', gulp.series(function(callback) {
   production = true;
@@ -215,6 +215,9 @@ gulp.task('watch', function() {
 
   // Watch SASS files
   gulp.watch(paths.source.sass).on('change', gulp.series('sass'));
+
+  // Watch JSON files 
+  gulp.watch(paths.source.json).on('change', gulp.series('browserify'));
 
   // Watch files for changes through Browserify with Watchify
   catchBrowserifyErrors = true;
@@ -239,13 +242,14 @@ gulp.task('serve', gulp.series('build', function() {
 
   gulp.watch(paths.source.sass).on('change', gulp.series('sass'));
   gulp.watch(paths.source.html).on('change', gulp.series('html', browserSync.reload));
+  gulp.watch(paths.source.json).on('change', gulp.series('browserify'));
   catchBrowserifyErrors = true;
   gulp.watch(paths.source.ts).on('change', gulp.series('browserify'));
 }));
 
 // Prepares the project for a npm release
 // After running this task, the project can be published to npm or installed from this folder.
-gulp.task('npm-prepare', gulp.series('build-prod', function() {
+gulp.task('npm-prepare', gulp.series('build-prod', 'copy-json', function() {
   // https://www.npmjs.com/package/gulp-typescript
   var tsProject = ts.createProject('tsconfig.json');
   var tsResult = gulp.src(paths.source.ts).pipe(tsProject());
