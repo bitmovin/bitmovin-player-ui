@@ -10,6 +10,7 @@ import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import { TimelineMarker } from '../uiconfig';
 import { PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import { StringUtils } from '../stringutils';
+import { UIUtils } from '../uiutils';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -31,12 +32,6 @@ export interface SeekBarConfig extends ComponentConfig {
    * Default: 50 (50ms = 20fps).
    */
   smoothPlaybackPositionUpdateIntervalMs?: number;
-
-  /**
-   * WCAG20 standard - denotes which elements in a page an interactive element or set of elements has control
-   * over and affects them.
-   */
-  'aria-controls'?: string;
 }
 
 /**
@@ -53,6 +48,60 @@ export interface SeekBarMarker {
   marker: TimelineMarker;
   position: number;
   duration?: number;
+}
+
+enum SeekBarType {
+  Vod,
+  Live,
+  Volume
+}
+
+interface ArrowKeyControls {
+  left: () => void;
+  right: () => void;
+  up: () => void;
+  down: () => void;
+}
+
+const arrowKeyControls = (currentValue: number, set: (number: number) => any, range: {min: number, max: number}): ArrowKeyControls => {
+  const controlValue = Math.floor(currentValue);
+
+  return {
+    left: () => {
+      if (controlValue > range.min) {
+        set(controlValue - 1);
+      }
+    },
+    right: () => {
+      if (controlValue < range.max) {
+        set(controlValue + 1);
+      }
+    },
+    up: () => {
+      if (controlValue + 5 > range.max) {
+        set(range.max);
+      } else {
+        set(controlValue + 5);
+      }
+    },
+    down: () => {
+      if (controlValue - 5 < range.min) {
+        set(range.min);
+      } else {
+        set(controlValue - 5);
+      }
+    }
+  }
+};
+
+const seekBarControls = (type: SeekBarType, player: PlayerAPI) => {
+  if (type === SeekBarType.Live) {
+    return arrowKeyControls(player.getTimeShift(), player.timeShift, { min: player.getMaxTimeShift(), max: 0 });
+  } else if (type === SeekBarType.Vod) {
+    return arrowKeyControls(player.getCurrentTime(), player.seek, { min: 0, max: player.getDuration() });
+  } else {
+    return arrowKeyControls(player.getVolume(), player.setVolume, { min: 0, max: 100 });
+  }
 }
 
 /**
@@ -87,7 +136,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private player: PlayerAPI;
 
-  private sliderType: 'vod' | 'live' | 'default';
+  private seekBarType: SeekBarType;
 
   /**
    * Buffer of the the current playback position. The position must be buffered in case the element
@@ -124,7 +173,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       cssClass: 'ui-seekbar',
       vertical: false,
       smoothPlaybackPositionUpdateIntervalMs: 50,
-      'aria-controls': this.config["aria-controls"],
+      tabindex: '0',
     }, this.config);
 
     this.label = this.config.label;
@@ -140,8 +189,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   private setAriaSliderMinMax(min: string, max: string) {
-    this.seekBar.attr('aria-valuemin', min);
-    this.seekBar.attr('aria-valuemax', max);
+    this.getDomElement().attr('aria-valuemin', min);
+    this.getDomElement().attr('aria-valuemax', max);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
@@ -153,13 +202,17 @@ export class SeekBar extends Component<SeekBarConfig> {
     // (the call must be up here to be executed for the volume slider as well)
     this.setPosition(this.seekBarBackdrop, 100);
 
+    // Add seekbar controls to the seekbar
+    this.setSeekBarControls();
+
     if (!configureSeek) {
-      this.sliderType = 'default';
+      this.seekBarType = SeekBarType.Volume;
       this.setAriaSliderMinMax('0', '100');
       // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
       // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
       // This is actually a hack, the proper solution would be for both seek bar and volume sliders to extend
       // a common base slider component and implement their functionality there.
+
       return;
     }
 
@@ -181,14 +234,20 @@ export class SeekBar extends Component<SeekBarConfig> {
         } else {
           let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
           this.setPlaybackPosition(playbackPositionPercentage);
-          this.sliderType = 'live';
+          this.seekBarType = SeekBarType.Live;
           this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
         }
+
+        const timeshiftValue = Math.ceil(this.player.getTimeShift()).toString();
+
+        this.getDomElement().attr('aria-valuenow', timeshiftValue);
+        this.getDomElement().attr('aria-valuetext', `Timeshift value: ${timeshiftValue}`);
 
         // Always show full buffer for live streams
         this.setBufferPosition(100);
       } else {
-        let playbackPositionPercentage = 100 / player.getDuration() * this.getRelativeCurrentTime();
+        const playerDuration = player.getDuration();
+        let playbackPositionPercentage = 100 / playerDuration * this.getRelativeCurrentTime();
 
         let videoBufferLength = player.getVideoBufferLength();
         let audioBufferLength = player.getAudioBufferLength();
@@ -203,7 +262,7 @@ export class SeekBar extends Component<SeekBarConfig> {
           bufferLength = 0;
         }
 
-        let bufferPercentage = 100 / player.getDuration() * bufferLength;
+        let bufferPercentage = 100 / playerDuration * bufferLength;
 
         // Update playback position only in paused state or in the initial startup state where player is neither
         // paused nor playing. Playback updates are handled in the Timeout below.
@@ -214,9 +273,16 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
 
-        this.sliderType = 'vod';
-        this.setAriaSliderMinMax('0', StringUtils.secondsToTime(player.getDuration()));
+        this.seekBarType = SeekBarType.Vod;
+        this.setAriaSliderMinMax('0', playerDuration.toString());
+
+        const ariaValueText = `${StringUtils.secondsToTime(this.player.getCurrentTime())} out of ${StringUtils.secondsToTime(playerDuration)}`;
+
+        this.getDomElement().attr('aria-valuenow', Math.floor(this.player.getCurrentTime()).toString());
+        this.getDomElement().attr('aria-valuetext', ariaValueText);
       }
+
+      this.getDomElement().attr('aria-label', 'Seek slider');
     };
 
     // Update seekbar upon these events
@@ -534,6 +600,26 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
   }
 
+  protected setSeekBarControls() {
+    this.getDomElement().on('keydown', (e: KeyboardEvent) => {
+      const controls = seekBarControls(this.seekBarType, this.player);
+
+      if (e.keyCode === UIUtils.KeyDownKey.LeftArrow) {
+        controls.left();
+        e.preventDefault();
+      } else if (e.keyCode === UIUtils.KeyDownKey.RightArrow) {
+        controls.right();
+        e.preventDefault();
+      } else if (e.keyCode === UIUtils.KeyDownKey.UpArrow) {
+        controls.up();
+        e.preventDefault();
+      } else if (e.keyCode === UIUtils.KeyDownKey.DownArrow) {
+        controls.down();
+        e.preventDefault();
+      }
+    });
+  }
+
   protected toDomElement(): DOM {
     if (this.config.vertical) {
       this.config.cssClasses.push('vertical');
@@ -542,12 +628,12 @@ export class SeekBar extends Component<SeekBarConfig> {
     let seekBarContainer = new DOM('div', {
       'id': this.config.id,
       'class': this.getCssClasses(),
+      'role': 'slider',
+      'tabindex': this.config.tabindex,
     });
 
     let seekBar = new DOM('div', {
       'class': this.prefixCss('seekbar'),
-      'role': 'slider',
-      'aria-controls': this.config["aria-controls"],
     });
     this.seekBar = seekBar;
 
@@ -593,16 +679,21 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     const setAriaSliderValue = (e: MouseEvent | TouchEvent) => {
       let currentSeekValue;
+      let currentSeekText;
 
-      if (this.sliderType === 'live') {
-        currentSeekValue = Math.floor(this.getOffset(e) * this.player.getMaxTimeShift());
-      } else if (this.sliderType === 'vod') {
-        currentSeekValue = StringUtils.secondsToTime(Math.floor(this.getOffset(e) * this.player.getDuration()));
+      if (this.seekBarType === SeekBarType.Live) {
+        currentSeekValue = -(Math.floor(this.getOffset(e) * this.player.getMaxTimeShift()) - this.player.getMaxTimeShift());
+        currentSeekText = `Timeshift value: ${currentSeekValue}`;
+      } else if (this.seekBarType === SeekBarType.Vod) {
+        currentSeekValue = Math.floor(this.getOffset(e) * this.player.getDuration());
+        currentSeekText = `${StringUtils.secondsToTime(currentSeekValue)} out of ${StringUtils.secondsToTime(this.player.getDuration())}`;
       } else {
         currentSeekValue = Math.floor(this.getOffset(e) * 100);
+        currentSeekText = `Value: ${currentSeekValue}`;
       }
 
-      this.seekBar.attr('aria-valuenow', currentSeekValue.toString());
+      this.getDomElement().attr('aria-valuenow', currentSeekValue.toString());
+      this.getDomElement().attr('aria-valuetext', currentSeekText);
     };
 
     // Define handler functions so we can attach/remove them later
