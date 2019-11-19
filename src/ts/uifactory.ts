@@ -94,7 +94,10 @@ export namespace UIFactory {
 
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
-        new SubtitleSettingsLabel({text: i18n.getLocalizer('settings.subtitles'), opener: subtitleSettingsOpenButton, for: subtitleSelectBox.getConfig().id}),
+        new SubtitleSettingsLabel({
+          text: i18n.getLocalizer('settings.subtitles'),
+          opener: subtitleSettingsOpenButton, for: subtitleSelectBox.getConfig().id,
+        }),
         subtitleSelectBox,
       ));
 
@@ -106,7 +109,7 @@ export namespace UIFactory {
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel(), 'aria-controls': 'video-seekbar' }),
+            new SeekBar({ label: new SeekBarLabel() }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top'],
@@ -242,7 +245,7 @@ export namespace UIFactory {
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel(), 'aria-controls': 'video-seekbar' }),
+            new SeekBar({ label: new SeekBarLabel() }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top'],
@@ -321,7 +324,7 @@ export namespace UIFactory {
         new Container({
           components: [
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 , 'aria-controls': 'video-seekbar'}),
+            new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1  }),
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top'],

@@ -51,6 +51,11 @@ export interface ComponentConfig {
    * Specifies the component role for WCAG20 standard
    */
   role?: string;
+
+  /**
+   * WCAG20 requirement for screen reader navigation
+   */
+  tabindex?: string;
 }
 
 export interface ComponentHoverChangedEventArgs extends NoArgs {
