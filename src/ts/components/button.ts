@@ -11,6 +11,11 @@ export interface ButtonConfig extends ComponentConfig {
    * The text as string or localize callback on the button.
    */
   text?: LocalizableText;
+
+  /**
+   * WCAG20 standard for defining info about the component (usually the name)
+   */
+  ariaLabel?: string;
 }
 
 /**
@@ -31,9 +36,9 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
   }
 
   protected toDomElement(): DOM {
-    let buttonElementAttributes: {[name: string]: string} = {
-      'type': 'button',
+    const buttonElementAttributes: {[name: string]: string} = {
       'id': this.config.id,
+      'aria-label': this.config.ariaLabel,
       'class': this.getCssClasses(),
     }
 

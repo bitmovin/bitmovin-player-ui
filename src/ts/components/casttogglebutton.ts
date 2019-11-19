@@ -14,7 +14,7 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-casttogglebutton',
       text: i18n.getLocalizer('googleCast'),
-      role: 'img',
+      ariaLabel: 'cast'
     }, this.config);
   }
 

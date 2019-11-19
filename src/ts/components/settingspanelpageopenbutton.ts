@@ -10,7 +10,7 @@ export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButto
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settingspanelpageopenbutton',
       text: i18n.getLocalizer('open'),
-      role: 'img'
+      ariaLabel: 'subtitle-settings',
     } as SettingsPanelPageNavigatorConfig, this.config);
   }
 
@@ -18,6 +18,7 @@ export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButto
     super.configure(player, uimanager);
 
     this.getDomElement().attr('aria-controls', 'subtitle-settings');
+    this.getDomElement().attr('aria-haspopup', 'true');
 
     this.onClick.subscribe(() => {
       this.pushTargetPage();

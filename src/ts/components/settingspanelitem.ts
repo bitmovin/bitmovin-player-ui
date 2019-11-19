@@ -32,13 +32,14 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
+      role: 'menuitem',
     }, this.config);
 
     if (label !== null) {
       if (label instanceof Component) {
         this.label = label;
       } else {
-        this.label = new Label({text: label, for: this.setting.getConfig().id} as LabelConfig);
+        this.label = new Label({ text: label, for: this.setting.getConfig().id } as LabelConfig);
       }
       this.addComponent(this.label);
     }
@@ -76,6 +77,8 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
         // Visibility might have changed and therefore the active state might have changed so we fire the event
         // TODO fire only when state has really changed (e.g. check if visibility has really changed)
         this.onActiveChangedEvent();
+
+        this.getDomElement().attr('aria-haspopup', 'true');
       };
 
       this.setting.onItemAdded.subscribe(handleConfigItemChanged);

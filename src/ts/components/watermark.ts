@@ -18,8 +18,9 @@ export class Watermark extends ClickOverlay {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-watermark',
       url: 'http://bitmovin.com',
-      role: 'img',
-      text: 'bitmovin-logo'
+      role: 'link',
+      text: 'logo',
+      ariaLabel: 'link to homepage',
     }, <WatermarkConfig>this.config);
   }
 }

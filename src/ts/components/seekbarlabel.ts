@@ -130,7 +130,6 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    */
   setText(text: string) {
     this.timeLabel.setText(text);
-    this.timeLabel.getDomElement().attr('aria-label', `Thumbnail time: ${text}`);
   }
 
   /**
@@ -147,11 +146,6 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    */
   setTitleText(text: string) {
     this.titleLabel.setText(text);
-    if (text != null) {
-      this.titleLabel.getDomElement().attr('aria-label', `Thumbnail title: ${text}`);
-    } else {
-      this.titleLabel.getDomElement().removeAttr('aria-label');
-    }
   }
 
   /**

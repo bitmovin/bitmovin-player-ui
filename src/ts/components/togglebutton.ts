@@ -42,6 +42,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
       cssClass: 'ui-togglebutton',
       onClass: 'on',
       offClass: 'off',
+      role: 'button',
     };
 
     this.config = this.mergeConfig(config, defaultConfig as Config, this.config);
@@ -51,6 +52,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
     super.configure(player, uimanager);
     const config = this.getConfig();
     this.getDomElement().addClass(this.prefixCss(config.offClass));
+    this.getDomElement().attr('aria-pressed', 'false');
   }
 
   /**
@@ -66,6 +68,8 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
 
       this.onToggleEvent();
       this.onToggleOnEvent();
+
+      this.getDomElement().attr('aria-pressed', 'true');
     }
   }
 
@@ -82,6 +86,8 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
 
       this.onToggleEvent();
       this.onToggleOffEvent();
+
+      this.getDomElement().attr('aria-pressed', 'false');
     }
   }
 

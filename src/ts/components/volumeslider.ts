@@ -31,6 +31,7 @@ export class VolumeSlider extends SeekBar {
       cssClass: 'ui-volumeslider',
       hideIfVolumeControlProhibited: true,
       'aria-controls': 'volume',
+      tabindex: '0',
     }, this.config);
   }
 
