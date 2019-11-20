@@ -36,7 +36,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
   }
 
   protected toDomElement(): DOM {
-    const buttonElementAttributes: {[name: string]: string} = {
+    const buttonElementAttributes: { [name: string]: string } = {
       'id': this.config.id,
       'aria-label': this.config.ariaLabel,
       'class': this.getCssClasses(),

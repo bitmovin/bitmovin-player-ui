@@ -10,7 +10,7 @@ import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import { TimelineMarker } from '../uiconfig';
 import { PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import { StringUtils } from '../stringutils';
-import { UIUtils } from '../uiutils';
+import {SeekBarType, setSeekBarControls} from './seekbarcontrols';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -50,60 +50,6 @@ export interface SeekBarMarker {
   duration?: number;
 }
 
-enum SeekBarType {
-  Vod,
-  Live,
-  Volume
-}
-
-interface ArrowKeyControls {
-  left: () => void;
-  right: () => void;
-  up: () => void;
-  down: () => void;
-}
-
-const arrowKeyControls = (currentValue: number, set: (number: number) => any, range: {min: number, max: number}): ArrowKeyControls => {
-  const controlValue = Math.floor(currentValue);
-
-  return {
-    left: () => {
-      if (controlValue > range.min) {
-        set(controlValue - 1);
-      }
-    },
-    right: () => {
-      if (controlValue < range.max) {
-        set(controlValue + 1);
-      }
-    },
-    up: () => {
-      if (controlValue + 5 > range.max) {
-        set(range.max);
-      } else {
-        set(controlValue + 5);
-      }
-    },
-    down: () => {
-      if (controlValue - 5 < range.min) {
-        set(range.min);
-      } else {
-        set(controlValue - 5);
-      }
-    }
-  }
-};
-
-const seekBarControls = (type: SeekBarType, player: PlayerAPI) => {
-  if (type === SeekBarType.Live) {
-    return arrowKeyControls(player.getTimeShift(), player.timeShift, { min: player.getMaxTimeShift(), max: 0 });
-  } else if (type === SeekBarType.Vod) {
-    return arrowKeyControls(player.getCurrentTime(), player.seek, { min: 0, max: player.getDuration() });
-  } else {
-    return arrowKeyControls(player.getVolume(), player.setVolume, { min: 0, max: 100 });
-  }
-}
-
 /**
  * A seek bar to seek within the player's media. It displays the current playback position, amount of buffed data, seek
  * target, and keeps status about an ongoing seek.
@@ -136,7 +82,11 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private player: PlayerAPI;
 
-  private seekBarType: SeekBarType;
+  protected seekBarType: SeekBarType;
+
+  protected getSeekBarType = () => {
+    return this.seekBarType;
+  }
 
   /**
    * Buffer of the the current playback position. The position must be buffered in case the element
@@ -203,7 +153,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPosition(this.seekBarBackdrop, 100);
 
     // Add seekbar controls to the seekbar
-    this.setSeekBarControls();
+    setSeekBarControls(this.getDomElement(), this.getSeekBarType, player);
 
     if (!configureSeek) {
       this.seekBarType = SeekBarType.Volume;
@@ -234,7 +184,6 @@ export class SeekBar extends Component<SeekBarConfig> {
         } else {
           let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
           this.setPlaybackPosition(playbackPositionPercentage);
-          this.seekBarType = SeekBarType.Live;
           this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
         }
 
@@ -273,7 +222,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
 
-        this.seekBarType = SeekBarType.Vod;
         this.setAriaSliderMinMax('0', playerDuration.toString());
 
         const ariaValueText = `${StringUtils.secondsToTime(this.player.getCurrentTime())} out of ${StringUtils.secondsToTime(playerDuration)}`;
@@ -298,6 +246,14 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeShifted, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
     player.on(player.exports.PlayerEvent.SegmentRequestFinished, playbackPositionHandler);
+
+    player.on(player.exports.PlayerEvent.SourceLoaded, () => {
+      if (player.isLive()) {
+        this.seekBarType = SeekBarType.Live;
+      } else {
+        this.seekBarType = SeekBarType.Vod;
+      }
+    });
 
     this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
@@ -598,26 +554,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
-  }
-
-  protected setSeekBarControls() {
-    this.getDomElement().on('keydown', (e: KeyboardEvent) => {
-      const controls = seekBarControls(this.seekBarType, this.player);
-
-      if (e.keyCode === UIUtils.KeyDownKey.LeftArrow) {
-        controls.left();
-        e.preventDefault();
-      } else if (e.keyCode === UIUtils.KeyDownKey.RightArrow) {
-        controls.right();
-        e.preventDefault();
-      } else if (e.keyCode === UIUtils.KeyDownKey.UpArrow) {
-        controls.up();
-        e.preventDefault();
-      } else if (e.keyCode === UIUtils.KeyDownKey.DownArrow) {
-        controls.down();
-        e.preventDefault();
-      }
-    });
   }
 
   protected toDomElement(): DOM {
