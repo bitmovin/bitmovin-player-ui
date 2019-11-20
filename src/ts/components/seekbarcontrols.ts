@@ -6,10 +6,7 @@ export enum SeekBarType {
     Vod,
     Live,
     Volume
-}
-
-const upDownSeekValues = 5;
-const leftRightSeekValues = 1;
+};
 
 const changeRangeValue = (
     value: number,
@@ -23,36 +20,46 @@ const changeRangeValue = (
     } else {
         cb(value);
     }
-}
+};
 
 const arrowKeyControls = (
     currentValue: number,
     range: { min: number, max: number },
+    keyStepIncrements: { leftRight: number, upDown: number },
     valueUpdate: (number: number) => void
 ) => {
     const controlValue = Math.floor(currentValue);
 
     return {
-        left: () => changeRangeValue(controlValue - leftRightSeekValues, range, valueUpdate),
-        right: () => changeRangeValue(controlValue + leftRightSeekValues, range, valueUpdate),
-        up: () => changeRangeValue(controlValue + upDownSeekValues, range, valueUpdate),
-        down: () => changeRangeValue(controlValue - upDownSeekValues, range, valueUpdate)
+        left: () => changeRangeValue(controlValue - keyStepIncrements.leftRight, range, valueUpdate),
+        right: () => changeRangeValue(controlValue + keyStepIncrements.leftRight, range, valueUpdate),
+        up: () => changeRangeValue(controlValue + keyStepIncrements.upDown, range, valueUpdate),
+        down: () => changeRangeValue(controlValue - keyStepIncrements.upDown, range, valueUpdate)
     }
 };
 
-const seekBarControls = (type: SeekBarType, player: PlayerAPI) => {
+const seekBarControls = (
+    type: SeekBarType,
+    keyStepIncrements: { leftRight: number, upDown: number },
+    player: PlayerAPI
+) => {
     if (type === SeekBarType.Live) {
-        return arrowKeyControls(player.getTimeShift(), { min: player.getMaxTimeShift(), max: 0 }, player.timeShift);
+        return arrowKeyControls(player.getTimeShift(), { min: player.getMaxTimeShift(), max: 0 }, keyStepIncrements, player.timeShift);
     } else if (type === SeekBarType.Vod) {
-        return arrowKeyControls(player.getCurrentTime(), { min: 0, max: player.getDuration() }, player.seek);
+        return arrowKeyControls(player.getCurrentTime(), { min: 0, max: player.getDuration() }, keyStepIncrements, player.seek);
     } else {
-        return arrowKeyControls(player.getVolume(), { min: 0, max: 100 }, player.setVolume);
+        return arrowKeyControls(player.getVolume(), { min: 0, max: 100 }, keyStepIncrements, player.setVolume);
     }
 }
 
-export const setSeekBarControls = (domElement: DOM, type: () => SeekBarType, player: PlayerAPI) => {
+export const setSeekBarControls = (
+    domElement: DOM,
+    type: () => SeekBarType,
+    keyStepIncrements: { leftRight: number, upDown: number },
+    player: PlayerAPI
+) => {
     domElement.on('keydown', (e: KeyboardEvent) => {
-        const controls = seekBarControls(type(), player);
+        const controls = seekBarControls(type(), keyStepIncrements, player);
 
         if (e.keyCode === UIUtils.KeyCode.LeftArrow) {
             controls.left();

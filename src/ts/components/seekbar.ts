@@ -32,6 +32,11 @@ export interface SeekBarConfig extends ComponentConfig {
    * Default: 50 (50ms = 20fps).
    */
   smoothPlaybackPositionUpdateIntervalMs?: number;
+
+  /**
+   * Used for seekBar control increments and decrements
+   */
+  keyStepIncrements?: { leftRight: number, upDown: number };
 }
 
 /**
@@ -119,10 +124,16 @@ export class SeekBar extends Component<SeekBarConfig> {
   constructor(config: SeekBarConfig = {}) {
     super(config);
 
+    const keyStepIncrements = this.config.keyStepIncrements != null ? this.config.keyStepIncrements : {
+      leftRight: 1,
+      upDown: 5,
+    };
+
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-seekbar',
       vertical: false,
       smoothPlaybackPositionUpdateIntervalMs: 50,
+      keyStepIncrements,
       tabindex: '0',
     }, this.config);
 
@@ -153,7 +164,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPosition(this.seekBarBackdrop, 100);
 
     // Add seekbar controls to the seekbar
-    setSeekBarControls(this.getDomElement(), this.getSeekBarType, player);
+    setSeekBarControls(this.getDomElement(), this.getSeekBarType, this.config.keyStepIncrements, player);
 
     if (!configureSeek) {
       this.seekBarType = SeekBarType.Volume;
