@@ -61,18 +61,32 @@ export const setSeekBarControls = (
     domElement.on('keydown', (e: KeyboardEvent) => {
         const controls = seekBarControls(type(), keyStepIncrements, player);
 
-        if (e.keyCode === UIUtils.KeyCode.LeftArrow) {
-            controls.left();
-            e.preventDefault();
-        } else if (e.keyCode === UIUtils.KeyCode.RightArrow) {
-            controls.right();
-            e.preventDefault();
-        } else if (e.keyCode === UIUtils.KeyCode.UpArrow) {
-            controls.up();
-            e.preventDefault();
-        } else if (e.keyCode === UIUtils.KeyCode.DownArrow) {
-            controls.down();
-            e.preventDefault();
+        switch(e.keyCode) {
+            case UIUtils.KeyCode.LeftArrow: {
+                controls.left();
+                e.preventDefault();
+                break;
+            }
+            case UIUtils.KeyCode.RightArrow: {
+                controls.right();
+                e.preventDefault();
+                break;
+            }
+            case UIUtils.KeyCode.UpArrow: {
+                controls.up();
+                e.preventDefault();
+                break;
+            }
+            case UIUtils.KeyCode.DownArrow: {
+                controls.down();
+                e.preventDefault();
+                break;
+            }
+            case UIUtils.KeyCode.Space: {
+                player.isPlaying() ? player.pause() : player.play();
+                e.preventDefault();
+                break;
+            }
         }
     });
 }

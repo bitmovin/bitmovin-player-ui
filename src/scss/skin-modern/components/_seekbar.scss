@@ -150,6 +150,10 @@ $seekbar-height: .3125em;
       }
     }
   }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(27,127,204,.8);
+  }
 }
 
 .#{$prefix}-ui-seekbar {
