@@ -10,6 +10,8 @@ export interface ContainerConfig extends ComponentConfig {
    * Child components of the container.
    */
   components?: Component<ComponentConfig>[];
+
+  ariaLabel?: string;
 }
 
 /**
@@ -118,6 +120,8 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     let containerElement = new DOM(this.config.tag, {
       'id': this.config.id,
       'class': this.getCssClasses(),
+      'role': this.config.role,
+      'aria-label': this.config.ariaLabel
     });
 
     // Create the inner container element (the inner <div>) that will contain the components

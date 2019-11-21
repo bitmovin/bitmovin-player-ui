@@ -13,7 +13,7 @@ export interface LabelConfig extends ComponentConfig {
   text?: LocalizableText;
 
   /**
-   * Associate label to form control. WCAG20 standard
+   * WCAG20 standard: Associate label to form control.
    */
   for?: string;
 }

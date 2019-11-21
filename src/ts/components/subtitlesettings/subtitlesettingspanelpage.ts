@@ -72,7 +72,9 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
           text: i18n.getLocalizer('back'),
         }), new SubtitleSettingsResetButton({
           settingsManager: manager,
-        })),
+        }), {
+          role: 'menubar',
+        }),
       ],
     }, this.config);
   }

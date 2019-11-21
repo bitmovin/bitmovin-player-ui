@@ -23,6 +23,8 @@ export class ControlBar extends Container<ControlBarConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-controlbar',
       hidden: true,
+      role: 'region',
+      ariaLabel: 'Video player',
     }, <ControlBarConfig>this.config);
   }
 

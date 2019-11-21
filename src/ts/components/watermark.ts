@@ -20,7 +20,7 @@ export class Watermark extends ClickOverlay {
       url: 'http://bitmovin.com',
       role: 'link',
       text: 'logo',
-      ariaLabel: 'link to homepage',
+      ariaLabel: 'Link to homepage',
     }, <WatermarkConfig>this.config);
   }
 }

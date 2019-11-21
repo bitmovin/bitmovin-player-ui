@@ -20,6 +20,8 @@ export class SubtitleSelectBox extends SelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
+    this.getDomElement().attr('aria-label', 'Subtitle switch');
+
     new SubtitleSwitchHandler(player, this, uimanager);
   }
 }

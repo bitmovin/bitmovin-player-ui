@@ -17,7 +17,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       cssClass: 'ui-hugeplaybacktogglebutton',
       text: i18n.getLocalizer('playPause'),
       role: 'button',
-      ariaLabel: 'playback',
+      ariaLabel: 'Playback',
     }, this.config);
   }
 

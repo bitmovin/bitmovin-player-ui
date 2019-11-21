@@ -169,7 +169,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (!configureSeek) {
       this.seekBarType = SeekBarType.Volume;
       this.setAriaSliderMinMax('0', '100');
-      this.getDomElement().attr('aria-label', 'volume');
+      this.getDomElement().attr('aria-label', 'Volume');
       this.getDomElement().attr('aria-valuenow', `${player.getVolume()}`);
       this.getDomElement().attr('aria-valuetext', `Value: ${player.getVolume()}`);
       // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
@@ -184,7 +184,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isUserSeeking = false;
     let isPlayerSeeking = false;
 
-    this.getDomElement().attr('aria-label', 'seek');
+    this.getDomElement().attr('aria-label', 'Video timeline');
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {

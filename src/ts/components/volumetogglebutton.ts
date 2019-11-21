@@ -16,7 +16,7 @@ export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
       text: i18n.getLocalizer('settings.audio.mute'),
       onClass: 'muted',
       offClass: 'unmuted',
-      ariaLabel: 'volume'
+      ariaLabel: 'Volume'
     };
 
     this.config = this.mergeConfig(config, defaultConfig, this.config);

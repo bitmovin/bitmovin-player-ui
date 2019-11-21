@@ -22,6 +22,7 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
 
     this.config = this.mergeConfig<ContainerConfig>(config, {
       cssClass: 'ui-settings-panel-page',
+      role: 'menu',
     }, this.config);
   }
 

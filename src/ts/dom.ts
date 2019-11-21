@@ -170,6 +170,15 @@ export class DOM {
   }
 
   /**
+   * Focuses to the specific element
+   */
+  focus(): DOM {
+    this.elements[0].focus();
+
+    return this;
+  }
+
+  /**
    * Returns a string of the inner HTML content of the first element.
    */
   html(): string;
