@@ -34,7 +34,9 @@ const arrowKeyControls = (
         left: () => changeRangeValue(controlValue - keyStepIncrements.leftRight, range, valueUpdate),
         right: () => changeRangeValue(controlValue + keyStepIncrements.leftRight, range, valueUpdate),
         up: () => changeRangeValue(controlValue + keyStepIncrements.upDown, range, valueUpdate),
-        down: () => changeRangeValue(controlValue - keyStepIncrements.upDown, range, valueUpdate)
+        down: () => changeRangeValue(controlValue - keyStepIncrements.upDown, range, valueUpdate),
+        home: () => changeRangeValue(range.min, range, valueUpdate),
+        end: () => changeRangeValue(range.max, range, valueUpdate),
     }
 };
 
@@ -79,6 +81,16 @@ export const setSeekBarControls = (
             }
             case UIUtils.KeyCode.DownArrow: {
                 controls.down();
+                e.preventDefault();
+                break;
+            }
+            case UIUtils.KeyCode.Home: {
+                controls.home();
+                e.preventDefault();
+                break;
+            }
+            case UIUtils.KeyCode.End: {
+                controls.end();
                 e.preventDefault();
                 break;
             }
