@@ -282,7 +282,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.updateActivePageClass();
     targetPage.onActiveEvent();
     sourcePage.onInactiveEvent();
-    targetPage.getDomElement().find('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])').focus();
+    targetPage.getDomElement().focusToFirstInput();
   }
 
   /**

@@ -22,7 +22,7 @@ export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButto
 
     this.onClick.subscribe(() => {
       this.pushTargetPage();
-      this.config.targetPage.getDomElement().find('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])').focus();
+      this.config.targetPage.getDomElement().focusToFirstInput();
     });
   }
 }
