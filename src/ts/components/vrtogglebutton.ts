@@ -14,7 +14,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-vrtogglebutton',
       text: i18n.getLocalizer('vr'),
-      ariaLabel: 'VR',
+      ariaLabel: i18n.getLocalizer('vr'),
     }, this.config);
   }
 

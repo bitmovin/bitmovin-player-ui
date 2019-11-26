@@ -69,8 +69,11 @@ interface Vocabulary {
   'playPause': string;
   'live': string;
   'subtitle.example': string;
+  'subtitle.select': string;
   'playingOn': string;
   'connectingTo': string;
+  'watermarkLink': string;
+  'controlBar': string;
 }
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;

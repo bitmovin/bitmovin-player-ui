@@ -52,6 +52,9 @@
   "default": "default",
   "live": "Live",
   "subtitle.example": "example subtitle",
+  "subtitle.select": "Select subtitle",
   "playingOn": "Playing on <strong>{castDeviceName}</strong>",
-  "connectingTo": "Connecting to <strong>{castDeviceName}</strong>..."
+  "connectingTo": "Connecting to <strong>{castDeviceName}</strong>...",
+  "watermarkLink": "Link to Homepage",
+  "controlBar": "Video player"
 }

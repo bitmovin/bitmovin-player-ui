@@ -15,7 +15,7 @@ export class HugeReplayButton extends Button<ButtonConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-hugereplaybutton',
       text: i18n.getLocalizer('replay'),
-      ariaLabel: 'Replay',
+      ariaLabel: i18n.getLocalizer('replay'),
     }, this.config);
   }
 

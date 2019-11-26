@@ -35,6 +35,9 @@
   "colors.blue": "blau",
   "colors.yellow": "gelb",
   "subtitle.example": "Beispiel Untertitel",
+  "subtitle.select": "Untertitel auswählen",
   "playingOn": "Spielt auf <strong>{castDeviceName}</strong>",
-  "connectingTo": "Verbindung mit <strong>{castDeviceName}</strong> wird hergestellt..."
+  "connectingTo": "Verbindung mit <strong>{castDeviceName}</strong> wird hergestellt...",
+  "watermarkLink": "Link zum Homepage",
+  "controlBar": "Videoplayer"
 }

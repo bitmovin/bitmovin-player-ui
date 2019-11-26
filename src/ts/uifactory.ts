@@ -89,7 +89,7 @@ export namespace UIFactory {
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
-      ariaLabel: 'subtitle settings',
+      ariaLabel: i18n.getLocalizer('settings.subtitles'),
       text: i18n.getLocalizer('open'),
     });
 
@@ -224,7 +224,7 @@ export namespace UIFactory {
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
-      ariaLabel: 'subtitle settings',
+      ariaLabel: i18n.getLocalizer('settings.subtitles'),
       text: i18n.getLocalizer('open'),
     });
 

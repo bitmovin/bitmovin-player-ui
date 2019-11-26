@@ -1,6 +1,6 @@
 import {ListSelector, ListSelectorConfig} from './listselector';
 import {DOM} from '../dom';
-import { i18n } from '../localization/i18n';
+import { i18n, LocalizableText } from '../localization/i18n';
 
 /**
  * A simple select box providing the possibility to select a single item out of a list of available items.
@@ -13,6 +13,7 @@ import { i18n } from '../localization/i18n';
  *     </select>
  * </code>
  */
+
 export class SelectBox extends ListSelector<ListSelectorConfig> {
 
   private selectElement: DOM;
@@ -29,6 +30,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
     let selectElement = new DOM('select', {
       'id': this.config.id,
       'class': this.getCssClasses(),
+      'aria-label': i18n.performLocalization(this.config.ariaLabel),
     });
 
     this.selectElement = selectElement;

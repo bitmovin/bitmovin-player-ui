@@ -15,7 +15,7 @@ export interface ButtonConfig extends ComponentConfig {
   /**
    * WCAG20 standard for defining info about the component (usually the name)
    */
-  ariaLabel?: string;
+  ariaLabel?: LocalizableText;
 
   /**
    * WCAG20 standard to display if a button is pressed or not
@@ -44,7 +44,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
   protected toDomElement(): DOM {
     const buttonElementAttributes: { [name: string]: string } = {
       'id': this.config.id,
-      'aria-label': this.config.ariaLabel,
+      'aria-label': i18n.performLocalization(this.config.ariaLabel),
       'class': this.getCssClasses(),
       'aria-pressed': 'false'
     }

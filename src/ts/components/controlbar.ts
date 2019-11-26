@@ -3,6 +3,7 @@ import {UIInstanceManager} from '../uimanager';
 import {UIUtils} from '../uiutils';
 import {Spacer} from './spacer';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for the {@link ControlBar}.
@@ -24,7 +25,7 @@ export class ControlBar extends Container<ControlBarConfig> {
       cssClass: 'ui-controlbar',
       hidden: true,
       role: 'region',
-      ariaLabel: 'Video player',
+      ariaLabel: i18n.getLocalizer('controlBar'),
     }, <ControlBarConfig>this.config);
   }
 
