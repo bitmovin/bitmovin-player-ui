@@ -16,11 +16,6 @@ export interface ButtonConfig extends ComponentConfig {
    * WCAG20 standard for defining info about the component (usually the name)
    */
   ariaLabel?: LocalizableText;
-
-  /**
-   * WCAG20 standard to display if a button is pressed or not
-   */
-  ariaPressed?: string;
 }
 
 /**
@@ -46,7 +41,10 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       'id': this.config.id,
       'aria-label': i18n.performLocalization(this.config.ariaLabel),
       'class': this.getCssClasses(),
-      'aria-pressed': 'false'
+      /**
+      * WCAG20 standard to display if a button is pressed or not
+      */
+      'aria-pressed': 'false',
     }
 
     if (this.config.role != null) {
