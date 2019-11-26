@@ -10,7 +10,7 @@ import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import { TimelineMarker } from '../uiconfig';
 import { PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import { StringUtils } from '../stringutils';
-import {SeekBarType, setSeekBarControls} from './seekbarcontrols';
+import { SeekBarType, setSeekBarControls } from './seekbarcontrols';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
