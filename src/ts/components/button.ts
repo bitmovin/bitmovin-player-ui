@@ -33,6 +33,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-button',
       role: 'button',
+      tabindex: '0',
     } as Config, this.config);
   }
 
@@ -45,6 +46,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       * WCAG20 standard to display if a button is pressed or not
       */
       'aria-pressed': 'false',
+      'tabindex': this.config.tabindex.toString(),
     }
 
     if (this.config.role != null) {

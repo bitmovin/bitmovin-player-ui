@@ -579,7 +579,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'role': 'slider',
-      'tabindex': this.config.tabindex,
+      'tabindex': this.config.tabindex.toString(),
     });
 
     let seekBar = new DOM('div', {
