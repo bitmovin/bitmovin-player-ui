@@ -74,6 +74,8 @@ interface Vocabulary {
   'connectingTo': string;
   'watermarkLink': string;
   'controlBar': string;
+  'seekBar': string;
+  'seekBar.value': string;
 }
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;

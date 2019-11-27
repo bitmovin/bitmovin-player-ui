@@ -11,6 +11,7 @@ import { TimelineMarker } from '../uiconfig';
 import { PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import { StringUtils } from '../stringutils';
 import { SeekBarType, setSeekBarControls } from './seekbarcontrols';
+import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -134,7 +135,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       vertical: false,
       smoothPlaybackPositionUpdateIntervalMs: 50,
       keyStepIncrements,
-      tabindex: '0',
+      tabindex: 0,
     }, this.config);
 
     this.label = this.config.label;
@@ -169,9 +170,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (!configureSeek) {
       this.seekBarType = SeekBarType.Volume;
       this.setAriaSliderMinMax('0', '100');
-      this.getDomElement().attr('aria-label', 'Volume');
+      this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer('settings.audio.mute')));
       this.getDomElement().attr('aria-valuenow', `${player.getVolume()}`);
-      this.getDomElement().attr('aria-valuetext', `Value: ${player.getVolume()}`);
+      this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${player.getVolume()}`);
       // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
       // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
       // This is actually a hack, the proper solution would be for both seek bar and volume sliders to extend
@@ -184,7 +185,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isUserSeeking = false;
     let isPlayerSeeking = false;
 
-    this.getDomElement().attr('aria-label', 'Video timeline');
+    this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer('seekBar')));
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
@@ -206,7 +207,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         const timeshiftValue = Math.ceil(this.player.getTimeShift()).toString();
 
         this.getDomElement().attr('aria-valuenow', timeshiftValue);
-        this.getDomElement().attr('aria-valuetext', `Timeshift value: ${timeshiftValue}`);
+        this.getDomElement().attr('aria-valuetext', `Timeshift ${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${timeshiftValue}`);
 
         // Always show full buffer for live streams
         this.setBufferPosition(100);
@@ -240,7 +241,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         this.setAriaSliderMinMax('0', playerDuration.toString());
 
-        const ariaValueText = `${StringUtils.secondsToTime(this.player.getCurrentTime())} out of ${StringUtils.secondsToTime(playerDuration)}`;
+        const ariaValueText = `${StringUtils.secondsToTime(this.player.getCurrentTime())}/${StringUtils.secondsToTime(playerDuration)}`;
 
         this.getDomElement().attr('aria-valuenow', Math.floor(this.player.getCurrentTime()).toString());
         this.getDomElement().attr('aria-valuetext', ariaValueText);

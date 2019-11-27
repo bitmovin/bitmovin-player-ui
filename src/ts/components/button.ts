@@ -33,7 +33,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-button',
       role: 'button',
-      tabindex: '0',
+      tabindex: 0,
     } as Config, this.config);
   }
 

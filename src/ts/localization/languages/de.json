@@ -39,5 +39,7 @@
   "playingOn": "Spielt auf <strong>{castDeviceName}</strong>",
   "connectingTo": "Verbindung mit <strong>{castDeviceName}</strong> wird hergestellt...",
   "watermarkLink": "Link zum Homepage",
-  "controlBar": "Videoplayer"
+  "controlBar": "Videoplayer",
+  "seekBar": "Video-Timeline",
+  "seekBar.value": "Wert"
 }
