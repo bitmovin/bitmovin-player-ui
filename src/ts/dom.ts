@@ -173,7 +173,11 @@ export class DOM {
    * Focuses to the first input element
    */
   focusToFirstInput() {
-    this.findChildElements('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')[0].focus();
+    const childElements = this.findChildElements('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+
+    if (childElements.length > 0) {
+      childElements[0].focus();
+    }
   }
 
   /**
