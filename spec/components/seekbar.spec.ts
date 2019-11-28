@@ -20,7 +20,7 @@ describe('SeekBar', () => {
     it('when live had no time shift', () => {
       jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(0);
       jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
-      jest.spyOn(playerMock, 'getDuration').mockReturnValue(888);
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(Infinity);
 
       seekbar.configure(playerMock, uiInstanceManagerMock);
 
@@ -37,7 +37,7 @@ describe('SeekBar', () => {
     it('clears smoothPlaybackPositionUpdater when AD is finished', () => {
       jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
       jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(-60);
-      jest.spyOn(playerMock, 'getDuration').mockReturnValue(60);
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(Infinity);
       seekbar.configure(playerMock, uiInstanceManagerMock);
 
       jest.spyOn(playerMock, 'isLive').mockReturnValue(false);

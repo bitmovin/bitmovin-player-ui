@@ -145,6 +145,10 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         }
       });
     }
+
+    // Hide hugeplaybacktogglebutton for screen readers
+    this.getDomElement().attr('aria-hidden', 'true');
+    this.getDomElement().attr('tabindex', '-1');
   }
 
   protected toDomElement(): DOM {
@@ -156,7 +160,6 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     // to the size if the image, it can scale inside the player without overshooting.
     buttonElement.append(new DOM('div', {
       'class': this.prefixCss('image'),
-      'aria-hidden': 'true',
     }));
 
     return buttonElement;
