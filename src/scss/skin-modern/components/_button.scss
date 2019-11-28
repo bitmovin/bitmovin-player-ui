@@ -39,8 +39,8 @@
   @include hidden;
 
   &:focus {
-    outline: none;
     box-shadow: $box-shadow;
+    outline: none;
   }
 }
 

@@ -32,7 +32,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
-      role: this.config.role != null ? this.config.role : 'menuitem',
+      role: 'menuitem',
     }, this.config);
 
     if (label !== null) {

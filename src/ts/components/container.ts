@@ -120,7 +120,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
       'id': this.config.id,
       'class': this.getCssClasses(),
       'role': this.config.role,
-      'aria-label': i18n.performLocalization(this.config.ariaLabel)
+      'aria-label': i18n.performLocalization(this.config.ariaLabel),
     });
 
     // Create the inner container element (the inner <div>) that will contain the components

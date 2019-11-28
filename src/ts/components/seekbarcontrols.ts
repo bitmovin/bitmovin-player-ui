@@ -5,8 +5,8 @@ import { PlayerAPI } from 'bitmovin-player';
 export enum SeekBarType {
     Vod,
     Live,
-    Volume
-};
+    Volume,
+}
 
 const changeRangeValue = (
     value: number,
@@ -26,7 +26,7 @@ const arrowKeyControls = (
     currentValue: number,
     range: { min: number, max: number },
     keyStepIncrements: { leftRight: number, upDown: number },
-    valueUpdate: (number: number) => void
+    valueUpdate: (value: number) => void,
 ) => {
     const controlValue = Math.floor(currentValue);
 
@@ -37,13 +37,13 @@ const arrowKeyControls = (
         down: () => changeRangeValue(controlValue - keyStepIncrements.upDown, range, valueUpdate),
         home: () => changeRangeValue(range.min, range, valueUpdate),
         end: () => changeRangeValue(range.max, range, valueUpdate),
-    }
+    };
 };
 
 const seekBarControls = (
     type: SeekBarType,
     keyStepIncrements: { leftRight: number, upDown: number },
-    player: PlayerAPI
+    player: PlayerAPI,
 ) => {
     if (type === SeekBarType.Live) {
         return arrowKeyControls(player.getTimeShift(), { min: player.getMaxTimeShift(), max: 0 }, keyStepIncrements, player.timeShift);
@@ -52,18 +52,18 @@ const seekBarControls = (
     } else {
         return arrowKeyControls(player.getVolume(), { min: 0, max: 100 }, keyStepIncrements, player.setVolume);
     }
-}
+};
 
 export const setSeekBarControls = (
     domElement: DOM,
     type: () => SeekBarType,
     keyStepIncrements: { leftRight: number, upDown: number },
-    player: PlayerAPI
+    player: PlayerAPI,
 ) => {
     domElement.on('keydown', (e: KeyboardEvent) => {
         const controls = seekBarControls(type(), keyStepIncrements, player);
 
-        switch(e.keyCode) {
+        switch (e.keyCode) {
             case UIUtils.KeyCode.LeftArrow: {
                 controls.left();
                 e.preventDefault();
@@ -101,4 +101,4 @@ export const setSeekBarControls = (
             }
         }
     });
-}
+};

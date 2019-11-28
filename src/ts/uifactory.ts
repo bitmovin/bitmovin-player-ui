@@ -102,7 +102,7 @@ export namespace UIFactory {
         subtitleSelectBox,
         {
           role: 'menubar',
-        }
+        },
       ));
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);
@@ -234,12 +234,12 @@ export namespace UIFactory {
       new SettingsPanelItem(
           new SubtitleSettingsLabel({
             text: i18n.getLocalizer('settings.subtitles'),
-            opener: subtitleSettingsOpenButton
+            opener: subtitleSettingsOpenButton,
           }),
         subtitleSelectBox,
         {
           role: 'menubar',
-        }
+        },
       ));
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);

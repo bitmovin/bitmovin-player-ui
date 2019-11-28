@@ -47,7 +47,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       */
       'aria-pressed': 'false',
       'tabindex': this.config.tabindex.toString(),
-    }
+    };
 
     if (this.config.role != null) {
       buttonElementAttributes['role'] = this.config.role;
