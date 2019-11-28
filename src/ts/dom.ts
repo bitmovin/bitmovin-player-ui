@@ -266,7 +266,7 @@ export class DOM {
   removeAttr(attribute: string) {
     this.forEach((element) => {
       element.removeAttribute(attribute);
-    })
+    });
   }
 
   private getAttr(attribute: string): string | null {
