@@ -37,11 +37,7 @@
   }
 
   @include hidden;
-
-  &:focus {
-    box-shadow: $box-shadow;
-    outline: none;
-  }
+  @include focusable;
 }
 
 .#{$prefix}-ui-button {
