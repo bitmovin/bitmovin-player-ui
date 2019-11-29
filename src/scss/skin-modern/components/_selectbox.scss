@@ -1,7 +1,10 @@
 @import '../variables';
+@import '../mixins';
 
 .#{$prefix}-ui-selectbox {
   @extend %ui-component;
+
+  @include focusable;
 
   background-color: transparent;
   border: 0;
@@ -16,9 +19,5 @@
     &:checked {
       color: $color-highlight;
     }
-  }
-
-  &:focus {
-    box-shadow: $box-shadow;
   }
 }

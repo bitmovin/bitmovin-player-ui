@@ -55,7 +55,7 @@ const seekBarControls = (
                 player.unmute();
             }
 
-            player.setVolume(volume)
+            player.setVolume(volume);
         }
 
         return arrowKeyControls(player.getVolume(), { min: 0, max: 100 }, keyStepIncrements, setVolume);

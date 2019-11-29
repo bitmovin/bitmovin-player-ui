@@ -122,3 +122,10 @@
   left: -$marker-dimension / 2;
   width: $marker-dimension;
 }
+
+@mixin focusable {
+  &:focus {
+    box-shadow: $box-shadow;
+    outline: none;
+  }
+}
