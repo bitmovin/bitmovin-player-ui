@@ -50,7 +50,15 @@ const seekBarControls = (
     } else if (type === SeekBarType.Vod) {
         return arrowKeyControls(player.getCurrentTime(), { min: 0, max: player.getDuration() }, keyStepIncrements, player.seek);
     } else {
-        return arrowKeyControls(player.getVolume(), { min: 0, max: 100 }, keyStepIncrements, player.setVolume);
+        const setVolume = (volume: number) => {
+            if (player.isMuted()) {
+                player.unmute();
+            }
+
+            player.setVolume(volume)
+        }
+
+        return arrowKeyControls(player.getVolume(), { min: 0, max: 100 }, keyStepIncrements, setVolume);
     }
 };
 
