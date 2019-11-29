@@ -173,10 +173,11 @@ export class DOM {
    * Focuses to the first input element
    */
   focusToFirstInput() {
-    const childElements = this.findChildElements('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const childWrappers = this.findChildElements('[class$="ui-settings-panel-item"]:not(.bmpui-hidden)');
 
-    if (childElements.length > 0) {
-      childElements[0].focus();
+    if (childWrappers.length > 0) {
+      const focusableElement = childWrappers[0].querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])') as HTMLElement;
+      focusableElement.focus();
     }
   }
 

@@ -165,7 +165,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPosition(this.seekBarBackdrop, 100);
 
     // Add seekbar controls to the seekbar
-    setSeekBarControls(this.getDomElement(), this.getSeekBarType, this.config.keyStepIncrements, player);
+    setSeekBarControls(this.getDomElement(), this.getSeekBarType, this.config.keyStepIncrements, player, uimanager.getConfig().volumeController);
 
     if (!configureSeek) {
       this.seekBarType = SeekBarType.Volume;
