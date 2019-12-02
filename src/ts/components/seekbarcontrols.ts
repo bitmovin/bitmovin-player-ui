@@ -1,12 +1,13 @@
 import { UIUtils } from '../uiutils';
 import { DOM } from '../dom';
 import { PlayerAPI } from 'bitmovin-player';
+import { VolumeController } from '../volumecontroller';
 
 export enum SeekBarType {
     Vod,
     Live,
-    Volume
-};
+    Volume,
+}
 
 const changeRangeValue = (
     value: number,
@@ -26,7 +27,7 @@ const arrowKeyControls = (
     currentValue: number,
     range: { min: number, max: number },
     keyStepIncrements: { leftRight: number, upDown: number },
-    valueUpdate: (number: number) => void
+    valueUpdate: (value: number) => void,
 ) => {
     const controlValue = Math.floor(currentValue);
 
@@ -37,33 +38,36 @@ const arrowKeyControls = (
         down: () => changeRangeValue(controlValue - keyStepIncrements.upDown, range, valueUpdate),
         home: () => changeRangeValue(range.min, range, valueUpdate),
         end: () => changeRangeValue(range.max, range, valueUpdate),
-    }
+    };
 };
 
 const seekBarControls = (
     type: SeekBarType,
     keyStepIncrements: { leftRight: number, upDown: number },
-    player: PlayerAPI
+    player: PlayerAPI,
+    volumeController: VolumeController,
 ) => {
     if (type === SeekBarType.Live) {
         return arrowKeyControls(player.getTimeShift(), { min: player.getMaxTimeShift(), max: 0 }, keyStepIncrements, player.timeShift);
     } else if (type === SeekBarType.Vod) {
         return arrowKeyControls(player.getCurrentTime(), { min: 0, max: player.getDuration() }, keyStepIncrements, player.seek);
-    } else {
-        return arrowKeyControls(player.getVolume(), { min: 0, max: 100 }, keyStepIncrements, player.setVolume);
+    } else if (type === SeekBarType.Volume && volumeController != null) {
+        const volumeTransition = volumeController.startTransition();
+        return arrowKeyControls(player.getVolume(), { min: 0, max: 100 }, keyStepIncrements, volumeTransition.finish.bind(volumeTransition));
     }
-}
+};
 
 export const setSeekBarControls = (
     domElement: DOM,
     type: () => SeekBarType,
     keyStepIncrements: { leftRight: number, upDown: number },
-    player: PlayerAPI
+    player: PlayerAPI,
+    volumeController: VolumeController,
 ) => {
     domElement.on('keydown', (e: KeyboardEvent) => {
-        const controls = seekBarControls(type(), keyStepIncrements, player);
+        const controls = seekBarControls(type(), keyStepIncrements, player, volumeController);
 
-        switch(e.keyCode) {
+        switch (e.keyCode) {
             case UIUtils.KeyCode.LeftArrow: {
                 controls.left();
                 e.preventDefault();
@@ -101,4 +105,4 @@ export const setSeekBarControls = (
             }
         }
     });
-}
+};

@@ -15,7 +15,7 @@ export interface ButtonConfig extends ComponentConfig {
   /**
    * WCAG20 standard for defining info about the component (usually the name)
    */
-  ariaLabel?: string;
+  ariaLabel?: LocalizableText;
 }
 
 /**
@@ -32,15 +32,22 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-button',
+      role: 'button',
+      tabindex: 0,
     } as Config, this.config);
   }
 
   protected toDomElement(): DOM {
     const buttonElementAttributes: { [name: string]: string } = {
       'id': this.config.id,
-      'aria-label': this.config.ariaLabel,
+      'aria-label': i18n.performLocalization(this.config.ariaLabel),
       'class': this.getCssClasses(),
-    }
+      /**
+      * WCAG20 standard to display if a button is pressed or not
+      */
+      'aria-pressed': 'false',
+      'tabindex': this.config.tabindex.toString(),
+    };
 
     if (this.config.role != null) {
       buttonElementAttributes['role'] = this.config.role;

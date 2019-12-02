@@ -170,6 +170,18 @@ export class DOM {
   }
 
   /**
+   * Focuses to the first input element
+   */
+  focusToFirstInput() {
+    const childWrappers = this.findChildElements('[class$="ui-settings-panel-item"]:not(.bmpui-hidden)');
+
+    if (childWrappers.length > 0) {
+      const focusableElement = childWrappers[0].querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])') as HTMLElement;
+      focusableElement.focus();
+    }
+  }
+
+  /**
    * Returns a string of the inner HTML content of the first element.
    */
   html(): string;
@@ -259,7 +271,7 @@ export class DOM {
   removeAttr(attribute: string) {
     this.forEach((element) => {
       element.removeAttribute(attribute);
-    })
+    });
   }
 
   private getAttr(attribute: string): string | null {

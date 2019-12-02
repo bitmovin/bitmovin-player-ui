@@ -39,6 +39,7 @@
   "speed": "Speed",
   "playPause" : "Play/Pause",
   "open": "open",
+  "close": "Close",
   "pictureInPicture": "Picture-in-Picture",
   "appleAirplay" : "Apple AirPlay",
   "googleCast": "Google Cast",
@@ -52,6 +53,11 @@
   "default": "default",
   "live": "Live",
   "subtitle.example": "example subtitle",
+  "subtitle.select": "Select subtitle",
   "playingOn": "Playing on <strong>{castDeviceName}</strong>",
-  "connectingTo": "Connecting to <strong>{castDeviceName}</strong>..."
+  "connectingTo": "Connecting to <strong>{castDeviceName}</strong>...",
+  "watermarkLink": "Link to Homepage",
+  "controlBar": "Video player",
+  "seekBar": "Video timeline",
+  "seekBar.value": "Value"
 }

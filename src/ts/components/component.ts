@@ -3,6 +3,7 @@ import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { LocalizableText } from '../localization/i18n';
 
 /**
  * Base configuration interface for a component.
@@ -55,7 +56,12 @@ export interface ComponentConfig {
   /**
    * WCAG20 requirement for screen reader navigation
    */
-  tabindex?: string;
+  tabindex?: number;
+
+  /**
+   * WCAG20 standard for defining info about the component (usually the name)
+   */
+  ariaLabel?: LocalizableText;
 }
 
 export interface ComponentHoverChangedEventArgs extends NoArgs {

@@ -154,6 +154,16 @@ export class UIContainer extends Container<UIContainerConfig> {
         showUi();
       },
     }, {
+      name: 'focusin',
+      handler: () => {
+        showUi();
+      },
+    }, {
+      name: 'keydown',
+      handler: () => {
+        showUi();
+      },
+    }, {
       // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
       name: 'mouseleave',
       handler: () => {

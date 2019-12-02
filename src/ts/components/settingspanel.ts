@@ -110,6 +110,12 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         // On mouse leave activate the timeout
         this.hideTimeout.reset();
       });
+      this.getDomElement().on('focusin', () => {
+        this.hideTimeout.clear();
+      });
+      this.getDomElement().on('focusout', () => {
+        this.hideTimeout.reset();
+      });
       this.onHide.subscribe(() => {
         // Clear timeout when hidden from outside
         this.hideTimeout.clear();
@@ -276,6 +282,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.updateActivePageClass();
     targetPage.onActiveEvent();
     sourcePage.onInactiveEvent();
+    targetPage.getDomElement().focusToFirstInput();
   }
 
   /**

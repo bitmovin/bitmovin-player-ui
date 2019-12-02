@@ -5,6 +5,7 @@
   "speed": "Geschwindigkeit",
   "playPause": "Abspielen/Pause",
   "open": "öffnen",
+  "close": "Schließen",
   "settings.audio.mute": "Lautstärke/Stummschaltung",
   "pictureInPicture": "Bild im Bild",
   "appleAirplay": "Apple AirPlay",
@@ -35,6 +36,11 @@
   "colors.blue": "blau",
   "colors.yellow": "gelb",
   "subtitle.example": "Beispiel Untertitel",
+  "subtitle.select": "Untertitel auswählen",
   "playingOn": "Spielt auf <strong>{castDeviceName}</strong>",
-  "connectingTo": "Verbindung mit <strong>{castDeviceName}</strong> wird hergestellt..."
+  "connectingTo": "Verbindung mit <strong>{castDeviceName}</strong> wird hergestellt...",
+  "watermarkLink": "Link zum Homepage",
+  "controlBar": "Videoplayer",
+  "seekBar": "Video-Timeline",
+  "seekBar.value": "Wert"
 }

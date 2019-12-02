@@ -29,6 +29,12 @@
     }
   }
 
+  &.#{$prefix}-controls-shown {
+    .#{$prefix}-ui-hugeplaybacktogglebutton:focus {
+      box-shadow: inset -4px -3px 2px 9px $color-focus;
+    }
+  }
+
   // IE9 compatibility: set transparent 1x1 pixel png background image to make it capture mouse events (IE9 does not capture events in areas without image or color content)
   // We abuse the no-flexbox class which is only set in IE9 (of all supported browsers)
   &.#{$prefix}-no-flexbox {

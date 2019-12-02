@@ -84,21 +84,25 @@ export namespace UIFactory {
       overlay: subtitleOverlay,
     });
 
+    const subtitleSelectBox = new SubtitleSelectBox();
+
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
+      ariaLabel: i18n.getLocalizer('settings.subtitles'),
       text: i18n.getLocalizer('open'),
     });
-
-    const subtitleSelectBox = new SubtitleSelectBox();
 
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({
           text: i18n.getLocalizer('settings.subtitles'),
-          opener: subtitleSettingsOpenButton, for: subtitleSelectBox.getConfig().id,
+          opener: subtitleSettingsOpenButton,
         }),
         subtitleSelectBox,
+        {
+          role: 'menubar',
+        },
       ));
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);
@@ -220,6 +224,7 @@ export namespace UIFactory {
     let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
+      ariaLabel: i18n.getLocalizer('settings.subtitles'),
       text: i18n.getLocalizer('open'),
     });
 
@@ -230,9 +235,11 @@ export namespace UIFactory {
           new SubtitleSettingsLabel({
             text: i18n.getLocalizer('settings.subtitles'),
             opener: subtitleSettingsOpenButton,
-            for: subtitleSelectBox.getConfig().id,
           }),
         subtitleSelectBox,
+        {
+          role: 'menubar',
+        },
       ));
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);

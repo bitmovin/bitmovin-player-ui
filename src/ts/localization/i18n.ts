@@ -64,13 +64,19 @@ interface Vocabulary {
   'normal': string;
   'default': string;
   'open': string;
+  'close': string;
   'fullscreen': string;
   'speed': string;
   'playPause': string;
   'live': string;
   'subtitle.example': string;
+  'subtitle.select': string;
   'playingOn': string;
   'connectingTo': string;
+  'watermarkLink': string;
+  'controlBar': string;
+  'seekBar': string;
+  'seekBar.value': string;
 }
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;
