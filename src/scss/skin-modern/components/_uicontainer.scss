@@ -31,7 +31,7 @@
 
   &.#{$prefix}-controls-shown {
     .#{$prefix}-ui-hugeplaybacktogglebutton:focus {
-      box-shadow: inset -4px -3px 2px 9px rgba(27, 127, 204, 1) !important;
+      box-shadow: inset -4px -3px 2px 9px $color-focus;
     }
   }
 
