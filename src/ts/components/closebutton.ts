@@ -2,6 +2,7 @@ import {ButtonConfig, Button} from './button';
 import {UIInstanceManager} from '../uimanager';
 import {Component, ComponentConfig} from './component';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for the {@link CloseButton}.
@@ -24,6 +25,7 @@ export class CloseButton extends Button<CloseButtonConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-closebutton',
       text: 'Close',
+      ariaLabel: i18n.getLocalizer('close'),
     } as CloseButtonConfig, this.config);
   }
 

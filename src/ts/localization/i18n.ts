@@ -64,6 +64,7 @@ interface Vocabulary {
   'normal': string;
   'default': string;
   'open': string;
+  'close': string;
   'fullscreen': string;
   'speed': string;
   'playPause': string;

@@ -145,10 +145,6 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         }
       });
     }
-
-    // Hide hugeplaybacktogglebutton for screen readers
-    this.getDomElement().attr('aria-hidden', 'true');
-    this.getDomElement().attr('tabindex', '-1');
   }
 
   protected toDomElement(): DOM {
