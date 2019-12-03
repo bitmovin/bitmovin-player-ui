@@ -41,6 +41,11 @@ interface Vocabulary {
   'settings.subtitles.font.family.smallcapital': string;
   'settings.subtitles.window.color': string;
   'settings.subtitles.window.opacity': string;
+  'settings.ariaLabel.volume': string;
+  'settings.ariaLabel.play': string;
+  'settings.time.hours': string;
+  'settings.time.minutes': string;
+  'settings.time.seconds': string;
   'colors.white': string;
   'colors.black': string;
   'colors.red': string;
@@ -75,8 +80,11 @@ interface Vocabulary {
   'connectingTo': string;
   'watermarkLink': string;
   'controlBar': string;
+  'player': string;
   'seekBar': string;
   'seekBar.value': string;
+  'seekBar.timeshift': string;
+  'seekBar.durationText': string;
 }
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;

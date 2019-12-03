@@ -5,6 +5,7 @@ import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
 import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -53,6 +54,8 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     this.config = this.mergeConfig(config, <UIContainerConfig>{
       cssClass: 'ui-uicontainer',
+      role: 'application',
+      ariaLabel: i18n.getLocalizer('player'),
       hideDelay: 5000,
     }, this.config);
 

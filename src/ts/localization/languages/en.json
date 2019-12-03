@@ -33,6 +33,13 @@
   "settings.subtitles.font.family.casual": "casual",
   "settings.subtitles.font.family.cursive": "cursive",
   "settings.subtitles.font.family.smallcapital": "small capital",
+  "settings.ariaLabel.volume": "Volume",
+  "settings.ariaLabel.mute": "Mute",
+  "settings.ariaLabel.play": "Play",
+  "settings.ariaLabel.pause": "Pause",
+  "settings.time.hours": "Hours",
+  "settings.time.minutes": "Minutes",
+  "settings.time.seconds": "Seconds",
   "ads.remainingTime": "This ad will end in {remainingTime} seconds.",
   "settings": "Settings",
   "fullscreen" : "Fullscreen",
@@ -57,7 +64,10 @@
   "playingOn": "Playing on <strong>{castDeviceName}</strong>",
   "connectingTo": "Connecting to <strong>{castDeviceName}</strong>...",
   "watermarkLink": "Link to Homepage",
-  "controlBar": "Video player",
+  "controlBar": "Video player controls",
+  "player": "Video player",
   "seekBar": "Video timeline",
-  "seekBar.value": "Value"
+  "seekBar.value": "Value",
+  "seekBar.timeshift": "Timeshift",
+  "seekBar.durationText": "out of"
 }

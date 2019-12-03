@@ -24,6 +24,13 @@
   "settings.subtitles.background.opacity": "Hintergrunddeckkraft",
   "settings.subtitles.window.color": "Hintergrundfarbe",
   "settings.subtitles.window.opacity": "Hintergrunddeckkraft",
+  "settings.ariaLabel.volume": "Lautstärke",
+  "settings.ariaLabel.mute": "Stummschaltung",
+  "settings.ariaLabel.play": "Abspielen",
+  "settings.ariaLabel.pause": "Pause",
+  "settings.time.hours": "Stunden",
+  "settings.time.minutes": "Minuten",
+  "settings.time.seconds": "Sekunden",
   "back": "Zurück",
   "reset": "Zurücksetzen",
   "replay": "Wiederholen",
@@ -40,7 +47,10 @@
   "playingOn": "Spielt auf <strong>{castDeviceName}</strong>",
   "connectingTo": "Verbindung mit <strong>{castDeviceName}</strong> wird hergestellt...",
   "watermarkLink": "Link zum Homepage",
-  "controlBar": "Videoplayer",
+  "controlBar": "Videoplayer Kontrollen",
+  "player": "Video player",
   "seekBar": "Video-Timeline",
-  "seekBar.value": "Wert"
+  "seekBar.value": "Wert",
+  "seekBar.timeshift": "Timeshift",
+  "seekBar.durationText": "aus"
 }

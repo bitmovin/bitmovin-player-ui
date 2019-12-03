@@ -94,6 +94,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     return this.seekBarType;
   }
 
+  protected isUiShown: boolean;
+
   /**
    * Buffer of the the current playback position. The position must be buffered in case the element
    * needs to be refreshed with {@link #refreshPlaybackPosition}.
@@ -170,7 +172,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (!configureSeek) {
       this.seekBarType = SeekBarType.Volume;
       this.setAriaSliderMinMax('0', '100');
-      this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer('settings.audio.mute')));
+      this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer('settings.ariaLabel.volume')));
       this.getDomElement().attr('aria-valuenow', `${player.getVolume()}`);
       this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${player.getVolume()}`);
       // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
@@ -180,6 +182,14 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       return;
     }
+
+    uimanager.onControlsShow.subscribe(() => {
+      this.isUiShown = true;
+    });
+
+    uimanager.onControlsHide.subscribe(() => {
+      this.isUiShown = false;
+    });
 
     let isPlaying = false;
     let isUserSeeking = false;
@@ -206,8 +216,10 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         const timeshiftValue = Math.ceil(this.player.getTimeShift()).toString();
 
-        this.getDomElement().attr('aria-valuenow', timeshiftValue);
-        this.getDomElement().attr('aria-valuetext', `Timeshift ${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${timeshiftValue}`);
+        if (this.isUiShown) {
+          this.getDomElement().attr('aria-valuenow', timeshiftValue);
+          this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.timeshift'))} ${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${timeshiftValue}`);
+        }
 
         // Always show full buffer for live streams
         this.setBufferPosition(100);
@@ -241,10 +253,12 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         this.setAriaSliderMinMax('0', playerDuration.toString());
 
-        const ariaValueText = `${StringUtils.secondsToTime(this.player.getCurrentTime())}/${StringUtils.secondsToTime(playerDuration)}`;
+        const ariaValueText = `${StringUtils.secondsToText(this.player.getCurrentTime())} ${i18n.performLocalization(i18n.getLocalizer('seekBar.durationText'))} ${StringUtils.secondsToText(playerDuration)}`;
 
-        this.getDomElement().attr('aria-valuenow', Math.floor(this.player.getCurrentTime()).toString());
-        this.getDomElement().attr('aria-valuetext', ariaValueText);
+        if (this.isUiShown) {
+          this.getDomElement().attr('aria-valuenow', Math.floor(this.player.getCurrentTime()).toString());
+          this.getDomElement().attr('aria-valuetext', ariaValueText);
+        }
       }
     };
 
