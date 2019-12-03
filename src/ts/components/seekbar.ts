@@ -10,7 +10,7 @@ import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import { TimelineMarker } from '../uiconfig';
 import { PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import { StringUtils } from '../stringutils';
-import { SeekBarType, setSeekBarControls } from './seekbarcontrols';
+import { SeekBarType, SeekBarController } from './seekbarcontroller';
 import { i18n } from '../localization/i18n';
 
 /**
@@ -167,7 +167,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPosition(this.seekBarBackdrop, 100);
 
     // Add seekbar controls to the seekbar
-    setSeekBarControls(this.getDomElement(), this.getSeekBarType, this.config.keyStepIncrements, player, uimanager.getConfig().volumeController);
+    const seekBarController = new SeekBarController(this.config.keyStepIncrements, player, uimanager.getConfig().volumeController);
+
+    seekBarController.setSeekBarControls(this.getDomElement(), this.getSeekBarType);
 
     if (!configureSeek) {
       this.seekBarType = SeekBarType.Volume;
