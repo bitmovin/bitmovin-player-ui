@@ -28,7 +28,6 @@ export namespace UIUtils {
     UpArrow = 38,
     RightArrow = 39,
     DownArrow = 40,
-
     Space = 32,
     End = 35,
     Home = 36,

@@ -232,10 +232,10 @@ export namespace UIFactory {
 
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
-          new SubtitleSettingsLabel({
-            text: i18n.getLocalizer('settings.subtitles'),
-            opener: subtitleSettingsOpenButton,
-          }),
+        new SubtitleSettingsLabel({
+          text: i18n.getLocalizer('settings.subtitles'),
+          opener: subtitleSettingsOpenButton,
+        }),
         subtitleSelectBox,
         {
           role: 'menubar',

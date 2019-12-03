@@ -137,7 +137,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       vertical: false,
       smoothPlaybackPositionUpdateIntervalMs: 50,
       keyStepIncrements,
-      tabindex: 0,
+      tabIndex: 0,
     }, this.config);
 
     this.label = this.config.label;
@@ -214,9 +214,9 @@ export class SeekBar extends Component<SeekBarConfig> {
           this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
         }
 
-        const timeshiftValue = Math.ceil(this.player.getTimeShift()).toString();
-
+        
         if (this.isUiShown) {
+          const timeshiftValue = Math.ceil(this.player.getTimeShift()).toString();
           this.getDomElement().attr('aria-valuenow', timeshiftValue);
           this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.timeshift'))} ${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${timeshiftValue}`);
         }
@@ -253,9 +253,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         this.setAriaSliderMinMax('0', playerDuration.toString());
 
-        const ariaValueText = `${StringUtils.secondsToText(this.player.getCurrentTime())} ${i18n.performLocalization(i18n.getLocalizer('seekBar.durationText'))} ${StringUtils.secondsToText(playerDuration)}`;
-
         if (this.isUiShown) {
+          const ariaValueText = `${StringUtils.secondsToText(this.player.getCurrentTime())} ${i18n.performLocalization(i18n.getLocalizer('seekBar.durationText'))} ${StringUtils.secondsToText(playerDuration)}`;
           this.getDomElement().attr('aria-valuenow', Math.floor(this.player.getCurrentTime()).toString());
           this.getDomElement().attr('aria-valuetext', ariaValueText);
         }
@@ -275,14 +274,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeShifted, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
     player.on(player.exports.PlayerEvent.SegmentRequestFinished, playbackPositionHandler);
-
-    player.on(player.exports.PlayerEvent.SourceLoaded, () => {
-      if (player.isLive()) {
-        this.seekBarType = SeekBarType.Live;
-      } else {
-        this.seekBarType = SeekBarType.Vod;
-      }
-    });
 
     this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
@@ -370,6 +361,9 @@ export class SeekBar extends Component<SeekBarConfig> {
       isLive = args.live;
       if (isLive && this.smoothPlaybackPositionUpdater != null) {
         this.smoothPlaybackPositionUpdater.clear();
+        this.seekBarType = SeekBarType.Live;
+      } else {
+        this.seekBarType = SeekBarType.Vod;
       }
       switchVisibility(isLive, hasTimeShift);
     });
@@ -594,7 +588,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'role': 'slider',
-      'tabindex': this.config.tabindex.toString(),
+      'tabindex': this.config.tabIndex.toString(),
     });
 
     let seekBar = new DOM('div', {
@@ -642,25 +636,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let seeking = false;
 
-    const setAriaSliderValue = (e: MouseEvent | TouchEvent) => {
-      let currentSeekValue;
-      let currentSeekText;
-
-      if (this.seekBarType === SeekBarType.Live) {
-        currentSeekValue = -(Math.floor(this.getOffset(e) * this.player.getMaxTimeShift()) - this.player.getMaxTimeShift());
-        currentSeekText = `Timeshift value: ${currentSeekValue}`;
-      } else if (this.seekBarType === SeekBarType.Vod) {
-        currentSeekValue = Math.floor(this.getOffset(e) * this.player.getDuration());
-        currentSeekText = `${StringUtils.secondsToTime(currentSeekValue)} out of ${StringUtils.secondsToTime(this.player.getDuration())}`;
-      } else {
-        currentSeekValue = Math.floor(this.getOffset(e) * 100);
-        currentSeekText = `Value: ${currentSeekValue}`;
-      }
-
-      this.getDomElement().attr('aria-valuenow', currentSeekValue.toString());
-      this.getDomElement().attr('aria-valuetext', currentSeekText);
-    };
-
     // Define handler functions so we can attach/remove them later
     let mouseTouchMoveHandler = (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
@@ -671,8 +646,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.setSeekPosition(targetPercentage);
       this.setPlaybackPosition(targetPercentage);
       this.onSeekPreviewEvent(targetPercentage, true);
-
-      setAriaSliderValue(e);
     };
 
     let mouseTouchUpHandler = (e: MouseEvent | TouchEvent) => {
@@ -687,8 +660,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       this.setSeeking(false);
       seeking = false;
-
-      setAriaSliderValue(e);
 
       // Fire seeked event
       this.onSeekedEvent(snappedChapter ? snappedChapter.position : targetPercentage);
@@ -712,8 +683,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Fire seeked event
       this.onSeekEvent();
-
-      setAriaSliderValue(e);
 
       // Add handler to track the seek operation over the whole document
       new DOM(document).on(isTouchEvent ? 'touchmove' : 'mousemove', mouseTouchMoveHandler);

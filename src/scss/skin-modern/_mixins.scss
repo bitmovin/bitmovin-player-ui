@@ -125,7 +125,7 @@
 
 @mixin focusable {
   &:focus {
-    box-shadow: $box-shadow;
+    box-shadow: $focus-element-box-shadow;
     outline: none;
   }
 }

@@ -56,7 +56,7 @@ export interface ComponentConfig {
   /**
    * WCAG20 requirement for screen reader navigation
    */
-  tabindex?: number;
+  tabIndex?: number;
 
   /**
    * WCAG20 standard for defining info about the component (usually the name)
