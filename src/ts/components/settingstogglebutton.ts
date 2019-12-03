@@ -42,7 +42,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       settingsPanel: null,
       autoHideWhenNoActiveSettings: true,
       role: 'pop-up button',
-      ariaLabel: i18n.getLocalizer('settings'),
     }, <SettingsToggleButtonConfig>this.config);
 
     /**

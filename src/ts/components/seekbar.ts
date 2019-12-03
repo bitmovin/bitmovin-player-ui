@@ -127,7 +127,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   constructor(config: SeekBarConfig = {}) {
     super(config);
 
-    const keyStepIncrements = this.config.keyStepIncrements != null ? this.config.keyStepIncrements : {
+    const keyStepIncrements = this.config.keyStepIncrements || {
       leftRight: 1,
       upDown: 5,
     };

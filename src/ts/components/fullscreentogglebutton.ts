@@ -14,7 +14,6 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-fullscreentogglebutton',
       text: i18n.getLocalizer('fullscreen'),
-      ariaLabel: i18n.getLocalizer('fullscreen'),
     }, this.config);
   }
 
