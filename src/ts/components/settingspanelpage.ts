@@ -74,6 +74,11 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
 
   onActiveEvent() {
     this.settingsPanelPageEvents.onActive.dispatch(this);
+    const activeItems = this.getItems().filter((item) => item.isActive() === true);
+
+    if (activeItems.length > 0) {
+      activeItems[0].getDomElement().focus();
+    }
   }
 
   get onActive(): Event<SettingsPanelPage, NoArgs> {

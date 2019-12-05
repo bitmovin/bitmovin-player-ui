@@ -75,7 +75,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     settingsPanel.onShow.subscribe(() => {
       // Set toggle status to on when the settings panel shows
       this.on();
-      settingsPanel.getDomElement().focusToFirstInput();
     });
     settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides

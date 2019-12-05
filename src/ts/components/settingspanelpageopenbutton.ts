@@ -22,7 +22,6 @@ export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButto
 
     this.onClick.subscribe(() => {
       this.pushTargetPage();
-      this.config.targetPage.getDomElement().focusToFirstInput();
     });
   }
 }
