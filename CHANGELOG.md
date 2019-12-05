@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+
+- Web Content Accessibility (WCAG) 2.0
+- Slider controls for Web Content Accessibility
+
 ### Fixed
 - UI flickering back and forth on live streams after ads
 

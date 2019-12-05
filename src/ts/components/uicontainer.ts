@@ -54,7 +54,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     this.config = this.mergeConfig(config, <UIContainerConfig>{
       cssClass: 'ui-uicontainer',
-      role: 'application',
+      role: 'region',
       ariaLabel: i18n.getLocalizer('player'),
       hideDelay: 5000,
     }, this.config);
