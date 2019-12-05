@@ -22,6 +22,16 @@
   }
 }
 
+@mixin hidden-animated-focusable($duration: $animation-duration) {
+  opacity: 1;
+  transition: hidden-animated-transition($duration);
+
+  &.#{$prefix}-hidden {
+    opacity: 0;
+    transition: opacity $duration, visibility $duration;
+  }
+}
+
 /*
  * this will use the existing `hidden-animated` mixin and add additional transitions properties
  *

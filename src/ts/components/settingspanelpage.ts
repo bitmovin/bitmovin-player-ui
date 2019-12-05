@@ -77,7 +77,7 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
     const activeItems = this.getItems().filter((item) => item.isActive() === true);
 
     if (activeItems.length > 0) {
-      activeItems[0].getDomElement().focus();
+      activeItems[0].getDomElement().focusToFirstInput();
     }
   }
 

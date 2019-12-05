@@ -158,7 +158,8 @@ export class UIContainer extends Container<UIContainerConfig> {
       },
     }, {
       name: 'focusin',
-      handler: () => {
+      handler: (e) => {
+        console.warn(e);
         showUi();
       },
     }, {
