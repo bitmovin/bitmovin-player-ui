@@ -31,7 +31,7 @@ export class SeekBarController {
     constructor(
         keyStepIncrements: { leftRight: number, upDown: number },
         player: PlayerAPI,
-        volumeController: VolumeController
+        volumeController: VolumeController,
     ) {
         this.keyStepIncrements = keyStepIncrements;
         this.player = player;
@@ -53,7 +53,7 @@ export class SeekBarController {
             home: () => changeRangeValue(range.min, range, valueUpdate),
             end: () => changeRangeValue(range.max, range, valueUpdate),
         };
-    };
+    }
 
     protected seekBarControls(type: SeekBarType) {
         if (type === SeekBarType.Live) {
@@ -64,12 +64,11 @@ export class SeekBarController {
             const volumeTransition = this.volumeController.startTransition();
             return this.arrowKeyControls(this.player.getVolume(), { min: 0, max: 100 }, volumeTransition.finish.bind(volumeTransition));
         }
-    };
+    }
 
     public setSeekBarControls (domElement: DOM, type: () => SeekBarType) {
         domElement.on('keydown', (e: KeyboardEvent) => {
             const controls = this.seekBarControls(type());
-    
             switch (e.keyCode) {
                 case UIUtils.KeyCode.LeftArrow: {
                     controls.left();
@@ -108,5 +107,5 @@ export class SeekBarController {
                 }
             }
         });
-    };
+    }
 }

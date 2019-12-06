@@ -216,7 +216,6 @@ export class SeekBar extends Component<SeekBarConfig> {
           this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
         }
 
-        
         if (this.isUiShown) {
           const timeshiftValue = Math.ceil(this.player.getTimeShift()).toString();
           this.getDomElement().attr('aria-valuenow', timeshiftValue);
