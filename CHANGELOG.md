@@ -12,8 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Slider controls for Web Content Accessibility
 - Fixed issue where settings panel show subscription was ignored on small UI screens
 
+## [3.9.1]
+
 ### Fixed
 - UI flickering back and forth on live streams after ads
+- Build errors when using the npm package
+- Outdated live asset sample
 
 ## [3.9.0]
 
@@ -598,6 +602,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.9.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.9.0...v3.9.1
 [3.9.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.8.1...v3.9.0
 [3.8.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.8.0...v3.8.1
 [3.8.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.7.0...v3.8.0
