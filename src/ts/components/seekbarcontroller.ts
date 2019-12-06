@@ -9,9 +9,19 @@ export enum SeekBarType {
     Volume,
 }
 
+interface Range {
+    min: number;
+    max: number;
+}
+
+interface KeyStepIncrementsConfig {
+    leftRight: number;
+    upDown: number;
+}
+
 const changeRangeValue = (
     value: number,
-    range: { min: number, max: number },
+    range: Range,
     cb: (value: number) => void,
 ) => {
     if (value < range.min) {
@@ -24,12 +34,12 @@ const changeRangeValue = (
 };
 
 export class SeekBarController {
-    protected keyStepIncrements: { leftRight: number, upDown: number };
+    protected keyStepIncrements: KeyStepIncrementsConfig;
     protected player: PlayerAPI;
     protected volumeController: VolumeController;
 
     constructor(
-        keyStepIncrements: { leftRight: number, upDown: number },
+        keyStepIncrements: KeyStepIncrementsConfig,
         player: PlayerAPI,
         volumeController: VolumeController,
     ) {
@@ -40,7 +50,7 @@ export class SeekBarController {
 
     protected arrowKeyControls(
         currentValue: number,
-        range: { min: number, max: number },
+        range: Range,
         valueUpdate: (value: number) => void,
     ) {
         const controlValue = Math.floor(currentValue);
