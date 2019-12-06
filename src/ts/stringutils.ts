@@ -48,8 +48,8 @@ export namespace StringUtils {
     const seconds = Math.floor(totalSeconds) % 60;
 
     return (isNegative ? '-' : '') +
-    (hours != 0 ? `${leftPadWithZeros(hours, 2)} ${i18n.performLocalization(i18n.getLocalizer('settings.time.hours'))} `: '') +
-    (minutes != 0 ? `${leftPadWithZeros(minutes, 2)} ${i18n.performLocalization(i18n.getLocalizer('settings.time.minutes'))} `: '') +
+    (hours !== 0 ? `${leftPadWithZeros(hours, 2)} ${i18n.performLocalization(i18n.getLocalizer('settings.time.hours'))} ` : '') +
+    (minutes !== 0 ? `${leftPadWithZeros(minutes, 2)} ${i18n.performLocalization(i18n.getLocalizer('settings.time.minutes'))} ` : '') +
     `${leftPadWithZeros(seconds, 2)} ${i18n.performLocalization(i18n.getLocalizer('settings.time.seconds'))}`;
   }
 
