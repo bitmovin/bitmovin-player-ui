@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Web Content Accessibility (WCAG) 2.0
-- Slider controls for Web Content Accessibility
+- Keyboard controls for sliders when focused
 
 ### Fixed
 - Settings panel show and hide listener ignored on small UI screens

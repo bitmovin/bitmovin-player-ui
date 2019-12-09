@@ -90,10 +90,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   protected seekBarType: SeekBarType;
 
-  protected getSeekBarType = () => {
-    return this.seekBarType;
-  }
-
   protected isUiShown: boolean;
 
   /**
@@ -169,7 +165,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // Add seekbar controls to the seekbar
     const seekBarController = new SeekBarController(this.config.keyStepIncrements, player, uimanager.getConfig().volumeController);
 
-    seekBarController.setSeekBarControls(this.getDomElement(), this.getSeekBarType);
+    seekBarController.setSeekBarControls(this.getDomElement(), () => this.seekBarType);
 
     // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
     // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
