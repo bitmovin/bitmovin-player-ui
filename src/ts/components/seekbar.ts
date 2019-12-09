@@ -133,6 +133,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       vertical: false,
       smoothPlaybackPositionUpdateIntervalMs: 50,
       keyStepIncrements,
+      ariaLabel: i18n.getLocalizer('seekBar'),
       tabIndex: 0,
     }, this.config);
 
@@ -148,9 +149,21 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
-  private setAriaSliderMinMax(min: string, max: string) {
+  protected setAriaSliderMinMax(min: string, max: string) {
     this.getDomElement().attr('aria-valuemin', min);
     this.getDomElement().attr('aria-valuemax', max);
+  }
+
+  private setAriaSliderValues() {
+    if (this.seekBarType === SeekBarType.Live) {
+      const timeshiftValue = Math.ceil(this.player.getTimeShift()).toString();
+      this.getDomElement().attr('aria-valuenow', timeshiftValue);
+      this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.timeshift'))} ${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${timeshiftValue}`);
+    } else if (this.seekBarType === SeekBarType.Vod) {
+      const ariaValueText = `${StringUtils.secondsToText(this.player.getCurrentTime())} ${i18n.performLocalization(i18n.getLocalizer('seekBar.durationText'))} ${StringUtils.secondsToText(this.player.getDuration())}`;
+      this.getDomElement().attr('aria-valuenow', Math.floor(this.player.getCurrentTime()).toString());
+      this.getDomElement().attr('aria-valuetext', ariaValueText);
+    }
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
@@ -173,10 +186,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     // a common base slider component and implement their functionality there.
     if (!configureSeek) {
       this.seekBarType = SeekBarType.Volume;
-      this.setAriaSliderMinMax('0', '100');
-      this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer('settings.ariaLabel.volume')));
-      this.getDomElement().attr('aria-valuenow', `${player.getVolume()}`);
-      this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${player.getVolume()}`);
 
       return;
     }
@@ -193,8 +202,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isUserSeeking = false;
     let isPlayerSeeking = false;
 
-    this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer('seekBar')));
-
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
       if (isUserSeeking) {
@@ -210,12 +217,6 @@ export class SeekBar extends Component<SeekBarConfig> {
           let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
           this.setPlaybackPosition(playbackPositionPercentage);
           this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
-        }
-
-        if (this.isUiShown) {
-          const timeshiftValue = Math.ceil(this.player.getTimeShift()).toString();
-          this.getDomElement().attr('aria-valuenow', timeshiftValue);
-          this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.timeshift'))} ${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${timeshiftValue}`);
         }
 
         // Always show full buffer for live streams
@@ -249,12 +250,10 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
 
         this.setAriaSliderMinMax('0', playerDuration.toString());
+      }
 
-        if (this.isUiShown) {
-          const ariaValueText = `${StringUtils.secondsToText(this.player.getCurrentTime())} ${i18n.performLocalization(i18n.getLocalizer('seekBar.durationText'))} ${StringUtils.secondsToText(playerDuration)}`;
-          this.getDomElement().attr('aria-valuenow', Math.floor(this.player.getCurrentTime()).toString());
-          this.getDomElement().attr('aria-valuetext', ariaValueText);
-        }
+      if (this.isUiShown) {
+        this.setAriaSliderValues();
       }
     };
 
@@ -585,6 +584,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'role': 'slider',
+      'aria-label': i18n.performLocalization(this.config.ariaLabel),
       'tabindex': this.config.tabIndex.toString(),
     });
 
