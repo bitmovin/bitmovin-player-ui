@@ -171,16 +171,16 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     seekBarController.setSeekBarControls(this.getDomElement(), this.getSeekBarType);
 
+    // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
+    // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
+    // This is actually a hack, the proper solution would be for both seek bar and volume sliders to extend
+    // a common base slider component and implement their functionality there.
     if (!configureSeek) {
       this.seekBarType = SeekBarType.Volume;
       this.setAriaSliderMinMax('0', '100');
       this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer('settings.ariaLabel.volume')));
       this.getDomElement().attr('aria-valuenow', `${player.getVolume()}`);
       this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${player.getVolume()}`);
-      // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
-      // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
-      // This is actually a hack, the proper solution would be for both seek bar and volume sliders to extend
-      // a common base slider component and implement their functionality there.
 
       return;
     }
