@@ -19,7 +19,7 @@ interface KeyStepIncrementsConfig {
     upDown: number;
 }
 
-const changeRangeValue = (
+const coerceValueIntoRange = (
     value: number,
     range: Range,
     cb: (value: number) => void,
@@ -56,12 +56,12 @@ export class SeekBarController {
         const controlValue = Math.floor(currentValue);
 
         return {
-            left: () => changeRangeValue(controlValue - this.keyStepIncrements.leftRight, range, valueUpdate),
-            right: () => changeRangeValue(controlValue + this.keyStepIncrements.leftRight, range, valueUpdate),
-            up: () => changeRangeValue(controlValue + this.keyStepIncrements.upDown, range, valueUpdate),
-            down: () => changeRangeValue(controlValue - this.keyStepIncrements.upDown, range, valueUpdate),
-            home: () => changeRangeValue(range.min, range, valueUpdate),
-            end: () => changeRangeValue(range.max, range, valueUpdate),
+            left: () => coerceValueIntoRange(controlValue - this.keyStepIncrements.leftRight, range, valueUpdate),
+            right: () => coerceValueIntoRange(controlValue + this.keyStepIncrements.leftRight, range, valueUpdate),
+            up: () => coerceValueIntoRange(controlValue + this.keyStepIncrements.upDown, range, valueUpdate),
+            down: () => coerceValueIntoRange(controlValue - this.keyStepIncrements.upDown, range, valueUpdate),
+            home: () => coerceValueIntoRange(range.min, range, valueUpdate),
+            end: () => coerceValueIntoRange(range.max, range, valueUpdate),
         };
     }
 
