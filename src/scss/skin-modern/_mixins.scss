@@ -28,7 +28,7 @@
 
   &.#{$prefix}-hidden {
     opacity: 0;
-    transition: opacity $duration, visibility $duration;
+    transition: opacity $duration $duration;
   }
 }
 

@@ -76,7 +76,7 @@ export class SeekBarController {
         }
     }
 
-    public setSeekBarControls (domElement: DOM, type: () => SeekBarType) {
+    public setSeekBarControls(domElement: DOM, type: () => SeekBarType) {
         domElement.on('keydown', (e: KeyboardEvent) => {
             const controls = this.seekBarControls(type());
             switch (e.keyCode) {

@@ -43,7 +43,7 @@ interface Vocabulary {
   'settings.subtitles.window.opacity': string;
   'settings.ariaLabel.volume': string;
   'settings.ariaLabel.mute': string;
-  'settings.ariaLabel.play': string;
+  'play': string;
   'settings.time.hours': string;
   'settings.time.minutes': string;
   'settings.time.seconds': string;

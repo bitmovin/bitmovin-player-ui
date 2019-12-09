@@ -7,13 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-
 - Web Content Accessibility (WCAG) 2.0
 - Slider controls for Web Content Accessibility
 
 ### Fixed
-
-- Settings panel show subscription ignored on small UI screens
+- Settings panel show and hide listener ignored on small UI screens
 
 ## [3.9.1]
 
