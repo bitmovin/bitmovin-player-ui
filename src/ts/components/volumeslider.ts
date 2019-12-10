@@ -59,7 +59,7 @@ export class VolumeSlider extends SeekBar {
       return;
     }
 
-    volumeController.onChanged.subscribe((VolumeController, args) => {
+    volumeController.onChanged.subscribe((_, args) => {
       if (args.muted) {
         this.setVolumeAriaSliderValues(0);
         this.setPlaybackPosition(0);

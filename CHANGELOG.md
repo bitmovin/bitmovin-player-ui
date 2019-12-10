@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Keyboard controls for sliders when focused
 
 ### Fixed
-- Settings panel show and hide listener ignored on small UI screens
+- `onActive` and `onInactive` not fired for root `SettingsPanelPage` when `SettingsPanel` was configured with `hideDelay` of `-1`
 
 ## [3.9.1]
 
