@@ -3,7 +3,6 @@ import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { VolumeTransition } from '../volumecontroller';
 import { i18n } from '../localization/i18n';
-import { SeekBarType } from './seekbarcontroller';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
@@ -21,9 +20,6 @@ export interface VolumeSliderConfig extends SeekBarConfig {
  * A simple volume slider component to adjust the player's volume setting.
  */
 export class VolumeSlider extends SeekBar {
-
-  private static readonly issuerName = 'ui';
-
   private volumeTransition: VolumeTransition;
 
   constructor(config: VolumeSliderConfig = {}) {
@@ -32,7 +28,7 @@ export class VolumeSlider extends SeekBar {
     this.config = this.mergeConfig(config, <VolumeSliderConfig>{
       cssClass: 'ui-volumeslider',
       hideIfVolumeControlProhibited: true,
-      ariaLabel: i18n.getLocalizer('settings.ariaLabel.volume'),
+      ariaLabel: i18n.getLocalizer('settings.audio.volume'),
       tabIndex: 0,
     }, this.config);
   }

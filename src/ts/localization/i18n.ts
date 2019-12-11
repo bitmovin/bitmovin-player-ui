@@ -20,6 +20,7 @@ interface Vocabulary {
   'settings.audio.quality': string;
   'settings.audio.track': string;
   'settings.audio.mute': string;
+  'settings.audio.volume': string;
   'settings.subtitles': string;
   'settings.subtitles.font.color': string;
   'settings.subtitles.font.opacity': string;
@@ -41,8 +42,6 @@ interface Vocabulary {
   'settings.subtitles.font.family.smallcapital': string;
   'settings.subtitles.window.color': string;
   'settings.subtitles.window.opacity': string;
-  'settings.ariaLabel.volume': string;
-  'settings.ariaLabel.mute': string;
   'play': string;
   'settings.time.hours': string;
   'settings.time.minutes': string;
