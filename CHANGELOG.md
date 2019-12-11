@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Added
+- Web Content Accessibility (WCAG) 2.0
+- Keyboard controls for sliders when focused
+
+### Fixed
+- `onActive` and `onInactive` not fired for root `SettingsPanelPage` when `SettingsPanel` was configured with `hideDelay` of `-1`
+
 ## [3.9.1]
 
 ### Fixed

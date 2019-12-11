@@ -38,7 +38,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
     this.timeLabel = new Label({ cssClasses: ['seekbar-label-time'] });
     this.titleLabel = new Label({ cssClasses: ['seekbar-label-title'] });
-    this.thumbnail = new Component({ cssClasses: ['seekbar-thumbnail'] });
+    this.thumbnail = new Component({ cssClasses: ['seekbar-thumbnail'], role: 'img' });
     this.thumbnailImageLoader = new ImageLoader();
 
     this.config = this.mergeConfig(config, {

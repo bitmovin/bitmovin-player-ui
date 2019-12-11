@@ -20,6 +20,7 @@ interface Vocabulary {
   'settings.audio.quality': string;
   'settings.audio.track': string;
   'settings.audio.mute': string;
+  'settings.audio.volume': string;
   'settings.subtitles': string;
   'settings.subtitles.font.color': string;
   'settings.subtitles.font.opacity': string;
@@ -41,6 +42,10 @@ interface Vocabulary {
   'settings.subtitles.font.family.smallcapital': string;
   'settings.subtitles.window.color': string;
   'settings.subtitles.window.opacity': string;
+  'play': string;
+  'settings.time.hours': string;
+  'settings.time.minutes': string;
+  'settings.time.seconds': string;
   'colors.white': string;
   'colors.black': string;
   'colors.red': string;
@@ -64,13 +69,22 @@ interface Vocabulary {
   'normal': string;
   'default': string;
   'open': string;
+  'close': string;
   'fullscreen': string;
   'speed': string;
   'playPause': string;
   'live': string;
   'subtitle.example': string;
+  'subtitle.select': string;
   'playingOn': string;
   'connectingTo': string;
+  'watermarkLink': string;
+  'controlBar': string;
+  'player': string;
+  'seekBar': string;
+  'seekBar.value': string;
+  'seekBar.timeshift': string;
+  'seekBar.durationText': string;
 }
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;

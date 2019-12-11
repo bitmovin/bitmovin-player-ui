@@ -11,6 +11,11 @@ export interface LabelConfig extends ComponentConfig {
    * The text as string or localize callback on the label.
    */
   text?: LocalizableText;
+
+  /**
+   * WCAG20 standard: Associate label to form control.
+   */
+  for?: string;
 }
 
 /**
@@ -40,8 +45,11 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
   }
 
   protected toDomElement(): DOM {
-    let labelElement = new DOM('span', {
+    const tagName = this.config.for != null ? 'label' : 'span';
+
+    let labelElement = new DOM(tagName, {
       'id': this.config.id,
+      'for': this.config.for,
       'class': this.getCssClasses(),
     }).html(i18n.performLocalization(this.text));
 

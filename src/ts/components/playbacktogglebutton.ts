@@ -18,6 +18,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-playbacktogglebutton',
       text: i18n.getLocalizer('playPause'),
+      ariaLabel: i18n.getLocalizer('play'),
     }, this.config);
 
     this.isPlayInitiated = false;

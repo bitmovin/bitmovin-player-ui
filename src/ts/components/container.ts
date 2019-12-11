@@ -1,6 +1,7 @@
 import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {ArrayUtils} from '../arrayutils';
+import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Container}.
@@ -118,6 +119,8 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     let containerElement = new DOM(this.config.tag, {
       'id': this.config.id,
       'class': this.getCssClasses(),
+      'role': this.config.role,
+      'aria-label': i18n.performLocalization(this.config.ariaLabel),
     });
 
     // Create the inner container element (the inner <div>) that will contain the components

@@ -1,4 +1,5 @@
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from './localization/i18n';
 
 export namespace StringUtils {
 
@@ -30,6 +31,26 @@ export namespace StringUtils {
         .replace('hh', leftPadWithZeros(hours, 2))
         .replace('mm', leftPadWithZeros(minutes, 2))
         .replace('ss', leftPadWithZeros(seconds, 2));
+  }
+
+  export function secondsToText(totalSeconds: number): string {
+    const isNegative = totalSeconds < 0;
+
+    if (isNegative) {
+      // If the time is negative, we make it positive for the calculation below
+      // (else we'd get all negative numbers) and reattach the negative sign later.
+      totalSeconds = -totalSeconds;
+    }
+
+    // Split into separate time parts
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor(totalSeconds / 60) - hours * 60;
+    const seconds = Math.floor(totalSeconds) % 60;
+
+    return (isNegative ? '-' : '') +
+    (hours !== 0 ? `${leftPadWithZeros(hours, 2)} ${i18n.performLocalization(i18n.getLocalizer('settings.time.hours'))} ` : '') +
+    (minutes !== 0 ? `${leftPadWithZeros(minutes, 2)} ${i18n.performLocalization(i18n.getLocalizer('settings.time.minutes'))} ` : '') +
+    `${leftPadWithZeros(seconds, 2)} ${i18n.performLocalization(i18n.getLocalizer('settings.time.seconds'))}`;
   }
 
   /**

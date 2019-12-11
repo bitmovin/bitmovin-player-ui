@@ -92,16 +92,6 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         this.hide();
         this.hideHoveredSelectBoxes();
       });
-
-      this.onShow.subscribe(() => {
-        // Reset navigation when te panel gets visible to avoid a weird animation when hiding
-        this.resetNavigation(true);
-        // Since we don't need to navigate to the root page again we need to fire the onActive event when the settings
-        // panel gets visible.
-        this.activePage.onActiveEvent();
-        // Activate timeout when shown
-        this.hideTimeout.start();
-      });
       this.getDomElement().on('mouseenter', () => {
         // On mouse enter clear the timeout
         this.hideTimeout.clear();
@@ -110,14 +100,37 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
         // On mouse leave activate the timeout
         this.hideTimeout.reset();
       });
-      this.onHide.subscribe(() => {
-        // Clear timeout when hidden from outside
+      this.getDomElement().on('focusin', () => {
         this.hideTimeout.clear();
-        // Since we don't reset the actual navigation here we need to simulate a onInactive event in case some panel
-        // needs to do something when they become invisible / inactive.
-        this.activePage.onInactiveEvent();
+      });
+      this.getDomElement().on('focusout', () => {
+        this.hideTimeout.reset();
       });
     }
+
+    this.onHide.subscribe(() => {
+      if (config.hideDelay > -1) {
+        // Clear timeout when hidden from outside
+        this.hideTimeout.clear();
+      }
+
+      // Since we don't reset the actual navigation here we need to simulate a onInactive event in case some panel
+      // needs to do something when they become invisible / inactive.
+      this.activePage.onInactiveEvent();
+    });
+
+    this.onShow.subscribe(() => {
+      // Reset navigation when te panel gets visible to avoid a weird animation when hiding
+      this.resetNavigation(true);
+      // Since we don't need to navigate to the root page again we need to fire the onActive event when the settings
+      // panel gets visible.
+      this.activePage.onActiveEvent();
+
+      if (config.hideDelay > -1) {
+        // Activate timeout when shown
+        this.hideTimeout.start();
+      }
+    });
 
     // pass event from root page through
     this.getRootPage().onSettingsStateChanged.subscribe(() => {

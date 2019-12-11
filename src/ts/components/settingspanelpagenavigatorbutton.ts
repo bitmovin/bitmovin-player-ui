@@ -1,6 +1,8 @@
 import {Button, ButtonConfig} from './button';
 import {SettingsPanel} from './settingspanel';
 import {SettingsPanelPage} from './settingspanelpage';
+import { PlayerAPI } from 'bitmovin-player';
+import { UIInstanceManager } from '../uimanager';
 
 /**
  * Configuration interface for a {@link SettingsPanelPageNavigatorButton}
@@ -15,6 +17,11 @@ export interface SettingsPanelPageNavigatorConfig extends ButtonConfig {
    * If empty it will navigate to the root page (not intended to use as navigate back behavior)
    */
   targetPage?: SettingsPanelPage;
+
+  /**
+   * WCAG20 standard: Establishes relationships between objects and their label(s)
+   */
+  ariaLabelledBy?: string;
 }
 
 /**

@@ -22,6 +22,7 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
 
     this.config = this.mergeConfig<ContainerConfig>(config, {
       cssClass: 'ui-settings-panel-page',
+      role: 'menu',
     }, this.config);
   }
 
@@ -73,6 +74,11 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
 
   onActiveEvent() {
     this.settingsPanelPageEvents.onActive.dispatch(this);
+    const activeItems = this.getItems().filter((item) => item.isActive());
+
+    if (activeItems.length > 0) {
+      activeItems[0].getDomElement().focusToFirstInput();
+    }
   }
 
   get onActive(): Event<SettingsPanelPage, NoArgs> {

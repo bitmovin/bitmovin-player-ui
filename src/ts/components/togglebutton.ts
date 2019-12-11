@@ -66,6 +66,8 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
 
       this.onToggleEvent();
       this.onToggleOnEvent();
+
+      this.getDomElement().attr('aria-pressed', 'true');
     }
   }
 
@@ -82,6 +84,8 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
 
       this.onToggleEvent();
       this.onToggleOffEvent();
+
+      this.getDomElement().attr('aria-pressed', 'false');
     }
   }
 

@@ -41,7 +41,19 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       text: i18n.getLocalizer('settings'),
       settingsPanel: null,
       autoHideWhenNoActiveSettings: true,
+      role: 'pop-up button',
     }, <SettingsToggleButtonConfig>this.config);
+
+    /**
+     * WCAG20 standard defines which popup menu (element id) is owned by the button
+     */
+    this.getDomElement().attr('aria-owns', config.settingsPanel.getActivePage().getConfig().id);
+
+    /**
+     * WCAG20 standard defines that a button has a popup menu bound to it
+     */
+    this.getDomElement().attr('aria-haspopup', 'true');
+
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

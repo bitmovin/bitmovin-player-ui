@@ -3,6 +3,7 @@ import {UIInstanceManager} from '../uimanager';
 import {UIUtils} from '../uiutils';
 import {Spacer} from './spacer';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for the {@link ControlBar}.
@@ -23,6 +24,8 @@ export class ControlBar extends Container<ControlBarConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-controlbar',
       hidden: true,
+      role: 'region',
+      ariaLabel: i18n.getLocalizer('controlBar'),
     }, <ControlBarConfig>this.config);
   }
 

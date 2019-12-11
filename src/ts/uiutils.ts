@@ -21,4 +21,15 @@ export namespace UIUtils {
     // Walk and configure the component tree
     recursiveTreeWalker(component);
   }
+
+  // From: https://github.com/nfriend/ts-keycode-enum/blob/master/Key.enum.ts
+  export enum KeyCode {
+    LeftArrow = 37,
+    UpArrow = 38,
+    RightArrow = 39,
+    DownArrow = 40,
+    Space = 32,
+    End = 35,
+    Home = 36,
+  }
 }

@@ -10,11 +10,15 @@ export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButto
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settingspanelpageopenbutton',
       text: i18n.getLocalizer('open'),
+      role: 'menuitem',
     } as SettingsPanelPageNavigatorConfig, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    this.getDomElement().attr('aria-haspopup', 'true');
+    this.getDomElement().attr('aria-owns', this.config.targetPage.getConfig().id);
 
     this.onClick.subscribe(() => {
       this.pushTargetPage();

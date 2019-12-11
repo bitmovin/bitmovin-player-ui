@@ -11,6 +11,7 @@ $color-secondary: #999 !default;
 $color-background: #111 !default;
 $color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3) !default;
 $color-background-bars: transparentize($color-black, .3) !default;
+$color-focus: #1b7fcc;
 
 $font-family: sans-serif !default;
 $font-size: 1em !default;
@@ -20,3 +21,5 @@ $subtitle-text-border-color: #000 !default;
 
 $animation-duration: .3s !default;
 $animation-duration-short: $animation-duration / 2 !default;
+
+$focus-element-box-shadow: 0 0 0 2px rgba($color-focus, .8);

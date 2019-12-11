@@ -4,7 +4,7 @@
 .#{$prefix}-ui-controlbar {
   @extend %ui-container;
 
-  @include hidden-animated;
+  @include hidden-animated-focusable;
   @include layout-align-bottom;
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);

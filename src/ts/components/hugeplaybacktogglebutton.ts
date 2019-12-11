@@ -16,6 +16,8 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-hugeplaybacktogglebutton',
       text: i18n.getLocalizer('playPause'),
+      role: 'button',
+      ariaLabel: i18n.getLocalizer('play'),
     }, this.config);
   }
 

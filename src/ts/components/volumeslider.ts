@@ -2,6 +2,7 @@ import { SeekBar, SeekBarConfig, SeekPreviewEventArgs } from './seekbar';
 import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { VolumeTransition } from '../volumecontroller';
+import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
@@ -19,9 +20,6 @@ export interface VolumeSliderConfig extends SeekBarConfig {
  * A simple volume slider component to adjust the player's volume setting.
  */
 export class VolumeSlider extends SeekBar {
-
-  private static readonly issuerName = 'ui';
-
   private volumeTransition: VolumeTransition;
 
   constructor(config: VolumeSliderConfig = {}) {
@@ -30,11 +28,20 @@ export class VolumeSlider extends SeekBar {
     this.config = this.mergeConfig(config, <VolumeSliderConfig>{
       cssClass: 'ui-volumeslider',
       hideIfVolumeControlProhibited: true,
+      ariaLabel: i18n.getLocalizer('settings.audio.volume'),
+      tabIndex: 0,
     }, this.config);
+  }
+
+  private setVolumeAriaSliderValues(value: number) {
+    this.getDomElement().attr('aria-valuenow', Math.ceil(value).toString());
+    this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${Math.ceil(value)}`);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager, false);
+
+    this.setAriaSliderMinMax('0', '100');
 
     let config = <VolumeSliderConfig>this.getConfig();
 
@@ -50,9 +57,11 @@ export class VolumeSlider extends SeekBar {
 
     volumeController.onChanged.subscribe((_, args) => {
       if (args.muted) {
+        this.setVolumeAriaSliderValues(0);
         this.setPlaybackPosition(0);
       } else {
         this.setPlaybackPosition(args.volume);
+        this.setVolumeAriaSliderValues(args.volume);
       }
     });
 

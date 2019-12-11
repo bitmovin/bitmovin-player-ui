@@ -1,4 +1,5 @@
 import {ClickOverlay, ClickOverlayConfig} from './clickoverlay';
+import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link ClickOverlay}.
@@ -18,6 +19,9 @@ export class Watermark extends ClickOverlay {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-watermark',
       url: 'http://bitmovin.com',
+      role: 'link',
+      text: 'logo',
+      ariaLabel: i18n.getLocalizer('watermarkLink'),
     }, <WatermarkConfig>this.config);
   }
 }
