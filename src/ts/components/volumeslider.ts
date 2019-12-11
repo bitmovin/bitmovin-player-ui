@@ -34,8 +34,8 @@ export class VolumeSlider extends SeekBar {
   }
 
   private setVolumeAriaSliderValues(value: number) {
-    this.getDomElement().attr('aria-valuenow', value.toString());
-    this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${value}`);
+    this.getDomElement().attr('aria-valuenow', Math.ceil(value).toString());
+    this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${Math.ceil(value)}`);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
