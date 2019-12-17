@@ -25,6 +25,13 @@ export class BrowserUtils {
     return navigator && navigator.userAgent && /Android/.test(navigator.userAgent);
   }
 
+  static get isIOS(): boolean {
+    if (!this.windowExists()) {
+      return false;
+    }
+    return navigator && navigator.userAgent && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  }
+
   private static windowExists(): boolean {
     return typeof window !== 'undefined';
   }

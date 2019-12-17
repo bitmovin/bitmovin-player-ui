@@ -3,6 +3,7 @@ import {SettingsPanelItem} from './settingspanelitem';
 import {UIInstanceManager} from '../uimanager';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import { PlayerAPI } from 'bitmovin-player';
+import { BrowserUtils } from '../browserutils';
 
 /**
  * A panel containing a list of {@link SettingsPanelItem items} that represent labelled settings.
@@ -73,12 +74,11 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
   }
 
   onActiveEvent() {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const activeItems = this.getItems().filter((item) => item.isActive());
 
     this.settingsPanelPageEvents.onActive.dispatch(this);
     // Disable focus for iOS devices, automatically opens select inputs
-    if (activeItems.length > 0 && !isIOS) {
+    if (activeItems.length > 0 && !BrowserUtils.isIOS) {
       activeItems[0].getDomElement().focusToFirstInput();
     }
   }
