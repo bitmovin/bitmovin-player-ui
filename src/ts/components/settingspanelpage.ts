@@ -77,8 +77,8 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
     const activeItems = this.getItems().filter((item) => item.isActive());
 
     this.settingsPanelPageEvents.onActive.dispatch(this);
-    // Disable focus for iOS devices, automatically opens select inputs
-    if (activeItems.length > 0 && !BrowserUtils.isIOS) {
+    // Disable focus for iOS and iPad OS 13 because it automatically opens select inputs
+    if (activeItems.length > 0 && !BrowserUtils.isIOS && !(BrowserUtils.isMacIntel && BrowserUtils.isTouchSupported)) {
       activeItems[0].getDomElement().focusToFirstInput();
     }
   }

@@ -12,6 +12,7 @@ import { PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import { StringUtils } from '../stringutils';
 import { SeekBarType, SeekBarController } from './seekbarcontroller';
 import { i18n } from '../localization/i18n';
+import { BrowserUtils } from '../browserutils';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -101,9 +102,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private smoothPlaybackPositionUpdater: Timeout;
   private pausedTimeshiftUpdater: Timeout;
-
-  // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
-  private touchSupported = ('ontouchstart' in window);
 
   private seekBarEvents = {
     /**
@@ -668,7 +666,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // and mouseup handlers to the whole document. A seek is triggered when the user lifts the mouse key.
     // A seek mouse gesture is thus basically a click with a long time frame between down and up events.
     seekBar.on('touchstart mousedown', (e: MouseEvent | TouchEvent) => {
-      let isTouchEvent = this.touchSupported && e instanceof TouchEvent;
+      let isTouchEvent = BrowserUtils.isTouchSupported && e instanceof TouchEvent;
 
       // Prevent selection of DOM elements (also prevents mousedown if current event is touchstart)
       e.preventDefault();
@@ -812,7 +810,7 @@ export class SeekBar extends Component<SeekBarConfig> {
    * @see #getVerticalOffset
    */
   private getOffset(e: MouseEvent | TouchEvent): number {
-    if (this.touchSupported && e instanceof TouchEvent) {
+    if (BrowserUtils.isTouchSupported && e instanceof TouchEvent) {
       if (this.config.vertical) {
         return this.getVerticalOffset(e.type === 'touchend' ? e.changedTouches[0].pageY : e.touches[0].pageY);
       } else {
