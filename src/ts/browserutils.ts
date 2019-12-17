@@ -38,6 +38,7 @@ export class BrowserUtils {
     }
     return navigator && navigator.userAgent && navigator.platform === 'MacIntel';
   }
+
   // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
   static get isTouchSupported() {
     if (!this.windowExists()) {
