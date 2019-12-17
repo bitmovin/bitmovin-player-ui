@@ -73,10 +73,12 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
   }
 
   onActiveEvent() {
-    this.settingsPanelPageEvents.onActive.dispatch(this);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const activeItems = this.getItems().filter((item) => item.isActive());
 
-    if (activeItems.length > 0) {
+    this.settingsPanelPageEvents.onActive.dispatch(this);
+    // Disable focus for iOS devices, automatically opens select inputs
+    if (activeItems.length > 0 && !isIOS) {
       activeItems[0].getDomElement().focusToFirstInput();
     }
   }
