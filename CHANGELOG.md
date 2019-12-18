@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - `onActive` and `onInactive` not fired for root `SettingsPanelPage` when `SettingsPanel` was configured with `hideDelay` of `-1`
+- Automatic opening of the first select box when the `SettingsPanel` becomes visible on iOS devices
 
 ## [3.9.1]
 

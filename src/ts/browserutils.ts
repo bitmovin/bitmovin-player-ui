@@ -25,6 +25,28 @@ export class BrowserUtils {
     return navigator && navigator.userAgent && /Android/.test(navigator.userAgent);
   }
 
+  static get isIOS(): boolean {
+    if (!this.windowExists()) {
+      return false;
+    }
+    return navigator && navigator.userAgent && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  }
+
+  static get isMacIntel(): boolean {
+    if (!this.windowExists()) {
+      return false;
+    }
+    return navigator && navigator.userAgent && navigator.platform === 'MacIntel';
+  }
+
+  // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
+  static get isTouchSupported() {
+    if (!this.windowExists()) {
+      return false;
+    }
+    return 'ontouchstart' in window || navigator && navigator.userAgent && (navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
+  }
+
   private static windowExists(): boolean {
     return typeof window !== 'undefined';
   }
