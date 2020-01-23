@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+### Development
+
+### Fixed
+- Subtitle background when TTML subtitles are used
+
 ## [3.9.2]
 
 ### Added
