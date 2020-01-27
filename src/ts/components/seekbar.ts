@@ -92,7 +92,6 @@ export class SeekBar extends Component<SeekBarConfig> {
   protected seekBarType: SeekBarType;
 
   protected isUiShown: boolean;
-  protected uiManager: UIInstanceManager;
 
   /**
    * Buffer of the the current playback position. The position must be buffered in case the element
@@ -169,7 +168,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     super.configure(player, uimanager);
 
     this.player = player;
-    this.uiManager = uimanager;
 
     // Apply scaling transform to the backdrop bar to have all bars rendered similarly
     // (the call must be up here to be executed for the volume slider as well)
