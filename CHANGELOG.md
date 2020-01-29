@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- Subtitle background when TTML subtitles are used
+- Empty background boxes with TTML subtitles on Chromecast
 
 ## [3.9.2]
 
