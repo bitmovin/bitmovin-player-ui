@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
+- UI hiding when actively using seek or volume slider
 - Empty background boxes with TTML subtitles on Chromecast
 
 ## [3.9.2]
