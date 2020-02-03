@@ -7,6 +7,8 @@ import { EventDispatcher } from '../eventdispatcher';
 import {DOM} from '../dom';
 import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
+import { setVttCueBoxStyles, setVttRegionStyles } from './subtitlevtt';
+import { VTTProperties } from 'bitmovin-player/types/subtitles/vtt/API';
 
 /**
  * Overlays the player to display subtitles.
@@ -67,9 +69,14 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.subtitleContainerManager.removeLabel(this.previewSubtitle);
       }
 
-      this.subtitleContainerManager.addLabel(labelToAdd);
-      this.updateComponents();
       this.show();
+
+      const overlaySize = {
+        width: this.getDomElement().width(),
+        height: this.getDomElement().height(),
+      };
+      this.subtitleContainerManager.addLabel(labelToAdd, overlaySize);
+      this.updateComponents();
     });
 
     player.on(player.exports.PlayerEvent.CueExit, (event: SubtitleCueEvent) => {
@@ -278,6 +285,7 @@ interface ActiveSubtitleCueMap {
 }
 
 interface SubtitleLabelConfig extends LabelConfig {
+  vtt?: VTTProperties;
   region?: string;
   regionStyle?: string;
 }
@@ -290,6 +298,10 @@ class SubtitleLabel extends Label<SubtitleLabelConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitle-label',
     }, this.config);
+  }
+
+  get vtt(): VTTProperties {
+    return this.config.vtt;
   }
 
   get region(): string {
@@ -343,6 +355,7 @@ class ActiveSubtitleManager {
       // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
       // else use the plain text
       text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
+      vtt: event.vtt,
       region: event.region,
       regionStyle: event.regionStyle,
     });
@@ -453,8 +466,8 @@ export class SubtitleRegionContainerManager {
    * If the subtitle has positioning information it is added to the container.
    * @param label The subtitle label to wrap
    */
-  addLabel(label: SubtitleLabel): void {
-    const regionName = label.region || 'default';
+  addLabel(label: SubtitleLabel, overlaySize?: {width: number, height: number}): void {
+    const regionName = label.vtt && label.vtt.region ? label.vtt.region.id : label.region || 'default';
     if (!this.subtitleRegionContainers[regionName]) {
       const regionContainer = new SubtitleRegionContainer({
         cssClass: `subtitle-position-${regionName}`,
@@ -474,22 +487,20 @@ export class SubtitleRegionContainerManager {
       }
     }
 
-    this.subtitleRegionContainers[regionName].addLabel(label);
+    this.subtitleRegionContainers[regionName].addLabel(label, overlaySize);
   }
 
   /**
    * Removes a subtitle label from a container.
    */
   removeLabel(label: SubtitleLabel): void {
-    const region = label.region || 'default';
-    for (const regionName in this.subtitleRegionContainers) {
-      this.subtitleRegionContainers[regionName].removeLabel(label);
-    }
+    const regionName = label.vtt && label.vtt.region ? label.vtt.region.id : label.region || 'default';
+    this.subtitleRegionContainers[regionName].removeLabel(label);
 
     // Remove container if no more labels are displayed
-    if (this.subtitleRegionContainers[region].isEmpty()) {
-      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[region]);
-      delete this.subtitleRegionContainers[region];
+    if (this.subtitleRegionContainers[regionName].isEmpty()) {
+      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[regionName]);
+      delete this.subtitleRegionContainers[regionName];
     }
   }
 
@@ -505,8 +516,9 @@ export class SubtitleRegionContainerManager {
   }
 }
 
-class SubtitleRegionContainer extends Container<ContainerConfig> {
+export class SubtitleRegionContainer extends Container<ContainerConfig> {
   private labelCount = 0;
+  private cueBoxContainers: {[key: string]: SubtitleCueBoxContainer} = {};
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -516,16 +528,77 @@ class SubtitleRegionContainer extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  addLabel(labelToAdd: SubtitleLabel) {
+  private addCueBoxContainer(labelToAdd: SubtitleLabel) {
+    const id = labelToAdd.getConfig().id;
+    this.cueBoxContainers[id] = new SubtitleCueBoxContainer();
+    this.cueBoxContainers[id].addLabel(labelToAdd);
+    setVttCueBoxStyles(this.cueBoxContainers[id], labelToAdd.vtt);
+    this.addComponent(this.cueBoxContainers[id]);
+    this.updateComponents();
+
+    if (labelToAdd.vtt.region && labelToAdd.vtt.region.scroll) {
+      this.getDomElement().scrollTo(0, 9999);
+    }
+  }
+
+  private removeCueBoxContainer(labelToRemove: SubtitleLabel) {
+    const id = labelToRemove.getConfig().id;
+    this.cueBoxContainers[id].removeLabel(labelToRemove);
+    this.removeComponent(this.cueBoxContainers[id]);
+    delete this.cueBoxContainers[id];
+    this.updateComponents();
+  }
+
+  addLabel(labelToAdd: SubtitleLabel, overlaySize?: {width: number, height: number}) {
     this.labelCount++;
+
+    if (labelToAdd.vtt) {
+      if (labelToAdd.vtt.region && overlaySize) {
+        setVttRegionStyles(this, labelToAdd.vtt.region, overlaySize);
+      }
+
+      return this.addCueBoxContainer(labelToAdd);
+    }
+
     this.addComponent(labelToAdd);
     this.updateComponents();
   }
 
   removeLabel(labelToRemove: SubtitleLabel): void {
     this.labelCount--;
+
+    if (labelToRemove.vtt) {
+      return this.removeCueBoxContainer(labelToRemove);
+    }
+
     this.removeComponent(labelToRemove);
     this.updateComponents();
+  }
+
+  public isEmpty(): boolean {
+    return this.labelCount === 0;
+  }
+}
+
+export class SubtitleCueBoxContainer extends Container<ContainerConfig> {
+  private labelCount = 0;
+
+  constructor(config: ContainerConfig = {}) {
+    super(config);
+
+    this.config = this.mergeConfig(config, {
+      cssClasses: ['subtitle-cue-container'],
+    }, this.config);
+  }
+
+  addLabel(labelToAdd: SubtitleLabel) {
+    this.labelCount++;
+    this.addComponent(labelToAdd);
+  }
+
+  removeLabel(labelToRemove: SubtitleLabel): void {
+    this.labelCount--;
+    this.removeComponent(labelToRemove);
   }
 
   public isEmpty(): boolean {
