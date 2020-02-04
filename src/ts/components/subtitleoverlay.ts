@@ -485,7 +485,7 @@ export class SubtitleRegionContainerManager {
 
     if (!this.subtitleRegionContainers[regionContainerId]) {
       const regionContainer = new SubtitleRegionContainer({
-        cssClasses
+        cssClasses,
       });
 
       this.subtitleRegionContainers[regionContainerId] = regionContainer;
