@@ -1,14 +1,19 @@
-import {SubtitleRegionContainer, SubtitleCueBoxContainer} from './subtitleoverlay';
+import { SubtitleRegionContainer, SubtitleCueBoxContainer } from './subtitleoverlay';
 import { VTTProperties, VTTRegionProperties } from 'bitmovin-player/types/subtitles/vtt/API';
 
-type Direction = 'top' | 'bottom' | 'left' | 'right';
+enum Direction {
+  Top = 'top',
+  Bottom = 'bottom',
+  Left = 'left',
+  Right = 'right'
+}
 
 const lineHeight = 28;
 
 const DirectionPair = new Map<Direction, Direction>([
-  ['top', 'bottom'],
-  ['left', 'right'],
-  ['right', 'left'],
+  [Direction.Top, Direction.Bottom],
+  [Direction.Left, Direction.Right],
+  [Direction.Right, Direction.Left],
 ]);
 
 /**
@@ -27,10 +32,12 @@ const setDefaultVttStyles = (cueContainer: SubtitleCueBoxContainer | SubtitleReg
  * https://w3.org/TR/webvtt1/#webvtt-cue-line-alignment
  */
 const setVttLineAlign = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContainer, {lineAlign}: VTTProperties, direction: Direction) => {
-  if (lineAlign != null && lineAlign === 'center') {
-    cueContainer.getDomElement().css(`margin-${direction}`, `${-lineHeight / 2}px`);
-  } else if (lineAlign != null && lineAlign === 'end') {
-    cueContainer.getDomElement().css(`margin-${direction}`, `${-lineHeight}px`);
+  switch (lineAlign) {
+    case 'center':
+      cueContainer.getDomElement().css(`margin-${direction}`, `${-lineHeight / 2}px`);
+      break;
+    case 'end':
+      cueContainer.getDomElement().css(`margin-${direction}`, `${-lineHeight}px`);
   }
 };
 
@@ -39,21 +46,23 @@ const setVttLineAlign = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionC
  * https://w3.org/TR/webvtt1/#webvtt-cue-line
  */
 const setVttLine = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContainer, vtt: VTTProperties, direction: Direction) => {
-  if (vtt.line != null && typeof vtt.line === 'number' && !vtt.snapToLines) {
-    cueContainer.getDomElement().css(direction, `${vtt.line}%`);
-    cueContainer.getDomElement().css(DirectionPair.get(direction), 'unset');
-
-    setVttLineAlign(cueContainer, vtt, direction);
-  } else if (vtt.line != null && typeof vtt.line === 'number' && vtt.snapToLines && vtt.line > 0) {
-    cueContainer.getDomElement().css(direction, `${vtt.line * lineHeight}px`);
-    cueContainer.getDomElement().css(DirectionPair.get(direction), 'unset');
-
-    setVttLineAlign(cueContainer, vtt, direction);
-  } else if (vtt.line != null && typeof vtt.line === 'number' && vtt.snapToLines && vtt.line < 0) {
-    cueContainer.getDomElement().css(DirectionPair.get(direction), `${vtt.line * -lineHeight}px`);
-    cueContainer.getDomElement().css(direction, 'unset');
-
-    setVttLineAlign(cueContainer, vtt, DirectionPair.get(direction));
+  if (vtt.line != 'auto' && typeof vtt.line === 'number') {
+    if (!vtt.snapToLines) {
+      cueContainer.getDomElement().css(direction, `${vtt.line}%`);
+      cueContainer.getDomElement().css(DirectionPair.get(direction), 'unset');
+  
+      setVttLineAlign(cueContainer, vtt, direction);
+    } else if (vtt.snapToLines && vtt.line > 0) {
+      cueContainer.getDomElement().css(direction, `${vtt.line * lineHeight}px`);
+      cueContainer.getDomElement().css(DirectionPair.get(direction), 'unset');
+  
+      setVttLineAlign(cueContainer, vtt, direction);
+    } else if (vtt.snapToLines && vtt.line < 0) {
+      cueContainer.getDomElement().css(DirectionPair.get(direction), `${vtt.line * -lineHeight}px`);
+      cueContainer.getDomElement().css(direction, 'unset');
+  
+      setVttLineAlign(cueContainer, vtt, DirectionPair.get(direction));
+    }
   }
 };
 
@@ -64,19 +73,17 @@ const setVttLine = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContai
 const setVttWritingDirection = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContainer, vtt: VTTProperties) => {
   if (vtt.vertical === '') {
     cueContainer.getDomElement().css('writing-mode', 'horizontal-tb');
-    setVttLine(cueContainer, vtt, 'top');
+    setVttLine(cueContainer, vtt, Direction.Top);
   } else if (vtt.vertical === 'lr') {
     cueContainer.getDomElement().css('writing-mode', 'vertical-lr');
     cueContainer.getDomElement().css('left', 'unset');
     cueContainer.getDomElement().css('right', '0');
-
-    setVttLine(cueContainer, vtt, 'right');
+    setVttLine(cueContainer, vtt, Direction.Right);
   } else if (vtt.vertical === 'rl') {
     cueContainer.getDomElement().css('writing-mode', 'vertical-rl');
     cueContainer.getDomElement().css('left', '0');
     cueContainer.getDomElement().css('right', 'unset');
-
-    setVttLine(cueContainer, vtt, 'left');
+    setVttLine(cueContainer, vtt, Direction.Left);
   }
 };
 
@@ -101,7 +108,6 @@ const setVttPositionAlign = (cueContainer: SubtitleCueBoxContainer | SubtitleReg
     default:
       cueContainer.getDomElement().css(direction, `${vtt.position}%`);
       cueContainer.getDomElement().css(DirectionPair.get(direction), 'auto');
-      break;
   }
 };
 
@@ -115,20 +121,22 @@ export const setVttCueBoxStyles = (cueContainer: SubtitleCueBoxContainer | Subti
   cueContainer.getDomElement().css('text-align', textAlign);
 
   // https://w3.org/TR/webvtt1/#webvtt-cue-size
-  const containerSize = vtt.size;
-  if (vtt.position !== 'auto' && vtt.vertical == null) {
-    cueContainer.getDomElement().css('width', `${containerSize}%`);
-    cueContainer.getDomElement().css('left', 'unset');
-    cueContainer.getDomElement().css('right', 'unset');
-    setVttPositionAlign(cueContainer, vtt, 'left');
-  } else if (vtt.position !== 'auto' && vtt.vertical != null) {
-    cueContainer.getDomElement().css('height', `${containerSize}%`);
-    setVttPositionAlign(cueContainer, vtt, 'top');
+  if (vtt.position !== 'auto') {
+    const containerSize = vtt.size;
+    if (vtt.vertical === '') {
+      cueContainer.getDomElement().css('width', `${containerSize}%`);
+      cueContainer.getDomElement().css('left', 'unset');
+      cueContainer.getDomElement().css('right', 'unset');
+      setVttPositionAlign(cueContainer, vtt, Direction.Left);
+    } else {
+      cueContainer.getDomElement().css('height', `${containerSize}%`);
+      setVttPositionAlign(cueContainer, vtt, Direction.Top);
+    }
   }
 };
 
 // https://www.w3.org/TR/webvtt1/#regions
-export const setVttRegionStyles = (regionContainer: SubtitleRegionContainer | SubtitleRegionContainer, region: VTTRegionProperties, overlaySize: {width: number, height: number}) => {
+export const setVttRegionStyles = (regionContainer: SubtitleRegionContainer, region: VTTRegionProperties, overlaySize: {width: number, height: number}) => {
   const regionPositionX = overlaySize.width * region.viewportAnchorX / 100 - ((overlaySize.width * region.width / 100) * region.regionAnchorX / 100);
   const regionPositionY = overlaySize.height * region.viewportAnchorY / 100 - ((region.lines * lineHeight) * region.regionAnchorY / 100);
   regionContainer.getDomElement().css('position', 'absolute');

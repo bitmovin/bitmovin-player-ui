@@ -1,10 +1,10 @@
-import {Container, ContainerConfig} from './container';
-import {UIInstanceManager} from '../uimanager';
-import {Label, LabelConfig} from './label';
-import {ComponentConfig, Component} from './component';
-import {ControlBar} from './controlbar';
+import { Container, ContainerConfig } from './container';
+import { UIInstanceManager } from '../uimanager';
+import { Label, LabelConfig } from './label';
+import { ComponentConfig, Component } from './component';
+import { ControlBar } from './controlbar';
 import { EventDispatcher } from '../eventdispatcher';
-import {DOM} from '../dom';
+import { DOM } from '../dom';
 import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { setVttCueBoxStyles, setVttRegionStyles } from './subtitlevtt';
@@ -494,7 +494,7 @@ export class SubtitleRegionContainerManager {
    * Removes a subtitle label from a container.
    */
   removeLabel(label: SubtitleLabel): void {
-    const regionName = label.vtt && label.vtt.region ? label.vtt.region.id : label.region || 'default';
+    const regionName = (label.vtt && label.vtt.region && label.vtt.region.id) ? label.vtt.region.id : label.region || 'default';
     this.subtitleRegionContainers[regionName].removeLabel(label);
 
     // Remove container if no more labels are displayed
@@ -536,7 +536,7 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
     this.addComponent(this.cueBoxContainers[id]);
     this.updateComponents();
 
-    if (labelToAdd.vtt.region && labelToAdd.vtt.region.scroll) {
+    if (labelToAdd.vtt.region && labelToAdd.vtt.region.scroll === 'up') {
       this.getDomElement().scrollTo(0, 9999);
     }
   }
