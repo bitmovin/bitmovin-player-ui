@@ -290,7 +290,7 @@ interface SubtitleLabelConfig extends LabelConfig {
   regionStyle?: string;
 }
 
-class SubtitleLabel extends Label<SubtitleLabelConfig> {
+export class SubtitleLabel extends Label<SubtitleLabelConfig> {
 
   constructor(config: SubtitleLabelConfig = {}) {
     super(config);
@@ -467,40 +467,64 @@ export class SubtitleRegionContainerManager {
    * @param label The subtitle label to wrap
    */
   addLabel(label: SubtitleLabel, overlaySize?: {width: number, height: number}): void {
-    const regionName = label.vtt && label.vtt.region ? label.vtt.region.id : label.region || 'default';
-    if (!this.subtitleRegionContainers[regionName]) {
+    let regionContainerId;
+    let regionName;
+
+    if (label.vtt) {
+      regionContainerId = label.vtt.region && label.vtt.region.id ? label.vtt.region.id : 'vtt';
+      regionName = 'vtt';
+    } else {
+      regionContainerId = regionName = label.region || 'default';
+    }
+
+    const cssClasses = [`subtitle-position-${regionName}`];
+
+    if (label.vtt && label.vtt.region) {
+      cssClasses.push(`vtt-region-${label.vtt.region.id}`);
+    }
+
+    if (!this.subtitleRegionContainers[regionContainerId]) {
       const regionContainer = new SubtitleRegionContainer({
-        cssClass: `subtitle-position-${regionName}`,
+        cssClasses
       });
 
-      this.subtitleRegionContainers[regionName] = regionContainer;
+      this.subtitleRegionContainers[regionContainerId] = regionContainer;
 
       if (label.regionStyle) {
         regionContainer.getDomElement().attr('style', label.regionStyle);
+      } else if (label.vtt && !label.vtt.region) {
+        regionContainer.getDomElement().css('position', 'unset');
       } else {
         // getDomElement needs to be called at least once to ensure the component exists
         regionContainer.getDomElement();
       }
 
-      for (const regionName in this.subtitleRegionContainers) {
-        this.subtitleOverlay.addComponent(this.subtitleRegionContainers[regionName]);
+      for (const regionContainerId in this.subtitleRegionContainers) {
+        this.subtitleOverlay.addComponent(this.subtitleRegionContainers[regionContainerId]);
       }
     }
 
-    this.subtitleRegionContainers[regionName].addLabel(label, overlaySize);
+    this.subtitleRegionContainers[regionContainerId].addLabel(label, overlaySize);
   }
 
   /**
    * Removes a subtitle label from a container.
    */
   removeLabel(label: SubtitleLabel): void {
-    const regionName = (label.vtt && label.vtt.region && label.vtt.region.id) ? label.vtt.region.id : label.region || 'default';
-    this.subtitleRegionContainers[regionName].removeLabel(label);
+    let regionContainerId;
+
+    if (label.vtt) {
+      regionContainerId = label.vtt.region && label.vtt.region.id ? label.vtt.region.id : 'vtt';
+    } else {
+      regionContainerId = label.region || 'default';
+    }
+
+    this.subtitleRegionContainers[regionContainerId].removeLabel(label);
 
     // Remove container if no more labels are displayed
-    if (this.subtitleRegionContainers[regionName].isEmpty()) {
-      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[regionName]);
-      delete this.subtitleRegionContainers[regionName];
+    if (this.subtitleRegionContainers[regionContainerId].isEmpty()) {
+      this.subtitleOverlay.removeComponent(this.subtitleRegionContainers[regionContainerId]);
+      delete this.subtitleRegionContainers[regionContainerId];
     }
   }
 
@@ -518,7 +542,6 @@ export class SubtitleRegionContainerManager {
 
 export class SubtitleRegionContainer extends Container<ContainerConfig> {
   private labelCount = 0;
-  private cueBoxContainers: {[key: string]: SubtitleCueBoxContainer} = {};
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -528,36 +551,16 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  private addCueBoxContainer(labelToAdd: SubtitleLabel) {
-    const id = labelToAdd.getConfig().id;
-    this.cueBoxContainers[id] = new SubtitleCueBoxContainer();
-    this.cueBoxContainers[id].addLabel(labelToAdd);
-    setVttCueBoxStyles(this.cueBoxContainers[id], labelToAdd.vtt);
-    this.addComponent(this.cueBoxContainers[id]);
-    this.updateComponents();
-
-    if (labelToAdd.vtt.region && labelToAdd.vtt.region.scroll === 'up') {
-      this.getDomElement().scrollTo(0, 9999);
-    }
-  }
-
-  private removeCueBoxContainer(labelToRemove: SubtitleLabel) {
-    const id = labelToRemove.getConfig().id;
-    this.cueBoxContainers[id].removeLabel(labelToRemove);
-    this.removeComponent(this.cueBoxContainers[id]);
-    delete this.cueBoxContainers[id];
-    this.updateComponents();
-  }
-
   addLabel(labelToAdd: SubtitleLabel, overlaySize?: {width: number, height: number}) {
     this.labelCount++;
 
     if (labelToAdd.vtt) {
+      debugger;
       if (labelToAdd.vtt.region && overlaySize) {
         setVttRegionStyles(this, labelToAdd.vtt.region, overlaySize);
       }
 
-      return this.addCueBoxContainer(labelToAdd);
+      setVttCueBoxStyles(labelToAdd, labelToAdd.vtt);
     }
 
     this.addComponent(labelToAdd);
@@ -566,39 +569,8 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
 
   removeLabel(labelToRemove: SubtitleLabel): void {
     this.labelCount--;
-
-    if (labelToRemove.vtt) {
-      return this.removeCueBoxContainer(labelToRemove);
-    }
-
     this.removeComponent(labelToRemove);
     this.updateComponents();
-  }
-
-  public isEmpty(): boolean {
-    return this.labelCount === 0;
-  }
-}
-
-export class SubtitleCueBoxContainer extends Container<ContainerConfig> {
-  private labelCount = 0;
-
-  constructor(config: ContainerConfig = {}) {
-    super(config);
-
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['subtitle-cue-container'],
-    }, this.config);
-  }
-
-  addLabel(labelToAdd: SubtitleLabel) {
-    this.labelCount++;
-    this.addComponent(labelToAdd);
-  }
-
-  removeLabel(labelToRemove: SubtitleLabel): void {
-    this.labelCount--;
-    this.removeComponent(labelToRemove);
   }
 
   public isEmpty(): boolean {

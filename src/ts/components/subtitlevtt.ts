@@ -1,14 +1,15 @@
-import { SubtitleRegionContainer, SubtitleCueBoxContainer } from './subtitleoverlay';
+import { SubtitleRegionContainer, SubtitleLabel } from './subtitleoverlay';
 import { VTTProperties, VTTRegionProperties } from 'bitmovin-player/types/subtitles/vtt/API';
+
+// Our default height of a line
+const lineHeight = 28;
 
 enum Direction {
   Top = 'top',
   Bottom = 'bottom',
   Left = 'left',
   Right = 'right'
-}
-
-const lineHeight = 28;
+};
 
 const DirectionPair = new Map<Direction, Direction>([
   [Direction.Top, Direction.Bottom],
@@ -20,18 +21,25 @@ const DirectionPair = new Map<Direction, Direction>([
  * Sets the default standardized styles for the Cue Box
  * https://w3.org/TR/webvtt1/#applying-css-properties
  */
-const setDefaultVttStyles = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContainer) => {
-  cueContainer.getDomElement().css('unicode-bidi', 'plaintext');
-  cueContainer.getDomElement().css('overflow-wrap', 'break-word');
-  cueContainer.getDomElement().css('text-wrap', 'balance');
-  cueContainer.getDomElement().css('white-space', 'pre-line');
+const setDefaultVttStyles = (cueContainer: SubtitleLabel) => {
+  if (cueContainer.vtt.region) {
+    cueContainer.getDomElement().css('position', 'relative');
+    cueContainer.getDomElement().css('unicode-bidi', 'plaintext');
+  } else {
+    cueContainer.getDomElement().css('position', 'absolute');
+    cueContainer.getDomElement().css('overflow-wrap', 'break-word');
+    cueContainer.getDomElement().css('overflow', 'hidden');
+    cueContainer.getDomElement().css('display', 'inline-flex');
+    cueContainer.getDomElement().css('flex-flow', 'column');
+    cueContainer.getDomElement().css('justify-content', 'flex-end');
+  }
 };
 
 /**
  * Align the Cue Box's line
  * https://w3.org/TR/webvtt1/#webvtt-cue-line-alignment
  */
-const setVttLineAlign = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContainer, {lineAlign}: VTTProperties, direction: Direction) => {
+const setVttLineAlign = (cueContainer: SubtitleLabel, {lineAlign}: VTTProperties, direction: Direction) => {
   switch (lineAlign) {
     case 'center':
       cueContainer.getDomElement().css(`margin-${direction}`, `${-lineHeight / 2}px`);
@@ -45,20 +53,20 @@ const setVttLineAlign = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionC
  * Defines the positioning of the Cue Box
  * https://w3.org/TR/webvtt1/#webvtt-cue-line
  */
-const setVttLine = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContainer, vtt: VTTProperties, direction: Direction) => {
-  if (vtt.line != 'auto' && typeof vtt.line === 'number') {
+const setVttLine = (cueContainer: SubtitleLabel, vtt: VTTProperties, direction: Direction) => {
+  if (vtt.line != 'auto') {
     if (!vtt.snapToLines) {
-      cueContainer.getDomElement().css(direction, `${vtt.line}%`);
+      cueContainer.getDomElement().css(direction, vtt.line as string);
       cueContainer.getDomElement().css(DirectionPair.get(direction), 'unset');
   
       setVttLineAlign(cueContainer, vtt, direction);
     } else if (vtt.snapToLines && vtt.line > 0) {
-      cueContainer.getDomElement().css(direction, `${vtt.line * lineHeight}px`);
+      cueContainer.getDomElement().css(direction, `${vtt.line as number * lineHeight}px`);
       cueContainer.getDomElement().css(DirectionPair.get(direction), 'unset');
   
       setVttLineAlign(cueContainer, vtt, direction);
     } else if (vtt.snapToLines && vtt.line < 0) {
-      cueContainer.getDomElement().css(DirectionPair.get(direction), `${vtt.line * -lineHeight}px`);
+      cueContainer.getDomElement().css(DirectionPair.get(direction), `${vtt.line as number * -lineHeight}px`);
       cueContainer.getDomElement().css(direction, 'unset');
   
       setVttLineAlign(cueContainer, vtt, DirectionPair.get(direction));
@@ -70,9 +78,11 @@ const setVttLine = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContai
  * Defines the writing direction of the Cue Box
  * https://w3.org/TR/webvtt1/#webvtt-cue-writing-direction
  */
-const setVttWritingDirection = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContainer, vtt: VTTProperties) => {
+const setVttWritingDirection = (cueContainer: SubtitleLabel, vtt: VTTProperties) => {
   if (vtt.vertical === '') {
     cueContainer.getDomElement().css('writing-mode', 'horizontal-tb');
+    cueContainer.getDomElement().css('left', '0');
+    cueContainer.getDomElement().css('bottom', '0');
     setVttLine(cueContainer, vtt, Direction.Top);
   } else if (vtt.vertical === 'lr') {
     cueContainer.getDomElement().css('writing-mode', 'vertical-lr');
@@ -91,7 +101,7 @@ const setVttWritingDirection = (cueContainer: SubtitleCueBoxContainer | Subtitle
  * Defines the Cue position alignment
  * https://w3.org/TR/webvtt1/#webvtt-cue-position-alignment
  */
-const setVttPositionAlign = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContainer, vtt: VTTProperties, direction: Direction) => {
+const setVttPositionAlign = (cueContainer: SubtitleLabel, vtt: VTTProperties, direction: Direction) => {
   switch (vtt.positionAlign) {
     case 'line-left':
       cueContainer.getDomElement().css(direction, `${vtt.position}%`);
@@ -111,7 +121,8 @@ const setVttPositionAlign = (cueContainer: SubtitleCueBoxContainer | SubtitleReg
   }
 };
 
-export const setVttCueBoxStyles = (cueContainer: SubtitleCueBoxContainer | SubtitleRegionContainer, vtt: VTTProperties) => {
+export const setVttCueBoxStyles = (cueContainer: SubtitleLabel, vtt: VTTProperties) => {
+  console.warn(vtt);
   setDefaultVttStyles(cueContainer);
 
   setVttWritingDirection(cueContainer, vtt);
@@ -120,18 +131,14 @@ export const setVttCueBoxStyles = (cueContainer: SubtitleCueBoxContainer | Subti
   const textAlign = vtt.align === 'middle' ? 'center' : vtt.align;
   cueContainer.getDomElement().css('text-align', textAlign);
 
+  const containerSize = vtt.size;
   // https://w3.org/TR/webvtt1/#webvtt-cue-size
-  if (vtt.position !== 'auto') {
-    const containerSize = vtt.size;
-    if (vtt.vertical === '') {
-      cueContainer.getDomElement().css('width', `${containerSize}%`);
-      cueContainer.getDomElement().css('left', 'unset');
-      cueContainer.getDomElement().css('right', 'unset');
-      setVttPositionAlign(cueContainer, vtt, Direction.Left);
-    } else {
-      cueContainer.getDomElement().css('height', `${containerSize}%`);
-      setVttPositionAlign(cueContainer, vtt, Direction.Top);
-    }
+  if (vtt.vertical === '') {
+    cueContainer.getDomElement().css('width', `${containerSize}%`);
+    setVttPositionAlign(cueContainer, vtt, Direction.Left);
+  } else {
+    cueContainer.getDomElement().css('height', `${containerSize}%`);
+    setVttPositionAlign(cueContainer, vtt, Direction.Top);
   }
 };
 
