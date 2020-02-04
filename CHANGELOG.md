@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- Subtitle stlying with VTT properties and regions
+- Support for regions in VTT subtitles
 
 ### Fixed
 - UI hiding when actively using seek or volume slider

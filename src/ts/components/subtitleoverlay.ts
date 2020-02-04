@@ -7,7 +7,7 @@ import { EventDispatcher } from '../eventdispatcher';
 import { DOM } from '../dom';
 import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
-import { setVttCueBoxStyles, setVttRegionStyles } from './subtitlevtt';
+import { VttUtils } from '../vttutils';
 import { VTTProperties } from 'bitmovin-player/types/subtitles/vtt/API';
 
 /**
@@ -466,7 +466,7 @@ export class SubtitleRegionContainerManager {
    * If the subtitle has positioning information it is added to the container.
    * @param label The subtitle label to wrap
    */
-  addLabel(label: SubtitleLabel, overlaySize?: {width: number, height: number}): void {
+  addLabel(label: SubtitleLabel, overlaySize?: { width: number, height: number }): void {
     let regionContainerId;
     let regionName;
 
@@ -493,6 +493,10 @@ export class SubtitleRegionContainerManager {
       if (label.regionStyle) {
         regionContainer.getDomElement().attr('style', label.regionStyle);
       } else if (label.vtt && !label.vtt.region) {
+        /**
+         * If there is no region present to wrap the Cue Box, the Cue box becomes the
+         * region itself. Therefore the positioning values have to come from the box.
+         */
         regionContainer.getDomElement().css('position', 'unset');
       } else {
         // getDomElement needs to be called at least once to ensure the component exists
@@ -551,16 +555,15 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  addLabel(labelToAdd: SubtitleLabel, overlaySize?: {width: number, height: number}) {
+  addLabel(labelToAdd: SubtitleLabel, overlaySize?: { width: number, height: number }) {
     this.labelCount++;
 
     if (labelToAdd.vtt) {
-      debugger;
       if (labelToAdd.vtt.region && overlaySize) {
-        setVttRegionStyles(this, labelToAdd.vtt.region, overlaySize);
+        VttUtils.setVttRegionStyles(this, labelToAdd.vtt.region, overlaySize);
       }
 
-      setVttCueBoxStyles(labelToAdd, labelToAdd.vtt);
+      VttUtils.setVttCueBoxStyles(labelToAdd, labelToAdd.vtt);
     }
 
     this.addComponent(labelToAdd);
