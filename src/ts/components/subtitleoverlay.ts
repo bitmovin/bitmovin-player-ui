@@ -563,7 +563,7 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
         VttUtils.setVttRegionStyles(this, labelToAdd.vtt.region, overlaySize);
       }
 
-      VttUtils.setVttCueBoxStyles(labelToAdd, labelToAdd.vtt);
+      VttUtils.setVttCueBoxStyles(labelToAdd);
     }
 
     this.addComponent(labelToAdd);
