@@ -8,8 +8,8 @@ enum Direction {
   Top = 'top',
   Bottom = 'bottom',
   Left = 'left',
-  Right = 'right'
-};
+  Right = 'right',
+}
 
 const DirectionPair = new Map<Direction, Direction>([
   [Direction.Top, Direction.Bottom],
@@ -54,7 +54,7 @@ const setVttLineAlign = (cueContainer: SubtitleLabel, { lineAlign }: VTTProperti
  * https://w3.org/TR/webvtt1/#webvtt-cue-line
  */
 const setVttLine = (cueContainer: SubtitleLabel, vtt: VTTProperties, direction: Direction) => {
-  if (vtt.line != 'auto') {
+  if (vtt.line !== 'auto') {
     if (!vtt.snapToLines) {
       cueContainer.getDomElement().css(direction, vtt.line as string);
       cueContainer.getDomElement().css(DirectionPair.get(direction), 'unset');
