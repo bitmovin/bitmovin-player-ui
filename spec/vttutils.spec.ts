@@ -4,10 +4,6 @@ import { VTTRegionProperties, VTTProperties } from 'bitmovin-player';
 import { MockHelper } from './helper/MockHelper';
 
 describe('Vtt Utils', () => {
-  beforeEach(() => {
-    // Setup DOM Mock
-
-  });
   describe('Vtt Region', () => {
     it('should set region css properties', () => {
         const mockRegionContainer = generateSubtitleRegionContainerMock();
