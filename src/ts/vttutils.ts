@@ -58,15 +58,12 @@ const setVttLine = (cueContainerDom: DOM, vtt: VTTProperties, direction: Directi
   if (vtt.line !== 'auto') {
     if (!vtt.snapToLines) {
       cueContainerDom.css(direction, vtt.line as string);
-      cueContainerDom.css(DirectionPair.get(direction), 'unset');
       setVttLineAlign(cueContainerDom, vtt, direction);
     } else if (vtt.snapToLines && vtt.line > 0) {
       cueContainerDom.css(direction, `${vtt.line as number * lineHeight}px`);
-      cueContainerDom.css(DirectionPair.get(direction), 'unset');
       setVttLineAlign(cueContainerDom, vtt, direction);
     } else if (vtt.snapToLines && vtt.line < 0) {
       cueContainerDom.css(DirectionPair.get(direction), `${vtt.line as number * -lineHeight}px`);
-      cueContainerDom.css(direction, 'unset');
       setVttLineAlign(cueContainerDom, vtt, DirectionPair.get(direction));
     }
   }
@@ -82,13 +79,11 @@ const setVttWritingDirection = (cueContainerDom: DOM, vtt: VTTProperties) => {
     setVttLine(cueContainerDom, vtt, Direction.Top);
   } else if (vtt.vertical === 'lr') {
     cueContainerDom.css('writing-mode', 'vertical-lr');
-    cueContainerDom.css('left', 'unset');
-    cueContainerDom.css('right', '0');
+    cueContainerDom.css(Direction.Right, '0');
     setVttLine(cueContainerDom, vtt, Direction.Right);
   } else if (vtt.vertical === 'rl') {
     cueContainerDom.css('writing-mode', 'vertical-rl');
-    cueContainerDom.css('left', '0');
-    cueContainerDom.css('right', 'unset');
+    cueContainerDom.css(Direction.Left, '0');
     setVttLine(cueContainerDom, vtt, Direction.Left);
   }
 };
@@ -98,22 +93,27 @@ const setVttWritingDirection = (cueContainerDom: DOM, vtt: VTTProperties) => {
  * https://w3.org/TR/webvtt1/#webvtt-cue-position-alignment
  */
 const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction: Direction) => {
-  switch (vtt.positionAlign) {
-    case 'line-left':
-      cueContainerDom.css(direction, `${vtt.position}%`);
-      cueContainerDom.css(DirectionPair.get(direction), 'auto');
-      break;
-    case 'center':
-      cueContainerDom.css(direction, `${vtt.position as number - (vtt.size || 100)}%`);
-      cueContainerDom.css(DirectionPair.get(direction), 'auto');
-      break;
-    case 'line-right':
-      cueContainerDom.css(direction, 'auto');
-      cueContainerDom.css(DirectionPair.get(direction), `${vtt.position}%`);
-      break;
-    default:
-      cueContainerDom.css(direction, `${vtt.position}%`);
-      cueContainerDom.css(DirectionPair.get(direction), 'auto');
+  // https://www.w3.org/TR/webvtt1/#webvtt-cue-position
+  if (vtt.position === 'auto') {
+    cueContainerDom.css(direction, '0');
+
+    if (vtt.vertical === '') {
+      cueContainerDom.css(Direction.Bottom, '0');
+    } 
+  } else {
+    switch (vtt.positionAlign) {
+      case 'line-left':
+        cueContainerDom.css(direction, `${vtt.position}%`);
+        cueContainerDom.css(DirectionPair.get(direction), 'auto');
+        break;
+      case 'center':
+        cueContainerDom.css(direction, `${vtt.position - vtt.size}%`);
+        cueContainerDom.css(DirectionPair.get(direction), 'auto');
+        break;
+      case 'line-right':
+        cueContainerDom.css(direction, 'auto');
+        cueContainerDom.css(DirectionPair.get(direction), `${vtt.position}%`);
+    }
   }
 };
 
@@ -127,21 +127,15 @@ export namespace VttUtils {
 
     // https://w3.org/TR/webvtt1/#webvtt-cue-text-alignment
     const textAlign = vtt.align === 'middle' ? 'center' : vtt.align;
-    cueContainer.getDomElement().css('text-align', textAlign);
-
-    // https://www.w3.org/TR/webvtt1/#webvtt-cue-position
-    if (vtt.position === 'auto') {
-      cueContainer.getDomElement().css('left', '0');
-      cueContainer.getDomElement().css('bottom', '0');
-    }
+    cueContainerDom.css('text-align', textAlign);
 
     // https://w3.org/TR/webvtt1/#webvtt-cue-size
     const containerSize = vtt.size;
     if (vtt.vertical === '') {
-      cueContainer.getDomElement().css('width', `${containerSize}%`);
+      cueContainerDom.css('width', `${containerSize}%`);
       setVttPositionAlign(cueContainerDom, vtt, Direction.Left);
     } else {
-      cueContainer.getDomElement().css('height', `${containerSize}%`);
+      cueContainerDom.css('height', `${containerSize}%`);
       setVttPositionAlign(cueContainerDom, vtt, Direction.Top);
     }
   };
@@ -155,11 +149,11 @@ export namespace VttUtils {
     const regionPositionY = overlaySize.height * region.viewportAnchorY / 100 - ((region.lines * lineHeight) * region.regionAnchorY / 100);
     regionContainerDom.css('position', 'absolute');
     regionContainerDom.css('overflow', 'hidden');
-    regionContainerDom.css('width', `${region && region.width ? region.width : 100}%`);
-    regionContainerDom.css('left', `${regionPositionX}px`);
-    regionContainerDom.css('right', 'unset');
-    regionContainerDom.css('top', `${regionPositionY}px`);
-    regionContainerDom.css('bottom', 'unset');
-    regionContainerDom.css('height', `${region && region.lines ? region.lines * lineHeight : 3 * lineHeight}px`);
+    regionContainerDom.css('width', `${region.width}%`);
+    regionContainerDom.css(Direction.Left, `${regionPositionX}px`);
+    regionContainerDom.css(Direction.Right, 'unset');
+    regionContainerDom.css(Direction.Top, `${regionPositionY}px`);
+    regionContainerDom.css(Direction.Bottom, 'unset');
+    regionContainerDom.css('height', `${region.lines * lineHeight}px`);
   };
 }
