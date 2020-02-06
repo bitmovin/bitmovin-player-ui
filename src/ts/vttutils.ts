@@ -99,7 +99,7 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
 
     if (vtt.vertical === '') {
       cueContainerDom.css(Direction.Bottom, '0');
-    } 
+    }
   } else {
     switch (vtt.positionAlign) {
       case 'line-left':
