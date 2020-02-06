@@ -76,14 +76,17 @@ const setVttLine = (cueContainerDom: DOM, vtt: VTTProperties, direction: Directi
 const setVttWritingDirection = (cueContainerDom: DOM, vtt: VTTProperties) => {
   if (vtt.vertical === '') {
     cueContainerDom.css('writing-mode', 'horizontal-tb');
+    cueContainerDom.css(Direction.Bottom, '0');
     setVttLine(cueContainerDom, vtt, Direction.Top);
   } else if (vtt.vertical === 'lr') {
     cueContainerDom.css('writing-mode', 'vertical-lr');
     cueContainerDom.css(Direction.Right, '0');
+    cueContainerDom.css(Direction.Top, '0');
     setVttLine(cueContainerDom, vtt, Direction.Right);
   } else if (vtt.vertical === 'rl') {
     cueContainerDom.css('writing-mode', 'vertical-rl');
     cueContainerDom.css(Direction.Left, '0');
+    cueContainerDom.css(Direction.Top, '0');
     setVttLine(cueContainerDom, vtt, Direction.Left);
   }
 };
@@ -96,10 +99,6 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
   // https://www.w3.org/TR/webvtt1/#webvtt-cue-position
   if (vtt.position === 'auto') {
     cueContainerDom.css(direction, '0');
-
-    if (vtt.vertical === '') {
-      cueContainerDom.css(Direction.Bottom, '0');
-    }
   } else {
     switch (vtt.positionAlign) {
       case 'line-left':
@@ -113,6 +112,9 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
       case 'line-right':
         cueContainerDom.css(direction, 'auto');
         cueContainerDom.css(DirectionPair.get(direction), `${vtt.position}%`);
+        break;
+      default:
+        cueContainerDom.css(direction, `${vtt.position}%`);
     }
   }
 };
