@@ -50,6 +50,7 @@ export namespace MockHelper {
       html: jest.fn(),
       css: jest.fn(),
       width: jest.fn(),
+      height: jest.fn()
     }));
 
     return new DOMClass();
