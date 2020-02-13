@@ -181,6 +181,13 @@ export class DOM {
   }
 
   /**
+   * Focuses to the first input element
+   */
+  scrollTo(x: number, y: number) {
+    this.elements[0].scrollTo(x, y);
+  }
+
+  /**
    * Returns a string of the inner HTML content of the first element.
    */
   html(): string;

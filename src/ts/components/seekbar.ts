@@ -635,7 +635,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     let mouseTouchMoveHandler = (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
       // Avoid propagation to VR handler
-      e.stopPropagation();
+      if (this.player.vr != null) {
+        e.stopPropagation();
+      }
 
       let targetPercentage = 100 * this.getOffset(e);
       this.setSeekPosition(targetPercentage);
@@ -671,7 +673,9 @@ export class SeekBar extends Component<SeekBarConfig> {
       // Prevent selection of DOM elements (also prevents mousedown if current event is touchstart)
       e.preventDefault();
       // Avoid propagation to VR handler
-      e.stopPropagation();
+      if (this.player.vr != null) {
+        e.stopPropagation();
+      }
 
       this.setSeeking(true); // Set seeking class on DOM element
       seeking = true; // Set seek tracking flag
@@ -689,10 +693,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       e.preventDefault();
 
       if (seeking) {
-        // During a seek (when mouse is down or touch move active), we need to stop propagation to avoid
-        // the VR viewport reacting to the moves.
-        e.stopPropagation();
-        // Because the stopped propagation inhibits the event on the document, we need to call it from here
         mouseTouchMoveHandler(e);
       }
 

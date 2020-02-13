@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.10.0]
+
+### Added
+- Support for regions in VTT subtitles
+
+### Fixed
+- UI hiding when actively using seek or volume slider
+- Empty background boxes with TTML subtitles on Chromecast
+
 ## [3.9.2]
 
 ### Added
