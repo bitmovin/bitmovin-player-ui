@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - UI hiding when actively using seek or volume slider
 - Empty background boxes with TTML subtitles on Chromecast
-- Default audio track not highlighted in AudioTrackListBox
+- Default selection not highlighted in AudioTrackListBox and SubtitleListBox
 
 ## [3.9.2]
 
