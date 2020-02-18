@@ -24,7 +24,6 @@ export class SubtitleSwitchHandler {
     this.bindSelectionEvent();
     this.bindPlayerEvents();
     this.refreshSubtitles();
-    this.selectCurrentSubtitle();
   }
 
   private bindSelectionEvent(): void {
@@ -96,5 +95,6 @@ export class SubtitleSwitchHandler {
     this.listElement.synchronizeItems([
       offListItem, ...subtitles.map(subtitleToListItem),
     ]);
+    this.selectCurrentSubtitle();
   };
 }
