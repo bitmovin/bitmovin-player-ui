@@ -34,8 +34,8 @@ describe('Vtt Utils', () => {
 
       VttUtils.setVttCueBoxStyles(mockRegionContainer);
       
-      expect(spyCss).toHaveBeenCalledTimes(11);
-      expect(spyCss).toHaveBeenNthCalledWith(9, 'text-align', 'left');
+      expect(spyCss).toHaveBeenCalledTimes(10);
+      expect(spyCss).toHaveBeenNthCalledWith(8, 'text-align', 'left');
     });
 
     describe('Default Cue Box Styles', () => {
@@ -47,13 +47,12 @@ describe('Vtt Utils', () => {
 
         VttUtils.setVttCueBoxStyles(mockRegionContainer);
 
-        expect(spyCss).toHaveBeenCalledTimes(11);
+        expect(spyCss).toHaveBeenCalledTimes(10);
         expect(spyCss).toHaveBeenNthCalledWith(1, 'position', 'absolute');
         expect(spyCss).toHaveBeenNthCalledWith(2, 'overflow-wrap', 'break-word');
         expect(spyCss).toHaveBeenNthCalledWith(3, 'overflow', 'hidden');
-        expect(spyCss).toHaveBeenNthCalledWith(4, 'display', 'inline-flex');
-        expect(spyCss).toHaveBeenNthCalledWith(5, 'flex-flow', 'column');
-        expect(spyCss).toHaveBeenNthCalledWith(6, 'justify-content', 'flex-end');
+        expect(spyCss).toHaveBeenNthCalledWith(4, 'flex-flow', 'column');
+        expect(spyCss).toHaveBeenNthCalledWith(5, 'display', 'inline-flex');
       });
 
       it('should set default cue box css properties with region', () => {
@@ -64,9 +63,10 @@ describe('Vtt Utils', () => {
 
         VttUtils.setVttCueBoxStyles(mockRegionContainer);
 
-        expect(spyCss).toHaveBeenCalledTimes(7);
+        expect(spyCss).toHaveBeenCalledTimes(8);
         expect(spyCss).toHaveBeenNthCalledWith(1, 'position', 'relative');
         expect(spyCss).toHaveBeenNthCalledWith(2, 'unicode-bidi', 'plaintext');
+        expect(spyCss).toHaveBeenNthCalledWith(3, 'display', 'inline-flex');
       });
     });
 
@@ -80,8 +80,8 @@ describe('Vtt Utils', () => {
   
           VttUtils.setVttCueBoxStyles(mockRegionContainer);
   
-          expect(spyCss).toHaveBeenCalledTimes(11);
-          expect(spyCss).toHaveBeenNthCalledWith(7, 'writing-mode', 'horizontal-tb');
+          expect(spyCss).toHaveBeenCalledTimes(10);
+          expect(spyCss).toHaveBeenNthCalledWith(6, 'writing-mode', 'horizontal-tb');
         });
 
         describe('Line Positioning', () => {
@@ -93,7 +93,7 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
     
-            expect(spyCss).toHaveBeenCalledTimes(11);
+            expect(spyCss).toHaveBeenCalledTimes(10);
           });
 
           it('should set percentage line positioning', () => {
@@ -104,8 +104,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(9, 'top', '50%');
+            expect(spyCss).toHaveBeenCalledTimes(11);
+            expect(spyCss).toHaveBeenNthCalledWith(8, 'top', '50%');
           });
 
           it('should set positive line positioning', () => {
@@ -116,8 +116,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(9, 'top', '112px');
+            expect(spyCss).toHaveBeenCalledTimes(11);
+            expect(spyCss).toHaveBeenNthCalledWith(8, 'top', '112px');
           });
 
           it('should set negative line positioning', () => {
@@ -128,8 +128,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(9, 'bottom', '112px');
+            expect(spyCss).toHaveBeenCalledTimes(11);
+            expect(spyCss).toHaveBeenNthCalledWith(8, 'bottom', '112px');
           });
 
           describe('Line Alignment', () => {
@@ -141,7 +141,7 @@ describe('Vtt Utils', () => {
       
               VttUtils.setVttCueBoxStyles(mockRegionContainer);
               
-              expect(spyCss).toHaveBeenCalledTimes(12);
+              expect(spyCss).toHaveBeenCalledTimes(11);
             });
 
             it('should do center line alignment', () => {
@@ -152,8 +152,8 @@ describe('Vtt Utils', () => {
       
               VttUtils.setVttCueBoxStyles(mockRegionContainer);
               
-              expect(spyCss).toHaveBeenCalledTimes(13);
-              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-top', '-14px');
+              expect(spyCss).toHaveBeenCalledTimes(12);
+              expect(spyCss).toHaveBeenNthCalledWith(9, 'margin-top', '-14px');
             });
 
             it('should do end line alignment', () => {
@@ -164,8 +164,8 @@ describe('Vtt Utils', () => {
       
               VttUtils.setVttCueBoxStyles(mockRegionContainer);
               
-              expect(spyCss).toHaveBeenCalledTimes(13);
-              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-top', '-28px');
+              expect(spyCss).toHaveBeenCalledTimes(12);
+              expect(spyCss).toHaveBeenNthCalledWith(9, 'margin-top', '-28px');
             });
           })
         });
@@ -180,9 +180,9 @@ describe('Vtt Utils', () => {
   
           VttUtils.setVttCueBoxStyles(mockRegionContainer);
           
-          expect(spyCss).toHaveBeenCalledTimes(12);
-          expect(spyCss).toHaveBeenNthCalledWith(7, 'writing-mode', 'vertical-lr');
-          expect(spyCss).toHaveBeenNthCalledWith(8, 'right', '0');
+          expect(spyCss).toHaveBeenCalledTimes(11);
+          expect(spyCss).toHaveBeenNthCalledWith(6, 'writing-mode', 'vertical-lr');
+          expect(spyCss).toHaveBeenNthCalledWith(7, 'right', '0');
         });
 
         describe('Line positioning', () => {
@@ -194,7 +194,7 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(12);
+            expect(spyCss).toHaveBeenCalledTimes(11);
           });
 
           it('should set percentage line positioning', () => {
@@ -205,8 +205,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(13);
-            expect(spyCss).toHaveBeenNthCalledWith(10, 'right', '50%');
+            expect(spyCss).toHaveBeenCalledTimes(12);
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'right', '50%');
           });
 
           it('should set positive line positioning', () => {
@@ -217,8 +217,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(13);
-            expect(spyCss).toHaveBeenNthCalledWith(10, 'right', '112px');
+            expect(spyCss).toHaveBeenCalledTimes(12);
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'right', '112px');
           });
 
           it('should set negative line positioning', () => {
@@ -229,8 +229,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(13);
-            expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '112px');
+            expect(spyCss).toHaveBeenCalledTimes(12);
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'left', '112px');
           });
 
           describe('Line alignment', () => {
@@ -242,7 +242,7 @@ describe('Vtt Utils', () => {
       
               VttUtils.setVttCueBoxStyles(mockRegionContainer);
               
-              expect(spyCss).toHaveBeenCalledTimes(13);
+              expect(spyCss).toHaveBeenCalledTimes(12);
             });
 
             it('should do center line alignment', () => {
@@ -253,8 +253,8 @@ describe('Vtt Utils', () => {
       
               VttUtils.setVttCueBoxStyles(mockRegionContainer);
               
-              expect(spyCss).toHaveBeenCalledTimes(14);
-              expect(spyCss).toHaveBeenNthCalledWith(11, 'margin-right', '-14px');
+              expect(spyCss).toHaveBeenCalledTimes(13);
+              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-right', '-14px');
             });
 
             it('should do end line alignment', () => {
@@ -265,8 +265,8 @@ describe('Vtt Utils', () => {
       
               VttUtils.setVttCueBoxStyles(mockRegionContainer);
               
-              expect(spyCss).toHaveBeenCalledTimes(14);
-              expect(spyCss).toHaveBeenNthCalledWith(11, 'margin-right', '-28px');
+              expect(spyCss).toHaveBeenCalledTimes(13);
+              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-right', '-28px');
             });
           })
         });
@@ -281,9 +281,9 @@ describe('Vtt Utils', () => {
   
           VttUtils.setVttCueBoxStyles(mockRegionContainer);
   
-          expect(spyCss).toHaveBeenCalledTimes(12);
-          expect(spyCss).toHaveBeenNthCalledWith(7, 'writing-mode', 'vertical-rl');
-          expect(spyCss).toHaveBeenNthCalledWith(8, 'left', '0');
+          expect(spyCss).toHaveBeenCalledTimes(11);
+          expect(spyCss).toHaveBeenNthCalledWith(6, 'writing-mode', 'vertical-rl');
+          expect(spyCss).toHaveBeenNthCalledWith(7, 'left', '0');
         });
 
         describe('Line positioning', () => {
@@ -295,7 +295,7 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
     
-            expect(spyCss).toHaveBeenCalledTimes(12);
+            expect(spyCss).toHaveBeenCalledTimes(11);
           });
 
           it('should set percentage line positioning', () => {
@@ -306,8 +306,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(13);
-            expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '50%');
+            expect(spyCss).toHaveBeenCalledTimes(12);
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'left', '50%');
           });
 
           it('should set positive line positioning', () => {
@@ -318,8 +318,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(13);
-            expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '112px');
+            expect(spyCss).toHaveBeenCalledTimes(12);
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'left', '112px');
           });
 
           it('should set negative line positioning', () => {
@@ -330,8 +330,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(13);
-            expect(spyCss).toHaveBeenNthCalledWith(10, 'right', '112px');
+            expect(spyCss).toHaveBeenCalledTimes(12);
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'right', '112px');
           });
 
           describe('Line alignment', () => {
@@ -343,7 +343,7 @@ describe('Vtt Utils', () => {
       
               VttUtils.setVttCueBoxStyles(mockRegionContainer);
               
-              expect(spyCss).toHaveBeenCalledTimes(13);
+              expect(spyCss).toHaveBeenCalledTimes(12);
             });
 
             it('should do center line alignment', () => {
@@ -354,8 +354,8 @@ describe('Vtt Utils', () => {
       
               VttUtils.setVttCueBoxStyles(mockRegionContainer);
               
-              expect(spyCss).toHaveBeenCalledTimes(14);
-              expect(spyCss).toHaveBeenNthCalledWith(11, 'margin-left', '-14px');
+              expect(spyCss).toHaveBeenCalledTimes(13);
+              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-left', '-14px');
             });
 
             it('should do end line alignment', () => {
@@ -366,8 +366,8 @@ describe('Vtt Utils', () => {
       
               VttUtils.setVttCueBoxStyles(mockRegionContainer);
               
-              expect(spyCss).toHaveBeenCalledTimes(14);
-              expect(spyCss).toHaveBeenNthCalledWith(11, 'margin-left', '-28px');
+              expect(spyCss).toHaveBeenCalledTimes(13);
+              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-left', '-28px');
             });
           })
         });
@@ -384,8 +384,8 @@ describe('Vtt Utils', () => {
   
           VttUtils.setVttCueBoxStyles(mockRegionContainer);
           
-          expect(spyCss).toHaveBeenCalledTimes(11);
-          expect(spyCss).toHaveBeenNthCalledWith(10, 'width', '100%');
+          expect(spyCss).toHaveBeenCalledTimes(10);
+          expect(spyCss).toHaveBeenNthCalledWith(9, 'width', '100%');
         });
 
         describe('Position Align', () => {
@@ -397,8 +397,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(11);
-            expect(spyCss).toHaveBeenNthCalledWith(11, 'left', '0');
+            expect(spyCss).toHaveBeenCalledTimes(10);
+            expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '0');
           });
           
           it('should set position', () => {
@@ -410,7 +410,7 @@ describe('Vtt Utils', () => {
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
             expect(spyCss).toHaveBeenCalledTimes(11);
-            expect(spyCss).toHaveBeenNthCalledWith(11, 'left', '50%');
+            expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '50%');
           });
 
           it('should set left position align', () => {
@@ -422,8 +422,8 @@ describe('Vtt Utils', () => {
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
             expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(11, 'left', '30%');
-            expect(spyCss).toHaveBeenNthCalledWith(12, 'right', 'auto');
+            expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '30%');
+            expect(spyCss).toHaveBeenNthCalledWith(11, 'right', 'auto');
           });
 
           it('should set center position align', () => {
@@ -435,8 +435,8 @@ describe('Vtt Utils', () => {
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
             expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(11, 'left', '-70%');
-            expect(spyCss).toHaveBeenNthCalledWith(12, 'right', 'auto');
+            expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '-20%');
+            expect(spyCss).toHaveBeenNthCalledWith(11, 'right', 'auto');
           });
 
           it('should set right position align', () => {
@@ -448,8 +448,8 @@ describe('Vtt Utils', () => {
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
             expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(11, 'left', 'auto');
-            expect(spyCss).toHaveBeenNthCalledWith(12, 'right', '30%');
+            expect(spyCss).toHaveBeenNthCalledWith(10, 'left', 'auto');
+            expect(spyCss).toHaveBeenNthCalledWith(11, 'right', '30%');
           });
         });
       });
@@ -463,8 +463,8 @@ describe('Vtt Utils', () => {
   
           VttUtils.setVttCueBoxStyles(mockRegionContainer);
           
-          expect(spyCss).toHaveBeenCalledTimes(12);
-          expect(spyCss).toHaveBeenNthCalledWith(11, 'height', '100%');
+          expect(spyCss).toHaveBeenCalledTimes(11);
+          expect(spyCss).toHaveBeenNthCalledWith(10, 'height', '100%');
         });
 
         describe('Position Align', () => {
@@ -476,8 +476,8 @@ describe('Vtt Utils', () => {
     
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
-            expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(12, 'top', '0');
+            expect(spyCss).toHaveBeenCalledTimes(11);
+            expect(spyCss).toHaveBeenNthCalledWith(11, 'top', '0');
           });
 
           it('should set position', () => {
@@ -489,7 +489,7 @@ describe('Vtt Utils', () => {
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
             expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(12, 'top', '50%');
+            expect(spyCss).toHaveBeenNthCalledWith(11, 'top', '50%');
           });
 
           it('should set left position align', () => {
@@ -501,8 +501,8 @@ describe('Vtt Utils', () => {
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
             expect(spyCss).toHaveBeenCalledTimes(13);
-            expect(spyCss).toHaveBeenNthCalledWith(12, 'top', '30%');
-            expect(spyCss).toHaveBeenNthCalledWith(13, 'bottom', 'auto');
+            expect(spyCss).toHaveBeenNthCalledWith(11, 'top', '30%');
+            expect(spyCss).toHaveBeenNthCalledWith(12, 'bottom', 'auto');
           });
 
           it('should set center position align', () => {
@@ -514,8 +514,8 @@ describe('Vtt Utils', () => {
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
             expect(spyCss).toHaveBeenCalledTimes(13);
-            expect(spyCss).toHaveBeenNthCalledWith(12, 'top', '-70%');
-            expect(spyCss).toHaveBeenNthCalledWith(13, 'bottom', 'auto');
+            expect(spyCss).toHaveBeenNthCalledWith(11, 'top', '-20%');
+            expect(spyCss).toHaveBeenNthCalledWith(12, 'bottom', 'auto');
           });
 
           it('should set right position align', () => {
@@ -527,8 +527,8 @@ describe('Vtt Utils', () => {
             VttUtils.setVttCueBoxStyles(mockRegionContainer);
             
             expect(spyCss).toHaveBeenCalledTimes(13);
-            expect(spyCss).toHaveBeenNthCalledWith(12, 'top', 'auto');
-            expect(spyCss).toHaveBeenNthCalledWith(13, 'bottom', '30%');
+            expect(spyCss).toHaveBeenNthCalledWith(11, 'top', 'auto');
+            expect(spyCss).toHaveBeenNthCalledWith(12, 'bottom', '30%');
           });
         });
       })
