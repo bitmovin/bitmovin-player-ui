@@ -24,7 +24,6 @@ export class SubtitleSwitchHandler {
     this.bindSelectionEvent();
     this.bindPlayerEvents();
     this.refreshSubtitles();
-    this.selectCurrentSubtitle();
   }
 
   private bindSelectionEvent(): void {
@@ -47,7 +46,7 @@ export class SubtitleSwitchHandler {
     this.player.on(this.player.exports.PlayerEvent.SubtitleDisabled, this.selectCurrentSubtitle);
     this.player.on(this.player.exports.PlayerEvent.SubtitleRemoved, this.removeSubtitle);
     // Update subtitles when source goes away
-    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, this.refreshSubtitles);
+    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, this.clearSubtitles);
     // Update subtitles when the period within a source changes
     this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, this.refreshSubtitles);
     this.uimanager.getConfig().events.onUpdated.subscribe(this.refreshSubtitles);
@@ -77,6 +76,10 @@ export class SubtitleSwitchHandler {
     this.listElement.selectItem(currentSubtitle ? currentSubtitle.id : SubtitleSwitchHandler.SUBTITLES_OFF_KEY);
   };
 
+  private clearSubtitles = () => {
+    this.listElement.clearItems();
+  }
+
   private refreshSubtitles = () => {
     if (!this.player.subtitles) {
       // Subtitles API not available (yet)
@@ -96,5 +99,6 @@ export class SubtitleSwitchHandler {
     this.listElement.synchronizeItems([
       offListItem, ...subtitles.map(subtitleToListItem),
     ]);
+    this.selectCurrentSubtitle();
   };
 }

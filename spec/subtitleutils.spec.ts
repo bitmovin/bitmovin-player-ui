@@ -15,6 +15,7 @@ let ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.fn
   getItems: jest.fn().mockReturnValue([]),
   synchronizeItems: jest.fn(),
   selectItem: jest.fn(),
+  clearItems: jest.fn(),
 }));
 
 let listSelectorMock: ListSelector<ListSelectorConfig>;
@@ -138,6 +139,14 @@ describe('SubtitleUtils', () => {
       );
       playerMock.eventEmitter.fireSubtitleDisabled();
       expect(listSelectorMock.selectItem).toHaveBeenCalledWith('null');
+    });
+  });
+
+  describe('clears subtitle list', () => {
+    it('on sourceUnloaded event', () => {
+      playerMock.eventEmitter.fireSourceUnloadedEvent();
+
+      expect(listSelectorMock.clearItems).toHaveBeenCalled();
     });
   });
 

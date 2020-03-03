@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.11.0]
+
+### Fixed
+- Position alignment for VTT subtitles
+- Default selection not highlighted in AudioTrackListBox and SubtitleListBox
+- Clear subtitles list when source is unloaded
+
 ## [3.10.0]
 
 ### Added

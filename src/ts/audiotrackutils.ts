@@ -22,7 +22,6 @@ export class AudioTrackSwitchHandler {
     this.bindSelectionEvent();
     this.bindPlayerEvents();
     this.refreshAudioTracks();
-    this.selectCurrentAudioTrack();
   }
 
   private bindSelectionEvent(): void {
@@ -74,5 +73,6 @@ export class AudioTrackSwitchHandler {
     };
 
     this.listElement.synchronizeItems(audioTracks.map(audioTrackToListItem));
+    this.selectCurrentAudioTrack();
   };
 }

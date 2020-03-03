@@ -30,10 +30,9 @@ const setDefaultVttStyles = (cueContainerDom: DOM, vtt: VTTProperties) => {
     cueContainerDom.css('position', 'absolute');
     cueContainerDom.css('overflow-wrap', 'break-word');
     cueContainerDom.css('overflow', 'hidden');
-    cueContainerDom.css('display', 'inline-flex');
     cueContainerDom.css('flex-flow', 'column');
-    cueContainerDom.css('justify-content', 'flex-end');
   }
+  cueContainerDom.css('display', 'inline-flex');
 };
 
 /**
@@ -104,17 +103,21 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
       case 'line-left':
         cueContainerDom.css(direction, `${vtt.position}%`);
         cueContainerDom.css(DirectionPair.get(direction), 'auto');
+        cueContainerDom.css('justify-content', 'flex-start');
         break;
       case 'center':
-        cueContainerDom.css(direction, `${vtt.position - vtt.size}%`);
+        cueContainerDom.css(direction, `${vtt.position - vtt.size / 2}%`);
         cueContainerDom.css(DirectionPair.get(direction), 'auto');
+        cueContainerDom.css('justify-content', 'center');
         break;
       case 'line-right':
         cueContainerDom.css(direction, 'auto');
         cueContainerDom.css(DirectionPair.get(direction), `${vtt.position}%`);
+        cueContainerDom.css('justify-content', 'flex-end');
         break;
       default:
         cueContainerDom.css(direction, `${vtt.position}%`);
+        cueContainerDom.css('justify-content', 'flex-start');
     }
   }
 };
