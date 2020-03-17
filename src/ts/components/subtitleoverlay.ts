@@ -485,7 +485,7 @@ export class SubtitleRegionContainerManager {
 
     if (!this.subtitleRegionContainers[regionContainerId]) {
       const regionContainer = new SubtitleRegionContainer({
-        cssClasses,
+        cssClasses: [...cssClasses, 'subtitle-region-container'],
       });
 
       this.subtitleRegionContainers[regionContainerId] = regionContainer;
@@ -549,10 +549,6 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
 
   constructor(config: ContainerConfig = {}) {
     super(config);
-
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['subtitle-region-container'],
-    }, this.config);
   }
 
   addLabel(labelToAdd: SubtitleLabel, overlaySize?: { width: number, height: number }) {
