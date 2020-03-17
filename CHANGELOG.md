@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [development]
+
+### Fixed
+- TTML subtitles region alignment
+
 ## [3.11.0]
 
 ### Fixed
