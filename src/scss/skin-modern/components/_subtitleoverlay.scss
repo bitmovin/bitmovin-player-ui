@@ -26,10 +26,12 @@
       right: 3em;
     }
 
-    &.#{$prefix}-subtitle-position-bottom>div {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
+    &.#{$prefix}-subtitle-position-bottom {
+      & div {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+      }
     }
   }
 
