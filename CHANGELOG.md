@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [development]
 
+### Added
+- TTML `displayAlign = after` styling case
+
 ### Fixed
-- TTML subtitles region alignment
+- TTML subtitles region alignmeng
 
 ## [3.11.0]
 
