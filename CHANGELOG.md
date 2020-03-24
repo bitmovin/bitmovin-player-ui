@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - TTML `displayAlign = after` styling case
 
 ### Fixed
-- TTML subtitles region alignmeng
+- TTML subtitles region alignment
 
 ## [3.11.0]
 
