@@ -551,7 +551,7 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['subtitle-region-container'],
+      cssClass: 'subtitle-region-container',
     }, this.config);
   }
 
