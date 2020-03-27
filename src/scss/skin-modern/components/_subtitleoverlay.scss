@@ -13,17 +13,23 @@
   position: absolute;
   right: 0;
   text-align: center;
-  transition: bottom $animation-duration-short ease-out;
   top: 0;
+  transition: bottom $animation-duration-short ease-out;
 
   .#{$prefix}-subtitle-region-container {
     position: absolute;
 
     &.#{$prefix}-subtitle-position-default {
       bottom: 2em;
-      top: initial;
       left: 3em;
       right: 3em;
+      top: initial;
+    }
+
+    &.#{$prefix}-subtitle-position-bottom > div {
+      bottom: 0;
+      position: absolute;
+      width: 100%;
     }
   }
 
