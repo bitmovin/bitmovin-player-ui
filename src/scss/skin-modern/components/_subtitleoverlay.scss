@@ -37,6 +37,7 @@
     @include text-border($subtitle-text-border-color);
 
     color: $subtitle-text-color;
+    height: fit-content;
 
     // Break labels into separate lines
     // sass-lint:disable force-pseudo-nesting
