@@ -24,7 +24,7 @@ The UI framework is also available in the NPM repository and comes with all sour
 ## Getting Started with Development
 
  0. Clone Git repository
- 1. Install node.js
+ 1. Install node.js (version 10.x required)
  2. Install Gulp: `npm install --global gulp-cli`
  3. Install required npm packages: `npm install`
  4. Run Gulp tasks (`gulp --tasks`)
