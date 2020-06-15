@@ -39,6 +39,11 @@ export interface SeekBarConfig extends ComponentConfig {
    * Used for seekBar control increments and decrements
    */
   keyStepIncrements?: { leftRight: number, upDown: number };
+
+  /**
+   * Used for seekBar marker snapping range percentage
+   */
+  snappingRange?: number;
 }
 
 /**
@@ -133,6 +138,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       keyStepIncrements,
       ariaLabel: i18n.getLocalizer('seekBar'),
       tabIndex: 0,
+      snappingRange: 1,
     }, this.config);
 
     this.label = this.config.label;
@@ -389,6 +395,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     uimanager.getConfig().events.onUpdated.subscribe(() => {
       playbackPositionHandler();
     });
+
+    // Set the snappingRange if set in the uimanager config
+    if (typeof uimanager.getConfig().seekbarSnappingRange === 'number') {
+      this.config.snappingRange = uimanager.getConfig().seekbarSnappingRange;
+    }
 
     // Initialize seekbar
     playbackPositionHandler(); // Set the playback position
@@ -753,7 +764,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected getMarkerAtPosition(percentage: number): SeekBarMarker | null {
-    const snappingRange = 1;
+    const snappingRange = this.config.snappingRange;
 
     if (this.timelineMarkers.length > 0) {
       for (let marker of this.timelineMarkers) {
