@@ -63,6 +63,11 @@ export interface UIConfig {
    */
   playbackSpeedSelectionEnabled?: boolean;
   /**
+   * Specifies the seekbar snapping range in percentage
+   * Default: 1
+   */
+  seekbarSnappingRange?: number;
+  /**
    * Provide customized errorMessages
    * For an example have a look at {@link ErrorMessageOverlayConfig.messages}
    */

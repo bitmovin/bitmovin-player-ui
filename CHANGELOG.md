@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v3.14.0]
+### Added
+- Seekbar snapping range is now configurable
+
 ## [v3.13.0]
 
 ### Fixed
@@ -633,6 +637,8 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.14.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.13.0...v3.14.0
+[3.13.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.12.0...v3.13.0
 [3.12.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.11.0...v3.12.0
 [3.11.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.10.0...v3.11.0
 [3.10.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.9.2...v3.10.0
