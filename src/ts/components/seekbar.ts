@@ -127,7 +127,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     super(config);
 
     const keyStepIncrements = this.config.keyStepIncrements || {
-      leftRight: 1,
+      leftRight: 5,
       upDown: 5,
     };
 

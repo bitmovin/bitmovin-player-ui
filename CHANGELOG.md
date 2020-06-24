@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Seekbar snapping range is now configurable
 
+### Changed
+- default key increment value for seekbar/volumeslidebar to 5
+
 ## [v3.13.0]
 
 ### Fixed
