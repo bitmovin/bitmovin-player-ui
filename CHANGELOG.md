@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+### Fixed
+- Dead documentation link in README.md
+
 ## [3.14.0]
 ### Added
 - Seekbar snapping range is now configurable
