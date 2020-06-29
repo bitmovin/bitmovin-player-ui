@@ -59,7 +59,7 @@ There are three approaches to customize the UI:
 
 ### Styling the built-in UI
 
-When using the built-in UI, you can style it to your linking with CSS by overwriting our default styles, as documented in our [CSS Class Reference](https://bitmovin.com/player-documentation/css-class-reference/).
+When using the built-in UI, you can style it to your linking with CSS by overwriting our default styles, as documented in our [CSS Class Reference](https://bitmovin.com/docs/player/articles/player-ui-css-class-reference/).
 
 ### Replacing the built-in UI
 
