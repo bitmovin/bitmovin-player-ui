@@ -28,17 +28,34 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
+    let fullscreenAvailableHandler = () => {
+      if (player.isViewModeAvailable(player.exports.ViewMode.Fullscreen)) {
+        this.show();
+      } else {
+        this.hide();
+      }
+    };
+
+    uimanager.getConfig().events.onUpdated.subscribe(fullscreenAvailableHandler);
+
     player.on(player.exports.PlayerEvent.ViewModeChanged, fullscreenStateHandler);
 
     this.onClick.subscribe(() => {
-      if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
-        player.setViewMode(player.exports.ViewMode.Inline);
+      if (player.isViewModeAvailable(player.exports.ViewMode.Fullscreen)) {
+        if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
+          player.setViewMode(player.exports.ViewMode.Inline);
+        } else {
+          player.setViewMode(player.exports.ViewMode.Fullscreen);
+        }
       } else {
-        player.setViewMode(player.exports.ViewMode.Fullscreen);
+        if (console) {
+          console.log('PIP unavailable');
+        }
       }
     });
 
     // Startup init
+    fullscreenAvailableHandler();
     fullscreenStateHandler();
   }
 }
