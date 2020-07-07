@@ -41,17 +41,19 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.on(player.exports.PlayerEvent.ViewModeChanged, fullscreenStateHandler);
 
     this.onClick.subscribe(() => {
-      if (player.isViewModeAvailable(player.exports.ViewMode.Fullscreen)) {
-        if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
-          player.setViewMode(player.exports.ViewMode.Inline);
-        } else {
-          player.setViewMode(player.exports.ViewMode.Fullscreen);
-        }
-      } else {
+      if (!player.isViewModeAvailable(player.exports.ViewMode.Fullscreen)) {
         if (console) {
           console.log('Fullscreen unavailable');
         }
+        return;
       }
+
+      const targetViewMode =
+        player.getViewMode() === player.exports.ViewMode.Fullscreen
+          ? player.exports.ViewMode.Inline
+          : player.exports.ViewMode.Fullscreen;
+
+      player.setViewMode(targetViewMode);
     });
 
     // Startup init
