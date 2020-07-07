@@ -18,8 +18,14 @@ import {
   SubtitleTrack,
   TimeChangedEvent,
   TimeShiftEvent,
-  VideoPlaybackQualityChangedEvent
+  VideoPlaybackQualityChangedEvent, ViewMode,
 } from 'bitmovin-player';
+
+// TODO: remove once available in the type definitions of the player
+export interface ViewModeAvailabilityChangedEvent extends PlayerEventBase {
+  viewMode: ViewMode;
+  available: Boolean;
+}
 
 export class PlayerEventEmitter {
   private eventHandlers: { [eventType: string]: PlayerEventCallback[]; } = {};
@@ -347,5 +353,14 @@ export class PlayerEventEmitter {
       timestamp: Date.now(),
       type: PlayerEvent.AudioChanged,
     } as AudioChangedEvent);
+  }
+
+  fireViewModeAvailabilityChangedEvent(viewMode: ViewMode, available: boolean): void {
+    this.fireEvent<ViewModeAvailabilityChangedEvent>({
+      timestamp: Date.now(),
+      viewMode: viewMode,
+      available: available,
+      type: 'viewmodeavailabilitychanged' as any,
+    });
   }
 }
