@@ -20,43 +20,48 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
+    let isPictureInPictureAvailable = () => {
+      return player.isViewModeAvailable(player.exports.ViewMode.PictureInPicture);
+    };
+
+    let pictureInPictureStateHandler = () => {
+      player.getViewMode() === player.exports.ViewMode.PictureInPicture ? this.on() : this.off();
+    };
+
+    let pictureInPictureAvailabilityChangedHandler = () => {
+      isPictureInPictureAvailable() ? this.show() : this.hide();
+    };
+
+    player.on(player.exports.PlayerEvent.ViewModeChanged, pictureInPictureStateHandler);
+
+    // Available only in our native SDKs for now
+    if ((player.exports.PlayerEvent as any).ViewModeAvailabilityChanged) {
+      player.on(
+        (player.exports.PlayerEvent as any).ViewModeAvailabilityChanged,
+        pictureInPictureAvailabilityChangedHandler,
+      );
+    }
+
+    uimanager.getConfig().events.onUpdated.subscribe(pictureInPictureAvailabilityChangedHandler);
+
     this.onClick.subscribe(() => {
-      if (player.isViewModeAvailable(player.exports.ViewMode.PictureInPicture)) {
-        if (player.getViewMode() === player.exports.ViewMode.PictureInPicture) {
-          player.setViewMode(player.exports.ViewMode.Inline);
-        } else {
-          player.setViewMode(player.exports.ViewMode.PictureInPicture);
-        }
-      } else {
+      if (!isPictureInPictureAvailable()) {
         if (console) {
           console.log('PIP unavailable');
         }
+        return;
       }
-    });
 
-    let pipAvailableHander = () => {
-      if (player.isViewModeAvailable(player.exports.ViewMode.PictureInPicture)) {
-        this.show();
-      } else {
-        this.hide();
-      }
-    };
+      const targetViewMode =
+        player.getViewMode() === player.exports.ViewMode.PictureInPicture
+          ? player.exports.ViewMode.Inline
+          : player.exports.ViewMode.PictureInPicture;
 
-    uimanager.getConfig().events.onUpdated.subscribe(pipAvailableHander);
-
-    // Toggle button 'on' state
-    player.on(player.exports.PlayerEvent.ViewModeChanged, () => {
-      if (player.getViewMode() === player.exports.ViewMode.PictureInPicture) {
-        this.on();
-      } else {
-        this.off();
-      }
+      player.setViewMode(targetViewMode);
     });
 
     // Startup init
-    pipAvailableHander(); // Hide button if PIP not available
-    if (player.getViewMode() === player.exports.ViewMode.PictureInPicture) {
-      this.on();
-    }
+    pictureInPictureAvailabilityChangedHandler(); // Hide button if PIP not available
+    pictureInPictureStateHandler();
   }
 }
