@@ -49,7 +49,7 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
         }
       } else {
         if (console) {
-          console.log('PIP unavailable');
+          console.log('Fullscreen unavailable');
         }
       }
     });
