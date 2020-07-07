@@ -1,6 +1,6 @@
 import { ToggleButton, ToggleButtonConfig } from './togglebutton';
 import { UIInstanceManager } from '../uimanager';
-import { PlayerAPI, ViewMode } from 'bitmovin-player';
+import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
 /**
@@ -21,7 +21,7 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
     super.configure(player, uimanager);
 
     let isFullScreenAvailable = () => {
-      return player.isViewModeAvailable(ViewMode.Fullscreen);
+      return player.isViewModeAvailable(player.exports.ViewMode.Fullscreen);
     };
 
     let fullscreenStateHandler = () => {
