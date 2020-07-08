@@ -18,7 +18,8 @@ import {
   SubtitleTrack,
   TimeChangedEvent,
   TimeShiftEvent,
-  VideoPlaybackQualityChangedEvent, ViewMode,
+  VideoPlaybackQualityChangedEvent,
+  ViewMode,
 } from 'bitmovin-player';
 
 // TODO: remove once available in the type definitions of the player
