@@ -20,15 +20,15 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let isFullScreenAvailable = () => {
+    const isFullScreenAvailable = () => {
       return player.isViewModeAvailable(player.exports.ViewMode.Fullscreen);
     };
 
-    let fullscreenStateHandler = () => {
+    const fullscreenStateHandler = () => {
       player.getViewMode() === player.exports.ViewMode.Fullscreen ? this.on() : this.off();
     };
 
-    let fullscreenAvailabilityChangedHandler = () => {
+    const fullscreenAvailabilityChangedHandler = () => {
       isFullScreenAvailable() ? this.show() : this.hide();
     };
 

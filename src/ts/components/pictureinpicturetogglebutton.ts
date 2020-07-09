@@ -20,15 +20,15 @@ export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfi
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let isPictureInPictureAvailable = () => {
+    const isPictureInPictureAvailable = () => {
       return player.isViewModeAvailable(player.exports.ViewMode.PictureInPicture);
     };
 
-    let pictureInPictureStateHandler = () => {
+    const pictureInPictureStateHandler = () => {
       player.getViewMode() === player.exports.ViewMode.PictureInPicture ? this.on() : this.off();
     };
 
-    let pictureInPictureAvailabilityChangedHandler = () => {
+    const pictureInPictureAvailabilityChangedHandler = () => {
       isPictureInPictureAvailable() ? this.show() : this.hide();
     };
 
