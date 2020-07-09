@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 ### Fixed
 - Dead documentation link in README.md
+- `FullscreenToggleButton` being visible although `ViewMode.Fullscreen` is not available
 
 ## [3.14.0]
 ### Added
