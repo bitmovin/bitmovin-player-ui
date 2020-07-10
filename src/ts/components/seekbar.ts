@@ -1017,48 +1017,41 @@ export class SeekBar extends Component<SeekBarConfig> {
     // Remove markers when unloaded
     this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => this.clearMarkers());
     // Update markers when the size of the seekbar changes
-    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkers());
+    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkersDOM());
 
     this.player.on(this.player.exports.PlayerEvent.SourceLoaded, () => {
       if (this.player.isLive()) {
         // Update marker position as timeshift range changes
-        this.player.on(this.player.exports.PlayerEvent.TimeChanged, () => this.setupMarkers());
+        this.player.on(this.player.exports.PlayerEvent.TimeChanged, () => this.updateMarkers());
+        // Update marker postion when paused as timeshift range changes
+        this.configureLivePausedTimeshiftUpdater(this.player, this.uimanager, () => this.updateMarkers());
       }
     });
-    this.uimanager.getConfig().events.onUpdated.subscribe(() => this.setupMarkers());
-    this.uimanager.onRelease.subscribe(() => this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.setupMarkers()));
-    this.configureLivePausedTimeshiftUpdater(this.player, this.uimanager, () => this.setupMarkers());
+    this.uimanager.getConfig().events.onUpdated.subscribe(() => this.updateMarkers());
+    this.uimanager.onRelease.subscribe(() => this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.updateMarkers()));
 
     // Init markers at startup
-    this.setupMarkers();
+    this.updateMarkers();
   }
 
   private clearMarkers = (): void  => {
     this.timelineMarkers = [];
-    this.updateMarkers();
+    this.updateMarkersDOM();
   }
 
   private removeMarker(marker: TimelineMarker): void {
     this.uimanager.getConfig().metadata.markers = this.uimanager.getConfig().metadata.markers.filter(_marker => marker !== _marker);
   }
 
-  private setupMarkers(): void {
+  private updateMarkers(): void {
     this.clearMarkers();
 
-    if (!shouldProcessMarkers(this.player)) {
+    if (!shouldProcessMarkers(this.player, this.uimanager)) {
       return;
     }
 
-    const duration = getDuration(this.player);
-
     for (let marker of this.uimanager.getConfig().metadata.markers) {
-      const markerPosition = 100 / duration * getMarkerTime(marker, this.player, duration); // convert absolute time to percentage
-      let markerDuration = 100 / duration * marker.duration;
-
-      if (markerPosition < 0 && !isNaN(markerDuration)) {
-        // Shrink marker duration for on live streams as they reach end
-        markerDuration = markerDuration + markerPosition;
-      }
+      const { markerPosition, markerDuration } = getMarkerPositions(this.player, marker);
 
       if (shouldRemoveMarker(markerPosition, markerDuration)) {
         this.removeMarker(marker);
@@ -1068,10 +1061,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     // Populate the timeline with the markers
-    this.updateMarkers();
+    this.updateMarkersDOM();
   }
 
-  protected updateMarkers(): void {
+  private updateMarkersDOM(): void {
     this.seekBarMarkersContainer.empty();
 
     const seekBarWidthPx = this.seekBar.width();
@@ -1101,6 +1094,20 @@ export class SeekBar extends Component<SeekBarConfig> {
 }
 
 // #region Marker helper functions
+function getMarkerPositions(player: PlayerAPI, marker: TimelineMarker) {
+  const duration = getDuration(player);
+
+  const markerPosition = 100 / duration * getMarkerTime(marker, player, duration); // convert absolute time to percentage
+  let markerDuration = 100 / duration * marker.duration;
+
+  if (markerPosition < 0 && !isNaN(markerDuration)) {
+    // Shrink marker duration for on live streams as they reach end
+    markerDuration = markerDuration + markerPosition;
+  }
+
+  return { markerDuration, markerPosition };
+}
+
 function getMarkerTime (marker: TimelineMarker, player: PlayerAPI, duration: number): number {
   if (!player.isLive()) {
     return marker.time;
@@ -1122,9 +1129,12 @@ function shouldRemoveMarker (markerPosition: number, markerDuration: number): bo
   return (isNaN(markerDuration) && markerDuration < 0) || markerPosition < 0;
 }
 
-function  shouldProcessMarkers(player: PlayerAPI): boolean {
+function  shouldProcessMarkers(player: PlayerAPI, uimanager: UIInstanceManager): boolean {
   // Don't generate timeline markers if we don't yet have a duration
   // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
-  return player.getDuration() !== Infinity || player.isLive();
+  const validToProcess = player.getDuration() !== Infinity || player.isLive();
+  const hasMarkers = this.uimanager.getConfig().metadata.markers.length > 0;
+
+  return validToProcess && hasMarkers;
 }
 // #endregion
