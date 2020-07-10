@@ -93,6 +93,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   private timelineMarkers: SeekBarMarker[];
 
   private player: PlayerAPI;
+  private uimanager: UIInstanceManager;
 
   protected seekBarType: SeekBarType;
 
@@ -174,6 +175,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     super.configure(player, uimanager);
 
     this.player = player;
+    this.uimanager = uimanager;
 
     // Apply scaling transform to the backdrop bar to have all bars rendered similarly
     // (the call must be up here to be executed for the volume slider as well)
@@ -408,7 +410,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.config.smoothPlaybackPositionUpdateIntervalMs !== SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED) {
       this.configureSmoothPlaybackPositionUpdater(player, uimanager);
     }
-    this.configureMarkers(player, uimanager);
+    this.configureMarkers();
   }
 
   private seekWhileScrubbing = (sender: SeekBar, args: SeekPreviewEventArgs) => {
@@ -530,44 +532,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private getRelativeCurrentTime(): number {
     return PlayerUtils.getCurrentTimeRelativeToSeekableRange(this.player);
-  }
-
-  private configureMarkers(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    let clearMarkers = () => {
-      this.timelineMarkers = [];
-      this.updateMarkers();
-    };
-
-    let setupMarkers = () => {
-      clearMarkers();
-
-      const duration = player.getDuration();
-
-      if (duration === Infinity) {
-        // Don't generate timeline markers if we don't yet have a duration
-        // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
-        return;
-      }
-
-      for (let marker of uimanager.getConfig().metadata.markers) {
-        const markerPosition = 100 / duration * marker.time; // convert absolute time to percentage
-        const markerDuration = 100 / duration * marker.duration;
-        this.timelineMarkers.push({ marker, position: markerPosition, duration: markerDuration });
-      }
-
-      // Populate the timeline with the markers
-      this.updateMarkers();
-    };
-
-    // Remove markers when unloaded
-    player.on(player.exports.PlayerEvent.SourceUnloaded, clearMarkers);
-    // Update markers when the size of the seekbar changes
-    player.on(player.exports.PlayerEvent.PlayerResized, () => this.updateMarkers());
-    uimanager.getConfig().events.onUpdated.subscribe(setupMarkers);
-    uimanager.onRelease.subscribe(() => uimanager.getConfig().events.onUpdated.unsubscribe(setupMarkers));
-
-    // Init markers at startup
-    setupMarkers();
   }
 
   release(): void {
@@ -734,33 +698,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     return seekBarContainer;
-  }
-
-  protected updateMarkers(): void {
-    this.seekBarMarkersContainer.empty();
-
-    const seekBarWidthPx = this.seekBar.width();
-
-    for (let marker of this.timelineMarkers) {
-      const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
-        .map(cssClass => this.prefixCss(cssClass));
-
-      const cssProperties: {[propertyName: string]: string} = {
-        'width': marker.position + '%',
-      };
-
-      if (marker.duration > 0) {
-        const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
-        cssProperties['border-right-width'] = markerWidthPx + 'px';
-        cssProperties['margin-left'] = '0';
-      }
-
-      this.seekBarMarkersContainer.append(new DOM('div', {
-        'class': markerClasses.join(' '),
-        'data-marker-time': String(marker.marker.time),
-        'data-marker-title': String(marker.marker.title),
-      }).css(cssProperties));
-    }
   }
 
   protected getMarkerAtPosition(percentage: number): SeekBarMarker | null {
@@ -1074,4 +1011,120 @@ export class SeekBar extends Component<SeekBarConfig> {
     // its size and can set the position correctly.
     this.refreshPlaybackPosition();
   }
+
+  // #region MARKERS
+  private configureMarkers(): void {
+    // Remove markers when unloaded
+    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => this.clearMarkers());
+    // Update markers when the size of the seekbar changes
+    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkers());
+
+    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, () => {
+      if (this.player.isLive()) {
+        // Update marker position as timeshift range changes
+        this.player.on(this.player.exports.PlayerEvent.TimeChanged, () => this.setupMarkers());
+      }
+    });
+    this.uimanager.getConfig().events.onUpdated.subscribe(() => this.setupMarkers());
+    this.uimanager.onRelease.subscribe(() => this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.setupMarkers()));
+    this.configureLivePausedTimeshiftUpdater(this.player, this.uimanager, () => this.setupMarkers());
+
+    // Init markers at startup
+    this.setupMarkers();
+  }
+
+  private clearMarkers = (): void  => {
+    this.timelineMarkers = [];
+    this.updateMarkers();
+  }
+
+  private removeMarker(marker: TimelineMarker): void {
+    this.uimanager.getConfig().metadata.markers = this.uimanager.getConfig().metadata.markers.filter(_marker => marker !== _marker);
+  }
+
+  private setupMarkers(): void {
+    this.clearMarkers();
+
+    if (!shouldProcessMarkers(this.player)) {
+      return;
+    }
+
+    const duration = getDuration(this.player);
+
+    for (let marker of this.uimanager.getConfig().metadata.markers) {
+      const markerPosition = 100 / duration * getMarkerTime(marker, this.player, duration); // convert absolute time to percentage
+      let markerDuration = 100 / duration * marker.duration;
+
+      if (markerPosition < 0 && !isNaN(markerDuration)) {
+        // Shrink marker duration for on live streams as they reach end
+        markerDuration = markerDuration + markerPosition;
+      }
+
+      if (shouldRemoveMarker(markerPosition, markerDuration)) {
+        this.removeMarker(marker);
+      } else {
+        this.timelineMarkers.push({ marker, position: markerPosition, duration: markerDuration });
+      }
+    }
+
+    // Populate the timeline with the markers
+    this.updateMarkers();
+  }
+
+  protected updateMarkers(): void {
+    this.seekBarMarkersContainer.empty();
+
+    const seekBarWidthPx = this.seekBar.width();
+
+    for (let marker of this.timelineMarkers) {
+      const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
+        .map(cssClass => this.prefixCss(cssClass));
+
+      const cssProperties: {[propertyName: string]: string} = {
+        'width': marker.position + '%',
+      };
+
+      if (marker.duration > 0) {
+        const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
+        cssProperties['border-right-width'] = markerWidthPx + 'px';
+        cssProperties['margin-left'] = '0';
+      }
+
+      this.seekBarMarkersContainer.append(new DOM('div', {
+        'class': markerClasses.join(' '),
+        'data-marker-time': String(marker.marker.time),
+        'data-marker-title': String(marker.marker.title),
+      }).css(cssProperties));
+    }
+  }
+  // #endregion
 }
+
+// #region Marker helper functions
+function getMarkerTime (marker: TimelineMarker, player: PlayerAPI, duration: number): number {
+  if (!player.isLive()) {
+    return marker.time;
+  }
+
+  return duration - (PlayerUtils.getSeekableRange(player).end - marker.time);
+}
+
+function getDuration (player: PlayerAPI): number {
+  if (!player.isLive()) {
+    return player.getDuration();
+  }
+  const {start, end} = PlayerUtils.getSeekableRange(player);
+
+  return end - start;
+}
+
+function shouldRemoveMarker (markerPosition: number, markerDuration: number): boolean {
+  return (isNaN(markerDuration) && markerDuration < 0) || markerPosition < 0;
+}
+
+function  shouldProcessMarkers(player: PlayerAPI): boolean {
+  // Don't generate timeline markers if we don't yet have a duration
+  // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
+  return player.getDuration() !== Infinity || player.isLive();
+}
+// #endregion
