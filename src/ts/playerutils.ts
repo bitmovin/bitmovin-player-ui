@@ -1,7 +1,7 @@
 import {Event, EventDispatcher, NoArgs} from './eventdispatcher';
 import {BrowserUtils} from './browserutils';
 import { UIInstanceManager } from './uimanager';
-import { PlayerAPI } from 'bitmovin-player';
+import { PlayerAPI, TimeRange } from 'bitmovin-player';
 
 export namespace PlayerUtils {
 
@@ -57,6 +57,29 @@ export namespace PlayerUtils {
    */
   export function getSeekableRangeStart(player: PlayerAPI, defaultValue: number = 0) {
     return player.getSeekableRange() && player.getSeekableRange().start || defaultValue;
+  }
+
+  /**
+   * Returns seekable time range.
+   * For live streams it will calculate timestamp timerange if tweak
+   * `enable_seek_for_vod` is not present
+   */
+  export function getSeekableRange(player: PlayerAPI): TimeRange {
+    let {start, end} = player.getSeekableRange();
+
+    // If it is VOD or we have `enable_seek_for_vod` enabled
+    if (!player.isLive() || end > -1 && start > -1) {
+      return {start, end};
+    }
+
+    const currentTimeshift = -player.getTimeShift();
+    const maxTimeshift = -player.getMaxTimeShift();
+    const currentTime = player.getCurrentTime();
+
+    end = currentTime + (currentTimeshift);
+    start = currentTime - (maxTimeshift - currentTimeshift);
+
+    return {start, end};
   }
 
   export interface TimeShiftAvailabilityChangedArgs extends NoArgs {
