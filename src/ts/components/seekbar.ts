@@ -1133,7 +1133,7 @@ function  shouldProcessMarkers(player: PlayerAPI, uimanager: UIInstanceManager):
   // Don't generate timeline markers if we don't yet have a duration
   // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
   const validToProcess = player.getDuration() !== Infinity || player.isLive();
-  const hasMarkers = this.uimanager.getConfig().metadata.markers.length > 0;
+  const hasMarkers = uimanager.getConfig().metadata.markers.length > 0;
 
   return validToProcess && hasMarkers;
 }
