@@ -145,7 +145,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * Sets the text on the title label.
    * @param text the text to show on the label
    */
-  setTitleText(text: string) {
+  setTitleText(text = '') {
     this.titleLabel.setText(text);
   }
 
