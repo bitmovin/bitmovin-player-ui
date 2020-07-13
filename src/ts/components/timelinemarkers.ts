@@ -14,7 +14,7 @@ export interface MarkersConfig extends ComponentConfig {
   snappingRange?: number;
 }
 
-export class TimelineMarkers extends Component<MarkersConfig> {
+export class TimelineMarkers {
   private markersContainer: DOM;
   private timelineMarkers: SeekBarMarker[];
   private player: PlayerAPI;
@@ -24,7 +24,6 @@ export class TimelineMarkers extends Component<MarkersConfig> {
   protected config: MarkersConfig;
 
   constructor(config: MarkersConfig, getSeekBarWidth: () => number, markersContainer: DOM) {
-    super();
     this.config = config;
     this.getSeekBarWidth = getSeekBarWidth;
     this.markersContainer = markersContainer;
@@ -153,6 +152,10 @@ export class TimelineMarkers extends Component<MarkersConfig> {
 
     // Stop updater when playback continues (no matter if the updater was started before)
     this.player.on(this.player.exports.PlayerEvent.Play, () => this.pausedTimeshiftUpdater.clear());
+  }
+
+  protected prefixCss(cssClassOrId: string): string {
+    return this.config.cssPrefix + '-' + cssClassOrId;
   }
 }
 
