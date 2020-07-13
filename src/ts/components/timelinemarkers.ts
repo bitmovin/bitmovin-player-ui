@@ -81,7 +81,7 @@ export class TimelineMarkers extends Component<MarkersConfig> {
     return null;
   }
 
-  private clearMarkers = (): void  => {
+  private clearMarkers(): void {
     this.timelineMarkers = [];
     this.markersContainer.empty();
   }
