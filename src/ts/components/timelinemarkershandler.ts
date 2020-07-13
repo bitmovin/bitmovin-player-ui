@@ -14,7 +14,7 @@ export interface MarkersConfig extends ComponentConfig {
   snappingRange?: number;
 }
 
-export class TimelineMarkers {
+export class TimelineMarkersHandler {
   private markersContainer: DOM;
   private timelineMarkers: SeekBarMarker[];
   private player: PlayerAPI;

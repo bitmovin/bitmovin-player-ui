@@ -13,7 +13,7 @@ import { StringUtils } from '../stringutils';
 import { SeekBarType, SeekBarController } from './seekbarcontroller';
 import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
-import { TimelineMarkers } from './timelinemarkers';
+import { TimelineMarkersHandler } from './timelinemarkershandler';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -91,7 +91,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   private label: SeekBarLabel;
 
   private seekBarMarkersContainer: DOM;
-  private timelineMarkers: TimelineMarkers;
+  private timelineMarkersHandler: TimelineMarkersHandler;
 
   private player: PlayerAPI;
 
@@ -417,8 +417,8 @@ export class SeekBar extends Component<SeekBarConfig> {
       cssPrefix: this.config.cssPrefix,
       snappingRange: this.config.snappingRange,
     };
-    this.timelineMarkers = new TimelineMarkers(timelineMarkerConfig, () => this.seekBar.width(), this.seekBarMarkersContainer);
-    this.timelineMarkers.configure(player, uimanager);
+    this.timelineMarkersHandler = new TimelineMarkersHandler(timelineMarkerConfig, () => this.seekBar.width(), this.seekBarMarkersContainer);
+    this.timelineMarkersHandler.configure(player, uimanager);
   }
 
   private seekWhileScrubbing = (sender: SeekBar, args: SeekPreviewEventArgs) => {
@@ -636,7 +636,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       new DOM(document).off('touchend mouseup', mouseTouchUpHandler);
 
       let targetPercentage = 100 * this.getOffset(e);
-      let snappedChapter = this.timelineMarkers && this.timelineMarkers.getMarkerAtPosition(targetPercentage);
+      let snappedChapter = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(targetPercentage);
 
       this.setSeeking(false);
       seeking = false;
@@ -922,7 +922,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
-    let snappedMarker = this.timelineMarkers && this.timelineMarkers.getMarkerAtPosition(percentage);
+    let snappedMarker = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(percentage);
 
     let seekPositionPercentage = percentage;
 
