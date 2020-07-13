@@ -1,27 +1,20 @@
 import { PlayerUtils } from '../src/ts/playerutils';
 import { PlayerAPI } from 'bitmovin-player';
-
-let PlayerMockClass: jest.Mock<PlayerAPI> = jest.fn().mockImplementation(() => ({
-  isLive: jest.fn(),
-  getSeekableRange: jest.fn().mockReturnValue({ start: -1, end: -1 }),
-  getTimeShift: jest.fn(),
-  getMaxTimeShift: jest.fn(),
-  getCurrentTime: jest.fn(),
-}));
+import { MockHelper } from './helper/MockHelper';
 
 describe('PlayerUtils', () => {
-  let player: PlayerAPI;
+  let playerMock: PlayerAPI;
 
   beforeEach(() => {
-    player = new PlayerMockClass;
+    playerMock = MockHelper.getPlayerMock();
   });
 
   describe('getSeekableRange', () => {
     it('it should return seekable range from playerAPI if available', () => {
       const seekableRange = { start: 0, end: 15 };
-      player.getSeekableRange = jest.fn().mockReturnValue(seekableRange);
+      jest.spyOn(playerMock, 'getSeekableRange').mockReturnValue(seekableRange);
 
-      const utilSeekableRange = PlayerUtils.getSeekableRange(player);
+      const utilSeekableRange = PlayerUtils.getSeekableRange(playerMock);
 
       expect(utilSeekableRange).toEqual(seekableRange);
     });
@@ -34,12 +27,12 @@ describe('PlayerUtils', () => {
   `(
       'should calculate start=$expectedStart and end=$expectedEnd seekable range',
       ({ timeshift, maxTimeshift, currentTime, expectedStart, expectedEnd }) => {
-        player.isLive = jest.fn().mockReturnValue(true);
-        player.getTimeShift = jest.fn().mockReturnValue(timeshift);
-        player.getMaxTimeShift = jest.fn().mockReturnValue(maxTimeshift);
-        player.getCurrentTime = jest.fn().mockReturnValue(currentTime);
+        jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
+        jest.spyOn(playerMock, 'getTimeShift').mockReturnValue(timeshift);
+        jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(maxTimeshift);
+        jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(currentTime);
 
-        const { start, end } = PlayerUtils.getSeekableRange(player);
+        const { start, end } = PlayerUtils.getSeekableRange(playerMock);
 
         expect(start).toEqual(expectedStart);
         expect(end).toEqual(expectedEnd);
