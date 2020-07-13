@@ -5,11 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
+
+### Added
+- Listen to `ViewModeAvailabilityChanged` event and toggle visibility of `FullscreenToggleButton` and `PictureInPictureToggleButton` accordingly
+
 ### Fixed
 - Dead documentation link in README.md
 - `FullscreenToggleButton` being visible although `ViewMode.Fullscreen` is not available
 
 ## [3.14.0]
+
 ### Added
 - Seekbar snapping range is now configurable
 

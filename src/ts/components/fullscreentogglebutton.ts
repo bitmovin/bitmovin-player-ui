@@ -1,5 +1,5 @@
-import {ToggleButton, ToggleButtonConfig} from './togglebutton';
-import {UIInstanceManager} from '../uimanager';
+import { ToggleButton, ToggleButtonConfig } from './togglebutton';
+import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
@@ -20,28 +20,32 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let fullscreenStateHandler = () => {
-      if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
-        this.on();
-      } else {
-        this.off();
-      }
+    const isFullScreenAvailable = () => {
+      return player.isViewModeAvailable(player.exports.ViewMode.Fullscreen);
     };
 
-    let fullscreenAvailableHandler = () => {
-      if (player.isViewModeAvailable(player.exports.ViewMode.Fullscreen)) {
-        this.show();
-      } else {
-        this.hide();
-      }
+    const fullscreenStateHandler = () => {
+      player.getViewMode() === player.exports.ViewMode.Fullscreen ? this.on() : this.off();
     };
 
-    uimanager.getConfig().events.onUpdated.subscribe(fullscreenAvailableHandler);
+    const fullscreenAvailabilityChangedHandler = () => {
+      isFullScreenAvailable() ? this.show() : this.hide();
+    };
 
     player.on(player.exports.PlayerEvent.ViewModeChanged, fullscreenStateHandler);
 
+    // Available only in our native SDKs for now
+    if ((player.exports.PlayerEvent as any).ViewModeAvailabilityChanged) {
+      player.on(
+        (player.exports.PlayerEvent as any).ViewModeAvailabilityChanged,
+        fullscreenAvailabilityChangedHandler,
+      );
+    }
+
+    uimanager.getConfig().events.onUpdated.subscribe(fullscreenAvailabilityChangedHandler);
+
     this.onClick.subscribe(() => {
-      if (!player.isViewModeAvailable(player.exports.ViewMode.Fullscreen)) {
+      if (!isFullScreenAvailable()) {
         if (console) {
           console.log('Fullscreen unavailable');
         }
@@ -57,7 +61,7 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
     });
 
     // Startup init
-    fullscreenAvailableHandler();
+    fullscreenAvailabilityChangedHandler();
     fullscreenStateHandler();
   }
 }
