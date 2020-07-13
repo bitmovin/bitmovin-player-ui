@@ -61,7 +61,7 @@ export class TimelineMarkers extends Component<MarkersConfig> {
     const snappingRange = this.config.snappingRange;
 
     if (this.timelineMarkers.length > 0) {
-      for (let marker of this.timelineMarkers) {
+      this.timelineMarkers.forEach(marker => {
         // Handle interval markers
         if (marker.duration > 0
           && percentage >= marker.position - snappingRange
@@ -73,7 +73,7 @@ export class TimelineMarkers extends Component<MarkersConfig> {
           && percentage <= marker.position + snappingRange) {
           return marker;
         }
-      }
+      });
     }
 
     return null;
