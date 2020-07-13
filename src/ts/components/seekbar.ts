@@ -410,6 +410,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     // Initialize markers
+    this.initializeTimelineMarkers(player, uimanager);
+  }
+
+  private initializeTimelineMarkers(player: PlayerAPI, uimanager: UIInstanceManager): void {
     const timelineMarkerConfig = {
       cssPrefix: this.config.cssPrefix,
       snappingRange: this.config.snappingRange,
