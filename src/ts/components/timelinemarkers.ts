@@ -119,11 +119,11 @@ export class TimelineMarkers extends Component<MarkersConfig> {
 
     const seekBarWidthPx = this.getSeekBarWidth();
 
-    for (let marker of this.timelineMarkers) {
+    this.timelineMarkers.forEach(marker => {
       const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
         .map(cssClass => this.prefixCss(cssClass));
 
-      const cssProperties: {[propertyName: string]: string} = {
+      const cssProperties: { [propertyName: string]: string } = {
         'width': marker.position + '%',
       };
 
@@ -138,8 +138,8 @@ export class TimelineMarkers extends Component<MarkersConfig> {
         'data-marker-time': String(marker.marker.time),
         'data-marker-title': String(marker.marker.title),
       }).css(cssProperties));
+    });
     }
-  }
 
   private configureLivePausedTimeshiftUpdater(
     handler: () => void,
