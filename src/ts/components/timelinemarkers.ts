@@ -83,7 +83,7 @@ export class TimelineMarkers extends Component<MarkersConfig> {
 
   private clearMarkers = (): void  => {
     this.timelineMarkers = [];
-    this.updateMarkersDOM();
+    this.markersContainer.empty();
   }
 
   private removeMarker(marker: TimelineMarker): void {
@@ -153,7 +153,6 @@ export class TimelineMarkers extends Component<MarkersConfig> {
     // Stop updater when playback continues (no matter if the updater was started before)
     this.player.on(this.player.exports.PlayerEvent.Play, () => this.pausedTimeshiftUpdater.clear());
   }
-
 }
 
 function getMarkerPositions(player: PlayerAPI, marker: TimelineMarker) {
