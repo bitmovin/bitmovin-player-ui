@@ -169,6 +169,11 @@ function getMarkerPositions(player: PlayerAPI, marker: TimelineMarker) {
     markerDuration = markerDuration + markerPosition;
   }
 
+  if (100 - markerPosition < markerDuration) {
+    // Shrink marker if it overflows timeline
+    markerDuration = 100 - markerPosition;
+  }
+
   return { markerDuration, markerPosition };
 }
 
