@@ -112,6 +112,9 @@ export class TimelineMarkers extends Component<MarkersConfig> {
   }
 
   private updateMarkersDOM(): void {
+    // TODO: For live streams we are removing all markers, and re-adding them.
+    // we should track markers by some internal IDs and just update their positions
+    // This would give us ability to make their pos updating smooth with css transition
     this.markersContainer.empty();
 
     const seekBarWidthPx = this.getSeekBarWidth();
