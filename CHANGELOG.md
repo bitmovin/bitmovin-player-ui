@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `FullscreenToggleButton` being visible although `ViewMode.Fullscreen` is not available
 
 ### Added
-- Support for `TimelineMarkers` on live streams
+- Support `TimelineMarkers` in live streams
 
 ## [3.14.0]
 ### Added
