@@ -1126,7 +1126,7 @@ function getDuration(player: PlayerAPI): number {
 }
 
 function shouldRemoveMarker(markerPosition: number, markerDuration: number): boolean {
-  return (isNaN(markerDuration) && markerDuration < 0) || markerPosition < 0;
+  return (markerDuration < 0 || isNaN(markerDuration)) && markerPosition < 0;
 }
 
 function shouldProcessMarkers(player: PlayerAPI, uimanager: UIInstanceManager): boolean {
