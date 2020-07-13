@@ -95,7 +95,7 @@ export class TimelineMarkers extends Component<MarkersConfig> {
       return;
     }
 
-    for (let marker of this.uimanager.getConfig().metadata.markers) {
+    this.uimanager.getConfig().metadata.markers.forEach(marker => {
       const { markerPosition, markerDuration } = getMarkerPositions(this.player, marker);
 
       if (shouldRemoveMarker(markerPosition, markerDuration)) {
@@ -103,7 +103,7 @@ export class TimelineMarkers extends Component<MarkersConfig> {
       } else {
         this.timelineMarkers.push({ marker, position: markerPosition, duration: markerDuration });
       }
-    }
+    });
 
     // Populate the timeline with the markers
     this.updateMarkersDOM();
