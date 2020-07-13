@@ -700,28 +700,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     return seekBarContainer;
   }
 
-  protected getMarkerAtPosition(percentage: number): SeekBarMarker | null {
-    const snappingRange = this.config.snappingRange;
-
-    if (this.timelineMarkers.length > 0) {
-      for (let marker of this.timelineMarkers) {
-        // Handle interval markers
-        if (marker.duration > 0
-          && percentage >= marker.position - snappingRange
-          && percentage <= marker.position + marker.duration + snappingRange) {
-          return marker;
-        }
-        // Handle position markers
-        else if (percentage >= marker.position - snappingRange
-          && percentage <= marker.position + snappingRange) {
-          return marker;
-        }
-      }
-    }
-
-    return null;
-  }
-
   /**
    * Gets the horizontal offset of a mouse/touch event point from the left edge of the seek bar.
    * @param eventPageX the pageX coordinate of an event to calculate the offset from
@@ -1041,6 +1019,28 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private removeMarker(marker: TimelineMarker): void {
     this.uimanager.getConfig().metadata.markers = this.uimanager.getConfig().metadata.markers.filter(_marker => marker !== _marker);
+  }
+
+  private getMarkerAtPosition(percentage: number): SeekBarMarker | null {
+    const snappingRange = this.config.snappingRange;
+
+    if (this.timelineMarkers.length > 0) {
+      for (let marker of this.timelineMarkers) {
+        // Handle interval markers
+        if (marker.duration > 0
+          && percentage >= marker.position - snappingRange
+          && percentage <= marker.position + marker.duration + snappingRange) {
+          return marker;
+        }
+        // Handle position markers
+        else if (percentage >= marker.position - snappingRange
+          && percentage <= marker.position + snappingRange) {
+          return marker;
+        }
+      }
+    }
+
+    return null;
   }
 
   private updateMarkers(): void {
