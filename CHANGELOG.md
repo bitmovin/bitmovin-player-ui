@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Dead documentation link in README.md
 - `FullscreenToggleButton` being visible although `ViewMode.Fullscreen` is not available
+- Vertical text alignment in the `MetadataLabel` for the `MetadataLabelContent.Title` in the `SmallScreenUI`
 
 ## [3.14.0]
 
