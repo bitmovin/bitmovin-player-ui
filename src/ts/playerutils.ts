@@ -62,7 +62,7 @@ export namespace PlayerUtils {
   /**
    * Returns seekable time range.
    * For live streams it will calculate timestamp timerange if tweak
-   * `enable_seek_for_vod` is not present
+   * `enable_seek_for_live` is not present
    */
   export function getSeekableRange(player: PlayerAPI): TimeRange {
     let {start, end} = player.getSeekableRange();
