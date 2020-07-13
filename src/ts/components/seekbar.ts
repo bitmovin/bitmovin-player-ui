@@ -371,8 +371,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe((sender, args: TimeShiftAvailabilityChangedArgs) => {
       hasTimeShift = args.timeShiftAvailable;
       switchVisibility(isLive, hasTimeShift);
-    },
-    );
+    });
     // Initial detection
     liveStreamDetector.detect();
     timeShiftDetector.detect();
