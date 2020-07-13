@@ -1,10 +1,10 @@
-import {Component, ComponentConfig} from './component';
-import {DOM} from '../dom';
-import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
-import {SeekBarLabel} from './seekbarlabel';
-import {UIInstanceManager, SeekPreviewArgs} from '../uimanager';
-import {Timeout} from '../timeout';
-import {PlayerUtils} from '../playerutils';
+import { Component, ComponentConfig } from './component';
+import { DOM } from '../dom';
+import { Event, EventDispatcher, NoArgs } from '../eventdispatcher';
+import { SeekBarLabel } from './seekbarlabel';
+import { UIInstanceManager, SeekPreviewArgs } from '../uimanager';
+import { Timeout } from '../timeout';
+import { PlayerUtils } from '../playerutils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import { TimelineMarker } from '../uiconfig';
@@ -290,7 +290,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.setSeeking(false);
     };
 
-    let restorePlayingState = function() {
+    let restorePlayingState = function () {
       // Continue playback after seek if player was playing when seek started
       if (isPlaying) {
         // use the same issuer here as in the pause on seek
@@ -371,9 +371,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
     timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe((sender, args: TimeShiftAvailabilityChangedArgs) => {
-        hasTimeShift = args.timeShiftAvailable;
-        switchVisibility(isLive, hasTimeShift);
-      },
+      hasTimeShift = args.timeShiftAvailable;
+      switchVisibility(isLive, hasTimeShift);
+    },
     );
     // Initial detection
     liveStreamDetector.detect();
@@ -1012,7 +1012,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.updateMarkers();
   }
 
-  private clearMarkers = (): void  => {
+  private clearMarkers = (): void => {
     this.timelineMarkers = [];
     this.updateMarkersDOM();
   }
@@ -1073,7 +1073,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
         .map(cssClass => this.prefixCss(cssClass));
 
-      const cssProperties: {[propertyName: string]: string} = {
+      const cssProperties: { [propertyName: string]: string } = {
         'width': marker.position + '%',
       };
 
@@ -1108,7 +1108,7 @@ function getMarkerPositions(player: PlayerAPI, marker: TimelineMarker) {
   return { markerDuration, markerPosition };
 }
 
-function getMarkerTime (marker: TimelineMarker, player: PlayerAPI, duration: number): number {
+function getMarkerTime(marker: TimelineMarker, player: PlayerAPI, duration: number): number {
   if (!player.isLive()) {
     return marker.time;
   }
@@ -1116,20 +1116,20 @@ function getMarkerTime (marker: TimelineMarker, player: PlayerAPI, duration: num
   return duration - (PlayerUtils.getSeekableRange(player).end - marker.time);
 }
 
-function getDuration (player: PlayerAPI): number {
+function getDuration(player: PlayerAPI): number {
   if (!player.isLive()) {
     return player.getDuration();
   }
-  const {start, end} = PlayerUtils.getSeekableRange(player);
+  const { start, end } = PlayerUtils.getSeekableRange(player);
 
   return end - start;
 }
 
-function shouldRemoveMarker (markerPosition: number, markerDuration: number): boolean {
+function shouldRemoveMarker(markerPosition: number, markerDuration: number): boolean {
   return (isNaN(markerDuration) && markerDuration < 0) || markerPosition < 0;
 }
 
-function  shouldProcessMarkers(player: PlayerAPI, uimanager: UIInstanceManager): boolean {
+function shouldProcessMarkers(player: PlayerAPI, uimanager: UIInstanceManager): boolean {
   // Don't generate timeline markers if we don't yet have a duration
   // The duration check is for buggy platforms where the duration is not available instantly (Chrome on Android 4.3)
   const validToProcess = player.getDuration() !== Infinity || player.isLive();
