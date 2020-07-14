@@ -1,7 +1,7 @@
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../uimanager';
 import { DOM } from '../dom';
-import { Component, ComponentConfig } from './component';
+import { ComponentConfig } from './component';
 import { TimelineMarker } from '../uiconfig';
 import { SeekBarMarker } from './seekbar';
 import { PlayerUtils } from '../playerutils';
