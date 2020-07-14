@@ -60,7 +60,7 @@ export class TimelineMarkersHandler {
     const snappingRange = this.config.snappingRange;
 
     if (this.timelineMarkers.length > 0) {
-      this.timelineMarkers.forEach(marker => {
+      for (let marker of this.timelineMarkers) {
         // Handle interval markers
         if (marker.duration > 0
           && percentage >= marker.position - snappingRange
@@ -72,7 +72,7 @@ export class TimelineMarkersHandler {
           && percentage <= marker.position + snappingRange) {
           return marker;
         }
-      });
+      }
     }
 
     return null;
