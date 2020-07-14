@@ -63,6 +63,8 @@ export namespace PlayerUtils {
    * Calculates player seekable time range for live.
    * For live streams we need to calculate range since we receive { start: -1, end: -1 }
    * unless `enable_seek_for_live` tweak is present
+   *
+   * @param player
    */
   export function getSeekableRangeForLive(player: PlayerAPI): TimeRange {
     if (!player.isLive()) {
