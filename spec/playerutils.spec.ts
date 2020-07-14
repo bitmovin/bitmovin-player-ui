@@ -10,20 +10,21 @@ describe('PlayerUtils', () => {
   });
 
   describe('getSeekableRange', () => {
-    it('it should return seekable range from playerAPI if available', () => {
+    it('it should return seekable range from playerAPI if not live', () => {
       const seekableRange = { start: 0, end: 15 };
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
       jest.spyOn(playerMock, 'getSeekableRange').mockReturnValue(seekableRange);
 
-      const utilSeekableRange = PlayerUtils.getSeekableRange(playerMock);
+      const utilSeekableRange = PlayerUtils.getSeekableRangeForLive(playerMock);
 
       expect(utilSeekableRange).toEqual(seekableRange);
     });
 
     test.each`
-    timeshift | maxTimeshift | currentTime    | expectedStart  | expectedEnd
-    ${0}      | ${-260}       | ${1594646367} | ${1594646107} | ${1594646367}
-    ${-25}    | ${-260}       | ${1594646367} | ${1594646132} | ${1594646392}
-    ${-60}    | ${-260}       | ${1594646367} | ${1594646167} | ${1594646427}
+    timeshift | maxTimeshift  | currentTime   | expectedStart  | expectedEnd
+    ${0}      | ${-260}       | ${1594646367} | ${1594646107}  | ${1594646367}
+    ${-25}    | ${-260}       | ${1594646367} | ${1594646132}  | ${1594646392}
+    ${-60}    | ${-260}       | ${1594646367} | ${1594646167}  | ${1594646427}
   `(
       'should calculate start=$expectedStart and end=$expectedEnd seekable range',
       ({ timeshift, maxTimeshift, currentTime, expectedStart, expectedEnd }) => {
@@ -32,7 +33,7 @@ describe('PlayerUtils', () => {
         jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(maxTimeshift);
         jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(currentTime);
 
-        const { start, end } = PlayerUtils.getSeekableRange(playerMock);
+        const { start, end } = PlayerUtils.getSeekableRangeForLive(playerMock);
 
         expect(start).toEqual(expectedStart);
         expect(end).toEqual(expectedEnd);
