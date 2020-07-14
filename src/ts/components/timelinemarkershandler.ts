@@ -5,7 +5,7 @@ import { ComponentConfig } from './component';
 import { TimelineMarker } from '../uiconfig';
 import { SeekBarMarker } from './seekbar';
 import { PlayerUtils } from '../playerutils';
-import { Timeout } from '../timeout';
+import { PausedTimeshiftUpdatedHandler } from '../pausedtimeshiftupdatehandler';
 
 export interface MarkersConfig extends ComponentConfig {
   /**
@@ -19,7 +19,7 @@ export class TimelineMarkersHandler {
   private timelineMarkers: SeekBarMarker[];
   private player: PlayerAPI;
   private uimanager: UIInstanceManager;
-  private pausedTimeshiftUpdater: Timeout;
+  private pausedTimeshiftUpdater: PausedTimeshiftUpdatedHandler;
   private getSeekBarWidth: () => number;
   protected config: MarkersConfig;
 
@@ -32,6 +32,7 @@ export class TimelineMarkersHandler {
   public configure(player: PlayerAPI, uimanager: UIInstanceManager) {
     this.player = player;
     this.uimanager = uimanager;
+    this.pausedTimeshiftUpdater = PausedTimeshiftUpdatedHandler.getInstance(player);
     this.configureMarkers();
   }
 
@@ -46,7 +47,7 @@ export class TimelineMarkersHandler {
         // Update marker position as timeshift range changes
         this.player.on(this.player.exports.PlayerEvent.TimeChanged, () => this.updateMarkers());
         // Update marker postion when paused as timeshift range changes
-        this.configureLivePausedTimeshiftUpdater(() => this.updateMarkers());
+        this.pausedTimeshiftUpdater.addListener(() => this.updateMarkers());
       }
     });
     this.uimanager.getConfig().events.onUpdated.subscribe(() => this.updateMarkers());
@@ -136,22 +137,6 @@ export class TimelineMarkersHandler {
         'data-marker-title': String(marker.marker.title),
       }).css(cssProperties));
     });
-  }
-
-  private configureLivePausedTimeshiftUpdater(
-    handler: () => void,
-  ): void {
-    // Regularly update the marker position while the timeout is active
-    this.pausedTimeshiftUpdater = new Timeout(1000, handler, true);
-
-    this.player.on(this.player.exports.PlayerEvent.Paused, () => {
-      if (this.player.isLive() && this.player.getMaxTimeShift() < 0) {
-        this.pausedTimeshiftUpdater.start();
-      }
-    });
-
-    // Stop updater when playback continues (no matter if the updater was started before)
-    this.player.on(this.player.exports.PlayerEvent.Play, () => this.pausedTimeshiftUpdater.clear());
   }
 
   protected prefixCss(cssClassOrId: string): string {

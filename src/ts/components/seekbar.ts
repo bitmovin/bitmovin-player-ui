@@ -14,6 +14,7 @@ import { SeekBarType, SeekBarController } from './seekbarcontroller';
 import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
 import { TimelineMarkersHandler } from './timelinemarkershandler';
+import { PausedTimeshiftUpdatedHandler } from '../pausedtimeshiftupdatehandler';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -107,7 +108,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   private playbackPositionPercentage = 0;
 
   private smoothPlaybackPositionUpdater: Timeout;
-  private pausedTimeshiftUpdater: Timeout;
+  private pausedTimeshiftUpdater: PausedTimeshiftUpdatedHandler;
 
   private seekBarEvents = {
     /**
@@ -275,7 +276,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // update bufferlevel when a segment has been downloaded
     player.on(player.exports.PlayerEvent.SegmentRequestFinished, playbackPositionHandler);
 
-    this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
+    this.configureLivePausedTimeshiftUpdater(player, playbackPositionHandler);
 
     // Seek handling
     let onPlayerSeek = () => {
@@ -445,21 +446,10 @@ export class SeekBar extends Component<SeekBarConfig> {
    */
   private configureLivePausedTimeshiftUpdater(
     player: PlayerAPI,
-    uimanager: UIInstanceManager,
     playbackPositionHandler: () => void,
   ): void {
-    // Regularly update the playback position while the timeout is active
-    this.pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
-
-    // Start updater when a live stream with timeshift window is paused
-    player.on(player.exports.PlayerEvent.Paused, () => {
-      if (player.isLive() && player.getMaxTimeShift() < 0) {
-        this.pausedTimeshiftUpdater.start();
-      }
-    });
-
-    // Stop updater when playback continues (no matter if the updater was started before)
-    player.on(player.exports.PlayerEvent.Play, () => this.pausedTimeshiftUpdater.clear());
+    this.pausedTimeshiftUpdater = PausedTimeshiftUpdatedHandler.getInstance(player);
+    this.pausedTimeshiftUpdater.addListener(() => playbackPositionHandler());
   }
 
   private configureSmoothPlaybackPositionUpdater(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -550,7 +540,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     if (this.pausedTimeshiftUpdater) {
-      this.pausedTimeshiftUpdater.clear();
+      this.pausedTimeshiftUpdater.release();
+      this.pausedTimeshiftUpdater = null;
     }
 
     this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
