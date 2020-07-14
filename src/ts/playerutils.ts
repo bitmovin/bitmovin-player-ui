@@ -60,26 +60,23 @@ export namespace PlayerUtils {
   }
 
   /**
-   * Returns seekable time range.
-   * For live streams it will calculate timestamp timerange if tweak
-   * `enable_seek_for_live` is not present
+   * Calculates player seekable time range for live.
+   * For live streams we calculate range since we receive {start: -1, end: -1} unless
+   * `enable_seek_for_live` is present
    */
-  export function getSeekableRange(player: PlayerAPI): TimeRange {
-    let {start, end} = player.getSeekableRange();
-
-    // If it is VOD or we have `enable_seek_for_vod` enabled
-    if (!player.isLive() || end > -1 && start > -1) {
-      return {start, end};
+  export function getSeekableRangeForLive(player: PlayerAPI): TimeRange {
+    if (!player.isLive()) {
+      return player.getSeekableRange();
     }
 
     const currentTimeshift = -player.getTimeShift();
     const maxTimeshift = -player.getMaxTimeShift();
     const currentTime = player.getCurrentTime();
 
-    end = currentTime + (currentTimeshift);
-    start = currentTime - (maxTimeshift - currentTimeshift);
+    const end = currentTime + (currentTimeshift);
+    const start = currentTime - (maxTimeshift - currentTimeshift);
 
-    return {start, end};
+    return { start, end };
   }
 
   export interface TimeShiftAvailabilityChangedArgs extends NoArgs {
