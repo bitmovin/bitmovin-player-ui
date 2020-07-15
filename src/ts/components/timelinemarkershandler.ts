@@ -59,27 +59,23 @@ export class TimelineMarkersHandler {
   public getMarkerAtPosition(percentage: number): SeekBarMarker | null {
     const snappingRange = this.config.snappingRange;
 
-    if (this.timelineMarkers.length > 0) {
-      for (let marker of this.timelineMarkers) {
-        const hasDuration = marker.duration > 0;
-        // Handle interval markers
-        const intervalMarkerMatch =
-          hasDuration &&
-          percentage >= marker.position - snappingRange &&
-          percentage <= marker.position + marker.duration + snappingRange;
+    const matchingMarker = this.timelineMarkers.find(marker => {
+      const hasDuration = marker.duration > 0;
+      // Handle interval markers
+      const intervalMarkerMatch =
+        hasDuration &&
+        percentage >= marker.position - snappingRange &&
+        percentage <= marker.position + marker.duration + snappingRange;
 
-        // Handle position markers
-        const positionMarkerMatch =
-          percentage >= marker.position - snappingRange &&
-          percentage <= marker.position + snappingRange;
+      // Handle position markers
+      const positionMarkerMatch =
+        percentage >= marker.position - snappingRange &&
+        percentage <= marker.position + snappingRange;
 
-        if (intervalMarkerMatch && positionMarkerMatch) {
-          return marker;
-        }
-      }
-    }
+      return intervalMarkerMatch && positionMarkerMatch;
+    });
 
-    return null;
+    return matchingMarker || null;
   }
 
   private clearMarkers(): void {
