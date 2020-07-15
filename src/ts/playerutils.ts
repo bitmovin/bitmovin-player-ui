@@ -66,7 +66,7 @@ export namespace PlayerUtils {
    *
    * @param player
    */
-  export function getSeekableRangeForLive(player: PlayerAPI): TimeRange {
+  export function getSeekableRangeRespectingLive(player: PlayerAPI): TimeRange {
     if (!player.isLive()) {
       return player.getSeekableRange();
     }

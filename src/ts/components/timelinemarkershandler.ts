@@ -183,14 +183,14 @@ function getMarkerTime(marker: TimelineMarker, player: PlayerAPI, duration: numb
     return marker.time;
   }
 
-  return duration - (PlayerUtils.getSeekableRangeForLive(player).end - marker.time);
+  return duration - (PlayerUtils.getSeekableRangeRespectingLive(player).end - marker.time);
 }
 
 function getDuration(player: PlayerAPI): number {
   if (!player.isLive()) {
     return player.getDuration();
   }
-  const { start, end } = PlayerUtils.getSeekableRangeForLive(player);
+  const { start, end } = PlayerUtils.getSeekableRangeRespectingLive(player);
 
   return end - start;
 }

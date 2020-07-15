@@ -15,7 +15,7 @@ describe('PlayerUtils', () => {
       jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
       jest.spyOn(playerMock, 'getSeekableRange').mockReturnValue(seekableRange);
 
-      const utilSeekableRange = PlayerUtils.getSeekableRangeForLive(playerMock);
+      const utilSeekableRange = PlayerUtils.getSeekableRangeRespectingLive(playerMock);
 
       expect(utilSeekableRange).toEqual(seekableRange);
     });
@@ -33,7 +33,7 @@ describe('PlayerUtils', () => {
         jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(maxTimeshift);
         jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(currentTime);
 
-        const { start, end } = PlayerUtils.getSeekableRangeForLive(playerMock);
+        const { start, end } = PlayerUtils.getSeekableRangeRespectingLive(playerMock);
 
         expect(start).toEqual(expectedStart);
         expect(end).toEqual(expectedEnd);
