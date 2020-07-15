@@ -61,15 +61,19 @@ export class TimelineMarkersHandler {
 
     if (this.timelineMarkers.length > 0) {
       for (let marker of this.timelineMarkers) {
+        const hasDuration = marker.duration > 0;
         // Handle interval markers
-        if (marker.duration > 0
-          && percentage >= marker.position - snappingRange
-          && percentage <= marker.position + marker.duration + snappingRange) {
-          return marker;
-        }
+        const intervalMarkerMatch =
+          hasDuration &&
+          percentage >= marker.position - snappingRange &&
+          percentage <= marker.position + marker.duration + snappingRange;
+
         // Handle position markers
-        else if (percentage >= marker.position - snappingRange
-          && percentage <= marker.position + snappingRange) {
+        const positionMarkerMatch =
+          percentage >= marker.position - snappingRange &&
+          percentage <= marker.position + snappingRange;
+
+        if (intervalMarkerMatch && positionMarkerMatch) {
           return marker;
         }
       }
