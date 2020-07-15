@@ -12,7 +12,7 @@ describe('PlayerUtils', () => {
   describe('getSeekableRange', () => {
     it('it should return seekable range from playerAPI if not live', () => {
       const seekableRange = { start: 0, end: 15 };
-      jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
       jest.spyOn(playerMock, 'getSeekableRange').mockReturnValue(seekableRange);
 
       const utilSeekableRange = PlayerUtils.getSeekableRangeForLive(playerMock);
