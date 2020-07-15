@@ -70,6 +70,7 @@ export namespace MockHelper {
           PlayerEvent,
           ViewMode: {
             Fullscreen: 'fullscreen',
+            PictureInPicture: 'pictureinpicture',
           },
         },
         isLive: jest.fn(),
