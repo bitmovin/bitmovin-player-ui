@@ -5,12 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
+### Added
+- Support `TimelineMarkers` in live streams
+
 ### Fixed
 - Dead documentation link in README.md
 - `FullscreenToggleButton` being visible although `ViewMode.Fullscreen` is not available
-
-### Added
-- Support `TimelineMarkers` in live streams
 
 ## [3.14.0]
 ### Added
