@@ -99,7 +99,7 @@ export class TimelineMarkersHandler {
 
       if (shouldRemoveMarker(markerPosition, markerDuration)) {
         this.removeMarker(marker);
-      } else if (markerPosition < 100) {
+      } else if (markerPosition <= 100) {
         this.timelineMarkers.push({ marker, position: markerPosition, duration: markerDuration });
       }
     });
