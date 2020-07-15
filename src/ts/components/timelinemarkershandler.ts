@@ -5,7 +5,7 @@ import { ComponentConfig } from './component';
 import { TimelineMarker } from '../uiconfig';
 import { SeekBarMarker } from './seekbar';
 import { PlayerUtils } from '../playerutils';
-import { PausedTimeshiftUpdatedHandler } from '../pausedtimeshiftupdatehandler';
+import { PausedTimeshiftUpdatedHandler } from '../pausedtimeshiftupdatedhandler';
 
 export interface MarkersConfig extends ComponentConfig {
   /**

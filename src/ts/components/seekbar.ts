@@ -14,7 +14,7 @@ import { SeekBarType, SeekBarController } from './seekbarcontroller';
 import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
 import { TimelineMarkersHandler } from './timelinemarkershandler';
-import { PausedTimeshiftUpdatedHandler } from '../pausedtimeshiftupdatehandler';
+import { PausedTimeshiftUpdatedHandler } from '../pausedtimeshiftupdatedhandler';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
