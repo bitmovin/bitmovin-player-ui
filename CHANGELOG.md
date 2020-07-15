@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Listen to `ViewModeAvailabilityChanged` event and toggle visibility of `FullscreenToggleButton` and `PictureInPictureToggleButton` accordingly
 
+### Changed
+- TypeScript update to 3.9.6
+
 ### Fixed
 - Dead documentation link in README.md
 - `FullscreenToggleButton` being visible although `ViewMode.Fullscreen` is not available
