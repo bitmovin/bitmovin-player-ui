@@ -40,7 +40,8 @@
       display: flex;
 
       .#{$prefix}-ui-label {
-        display: inline;
+        align-items: center;
+        display: inline-flex;
         font-size: 1em;
       }
 

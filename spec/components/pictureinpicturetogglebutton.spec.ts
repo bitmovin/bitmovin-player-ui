@@ -1,47 +1,47 @@
 import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
 import { UIInstanceManager } from '../../src/ts/uimanager';
-import { FullscreenToggleButton } from '../../src/ts/components/fullscreentogglebutton';
+import { PictureInPictureToggleButton } from '../../src/ts/components/pictureInPicturetogglebutton';
 import { ViewMode } from 'bitmovin-player';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
 
-let fullscreenToggleButton: FullscreenToggleButton;
+let pictureInPictureToggleButton: PictureInPictureToggleButton;
 
-describe('FullscreenToggleButton', () => {
+describe('PictureInPictureToggleButton', () => {
   beforeEach(() => {
     playerMock = MockHelper.getPlayerMock();
     uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
 
-    fullscreenToggleButton = new FullscreenToggleButton();
-    fullscreenToggleButton.initialize();
+    pictureInPictureToggleButton = new PictureInPictureToggleButton();
+    pictureInPictureToggleButton.initialize();
 
     // Setup DOM Mock
     const mockDomElement = MockHelper.generateDOMMock();
-    jest.spyOn(fullscreenToggleButton, 'getDomElement').mockReturnValue(mockDomElement);
+    jest.spyOn(pictureInPictureToggleButton, 'getDomElement').mockReturnValue(mockDomElement);
   });
 
   describe('is visible', () => {
-    it('when fullscreen is available', () => {
+    it('when pictureInPicture is available', () => {
       jest.spyOn(playerMock, 'isViewModeAvailable').mockReturnValue(true);
 
-      fullscreenToggleButton.configure(playerMock, uiInstanceManagerMock);
+      pictureInPictureToggleButton.configure(playerMock, uiInstanceManagerMock);
 
-      expect(fullscreenToggleButton.isHidden()).toBe(false);
+      expect(pictureInPictureToggleButton.isHidden()).toBe(false);
     });
   });
 
   describe('is hidden', () => {
-    it('when fullscreen is not available', () => {
+    it('when pictureInPicture is not available', () => {
       jest.spyOn(playerMock, 'isViewModeAvailable').mockReturnValue(false);
 
-      fullscreenToggleButton.configure(playerMock, uiInstanceManagerMock);
+      pictureInPictureToggleButton.configure(playerMock, uiInstanceManagerMock);
 
-      expect(fullscreenToggleButton.isHidden()).toBe(true);
+      expect(pictureInPictureToggleButton.isHidden()).toBe(true);
     });
   });
 
-  describe('a change of fullscreen availability', () => {
+  describe('a change of pictureInPicture availability', () => {
     beforeEach(() => {
       // This is needed as the event is not yet part of the PlayerAPI
       // @ts-ignore
@@ -51,7 +51,7 @@ describe('FullscreenToggleButton', () => {
           ViewModeAvailabilityChanged: 'viewmodeavailabilitychanged',
         },
         ViewMode: {
-          Fullscreen: 'fullscreen',
+          PictureInPicture: 'pictureInPicture',
         },
       } as any;
     });
@@ -60,12 +60,12 @@ describe('FullscreenToggleButton', () => {
       it('hides the button', () => {
         jest.spyOn(playerMock, 'isViewModeAvailable').mockReturnValue(true);
 
-        fullscreenToggleButton.configure(playerMock, uiInstanceManagerMock);
+        pictureInPictureToggleButton.configure(playerMock, uiInstanceManagerMock);
 
         jest.spyOn(playerMock, 'isViewModeAvailable').mockReturnValue(false);
-        playerMock.eventEmitter.fireViewModeAvailabilityChangedEvent(ViewMode.Fullscreen, false);
+        playerMock.eventEmitter.fireViewModeAvailabilityChangedEvent(ViewMode.PictureInPicture, false);
 
-        expect(fullscreenToggleButton.isHidden()).toBe(true);
+        expect(pictureInPictureToggleButton.isHidden()).toBe(true);
       });
     });
 
@@ -73,12 +73,12 @@ describe('FullscreenToggleButton', () => {
       it('shows the button', () => {
         jest.spyOn(playerMock, 'isViewModeAvailable').mockReturnValue(false);
 
-        fullscreenToggleButton.configure(playerMock, uiInstanceManagerMock);
+        pictureInPictureToggleButton.configure(playerMock, uiInstanceManagerMock);
 
         jest.spyOn(playerMock, 'isViewModeAvailable').mockReturnValue(true);
-        playerMock.eventEmitter.fireViewModeAvailabilityChangedEvent(ViewMode.Fullscreen, true);
+        playerMock.eventEmitter.fireViewModeAvailabilityChangedEvent(ViewMode.PictureInPicture, true);
 
-        expect(fullscreenToggleButton.isHidden()).toBe(false);
+        expect(pictureInPictureToggleButton.isHidden()).toBe(false);
       });
     });
   });
