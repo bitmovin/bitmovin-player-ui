@@ -80,7 +80,7 @@ export class TimelineMarkersHandler {
 
   private clearMarkers(): void {
     this.timelineMarkers = [];
-    this.markersContainer.empty();
+    this.updateMarkersDOM();
   }
 
   private removeMarker(marker: TimelineMarker): void {
@@ -99,7 +99,7 @@ export class TimelineMarkersHandler {
 
       if (shouldRemoveMarker(markerPosition, markerDuration)) {
         this.removeMarker(marker);
-      } else {
+      } else if (markerPosition < 100) {
         this.timelineMarkers.push({ marker, position: markerPosition, duration: markerDuration });
       }
     });
