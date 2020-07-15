@@ -72,7 +72,7 @@ export class TimelineMarkersHandler {
         percentage >= marker.position - snappingRange &&
         percentage <= marker.position + snappingRange;
 
-      return intervalMarkerMatch && positionMarkerMatch;
+      return intervalMarkerMatch || positionMarkerMatch;
     });
 
     return matchingMarker || null;
