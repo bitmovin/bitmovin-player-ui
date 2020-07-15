@@ -29,7 +29,7 @@ export class TimelineMarkersHandler {
     this.markersContainer = markersContainer;
   }
 
-  public configure(player: PlayerAPI, uimanager: UIInstanceManager) {
+  public initialize(player: PlayerAPI, uimanager: UIInstanceManager) {
     this.player = player;
     this.uimanager = uimanager;
     this.pausedTimeshiftUpdater = PausedTimeshiftUpdatedHandler.getInstance(player);

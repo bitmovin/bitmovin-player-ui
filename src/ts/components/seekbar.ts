@@ -419,7 +419,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       snappingRange: this.config.snappingRange,
     };
     this.timelineMarkersHandler = new TimelineMarkersHandler(timelineMarkerConfig, () => this.seekBar.width(), this.seekBarMarkersContainer);
-    this.timelineMarkersHandler.configure(player, uimanager);
+    this.timelineMarkersHandler.initialize(player, uimanager);
   }
 
   private seekWhileScrubbing = (sender: SeekBar, args: SeekPreviewEventArgs) => {
