@@ -46,7 +46,7 @@
     "ts-jest": "^24.0.2",
     "tsify": "^2.0.2",
     "tslint": "^5.11.0",
-    "typescript": "^3.4.5",
+    "typescript": "^3.9.6",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.11.1",
