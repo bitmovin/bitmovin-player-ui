@@ -57,7 +57,7 @@ describe('TimelineMarkersHandler', () => {
     expect(marker.marker).toEqual(expectedMarker);
   });
 
-  it('should remove TimelineMarker once out if bounds', () => {
+  it('should remove TimelineMarker that are outside timeshift range (Passed)', () => {
     const expectedMarker = getTimelineMarker(90);
     uimanagerMock.getConfig().metadata.markers.push(expectedMarker);
     jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(200);
@@ -72,7 +72,7 @@ describe('TimelineMarkersHandler', () => {
     expect(markers).toHaveLength(0);
   });
 
-  it('should not display markers that are outside timeshift range (Future)', () => {
+  it('should not display TimelineMarkers that are outside timeshift range (Upcoming)', () => {
     const expectedMarker = getTimelineMarker(220);
     uimanagerMock.getConfig().metadata.markers.push(expectedMarker);
     jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(200);
