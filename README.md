@@ -24,7 +24,7 @@ The UI framework is also available in the NPM repository and comes with all sour
 ## Getting Started with Development
 
  0. Clone Git repository
- 1. Install node.js (version 10.x required)
+ 1. Install node.js
  2. Install Gulp: `npm install --global gulp-cli`
  3. Install required npm packages: `npm install`
  4. Run Gulp tasks (`gulp --tasks`)
@@ -59,7 +59,7 @@ There are three approaches to customize the UI:
 
 ### Styling the built-in UI
 
-When using the built-in UI, you can style it to your linking with CSS by overwriting our default styles, as documented in our [CSS Class Reference](https://bitmovin.com/player-documentation/css-class-reference/).
+When using the built-in UI, you can style it to your linking with CSS by overwriting our default styles, as documented in our [CSS Class Reference](https://bitmovin.com/docs/player/articles/player-ui-css-class-reference/).
 
 ### Replacing the built-in UI
 

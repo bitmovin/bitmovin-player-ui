@@ -1,7 +1,7 @@
 import {Event, EventDispatcher, NoArgs} from './eventdispatcher';
 import {BrowserUtils} from './browserutils';
 import { UIInstanceManager } from './uimanager';
-import { PlayerAPI } from 'bitmovin-player';
+import { PlayerAPI, TimeRange } from 'bitmovin-player';
 
 export namespace PlayerUtils {
 
@@ -57,6 +57,27 @@ export namespace PlayerUtils {
    */
   export function getSeekableRangeStart(player: PlayerAPI, defaultValue: number = 0) {
     return player.getSeekableRange() && player.getSeekableRange().start || defaultValue;
+  }
+
+  /**
+   * Calculates player seekable time range for live.
+   * As the player returns `{ start: -1, end: -1 }` for live streams we need to calculate the `seekableRange` based on `maxTimeshift`.
+   *
+   * @param player
+   */
+  export function getSeekableRangeRespectingLive(player: PlayerAPI): TimeRange {
+    if (!player.isLive()) {
+      return player.getSeekableRange();
+    }
+
+    const currentTimeshift = -player.getTimeShift();
+    const maxTimeshift = -player.getMaxTimeShift();
+    const currentTime = player.getCurrentTime();
+
+    const end = currentTime + (currentTimeshift);
+    const start = currentTime - (maxTimeshift - currentTimeshift);
+
+    return { start, end };
   }
 
   export interface TimeShiftAvailabilityChangedArgs extends NoArgs {

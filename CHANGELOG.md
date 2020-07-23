@@ -4,11 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v3.14.0]
+## [3.15.0] - 2020-07-23
+
+### Added
+- Listen to `ViewModeAvailabilityChanged` event and toggle visibility of `FullscreenToggleButton` and `PictureInPictureToggleButton` accordingly
+- Support `TimelineMarkers` in live streams
+
+### Changed
+- TypeScript update to 3.9.6
+
+### Fixed
+- Dead documentation link in README.md
+- `FullscreenToggleButton` being visible although `ViewMode.Fullscreen` is not available
+- Vertical text alignment in the `MetadataLabel` for the `MetadataLabelContent.Title` in the `SmallScreenUI`
+
+## [3.14.0]
+
 ### Added
 - Seekbar snapping range is now configurable
 
-## [v3.13.0]
+## [3.13.0]
 
 ### Fixed
 - Subtitles partially hidden by player controls

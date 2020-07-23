@@ -97,17 +97,18 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       this.setThumbnail(this.player.getThumbnail(wallClockTime));
 
     } else {
-      if (args.marker) {
-        this.setTitleText(args.marker.marker.title);
-      } else {
-        this.setTitleText(null);
-      }
       let time = this.player.getDuration() * (args.position / 100);
       this.setTime(time);
 
       const seekableRangeStart = PlayerUtils.getSeekableRangeStart(this.player, 0);
       const absoluteSeekTarget = time + seekableRangeStart;
       this.setThumbnail(this.player.getThumbnail(absoluteSeekTarget));
+    }
+
+    if (args.marker) {
+      this.setTitleText(args.marker.marker.title);
+    } else {
+      this.setTitleText(null);
     }
 
     // Remove CSS classes from previous marker
@@ -144,7 +145,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * Sets the text on the title label.
    * @param text the text to show on the label
    */
-  setTitleText(text: string) {
+  setTitleText(text = '') {
     this.titleLabel.setText(text);
   }
 
