@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Dead documentation link in README.md
 - `FullscreenToggleButton` being visible although `ViewMode.Fullscreen` is not available
 - Vertical text alignment in the `MetadataLabel` for the `MetadataLabelContent.Title` in the `SmallScreenUI`
+- Inconsistent `PlaybackToggleButton` state after transitioning between multiple `AdBreak`s for the same position using `BitmovinAdvertisingModule`
 
 ## [3.14.0]
 
