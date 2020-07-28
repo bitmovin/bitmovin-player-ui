@@ -96,6 +96,7 @@ $seekbar-height: .3125em;
           position: absolute;
           height: $seekbar-height * 4;
           left: 50%;
+          -ms-transform: translate(-50%, calc(-100% - .2em));
           -webkit-transform: translate(-50%, calc(-100% - .2em));
           transform: translate(-50%, calc(-100% - .2em));
         }
