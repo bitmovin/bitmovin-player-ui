@@ -121,20 +121,20 @@ export class TimelineMarkersHandler {
         .map(cssClass => this.prefixCss(cssClass));
 
       const cssProperties: { [propertyName: string]: string } = {
-        'width': marker.position + '%',
+        'left': `${marker.position}%`,
       };
 
       if (marker.duration > 0) {
         const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
-        cssProperties['border-right-width'] = markerWidthPx + 'px';
-        cssProperties['margin-left'] = '0';
+        cssProperties['width'] = `${markerWidthPx}px`;
       }
 
-      this.markersContainer.append(new DOM('div', {
+      const markerElement = new DOM('div', {
         'class': markerClasses.join(' '),
         'data-marker-time': String(marker.marker.time),
         'data-marker-title': String(marker.marker.title),
-      }).css(cssProperties));
+      }).css(cssProperties);
+      this.markersContainer.append(markerElement);
     });
   }
 
