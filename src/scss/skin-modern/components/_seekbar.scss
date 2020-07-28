@@ -94,11 +94,10 @@ $seekbar-height: .3125em;
 
         > .#{$prefix}-seekbar-marker-image {
           position: absolute;
-          top: -1em;
-          height: 1em;
+          height: $seekbar-height * 4;
           left: 50%;
-          -webkit-transform: translateX(-50%);
-          transform: translateX(-50%);
+          -webkit-transform: translate(-50%, calc(-100% - .2em));
+          transform: translate(-50%, calc(-100% - .2em));
         }
       }
     }
