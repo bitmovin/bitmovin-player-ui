@@ -25,6 +25,10 @@ export interface TimelineMarker {
    */
   title?: string;
   /**
+   * Url to timeline marker image
+   */
+  imageUrl?: string;
+  /**
    * Optional CSS classes that are applied to the marker on a {@link SeekBar} and can be used to
    * differentiate different types of markers by their style (e.g. different color of chapter markers
    * and ad break markers).
