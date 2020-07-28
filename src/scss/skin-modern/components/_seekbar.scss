@@ -91,6 +91,11 @@ $seekbar-height: .3125em;
         margin-left: -$marker-width / 2;
         width: $marker-width;
         text-align: center;
+
+        > .#{$prefix}-seekbar-marker-image {
+          position: absolute;
+          top: -$seekbar-height - .375em;
+        }
       }
     }
   }
