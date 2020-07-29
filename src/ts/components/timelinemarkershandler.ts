@@ -27,6 +27,7 @@ export class TimelineMarkersHandler {
     this.config = config;
     this.getSeekBarWidth = getSeekBarWidth;
     this.markersContainer = markersContainer;
+    this.timelineMarkers = [];
   }
 
   public initialize(player: PlayerAPI, uimanager: UIInstanceManager) {
