@@ -120,8 +120,6 @@ export class TimelineMarkersHandler {
       const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
         .map(cssClass => this.prefixCss(cssClass));
 
-      const markerImageClasses = ['seekbar-marker-image'].map(cssClass => this.prefixCss(cssClass));
-
       const cssProperties: { [propertyName: string]: string } = {
         'left': `${marker.position}%`,
       };
@@ -138,6 +136,8 @@ export class TimelineMarkersHandler {
       }).css(cssProperties);
 
       if (marker.marker.imageUrl) {
+        const markerImageClasses = ['seekbar-marker-image'].map(cssClass => this.prefixCss(cssClass));
+
         const imageElement = new DOM('img', {
           'class': markerImageClasses.join(' '),
           'src': marker.marker.imageUrl,
