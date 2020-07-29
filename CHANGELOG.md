@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Support for `images` on `TimelineMarkers`
 
+### Changed
+- The way `TimelineMarkers` are rendered.
+
 ## [3.15.0] - 2020-07-23
 
 ### Added
