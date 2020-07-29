@@ -84,11 +84,7 @@ $seekbar-height: .3125em;
         @extend %bar;
 
         background-color: $color-primary;
-        // don't consider the border for width, else it does not overlap at edges
-        box-sizing: content-box;
         height: 100%;
-        // offset position marker to center it on its actual position
-        margin-left: -$marker-width / 2;
         width: $marker-width;
         text-align: center;
 
