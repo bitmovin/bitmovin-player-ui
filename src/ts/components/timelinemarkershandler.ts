@@ -136,10 +136,8 @@ export class TimelineMarkersHandler {
       }).css(cssProperties);
 
       if (marker.marker.imageUrl) {
-        const markerImageClasses = ['seekbar-marker-image'].map(cssClass => this.prefixCss(cssClass));
-
         const imageElement = new DOM('img', {
-          'class': markerImageClasses.join(' '),
+          'class': this.prefixCss('seekbar-marker-image'),
           'src': marker.marker.imageUrl,
         });
 
