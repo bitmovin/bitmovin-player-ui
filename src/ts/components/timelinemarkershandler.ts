@@ -134,23 +134,8 @@ export class TimelineMarkersHandler {
     });
   }
 
-  private getMarkerCssProperties(marker: SeekBarMarker): { [propertyName: string]: string } {
-    const seekBarWidthPx = this.getSeekBarWidth();
-
-    const cssProperties: { [propertyName: string]: string } = {
-      'left': `${marker.position < 0 ? 0 : marker.position}%`,
-    };
-
-    if (marker.duration > 0) {
-      const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
-      cssProperties['width'] = `${markerWidthPx}px`;
-    }
-
-    return cssProperties;
-  }
-
   private updateMarkerDOM(marker: SeekBarMarker): void {
-    marker.element.css(this.getMarkerCssProperties(marker));
+    marker.element.css(getMarkerCssProperties(marker));
   }
 
   private createMarkerDOM(marker: SeekBarMarker): void {
@@ -161,7 +146,7 @@ export class TimelineMarkersHandler {
         'class': markerClasses.join(' '),
         'data-marker-time': String(marker.marker.time),
         'data-marker-title': String(marker.marker.title),
-      }).css(this.getMarkerCssProperties(marker));
+      }).css(getMarkerCssProperties(marker));
 
       if (marker.marker.imageUrl) {
         const removeImage = () => {
@@ -259,4 +244,19 @@ function shouldProcessMarkers(player: PlayerAPI, uimanager: UIInstanceManager): 
   const hasMarkers = uimanager.getConfig().metadata.markers.length > 0;
 
   return validToProcess && hasMarkers;
+}
+
+function getMarkerCssProperties(marker: SeekBarMarker): { [propertyName: string]: string } {
+  const seekBarWidthPx = this.getSeekBarWidth();
+
+  const cssProperties: { [propertyName: string]: string } = {
+    'left': `${marker.position < 0 ? 0 : marker.position}%`,
+  };
+
+  if (marker.duration > 0) {
+    const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
+    cssProperties['width'] = `${markerWidthPx}px`;
+  }
+
+  return cssProperties;
 }
