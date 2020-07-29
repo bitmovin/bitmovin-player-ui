@@ -87,10 +87,6 @@ $seekbar-height: .3125em;
         height: 100%;
         width: $marker-width;
         text-align: center;
-        -webkit-transition-property: -webkit-transform;
-        -moz-transition-property: -moz-transform;
-        -ms-transition-property: -ms-transform;
-        -o-transition-property: -o-transform;
         transition-property: transform;
         transition-duration: 1s;
         transition-timing-function: linear;
@@ -98,10 +94,6 @@ $seekbar-height: .3125em;
         > .#{$prefix}-seekbar-marker-image {
           position: absolute;
           height: $seekbar-height * 4;
-          -webkit-transform: translate(-50%, calc(-100% - .2em));
-          -moz-transform: translate(-50%, calc(-100% - .2em));
-          -ms-transform: translate(-50%, calc(-100% - .2em));
-          -o-transform: translate(-50%, calc(-100% - .2em));
           transform: translate(-50%, calc(-100% - .2em));
         }
       }
