@@ -2,6 +2,7 @@ import { SubtitleRegionContainer, SubtitleLabel } from '../src/ts/components/sub
 import { VttUtils } from '../src/ts/vttutils';
 import { VTTRegionProperties, VTTProperties } from 'bitmovin-player';
 import { MockHelper } from './helper/MockHelper';
+import { Size } from '../src/ts/dom';
 
 describe('Vtt Utils', () => {
   describe('Vtt Region', () => {
@@ -26,13 +27,15 @@ describe('Vtt Utils', () => {
   });
 
   describe('Vtt Cue Box', () => {
+    const subtitleOverLaySize: Size = { width: 300, height: 168 };
+
     it('should set text align', () => {
       const mockRegionContainer = generateSubtitleCueBoxMock(false, { align: 'left' } as VTTProperties);
       const mockDomElement = MockHelper.generateDOMMock();
       mockRegionContainer.getDomElement = () => mockDomElement;
       const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-      VttUtils.setVttCueBoxStyles(mockRegionContainer);
+      VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
       expect(spyCss).toHaveBeenCalledTimes(10);
       expect(spyCss).toHaveBeenNthCalledWith(8, 'text-align', 'left');
@@ -45,7 +48,7 @@ describe('Vtt Utils', () => {
         mockRegionContainer.getDomElement = () => mockDomElement;
         const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-        VttUtils.setVttCueBoxStyles(mockRegionContainer);
+        VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
         expect(spyCss).toHaveBeenCalledTimes(10);
         expect(spyCss).toHaveBeenNthCalledWith(1, 'position', 'absolute');
@@ -61,7 +64,7 @@ describe('Vtt Utils', () => {
         mockRegionContainer.getDomElement = () => mockDomElement;
         const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-        VttUtils.setVttCueBoxStyles(mockRegionContainer);
+        VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
         expect(spyCss).toHaveBeenCalledTimes(8);
         expect(spyCss).toHaveBeenNthCalledWith(1, 'position', 'relative');
@@ -78,7 +81,7 @@ describe('Vtt Utils', () => {
           mockRegionContainer.getDomElement = () => mockDomElement;
           const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-          VttUtils.setVttCueBoxStyles(mockRegionContainer);
+          VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
           expect(spyCss).toHaveBeenCalledTimes(10);
           expect(spyCss).toHaveBeenNthCalledWith(6, 'writing-mode', 'horizontal-tb');
@@ -91,7 +94,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(10);
           });
@@ -105,7 +108,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(11);
             expect(spyCss).toHaveBeenNthCalledWith(8, 'top', '50%');
@@ -120,10 +123,10 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(11);
-            expect(spyCss).toHaveBeenNthCalledWith(8, 'top', '112px');
+            expect(spyCss).toHaveBeenNthCalledWith(8, 'top', '19.047619047619047%');
           });
 
           it('should set negative line positioning', () => {
@@ -135,10 +138,10 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(11);
-            expect(spyCss).toHaveBeenNthCalledWith(8, 'bottom', '112px');
+            expect(spyCss).toHaveBeenNthCalledWith(8, 'top', '80.95238095238095%');
           });
 
           describe('Line Alignment', () => {
@@ -152,7 +155,7 @@ describe('Vtt Utils', () => {
               mockRegionContainer.getDomElement = () => mockDomElement;
               const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-              VttUtils.setVttCueBoxStyles(mockRegionContainer);
+              VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(11);
             });
@@ -167,7 +170,7 @@ describe('Vtt Utils', () => {
               mockRegionContainer.getDomElement = () => mockDomElement;
               const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-              VttUtils.setVttCueBoxStyles(mockRegionContainer);
+              VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(12);
               expect(spyCss).toHaveBeenNthCalledWith(9, 'margin-top', '-14px');
@@ -183,7 +186,7 @@ describe('Vtt Utils', () => {
               mockRegionContainer.getDomElement = () => mockDomElement;
               const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-              VttUtils.setVttCueBoxStyles(mockRegionContainer);
+              VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(12);
               expect(spyCss).toHaveBeenNthCalledWith(9, 'margin-top', '-28px');
@@ -199,7 +202,7 @@ describe('Vtt Utils', () => {
           mockRegionContainer.getDomElement = () => mockDomElement;
           const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-          VttUtils.setVttCueBoxStyles(mockRegionContainer);
+          VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
           expect(spyCss).toHaveBeenCalledTimes(11);
           expect(spyCss).toHaveBeenNthCalledWith(6, 'writing-mode', 'vertical-lr');
@@ -213,7 +216,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(11);
           });
@@ -228,7 +231,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
             expect(spyCss).toHaveBeenNthCalledWith(9, 'right', '50%');
@@ -244,10 +247,10 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(9, 'right', '112px');
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'right', '19.047619047619047%');
           });
 
           it('should set negative line positioning', () => {
@@ -260,10 +263,10 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(9, 'left', '112px');
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'right', '80.95238095238095%');
           });
 
           describe('Line alignment', () => {
@@ -278,7 +281,7 @@ describe('Vtt Utils', () => {
               mockRegionContainer.getDomElement = () => mockDomElement;
               const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-              VttUtils.setVttCueBoxStyles(mockRegionContainer);
+              VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(12);
             });
@@ -294,7 +297,7 @@ describe('Vtt Utils', () => {
               mockRegionContainer.getDomElement = () => mockDomElement;
               const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-              VttUtils.setVttCueBoxStyles(mockRegionContainer);
+              VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(13);
               expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-right', '-14px');
@@ -311,7 +314,7 @@ describe('Vtt Utils', () => {
               mockRegionContainer.getDomElement = () => mockDomElement;
               const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-              VttUtils.setVttCueBoxStyles(mockRegionContainer);
+              VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(13);
               expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-right', '-28px');
@@ -327,7 +330,7 @@ describe('Vtt Utils', () => {
           mockRegionContainer.getDomElement = () => mockDomElement;
           const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-          VttUtils.setVttCueBoxStyles(mockRegionContainer);
+          VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
           expect(spyCss).toHaveBeenCalledTimes(11);
           expect(spyCss).toHaveBeenNthCalledWith(6, 'writing-mode', 'vertical-rl');
@@ -341,7 +344,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(11);
           });
@@ -356,7 +359,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
             expect(spyCss).toHaveBeenNthCalledWith(9, 'left', '50%');
@@ -372,10 +375,10 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(9, 'left', '112px');
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'left', '19.047619047619047%');
           });
 
           it('should set negative line positioning', () => {
@@ -388,10 +391,10 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
-            expect(spyCss).toHaveBeenNthCalledWith(9, 'right', '112px');
+            expect(spyCss).toHaveBeenNthCalledWith(9, 'left', '80.95238095238095%');
           });
 
           describe('Line alignment', () => {
@@ -406,7 +409,7 @@ describe('Vtt Utils', () => {
               mockRegionContainer.getDomElement = () => mockDomElement;
               const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-              VttUtils.setVttCueBoxStyles(mockRegionContainer);
+              VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(12);
             });
@@ -422,7 +425,7 @@ describe('Vtt Utils', () => {
               mockRegionContainer.getDomElement = () => mockDomElement;
               const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-              VttUtils.setVttCueBoxStyles(mockRegionContainer);
+              VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(13);
               expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-left', '-14px');
@@ -439,7 +442,7 @@ describe('Vtt Utils', () => {
               mockRegionContainer.getDomElement = () => mockDomElement;
               const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-              VttUtils.setVttCueBoxStyles(mockRegionContainer);
+              VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(13);
               expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-left', '-28px');
@@ -457,7 +460,7 @@ describe('Vtt Utils', () => {
           mockRegionContainer.getDomElement = () => mockDomElement;
           const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-          VttUtils.setVttCueBoxStyles(mockRegionContainer);
+          VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
           expect(spyCss).toHaveBeenCalledTimes(10);
           expect(spyCss).toHaveBeenNthCalledWith(9, 'width', '100%');
@@ -470,7 +473,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(10);
             expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '0');
@@ -482,7 +485,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(11);
             expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '50%');
@@ -497,7 +500,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
             expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '30%');
@@ -513,7 +516,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
             expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '-20%');
@@ -529,7 +532,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
             expect(spyCss).toHaveBeenNthCalledWith(10, 'left', 'auto');
@@ -545,7 +548,7 @@ describe('Vtt Utils', () => {
           mockRegionContainer.getDomElement = () => mockDomElement;
           const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-          VttUtils.setVttCueBoxStyles(mockRegionContainer);
+          VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
           expect(spyCss).toHaveBeenCalledTimes(11);
           expect(spyCss).toHaveBeenNthCalledWith(10, 'height', '100%');
@@ -558,7 +561,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(11);
             expect(spyCss).toHaveBeenNthCalledWith(11, 'top', '0');
@@ -573,7 +576,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(12);
             expect(spyCss).toHaveBeenNthCalledWith(11, 'top', '50%');
@@ -589,7 +592,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(13);
             expect(spyCss).toHaveBeenNthCalledWith(11, 'top', '30%');
@@ -606,7 +609,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(13);
             expect(spyCss).toHaveBeenNthCalledWith(11, 'top', '-20%');
@@ -623,7 +626,7 @@ describe('Vtt Utils', () => {
             mockRegionContainer.getDomElement = () => mockDomElement;
             const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
 
-            VttUtils.setVttCueBoxStyles(mockRegionContainer);
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
             expect(spyCss).toHaveBeenCalledTimes(13);
             expect(spyCss).toHaveBeenNthCalledWith(11, 'top', 'auto');
