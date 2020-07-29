@@ -136,10 +136,15 @@ export class TimelineMarkersHandler {
       }).css(cssProperties);
 
       if (marker.marker.imageUrl) {
+        const removeImage = () => {
+          const toRemove = imageElement.get()[0];
+          toRemove.parentElement.removeChild(toRemove);
+        };
+
         const imageElement = new DOM('img', {
           'class': this.prefixCss('seekbar-marker-image'),
           'src': marker.marker.imageUrl,
-        });
+        }).on('error', removeImage);
 
         markerElement.append(imageElement);
       }
