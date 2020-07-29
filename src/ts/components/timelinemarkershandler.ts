@@ -99,8 +99,7 @@ export class TimelineMarkersHandler {
 
   private removeMarkerFromDOM(marker: SeekBarMarker): void {
     if (marker.element) {
-      const element = marker.element.get()[0];
-      element.parentElement.removeChild(element);
+      marker.element.remove();
     }
   }
 
@@ -171,8 +170,7 @@ export class TimelineMarkersHandler {
 
       if (marker.marker.imageUrl) {
         const removeImage = () => {
-          const toRemove = imageElement.get()[0];
-          toRemove.parentElement.removeChild(toRemove);
+        imageElement.remove();
         };
 
         const imageElement = new DOM('img', {
