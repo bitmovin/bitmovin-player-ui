@@ -138,8 +138,9 @@ export class TimelineMarkersHandler {
   private getMarkerCssProperties(marker: SeekBarMarker): { [propertyName: string]: string } {
     const seekBarWidthPx = this.getSeekBarWidth();
 
+    const positionInPx = (seekBarWidthPx / 100) * (marker.position < 0 ? 0 : marker.position);
     const cssProperties: { [propertyName: string]: string } = {
-      'left': `${marker.position < 0 ? 0 : marker.position}%`,
+      'transform': `translateX(${positionInPx}px)`,
     };
 
     if (marker.duration > 0) {

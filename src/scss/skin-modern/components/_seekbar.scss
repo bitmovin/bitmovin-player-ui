@@ -87,6 +87,8 @@ $seekbar-height: .3125em;
         height: 100%;
         width: $marker-width;
         text-align: center;
+        transition-property: all;
+        transition-duration: 1s;
 
         > .#{$prefix}-seekbar-marker-image {
           position: absolute;
