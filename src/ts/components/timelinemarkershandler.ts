@@ -126,7 +126,7 @@ export class TimelineMarkersHandler {
 
           this.updateMarkerDOM(matchingMarker);
         } else {
-          const newMarker: SeekBarMarker = {marker, position: markerPosition, duration: markerDuration};
+          const newMarker: SeekBarMarker = { marker, position: markerPosition, duration: markerDuration };
           this.timelineMarkers.push(newMarker);
 
           this.createMarkerDOM(newMarker);
