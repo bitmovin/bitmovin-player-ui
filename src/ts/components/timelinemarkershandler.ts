@@ -89,7 +89,7 @@ export class TimelineMarkersHandler {
 
   private filterRemovedMarkers(): void {
     this.timelineMarkers = this.timelineMarkers.filter(seekbarMarker => {
-      const matchingMarker = this.uimanager.getConfig().metadata.markers.find(_marker =>  seekbarMarker.marker === _marker);
+      const matchingMarker = this.uimanager.getConfig().metadata.markers.find(_marker => seekbarMarker.marker === _marker);
       if (!matchingMarker) {
         this.removeMarkerFromDOM(seekbarMarker);
       }
@@ -159,30 +159,30 @@ export class TimelineMarkersHandler {
   }
 
   private createMarkerDOM(marker: SeekBarMarker): void {
-      const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
-        .map(cssClass => this.prefixCss(cssClass));
+    const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
+      .map(cssClass => this.prefixCss(cssClass));
 
-      const markerElement = new DOM('div', {
-        'class': markerClasses.join(' '),
-        'data-marker-time': String(marker.marker.time),
-        'data-marker-title': String(marker.marker.title),
-      }).css(this.getMarkerCssProperties(marker));
+    const markerElement = new DOM('div', {
+      'class': markerClasses.join(' '),
+      'data-marker-time': String(marker.marker.time),
+      'data-marker-title': String(marker.marker.title),
+    }).css(this.getMarkerCssProperties(marker));
 
-      if (marker.marker.imageUrl) {
-        const removeImage = () => {
+    if (marker.marker.imageUrl) {
+      const removeImage = () => {
         imageElement.remove();
-        };
+      };
 
-        const imageElement = new DOM('img', {
-          'class': this.prefixCss('seekbar-marker-image'),
-          'src': marker.marker.imageUrl,
-        }).on('error', removeImage);
+      const imageElement = new DOM('img', {
+        'class': this.prefixCss('seekbar-marker-image'),
+        'src': marker.marker.imageUrl,
+      }).on('error', removeImage);
 
-        markerElement.append(imageElement);
-      }
+      markerElement.append(imageElement);
+    }
 
-      marker.element = markerElement;
-      this.markersContainer.append(markerElement);
+    marker.element = markerElement;
+    this.markersContainer.append(markerElement);
   }
 
   private updateMarkersDOM(): void {
