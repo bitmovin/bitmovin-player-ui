@@ -97,6 +97,13 @@ export class TimelineMarkersHandler {
     });
   }
 
+  private removeMarkerFromDOM(marker: SeekBarMarker) {
+    if (marker.element) {
+      const element = marker.element.get()[0];
+      element.parentElement.removeChild(element);
+    }
+  }
+
   private updateMarkers(): void {
     if (!shouldProcessMarkers(this.player, this.uimanager)) {
       this.clearMarkers();
@@ -127,12 +134,11 @@ export class TimelineMarkersHandler {
     });
   }
 
-
-  private updateMarkerDOM(marker: SeekBarMarker) {
+  private getMarkerCssProperties(marker: SeekBarMarker): { [propertyName: string]: string } {
     const seekBarWidthPx = this.getSeekBarWidth();
 
     const cssProperties: { [propertyName: string]: string } = {
-      'left': `${marker.position}%`,
+      'left': `${marker.position < 0 ? 0 : marker.position}%`,
     };
 
     if (marker.duration > 0) {
@@ -140,36 +146,22 @@ export class TimelineMarkersHandler {
       cssProperties['width'] = `${markerWidthPx}px`;
     }
 
-    marker.element.css(cssProperties);
+    return cssProperties;
   }
 
-  private removeMarkerFromDOM(marker: SeekBarMarker) {
-    if (marker.element) {
-      const element = marker.element.get()[0];
-      element.parentElement.removeChild(element);
-    }
+  private updateMarkerDOM(marker: SeekBarMarker): void {
+    marker.element.css(this.getMarkerCssProperties(marker));
   }
 
-  private createMarkerDOM(marker: SeekBarMarker) {
-    const seekBarWidthPx = this.getSeekBarWidth();
-
+  private createMarkerDOM(marker: SeekBarMarker): void {
       const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
         .map(cssClass => this.prefixCss(cssClass));
-
-      const cssProperties: { [propertyName: string]: string } = {
-        'left': `${marker.position}%`,
-      };
-
-      if (marker.duration > 0) {
-        const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
-        cssProperties['width'] = `${markerWidthPx}px`;
-      }
 
       const markerElement = new DOM('div', {
         'class': markerClasses.join(' '),
         'data-marker-time': String(marker.marker.time),
         'data-marker-title': String(marker.marker.title),
-      }).css(cssProperties);
+      }).css(this.getMarkerCssProperties(marker));
 
       if (marker.marker.imageUrl) {
         const removeImage = () => {
@@ -223,7 +215,7 @@ export class TimelineMarkersHandler {
 function getMarkerPositions(player: PlayerAPI, marker: TimelineMarker) {
   const duration = getDuration(player);
 
-  const markerPosition = 100 / duration * getMarkerTime(marker, player, duration); // convert absolute time to percentage
+  let markerPosition = 100 / duration * getMarkerTime(marker, player, duration); // convert absolute time to percentage
   let markerDuration = 100 / duration * marker.duration;
 
   if (markerPosition < 0 && !isNaN(markerDuration)) {
