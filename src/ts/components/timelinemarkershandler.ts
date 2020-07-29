@@ -119,6 +119,7 @@ export class TimelineMarkersHandler {
         this.removeMarkerFromConfig(marker);
       } else if (markerPosition <= 100) {
         const matchingMarker = this.timelineMarkers.find(seekbarMarker => seekbarMarker.marker === marker);
+
         if (matchingMarker) {
           matchingMarker.position = markerPosition;
           matchingMarker.duration = markerDuration;
