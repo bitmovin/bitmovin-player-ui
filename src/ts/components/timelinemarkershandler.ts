@@ -217,7 +217,7 @@ export class TimelineMarkersHandler {
 function getMarkerPositions(player: PlayerAPI, marker: TimelineMarker) {
   const duration = getDuration(player);
 
-  let markerPosition = 100 / duration * getMarkerTime(marker, player, duration); // convert absolute time to percentage
+  const markerPosition = 100 / duration * getMarkerTime(marker, player, duration); // convert absolute time to percentage
   let markerDuration = 100 / duration * marker.duration;
 
   if (markerPosition < 0 && !isNaN(markerDuration)) {
