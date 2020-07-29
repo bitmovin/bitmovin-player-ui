@@ -140,8 +140,10 @@ export class TimelineMarkersHandler {
 
     const positionInPx = (seekBarWidthPx / 100) * (marker.position < 0 ? 0 : marker.position);
     const cssProperties: { [propertyName: string]: string } = {
-      '-ms-transform': `translateX(${positionInPx}px)`,
       '-webkit-transform': `translateX(${positionInPx}px)`,
+      '-moz-transform': `translateX(${positionInPx}px)`,
+      '-ms-transform': `translateX(${positionInPx}px)`,
+      '-o-transform': `translateX(${positionInPx}px)`,
       'transform': `translateX(${positionInPx}px)`,
     };
 
