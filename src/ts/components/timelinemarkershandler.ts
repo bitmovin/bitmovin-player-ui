@@ -137,12 +137,14 @@ export class TimelineMarkersHandler {
         'data-marker-title': String(marker.marker.title),
       }).css(cssProperties);
 
-      const imageElement = new DOM('img', {
-        'class': markerImageClasses.join(' '),
-        'src': marker.marker.imageUrl,
-      });
+      if (marker.marker.imageUrl) {
+        const imageElement = new DOM('img', {
+          'class': markerImageClasses.join(' '),
+          'src': marker.marker.imageUrl,
+        });
 
-      markerElement.append(imageElement);
+        markerElement.append(imageElement);
+      }
 
       this.markersContainer.append(markerElement);
     });
