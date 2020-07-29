@@ -83,11 +83,11 @@ export class TimelineMarkersHandler {
     this.markersContainer.get()[0].innerHTML = '';
   }
 
-  private removeMarker(marker: TimelineMarker): void {
+  private removeMarkerFromConfig(marker: TimelineMarker): void {
     this.uimanager.getConfig().metadata.markers = this.uimanager.getConfig().metadata.markers.filter(_marker => marker !== _marker);
   }
 
-  private filterRemovedMarkers() {
+  private filterRemovedMarkers(): void {
     this.timelineMarkers = this.timelineMarkers.filter(seekbarMarker => {
       const matchingMarker = this.uimanager.getConfig().metadata.markers.find(_marker =>  seekbarMarker.marker === _marker);
       if (!matchingMarker) {
@@ -97,7 +97,7 @@ export class TimelineMarkersHandler {
     });
   }
 
-  private removeMarkerFromDOM(marker: SeekBarMarker) {
+  private removeMarkerFromDOM(marker: SeekBarMarker): void {
     if (marker.element) {
       const element = marker.element.get()[0];
       element.parentElement.removeChild(element);
@@ -116,7 +116,7 @@ export class TimelineMarkersHandler {
       const { markerPosition, markerDuration } = getMarkerPositions(this.player, marker);
 
       if (shouldRemoveMarker(markerPosition, markerDuration)) {
-        this.removeMarker(marker);
+        this.removeMarkerFromConfig(marker);
       } else if (markerPosition <= 100) {
         const matchingMarker = this.timelineMarkers.find(seekbarMarker => seekbarMarker.marker === marker);
         if (matchingMarker) {
