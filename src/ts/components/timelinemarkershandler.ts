@@ -179,9 +179,9 @@ export class TimelineMarkersHandler {
         }).on('error', removeImage);
 
         markerElement.append(imageElement);
-        marker.element = markerElement;
       }
 
+      marker.element = markerElement;
       this.markersContainer.append(markerElement);
   }
 
