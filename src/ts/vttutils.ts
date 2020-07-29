@@ -1,9 +1,10 @@
 import { SubtitleRegionContainer, SubtitleLabel } from './components/subtitleoverlay';
 import { VTTProperties, VTTRegionProperties } from 'bitmovin-player/types/subtitles/vtt/API';
-import { DOM } from './dom';
+import { DOM, Size } from './dom';
 
 // Our default height of a line
 const lineHeight = 28;
+const defaultLineNumber = 21; // Our default amount of lines
 
 enum Direction {
   Top = 'top',
@@ -53,40 +54,56 @@ const setVttLineAlign = (cueContainerDom: DOM, { lineAlign }: VTTProperties, dir
  * Defines the line positioning of the Cue Box
  * https://w3.org/TR/webvtt1/#webvtt-cue-line
  */
-const setVttLine = (cueContainerDom: DOM, vtt: VTTProperties, direction: Direction) => {
-  if (vtt.line !== 'auto') {
-    if (!vtt.snapToLines) {
-      cueContainerDom.css(direction, vtt.line as string);
-      setVttLineAlign(cueContainerDom, vtt, direction);
-    } else if (vtt.snapToLines && vtt.line > 0) {
-      cueContainerDom.css(direction, `${vtt.line as number * lineHeight}px`);
-      setVttLineAlign(cueContainerDom, vtt, direction);
-    } else if (vtt.snapToLines && vtt.line < 0) {
-      cueContainerDom.css(DirectionPair.get(direction), `${vtt.line as number * -lineHeight}px`);
-      setVttLineAlign(cueContainerDom, vtt, DirectionPair.get(direction));
-    }
+const setVttLine = (
+  cueContainerDom: DOM,
+  vtt: VTTProperties,
+  direction: Direction,
+  subtitleOverLaySize: Size,
+) => {
+  if (vtt.line === 'auto') {
+    return;
   }
+
+  let relativeLinePosition = vtt.line;
+
+  if (vtt.snapToLines) {
+    let targetLine = Number(vtt.line);
+    if (targetLine < 0) {
+      targetLine = defaultLineNumber + targetLine;
+    }
+
+    const lineHeight = subtitleOverLaySize.height / defaultLineNumber;
+    const absoluteLinePosition = lineHeight * targetLine;
+    relativeLinePosition = (100 * absoluteLinePosition) / subtitleOverLaySize.height;
+    relativeLinePosition = `${relativeLinePosition}%`;
+  }
+
+  cueContainerDom.css(direction, relativeLinePosition as string);
+  setVttLineAlign(cueContainerDom, vtt, direction);
 };
 
 /**
  * Defines the writing direction of the Cue Box
  * https://w3.org/TR/webvtt1/#webvtt-cue-writing-direction
  */
-const setVttWritingDirection = (cueContainerDom: DOM, vtt: VTTProperties) => {
+const setVttWritingDirection = (
+  cueContainerDom: DOM, vtt: VTTProperties,
+  subtitleOverlaySize: Size,
+) => {
   if (vtt.vertical === '') {
     cueContainerDom.css('writing-mode', 'horizontal-tb');
     cueContainerDom.css(Direction.Bottom, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Top);
+    setVttLine(cueContainerDom, vtt, Direction.Top, subtitleOverlaySize);
   } else if (vtt.vertical === 'lr') {
     cueContainerDom.css('writing-mode', 'vertical-lr');
     cueContainerDom.css(Direction.Right, '0');
     cueContainerDom.css(Direction.Top, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Right);
+    setVttLine(cueContainerDom, vtt, Direction.Right, subtitleOverlaySize);
   } else if (vtt.vertical === 'rl') {
     cueContainerDom.css('writing-mode', 'vertical-rl');
     cueContainerDom.css(Direction.Left, '0');
     cueContainerDom.css(Direction.Top, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Left);
+    setVttLine(cueContainerDom, vtt, Direction.Left, subtitleOverlaySize);
   }
 };
 
@@ -123,12 +140,15 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
 };
 
 export namespace VttUtils {
-  export const setVttCueBoxStyles = (cueContainer: SubtitleLabel) => {
+  export const setVttCueBoxStyles = (
+    cueContainer: SubtitleLabel,
+    subtitleOverlaySize: Size,
+  ) => {
     const vtt = cueContainer.vtt;
     const cueContainerDom = cueContainer.getDomElement();
 
     setDefaultVttStyles(cueContainerDom, vtt);
-    setVttWritingDirection(cueContainerDom, vtt);
+    setVttWritingDirection(cueContainerDom, vtt, subtitleOverlaySize);
 
     // https://w3.org/TR/webvtt1/#webvtt-cue-text-alignment
     const textAlign = vtt.align === 'middle' ? 'center' : vtt.align;
@@ -148,7 +168,11 @@ export namespace VttUtils {
   /** https://www.w3.org/TR/webvtt1/#regions
    *  https://www.speechpad.com/captions/webvtt#toc_16
    */
-  export const setVttRegionStyles = (regionContainer: SubtitleRegionContainer, region: VTTRegionProperties, overlaySize: { width: number, height: number }) => {
+  export const setVttRegionStyles = (
+    regionContainer: SubtitleRegionContainer,
+    region: VTTRegionProperties,
+    overlaySize: Size,
+  ) => {
     const regionContainerDom = regionContainer.getDomElement();
     const regionPositionX = overlaySize.width * region.viewportAnchorX / 100 - ((overlaySize.width * region.width / 100) * region.regionAnchorX / 100);
     const regionPositionY = overlaySize.height * region.viewportAnchorY / 100 - ((region.lines * lineHeight) * region.regionAnchorY / 100);
