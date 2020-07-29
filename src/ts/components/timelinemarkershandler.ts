@@ -80,7 +80,7 @@ export class TimelineMarkersHandler {
 
   private clearMarkers(): void {
     this.timelineMarkers = [];
-    this.markersContainer.get()[0].innerHTML = '';
+    this.markersContainer.empty();
   }
 
   private removeMarkerFromConfig(marker: TimelineMarker): void {
