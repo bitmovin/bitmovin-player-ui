@@ -39,6 +39,8 @@ export class TimelineMarkersHandler {
   private configureMarkers(): void {
     // Remove markers when unloaded
     this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => this.clearMarkers());
+    this.player.on(this.player.exports.PlayerEvent.AdBreakStarted, () => this.clearMarkers());
+    this.player.on(this.player.exports.PlayerEvent.AdBreakFinished, () => this.updateMarkers());
     // Update markers when the size of the seekbar changes
     this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkersDOM());
 
