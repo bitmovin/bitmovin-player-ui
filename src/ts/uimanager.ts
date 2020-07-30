@@ -281,6 +281,13 @@ export class UIManager {
         }
       }
 
+      if (adRequiresUi) {
+        // we dispatch onUpdated event because if there are multiple adBreaks for same position
+        // `Play` and `Playing` events will not be dispatched which will cause `PlaybackButton` state
+        // to be out of sync
+        this.config.events.onUpdated.dispatch(this);
+      }
+
       this.resolveUiVariant({
         isAd: isAd,
         adRequiresUi: adRequiresUi,

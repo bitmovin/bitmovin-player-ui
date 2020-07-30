@@ -83,13 +83,19 @@ $seekbar-height: .3125em;
       > .#{$prefix}-seekbar-marker {
         @extend %bar;
 
-        border-right: $marker-width solid $color-primary;
-        // don't consider the border for width, else it does not overlap at edges
-        box-sizing: content-box;
+        background-color: $color-primary;
         height: 100%;
-        // offset position marker to center it on its actual position
-        margin-left: -$marker-width / 2;
-        width: 0;
+        width: $marker-width;
+        text-align: center;
+        transition-property: transform;
+        transition-duration: 1s;
+        transition-timing-function: linear;
+
+        > .#{$prefix}-seekbar-marker-image {
+          position: absolute;
+          height: $seekbar-height * 4;
+          transform: translate(-50%, calc(-100% - .2em));
+        }
       }
     }
   }

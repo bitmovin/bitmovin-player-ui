@@ -27,6 +27,7 @@ export class TimelineMarkersHandler {
     this.config = config;
     this.getSeekBarWidth = getSeekBarWidth;
     this.markersContainer = markersContainer;
+    this.timelineMarkers = [];
   }
 
   public initialize(player: PlayerAPI, uimanager: UIInstanceManager) {
@@ -38,6 +39,8 @@ export class TimelineMarkersHandler {
   private configureMarkers(): void {
     // Remove markers when unloaded
     this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => this.clearMarkers());
+    this.player.on(this.player.exports.PlayerEvent.AdBreakStarted, () => this.clearMarkers());
+    this.player.on(this.player.exports.PlayerEvent.AdBreakFinished, () => this.updateMarkers());
     // Update markers when the size of the seekbar changes
     this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkersDOM());
 
@@ -80,61 +83,114 @@ export class TimelineMarkersHandler {
 
   private clearMarkers(): void {
     this.timelineMarkers = [];
-    this.updateMarkersDOM();
+    this.markersContainer.empty();
   }
 
-  private removeMarker(marker: TimelineMarker): void {
+  private removeMarkerFromConfig(marker: TimelineMarker): void {
     this.uimanager.getConfig().metadata.markers = this.uimanager.getConfig().metadata.markers.filter(_marker => marker !== _marker);
   }
 
-  private updateMarkers(): void {
-    this.clearMarkers();
+  private filterRemovedMarkers(): void {
+    this.timelineMarkers = this.timelineMarkers.filter(seekbarMarker => {
+      const matchingMarker = this.uimanager.getConfig().metadata.markers.find(_marker => seekbarMarker.marker === _marker);
+      if (!matchingMarker) {
+        this.removeMarkerFromDOM(seekbarMarker);
+      }
+      return matchingMarker;
+    });
+  }
 
+  private removeMarkerFromDOM(marker: SeekBarMarker): void {
+    if (marker.element) {
+      marker.element.remove();
+    }
+  }
+
+  private updateMarkers(): void {
     if (!shouldProcessMarkers(this.player, this.uimanager)) {
+      this.clearMarkers();
       return;
     }
+
+    this.filterRemovedMarkers();
 
     this.uimanager.getConfig().metadata.markers.forEach(marker => {
       const { markerPosition, markerDuration } = getMarkerPositions(this.player, marker);
 
       if (shouldRemoveMarker(markerPosition, markerDuration)) {
-        this.removeMarker(marker);
+        this.removeMarkerFromConfig(marker);
       } else if (markerPosition <= 100) {
-        this.timelineMarkers.push({ marker, position: markerPosition, duration: markerDuration });
+        const matchingMarker = this.timelineMarkers.find(seekbarMarker => seekbarMarker.marker === marker);
+
+        if (matchingMarker) {
+          matchingMarker.position = markerPosition;
+          matchingMarker.duration = markerDuration;
+
+          this.updateMarkerDOM(matchingMarker);
+        } else {
+          const newMarker: SeekBarMarker = { marker, position: markerPosition, duration: markerDuration };
+          this.timelineMarkers.push(newMarker);
+
+          this.createMarkerDOM(newMarker);
+        }
       }
     });
+  }
 
-    // Populate the timeline with the markers
-    this.updateMarkersDOM();
+  private getMarkerCssProperties(marker: SeekBarMarker): { [propertyName: string]: string } {
+    const seekBarWidthPx = this.getSeekBarWidth();
+
+    const positionInPx = (seekBarWidthPx / 100) * (marker.position < 0 ? 0 : marker.position);
+    const cssProperties: { [propertyName: string]: string } = {
+      'transform': `translateX(${positionInPx}px)`,
+    };
+
+    if (marker.duration > 0) {
+      const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
+      cssProperties['width'] = `${markerWidthPx}px`;
+    }
+
+    return cssProperties;
+  }
+
+  private updateMarkerDOM(marker: SeekBarMarker): void {
+    marker.element.css(this.getMarkerCssProperties(marker));
+  }
+
+  private createMarkerDOM(marker: SeekBarMarker): void {
+    const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
+      .map(cssClass => this.prefixCss(cssClass));
+
+    const markerElement = new DOM('div', {
+      'class': markerClasses.join(' '),
+      'data-marker-time': String(marker.marker.time),
+      'data-marker-title': String(marker.marker.title),
+    }).css(this.getMarkerCssProperties(marker));
+
+    if (marker.marker.imageUrl) {
+      const removeImage = () => {
+        imageElement.remove();
+      };
+
+      const imageElement = new DOM('img', {
+        'class': this.prefixCss('seekbar-marker-image'),
+        'src': marker.marker.imageUrl,
+      }).on('error', removeImage);
+
+      markerElement.append(imageElement);
+    }
+
+    marker.element = markerElement;
+    this.markersContainer.append(markerElement);
   }
 
   private updateMarkersDOM(): void {
-    // TODO: For live streams we are removing all markers, and re-adding them.
-    // we should track markers by some internal IDs and just update their positions
-    // This would give us ability to make their pos updating smooth with css transition
-    this.markersContainer.empty();
-
-    const seekBarWidthPx = this.getSeekBarWidth();
-
     this.timelineMarkers.forEach(marker => {
-      const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
-        .map(cssClass => this.prefixCss(cssClass));
-
-      const cssProperties: { [propertyName: string]: string } = {
-        'width': marker.position + '%',
-      };
-
-      if (marker.duration > 0) {
-        const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
-        cssProperties['border-right-width'] = markerWidthPx + 'px';
-        cssProperties['margin-left'] = '0';
+      if (marker.element) {
+        this.updateMarkerDOM(marker);
+      } else {
+        this.createMarkerDOM(marker);
       }
-
-      this.markersContainer.append(new DOM('div', {
-        'class': markerClasses.join(' '),
-        'data-marker-time': String(marker.marker.time),
-        'data-marker-title': String(marker.marker.title),
-      }).css(cssProperties));
     });
   }
 
