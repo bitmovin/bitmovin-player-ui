@@ -26,7 +26,7 @@ export interface TimelineMarker {
   title?: string;
   /**
    * Url to timeline marker image
-   * Prefered small image sizes (~50px)
+   * Prefered small image sizes (~50px) with aspect ratio of 1:1
    * Best performing with SVG format
    */
   imageUrl?: string;
