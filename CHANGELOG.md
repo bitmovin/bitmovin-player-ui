@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Support for `images` on `TimelineMarkers`
 
 ### Changed
-- The css for positioning of the `TimelineMarkers`
+- CSS for positioning of the `TimelineMarkers`
 
 ## [3.15.0] - 2020-07-23
 
