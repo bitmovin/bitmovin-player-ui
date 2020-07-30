@@ -25,6 +25,12 @@ export interface TimelineMarker {
    */
   title?: string;
   /**
+   * Url to timeline marker image
+   * Prefered small image sizes (~50px) with aspect ratio of 1:1
+   * Best performing with SVG format
+   */
+  imageUrl?: string;
+  /**
    * Optional CSS classes that are applied to the marker on a {@link SeekBar} and can be used to
    * differentiate different types of markers by their style (e.g. different color of chapter markers
    * and ad break markers).
