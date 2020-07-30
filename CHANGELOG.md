@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Support for `images` on `TimelineMarkers`
 
 ### Changed
-- CSS for positioning of the `TimelineMarkers`
+- Changed `TimelineMarkers` rendering from using no `offset` and `css-border` to `width` and `translateX` properties.
 
 ## [3.15.0] - 2020-07-23
 
