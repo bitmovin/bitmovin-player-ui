@@ -367,17 +367,23 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       if (item.isActive() && (item as any).setting instanceof SelectBox) {
         const selectBox = (item as any).setting as SelectBox;
         const oldDisplay = selectBox.getDomElement().css('display');
-        // updating the display to none marks the select-box as inactive, so it will be hidden with the rest
-        // we just have to make sure to reset this as soon as possible
-        selectBox.getDomElement().css('display', 'none');
-        if (window.requestAnimationFrame) {
-          requestAnimationFrame(() => {
+        if (oldDisplay !== 'none') {
+          // updating the display to none marks the select-box as inactive, so it will be hidden with the rest
+          // we just have to make sure to reset this as soon as possible
+          // if oldDisplay is already 'none', no need to redo it as it could lead to race condition
+          // wherein the display is irreversibly set to 'none' when browser tab/window is not active because
+          // requestAnimationFrame is either delayed or paused in some browsers in inactive state
+          selectBox.getDomElement().css('display', 'none');
+          // console.log('Before: Setting display:none');
+          if (window.requestAnimationFrame) {
+            requestAnimationFrame(() => {
+              selectBox.getDomElement().css('display', oldDisplay);
+            });
+          } else {
+            // IE9 has no requestAnimationFrame, set the value directly. It has no optimization about ignoring DOM-changes
+            // between animationFrames
             selectBox.getDomElement().css('display', oldDisplay);
-          });
-        } else {
-          // IE9 has no requestAnimationFrame, set the value directly. It has no optimization about ignoring DOM-changes
-          // between animationFrames
-          selectBox.getDomElement().css('display', oldDisplay);
+          }
         }
       }
     });
