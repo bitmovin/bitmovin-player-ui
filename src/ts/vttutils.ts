@@ -64,7 +64,7 @@ const setVttLine = (
     return;
   }
 
-  let relativeLinePosition = vtt.line;
+  let relativeLinePosition = parseFloat(vtt.line as string);
 
   if (vtt.snapToLines) {
     let targetLine = Number(vtt.line);
@@ -75,10 +75,9 @@ const setVttLine = (
     const lineHeight = subtitleOverLaySize.height / defaultLineNumber;
     const absoluteLinePosition = lineHeight * targetLine;
     relativeLinePosition = (100 * absoluteLinePosition) / subtitleOverLaySize.height;
-    relativeLinePosition = `${relativeLinePosition}%`;
   }
 
-  cueContainerDom.css(direction, relativeLinePosition as string);
+  cueContainerDom.css(direction, `${relativeLinePosition}%`);
   setVttLineAlign(cueContainerDom, vtt, direction);
 };
 
