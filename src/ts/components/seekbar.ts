@@ -61,6 +61,7 @@ export interface SeekBarMarker {
   marker: TimelineMarker;
   position: number;
   duration?: number;
+  element?: DOM;
 }
 
 /**
