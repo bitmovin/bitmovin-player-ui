@@ -114,6 +114,21 @@ describe('Vtt Utils', () => {
             expect(spyCss).toHaveBeenNthCalledWith(8, 'top', '50%');
           });
 
+          it('should set percentage line positioning for absolute value', () => {
+            const mockRegionContainer = generateSubtitleCueBoxMock(false, {
+              line: 50,
+              snapToLines: false,
+            } as VTTProperties);
+            const mockDomElement = MockHelper.generateDOMMock();
+            mockRegionContainer.getDomElement = () => mockDomElement;
+            const spyCss = jest.spyOn(mockRegionContainer.getDomElement(), 'css');
+
+            VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
+
+            expect(spyCss).toHaveBeenCalledTimes(11);
+            expect(spyCss).toHaveBeenNthCalledWith(8, 'top', '50%');
+          });
+
           it('should set positive line positioning', () => {
             const mockRegionContainer = generateSubtitleCueBoxMock(false, {
               line: 4,
