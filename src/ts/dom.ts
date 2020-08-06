@@ -3,6 +3,11 @@ export interface Offset {
   top: number;
 }
 
+export interface Size {
+  width: number;
+  height: number;
+}
+
 export interface CssProperties {
   [propertyName: string]: string;
 }
@@ -394,6 +399,14 @@ export class DOM {
   height(): number {
     // TODO check if this is the same as jQuery's height() (probably not)
     return this.elements[0].offsetHeight;
+  }
+
+  /**
+   * Returns the size of the first element.
+   * @return {Size} the size of the first element
+   */
+  size(): Size {
+    return { width: this.width(), height: this.height() };
   }
 
   /**

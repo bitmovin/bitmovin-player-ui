@@ -51,6 +51,7 @@ export namespace MockHelper {
       css: jest.fn(),
       width: jest.fn(),
       height: jest.fn(),
+      size: jest.fn(),
       empty: jest.fn(),
       append: jest.fn(),
     }));
