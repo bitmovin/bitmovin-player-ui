@@ -4,7 +4,7 @@ import { Label, LabelConfig } from './label';
 import { ComponentConfig, Component } from './component';
 import { ControlBar } from './controlbar';
 import { EventDispatcher } from '../eventdispatcher';
-import { DOM } from '../dom';
+import { DOM, Size } from '../dom';
 import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { VttUtils } from '../vttutils';
@@ -71,11 +71,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.show();
 
-      const overlaySize = {
-        width: this.getDomElement().width(),
-        height: this.getDomElement().height(),
-      };
-      this.subtitleContainerManager.addLabel(labelToAdd, overlaySize);
+      this.subtitleContainerManager.addLabel(labelToAdd, this.getDomElement().size());
       this.updateComponents();
     });
 
@@ -466,7 +462,7 @@ export class SubtitleRegionContainerManager {
    * If the subtitle has positioning information it is added to the container.
    * @param label The subtitle label to wrap
    */
-  addLabel(label: SubtitleLabel, overlaySize?: { width: number, height: number }): void {
+  addLabel(label: SubtitleLabel, overlaySize?: Size): void {
     let regionContainerId;
     let regionName;
 
@@ -555,7 +551,7 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
     }, this.config);
   }
 
-  addLabel(labelToAdd: SubtitleLabel, overlaySize?: { width: number, height: number }) {
+  addLabel(labelToAdd: SubtitleLabel, overlaySize?: Size) {
     this.labelCount++;
 
     if (labelToAdd.vtt) {
@@ -563,7 +559,7 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
         VttUtils.setVttRegionStyles(this, labelToAdd.vtt.region, overlaySize);
       }
 
-      VttUtils.setVttCueBoxStyles(labelToAdd);
+      VttUtils.setVttCueBoxStyles(labelToAdd, overlaySize);
     }
 
     this.addComponent(labelToAdd);
