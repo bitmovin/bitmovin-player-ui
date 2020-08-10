@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Subtitle positioning when small screen UI is used and vtt properties are present
+- `SettingsPanel` goes blank sometimes when switching browser tab/window
 
 ## [3.16.0] - 2020-07-30
 
@@ -668,6 +669,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.16.0...HEAD
 [3.16.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.15.0...v3.16.0
 [3.15.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.14.0...v3.15.0
 [3.14.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.13.0...v3.14.0

@@ -367,6 +367,13 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       if (item.isActive() && (item as any).setting instanceof SelectBox) {
         const selectBox = (item as any).setting as SelectBox;
         const oldDisplay = selectBox.getDomElement().css('display');
+        if (oldDisplay === 'none') {
+          // if oldDisplay is already 'none', no need to set to 'none' again. It could lead to race condition
+          // wherein the display is irreversibly set to 'none' when browser tab/window is not active because
+          // requestAnimationFrame is either delayed or paused in some browsers in inactive state
+          return;
+        }
+
         // updating the display to none marks the select-box as inactive, so it will be hidden with the rest
         // we just have to make sure to reset this as soon as possible
         selectBox.getDomElement().css('display', 'none');
