@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [develop]
+## [3.17.0]
 
 ### Fixed
 - Subtitle positioning when small screen UI is used and vtt properties are present
@@ -669,7 +669,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.16.0...HEAD
+[3.17.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.16.0...v3.17.0
 [3.16.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.15.0...v3.16.0
 [3.15.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.14.0...v3.15.0
 [3.14.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.13.0...v3.14.0
