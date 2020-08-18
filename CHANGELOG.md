@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.17.0]
+## [3.17.0] - 2020-08-18
 
 ### Fixed
 - Subtitle positioning when small screen UI is used and vtt properties are present
