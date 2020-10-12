@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## develop
+
+### Fixed
+- Live-indicator stays active after stalling in live streams
+
 ## [3.17.0] - 2020-08-18
 
 ### Fixed
