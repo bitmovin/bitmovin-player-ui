@@ -139,6 +139,8 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     player.on(player.exports.PlayerEvent.TimeShifted, updateLiveTimeshiftState);
     player.on(player.exports.PlayerEvent.Playing, updateLiveTimeshiftState);
     player.on(player.exports.PlayerEvent.Paused, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.StallStarted, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.StallEnded, updateLiveTimeshiftState);
 
     let init = () => {
       // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content
