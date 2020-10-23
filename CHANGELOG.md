@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Live-indicator stays active after stalling in live streams
+- Subtitles not displayed in IE/tizen 2016 when no regions are present
 
 ## [3.17.0] - 2020-08-18
 
