@@ -493,7 +493,7 @@ export class SubtitleRegionContainerManager {
          * If there is no region present to wrap the Cue Box, the Cue box becomes the
          * region itself. Therefore the positioning values have to come from the box.
          */
-        regionContainer.getDomElement().css('position', 'unset');
+        regionContainer.getDomElement().css('position', 'static');
       } else {
         // getDomElement needs to be called at least once to ensure the component exists
         regionContainer.getDomElement();
