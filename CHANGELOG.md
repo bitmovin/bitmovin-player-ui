@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## develop
+## [3.19.0] - 2020-11-10
+
+### Fixed
+- Subtitles not displayed in IE/tizen 2016 when no regions are present
+
+## [3.18.0] - 2020-10-27
 
 ### Fixed
 - Live-indicator stays active after stalling in live streams
-- Subtitles not displayed in IE/tizen 2016 when no regions are present
 
 ## [3.17.0] - 2020-08-18
 
