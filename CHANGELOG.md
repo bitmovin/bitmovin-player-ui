@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Exception on browsers not supporting `Array.find` by adding a polyfill
 
-
 ## [3.19.0] - 2020-11-10
 
 ### Fixed
