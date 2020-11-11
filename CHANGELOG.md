@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## develop
 
-### Added
-- Added a polyfill for `Array.prototype.find`
+### Fixed
+- Exception on browsers not supporting `Array.find` by adding a polyfill
+
 
 ## [3.19.0] - 2020-11-10
 
