@@ -771,19 +771,7 @@ export class PlayerWrapper {
     // Collect all members of the player (public API methods and properties of the player)
     const objectProtoPropertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf({}));
     const namesToIgnore = ['constructor', ...objectProtoPropertyNames];
-    const getAllPropertyNames = ((target: PlayerAPI) => {
-      let names: string[] = [];
-
-      while (target) {
-        names = names.concat(Object.getOwnPropertyNames(target).filter(name => namesToIgnore.indexOf(name) === -1));
-        // go up prototype chain
-        target = Object.getPrototypeOf(target);
-      }
-
-      return names;
-    });
-
-    const members = getAllPropertyNames(player);
+    const members = getAllPropertyNames(player).filter(name => namesToIgnore.indexOf(name) === -1);
     // Split the members into methods and properties
     let methods = <any[]>[];
     let properties = <any[]>[];
@@ -911,3 +899,14 @@ export class PlayerWrapper {
   }
 }
 
+function getAllPropertyNames(target: PlayerAPI): string[] {
+  let names: string[] = [];
+
+  while (target) {
+    names = names.concat(Object.getOwnPropertyNames(target));
+    // go up prototype chain
+    target = Object.getPrototypeOf(target);
+  }
+
+  return names;
+}
