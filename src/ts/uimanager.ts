@@ -903,7 +903,8 @@ function getAllPropertyNames(target: PlayerAPI): string[] {
   let names: string[] = [];
 
   while (target) {
-    names = names.concat(Object.getOwnPropertyNames(target));
+    const newNames = Object.getOwnPropertyNames(target).filter(name => names.indexOf(name) === -1);
+    names = names.concat(newNames);
     // go up prototype chain
     target = Object.getPrototypeOf(target);
   }
