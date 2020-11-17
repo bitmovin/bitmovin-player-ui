@@ -899,7 +899,7 @@ export class PlayerWrapper {
   }
 }
 
-function getAllPropertyNames(target: PlayerAPI): string[] {
+function getAllPropertyNames(target: Object): string[] {
   let names: string[] = [];
 
   while (target) {
