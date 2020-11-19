@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [develop]
+## [3.20.0]
 
 ### Fixed
 - Wrapping possibly not enumerable poperties of player object, like getters and setters
