@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.19.0]
+## [3.20.0] - 2020-11-25
+
+### Fixed
+- Wrapping possibly not enumerable poperties of player object, like getters and setters
+
+## [3.19.0] - 2020-11-10
 
 ### Fixed
 - Subtitles not displayed in IE/tizen 2016 when no regions are present

@@ -769,12 +769,9 @@ export class PlayerWrapper {
     this.player = player;
 
     // Collect all members of the player (public API methods and properties of the player)
-    // (Object.getOwnPropertyNames(player) does not work with the player TypeScript class starting in 7.2)
-    let members: string[] = [];
-    for (let member in player) {
-      members.push(member);
-    }
-
+    const objectProtoPropertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf({}));
+    const namesToIgnore = ['constructor', ...objectProtoPropertyNames];
+    const members = getAllPropertyNames(player).filter(name => namesToIgnore.indexOf(name) === -1);
     // Split the members into methods and properties
     let methods = <any[]>[];
     let properties = <any[]>[];
@@ -902,3 +899,15 @@ export class PlayerWrapper {
   }
 }
 
+function getAllPropertyNames(target: Object): string[] {
+  let names: string[] = [];
+
+  while (target) {
+    const newNames = Object.getOwnPropertyNames(target).filter(name => names.indexOf(name) === -1);
+    names = names.concat(newNames);
+    // go up prototype chain
+    target = Object.getPrototypeOf(target);
+  }
+
+  return names;
+}
