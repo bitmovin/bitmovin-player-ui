@@ -60,7 +60,7 @@ export namespace UIFactory {
     return UIFactory.buildModernCastReceiverUI(player, config);
   }
 
-  function modernUI() {
+  export function modernUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
     let mainSettingsPanelPage = new SettingsPanelPage({
