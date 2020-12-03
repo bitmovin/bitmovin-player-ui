@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## [3.21.0] - 2020-12-03
+
+### Added
+- `'type' : 'button'` to buttons to prevent submitting forms
+
 ## [3.20.0] - 2020-11-25
 
 ### Fixed
@@ -684,6 +690,10 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.21.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.20.0...v3.11.0
+[3.20.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.19.0...v3.20.0
+[3.19.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.18.0...v3.19.0
+[3.18.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.17.0...v3.18.0
 [3.17.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.16.0...v3.17.0
 [3.16.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.15.0...v3.16.0
 [3.15.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.14.0...v3.15.0
