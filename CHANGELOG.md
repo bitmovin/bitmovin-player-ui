@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## develop
+
+### Changed
+- Exported builder method for `modernUI`
+
 ## [3.21.0] - 2020-12-03
 
 ### Added
@@ -13,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [3.20.0] - 2020-11-25
 
 ### Fixed
-- Wrapping possibly not enumerable poperties of player object, like getters and setters
+- Wrapping possibly not enumerable properties of player object, like getters and setters
 
 ## [3.19.0] - 2020-11-10
 
