@@ -146,6 +146,7 @@ export class UIManager {
     this.config = {
       playbackSpeedSelectionEnabled: true, // Switch on speed selector by default
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
+      disableAutoHideWhenHovered: false, // Disable auto hide when UI is hovered
       ...uiconfig,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),

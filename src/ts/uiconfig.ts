@@ -69,6 +69,11 @@ export interface UIConfig {
    */
   playbackSpeedSelectionEnabled?: boolean;
   /**
+   * Specifies if the player controls including `SettingsPanel` should auto hide when still hovered
+   * Default: false
+   */
+  disableAutoHideWhenHovered?: boolean;
+  /**
    * Specifies the seekbar snapping range in percentage
    * Default: 1
    */
