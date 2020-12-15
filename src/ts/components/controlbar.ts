@@ -72,7 +72,5 @@ export class ControlBar extends Container<ControlBarConfig> {
     uimanager.onControlsHide.subscribe(() => {
       this.hide();
     });
-
-
   }
 }
