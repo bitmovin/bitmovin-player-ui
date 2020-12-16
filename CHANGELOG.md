@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## develop
 
+### Added
+- `UIConfig#disableAutoHideWhenHovered` config property to disable auto hiding of UI when an element in `ControlBar` is currently hovered
+
 ### Changed
 - Exported builder method for `modernUI`
 
