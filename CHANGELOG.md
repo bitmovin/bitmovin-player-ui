@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## develop
+## [3.22.0] - 2020-12-17
 
 ### Added
 - `UIConfig#disableAutoHideWhenHovered` config property to disable auto hiding of UI when an element in `ControlBar` is currently hovered
