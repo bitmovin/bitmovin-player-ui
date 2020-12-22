@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [3.22.0] - 2020-12-17
+
+### Added
+- `UIConfig#disableAutoHideWhenHovered` config property to disable auto hiding of UI when an element in `ControlBar` is currently hovered
+
+### Changed
+- Exported builder method for `modernUI`
+
 ## [3.21.0] - 2020-12-03
 
 ### Added
@@ -13,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [3.20.0] - 2020-11-25
 
 ### Fixed
-- Wrapping possibly not enumerable poperties of player object, like getters and setters
+- Wrapping possibly not enumerable properties of player object, like getters and setters
 
 ## [3.19.0] - 2020-11-10
 
@@ -690,7 +698,8 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[3.21.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.20.0...v3.11.0
+[3.22.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.21.0...v3.22.0
+[3.21.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.20.0...v3.21.0
 [3.20.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.19.0...v3.20.0
 [3.19.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.18.0...v3.19.0
 [3.18.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.17.0...v3.18.0
