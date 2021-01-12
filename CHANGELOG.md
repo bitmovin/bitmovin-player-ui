@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## develop
+
+### Changed
+- Default error message for code `1105` now uses the term "allowlist"
 
 ## [3.22.0] - 2020-12-22
 

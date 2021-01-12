@@ -11,7 +11,7 @@ export namespace ErrorUtils {
     1102: 'No configuration was provided',
     1103: 'The license is not valid',
     1104: 'The the domain-locked player is not authorized to playback on this domain',
-    1105: 'The domain is not whitelisted',
+    1105: 'The domain is not allowlisted',
     1106: 'The license server URL is invalid',
     1107: 'The impression server URL is invalid',
     1108: 'Could not initialize a rendering engine',
