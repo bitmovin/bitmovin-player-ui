@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## develop
 
 ### Changed
-- Default error message for code `1105` uses the term "allowlist" instead of "whitelist"
+- Default error message for code `1105` now uses the term "allowlist"
 
 ## [3.22.0] - 2020-12-22
 
