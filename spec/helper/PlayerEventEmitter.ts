@@ -364,4 +364,11 @@ export class PlayerEventEmitter {
       type: 'viewmodeavailabilitychanged' as any,
     });
   }
+
+  firePlaylistTransitionEvent(): void {
+    this.fireEvent<any>({
+      timestamp: Date.now(),
+      type: 'playlisttransition',
+    });
+  }
 }
