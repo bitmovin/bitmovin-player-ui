@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## develop
+
+### Added
+- Support for `PlaylistTransition` event which is only present on Mobile V3
+
 ## [3.23.0] - 2021-01-14
 
 ### Changed
