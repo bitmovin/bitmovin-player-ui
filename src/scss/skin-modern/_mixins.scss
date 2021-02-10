@@ -138,4 +138,9 @@
     box-shadow: $focus-element-box-shadow;
     outline: none;
   }
+
+  &:focus:not(:focus-visible) {
+    box-shadow: none;
+    outline: none;
+  }
 }
