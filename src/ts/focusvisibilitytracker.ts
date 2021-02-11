@@ -4,7 +4,7 @@ export class FocusVisibilityTracker {
   private readonly eventHandlerMap: { [eventName: string]: EventListenerOrEventListenerObject };
   private lastInteractionWasKeyboard: boolean = true;
 
-  constructor(document: Document, private bitmovinUiPrefix: string) {
+  constructor(private bitmovinUiPrefix: string) {
     this.eventHandlerMap = {
       mousedown: this.onMouseOrPointerOrTouch,
       pointerdown: this.onMouseOrPointerOrTouch,
@@ -13,7 +13,7 @@ export class FocusVisibilityTracker {
       focus: this.onFocus,
       blur: this.onBlur,
     };
-    this.registerEventListeners(document);
+    this.registerEventListeners();
   }
 
   private onKeyDown = (e: KeyboardEvent) => {
@@ -43,7 +43,7 @@ export class FocusVisibilityTracker {
     }
   };
 
-  private registerEventListeners(document: Document): void {
+  private registerEventListeners(): void {
     for (const event in this.eventHandlerMap) {
       document.addEventListener(event, this.eventHandlerMap[event], true);
     }

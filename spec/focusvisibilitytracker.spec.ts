@@ -6,22 +6,16 @@ describe('FocusVisibilityTracker', () => {
   const uiButtonId = `${bitmovinUIPrefix}-some-button`;
   const nonUiButtonId = 'some-button';
   const focusVisibileClassName = '{{PREFIX}}-focus-visible';
-  let document: Document;
   let uiButton: HTMLElement;
   let nonUiButton: HTMLElement;
   let tracker: FocusVisibilityTracker;
 
   beforeEach(() => {
-    const dom = new JSDOM();
-    document = dom.window.document;
+    const { window } = new JSDOM();
+    global.document = window.document;
     uiButton = createAndAddButton(document, uiButtonId);
     nonUiButton = createAndAddButton(document, nonUiButtonId);
-
-    // make x instance of Element/DOMTokenList checks work
-    global.Element = dom.window.Element;
-    global.DOMTokenList = dom.window.DOMTokenList;
-
-    tracker = new FocusVisibilityTracker(document, bitmovinUIPrefix);
+    tracker = new FocusVisibilityTracker(bitmovinUIPrefix);
   });
 
   it('should add the focus-visible class on a UI button that gets focus w/o initial interaction', () => {

@@ -333,7 +333,7 @@ export class UIManager {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.ViewModeChanged, resolveUiVariant);
     }
 
-    this.focusVisibilityTracker = new FocusVisibilityTracker(document, '{{PREFIX}}');
+    this.focusVisibilityTracker = new FocusVisibilityTracker('{{PREFIX}}');
 
     // Initialize the UI
     resolveUiVariant(null);
