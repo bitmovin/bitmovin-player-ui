@@ -35,7 +35,7 @@
         box-shadow: inset -4px -3px 2px 9px $color-focus;
       }
 
-      &:focus:not(:focus-visible) {
+      &:focus:not(.#{$prefix}-focus-visible) {
         box-shadow: none;
       }
     }
