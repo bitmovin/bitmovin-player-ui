@@ -1,4 +1,4 @@
-const FocusVisibleClassName = '{{PREFIX}}-focus-visible';
+const FocusVisibleCssClassName = '{{PREFIX}}-focus-visible';
 
 export class FocusVisibilityTracker {
   private readonly eventHandlerMap: { [eventName: string]: EventListenerOrEventListenerObject };
@@ -31,15 +31,15 @@ export class FocusVisibilityTracker {
       this.lastInteractionWasKeyboard &&
       isHtmlElement(element) &&
       isBitmovinUi(element, this.bitmovinUiPrefix) &&
-      !element.classList.contains(FocusVisibleClassName)
+      !element.classList.contains(FocusVisibleCssClassName)
     ) {
-      element.classList.add(FocusVisibleClassName);
+      element.classList.add(FocusVisibleCssClassName);
     }
   };
 
   private onBlur = ({ target: element }: FocusEvent) => {
     if (isHtmlElement(element)) {
-      element.classList.remove(FocusVisibleClassName);
+      element.classList.remove(FocusVisibleCssClassName);
     }
   };
 
