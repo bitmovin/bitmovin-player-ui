@@ -51,9 +51,7 @@ describe('FocusVisibilityTracker', () => {
       uiButton.focus();
 
       expect(uiButton.classList.contains(focusVisibileClassName)).toBe(false);
-      expect(nonUiButton.classList.contains(focusVisibileClassName)).toBe(
-        false
-      );
+      expect(nonUiButton.classList.contains(focusVisibileClassName)).toBe(false);
     }
   );
 
