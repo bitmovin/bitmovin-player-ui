@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Support for `PlaylistTransition` event which is only present on Mobile V3
 
+### Fixed
+- Controls' focus highlighting is shown in case of non-keyboard interaction on some browsers/platforms
+
 ## [3.23.0] - 2021-01-14
 
 ### Changed
