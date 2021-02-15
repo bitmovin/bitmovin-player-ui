@@ -19,7 +19,7 @@ describe('FocusVisibilityTracker', () => {
   });
 
   it('should add the focus-visible class on a UI button that gets focus w/o initial interaction', () => {
-    // Tinitially , the last interaction is set to keyboard to cover case of htting TAB from the adress bar which would
+    // Initially, the last interaction is set to keyboard. To cover the case of hitting TAB from the address bar which would
     // not trigger a keydown event.
     uiButton.focus();
 
