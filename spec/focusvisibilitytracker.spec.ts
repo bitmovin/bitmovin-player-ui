@@ -18,7 +18,7 @@ describe('FocusVisibilityTracker', () => {
     tracker = new FocusVisibilityTracker(bitmovinUIPrefix);
   });
 
-  it('should add the focus-visible class on a UI button that gets focus w/o initial interaction', () => {
+  it('adds the focus-visible class on a UI button that gets focus w/o initial interaction', () => {
     // Initially, the last interaction is set to keyboard. To cover the case of hitting TAB from the address bar which would
     // not trigger a keydown event.
     uiButton.focus();
@@ -27,7 +27,7 @@ describe('FocusVisibilityTracker', () => {
     expect(nonUiButton.classList.contains(focusVisibileClassName)).toBe(false);
   });
 
-  it('should add the focus-visible class on a UI button that gets focus after a keydown event', () => {
+  it('adds the focus-visible class on a UI button that gets focus after a keydown event', () => {
     dispatchEvent(document, 'MouseEvent', 'mousedown');
     dispatchEvent(document, 'KeyboardEvent', 'keydown');
 
@@ -44,7 +44,7 @@ describe('FocusVisibilityTracker', () => {
     ${'MouseEvent'} | ${'mousedown'}
     ${'TouchEvent'} | ${'touchstart'}
   `(
-    'should not add the focus-visible class on a UI button that gets focus after a $eventType event',
+    'does not add the focus-visible class on a UI button that gets focus after a $eventType event',
     ({ eventInterface, eventType }) => {
       dispatchEvent(document, eventInterface, eventType);
 
@@ -55,7 +55,7 @@ describe('FocusVisibilityTracker', () => {
     }
   );
 
-  it('should remove the focus-visible class on a UI button once it loses focus', () => {
+  it('removes the focus-visible class on a UI button once it loses focus', () => {
     uiButton.focus();
 
     uiButton.blur();
@@ -64,7 +64,7 @@ describe('FocusVisibilityTracker', () => {
     expect(nonUiButton.classList.contains(focusVisibileClassName)).toBe(false);
   });
 
-  it('should remove event listeners upon release', () => {
+  it('removes event listeners upon release', () => {
     const spy = jest.spyOn(global.document, 'removeEventListener');
     expect(spy).toHaveBeenCalledTimes(0);
 
