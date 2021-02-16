@@ -1,5 +1,8 @@
-import { PlayerWrapper } from '../src/ts/uimanager';
+import { InternalUIConfig, PlayerWrapper, UIManager } from '../src/ts/uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
+
+jest.mock('../src/ts/dom');
 
 // This just simulates a Class that can be wrapped by our PlayerWrapper.
 // To enable this simple class structure we need a lot of any casts in the tests.
@@ -59,6 +62,47 @@ describe('UIManager', () => {
 
       it('wraps functions of super class', () => {
         expect(inheritedClassInstance.a).not.toBeUndefined();
+      });
+    });
+  });
+  describe('mobile v3 handling', () => {
+    let playerMock: TestingPlayerAPI;
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+
+      // disable HTML element interactions
+      UIManager.prototype.switchToUiVariant = jest.fn();
+    });
+    describe('when a PlaylistTransition event is part of PlayerEvent', () => {
+      beforeEach(() => {
+        (playerMock.exports.PlayerEvent as any).PlaylistTransition = 'playlisttransition';
+      });
+      it('attaches the listener', () => {
+        const onSpy = jest.spyOn(playerMock, 'on');
+
+        new UIManager(playerMock, MockHelper.generateDOMMock() as any);
+        expect(onSpy).toHaveBeenCalledWith('playlisttransition', expect.any(Function));
+      });
+      describe('and a PlaylistTransition event occurs', () => {
+        it('dispatches onUpdated', () => {
+          const uiManager = new UIManager(playerMock, MockHelper.generateDOMMock() as any);
+          let onUpdatedSpy = jest.fn();
+          (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+          playerMock.eventEmitter.firePlaylistTransitionEvent();
+          expect(onUpdatedSpy).toHaveBeenCalled();
+        });
+      });
+    });
+    describe('when no PlaylistTransition event is part of PlayerEvent', () => {
+      beforeEach(() => {
+        delete (playerMock.exports.PlayerEvent as any).PlaylistTransition;
+      });
+      it('does not attach a listener', () => {
+        const onSpy = jest.spyOn(playerMock, 'on');
+
+        new UIManager(playerMock, MockHelper.generateDOMMock() as any);
+        expect(onSpy).not.toHaveBeenCalledWith('playlisttransition', expect.any(Function));
       });
     });
   });

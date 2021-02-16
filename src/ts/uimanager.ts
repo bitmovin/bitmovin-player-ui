@@ -184,11 +184,22 @@ export class UIManager {
 
     updateConfig();
 
-    // Update the configuration when a new source is loaded
-    this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, () => {
+    // Update the source configuration when a new source is loaded and dispatch onUpdated
+    const updateSource = () => {
       updateConfig();
       this.config.events.onUpdated.dispatch(this);
-    });
+    };
+
+    this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, updateSource);
+
+    // The PlaylistTransition event is only available on Mobile v3 for now.
+    // This event is fired when a new source becomes active in the player.
+    if ((this.player.exports.PlayerEvent as any).PlaylistTransition) {
+      this.managerPlayerWrapper.getPlayer().on(
+        (this.player.exports.PlayerEvent as any).PlaylistTransition,
+        updateSource,
+      );
+    }
 
     if (uiconfig.container) {
       // Unfortunately "uiContainerElement = new DOM(config.container)" will not accept the container with
