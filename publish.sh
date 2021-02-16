@@ -4,11 +4,6 @@ set -e
 PACKAGE_NAME="bitmovin-player-ui"
 CI_BRANCH=$TRAVIS_BRANCH
 
-if ! [[ "${CI_BRANCH}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-  echo "INFO ${CI_BRANCH} is not a valid version to be published, skipping"
-  exit 0
-fi
-
 CHANNEL=-1
 NPM_TAG=-1
 MAJOR=-1
@@ -46,16 +41,9 @@ if [[ "${CI_BRANCH}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)-?([a-z]*) ]]; then
             exit 1
             ;;
     esac
-elif [[ "${CI_BRANCH}" =~ ^nightly\/([0-9]{4})\/([0-9]{2})\/([0-9]{2}) ]]; then
-    CHANNEL="nightly"
-    YEAR=${BASH_REMATCH[1]}
-    MONTH=${BASH_REMATCH[2]}
-    DAY=${BASH_REMATCH[3]}
-    VERSION="${YEAR}.${MONTH}.${DAY}"
-    MAJOR=${YEAR}
-    MINOR=${MONTH}
 else
-    CHANNEL="dev"
+    echo "INFO ${CI_BRANCH} is not a valid version to be published, skipping"
+    exit 0
 fi
 
 echo "INFO npm tag set to ${NPM_TAG}"
