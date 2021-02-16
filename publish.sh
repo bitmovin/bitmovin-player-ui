@@ -4,6 +4,8 @@ set -e
 PACKAGE_NAME="bitmovin-player-ui"
 CI_BRANCH=$TRAVIS_BRANCH
 
+echo "INFO branch is set to ${CI_BRANCH}"
+
 CHANNEL=-1
 NPM_TAG=-1
 MAJOR=-1
