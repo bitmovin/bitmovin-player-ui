@@ -97,7 +97,7 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
     if (this.useAnimationFrame) {
       this.frameUpdateHandlerId = window.requestAnimationFrame(this.renderFrame.bind(this));
     } else {
-      this.frameUpdateHandlerId = setTimeout(this.renderFrame.bind(this), this.frameInterval);
+      this.frameUpdateHandlerId = window.setTimeout(this.renderFrame.bind(this), this.frameInterval);
     }
   }
 }
