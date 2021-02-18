@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Build step to publish releases to npm via CI
 
+### Fixed
+- Controls' focus highlighting is shown in case of non-keyboard interaction on some browsers/platforms
+
 ## [3.24.0] - 2021-02-16
 
 ### Added

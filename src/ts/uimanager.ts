@@ -11,6 +11,7 @@ import { TimelineMarker, UIConfig } from './uiconfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './volumecontroller';
 import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
+import { FocusVisibilityTracker } from './focusvisibilitytracker';
 
 export interface LocalizationConfig {
   /**
@@ -95,6 +96,7 @@ export class UIManager {
   private currentUi: InternalUIInstanceManager;
   private config: InternalUIConfig; // Conjunction of provided uiConfig and sourceConfig from the player
   private managerPlayerWrapper: PlayerWrapper;
+  private focusVisibilityTracker: FocusVisibilityTracker;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -331,6 +333,8 @@ export class UIManager {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.ViewModeChanged, resolveUiVariant);
     }
 
+    this.focusVisibilityTracker = new FocusVisibilityTracker('{{PREFIX}}');
+
     // Initialize the UI
     resolveUiVariant(null);
   }
@@ -489,6 +493,7 @@ export class UIManager {
       this.releaseUi(uiInstanceManager);
     }
     this.managerPlayerWrapper.clearEventHandlers();
+    this.focusVisibilityTracker.release();
   }
 
   /**
