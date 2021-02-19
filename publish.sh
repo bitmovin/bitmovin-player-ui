@@ -13,9 +13,9 @@ MINOR=-1
 POSTIFX=-1
 VERSION=-1
 
-DRY_RUN_CMD=
-if ($DRY_RUN); then
-    DRY_RUN_CMD="--dry-run"
+NPM_DRY_RUN_CMD=
+if ($NPM_DRY_RUN); then
+    NPM_DRY_RUN_CMD="--dry-run"
     echo "INFO performing a dry run"
 fi
 
@@ -76,7 +76,7 @@ echo "INFO latest npm version is $NPM_LATEST"
 # a tag (the default tag is always "latest"). If the published version is older that the currently tagged version,
 # we have to revert the tag afterwards to avoid version regressions.
 echo "INFO publishing ${VERSION} to npm with tag "${NPM_TAG}" (current tagged version is ${NPM_LATEST})"
-npm publish --tag ${NPM_TAG} ${DRY_RUN_CMD}
+npm publish --tag ${NPM_TAG} ${NPM_DRY_RUN_CMD}
 
 # Checks if one version is greater than the other
 # https://stackoverflow.com/a/24067243/370252
@@ -89,7 +89,7 @@ npm publish --tag ${NPM_TAG} ${DRY_RUN_CMD}
 #    (as a workaround we could suffix "-zzzzz" to versions without a suffix)
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 
-if !$DRY_RUN && version_gt ${NPM_LATEST} ${VERSION}; then
+if !$NPM_DRY_RUN && version_gt ${NPM_LATEST} ${VERSION}; then
     # The version we just published is lower than the previously tagged version on npm, so we need to revert the
     # tag to the previous version to avoid version downgrades (this e.g. avoids that a 7.2.5 hotfix release overwrites
     # the latest-tagged 7.3.2)
