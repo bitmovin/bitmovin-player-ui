@@ -1,5 +1,17 @@
 import {ErrorMessageMap, ErrorMessageTranslator} from './components/errormessageoverlay';
-import { ErrorEvent } from 'bitmovin-player';
+import { ErrorEvent, PlayerEventBase } from 'bitmovin-player';
+
+export interface MobileV3PlayerErrorEvent extends PlayerEventBase {
+  name: 'onPlayerError';
+  code: number;
+  message: string;
+}
+
+export interface MobileV3SourceErrorEvent extends PlayerEventBase {
+  name: 'onSourceError';
+  code: number;
+  message: string;
+}
 
 export namespace ErrorUtils {
 
