@@ -67,7 +67,11 @@ export namespace ErrorUtils {
     3100: 'An Advertising module error has occurred. Refer to the attached AdvertisingError.',
   };
 
-  export const defaultErrorMessageTranslator: ErrorMessageTranslator = (error: ErrorEvent) => {
+  export const defaultMobileV3ErrorMessageTranslator = (error: MobileV3PlayerErrorEvent | MobileV3SourceErrorEvent) => {
+    return `${error.message}\n(${error.name})`;
+  }
+
+  export const defaultWebErrorMessageTranslator: ErrorMessageTranslator = (error: ErrorEvent) => {
     const errorMessage = ErrorUtils.defaultErrorMessages[error.code];
 
     if (errorMessage) {
