@@ -13,8 +13,8 @@ MINOR=-1
 POSTIFX=-1
 VERSION=-1
 
-NPM_DRY_RUN_CMD=
-if ($NPM_DRY_RUN); then
+NPM_DRY_RUN_CMD=""
+if [[ $NPM_DRY_RUN = true ]]; then
     NPM_DRY_RUN_CMD="--dry-run"
     echo "INFO performing a dry run"
 fi
@@ -89,13 +89,15 @@ npm publish --tag ${NPM_TAG} ${NPM_DRY_RUN_CMD}
 #    (as a workaround we could suffix "-zzzzz" to versions without a suffix)
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 
-if !$NPM_DRY_RUN && version_gt ${NPM_LATEST} ${VERSION}; then
+if version_gt ${NPM_LATEST} ${VERSION}; then
     # The version we just published is lower than the previously tagged version on npm, so we need to revert the
     # tag to the previous version to avoid version downgrades (this e.g. avoids that a 7.2.5 hotfix release overwrites
     # the latest-tagged 7.3.2)
     echo "INFO reverting "${NPM_TAG}" tag from the just published version ${VERSION} to the greater ${NPM_LATEST}"
     # It takes a while until the metadata after npm publish is updated so we need to wait to avoid a failed tag update
     # "npm WARN dist-tag add latest is already set to version ${VERSION}"
-    sleep 10
-    npm dist-tag add ${PACKAGE_NAME}@${NPM_LATEST} ${NPM_TAG}
+    if [[ $NPM_DRY_RUN != true ]]; then
+        sleep 10
+        npm dist-tag add ${PACKAGE_NAME}@${NPM_LATEST} ${NPM_TAG}
+    fi
 fi
