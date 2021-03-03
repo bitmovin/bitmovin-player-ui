@@ -1,8 +1,10 @@
 import { PlayerAPI, PlayerEvent, PlayerEventBase, PlayerEventCallback } from 'bitmovin-player';
+import { WrappedPlayer } from './uimanager';
 
 export enum MobileV3PlayerEvent {
   SourceError = 'sourceerror',
   PlayerError = 'playererror',
+  PlaylistTransition = 'playlisttransition',
 }
 
 export interface MobileV3PlayerErrorEvent extends PlayerEventBase {
@@ -24,7 +26,7 @@ export interface MobileV3PlayerAPI extends PlayerAPI {
   exports: PlayerAPI['exports'] & { PlayerEvent: MobileV3PlayerEventType };
 }
 
-export function isMobileV3PlayerAPI(player: PlayerAPI | MobileV3PlayerAPI): player is MobileV3PlayerAPI {
+export function isMobileV3PlayerAPI(player: WrappedPlayer | PlayerAPI | MobileV3PlayerAPI): player is MobileV3PlayerAPI {
   let everyKeyExists = true;
 
   for (const key in MobileV3PlayerEvent) {
