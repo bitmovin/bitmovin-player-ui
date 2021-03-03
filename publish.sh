@@ -54,9 +54,9 @@ if [[ ${NPM_TAG}  == -1 ]]; then
     exit 1
 fi
 
-## Check if this version was already published.
-## If something went wrong during a later build step and we re-run the release
-## after fixing the problem, the npm publish would fail the build.
+# Check if this version was already published.
+# If something went wrong during a later build step and we re-run the release
+# after fixing the problem, the npm publish would fail the build.
 IS_PUBLISHED=$(npm view ${PACKAGE_NAME}@${VERSION} dist-tags)
 
 if [[ ${IS_PUBLISHED} ]]; then
