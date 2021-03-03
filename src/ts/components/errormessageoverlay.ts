@@ -2,21 +2,11 @@ import {ContainerConfig, Container} from './container';
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {TvNoiseCanvas} from './tvnoisecanvas';
-import {ErrorUtils, MobileV3PlayerErrorEvent, MobileV3SourceErrorEvent } from '../errorutils';
-import { ErrorEvent, PlayerAPI, PlayerEventBase, PlayerEvent, PlayerEventCallback } from 'bitmovin-player';
-
-
-export enum MobileV3PlayerEvent {
-  SourceError = 'sourceerror',
-  PlayerError = 'playererror',
-};
-
-export type MobileV3PlayerEventType = PlayerEvent | MobileV3PlayerEvent;
-
-export interface MobileV3PlayerAPI extends PlayerAPI {
-  on(eventType: MobileV3PlayerEventType, callback: PlayerEventCallback): void;
-  exports: PlayerAPI['exports'] & { PlayerEvent: MobileV3PlayerEventType };
-}
+import {ErrorUtils } from '../errorutils';
+import { ErrorEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
+import {
+  MobileV3PlayerAPI, MobileV3PlayerErrorEvent, MobileV3PlayerEvent, MobileV3SourceErrorEvent,
+} from '../mobilev3playerapi';
 
 export interface ErrorMessageTranslator {
   (error: ErrorEvent): string;
@@ -160,7 +150,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
 function customizeErrorMessage(
   errorMessages: ErrorMessageTranslator | ErrorMessageMap,
-  event: ErrorEvent | MobileV3PlayerErrorEvent | MobileV3SourceErrorEvent
+  event: ErrorEvent | MobileV3PlayerErrorEvent | MobileV3SourceErrorEvent,
 ): string | undefined {
   let message = undefined;
   // Process message vocabularies
