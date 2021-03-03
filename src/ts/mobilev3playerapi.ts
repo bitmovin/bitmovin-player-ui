@@ -23,3 +23,15 @@ export interface MobileV3PlayerAPI extends PlayerAPI {
   on(eventType: MobileV3PlayerEventType, callback: PlayerEventCallback): void;
   exports: PlayerAPI['exports'] & { PlayerEvent: MobileV3PlayerEventType };
 }
+
+export function isMobileV3PlayerAPI(player: PlayerAPI | MobileV3PlayerAPI): player is MobileV3PlayerAPI {
+  let everyKeyExists = true;
+
+  for (const key in MobileV3PlayerEvent) {
+    if (MobileV3PlayerEvent.hasOwnProperty(key) && !player.exports.PlayerEvent.hasOwnProperty(key)) {
+      everyKeyExists = false;
+    }
+  }
+
+  return everyKeyExists;
+}

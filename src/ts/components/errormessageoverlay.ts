@@ -5,6 +5,7 @@ import {TvNoiseCanvas} from './tvnoisecanvas';
 import {ErrorUtils } from '../errorutils';
 import { ErrorEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import {
+  isMobileV3PlayerAPI,
   MobileV3PlayerAPI, MobileV3PlayerErrorEvent, MobileV3PlayerEvent, MobileV3SourceErrorEvent,
 } from '../mobilev3playerapi';
 
@@ -172,16 +173,4 @@ function customizeErrorMessage(
   }
 
   return message;
-}
-
-function isMobileV3PlayerAPI(player: PlayerAPI | MobileV3PlayerAPI): player is MobileV3PlayerAPI {
-  let everyKeyExists = true;
-
-  for (const key in MobileV3PlayerEvent) {
-    if (MobileV3PlayerEvent.hasOwnProperty(key) && !player.exports.PlayerEvent.hasOwnProperty(key)) {
-      everyKeyExists = false;
-    }
-  }
-
-  return everyKeyExists;
 }
