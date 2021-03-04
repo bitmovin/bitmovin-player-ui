@@ -153,24 +153,19 @@ function customizeErrorMessage(
   errorMessages: ErrorMessageTranslator | ErrorMessageMap,
   event: ErrorEvent | MobileV3PlayerErrorEvent | MobileV3SourceErrorEvent,
 ): string | undefined {
-  let message = undefined;
-  // Process message vocabularies
-  if (errorMessages) {
-    if (typeof errorMessages === 'function') {
-      // Translation function for all errors
-      message = errorMessages(event);
-    } else if (errorMessages[event.code]) {
-      // It's not a translation function, so it must be a map of strings or translation functions
-      let customMessage = errorMessages[event.code];
-
-      if (typeof customMessage === 'string') {
-        message = customMessage;
-      } else {
-        // The message is a translation function, so we call it
-        message = customMessage(event);
-      }
-    }
+  if (!errorMessages) {
+    return undefined;
   }
 
-  return message;
+  // Process message vocabularies
+  if (typeof errorMessages === 'function') {
+    // Translation function for all errors
+    return errorMessages(event);
+  }
+  if (errorMessages[event.code]) {
+    // It's not a translation function, so it must be a map of strings or translation functions
+    const customMessage = errorMessages[event.code];
+
+    return typeof customMessage === 'string' ? customMessage : customMessage(event);
+  }
 }
