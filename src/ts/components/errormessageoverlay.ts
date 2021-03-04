@@ -2,7 +2,7 @@ import {ContainerConfig, Container} from './container';
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {TvNoiseCanvas} from './tvnoisecanvas';
-import {ErrorUtils } from '../errorutils';
+import { ErrorUtils } from '../errorutils';
 import { ErrorEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import {
   isMobileV3PlayerAPI,
