@@ -27,13 +27,11 @@ export interface MobileV3PlayerAPI extends PlayerAPI {
 }
 
 export function isMobileV3PlayerAPI(player: WrappedPlayer | PlayerAPI | MobileV3PlayerAPI): player is MobileV3PlayerAPI {
-  let everyKeyExists = true;
-
   for (const key in MobileV3PlayerEvent) {
     if (MobileV3PlayerEvent.hasOwnProperty(key) && !player.exports.PlayerEvent.hasOwnProperty(key)) {
-      everyKeyExists = false;
+      return false;
     }
   }
 
-  return everyKeyExists;
+  return true;
 }
