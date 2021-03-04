@@ -57,12 +57,11 @@ describe('ErrorMessageOverlay', () => {
         const playerErrorEvent = {
           type: MobileV3PlayerEvent.PlayerError,
           message: 'this is a player error',
-          name: 'playererror',
         };
         playerMock.eventEmitter.fireEvent<any>(playerErrorEvent);
   
         expect(onSpy).toHaveBeenCalledWith(MobileV3PlayerEvent.PlayerError, expect.any(Function));
-        expect(setTextSpy).toHaveBeenCalledWith(`${playerErrorEvent.message}\n(${playerErrorEvent.name})`);
+        expect(setTextSpy).toHaveBeenCalledWith(playerErrorEvent.message);
       });
     });
   });

@@ -7,11 +7,10 @@ import defaultWebErrorMessageTranslator = ErrorUtils.defaultWebErrorMessageTrans
 describe('ErrorUtils', () => {
   describe('defaultMobileV3ErrorMessageTranslator', () => {
     it('should translate the error event to an error message', () => {
-      const errorName = 'onPlayerError';
       const errorMessage = 'something went horribly wrong';
-      const playerErrorEvent = { message: errorMessage, name: errorName } as MobileV3PlayerErrorEvent;
+      const playerErrorEvent = { message: errorMessage } as MobileV3PlayerErrorEvent;
 
-      expect(defaultMobileV3ErrorMessageTranslator(playerErrorEvent)).toEqual(`${errorMessage}\n(${errorName})`);
+      expect(defaultMobileV3ErrorMessageTranslator(playerErrorEvent)).toEqual(errorMessage);
     });
   });
 

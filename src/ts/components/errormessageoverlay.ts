@@ -10,7 +10,7 @@ import {
 } from '../mobilev3playerapi';
 
 export interface ErrorMessageTranslator {
-  (error: ErrorEvent): string;
+  (error: ErrorEvent | MobileV3PlayerErrorEvent): string;
 }
 
 export interface ErrorMessageMap {

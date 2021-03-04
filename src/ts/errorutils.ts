@@ -69,7 +69,7 @@ export namespace ErrorUtils {
   };
 
   export const defaultMobileV3ErrorMessageTranslator = (error: MobileV3PlayerErrorEvent | MobileV3SourceErrorEvent) => {
-    return `${error.message}\n(${error.name})`;
+    return error.message;
   };
 
   export const defaultWebErrorMessageTranslator: ErrorMessageTranslator = (error: ErrorEvent) => {
