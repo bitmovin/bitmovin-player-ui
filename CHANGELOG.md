@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## develop
 
+### Added
+- Support for Mobile V3 `PlayerError` and `SourceError` events
+
 ### Fixed
 - Controls' focus highlighting is shown in case of non-keyboard interaction on some browsers/platforms
 

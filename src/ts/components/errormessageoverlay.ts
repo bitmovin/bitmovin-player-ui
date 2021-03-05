@@ -2,11 +2,15 @@ import {ContainerConfig, Container} from './container';
 import {Label, LabelConfig} from './label';
 import {UIInstanceManager} from '../uimanager';
 import {TvNoiseCanvas} from './tvnoisecanvas';
-import {ErrorUtils} from '../errorutils';
+import { ErrorUtils } from '../errorutils';
 import { ErrorEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
+import {
+  isMobileV3PlayerAPI,
+  MobileV3PlayerAPI, MobileV3PlayerErrorEvent, MobileV3PlayerEvent, MobileV3SourceErrorEvent,
+} from '../mobilev3playerapi';
 
 export interface ErrorMessageTranslator {
-  (error: ErrorEvent): string;
+  (error: ErrorEvent | MobileV3PlayerErrorEvent): string;
 }
 
 export interface ErrorMessageMap {
@@ -95,38 +99,39 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     }, this.config);
   }
 
-  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI | MobileV3PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     let config = this.getConfig();
 
-    player.on(player.exports.PlayerEvent.Error, (event: ErrorEvent) => {
-      let message = ErrorUtils.defaultErrorMessageTranslator(event);
-
-      // errorMessages configured in `UIConfig` take precedence `ErrorMessageOverlayConfig`
-      let errorMessages = uimanager.getConfig().errorMessages || config.messages;
-      // Process message vocabularies
-      if (errorMessages) {
-        if (typeof errorMessages === 'function') {
-          // Translation function for all errors
-          message = errorMessages(event);
-        } else if (errorMessages[event.code]) {
-          // It's not a translation function, so it must be a map of strings or translation functions
-          let customMessage = errorMessages[event.code];
-
-          if (typeof customMessage === 'string') {
-            message = customMessage;
-          } else {
-            // The message is a translation function, so we call it
-            message = customMessage(event);
-          }
-        }
+    const handleErrorMessage = (
+      event: ErrorEvent | MobileV3SourceErrorEvent | MobileV3PlayerErrorEvent,
+      message: string,
+    ) => {
+      const customizedMessage = customizeErrorMessage(uimanager.getConfig().errorMessages || config.messages, event);
+      if (customizedMessage) {
+        message = customizedMessage;
       }
 
       this.errorLabel.setText(message);
       this.tvNoiseBackground.start();
       this.show();
-    });
+    };
+
+    if (isMobileV3PlayerAPI(player)) {
+      const errorEventHandler = (event: MobileV3SourceErrorEvent | MobileV3PlayerErrorEvent) => {
+        const message = ErrorUtils.defaultMobileV3ErrorMessageTranslator(event);
+        handleErrorMessage(event, message);
+      };
+
+      player.on(MobileV3PlayerEvent.PlayerError, errorEventHandler);
+      player.on(MobileV3PlayerEvent.SourceError, errorEventHandler);
+    } else {
+      player.on(player.exports.PlayerEvent.Error, (event: ErrorEvent) => {
+        let message = ErrorUtils.defaultWebErrorMessageTranslator(event);
+        handleErrorMessage(event, message);
+      });
+    }
 
     player.on(player.exports.PlayerEvent.SourceLoaded, (event: PlayerEventBase) => {
       if (this.isShown()) {
@@ -141,5 +146,26 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
     // Canvas rendering must be explicitly stopped, else it just continues forever and hogs resources
     this.tvNoiseBackground.stop();
+  }
+}
+
+function customizeErrorMessage(
+  errorMessages: ErrorMessageTranslator | ErrorMessageMap,
+  event: ErrorEvent | MobileV3PlayerErrorEvent | MobileV3SourceErrorEvent,
+): string | undefined {
+  if (!errorMessages) {
+    return undefined;
+  }
+
+  // Process message vocabularies
+  if (typeof errorMessages === 'function') {
+    // Translation function for all errors
+    return errorMessages(event);
+  }
+  if (errorMessages[event.code]) {
+    // It's not a translation function, so it must be a map of strings or translation functions
+    const customMessage = errorMessages[event.code];
+
+    return typeof customMessage === 'string' ? customMessage : customMessage(event);
   }
 }

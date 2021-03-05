@@ -12,6 +12,7 @@ import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, 
 import { VolumeController } from './volumecontroller';
 import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 import { FocusVisibilityTracker } from './focusvisibilitytracker';
+import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './mobilev3playerapi';
 
 export interface LocalizationConfig {
   /**
@@ -192,15 +193,14 @@ export class UIManager {
       this.config.events.onUpdated.dispatch(this);
     };
 
-    this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.SourceLoaded, updateSource);
+    const wrappedPlayer = this.managerPlayerWrapper.getPlayer();
+
+    wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, updateSource);
 
     // The PlaylistTransition event is only available on Mobile v3 for now.
     // This event is fired when a new source becomes active in the player.
-    if ((this.player.exports.PlayerEvent as any).PlaylistTransition) {
-      this.managerPlayerWrapper.getPlayer().on(
-        (this.player.exports.PlayerEvent as any).PlaylistTransition,
-        updateSource,
-      );
+    if (isMobileV3PlayerAPI(wrappedPlayer)) {
+      wrappedPlayer.on(MobileV3PlayerEvent.PlaylistTransition, updateSource);
     }
 
     if (uiconfig.container) {
@@ -762,7 +762,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
 /**
  * Extended interface of the {@link Player} for use in the UI.
  */
-interface WrappedPlayer extends PlayerAPI {
+export interface WrappedPlayer extends PlayerAPI {
   /**
    * Fires an event on the player that targets all handlers in the UI but never enters the real player.
    * @param event the event to fire
