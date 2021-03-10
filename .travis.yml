@@ -6,6 +6,7 @@ before_script:
 script:
   - npm test
   - gulp build-prod
+  - bash publish.sh
 cache:
   yarn: true
 env:
