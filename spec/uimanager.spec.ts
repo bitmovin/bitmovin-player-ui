@@ -1,6 +1,7 @@
 import { InternalUIConfig, PlayerWrapper, UIManager } from '../src/ts/uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
+import { MobileV3PlayerEvent } from '../src/ts/mobilev3playerapi';
 
 jest.mock('../src/ts/dom');
 
@@ -75,7 +76,9 @@ describe('UIManager', () => {
     });
     describe('when a PlaylistTransition event is part of PlayerEvent', () => {
       beforeEach(() => {
-        (playerMock.exports.PlayerEvent as any).PlaylistTransition = 'playlisttransition';
+        (playerMock.exports.PlayerEvent as any).SourceError = MobileV3PlayerEvent.SourceError;
+        (playerMock.exports.PlayerEvent as any).PlayerError = MobileV3PlayerEvent.PlayerError;
+        (playerMock.exports.PlayerEvent as any).PlaylistTransition = MobileV3PlayerEvent.PlaylistTransition;
       });
       it('attaches the listener', () => {
         const onSpy = jest.spyOn(playerMock, 'on');
