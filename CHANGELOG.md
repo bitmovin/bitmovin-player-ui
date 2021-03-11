@@ -8,8 +8,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Build step to publish releases to npm via CI
-
-### Added
 - Support for Mobile V3 `PlayerError` and `SourceError` events
 
 ### Fixed
