@@ -999,7 +999,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.refreshPlaybackPosition();
   }
 
-
  /**
    * Checks if TouchEvent is supported.
    * @returns {boolean} true if TouchEvent not undefined, else false
