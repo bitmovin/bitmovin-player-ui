@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Controls' focus highlighting is shown in case of non-keyboard interaction on some browsers/platforms
+- `TouchEvent` error in seekbar controls when using the mouse on a touchscreen Windows device and IE/UWP
 
 ## [3.24.0] - 2021-02-16
 
