@@ -652,7 +652,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // and mouseup handlers to the whole document. A seek is triggered when the user lifts the mouse key.
     // A seek mouse gesture is thus basically a click with a long time frame between down and up events.
     seekBar.on('touchstart mousedown', (e: MouseEvent | TouchEvent) => {
-      let isTouchEvent = BrowserUtils.isTouchSupported && e.constructor.name === 'Touchscreen' && e instanceof TouchEvent;
+      let isTouchEvent = BrowserUtils.isTouchSupported && this.isTouchEvent(e);
 
       // Prevent selection of DOM elements (also prevents mousedown if current event is touchstart)
       e.preventDefault();
@@ -745,7 +745,7 @@ export class SeekBar extends Component<SeekBarConfig> {
    * @see #getVerticalOffset
    */
   private getOffset(e: MouseEvent | TouchEvent): number {
-    if (BrowserUtils.isTouchSupported && e.constructor.name === 'Touchscreen' && e instanceof TouchEvent) {
+    if (BrowserUtils.isTouchSupported && this.isTouchEvent(e)) {
       if (this.config.vertical) {
         return this.getVerticalOffset(e.type === 'touchend' ? e.changedTouches[0].pageY : e.touches[0].pageY);
       } else {
@@ -997,5 +997,14 @@ export class SeekBar extends Component<SeekBarConfig> {
     // For such cases, we refresh the position here in onShow because here it is guaranteed that the component knows
     // its size and can set the position correctly.
     this.refreshPlaybackPosition();
+  }
+
+
+ /**
+   * Checks if TouchEvent is supported.
+   * @returns {boolean} true if TouchEvent not undefined, else false
+   */
+  isTouchEvent(e: UIEvent): e is TouchEvent {
+    return window.TouchEvent && e instanceof TouchEvent;
   }
 }
