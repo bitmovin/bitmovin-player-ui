@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.25.0]
+## [develop]
+
+### Fixed
+- `TouchEvent` error in seekbar controls when using the mouse on a touchscreen Windows device and IE/UWP
+
+## [3.25.0] - 2021-03-16
 
 ### Added
 - Build step to publish releases to npm via CI
@@ -12,7 +17,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Controls' focus highlighting is shown in case of non-keyboard interaction on some browsers/platforms
-- `TouchEvent` error in seekbar controls when using the mouse on a touchscreen Windows device and IE/UWP
 
 ## [3.24.0] - 2021-02-16
 
