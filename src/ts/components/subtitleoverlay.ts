@@ -54,16 +54,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.subtitleContainerManager = new SubtitleRegionContainerManager(this);
 
     player.on(player.exports.PlayerEvent.CueEnter, (event: SubtitleCueEvent) => {
-      // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
-      if (event.position) {
-        // Sometimes the positions are undefined, we assume them to be zero
-        event.position.row = event.position.row || 0;
-        event.position.column = event.position.column || 0;
-      }
-
-      let labelToAdd = subtitleManager.cueEnter(event);
-
-      this.preprocessLabelEventCallback.dispatch(event, labelToAdd);
+      let labelToAdd = this.generateLabel(event);
+      subtitleManager.cueEnter(event, labelToAdd);
 
       if (this.previewSubtitleActive) {
         this.subtitleContainerManager.removeLabel(this.previewSubtitle);
@@ -73,6 +65,18 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.subtitleContainerManager.addLabel(labelToAdd, this.getDomElement().size());
       this.updateComponents();
+    });
+
+    player.on(player.exports.PlayerEvent.CueUpdate, (event: SubtitleCueEvent) => {
+      try {
+        const label = this.generateLabel(event);
+        const oldLabel = subtitleManager.getPreviousCue(event);
+        this.subtitleContainerManager.updateLabel(oldLabel, label);
+        subtitleManager.cueUpdate(event, label);
+      } catch(e) {
+        console.error(e);
+      }
+      
     });
 
     player.on(player.exports.PlayerEvent.CueExit, (event: SubtitleCueEvent) => {
@@ -123,6 +127,29 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.configureCea608Captions(player, uimanager);
     // Init
     subtitleClearHandler();
+  }
+
+  generateLabel(event: SubtitleCueEvent): SubtitleLabel {
+    // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
+    if (event.position) {
+      // Sometimes the positions are undefined, we assume them to be zero
+      event.position.row = event.position.row || 0;
+      event.position.column = event.position.column || 0;
+    }
+
+    
+    const label = new SubtitleLabel({
+      // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
+      // else use the plain text
+      text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
+      vtt: event.vtt,
+      region: event.region,
+      regionStyle: event.regionStyle,
+    });
+
+    this.preprocessLabelEventCallback.dispatch(event);
+
+    return label;
   }
 
   configureCea608Captions(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -344,17 +371,22 @@ class ActiveSubtitleManager {
    * @param event
    * @return {SubtitleLabel}
    */
-  cueEnter(event: SubtitleCueEvent): SubtitleLabel {
-    let id = ActiveSubtitleManager.calculateId(event);
+  cueEnter(event: SubtitleCueEvent, label: SubtitleLabel): void {
+    this.addCueToMap(event, label);
+  }
 
-    let label = new SubtitleLabel({
-      // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
-      // else use the plain text
-      text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
-      vtt: event.vtt,
-      region: event.region,
-      regionStyle: event.regionStyle,
-    });
+  cueUpdate(event: SubtitleCueEvent, label: SubtitleLabel): void {
+    this.addCueToMap(event, label);
+
+    console.log(this.activeSubtitleCueMap);
+  }
+
+  getPreviousCue(event: SubtitleCueEvent): SubtitleLabel {
+    return this.removeCueFromMap(event);
+  }
+
+  private addCueToMap(event: SubtitleCueEvent, label: SubtitleLabel): void {
+    let id = ActiveSubtitleManager.calculateId(event);
 
     // Create array for id if it does not exist
     this.activeSubtitleCueMap[id] = this.activeSubtitleCueMap[id] || [];
@@ -362,11 +394,31 @@ class ActiveSubtitleManager {
     // Add cue
     this.activeSubtitleCueMap[id].push({ event, label });
     this.activeSubtitleCueCount++;
-
-    return label;
   }
 
-  private static generateImageTagText(imageData: string): string {
+  private removeCueFromMap(event: SubtitleCueEvent): SubtitleLabel {
+    let id = ActiveSubtitleManager.calculateId(event);
+    let activeSubtitleCues = this.activeSubtitleCueMap[id];
+
+    if (activeSubtitleCues && activeSubtitleCues.length > 0) {
+      // Remove cue
+      /* We apply the FIFO approach here and remove the oldest cue from the associated id. When there are multiple cues
+       * with the same id, there is no way to know which one of the cues is to be deleted, so we just hope that FIFO
+       * works fine. Theoretically it can happen that two cues with colliding ids are removed at different times, in
+       * the wrong order. This rare case has yet to be observed. If it ever gets an issue, we can take the unstable
+       * cue end time (which can change between CueEnter and CueExit IN CueUpdate) and use it as an
+       * additional hint to try and remove the correct one of the colliding cues.
+       */
+      let activeSubtitleCue = activeSubtitleCues.shift();
+      this.activeSubtitleCueCount--;
+
+      return activeSubtitleCue.label;
+    } else {
+      return null;
+    }
+  }
+
+  static generateImageTagText(imageData: string): string {
     if (!imageData) {
       return;
     }
@@ -400,25 +452,7 @@ class ActiveSubtitleManager {
    * @return {SubtitleLabel|null}
    */
   cueExit(event: SubtitleCueEvent): SubtitleLabel {
-    let id = ActiveSubtitleManager.calculateId(event);
-    let activeSubtitleCues = this.activeSubtitleCueMap[id];
-
-    if (activeSubtitleCues && activeSubtitleCues.length > 0) {
-      // Remove cue
-      /* We apply the FIFO approach here and remove the oldest cue from the associated id. When there are multiple cues
-       * with the same id, there is no way to know which one of the cues is to be deleted, so we just hope that FIFO
-       * works fine. Theoretically it can happen that two cues with colliding ids are removed at different times, in
-       * the wrong order. This rare case has yet to be observed. If it ever gets an issue, we can take the unstable
-       * cue end time (which can change between CueEnter and CueExit IN CueUpdate) and use it as an
-       * additional hint to try and remove the correct one of the colliding cues.
-       */
-      let activeSubtitleCue = activeSubtitleCues.shift();
-      this.activeSubtitleCueCount--;
-
-      return activeSubtitleCue.label;
-    } else {
-      return null;
-    }
+    return this.removeCueFromMap(event);
   }
 
   /**
@@ -457,22 +491,27 @@ export class SubtitleRegionContainerManager {
     this.subtitleOverlay = subtitleOverlay;
   }
 
+  private getRegion(label: SubtitleLabel): { regionContainerId: string, regionName: string } {
+    if (label.vtt) {
+      return {
+        regionContainerId: label.vtt.region && label.vtt.region.id ? label.vtt.region.id : 'vtt',
+        regionName: 'vtt',
+      }
+    } else {
+      return {
+        regionContainerId: label.region || 'default',
+        regionName: label.region || 'default',
+      }
+    }
+  }
+
   /**
    * Creates and wraps a subtitle label into a container div based on the subtitle region.
    * If the subtitle has positioning information it is added to the container.
    * @param label The subtitle label to wrap
    */
   addLabel(label: SubtitleLabel, overlaySize?: Size): void {
-    let regionContainerId;
-    let regionName;
-
-    if (label.vtt) {
-      regionContainerId = label.vtt.region && label.vtt.region.id ? label.vtt.region.id : 'vtt';
-      regionName = 'vtt';
-    } else {
-      regionContainerId = regionName = label.region || 'default';
-    }
-
+    const { regionContainerId, regionName } = this.getRegion(label);
     const cssClasses = [`subtitle-position-${regionName}`];
 
     if (label.vtt && label.vtt.region) {
@@ -505,6 +544,13 @@ export class SubtitleRegionContainerManager {
     }
 
     this.subtitleRegionContainers[regionContainerId].addLabel(label, overlaySize);
+  }
+
+  updateLabel(label: SubtitleLabel, newLabel: SubtitleLabel): void {
+    const { regionContainerId } = this.getRegion(label);
+
+    this.subtitleRegionContainers[regionContainerId].removeLabel(label);
+    this.subtitleRegionContainers[regionContainerId].addLabel(newLabel);
   }
 
   /**
