@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- Ad times (`remainingTime`, `playedTime` and `adDuration`) are not correctly rounded
+
 ## [3.26.0]
 
 ### Fixed
