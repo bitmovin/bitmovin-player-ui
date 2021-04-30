@@ -54,8 +54,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.subtitleContainerManager = new SubtitleRegionContainerManager(this);
 
     player.on(player.exports.PlayerEvent.CueEnter, (event: SubtitleCueEvent) => {
-      let labelToAdd = this.generateLabel(event);
-      subtitleManager.cueEnter(event, labelToAdd);
+      const label = this.generateLabel(event);
+      subtitleManager.cueEnter(event, label);
 
       if (this.previewSubtitleActive) {
         this.subtitleContainerManager.removeLabel(this.previewSubtitle);
@@ -63,20 +63,16 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.show();
 
-      this.subtitleContainerManager.addLabel(labelToAdd, this.getDomElement().size());
+      this.subtitleContainerManager.addLabel(label, this.getDomElement().size());
       this.updateComponents();
     });
 
     player.on(player.exports.PlayerEvent.CueUpdate, (event: SubtitleCueEvent) => {
-      try {
-        const label = this.generateLabel(event);
-        const oldLabel = subtitleManager.getPreviousCue(event);
-        this.subtitleContainerManager.updateLabel(oldLabel, label);
-        subtitleManager.cueUpdate(event, label);
-      } catch(e) {
-        console.error(e);
-      }
-      
+      const label = this.generateLabel(event);
+      const oldLabel = subtitleManager.getPreviousCue(event);
+
+      subtitleManager.cueUpdate(event, label);
+      this.subtitleContainerManager.updateLabel(oldLabel, label);
     });
 
     player.on(player.exports.PlayerEvent.CueExit, (event: SubtitleCueEvent) => {
@@ -283,8 +279,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   enablePreviewSubtitleLabel(): void {
-    this.previewSubtitleActive = true;
     if (!this.subtitleManager.hasCues) {
+      this.previewSubtitleActive = true;
       this.subtitleContainerManager.addLabel(this.previewSubtitle);
       this.updateComponents();
       this.show();
@@ -292,9 +288,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   removePreviewSubtitleLabel(): void {
-    this.previewSubtitleActive = false;
-    this.subtitleContainerManager.removeLabel(this.previewSubtitle);
-    this.updateComponents();
+    if (this.previewSubtitleActive) {
+      this.previewSubtitleActive = false;
+      this.subtitleContainerManager.removeLabel(this.previewSubtitle);
+      this.updateComponents();
+    }
   }
 }
 
@@ -366,19 +364,12 @@ class ActiveSubtitleManager {
     return id;
   }
 
-  /**
-   * Adds a subtitle cue to the manager and returns the label that should be added to the subtitle overlay.
-   * @param event
-   * @return {SubtitleLabel}
-   */
   cueEnter(event: SubtitleCueEvent, label: SubtitleLabel): void {
     this.addCueToMap(event, label);
   }
 
   cueUpdate(event: SubtitleCueEvent, label: SubtitleLabel): void {
     this.addCueToMap(event, label);
-
-    console.log(this.activeSubtitleCueMap);
   }
 
   getPreviousCue(event: SubtitleCueEvent): SubtitleLabel {
