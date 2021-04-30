@@ -306,6 +306,16 @@ export class PlayerEventEmitter {
     } as SubtitleCueEvent);
   }
 
+  fireSubtitleCueUpdateEvent(): void {
+    this.fireEvent<SubtitleCueEvent>({
+      subtitleId: 'subtitleId',
+      start: 0,
+      end: 10,
+      text: 'Test Subtitle',
+      type: PlayerEvent.CueUpdate,
+    } as SubtitleCueEvent);
+  }
+
   fireSubtitleCueExitEvent(): void {
     this.fireEvent<SubtitleCueEvent>({
       subtitleId: 'subtitleId',

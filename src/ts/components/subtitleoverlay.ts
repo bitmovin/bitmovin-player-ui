@@ -69,10 +69,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     player.on(player.exports.PlayerEvent.CueUpdate, (event: SubtitleCueEvent) => {
       const label = this.generateLabel(event);
-      const oldLabel = subtitleManager.getPreviousCue(event);
+      const previousLabel = subtitleManager.getPreviousCue(event);
 
       subtitleManager.cueUpdate(event, label);
-      this.subtitleContainerManager.updateLabel(oldLabel, label);
+      this.subtitleContainerManager.updateLabel(previousLabel, label);
     });
 
     player.on(player.exports.PlayerEvent.CueExit, (event: SubtitleCueEvent) => {
@@ -126,13 +126,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   generateLabel(event: SubtitleCueEvent): SubtitleLabel {
-    // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter)
+    // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter / update)
     if (event.position) {
       // Sometimes the positions are undefined, we assume them to be zero
       event.position.row = event.position.row || 0;
       event.position.column = event.position.column || 0;
     }
-
     
     const label = new SubtitleLabel({
       // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
@@ -537,10 +536,10 @@ export class SubtitleRegionContainerManager {
     this.subtitleRegionContainers[regionContainerId].addLabel(label, overlaySize);
   }
 
-  updateLabel(label: SubtitleLabel, newLabel: SubtitleLabel): void {
-    const { regionContainerId } = this.getRegion(label);
+  updateLabel(previousLabel: SubtitleLabel, newLabel: SubtitleLabel): void {
+    const { regionContainerId } = this.getRegion(previousLabel);
 
-    this.subtitleRegionContainers[regionContainerId].removeLabel(label);
+    this.subtitleRegionContainers[regionContainerId].removeLabel(previousLabel);
     this.subtitleRegionContainers[regionContainerId].addLabel(newLabel);
   }
 
