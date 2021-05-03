@@ -71,8 +71,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       const label = this.generateLabel(event);
       const previousLabel = subtitleManager.getPreviousCue(event);
 
-      subtitleManager.cueUpdate(event, label);
-      this.subtitleContainerManager.updateLabel(previousLabel, label);
+      if (previousLabel) {
+        subtitleManager.cueUpdate(event, label);
+        this.subtitleContainerManager.updateLabel(previousLabel, label);
+      }
     });
 
     player.on(player.exports.PlayerEvent.CueExit, (event: SubtitleCueEvent) => {
