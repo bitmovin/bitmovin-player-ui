@@ -373,7 +373,7 @@ class ActiveSubtitleManager {
     this.addCueToMap(event, label);
   }
 
-  getPreviousCue(event: SubtitleCueEvent): SubtitleLabel {
+  getPreviousCue(event: SubtitleCueEvent): SubtitleLabel | undefined {
     return this.removeCueFromMap(event);
   }
 
@@ -388,7 +388,7 @@ class ActiveSubtitleManager {
     this.activeSubtitleCueCount++;
   }
 
-  private removeCueFromMap(event: SubtitleCueEvent): SubtitleLabel {
+  private removeCueFromMap(event: SubtitleCueEvent): SubtitleLabel | undefined {
     let id = ActiveSubtitleManager.calculateId(event);
     let activeSubtitleCues = this.activeSubtitleCueMap[id];
 
@@ -405,12 +405,10 @@ class ActiveSubtitleManager {
       this.activeSubtitleCueCount--;
 
       return activeSubtitleCue.label;
-    } else {
-      return null;
     }
   }
 
-  static generateImageTagText(imageData: string): string {
+  static generateImageTagText(imageData: string): string | undefined {
     if (!imageData) {
       return;
     }
@@ -427,13 +425,11 @@ class ActiveSubtitleManager {
    * @param event
    * @return {SubtitleLabel}
    */
-  getCues(event: SubtitleCueEvent): SubtitleLabel[] {
+  getCues(event: SubtitleCueEvent): SubtitleLabel[] | undefined {
     let id = ActiveSubtitleManager.calculateId(event);
     let activeSubtitleCues = this.activeSubtitleCueMap[id];
     if (activeSubtitleCues && activeSubtitleCues.length > 0) {
       return activeSubtitleCues.map((cue) => cue.label);
-    } else {
-      return null;
     }
   }
 
@@ -489,12 +485,12 @@ export class SubtitleRegionContainerManager {
         regionContainerId: label.vtt.region && label.vtt.region.id ? label.vtt.region.id : 'vtt',
         regionName: 'vtt',
       };
-    } else {
-      return {
-        regionContainerId: label.region || 'default',
-        regionName: label.region || 'default',
-      };
     }
+
+    return {
+      regionContainerId: label.region || 'default',
+      regionName: label.region || 'default',
+    };
   }
 
   /**
