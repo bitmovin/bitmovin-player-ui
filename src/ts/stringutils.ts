@@ -106,14 +106,14 @@ export namespace StringUtils {
         if (skipOffset) {
           time = Math.ceil(skipOffset - player.getCurrentTime());
         } else {
-          time = player.getDuration() - player.getCurrentTime();
+          time = Math.round(player.getDuration() - player.getCurrentTime());
         }
       } else if (formatString.indexOf('playedTime') > -1) {
-        time = player.getCurrentTime();
+        time = Math.round(player.getCurrentTime());
       } else if (formatString.indexOf('adDuration') > -1) {
-        time = player.getDuration();
+        time = Math.round(player.getDuration());
       }
-      return formatNumber(Math.round(time), formatString);
+      return formatNumber(time, formatString);
     });
   }
 
