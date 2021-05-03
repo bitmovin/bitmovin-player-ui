@@ -289,11 +289,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   removePreviewSubtitleLabel(): void {
-    if (this.previewSubtitleActive) {
-      this.previewSubtitleActive = false;
-      this.subtitleContainerManager.removeLabel(this.previewSubtitle);
-      this.updateComponents();
+    if (!this.previewSubtitleActive) {
+      return;
     }
+
+    this.previewSubtitleActive = false;
+    this.subtitleContainerManager.removeLabel(this.previewSubtitle);
+    this.updateComponents();
   }
 }
 
