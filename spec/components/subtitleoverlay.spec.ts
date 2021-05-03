@@ -41,7 +41,7 @@ describe('SubtitleOverlay', () => {
     });
 
     it('updates a subtitle label on cueUpdate', () => {
-      const updateLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'updateLabel');
+      const updateLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'replaceLabel');
       jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
 
       playerMock.eventEmitter.fireSubtitleCueEnterEvent();
@@ -52,7 +52,7 @@ describe('SubtitleOverlay', () => {
     });
 
     it('ignores cueUpdate event if it does not match a previous cue', () => {
-      const updateLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'updateLabel');
+      const updateLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'replaceLabel');
       jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
 
       playerMock.eventEmitter.fireSubtitleCueEnterEvent();

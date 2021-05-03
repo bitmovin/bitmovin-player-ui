@@ -73,7 +73,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       if (previousLabel) {
         subtitleManager.cueUpdate(event, label);
-        this.subtitleContainerManager.updateLabel(previousLabel, label);
+        this.subtitleContainerManager.replaceLabel(previousLabel, label);
       }
     });
 
@@ -536,7 +536,7 @@ export class SubtitleRegionContainerManager {
     this.subtitleRegionContainers[regionContainerId].addLabel(label, overlaySize);
   }
 
-  updateLabel(previousLabel: SubtitleLabel, newLabel: SubtitleLabel): void {
+  replaceLabel(previousLabel: SubtitleLabel, newLabel: SubtitleLabel): void {
     const { regionContainerId } = this.getRegion(previousLabel);
 
     this.subtitleRegionContainers[regionContainerId].removeLabel(previousLabel);
