@@ -376,7 +376,7 @@ class ActiveSubtitleManager {
   }
 
   getPreviousCue(event: SubtitleCueEvent): SubtitleLabel | undefined {
-    return this.removeCueFromMap(event);
+    return this.popCueFromMap(event);
   }
 
   private addCueToMap(event: SubtitleCueEvent, label: SubtitleLabel): void {
@@ -390,7 +390,7 @@ class ActiveSubtitleManager {
     this.activeSubtitleCueCount++;
   }
 
-  private removeCueFromMap(event: SubtitleCueEvent): SubtitleLabel | undefined {
+  private popCueFromMap(event: SubtitleCueEvent): SubtitleLabel | undefined {
     let id = ActiveSubtitleManager.calculateId(event);
     let activeSubtitleCues = this.activeSubtitleCueMap[id];
 
@@ -442,7 +442,7 @@ class ActiveSubtitleManager {
    * @return {SubtitleLabel|null}
    */
   cueExit(event: SubtitleCueEvent): SubtitleLabel {
-    return this.removeCueFromMap(event);
+    return this.popCueFromMap(event);
   }
 
   /**
