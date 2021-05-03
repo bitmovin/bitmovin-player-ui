@@ -134,7 +134,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       event.position.row = event.position.row || 0;
       event.position.column = event.position.column || 0;
     }
-    
+
     const label = new SubtitleLabel({
       // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
       // else use the plain text
@@ -488,12 +488,12 @@ export class SubtitleRegionContainerManager {
       return {
         regionContainerId: label.vtt.region && label.vtt.region.id ? label.vtt.region.id : 'vtt',
         regionName: 'vtt',
-      }
+      };
     } else {
       return {
         regionContainerId: label.region || 'default',
         regionName: label.region || 'default',
-      }
+      };
     }
   }
 
