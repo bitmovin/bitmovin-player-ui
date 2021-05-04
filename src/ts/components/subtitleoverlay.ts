@@ -69,11 +69,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     player.on(player.exports.PlayerEvent.CueUpdate, (event: SubtitleCueEvent) => {
       const label = this.generateLabel(event);
-      const previousLabel = subtitleManager.getPreviousCue(event);
+      const labelToReplace = subtitleManager.cueUpdate(event, label);
 
-      if (previousLabel) {
-        subtitleManager.cueUpdate(event, label);
-        this.subtitleContainerManager.replaceLabel(previousLabel, label);
+      if (labelToReplace) {
+        this.subtitleContainerManager.replaceLabel(labelToReplace, label);
       }
     });
 
@@ -371,12 +370,15 @@ class ActiveSubtitleManager {
     this.addCueToMap(event, label);
   }
 
-  cueUpdate(event: SubtitleCueEvent, label: SubtitleLabel): void {
-    this.addCueToMap(event, label);
-  }
+  cueUpdate(event: SubtitleCueEvent, label: SubtitleLabel): SubtitleLabel | undefined {
+    const labelToReplace = this.popCueFromMap(event);
 
-  getPreviousCue(event: SubtitleCueEvent): SubtitleLabel | undefined {
-    return this.popCueFromMap(event);
+    if (labelToReplace) {
+      this.addCueToMap(event, label);
+      return labelToReplace;
+    }
+
+    return undefined;
   }
 
   private addCueToMap(event: SubtitleCueEvent, label: SubtitleLabel): void {
