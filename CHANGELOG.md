@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- Support for subtitle `CueUpdate` events
+- Support for `CueUpdate` events that where introduced in player v8.60.0
 
 ### Fixed
 - Ad times (`remainingTime`, `playedTime` and `adDuration`) are not correctly rounded
