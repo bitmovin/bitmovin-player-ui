@@ -143,7 +143,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       regionStyle: event.regionStyle,
     });
 
-    this.preprocessLabelEventCallback.dispatch(event);
+    this.preprocessLabelEventCallback.dispatch(event, label);
 
     return label;
   }
@@ -288,13 +288,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   removePreviewSubtitleLabel(): void {
-    if (!this.previewSubtitleActive) {
-      return;
+    if (this.previewSubtitleActive) {
+      this.previewSubtitleActive = false;
+      this.subtitleContainerManager.removeLabel(this.previewSubtitle);
+      this.updateComponents();
     }
-
-    this.previewSubtitleActive = false;
-    this.subtitleContainerManager.removeLabel(this.previewSubtitle);
-    this.updateComponents();
   }
 }
 
