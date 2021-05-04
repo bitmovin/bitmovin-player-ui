@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- Support for subtitle `cueUpdate` events
+- Support for subtitle `CueUpdate` events
 
 ## [3.26.0]
 
