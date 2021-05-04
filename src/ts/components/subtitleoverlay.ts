@@ -57,6 +57,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       const label = this.generateLabel(event);
       subtitleManager.cueEnter(event, label);
 
+      this.preprocessLabelEventCallback.dispatch(event, label);
+
       if (this.previewSubtitleActive) {
         this.subtitleContainerManager.removeLabel(this.previewSubtitle);
       }
@@ -70,6 +72,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.on(player.exports.PlayerEvent.CueUpdate, (event: SubtitleCueEvent) => {
       const label = this.generateLabel(event);
       const labelToReplace = subtitleManager.cueUpdate(event, label);
+
+      this.preprocessLabelEventCallback.dispatch(event, label);
 
       if (labelToReplace) {
         this.subtitleContainerManager.replaceLabel(labelToReplace, label);
@@ -143,8 +147,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       regionStyle: event.regionStyle,
     });
 
-    this.preprocessLabelEventCallback.dispatch(event, label);
-
     return label;
   }
 
@@ -159,6 +161,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let enabled = false;
 
     const updateCEA608FontSize = () => {
+
+      console.log("UPDATE FONTS");
+
       const dummyLabel = new SubtitleLabel({ text: 'X' });
       dummyLabel.getDomElement().css({
         // By using a large font size we do not need to use multiple letters and can get still an
@@ -237,6 +242,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         // Skip all non-CEA608 cues
         return;
       }
+      
+      console.log("PROCESS LABEL");
 
       if (!enabled) {
         enabled = true;
