@@ -32,34 +32,12 @@ describe('SubtitleOverlay', () => {
       expect(addLabelSpy).toHaveBeenCalled();
     });
 
-    it('removes a subtitle label on cueExit', () => {
+    it('removes a subtitle label con cueExit', () => {
       playerMock.eventEmitter.fireSubtitleCueEnterEvent();
       const removeLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'removeLabel');
       jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
       playerMock.eventEmitter.fireSubtitleCueExitEvent();
       expect(removeLabelSpy).toHaveBeenCalled();
-    });
-
-    it('updates a subtitle label on cueUpdate', () => {
-      const updateLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'replaceLabel');
-      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
-
-      playerMock.eventEmitter.fireSubtitleCueEnterEvent();
-      expect(updateLabelSpy).not.toHaveBeenCalled();
-
-      playerMock.eventEmitter.fireSubtitleCueUpdateEvent();
-      expect(updateLabelSpy).toHaveBeenCalled();
-    });
-
-    it('ignores cueUpdate event if it does not match a previous cue', () => {
-      const updateLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'replaceLabel');
-      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
-
-      playerMock.eventEmitter.fireSubtitleCueEnterEvent();
-      expect(updateLabelSpy).not.toHaveBeenCalled();
-
-      playerMock.eventEmitter.fireSubtitleCueUpdateEvent('some different text');
-      expect(updateLabelSpy).not.toHaveBeenCalled();
     });
   });
 });
