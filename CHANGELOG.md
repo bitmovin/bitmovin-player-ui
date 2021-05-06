@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- Support for `CueUpdate` events that where introduced in player v8.60.0
+- Support for `CueUpdate` events that were introduced in player v8.60.0
+
+### Fixed
+- Ad times (`remainingTime`, `playedTime` and `adDuration`) are not correctly rounded
 
 ## [3.26.0]
 
