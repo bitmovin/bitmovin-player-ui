@@ -4,11 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [develop]
-
-### Added
-- Support for `CueUpdate` events that where introduced in player v8.60.0
-
 ## [3.26.0]
 
 ### Fixed
@@ -726,7 +721,6 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.26.0...HEAD
 [3.26.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.25.0...v3.26.0
 [3.25.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.24.0...v3.25.0
 [3.24.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.23.0...v3.24.0
