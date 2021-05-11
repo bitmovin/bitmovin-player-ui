@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.27.0]
+## [3.27.0] - 2021-04-11
 
 ### Added
 - Support for `CueUpdate` events that were introduced in player v8.60.0
@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Ad times (`remainingTime`, `playedTime` and `adDuration`) are not correctly rounded
 
-## [3.26.0]
+## [3.26.0] - 2021-03-30
 
 ### Fixed
 - `TouchEvent` error in seekbar controls when using the mouse on a touchscreen Windows device and IE/UWP
