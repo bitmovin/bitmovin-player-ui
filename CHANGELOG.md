@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.27.0]
+## [3.27.0] - 2021-05-11
 
 ### Added
 - Support for `CueUpdate` events that were introduced in player v8.60.0
