@@ -128,7 +128,7 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
         break;
       case 'line-right':
         cueContainerDom.css(direction, 'auto');
-        cueContainerDom.css(DirectionPair.get(direction), `${vtt.position}%`);
+        cueContainerDom.css(DirectionPair.get(direction), `${100 - vtt.position}%`);
         cueContainerDom.css('justify-content', 'flex-end');
         break;
       default:
