@@ -551,7 +551,7 @@ describe('Vtt Utils', () => {
 
             expect(spyCss).toHaveBeenCalledTimes(12);
             expect(spyCss).toHaveBeenNthCalledWith(10, 'left', 'auto');
-            expect(spyCss).toHaveBeenNthCalledWith(11, 'right', '30%');
+            expect(spyCss).toHaveBeenNthCalledWith(11, 'right', '70%');
           });
         });
       });
@@ -645,7 +645,7 @@ describe('Vtt Utils', () => {
 
             expect(spyCss).toHaveBeenCalledTimes(13);
             expect(spyCss).toHaveBeenNthCalledWith(11, 'top', 'auto');
-            expect(spyCss).toHaveBeenNthCalledWith(12, 'bottom', '30%');
+            expect(spyCss).toHaveBeenNthCalledWith(12, 'bottom', '70%');
           });
         });
       });
