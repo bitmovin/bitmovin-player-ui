@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.28.0]
+## [3.28.0] - 2021-06-22
 
 ### Fixed
 - VTT cue positioning when position alignment is `end` or `right`
