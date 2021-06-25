@@ -249,7 +249,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         // paused nor playing. Playback updates are handled in the Timeout below.
         if (this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
           || forceUpdate || player.isPaused() || (player.isPaused() === player.isPlaying())) {
-          this.setPlaybackPosition(playbackPositionPercentage);
+          if(!this.isSeeking) this.setPlaybackPosition(playbackPositionPercentage);
         }
 
         this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
@@ -511,7 +511,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
 
       let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
-      this.setPlaybackPosition(playbackPositionPercentage);
+      if(!this.isSeeking) this.setPlaybackPosition(playbackPositionPercentage);
     }, true);
 
     let startSmoothPlaybackPositionUpdater = () => {
