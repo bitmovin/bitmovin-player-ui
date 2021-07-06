@@ -110,6 +110,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   private smoothPlaybackPositionUpdater: Timeout;
   private pausedTimeshiftUpdater: Timeout;
 
+  private isUserSeeking = false;
+
   private seekBarEvents = {
     /**
      * Fired when a scrubbing seek operation is started.
@@ -204,12 +206,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     let isPlaying = false;
-    let isUserSeeking = false;
     let isPlayerSeeking = false;
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
-      if (isUserSeeking) {
+      if (this.isUserSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
       }
@@ -303,7 +304,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeShifted, onPlayerSeeked);
 
     this.onSeek.subscribe((sender) => {
-      isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
+      this.isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
 
       // Notify UI manager of started seek
       uimanager.onSeek.dispatch(sender);
@@ -326,9 +327,12 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     // Rate-limited scrubbing seek
-    this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
+    if (uimanager.getConfig().enableSeekPreview) {
+      this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
+    }
+
     this.onSeeked.subscribe((sender, percentage) => {
-      isUserSeeking = false;
+      this.isUserSeeking = false;
 
       // Do the seek
       this.seek(percentage);
@@ -472,6 +476,10 @@ export class SeekBar extends Component<SeekBarConfig> {
      * To work around this issue, we maintain a local playback position that is updated in a stable regular interval
      * and kept in sync with the player.
      */
+    if (!uimanager.getConfig().enableSeekPreview && this.isUserSeeking) {
+      // We caught a seek preview seek, do not update the seekbar if seek preview is disabled
+      return;
+    }
     let currentTimeSeekBar = 0;
     let currentTimePlayer = 0;
     let updateIntervalMs = 50;
