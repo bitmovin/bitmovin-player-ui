@@ -110,6 +110,10 @@ export class SeekBar extends Component<SeekBarConfig> {
   private smoothPlaybackPositionUpdater: Timeout;
   private pausedTimeshiftUpdater: Timeout;
 
+  private isUserSeeking = false;
+
+  private isSeekPreviewEnabled = true;
+
   private seekBarEvents = {
     /**
      * Fired when a scrubbing seek operation is started.
@@ -176,6 +180,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     this.player = player;
 
+    this.isSeekPreviewEnabled = uimanager.getConfig().enableSeekPreview;
+
     // Apply scaling transform to the backdrop bar to have all bars rendered similarly
     // (the call must be up here to be executed for the volume slider as well)
     this.setPosition(this.seekBarBackdrop, 100);
@@ -204,12 +210,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     let isPlaying = false;
-    let isUserSeeking = false;
     let isPlayerSeeking = false;
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
-      if (isUserSeeking) {
+      if (this.isUserSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
       }
@@ -303,7 +308,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeShifted, onPlayerSeeked);
 
     this.onSeek.subscribe((sender) => {
-      isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
+      this.isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
 
       // Notify UI manager of started seek
       uimanager.onSeek.dispatch(sender);
@@ -326,9 +331,12 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     // Rate-limited scrubbing seek
-    this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
+    if (this.isSeekPreviewEnabled) {
+      this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
+    }
+
     this.onSeeked.subscribe((sender, percentage) => {
-      isUserSeeking = false;
+      this.isUserSeeking = false;
 
       // Do the seek
       this.seek(percentage);
@@ -554,7 +562,9 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.pausedTimeshiftUpdater.clear();
     }
 
-    this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
+    if (this.isSeekPreviewEnabled) {
+      this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
+    }
   }
 
   protected toDomElement(): DOM {
@@ -682,6 +692,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       let position = 100 * this.getOffset(e);
       this.setSeekPosition(position);
+
       this.onSeekPreviewEvent(position, false);
 
       if (this.hasLabel() && this.getLabel().isHidden()) {
