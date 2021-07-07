@@ -214,7 +214,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
-      if (this.isUserSeeking) {
+      if (!this.isSeekPreviewEnabled && this.isUserSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
       }
@@ -486,6 +486,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
     this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
+      if (!this.isSeekPreviewEnabled && this.isUserSeeking) {
+        // We caught a seek preview seek, do not update the seekbar
+        return;
+      }
+
       currentTimeSeekBar += currentTimeUpdateDeltaSecs;
 
       try {
