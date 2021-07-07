@@ -112,6 +112,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private isUserSeeking = false;
 
+  private isSeekPreviewEnabled = true;
+
   private seekBarEvents = {
     /**
      * Fired when a scrubbing seek operation is started.
@@ -177,6 +179,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     super.configure(player, uimanager);
 
     this.player = player;
+
+    this.isSeekPreviewEnabled = uimanager.getConfig().enableSeekPreview;
 
     // Apply scaling transform to the backdrop bar to have all bars rendered similarly
     // (the call must be up here to be executed for the volume slider as well)
@@ -327,7 +331,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     // Rate-limited scrubbing seek
-    if (uimanager.getConfig().enableSeekPreview) {
+    if (this.isSeekPreviewEnabled) {
       this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
     }
 
@@ -476,10 +480,6 @@ export class SeekBar extends Component<SeekBarConfig> {
      * To work around this issue, we maintain a local playback position that is updated in a stable regular interval
      * and kept in sync with the player.
      */
-    if (!uimanager.getConfig().enableSeekPreview && this.isUserSeeking) {
-      // We caught a seek preview seek, do not update the seekbar if seek preview is disabled
-      return;
-    }
     let currentTimeSeekBar = 0;
     let currentTimePlayer = 0;
     let updateIntervalMs = 50;
@@ -634,7 +634,9 @@ export class SeekBar extends Component<SeekBarConfig> {
       let targetPercentage = 100 * this.getOffset(e);
       this.setSeekPosition(targetPercentage);
       this.setPlaybackPosition(targetPercentage);
-      this.onSeekPreviewEvent(targetPercentage, true);
+      if (this.isSeekPreviewEnabled) {
+        this.onSeekPreviewEvent(targetPercentage, true);
+      }
     };
 
     let mouseTouchUpHandler = (e: MouseEvent | TouchEvent) => {
@@ -690,7 +692,10 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       let position = 100 * this.getOffset(e);
       this.setSeekPosition(position);
-      this.onSeekPreviewEvent(position, false);
+
+      if (this.isSeekPreviewEnabled) {
+        this.onSeekPreviewEvent(position, false);
+      }
 
       if (this.hasLabel() && this.getLabel().isHidden()) {
         this.getLabel().show();
