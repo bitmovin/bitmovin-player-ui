@@ -562,7 +562,9 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.pausedTimeshiftUpdater.clear();
     }
 
-    this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
+    if (this.isSeekPreviewEnabled) {
+      this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
+    }
   }
 
   protected toDomElement(): DOM {
