@@ -150,6 +150,7 @@ export class UIManager {
       playbackSpeedSelectionEnabled: true, // Switch on speed selector by default
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
       disableAutoHideWhenHovered: false, // Disable auto hide when UI is hovered
+      enableSeekPreview: true,
       ...uiconfig,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
