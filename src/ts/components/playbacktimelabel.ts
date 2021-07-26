@@ -133,7 +133,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     };
 
     player.on(player.exports.PlayerEvent.TimeChanged, playbackTimeHandler);
-    player.on(player.exports.PlayerEvent.Seeked, playbackTimeHandler);
+    player.on(player.exports.PlayerEvent.Seek, playbackTimeHandler);
 
     player.on(player.exports.PlayerEvent.TimeShift, updateLiveTimeshiftState);
     player.on(player.exports.PlayerEvent.TimeShifted, updateLiveTimeshiftState);
