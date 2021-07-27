@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Changed
-- Current time now gets updated immediately during a seek, to reflect new behavior of `getCurrentTime` API
+- Current time now gets updated immediately during a seek, to reflect the new behavior of `getCurrentTime` API
 
 ## [3.28.1]
 
