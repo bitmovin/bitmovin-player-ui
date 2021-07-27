@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Changed
+- Current time now gets updated immediately during a seek, to reflect new behavior of `getCurrentTime` API
+
 ## [3.28.1]
 
 ### Fixed
