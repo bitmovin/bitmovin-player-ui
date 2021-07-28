@@ -252,7 +252,10 @@ export class SeekBar extends Component<SeekBarConfig> {
           this.setPlaybackPosition(playbackPositionPercentage);
         }
 
-        this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
+        if (!isPlayerSeeking) {
+          // During seeking, buffer levels may be off during the transition.
+          this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
+        }
 
         this.setAriaSliderMinMax('0', playerDuration.toString());
       }
