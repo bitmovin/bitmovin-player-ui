@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Current time now gets updated immediately during a seek, to reflect the new behavior of `getCurrentTime` API
 
+### Fixed
+- Empty lines being added to subtitles
+
 ## [3.28.1]
 
 ### Fixed
