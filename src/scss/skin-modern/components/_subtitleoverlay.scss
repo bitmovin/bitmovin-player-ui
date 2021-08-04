@@ -41,7 +41,7 @@
 
     // Break labels into separate lines
     // sass-lint:disable force-pseudo-nesting
-    &:nth-child(1n-1)::after {
+    &:nth-child(n+2)::after {
       content: '\A';
       white-space: pre-line;
     }
