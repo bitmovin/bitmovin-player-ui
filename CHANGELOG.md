@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Current time now gets updated immediately during a seek, to reflect the new behavior of `getCurrentTime` API
 
 ### Fixed
-- Empty lines being added to subtitles
+- Empty lines being added to VTT subtitles
 
 ## [3.28.1]
 
