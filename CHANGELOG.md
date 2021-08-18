@@ -6,9 +6,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.29.0]
 
-### Changed
-- Current time now gets updated immediately during a seek, to reflect the new behavior of `getCurrentTime` API
-
 ### Fixed
 - An empty line being added to subtitle boxes when VTT positioning attributes are present.
 
