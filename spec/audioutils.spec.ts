@@ -52,7 +52,7 @@ describe('AudioUtils', () => {
 
     it('on audioAdded event', () => {
       playerMock.eventEmitter.fireAudioAddedEvent('a-3', 'A3');
-      expect(listSelectorMock.addItem).toHaveBeenCalledWith('a-3', expect.any(Function)); // i18n.t in our case
+      expect(listSelectorMock.addItem).toHaveBeenCalledWith('a-3', expect.any(Function), true);
     });
   });
 
@@ -114,6 +114,16 @@ describe('AudioUtils', () => {
       } as AudioTrack);
       playerMock.eventEmitter.fireAudioChangedEvent();
       expect(listSelectorMock.selectItem).toHaveBeenCalledWith('a-2');
+    });
+
+    it('on audioAdded event', () => {
+      jest.spyOn(playerMock, 'getAudio').mockReturnValue({
+        id: 'a-1',
+        label: 'A1',
+        lang: 'en',
+      } as AudioTrack);
+      playerMock.eventEmitter.fireAudioAddedEvent('a-3', 'A3');
+      expect(listSelectorMock.selectItem).toHaveBeenCalledWith('a-1');
     });
   });
 });
