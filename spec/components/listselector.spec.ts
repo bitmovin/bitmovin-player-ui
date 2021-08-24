@@ -32,19 +32,6 @@ describe('ListSelector', () => {
       ]);
     });
 
-    it('adds items respecting the key order if sortedInsert is true', () => {
-      const sortedInsert = true;
-      listSelector.addItem('A', 'itemA', sortedInsert);
-      listSelector.addItem('C', 'itemC', sortedInsert);
-      listSelector.addItem('B', 'itemB', sortedInsert);
-
-      expect(listSelector.getItems()).toEqual([
-        { key: 'A', label: 'itemA' },
-        { key: 'B', label: 'itemB' },
-        { key: 'C', label: 'itemC' },
-      ]);
-    });
-
     it('overrides existing value', () => {
       listSelector.addItem('itemKey', 'itemLabelOld');
       listSelector.addItem('itemKey', 'itemLabelNew');
