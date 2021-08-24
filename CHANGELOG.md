@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
+- Inconsistent sorting of audio tracks when using Safari
+- Initial audio track sometimes being wrong when using Safari
+
+## [3.29.0]
+
+### Fixed
 - An empty line being added to subtitle boxes when VTT positioning attributes are present.
 
 ## [3.28.1]
