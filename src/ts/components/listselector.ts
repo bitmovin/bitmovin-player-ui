@@ -99,12 +99,13 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   }
 
   /**
-   * Adds an item to this selector by appending it to the end of the list of items. If an item with the specified
-   * key already exists, it is replaced.
+   * Adds an item to this selector by doing a sorted insert or by appending the element to the end of the list of items.
+   * If an item with the specified key already exists, it is replaced.
    * @param key the key of the item to add
    * @param label the (human-readable) label of the item to add
+   * @param sortedInsert whether the item should be added respecting the order of keys
    */
-  addItem(key: string, label: LocalizableText) {
+  addItem(key: string, label: LocalizableText, sortedInsert = false) {
     const listItem = { key: key, label: i18n.performLocalization(label) };
 
     // Apply filter function
@@ -120,7 +121,17 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     // Try to remove key first to get overwrite behavior and avoid duplicate keys
     this.removeItem(key); // This will trigger an ItemRemoved and an ItemAdded event
 
-    this.items.push(listItem);
+    // Add the item to the list
+    if (sortedInsert) {
+      const index = this.items.findIndex(entry => entry.key > key);
+      if (index < 0) {
+          this.items.push(listItem);
+      } else {
+        this.items.splice(index, 0, listItem);
+      }
+    } else {
+      this.items.push(listItem);
+    }
     this.onItemAddedEvent(key);
   }
 

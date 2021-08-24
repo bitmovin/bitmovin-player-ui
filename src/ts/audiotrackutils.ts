@@ -46,7 +46,7 @@ export class AudioTrackSwitchHandler {
   private addAudioTrack = (event: AudioTrackEvent) => {
     const audioTrack = event.track;
     if (!this.listElement.hasItem(audioTrack.id)) {
-      this.listElement.addItem(audioTrack.id, i18n.getLocalizer(audioTrack.label));
+      this.listElement.addItem(audioTrack.id, i18n.getLocalizer(audioTrack.label), true);
     }
   };
 
