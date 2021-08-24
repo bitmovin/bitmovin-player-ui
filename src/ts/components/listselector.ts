@@ -125,7 +125,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     if (sortedInsert) {
       const index = this.items.findIndex(entry => entry.key > key);
       if (index < 0) {
-          this.items.push(listItem);
+        this.items.push(listItem);
       } else {
         this.items.splice(index, 0, listItem);
       }
