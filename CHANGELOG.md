@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- Sort audio tracks by id
+- Sort `AudioTracks` inside the `AudioTrackSelectBox` and the `AudioTrackListBox` by their identifier.
 
 ## [3.29.0]
 
