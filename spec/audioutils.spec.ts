@@ -115,15 +115,5 @@ describe('AudioUtils', () => {
       playerMock.eventEmitter.fireAudioChangedEvent();
       expect(listSelectorMock.selectItem).toHaveBeenCalledWith('a-2');
     });
-
-    it('on audioAdded event', () => {
-      jest.spyOn(playerMock, 'getAudio').mockReturnValue({
-        id: 'a-1',
-        label: 'A1',
-        lang: 'en',
-      } as AudioTrack);
-      playerMock.eventEmitter.fireAudioAddedEvent('a-3', 'A3');
-      expect(listSelectorMock.selectItem).toHaveBeenCalledWith('a-1');
-    });
   });
 });

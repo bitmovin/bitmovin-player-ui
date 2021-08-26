@@ -48,9 +48,6 @@ export class AudioTrackSwitchHandler {
     if (!this.listElement.hasItem(audioTrack.id)) {
       this.listElement.addItem(audioTrack.id, i18n.getLocalizer(audioTrack.label));
     }
-
-    // Refresh current audio selection
-    this.selectCurrentAudioTrack();
   };
 
   private removeAudioTrack = (event: AudioTrackEvent) => {

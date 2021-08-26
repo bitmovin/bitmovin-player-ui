@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Inconsistent sorting of audio tracks when using Safari
-- Audio track list sometimes showing incorrect selected audio when using Safari
 
 ## [3.29.0]
 
