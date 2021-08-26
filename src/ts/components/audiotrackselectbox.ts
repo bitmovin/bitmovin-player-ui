@@ -3,7 +3,6 @@ import {ListSelectorConfig} from './listselector';
 import {UIInstanceManager} from '../uimanager';
 import {AudioTrackSwitchHandler} from '../audiotrackutils';
 import { PlayerAPI } from 'bitmovin-player';
-import { i18n, LocalizableText } from '../localization/i18n';
 
 /**
  * A select box providing a selection between available audio tracks (e.g. different languages).
