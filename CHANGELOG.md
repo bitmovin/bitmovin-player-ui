@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Added
+- Sort `AudioTracks` inside the `AudioTrackSelectBox` and the `AudioTrackListBox` by their identifier.
+
 ## [3.29.0]
 
 ### Fixed
