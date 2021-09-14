@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.30.0]
+
+### Added
+- Sort `AudioTracks` inside the `AudioTrackSelectBox` and the `AudioTrackListBox` by their identifier.
+
 ## [3.29.0]
 
 ### Fixed
@@ -744,6 +749,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.30.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.29.0...v3.30.0
 [3.29.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.28.1...v3.29.0
 [3.28.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.28.0...v3.28.1
 [3.28.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.27.0...v3.28.0

@@ -20,6 +20,31 @@ describe('ListSelector', () => {
       expect(listSelector.getItems()).toEqual([{ key: 'itemKey', label: 'itemLabel' }]);
     });
 
+    it('adds new items to the end of the list', () => {
+      listSelector.addItem('A', 'itemA');
+      listSelector.addItem('C', 'itemC');
+      listSelector.addItem('B', 'itemB');
+
+      expect(listSelector.getItems()).toEqual([
+        { key: 'A', label: 'itemA' },
+        { key: 'C', label: 'itemC' },
+        { key: 'B', label: 'itemB' },
+      ]);
+    });
+
+    it('adds items respecting the key order if sortedInsert is true', () => {
+      const sortedInsert = true;
+      listSelector.addItem('A', 'itemA', sortedInsert);
+      listSelector.addItem('C', 'itemC', sortedInsert);
+      listSelector.addItem('B', 'itemB', sortedInsert);
+
+      expect(listSelector.getItems()).toEqual([
+        { key: 'A', label: 'itemA' },
+        { key: 'B', label: 'itemB' },
+        { key: 'C', label: 'itemC' },
+      ]);
+    });
+
     it('overrides existing value', () => {
       listSelector.addItem('itemKey', 'itemLabelOld');
       listSelector.addItem('itemKey', 'itemLabelNew');
