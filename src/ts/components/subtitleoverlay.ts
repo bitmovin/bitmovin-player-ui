@@ -54,7 +54,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.subtitleContainerManager = new SubtitleRegionContainerManager(this);
 
     player.on(player.exports.PlayerEvent.CueEnter, (event: SubtitleCueEvent) => {
-      const label = this.generateLabel(event);
+      const label = this.generateLabel(
+        event, player?.getPlayerType());
       subtitleManager.cueEnter(event, label);
 
       this.preprocessLabelEventCallback.dispatch(event, label);
@@ -132,7 +133,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     subtitleClearHandler();
   }
 
-  generateLabel(event: SubtitleCueEvent): SubtitleLabel {
+  generateLabel(event: SubtitleCueEvent, playerType?: string): SubtitleLabel {
     // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter / update)
     if (event.position) {
       // Sometimes the positions are undefined, we assume them to be zero
@@ -145,7 +146,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // else use the plain text
       text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
       vtt: event.vtt,
-      playerType: event.playerType,
+      playerType: playerType,
       region: event.region,
       regionStyle: event.regionStyle,
     });

@@ -114,9 +114,9 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
   console.log("[info] setVttPositionAlign, vtt", vtt);
   // https://www.w3.org/TR/webvtt1/#webvtt-cue-position
   console.log("[info] ui/vttutils, playerType", playerType);
-  if (vtt.position === 'auto' /*&& playerType !== "native"*/) {
+  if (vtt.position === 'auto') {
     cueContainerDom.css(direction, '0');
-  } else /*if (vtt.position !== "auto") */{
+  } else {
     if (playerType === "native") {
       switch (vtt.align) {
       case "start":
