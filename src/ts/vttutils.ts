@@ -110,11 +110,27 @@ const setVttWritingDirection = (
  * Defines the Cue position alignment
  * https://w3.org/TR/webvtt1/#webvtt-cue-position-alignment
  */
-const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction: Direction) => {
+const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction: Direction, playerType?: string) => {
+  console.log("[info] setVttPositionAlign, vtt", vtt);
   // https://www.w3.org/TR/webvtt1/#webvtt-cue-position
-  if (vtt.position === 'auto') {
+  console.log("[info] ui/vttutils, playerType", playerType);
+  if (vtt.position === 'auto' /*&& playerType !== "native"*/) {
     cueContainerDom.css(direction, '0');
-  } else {
+  } else /*if (vtt.position !== "auto") */{
+    if (playerType === "native") {
+      switch (vtt.align) {
+      case "start":
+        vtt.positionAlign = "line-left";
+        break;
+      case "center":
+        vtt.positionAlign = "center";
+        break;
+      case "end":   
+        vtt.positionAlign = "line-right";
+        break;
+      }
+      vtt.line = `${vtt.line}%`;
+    }
     switch (vtt.positionAlign) {
       case 'line-left':
         cueContainerDom.css(direction, `${vtt.position}%`);
@@ -144,7 +160,10 @@ export namespace VttUtils {
     subtitleOverlaySize: Size,
   ) => {
     const vtt = cueContainer.vtt;
+    console.log("[info] VttUtils cueContainer", cueContainer);
     const cueContainerDom = cueContainer.getDomElement();
+    let playerType: string | undefined;
+    playerType = cueContainer.playerType;
 
     setDefaultVttStyles(cueContainerDom, vtt);
     setVttWritingDirection(cueContainerDom, vtt, subtitleOverlaySize);
@@ -157,10 +176,10 @@ export namespace VttUtils {
     const containerSize = vtt.size;
     if (vtt.vertical === '') {
       cueContainerDom.css('width', `${containerSize}%`);
-      setVttPositionAlign(cueContainerDom, vtt, Direction.Left);
+      setVttPositionAlign(cueContainerDom, vtt, Direction.Left, playerType);
     } else {
       cueContainerDom.css('height', `${containerSize}%`);
-      setVttPositionAlign(cueContainerDom, vtt, Direction.Top);
+      setVttPositionAlign(cueContainerDom, vtt, Direction.Top, playerType);
     }
   };
 

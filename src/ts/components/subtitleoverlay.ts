@@ -68,7 +68,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.subtitleContainerManager.addLabel(label, this.getDomElement().size());
       this.updateComponents();
     });
-
+/* in NativePlayer instances CueUpdate is sent on CueEnter.
+    First: if it's necesary? Second TODO: set VTT in the Upate message
     player.on(player.exports.PlayerEvent.CueUpdate, (event: SubtitleCueEvent) => {
       const label = this.generateLabel(event);
       const labelToReplace = subtitleManager.cueUpdate(event, label);
@@ -79,6 +80,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.subtitleContainerManager.replaceLabel(labelToReplace, label);
       }
     });
+*/
 
     player.on(player.exports.PlayerEvent.CueExit, (event: SubtitleCueEvent) => {
       let labelToRemove = subtitleManager.cueExit(event);
@@ -143,6 +145,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // else use the plain text
       text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
       vtt: event.vtt,
+      playerType: event.playerType,
       region: event.region,
       regionStyle: event.regionStyle,
     });
@@ -240,6 +243,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         return;
       }
 
+
       if (!enabled) {
         enabled = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
@@ -311,6 +315,7 @@ interface SubtitleLabelConfig extends LabelConfig {
   vtt?: VTTProperties;
   region?: string;
   regionStyle?: string;
+  playerType?: string;
 }
 
 export class SubtitleLabel extends Label<SubtitleLabelConfig> {
@@ -321,6 +326,10 @@ export class SubtitleLabel extends Label<SubtitleLabelConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-subtitle-label',
     }, this.config);
+  }
+
+  get playerType(): string {
+    return this.config.playerType;
   }
 
   get vtt(): VTTProperties {
@@ -474,6 +483,7 @@ class ActiveSubtitleManager {
 }
 
 export class SubtitleRegionContainerManager {
+  
   private subtitleRegionContainers: { [regionName: string]: SubtitleRegionContainer } = {};
 
   /**
@@ -482,7 +492,6 @@ export class SubtitleRegionContainerManager {
   constructor(private subtitleOverlay: SubtitleOverlay) {
     this.subtitleOverlay = subtitleOverlay;
   }
-
   private getRegion(label: SubtitleLabel): { regionContainerId: string, regionName: string } {
     if (label.vtt) {
       return {
@@ -591,17 +600,20 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
 
   addLabel(labelToAdd: SubtitleLabel, overlaySize?: Size) {
     this.labelCount++;
+    console.log("[info] set vtt style", labelToAdd);
 
     if (labelToAdd.vtt) {
       if (labelToAdd.vtt.region && overlaySize) {
         VttUtils.setVttRegionStyles(this, labelToAdd.vtt.region, overlaySize);
       }
-
       VttUtils.setVttCueBoxStyles(labelToAdd, overlaySize);
     }
 
     this.addComponent(labelToAdd);
     this.updateComponents();
+    console.log(
+      "[info]: after update",
+      document.querySelectorAll(".bmpui-ui-subtitle-label"));
   }
 
   removeLabel(labelToRemove: SubtitleLabel): void {
