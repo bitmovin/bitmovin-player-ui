@@ -58,7 +58,7 @@
 
 .#{$prefix}-ui-uicontainer .#{$prefix}-ui-subtitle-overlay * {
   // This aims to prevent possibly conflicting style definitions inherited
-  // from target applications whuch can break subtitle styling. It's still possible
+  // from target applications which can break subtitles styling. It's still possible
   // to override this with selector of higher priority score.
   all: unset;
 }
