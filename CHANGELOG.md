@@ -8,8 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Sort `AudioTracks` inside the `AudioTrackSelectBox` and the `AudioTrackListBox` by their identifier.
-- Style reset for subtitle overlay element to prevent undesired CSS rules
-collisions.
+- Style reset for subtitle overlay element to prevent undesired CSS rules collisions.
 
 ## [3.29.0]
 
