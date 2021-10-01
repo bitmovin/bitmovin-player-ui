@@ -24,7 +24,7 @@
   }
 
   p {
-    // It may happen that we sender <p> inside of an <span> and the `all: unset;` reseting above sets
+    // It may happen that we render <p> inside of an <span> and the `all: unset;` reseting above sets
     // p to inherit the inline display instead of its default display block so this sets it back.
     display: block;
   }
