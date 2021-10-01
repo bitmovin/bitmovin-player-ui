@@ -3,6 +3,7 @@
 
 .#{$prefix}-ui-uicontainer .#{$prefix}-ui-subtitle-overlay {
   @extend %ui-container;
+
   @include hidden;
 
   bottom: 0;
