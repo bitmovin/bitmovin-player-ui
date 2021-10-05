@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Added
+- Style reset for subtitle overlay element to prevent undesired CSS rules collisions.
+
 ## [3.30.0]
 
 ### Added
 - Sort `AudioTracks` inside the `AudioTrackSelectBox` and the `AudioTrackListBox` by their identifier.
-- Style reset for subtitle overlay element to prevent undesired CSS rules collisions.
 
 ## [3.29.0]
 
