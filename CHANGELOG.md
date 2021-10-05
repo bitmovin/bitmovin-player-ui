@@ -1,8 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/) 
+The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## [develop]
+
+### Added
+- Style reset for subtitle overlay element to prevent undesired CSS rules collisions.
 
 ## [3.30.0]
 
@@ -224,7 +229,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - UI not hiding after selecting an item within a `ListBox`
 
 ## [3.4.6]
-	
+
 ### Fixed
 - Allow npm package to be imported in server side app without `navigator` error
 
@@ -258,7 +263,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Stopping timeshift offset updater of `SeekBar` when player is destroyed
-- `box-sizing` style of `SeekBar` and `SeekBarLabel` 
+- `box-sizing` style of `SeekBar` and `SeekBarLabel`
 
 ## [3.4.0]
 
@@ -503,7 +508,7 @@ License change from LGPLv3 to MIT.
 - Removed `VolumeControlButton`'s `VolumeSlider` slide-in animation in the legacy skin to fix the slider knob at 100% bug
 
 ### Fixed
-- Vertical `VolumeSlider` knob in legacy skin was not visible when set to a low volume 
+- Vertical `VolumeSlider` knob in legacy skin was not visible when set to a low volume
 - Legacy skin's `VolumeSlider` knob was always rendered at 100% when appearing after being hidden
 - Avoid `ItemSelectionList` DOM recreation on item selection to avoid unexpected events (e.g. `mouseenter`)
 
