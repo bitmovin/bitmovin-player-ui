@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.31.0]
+## [3.31.0] - 2021-10-12
 
 ### Added
 - Style reset for subtitle overlay element to prevent undesired CSS rules collisions.
