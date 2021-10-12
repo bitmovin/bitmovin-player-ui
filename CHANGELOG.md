@@ -4,22 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.31.0]
+## [3.31.0] - 2021-10-12
 
 ### Added
 - Style reset for subtitle overlay element to prevent undesired CSS rules collisions.
 
-## [3.30.0]
+## [3.30.0] - 2021-09-14
 
 ### Added
 - Sort `AudioTracks` inside the `AudioTrackSelectBox` and the `AudioTrackListBox` by their identifier.
 
-## [3.29.0]
+## [3.29.0] - 2021-08-19
 
 ### Fixed
 - An empty line being added to subtitle boxes when VTT positioning attributes are present.
 
-## [3.28.1]
+## [3.28.1] - 2021-06-25
 
 ### Fixed
 - Broken build for previous release `3.28.0`
