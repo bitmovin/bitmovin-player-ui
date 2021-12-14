@@ -220,7 +220,9 @@ export class SeekBar extends Component<SeekBarConfig> {
           this.setPlaybackPosition(100);
         } else {
           let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
-          this.setPlaybackPosition(playbackPositionPercentage);
+          if (!this.isSeeking()) {
+            this.setPlaybackPosition(playbackPositionPercentage);
+          }
           this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
         }
 
