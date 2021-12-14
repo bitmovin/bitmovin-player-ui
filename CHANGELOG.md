@@ -4,11 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [develop]
-
-### Fixed
-- Dragging the scrubber in the seekbar jumping between locations during a seek operation 
-
 ## [3.31.0]
 
 ### Added
