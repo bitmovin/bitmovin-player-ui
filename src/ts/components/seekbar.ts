@@ -219,8 +219,10 @@ export class SeekBar extends Component<SeekBarConfig> {
           // This case must be explicitly handled to avoid division by zero
           this.setPlaybackPosition(100);
         } else {
-          let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
-          this.setPlaybackPosition(playbackPositionPercentage);
+          if (!this.isSeeking()) {
+            const playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
+            this.setPlaybackPosition(playbackPositionPercentage);
+          }
           this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
         }
 
@@ -247,8 +249,11 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         // Update playback position only in paused state or in the initial startup state where player is neither
         // paused nor playing. Playback updates are handled in the Timeout below.
-        if (this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
-          || forceUpdate || player.isPaused() || (player.isPaused() === player.isPlaying())) {
+        const isInInitialStartupState = this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
+            || forceUpdate || player.isPaused();
+        const isNeitherPausedNorPlaying = player.isPaused() === player.isPlaying();
+
+        if ((isInInitialStartupState || isNeitherPausedNorPlaying) && !this.isSeeking()) {
           this.setPlaybackPosition(playbackPositionPercentage);
         }
 
@@ -478,6 +483,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
     this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
+      if (this.isSeeking()) {
+        return;
+      }
+
       currentTimeSeekBar += currentTimeUpdateDeltaSecs;
 
       try {
