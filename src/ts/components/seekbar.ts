@@ -252,6 +252,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       let playbackPositionPercentage = getPlaybackPositionPercentage();
 
+      updateBufferLevel(playbackPositionPercentage);
+
       // The segment request finished is used to help the playback position move, when the smooth playback position is not enabled.
       // At the same time when the user is scrubbing, we also move the position of the seekbar to display a preview during scrubbing.
       // When the user is scrubbing we do not record this as a user seek operation, as the user has yet to finish their seek,
@@ -284,8 +286,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
         this.setAriaSliderMinMax('0', player.getDuration().toString());
       }
-
-      updateBufferLevel(playbackPositionPercentage);
 
       if (this.isUiShown) {
         this.setAriaSliderValues();
