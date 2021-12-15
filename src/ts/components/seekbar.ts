@@ -471,7 +471,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     playbackPositionHandler: () => void,
   ): void {
     // Regularly update the playback position while the timeout is active
-    this.pausedTimeshiftUpdater = new Timeout(1000, () => playbackPositionHandler, true);
+    this.pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
 
     // Start updater when a live stream with timeshift window is paused
     player.on(player.exports.PlayerEvent.Paused, () => {
