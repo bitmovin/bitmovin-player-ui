@@ -302,7 +302,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // update playback position when a timeshift has finished
     player.on(player.exports.PlayerEvent.TimeShifted, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
-    player.on(player.exports.PlayerEvent.SegmentRequestFinished, () => updateBufferLevel(getPlaybackPositionPercentage()));
+    player.on(player.exports.PlayerEvent.SegmentRequestFinished, playbackPositionHandler);
 
     this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
