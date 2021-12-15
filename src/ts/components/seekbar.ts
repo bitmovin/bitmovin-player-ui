@@ -213,7 +213,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
 
       return 100 / player.getDuration() * this.getRelativeCurrentTime();
-    }
+    };
 
     const updateBufferLevel = (playbackPositionPercentage: number): void => {
       if (player.isLive()) {
@@ -240,7 +240,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       const bufferPercentage = 100 / playerDuration * bufferLength;
 
       this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
-    }
+    };
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
