@@ -81,5 +81,37 @@ describe('SeekBar', () => {
 
           expect(setPlaybackPositionSpy).toHaveBeenCalledTimes(timesCalled);
         })
+
+    it('will be moved after a successful seeked event', function () {
+      playerMock.eventEmitter.fireSeekedEvent();
+      expect(setPlaybackPositionSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('will not move after a successful segment request download', function () {
+      playerMock.eventEmitter.fireSegmentRequestFinished();
+      expect(setPlaybackPositionSpy).toHaveBeenCalledTimes(0);
+    });
   })
+
+  describe('buffer levels', () => {
+    beforeEach(() => {
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+    })
+
+    test.each`
+    isLive
+    ${true} 
+    ${false}
+    `('should get updated accordingly when a request has finished and isLive=$isLive', ({isLive}) => {
+
+      const setBufferPositionSpy = jest.spyOn(seekbar, 'setBufferPosition');
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(isLive);
+      const value = 100;
+
+      playerMock.eventEmitter.fireSegmentRequestFinished();
+
+      expect(setBufferPositionSpy).toHaveBeenCalledTimes(1);
+      expect(setBufferPositionSpy).toHaveBeenCalledWith(isLive ? 100 : value);
+    })
+  });
 });

@@ -13,6 +13,7 @@ import {
   PlayerEventBase,
   PlayerEventCallback,
   SeekEvent,
+  SegmentRequestFinishedEvent,
   SubtitleCueEvent,
   SubtitleEvent,
   SubtitleTrack,
@@ -59,6 +60,21 @@ export class PlayerEventEmitter {
       time: 10,
       timestamp: Date.now(),
       type: PlayerEvent.Paused,
+    });
+  }
+
+  public fireSegmentRequestFinished() {
+    this.fireEvent<SegmentRequestFinishedEvent>({
+      timestamp: Date.now(),
+      type: PlayerEvent.SegmentRequestFinished,
+      httpStatus: 200,
+      downloadTime: 0,
+      mimeType: 'video/mp4',
+      success: true,
+      uid: 'unique-id',
+      size: 1,
+      duration: 1,
+      isInit: false,
     });
   }
 

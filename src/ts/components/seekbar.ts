@@ -290,12 +290,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeChanged, playbackPositionHandler);
     // update bufferlevel when buffering is complete
     player.on(player.exports.PlayerEvent.StallEnded, playbackPositionHandler);
-    // update playback position when a seek has finished
-    player.on(player.exports.PlayerEvent.Seeked, playbackPositionHandler);
     // update playback position when a timeshift has finished
     player.on(player.exports.PlayerEvent.TimeShifted, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
-    player.on(player.exports.PlayerEvent.SegmentRequestFinished, playbackPositionHandler);
+    player.on(player.exports.PlayerEvent.SegmentRequestFinished, () => updateBufferLevel(getPlaybackPositionPercentage()));
 
     this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
@@ -305,9 +303,12 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.setSeeking(true);
     };
 
-    let onPlayerSeeked = () => {
+    let onPlayerSeeked = (event: PlayerEventBase = null, forceUpdate: boolean = false ) => {
       isPlayerSeeking = false;
       this.setSeeking(false);
+
+      // update playback position when a seek has finished
+      playbackPositionHandler(event, forceUpdate)
     };
 
     let restorePlayingState = function () {
