@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - The scrubber could jump to an old position during a seek operation when it was dragged.
+- The Seekbar scrubber could jump to an old position on touch devices when a new buffer is available during a seek operation.
 
 ## [3.31.0] - 2021-10-12
 
