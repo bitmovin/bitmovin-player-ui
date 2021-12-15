@@ -414,7 +414,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     // Add markers when a source is loaded or update when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(() => {
-      console.warn('ON UPDATED')
       playbackPositionHandler();
     });
 
@@ -472,7 +471,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     playbackPositionHandler: () => void,
   ): void {
     // Regularly update the playback position while the timeout is active
-    this.pausedTimeshiftUpdater = new Timeout(1000, () => {console.warn('timeout shifter');playbackPositionHandler()}, true);
+    this.pausedTimeshiftUpdater = new Timeout(1000, () => playbackPositionHandler, true);
 
     // Start updater when a live stream with timeshift window is paused
     player.on(player.exports.PlayerEvent.Paused, () => {
@@ -537,7 +536,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
 
       let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
-      console.warn('SMOOTH', {currentTimeSeekBar, currentTimePlayer, seek: this.isSeeking()})
       this.setPlaybackPosition(playbackPositionPercentage);
     }, true);
 
@@ -652,7 +650,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       let targetPercentage = 100 * this.getOffset(e);
       this.setSeekPosition(targetPercentage);
-      console.warn('MOUSE TOUCH', targetPercentage)
       this.setPlaybackPosition(targetPercentage);
       this.onSeekPreviewEvent(targetPercentage, true);
     };
@@ -671,7 +668,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       seeking = false;
 
       // Fire seeked event
-      console.error('firing seeked event', e, targetPercentage,snappedChapter?.position)
       this.onSeekedEvent(snappedChapter ? snappedChapter.position : targetPercentage);
     };
 
@@ -823,7 +819,6 @@ export class SeekBar extends Component<SeekBarConfig> {
    * @param percent a number between 0 and 100 as returned by the player
    */
   setPlaybackPosition(percent: number) {
-    console.log('SET POSSTION', percent, {track:new Error('er')})
     this.playbackPositionPercentage = percent;
 
     // Set position of the bar
