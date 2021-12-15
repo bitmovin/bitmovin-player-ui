@@ -215,7 +215,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       return 100 / player.getDuration() * this.getRelativeCurrentTime();
     }
 
-    const updateBuffer = (playbackPositionPercentage: number): void => {
+    const updateBufferLevel = (playbackPositionPercentage: number): void => {
       if (player.isLive()) {
         // Always show full buffer for live streams
         this.setBufferPosition(100);
@@ -276,7 +276,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.setAriaSliderMinMax('0', player.getDuration().toString());
       }
 
-      updateBuffer(playbackPositionPercentage);
+      updateBufferLevel(playbackPositionPercentage);
 
       if (this.isUiShown) {
         this.setAriaSliderValues();
