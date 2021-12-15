@@ -52,4 +52,49 @@ describe('SeekBar', () => {
       expect(clearSpy).toHaveBeenCalled();
     });
   });
+
+  describe('playback position', () => {
+    let setPlaybackPositionSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(20);
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+
+      setPlaybackPositionSpy = jest.spyOn(seekbar, 'setPlaybackPosition');
+    })
+
+    describe('when the player is seeking', () => {
+      beforeEach(() => {
+        jest.spyOn(seekbar, 'isSeeking').mockReturnValue(true);
+      })
+
+      test.each`
+      isLive
+      ${false}
+      ${true}
+      `('will not be set when isLive=$isLive and a stall ended event is fired', ({isLive}) => {
+        if (isLive) {
+          jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(-60);
+        }
+        jest.spyOn(playerMock, 'isLive').mockReturnValue(isLive);
+
+        playerMock.eventEmitter.fireStallEndedEvent();
+        expect(setPlaybackPositionSpy).toHaveBeenCalledTimes(0);
+      })
+    })
+
+    test.each`
+      isLive
+      ${false}
+      ${true}
+      `('will not be set when isLive=$isLive and a stall ended event is fired', ({isLive}) => {
+      if (isLive) {
+        jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(-60);
+      }
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(isLive);
+
+      playerMock.eventEmitter.fireStallEndedEvent();
+      expect(setPlaybackPositionSpy).toHaveBeenCalledTimes(1);
+    })
+  })
 });
