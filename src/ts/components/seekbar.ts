@@ -213,7 +213,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
 
       return 100 / player.getDuration() * this.getRelativeCurrentTime();
-    }
+    };
 
     const updateBufferLevel = (playbackPositionPercentage: number): void => {
       if (player.isLive()) {
@@ -240,7 +240,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       const bufferPercentage = 100 / playerDuration * bufferLength;
 
       this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
-    }
+    };
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
@@ -267,7 +267,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         // paused nor playing. Playback updates are handled in the Timeout below.
         const isInInitialStartupState = this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
             || forceUpdate || player.isPaused();
-        const isNeitherPausedNorPlaying = player.isPaused() === player.isPlaying()
+        const isNeitherPausedNorPlaying = player.isPaused() === player.isPlaying();
 
         if ((isInInitialStartupState || isNeitherPausedNorPlaying) && !this.isSeeking()) {
           this.setPlaybackPosition(playbackPositionPercentage);
@@ -472,7 +472,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     playbackPositionHandler: () => void,
   ): void {
     // Regularly update the playback position while the timeout is active
-    this.pausedTimeshiftUpdater = new Timeout(1000, () => playbackPositionHandler, true);
+    this.pausedTimeshiftUpdater = new Timeout(1000, playbackPositionHandler, true);
 
     // Start updater when a live stream with timeshift window is paused
     player.on(player.exports.PlayerEvent.Paused, () => {
