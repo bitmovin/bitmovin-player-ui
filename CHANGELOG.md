@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- Dragging the scrubber in the seekbar jumping between locations during a seek operation
+- The scrubber could jump to an old position during a seek operation when it was dragged.
 
 ## [3.31.0] - 2021-10-12
 
