@@ -318,7 +318,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.setSeeking(false);
 
       // update playback position when a seek has finished
-      playbackPositionHandler(event, forceUpdate)
+      playbackPositionHandler(event, forceUpdate);
     };
 
     let restorePlayingState = function () {
