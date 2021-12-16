@@ -14,6 +14,7 @@ import { SeekBarType, SeekBarController } from './seekbarcontroller';
 import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
 import { TimelineMarkersHandler } from './timelinemarkershandler';
+import { getMinBufferLevel } from './seekbarbufferlevel';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -171,6 +172,27 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
+  private getPlaybackPositionPercentage(): number {
+    if (this.player.isLive()) {
+      return 100 - (100 / this.player.getMaxTimeShift() * this.player.getTimeShift());
+    }
+
+    return 100 / this.player.getDuration() * this.getRelativeCurrentTime();
+  }
+
+  private updateBufferLevel(playbackPositionPercentage: number): void {
+
+    let bufferLoadedPercentageLevel: number;
+    if (this.player.isLive()) {
+      // Always show full buffer for live streams
+      bufferLoadedPercentageLevel = 100;
+    } else {
+      bufferLoadedPercentageLevel = playbackPositionPercentage + getMinBufferLevel(this.player);
+    }
+
+    this.setBufferPosition(bufferLoadedPercentageLevel);
+  }
+
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
 
@@ -214,39 +236,20 @@ export class SeekBar extends Component<SeekBarConfig> {
         return;
       }
 
+      const playbackPositionPercentage = this.getPlaybackPositionPercentage();
+
       if (player.isLive()) {
         if (player.getMaxTimeShift() === 0) {
           // This case must be explicitly handled to avoid division by zero
           this.setPlaybackPosition(100);
         } else {
           if (!this.isSeeking()) {
-            const playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
             this.setPlaybackPosition(playbackPositionPercentage);
           }
+
           this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
         }
-
-        // Always show full buffer for live streams
-        this.setBufferPosition(100);
       } else {
-        const playerDuration = player.getDuration();
-        let playbackPositionPercentage = 100 / playerDuration * this.getRelativeCurrentTime();
-
-        let videoBufferLength = player.getVideoBufferLength();
-        let audioBufferLength = player.getAudioBufferLength();
-        // Calculate the buffer length which is the smaller length of the audio and video buffers. If one of these
-        // buffers is not available, we set it's value to MAX_VALUE to make sure that the other real value is taken
-        // as the buffer length.
-        let bufferLength = Math.min(
-          videoBufferLength != null ? videoBufferLength : Number.MAX_VALUE,
-          audioBufferLength != null ? audioBufferLength : Number.MAX_VALUE);
-        // If both buffer lengths are missing, we set the buffer length to zero
-        if (bufferLength === Number.MAX_VALUE) {
-          bufferLength = 0;
-        }
-
-        let bufferPercentage = 100 / playerDuration * bufferLength;
-
         // Update playback position only in paused state or in the initial startup state where player is neither
         // paused nor playing. Playback updates are handled in the Timeout below.
         const isInInitialStartupState = this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
@@ -257,10 +260,10 @@ export class SeekBar extends Component<SeekBarConfig> {
           this.setPlaybackPosition(playbackPositionPercentage);
         }
 
-        this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
-
-        this.setAriaSliderMinMax('0', playerDuration.toString());
+        this.setAriaSliderMinMax('0', player.getDuration().toString());
       }
+
+      this.updateBufferLevel(playbackPositionPercentage);
 
       if (this.isUiShown) {
         this.setAriaSliderValues();
