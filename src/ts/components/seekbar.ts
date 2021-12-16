@@ -171,6 +171,41 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
+  private getPlaybackPositionPercentage(): number {
+    if (this.player.isLive()) {
+      return 100 - (100 / this.player.getMaxTimeShift() * this.player.getTimeShift());
+    }
+
+    return 100 / this.player.getDuration() * this.getRelativeCurrentTime();
+  };
+
+  private updateBufferLevel(playbackPositionPercentage: number): void {
+    if (this.player.isLive()) {
+      // Always show full buffer for live streams
+      this.setBufferPosition(100);
+      return;
+    }
+
+    const playerDuration = this.player.getDuration();
+
+    const videoBufferLength = this.player.getVideoBufferLength();
+    const audioBufferLength = this.player.getAudioBufferLength();
+    // Calculate the buffer length which is the smaller length of the audio and video buffers. If one of these
+    // buffers is not available, we set it's value to MAX_VALUE to make sure that the other real value is taken
+    // as the buffer length.
+    let bufferLength = Math.min(
+        videoBufferLength != null ? videoBufferLength : Number.MAX_VALUE,
+        audioBufferLength != null ? audioBufferLength : Number.MAX_VALUE);
+    // If both buffer lengths are missing, we set the buffer length to zero
+    if (bufferLength === Number.MAX_VALUE) {
+      bufferLength = 0;
+    }
+
+    const bufferPercentage = 100 / playerDuration * bufferLength;
+
+    this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
+  };
+
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
 
@@ -208,41 +243,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isUserSeeking = false;
     let isPlayerSeeking = false;
 
-    const getPlaybackPositionPercentage = (): number => {
-      if (player.isLive()) {
-        return 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
-      }
-
-      return 100 / player.getDuration() * this.getRelativeCurrentTime();
-    };
-
-    const updateBufferLevel = (playbackPositionPercentage: number): void => {
-      if (player.isLive()) {
-        // Always show full buffer for live streams
-        this.setBufferPosition(100);
-        return;
-      }
-
-      const playerDuration = player.getDuration();
-
-      const videoBufferLength = player.getVideoBufferLength();
-      const audioBufferLength = player.getAudioBufferLength();
-      // Calculate the buffer length which is the smaller length of the audio and video buffers. If one of these
-      // buffers is not available, we set it's value to MAX_VALUE to make sure that the other real value is taken
-      // as the buffer length.
-      let bufferLength = Math.min(
-          videoBufferLength != null ? videoBufferLength : Number.MAX_VALUE,
-          audioBufferLength != null ? audioBufferLength : Number.MAX_VALUE);
-      // If both buffer lengths are missing, we set the buffer length to zero
-      if (bufferLength === Number.MAX_VALUE) {
-        bufferLength = 0;
-      }
-
-      const bufferPercentage = 100 / playerDuration * bufferLength;
-
-      this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
-    };
-
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
       if (isUserSeeking) {
@@ -250,9 +250,9 @@ export class SeekBar extends Component<SeekBarConfig> {
         return;
       }
 
-      let playbackPositionPercentage = getPlaybackPositionPercentage();
+      let playbackPositionPercentage = this.getPlaybackPositionPercentage();
 
-      updateBufferLevel(playbackPositionPercentage);
+      this.updateBufferLevel(playbackPositionPercentage);
 
       // The segment request finished is used to help the playback position move, when the smooth playback position is not enabled.
       // At the same time when the user is scrubbing, we also move the position of the seekbar to display a preview during scrubbing.
