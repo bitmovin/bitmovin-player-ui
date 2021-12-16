@@ -94,7 +94,11 @@ describe('SeekBar', () => {
 
     describe('vod event tracking', () => {
 
+      let setBufferPositionSpy: jest.SpyInstance;
+
       beforeEach(() => {
+        setBufferPositionSpy = jest.spyOn(seekbar, 'setBufferPosition');
+
         jest.spyOn(playerMock, 'getDuration').mockReturnValue(50);
 
         jest.spyOn(playerMock, 'getSeekableRange').mockImplementation(() => ({start: 30, end: 40}));
@@ -116,6 +120,9 @@ describe('SeekBar', () => {
         playerMock.eventEmitter.fireSegmentRequestFinished();
 
         expect(setPlaybackPositionSpy).toHaveBeenLastCalledWith(firstPlaybackPercentage);
+
+        const expectedPlaybackPercentage = 18;
+        expect(setBufferPositionSpy).toHaveBeenLastCalledWith(expectedPlaybackPercentage)
       });
 
       it('will update the scrubber location after a successful segment request download and the user is not scrubbing', function () {
@@ -126,6 +133,7 @@ describe('SeekBar', () => {
         playerMock.eventEmitter.fireSegmentRequestFinished();
 
         expect(setPlaybackPositionSpy).toHaveBeenLastCalledWith(18);
+        expect(setBufferPositionSpy).toHaveBeenLastCalledWith(18)
       });
     });
   })
