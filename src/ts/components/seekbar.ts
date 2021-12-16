@@ -342,7 +342,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.onSeekPreview.subscribe((sender: SeekBar, args: SeekPreviewEventArgs) => {
       // Notify UI manager of seek preview
       uimanager.onSeekPreview.dispatch(sender, args);
-      scrubbing = true;
+      scrubbing = args.scrubbing;
     });
 
     // Rate-limited scrubbing seek
