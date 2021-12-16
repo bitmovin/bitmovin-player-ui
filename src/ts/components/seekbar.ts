@@ -14,6 +14,7 @@ import { SeekBarType, SeekBarController } from './seekbarcontroller';
 import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
 import { TimelineMarkersHandler } from './timelinemarkershandler';
+import {getMinBufferLevel} from "./seekbarbufferlevel";
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -180,30 +181,16 @@ export class SeekBar extends Component<SeekBarConfig> {
   };
 
   private updateBufferLevel(playbackPositionPercentage: number): void {
+
+    let bufferLoadedPercentageLevel: number;
     if (this.player.isLive()) {
       // Always show full buffer for live streams
-      this.setBufferPosition(100);
-      return;
+      bufferLoadedPercentageLevel = 100;
+    } else {
+      bufferLoadedPercentageLevel = playbackPositionPercentage + getMinBufferLevel(this.player)
     }
 
-    const playerDuration = this.player.getDuration();
-
-    const videoBufferLength = this.player.getVideoBufferLength();
-    const audioBufferLength = this.player.getAudioBufferLength();
-    // Calculate the buffer length which is the smaller length of the audio and video buffers. If one of these
-    // buffers is not available, we set it's value to MAX_VALUE to make sure that the other real value is taken
-    // as the buffer length.
-    let bufferLength = Math.min(
-        videoBufferLength != null ? videoBufferLength : Number.MAX_VALUE,
-        audioBufferLength != null ? audioBufferLength : Number.MAX_VALUE);
-    // If both buffer lengths are missing, we set the buffer length to zero
-    if (bufferLength === Number.MAX_VALUE) {
-      bufferLength = 0;
-    }
-
-    const bufferPercentage = 100 / playerDuration * bufferLength;
-
-    this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
+    this.setBufferPosition(bufferLoadedPercentageLevel);
   };
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
