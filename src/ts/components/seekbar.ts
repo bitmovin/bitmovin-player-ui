@@ -14,7 +14,7 @@ import { SeekBarType, SeekBarController } from './seekbarcontroller';
 import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
 import { TimelineMarkersHandler } from './timelinemarkershandler';
-import {getMinBufferLevel} from "./seekbarbufferlevel";
+import {getMinBufferLevel} from './seekbarbufferlevel';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -178,7 +178,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     return 100 / this.player.getDuration() * this.getRelativeCurrentTime();
-  };
+  }
 
   private updateBufferLevel(playbackPositionPercentage: number): void {
 
@@ -187,11 +187,11 @@ export class SeekBar extends Component<SeekBarConfig> {
       // Always show full buffer for live streams
       bufferLoadedPercentageLevel = 100;
     } else {
-      bufferLoadedPercentageLevel = playbackPositionPercentage + getMinBufferLevel(this.player)
+      bufferLoadedPercentageLevel = playbackPositionPercentage + getMinBufferLevel(this.player);
     }
 
     this.setBufferPosition(bufferLoadedPercentageLevel);
-  };
+  }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);

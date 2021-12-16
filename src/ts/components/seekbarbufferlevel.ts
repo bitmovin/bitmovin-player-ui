@@ -1,4 +1,4 @@
-import {PlayerAPI} from "bitmovin-player";
+import {PlayerAPI} from 'bitmovin-player';
 
 export function getMinBufferLevel(player: PlayerAPI): number {
 
