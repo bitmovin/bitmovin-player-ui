@@ -91,6 +91,43 @@ describe('SeekBar', () => {
       playerMock.eventEmitter.fireSegmentRequestFinished();
       expect(setPlaybackPositionSpy).toHaveBeenCalledTimes(1);
     });
+
+    describe('vod event tracking', () => {
+
+      beforeEach(() => {
+        jest.spyOn(playerMock, 'getDuration').mockReturnValue(50);
+
+        jest.spyOn(playerMock, 'getSeekableRange').mockImplementation(() => ({start: 30, end: 40}));
+
+        const currentTime = 35;
+        jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(currentTime);
+
+        playerMock.eventEmitter.fireSeekEvent(currentTime);
+        playerMock.eventEmitter.fireSeekedEvent();
+      })
+
+      it('will use the last known playback position location after a successful segment request download and the user is scrubbing', function () {
+        const firstPlaybackPercentage = seekbar['playbackPositionPercentage'];
+
+        jest.spyOn(playerMock, 'getSeekableRange').mockImplementation(() => ({start: 26, end: 30}));
+
+        seekbar['onSeekPreviewEvent'](40, true)
+
+        playerMock.eventEmitter.fireSegmentRequestFinished();
+
+        expect(setPlaybackPositionSpy).toHaveBeenLastCalledWith(firstPlaybackPercentage);
+      });
+
+      it('will update the scrubber location after a successful segment request download and the user is not scrubbing', function () {
+        jest.spyOn(playerMock, 'getSeekableRange').mockImplementation(() => ({start: 26, end: 30}));
+
+        seekbar['onSeekPreviewEvent'](18, false)
+
+        playerMock.eventEmitter.fireSegmentRequestFinished();
+
+        expect(setPlaybackPositionSpy).toHaveBeenLastCalledWith(18);
+      });
+    });
   })
 
   describe('buffer levels', () => {
