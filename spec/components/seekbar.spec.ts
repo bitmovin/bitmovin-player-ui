@@ -82,18 +82,17 @@ describe('SeekBar', () => {
           expect(setPlaybackPositionSpy).toHaveBeenCalledTimes(timesCalled);
         })
 
-    it('will be moved after a successful seeked event', function () {
+    it('will be moved after a successful seeked event',  () => {
       playerMock.eventEmitter.fireSeekedEvent();
       expect(setPlaybackPositionSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('will move after a successful segment request download', function () {
+    it('will move after a successful segment request download',  () => {
       playerMock.eventEmitter.fireSegmentRequestFinished();
       expect(setPlaybackPositionSpy).toHaveBeenCalledTimes(1);
     });
 
     describe('vod event tracking', () => {
-
       let setBufferPositionSpy: jest.SpyInstance;
 
       beforeEach(() => {
@@ -110,7 +109,7 @@ describe('SeekBar', () => {
         playerMock.eventEmitter.fireSeekedEvent();
       })
 
-      it('will use the last known playback position location after a successful segment request download and the user is scrubbing', function () {
+      it('will use the last known playback position location after a successful segment request download and the user is scrubbing', () => {
         const firstPlaybackPercentage = seekbar['playbackPositionPercentage'];
 
         jest.spyOn(playerMock, 'getSeekableRange').mockImplementation(() => ({start: 26, end: 30}));
@@ -125,7 +124,7 @@ describe('SeekBar', () => {
         expect(setBufferPositionSpy).toHaveBeenLastCalledWith(expectedPlaybackPercentage)
       });
 
-      it('will update the scrubber location after a successful segment request download and the user is not scrubbing', function () {
+      it('will update the scrubber location after a successful segment request download and the user is not scrubbing', () => {
         jest.spyOn(playerMock, 'getSeekableRange').mockImplementation(() => ({start: 26, end: 30}));
 
         seekbar['onSeekPreviewEvent'](18, false)
