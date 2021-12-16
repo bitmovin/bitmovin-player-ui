@@ -105,6 +105,7 @@ export namespace MockHelper {
         isStalled: jest.fn(),
         isCasting: jest.fn(),
         isViewModeAvailable: jest.fn(),
+        seek: jest.fn(),
 
         // Event faker
         eventEmitter: eventHelper,

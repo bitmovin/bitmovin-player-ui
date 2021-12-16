@@ -226,6 +226,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     let isPlaying = false;
+    let scrubbing = false;
     let isUserSeeking = false;
     let isPlayerSeeking = false;
 
@@ -236,7 +237,17 @@ export class SeekBar extends Component<SeekBarConfig> {
         return;
       }
 
-      const playbackPositionPercentage = this.getPlaybackPositionPercentage();
+      let playbackPositionPercentage = this.getPlaybackPositionPercentage();
+
+      this.updateBufferLevel(playbackPositionPercentage);
+
+      // The segment request finished is used to help the playback position move, when the smooth playback position is not enabled.
+      // At the same time when the user is scrubbing, we also move the position of the seekbar to display a preview during scrubbing.
+      // When the user is scrubbing we do not record this as a user seek operation, as the user has yet to finish their seek,
+      // but we should not move the playback position to not create a jumping behaviour.
+      if (scrubbing && event.type === player.exports.PlayerEvent.SegmentRequestFinished && playbackPositionPercentage !== this.playbackPositionPercentage) {
+        playbackPositionPercentage = this.playbackPositionPercentage;
+      }
 
       if (player.isLive()) {
         if (player.getMaxTimeShift() === 0) {
@@ -263,8 +274,6 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.setAriaSliderMinMax('0', player.getDuration().toString());
       }
 
-      this.updateBufferLevel(playbackPositionPercentage);
-
       if (this.isUiShown) {
         this.setAriaSliderValues();
       }
@@ -277,8 +286,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeChanged, playbackPositionHandler);
     // update bufferlevel when buffering is complete
     player.on(player.exports.PlayerEvent.StallEnded, playbackPositionHandler);
-    // update playback position when a seek has finished
-    player.on(player.exports.PlayerEvent.Seeked, playbackPositionHandler);
     // update playback position when a timeshift has finished
     player.on(player.exports.PlayerEvent.TimeShifted, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
@@ -290,11 +297,15 @@ export class SeekBar extends Component<SeekBarConfig> {
     let onPlayerSeek = () => {
       isPlayerSeeking = true;
       this.setSeeking(true);
+      scrubbing = false;
     };
 
-    let onPlayerSeeked = () => {
+    let onPlayerSeeked = (event: PlayerEventBase = null, forceUpdate: boolean = false ) => {
       isPlayerSeeking = false;
       this.setSeeking(false);
+
+      // update playback position when a seek has finished
+      playbackPositionHandler(event, forceUpdate);
     };
 
     let restorePlayingState = function () {
@@ -331,6 +342,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.onSeekPreview.subscribe((sender: SeekBar, args: SeekPreviewEventArgs) => {
       // Notify UI manager of seek preview
       uimanager.onSeekPreview.dispatch(sender, args);
+      scrubbing = args.scrubbing;
     });
 
     // Rate-limited scrubbing seek
