@@ -109,6 +109,7 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
     return new ListBoxItemButton({
       key: listItem.key,
       text: listItem.label,
+      ariaLabel: listItem.ariaLabel,
     });
   }
 

@@ -9,6 +9,8 @@ import { LocalizableText, i18n } from '../localization/i18n';
 export interface ListItem {
   key: string;
   label: LocalizableText;
+  sortedInsert?: boolean;
+  ariaLabel?: string;
 }
 
 /**
@@ -104,9 +106,10 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param key the key of the item to add
    * @param label the (human-readable) label of the item to add
    * @param sortedInsert whether the item should be added respecting the order of keys
+   * @param ariaLabel custom aria label for the listItem
    */
-  addItem(key: string, label: LocalizableText, sortedInsert = false) {
-    const listItem = { key: key, label: i18n.performLocalization(label) };
+  addItem(key: string, label: LocalizableText, sortedInsert = false, ariaLabel = '') {
+    const listItem = { key: key, label: i18n.performLocalization(label), ...(ariaLabel && {ariaLabel: ariaLabel})};
 
     // Apply filter function
     if (this.config.filter && !this.config.filter(listItem)) {
@@ -199,7 +202,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   synchronizeItems(newItems: ListItem[]): void {
     newItems
       .filter((item) => !this.hasItem(item.key))
-      .forEach((item) => this.addItem(item.key, item.label));
+      .forEach((item) => this.addItem(item.key, item.label, item.sortedInsert, item.ariaLabel));
 
     this.items
       .filter((item) => newItems.filter((i) => i.key === item.key).length === 0)
