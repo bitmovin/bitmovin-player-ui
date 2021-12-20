@@ -1,4 +1,4 @@
- import { ListItem, ListSelector, ListSelectorConfig } from '../../src/ts/components/listselector';
+import { ListItem, ListSelector, ListSelectorConfig } from '../../src/ts/components/listselector';
 
 class ListSelectorTestClass extends ListSelector<ListSelectorConfig> {
 }
