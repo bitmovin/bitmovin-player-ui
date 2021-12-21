@@ -14,6 +14,7 @@ import { SeekBarType, SeekBarController } from './seekbarcontroller';
 import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
 import { TimelineMarkersHandler } from './timelinemarkershandler';
+import { getMinBufferLevel } from './seekbarbufferlevel';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -171,6 +172,27 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
+  private getPlaybackPositionPercentage(): number {
+    if (this.player.isLive()) {
+      return 100 - (100 / this.player.getMaxTimeShift() * this.player.getTimeShift());
+    }
+
+    return 100 / this.player.getDuration() * this.getRelativeCurrentTime();
+  }
+
+  private updateBufferLevel(playbackPositionPercentage: number): void {
+
+    let bufferLoadedPercentageLevel: number;
+    if (this.player.isLive()) {
+      // Always show full buffer for live streams
+      bufferLoadedPercentageLevel = 100;
+    } else {
+      bufferLoadedPercentageLevel = playbackPositionPercentage + getMinBufferLevel(this.player);
+    }
+
+    this.setBufferPosition(bufferLoadedPercentageLevel);
+  }
+
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
 
@@ -204,6 +226,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     let isPlaying = false;
+    let scrubbing = false;
     let isUserSeeking = false;
     let isPlayerSeeking = false;
 
@@ -214,47 +237,41 @@ export class SeekBar extends Component<SeekBarConfig> {
         return;
       }
 
+      let playbackPositionPercentage = this.getPlaybackPositionPercentage();
+
+      this.updateBufferLevel(playbackPositionPercentage);
+
+      // The segment request finished is used to help the playback position move, when the smooth playback position is not enabled.
+      // At the same time when the user is scrubbing, we also move the position of the seekbar to display a preview during scrubbing.
+      // When the user is scrubbing we do not record this as a user seek operation, as the user has yet to finish their seek,
+      // but we should not move the playback position to not create a jumping behaviour.
+      if (scrubbing && event.type === player.exports.PlayerEvent.SegmentRequestFinished && playbackPositionPercentage !== this.playbackPositionPercentage) {
+        playbackPositionPercentage = this.playbackPositionPercentage;
+      }
+
       if (player.isLive()) {
         if (player.getMaxTimeShift() === 0) {
           // This case must be explicitly handled to avoid division by zero
           this.setPlaybackPosition(100);
         } else {
-          let playbackPositionPercentage = 100 - (100 / player.getMaxTimeShift() * player.getTimeShift());
-          this.setPlaybackPosition(playbackPositionPercentage);
+          if (!this.isSeeking()) {
+            this.setPlaybackPosition(playbackPositionPercentage);
+          }
+
           this.setAriaSliderMinMax(player.getMaxTimeShift().toString(), '0');
         }
-
-        // Always show full buffer for live streams
-        this.setBufferPosition(100);
       } else {
-        const playerDuration = player.getDuration();
-        let playbackPositionPercentage = 100 / playerDuration * this.getRelativeCurrentTime();
-
-        let videoBufferLength = player.getVideoBufferLength();
-        let audioBufferLength = player.getAudioBufferLength();
-        // Calculate the buffer length which is the smaller length of the audio and video buffers. If one of these
-        // buffers is not available, we set it's value to MAX_VALUE to make sure that the other real value is taken
-        // as the buffer length.
-        let bufferLength = Math.min(
-          videoBufferLength != null ? videoBufferLength : Number.MAX_VALUE,
-          audioBufferLength != null ? audioBufferLength : Number.MAX_VALUE);
-        // If both buffer lengths are missing, we set the buffer length to zero
-        if (bufferLength === Number.MAX_VALUE) {
-          bufferLength = 0;
-        }
-
-        let bufferPercentage = 100 / playerDuration * bufferLength;
-
         // Update playback position only in paused state or in the initial startup state where player is neither
         // paused nor playing. Playback updates are handled in the Timeout below.
-        if (this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
-          || forceUpdate || player.isPaused() || (player.isPaused() === player.isPlaying())) {
+        const isInInitialStartupState = this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
+            || forceUpdate || player.isPaused();
+        const isNeitherPausedNorPlaying = player.isPaused() === player.isPlaying();
+
+        if ((isInInitialStartupState || isNeitherPausedNorPlaying) && !this.isSeeking()) {
           this.setPlaybackPosition(playbackPositionPercentage);
         }
 
-        this.setBufferPosition(playbackPositionPercentage + bufferPercentage);
-
-        this.setAriaSliderMinMax('0', playerDuration.toString());
+        this.setAriaSliderMinMax('0', player.getDuration().toString());
       }
 
       if (this.isUiShown) {
@@ -269,8 +286,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeChanged, playbackPositionHandler);
     // update bufferlevel when buffering is complete
     player.on(player.exports.PlayerEvent.StallEnded, playbackPositionHandler);
-    // update playback position when a seek has finished
-    player.on(player.exports.PlayerEvent.Seeked, playbackPositionHandler);
     // update playback position when a timeshift has finished
     player.on(player.exports.PlayerEvent.TimeShifted, playbackPositionHandler);
     // update bufferlevel when a segment has been downloaded
@@ -282,11 +297,15 @@ export class SeekBar extends Component<SeekBarConfig> {
     let onPlayerSeek = () => {
       isPlayerSeeking = true;
       this.setSeeking(true);
+      scrubbing = false;
     };
 
-    let onPlayerSeeked = () => {
+    let onPlayerSeeked = (event: PlayerEventBase = null, forceUpdate: boolean = false ) => {
       isPlayerSeeking = false;
       this.setSeeking(false);
+
+      // update playback position when a seek has finished
+      playbackPositionHandler(event, forceUpdate);
     };
 
     let restorePlayingState = function () {
@@ -323,6 +342,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.onSeekPreview.subscribe((sender: SeekBar, args: SeekPreviewEventArgs) => {
       // Notify UI manager of seek preview
       uimanager.onSeekPreview.dispatch(sender, args);
+      scrubbing = args.scrubbing;
     });
 
     // Rate-limited scrubbing seek
@@ -478,6 +498,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
     this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
+      if (this.isSeeking()) {
+        return;
+      }
+
       currentTimeSeekBar += currentTimeUpdateDeltaSecs;
 
       try {
