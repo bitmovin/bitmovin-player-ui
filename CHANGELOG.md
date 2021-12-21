@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.32.0] - 2021-12-21
+## [3.32.0] - 2021-12-21 - 2021-12-21
 
 ### Fixed
 - The scrubber could jump to an old position during a seek operation when it was dragged.
