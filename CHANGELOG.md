@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- Update the markers on live streams causing unhandled exception after player is destroyed
+- Updating the markers on live streams causing unhandled exception after player is destroyed
 
 ## [3.32.0] - 2021-12-21
 
