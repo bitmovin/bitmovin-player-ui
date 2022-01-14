@@ -208,6 +208,7 @@ export class TimelineMarkersHandler {
 
     // Stop updater when playback continues (no matter if the updater was started before)
     this.player.on(this.player.exports.PlayerEvent.Play, () => this.pausedTimeshiftUpdater.clear());
+    this.player.on(this.player.exports.PlayerEvent.Destroy, () => this.pausedTimeshiftUpdater.clear());
   }
 
   protected prefixCss(cssClassOrId: string): string {
