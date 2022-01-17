@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
+### Changed
+- `PlayerError` events that provide a message are displayed instead of default messages
+
 ### Fixed
 - Updating the markers on live streams causing unhandled exception after player is destroyed
 
