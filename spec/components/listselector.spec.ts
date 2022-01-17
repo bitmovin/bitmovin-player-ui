@@ -62,9 +62,6 @@ describe('ListSelector', () => {
   });
 
   describe('addItem with custom aria label', () => {
-    beforeEach(() => {
-    });
-
     it('adds a new item with custom aria label', () => {
       listSelector.addItem('itemKey', 'itemLabel', false, 'itemAriaLabel');
 
