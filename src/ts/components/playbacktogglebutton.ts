@@ -39,11 +39,15 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
 
       if (player.isPlaying() || this.isPlayInitiated) {
         this.on();
-        this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer('pause')));
+        updateAriaLabel('pause');
       } else {
         this.off();
-        this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer('play')));
+        updateAriaLabel('play');
       }
+    };
+
+    const updateAriaLabel = (label: string) => {
+      this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer(label)));
     };
 
     // Call handler upon these events
