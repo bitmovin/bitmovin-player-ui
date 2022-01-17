@@ -73,7 +73,7 @@ export namespace ErrorUtils {
   };
 
   export const defaultWebErrorMessageTranslator: ErrorMessageTranslator = (error: ErrorEvent) => {
-    const errorMessage = ErrorUtils.defaultErrorMessages[error.code];
+    const errorMessage = error.message ?? ErrorUtils.defaultErrorMessages[error.code];
 
     if (errorMessage) {
       // Use the error message text if there is one
