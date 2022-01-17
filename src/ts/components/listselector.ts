@@ -109,7 +109,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param ariaLabel custom aria label for the listItem
    */
   addItem(key: string, label: LocalizableText, sortedInsert = false, ariaLabel = '') {
-    const listItem = { key: key, label: i18n.performLocalization(label), ...(ariaLabel && {ariaLabel: ariaLabel})};
+    const listItem = { key: key, label: i18n.performLocalization(label), ...(ariaLabel && { ariaLabel })};
 
     // Apply filter function
     if (this.config.filter && !this.config.filter(listItem)) {
