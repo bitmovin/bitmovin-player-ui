@@ -17,6 +17,14 @@ export interface ToggleButtonConfig extends ButtonConfig {
    */
   offClass?: string;
   /**
+  * The aria label that marks the on-state of the button.
+  */
+ onAriaLabel?: string;
+ /**
+  * The aria label that marks the off-state of the button.
+  */
+ offAriaLabel?: string;
+  /**
    * The text as string or as localize callback on the button.
    */
   text?: LocalizableText;
@@ -44,6 +52,10 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
       offClass: 'off',
     };
 
+    if (config.onAriaLabel) {
+      config.ariaLabel = config.onAriaLabel;
+    }
+
     this.config = this.mergeConfig(config, defaultConfig as Config, this.config);
   }
 
@@ -67,7 +79,11 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
       this.onToggleEvent();
       this.onToggleOnEvent();
 
-      this.getDomElement().attr('aria-pressed', 'true');
+      this.setAriaAttr('pressed', 'true');
+
+      if (this.config.onAriaLabel) {
+        this.setAriaLabel(this.config.onAriaLabel);
+      }
     }
   }
 
@@ -85,7 +101,11 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
       this.onToggleEvent();
       this.onToggleOffEvent();
 
-      this.getDomElement().attr('aria-pressed', 'false');
+      this.setAriaAttr('pressed', 'false');
+
+      if (this.config.offAriaLabel) {
+        this.setAriaLabel(this.config.offAriaLabel);
+      }
     }
   }
 
