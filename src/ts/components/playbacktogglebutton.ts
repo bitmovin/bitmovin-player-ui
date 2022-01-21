@@ -17,8 +17,9 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-playbacktogglebutton',
-      text: i18n.getLocalizer('playPause'),
-      ariaLabel: i18n.getLocalizer('play'),
+      text: i18n.getLocalizer('play'),
+      onAriaLabel: 'pause',
+      offAriaLabel: 'play',
     }, this.config);
 
     this.isPlayInitiated = false;
@@ -39,15 +40,9 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
 
       if (player.isPlaying() || this.isPlayInitiated) {
         this.on();
-        updateAriaLabel('pause');
       } else {
         this.off();
-        updateAriaLabel('play');
       }
-    };
-
-    const updateAriaLabel = (label: string) => {
-      this.getDomElement().attr('aria-label', i18n.performLocalization(i18n.getLocalizer(label)));
     };
 
     // Call handler upon these events
