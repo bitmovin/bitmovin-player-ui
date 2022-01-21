@@ -19,11 +19,11 @@ export interface ToggleButtonConfig extends ButtonConfig {
   /**
   * The aria label that marks the on-state of the button.
   */
- onAriaLabel?: string;
+ onAriaLabel?: LocalizableText;
  /**
   * The aria label that marks the off-state of the button.
   */
- offAriaLabel?: string;
+ offAriaLabel?: LocalizableText;
   /**
    * The text as string or as localize callback on the button.
    */

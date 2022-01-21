@@ -292,8 +292,8 @@ export class Component<Config extends ComponentConfig> {
     return this.element;
   }
 
-  setAriaLabel(label: string): void {
-    this.setAriaAttr('label', i18n.performLocalization(i18n.getLocalizer(label)));
+  setAriaLabel(label: LocalizableText): void {
+    this.setAriaAttr('label', i18n.performLocalization(label));
   }
 
   setAriaAttr(name: string, value: string) {
