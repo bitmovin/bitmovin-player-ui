@@ -42,7 +42,7 @@ export namespace MockHelper {
     return new UiInstanceManagerMockClass();
   }
 
-  export function generateDOMMock(): DOM {
+  export function generateDOMMock(): jest.Mocked<DOM> {
     const DOMClass: jest.Mock<DOM> = jest.fn().mockImplementation(() => ({
       addClass: jest.fn(),
       removeClass: jest.fn(),
@@ -56,7 +56,7 @@ export namespace MockHelper {
       append: jest.fn(),
     }));
 
-    return new DOMClass();
+    return new DOMClass() as jest.Mocked<DOM>;
   }
 
   export function getPlayerMock(): TestingPlayerAPI {
