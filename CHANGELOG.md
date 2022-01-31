@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
-## [develop]
+## [3.33.0]
 
 ### Added
 - Support for providing custom `aria-label` when ListBox is used.
@@ -767,7 +767,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[3.32.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.32.0...HEAD
+[3.33.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.32.0...v3.33.0
 [3.32.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.31.0...v3.32.0
 [3.31.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.30.0...v3.31.0
 [3.30.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.29.0...v3.30.0
