@@ -18,10 +18,10 @@ export interface ToggleButtonConfig extends ButtonConfig {
   offClass?: string;
   /**
    * WCAG20 standard for defining info about the component (usually the name)
-   * 
+   *
    * It is recommended to use `onAriaLabel` and `offAriaLabel` for toggle buttons
    * as the component can then update them as the button is used.
-   * 
+   *
    * If both `ariaLabel` and `onAriaLabel` are set, `onAriaLabel` is used.
    */
   ariaLabel?: LocalizableText;
