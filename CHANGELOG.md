@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [3.33.0]
 
 ### Added
-- Support for providing custom `aria-label` when ListBox is used.
+- Support for providing custom `aria-label` when `ListBox` is used.
 
 ### Fixed
 - Updating the markers on live streams causing unhandled exception after player is destroyed
