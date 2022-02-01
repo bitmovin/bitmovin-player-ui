@@ -61,6 +61,46 @@ describe('ListSelector', () => {
     });
   });
 
+  describe('addItem with custom aria label', () => {
+    it('adds a new item with custom aria label', () => {
+      listSelector.addItem('itemKey', 'itemLabel', false, 'itemAriaLabel');
+
+      expect(listSelector.getItems()).toEqual([{ key: 'itemKey', label: 'itemLabel', ariaLabel: 'itemAriaLabel'}]);
+    });
+
+    it('adds new items to the end of the list with custom aria label', () => {
+      listSelector.addItem('A', 'itemA', false, 'itemAriaLabelA');
+      listSelector.addItem('C', 'itemC', false, 'itemAriaLabelB');
+      listSelector.addItem('B', 'itemB', false, 'itemAriaLabelC');
+
+      expect(listSelector.getItems()).toEqual([
+        { key: 'A', label: 'itemA', ariaLabel: 'itemAriaLabelA'},
+        { key: 'C', label: 'itemC', ariaLabel: 'itemAriaLabelB'},
+        { key: 'B', label: 'itemB', ariaLabel: 'itemAriaLabelC'},
+      ]);
+    });
+
+    it('adds items respecting the key order if sortedInsert is true and with custom aria label', () => {
+      const sortedInsert = true;
+      listSelector.addItem('A', 'itemA', sortedInsert, 'itemAriaLabelA');
+      listSelector.addItem('C', 'itemC', sortedInsert, 'itemAriaLabelC');
+      listSelector.addItem('B', 'itemB', sortedInsert, 'itemAriaLabelB');
+
+      expect(listSelector.getItems()).toEqual([
+        { key: 'A', label: 'itemA', ariaLabel: 'itemAriaLabelA'},
+        { key: 'B', label: 'itemB', ariaLabel: 'itemAriaLabelB' },
+        { key: 'C', label: 'itemC', ariaLabel: 'itemAriaLabelC' },
+      ]);
+    });
+
+    it('overrides existing value with custom aria label', () => {
+      listSelector.addItem('itemKey', 'itemLabelOld', false, 'itemAriaLabelOld');
+      listSelector.addItem('itemKey', 'itemLabelNew', false, 'itemAriaLabelNew');
+
+      expect(listSelector.getItems()).toEqual([{ key: 'itemKey', label: 'itemLabelNew', ariaLabel: 'itemAriaLabelNew' }]);
+    });
+  });
+
   describe('removeItem', () => {
     beforeEach(() => {
       listSelector.addItem('itemKey', 'itemLabel');
