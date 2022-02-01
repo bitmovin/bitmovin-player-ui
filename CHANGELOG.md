@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.33.0] - 2022-02-01
+## [3.33.0]
 
 ### Added
 - Support for providing custom `aria-label` when ListBox is used.
