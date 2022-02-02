@@ -38,11 +38,12 @@ describe('ToggleButton', () => {
       const offLocalizer = () => 'off';
 
       const config: ToggleButtonConfig = {
-        onAriaLabel: offLocalizer,
+        offAriaLabel: offLocalizer,
       };
 
       toggleButton = new ToggleButton(config);
       toggleButton.on();
+      toggleButton.off();
 
       expect(mockDomElement.attr).toHaveBeenCalledWith('aria-label', 'off');
     });
