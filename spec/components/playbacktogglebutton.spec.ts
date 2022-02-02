@@ -34,8 +34,35 @@ describe('ToggleButton', () => {
       expect(mockDomElement.attr).toHaveBeenCalledWith('aria-label', 'on');
     });
 
+    it('should set on label when toggle state is on (string label)', () => {
+      const onLocalizer = 'on';
+
+      const config: ToggleButtonConfig = {
+        onAriaLabel: onLocalizer,
+      };
+
+      toggleButton = new ToggleButton(config);
+      toggleButton.on();
+
+      expect(mockDomElement.attr).toHaveBeenCalledWith('aria-label', 'on');
+    });
+
     it('should set off label when toggle state is off', () => {
       const offLocalizer = () => 'off';
+
+      const config: ToggleButtonConfig = {
+        offAriaLabel: offLocalizer,
+      };
+
+      toggleButton = new ToggleButton(config);
+      toggleButton.on();
+      toggleButton.off();
+
+      expect(mockDomElement.attr).toHaveBeenCalledWith('aria-label', 'off');
+    });
+
+    it('should set off label when toggle state is off (string label)', () => {
+      const offLocalizer = 'off';
 
       const config: ToggleButtonConfig = {
         offAriaLabel: offLocalizer,
