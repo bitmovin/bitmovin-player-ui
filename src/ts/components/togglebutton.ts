@@ -17,6 +17,23 @@ export interface ToggleButtonConfig extends ButtonConfig {
    */
   offClass?: string;
   /**
+   * WCAG20 standard for defining info about the component (usually the name)
+   *
+   * It is recommended to use `onAriaLabel` and `offAriaLabel` for toggle buttons
+   * as the component can then update them as the button is used.
+   *
+   * If both `ariaLabel` and `onAriaLabel` are set, `onAriaLabel` is used.
+   */
+  ariaLabel?: LocalizableText;
+  /**
+   * The aria label that marks the on-state of the button.
+   */
+  onAriaLabel?: LocalizableText;
+  /**
+   * The aria label that marks the off-state of the button.
+   */
+  offAriaLabel?: LocalizableText;
+  /**
    * The text as string or as localize callback on the button.
    */
   text?: LocalizableText;
@@ -44,6 +61,10 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
       offClass: 'off',
     };
 
+    if (config.onAriaLabel) {
+      config.ariaLabel = config.onAriaLabel;
+    }
+
     this.config = this.mergeConfig(config, defaultConfig as Config, this.config);
   }
 
@@ -67,7 +88,11 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
       this.onToggleEvent();
       this.onToggleOnEvent();
 
-      this.getDomElement().attr('aria-pressed', 'true');
+      this.setAriaAttr('pressed', 'true');
+
+      if (this.config.onAriaLabel) {
+        this.setAriaLabel(this.config.onAriaLabel);
+      }
     }
   }
 
@@ -85,7 +110,11 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
       this.onToggleEvent();
       this.onToggleOffEvent();
 
-      this.getDomElement().attr('aria-pressed', 'false');
+      this.setAriaAttr('pressed', 'false');
+
+      if (this.config.offAriaLabel) {
+        this.setAriaLabel(this.config.offAriaLabel);
+      }
     }
   }
 

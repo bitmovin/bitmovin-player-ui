@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Updating the markers on live streams causing unhandled exception after player is destroyed.
+- Incorrect aria-label on playbackbutton toggle
 
 ## [3.32.0] - 2021-12-21
 
