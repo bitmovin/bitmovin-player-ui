@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Updating the markers on live streams causing unhandled exception after player is destroyed.
+- Incorrect aria-label on playbackbutton toggle
 
 ## [3.32.0] - 2021-12-21
 
@@ -768,6 +769,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.33.0...HEAD
 [3.33.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.32.0...v3.33.0
 [3.32.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.31.0...v3.32.0
 [3.31.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.30.0...v3.31.0
