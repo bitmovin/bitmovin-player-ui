@@ -3,8 +3,15 @@
 
 .#{$prefix}-ui-playbacktoggle-overlay {
   @extend %ui-container;
+  @include layout-cover;
+  @include layout-center-children-in-container;
 
-  .#{$prefix}-ui-hugeplaybacktogglebutton {
-    @include layout-cover;
+  //.#{$prefix}-ui-hugeplaybacktogglebutton {
+  //  @include layout-cover;
+  //}
+
+  // use the small button instead of the huge one
+  .#{$prefix}-ui-playbacktogglebutton {
+    @include hidden-animated;
   }
 }
