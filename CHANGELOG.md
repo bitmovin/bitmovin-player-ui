@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- Incorrect aria-label on playbackbutton toggle
+
 ## [3.33.0] - 2022-02-01
 
 ### Added
@@ -11,7 +16,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Updating the markers on live streams causing unhandled exception after player is destroyed.
-- Incorrect aria-label on playbackbutton toggle
 
 ## [3.32.0] - 2021-12-21
 
