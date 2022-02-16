@@ -3,7 +3,7 @@ import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
-import { LocalizableText } from '../localization/i18n';
+import { i18n, LocalizableText } from '../localization/i18n';
 
 /**
  * Base configuration interface for a component.
@@ -290,6 +290,14 @@ export class Component<Config extends ComponentConfig> {
     }
 
     return this.element;
+  }
+
+  setAriaLabel(label: LocalizableText): void {
+    this.setAriaAttr('label', i18n.performLocalization(label));
+  }
+
+  setAriaAttr(name: string, value: string) {
+    this.getDomElement().attr(`aria-${name}`, value);
   }
 
   /**
