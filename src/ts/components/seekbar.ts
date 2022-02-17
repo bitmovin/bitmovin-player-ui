@@ -45,6 +45,11 @@ export interface SeekBarConfig extends ComponentConfig {
    * Used for seekBar marker snapping range percentage
    */
   snappingRange?: number;
+
+  /**
+   * Used to enable/disable seek preview
+   */
+  isSeekPreviewEnabled?: boolean;
 }
 
 /**
@@ -112,8 +117,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private isUserSeeking = false;
 
-  private isSeekPreviewEnabled = true;
-
   private seekBarEvents = {
     /**
      * Fired when a scrubbing seek operation is started.
@@ -145,6 +148,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       ariaLabel: i18n.getLocalizer('seekBar'),
       tabIndex: 0,
       snappingRange: 1,
+      isSeekPreviewEnabled: true,
     }, this.config);
 
     this.label = this.config.label;
@@ -179,8 +183,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     super.configure(player, uimanager);
 
     this.player = player;
-
-    this.isSeekPreviewEnabled = uimanager.getConfig().enableSeekPreview;
 
     // Apply scaling transform to the backdrop bar to have all bars rendered similarly
     // (the call must be up here to be executed for the volume slider as well)
@@ -330,8 +332,13 @@ export class SeekBar extends Component<SeekBarConfig> {
       uimanager.onSeekPreview.dispatch(sender, args);
     });
 
+    // Set isSeekPreviewEnabled if set in the uimanager config
+    if (typeof uimanager.getConfig().enableSeekPreview === 'boolean') {
+      this.config.isSeekPreviewEnabled = uimanager.getConfig().enableSeekPreview;
+    }
+
     // Rate-limited scrubbing seek
-    if (this.isSeekPreviewEnabled) {
+    if (this.config.isSeekPreviewEnabled) {
       this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
     }
 
@@ -562,7 +569,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.pausedTimeshiftUpdater.clear();
     }
 
-    if (this.isSeekPreviewEnabled) {
+    if (this.config.isSeekPreviewEnabled) {
       this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
     }
   }
