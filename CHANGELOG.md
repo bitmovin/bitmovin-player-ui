@@ -1,10 +1,62 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/) 
+The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.26.0]
+## [3.34.0] - 2022-02-16
+
+### Fixed
+- Incorrect aria-label on playbackbutton toggle
+
+## [3.33.0] - 2022-02-01
+
+### Added
+- Support for providing custom `aria-label` when `ListBox` is used.
+
+### Fixed
+- Updating the markers on live streams causing unhandled exception after player is destroyed.
+
+## [3.32.0] - 2021-12-21
+
+### Fixed
+- The scrubber could jump to an old position during a seek operation when it was dragged.
+- The Seekbar scrubber could jump to an old position on touch devices when the buffer updates during a seek operation.
+
+## [3.31.0] - 2021-10-12
+
+### Added
+- Style reset for subtitle overlay element to prevent undesired CSS rules collisions.
+
+## [3.30.0] - 2021-09-14
+
+### Added
+- Sort `AudioTracks` inside the `AudioTrackSelectBox` and the `AudioTrackListBox` by their identifier.
+
+## [3.29.0] - 2021-08-19
+
+### Fixed
+- An empty line being added to subtitle boxes when VTT positioning attributes are present.
+
+## [3.28.1] - 2021-06-25
+
+### Fixed
+- Broken build for previous release `3.28.0`
+
+## [3.28.0] - 2021-06-22 [YANKED]
+
+### Fixed
+- VTT cue positioning when position alignment is `end` or `right`
+
+## [3.27.0] - 2021-04-11
+
+### Added
+- Support for `CueUpdate` events that were introduced in player v8.60.0
+
+### Fixed
+- Ad times (`remainingTime`, `playedTime` and `adDuration`) are not correctly rounded
+
+## [3.26.0] - 2021-03-30
 
 ### Fixed
 - `TouchEvent` error in seekbar controls when using the mouse on a touchscreen Windows device and IE/UWP
@@ -196,7 +248,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - UI not hiding after selecting an item within a `ListBox`
 
 ## [3.4.6]
-	
+
 ### Fixed
 - Allow npm package to be imported in server side app without `navigator` error
 
@@ -230,7 +282,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Stopping timeshift offset updater of `SeekBar` when player is destroyed
-- `box-sizing` style of `SeekBar` and `SeekBarLabel` 
+- `box-sizing` style of `SeekBar` and `SeekBarLabel`
 
 ## [3.4.0]
 
@@ -475,7 +527,7 @@ License change from LGPLv3 to MIT.
 - Removed `VolumeControlButton`'s `VolumeSlider` slide-in animation in the legacy skin to fix the slider knob at 100% bug
 
 ### Fixed
-- Vertical `VolumeSlider` knob in legacy skin was not visible when set to a low volume 
+- Vertical `VolumeSlider` knob in legacy skin was not visible when set to a low volume
 - Legacy skin's `VolumeSlider` knob was always rendered at 100% when appearing after being hidden
 - Avoid `ItemSelectionList` DOM recreation on item selection to avoid unexpected events (e.g. `mouseenter`)
 
@@ -721,6 +773,15 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.34.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.33.0...v3.34.0
+[3.33.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.32.0...v3.33.0
+[3.32.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.31.0...v3.32.0
+[3.31.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.30.0...v3.31.0
+[3.30.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.29.0...v3.30.0
+[3.29.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.28.1...v3.29.0
+[3.28.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.28.0...v3.28.1
+[3.28.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.27.0...v3.28.0
+[3.27.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.26.0...v3.27.0
 [3.26.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.25.0...v3.26.0
 [3.25.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.24.0...v3.25.0
 [3.24.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.23.0...v3.24.0

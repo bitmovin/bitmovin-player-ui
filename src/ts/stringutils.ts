@@ -113,7 +113,7 @@ export namespace StringUtils {
       } else if (formatString.indexOf('adDuration') > -1) {
         time = player.getDuration();
       }
-      return formatNumber(time, formatString);
+      return formatNumber(Math.round(time), formatString);
     });
   }
 

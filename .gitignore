@@ -140,6 +140,8 @@ local.properties
 # Code Recommenders
 .recommenders/
 
+### VsCode ###
+.vscode
 
 ### Windows ###
 # Windows thumbnail cache files

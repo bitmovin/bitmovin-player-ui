@@ -1,7 +1,7 @@
 @import '../variables';
 @import '../mixins';
 
-.#{$prefix}-ui-subtitle-overlay {
+.#{$prefix}-ui-uicontainer .#{$prefix}-ui-subtitle-overlay {
   @extend %ui-container;
 
   @include hidden;
@@ -15,6 +15,19 @@
   text-align: center;
   top: 0;
   transition: bottom $animation-duration-short ease-out;
+
+  * {
+    // This aims to prevent possibly conflicting style definitions inherited
+    // from target applications which can break subtitles styling. It's still possible
+    // to override this with selector of higher priority score.
+    all: unset;
+  }
+
+  p {
+    // It may happen that we render <p> inside of an <span> and the `all: unset;` reseting above sets
+    // p to inherit the inline display instead of its default display block so this sets it back.
+    display: block;
+  }
 
   .#{$prefix}-subtitle-region-container {
     position: absolute;
@@ -44,6 +57,8 @@
     &:nth-child(1n-1)::after {
       content: '\A';
       white-space: pre-line;
+      // VTT flex styling can increase this elements height, making the background larger
+      height: 0;
     }
   }
 

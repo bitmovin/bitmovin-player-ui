@@ -1,12 +1,12 @@
 {
   "name": "bitmovin-player-ui",
-  "version": "3.26.0",
+  "version": "3.34.0",
   "description": "Bitmovin Player UI Framework",
   "main": "./dist/js/framework/main.js",
   "types": "./dist/js/framework/main.d.ts",
   "scripts": {
     "test": "npx jest",
-    "prepublish": "gulp npm-prepare"
+    "prepare": "gulp npm-prepare"
   },
   "repository": {
     "type": "git",

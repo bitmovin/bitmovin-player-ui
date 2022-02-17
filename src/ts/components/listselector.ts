@@ -9,6 +9,8 @@ import { LocalizableText, i18n } from '../localization/i18n';
 export interface ListItem {
   key: string;
   label: LocalizableText;
+  sortedInsert?: boolean;
+  ariaLabel?: string;
 }
 
 /**
@@ -99,13 +101,15 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   }
 
   /**
-   * Adds an item to this selector by appending it to the end of the list of items. If an item with the specified
-   * key already exists, it is replaced.
+   * Adds an item to this selector by doing a sorted insert or by appending the element to the end of the list of items.
+   * If an item with the specified key already exists, it is replaced.
    * @param key the key of the item to add
    * @param label the (human-readable) label of the item to add
+   * @param sortedInsert whether the item should be added respecting the order of keys
+   * @param ariaLabel custom aria label for the listItem
    */
-  addItem(key: string, label: LocalizableText) {
-    const listItem = { key: key, label: i18n.performLocalization(label) };
+  addItem(key: string, label: LocalizableText, sortedInsert = false, ariaLabel = '') {
+    const listItem = { key: key, label: i18n.performLocalization(label), ...(ariaLabel && { ariaLabel })};
 
     // Apply filter function
     if (this.config.filter && !this.config.filter(listItem)) {
@@ -120,7 +124,17 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     // Try to remove key first to get overwrite behavior and avoid duplicate keys
     this.removeItem(key); // This will trigger an ItemRemoved and an ItemAdded event
 
-    this.items.push(listItem);
+    // Add the item to the list
+    if (sortedInsert) {
+      const index = this.items.findIndex(entry => entry.key > key);
+      if (index < 0) {
+        this.items.push(listItem);
+      } else {
+        this.items.splice(index, 0, listItem);
+      }
+    } else {
+      this.items.push(listItem);
+    }
     this.onItemAddedEvent(key);
   }
 
@@ -188,7 +202,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   synchronizeItems(newItems: ListItem[]): void {
     newItems
       .filter((item) => !this.hasItem(item.key))
-      .forEach((item) => this.addItem(item.key, item.label));
+      .forEach((item) => this.addItem(item.key, item.label, item.sortedInsert, item.ariaLabel));
 
     this.items
       .filter((item) => newItems.filter((i) => i.key === item.key).length === 0)
