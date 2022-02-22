@@ -50,7 +50,7 @@ export interface SeekBarConfig extends ComponentConfig {
   /**
    * Used to enable/disable seek preview
    */
-  isSeekPreviewEnabled?: boolean;
+  enableSeekPreview?: boolean;
 }
 
 /**
@@ -149,7 +149,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       ariaLabel: i18n.getLocalizer('seekBar'),
       tabIndex: 0,
       snappingRange: 1,
-      isSeekPreviewEnabled: true,
+      enableSeekPreview: true,
     }, this.config);
 
     this.label = this.config.label;
@@ -352,13 +352,13 @@ export class SeekBar extends Component<SeekBarConfig> {
       scrubbing = args.scrubbing;
     });
 
-    // Set isSeekPreviewEnabled if set in the uimanager config
+    // Set enableSeekPreview if set in the uimanager config
     if (typeof uimanager.getConfig().enableSeekPreview === 'boolean') {
-      this.config.isSeekPreviewEnabled = uimanager.getConfig().enableSeekPreview;
+      this.config.enableSeekPreview = uimanager.getConfig().enableSeekPreview;
     }
 
     // Rate-limited scrubbing seek
-    if (this.config.isSeekPreviewEnabled) {
+    if (this.config.enableSeekPreview) {
       this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
     }
 
@@ -593,7 +593,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.pausedTimeshiftUpdater.clear();
     }
 
-    if (this.config.isSeekPreviewEnabled) {
+    if (this.config.enableSeekPreview) {
       this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
     }
   }
