@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.35.0] - 2022-02-17
+## [develop]
 
 ### Added
-- seek preview is now configurable via `isSeekPreviewEnabled` from SeekBarConfig or UIConfig
+- Seek preview is now configurable via `UIConfig.enableSeekPreview` or `SeekBarConfig.enableSeekPreview`
 
 ## [3.34.0] - 2022-02-16
 
