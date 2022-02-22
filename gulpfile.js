@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 
 // Gulp plugins
-var sass = require('gulp-sass')(require('node-sass'));
+var sass = require('gulp-sass')(require('sass'));
 var sourcemaps = require('gulp-sourcemaps');
 var cssBase64 = require('gulp-css-base64');
 var postcss = require('gulp-postcss');
