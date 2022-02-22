@@ -45,7 +45,7 @@
 
 // IE9 compatibility: fallback for missing flexbox support
 // sass-lint:disable nesting-depth
-&.#{$prefix}-no-flexbox {
+.#{$prefix}-no-flexbox {
   .#{$prefix}-ui-controlbar {
     .#{$prefix}-controlbar-top,
     .#{$prefix}-controlbar-bottom {
