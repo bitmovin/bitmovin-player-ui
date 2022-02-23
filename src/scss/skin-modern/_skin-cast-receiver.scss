@@ -1,6 +1,6 @@
 @import 'variables';
 
-&.#{$prefix}-ui-skin-cast-receiver {
+.#{$prefix}-ui-skin-cast-receiver {
 
   $background-color: transparentize($color-background, .15);
   $overscan-margin: 10%;
