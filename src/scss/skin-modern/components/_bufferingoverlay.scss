@@ -36,7 +36,7 @@
 
   .#{$prefix}-ui-buffering-overlay-indicator {
     $buffering-animation-duration: 2s;
-    $buffering-animation-delay: $buffering-animation-duration / 10;
+    $buffering-animation-delay: $buffering-animation-duration * 0.1;
 
     @keyframes fancy {
       0% {
