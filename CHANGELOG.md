@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Seek preview is now configurable via `UIConfig.enableSeekPreview` or `SeekBarConfig.enableSeekPreview`
 
+## [3.35.0] - 2022-03-01
+
+### Fixed
+- npm install failure on node 16
+
 ## [3.34.0] - 2022-02-16
 
 ### Fixed
@@ -778,6 +783,8 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.35.0...HEAD
+[3.35.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.34.0...v3.35.0
 [3.34.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.33.0...v3.34.0
 [3.33.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.32.0...v3.33.0
 [3.32.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.31.0...v3.32.0
