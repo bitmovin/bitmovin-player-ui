@@ -113,7 +113,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         let previewHideEventArgs = <CancelEventArgs>{};
         uimanager.onPreviewControlsHide.dispatch(this, previewHideEventArgs);
 
-        if (!previewHideEventArgs.cancel) {
+        if (!previewHideEventArgs.cancel && player.isPlaying()) {
           // If the preview wasn't canceled, let subscribers know that they should now hide themselves
           uimanager.onControlsHide.dispatch(this);
           isUiShown = false;

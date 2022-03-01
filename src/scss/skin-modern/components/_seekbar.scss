@@ -44,7 +44,7 @@ $seekbar-height: .3125em;
 
     .#{$prefix}-seekbar-bufferlevel {
       @extend %bar;
-      background-color: $color-primary;
+      background-color: $color-secondary;
       margin: $bar-inset 0;
       transition: .3s linear, .3s linear;
       transition-property: transform;
@@ -83,8 +83,7 @@ $seekbar-height: .3125em;
       > .#{$prefix}-seekbar-marker {
         @extend %bar;
 
-        background-color: $color-primary;
-        height: 100%;
+        background-color: $color-accent;
         width: $marker-width;
         text-align: center;
         transition-property: transform;

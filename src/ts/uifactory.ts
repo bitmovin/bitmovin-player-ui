@@ -49,7 +49,7 @@ import { i18n } from './localization/i18n';
 export namespace UIFactory {
 
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return UIFactory.buildModernUI(player, config);
+    return UIFactory.buildAngelUI(player, config);
   }
 
   export function buildDefaultSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -359,6 +359,17 @@ export namespace UIFactory {
     });
   }
 
+  export function buildAngelUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return new UIManager(player, [{
+      ui: UIFactory.modernAdsUI(),
+      condition: (context: UIConditionContext) => {
+        return context.isAd && context.adRequiresUi;
+      },
+    }, {
+      ui: angelUI(),
+    }], config);
+  }
+
   export function buildModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     // show smallScreen UI only on mobile/handheld devices
     let smallScreenSwitchWidth = 600;
@@ -405,4 +416,67 @@ export namespace UIFactory {
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(player, modernCastReceiverUI(), config);
   }
+}
+
+function angelUI() {
+  let mainSettingsPanelPage = new SettingsPanelPage({
+    components: [
+      new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.subtitles'), new SubtitleSelectBox()),
+    ],
+  });
+
+  const settingsPanel = new SettingsPanel({
+    components: [
+      mainSettingsPanelPage,
+    ],
+    hidden: true,
+  });
+
+  let controlBar = new ControlBar({
+    hidden: false,
+    components: [
+      settingsPanel,
+      new Container({
+        components: [
+          new SeekBar({ label: new SeekBarLabel() }),
+        ],
+        cssClasses: ['controlbar-top'],
+      }),
+      new Container({
+        components: [
+          new PlaybackToggleButton(),
+          new VolumeToggleButton(),
+          new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentAndTotalTime, hideInLivePlayback: true, cssClass: 'progress-label' }),
+          new Spacer(),
+          new PictureInPictureToggleButton(),
+          new AirPlayToggleButton(),
+          new CastToggleButton(),
+          new SettingsToggleButton({ settingsPanel: settingsPanel }),
+          new FullscreenToggleButton(),
+        ],
+        cssClasses: ['controlbar-bottom'],
+      }),
+    ],
+  });
+
+  return new UIContainer({
+    components: [
+      new SubtitleOverlay(),
+      new CastStatusOverlay(),
+      new TitleBar({
+        hidden: false,
+        components: [
+          new MetadataLabel({ content: MetadataLabelContent.Title }),
+        ],
+      }),
+      controlBar,
+      new RecommendationOverlay(),
+      new ErrorMessageOverlay(),
+    ],
+    cssClasses: ['ui-skin-angel'],
+  });
 }

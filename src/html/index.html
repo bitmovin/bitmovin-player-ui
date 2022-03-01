@@ -102,27 +102,23 @@
 <script type="text/javascript">
   var sources = {
     fullyFeatured: {
-      dash: '//bitdash-a.akamaihd.net/content/sintel/sintel.mpd',
-      hls: '//bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
-      progressive: [
-        {url: '//bitdash-a.akamaihd.net/content/sintel/Sintel.mp4', type: 'video/mp4'},
-        {url: '//bitdash-a.akamaihd.net/content/sintel/Sintel.webm', type: 'video/webm'}
-      ],
-      poster: '//bitdash-a.akamaihd.net/content/sintel/poster.png',
+      metadata: {
+        frame: {
+            momentTitle: 'This is a moment title',
+            owner: {
+                name: 'Latisha Fondits'
+            }
+        }
+      },
+      hls: 'https://video.thechosen.tv/The_Chosen_S01E01_muxed-20211201_znyhj-3s.m3u8',
+      poster: 'https://content.vidangel.com/chosen/andrew_sitting.png',
       thumbnailTrack: {
-        url: '//bitdash-a.akamaihd.net/content/sintel/sprite/sprite.vtt',
+        url: 'https://video.thechosen.tv/captions/The_Chosen_S01E01.vtt',
       },
       title: 'Sintel',
       description: 'A woman, Sintel, is attacked while traveling through a wintry mountainside. After defeating her attacker and taking his spear, she finds refuge in a shaman\'s hut...',
       markers: [
-        {time: 0, title: 'Intro'},
-        {time: 102, title: 'Old Guy', duration: 30},
-        {time: 150, title: 'City', cssClasses: ['class1', 'class2']},
-        {time: 200, title: 'Dragon'},
-        {time: 370, title: 'Desert'},
-        {time: 385, title: 'Bamboo Forest'},
-        {time: 410, title: 'Winter again'},
-        {time: 755, title: 'Credits'},
+        {time: 102, title: 'Old Guy', duration: 100},
       ],
       recommendations: [
         {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
@@ -697,7 +693,7 @@
   // put all demos in own select-opt-group
   let demoGroup = $('<optgroup label="Demos" />');
   $.each(uiDemos, function(key, value) {
-    $('<option></option>').attr('value', value).text(value).appendTo(demoGroup);
+    $('<option selected></option>').attr('value', value).text(value).appendTo(demoGroup);
   });
   demoGroup.appendTo(configUISelect);
 
@@ -711,6 +707,9 @@
       uiManager = bitmovin.playerui.UIFactory[factoryMethod](player, uiConfig);
     }
   });
+
+  uiManager.release();
+  uiManager = bitmovin.playerui.DemoFactory['buildDemoWithSeparateAudioSubtitlesButtons'](player, uiConfig);
 
   // Populate stats
   $('#userAgent').html(navigator.userAgent);

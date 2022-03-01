@@ -4,14 +4,15 @@ $color-black: #000 !default;
 $color-transparent: rgba(0, 0, 0, 0) !default;
 $color-red: #f00 !default;
 
-$color-highlight: #1fabe2 !default; //Bitmovin blue
-$color-primary: #fff !default;
+$color-highlight: white !default; //Bitmovin blue
+$color-primary: white !default;
 $color-secondary: #999 !default;
+$color-accent: #59c0a5 !default;
 
 $color-background: #111 !default;
 $color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3) !default;
-$color-background-bars: transparentize($color-black, .3) !default;
-$color-focus: #1b7fcc;
+$color-background-bars: transparentize($color-black, .1) !default;
+$color-focus: white;
 
 $font-family: sans-serif !default;
 $font-size: 1em !default;
