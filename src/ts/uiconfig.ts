@@ -85,4 +85,9 @@ export interface UIConfig {
    * For an example have a look at {@link ErrorMessageOverlayConfig.messages}
    */
   errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
+  /**
+   * Toggles the seek preview feature.
+   * Default: true
+   */
+  enableSeekPreview?: boolean;
 }
