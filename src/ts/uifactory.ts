@@ -465,14 +465,10 @@ function angelUI() {
 
   return new UIContainer({
     components: [
+      new BufferingOverlay(),
+      new PlaybackToggleOverlay(),
       new SubtitleOverlay(),
       new CastStatusOverlay(),
-      new TitleBar({
-        hidden: false,
-        components: [
-          new MetadataLabel({ content: MetadataLabelContent.Title }),
-        ],
-      }),
       controlBar,
       new RecommendationOverlay(),
       new ErrorMessageOverlay(),
