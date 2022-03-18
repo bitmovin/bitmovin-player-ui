@@ -35,6 +35,7 @@
   @import 'components/recommendationoverlay';
   @import 'components/clickoverlay';
   @import 'components/hugereplaybutton';
+  @import 'components/upnextbutton';
   @import 'components/playbacktimelabel';
   @import 'components/bufferingoverlay';
   @import 'components/playbacktoggleoverlay';
@@ -59,13 +60,6 @@
   &.#{$prefix}-player-state-idle {
     .#{$prefix}-ui-controlbar,
     .#{$prefix}-ui-titlebar,
-    .#{$prefix}-ui-hugeplaybacktogglebutton {
-      display: none;
-    }
-  }
-
-  &.#{$prefix}-player-state-finished {
-    .#{$prefix}-ui-controlbar,
     .#{$prefix}-ui-hugeplaybacktogglebutton {
       display: none;
     }

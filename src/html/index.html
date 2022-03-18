@@ -12,7 +12,7 @@
 
 <div class="container">
     <div class="player-wrapper">
-        <div class="player" id="player"></div>
+        <div class="player" id="bitmovin-player"></div>
     </div>
 
     <br>
@@ -107,6 +107,12 @@
             momentTitle: 'This is a moment title',
             owner: {
                 name: 'Latisha Fondits'
+            }
+        },
+        upNext: {
+            showTime: 1200,
+            goToNext: () => {
+                alert('hey!')
             }
         }
       },
@@ -253,7 +259,7 @@
   bitmovin.playerui.UIManager.setLocalizationConfig({ language: 'en', browserLanguageDetection: false });
 
   var playerSetup = function(config) {
-    player = new bitmovin.player.Player(document.getElementById('player'), config);
+    player = new bitmovin.player.Player(document.getElementById('bitmovin-player'), config);
 
     // Update API methods when a module namespace becomes available
     player.on(bitmovin.player.PlayerEvent.ModuleReady, function() {

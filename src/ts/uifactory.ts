@@ -28,6 +28,7 @@ import { FullscreenToggleButton } from './components/fullscreentogglebutton';
 import { UIContainer } from './components/uicontainer';
 import { BufferingOverlay } from './components/bufferingoverlay';
 import { PlaybackToggleOverlay } from './components/playbacktoggleoverlay';
+import { UpNextOverlay } from './components/upnextoverlay';
 import { CastStatusOverlay } from './components/caststatusoverlay';
 import { TitleBar } from './components/titlebar';
 import { RecommendationOverlay } from './components/recommendationoverlay';
@@ -467,10 +468,10 @@ function angelUI() {
     components: [
       new BufferingOverlay(),
       new PlaybackToggleOverlay(),
+      new UpNextOverlay(),
       new SubtitleOverlay(),
       new CastStatusOverlay(),
       controlBar,
-      new RecommendationOverlay(),
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-skin-angel'],
