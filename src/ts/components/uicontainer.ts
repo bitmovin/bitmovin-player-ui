@@ -7,6 +7,8 @@ import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
+declare const window: any;
+
 /**
  * Configuration interface for a {@link UIContainer}.
  */
@@ -89,20 +91,23 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isSeeking = false;
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
+    let isUiBlocked = false;
 
     const hidingPrevented = (): boolean => {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
     };
 
     let showUi = () => {
-      if (!isUiShown) {
-        // Let subscribers know that they should reveal themselves
-        uimanager.onControlsShow.dispatch(this);
-        isUiShown = true;
-      }
-      // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
-      if (!isSeeking && !player.isCasting() && !hidingPrevented()) {
-        this.uiHideTimeout.start();
+      if (!isUiBlocked) {
+        if (!isUiShown) {
+          // Let subscribers know that they should reveal themselves
+          uimanager.onControlsShow.dispatch(this);
+          isUiShown = true;
+        }
+        // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
+        if (!isSeeking && !player.isCasting() && !hidingPrevented()) {
+          this.uiHideTimeout.start();
+        }
       }
     };
 
@@ -124,6 +129,15 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
+    if (window.bitmovin.customMessageHandler) {
+      window.bitmovin.customMessageHandler.on('blockUi', () => {
+        hideUi();
+        isUiBlocked = true;
+      });
+      window.bitmovin.customMessageHandler.on('unblockUi', () => {
+        isUiBlocked = false;
+      });
+    }
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
@@ -131,20 +145,24 @@ export class UIContainer extends Container<UIContainerConfig> {
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
       handler: (e) => {
-        if (!isUiShown) {
-          // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
-          // instead. The first touch is not prevented to let other listeners receive the event and trigger an
-          // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
-          // tap which 1. reveals the UI and 2. starts playback.
-          if (isFirstTouch && !player.isPlaying()) {
-            isFirstTouch = false;
+        if (!isUiBlocked) {
+          if (!isUiShown) {
+            // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
+            // instead. The first touch is not prevented to let other listeners receive the event and trigger an
+            // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
+            // tap which 1. reveals the UI and 2. starts playback.
+            if (isFirstTouch && !player.isPlaying()) {
+              isFirstTouch = false;
+            } else {
+              e.preventDefault();
+            }
+            showUi();
           } else {
             e.preventDefault();
+            hideUi();
           }
-          showUi();
         } else {
           e.preventDefault();
-          hideUi();
         }
       },
     }, {
