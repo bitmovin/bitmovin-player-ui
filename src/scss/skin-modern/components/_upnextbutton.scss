@@ -23,6 +23,8 @@
   font-weight: 600;
   overflow: hidden;
 
+  color: black !important;
+
   &.#{$prefix}-hidden {
     display: none;
   }
