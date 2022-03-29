@@ -1,0 +1,19 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-nfttogglebutton {
+  @extend %ui-button;
+
+  @media (min-width: 768px) {
+
+    background-image: svg('assets/skin-modern/images/nftframe.svg');
+
+    &.#{$prefix}-on {
+      background-image: svg('assets/skin-modern/images/nftframeX.svg');
+    }
+
+    &:hover {
+      @include svg-icon-shadow;
+    }
+  }
+}

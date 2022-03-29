@@ -1,0 +1,10 @@
+@import '../variables';
+
+.#{$prefix}-label-moment {
+  @extend %ui-label;
+
+  align-self: center;
+  padding: .25em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

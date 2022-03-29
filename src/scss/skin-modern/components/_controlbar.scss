@@ -11,12 +11,27 @@
   box-sizing: border-box;
   line-height: 1em;
   padding: 1em 1em .5em;
+  transition: padding ease-in-out 200ms;
 
+  .#{$prefix}-controlbar-above-top,
   .#{$prefix}-controlbar-top,
   .#{$prefix}-controlbar-bottom {
     > .#{$prefix}-container-wrapper {
+      min-width: 0;
       display: flex;
       margin: .5em 0;
+    }
+  }
+
+  .#{$prefix}-controlbar-above-top {
+    white-space: nowrap;
+
+    .#{$prefix}-ui-label {
+      font-size: .9em;
+    }
+
+    > .#{$prefix}-container-wrapper > * {
+      margin: 0em;
     }
   }
 
@@ -43,10 +58,19 @@
   }
 }
 
+&.#{$prefix}-player-state-paused {
+  @media (min-width: 768px) {
+    .show-nft-display.user-has-interacted {
+      padding: 4em 1em
+    }
+  }
+}
+
 // IE9 compatibility: fallback for missing flexbox support
 // sass-lint:disable nesting-depth
 .#{$prefix}-no-flexbox {
   .#{$prefix}-ui-controlbar {
+    .#{$prefix}-controlbar-above-top,
     .#{$prefix}-controlbar-top,
     .#{$prefix}-controlbar-bottom {
       > .#{$prefix}-container-wrapper {

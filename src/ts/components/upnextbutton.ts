@@ -38,7 +38,7 @@ export class UpNextButton extends Button<ButtonConfig> {
     player.on(player.exports.PlayerEvent.TimeChanged, ({ time }) => {
       const showTime = player.getSource()?.metadata?.upNext?.showTime;
 
-      if (showTime <= time && this.isHidden()) {
+      if (showTime > 0 && showTime <= time && this.isHidden()) {
         this.show();
         this.getDomElement().addClass(this.prefixCss('animating'));
 
