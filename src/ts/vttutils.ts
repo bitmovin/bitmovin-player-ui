@@ -85,7 +85,7 @@ const setVttLine = (
  * Defines the writing direction of the Cue Box
  * https://w3.org/TR/webvtt1/#webvtt-cue-writing-direction
  */
-const setVttWritingDirection = (
+const setVttWritingDirectionAndCueBoxPositioning = (
   cueContainerDom: DOM, vtt: VTTProperties,
   subtitleOverlaySize: Size,
 ) => {
@@ -147,7 +147,7 @@ export namespace VttUtils {
     const cueContainerDom = cueContainer.getDomElement();
 
     setDefaultVttStyles(cueContainerDom, vtt);
-    setVttWritingDirection(cueContainerDom, vtt, subtitleOverlaySize);
+    setVttWritingDirectionAndCueBoxPositioning(cueContainerDom, vtt, subtitleOverlaySize);
 
     // https://w3.org/TR/webvtt1/#webvtt-cue-text-alignment
     const textAlign = vtt.align === 'middle' ? 'center' : vtt.align;
