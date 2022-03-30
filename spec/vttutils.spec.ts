@@ -188,7 +188,7 @@ describe('Vtt Utils', () => {
               VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(12);
-              expect(spyCss).toHaveBeenNthCalledWith(9, 'margin-top', '-14px');
+              expect(spyCss).toHaveBeenNthCalledWith(9, 'top', '47.5%');
             });
 
             it('should do end line alignment', () => {
@@ -203,8 +203,8 @@ describe('Vtt Utils', () => {
 
               VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
-              expect(spyCss).toHaveBeenCalledTimes(12);
-              expect(spyCss).toHaveBeenNthCalledWith(9, 'margin-top', '-28px');
+              expect(spyCss).toHaveBeenCalledTimes(13);
+              expect(spyCss).toHaveBeenNthCalledWith(10, 'bottom', '50%');
             });
           });
         });
@@ -315,7 +315,7 @@ describe('Vtt Utils', () => {
               VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(13);
-              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-right', '-14px');
+              expect(spyCss).toHaveBeenNthCalledWith(10, 'right', '47.5%');
             });
 
             it('should do end line alignment', () => {
@@ -331,8 +331,8 @@ describe('Vtt Utils', () => {
 
               VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
-              expect(spyCss).toHaveBeenCalledTimes(13);
-              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-right', '-28px');
+              expect(spyCss).toHaveBeenCalledTimes(14);
+              expect(spyCss).toHaveBeenNthCalledWith(11, 'left', '50%');
             });
           });
         });
@@ -443,7 +443,7 @@ describe('Vtt Utils', () => {
               VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(13);
-              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-left', '-14px');
+              expect(spyCss).toHaveBeenNthCalledWith(10, 'left', '47.5%');
             });
 
             it('should do end line alignment', () => {
@@ -459,8 +459,8 @@ describe('Vtt Utils', () => {
 
               VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
-              expect(spyCss).toHaveBeenCalledTimes(13);
-              expect(spyCss).toHaveBeenNthCalledWith(10, 'margin-left', '-28px');
+              expect(spyCss).toHaveBeenCalledTimes(14);
+              expect(spyCss).toHaveBeenNthCalledWith(11, 'right', '50%');
             });
           });
         });
@@ -662,6 +662,7 @@ function generateSubtitleCueBoxMock(hasRegion: boolean, vttProps?: VTTProperties
   const region = hasRegion ? vttRegionProps : null;
   const SubtitleCueBoxClass: jest.Mock<SubtitleLabel> = jest.fn().mockImplementation(() => (
     {
+      getText: () => "",
       vtt: {
         ...generateVttProps(vttProps),
         region,

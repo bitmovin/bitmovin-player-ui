@@ -4,6 +4,11 @@ import { DOM, Size } from './dom';
 
 // Our default height of a line
 const lineHeight = 28;
+
+// Default relative line height
+const lineHeightPercent = 5;
+let lineCount: number;
+
 const defaultLineNumber = 21; // Our default amount of lines
 
 enum Direction {
@@ -40,13 +45,20 @@ const setDefaultVttStyles = (cueContainerDom: DOM, vtt: VTTProperties) => {
  * Align the Cue Box's line
  * https://w3.org/TR/webvtt1/#webvtt-cue-line-alignment
  */
-const setVttLineAlign = (cueContainerDom: DOM, { lineAlign }: VTTProperties, direction: Direction, lineCount: number) => {
+const setVttLineAlign = (
+  cueContainerDom: DOM,
+  { lineAlign }: VTTProperties,
+  direction: Direction,
+  relativeCueBoxPosition: number) =>
+{
   switch (lineAlign) {
     case 'center':
-      cueContainerDom.css(`margin-${direction}`, `${-lineHeight / 2}px`);
+      setCssForCenterLineAlign(
+        cueContainerDom, direction, relativeCueBoxPosition);
       break;
     case 'end':
-      cueContainerDom.css(`margin-${direction}`, `${-lineHeight * lineCount}px`);
+      setCssForEndLineAlign(
+        cueContainerDom, direction, relativeCueBoxPosition);
   }
 };
 
@@ -58,8 +70,7 @@ const setVttLine = (
   cueContainerDom: DOM,
   vtt: VTTProperties,
   direction: Direction,
-  subtitleOverLaySize: Size,
-  lineCount: number 
+  subtitleOverLaySize: Size
 ) => {
   if (vtt.line === 'auto') {
     return;
@@ -79,7 +90,7 @@ const setVttLine = (
   }
 
   cueContainerDom.css(direction, `${relativeLinePosition}%`);
-  setVttLineAlign(cueContainerDom, vtt, direction, lineCount);
+  setVttLineAlign(cueContainerDom, vtt, direction, relativeLinePosition);
 };
 
 /**
@@ -88,23 +99,22 @@ const setVttLine = (
  */
 const setVttWritingDirectionAndCueBoxPositioning = (
   cueContainerDom: DOM, vtt: VTTProperties,
-  subtitleOverlaySize: Size,
-  lineCount: number
+  subtitleOverlaySize: Size
 ) => {
   if (vtt.vertical === '') {
     cueContainerDom.css('writing-mode', 'horizontal-tb');
     cueContainerDom.css(Direction.Bottom, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Top, subtitleOverlaySize, lineCount);
+    setVttLine(cueContainerDom, vtt, Direction.Top, subtitleOverlaySize);
   } else if (vtt.vertical === 'lr') {
     cueContainerDom.css('writing-mode', 'vertical-lr');
     cueContainerDom.css(Direction.Right, '0');
     cueContainerDom.css(Direction.Top, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Right, subtitleOverlaySize, lineCount);
+    setVttLine(cueContainerDom, vtt, Direction.Right, subtitleOverlaySize);
   } else if (vtt.vertical === 'rl') {
     cueContainerDom.css('writing-mode', 'vertical-rl');
     cueContainerDom.css(Direction.Left, '0');
     cueContainerDom.css(Direction.Top, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Left, subtitleOverlaySize, lineCount);
+    setVttLine(cueContainerDom, vtt, Direction.Left, subtitleOverlaySize);
   }
 };
 
@@ -140,6 +150,30 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
   }
 };
 
+const countLines = (innerHtml: string) =>
+  innerHtml.split("<br />").length;
+
+// this is only a rough approximation based in a standard line height
+const setCssForCenterLineAlign =(
+  cueContainerDom: DOM,
+  direction: Direction,
+  relativeCueBoxPosition: number) =>
+{
+  const centerOffset = lineHeightPercent * lineCount / 2;
+  const offset = relativeCueBoxPosition - centerOffset;
+  cueContainerDom.css(direction, `${offset}%`);
+};
+
+const setCssForEndLineAlign = (
+  cueContainerDom: DOM,
+  direction: Direction,
+  relativeCueBoxPosition: number) =>
+{
+      let offset = relativeCueBoxPosition;
+      cueContainerDom.css(direction, "");
+      let inverse = DirectionPair.get(direction);
+      cueContainerDom.css(inverse, `${100 - offset}%`);
+};
 
 export namespace VttUtils {
   export const setVttCueBoxStyles = (
@@ -148,13 +182,12 @@ export namespace VttUtils {
   ) => {
     const vtt = cueContainer.vtt;
     const cueContainerDom = cueContainer.getDomElement();
-    const countLines = (innerHtml: string) =>
-      innerHtml.split("<br />").length;
-    const lineCount = countLines(cueContainer.getText());
+
 
     setDefaultVttStyles(cueContainerDom, vtt);
 
-    setVttWritingDirectionAndCueBoxPositioning(cueContainerDom, vtt, subtitleOverlaySize, lineCount);
+    lineCount = countLines(cueContainer.getText());
+    setVttWritingDirectionAndCueBoxPositioning(cueContainerDom, vtt, subtitleOverlaySize);
 
     // https://w3.org/TR/webvtt1/#webvtt-cue-text-alignment
     const textAlign = vtt.align === 'middle' ? 'center' : vtt.align;
