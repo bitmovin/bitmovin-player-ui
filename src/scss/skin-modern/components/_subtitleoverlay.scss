@@ -1,13 +1,13 @@
 @import '../variables';
 @import '../mixins';
 
-.#{$prefix}-ui-uicontainer .#{$prefix}-ui-subtitle-overlay {
+.#{$prefix}-ui-subtitle-overlay {
   @extend %ui-container;
 
   @include hidden;
 
   bottom: 0;
-  font-size: 1.2em;
+  font-size: 1.25rem;
   left: 0;
   pointer-events: none;
   position: absolute;

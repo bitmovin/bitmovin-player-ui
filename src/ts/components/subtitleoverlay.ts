@@ -104,6 +104,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       subtitleManager.clear();
       this.removeComponents();
       this.updateComponents();
+      this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
     };
 
     player.on(player.exports.PlayerEvent.AudioChanged, subtitleClearHandler);
@@ -218,7 +219,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       for (let label of this.getComponents()) {
         if (label instanceof SubtitleLabel) {
           label.getDomElement().css({
-            'font-size': `${fontSize}px`,
+            'font-size': `3em`,
             'letter-spacing': `${fontLetterSpacing}px`,
           });
         }
@@ -257,7 +258,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       label.getDomElement().css({
         'left': `${event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET}%`,
         'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
-        'font-size': `${fontSize}px`,
+        'font-size': `3em`,
         'letter-spacing': `${fontLetterSpacing}px`,
       });
     });
