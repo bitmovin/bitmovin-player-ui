@@ -326,13 +326,13 @@ This page uses BrowserSync to sync the state across multiple tabs and browsers a
 
 ## Deploying
 
-- Run `gulp build-prod`
+- Run `npm run build`
   - Will generate a `dist` folder with `js` and `css` folders.
+  - Note that a version number is generated and printed to the terminal. You will use this version number later.
 - Log into Cloudinary https://cloudinary.com/console/c-694d3e967aa1c898b5e184ba33ac2a/media_library/folders/bf9e9189688661e37f3751a1006c991c1a
 - Manually replace the `js` and `css` folders in cloudinary using the new files generated in the `dist` folder.
 
 ## Usage
 
-- Generate a new version string with the UTC time. The version string forces cache-busting with Cloudinary.
-- Reference the js and css files in the Bitmovin player config using the version string.
+- Reference the js and css files in the Bitmovin player config using the version string generated earlier. The version string forces cache-busting with Cloudinary.
   - See the [BitmovinPlayer](https://github.com/Angel-Studios/angel-web/blob/staging/src/components/player/AngelPlayer/BitmovinPlayer/BitmovinPlayer.tsx#L7-L18) in `angel-web` as an example.
