@@ -1599,12 +1599,13 @@
 
   // Fill the UI factory method select box
   $.each(uiFactoryMethods, function(key, value) {
-    configUISelect.append($('<option></option>').attr('value', value).text(value));
+    const element = value === 'buildAngelUI' ? '<option selected></option>' : '<option></option>'
+    configUISelect.append($(element).attr('value', value).text(value));
   });
   // put all demos in own select-opt-group
   let demoGroup = $('<optgroup label="Demos" />');
   $.each(uiDemos, function(key, value) {
-    $('<option selected></option>').attr('value', value).text(value).appendTo(demoGroup);
+    $('<option></option>').attr('value', value).text(value).appendTo(demoGroup);
   });
   demoGroup.appendTo(configUISelect);
 
@@ -1620,7 +1621,7 @@
   });
 
   uiManager.release();
-  uiManager = bitmovin.playerui.DemoFactory['buildDemoWithSeparateAudioSubtitlesButtons'](player, uiConfig);
+  uiManager = uiManager = bitmovin.playerui.UIFactory['buildAngelUI'](player, uiConfig);
 
   // Populate stats
   $('#userAgent').html(navigator.userAgent);
