@@ -6,6 +6,7 @@
   "types": "./dist/js/framework/main.d.ts",
   "scripts": {
     "build": "gulp build-prod",
+    "postbuild": "echo \"v$(date -u +%Y%m%d%H%M%S)\"",
     "dev": "gulp serve",
     "lint": "gulp lint",
     "lint:fix": "sass-lint-auto-fix gulp lint",
