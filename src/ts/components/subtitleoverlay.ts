@@ -219,7 +219,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       for (let label of this.getComponents()) {
         if (label instanceof SubtitleLabel) {
           label.getDomElement().css({
-            'font-size': `3em`,
+            'font-size': `${fontSize}px`,
             'letter-spacing': `${fontLetterSpacing}px`,
           });
         }
@@ -258,7 +258,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       label.getDomElement().css({
         'left': `${event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET}%`,
         'top': `${event.position.row * SubtitleOverlay.CEA608_ROW_OFFSET}%`,
-        'font-size': `3em`,
+        'font-size': `${fontSize}px`,
         'letter-spacing': `${fontLetterSpacing}px`,
       });
     });

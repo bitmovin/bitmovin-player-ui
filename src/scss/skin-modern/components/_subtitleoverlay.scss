@@ -7,7 +7,7 @@
   @include hidden;
 
   bottom: 0;
-  font-size: 1.25rem;
+  font-size: 1rem;
   left: 0;
   pointer-events: none;
   position: absolute;
@@ -15,6 +15,16 @@
   text-align: center;
   top: 0;
   transition: bottom $animation-duration-short ease-out;
+
+  @media (min-width: 640px) {
+    font-size: 1.15rem;
+  }
+  @media (min-width: 768px) {
+    font-size: 1.3rem;
+  }
+  @media (min-width: 1024px) {
+    font-size: 1.5rem;
+  }
 
   * {
     // This aims to prevent possibly conflicting style definitions inherited
