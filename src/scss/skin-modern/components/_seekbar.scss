@@ -9,13 +9,13 @@ $seekbar-height: .3125em;
   @include hidden;
   @include focusable;
 
+  $bar-inset: auto;
   cursor: pointer;
   font-size: 1em;
   height: 1em;
   position: relative;
-  width: 100%;
 
-  $bar-inset: auto;
+  width: 100%;
 
   .#{$prefix}-seekbar {
 
@@ -84,15 +84,15 @@ $seekbar-height: .3125em;
         @extend %bar;
 
         background-color: $color-accent;
-        width: $marker-width;
         text-align: center;
-        transition-property: transform;
         transition-duration: 1s;
+        transition-property: transform;
         transition-timing-function: linear;
+        width: $marker-width;
 
         > .#{$prefix}-seekbar-marker-image {
-          position: absolute;
           height: $seekbar-height * 4;
+          position: absolute;
           transform: translate(-50%, calc(-100% - .2em));
         }
       }

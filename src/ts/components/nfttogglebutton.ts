@@ -4,9 +4,11 @@ import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import {DOM} from '../dom';
 
-/**
- * A button that toggles between playback and pause.
- */
+interface Nifty {
+  toggleNftDisplay?: (isOn: boolean) => void;
+  nftEnabled?: boolean;
+}
+
 export class NftToggleButton extends ToggleButton<ToggleButtonConfig> {
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
@@ -25,12 +27,18 @@ export class NftToggleButton extends ToggleButton<ToggleButtonConfig> {
     this.onClick.subscribe(() => {
       const controlBar = new DOM('.bmpui-ui-controlbar');
       this.toggle();
-      if (this.isOn()) {
+      const isOn = this.isOn();
+
+      if (isOn) {
         controlBar.addClass('show-nft-display');
       } else {
         controlBar.removeClass('show-nft-display');
       }
-      player.getSource()?.metadata?.nifty?.toggleNftDisplay(this.isOn());
+
+      const nifty = getNifty(player);
+      if (nifty?.toggleNftDisplay) {
+        nifty.toggleNftDisplay(isOn);
+      }
     });
 
     player.on(player.exports.PlayerEvent.Playing, () => {
@@ -50,7 +58,8 @@ export class NftToggleButton extends ToggleButton<ToggleButtonConfig> {
 
       controlBar.removeClass('user-has-interacted');
 
-      if (player.getSource()?.metadata?.nifty?.nftEnabled) {
+      const nifty = getNifty(player);
+      if (nifty?.nftEnabled) {
         this.show();
         this.on();
         controlBar.addClass('show-nft-display');
@@ -62,4 +71,8 @@ export class NftToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.hide();
   }
+}
+
+function getNifty(player: PlayerAPI): undefined | Nifty {
+  return (player.getSource()?.metadata as any)?.nifty;
 }

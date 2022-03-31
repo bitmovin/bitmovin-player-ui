@@ -1,13 +1,13 @@
 @import '../variables';
 @import '../mixins';
 
-.#{$prefix}-ui-uicontainer .#{$prefix}-ui-subtitle-overlay {
+.#{$prefix}-ui-subtitle-overlay {
   @extend %ui-container;
 
   @include hidden;
 
   bottom: 0;
-  font-size: 1.2em;
+  font-size: 1rem;
   left: 0;
   pointer-events: none;
   position: absolute;
@@ -15,6 +15,16 @@
   text-align: center;
   top: 0;
   transition: bottom $animation-duration-short ease-out;
+
+  @media (min-width: 640px) {
+    font-size: 1.15rem;
+  }
+  @media (min-width: 768px) {
+    font-size: 1.3rem;
+  }
+  @media (min-width: 1024px) {
+    font-size: 1.5rem;
+  }
 
   * {
     // This aims to prevent possibly conflicting style definitions inherited
@@ -56,9 +66,9 @@
     // sass-lint:disable force-pseudo-nesting
     &:nth-child(1n-1)::after {
       content: '\A';
-      white-space: pre-line;
-      // VTT flex styling can increase this elements height, making the background larger
       height: 0;
+      // VTT flex styling can increase this elements height, making the background larger
+      white-space: pre-line;
     }
   }
 
