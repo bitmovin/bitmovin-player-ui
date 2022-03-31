@@ -1,8 +1,9 @@
-import {LabelConfig, Label} from './label';
-import {UIInstanceManager} from '../uimanager';
+import { LabelConfig, Label } from './label';
+import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 
 interface Moment {
+  title: string;
   startFrameNumber: number;
   endFrameNumber: number;
 }
@@ -13,9 +14,13 @@ export class MomentLabel extends Label<LabelConfig> {
   constructor(config: LabelConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['label-moment'],
-    } as LabelConfig, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['label-moment'],
+      } as LabelConfig,
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -26,10 +31,11 @@ export class MomentLabel extends Label<LabelConfig> {
     };
 
     const updateMoment = () => {
-      const nextMoment = player.getSource()?.metadata?.nifty?.moments?.[this.nextMomentIndex];
-      if (nextMoment) {
+      const moments = getMoments(player);
+      if (moments && moments.length > 0) {
+        const nextMoment = moments[this.nextMomentIndex];
         this.setText(nextMoment.title);
-        if (player.getSource().metadata.nifty.moments.length > this.nextMomentIndex + 1) {
+        if (moments.length > this.nextMomentIndex + 1) {
           this.nextMomentIndex = this.nextMomentIndex + 1;
         }
       }
@@ -37,22 +43,35 @@ export class MomentLabel extends Label<LabelConfig> {
 
     player.on(player.exports.PlayerEvent.SourceUnloaded, unload);
     player.on(player.exports.PlayerEvent.SourceLoaded, () => {
-      if (player.getSource().metadata?.nifty?.moments) {
+      const moments = getMoments(player);
+      if (moments && moments.length > 0) {
         const currentFrameish = Math.round(player.getCurrentTime() * 24);
-        this.nextMomentIndex = player.getSource().metadata.nifty.moments.findIndex((moment: Moment) => moment.startFrameNumber <= currentFrameish && moment.endFrameNumber >= currentFrameish) ?? 0;
+        this.nextMomentIndex =
+          moments.findIndex((moment: Moment) => {
+            return moment.startFrameNumber <= currentFrameish && moment.endFrameNumber >= currentFrameish;
+          }) ?? 0;
         updateMoment();
       }
     });
     // @ts-ignore
     player.on(player.exports.PlayerEvent.TimeChanged, ({ time }) => {
-      if (player.getSource()?.metadata?.nifty?.moments) {
+      const moments = getMoments(player);
+      if (moments && moments.length > 0) {
         const frameApproximation = Math.round(time * 24);
-        const nextMoment = player.getSource().metadata.nifty.moments[this.nextMomentIndex];
+        const nextMoment = moments[this.nextMomentIndex];
 
-        if (nextMoment && nextMoment.startFrameNumber <= frameApproximation && nextMoment.endFrameNumber >= frameApproximation) {
+        if (
+          nextMoment &&
+          nextMoment.startFrameNumber <= frameApproximation &&
+          nextMoment.endFrameNumber >= frameApproximation
+        ) {
           updateMoment();
         }
       }
     });
   }
+}
+
+function getMoments(player: PlayerAPI): undefined | Moment[] {
+  return (player.getSource()?.metadata as any)?.nifty?.moments;
 }
