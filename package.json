@@ -5,9 +5,12 @@
   "main": "./dist/js/framework/main.js",
   "types": "./dist/js/framework/main.d.ts",
   "scripts": {
-    "test": "npx jest",
+    "build": "gulp build-prod",
+    "dev": "gulp serve",
+    "lint": "gulp lint",
+    "lint:fix": "sass-lint-auto-fix gulp lint",
     "prepare": "gulp npm-prepare",
-    "lint:fix": "sass-lint-auto-fix"
+    "test": "npx jest"
   },
   "repository": {
     "type": "git",
