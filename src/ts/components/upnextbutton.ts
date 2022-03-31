@@ -1,29 +1,35 @@
-import {ButtonConfig, Button} from './button';
-import {DOM} from '../dom';
-import {UIInstanceManager} from '../uimanager';
+import { ButtonConfig, Button } from './button';
+import { DOM } from '../dom';
+import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
-/**
- * A button to play/replay a video.
- */
-export class UpNextButton extends Button<ButtonConfig> {
+interface UpNext {
+  goToNext?: () => void;
+  showTime?: number;
+}
 
+export class UpNextButton extends Button<ButtonConfig> {
   constructor(config: ButtonConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-upnextbutton',
-      text: i18n.getLocalizer('nextEpisode'),
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-upnextbutton',
+        text: i18n.getLocalizer('nextEpisode'),
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     const goToNext = () => {
-      if (player.getSource()?.metadata?.upNext?.goToNext) {
-        player.getSource()?.metadata?.upNext?.goToNext();
+      const upNext = getUpNext(player);
+      if (upNext?.goToNext) {
+        upNext.goToNext();
       }
       this.hide();
     };
@@ -36,9 +42,10 @@ export class UpNextButton extends Button<ButtonConfig> {
 
     // @ts-ignore
     player.on(player.exports.PlayerEvent.TimeChanged, ({ time }) => {
-      const showTime = player.getSource()?.metadata?.upNext?.showTime;
+      const upNext = getUpNext(player);
+      const showTime = upNext?.showTime;
 
-      if (showTime <= time && this.isHidden()) {
+      if (showTime && showTime > 0 && showTime <= time && this.isHidden()) {
         this.show();
         this.getDomElement().addClass(this.prefixCss('animating'));
 
@@ -50,11 +57,15 @@ export class UpNextButton extends Button<ButtonConfig> {
 
         const hoverHandler = () => {
           this.getDomElement().removeClass(this.prefixCss('animating'));
-          document.getElementById('bitmovin-player').removeEventListener('mouseover', hoverHandler);
+          document
+            .getElementById('bitmovin-player')
+            .removeEventListener('mouseover', hoverHandler);
           clearTimeout(goToNextTimeout);
         };
 
-        document.getElementById('bitmovin-player').addEventListener('mouseover', hoverHandler);
+        document
+          .getElementById('bitmovin-player')
+          .addEventListener('mouseover', hoverHandler);
       } else if (showTime >= time && this.isShown()) {
         this.hide();
         this.getDomElement().removeClass(this.prefixCss('animating'));
@@ -73,24 +84,27 @@ export class UpNextButton extends Button<ButtonConfig> {
     // can cover the whole video player are and scaling would extend it beyond. By adding an inner element, confined
     // to the size if the image, it can scale inside the player without overshooting.
     const animationWrapper = new DOM('div', {
-      'class': this.prefixCss('animation-wrapper'),
+      class: this.prefixCss('animation-wrapper'),
     });
 
-    animationWrapper.append(new DOM('div', {
-      'class': this.prefixCss('animation'),
-    }));
+    animationWrapper.append(
+      new DOM('div', { class: this.prefixCss('animation') }),
+    );
 
-    animationWrapper.append(new DOM('div', {
-      'class': this.prefixCss('icon'),
-    }));
+    animationWrapper.append(
+      new DOM('div', { class: this.prefixCss('icon') }),
+    );
 
-    animationWrapper.append(new DOM('div', {
-      'class': this.prefixCss('text'),
-    }).html('Next Episode'));
-
+    animationWrapper.append(
+      new DOM('div', { class: this.prefixCss('text') }).html('Next Episode'),
+    );
 
     buttonElement.append(animationWrapper);
 
     return buttonElement;
   }
+}
+
+function getUpNext(player: PlayerAPI): undefined | UpNext {
+  return (player.getSource()?.metadata as any)?.upNext;
 }

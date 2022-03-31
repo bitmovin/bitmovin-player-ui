@@ -9,6 +9,7 @@
   @import 'components/controlbar';
   @import 'components/button';
   @import 'components/playbacktogglebutton';
+  @import 'components/nfttogglebutton';
   @import 'components/fullscreentogglebutton';
   @import 'components/vrtogglebutton';
   @import 'components/volumetogglebutton';
@@ -50,6 +51,7 @@
   @import 'skin-cast-receiver';
   @import 'skin-smallscreen';
   @import 'custom';
+  @import 'components/momentlabel';
 
   color: $color-primary;
   font-family: $font-family;
@@ -87,4 +89,5 @@
       font-size: .7em;
     }
   }
+
 }

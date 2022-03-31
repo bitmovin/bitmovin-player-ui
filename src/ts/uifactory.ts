@@ -16,6 +16,7 @@ import { PlaybackTimeLabel, PlaybackTimeLabelMode } from './components/playbackt
 import { SeekBar } from './components/seekbar';
 import { SeekBarLabel } from './components/seekbarlabel';
 import { PlaybackToggleButton } from './components/playbacktogglebutton';
+import { NftToggleButton } from './components/nfttogglebutton';
 import { VolumeToggleButton } from './components/volumetogglebutton';
 import { VolumeSlider } from './components/volumeslider';
 import { Spacer } from './components/spacer';
@@ -40,12 +41,13 @@ import { AdSkipButton } from './components/adskipbutton';
 import { CloseButton } from './components/closebutton';
 import { MetadataLabel, MetadataLabelContent } from './components/metadatalabel';
 import { PlayerUtils } from './playerutils';
-import { Label } from './components/label';
+import {Label, LabelConfig} from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
+import {MomentLabel} from './components/momentlabel';
 
 export namespace UIFactory {
 
@@ -452,7 +454,9 @@ function angelUI() {
           new PlaybackToggleButton(),
           new VolumeToggleButton(),
           new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentAndTotalTime, hideInLivePlayback: true, cssClass: 'progress-label' }),
+          new MomentLabel({}),
           new Spacer(),
+          new NftToggleButton(),
           new PictureInPictureToggleButton(),
           new AirPlayToggleButton(),
           new CastToggleButton(),
@@ -466,6 +470,11 @@ function angelUI() {
 
   return new UIContainer({
     components: [
+      new TitleBar({
+        components: [
+          new MetadataLabel({ content: MetadataLabelContent.Title }),
+        ],
+      }),
       new BufferingOverlay(),
       new PlaybackToggleOverlay(),
       new UpNextOverlay(),

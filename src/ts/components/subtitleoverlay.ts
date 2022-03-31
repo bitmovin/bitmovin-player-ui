@@ -104,6 +104,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       subtitleManager.clear();
       this.removeComponents();
       this.updateComponents();
+      this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
     };
 
     player.on(player.exports.PlayerEvent.AudioChanged, subtitleClearHandler);

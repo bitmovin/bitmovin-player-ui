@@ -3,8 +3,7 @@
 %ui-spacer {
   @extend %ui-component;
 
-  height: 100%;
-  width: 100%;
+  margin-left: auto;
 }
 
 .#{$prefix}-ui-spacer {
