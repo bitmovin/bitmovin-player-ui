@@ -112,7 +112,12 @@ gulp.task('lint-sass', function() {
   return gulp.src(paths.source.sass)
   .pipe(sassLint({
     rules: {
-      'no-css-comments': 0
+      'no-css-comments': 0,
+      'hex-length': 0,
+      'no-color-literals': 0,
+      'no-important': 0,
+      'leading-zero': 0,
+      'nesting-depth': 5
     }
   }))
   .pipe(sassLint.format())

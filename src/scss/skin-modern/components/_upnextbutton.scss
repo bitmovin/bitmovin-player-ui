@@ -5,25 +5,26 @@
   from {
     width: 0;
   }
+
   to {
     width: 100%;
   }
 }
 
 .#{$prefix}-ui-upnextbutton {
-  outline: none;
-
-  position:absolute;
-  right: 1.25em;
-  bottom: 5em;
+  border: 0;
 
   border-radius: .5em;
-  border: none;
-  padding: 0;
-  font-weight: 600;
-  overflow: hidden;
+  bottom: 5em;
+  color: #000000 !important;
 
-  color: black !important;
+  font-weight: 600;
+  outline: none;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+
+  right: 1.25em;
 
   &.#{$prefix}-hidden {
     display: none;
@@ -34,11 +35,11 @@
   }
 
   .#{$prefix}-animation-wrapper {
-    padding: 1em 1.5em;
-    background-color: #949DA4;
+    align-items: center;
+    background-color: #949da4;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    padding: 1em 1.5em;
     position: relative;
 
     .#{$prefix}-text {
@@ -49,23 +50,24 @@
       background-image: svg('assets/skin-modern/images/playsolid.svg');
       background-repeat: no-repeat;
       height: 1em;
+      margin-right: 1em;
       width: 1em;
       z-index: 10;
-      margin-right: 1em;
     }
 
     .#{$prefix}-animation {
-      z-index: 0;
-      position: absolute;
-      left: 0;
-      top: 0;
+      background-color: #ffffff;
       height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
       width: 100%;
-      background-color: white;
+      z-index: 0;
     }
   }
 
   &.#{$prefix}-animating {
+
     .#{$prefix}-animation {
       animation: linear-progress 6s linear;
     }
