@@ -20,6 +20,7 @@ enum Direction {
 
 const DirectionPair = new Map<Direction, Direction>([
   [Direction.Top, Direction.Bottom],
+  [Direction.Bottom, Direction.Top],
   [Direction.Left, Direction.Right],
   [Direction.Right, Direction.Left],
 ]);
@@ -51,6 +52,8 @@ const setVttLineAlign = (
   direction: Direction,
   relativeCueBoxPosition: number) =>
 {
+  console.log("[i] setLineAlign: lineAlign, offset, direction",
+    lineAlign, relativeCueBoxPosition, direction);
   switch (lineAlign) {
     case 'center':
       setCssForCenterLineAlign(
@@ -72,7 +75,12 @@ const setVttLine = (
   direction: Direction,
   subtitleOverLaySize: Size
 ) => {
-  if (vtt.line === 'auto') {
+  const overlayReferenceEdge = DirectionPair.get(direction);
+  if (vtt.line === 'auto' && vtt.vertical) {
+    cueContainerDom.css(overlayReferenceEdge, "0");
+    return;
+  }
+  if (vtt.line === 'auto' && !vtt.vertical) {
     return;
   }
 
@@ -89,7 +97,9 @@ const setVttLine = (
     relativeLinePosition = (100 * absoluteLinePosition) / subtitleOverLaySize.height;
   }
 
-  cueContainerDom.css(direction, `${relativeLinePosition}%`);
+  if (vtt.lineAlign !== "end")
+    cueContainerDom.css(
+      overlayReferenceEdge, `${relativeLinePosition}%`);
   setVttLineAlign(cueContainerDom, vtt, direction, relativeLinePosition);
 };
 
@@ -101,21 +111,41 @@ const setVttWritingDirectionAndCueBoxPositioning = (
   cueContainerDom: DOM, vtt: VTTProperties,
   subtitleOverlaySize: Size
 ) => {
-  if (vtt.vertical === '') {
+  console.log("[i] setVttWritingDirection: vtt.vertical", vtt.vertical);
+  switch (vtt.vertical) {
+  case '':
     cueContainerDom.css('writing-mode', 'horizontal-tb');
     cueContainerDom.css(Direction.Bottom, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Top, subtitleOverlaySize);
-  } else if (vtt.vertical === 'lr') {
-    cueContainerDom.css('writing-mode', 'vertical-lr');
-    cueContainerDom.css(Direction.Right, '0');
-    cueContainerDom.css(Direction.Top, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Right, subtitleOverlaySize);
-  } else if (vtt.vertical === 'rl') {
-    cueContainerDom.css('writing-mode', 'vertical-rl');
-    cueContainerDom.css(Direction.Left, '0');
-    cueContainerDom.css(Direction.Top, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Left, subtitleOverlaySize);
+    setVttLine(cueContainerDom, vtt, Direction.Bottom, subtitleOverlaySize);
+    break;
+  // "lr" is "left to right" so this is vertical growing right
+  case 'lr':
+    console.log("[i] lr");
+    setCueBoxPositionForVerticalWriting(
+      cueContainerDom, Direction.Right, vtt, subtitleOverlaySize);
+    break;
+  case 'rl':
+    setCueBoxPositionForVerticalWriting(
+      cueContainerDom, Direction.Left, vtt, subtitleOverlaySize);
+    break;
   }
+};
+
+// todo: limit type of the parameter `direction` to
+//   Direction.Right, Direction.Left
+const setCueBoxPositionForVerticalWriting = (
+  cueContainerDom: DOM,
+  direction: Direction,
+  vtt: VTTProperties,
+  subtitleOverlaySize: Size
+) => {
+    const writingMode = direction === Direction.Right ?
+      "vertical-lr" : "vertical-rl";
+    const opositeEdge = direction;
+
+    cueContainerDom.css('writing-mode', writingMode);
+    cueContainerDom.css(Direction.Top, '0');
+    setVttLine(cueContainerDom, vtt, direction, subtitleOverlaySize);
 };
 
 /**
@@ -159,20 +189,23 @@ const setCssForCenterLineAlign =(
   direction: Direction,
   relativeCueBoxPosition: number) =>
 {
+  const overlayReferenceEdge = DirectionPair.get(direction);
+  const opositeEdge = DirectionPair.get(direction);
   const centerOffset = lineHeightPercent * lineCount / 2;
   const offset = relativeCueBoxPosition - centerOffset;
-  cueContainerDom.css(direction, `${offset}%`);
+  cueContainerDom.css(overlayReferenceEdge, `${offset}%`);
 };
 
 const setCssForEndLineAlign = (
   cueContainerDom: DOM,
   direction: Direction,
-  relativeCueBoxPosition: number) =>
+  offset: number) =>
 {
-      let offset = relativeCueBoxPosition;
-      cueContainerDom.css(direction, "");
-      let inverse = DirectionPair.get(direction);
-      cueContainerDom.css(inverse, `${100 - offset}%`);
+      console.log("[i] setCssForEnd: direction, offset",
+        direction, offset);
+      const overlayReferenceEdge = DirectionPair.get(direction);
+      const opositeEdge = direction;
+      cueContainerDom.css(opositeEdge, `${100 - offset}%`);
 };
 
 export namespace VttUtils {
