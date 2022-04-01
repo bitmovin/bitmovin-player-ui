@@ -51,8 +51,6 @@ const setVttLineAlign = (
   { lineAlign }: VTTProperties,
   direction: Direction,
   relativeCueBoxPosition: number) => {
-  console.log('[i] setLineAlign: lineAlign, offset, direction',
-    lineAlign, relativeCueBoxPosition, direction);
   switch (lineAlign) {
     case 'center':
       setCssForCenterLineAlign(
@@ -110,7 +108,6 @@ const setVttWritingDirectionAndCueBoxPositioning = (
   cueContainerDom: DOM, vtt: VTTProperties,
   subtitleOverlaySize: Size,
 ) => {
-  console.log('[i] setVttWritingDirection: vtt.vertical', vtt.vertical);
   switch (vtt.vertical) {
   case '':
     cueContainerDom.css('writing-mode', 'horizontal-tb');
@@ -119,7 +116,6 @@ const setVttWritingDirectionAndCueBoxPositioning = (
     break;
   // "lr" is "left to right" so this is vertical growing right
   case 'lr':
-    console.log('[i] lr');
     setCueBoxPositionForVerticalWriting(
       cueContainerDom, Direction.Right, vtt, subtitleOverlaySize);
     break;
@@ -198,8 +194,6 @@ const setCssForEndLineAlign = (
   cueContainerDom: DOM,
   direction: Direction,
   offset: number) => {
-      console.log('[i] setCssForEnd: direction, offset',
-        direction, offset);
       const overlayReferenceEdge = DirectionPair.get(direction);
       const opositeEdge = direction;
       cueContainerDom.css(opositeEdge, `${100 - offset}%`);
