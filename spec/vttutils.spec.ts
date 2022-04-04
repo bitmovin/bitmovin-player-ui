@@ -188,7 +188,7 @@ describe('Vtt Utils', () => {
               VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(12);
-              expect(spyCss).toHaveBeenNthCalledWith(9, 'top', '47.5%');
+              expect(spyCss).toHaveBeenNthCalledWith(9, 'transform', 'translateY(-50%)');
             });
 
             it('should do end line alignment', () => {
@@ -315,7 +315,7 @@ describe('Vtt Utils', () => {
               VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(12);
-              expect(spyCss).toHaveBeenNthCalledWith(9, 'left', '47.5%');
+              expect(spyCss).toHaveBeenNthCalledWith(9, 'transform', 'translateX(-50%)');
             });
 
             it('should do end line alignment', () => {
@@ -443,7 +443,7 @@ describe('Vtt Utils', () => {
               VttUtils.setVttCueBoxStyles(mockRegionContainer, subtitleOverLaySize);
 
               expect(spyCss).toHaveBeenCalledTimes(12);
-              expect(spyCss).toHaveBeenNthCalledWith(9, 'right', '47.5%');
+              expect(spyCss).toHaveBeenNthCalledWith(9, 'transform', 'translateX(50%)');
             });
 
             it('should do end line alignment', () => {
@@ -662,7 +662,7 @@ function generateSubtitleCueBoxMock(hasRegion: boolean, vttProps?: VTTProperties
   const region = hasRegion ? vttRegionProps : null;
   const SubtitleCueBoxClass: jest.Mock<SubtitleLabel> = jest.fn().mockImplementation(() => (
     {
-      getText: () => "",
+      getText: () => '',
       vtt: {
         ...generateVttProps(vttProps),
         region,

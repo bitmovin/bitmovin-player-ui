@@ -7,7 +7,7 @@ const lineHeight = 28;
 
 // Default relative line height
 const lineHeightPercent = 5;
-let lineCount: number;
+let lineCount: number = 1;
 
 const defaultLineNumber = 21; // Our default amount of lines
 
@@ -16,6 +16,11 @@ enum Direction {
   Bottom = 'bottom',
   Left = 'left',
   Right = 'right',
+}
+
+enum VttVerticalWriting {
+  GrowingRight = 'lr',
+  GrowingLeft = 'rl',
 }
 
 const DirectionPair = new Map<Direction, Direction>([
@@ -114,12 +119,11 @@ const setVttWritingDirectionAndCueBoxPositioning = (
     cueContainerDom.css(Direction.Bottom, '0');
     setVttLine(cueContainerDom, vtt, Direction.Bottom, subtitleOverlaySize);
     break;
-  // "lr" is "left to right" so this is vertical growing right
-  case 'lr':
+  case VttVerticalWriting.GrowingRight:
     setCueBoxPositionForVerticalWriting(
       cueContainerDom, Direction.Right, vtt, subtitleOverlaySize);
     break;
-  case 'rl':
+  case VttVerticalWriting.GrowingLeft:
     setCueBoxPositionForVerticalWriting(
       cueContainerDom, Direction.Left, vtt, subtitleOverlaySize);
     break;
@@ -177,15 +181,21 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
 const countLines = (innerHtml: string) =>
   innerHtml.split('<br />').length;
 
-// this is only a rough approximation based in a standard line height
 const setCssForCenterLineAlign = (
   cueContainerDom: DOM,
   direction: Direction,
   relativeCueBoxPosition: number) => {
-  const overlayReferenceEdge = DirectionPair.get(direction);
-  const centerOffset = lineHeightPercent * lineCount / 2;
-  const offset = relativeCueBoxPosition - centerOffset;
-  cueContainerDom.css(overlayReferenceEdge, `${offset}%`);
+  switch (direction) {
+    case Direction.Bottom:
+      cueContainerDom.css('transform', 'translateY(-50%)');
+      break;
+    case Direction.Left:
+      cueContainerDom.css('transform', 'translateX(50%)');
+      break;
+    case Direction.Right:
+      cueContainerDom.css('transform', 'translateX(-50%)');
+      break;
+  }
 };
 
 const setCssForEndLineAlign = (
