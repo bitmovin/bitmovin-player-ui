@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [development]
+
+### Fixed
+- Incorrect line alignment for subtitle cues from WebVTT tracks.
+- Incorrect edges of reference for vertical writing cues in block positioning from WebVTT tracks.
+- An empty line is added in vertical subtitle cues.
+
 ## [3.36.0] - 2022-03-15
 
 ### Added
