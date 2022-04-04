@@ -136,7 +136,6 @@ const setCueBoxPositionForVerticalWriting = (
 ) => {
     const writingMode = direction === Direction.Right ?
       'vertical-lr' : 'vertical-rl';
-    const opositeEdge = direction;
 
     cueContainerDom.css('writing-mode', writingMode);
     cueContainerDom.css(Direction.Top, '0');
@@ -184,7 +183,6 @@ const setCssForCenterLineAlign = (
   direction: Direction,
   relativeCueBoxPosition: number) => {
   const overlayReferenceEdge = DirectionPair.get(direction);
-  const opositeEdge = DirectionPair.get(direction);
   const centerOffset = lineHeightPercent * lineCount / 2;
   const offset = relativeCueBoxPosition - centerOffset;
   cueContainerDom.css(overlayReferenceEdge, `${offset}%`);
@@ -194,9 +192,8 @@ const setCssForEndLineAlign = (
   cueContainerDom: DOM,
   direction: Direction,
   offset: number) => {
-      const overlayReferenceEdge = DirectionPair.get(direction);
-      const opositeEdge = direction;
-      cueContainerDom.css(opositeEdge, `${100 - offset}%`);
+      const opositeToOverlayReferenceEdge = direction;
+      cueContainerDom.css(opositeToOverlayReferenceEdge, `${100 - offset}%`);
 };
 
 export namespace VttUtils {
