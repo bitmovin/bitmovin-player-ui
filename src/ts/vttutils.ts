@@ -23,6 +23,8 @@ enum VttVerticalWriting {
   GrowingLeft = 'rl',
 }
 
+type VerticalWritingDirection = Direction.Left | Direction.Right;
+
 const DirectionPair = new Map<Direction, Direction>([
   [Direction.Top, Direction.Bottom],
   [Direction.Bottom, Direction.Top],
@@ -130,11 +132,9 @@ const setVttWritingDirectionAndCueBoxPositioning = (
   }
 };
 
-// todo: limit type of the parameter `direction` to
-//   Direction.Right, Direction.Left
 const setCueBoxPositionForVerticalWriting = (
   cueContainerDom: DOM,
-  direction: Direction,
+  direction: VerticalWritingDirection,
   vtt: VTTProperties,
   subtitleOverlaySize: Size,
 ) => {
