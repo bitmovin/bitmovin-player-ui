@@ -1,11 +1,14 @@
-import {ContainerConfig, Container} from './container';
+import {Container, ContainerConfig} from './container';
 import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
-import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
-import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
-import { i18n } from '../localization/i18n';
+import {CancelEventArgs, EventDispatcher} from '../eventdispatcher';
+import {PlayerAPI, PlayerResizedEvent} from 'bitmovin-player';
+import {i18n} from '../localization/i18n';
+import {BrowserUtils} from '../browserutils';
+
+declare const window: any;
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -89,26 +92,29 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isSeeking = false;
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
+    let isUiBlocked = false;
 
     const hidingPrevented = (): boolean => {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
     };
 
     let showUi = () => {
-      if (!isUiShown) {
-        // Let subscribers know that they should reveal themselves
-        uimanager.onControlsShow.dispatch(this);
-        isUiShown = true;
-      }
-      // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
-      if (!isSeeking && !player.isCasting() && !hidingPrevented()) {
-        this.uiHideTimeout.start();
+      if (!isUiBlocked) {
+        if (!isUiShown) {
+          // Let subscribers know that they should reveal themselves
+          uimanager.onControlsShow.dispatch(this);
+          isUiShown = true;
+        }
+        // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
+        if (!isSeeking && !player.isCasting() && !hidingPrevented()) {
+          this.uiHideTimeout.start();
+        }
       }
     };
 
     let hideUi = () => {
-      // Hide the UI only if it is shown, and if not casting
-      if (isUiShown && !player.isCasting()) {
+      // Hide the UI only if it is shown, and if not casting, and if not Airplaying on Ios
+      if (isUiShown && !player.isCasting() && (BrowserUtils.isIOS && !player.isAirplayActive() || !BrowserUtils.isIOS)) {
         // Issue a preview event to check if we are good to hide the controls
         let previewHideEventArgs = <CancelEventArgs>{};
         uimanager.onPreviewControlsHide.dispatch(this, previewHideEventArgs);
@@ -127,34 +133,50 @@ export class UIContainer extends Container<UIContainerConfig> {
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
+    if (window.bitmovin.customMessageHandler) {
+      window.bitmovin.customMessageHandler.on('blockUi', () => {
+        isUiShown && hideUi();
+        isUiBlocked = true;
+      });
+      window.bitmovin.customMessageHandler.on('unblockUi', () => {
+        isUiBlocked = false;
+      });
+    }
+
     this.userInteractionEvents = [{
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
-      handler: (e) => {
-        if (!isUiShown) {
-          // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
-          // instead. The first touch is not prevented to let other listeners receive the event and trigger an
-          // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
-          // tap which 1. reveals the UI and 2. starts playback.
-          if (isFirstTouch && !player.isPlaying()) {
-            isFirstTouch = false;
+      handler: (e: Event) => {
+        if (!isUiBlocked) {
+          if (!isUiShown || e.defaultPrevented) {
+            // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
+            // instead. The first touch is not prevented to let other listeners receive the event and trigger an
+            // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
+            // tap which 1. reveals the UI and 2. starts playback.
+            if (isFirstTouch && !player.isPlaying()) {
+              isFirstTouch = false;
+            } else {
+              e.preventDefault();
+            }
+            showUi();
           } else {
-            e.preventDefault();
+            hideUi();
           }
-          showUi();
+        } else {
+          e.preventDefault();
         }
       },
     }, {
       // When the mouse enters, we show the UI
       name: 'mouseenter',
       handler: () => {
-        showUi();
+        !BrowserUtils.isTouchSupported && showUi();
       },
     }, {
       // When the mouse moves within, we show the UI
       name: 'mousemove',
       handler: () => {
-        showUi();
+        !BrowserUtils.isTouchSupported && showUi();
       },
     }, {
       name: 'focusin',
@@ -189,6 +211,9 @@ export class UIContainer extends Container<UIContainerConfig> {
       if (!hidingPrevented()) {
         this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
       }
+    });
+    player.on(player.exports.PlayerEvent.TimeShift, () => {
+        showUi();
     });
     player.on(player.exports.PlayerEvent.CastStarted, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
