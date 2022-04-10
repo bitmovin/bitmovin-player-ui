@@ -2,26 +2,35 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-jobs:
-  npm-publish:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+executors:
+  mininal_node_executor:
     docker:
       - image: node:12.19.0-buster
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    resource_class: large
+    working_directory: ~/webclient
+
+commands: 
+  npm-publish:
     steps:
       - checkout
+      - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
       - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
       - run: npm i
       - run: npm test
       - run: npm publish
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+  npm-publish:
+
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   npm-publish-workflow:
     jobs:
-      - npm-publish
+      npm-publish:
+        executor: mininal_node_executor
+        steps:
+          - npm-publish
