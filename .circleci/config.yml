@@ -1,7 +1,7 @@
 version: 2.1
 
 executors:
-  mininal_node_executor:
+  minimal_node_executor:
     docker:
       - image: node:12.19.0-buster
     resource_class: large
