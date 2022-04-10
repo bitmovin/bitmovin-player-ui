@@ -8,7 +8,24 @@ executors:
     working_directory: ~/webclient
 
 jobs:
-  npm-publish-job:
+  npm-test:
+    executor: minimal_node_executor
+    steps:
+      - checkout
+      - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
+      - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
+      - run: npm i
+      - run: npm test
+  npm-publish-develop:
+    executor: minimal_node_executor
+    steps:
+      - checkout
+      - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
+      - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
+      - run: npm i
+      - run: npm test
+      - run: npm publish --tag develop
+  npm-publish-main:
     executor: minimal_node_executor
     steps:
       - checkout
@@ -19,6 +36,24 @@ jobs:
       - run: npm publish
 
 workflows:
-  npm-publish-workflow:
+  publish-workflow-develop:
     jobs:
-      - npm-publish-job
+      - npm-publish-develop:
+        filters:
+          branches:
+            only: develop
+  publish-workflow-main:
+    jobs:
+      - npm-publish-main:
+        filters:
+          branches:
+            only: main
+  test-workflow:
+    jobs:
+      - npm-test:
+        filters:
+          branches:
+            ignore:
+              - develop
+              - main
+  
