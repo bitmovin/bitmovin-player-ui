@@ -1,6 +1,6 @@
 {
   "name": "@sparksport/bitmovin-player-ui",
-  "version": "3.33.0-sparksport",
+  "version": "3.37.0",
   "description": "Bitmovin Player UI Framework",
   "main": "./dist/js/framework/main.js",
   "types": "./dist/js/framework/main.d.ts",
