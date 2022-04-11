@@ -10,8 +10,6 @@ import {BrowserUtils} from '../browserutils';
 
 declare const window: any;
 
-declare const window: any;
-
 /**
  * Configuration interface for a {@link UIContainer}.
  */
