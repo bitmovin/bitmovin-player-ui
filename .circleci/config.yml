@@ -15,6 +15,7 @@ jobs:
       - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
       - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
       - run: npm ci
+      - run: npm run prepare
       - run: npm test
   npm-publish-main:
     executor: minimal_node_executor
@@ -24,6 +25,9 @@ jobs:
       - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
       - run: npm ci
       - run: npm test
+      - run: apk add github-cli
+      - run: gh auth login --with-token ${GITHUB_ACCESS_TOKEN}
+      - run: npm run prepare
       - run: npm publish
 
 workflows:
