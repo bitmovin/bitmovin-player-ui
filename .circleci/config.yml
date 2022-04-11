@@ -24,7 +24,7 @@ jobs:
       - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
       - run: npm ci
       - run: npm test
-      - run: npm publish --tag develop
+      - run: npm publish --tag develop --force
   npm-publish-main:
     executor: minimal_node_executor
     steps:
@@ -33,7 +33,7 @@ jobs:
       - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
       - run: npm ci
       - run: npm test
-      - run: npm publish
+      - run: npm publish --force
 
 workflows:
   publish-workflow-develop:
