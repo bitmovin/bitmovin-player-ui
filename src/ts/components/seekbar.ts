@@ -46,6 +46,11 @@ export interface SeekBarConfig extends ComponentConfig {
    * Used for seekBar marker snapping range percentage
    */
   snappingRange?: number;
+
+  /**
+   * Used to enable/disable seek preview
+   */
+  enableSeekPreview?: boolean;
 }
 
 /**
@@ -111,6 +116,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   private smoothPlaybackPositionUpdater: Timeout;
   private pausedTimeshiftUpdater: Timeout;
 
+  private isUserSeeking = false;
+
   private seekBarEvents = {
     /**
      * Fired when a scrubbing seek operation is started.
@@ -142,6 +149,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       ariaLabel: i18n.getLocalizer('seekBar'),
       tabIndex: 0,
       snappingRange: 1,
+      enableSeekPreview: true,
     }, this.config);
 
     this.label = this.config.label;
@@ -227,12 +235,11 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let isPlaying = false;
     let scrubbing = false;
-    let isUserSeeking = false;
     let isPlayerSeeking = false;
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
-      if (isUserSeeking) {
+      if (this.isUserSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
       }
@@ -322,7 +329,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeShifted, onPlayerSeeked);
 
     this.onSeek.subscribe((sender) => {
-      isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
+      this.isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
 
       // Notify UI manager of started seek
       uimanager.onSeek.dispatch(sender);
@@ -345,10 +352,18 @@ export class SeekBar extends Component<SeekBarConfig> {
       scrubbing = args.scrubbing;
     });
 
+    // Set enableSeekPreview if set in the uimanager config
+    if (typeof uimanager.getConfig().enableSeekPreview === 'boolean') {
+      this.config.enableSeekPreview = uimanager.getConfig().enableSeekPreview;
+    }
+
     // Rate-limited scrubbing seek
-    this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
+    if (this.config.enableSeekPreview) {
+      this.onSeekPreview.subscribeRateLimited(this.seekWhileScrubbing, 200);
+    }
+
     this.onSeeked.subscribe((sender, percentage) => {
-      isUserSeeking = false;
+      this.isUserSeeking = false;
 
       // Do the seek
       this.seek(percentage);
@@ -578,7 +593,9 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.pausedTimeshiftUpdater.clear();
     }
 
-    this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
+    if (this.config.enableSeekPreview) {
+      this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
+    }
   }
 
   protected toDomElement(): DOM {
@@ -706,6 +723,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       let position = 100 * this.getOffset(e);
       this.setSeekPosition(position);
+
       this.onSeekPreviewEvent(position, false);
 
       if (this.hasLabel() && this.getLabel().isHidden()) {

@@ -124,7 +124,7 @@ index 6f1967e..1e50c73 100644
 
 ```
 
-# Bitmovin Player UI [![npm version](https://badge.fury.io/js/bitmovin-player-ui.svg)](https://badge.fury.io/js/bitmovin-player-ui) [![Build Status](https://travis-ci.com/bitmovin/bitmovin-player-ui.svg?branch=master)](https://travis-ci.com/bitmovin/bitmovin-player-ui)
+# Bitmovin Player UI [![npm version](https://badge.fury.io/js/bitmovin-player-ui.svg)](https://badge.fury.io/js/bitmovin-player-ui) [![Build Status](https://app.travis-ci.com/bitmovin/bitmovin-player-ui.svg?branch=develop)](https://app.travis-ci.com/bitmovin/bitmovin-player-ui)
 The Bitmovin Adaptive Streaming Player UI
 
 Read more about the usage, along with other important information about the Bitmovin Player at https://bitmovin.com/ and https://bitmovin.com/docs/player.

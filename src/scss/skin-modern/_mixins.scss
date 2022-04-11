@@ -129,7 +129,7 @@
 
 @mixin seekbar-position-marker($marker-dimension) {
   height: $marker-dimension;
-  left: -$marker-dimension / 2;
+  left: -$marker-dimension * 0.5;
   width: $marker-dimension;
 }
 
