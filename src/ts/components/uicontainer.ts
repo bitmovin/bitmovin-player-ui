@@ -1,11 +1,14 @@
-import {ContainerConfig, Container} from './container';
+import {Container, ContainerConfig} from './container';
 import {UIInstanceManager} from '../uimanager';
 import {DOM} from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
-import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
-import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
-import { i18n } from '../localization/i18n';
+import {CancelEventArgs, EventDispatcher} from '../eventdispatcher';
+import {PlayerAPI, PlayerResizedEvent} from 'bitmovin-player';
+import {i18n} from '../localization/i18n';
+import {BrowserUtils} from '../browserutils';
+
+declare const window: any;
 
 declare const window: any;
 
@@ -112,8 +115,8 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     let hideUi = () => {
-      // Hide the UI only if it is shown, and if not casting
-      if (isUiShown && !player.isCasting()) {
+      // Hide the UI only if it is shown, and if not casting, and if not Airplaying on Ios
+      if (isUiShown && !player.isCasting() && (BrowserUtils.isIOS && !player.isAirplayActive() || !BrowserUtils.isIOS)) {
         // Issue a preview event to check if we are good to hide the controls
         let previewHideEventArgs = <CancelEventArgs>{};
         uimanager.onPreviewControlsHide.dispatch(this, previewHideEventArgs);
@@ -140,6 +143,16 @@ export class UIContainer extends Container<UIContainerConfig> {
     }
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
+
+    if (window.bitmovin.customMessageHandler) {
+      window.bitmovin.customMessageHandler.on('blockUi', () => {
+        isUiShown && hideUi();
+        isUiBlocked = true;
+      });
+      window.bitmovin.customMessageHandler.on('unblockUi', () => {
+        isUiBlocked = false;
+      });
+    }
 
     this.userInteractionEvents = [{
       // On touch displays, the first touch reveals the UI
@@ -169,13 +182,13 @@ export class UIContainer extends Container<UIContainerConfig> {
       // When the mouse enters, we show the UI
       name: 'mouseenter',
       handler: () => {
-        showUi();
+        !BrowserUtils.isTouchSupported && showUi();
       },
     }, {
       // When the mouse moves within, we show the UI
       name: 'mousemove',
       handler: () => {
-        showUi();
+        !BrowserUtils.isTouchSupported && showUi();
       },
     }, {
       name: 'focusin',
@@ -210,6 +223,9 @@ export class UIContainer extends Container<UIContainerConfig> {
       if (!hidingPrevented()) {
         this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
       }
+    });
+    player.on(player.exports.PlayerEvent.TimeShift, () => {
+        showUi();
     });
     player.on(player.exports.PlayerEvent.CastStarted, () => {
       showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
