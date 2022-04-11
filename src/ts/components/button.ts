@@ -59,7 +59,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       this.onClickEvent();
     });
 
-    buttonElement.on('touchend', (e?) => {
+    buttonElement.on('touchend', (e) => {
       this.onClickEvent();
       e.preventDefault(); // do not propagate further
     });

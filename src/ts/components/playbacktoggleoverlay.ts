@@ -1,5 +1,4 @@
 import {Container, ContainerConfig} from './container';
-import {HugePlaybackToggleButton} from './hugeplaybacktogglebutton';
 import { PlaybackToggleButton } from './playbacktogglebutton';
 import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';

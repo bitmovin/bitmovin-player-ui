@@ -1,6 +1,6 @@
 {
-  "name": "bitmovin-player-ui",
-  "version": "3.36.0-sparksport",
+  "name": "@sparksport/bitmovin-player-ui",
+  "version": "3.37.1",
   "description": "Bitmovin Player UI Framework",
   "main": "./dist/js/framework/main.js",
   "types": "./dist/js/framework/main.d.ts",
@@ -8,10 +8,7 @@
     "test": "npx jest",
     "prepare": "gulp npm-prepare"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bitmovin/bitmovin-player-ui.git"
-  },
+  "repository": "git://github.com/sparksport/bitmovin-player-ui.git",
   "author": "Bitmovin",
   "license": "MIT",
   "bugs": {

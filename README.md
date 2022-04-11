@@ -1,4 +1,130 @@
-# Bitmovin Player UI [![npm version](https://badge.fury.io/js/bitmovin-player-ui.svg)](https://badge.fury.io/js/bitmovin-player-ui) [![Build Status](https://travis-ci.com/bitmovin/bitmovin-player-ui.svg?branch=master)](https://travis-ci.com/bitmovin/bitmovin-player-ui)
+# Spark Sport Fork
+
+This fork follow the original repository https://github.com/bitmovin/bitmovin-player-ui.
+
+To update this fork you can follow these instructions: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork.
+
+### Why forking the Bitmovin Player UI?
+
+This fork contains a patch to enable **hidding the UI on tap for Mobile UI** which is not a feature that Bitmovin planned to implement anytime soon. 
+
+Here is the content of the patch provided by Bitmovin: 
+```diff
+diff --git a/src/scss/skin-modern/components/_playbacktoggleoverlay.scss b/src/scss/skin-modern/components/_playbacktoggleoverlay.scss
+index 7fb854b..cdc4ea5 100644
+--- a/src/scss/skin-modern/components/_playbacktoggleoverlay.scss
++++ b/src/scss/skin-modern/components/_playbacktoggleoverlay.scss
+@@ -3,8 +3,15 @@
+ .#{$prefix}-ui-playbacktoggle-overlay {
+   @extend %ui-container;
++  @include layout-cover;
++  @include layout-center-children-in-container;
+ 
+-  .#{$prefix}-ui-hugeplaybacktogglebutton {
+-    @include layout-cover;
++  //.#{$prefix}-ui-hugeplaybacktogglebutton {
++  //  @include layout-cover;
++  //}
++
++  // use the small button instead of the huge one
++  .#{$prefix}-ui-playbacktogglebutton {
++    @include hidden-animated;
+   }
+ }
+diff --git a/src/ts/components/button.ts b/src/ts/components/button.ts
+index b085580..4daa47b 100644
+--- a/src/ts/components/button.ts
++++ b/src/ts/components/button.ts
+@@ -59,6 +59,11 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
+       this.onClickEvent();
+     });
+ 
++    buttonElement.on('touchend', (e) => {
++      this.onClickEvent();
++      e.preventDefault(); // do not propagate further
++    });
++
+     return buttonElement;
+   }
+ 
+diff --git a/src/ts/components/playbacktoggleoverlay.ts b/src/ts/components/playbacktoggleoverlay.ts
+index cc8920f..9b3f730 100644
+--- a/src/ts/components/playbacktoggleoverlay.ts
++++ b/src/ts/components/playbacktoggleoverlay.ts
+@@ -1,21 +1,38 @@
+ import {Container, ContainerConfig} from './container';
+ import {HugePlaybackToggleButton} from './hugeplaybacktogglebutton';
++import { PlaybackToggleButton } from './playbacktogglebutton';
++import { UIInstanceManager } from '../uimanager';
++import { PlayerAPI } from 'bitmovin-player';
+ 
+ /**
+  * Overlays the player and displays error messages.
+  */
+ export class PlaybackToggleOverlay extends Container<ContainerConfig> {
+ 
+-  private playbackToggleButton: HugePlaybackToggleButton;
++  private playbackToggleButton: PlaybackToggleButton;
+ 
+   constructor(config: ContainerConfig = {}) {
+     super(config);
+ 
+-    this.playbackToggleButton = new HugePlaybackToggleButton();
++    // Replace huge button which takes the full screen with a small one
++    this.playbackToggleButton = new PlaybackToggleButton();
+ 
+     this.config = this.mergeConfig(config, {
+       cssClass: 'ui-playbacktoggle-overlay',
+       components: [this.playbackToggleButton],
+     }, this.config);
+   }
+-}
+\ No newline at end of file
++
++  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
++    super.configure(player, uimanager);
++
++    // Hide only the button accordingly (not the container: this)
++    uimanager.onControlsHide.subscribe(() => {
++      this.playbackToggleButton.hide();
++    });
++
++    uimanager.onControlsShow.subscribe(() => {
++      this.playbackToggleButton.show();
++    });
++  }
++}
+diff --git a/src/ts/components/uicontainer.ts b/src/ts/components/uicontainer.ts
+index 6f1967e..1e50c73 100644
+--- a/src/ts/components/uicontainer.ts
++++ b/src/ts/components/uicontainer.ts
+@@ -142,20 +142,10 @@ export class UIContainer extends Container<UIContainerConfig> {
+             e.preventDefault();
+           }
+           showUi();
++        } else {
++          hideUi();
+         }
+       },
+-    }, {
+-      // When the mouse enters, we show the UI
+-      name: 'mouseenter',
+-      handler: () => {
+-        showUi();
+-      },
+-    }, {
+-      // When the mouse moves within, we show the UI
+-      name: 'mousemove',
+-      handler: () => {
+-        showUi();
+-      },
+     }, {
+       name: 'focusin',
+       handler: () => {
+
+```
+
+# Bitmovin Player UI [![npm version](https://badge.fury.io/js/bitmovin-player-ui.svg)](https://badge.fury.io/js/bitmovin-player-ui) [![Build Status](https://app.travis-ci.com/bitmovin/bitmovin-player-ui.svg?branch=develop)](https://app.travis-ci.com/bitmovin/bitmovin-player-ui)
 The Bitmovin Adaptive Streaming Player UI
 
 Read more about the usage, along with other important information about the Bitmovin Player at https://bitmovin.com/ and https://bitmovin.com/docs/player.

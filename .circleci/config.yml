@@ -1,0 +1,45 @@
+version: 2.1
+
+executors:
+  minimal_node_executor:
+    docker:
+      - image: node:14.18.2-buster
+    resource_class: large
+    working_directory: ~/webclient
+
+jobs:
+  npm-test:
+    executor: minimal_node_executor
+    steps:
+      - checkout
+      - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
+      - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
+      - run: npm ci
+      - run: npm test
+  npm-publish-main:
+    executor: minimal_node_executor
+    steps:
+      - checkout
+      - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
+      - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
+      - run: npm ci
+      - run: npm test
+      - run: npm publish
+
+workflows:
+  publish-workflow-main:
+    jobs:
+      - npm-publish-main:
+          filters:
+            branches:
+              only: main
+              ignore: '*'
+  test-workflow:
+    jobs:
+      - npm-test:
+          filters:
+            branches:
+              ignore:
+                - develop
+                - main
+  

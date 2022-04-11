@@ -130,6 +130,15 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
+    if (window.bitmovin.customMessageHandler) {
+      window.bitmovin.customMessageHandler.on('blockUi', () => {
+        hideUi();
+        isUiBlocked = true;
+      });
+      window.bitmovin.customMessageHandler.on('unblockUi', () => {
+        isUiBlocked = false;
+      });
+    }
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
@@ -146,9 +155,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     this.userInteractionEvents = [{
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
-      handler: (e: Event) => {
+      handler: (e) => {
         if (!isUiBlocked) {
-          if (!isUiShown || e.defaultPrevented) {
+          if (!isUiShown) {
             // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
             // instead. The first touch is not prevented to let other listeners receive the event and trigger an
             // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
@@ -160,6 +169,7 @@ export class UIContainer extends Container<UIContainerConfig> {
             }
             showUi();
           } else {
+            e.preventDefault();
             hideUi();
           }
         } else {
