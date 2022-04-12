@@ -4,6 +4,11 @@ import { DOM, Size } from './dom';
 
 // Our default height of a line
 const lineHeight = 28;
+
+// Default relative line height
+const lineHeightPercent = 5;
+let lineCount: number = 1;
+
 const defaultLineNumber = 21; // Our default amount of lines
 
 enum Direction {
@@ -13,8 +18,16 @@ enum Direction {
   Right = 'right',
 }
 
+enum VttVerticalWriting {
+  GrowingRight = 'lr',
+  GrowingLeft = 'rl',
+}
+
+type VerticalWritingDirection = Direction.Left | Direction.Right;
+
 const DirectionPair = new Map<Direction, Direction>([
   [Direction.Top, Direction.Bottom],
+  [Direction.Bottom, Direction.Top],
   [Direction.Left, Direction.Right],
   [Direction.Right, Direction.Left],
 ]);
@@ -40,13 +53,19 @@ const setDefaultVttStyles = (cueContainerDom: DOM, vtt: VTTProperties) => {
  * Align the Cue Box's line
  * https://w3.org/TR/webvtt1/#webvtt-cue-line-alignment
  */
-const setVttLineAlign = (cueContainerDom: DOM, { lineAlign }: VTTProperties, direction: Direction) => {
+const setVttLineAlign = (
+  cueContainerDom: DOM,
+  { lineAlign }: VTTProperties,
+  direction: Direction,
+  relativeCueBoxPosition: number) => {
   switch (lineAlign) {
     case 'center':
-      cueContainerDom.css(`margin-${direction}`, `${-lineHeight / 2}px`);
+      setCssForCenterLineAlign(
+        cueContainerDom, direction, relativeCueBoxPosition);
       break;
     case 'end':
-      cueContainerDom.css(`margin-${direction}`, `${-lineHeight}px`);
+      setCssForEndLineAlign(
+        cueContainerDom, direction, relativeCueBoxPosition);
   }
 };
 
@@ -60,7 +79,12 @@ const setVttLine = (
   direction: Direction,
   subtitleOverLaySize: Size,
 ) => {
-  if (vtt.line === 'auto') {
+  const overlayReferenceEdge = DirectionPair.get(direction);
+  if (vtt.line === 'auto' && vtt.vertical) {
+    cueContainerDom.css(overlayReferenceEdge, '0');
+    return;
+  }
+  if (vtt.line === 'auto' && !vtt.vertical) {
     return;
   }
 
@@ -77,33 +101,49 @@ const setVttLine = (
     relativeLinePosition = (100 * absoluteLinePosition) / subtitleOverLaySize.height;
   }
 
-  cueContainerDom.css(direction, `${relativeLinePosition}%`);
-  setVttLineAlign(cueContainerDom, vtt, direction);
+  if (vtt.lineAlign !== 'end')
+    cueContainerDom.css(
+      overlayReferenceEdge, `${relativeLinePosition}%`);
+  setVttLineAlign(cueContainerDom, vtt, direction, relativeLinePosition);
 };
 
 /**
  * Defines the writing direction of the Cue Box
  * https://w3.org/TR/webvtt1/#webvtt-cue-writing-direction
  */
-const setVttWritingDirection = (
+const setVttWritingDirectionAndCueBoxPositioning = (
   cueContainerDom: DOM, vtt: VTTProperties,
   subtitleOverlaySize: Size,
 ) => {
-  if (vtt.vertical === '') {
+  switch (vtt.vertical) {
+  case '':
     cueContainerDom.css('writing-mode', 'horizontal-tb');
     cueContainerDom.css(Direction.Bottom, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Top, subtitleOverlaySize);
-  } else if (vtt.vertical === 'lr') {
-    cueContainerDom.css('writing-mode', 'vertical-lr');
-    cueContainerDom.css(Direction.Right, '0');
-    cueContainerDom.css(Direction.Top, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Right, subtitleOverlaySize);
-  } else if (vtt.vertical === 'rl') {
-    cueContainerDom.css('writing-mode', 'vertical-rl');
-    cueContainerDom.css(Direction.Left, '0');
-    cueContainerDom.css(Direction.Top, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Left, subtitleOverlaySize);
+    setVttLine(cueContainerDom, vtt, Direction.Bottom, subtitleOverlaySize);
+    break;
+  case VttVerticalWriting.GrowingRight:
+    setCueBoxPositionForVerticalWriting(
+      cueContainerDom, Direction.Right, vtt, subtitleOverlaySize);
+    break;
+  case VttVerticalWriting.GrowingLeft:
+    setCueBoxPositionForVerticalWriting(
+      cueContainerDom, Direction.Left, vtt, subtitleOverlaySize);
+    break;
   }
+};
+
+const setCueBoxPositionForVerticalWriting = (
+  cueContainerDom: DOM,
+  direction: VerticalWritingDirection,
+  vtt: VTTProperties,
+  subtitleOverlaySize: Size,
+) => {
+    const writingMode = direction === Direction.Right ?
+      'vertical-lr' : 'vertical-rl';
+
+    cueContainerDom.css('writing-mode', writingMode);
+    cueContainerDom.css(Direction.Top, '0');
+    setVttLine(cueContainerDom, vtt, direction, subtitleOverlaySize);
 };
 
 /**
@@ -138,6 +178,34 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
   }
 };
 
+const countLines = (innerHtml: string) =>
+  innerHtml.split('<br />').length;
+
+const setCssForCenterLineAlign = (
+  cueContainerDom: DOM,
+  direction: Direction,
+  relativeCueBoxPosition: number) => {
+  switch (direction) {
+    case Direction.Bottom:
+      cueContainerDom.css('transform', 'translateY(-50%)');
+      break;
+    case Direction.Left:
+      cueContainerDom.css('transform', 'translateX(50%)');
+      break;
+    case Direction.Right:
+      cueContainerDom.css('transform', 'translateX(-50%)');
+      break;
+  }
+};
+
+const setCssForEndLineAlign = (
+  cueContainerDom: DOM,
+  direction: Direction,
+  offset: number) => {
+      const opositeToOverlayReferenceEdge = direction;
+      cueContainerDom.css(opositeToOverlayReferenceEdge, `${100 - offset}%`);
+};
+
 export namespace VttUtils {
   export const setVttCueBoxStyles = (
     cueContainer: SubtitleLabel,
@@ -146,8 +214,11 @@ export namespace VttUtils {
     const vtt = cueContainer.vtt;
     const cueContainerDom = cueContainer.getDomElement();
 
+
     setDefaultVttStyles(cueContainerDom, vtt);
-    setVttWritingDirection(cueContainerDom, vtt, subtitleOverlaySize);
+
+    lineCount = countLines(cueContainer.getText());
+    setVttWritingDirectionAndCueBoxPositioning(cueContainerDom, vtt, subtitleOverlaySize);
 
     // https://w3.org/TR/webvtt1/#webvtt-cue-text-alignment
     const textAlign = vtt.align === 'middle' ? 'center' : vtt.align;
