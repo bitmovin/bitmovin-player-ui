@@ -23,8 +23,9 @@ jobs:
       - checkout
       - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
       - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
-      - run: npm ci
       - run: npm run add-version-suffix
+      - run: sudo npm install --global cross-env
+      - run: npm ci
       - run: npm publish
   npm-publish-main:
     executor: minimal_node_executor
