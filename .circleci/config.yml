@@ -67,4 +67,6 @@ workflows:
               ignore:
                 - develop
                 - main
+          requires:
+            - npm-publish-beta-approval
   
