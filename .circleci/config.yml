@@ -1,16 +1,22 @@
 version: 2.1
 
 executors:
-  minimal_node_executor:
+  node_user_executor:
     docker:
       - image: node:14.18.2-buster
         user: node
     resource_class: large
     working_directory: ~/webclient
+  node_root_executor:
+    docker:
+      - image: node:14.18.2-buster
+        user: root
+    resource_class: large
+    working_directory: ~/webclient
 
 jobs:
   npm-test:
-    executor: minimal_node_executor
+    executor: node_user_executor
     steps:
       - checkout
       - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
@@ -18,17 +24,17 @@ jobs:
       - run: npm ci
       - run: npm test
   npm-publish-beta:
-    executor: minimal_node_executor
+    executor: node_root_executor
     steps: 
       - checkout
       - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
       - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/webclient/.npmrc'
       - run: npm ci
-      - run: sudo npm install --global cross-env
-      - run: sudo npm run add-version-suffix
+      - run: npm install --global cross-env
+      - run: npm run add-version-suffix
       - run: npm publish
   npm-publish-main:
-    executor: minimal_node_executor
+    executor: node_user_executor
     steps:
       - checkout
       - run: 'echo "scripts-prepend-node-path=true" >> ~/webclient/.npmrc'
