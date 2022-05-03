@@ -164,7 +164,11 @@ To take a look at the project, run `gulp serve`. For changes, check our [CHANGEL
 
 ## Contributing
 
-Pull requests are welcome! Please check the [contribution guidelines](CONTRIBUTING.md).
+Pull requests are welcome! Please check the [contribution guidelines](CONTRIBUTING.md). 
+
+## CICD Pipeline
+
+When you make a feature branch, CircleCI will run a build and all the tests for you. Optionally, you can also choose to publish the NPM package (so you can test your changes with the `spark-player-skin` repository). It will publish the package with the version number in package.json, with a `-beta-#` suffix, where the # is replaced by a number, the number of times you've chosen to publish. So if you publish a beta 3 times, there would be a `-beta-1`, `-beta-2`, and a `-beta-3` in the NPM registry.
 
 ## Introduction
 
