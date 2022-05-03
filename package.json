@@ -6,6 +6,7 @@
   "types": "./dist/js/framework/main.d.ts",
   "scripts": {
     "test": "npx jest",
+    "add-suffix": "cross-env SUFFIX=beta node ./node_modules/npm-version-suffix/run-add-suffix.js",
     "prepare": "gulp npm-prepare"
   },
   "repository": "git://github.com/sparksport/bitmovin-player-ui.git",
@@ -49,5 +50,8 @@
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.11.1",
     "yargs": "^12.0.2"
+  },
+  "dependencies": {
+    "npm-version-suffix": "^0.2.0"
   }
 }
