@@ -32,7 +32,7 @@ jobs:
       - run: npm ci
       - run: npm install --global cross-env
       - run: npm run add-version-suffix
-      - run: npm publish
+      - run: npm publish --tag beta
   npm-publish-main:
     executor: node_user_executor
     steps:
