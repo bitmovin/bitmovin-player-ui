@@ -45,6 +45,8 @@ import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
+import { SubtitleListBox } from './components/subtitlelistbox';
+import { AudioTrackListBox } from './main';
 
 export namespace UIFactory {
 
@@ -404,5 +406,89 @@ export namespace UIFactory {
 
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(player, modernCastReceiverUI(), config);
+  }
+
+  export function buildModernTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+        return new UIManager(player, [{
+          ui: modernTvUI(),
+        }], config);
+  }
+
+  export function modernTvUI() {
+    let subtitleOverlay = new SubtitleOverlay();
+
+    let subtitleListPanel = new SettingsPanel({
+      components: [
+        new SettingsPanelPage({
+          components: [
+            new SubtitleListBox(),
+          ]
+        }),
+      ],
+      hidden: true,
+    });
+
+    let audioTrackListPanel = new SettingsPanel({
+      components: [
+        new SettingsPanelPage({
+          components: [
+            new AudioTrackListBox(),
+          ]
+        })
+      ],
+      hidden: true,
+    })
+
+    let controlBar = new ControlBar({
+      components: [
+        new Container({
+          components: [
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+            new SeekBar({ label: new SeekBarLabel() }),
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
+          ],
+          cssClasses: ['controlbar-top'],
+        }),
+      ],
+    });
+
+    return new UIContainer({
+      components: [
+        subtitleOverlay,
+        new BufferingOverlay(),
+        new PlaybackToggleOverlay(),
+        controlBar,
+        new TitleBar({
+          components: [
+            new MetadataLabel({ content: MetadataLabelContent.Title }),
+            new SettingsToggleButton({
+              settingsPanel: subtitleListPanel,
+              autoHideWhenNoActiveSettings: false,
+              cssClass: 'ui-subtitlesettingstogglebutton',
+              text: i18n.getLocalizer('settings.subtitles'),
+            }),
+            new SettingsToggleButton({
+              settingsPanel: audioTrackListPanel,
+              autoHideWhenNoActiveSettings: false,
+              cssClass: 'ui-audiotracksettingstogglebutton',
+              ariaLabel: i18n.getLocalizer('settings.audio.track'),
+              text: i18n.getLocalizer('settings.audio.track'),
+            }),
+            new MetadataLabel({ content: MetadataLabelContent.Description }),
+            subtitleListPanel,
+            audioTrackListPanel,
+          ]
+        }),
+        new RecommendationOverlay(),
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-tv'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+    });
   }
 }
