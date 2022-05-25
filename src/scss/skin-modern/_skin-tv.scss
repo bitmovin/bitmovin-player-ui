@@ -1,0 +1,52 @@
+@import 'variables';
+@import 'mixins';
+
+.#{$prefix}-ui-skin-tv {
+  $overscan-margin: 10%;
+
+  font-size: 2.5em;
+
+  // Increase icon sizes and texts in the controlbar such as current time
+  .#{$prefix}-ui-subtitlesettingstogglebutton,
+  .#{$prefix}-ui-audiotracksettingstogglebutton,
+  .#{$prefix}-ui-controlbar {
+    font-size: 2em;
+  }
+
+  // Position the settings panel top right below the settings icons
+  // TODO needs to be improved
+  .#{$prefix}-ui-settings-panel {
+    top: 18em;
+    right: $overscan-margin;
+  }
+
+  .#{$prefix}-ui-titlebar {
+    > .#{$prefix}-container-wrapper {
+      margin: $overscan-margin;
+
+      .#{$prefix}-ui-label {
+        align-items: center;
+        display: inline-flex;
+        font-size: 2em;
+      }
+
+      .#{$prefix}-label-metadata-title {
+        width: 90%;
+        font-size: 2.5em;
+      }
+
+      .#{$prefix}-label-metadata {
+        margin-top: 1em;
+      }
+    }
+  }
+
+  // Increase margin area around the UI but spread the dark shadow still 
+  // to the edge of the video by applying it to only the container-wrapper
+  .#{$prefix}-ui-controlbar {
+    > .#{$prefix}-container-wrapper {
+      margin: $overscan-margin;
+      width: 100% - 2 * $overscan-margin;
+    } 
+  }
+}
