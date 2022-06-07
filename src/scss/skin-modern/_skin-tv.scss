@@ -4,14 +4,7 @@
 .#{$prefix}-ui-skin-tv {
   $overscan-margin: 10%;
 
-  font-size: 2.5em;
-
-  // Increase icon sizes and texts in the controlbar such as current time
-  .#{$prefix}-ui-subtitlesettingstogglebutton,
-  .#{$prefix}-ui-audiotracksettingstogglebutton,
-  .#{$prefix}-ui-controlbar {
-    font-size: 2em;
-  }
+  font-size: 3vh;
 
   // Position the settings panel top right below the settings icons
   // TODO needs to be improved
@@ -23,22 +16,34 @@
   .#{$prefix}-ui-titlebar {
     > .#{$prefix}-container-wrapper {
       margin: $overscan-margin;
+      font-size: 4vh;
 
       .#{$prefix}-ui-label {
         align-items: center;
         display: inline-flex;
-        font-size: 2em;
-      }
-
-      .#{$prefix}-label-metadata-title {
-        width: 90%;
-        font-size: 2.5em;
       }
 
       .#{$prefix}-label-metadata {
         margin-top: 1em;
       }
+
+      .#{$prefix}-label-metadata-title {
+        width: 80%;
+      }
+
+      .#{$prefix}-label-metadata-description {
+        font-size: 3vh;
+      }
     }
+  }
+
+  // Increase icon sizes and texts in the controlbar such as current time
+  .#{$prefix}-ui-subtitlesettingstogglebutton,
+  .#{$prefix}-ui-audiotracksettingstogglebutton,
+  .#{$prefix}-ui-controlbar,
+  .#{$prefix}-label-metadata-title,
+  .#{$prefix}-ui-playbacktimelabel {
+    font-size: 4vh;
   }
 
   // Increase margin area around the UI but spread the dark shadow still 
