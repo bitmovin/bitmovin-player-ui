@@ -482,12 +482,11 @@ export namespace UIFactory {
             new Container({
               components: [
                 new MetadataLabel({ content: MetadataLabelContent.Description }),
+                subtitleListPanel,
+                audioTrackListPanel,
               ],
               cssClasses: ['ui-titlebar-bottom'],
             }),
-            
-            subtitleListPanel,
-            audioTrackListPanel,
           ]
         }),
         new RecommendationOverlay(),
