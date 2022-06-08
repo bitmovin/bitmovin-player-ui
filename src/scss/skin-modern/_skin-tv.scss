@@ -23,11 +23,14 @@
       font-size: $large-size;
       
       display: inline-flex;
-      justify-content: space-between;
+      // Start from the right side
+      justify-content: flex-end;
       align-items: center;
 
       .#{$prefix}-label-metadata-title {
-        width: 100%;
+        // Moves rest of the items starting with this one to the very left
+        // margin auto will fill up the rest of the space in between.
+        margin-right: auto;
       }
     }
   }
