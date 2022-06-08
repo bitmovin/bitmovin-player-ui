@@ -415,9 +415,7 @@ export namespace UIFactory {
   }
 
   export function modernTvUI() {
-    let subtitleOverlay = new SubtitleOverlay();
-
-    let subtitleListPanel = new SettingsPanel({
+    const subtitleListPanel = new SettingsPanel({
       components: [
         new SettingsPanelPage({
           components: [
@@ -428,7 +426,7 @@ export namespace UIFactory {
       hidden: true,
     });
 
-    let audioTrackListPanel = new SettingsPanel({
+    const audioTrackListPanel = new SettingsPanel({
       components: [
         new SettingsPanelPage({
           components: [
@@ -437,27 +435,25 @@ export namespace UIFactory {
         })
       ],
       hidden: true,
-    })
-
-    let controlBar = new ControlBar({
-      components: [
-        new Container({
-          components: [
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-            new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
-          ],
-          cssClasses: ['controlbar-top'],
-        }),
-      ],
     });
 
     return new UIContainer({
       components: [
-        subtitleOverlay,
+        new SubtitleOverlay(),
         new BufferingOverlay(),
         new PlaybackToggleOverlay(),
-        controlBar,
+        new ControlBar({
+          components: [
+            new Container({
+              components: [
+                new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+                new SeekBar({ label: new SeekBarLabel() }),
+                new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
+              ],
+              cssClasses: ['controlbar-top'],
+            }),
+          ],
+        }),
         new TitleBar({
           components: [
             new Container({
