@@ -420,7 +420,7 @@ export namespace UIFactory {
         new SettingsPanelPage({
           components: [
             new SubtitleListBox(),
-          ]
+          ],
         }),
       ],
       hidden: true,
@@ -431,8 +431,8 @@ export namespace UIFactory {
         new SettingsPanelPage({
           components: [
             new AudioTrackListBox(),
-          ]
-        })
+          ],
+        }),
       ],
       hidden: true,
     });
@@ -483,7 +483,7 @@ export namespace UIFactory {
               ],
               cssClasses: ['ui-titlebar-bottom'],
             }),
-          ]
+          ],
         }),
         new RecommendationOverlay(),
         new ErrorMessageOverlay(),
