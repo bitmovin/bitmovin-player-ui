@@ -4,6 +4,7 @@
 .#{$prefix}-ui-skin-tv {
   $overscan-margin: 10%;
   $large-size: 4vh;
+  $medium-large-size: 3.5vh;
   $medium-size: 3vh;
 
   font-size: $medium-size;
@@ -53,7 +54,7 @@
 
     // Position the settings panel top right below the settings icons
     .#{$prefix}-ui-settings-panel {
-      font-size: $medium-size;
+      font-size: $medium-large-size;
       top: 0;
       right: 0;
     }
