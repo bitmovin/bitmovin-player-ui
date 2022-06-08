@@ -3,8 +3,10 @@
 
 .#{$prefix}-ui-skin-tv {
   $overscan-margin: 10%;
+  $large-size: 4vh;
+  $medium-size: 3vh;
 
-  font-size: 3vh;
+  font-size: $medium-size;
 
   // Position the settings panel top right below the settings icons
   // TODO needs to be improved
@@ -15,25 +17,32 @@
 
   .#{$prefix}-ui-titlebar {
     > .#{$prefix}-container-wrapper {
-      margin: $overscan-margin;
-      font-size: 4vh;
+      margin: $overscan-margin $overscan-margin $medium-size;
+      width: 100% - 2 * $overscan-margin;
+    }
+  }
 
-      .#{$prefix}-ui-label {
-        align-items: center;
-        display: inline-flex;
-      }
+  .#{$prefix}-ui-titlebar-top {
+    margin-bottom: $medium-size;
 
-      .#{$prefix}-label-metadata {
-        margin-top: 1em;
-      }
+    > .#{$prefix}-container-wrapper {
+      width: 100%;
+      font-size: $large-size;
+      
+      display: inline-flex;
+      justify-content: space-between;
+      align-items: center;
 
       .#{$prefix}-label-metadata-title {
-        width: 80%;
+        width: 100%;
       }
+    }
+  }
 
-      .#{$prefix}-label-metadata-description {
-        font-size: 3vh;
-      }
+  .#{$prefix}-ui-titlebar-bottom {
+    .#{$prefix}-label-metadata-description {
+      display: block;
+      font-size: $medium-size;
     }
   }
 
@@ -43,7 +52,7 @@
   .#{$prefix}-ui-controlbar,
   .#{$prefix}-label-metadata-title,
   .#{$prefix}-ui-playbacktimelabel {
-    font-size: 4vh;
+    font-size: $large-size;
   }
 
   // Increase margin area around the UI but spread the dark shadow still 

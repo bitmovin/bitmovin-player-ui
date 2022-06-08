@@ -460,21 +460,32 @@ export namespace UIFactory {
         controlBar,
         new TitleBar({
           components: [
-            new MetadataLabel({ content: MetadataLabelContent.Title }),
-            new SettingsToggleButton({
-              settingsPanel: subtitleListPanel,
-              autoHideWhenNoActiveSettings: false,
-              cssClass: 'ui-subtitlesettingstogglebutton',
-              text: i18n.getLocalizer('settings.subtitles'),
+            new Container({
+              components: [
+                new MetadataLabel({ content: MetadataLabelContent.Title }),
+                new SettingsToggleButton({
+                  settingsPanel: subtitleListPanel,
+                  autoHideWhenNoActiveSettings: false,
+                  cssClass: 'ui-subtitlesettingstogglebutton',
+                  text: i18n.getLocalizer('settings.subtitles'),
+                }),
+                new SettingsToggleButton({
+                  settingsPanel: audioTrackListPanel,
+                  autoHideWhenNoActiveSettings: false,
+                  cssClass: 'ui-audiotracksettingstogglebutton',
+                  ariaLabel: i18n.getLocalizer('settings.audio.track'),
+                  text: i18n.getLocalizer('settings.audio.track'),
+                }),
+              ],
+              cssClasses: ['ui-titlebar-top'],
             }),
-            new SettingsToggleButton({
-              settingsPanel: audioTrackListPanel,
-              autoHideWhenNoActiveSettings: false,
-              cssClass: 'ui-audiotracksettingstogglebutton',
-              ariaLabel: i18n.getLocalizer('settings.audio.track'),
-              text: i18n.getLocalizer('settings.audio.track'),
+            new Container({
+              components: [
+                new MetadataLabel({ content: MetadataLabelContent.Description }),
+              ],
+              cssClasses: ['ui-titlebar-bottom'],
             }),
-            new MetadataLabel({ content: MetadataLabelContent.Description }),
+            
             subtitleListPanel,
             audioTrackListPanel,
           ]
