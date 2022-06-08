@@ -8,13 +8,6 @@
 
   font-size: $medium-size;
 
-  // Position the settings panel top right below the settings icons
-  // TODO needs to be improved
-  .#{$prefix}-ui-settings-panel {
-    top: 18em;
-    right: $overscan-margin;
-  }
-
   .#{$prefix}-ui-titlebar {
     > .#{$prefix}-container-wrapper {
       margin: $overscan-margin $overscan-margin $medium-size;
@@ -40,9 +33,26 @@
   }
 
   .#{$prefix}-ui-titlebar-bottom {
+    > .#{$prefix}-container-wrapper {
+      width: 100%;
+      font-size: $large-size;
+
+      position: relative;
+      display: inline-flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
     .#{$prefix}-label-metadata-description {
-      display: block;
       font-size: $medium-size;
+      width: 100%;
+    }
+
+    // Position the settings panel top right below the settings icons
+    .#{$prefix}-ui-settings-panel {
+      font-size: $medium-size;
+      top: 0;
+      right: 0;
     }
   }
 
