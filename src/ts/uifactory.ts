@@ -422,7 +422,7 @@ export namespace UIFactory {
       components: [
         new SettingsPanelPage({
           components: [
-            new SubtitleListBox(),
+            new SettingsPanelItem(null, new SubtitleListBox()),
           ],
         }),
       ],
@@ -433,7 +433,7 @@ export namespace UIFactory {
       components: [
         new SettingsPanelPage({
           components: [
-            new AudioTrackListBox(),
+            new SettingsPanelItem(null, new AudioTrackListBox()),
           ],
         }),
       ],
@@ -472,14 +472,14 @@ export namespace UIFactory {
                  new SettingsToggleButton({
                   settingsPanel: subtitleListPanel,
                   menuCaption : subtitleMenuCaption,
-                  autoHideWhenNoActiveSettings: false,
+                  autoHideWhenNoActiveSettings: true,
                   cssClass: 'ui-subtitlesettingstogglebutton',
                   text: i18n.getLocalizer('settings.subtitles'),
                 }),
                 new SettingsToggleButton({
                   settingsPanel: audioTrackListPanel,
                   menuCaption : audioMenuCaption,
-                  autoHideWhenNoActiveSettings: false,
+                  autoHideWhenNoActiveSettings: true,
                   cssClass: 'ui-audiotracksettingstogglebutton',
                   ariaLabel: i18n.getLocalizer('settings.audio.track'),
                   text: i18n.getLocalizer('settings.audio.track'),
