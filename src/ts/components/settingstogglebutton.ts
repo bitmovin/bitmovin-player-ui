@@ -5,6 +5,7 @@ import {Component, ComponentConfig} from './component';
 import {ArrayUtils} from '../arrayutils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
+import {Menucaption} from './menucaption';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -20,6 +21,11 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
    * Default: true
    */
   autoHideWhenNoActiveSettings?: boolean;
+
+  /**
+   * The Menu caption component whose visibility the button should toggle.
+   */
+  menuCaption?: Menucaption;
 }
 
 /**
@@ -40,6 +46,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       cssClass: 'ui-settingstogglebutton',
       text: i18n.getLocalizer('settings'),
       settingsPanel: null,
+      menuCaption: null,
       autoHideWhenNoActiveSettings: true,
       role: 'pop-up button',
     }, <SettingsToggleButtonConfig>this.config);
@@ -61,6 +68,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
 
     let config = this.getConfig();
     let settingsPanel = config.settingsPanel;
+    let menuCaption = config.menuCaption;
 
     this.onClick.subscribe(() => {
       // only hide other `SettingsPanel`s if a new one will be opened
@@ -75,10 +83,12 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     settingsPanel.onShow.subscribe(() => {
       // Set toggle status to on when the settings panel shows
       this.on();
+      if (menuCaption) menuCaption.show();
     });
     settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides
       this.off();
+      if (menuCaption) menuCaption.hide();
     });
 
     // Ensure that only one `SettingPanel` is visible at once

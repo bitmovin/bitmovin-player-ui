@@ -47,6 +47,7 @@ import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './main';
+import {Menucaption} from './components/menucaption';
 
 export namespace UIFactory {
 
@@ -415,11 +416,13 @@ export namespace UIFactory {
   }
 
   export function modernTvUI() {
+    const subtitleMenuCaption = new Menucaption({text: i18n.getLocalizer('settings.subtitles')});
+    const audioMenuCaption = new Menucaption({text: i18n.getLocalizer('settings.audio.track')});
     const subtitleListPanel = new SettingsPanel({
       components: [
         new SettingsPanelPage({
           components: [
-            new SettingsPanelItem(null, new SubtitleListBox()),
+            new SubtitleListBox(),
           ],
         }),
       ],
@@ -430,7 +433,7 @@ export namespace UIFactory {
       components: [
         new SettingsPanelPage({
           components: [
-            new SettingsPanelItem(null, new AudioTrackListBox()),
+            new AudioTrackListBox(),
           ],
         }),
       ],
@@ -458,16 +461,25 @@ export namespace UIFactory {
           components: [
             new Container({
               components: [
+                subtitleMenuCaption,
+                audioMenuCaption,
+              ],
+              cssClasses: ['ui-menucaption'],
+            }),
+            new Container({
+              components: [
                 new MetadataLabel({ content: MetadataLabelContent.Title }),
-                new SettingsToggleButton({
+                 new SettingsToggleButton({
                   settingsPanel: subtitleListPanel,
-                  autoHideWhenNoActiveSettings: true,
+                  menuCaption : subtitleMenuCaption,
+                  autoHideWhenNoActiveSettings: false,
                   cssClass: 'ui-subtitlesettingstogglebutton',
                   text: i18n.getLocalizer('settings.subtitles'),
                 }),
                 new SettingsToggleButton({
                   settingsPanel: audioTrackListPanel,
-                  autoHideWhenNoActiveSettings: true,
+                  menuCaption : audioMenuCaption,
+                  autoHideWhenNoActiveSettings: false,
                   cssClass: 'ui-audiotracksettingstogglebutton',
                   ariaLabel: i18n.getLocalizer('settings.audio.track'),
                   text: i18n.getLocalizer('settings.audio.track'),
