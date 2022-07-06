@@ -32,7 +32,7 @@ export interface SeekRemoteConfiguration extends ComponentConfig {
     /**
      * prevents keydown events from firing too rapidly
      */
-    millisBetweenHoldEvents?: number;
+    millisecondsBetweenHoldEvents?: number;
 
     /**
      * Can be used to prevent automatically seeking and instead require a provided key to be pressed to finish the seek
@@ -89,7 +89,7 @@ export class SeekRemoteConfig extends Component<SeekRemoteConfiguration> {
                 config: SeekRemoteConfiguration = {
                 backButton: 'ArrowLeft',
                 forwardButton: 'ArrowRight',
-                millisBetweenHoldEvents: 125,
+                millisecondsBetweenHoldEvents: 125,
                 restrictSeekToKey: undefined,
                 seekDistance: {seekDistances: [10, 20, 30, 40, 50], millisBetweenTiers: 3000},
     }) {

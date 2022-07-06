@@ -447,7 +447,7 @@ export namespace UIFactory {
             new Container({
               components: [
                 new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-                new SeekBar({ label: new SeekBarLabel() }),
+                new SeekBar({ label: new SeekBarLabel(), seekRemoteConfig: {backButton: 'ArrowLeft', forwardButton: 'ArrowRight', millisecondsBetweenHoldEvents: 125, restrictSeekToKey: 'Enter', seekDistance: {seekDistances: [10, 20, 30, 40, 50], millisBetweenTiers: 3000}} }),
                 new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
               ],
               cssClasses: ['controlbar-top'],
