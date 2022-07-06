@@ -1,0 +1,80 @@
+@import 'variables';
+@import 'mixins';
+
+.#{$prefix}-ui-skin-tv {
+  $overscan-margin: 10%;
+  $large-size: 4vh;
+  $medium-large-size: 3.5vh;
+  $medium-size: 3vh;
+
+  font-size: $medium-size;
+
+  .#{$prefix}-ui-titlebar {
+    > .#{$prefix}-container-wrapper {
+      margin: $overscan-margin $overscan-margin $medium-size;
+      width: 100% - 2 * $overscan-margin;
+    }
+  }
+
+  .#{$prefix}-ui-titlebar-top {
+    margin-bottom: $medium-size;
+
+    > .#{$prefix}-container-wrapper {
+      width: 100%;
+      font-size: $large-size;
+      
+      display: inline-flex;
+      // Start from the right side
+      justify-content: flex-end;
+      align-items: center;
+
+      .#{$prefix}-label-metadata-title {
+        // Moves rest of the items starting with this one to the very left
+        // margin auto will fill up the rest of the space in between.
+        margin-right: auto;
+      }
+    }
+  }
+
+  .#{$prefix}-ui-titlebar-bottom {
+    > .#{$prefix}-container-wrapper {
+      width: 100%;
+      font-size: $large-size;
+
+      position: relative;
+      display: inline-flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .#{$prefix}-label-metadata-description {
+      font-size: $medium-size;
+      width: 100%;
+    }
+
+    // Position the settings panel top right below the settings icons
+    .#{$prefix}-ui-settings-panel {
+      font-size: $medium-large-size;
+      top: 0;
+      right: 0;
+    }
+  }
+
+  // Increase icon sizes and texts in the controlbar such as current time
+  .#{$prefix}-ui-subtitlesettingstogglebutton,
+  .#{$prefix}-ui-audiotracksettingstogglebutton,
+  .#{$prefix}-ui-controlbar,
+  .#{$prefix}-label-metadata-title,
+  .#{$prefix}-ui-playbacktimelabel {
+    font-size: $large-size;
+  }
+
+  // Increase margin area around the UI but spread the dark shadow still 
+  // to the edge of the video by applying it to only the container-wrapper
+  .#{$prefix}-ui-controlbar {
+    > .#{$prefix}-container-wrapper {
+      margin: $overscan-margin;
+      width: 100% - 2 * $overscan-margin;
+    } 
+  }
+}
