@@ -15,6 +15,7 @@ import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
 import { TimelineMarkersHandler } from './timelinemarkershandler';
 import { getMinBufferLevel } from './seekbarbufferlevel';
+import {SeekRemoteConfig, SeekRemoteConfiguration, TieredSeekingConfig} from './seekRemoteConfig';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -51,6 +52,11 @@ export interface SeekBarConfig extends ComponentConfig {
    * Used to enable/disable seek preview
    */
   enableSeekPreview?: boolean;
+
+  /**
+   * Used for enabling Seeking via remote/keyboard events
+   */
+  seekRemoteConfig?: SeekRemoteConfiguration;
 }
 
 /**
@@ -98,9 +104,9 @@ export class SeekBar extends Component<SeekBarConfig> {
   private label: SeekBarLabel;
 
   private seekBarMarkersContainer: DOM;
-  private timelineMarkersHandler: TimelineMarkersHandler;
+  timelineMarkersHandler: TimelineMarkersHandler;
 
-  private player: PlayerAPI;
+  player: PlayerAPI;
 
   protected seekBarType: SeekBarType;
 
@@ -117,6 +123,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   private pausedTimeshiftUpdater: Timeout;
 
   private isUserSeeking = false;
+  private seekRemoteConfig: SeekRemoteConfig;
 
   private seekBarEvents = {
     /**
@@ -153,6 +160,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     }, this.config);
 
     this.label = this.config.label;
+
+    if (config.seekRemoteConfig) {
+      this.seekRemoteConfig = new SeekRemoteConfig(this, config.seekRemoteConfig);
+    }
   }
 
   initialize(): void {
@@ -960,11 +971,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     return this.label;
   }
 
-  protected onSeekEvent() {
+  onSeekEvent() {
     this.seekBarEvents.onSeek.dispatch(this);
   }
 
-  protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
+  onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
     let snappedMarker = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(percentage);
 
     let seekPositionPercentage = percentage;
@@ -999,7 +1010,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
   }
 
-  protected onSeekedEvent(percentage: number) {
+  onSeekedEvent(percentage: number) {
     this.seekBarEvents.onSeeked.dispatch(this, percentage);
   }
 
