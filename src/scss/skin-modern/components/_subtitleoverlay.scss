@@ -1,13 +1,20 @@
 @import '../variables';
 @import '../mixins';
 
+/*
+   You will see that all the font sizes are the same and are using 'vw' units.
+   This provides a responsive subtitle experience on all devices that makes
+   subtitles easier to track while watching the video. It seems to be what Netflix does and
+   follows this article: https://www.w3schools.com/howto/howto_css_responsive_text.asp
+ */
+
 .#{$prefix}-ui-subtitle-overlay {
   @extend %ui-container;
 
   @include hidden;
 
-  bottom: 0;
-  font-size: 1rem;
+  bottom: 2vh;
+  font-size: 2.5vw;
   left: 0;
   pointer-events: none;
   position: absolute;
@@ -17,13 +24,16 @@
   transition: bottom $animation-duration-short ease-out;
 
   @media (min-width: 640px) {
-    font-size: 1.15rem;
+    //font-size: 1.15rem;
+    font-size: 2.5vw;
   }
   @media (min-width: 768px) {
-    font-size: 1.3rem;
+    //font-size: 1.3rem;
+    font-size: 2.5vw;
   }
   @media (min-width: 1024px) {
-    font-size: 1.5rem;
+    //font-size: 1.5rem;
+    font-size: 2.5vw;
   }
 
   * {
@@ -43,14 +53,14 @@
     position: absolute;
 
     &.#{$prefix}-subtitle-position-default {
-      bottom: 2em;
+      bottom: 8vh;
       left: 3em;
       right: 3em;
       top: initial;
     }
 
     &.#{$prefix}-subtitle-position-bottom > div {
-      bottom: 0;
+      bottom: 8vh;
       position: absolute;
       width: 100%;
     }
@@ -74,7 +84,7 @@
 
   // Move the subtitle up above the controlbar when it appears to avoid them overlapping
   &.#{$prefix}-controlbar-visible {
-    bottom: 5em;
+    bottom: 8vh;
     transition: bottom $animation-duration-short ease-in;
   }
 }
