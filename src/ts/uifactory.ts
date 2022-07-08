@@ -47,7 +47,7 @@ import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './main';
-import {Menucaption} from './components/menucaption';
+import { Menucaption } from './components/menucaption';
 
 export namespace UIFactory {
 
