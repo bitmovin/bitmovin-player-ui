@@ -469,7 +469,7 @@ export namespace UIFactory {
             new Container({
               components: [
                 new MetadataLabel({ content: MetadataLabelContent.Title }),
-                 new SettingsToggleButton({
+                new SettingsToggleButton({
                   settingsPanel: subtitleListPanel,
                   menuCaption : subtitleMenuCaption,
                   autoHideWhenNoActiveSettings: true,
