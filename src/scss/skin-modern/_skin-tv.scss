@@ -16,7 +16,7 @@
     }
   }
 
-  .#{$prefix}-ui-titlebar-top {
+  .#{$prefix}-ui-titlebar-top,.#{$prefix}-ui-menucaption {
     margin-bottom: $medium-size;
 
     > .#{$prefix}-container-wrapper {

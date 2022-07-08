@@ -47,6 +47,7 @@ import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './main';
+import { Menucaption } from './components/menucaption';
 
 export namespace UIFactory {
 
@@ -415,6 +416,8 @@ export namespace UIFactory {
   }
 
   export function modernTvUI() {
+    const subtitleMenuCaption = new Menucaption({text: i18n.getLocalizer('settings.subtitles')});
+    const audioMenuCaption = new Menucaption({text: i18n.getLocalizer('settings.audio.track')});
     const subtitleListPanel = new SettingsPanel({
       components: [
         new SettingsPanelPage({
@@ -458,15 +461,24 @@ export namespace UIFactory {
           components: [
             new Container({
               components: [
+                subtitleMenuCaption,
+                audioMenuCaption,
+              ],
+              cssClasses: ['ui-menucaption'],
+            }),
+            new Container({
+              components: [
                 new MetadataLabel({ content: MetadataLabelContent.Title }),
                 new SettingsToggleButton({
                   settingsPanel: subtitleListPanel,
+                  menuCaption : subtitleMenuCaption,
                   autoHideWhenNoActiveSettings: true,
                   cssClass: 'ui-subtitlesettingstogglebutton',
                   text: i18n.getLocalizer('settings.subtitles'),
                 }),
                 new SettingsToggleButton({
                   settingsPanel: audioTrackListPanel,
+                  menuCaption : audioMenuCaption,
                   autoHideWhenNoActiveSettings: true,
                   cssClass: 'ui-audiotracksettingstogglebutton',
                   ariaLabel: i18n.getLocalizer('settings.audio.track'),
