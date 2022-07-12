@@ -4,7 +4,7 @@
 .#{$prefix}-ui-skin-tv {
   $overscan-margin: 10%;
   $large-size: 4vh;
-  $medium-large-size: 3.5vh;
+  $medium-large-size: 3vh;
   $medium-size: 3vh;
 
   font-size: $medium-size;
@@ -70,9 +70,12 @@
   .#{$prefix}-ui-subtitlesettingstogglebutton,
   .#{$prefix}-ui-audiotracksettingstogglebutton,
   .#{$prefix}-ui-controlbar,
-  .#{$prefix}-label-metadata-title,
-  .#{$prefix}-ui-playbacktimelabel {
+  .#{$prefix}-label-metadata-title {
     font-size: $large-size;
+  }
+
+  .#{$prefix}-ui-playbacktimelabel {
+    font-size: $medium-large-size;
   }
 
   // Increase margin area around the UI but spread the dark shadow still 
