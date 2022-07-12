@@ -83,8 +83,8 @@
   // to the edge of the video by applying it to only the container-wrapper
   .#{$prefix}-ui-controlbar {
     > .#{$prefix}-container-wrapper {
-      margin: $overscan-margin;
-      width: 100% - 2 * $overscan-margin;
+      margin: $overscan-margin 0;
+      width: 99%;
     } 
   }
 }
