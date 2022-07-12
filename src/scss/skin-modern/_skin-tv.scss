@@ -36,6 +36,12 @@
     }
   }
 
+  .#{$prefix}-ui-hugeplaybacktogglebutton {
+    > .#{$prefix}-image {
+      background-size: 20vh;
+    }
+  }
+
   .#{$prefix}-ui-titlebar-bottom {
     > .#{$prefix}-container-wrapper {
       width: 100%;
