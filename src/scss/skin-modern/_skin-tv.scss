@@ -22,7 +22,7 @@
     > .#{$prefix}-container-wrapper {
       width: 100%;
       font-size: $large-size;
-      
+
       display: inline-flex;
       // Start from the right side
       justify-content: flex-end;
@@ -32,6 +32,7 @@
         // Moves rest of the items starting with this one to the very left
         // margin auto will fill up the rest of the space in between.
         margin-right: auto;
+        font-size: $large-size;
       }
     }
   }
@@ -69,10 +70,12 @@
 
   // Increase icon sizes and texts in the controlbar such as current time
   .#{$prefix}-ui-subtitlesettingstogglebutton,
-  .#{$prefix}-ui-audiotracksettingstogglebutton,
-  .#{$prefix}-ui-controlbar,
-  .#{$prefix}-label-metadata-title {
-    font-size: $large-size;
+  .#{$prefix}-ui-audiotracksettingstogglebutton {
+    font-size: 5vh;
+  }
+
+  .#{$prefix}-ui-controlbar {
+    font-size: $medium-large-size;
   }
 
   .#{$prefix}-ui-playbacktimelabel {
