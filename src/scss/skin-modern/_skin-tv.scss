@@ -2,10 +2,10 @@
 @import 'mixins';
 
 .#{$prefix}-ui-skin-tv {
-  $overscan-margin: 10%;
-  $large-size: 4vh;
-  $medium-large-size: 3.5vh;
-  $medium-size: 3vh;
+  $overscan-margin: 2%;
+  $large-size: 3.5vh;
+  $medium-large-size: 3vh;
+  $medium-size: 2vh;
 
   font-size: $medium-size;
 
@@ -17,12 +17,12 @@
   }
 
   .#{$prefix}-ui-titlebar-top {
-    margin-bottom: $medium-size;
+    margin-bottom: 1vh;
 
     > .#{$prefix}-container-wrapper {
       width: 100%;
       font-size: $large-size;
-      
+
       display: inline-flex;
       // Start from the right side
       justify-content: flex-end;
@@ -32,7 +32,14 @@
         // Moves rest of the items starting with this one to the very left
         // margin auto will fill up the rest of the space in between.
         margin-right: auto;
+        font-size: $large-size;
       }
+    }
+  }
+
+  .#{$prefix}-ui-hugeplaybacktogglebutton {
+    > .#{$prefix}-image {
+      background-size: 20vh;
     }
   }
 
@@ -49,7 +56,8 @@
 
     .#{$prefix}-label-metadata-description {
       font-size: $medium-size;
-      width: 100%;
+      width: 66%;
+      line-height: 2em;
     }
 
     // Position the settings panel top right below the settings icons
@@ -62,19 +70,24 @@
 
   // Increase icon sizes and texts in the controlbar such as current time
   .#{$prefix}-ui-subtitlesettingstogglebutton,
-  .#{$prefix}-ui-audiotracksettingstogglebutton,
-  .#{$prefix}-ui-controlbar,
-  .#{$prefix}-label-metadata-title,
+  .#{$prefix}-ui-audiotracksettingstogglebutton {
+    font-size: 5vh;
+  }
+
+  .#{$prefix}-ui-controlbar {
+    font-size: $medium-large-size;
+  }
+
   .#{$prefix}-ui-playbacktimelabel {
-    font-size: $large-size;
+    font-size: 2.5vh;
   }
 
   // Increase margin area around the UI but spread the dark shadow still 
   // to the edge of the video by applying it to only the container-wrapper
   .#{$prefix}-ui-controlbar {
     > .#{$prefix}-container-wrapper {
-      margin: $overscan-margin;
-      width: 100% - 2 * $overscan-margin;
+      margin: $overscan-margin 0;
+      width: 99%;
     } 
   }
 }
