@@ -124,7 +124,6 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private isUserSeeking = false;
   private seekRemoteConfig: SeekRemoteConfig;
-
   private seekBarEvents = {
     /**
      * Fired when a scrubbing seek operation is started.

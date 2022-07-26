@@ -200,6 +200,7 @@ export class SeekRemoteConfig extends Component<SeekRemoteConfiguration> {
 
             this.seekBar.setSeekPosition(0);
             this.seekPos = undefined;
+            this.position = undefined;
 
             if (this.seekBar.hasLabel()) {
                 this.seekBar.getLabel().hide();
