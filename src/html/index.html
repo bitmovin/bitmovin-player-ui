@@ -265,7 +265,8 @@
     });
 
     // Add UI
-    uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
+    // uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
+    uiManager = bitmovin.playerui.UIFactory.buildModernTvUI(player, uiConfig);
 
     player.load(sources.fullyFeatured).then(function() {
       console.log('source successfully loaded');

@@ -97,15 +97,29 @@ export class SeekRemoteConfig extends Component<SeekRemoteConfiguration> {
         this.seekRemoteConfig = config;
         this.seekBar = seekBar;
         this.seekDistance = (typeof this.seekRemoteConfig.seekDistance === 'number') ? this.seekRemoteConfig.seekDistance as number : new TieredSeek(this.seekRemoteConfig.seekDistance as TieredSeekingConfig);
-        if (!this.hasStartedListeners) {
-            this.hasStartedListeners = true;
-            this.startListeners();
-        }
+
+
+        seekBar.uimgr.onPreviewControlsHide.subscribe((uiContainer, args) => {
+            if (this.lastMove > 0) args.cancel = true;
+        });
+
+        seekBar.uimgr.onControlsShow.subscribe((uiContainer, args) => {
+            if (!this.hasStartedListeners) {
+                this.startListeners();
+                this.hasStartedListeners = true;
+            }
+        });
+
+        seekBar.uimgr.onControlsHide.subscribe((uiContainer, args) => {
+            this.removeListeners();
+            this.hasStartedListeners = false;
+        });
     }
 
     protected startListeners = () => {
         document.addEventListener('keydown', this.keyDownHandler);
     };
+
     protected removeListeners = () => {
         document.removeEventListener('keydown', this.keyDownHandler);
         document.removeEventListener('keyup', this.keyUpHandler);
@@ -160,6 +174,17 @@ export class SeekRemoteConfig extends Component<SeekRemoteConfiguration> {
         document.addEventListener('keyup', this.keyUpHandler);
     };
 
+    public cancelDirectionalSeek = () => {
+        this.seekBar.setSeekPosition(0);
+        this.seekPos = undefined;
+        this.position = undefined;
+        if (this.seekBar.hasLabel()) {
+            this.seekBar.getLabel().hide();
+        }
+        this.seekBar.setSeeking(false);
+        this.lastMove = 0;
+    }
+
     protected keyUpHandler = (e: KeyboardEvent) => {
         this.removeListeners();
         this.seekHoldStart = undefined;
@@ -181,6 +206,7 @@ export class SeekRemoteConfig extends Component<SeekRemoteConfiguration> {
                 this.seekBar.setSeekPosition(percent);
                 this.seekBar.setPlaybackPosition(percent);
                 this.seekBar.onSeekPreviewEvent(percent, false);
+                this.lastMove = 0;
 
                 this.seekBar.setSeeking(false);
                 this.seeking = false;
@@ -198,13 +224,7 @@ export class SeekRemoteConfig extends Component<SeekRemoteConfiguration> {
         } else { // Different key/button pressed so cancelling all seeking intentions
             e.preventDefault();
 
-            this.seekBar.setSeekPosition(0);
-            this.seekPos = undefined;
-            this.position = undefined;
-
-            if (this.seekBar.hasLabel()) {
-                this.seekBar.getLabel().hide();
-            }
+            this.cancelDirectionalSeek();
         }
         this.startListeners();
     };

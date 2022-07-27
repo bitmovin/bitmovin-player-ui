@@ -124,6 +124,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private isUserSeeking = false;
   private seekRemoteConfig: SeekRemoteConfig;
+  public uimgr: UIInstanceManager;
   private seekBarEvents = {
     /**
      * Fired when a scrubbing seek operation is started.
@@ -160,9 +161,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     this.label = this.config.label;
 
-    if (config.seekRemoteConfig) {
-      this.seekRemoteConfig = new SeekRemoteConfig(this, config.seekRemoteConfig);
-    }
+
   }
 
   initialize(): void {
@@ -213,6 +212,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
+    this.uimgr = uimanager;
+    this.seekRemoteConfig = new SeekRemoteConfig(this, this.config.seekRemoteConfig);
 
     this.player = player;
 
@@ -240,6 +241,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     uimanager.onControlsHide.subscribe(() => {
+      if (this.seekRemoteConfig) this.seekRemoteConfig.cancelDirectionalSeek();
       this.isUiShown = false;
     });
 
