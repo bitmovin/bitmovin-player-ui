@@ -135,9 +135,10 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     };
 
     let playbackReadyHandler = () => {
-    // Set time format depending on source duration
-    this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
+      // Set time format depending on source duration
+      this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
       StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
+      playbackTimeHandler();
     }
 
     player.on(player.exports.PlayerEvent.TimeChanged, playbackTimeHandler);
