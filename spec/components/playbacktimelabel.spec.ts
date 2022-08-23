@@ -62,10 +62,13 @@ describe('PlaybackTimeLabel', () => {
       jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(30);
 
       playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      playerMock.eventEmitter.fireEvent<PlayerEventBase>(
+        {type: PlayerEvent.Ready, timestamp: Date.now()}
+      );
       expect(playbackTimeLabel.getText()).toEqual('01:10');
     });
 
-    it.only('displays the total time mm:ss', () => {
+    it('displays the total time mm:ss', () => {
       jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
       playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime });
 
@@ -81,7 +84,7 @@ describe('PlaybackTimeLabel', () => {
       expect(playbackTimeLabel.getText()).toEqual('01:40');
     });
 
-    it.only('displays the total time hh:mm:ss', () => {
+    it('displays the total time hh:mm:ss', () => {
       jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
       playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime });
 
