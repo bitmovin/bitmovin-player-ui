@@ -139,7 +139,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
       StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
       playbackTimeHandler();
-    }
+    };
 
     player.on(player.exports.PlayerEvent.TimeChanged, playbackTimeHandler);
     player.on(player.exports.PlayerEvent.Ready, playbackReadyHandler);
