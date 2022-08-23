@@ -1,6 +1,7 @@
 import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
 import { UIInstanceManager } from '../../src/ts/uimanager';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from '../../src/ts/components/playbacktimelabel';
+import { PlayerEvent, PlayerEventBase} from 'bitmovin-player';
 
 const liveEdgeActiveCssClassName = 'ui-playbacktimelabel-live-edge';
 
@@ -64,7 +65,8 @@ describe('PlaybackTimeLabel', () => {
       expect(playbackTimeLabel.getText()).toEqual('01:10');
     });
 
-    it('displays the total time', () => {
+    it.only('displays the total time mm:ss', () => {
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
       playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime });
 
       // Setup DOM Mock
@@ -73,7 +75,29 @@ describe('PlaybackTimeLabel', () => {
 
       jest.spyOn(playerMock, 'getDuration').mockReturnValue(100);
       playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      playerMock.eventEmitter.fireEvent<PlayerEventBase>(
+        {type: PlayerEvent.Ready, timestamp: Date.now()}
+      );
       expect(playbackTimeLabel.getText()).toEqual('01:40');
+    });
+
+    it.only('displays the total time hh:mm:ss', () => {
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+      playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime });
+
+      // Setup DOM Mock
+      const mockDomElement = MockHelper.generateDOMMock();
+      jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(0);
+      expect(playbackTimeLabel.getText()).toEqual(undefined);
+
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(3600);
+      playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      playerMock.eventEmitter.fireEvent<PlayerEventBase>(
+        {type: PlayerEvent.Ready, timestamp: Date.now()}
+      );
+      expect(playbackTimeLabel.getText()).toEqual('01:00:00');
     });
   });
 
