@@ -27,10 +27,11 @@ export namespace StringUtils {
     let minutes = Math.floor(totalSeconds / 60) - hours * 60;
     let seconds = Math.floor(totalSeconds) % 60;
 
-    return (isNegative ? '-' : '') + format
-        .replace('hh', leftPadWithZeros(hours, 2))
-        .replace('mm', leftPadWithZeros(minutes, 2))
-        .replace('ss', leftPadWithZeros(seconds, 2));
+    let time = [minutes, seconds];
+    if (hours != 0) time.splice(0,0,hours);
+
+    return (isNegative ? '-' : '') + 
+      time.map(val=>leftPadWithZeros(val,2)).join(':');
   }
 
   export function secondsToText(totalSeconds: number): string {
