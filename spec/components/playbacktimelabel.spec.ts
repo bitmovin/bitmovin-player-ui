@@ -68,7 +68,7 @@ describe('PlaybackTimeLabel', () => {
       expect(playbackTimeLabel.getText()).toEqual('01:10');
     });
 
-    it('displays the total time mm:ss', () => {
+    it('displays the total time mm:ss if duration is lower than 1 hour', () => {
       jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
       playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime });
 
