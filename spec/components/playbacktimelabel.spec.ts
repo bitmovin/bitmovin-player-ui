@@ -76,7 +76,6 @@ describe('PlaybackTimeLabel', () => {
 
       jest.spyOn(playerMock, 'getDuration').mockReturnValue(100);
       playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
-      playerMock.eventEmitter.fireReadyEvent();
       expect(playbackTimeLabel.getText()).toEqual('01:40');
     });
 
