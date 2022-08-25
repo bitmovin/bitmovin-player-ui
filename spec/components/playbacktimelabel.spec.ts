@@ -62,9 +62,7 @@ describe('PlaybackTimeLabel', () => {
       jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(30);
 
       playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
-      playerMock.eventEmitter.fireEvent<PlayerEventBase>(
-        {type: PlayerEvent.Ready, timestamp: Date.now()}
-      );
+      playerMock.eventEmitter.fireReadyEvent();
       expect(playbackTimeLabel.getText()).toEqual('01:10');
     });
 
@@ -78,9 +76,7 @@ describe('PlaybackTimeLabel', () => {
 
       jest.spyOn(playerMock, 'getDuration').mockReturnValue(100);
       playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
-      playerMock.eventEmitter.fireEvent<PlayerEventBase>(
-        {type: PlayerEvent.Ready, timestamp: Date.now()}
-      );
+      playerMock.eventEmitter.fireReadyEvent();
       expect(playbackTimeLabel.getText()).toEqual('01:40');
     });
 
@@ -97,9 +93,7 @@ describe('PlaybackTimeLabel', () => {
 
       jest.spyOn(playerMock, 'getDuration').mockReturnValue(3600);
       playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
-      playerMock.eventEmitter.fireEvent<PlayerEventBase>(
-        {type: PlayerEvent.Ready, timestamp: Date.now()}
-      );
+      playerMock.eventEmitter.fireReadyEvent();
       expect(playbackTimeLabel.getText()).toEqual('01:00:00');
     });
   });
