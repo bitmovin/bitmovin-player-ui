@@ -134,7 +134,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    let playbackReadyHandler = () => {
+    let updateTimeFormatBasedOnDuration = () => {
       // Set time format depending on source duration
       this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
       StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
@@ -142,7 +142,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     };
 
     player.on(player.exports.PlayerEvent.TimeChanged, playbackTimeHandler);
-    player.on(player.exports.PlayerEvent.Ready, playbackReadyHandler);
+    player.on(player.exports.PlayerEvent.Ready, updateTimeFormatBasedOnDuration);
     player.on(player.exports.PlayerEvent.Seeked, playbackTimeHandler);
 
     player.on(player.exports.PlayerEvent.TimeShift, updateLiveTimeshiftState);
@@ -160,6 +160,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         'min-width': null,
       });
 
+      updateTimeFormatBasedOnDuration();
     };
     uimanager.getConfig().events.onUpdated.subscribe(init);
 
