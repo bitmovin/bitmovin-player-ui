@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [development]
+
+### Fixed
+- Duration format not getting updated from `mm:ss` to `hh:mm:ss`
+
 ## [3.37.0] - 2022-04-12
 
 ### Fixed
