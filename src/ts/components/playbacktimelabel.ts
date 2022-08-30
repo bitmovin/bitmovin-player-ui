@@ -118,7 +118,9 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
     let playbackTimeHandler = () => {
       if (!live && player.getDuration() !== Infinity) {
-        this.setTime(PlayerUtils.getCurrentTimeRelativeToSeekableRange(player), player.getDuration());
+        this.setTime(
+          PlayerUtils.getCurrentTimeRelativeToSeekableRange(player),
+          player.getDuration());
       }
 
       // To avoid 'jumping' in the UI by varying label sizes due to non-monospaced fonts,
@@ -132,7 +134,15 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
+    let updateTimeFormatBasedOnDuration = () => {
+      // Set time format depending on source duration
+      this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
+      StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
+      playbackTimeHandler();
+    };
+
     player.on(player.exports.PlayerEvent.TimeChanged, playbackTimeHandler);
+    player.on(player.exports.PlayerEvent.Ready, updateTimeFormatBasedOnDuration);
     player.on(player.exports.PlayerEvent.Seeked, playbackTimeHandler);
 
     player.on(player.exports.PlayerEvent.TimeShift, updateLiveTimeshiftState);
@@ -150,12 +160,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         'min-width': null,
       });
 
-      // Set time format depending on source duration
-      this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
-        StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
-
-      // Update time after the format has been set
-      playbackTimeHandler();
+      updateTimeFormatBasedOnDuration();
     };
     uimanager.getConfig().events.onUpdated.subscribe(init);
 

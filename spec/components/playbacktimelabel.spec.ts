@@ -1,6 +1,7 @@
 import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
 import { UIInstanceManager } from '../../src/ts/uimanager';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from '../../src/ts/components/playbacktimelabel';
+import { PlayerEvent, PlayerEventBase } from 'bitmovin-player';
 
 const liveEdgeActiveCssClassName = 'ui-playbacktimelabel-live-edge';
 
@@ -64,7 +65,8 @@ describe('PlaybackTimeLabel', () => {
       expect(playbackTimeLabel.getText()).toEqual('01:10');
     });
 
-    it('displays the total time', () => {
+    it('displays the total time mm:ss if duration is lower than 1 hour', () => {
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
       playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime });
 
       // Setup DOM Mock
@@ -74,6 +76,36 @@ describe('PlaybackTimeLabel', () => {
       jest.spyOn(playerMock, 'getDuration').mockReturnValue(100);
       playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
       expect(playbackTimeLabel.getText()).toEqual('01:40');
+    });
+
+    it('displays the total time hh:mm:ss if duration is greater than 1 hour', () => {
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+      playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime });
+
+      // Setup DOM Mock
+      const mockDomElement = MockHelper.generateDOMMock();
+      jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(3600);
+      playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      expect(playbackTimeLabel.getText()).toEqual('01:00:00');
+    });
+
+    it('updates time format on ready event', () => {
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+      playbackTimeLabel = new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime });
+
+      // Setup DOM Mock
+      const mockDomElement = MockHelper.generateDOMMock();
+      jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(0);
+      playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      expect(playbackTimeLabel.getText()).toEqual('00:00');
+
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(3600);
+      playerMock.eventEmitter.fireReadyEvent();
+      expect(playbackTimeLabel.getText()).toEqual('01:00:00');
     });
   });
 

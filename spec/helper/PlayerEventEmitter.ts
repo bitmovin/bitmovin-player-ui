@@ -276,6 +276,13 @@ export class PlayerEventEmitter {
     });
   }
 
+  fireReadyEvent(): void {
+    this.fireEvent<PlayerEventBase>({
+      type: PlayerEvent.Ready,
+      timestamp: Date.now()
+    });
+  }
+
   // Subtitle Events
   fireSubtitleAddedEvent(id: string, label: string): void {
     this.fireEvent<SubtitleEvent>({
