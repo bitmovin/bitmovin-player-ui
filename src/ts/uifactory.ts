@@ -48,6 +48,8 @@ import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import {MomentLabel} from './components/momentlabel';
+import {SubtitleListBox} from './components/subtitlelistbox';
+import {AudioTrackListBox} from './components/audiotracklistbox';
 
 export namespace UIFactory {
 
@@ -426,10 +428,32 @@ function angelUI() {
     components: [
       new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
       new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
       new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('settings.subtitles'), new SubtitleSelectBox()),
     ],
+  });
+
+  let subtitleListBox = new SubtitleListBox();
+  let subtitleSettingsPanel = new SettingsPanel({
+    components: [
+      new SettingsPanelPage({
+        components: [
+          new SettingsPanelItem(null, subtitleListBox),
+        ],
+      }),
+    ],
+    hidden: true,
+  });
+
+  let audioTrackListBox = new AudioTrackListBox();
+  let audioTrackSettingsPanel = new SettingsPanel({
+    components: [
+      new SettingsPanelPage({
+        components: [
+          new SettingsPanelItem(null, audioTrackListBox),
+        ],
+      }),
+    ],
+    hidden: true,
   });
 
   const settingsPanel = new SettingsPanel({
@@ -442,6 +466,8 @@ function angelUI() {
   let controlBar = new ControlBar({
     hidden: false,
     components: [
+      audioTrackSettingsPanel,
+      subtitleSettingsPanel,
       settingsPanel,
       new Container({
         components: [
@@ -460,6 +486,14 @@ function angelUI() {
           new PictureInPictureToggleButton(),
           new AirPlayToggleButton(),
           new CastToggleButton(),
+          new SettingsToggleButton({
+            settingsPanel: audioTrackSettingsPanel,
+            cssClass: 'ui-audiotracksettingstogglebutton',
+          }),
+          new SettingsToggleButton({
+            settingsPanel: subtitleSettingsPanel,
+            cssClass: 'ui-subtitlesettingstogglebutton',
+          }),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
           new FullscreenToggleButton(),
         ],
@@ -470,6 +504,7 @@ function angelUI() {
 
   return new UIContainer({
     components: [
+      new SubtitleOverlay(),
       new TitleBar({
         components: [
           new MetadataLabel({ content: MetadataLabelContent.Title }),
@@ -478,7 +513,6 @@ function angelUI() {
       new BufferingOverlay(),
       new PlaybackToggleOverlay(),
       new UpNextOverlay(),
-      new SubtitleOverlay(),
       new CastStatusOverlay(),
       controlBar,
       new ErrorMessageOverlay(),
