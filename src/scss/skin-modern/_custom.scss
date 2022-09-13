@@ -3,4 +3,21 @@ $color-highlight: #ffffff;
 .#{$prefix}-progress-label {
   align-self: center;
   padding: .25em;
+
+  &.#{$prefix}-ui-playbacktimelabel-live {
+    cursor: pointer;
+    text-transform: uppercase;
+
+    &::before {
+      color: $color-secondary;
+      content: '●';
+      padding-right: .2em;
+    }
+
+    &.#{$prefix}-ui-playbacktimelabel-live-edge {
+      &::before {
+        color: $color-red;
+      }
+    }
+  }
 }
