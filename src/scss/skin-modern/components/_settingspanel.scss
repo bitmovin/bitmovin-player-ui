@@ -15,12 +15,20 @@
 
   background-color: $background-color;
   bottom: 5em;
-  max-height: 45vh;
+  max-height: 100px;
   overflow-x: hidden;
   overflow-y: auto;
   padding: 0;
   position: absolute;
   right: 2em;
+
+  @media (min-width: 768px) {
+    max-height: 250px;
+  }
+
+  @media (min-width: 1280px) {
+    max-height: 350px;
+  }
 
   > .#{$prefix}-container-wrapper {
     margin: .5em;
