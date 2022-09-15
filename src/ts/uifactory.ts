@@ -383,6 +383,11 @@ export namespace UIFactory {
           && context.documentWidth < smallScreenSwitchWidth;
       },
     }, {
+      ui: modernTvUI(),
+      condition: (context: UIConditionContext) => {
+        return true;
+      },
+    }, {
       ui: modernUI(),
       condition: (context: UIConditionContext) => {
         return !context.isAd && !context.adRequiresUi;
@@ -409,9 +414,9 @@ export namespace UIFactory {
   }
 
   export function buildModernTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-        return new UIManager(player, [{
-          ui: modernTvUI(),
-        }], config);
+    return new UIManager(player, [{
+      ui: modernTvUI(),
+    }], config);
   }
 
   export function modernTvUI() {
@@ -423,6 +428,7 @@ export namespace UIFactory {
           ],
         }),
       ],
+      hideDelay: -1,
       hidden: true,
     });
 
@@ -434,6 +440,7 @@ export namespace UIFactory {
           ],
         }),
       ],
+      hideDelay: -1,
       hidden: true,
     });
 
@@ -441,13 +448,13 @@ export namespace UIFactory {
       components: [
         new SubtitleOverlay(),
         new BufferingOverlay(),
-        new PlaybackToggleOverlay(),
+        new PlaybackToggleOverlay({ cssClasses: ['spatial-navigation'] }),
         new ControlBar({
           components: [
             new Container({
               components: [
                 new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-                new SeekBar({ label: new SeekBarLabel() }),
+                new SeekBar({ label: new SeekBarLabel(), cssClasses: ['spatial-navigation'] }),
                 new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
               ],
               cssClasses: ['controlbar-top'],
@@ -462,13 +469,13 @@ export namespace UIFactory {
                 new SettingsToggleButton({
                   settingsPanel: subtitleListPanel,
                   autoHideWhenNoActiveSettings: true,
-                  cssClass: 'ui-subtitlesettingstogglebutton',
+                  cssClasses: ['ui-subtitlesettingstogglebutton', 'spatial-navigation'],
                   text: i18n.getLocalizer('settings.subtitles'),
                 }),
                 new SettingsToggleButton({
                   settingsPanel: audioTrackListPanel,
                   autoHideWhenNoActiveSettings: true,
-                  cssClass: 'ui-audiotracksettingstogglebutton',
+                  cssClasses: ['ui-audiotracksettingstogglebutton', 'spatial-navigation'],
                   ariaLabel: i18n.getLocalizer('settings.audio.track'),
                   text: i18n.getLocalizer('settings.audio.track'),
                 }),

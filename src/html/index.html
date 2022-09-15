@@ -99,6 +99,7 @@
 <script src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
 <script src="js/bitmovinplayer-ui.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script src="js/lrud.js"></script>
 <script type="text/javascript">
   var sources = {
     fullyFeatured: {
@@ -266,6 +267,149 @@
 
     // Add UI
     uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
+
+    // ------ Navigation using lrud
+
+    function addFocusStyle(e) {
+      console.warn(e);
+      document.getElementById(e.id).style.outline = '2px solid red';
+    }
+    function removeFocusStyle(e) {
+      document.getElementById(e.id).style.outline = '';
+    }
+
+    let isFirstSubtitleFocus = false;
+    let isFirstAudioFocus = false;
+    let isSubtitleButtonFocus = false;
+
+    const navigation = new Lrud();
+    // Main UI container
+    navigation
+      .register('bmpui-id-167', { orientation: 'vertical' })
+    
+    navigation
+      // Top title bar, make it focusable but don't apply any css, maybe we should make the first child focused
+      .register('bmpui-id-156', { orientation: 'horizontal', parent: 'bmpui-id-167', isFocusable: true })
+
+    navigation
+      // Subtitle track panel
+      .register('bmpui-id-154', {
+        orientation: 'vertical',
+        parent: 'bmpui-id-156',
+        isFocusable: true,
+        // Do not dig down to the focusable child
+        isStopPropagate: true,
+        onFocus: addFocusStyle,
+        onSelect: (e) => {
+          console.warn(e);
+          document.getElementById(e.id).click();
+          isSubtitleButtonFocus = true;
+        },
+        // onInactive: removeFocusStyle,
+        onLeave: (e) => {
+          isSubtitleButtonFocus = false;
+          removeFocusStyle(e)
+        },
+      })
+      // Subtitle page
+      .register('bmpui-id-259', {
+        parent: 'bmpui-id-154',
+        isFocusable: true,
+        onFocus: (e) => {
+          isFirstSubtitleFocus = true;
+          addFocusStyle(e);
+        },
+        onLeave: (e) => {
+          console.error('leave', e);
+          isFirstSubtitleFocus = false;
+          removeFocusStyle(e)
+        },
+      })
+      .register('bmpui-id-260', {
+        parent: 'bmpui-id-154',
+        isFocusable: true,
+        onFocus: addFocusStyle,
+        onLeave: removeFocusStyle,
+      })
+      .register('bmpui-id-261', {
+        parent: 'bmpui-id-154',
+        isFocusable: true,
+        onFocus: addFocusStyle,
+        onLeave: removeFocusStyle,
+      })
+      .register('bmpui-id-262', {
+        parent: 'bmpui-id-154',
+        isFocusable: true,
+        onFocus: addFocusStyle,
+        onLeave: removeFocusStyle,
+      })
+      .register('bmpui-id-263', {
+        parent: 'bmpui-id-154',
+        isFocusable: true,
+        onFocus: addFocusStyle,
+        onLeave: removeFocusStyle,
+      })
+
+    navigation
+      // Audio track panel
+      .register('bmpui-id-155' ,{
+        parent: 'bmpui-id-156',
+        isFocusable: true,
+        isStopPropagate: true,
+        onFocus: addFocusStyle,
+        onSelect: (e) => {
+          document.getElementById(e.id).click();
+        },
+        onLeave: removeFocusStyle
+      })
+      .register('bmpui-id-264', {
+        parent: 'bmpui-id-155',
+        isFocusable: true,
+        onFocus: addFocusStyle,
+        onLeave: removeFocusStyle,
+      })
+      .register('bmpui-id-265', {
+        parent: 'bmpui-id-155',
+        isFocusable: true,
+        onFocus: addFocusStyle,
+        onLeave: removeFocusStyle,
+      })
+      .register('bmpui-id-266', {
+        parent: 'bmpui-id-155',
+        isFocusable: true,
+        onFocus: addFocusStyle,
+        onLeave: removeFocusStyle,
+      })
+
+      navigation
+        // Seek bar
+        .register('bmpui-id-149', {
+          orientation: 'horizontal',
+          parent: 'bmpui-id-167',
+          isFocusable: true,
+          onFocus: addFocusStyle,
+          onLeave: removeFocusStyle
+        })
+
+      navigation.assignFocus('bmpui-id-149')
+
+      // Handle key down event to focus different navigatable elements
+      document.onkeydown = event => {
+        if (isFirstSubtitleFocus && KeyCodes[event.keyCode] === 'up') {
+          isFirstSubtitleFocus = false;
+          navigation.assignFocus('bmpui-id-154');
+          document.getElementById('bmpui-id-259').style.outline = '';
+        }
+        if (isSubtitleButtonFocus && KeyCodes[event.keyCode] === 'down') {
+          isSubtitleButtonFocus = false;
+          document.getElementById('bmpui-id-154').style.outline = '';
+          navigation.assignFocus('bmpui-id-259');
+        }
+        if (KeyCodes[event.keyCode]) {
+          navigation.handleKeyEvent(event)
+          event.preventDefault()
+        }
+    }
 
     player.load(sources.fullyFeatured).then(function() {
       console.log('source successfully loaded');
