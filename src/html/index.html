@@ -267,6 +267,59 @@
     // Add UI
     uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
 
+    // ---- Navigation using our own implementation
+
+    function addFocusStyle(e) {
+      console.warn(e);
+      console.warn('add it boyee', document.getElementById(e.id))
+      document.getElementById(e.id).style.outline = '2px solid red';
+    }
+    function removeFocusStyle(e) {
+      document.getElementById(e.id).style.outline = '';
+    }
+    
+    const spatialNavigation = new bitmovin.playerui.SpatialNavigation();
+    window.spatialNavigation = spatialNavigation;
+    const rootNavigationGroup = new bitmovin.playerui.NavigationGroup();
+
+    spatialNavigation.addNavigationGroup(rootNavigationGroup);
+
+    const seekBarElement = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-149'));
+    const spanElement = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-153'));
+    // const playPauseButton = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-141'));
+    const subtitlesButton = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-154'));
+    const audioButton = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-155'));
+
+    rootNavigationGroup.addNavigationElement(seekBarElement);
+    rootNavigationGroup.addNavigationElement(spanElement);
+    // rootNavigationGroup.addNavigationElement(playPauseButton);
+    rootNavigationGroup.addNavigationElement(subtitlesButton);
+    rootNavigationGroup.addNavigationElement(audioButton);
+
+    rootNavigationGroup.enable();
+
+    rootNavigationGroup.addEventListener('elementfocus', (el) => {
+      console.warn('huh');
+      addFocusStyle(el.element);
+    });
+    rootNavigationGroup.addEventListener('elementblur', (el) => {
+      console.warn('hah');
+
+      removeFocusStyle(el.element);
+    });
+
+    spatialNavigation.focusElement(seekBarElement);
+
+    // rootNavigationGroup.getElements()[0].focus();
+    // const activeElem = rootNavigationGroup.getActiveElement();
+    // spatialNavigation.up();
+    
+
+    // const navigationGroup = new Navi
+
+    // ------------------------------
+
+
     player.load(sources.fullyFeatured).then(function() {
       console.log('source successfully loaded');
     }, function(errorEvent) {
