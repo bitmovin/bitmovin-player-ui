@@ -50,7 +50,7 @@ export class SpatialNavigation {
   constructor() {}
 
   public addNavigationGroup(...navigationGroups: NavigationGroup[]) {
-    navigationGroups.forEach(v => this.navigationGroups.push(v)); 
+    navigationGroups.forEach(v => this.navigationGroups.push(v));
   }
 
   public get activeNavigationGroup() {
@@ -60,10 +60,10 @@ export class SpatialNavigation {
 
   public handleKeyEvent(e: KeyboardEvent) {
     const direction: Directions | Actions = KeyCode[e.keyCode];
-    
-    if (Object.keys(Directions).includes(direction)) {
+
+    if (Object.keys(Directions)(direction)) {
       this.activeNavigationGroup.handleNavigation(direction as Directions);
-    } 
+    }
   }
 
   public focusElement(el: NavigationElement) {
@@ -107,31 +107,31 @@ function getElementInDirection(navigationGroup: NavigationGroup, direction: Dire
 
   const elementsToConsider = navigationGroup.getElements().filter(el => {
     if (el.active) return false;
-    
+
     if (direction === Directions.UP) {
-      return el.getElementSpatialLocation().centerY < activeRect.centerY
+      return el.getElementSpatialLocation().centerY < activeRect.centerY;
     }
     if (direction === Directions.DOWN) {
-      return el.getElementSpatialLocation().centerY > activeRect.centerY
+      return el.getElementSpatialLocation().centerY > activeRect.centerY;
     }
     if (direction === Directions.LEFT) {
-      return el.getElementSpatialLocation().centerX < activeRect.centerX
+      return el.getElementSpatialLocation().centerX < activeRect.centerX;
     }
     if (direction === Directions.RIGHT) {
-      return el.getElementSpatialLocation().centerX > activeRect.centerX
+      return el.getElementSpatialLocation().centerX > activeRect.centerX;
     }
-  })
+  });
 
   return elementsToConsider.reduce<NavigationElement | null>((prev, curr) => {
     if (prev === null) {
-      return curr
+      return curr;
     }
 
     const previousRect = prev.getElementSpatialLocation();
     const currentRect = curr.getElementSpatialLocation();
 
-    const currDist = Math.abs(activeRect.centerX-currentRect.centerX) + Math.abs(activeRect.centerY-currentRect.centerY);
-    const prevDist = Math.abs(activeRect.centerX-previousRect.centerX) + Math.abs(activeRect.centerY-previousRect.centerY);
+    const currDist = Math.abs(activeRect.centerX - currentRect.centerX) + Math.abs(activeRect.centerY - currentRect.centerY);
+    const prevDist = Math.abs(activeRect.centerX - previousRect.centerX) + Math.abs(activeRect.centerY - previousRect.centerY);
 
     if (currDist < prevDist) return curr;
     return prev;
@@ -143,8 +143,8 @@ export class NavigationElement {
   public element: HTMLElement;
   public active = false;
   private listeners: {
-    [key: string]: ((el: NavigationElement) => void)[]
-  } = {}
+    [key: string]: ((el: NavigationElement) => void)[],
+  } = {};
 
   private overrides: {
     [key in Directions]?: (e: NavigationElement, dir?: Directions) => void;
@@ -166,8 +166,8 @@ export class NavigationElement {
     return {
       ...rect,
       centerX,
-      centerY
-    }
+      centerY,
+    };
   }
 
   public override(direction: Directions, handler: (e: NavigationElement, dir?: Directions) => void) {
@@ -193,11 +193,11 @@ export class NavigationElement {
   private getListenersForType(type: string) {
     return (this.listeners[type] || []);
   }
-  
+
   private triggerListener(type: string) {
     this.getListenersForType(type).forEach(handler => handler(this));
   }
-  
+
   public focus() {
     this.active = true;
     this.triggerListener('focus');
@@ -226,28 +226,28 @@ type NavigationGroupEvent = {
   [NavigationGroupEventType.ELEMENT_BLUR]: (element: NavigationElement) => void;
   [NavigationGroupEventType.GROUP_DISABLE]: (element: NavigationGroup) => void;
   [NavigationGroupEventType.GROUP_ENABLE]: (element: NavigationGroup) => void;
-}
+};
 
 export class NavigationGroup {
   private elements: NavigationElement[] = [];
   public disabled = true;
   private listeners: {
-    [key: string]: ((args: any) => void)[]
-  } = {}
+    [key: string]: ((args: any) => void)[];
+  } = {};
 
   public addSelector(selector: string) {
     const elements = document.querySelectorAll(selector);
     elements.forEach(elem => {
       if (elem) {
-        this.elements.push(new NavigationElement(elem as HTMLElement))
+        this.elements.push(new NavigationElement(elem as HTMLElement));
       }
-    })
+    });
   }
 
   public getElements(): NavigationElement[] {
     return this.elements;
   }
-  
+
   public getActiveElement(): NavigationElement | undefined {
     return this.elements.find(el => el.active);
   }
@@ -294,16 +294,16 @@ export class NavigationGroup {
   private dispatch<K extends NavigationGroupEventType>(type: K,  el: Parameters<NavigationGroupEvent[K]>[0]) {
     (this.listeners[type] || []).forEach(listener => {
       listener(el);
-    })
+    });
   }
 
   public disable(): void {
     this.disabled = true;
-    this.dispatch(NavigationGroupEventType.GROUP_DISABLE, this)
+    this.dispatch(NavigationGroupEventType.GROUP_DISABLE, this);
   }
 
   public enable(): void {
     this.disabled = false;
-    this.dispatch(NavigationGroupEventType.GROUP_ENABLE, this)
+    this.dispatch(NavigationGroupEventType.GROUP_ENABLE, this);
   }
 }
