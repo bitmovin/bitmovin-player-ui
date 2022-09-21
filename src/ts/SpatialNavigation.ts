@@ -10,6 +10,34 @@ enum Actions {
   BACK = 'back',
 }
 
+enum NavigationElementEventType {
+  ELEMENT_FOCUS = 'elementfocus',
+  ELEMENT_BLUR = 'elementblur',
+  ELEMENT_ENTER = 'elemententer',
+  ELEMENT_BACK = 'elementback',
+}
+
+type NavigationElementEvent = {
+  [NavigationElementEventType.ELEMENT_FOCUS]: (element: NavigationElement) => void;
+  [NavigationElementEventType.ELEMENT_BLUR]: (element: NavigationElement) => void;
+  [NavigationElementEventType.ELEMENT_ENTER]: (element: NavigationElement) => void;
+  [NavigationElementEventType.ELEMENT_BACK]: (element: NavigationElement) => void;
+};
+
+enum NavigationGroupEventType {
+  ELEMENT_FOCUS = 'elementfocus',
+  ELEMENT_BLUR = 'elementblur',
+  GROUP_DISABLE = 'groupdisable',
+  GROUP_ENABLE = 'groupenable',
+}
+
+type NavigationGroupEvent = {
+  [NavigationGroupEventType.ELEMENT_FOCUS]: (element: NavigationElement) => void;
+  [NavigationGroupEventType.ELEMENT_BLUR]: (element: NavigationElement) => void;
+  [NavigationGroupEventType.GROUP_DISABLE]: (element: NavigationGroup) => void;
+  [NavigationGroupEventType.GROUP_ENABLE]: (element: NavigationGroup) => void;
+};
+
 const KeyCode: {[key: number]: Directions | Actions} = {
   4: Directions.LEFT,
   21: Directions.LEFT,
@@ -54,14 +82,13 @@ export class SpatialNavigation {
   }
 
   public get activeNavigationGroup() {
-    console.warn(this.navigationGroups);
     return this.navigationGroups.find(v => !v.disabled);
   }
 
   public handleKeyEvent(e: KeyboardEvent) {
     const direction: Directions | Actions = KeyCode[e.keyCode];
 
-    if (Object.keys(Directions)(direction)) {
+    if (Object.keys(Directions).includes(direction)) {
       this.activeNavigationGroup.handleNavigation(direction as Directions);
     }
   }
@@ -92,11 +119,11 @@ export class SpatialNavigation {
   }
 
   public back() {
-
+  this.activeNavigationGroup.handleAction(Actions.BACK);
   }
 
   public enter() {
-
+    this.activeNavigationGroup.handleAction(Actions.ENTER);
   }
 }
 
@@ -143,7 +170,7 @@ export class NavigationElement {
   public element: HTMLElement;
   public active = false;
   private listeners: {
-    [key: string]: ((el: NavigationElement) => void)[],
+    [key in NavigationElementEventType]?: (NavigationElementEvent[key])[];
   } = {};
 
   private overrides: {
@@ -178,7 +205,7 @@ export class NavigationElement {
     return this.overrides[direction];
   }
 
-  public addListener(type: string, handler: any) {
+  public addListener<K extends NavigationElementEventType>(type: K, handler: NavigationElementEvent[K]) {
     if (!this.listeners[type]) {
       this.listeners[type] = [];
     }
@@ -186,47 +213,38 @@ export class NavigationElement {
     this.listeners[type].push(handler);
   }
 
-  public removeListener(type: string, handler: any) {
+  public removeListener<K extends NavigationElementEventType>(type: K, handler: NavigationElementEvent[K]) {
     this.listeners[type] = (this.listeners[type] || []).filter(hnd => hnd !== handler);
   }
 
-  private getListenersForType(type: string) {
+  private getListenersForType(type: NavigationElementEventType) {
     return (this.listeners[type] || []);
   }
 
-  private triggerListener(type: string) {
+  private triggerListener(type: NavigationElementEventType) {
     this.getListenersForType(type).forEach(handler => handler(this));
   }
 
   public focus() {
     this.active = true;
-    this.triggerListener('focus');
+    this.triggerListener(NavigationElementEventType.ELEMENT_FOCUS);
   }
 
   public blur() {
     this.active = false;
-    this.triggerListener('blur');
+    this.triggerListener(NavigationElementEventType.ELEMENT_FOCUS);
   }
 
   public enter() {
-    this.triggerListener('enter');
+    this.triggerListener(NavigationElementEventType.ELEMENT_ENTER);
+  }
+
+  public back() {
+    this.triggerListener(NavigationElementEventType.ELEMENT_BACK);
   }
 
 }
 
-enum NavigationGroupEventType {
-  ELEMENT_FOCUS = 'elementfocus',
-  ELEMENT_BLUR = 'elementblur',
-  GROUP_DISABLE = 'groupdisable',
-  GROUP_ENABLE = 'groupenable',
-}
-
-type NavigationGroupEvent = {
-  [NavigationGroupEventType.ELEMENT_FOCUS]: (element: NavigationElement) => void;
-  [NavigationGroupEventType.ELEMENT_BLUR]: (element: NavigationElement) => void;
-  [NavigationGroupEventType.GROUP_DISABLE]: (element: NavigationGroup) => void;
-  [NavigationGroupEventType.GROUP_ENABLE]: (element: NavigationGroup) => void;
-};
 
 export class NavigationGroup {
   private elements: NavigationElement[] = [];
@@ -278,9 +296,32 @@ export class NavigationGroup {
   }
 
   public handleNavigation(direction: Directions) {
+    const activeElement = this.getActiveElement();
+    const override = activeElement.getOverride(direction);
+
+    if (override) {
+      return override(activeElement, direction);
+    }
+
     const targetElement = getElementInDirection(this, direction);
     if (targetElement) {
       this.focusElement(targetElement);
+    }
+  }
+
+  public handleAction(action: Actions) {
+    const activeElement = this.getActiveElement();
+    if (!activeElement) {
+      return;
+    }
+
+    switch (action) {
+      case(Actions.ENTER):
+        activeElement.enter();
+        break;
+      case(Actions.BACK):
+        activeElement.back();
+        break;
     }
   }
 
