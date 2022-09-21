@@ -383,6 +383,11 @@ export namespace UIFactory {
           && context.documentWidth < smallScreenSwitchWidth;
       },
     }, {
+      ui: modernTvUI(),
+      condition: (context: UIConditionContext) => {
+        return true;
+      },
+    }, {
       ui: modernUI(),
       condition: (context: UIConditionContext) => {
         return !context.isAd && !context.adRequiresUi;
@@ -409,9 +414,9 @@ export namespace UIFactory {
   }
 
   export function buildModernTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-        return new UIManager(player, [{
-          ui: modernTvUI(),
-        }], config);
+    return new UIManager(player, [{
+      ui: modernTvUI(),
+    }], config);
   }
 
   export function modernTvUI() {
