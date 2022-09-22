@@ -95,7 +95,6 @@ export class SpatialNavigation {
 
   public focusElement(el: NavigationElement) {
     const exists = this.activeNavigationGroup.getElements().findIndex(elem => elem === el);
-
     if (exists > -1) {
       this.activeNavigationGroup.focusElement(el);
     }
@@ -232,7 +231,7 @@ export class NavigationElement {
 
   public blur() {
     this.active = false;
-    this.triggerListener(NavigationElementEventType.ELEMENT_FOCUS);
+    this.triggerListener(NavigationElementEventType.ELEMENT_BLUR);
   }
 
   public enter() {
@@ -242,18 +241,21 @@ export class NavigationElement {
   public back() {
     this.triggerListener(NavigationElementEventType.ELEMENT_BACK);
   }
-
 }
 
 
 export class NavigationGroup {
   private elements: NavigationElement[] = [];
+  private selectors: string[] = [];
+
   public disabled = true;
-  private listeners: {
-    [key: string]: ((args: any) => void)[];
-  } = {};
+  private listeners: { [key: string]: ((args: any) => void)[]; } = {};
 
   public addSelector(selector: string) {
+    if (!this.selectors.includes(selector)) {
+      this.selectors.push(selector);
+    }
+
     const elements = document.querySelectorAll(selector);
     elements.forEach(elem => {
       if (elem) {
@@ -263,11 +265,24 @@ export class NavigationGroup {
   }
 
   public getElements(): NavigationElement[] {
+    const hasElement = (elem: HTMLElement) => {
+      return this.elements.findIndex(el => el.element === elem) > -1;
+    };
+
+    this.selectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(elem => {
+        if (elem && !hasElement(elem as HTMLElement)) {
+          this.elements.push(new NavigationElement(elem as HTMLElement));
+        }
+      });
+    });
+
     return this.elements;
   }
 
   public getActiveElement(): NavigationElement | undefined {
-    return this.elements.find(el => el.active);
+    return this.getElements().find(el => el.active);
   }
 
   public addElement(element: HTMLElement): void {
@@ -279,17 +294,21 @@ export class NavigationGroup {
   }
 
   public focusElement(element: NavigationElement): void {
+    this.blurActiveElement();
+    element.focus();
+    this.dispatch(NavigationGroupEventType.ELEMENT_FOCUS, element);
+  }
+
+  public blurActiveElement(): void {
     const active = this.getActiveElement();
     if (active) {
       active.blur();
       this.dispatch(NavigationGroupEventType.ELEMENT_BLUR, active);
     }
-    element.focus();
-    this.dispatch(NavigationGroupEventType.ELEMENT_FOCUS, element);
   }
 
   public focusFirstElement(): void {
-    const el = this.elements[0];
+    const el = this.getElements()[0];
     if (el) {
       this.focusElement(el);
     }
