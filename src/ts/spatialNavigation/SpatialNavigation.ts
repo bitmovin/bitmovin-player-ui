@@ -67,8 +67,9 @@ export class SpatialNavigation {
   public handleKeyEvent(e: KeyboardEvent) {
     const direction: Directions | Actions = KeyCode[e.keyCode];
 
-    if (Object.keys(Directions).includes(direction)) {
+    if ([...Object.values(Directions), ...Object.values(Actions)].includes(direction)) {
       this.activeNavigationGroup.handleNavigation(direction as Directions);
+      e.preventDefault();
     }
   }
 
