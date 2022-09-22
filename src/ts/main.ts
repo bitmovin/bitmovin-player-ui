@@ -1,7 +1,9 @@
 export const version: string = '{{VERSION}}';
 // Management
 export { UIManager, UIInstanceManager } from './uimanager';
-export { SpatialNavigation, NavigationElement, NavigationGroup } from './SpatialNavigation';
+export { SpatialNavigation } from './spatialNavigation/SpatialNavigation';
+export { SpatialNavigationElement } from './spatialNavigation/SpatialNavigationElement';
+export { SpatialNavigationGroup } from './spatialNavigation/SpatialNavigationGroup';
 // Factories
 export { UIFactory } from './uifactory';
 export { DemoFactory } from './demofactory';
