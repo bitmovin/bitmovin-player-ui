@@ -269,47 +269,6 @@
 
     // ---- Navigation using our own implementation
 
-    function addFocusStyle(e) {
-      console.warn(e);
-      console.warn('add it boyee', document.getElementById(e.id))
-      document.getElementById(e.id).style.outline = '2px solid red';
-    }
-    function removeFocusStyle(e) {
-      document.getElementById(e.id).style.outline = '';
-    }
-    
-    const spatialNavigation = new bitmovin.playerui.SpatialNavigation();
-    window.spatialNavigation = spatialNavigation;
-    const rootNavigationGroup = new bitmovin.playerui.NavigationGroup();
-
-    spatialNavigation.addNavigationGroup(rootNavigationGroup);
-
-    const seekBarElement = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-149'));
-    const spanElement = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-153'));
-    // const playPauseButton = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-141'));
-    const subtitlesButton = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-154'));
-    const audioButton = new bitmovin.playerui.NavigationElement(document.getElementById('bmpui-id-155'));
-
-    rootNavigationGroup.addNavigationElement(seekBarElement);
-    rootNavigationGroup.addNavigationElement(spanElement);
-    // rootNavigationGroup.addNavigationElement(playPauseButton);
-    rootNavigationGroup.addNavigationElement(subtitlesButton);
-    rootNavigationGroup.addNavigationElement(audioButton);
-
-    rootNavigationGroup.enable();
-
-    rootNavigationGroup.addEventListener('elementfocus', (el) => {
-      console.warn('huh');
-      addFocusStyle(el.element);
-    });
-    rootNavigationGroup.addEventListener('elementblur', (el) => {
-      console.warn('hah');
-
-      removeFocusStyle(el.element);
-    });
-
-    spatialNavigation.focusElement(seekBarElement);
-
     // rootNavigationGroup.getElements()[0].focus();
     // const activeElem = rootNavigationGroup.getActiveElement();
     // spatialNavigation.up();
@@ -322,10 +281,64 @@
 
     player.load(sources.fullyFeatured).then(function() {
       console.log('source successfully loaded');
+      setupSpatialNavigation();
     }, function(errorEvent) {
       console.log('error while loading source', errorEvent);
+      setupSpatialNavigation();
     });
   };
+
+  function setupSpatialNavigation() {
+      function addFocusStyle(e) {
+          document.getElementById(e.id).style.outline = '2px solid red';
+      }
+      function removeFocusStyle(e) {
+          console.warn(document.getElementById(e.id));
+          document.getElementById(e.id).style.outline = '';
+      }
+
+      const spatialNavigation = new bitmovin.playerui.SpatialNavigation();
+      window.spatialNavigation = spatialNavigation;
+
+      const rootNavigationGroup = new bitmovin.playerui.SpatialNavigationGroup('ROOT');
+      const subtitleNavigationGroup = new bitmovin.playerui.SpatialNavigationGroup('SUBTITLE');
+        const audioNavigationGroup = new bitmovin.playerui.SpatialNavigationGroup('AUDIO');
+      
+      spatialNavigation.addNavigationGroup(rootNavigationGroup);
+      spatialNavigation.addNavigationGroup(subtitleNavigationGroup);
+      spatialNavigation.addNavigationGroup(audioNavigationGroup);
+      
+      const seekBarElement = new bitmovin.playerui.SpatialNavigationElement(document.getElementById('bmpui-id-149'));
+      const playPauseButton = new bitmovin.playerui.SpatialNavigationElement(document.getElementById('bmpui-id-141'));
+      const subtitlesButton = new bitmovin.playerui.SpatialNavigationElement(document.getElementById('bmpui-id-154'));
+      const audioButton = new bitmovin.playerui.SpatialNavigationElement(document.getElementById('bmpui-id-155'));
+      
+      rootNavigationGroup.addSpatialNavigationElement(seekBarElement);
+      rootNavigationGroup.addSpatialNavigationElement(playPauseButton);
+      rootNavigationGroup.addSpatialNavigationElement(subtitlesButton);
+      rootNavigationGroup.addSpatialNavigationElement(audioButton);
+      
+      subtitleNavigationGroup.addSelector("#bmpui-id-126 > button");
+
+      spatialNavigation.addEventListener('groupenable', (group) => {
+        const elements = subtitleNavigationGroup.getElements();
+        spatialNavigation.focusElement(elements[0]);
+      });
+      
+      spatialNavigation.addEventListener('elementfocus', (el) => addFocusStyle(el.element));
+      spatialNavigation.addEventListener('elementblur', (el) => removeFocusStyle(el.element));
+
+      rootNavigationGroup.enable();
+      spatialNavigation.focusElement(seekBarElement);
+
+      subtitlesButton.addEventListener('elemententer', (el) => {
+          rootNavigationGroup.blurActiveElement();
+
+          rootNavigationGroup.disable();
+          subtitleNavigationGroup.enable();
+          el.element.click();
+      })
+  }
 
   playerSetup(config);
 
