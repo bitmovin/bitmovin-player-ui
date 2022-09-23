@@ -24,6 +24,6 @@ export class SpatialNavigationEventBus<T extends EventBusGenericMap> {
   public dispatch<K extends keyof T>(type: K, event: T[K]) {
     this.getListenersForType(type).forEach(listener => {
       listener(event);
-    })
+    });
   }
 }

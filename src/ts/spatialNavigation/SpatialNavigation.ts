@@ -1,6 +1,6 @@
-import {  NavigationElementEvent, NavigationElementEventType, SpatialNavigationElement } from "./SpatialNavigationElement";
-import { Listener, SpatialNavigationEventBus } from "./SpatialNavigationEventBus";
-import { NavigationGroupEvent, NavigationGroupEventType, SpatialNavigationGroup } from "./SpatialNavigationGroup";
+import {  NavigationElementEvent, NavigationElementEventType, SpatialNavigationElement } from './SpatialNavigationElement';
+import { Listener, SpatialNavigationEventBus } from './SpatialNavigationEventBus';
+import { NavigationGroupEvent, NavigationGroupEventType, SpatialNavigationGroup } from './SpatialNavigationGroup';
 
 export enum Directions {
   UP = 'up',
@@ -65,14 +65,14 @@ export class SpatialNavigation extends SpatialNavigationEventBus<SpatialNavigati
   }
 
   private syncEventListeners(): void {
-    this.navigationGroups.forEach(navigationGroup => this.syncEventListenersOnGroup(navigationGroup))
+    this.navigationGroups.forEach(navigationGroup => this.syncEventListenersOnGroup(navigationGroup));
   }
 
   private syncEventListenersOnGroup(navigationGroup: SpatialNavigationGroup): void {
     [...Object.values(NavigationGroupEventType), ...Object.values(NavigationElementEventType)].forEach(eventType => {
-      this.getListenersForType(eventType).forEach(listener => {
+      this.getListenersForType(eventType).forEach((listener: any) => {
         navigationGroup.addEventListener(eventType, listener);
-      })
+      });
     });
   }
 

@@ -1,6 +1,6 @@
-import { Actions, Directions } from "./SpatialNavigation";
-import { NavigationElementEvent, NavigationElementEventType, SpatialNavigationElement } from "./SpatialNavigationElement";
-import { Listener, SpatialNavigationEventBus } from "./SpatialNavigationEventBus";
+import { Actions, Directions } from './SpatialNavigation';
+import { NavigationElementEvent, NavigationElementEventType, SpatialNavigationElement } from './SpatialNavigationElement';
+import { Listener, SpatialNavigationEventBus } from './SpatialNavigationEventBus';
 
 export enum NavigationGroupEventType {
   GROUP_DISABLE = 'groupdisable',
@@ -147,8 +147,8 @@ export class SpatialNavigationGroup extends SpatialNavigationEventBus<Navigation
     eventTypes.forEach(type => {
       this.getListenersForType(type).forEach(listener => {
         element.addEventListener(type, listener);
-      })
-    })
+      });
+    });
   }
 
   public disable(): void {

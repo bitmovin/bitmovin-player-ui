@@ -1,6 +1,5 @@
-import { Directions } from "./SpatialNavigation";
-import { Listener, SpatialNavigationEventBus } from "./SpatialNavigationEventBus";
-import { SpatialNavigationGroup } from "./SpatialNavigationGroup";
+import { Directions } from './SpatialNavigation';
+import { SpatialNavigationEventBus } from './SpatialNavigationEventBus';
 
 export enum NavigationElementEventType {
   ELEMENT_FOCUS = 'elementfocus',
@@ -79,7 +78,7 @@ export class SpatialNavigationElement extends SpatialNavigationEventBus<Navigati
       this.getElementTopLeftVertex(),
       this.getElementTopRightVertex(),
       this.getElementBottonLeftVertex(),
-      this.getElementBottomRightVertex()
+      this.getElementBottomRightVertex(),
     ].map(currPoint => manhattenDistance(point, currPoint)));
   }
 
