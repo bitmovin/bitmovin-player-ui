@@ -34,7 +34,7 @@ export class SpatialNavigationElement extends SpatialNavigationEventBus<Navigati
     this.element = element;
   }
 
-  public getElementSpatialLocation() {
+  public getElementSpatialLocation(): DOMRect {
     return this.element.getBoundingClientRect();
   }
 
@@ -92,7 +92,7 @@ export class SpatialNavigationElement extends SpatialNavigationEventBus<Navigati
     ].map((point) => this.minimumDistanceFromPoint(point)));
   }
 
-  public override(direction: Directions, handler: (e: SpatialNavigationElement, dir?: Directions) => void) {
+  public override(direction: Directions, handler: (e: SpatialNavigationElement, dir?: Directions) => void): void {
     this.overrides[direction] = handler;
   }
 
@@ -100,21 +100,21 @@ export class SpatialNavigationElement extends SpatialNavigationEventBus<Navigati
     return this.overrides[direction];
   }
 
-  public focus() {
+  public focus(): void {
     this.active = true;
     this.dispatch(NavigationElementEventType.ELEMENT_FOCUS, this);
   }
 
-  public blur() {
+  public blur(): void {
     this.active = false;
     this.dispatch(NavigationElementEventType.ELEMENT_BLUR, this);
   }
 
-  public enter() {
+  public enter(): void {
     this.dispatch(NavigationElementEventType.ELEMENT_ENTER, this);
   }
 
-  public back() {
+  public back(): void {
     this.dispatch(NavigationElementEventType.ELEMENT_BACK, this);
   }
 }

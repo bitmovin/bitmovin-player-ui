@@ -23,7 +23,7 @@ export class SpatialNavigationGroup extends SpatialNavigationEventBus<Navigation
     super();
   }
 
-  public addSelector(selector: string) {
+  public addSelector(selector: string): void {
     if (!this.selectors.includes(selector)) {
       this.selectors.push(selector);
     }
@@ -37,7 +37,7 @@ export class SpatialNavigationGroup extends SpatialNavigationEventBus<Navigation
     });
   }
 
-  public hasElement(element: SpatialNavigationElement) {
+  public hasElement(element: SpatialNavigationElement): boolean {
     return this.elements.includes(element);
   }
 
@@ -90,7 +90,7 @@ export class SpatialNavigationGroup extends SpatialNavigationEventBus<Navigation
     }
   }
 
-  public handleNavigation(direction: Directions) {
+  public handleNavigation(direction: Directions): void {
     const activeElement = this.getActiveElement();
     const override = activeElement.getOverride(direction);
 
@@ -104,7 +104,7 @@ export class SpatialNavigationGroup extends SpatialNavigationEventBus<Navigation
     }
   }
 
-  public handleAction(action: Actions) {
+  public handleAction(action: Actions): void {
     const activeElement = this.getActiveElement();
     if (!activeElement) {
       return;
@@ -136,13 +136,13 @@ export class SpatialNavigationGroup extends SpatialNavigationEventBus<Navigation
     }
   }
 
-  private syncEventListenersOnElements() {
+  private syncEventListenersOnElements(): void {
     this.getElements().forEach(element => {
       this.syncEventListenersOnElement(element);
     });
   }
 
-  private syncEventListenersOnElement(element: SpatialNavigationElement) {
+  private syncEventListenersOnElement(element: SpatialNavigationElement): void {
     const eventTypes = Object.values(NavigationElementEventType);
     eventTypes.forEach(type => {
       this.getListenersForType(type).forEach(listener => {

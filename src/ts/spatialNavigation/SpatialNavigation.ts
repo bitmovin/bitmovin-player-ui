@@ -57,18 +57,18 @@ export class SpatialNavigation extends SpatialNavigationEventBus<SpatialNavigati
     super();
   }
 
-  public addNavigationGroup(...navigationGroups: SpatialNavigationGroup[]) {
+  public addNavigationGroup(...navigationGroups: SpatialNavigationGroup[]): void {
     navigationGroups.forEach(navigationGroup => {
       this.navigationGroups.push(navigationGroup);
       this.syncEventListenersOnGroup(navigationGroup);
     });
   }
 
-  private syncEventListeners() {
+  private syncEventListeners(): void {
     this.navigationGroups.forEach(navigationGroup => this.syncEventListenersOnGroup(navigationGroup))
   }
 
-  private syncEventListenersOnGroup(navigationGroup: SpatialNavigationGroup) {
+  private syncEventListenersOnGroup(navigationGroup: SpatialNavigationGroup): void {
     [...Object.values(NavigationGroupEventType), ...Object.values(NavigationElementEventType)].forEach(eventType => {
       this.getListenersForType(eventType).forEach(listener => {
         navigationGroup.addEventListener(eventType, listener);
@@ -86,66 +86,62 @@ export class SpatialNavigation extends SpatialNavigationEventBus<SpatialNavigati
     this.navigationGroups.forEach(navigationGroup => navigationGroup.removeEventListener(type, handler));
   }
 
-  public get activeNavigationGroup() {
-    return this.navigationGroups.find(v => !v.disabled);
-  }
-
-  public getNavigationGroups() {
+  public getNavigationGroups(): SpatialNavigationGroup[] {
     return this.navigationGroups;
   }
 
-  public getActiveNavigationGroup() {
+  public getActiveNavigationGroup(): SpatialNavigationGroup | undefined {
     return this.getNavigationGroups().find(group => !group.disabled);
   }
 
-  public handleKeyEvent(e: KeyboardEvent) {
+  public handleKeyEvent(e: KeyboardEvent): void {
     const direction: Directions | Actions = KeyCode[e.keyCode];
 
     if ([...Object.values(Directions), ...Object.values(Actions)].includes(direction)) {
-      this.activeNavigationGroup.handleNavigation(direction as Directions);
+      this.getActiveNavigationGroup().handleNavigation(direction as Directions);
       e.preventDefault();
     }
   }
 
-  public focusElement(el: SpatialNavigationElement) {
-    const exists = this.activeNavigationGroup.getElements().findIndex(elem => elem === el);
+  public focusElement(el: SpatialNavigationElement): void {
+    const exists = this.getActiveNavigationGroup().getElements().findIndex(elem => elem === el);
     if (exists > -1) {
-      this.activeNavigationGroup.focusElement(el);
+      this.getActiveNavigationGroup().focusElement(el);
     }
   }
 
-  public left() {
-    this.activeNavigationGroup.handleNavigation(Directions.LEFT);
+  public left(): void {
+    this.getActiveNavigationGroup()?.handleNavigation(Directions.LEFT);
   }
 
-  public right() {
-    this.activeNavigationGroup.handleNavigation(Directions.RIGHT);
+  public right(): void {
+    this.getActiveNavigationGroup()?.handleNavigation(Directions.RIGHT);
   }
 
-  public up() {
-    this.activeNavigationGroup.handleNavigation(Directions.UP);
+  public up(): void {
+    this.getActiveNavigationGroup()?.handleNavigation(Directions.UP);
   }
 
-  public down() {
-    this.activeNavigationGroup.handleNavigation(Directions.DOWN);
+  public down(): void {
+    this.getActiveNavigationGroup()?.handleNavigation(Directions.DOWN);
   }
 
-  public back() {
-    this.activeNavigationGroup.handleAction(Actions.BACK);
+  public back(): void {
+    this.getActiveNavigationGroup()?.handleAction(Actions.BACK);
   }
 
-  public enter() {
-    this.activeNavigationGroup.handleAction(Actions.ENTER);
+  public enter(): void {
+    this.getActiveNavigationGroup()?.handleAction(Actions.ENTER);
   }
 
-  public getNavigationElementGroup(el: SpatialNavigationElement) {
+  public getNavigationElementGroup(el: SpatialNavigationElement): SpatialNavigationGroup | undefined {
     return this.getNavigationGroups().find(group => group.hasElement(el));
   }
 
-  public enableNavigationGroup(navigationGroup: SpatialNavigationGroup) {
+  public enableNavigationGroup(navigationGroup: SpatialNavigationGroup): void {
     const matchingGroup = this.getNavigationGroups().find(ng => ng === navigationGroup);
     if (matchingGroup) {
-      this.activeNavigationGroup.disable();
+      this.getActiveNavigationGroup()?.disable();
       matchingGroup.enable();
     }
   }
