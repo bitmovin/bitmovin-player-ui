@@ -15,6 +15,8 @@ export type NavigationGroupEvent = {
 export class SpatialNavigationGroup extends SpatialNavigationEventBus<NavigationGroupEvent> {
   private elements: SpatialNavigationElement[] = [];
   private selectors: string[] = [];
+  private activeElementBeforeDisable?: SpatialNavigationElement;
+
   public disabled = true;
 
   constructor(public readonly groupName: string) {
@@ -33,6 +35,10 @@ export class SpatialNavigationGroup extends SpatialNavigationEventBus<Navigation
         this.elements.push(spatialNavigationElement);
       }
     });
+  }
+
+  public hasElement(element: SpatialNavigationElement) {
+    return this.elements.includes(element);
   }
 
   public getElements(): SpatialNavigationElement[] {
@@ -147,11 +153,20 @@ export class SpatialNavigationGroup extends SpatialNavigationEventBus<Navigation
 
   public disable(): void {
     this.disabled = true;
+    const activeElement = this.getActiveElement();
+    if (activeElement) {
+      this.activeElementBeforeDisable = activeElement;
+      activeElement.blur();
+    }
     this.dispatch(NavigationGroupEventType.GROUP_DISABLE, this);
   }
 
   public enable(): void {
     this.disabled = false;
+    if (this.activeElementBeforeDisable) {
+      this.activeElementBeforeDisable.focus();
+      this.activeElementBeforeDisable = undefined;
+    }
     this.dispatch(NavigationGroupEventType.GROUP_ENABLE, this);
   }
 }
