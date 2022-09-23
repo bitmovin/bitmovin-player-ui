@@ -293,7 +293,6 @@
           document.getElementById(e.id).style.outline = '2px solid red';
       }
       function removeFocusStyle(e) {
-          console.warn(document.getElementById(e.id));
           document.getElementById(e.id).style.outline = '';
       }
 
@@ -302,11 +301,9 @@
 
       const rootNavigationGroup = new bitmovin.playerui.SpatialNavigationGroup('ROOT');
       const subtitleNavigationGroup = new bitmovin.playerui.SpatialNavigationGroup('SUBTITLE');
-        const audioNavigationGroup = new bitmovin.playerui.SpatialNavigationGroup('AUDIO');
+      const audioNavigationGroup = new bitmovin.playerui.SpatialNavigationGroup('AUDIO');
       
-      spatialNavigation.addNavigationGroup(rootNavigationGroup);
-      spatialNavigation.addNavigationGroup(subtitleNavigationGroup);
-      spatialNavigation.addNavigationGroup(audioNavigationGroup);
+      spatialNavigation.addNavigationGroup(rootNavigationGroup, subtitleNavigationGroup, audioNavigationGroup);
       
       const seekBarElement = new bitmovin.playerui.SpatialNavigationElement(document.getElementById('bmpui-id-149'));
       const playPauseButton = new bitmovin.playerui.SpatialNavigationElement(document.getElementById('bmpui-id-141'));
@@ -319,10 +316,52 @@
       rootNavigationGroup.addSpatialNavigationElement(audioButton);
       
       subtitleNavigationGroup.addSelector("#bmpui-id-126 > button");
+      audioNavigationGroup.addSelector("#bmpui-id-130 > button");
 
       spatialNavigation.addEventListener('groupenable', (group) => {
-        const elements = subtitleNavigationGroup.getElements();
-        spatialNavigation.focusElement(elements[0]);
+        console.warn('GROUP ENABLE', group.groupName);
+        if (!group.getActiveElement()) {
+          const elements = group.getElements();
+          console.warn(elements);
+          spatialNavigation.focusElement(elements[0]);
+        }
+      });
+
+      spatialNavigation.addEventListener('groupdisable', group => {
+        console.warn('GROUP DISABLE', group.groupName);
+        if (group.groupName !== 'ROOT') {
+          rootNavigationGroup.enable();
+        }
+      });
+
+      spatialNavigation.addEventListener('elementback', (el) => {
+        const activeGroup = spatialNavigation.getActiveNavigationGroup();
+        if (activeGroup && activeGroup.groupName !== 'ROOT') {
+          activeGroup.disable();
+          rootNavigationGroup.enable();
+        }
+      });
+
+      spatialNavigation.addEventListener('elemententer', (el) => {
+        const activeGroup = spatialNavigation.getActiveNavigationGroup();
+
+        if (activeGroup.groupName !== 'ROOT') {
+          el.element.click();
+          activeGroup.disable();
+          rootNavigationGroup.enable();
+        }
+      });
+            
+      subtitlesButton.addEventListener('elemententer', (el) => {
+          rootNavigationGroup.disable();
+          subtitleNavigationGroup.enable();
+          el.element.click();
+      });
+
+      audioButton.addEventListener('elemententer', (el) => {
+          rootNavigationGroup.disable();
+          audioNavigationGroup.enable();
+          el.element.click();
       });
       
       spatialNavigation.addEventListener('elementfocus', (el) => addFocusStyle(el.element));
@@ -330,14 +369,6 @@
 
       rootNavigationGroup.enable();
       spatialNavigation.focusElement(seekBarElement);
-
-      subtitlesButton.addEventListener('elemententer', (el) => {
-          rootNavigationGroup.blurActiveElement();
-
-          rootNavigationGroup.disable();
-          subtitleNavigationGroup.enable();
-          el.element.click();
-      })
   }
 
   playerSetup(config);
