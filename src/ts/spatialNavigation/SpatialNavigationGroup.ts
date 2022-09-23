@@ -156,41 +156,57 @@ export class SpatialNavigationGroup extends SpatialNavigationEventBus<Navigation
   }
 }
 
+function upMoveFilter(currentElement: SpatialNavigationElement, activeElement: SpatialNavigationElement): boolean {
+  return currentElement.getElementSpatialLocation().bottom <= activeElement.getElementSpatialLocation().top;
+}
+
+function downMoveFilter(currentElement: SpatialNavigationElement, activeElement: SpatialNavigationElement): boolean {
+  return currentElement.getElementSpatialLocation().top >= activeElement.getElementSpatialLocation().bottom;
+}
+
+function rightMoveFilter(currentElement: SpatialNavigationElement, activeElement: SpatialNavigationElement): boolean {
+  return currentElement.getElementSpatialLocation().left >= activeElement.getElementSpatialLocation().right;
+}
+
+function leftMoveFilter(currentElement: SpatialNavigationElement, activeElement: SpatialNavigationElement): boolean {
+  return currentElement.getElementSpatialLocation().right <= activeElement.getElementSpatialLocation().left;
+}
 
 function getElementInDirection(navigationGroup: SpatialNavigationGroup, direction: Directions) {
   const activeElement = navigationGroup.getActiveElement();
   if (!activeElement) return null;
-  const activeRect = activeElement.getElementSpatialLocation();
+  // const activeRect = activeElement.getElementSpatialLocation();
 
+  console.warn(navigationGroup);
   const elementsToConsider = navigationGroup.getElements().filter(el => {
     if (el.active) return false;
 
     if (direction === Directions.UP) {
-      return el.getElementSpatialLocation().centerY < activeRect.centerY;
+      return upMoveFilter(el, activeElement);
     }
     if (direction === Directions.DOWN) {
-      return el.getElementSpatialLocation().centerY > activeRect.centerY;
+      return downMoveFilter(el, activeElement);
     }
     if (direction === Directions.LEFT) {
-      return el.getElementSpatialLocation().centerX < activeRect.centerX;
+      return leftMoveFilter(el, activeElement);
     }
     if (direction === Directions.RIGHT) {
-      return el.getElementSpatialLocation().centerX > activeRect.centerX;
+      return rightMoveFilter(el, activeElement);
     }
   });
+
+  console.log(elementsToConsider);
 
   return elementsToConsider.reduce<SpatialNavigationElement | null>((prev, curr) => {
     if (prev === null) {
       return curr;
     }
 
-    const previousRect = prev.getElementSpatialLocation();
-    const currentRect = curr.getElementSpatialLocation();
-
-    const currDist = Math.abs(activeRect.centerX - currentRect.centerX) + Math.abs(activeRect.centerY - currentRect.centerY);
-    const prevDist = Math.abs(activeRect.centerX - previousRect.centerX) + Math.abs(activeRect.centerY - previousRect.centerY);
-
-    if (currDist < prevDist) return curr;
+    const minDistanceFromCurrentElement = activeElement.minimumDistanceFrom(curr);
+    const minDistanceFromPreviousElement = activeElement.minimumDistanceFrom(prev);
+    if (minDistanceFromCurrentElement < minDistanceFromPreviousElement) {
+      return curr;
+    }
     return prev;
   }, null);
 }

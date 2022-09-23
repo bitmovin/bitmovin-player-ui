@@ -16,6 +16,11 @@ export type NavigationElementEvent = {
   [NavigationElementEventType.ELEMENT_BACK]: SpatialNavigationElement,
 };
 
+interface Coordinate {
+  x: number;
+  y: number;
+}
+
 export class SpatialNavigationElement extends SpatialNavigationEventBus<NavigationElementEvent> {
   public element: HTMLElement;
   public active = false;
@@ -30,21 +35,61 @@ export class SpatialNavigationElement extends SpatialNavigationEventBus<Navigati
   }
 
   public getElementSpatialLocation() {
+    return this.element.getBoundingClientRect();
+  }
+
+  public getElementTopLeftVertex(): Coordinate {
     const rect = this.element.getBoundingClientRect();
 
-    const centerY = rect.y + (rect.height / 2);
-    const centerX = rect.x + (rect.width / 2);
-
     return {
-      ...rect,
-      centerX,
-      centerY,
+      x: rect.left,
+      y: rect.top,
     };
   }
 
-  public addEventListener<K extends keyof NavigationElementEvent>(type: K, handler: Listener<NavigationElementEvent[K]>): void {
-    console.warn('ELEM ADD LISTENER', type, handler);
-    super.addEventListener(type, handler);
+  public getElementTopRightVertex(): Coordinate {
+    const rect = this.element.getBoundingClientRect();
+
+    return {
+      x: rect.right,
+      y: rect.top,
+    };
+  }
+
+  public getElementBottonLeftVertex(): Coordinate {
+    const rect = this.element.getBoundingClientRect();
+
+    return {
+      x: rect.left,
+      y: rect.bottom,
+    };
+  }
+
+  public getElementBottomRightVertex(): Coordinate {
+    const rect = this.element.getBoundingClientRect();
+
+    return {
+      x: rect.right,
+      y: rect.bottom,
+    };
+  }
+
+  private minimumDistanceFromPoint(point: Coordinate): number {
+    return Math.min(...[
+      this.getElementTopLeftVertex(),
+      this.getElementTopRightVertex(),
+      this.getElementBottonLeftVertex(),
+      this.getElementBottomRightVertex()
+    ].map(currPoint => manhattenDistance(point, currPoint)));
+  }
+
+  public minimumDistanceFrom(elem: SpatialNavigationElement): number {
+    return Math.min(...[
+      elem.getElementTopLeftVertex(),
+      elem.getElementTopRightVertex(),
+      elem.getElementBottonLeftVertex(),
+      elem.getElementBottomRightVertex(),
+    ].map((point) => this.minimumDistanceFromPoint(point)));
   }
 
   public override(direction: Directions, handler: (e: SpatialNavigationElement, dir?: Directions) => void) {
@@ -74,3 +119,6 @@ export class SpatialNavigationElement extends SpatialNavigationEventBus<Navigati
   }
 }
 
+function manhattenDistance(p1: Coordinate, p2: Coordinate): number {
+  return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
+}
