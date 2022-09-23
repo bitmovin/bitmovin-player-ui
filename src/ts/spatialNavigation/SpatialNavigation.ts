@@ -94,6 +94,10 @@ export class SpatialNavigation extends SpatialNavigationEventBus<SpatialNavigati
     return this.navigationGroups;
   }
 
+  public getActiveNavigationGroup() {
+    return this.getNavigationGroups().find(group => !group.disabled);
+  }
+
   public handleKeyEvent(e: KeyboardEvent) {
     const direction: Directions | Actions = KeyCode[e.keyCode];
 
@@ -120,7 +124,6 @@ export class SpatialNavigation extends SpatialNavigationEventBus<SpatialNavigati
 
   public up() {
     this.activeNavigationGroup.handleNavigation(Directions.UP);
-
   }
 
   public down() {
@@ -133,6 +136,10 @@ export class SpatialNavigation extends SpatialNavigationEventBus<SpatialNavigati
 
   public enter() {
     this.activeNavigationGroup.handleAction(Actions.ENTER);
+  }
+
+  public getNavigationElementGroup(el: SpatialNavigationElement) {
+    return this.getNavigationGroups().find(group => group.hasElement(el));
   }
 
   public enableNavigationGroup(navigationGroup: SpatialNavigationGroup) {
