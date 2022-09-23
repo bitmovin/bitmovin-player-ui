@@ -1,4 +1,6 @@
 import { Directions } from "./SpatialNavigation";
+import { Listener, SpatialNavigationEventBus } from "./SpatialNavigationEventBus";
+import { SpatialNavigationGroup } from "./SpatialNavigationGroup";
 
 export enum NavigationElementEventType {
   ELEMENT_FOCUS = 'elementfocus',
@@ -8,28 +10,23 @@ export enum NavigationElementEventType {
 }
 
 export type NavigationElementEvent = {
-  [NavigationElementEventType.ELEMENT_FOCUS]: (element: SpatialNavigationElement) => void;
-  [NavigationElementEventType.ELEMENT_BLUR]: (element: SpatialNavigationElement) => void;
-  [NavigationElementEventType.ELEMENT_ENTER]: (element: SpatialNavigationElement) => void;
-  [NavigationElementEventType.ELEMENT_BACK]: (element: SpatialNavigationElement) => void;
+  [NavigationElementEventType.ELEMENT_FOCUS]: SpatialNavigationElement,
+  [NavigationElementEventType.ELEMENT_BLUR]: SpatialNavigationElement,
+  [NavigationElementEventType.ELEMENT_ENTER]: SpatialNavigationElement,
+  [NavigationElementEventType.ELEMENT_BACK]: SpatialNavigationElement,
 };
 
-export class SpatialNavigationElement {
+export class SpatialNavigationElement extends SpatialNavigationEventBus<NavigationElementEvent> {
   public element: HTMLElement;
   public active = false;
-  private listeners: {
-    [key in NavigationElementEventType]?: (NavigationElementEvent[key])[];
-  } = {};
 
   private overrides: {
     [key in Directions]?: (e: SpatialNavigationElement, dir?: Directions) => void;
   } = {};
 
-  constructor(element: HTMLElement, listeners?: {[key: string]: ((el: SpatialNavigationElement) => void)[]}) {
+  constructor(element: HTMLElement) {
+    super();
     this.element = element;
-    if (listeners) {
-      this.listeners = listeners;
-    }
   }
 
   public getElementSpatialLocation() {
@@ -45,6 +42,11 @@ export class SpatialNavigationElement {
     };
   }
 
+  public addEventListener<K extends keyof NavigationElementEvent>(type: K, handler: Listener<NavigationElementEvent[K]>): void {
+    console.warn('ELEM ADD LISTENER', type, handler);
+    super.addEventListener(type, handler);
+  }
+
   public override(direction: Directions, handler: (e: SpatialNavigationElement, dir?: Directions) => void) {
     this.overrides[direction] = handler;
   }
@@ -53,42 +55,22 @@ export class SpatialNavigationElement {
     return this.overrides[direction];
   }
 
-  public addListener<K extends NavigationElementEventType>(type: K, handler: NavigationElementEvent[K]) {
-    if (!this.listeners[type]) {
-      this.listeners[type] = [];
-    }
-
-    this.listeners[type].push(handler);
-  }
-
-  public removeListener<K extends NavigationElementEventType>(type: K, handler: NavigationElementEvent[K]) {
-    this.listeners[type] = (this.listeners[type] || []).filter(hnd => hnd !== handler);
-  }
-
-  private getListenersForType(type: NavigationElementEventType) {
-    return (this.listeners[type] || []);
-  }
-
-  private triggerListener(type: NavigationElementEventType) {
-    this.getListenersForType(type).forEach(handler => handler(this));
-  }
-
   public focus() {
     this.active = true;
-    this.triggerListener(NavigationElementEventType.ELEMENT_FOCUS);
+    this.dispatch(NavigationElementEventType.ELEMENT_FOCUS, this);
   }
 
   public blur() {
     this.active = false;
-    this.triggerListener(NavigationElementEventType.ELEMENT_BLUR);
+    this.dispatch(NavigationElementEventType.ELEMENT_BLUR, this);
   }
 
   public enter() {
-    this.triggerListener(NavigationElementEventType.ELEMENT_ENTER);
+    this.dispatch(NavigationElementEventType.ELEMENT_ENTER, this);
   }
 
   public back() {
-    this.triggerListener(NavigationElementEventType.ELEMENT_BACK);
+    this.dispatch(NavigationElementEventType.ELEMENT_BACK, this);
   }
 }
 

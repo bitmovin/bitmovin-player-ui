@@ -1,26 +1,25 @@
 import { Actions, Directions } from "./SpatialNavigation";
-import { SpatialNavigationElement } from "./SpatialNavigationElement";
+import { NavigationElementEvent, NavigationElementEventType, SpatialNavigationElement } from "./SpatialNavigationElement";
+import { Listener, SpatialNavigationEventBus } from "./SpatialNavigationEventBus";
 
 export enum NavigationGroupEventType {
-  ELEMENT_FOCUS = 'elementfocus',
-  ELEMENT_BLUR = 'elementblur',
   GROUP_DISABLE = 'groupdisable',
   GROUP_ENABLE = 'groupenable',
 }
 
 export type NavigationGroupEvent = {
-  [NavigationGroupEventType.ELEMENT_FOCUS]: (element: SpatialNavigationElement) => void;
-  [NavigationGroupEventType.ELEMENT_BLUR]: (element: SpatialNavigationElement) => void;
-  [NavigationGroupEventType.GROUP_DISABLE]: (element: SpatialNavigationGroup) => void;
-  [NavigationGroupEventType.GROUP_ENABLE]: (element: SpatialNavigationGroup) => void;
-};
+  [NavigationGroupEventType.GROUP_DISABLE]: SpatialNavigationGroup,
+  [NavigationGroupEventType.GROUP_ENABLE]: SpatialNavigationGroup,
+} & NavigationElementEvent;
 
-export class SpatialNavigationGroup {
+export class SpatialNavigationGroup extends SpatialNavigationEventBus<NavigationGroupEvent> {
   private elements: SpatialNavigationElement[] = [];
   private selectors: string[] = [];
-
   public disabled = true;
-  private listeners: { [key: string]: ((args: any) => void)[]; } = {};
+
+  constructor(public readonly groupName: string) {
+    super();
+  }
 
   public addSelector(selector: string) {
     if (!this.selectors.includes(selector)) {
@@ -30,7 +29,8 @@ export class SpatialNavigationGroup {
     const elements = document.querySelectorAll(selector);
     elements.forEach(elem => {
       if (elem) {
-        this.elements.push(new SpatialNavigationElement(elem as HTMLElement));
+        const spatialNavigationElement = new SpatialNavigationElement(elem as HTMLElement);
+        this.elements.push(spatialNavigationElement);
       }
     });
   }
@@ -42,9 +42,9 @@ export class SpatialNavigationGroup {
 
     this.selectors.forEach(selector => {
       const elements = document.querySelectorAll(selector);
-      elements.forEach(elem => {
-        if (elem && !hasElement(elem as HTMLElement)) {
-          this.elements.push(new SpatialNavigationElement(elem as HTMLElement));
+      elements.forEach((elem: HTMLElement) => {
+        if (elem && !hasElement(elem)) {
+          this.addElement(elem);
         }
       });
     });
@@ -57,24 +57,23 @@ export class SpatialNavigationGroup {
   }
 
   public addElement(element: HTMLElement): void {
-    this.elements.push(new SpatialNavigationElement(element));
+    this.addSpatialNavigationElement(new SpatialNavigationElement(element));
   }
 
-  public addNavigationElement(element: SpatialNavigationElement): void {
+  public addSpatialNavigationElement(element: SpatialNavigationElement): void {
     this.elements.push(element);
+    this.syncEventListenersOnElement(element);
   }
 
   public focusElement(element: SpatialNavigationElement): void {
     this.blurActiveElement();
     element.focus();
-    this.dispatch(NavigationGroupEventType.ELEMENT_FOCUS, element);
   }
 
   public blurActiveElement(): void {
     const active = this.getActiveElement();
     if (active) {
       active.blur();
-      this.dispatch(NavigationGroupEventType.ELEMENT_BLUR, active);
     }
   }
 
@@ -115,17 +114,35 @@ export class SpatialNavigationGroup {
     }
   }
 
-  public addEventListener<K extends NavigationGroupEventType>(type: K, handler: (el: NavigationGroupEvent[K]) => void) {
-    if (!this.listeners[type]) {
-      this.listeners[type] = [];
-    }
-    this.listeners[type].push(handler);
+  public addEventListener<K extends NavigationGroupEventType | keyof NavigationElementEvent>(type: K, handler: Listener<NavigationGroupEvent[K]>): void {
+    super.addEventListener(type, handler);
+    this.syncEventListenersOnElements();
   }
 
-  private dispatch<K extends NavigationGroupEventType>(type: K,  el: Parameters<NavigationGroupEvent[K]>[0]) {
-    (this.listeners[type] || []).forEach(listener => {
-      listener(el);
+  public removeEventListener<K extends NavigationGroupEventType | keyof NavigationElementEvent>(type: K, handler: Listener<NavigationGroupEvent[K]>): void {
+    if (isNavigationGroupEventType(type)) {
+      super.removeEventListener(type, handler);
+    }
+    if (isNavigationElementEventType(type)) {
+      this.getElements().forEach(element => {
+        element.removeEventListener(type, handler as any);
+      });
+    }
+  }
+
+  private syncEventListenersOnElements() {
+    this.getElements().forEach(element => {
+      this.syncEventListenersOnElement(element);
     });
+  }
+
+  private syncEventListenersOnElement(element: SpatialNavigationElement) {
+    const eventTypes = Object.values(NavigationElementEventType);
+    eventTypes.forEach(type => {
+      this.getListenersForType(type).forEach(listener => {
+        element.addEventListener(type, listener);
+      })
+    })
   }
 
   public disable(): void {
@@ -178,3 +195,10 @@ function getElementInDirection(navigationGroup: SpatialNavigationGroup, directio
   }, null);
 }
 
+function isNavigationGroupEventType(type: NavigationGroupEventType | NavigationElementEventType): type is NavigationGroupEventType {
+  return Object.values(NavigationGroupEventType).includes(type as any);
+}
+
+function isNavigationElementEventType(type: NavigationGroupEventType | NavigationElementEventType): type is NavigationElementEventType {
+  return Object.values(NavigationElementEventType).includes(type as any);
+}

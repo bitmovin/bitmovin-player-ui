@@ -1,5 +1,6 @@
-import { SpatialNavigationElement } from "./SpatialNavigationElement";
-import { SpatialNavigationGroup } from "./SpatialNavigationGroup";
+import {  NavigationElementEvent, NavigationElementEventType, SpatialNavigationElement } from "./SpatialNavigationElement";
+import { Listener, SpatialNavigationEventBus } from "./SpatialNavigationEventBus";
+import { NavigationGroupEvent, NavigationGroupEventType, SpatialNavigationGroup } from "./SpatialNavigationGroup";
 
 export enum Directions {
   UP = 'up',
@@ -47,13 +48,47 @@ export const KeyCode: {[key: number]: Directions | Actions} = {
   69: Actions.BACK,
 };
 
+type SpatialNavigationEventMap = NavigationGroupEvent;
 
-export class SpatialNavigation {
+export class SpatialNavigation extends SpatialNavigationEventBus<SpatialNavigationEventMap> {
   private navigationGroups: SpatialNavigationGroup[] = [];
-  constructor() {}
+
+  constructor() {
+    super();
+  }
 
   public addNavigationGroup(...navigationGroups: SpatialNavigationGroup[]) {
-    navigationGroups.forEach(v => this.navigationGroups.push(v));
+    navigationGroups.forEach(navigationGroup => {
+      this.navigationGroups.push(navigationGroup);
+      this.syncEventListenersOnGroup(navigationGroup);
+    });
+  }
+
+  private syncEventListeners() {
+    this.navigationGroups.forEach(navigationGroup => this.syncEventListenersOnGroup(navigationGroup))
+  }
+
+  private syncEventListenersOnGroup(navigationGroup: SpatialNavigationGroup) {
+    Object.values(NavigationGroupEventType).forEach(eventType => {
+      this.getListenersForType(eventType).forEach(listener => {
+        navigationGroup.addEventListener(eventType, listener);
+      })
+    });
+    Object.values(NavigationElementEventType).forEach(eventType => {
+      this.getListenersForType(eventType).forEach(listener => {
+        navigationGroup.addEventListener(eventType, listener);
+      })
+    });
+  }
+
+  public addEventListener<K extends NavigationGroupEventType | keyof NavigationElementEvent>(type: K, handler: Listener<NavigationGroupEvent[K]>): void {
+    super.addEventListener(type, handler);
+    this.syncEventListeners();
+  }
+
+  public removeEventListener<K extends NavigationGroupEventType | keyof NavigationElementEvent>(type: K, handler: Listener<NavigationGroupEvent[K]>): void {
+    super.removeEventListener(type, handler);
+    this.navigationGroups.forEach(navigationGroup => navigationGroup.removeEventListener(type, handler));
   }
 
   public get activeNavigationGroup() {
