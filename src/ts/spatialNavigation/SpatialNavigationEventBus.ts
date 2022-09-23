@@ -9,7 +9,6 @@ export class SpatialNavigationEventBus<T extends EventBusGenericMap> {
   }
 
   public addEventListener<K extends keyof T>(type: K, handler: Listener<T[K]>) {
-    console.error('ADD LISTENER', type)
     if (!this.listeners[type]) {
       this.listeners[type] = [];
     }
@@ -23,8 +22,6 @@ export class SpatialNavigationEventBus<T extends EventBusGenericMap> {
   }
 
   public dispatch<K extends keyof T>(type: K, event: T[K]) {
-    console.error('DISPATCH', type, event);
-    console.error(this.getListenersForType(type));
     this.getListenersForType(type).forEach(listener => {
       listener(event);
     })

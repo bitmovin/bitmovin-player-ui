@@ -69,12 +69,7 @@ export class SpatialNavigation extends SpatialNavigationEventBus<SpatialNavigati
   }
 
   private syncEventListenersOnGroup(navigationGroup: SpatialNavigationGroup) {
-    Object.values(NavigationGroupEventType).forEach(eventType => {
-      this.getListenersForType(eventType).forEach(listener => {
-        navigationGroup.addEventListener(eventType, listener);
-      })
-    });
-    Object.values(NavigationElementEventType).forEach(eventType => {
+    [...Object.values(NavigationGroupEventType), ...Object.values(NavigationElementEventType)].forEach(eventType => {
       this.getListenersForType(eventType).forEach(listener => {
         navigationGroup.addEventListener(eventType, listener);
       })
