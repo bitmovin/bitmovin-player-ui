@@ -366,7 +366,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.isUserSeeking = false;
 
       // Do the seek
-      this.seek(percentage);
+      this.seek(percentage, false);
 
       // Notify UI manager of finished seek
       uimanager.onSeeked.dispatch(sender);
@@ -459,19 +459,24 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private seekWhileScrubbing = (sender: SeekBar, args: SeekPreviewEventArgs) => {
     if (args.scrubbing) {
-      this.seek(args.position);
+      this.seek(args.position, true);
     }
   };
 
-  private seek = (percentage: number) => {
+  private seek = (percentage: number, isScrubbing: boolean) => {
     if (this.player.isLive()) {
       const maxTimeShift = this.player.getMaxTimeShift();
-      this.player.timeShift(maxTimeShift - (maxTimeShift * (percentage / 100)), 'ui');
+      const timeShiftTarget = maxTimeShift - (maxTimeShift * (percentage / 100));
+
+      // TODO: remove workaround once Player API types are adjusted
+      (this.player.timeShift as any)(timeShiftTarget, 'ui', { isScrubbing });
     } else {
       const seekableRangeStart = PlayerUtils.getSeekableRangeStart(this.player, 0);
       const relativeSeekTarget = this.player.getDuration() * (percentage / 100);
       const absoluteSeekTarget = relativeSeekTarget + seekableRangeStart;
-      this.player.seek(absoluteSeekTarget, 'ui');
+
+      // TODO: remove workaround helper types once Player API types are adjusted
+      (this.player.seek as any)(absoluteSeekTarget, 'ui', { isScrubbing });
     }
   };
 
