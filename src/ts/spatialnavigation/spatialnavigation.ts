@@ -124,10 +124,6 @@ export class Spatialnavigation {
     });
   }
 
-  public getNavigationGroups(): NavigationGroup[] {
-    return this.navigationGroups;
-  }
-
   public getActiveNavigationGroup(): NavigationGroup | undefined {
     return this.activeNavigationGroups[this.activeNavigationGroups.length - 1];
   }
