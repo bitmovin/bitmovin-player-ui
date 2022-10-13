@@ -90,4 +90,13 @@
       width: 99%;
     } 
   }
+
+  :focus {
+    transition: all .05s ease-in-out;
+    box-shadow: $focus-element-box-shadow;
+    outline: none;
+    border: none;
+    -webkit-filter: drop-shadow(0 0 0.3em $color-highlight);
+    filter: drop-shadow(0 0 0.3em $color-highlight);
+  }
 }
