@@ -13,7 +13,7 @@ import { VolumeController } from './volumecontroller';
 import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 import { FocusVisibilityTracker } from './focusvisibilitytracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './mobilev3playerapi';
-import { Spatialnavigation } from './spatialNavigation/spatialnavigation';
+import { Spatialnavigation } from './spatialnavigation/spatialnavigation';
 
 export interface LocalizationConfig {
   /**

@@ -47,9 +47,9 @@ import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './main';
-import { Spatialnavigation } from './spatialNavigation/spatialnavigation';
-import { RootNavigationGroup } from './spatialNavigation/rootnavigationgroup';
-import { NavigationGroup } from './spatialNavigation/navigationgroup';
+import { Spatialnavigation } from './spatialnavigation/spatialnavigation';
+import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
+import { NavigationGroup } from './spatialnavigation/navigationgroup';
 
 export namespace UIFactory {
 
