@@ -3,7 +3,6 @@ import { mockClass } from '../helper/mockClass';
 import { RootNavigationGroup } from '../../src/ts/spatialnavigation/rootnavigationgroup';
 import { Action, Direction } from '../../src/ts/spatialnavigation/spatialnavigation';
 
-jest.mock('../../src/ts/spatialnavigation/seekbarhandler.ts');
 jest.mock('../../src/ts/spatialnavigation/navigationgroup.ts');
 
 describe('RootNavigationGroup', () => {
@@ -51,7 +50,6 @@ describe('RootNavigationGroup', () => {
   describe('release', () => {
     it('should clear up', () => {
       rootNavigationGroup.release();
-      expect(rootNavigationGroup['seekHandler'].release).toHaveBeenCalled();
     });
   });
 });
