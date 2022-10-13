@@ -5,6 +5,7 @@ import { SettingsToggleButton } from '../../src/ts/components/settingstogglebutt
 import { getFirstDomElement, mockComponent } from '../helper/mockComponent';
 import * as navigationAlgorithm from '../../src/ts/spatialnavigation/navigationalgorithm';
 import { Action, Direction } from '../../src/ts/spatialnavigation/spatialnavigation';
+import { NodeEventSubscriber } from '../../src/ts/spatialnavigation/nodeeventsubscriber';
 
 jest.mock('../../src/ts/spatialnavigation/navigationalgorithm.ts');
 jest.mock('../../src/ts/spatialnavigation/nodeeventsubscriber.ts');
@@ -145,9 +146,10 @@ describe('NavigationGroup', () => {
   describe('release', () => {
     it('should clean up', () => {
       rootNavigationGroup['activeElement'] = getFirstDomElement(subtitleToggleButtonMock);
+      const eventSubscribeReleaseSpy = jest.spyOn(NodeEventSubscriber.prototype, 'release');
       rootNavigationGroup.release();
 
-      expect(rootNavigationGroup['eventSubscriber'].release).toHaveBeenCalled();
+      expect(eventSubscribeReleaseSpy).toHaveBeenCalled();
       expect(rootNavigationGroup['components']).toHaveLength(0);
       expect(rootNavigationGroup['activeElement']).toBeUndefined();
     });
