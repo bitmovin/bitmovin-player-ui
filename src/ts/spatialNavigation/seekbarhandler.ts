@@ -111,7 +111,7 @@ export class SeekBarHandler {
 
     const seekBar = getSeekBar(target);
 
-    if (action === Action.SELECT) {
+    if (action === Action.SELECT && this.isScrubbing) {
       this.dispatchMouseClickEvent(seekBar);
       return true;
     } else if (action === Action.BACK) {
