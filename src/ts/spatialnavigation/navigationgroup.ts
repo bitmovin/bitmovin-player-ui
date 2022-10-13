@@ -136,5 +136,6 @@ export class NavigationGroup {
     this.eventSubscriber.release();
     this.activeElement = undefined;
     this.components.splice(0, this.components.length);
+    this.removeElementHoverEventListeners();
   }
 }
