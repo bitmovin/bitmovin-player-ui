@@ -47,6 +47,9 @@ import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './main';
+import { Spatialnavigation } from './spatialNavigation/spatialnavigation';
+import { RootNavigationGroup } from './spatialNavigation/rootnavigationgroup';
+import { NavigationGroup } from './spatialNavigation/navigationgroup';
 
 export namespace UIFactory {
 
@@ -410,44 +413,61 @@ export namespace UIFactory {
 
   export function buildModernTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
         return new UIManager(player, [{
-          ui: modernTvUI(),
+          ...modernTvUI(),
         }], config);
   }
 
   export function modernTvUI() {
+    const subtitleListBox = new SubtitleListBox();
     const subtitleListPanel = new SettingsPanel({
       components: [
         new SettingsPanelPage({
           components: [
-            new SettingsPanelItem(null, new SubtitleListBox()),
+            new SettingsPanelItem(null, subtitleListBox),
           ],
         }),
       ],
       hidden: true,
     });
 
+    const audioTrackListBox = new AudioTrackListBox();
     const audioTrackListPanel = new SettingsPanel({
       components: [
         new SettingsPanelPage({
           components: [
-            new SettingsPanelItem(null, new AudioTrackListBox()),
+            new SettingsPanelItem(null, audioTrackListBox),
           ],
         }),
       ],
       hidden: true,
     });
 
-    return new UIContainer({
+    const seekBar = new SeekBar({ label: new SeekBarLabel() });
+    const playbackToggleOverlay = new PlaybackToggleOverlay();
+    let subtitleToggleButton = new SettingsToggleButton({
+      settingsPanel: subtitleListPanel,
+      autoHideWhenNoActiveSettings: true,
+      cssClass: 'ui-subtitlesettingstogglebutton',
+      text: i18n.getLocalizer('settings.subtitles'),
+    });
+    let audioToggleButton = new SettingsToggleButton({
+      settingsPanel: audioTrackListPanel,
+      autoHideWhenNoActiveSettings: true,
+      cssClass: 'ui-audiotracksettingstogglebutton',
+      ariaLabel: i18n.getLocalizer('settings.audio.track'),
+      text: i18n.getLocalizer('settings.audio.track'),
+    });
+    const uiContainer = new UIContainer({
       components: [
         new SubtitleOverlay(),
         new BufferingOverlay(),
-        new PlaybackToggleOverlay(),
+        playbackToggleOverlay,
         new ControlBar({
           components: [
             new Container({
               components: [
                 new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-                new SeekBar({ label: new SeekBarLabel() }),
+                seekBar,
                 new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
               ],
               cssClasses: ['controlbar-top'],
@@ -459,19 +479,8 @@ export namespace UIFactory {
             new Container({
               components: [
                 new MetadataLabel({ content: MetadataLabelContent.Title }),
-                new SettingsToggleButton({
-                  settingsPanel: subtitleListPanel,
-                  autoHideWhenNoActiveSettings: true,
-                  cssClass: 'ui-subtitlesettingstogglebutton',
-                  text: i18n.getLocalizer('settings.subtitles'),
-                }),
-                new SettingsToggleButton({
-                  settingsPanel: audioTrackListPanel,
-                  autoHideWhenNoActiveSettings: true,
-                  cssClass: 'ui-audiotracksettingstogglebutton',
-                  ariaLabel: i18n.getLocalizer('settings.audio.track'),
-                  text: i18n.getLocalizer('settings.audio.track'),
-                }),
+                subtitleToggleButton,
+                audioToggleButton,
               ],
               cssClasses: ['ui-titlebar-top'],
             }),
@@ -496,5 +505,16 @@ export namespace UIFactory {
         PlayerUtils.PlayerState.Finished,
       ],
     });
+
+    const spatialNavigation = new Spatialnavigation(
+      new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, audioToggleButton, subtitleToggleButton),
+      new NavigationGroup(subtitleListPanel, subtitleListBox),
+      new NavigationGroup(audioTrackListPanel, audioTrackListBox),
+    );
+
+    return {
+      ui: uiContainer,
+      spatialNavigation: spatialNavigation,
+    };
   }
 }
