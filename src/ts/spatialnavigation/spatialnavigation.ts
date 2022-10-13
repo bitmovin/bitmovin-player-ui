@@ -1,6 +1,7 @@
 import { NavigationGroup } from './navigationgroup';
 import { RootNavigationGroup } from './rootnavigationgroup';
 import { NodeEventSubscriber } from './nodeeventsubscriber';
+import { SeekBarHandler } from './seekbarhandler';
 
 export enum Direction {
   UP = 'up',
@@ -53,8 +54,11 @@ export class Spatialnavigation {
   private readonly navigationGroups: NavigationGroup[] = [];
   private readonly activeNavigationGroups: NavigationGroup[];
   private readonly eventSubscriber: NodeEventSubscriber;
+  private readonly seekBarHandler: SeekBarHandler;
 
   constructor(rootNavigationGroup: RootNavigationGroup, ...navigationGroups: NavigationGroup[]) {
+    this.seekBarHandler = new SeekBarHandler(rootNavigationGroup);
+
     this.activeNavigationGroups = [];
     this.unsubscribeVisibilityChangesFns = [];
     this.eventSubscriber = new NodeEventSubscriber();
@@ -149,6 +153,7 @@ export class Spatialnavigation {
     this.unsubscribeFromNavigationGroupVisibilityChanges();
     this.eventSubscriber.release();
     this.navigationGroups.forEach(group => group.release());
+    this.seekBarHandler.release();
   }
 }
 

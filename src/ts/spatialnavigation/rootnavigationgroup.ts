@@ -2,14 +2,10 @@ import { NavigationGroup } from './navigationgroup';
 import { Component } from '../components/component';
 import { Action, Direction } from './spatialnavigation';
 import { UIContainer } from '../components/uicontainer';
-import { SeekBarHandler } from './seekbarhandler';
 
 export class RootNavigationGroup extends NavigationGroup {
-  private readonly seekHandler: SeekBarHandler;
-
   constructor(public readonly container: UIContainer, ...elements: Component<unknown>[]) {
     super(container, ...elements);
-    this.seekHandler = new SeekBarHandler(this);
   }
 
   public handleAction(action: Action) {
@@ -34,6 +30,5 @@ export class RootNavigationGroup extends NavigationGroup {
 
   public release(): void {
     super.release();
-    this.seekHandler.release();
   }
 }
