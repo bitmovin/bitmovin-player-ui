@@ -33,13 +33,7 @@ export class SeekBarHandler {
     const seekBarWidth = seekBarWrapper.getBoundingClientRect().width;
     const increment = seekBarWidth * this.scrubSpeedPercentage;
 
-    if (direction === Direction.RIGHT) {
-      return increment;
-    } else if (direction === Direction.LEFT) {
-      return -increment;
-    } else {
-      return 0;
-    }
+    return direction === Direction.RIGHT ? increment : -increment;
   }
 
   private resetCursorPosition(): void {
@@ -87,7 +81,7 @@ export class SeekBarHandler {
       return false;
     }
 
-    if (direction === Direction.UP) {
+    if (direction === Direction.UP || direction === Direction.DOWN) {
       this.stopSeeking(getSeekBar(target));
 
       return false;
@@ -104,7 +98,7 @@ export class SeekBarHandler {
       const mouseEventInit = this.getCursorPositionMouseEventInit();
 
       document.dispatchEvent(new MouseEvent('mouseup', mouseEventInit));
-      seekBar.removeEventListener('mousedown', mouseDownHandler);
+      this.eventSubscriber.off(seekBar, 'mousedown', mouseDownHandler);
       this.stopSeeking(seekBar);
     };
 
