@@ -23,7 +23,7 @@ export class SeekBarHandler {
     clearTimeout(this.scrubSpeedResetTimeout);
     this.scrubSpeedPercentage *= ScrubSpeedMultiplier;
     this.scrubSpeedResetTimeout = window.setTimeout(
-      () => this.scrubSpeedPercentage = DefaultSeemAmountPercentage, ScrubSpeedClearInterval
+      () => this.scrubSpeedPercentage = DefaultSeemAmountPercentage, ScrubSpeedClearInterval,
     );
   }
 
