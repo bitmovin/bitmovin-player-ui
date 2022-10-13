@@ -2,10 +2,16 @@ import { RootNavigationGroup } from './rootnavigationgroup';
 import { Action, Direction } from './spatialnavigation';
 import { NodeEventSubscriber } from './nodeeventsubscriber';
 
+const DefaultSeemAmountPercentage = 0.005;
+const ScrubSpeedClearInterval = 100;
+const ScrubSpeedMultiplier = 1.1;
+
 export class SeekBarHandler {
-  private readonly eventSubscriber: NodeEventSubscriber;
   private readonly cursorPosition = { x: 0, y: 0};
+  private readonly eventSubscriber: NodeEventSubscriber;
   private isScrubbing = false;
+  private scrubSpeedResetTimeout: number;
+  private scrubSpeedPercentage = DefaultSeemAmountPercentage;
 
   constructor(private readonly rootNavigationGroup: RootNavigationGroup) {
     this.rootNavigationGroup.onAction = this.onAction;
@@ -13,12 +19,24 @@ export class SeekBarHandler {
     this.rootNavigationGroup.onNavigation = this.onNavigation;
   }
 
-  private getIncrement(direction: Direction): number {
-    // TODO: make this configurable and increase it with time
+  private updateScrubSpeedPercentage(): void {
+    clearTimeout(this.scrubSpeedResetTimeout);
+    this.scrubSpeedPercentage *= ScrubSpeedMultiplier;
+    this.scrubSpeedResetTimeout = window.setTimeout(
+      () => this.scrubSpeedPercentage = DefaultSeemAmountPercentage, ScrubSpeedClearInterval
+    );
+  }
+
+  private getIncrement(direction: Direction, seekBarWrapper: HTMLElement): number {
+    this.updateScrubSpeedPercentage();
+
+    const seekBarWidth = seekBarWrapper.getBoundingClientRect().width;
+    const increment = seekBarWidth * this.scrubSpeedPercentage;
+
     if (direction === Direction.RIGHT) {
-      return 5;
+      return increment;
     } else if (direction === Direction.LEFT) {
-      return -5;
+      return -increment;
     } else {
       return 0;
     }
@@ -29,8 +47,8 @@ export class SeekBarHandler {
     this.cursorPosition.y = 0;
   }
 
-  private updateCursorPosition(direction: Direction): void {
-    this.cursorPosition.x += this.getIncrement(direction);
+  private updateCursorPosition(direction: Direction, seekBarWrapper: HTMLElement): void {
+    this.cursorPosition.x += this.getIncrement(direction, seekBarWrapper);
   }
 
   private initializeCursorPosition(seekBarWrapper: HTMLElement): void {
@@ -45,7 +63,7 @@ export class SeekBarHandler {
 
   private initializeOrUpdateCursorPosition(seekBarWrapper: HTMLElement, direction: Direction): void {
     if (this.isScrubbing) {
-      this.updateCursorPosition(direction);
+      this.updateCursorPosition(direction, seekBarWrapper);
     } else {
       this.initializeCursorPosition(seekBarWrapper);
     }
@@ -60,7 +78,7 @@ export class SeekBarHandler {
     };
   }
 
-  private dispatchMouseMoveEvent(seekBar: ChildNode): void {
+  private dispatchMouseMoveEvent(seekBar: Element): void {
     seekBar.dispatchEvent(new MouseEvent('mousemove', this.getCursorPositionMouseEventInit()));
   }
 
@@ -81,7 +99,7 @@ export class SeekBarHandler {
     return true;
   };
 
-  private dispatchMouseClickEvent(seekBar: ChildNode): void {
+  private dispatchMouseClickEvent(seekBar: Element): void {
     const mouseDownHandler = () => {
       const mouseEventInit = this.getCursorPositionMouseEventInit();
 
@@ -94,13 +112,13 @@ export class SeekBarHandler {
     seekBar.dispatchEvent(new MouseEvent('mousedown'));
   }
 
-  private stopSeeking(seekBar: ChildNode): void {
+  private stopSeeking(seekBar: Element): void {
     this.resetCursorPosition();
     this.isScrubbing = false;
     this.dispatchMouseLeaveEvent(seekBar);
   }
 
-  private dispatchMouseLeaveEvent(seekBar: ChildNode): void {
+  private dispatchMouseLeaveEvent(seekBar: Element): void {
     seekBar.dispatchEvent(new MouseEvent('mouseleave'));
   }
 
@@ -133,8 +151,8 @@ function isSeekBarWrapper(element: HTMLElement): boolean {
   return Array.from(element.classList).findIndex(className => className.includes('-ui-seekbar')) > -1;
 }
 
-function getSeekBar(seekBarWrapper: HTMLElement): ChildNode {
-  return seekBarWrapper.firstChild;
+function getSeekBar(seekBarWrapper: HTMLElement): Element {
+  return seekBarWrapper.children.item(0);
 }
 
 function getPlaybackPositionMarker(seekBarWrapper: HTMLElement): HTMLElement {
