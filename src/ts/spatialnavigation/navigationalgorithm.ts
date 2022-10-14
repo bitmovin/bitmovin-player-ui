@@ -76,7 +76,3 @@ export function getElementInDirection(
     .sort(([angleA, lengthA], [angleB, lengthB]) => (angleA - angleB) + (lengthA - lengthB))
     .shift()?.[2];
 }
-
-
-
-

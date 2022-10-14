@@ -59,7 +59,7 @@ describe('getElementInDirection', () => {
   });
 
   it('should return null if there is no active element', () => {
-    const elementInDirection = getElementInDirection(undefined, nonOverlappingHtmlElements, Direction.RIGHT);
+    const elementInDirection = getElementInDirection(undefined as any, nonOverlappingHtmlElements, Direction.RIGHT);
 
     expect(elementInDirection).toEqual(null);
   });

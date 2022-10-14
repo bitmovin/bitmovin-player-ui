@@ -25,7 +25,7 @@ describe('SpatialNavigation', () => {
 
     otherNavigationContainer = new SettingsPanel({});
     otherNavigationContainer.hide();
-    otherNavigationGroup = new NavigationGroup(otherNavigationContainer);
+    otherNavigationGroup = new NavigationGroup(otherNavigationContainer as any);
 
     spatialNavigation = new Spatialnavigation(rootNavigationGroup, otherNavigationGroup);
   });

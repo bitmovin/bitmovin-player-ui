@@ -45,7 +45,7 @@ describe('getHtmlElementsFromComponents', () => {
       createListBoxMock(...listBoxEntries),
     );
 
-    const htmlElements = getHtmlElementsFromComponents([container]);
+    const htmlElements = getHtmlElementsFromComponents([container as Container<any>]);
 
     expect(htmlElements).toEqual(expectedHtmlElements);
   });
@@ -59,7 +59,7 @@ describe('getHtmlElementsFromComponents', () => {
     ];
     const components = expectedHtmlElements.map(elem => createComponentMock(elem));
 
-    const htmlElements = getHtmlElementsFromComponents(components);
+    const htmlElements = getHtmlElementsFromComponents(components as any);
 
     expect(htmlElements).toEqual(expectedHtmlElements);
   });

@@ -45,7 +45,7 @@ describe('SeekBarHandler', () => {
       ${Direction.LEFT}
       ${Direction.RIGHT}
     `('should return false if the event target is not the seek bar with direction=$direction', ({ direction }) => {
-      expect(rootNavigationGroupMock.onNavigation(direction, document.createElement('div'))).toBeFalsy();
+      expect(rootNavigationGroupMock.onNavigation!(direction, document.createElement('div'))).toBeFalsy();
     });
 
     test.each`
@@ -53,7 +53,7 @@ describe('SeekBarHandler', () => {
       ${Direction.DOWN}
       ${Direction.UP}
     `('should stop scrubbing when onDirection is called with direction=$direction', ({ direction }) => {
-      expect(rootNavigationGroupMock.onNavigation(direction, seekBarWrapperMock)).toBeFalsy();
+      expect(rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock)).toBeFalsy();
 
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mouseleave'));
       expect(eventSubscriberOnSpy).not.toHaveBeenCalled();
@@ -61,7 +61,7 @@ describe('SeekBarHandler', () => {
 
     it('should increase scrubSpeedPercentage', () => {
       for(let i = 0; i < 20; i++) {
-        rootNavigationGroupMock.onNavigation(Direction.RIGHT, seekBarWrapperMock);
+        rootNavigationGroupMock.onNavigation!(Direction.RIGHT, seekBarWrapperMock);
       }
       const mousePositions = scrubbingPositionsFromMouseEventMock(seekBarMock.dispatchEvent);
 
@@ -74,7 +74,7 @@ describe('SeekBarHandler', () => {
       ${Direction.LEFT}
     `('should reset scrubSpeedPercentage when stop scrubbing with direction=$direction', ({ direction }) => {
       for(let i = 0; i < 20; i++) {
-        rootNavigationGroupMock.onNavigation(direction, seekBarWrapperMock);
+        rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock);
       }
 
       const mousePositions = scrubbingPositionsFromMouseEventMock(seekBarMock.dispatchEvent);
@@ -84,8 +84,8 @@ describe('SeekBarHandler', () => {
       seekBarMock.dispatchEvent.mockReset();
       jest.advanceTimersByTime(1000);
 
-      rootNavigationGroupMock.onNavigation(direction, seekBarWrapperMock);
-      rootNavigationGroupMock.onNavigation(direction, seekBarWrapperMock);
+      rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock);
+      rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock);
 
       const mousePositionsAfterReset = scrubbingPositionsFromMouseEventMock(seekBarMock.dispatchEvent);
       const afterResetScrubbingSpeeds = getScrubbingSpeeds(mousePositionsAfterReset);
@@ -101,19 +101,19 @@ describe('SeekBarHandler', () => {
       ${Action.SELECT}
       ${Action.BACK}
     `('should return false if the event target is not the seek bar with action=$action', ({ action }) => {
-      expect(rootNavigationGroupMock.onAction(action, document.createElement('div'))).toBeFalsy();
+      expect(rootNavigationGroupMock.onAction!(action, document.createElement('div'))).toBeFalsy();
     });
 
     it('should ignore SELECT actions when not actively scrubbing', () => {
-      expect(rootNavigationGroupMock.onAction(Action.SELECT, seekBarWrapperMock)).toBeFalsy();
+      expect(rootNavigationGroupMock.onAction!(Action.SELECT, seekBarWrapperMock)).toBeFalsy();
     });
 
     it('should dispatch a mouse click event when the SELECT action is triggered while scrubbing', () => {
 
-      eventSubscriberOnSpy.mockImplementation((_, __, handler: EventListener) => handler(null));
-      rootNavigationGroupMock.onNavigation(Direction.RIGHT, seekBarWrapperMock);
+      eventSubscriberOnSpy.mockImplementation((_, __, handler: EventListener) => handler(null as any));
+      rootNavigationGroupMock.onNavigation!(Direction.RIGHT, seekBarWrapperMock);
 
-      expect(rootNavigationGroupMock.onAction(Action.SELECT, seekBarWrapperMock)).toBeTruthy();
+      expect(rootNavigationGroupMock.onAction!(Action.SELECT, seekBarWrapperMock)).toBeTruthy();
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mousedown'));
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mouseleave'));
       expect(eventSubscriberOnSpy).toHaveBeenCalledWith(seekBarMock, 'mousedown', jasmine.any(Function));
@@ -124,7 +124,7 @@ describe('SeekBarHandler', () => {
     });
 
     it('should stop seeking when the BACK action is triggered', () => {
-      expect(rootNavigationGroupMock.onAction(Action.BACK, seekBarWrapperMock)).toBeTruthy();
+      expect(rootNavigationGroupMock.onAction!(Action.BACK, seekBarWrapperMock)).toBeTruthy();
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mouseleave'));
       expect(eventSubscriberOnSpy).not.toHaveBeenCalled();
     });
@@ -202,4 +202,3 @@ function isIncreasing(values: number[]): boolean {
 
   return true;
 }
-
