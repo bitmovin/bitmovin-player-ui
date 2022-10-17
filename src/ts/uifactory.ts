@@ -444,13 +444,13 @@ export namespace UIFactory {
 
     const seekBar = new SeekBar({ label: new SeekBarLabel() });
     const playbackToggleOverlay = new PlaybackToggleOverlay();
-    let subtitleToggleButton = new SettingsToggleButton({
+    const subtitleToggleButton = new SettingsToggleButton({
       settingsPanel: subtitleListPanel,
       autoHideWhenNoActiveSettings: true,
       cssClass: 'ui-subtitlesettingstogglebutton',
       text: i18n.getLocalizer('settings.subtitles'),
     });
-    let audioToggleButton = new SettingsToggleButton({
+    const audioToggleButton = new SettingsToggleButton({
       settingsPanel: audioTrackListPanel,
       autoHideWhenNoActiveSettings: true,
       cssClass: 'ui-audiotracksettingstogglebutton',
