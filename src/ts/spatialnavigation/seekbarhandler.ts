@@ -2,7 +2,7 @@ import { RootNavigationGroup } from './rootnavigationgroup';
 import { Action, Direction } from './spatialnavigation';
 import { NodeEventSubscriber } from './nodeeventsubscriber';
 
-const DefaultSeemAmountPercentage = 0.005;
+const DefaultScrubSpeedPercentage = 0.005;
 const ScrubSpeedClearInterval = 100;
 const ScrubSpeedMultiplier = 1.1;
 
@@ -11,7 +11,7 @@ export class SeekBarHandler {
   private readonly eventSubscriber: NodeEventSubscriber;
   private isScrubbing = false;
   private scrubSpeedResetTimeout: number;
-  private scrubSpeedPercentage = DefaultSeemAmountPercentage;
+  private scrubSpeedPercentage = DefaultScrubSpeedPercentage;
 
   constructor(private readonly rootNavigationGroup: RootNavigationGroup) {
     this.rootNavigationGroup.onAction = this.onAction;
@@ -23,7 +23,7 @@ export class SeekBarHandler {
     clearTimeout(this.scrubSpeedResetTimeout);
     this.scrubSpeedPercentage *= ScrubSpeedMultiplier;
     this.scrubSpeedResetTimeout = window.setTimeout(
-      () => this.scrubSpeedPercentage = DefaultSeemAmountPercentage, ScrubSpeedClearInterval,
+      () => this.scrubSpeedPercentage = DefaultScrubSpeedPercentage, ScrubSpeedClearInterval,
     );
   }
 
