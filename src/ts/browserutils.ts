@@ -22,7 +22,7 @@ export class BrowserUtils {
     if (!this.windowExists()) {
       return false;
     }
-    return navigator && navigator.userAgent && /Android/.test(navigator.userAgent) && !this.isHisense
+    return navigator && navigator.userAgent && /Android/.test(navigator.userAgent) && !this.isHisense;
   }
 
   static get isIOS(): boolean {
