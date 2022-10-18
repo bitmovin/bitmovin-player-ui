@@ -4,8 +4,8 @@ import { PlaybackToggleButton } from '../../src/ts/components/playbacktogglebutt
 import { SettingsToggleButton } from '../../src/ts/components/settingstogglebutton';
 import { getFirstDomElement, mockComponent } from '../helper/mockComponent';
 import * as navigationAlgorithm from '../../src/ts/spatialnavigation/navigationalgorithm';
-import { Action, Direction } from '../../src/ts/spatialnavigation/spatialnavigation';
 import { NodeEventSubscriber } from '../../src/ts/spatialnavigation/nodeeventsubscriber';
+import { Action, Direction } from '../../src/ts/spatialnavigation/types';
 
 jest.mock('../../src/ts/spatialnavigation/navigationalgorithm.ts');
 jest.mock('../../src/ts/spatialnavigation/nodeeventsubscriber.ts');

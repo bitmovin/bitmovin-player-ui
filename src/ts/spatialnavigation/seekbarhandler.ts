@@ -1,6 +1,6 @@
 import { RootNavigationGroup } from './rootnavigationgroup';
-import { Action, Direction } from './spatialnavigation';
 import { NodeEventSubscriber } from './nodeeventsubscriber';
+import { Action, Direction } from './types';
 
 const DefaultScrubSpeedPercentage = 0.005;
 const ScrubSpeedClearInterval = 100;

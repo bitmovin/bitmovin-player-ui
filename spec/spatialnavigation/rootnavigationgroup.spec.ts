@@ -1,7 +1,7 @@
 import { UIContainer } from '../../src/ts/components/uicontainer';
 import { mockClass } from '../helper/mockClass';
 import { RootNavigationGroup } from '../../src/ts/spatialnavigation/rootnavigationgroup';
-import { Action, Direction } from '../../src/ts/spatialnavigation/spatialnavigation';
+import { Action, Direction } from '../../src/ts/spatialnavigation/types';
 
 jest.mock('../../src/ts/spatialnavigation/navigationgroup.ts');
 

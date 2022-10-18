@@ -1,10 +1,11 @@
-import { Action, Direction, SpatialNavigation } from '../../src/ts/spatialnavigation/spatialnavigation';
+import { SpatialNavigation } from '../../src/ts/spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from '../../src/ts/spatialnavigation/rootnavigationgroup';
 import { UIContainer } from '../../src/ts/components/uicontainer';
 import { NavigationGroup } from '../../src/ts/spatialnavigation/navigationgroup';
 import { SettingsPanel } from '../../src/ts/components/settingspanel';
 import { NodeEventSubscriber } from '../../src/ts/spatialnavigation/nodeeventsubscriber';
 import { SeekBarHandler } from '../../src/ts/spatialnavigation/seekbarhandler';
+import { Action, Direction } from '../../src/ts/spatialnavigation/types';
 
 jest.mock('../../src/ts/spatialnavigation/seekbarhandler.ts');
 jest.mock('../../src/ts/spatialnavigation/nodeeventsubscriber.ts');
@@ -68,16 +69,16 @@ describe('SpatialNavigation', () => {
   describe('handleKeyEvent', () => {
       it('should call handle navigation on active group on key event', () => {
         const rootHandleNavigationSpy = jest.spyOn(rootNavigationGroup, 'handleNavigation');
-        spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown',{ key:'Up', keyCode: 19 } as any));
+        spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key:'Up', keyCode: 38 } as any));
 
         expect(rootHandleNavigationSpy).toHaveBeenCalledWith(Direction.UP);
       });
 
     it('should call handle action on active group on key event', () => {
       const rootHandleActionSpy = jest.spyOn(rootNavigationGroup, 'handleAction');
-      spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown',{ key:'Escape', keyCode: 27 } as any));
+      spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key:'Escape', keyCode: 27 } as any));
 
-      expect(rootHandleActionSpy).toHaveBeenCalledWith(Action.BACK  );
+      expect(rootHandleActionSpy).toHaveBeenCalledWith(Action.BACK);
     });
 
   });

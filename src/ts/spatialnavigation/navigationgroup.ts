@@ -1,14 +1,10 @@
-import { Action, Direction } from './spatialnavigation';
 import { Container } from '../components/container';
 import { Component } from '../components/component';
 import { getElementInDirection } from './navigationalgorithm';
 import { getHtmlElementsFromComponents } from './gethtmlelementsfromcomponents';
 import { NodeEventSubscriber } from './nodeeventsubscriber';
 import { isSettingsPanel } from './typeguards';
-
-type Callback<T> = (data: T, target: HTMLElement, preventDefault: () => void) => void;
-export type NavigationCallback = Callback<Direction>;
-export type ActionCallback = Callback<Action>;
+import { Action, ActionCallback, Callback, Direction, NavigationCallback } from './types';
 
 export class NavigationGroup {
   private activeElement?: HTMLElement;

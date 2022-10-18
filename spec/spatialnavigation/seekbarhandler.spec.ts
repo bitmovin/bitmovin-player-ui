@@ -1,7 +1,7 @@
 import { RootNavigationGroup } from '../../src/ts/spatialnavigation/rootnavigationgroup';
 import { SeekBarHandler } from '../../src/ts/spatialnavigation/seekbarhandler';
 import { NodeEventSubscriber } from '../../src/ts/spatialnavigation/nodeeventsubscriber';
-import { Action, Direction } from '../../src/ts/spatialnavigation/spatialnavigation';
+import { Action, Direction } from '../../src/ts/spatialnavigation/types';
 
 jest.mock('../../src/ts/spatialnavigation/nodeeventsubscriber');
 

@@ -1,5 +1,5 @@
 import { getElementInDirection } from '../../src/ts/spatialnavigation/navigationalgorithm';
-import { Direction } from '../../src/ts/spatialnavigation/spatialnavigation';
+import { Direction } from '../../src/ts/spatialnavigation/types';
 
 describe('getElementInDirection', () => {
   const currentHtmlElement = mockHtmlElement(100, 100, 100, 100); // center (150, 150)

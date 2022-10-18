@@ -1,4 +1,4 @@
-import { Direction } from './spatialnavigation';
+import { Direction } from './types';
 
 interface Vector {
   x: number;

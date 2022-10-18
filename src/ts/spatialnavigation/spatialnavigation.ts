@@ -2,52 +2,9 @@ import { NavigationGroup } from './navigationgroup';
 import { RootNavigationGroup } from './rootnavigationgroup';
 import { NodeEventSubscriber } from './nodeeventsubscriber';
 import { SeekBarHandler } from './seekbarhandler';
-
-export enum Direction {
-  UP = 'up',
-  DOWN = 'down',
-  LEFT = 'left',
-  RIGHT = 'right',
-}
-
-export enum Action {
-  SELECT = 'select',
-  BACK = 'back',
-}
-
-const KeyMap: {[key: number]: Direction | Action} = {
-  4: Direction.LEFT,
-  21: Direction.LEFT,
-  37: Direction.LEFT,
-  214: Direction.LEFT,
-  205: Direction.LEFT,
-  218: Direction.LEFT,
-  5: Direction.RIGHT,
-  22: Direction.RIGHT,
-  39: Direction.RIGHT,
-  213: Direction.RIGHT,
-  206: Direction.RIGHT,
-  217: Direction.RIGHT,
-  29460: Direction.UP,
-  19: Direction.UP,
-  38: Direction.UP,
-  211: Direction.UP,
-  203: Direction.UP,
-  215: Direction.UP,
-  29461: Direction.DOWN,
-  20: Direction.DOWN,
-  40: Direction.DOWN,
-  212: Direction.DOWN,
-  204: Direction.DOWN,
-  216: Direction.DOWN,
-  29443: Action.SELECT,
-  13: Action.SELECT,
-  67: Action.SELECT,
-  32: Action.SELECT,
-  23: Action.SELECT,
-  195: Action.SELECT,
-  27: Action.BACK,
-};
+import { getKeyMapForPlatform } from './keymap';
+import { Action, Direction, KeyMap } from './types';
+import { isAction, isDirection } from './typeguards';
 
 export class SpatialNavigation {
   private unsubscribeVisibilityChangesFns: (() => void)[];
@@ -55,6 +12,7 @@ export class SpatialNavigation {
   private readonly activeNavigationGroups: NavigationGroup[];
   private readonly eventSubscriber: NodeEventSubscriber;
   private readonly seekBarHandler: SeekBarHandler;
+  private readonly keyMap: KeyMap;
 
   constructor(rootNavigationGroup: RootNavigationGroup, ...navigationGroups: NavigationGroup[]) {
     this.seekBarHandler = new SeekBarHandler(rootNavigationGroup);
@@ -63,6 +21,7 @@ export class SpatialNavigation {
     this.unsubscribeVisibilityChangesFns = [];
     this.eventSubscriber = new NodeEventSubscriber();
     this.navigationGroups = [rootNavigationGroup, ...navigationGroups];
+    this.keyMap = getKeyMapForPlatform();
 
     this.subscribeToNavigationGroupVisibilityChanges();
     this.attachKeyEventHandler();
@@ -133,7 +92,7 @@ export class SpatialNavigation {
   }
 
   private handleKeyEvent = (e: KeyboardEvent): void => {
-    const event: Direction | Action | undefined = KeyMap[getKeyCode(e)];
+    const event: Direction | Action | undefined = this.keyMap[getKeyCode(e)];
 
     if (isDirection(event)) {
       this.getActiveNavigationGroup().handleNavigation(event);
@@ -155,14 +114,6 @@ export class SpatialNavigation {
     this.navigationGroups.forEach(group => group.release());
     this.seekBarHandler.release();
   }
-}
-
-function isDirection(direction: unknown): direction is Direction {
-  return typeof direction === 'string' && Object.values<string>(Direction).includes(direction);
-}
-
-function isAction(action: unknown): action is Action {
-  return typeof action === 'string' && Object.values<string>(Action).includes(action);
 }
 
 function getKeyCode(event: KeyboardEvent): number {

@@ -1,7 +1,7 @@
 import { NavigationGroup } from './navigationgroup';
 import { Component } from '../components/component';
-import { Action, Direction } from './spatialnavigation';
 import { UIContainer } from '../components/uicontainer';
+import { Action, Direction } from './types';
 
 export class RootNavigationGroup extends NavigationGroup {
   constructor(public readonly container: UIContainer, ...elements: Component<unknown>[]) {
