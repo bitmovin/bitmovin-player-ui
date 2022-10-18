@@ -43,15 +43,14 @@ export class NavigationGroup {
     return this.activeElement;
   }
 
-  public focusElement(element: HTMLElement): void {
+  private focusElement(element: HTMLElement): void {
     this.blurActiveElement();
     this.activeElement = element;
     this.activeElement.focus();
   }
 
-  public blurActiveElement(): void {
+  private blurActiveElement(): void {
     this.activeElement?.blur();
-    this.activeElement = undefined;
   }
 
   private focusFirstElement(): void {
@@ -104,6 +103,7 @@ export class NavigationGroup {
     if (this.activeElement) {
       this.activeElementBeforeDisable = this.activeElement;
       this.blurActiveElement();
+      this.activeElement = undefined;
     }
   }
 
