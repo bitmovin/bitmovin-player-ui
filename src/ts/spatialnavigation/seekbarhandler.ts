@@ -142,7 +142,7 @@ export class SeekBarHandler {
 }
 
 function isSeekBarWrapper(element: HTMLElement): boolean {
-  return Array.from(element.classList).findIndex(className => className.includes('-ui-seekbar')) > -1;
+  return Array.from(element.classList).findIndex(className => /-ui-seekbar$/.test(className)) > -1;
 }
 
 function getSeekBar(seekBarWrapper: HTMLElement): Element {
