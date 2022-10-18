@@ -49,7 +49,7 @@ const KeyMap: {[key: number]: Direction | Action} = {
   27: Action.BACK,
 };
 
-export class Spatialnavigation {
+export class SpatialNavigation {
   private unsubscribeVisibilityChangesFns: (() => void)[];
   private readonly navigationGroups: NavigationGroup[] = [];
   private readonly activeNavigationGroups: NavigationGroup[];

@@ -47,7 +47,7 @@ import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './main';
-import { Spatialnavigation } from './spatialnavigation/spatialnavigation';
+import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { NavigationGroup } from './spatialnavigation/navigationgroup';
 
@@ -506,7 +506,7 @@ export namespace UIFactory {
       ],
     });
 
-    const spatialNavigation = new Spatialnavigation(
+    const spatialNavigation = new SpatialNavigation(
       new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, audioToggleButton, subtitleToggleButton),
       new NavigationGroup(subtitleListPanel, subtitleListBox),
       new NavigationGroup(audioTrackListPanel, audioTrackListBox),

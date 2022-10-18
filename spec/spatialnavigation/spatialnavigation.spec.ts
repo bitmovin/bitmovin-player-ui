@@ -1,4 +1,4 @@
-import { Action, Direction, Spatialnavigation } from '../../src/ts/spatialnavigation/spatialnavigation';
+import { Action, Direction, SpatialNavigation } from '../../src/ts/spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from '../../src/ts/spatialnavigation/rootnavigationgroup';
 import { UIContainer } from '../../src/ts/components/uicontainer';
 import { NavigationGroup } from '../../src/ts/spatialnavigation/navigationgroup';
@@ -11,7 +11,7 @@ jest.mock('../../src/ts/spatialnavigation/nodeeventsubscriber.ts');
 
 describe('SpatialNavigation', () => {
 
-  let spatialNavigation: Spatialnavigation;
+  let spatialNavigation: SpatialNavigation;
   let rootNavigationGroup: RootNavigationGroup;
   let rootNavigationContainer: UIContainer;
 
@@ -27,7 +27,7 @@ describe('SpatialNavigation', () => {
     otherNavigationContainer.hide();
     otherNavigationGroup = new NavigationGroup(otherNavigationContainer as any);
 
-    spatialNavigation = new Spatialnavigation(rootNavigationGroup, otherNavigationGroup);
+    spatialNavigation = new SpatialNavigation(rootNavigationGroup, otherNavigationGroup);
   });
 
   describe('default active navigationGroup', () => {
@@ -37,7 +37,7 @@ describe('SpatialNavigation', () => {
 
     it('should set visible navigation group as default navigation group', () => {
       otherNavigationContainer.show();
-      spatialNavigation = new Spatialnavigation(rootNavigationGroup, otherNavigationGroup);
+      spatialNavigation = new SpatialNavigation(rootNavigationGroup, otherNavigationGroup);
 
       expect(spatialNavigation.getActiveNavigationGroup()).toEqual(otherNavigationGroup);
     });

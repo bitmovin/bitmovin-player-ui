@@ -13,7 +13,7 @@ import { VolumeController } from './volumecontroller';
 import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 import { FocusVisibilityTracker } from './focusvisibilitytracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './mobilev3playerapi';
-import { Spatialnavigation } from './spatialnavigation/spatialnavigation';
+import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 
 export interface LocalizationConfig {
   /**
@@ -87,7 +87,7 @@ export interface UIConditionResolver {
 export interface UIVariant {
   ui: UIContainer;
   condition?: UIConditionResolver;
-  spatialNavigation?: Spatialnavigation;
+  spatialNavigation?: SpatialNavigation;
 }
 
 export class UIManager {
@@ -562,7 +562,7 @@ export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
   private ui: UIContainer;
   private config: InternalUIConfig;
-  protected spatialNavigation?: Spatialnavigation;
+  protected spatialNavigation?: SpatialNavigation;
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
@@ -577,7 +577,7 @@ export class UIInstanceManager {
     onRelease: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
-  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig, spatialNavigation?: Spatialnavigation) {
+  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig, spatialNavigation?: SpatialNavigation) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
