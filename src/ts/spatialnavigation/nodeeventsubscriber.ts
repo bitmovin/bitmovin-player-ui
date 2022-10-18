@@ -1,5 +1,8 @@
 type Listeners = ([Node, EventListenerOrEventListenerObject, boolean | AddEventListenerOptions])[];
 
+/**
+ * Allows to subscribe to Node events.
+ */
 export class NodeEventSubscriber {
   private readonly attachedListeners: Map<keyof HTMLElementEventMap, Listeners>;
 
@@ -15,6 +18,14 @@ export class NodeEventSubscriber {
     return this.attachedListeners.get(type);
   }
 
+  /**
+   * Adds the given event listener to the node.
+   *
+   * @param node The node to remove the event listener from
+   * @param type The event to listen to
+   * @param listener The listener to remove
+   * @param options The event listener options
+   */
   public on(
     node: Node,
     type: keyof HTMLElementEventMap,
@@ -25,6 +36,14 @@ export class NodeEventSubscriber {
     this.getEventListenersOfType(type).push([node, listener, options]);
   }
 
+  /**
+   * Removes the given event listener from the node.
+   *
+   * @param node The node to attach the event listener to
+   * @param type The event to listen to
+   * @param listener The listener to add
+   * @param options The event listener options
+   */
   public off(
     node: Node,
     type: keyof HTMLElementEventMap,
@@ -43,6 +62,9 @@ export class NodeEventSubscriber {
     }
   }
 
+  /**
+   * Removes all attached event listeners.
+   */
   public release(): void {
     this.attachedListeners.forEach((listenersOfType, type) => {
       listenersOfType.forEach(([element, listener, options]) => {

@@ -61,7 +61,7 @@ describe('getElementInDirection', () => {
   it('should return null if there is no active element', () => {
     const elementInDirection = getElementInDirection(undefined as any, nonOverlappingHtmlElements, Direction.RIGHT);
 
-    expect(elementInDirection).toEqual(null);
+    expect(elementInDirection).toEqual(undefined);
   });
 
   it('should return the closer element even if its angle is larger', () => {

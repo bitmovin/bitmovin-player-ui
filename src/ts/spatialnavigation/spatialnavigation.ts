@@ -6,6 +6,13 @@ import { getKeyMapForPlatform } from './keymap';
 import { Action, Direction, KeyMap } from './types';
 import { isAction, isDirection } from './typeguards';
 
+/**
+ * SpatialNavigation keeps track of all navigation groups, and updates the active navigation group when visibility
+ * changes on group container.
+ *
+ * It listens to key events, and triggers either handleNavigation or handleAction on the active group.
+ * SeekBarHandler will get instantiated with root navigation group and disposed on release of the spatial navigation.
+ */
 export class SpatialNavigation {
   private unsubscribeVisibilityChangesFns: (() => void)[];
   private readonly navigationGroups: NavigationGroup[] = [];
@@ -47,6 +54,10 @@ export class SpatialNavigation {
     }
   };
 
+  /**
+   * Subscribes to onHide and onShow on all navigation groups containers as Spatial navigation tracks active navigation
+   * group based on their container visibility.
+   */
   private subscribeToNavigationGroupVisibilityChanges(): void {
     this.navigationGroups.forEach(group => {
       const onShowHandler = () => this.onShow(group);
@@ -67,6 +78,10 @@ export class SpatialNavigation {
     this.unsubscribeVisibilityChangesFns = [];
   }
 
+  /**
+   * It will enable group of which container is currently shown
+   * If there are no groups with containers that are currently visible, it will enable root navigation group
+   */
   private enableDefaultNavigationGroup(): void {
     const isShown = (group: NavigationGroup) => group.container.isShown();
     const groupToEnable = this.navigationGroups.find(isShown) ?? this.navigationGroups[0];
@@ -77,6 +92,9 @@ export class SpatialNavigation {
     }
   }
 
+  /**
+   * Disables navigation groups that are no longer active and calls enable on last pushed navigation group
+   */
   private updateEnabledNavigationGroup(): void {
     this.activeNavigationGroups.forEach((group, idx) => {
       if (idx < this.activeNavigationGroups.length - 1) {
@@ -87,10 +105,19 @@ export class SpatialNavigation {
     });
   }
 
+  /**
+   * Returns currently active navigation group
+   */
   public getActiveNavigationGroup(): NavigationGroup | undefined {
     return this.activeNavigationGroups[this.activeNavigationGroups.length - 1];
   }
 
+  /**
+   * Checks if keyboard event keycode is tracked either as Direction or Action and calls appropriate handler on active
+   * navigation group
+   *
+   * @param e {KeyboardEvent}
+   */
   private handleKeyEvent = (e: KeyboardEvent): void => {
     const event: Direction | Action | undefined = this.keyMap[getKeyCode(e)];
 
@@ -108,6 +135,11 @@ export class SpatialNavigation {
     }
   };
 
+  /**
+   * Dispose of SpatialNavigation
+   *
+   * Remove all event handlers, release seekbar handler and release all navigation groups.
+   */
   public release(): void {
     this.unsubscribeFromNavigationGroupVisibilityChanges();
     this.eventSubscriber.release();

@@ -6,6 +6,10 @@ const DefaultScrubSpeedPercentage = 0.005;
 const ScrubSpeedClearInterval = 100;
 const ScrubSpeedMultiplier = 1.1;
 
+/**
+ * Handles Spatial Navigation interaction with the seek bar. Ensures, that seek operations can be executed and that the
+ * scrubbing tooltip is shown as if the user scrubbed using the mouse/touchscreen.
+ */
 export class SeekBarHandler {
   private readonly cursorPosition = { x: 0, y: 0};
   private readonly eventSubscriber: NodeEventSubscriber;
@@ -132,6 +136,9 @@ export class SeekBarHandler {
     }
   };
 
+  /**
+   * Releases the SeekBraHandler, making sure all event subscribers are removed.
+   */
   public release(): void {
     this.eventSubscriber.release();
     this.rootNavigationGroup.onAction = undefined;

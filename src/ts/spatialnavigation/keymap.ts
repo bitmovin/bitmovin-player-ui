@@ -109,6 +109,9 @@ const DefaultKeyMap = {
   27: Action.BACK,
 };
 
+/**
+ * Returns the matching key map for the current platform.
+ */
 export function getKeyMapForPlatform(): KeyMap {
   const applicableKeyMap = [
     WebOsKeyMap,
