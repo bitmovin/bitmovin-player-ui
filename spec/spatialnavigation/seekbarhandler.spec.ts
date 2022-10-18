@@ -38,14 +38,20 @@ describe('SeekBarHandler', () => {
   });
 
   describe('onNavigation', () => {
+    let preventDefaultSpy: jest.Mock;
+
+    beforeEach(() => (preventDefaultSpy = jest.fn()));
+
     test.each`
       direction
       ${Direction.DOWN}
       ${Direction.UP}
       ${Direction.LEFT}
       ${Direction.RIGHT}
-    `('should return false if the event target is not the seek bar with direction=$direction', ({ direction }) => {
-      expect(rootNavigationGroupMock.onNavigation!(direction, document.createElement('div'))).toBeFalsy();
+    `("should not prevent default if the event target isn't the seekbar with direction=$direction", ({ direction }) => {
+      rootNavigationGroupMock.onNavigation!(direction, document.createElement('div'), preventDefaultSpy);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
     });
 
     test.each`
@@ -53,15 +59,16 @@ describe('SeekBarHandler', () => {
       ${Direction.DOWN}
       ${Direction.UP}
     `('should stop scrubbing when onDirection is called with direction=$direction', ({ direction }) => {
-      expect(rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock)).toBeFalsy();
+      rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock, preventDefaultSpy);
 
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mouseleave'));
       expect(eventSubscriberOnSpy).not.toHaveBeenCalled();
     });
 
     it('should increase scrubSpeedPercentage', () => {
       for(let i = 0; i < 20; i++) {
-        rootNavigationGroupMock.onNavigation!(Direction.RIGHT, seekBarWrapperMock);
+        rootNavigationGroupMock.onNavigation!(Direction.RIGHT, seekBarWrapperMock, preventDefaultSpy);
       }
       const mousePositions = scrubbingPositionsFromMouseEventMock(seekBarMock.dispatchEvent);
 
@@ -74,7 +81,7 @@ describe('SeekBarHandler', () => {
       ${Direction.LEFT}
     `('should reset scrubSpeedPercentage when stop scrubbing with direction=$direction', ({ direction }) => {
       for(let i = 0; i < 20; i++) {
-        rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock);
+        rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock, preventDefaultSpy);
       }
 
       const mousePositions = scrubbingPositionsFromMouseEventMock(seekBarMock.dispatchEvent);
@@ -84,8 +91,8 @@ describe('SeekBarHandler', () => {
       seekBarMock.dispatchEvent.mockReset();
       jest.advanceTimersByTime(1000);
 
-      rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock);
-      rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock);
+      rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock, preventDefaultSpy);
+      rootNavigationGroupMock.onNavigation!(direction, seekBarWrapperMock, preventDefaultSpy);
 
       const mousePositionsAfterReset = scrubbingPositionsFromMouseEventMock(seekBarMock.dispatchEvent);
       const afterResetScrubbingSpeeds = getScrubbingSpeeds(mousePositionsAfterReset);
@@ -96,24 +103,33 @@ describe('SeekBarHandler', () => {
   });
 
   describe('onAction', () => {
+    let preventDefaultSpy: jest.Mock;
+
+    beforeEach(() => (preventDefaultSpy = jest.fn()));
+
     test.each`
       action
       ${Action.SELECT}
       ${Action.BACK}
-    `('should return false if the event target is not the seek bar with action=$action', ({ action }) => {
-      expect(rootNavigationGroupMock.onAction!(action, document.createElement('div'))).toBeFalsy();
+    `('should not prevent default if the event target is not the seek bar with action=$action', ({ action }) => {
+      rootNavigationGroupMock.onAction!(action, document.createElement('div'), preventDefaultSpy);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
     });
 
     it('should ignore SELECT actions when not actively scrubbing', () => {
-      expect(rootNavigationGroupMock.onAction!(Action.SELECT, seekBarWrapperMock)).toBeFalsy();
+      rootNavigationGroupMock.onAction!(Action.SELECT, seekBarWrapperMock, preventDefaultSpy)
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
     });
 
     it('should dispatch a mouse click event when the SELECT action is triggered while scrubbing', () => {
-
       eventSubscriberOnSpy.mockImplementation((_, __, handler: EventListener) => handler(null as any));
-      rootNavigationGroupMock.onNavigation!(Direction.RIGHT, seekBarWrapperMock);
+      rootNavigationGroupMock.onNavigation!(Direction.RIGHT, seekBarWrapperMock, preventDefaultSpy);
+      preventDefaultSpy.mockReset();
+      rootNavigationGroupMock.onAction!(Action.SELECT, seekBarWrapperMock, preventDefaultSpy);
 
-      expect(rootNavigationGroupMock.onAction!(Action.SELECT, seekBarWrapperMock)).toBeTruthy();
+      expect(preventDefaultSpy).toHaveBeenCalled();
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mousedown'));
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mouseleave'));
       expect(eventSubscriberOnSpy).toHaveBeenCalledWith(seekBarMock, 'mousedown', jasmine.any(Function));
@@ -124,7 +140,9 @@ describe('SeekBarHandler', () => {
     });
 
     it('should stop seeking when the BACK action is triggered', () => {
-      expect(rootNavigationGroupMock.onAction!(Action.BACK, seekBarWrapperMock)).toBeTruthy();
+      rootNavigationGroupMock.onAction!(Action.BACK, seekBarWrapperMock, preventDefaultSpy);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mouseleave'));
       expect(eventSubscriberOnSpy).not.toHaveBeenCalled();
     });
@@ -191,14 +209,4 @@ function getScrubbingSpeeds(scrubbingPositions: number[]): number[] {
   }
 
   return speeds;
-}
-
-function isIncreasing(values: number[]): boolean {
-  for (let idx = 1; idx < values.length; idx++) {
-    if (values[idx] < values[idx - 1]) {
-      return false;
-    }
-  }
-
-  return true;
 }
