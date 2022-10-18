@@ -90,8 +90,8 @@ export class Spatialnavigation {
 
   private subscribeToNavigationGroupVisibilityChanges(): void {
     this.navigationGroups.forEach(group => {
-      const onShowHandler = this.onShow.bind(this, group);
-      const onHideHandler = this.onHide.bind(this, group);
+      const onShowHandler = () => this.onShow(group);
+      const onHideHandler = () => this.onHide(group);
 
       group.container.onShow.subscribe(onShowHandler);
       group.container.onHide.subscribe(onHideHandler);
