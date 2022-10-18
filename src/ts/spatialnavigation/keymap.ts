@@ -1,7 +1,8 @@
 import { Action, Direction, KeyMap } from './types';
+import { BrowserUtils } from '../browserutils';
 
 const TizenKeyMap = {
-  isApplicable: () => navigator.userAgent.includes('Tizen'),
+  isApplicable: () => BrowserUtils.isTizen,
   keyCodes: {
     // D-pad Up
     38: Direction.UP,
@@ -19,7 +20,7 @@ const TizenKeyMap = {
 };
 
 const WebOsKeyMap = {
-  isApplicable: () => navigator.userAgent.includes('Web0S') || navigator.userAgent.includes('NetCast'),
+  isApplicable: () => BrowserUtils.isWebOs,
   keyCodes: {
     // D-pad Up
     38: Direction.UP,
@@ -37,7 +38,7 @@ const WebOsKeyMap = {
 };
 
 const PlayStationKeyMap = {
-  isApplicable: () => /PlayStation 5/i.test(navigator.userAgent),
+  isApplicable: () => BrowserUtils.isPlayStation,
   keyCodes: {
     // D-pad Up
     38: Direction.UP,
@@ -55,7 +56,7 @@ const PlayStationKeyMap = {
 };
 
 const AndroidKeyMap = {
-  isApplicable: () => navigator.userAgent.includes('Android') && !navigator.userAgent.includes('Hisense'),
+  isApplicable: () => BrowserUtils.isAndroid,
   keyCodes: {
     // D-pad Up
     19: Direction.UP,
@@ -75,7 +76,7 @@ const AndroidKeyMap = {
 };
 
 const HisenseKeyMap = {
-  isApplicable: () => navigator.userAgent.includes('Hisense'),
+  isApplicable: () => BrowserUtils.isHisense,
   keyCodes: {
     // D-pad Up
     38: Direction.UP,
