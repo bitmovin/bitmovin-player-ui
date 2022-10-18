@@ -6,8 +6,9 @@ import { getHtmlElementsFromComponents } from './gethtmlelementsfromcomponents';
 import { NodeEventSubscriber } from './nodeeventsubscriber';
 import { isSettingsPanel } from './typeguards';
 
-export type NavigationCallback = (direction: Direction, target: HTMLElement) => boolean;
-export type ActionCallback = (action: Action, target: HTMLElement) => boolean;
+type Callback<T> = (data: T, target: HTMLElement, preventDefault: () => void) => void;
+export type NavigationCallback = Callback<Direction>;
+export type ActionCallback = Callback<Action>;
 
 export class NavigationGroup {
   private activeElement?: HTMLElement;
@@ -22,20 +23,20 @@ export class NavigationGroup {
   }
 
   /**
-   * Adds onNavigation override
+   * Adds onNavigation override.
+   * Calling preventDefault will not execute default implementation
    * @param direction {Direction}
    * @param target {HTMLElement}
-   *
-   * @returns Boolean - true means it should stop propagation, and false means it should be handled by default handler
+   * @param preventDefault {() => void}
    */
   public onNavigation?: NavigationCallback;
 
   /**
-   * Adds onAction override
+   * Adds onAction override.
+   * Calling preventDefault will not execute default implementation
    * @param action {Action}
    * @param target {HTMLElement}
-   *
-   * @returns Boolean - true means it should stop propagation, and false means it should be handled by default handler
+   * @param preventDefault {() => void}
    */
   public onAction?: ActionCallback;
 
@@ -83,20 +84,23 @@ export class NavigationGroup {
     }
   }
 
-  public handleNavigation(direction: Direction): void {
-    const stopPropagation = this.onNavigation?.(direction, this.activeElement) ?? false;
+  private handleInput<T>(data: T, defaultHandler: (data: T) => void, userHandler?: Callback<T>): void {
+    let handleDefault = true;
+    const preventDefault = () => (handleDefault = false);
 
-    if (!stopPropagation) {
-      this.defaultNavigationHandler(direction);
+    userHandler?.(data, this.activeElement, preventDefault);
+
+    if (handleDefault) {
+      defaultHandler.call(this, data);
     }
   }
 
-  public handleAction(action: Action): void {
-    const stopPropagation = this.onAction?.(action, this.activeElement) ?? false;
+  public handleNavigation(direction: Direction): void {
+    this.handleInput(direction, this.defaultNavigationHandler, this.onNavigation);
+  }
 
-    if (!stopPropagation) {
-      this.defaultActionHandler(action);
-    }
+  public handleAction(action: Action): void {
+    this.handleInput(action, this.defaultActionHandler, this.onAction);
   }
 
   public disable(): void {

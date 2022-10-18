@@ -31,11 +31,10 @@ describe('RootNavigationGroup', () => {
       expect(containerUiMock.hideUi).toHaveBeenCalled();
     });
 
-    it('should not call hideUi on UIContainer on ACtion.SELECT', () => {
+    it('should not call hideUi on UIContainer on Action.SELECT', () => {
       rootNavigationGroup['defaultActionHandler'](Action.SELECT);
 
       expect(containerUiMock.hideUi).not.toHaveBeenCalled();
-
     })
   });
 
