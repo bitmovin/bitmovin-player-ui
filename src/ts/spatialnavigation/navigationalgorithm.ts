@@ -111,16 +111,17 @@ export function getElementInDirection(
     // don't take the current element into account
     .filter(elem => elem !== activeElement)
     // get the angle between, and distance to any other element from the current element
-    .map(elem => {
-      const elemVector = getElementVector(elem);
-      const dist = distance(activeElemVector, elemVector);
-      const angle = calculateAngle(activeElemVector, elemVector, direction);
-      return [angle, dist, elem] as const;
+    .map(element => {
+      const elementVector = getElementVector(element);
+      const dist = distance(activeElemVector, elementVector);
+      const angle = calculateAngle(activeElemVector, elementVector, direction);
+
+      return { angle, dist, element };
     })
     // filter out any elements that don't align with the direction we're trying to move in
-    .filter(([angle]) => angle <= cutoffAngle)
+    .filter(({ angle }) => angle <= cutoffAngle)
     // sort the resulting elements based on their distance to the current element in ascending order
-    .sort(([angleA, lengthA], [angleB, lengthB]) => (angleA - angleB) + (lengthA - lengthB))
+    .sort(({ angle: angleA, dist: distA }, { angle: angleB, dist: distB }) => (angleA - angleB) + (distA - distB))
     // return the element closest to the current element
-    .shift()?.[2];
+    .shift()?.element;
 }
