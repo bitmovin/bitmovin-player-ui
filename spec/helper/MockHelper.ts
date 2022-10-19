@@ -55,6 +55,7 @@ export namespace MockHelper {
       empty: jest.fn(),
       append: jest.fn(),
       attr: jest.fn(),
+      get: jest.fn(),
     }));
 
     return new DOMClass() as jest.Mocked<DOM>;
