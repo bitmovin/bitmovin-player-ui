@@ -50,7 +50,7 @@ export class BrowserUtils {
     if (!this.windowExists()) {
       return false;
     }
-    return navigator && navigator.userAgent && /PlayStation 5/i.test(navigator.userAgent);
+    return navigator && navigator.userAgent && /PlayStation/i.test(navigator.userAgent);
   }
 
   static get isWebOs(): boolean {
