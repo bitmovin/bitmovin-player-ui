@@ -52,8 +52,8 @@ export class SeekBarHandler {
   private initializeCursorPosition(seekBarWrapper: HTMLElement): void {
     const playbackPositionMarker = getPlaybackPositionMarker(seekBarWrapper);
     const rect = playbackPositionMarker.getBoundingClientRect();
-    const startX = rect.x + (rect.width / 2);
-    const startY = rect.y;
+    const startX = rect.left + (rect.width / 2);
+    const startY = rect.top;
 
     this.cursorPosition.x = startX;
     this.cursorPosition.y = startY;

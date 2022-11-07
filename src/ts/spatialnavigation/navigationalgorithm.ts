@@ -60,8 +60,8 @@ function getElementVector(element: HTMLElement): Vector {
   const boundingRect = element.getBoundingClientRect();
 
   return {
-    x: boundingRect.x + boundingRect.width / 2,
-    y: boundingRect.y + boundingRect.height / 2,
+    x: boundingRect.left + boundingRect.width / 2,
+    y: boundingRect.top + boundingRect.height / 2,
   };
 }
 
