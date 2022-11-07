@@ -57,12 +57,19 @@ function distance(a: Vector, b: Vector): number {
  * @param element The element to get the center of
  */
 function getElementVector(element: HTMLElement): Vector {
-  const boundingRect = element.getBoundingClientRect();
+  const boundingRect: DOMRect | ClientRect = element.getBoundingClientRect();
 
-  return {
-    x: boundingRect.x + boundingRect.width / 2,
-    y: boundingRect.y + boundingRect.height / 2,
-  };
+  if (boundingRect instanceof ClientRect) {
+    return {
+      x: boundingRect.left + boundingRect.width / 2,
+      y: boundingRect.top + boundingRect.height / 2,
+    };
+  } else if (boundingRect instanceof DOMRect) {
+    return {
+      x: boundingRect.x + boundingRect.width / 2,
+      y: boundingRect.y + boundingRect.height / 2,
+    };
+  }
 }
 
 /**
