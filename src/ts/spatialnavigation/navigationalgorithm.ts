@@ -59,9 +59,20 @@ function distance(a: Vector, b: Vector): number {
 function getElementVector(element: HTMLElement): Vector {
   const boundingRect = element.getBoundingClientRect();
 
+  let _x: number;
+  let _y: number;
+
+  if (boundingRect.hasOwnProperty('x') && boundingRect.hasOwnProperty('y')) {
+    _x = boundingRect.x;
+    _y = boundingRect.y;
+  } else {
+    _x = boundingRect.left;
+    _y = boundingRect.top;
+  }
+
   return {
-    x: boundingRect.left + boundingRect.width / 2,
-    y: boundingRect.top + boundingRect.height / 2,
+    x: _x + boundingRect.width / 2,
+    y: _y + boundingRect.height / 2,
   };
 }
 
