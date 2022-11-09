@@ -1,6 +1,7 @@
 import { RootNavigationGroup } from './rootnavigationgroup';
 import { NodeEventSubscriber } from './nodeeventsubscriber';
 import { Action, Direction } from './types';
+import {getBoundingRectFromElement} from './navigationalgorithm';
 
 const DefaultScrubSpeedPercentage = 0.005;
 const ScrubSpeedClearInterval = 100;
@@ -51,21 +52,11 @@ export class SeekBarHandler {
 
   private initializeCursorPosition(seekBarWrapper: HTMLElement): void {
     const playbackPositionMarker = getPlaybackPositionMarker(seekBarWrapper);
-    const rect = playbackPositionMarker.getBoundingClientRect();
+    const rect = getBoundingRectFromElement(playbackPositionMarker);
 
-    let _x: number;
-    let _y: number;
 
-    if (rect.hasOwnProperty('x') && rect.hasOwnProperty('y')) {
-      _x = rect.x;
-      _y = rect.y;
-    } else {
-      _x = rect.left;
-      _y = rect.top;
-    }
-
-    const startX = _x + (rect.width / 2);
-    const startY = _y;
+    const startX = rect.x + (rect.width / 2);
+    const startY = rect.y;
 
     this.cursorPosition.x = startX;
     this.cursorPosition.y = startY;

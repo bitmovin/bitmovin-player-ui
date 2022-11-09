@@ -57,22 +57,11 @@ function distance(a: Vector, b: Vector): number {
  * @param element The element to get the center of
  */
 function getElementVector(element: HTMLElement): Vector {
-  const boundingRect = element.getBoundingClientRect();
-
-  let _x: number;
-  let _y: number;
-
-  if (boundingRect.hasOwnProperty('x') && boundingRect.hasOwnProperty('y')) {
-    _x = boundingRect.x;
-    _y = boundingRect.y;
-  } else {
-    _x = boundingRect.left;
-    _y = boundingRect.top;
-  }
+  const boundingRect = getBoundingRectFromElement(element);
 
   return {
-    x: _x + boundingRect.width / 2,
-    y: _y + boundingRect.height / 2,
+    x: boundingRect.x + boundingRect.width / 2,
+    y: boundingRect.y + boundingRect.height / 2,
   };
 }
 
@@ -136,3 +125,22 @@ export function getElementInDirection(
     // return the element closest to the current element
     .shift()?.element;
 }
+
+/**
+ * Returns DOMRect like object containing horizontal X and vertical Y coordinates from and HTMLElement.
+ * Handles use-cases for getBoundingClientRect when the return type can be either
+ * a ClientRect or DOMRect object type.
+ *
+ * @param element The currently selected element
+ */
+export function getBoundingRectFromElement(element: HTMLElement) {
+  const boundingRect = element.getBoundingClientRect();
+
+  if (typeof boundingRect.x !== 'number' && typeof boundingRect.y !== 'number') {
+    boundingRect.x = boundingRect.left;
+    boundingRect.y = boundingRect.height;
+  }
+
+  return boundingRect;
+}
+
