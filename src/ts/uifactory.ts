@@ -478,7 +478,13 @@ function angelUI() {
       new Container({
         components: [
           new PlaybackToggleButton(),
-          new VolumeToggleButton(),
+            new Container({
+              components: [
+                new VolumeToggleButton(),
+                new VolumeSlider(),
+              ],
+              cssClasses: ['controlbar-volume'],
+            }),
           new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentAndTotalTime, hideInLivePlayback: true, cssClass: 'progress-label' }),
           new MomentLabel({}),
           new Spacer(),
