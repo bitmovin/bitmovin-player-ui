@@ -57,7 +57,7 @@ function distance(a: Vector, b: Vector): number {
  * @param element The element to get the center of
  */
 function getElementVector(element: HTMLElement): Vector {
-  const boundingRect = getBoundingRectFromElement(element);
+  const boundingRect = element.getBoundingClientRect();
 
   return {
     x: boundingRect.x + boundingRect.width / 2,
@@ -125,22 +125,3 @@ export function getElementInDirection(
     // return the element closest to the current element
     .shift()?.element;
 }
-
-/**
- * Returns DOMRect like object containing horizontal X and vertical Y coordinates from and HTMLElement.
- * Handles use-cases for getBoundingClientRect when the return type can be either
- * a ClientRect or DOMRect object type.
- *
- * @param element The currently selected element
- */
-export function getBoundingRectFromElement(element: HTMLElement) {
-  const boundingRect = element.getBoundingClientRect();
-
-  if (typeof boundingRect.x !== 'number' && typeof boundingRect.y !== 'number') {
-    boundingRect.x = boundingRect.left;
-    boundingRect.y = boundingRect.height;
-  }
-
-  return boundingRect;
-}
-
