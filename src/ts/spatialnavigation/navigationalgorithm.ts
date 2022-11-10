@@ -138,7 +138,7 @@ export function getBoundingRectFromElement(element: HTMLElement) {
 
   if (typeof boundingRect.x !== 'number' && typeof boundingRect.y !== 'number') {
     boundingRect.x = boundingRect.left;
-    boundingRect.y = boundingRect.height;
+    boundingRect.y = boundingRect.top;
   }
 
   return boundingRect;
