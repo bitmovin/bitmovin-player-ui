@@ -113,9 +113,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
         message = customizedMessage;
       }
 
-      this.errorLabel.setText(message);
-      this.tvNoiseBackground.start();
-      this.show();
+      this.display(message);
     };
 
     if (isMobileV3PlayerAPI(player)) {
@@ -139,6 +137,12 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
         this.hide();
       }
     });
+  }
+
+  display(errorMessage: string): void {
+    this.errorLabel.setText(errorMessage);
+    this.tvNoiseBackground.start();
+    this.show();
   }
 
   release(): void {
