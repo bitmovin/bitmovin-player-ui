@@ -50,6 +50,7 @@ import { AudioTrackListBox } from './main';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { NavigationGroup } from './spatialnavigation/navigationgroup';
+import { ListNavigationGroup } from './spatialnavigation/ListNavigationGroup';
 
 export namespace UIFactory {
 
@@ -508,8 +509,8 @@ export namespace UIFactory {
 
     const spatialNavigation = new SpatialNavigation(
       new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, audioToggleButton, subtitleToggleButton),
-      new NavigationGroup(subtitleListPanel, subtitleListBox),
-      new NavigationGroup(audioTrackListPanel, audioTrackListBox),
+      new ListNavigationGroup(subtitleListPanel, subtitleListBox),
+      new ListNavigationGroup(audioTrackListPanel, audioTrackListBox),
     );
 
     return {
