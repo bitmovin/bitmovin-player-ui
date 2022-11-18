@@ -2,7 +2,7 @@ import { NavigationGroup } from './navigationgroup';
 import { Action, Direction } from './types';
 
 export class ListNavigationGroup extends NavigationGroup {
-  public handleAction(action: Action) {
+  public handleAction(action: Action): void {
     super.handleAction(action);
 
     if (action === Action.SELECT) {
@@ -11,7 +11,7 @@ export class ListNavigationGroup extends NavigationGroup {
     }
   }
 
-  public handleNavigation(direction: Direction) {
+  public handleNavigation(direction: Direction): void {
     super.handleNavigation(direction);
 
     if (![Direction.UP, Direction.DOWN].includes(direction)) {
