@@ -50,6 +50,7 @@ import { AudioTrackListBox } from './main';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { NavigationGroup } from './spatialnavigation/navigationgroup';
+import { ReplayButton } from './components/replaybutton';
 
 export namespace UIFactory {
 
@@ -515,6 +516,104 @@ export namespace UIFactory {
     return {
       ui: uiContainer,
       spatialNavigation: spatialNavigation,
+    };
+  }
+
+  export function buildDisneyPlusTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return new UIManager(player, [{ ...disneyPlusTvUI() }], config);
+  }
+
+  export function disneyPlusTvUI() {
+    let subtitleOverlay = new SubtitleOverlay();
+
+    let mainSettingsPanelPage = new SettingsPanelPage({
+      components: [
+        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+      ],
+    });
+
+    let settingsPanel = new SettingsPanel({
+      components: [
+        mainSettingsPanelPage,
+      ],
+      hidden: true,
+    });
+
+    let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
+      settingsPanel: settingsPanel,
+      overlay: subtitleOverlay,
+    });
+
+    const subtitleSelectBox = new SubtitleSelectBox();
+
+    let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
+      targetPage: subtitleSettingsPanelPage,
+      container: settingsPanel,
+      ariaLabel: i18n.getLocalizer('settings.subtitles'),
+      text: i18n.getLocalizer('open'),
+    });
+
+    mainSettingsPanelPage.addComponent(
+      new SettingsPanelItem(
+        new SubtitleSettingsLabel({
+          text: i18n.getLocalizer('settings.subtitles'),
+          opener: subtitleSettingsOpenButton,
+        }),
+        subtitleSelectBox,
+        {
+          role: 'menubar',
+        },
+      ));
+
+    settingsPanel.addComponent(subtitleSettingsPanelPage);
+
+    const replayButton = new ReplayButton();
+    const playbackToggleButton = new PlaybackToggleButton();
+    const settingsToggleButton = new SettingsToggleButton({ settingsPanel: settingsPanel });
+
+    let controlBar = new ControlBar({
+      components: [
+        settingsPanel,
+        new Container({
+          components: [
+            new SeekBar({ label: new SeekBarLabel() }),
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+          ],
+          cssClasses: ['controlbar-top'],
+        }),
+        new Container({
+          components: [
+            new Spacer(),
+            replayButton,
+            playbackToggleButton,
+            new Spacer(),
+            settingsToggleButton,
+          ],
+          cssClasses: ['controlbar-bottom'],
+        }),
+      ],
+    });
+
+    const uiContainer = new UIContainer({
+      components: [
+        subtitleOverlay,
+        new BufferingOverlay(),
+        controlBar,
+        new TitleBar(),
+        new RecommendationOverlay(),
+        new ErrorMessageOverlay(),
+      ],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+      cssClasses: ['ui-skin-tv-disneyplus'],
+    });
+
+    return {
+      ui: uiContainer,
     };
   }
 }
