@@ -2,6 +2,8 @@ body {
   margin: 1em;
 }
 
+.container { max-width: 50000; width: 100%; }
+
 // sass-lint:disable no-ids
 #player {
   position: relative;
