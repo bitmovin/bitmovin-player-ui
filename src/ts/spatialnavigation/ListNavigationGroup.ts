@@ -38,7 +38,8 @@ export class ListNavigationGroup extends NavigationGroup {
     super.handleNavigation(direction);
 
     if (!this.listNavigationDirections.includes(direction)) {
-      // close the container on any input other than up and down
+      // close the container on navigation inputs that don't align
+      // with the orientation of the list
       this.handleAction(Action.BACK);
     }
   }
