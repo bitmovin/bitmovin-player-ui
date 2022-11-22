@@ -739,4 +739,126 @@ export namespace UIFactory {
       ui: uiContainer,
     };
   }
+
+  export function buildYoutubeTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return new UIManager(player, [{
+      ...youtubeTvUI(),
+    }], config);
+  }
+
+  export function youtubeTvUI() {
+
+  const uiContainer = new UIContainer({
+    cssClasses: ['ui-skin-tv-youtube'],
+    hideDelay: 2000,
+    hidePlayerStateExceptions: [
+      PlayerUtils.PlayerState.Prepared,
+      PlayerUtils.PlayerState.Paused,
+      PlayerUtils.PlayerState.Idle,
+      PlayerUtils.PlayerState.Finished,
+    ],
+    // userInteractionEventSource: 
+  });
+
+  const subtitleListBox = new SubtitleListBox();
+  const subtitleListPanel = new SettingsPanel({
+    components: [
+      new SettingsPanelPage({
+        components: [
+          new SettingsPanelItem(null, subtitleListBox),
+        ],
+      }),
+    ],
+    hidden: false,
+  });
+
+  const audioTrackListBox = new AudioTrackListBox();
+  const audioTrackListPanel = new SettingsPanel({
+    components: [
+      new SettingsPanelPage({
+        components: [
+          new SettingsPanelItem(null, audioTrackListBox),
+        ],
+      }),
+    ],
+    hidden: true,
+  });
+
+  const closeButton = new CloseButton({ target: uiContainer });
+
+  const seekBar = new SeekBar({ label: new SeekBarLabel });
+
+  const subtitleToggleButton = new SettingsToggleButton({
+    settingsPanel: subtitleListPanel,
+    autoHideWhenNoActiveSettings: true,
+    cssClass: 'ui-subtitlesettingstogglebutton',
+    text: i18n.getLocalizer('settings.subtitles'),
+  });
+  const audioToggleButton = new SettingsToggleButton({
+    settingsPanel: audioTrackListPanel,
+    autoHideWhenNoActiveSettings: true,
+    cssClass: 'ui-audiotracksettingstogglebutton',
+    ariaLabel: i18n.getLocalizer('settings.audio.track'),
+    text: i18n.getLocalizer('settings.audio.track'),
+  });
+
+  const playbackToggleButton = new PlaybackToggleButton()
+  const replayButton = new ReplayButton()
+  const nextButton = new NextButton()
+
+  const uiComponents = new UIContainer({
+    components: [
+      new SubtitleOverlay(),
+      new BufferingOverlay(),
+      // playbackToggleOverlay,
+      new ControlBar({
+        components: [
+          new Container({
+            components: [
+              playbackToggleButton,
+              new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+              seekBar,
+              new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
+            ],
+            cssClasses: ['controlbar-top'],
+          }),
+        ],
+      }),
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              closeButton,
+              replayButton,
+              nextButton,
+              new MetadataLabel({ content: MetadataLabelContent.Title }),
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+          new Container({
+            components: [
+              subtitleListPanel,
+              audioTrackListPanel,
+              new MetadataLabel({ content: MetadataLabelContent.Description }),
+            ],
+            cssClasses: ['ui-titlebar-bottom'],
+          }),
+        ],
+      }),
+      new RecommendationOverlay(),
+      new ErrorMessageOverlay(),
+    ],
+  });
+
+  uiContainer.addComponent(uiComponents);
+
+  const spatialNavigation = new SpatialNavigation(
+    new RootNavigationGroup(uiContainer, seekBar, nextButton, replayButton, closeButton),
+  );
+
+  return {
+    ui: uiContainer,
+    spatialNavigation: spatialNavigation,
+  };
+  }
 }
