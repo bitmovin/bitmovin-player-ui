@@ -603,11 +603,14 @@ export namespace UIFactory {
   }
 
   export function disneyPlusTvUI() {
-    let subtitleOverlay = new SubtitleOverlay();
+    const subtitleOverlay = new SubtitleOverlay();
+    const audioTrackList = new AudioTrackListBox();
+    const subtitleList = new SubtitleListBox();
 
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), audioTrackList),
+        new SettingsPanelItem(i18n.getLocalizer('settings.subtitles'), subtitleList),
       ],
     });
 
@@ -622,27 +625,6 @@ export namespace UIFactory {
       settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
     });
-
-    const subtitleSelectBox = new SubtitleSelectBox();
-
-    let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
-      targetPage: subtitleSettingsPanelPage,
-      container: settingsPanel,
-      ariaLabel: i18n.getLocalizer('settings.subtitles'),
-      text: i18n.getLocalizer('open'),
-    });
-
-    mainSettingsPanelPage.addComponent(
-      new SettingsPanelItem(
-        new SubtitleSettingsLabel({
-          text: i18n.getLocalizer('settings.subtitles'),
-          opener: subtitleSettingsOpenButton,
-        }),
-        subtitleSelectBox,
-        {
-          role: 'menubar',
-        },
-      ));
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);
 
@@ -695,6 +677,7 @@ export namespace UIFactory {
 
     const spatialNavigation = new SpatialNavigation(
       new RootNavigationGroup(uiContainer, seekBar, replayButton, playbackToggleButton, settingsToggleButton),
+      new NavigationGroup(settingsPanel, audioTrackList, subtitleList),
     );
 
     return {
