@@ -48,9 +48,17 @@
     &:hover {
       @include svg-icon-shadow;
     }
+
+    &:focus {
+      background-image: svg('assets/skin-modern/disney/playX.svg');
+    }
   
     &.#{$prefix}-on {
       background-image: svg('assets/skin-modern/disney/pause.svg');
+
+      &:focus {
+        background-image: svg('assets/skin-modern/disney/pauseX.svg');
+      }
     }
   }
 
