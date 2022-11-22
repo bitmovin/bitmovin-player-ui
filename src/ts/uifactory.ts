@@ -649,13 +649,14 @@ export namespace UIFactory {
     const replayButton = new ReplayButton();
     const playbackToggleButton = new PlaybackToggleButton();
     const settingsToggleButton = new SettingsToggleButton({ settingsPanel: settingsPanel });
+    const seekBar = new SeekBar({ label: new SeekBarLabel() });
 
     let controlBar = new ControlBar({
       components: [
         settingsPanel,
         new Container({
           components: [
-            new SeekBar({ label: new SeekBarLabel() }),
+            seekBar,
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top'],
@@ -687,12 +688,18 @@ export namespace UIFactory {
         PlayerUtils.PlayerState.Prepared,
         PlayerUtils.PlayerState.Paused,
         PlayerUtils.PlayerState.Finished,
+        PlayerUtils.PlayerState.Idle,
       ],
       cssClasses: ['ui-skin-tv-disneyplus'],
     });
 
+    const spatialNavigation = new SpatialNavigation(
+      new RootNavigationGroup(uiContainer, seekBar, replayButton, playbackToggleButton, settingsToggleButton),
+    );
+
     return {
       ui: uiContainer,
+      spatialNavigation: spatialNavigation
     };
   }
 
