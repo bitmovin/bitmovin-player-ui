@@ -78,12 +78,20 @@
     &:hover {
       @include svg-icon-shadow;
     }
+
+    &:focus {
+      background-image: svg('assets/skin-modern/disney/restartX.svg');
+    }
   }
 
   .#{$prefix}-ui-settingstogglebutton {
     @extend %ui-settingstogglebutton;
   
     background-image: svg('assets/skin-modern/disney/settings.svg');
+
+    &:focus {
+      background-image: svg('assets/skin-modern/disney/settingsX.svg');
+    }
   }
 
   .#{$prefix}-seekbar-backdrop,
