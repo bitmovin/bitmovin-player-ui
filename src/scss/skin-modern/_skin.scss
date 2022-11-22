@@ -32,6 +32,7 @@
 @import 'components/recommendationoverlay';
 @import 'components/clickoverlay';
 @import 'components/hugereplaybutton';
+@import 'components/replaybutton';
 @import 'components/playbacktimelabel';
 @import 'components/bufferingoverlay';
 @import 'components/playbacktoggleoverlay';
@@ -47,6 +48,7 @@
 @import 'skin-smallscreen';
 @import 'skin-tv';
 @import 'skin-tv-netflix';
+@import 'skin-tv-disneyplus';
 
 .#{$prefix}-ui-uicontainer {
   color: $color-primary;

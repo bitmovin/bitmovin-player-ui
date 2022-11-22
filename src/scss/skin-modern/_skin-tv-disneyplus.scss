@@ -1,0 +1,96 @@
+@import 'variables';
+@import 'mixins';
+
+.#{$prefix}-ui-skin-tv-disneyplus {
+  $accentColor: rgba(93, 167, 255, 1);
+  $greyish: rgba(255, 255, 255, 0.3);
+  $white: rgba(255, 255, 255, 1);
+
+  font-family: 'Avenir' !important;
+  font-style: normal !important;
+
+  $large-size: 3.5vh;
+  $medium-size: 2vh;
+
+  .#{$prefix}-ui-titlebar > .#{$prefix}-container-wrapper,
+  .#{$prefix}-ui-controlbar > .#{$prefix}-container-wrapper {
+      padding: 2em;
+  }
+
+  .#{$prefix}-ui-titlebar {
+    padding: 0;
+
+    .#{$prefix}-label-metadata-title {
+      font-size: $large-size;
+      font-weight: bold;
+    }
+
+    .#{$prefix}-label-metadata-description {
+      font-size: $medium-size;
+    }
+  }
+
+  .#{$prefix}-controlbar-bottom 
+  .#{$prefix}-container-wrapper 
+  > * {
+    margin: auto 1em;
+  }
+
+  // COMPONENT CSS OVERRIDES
+  .#{$prefix}-ui-playbacktogglebutton {
+    @extend %ui-button;
+  
+    background-image: svg('assets/skin-modern/disney/play.svg');
+  
+    &:hover {
+      @include svg-icon-shadow;
+    }
+  
+    &.#{$prefix}-on {
+      background-image: svg('assets/skin-modern/disney/pause.svg');
+    }
+  }
+
+  .#{$prefix}-ui-replaybutton {
+    @extend %ui-button;
+  
+    background-image: svg('assets/skin-modern/disney/restart.svg');
+  
+    &:hover {
+      @include svg-icon-shadow;
+    }
+  }
+
+  .#{$prefix}-ui-settingstogglebutton {
+    @extend %ui-settingstogglebutton;
+  
+    background-image: svg('assets/skin-modern/disney/settings.svg');
+  }
+
+  .#{$prefix}-seekbar-backdrop,
+  .#{$prefix}-seekbar-bufferlevel,
+  .#{$prefix}-seekbar-seekposition,
+  .#{$prefix}-seekbar-playbackposition {
+    border-radius: 9px !important;
+  }
+
+  .#{$prefix}-seekbar-playbackposition-marker {
+    background-color: $white !important;
+    border: solid !important;
+    width: 0.1em !important;
+    margin-left: 0.4em !important;
+    border-radius: 6px !important;
+  }
+
+  .#{$prefix}-seekbar-backdrop {
+    background-color: $greyish !important;
+  }
+
+  .#{$prefix}-seekbar-bufferlevel {
+    background-color: rgba(0, 0, 0, 0) !important;
+  }
+
+  .#{$prefix}-seekbar-playbackposition {
+    background-color: $accentColor !important;
+  }
+}

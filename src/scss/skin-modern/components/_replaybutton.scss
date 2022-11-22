@@ -1,0 +1,12 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-replaybutton {
+  @extend %ui-button;
+
+  background-image: svg('assets/skin-modern/images/replay.svg');
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+}
