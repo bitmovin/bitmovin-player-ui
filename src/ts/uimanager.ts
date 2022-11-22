@@ -485,7 +485,12 @@ export class UIManager {
 
   private releaseUi(ui: InternalUIInstanceManager): void {
     ui.releaseControls();
-    ui.getUI().getDomElement().remove();
+
+    const uiContainer = ui.getUI();
+    if (uiContainer.hasDomElement()) {
+      uiContainer.getDomElement().remove();
+    }
+
     ui.clearEventHandlers();
   }
 
