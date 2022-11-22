@@ -635,7 +635,6 @@ export namespace UIFactory {
 
     let controlBar = new ControlBar({
       components: [
-        settingsPanel,
         new Container({
           components: [
             seekBar,
@@ -662,6 +661,7 @@ export namespace UIFactory {
         new BufferingOverlay(),
         controlBar,
         new TitleBar(),
+        settingsPanel,
         new RecommendationOverlay(),
         new ErrorMessageOverlay(),
       ],

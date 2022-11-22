@@ -17,6 +17,13 @@
       padding: 2em;
   }
 
+  .#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+  }
+
   .#{$prefix}-ui-titlebar {
     padding: 1em 1em 0.5em;
 
