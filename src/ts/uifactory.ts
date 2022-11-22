@@ -43,10 +43,11 @@ import { Label } from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
-import { PlayerAPI } from 'bitmovin-player';
+import Player, { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './main';
+import { Button } from './components/button';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { NavigationGroup } from './spatialnavigation/navigationgroup';
@@ -54,7 +55,7 @@ import { NavigationGroup } from './spatialnavigation/navigationgroup';
 export namespace UIFactory {
 
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return UIFactory.buildModernUI(player, config);
+    return UIFactory.buildNetflixTvUI(player, config); //added for convenience
   }
 
   export function buildDefaultSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -430,6 +431,9 @@ export namespace UIFactory {
       hidden: true,
     });
 
+    
+    
+
     const audioTrackListBox = new AudioTrackListBox();
     const audioTrackListPanel = new SettingsPanel({
       components: [
@@ -517,4 +521,134 @@ export namespace UIFactory {
       spatialNavigation: spatialNavigation,
     };
   }
+
+  export function buildNetflixTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return new UIManager(player, [{
+      ...netflixTvUI(),
+    }], config);
+  }
+
+  export function netflixTvUI() {
+
+  const uiContainer = new UIContainer({
+    cssClasses: ['ui-skin-tv-netflix'],
+    hideDelay: 20000,
+    hidePlayerStateExceptions: [
+    PlayerUtils.PlayerState.Prepared,
+    PlayerUtils.PlayerState.Paused,
+    PlayerUtils.PlayerState.Idle,
+    PlayerUtils.PlayerState.Finished,
+  ],
+    // userInteractionEventSource: 
+ } );
+
+
+
+
+  const subtitleListBox = new SubtitleListBox();
+  const subtitleListPanel = new SettingsPanel({
+    components: [
+      new SettingsPanelPage({
+        components: [
+          new SettingsPanelItem(null, subtitleListBox),
+        ],
+      }),
+    ],
+    hidden: false,
+  });
+
+  const audioTrackListBox = new AudioTrackListBox();
+  const audioTrackListPanel = new SettingsPanel({
+    components: [
+      new SettingsPanelPage({
+        components: [
+          new SettingsPanelItem(null, audioTrackListBox),
+        ],
+      }),
+    ],
+    hidden: true,
+  });
+
+  const closeButton = new CloseButton({ target: uiContainer })
+
+
+
+  const seekBar = new SeekBar({ label: new SeekBarLabel,
+   });
+  const subtitleToggleButton = new SettingsToggleButton({
+    settingsPanel: subtitleListPanel,
+    autoHideWhenNoActiveSettings: true,
+    cssClass: 'ui-subtitlesettingstogglebutton',
+    text: i18n.getLocalizer('settings.subtitles'),
+  });
+  const audioToggleButton = new SettingsToggleButton({
+    settingsPanel: audioTrackListPanel,
+    autoHideWhenNoActiveSettings: true,
+    cssClass: 'ui-audiotracksettingstogglebutton',
+    ariaLabel: i18n.getLocalizer('settings.audio.track'),
+    text: i18n.getLocalizer('settings.audio.track'),
+  });
+
+  const playbackToggleButton = new PlaybackToggleButton()
+
+  const uiComponents = new UIContainer({
+    components: [
+      new SubtitleOverlay(),
+      new BufferingOverlay(),
+      // playbackToggleOverlay,
+      new ControlBar({
+        components: [
+          new Container({
+            components: [
+              playbackToggleButton,
+              new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+              seekBar,
+              new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
+            ],
+            cssClasses: ['controlbar-top'],
+          }),
+        ],
+      }),
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              closeButton,
+              subtitleToggleButton,
+              audioToggleButton,
+              new MetadataLabel({ content: MetadataLabelContent.Title }),
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+          new Container({
+            components: [
+              subtitleListPanel,
+              audioTrackListPanel,
+              new MetadataLabel({ content: MetadataLabelContent.Description }),
+            ],
+            cssClasses: ['ui-titlebar-bottom'],
+          }),
+        ],
+      }),
+      new RecommendationOverlay(),
+      new ErrorMessageOverlay(),
+    ],
+  });
+
+  uiContainer.addComponent(uiComponents);
+
+
+
+  const spatialNavigation = new SpatialNavigation(
+    new RootNavigationGroup(uiContainer, seekBar, audioToggleButton, subtitleToggleButton, closeButton),
+    new NavigationGroup(subtitleListPanel, subtitleListBox),
+    new NavigationGroup(audioTrackListPanel, audioTrackListBox),
+  );
+
+  return {
+    ui: uiContainer,
+    spatialNavigation: spatialNavigation,
+  };
+  }
+
 }

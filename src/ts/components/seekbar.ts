@@ -315,7 +315,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       playbackPositionHandler(event, forceUpdate);
     };
 
-    let restorePlayingState = function () {
+     let restorePlayingState = function () {
       // Continue playback after seek if player was playing when seek started
       if (isPlaying) {
         // use the same issuer here as in the pause on seek

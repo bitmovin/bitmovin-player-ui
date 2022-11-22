@@ -76,6 +76,12 @@
 
   .#{$prefix}-ui-controlbar {
     font-size: $medium-large-size;
+
+    .#{$prefix}-controlbar-top{
+      font-size: $medium-large-size;
+      justify-self: center;
+
+    }
   }
 
   .#{$prefix}-ui-playbacktimelabel {
@@ -99,4 +105,17 @@
     -webkit-filter: drop-shadow(0 0 0.3em $color-highlight);
     filter: drop-shadow(0 0 0.3em $color-highlight);
   }
+
+  .#{$prefix}-ui-hugeplaybacktogglebutton {
+    @extend %ui-button;
+
+    .#{$prefix}-off {
+      .#{$prefix}-image {
+        animation: fade-out $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
+        transition: visibility 0s $animation-duration;
+        visibility: hidden;
+      }
+  }
+}
+
 }
