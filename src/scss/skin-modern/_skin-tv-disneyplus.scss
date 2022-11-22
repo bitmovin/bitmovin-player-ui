@@ -31,12 +31,11 @@
   }
   
   .#{$prefix}-controlbar-bottom {
-    padding-top: 1em;
-    padding-bottom: 1em;
+    font-size: 2.5vh;
 
     .#{$prefix}-container-wrapper 
     > * {
-      margin: auto 1em;
+      margin: auto 0.5em;
     }
   }
 
