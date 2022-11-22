@@ -102,13 +102,6 @@
     background-color: $accentColor !important;
   }
 
-  .#{$prefix}-ui-seekbar {
-    .#{$prefix}-hidden {
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-  }
-
   .#{$prefix}-ui-seekbar-label {
     font-size: 4vw;
     border-radius: 5px;
