@@ -1,0 +1,196 @@
+@import 'variables';
+@import 'mixins';
+
+.#{$prefix}-ui-skin-tv-netflix {
+  $overscan-margin: 5%;
+  $large-size: 3.5vh;
+  $medium-large-size: 3vh;
+  $medium-size: 2vh;
+  $small-size: 1.5vh;
+  font-family: Helvetica, sans-serif;
+  letter-spacing: 0em;
+  
+  $color-highlight: #FFFFFF;
+  $color-background: #FFFFFF;
+
+  font-size: $medium-size;
+
+
+  .#{$prefix}-ui-titlebar {
+    > .#{$prefix}-container-wrapper {
+      margin: $overscan-margin $overscan-margin $small-size;
+      width: 100% - 2 * $overscan-margin;
+    }
+  }
+
+  .#{$prefix}-ui-titlebar-top {
+    height: 5vh;
+
+    > .#{$prefix}-container-wrapper {
+      width: 100%;
+      height: 5vh;
+      font-size: $small-size;
+
+      display: inline-flex;
+      // Start from the right side
+      justify-content: flex-end;
+      align-items: center;
+
+
+      .#{$prefix}-label-metadata-title {
+        // Moves rest of the items starting with this one to the very left
+        // margin auto will fill up the rest of the space in between.
+        margin-left: auto;
+        font-weight: bold;
+        font-size: $medium-size;
+      }
+    }
+  }
+
+
+
+  .#{$prefix}-ui-titlebar-bottom {
+    > .#{$prefix}-container-wrapper {
+      width: 100%;
+      font-size: $small-size;
+
+      position: relative;
+      display: inline-flex;
+      justify-content: right;
+      align-items: flex-start;
+    }
+
+    .#{$prefix}-label-metadata-description {
+      font-size: $small-size;
+      text-align: right;
+      width: 40%;
+    }
+  }
+
+  // Position the settings panel top left below the settings icons
+  .#{$prefix}-ui-settings-panel {
+    font-size: $small-size;
+    top: 0;
+    left: 0;
+    width: 10vw;
+    background-color: transparent;
+    > .#{$prefix}-container-wrapper {
+    // width: 20%;
+    }
+  }
+
+  .#{$prefix}-ui-listbox {
+
+    >.#{$prefix}-ui-listbox-button {
+      // background-color: blue
+    }
+  }
+
+  // Increase icon sizes and texts in the controlbar such as current time
+  .#{$prefix}-ui-subtitlesettingstogglebutton,
+  .#{$prefix}-ui-audiotracksettingstogglebutton {
+    font-size: $large-size;
+
+    &:hover {
+      filter: drop-shadow(0 0 0.3em $color-highlight);
+      -webkit-filter: drop-shadow(0 0 0.3em $color-highlight);
+    }
+  }
+
+  .#{$prefix}-ui-closebutton {
+    margin: 1vw;
+    background-image: svg('assets/skin-modern/images/return.svg');
+
+  }
+
+// Controlbar hierarchy
+  .#{$prefix}-ui-controlbar {
+    font-size: $medium-large-size;
+
+    > .#{$prefix}-container-wrapper {
+      margin: $overscan-margin auto;
+      width: 80%;
+
+      > .#{$prefix}-controlbar-top {
+        font-size: $medium-large-size;
+
+        > .#{$prefix}-container-wrapper {
+          font-size: $medium-large-size;
+          margin: auto;
+
+          > .#{$prefix}-ui-seekbar {
+            font-size: $small-size;
+            margin: auto;
+
+            >  .#{$prefix}-seekbar{
+
+              > .#{$prefix}-seekbar-backdrop{
+                // background-color: red
+              }
+              > .#{$prefix}-seekbar-bufferlevel{
+                background-color: grey
+              }
+              >  .#{$prefix}-seekbar-position{
+                background-color: red
+              }
+              >  .#{$prefix}-seekbar-playbackposition{
+                background-color: red
+              }
+              >  .#{$prefix}-seekbar{
+                background-color: red
+
+              }
+              >  .#{$prefix}-seekbar-markers{
+                visibility: hidden;
+              }
+              >  .#{$prefix}-seekbar-playbackposition-marker{
+                visibility: hidden;
+
+                
+              }
+
+              
+            }
+          };
+          > .#{$prefix}-ui-playbacktimelabel {
+            font-size: $medium-size;
+            margin: auto;
+            width: 5vw;
+
+          }
+        }
+      }
+    } 
+  }
+
+  .#{$prefix}-restart-button {
+    
+    background-image: svg('assets/skin-modern/images/play_netflix.svg');
+  }
+
+  .#{$prefix}-ui-playbacktogglebutton {
+    @extend %ui-button;
+    font-size: $medium-size;
+    padding-right: 1vw;
+  
+    background-image: svg('assets/skin-modern/images/play_netflix.svg');
+  
+    &:hover {
+      @include svg-icon-shadow;
+    }
+  
+    &.#{$prefix}-on {
+      background-image: svg('assets/skin-modern/images/pause_netflix.svg');
+
+    }
+  }
+
+  :focus {
+    transition: all .05s ease-in-out;
+    // box-shadow: $focus-element-box-shadow;
+    outline: none;
+    border: none;
+    -webkit-filter: drop-shadow(0 0 0.3em $color-highlight);
+    filter: drop-shadow(0 0 0.3em $color-highlight);
+  }
+}
