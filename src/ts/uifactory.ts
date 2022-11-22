@@ -537,15 +537,15 @@ export namespace UIFactory {
       PlayerUtils.PlayerState.Idle,
       PlayerUtils.PlayerState.Finished,
     ],
-    // userInteractionEventSource: 
+    // userInteractionEventSource:
   });
 
 
   const closeButton = new CloseButton({ target: uiContainer });
   const seekBar = new SeekBar({ label: new SeekBarLabel });
-  const playbackToggleButton = new PlaybackToggleButton()
-  const replayButton = new ReplayButton()
-  const nextButton = new NextButton()
+  const playbackToggleButton = new PlaybackToggleButton();
+  const replayButton = new ReplayButton();
+  const nextButton = new NextButton();
 
   const uiComponents = new UIContainer({
     components: [
@@ -699,7 +699,7 @@ export namespace UIFactory {
 
     return {
       ui: uiContainer,
-      spatialNavigation: spatialNavigation
+      spatialNavigation: spatialNavigation,
     };
   }
 
@@ -720,7 +720,6 @@ export namespace UIFactory {
       PlayerUtils.PlayerState.Idle,
       PlayerUtils.PlayerState.Finished,
     ],
-    // userInteractionEventSource: 
   });
 
   const subtitleListBox = new SubtitleListBox();
@@ -765,9 +764,9 @@ export namespace UIFactory {
     text: i18n.getLocalizer('settings.audio.track'),
   });
 
-  const playbackToggleButton = new PlaybackToggleButton()
-  const replayButton = new ReplayButton()
-  const nextButton = new NextButton()
+  const playbackToggleButton = new PlaybackToggleButton();
+  const replayButton = new ReplayButton();
+  const nextButton = new NextButton();
 
   const uiComponents = new UIContainer({
     components: [
