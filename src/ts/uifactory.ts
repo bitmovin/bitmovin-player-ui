@@ -52,11 +52,12 @@ import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { NavigationGroup } from './spatialnavigation/navigationgroup';
 import { ReplayButton } from './components/replaybutton';
+import { NextButton } from './components/nextbutton';
 
 export namespace UIFactory {
 
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return UIFactory.buildNetflixTvUI(player, config); //added for convenience
+    return UIFactory.buildModernUI(player, config);
   }
 
   export function buildDefaultSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -533,7 +534,7 @@ export namespace UIFactory {
 
   const uiContainer = new UIContainer({
     cssClasses: ['ui-skin-tv-netflix'],
-    hideDelay: 20000,
+    hideDelay: 2000,
     hidePlayerStateExceptions: [
     PlayerUtils.PlayerState.Prepared,
     PlayerUtils.PlayerState.Paused,
@@ -591,6 +592,8 @@ export namespace UIFactory {
   });
 
   const playbackToggleButton = new PlaybackToggleButton()
+  const replayButton = new ReplayButton()
+  const nextButton = new NextButton()
 
   const uiComponents = new UIContainer({
     components: [
@@ -615,8 +618,8 @@ export namespace UIFactory {
           new Container({
             components: [
               closeButton,
-              subtitleToggleButton,
-              audioToggleButton,
+              replayButton,
+              nextButton,
               new MetadataLabel({ content: MetadataLabelContent.Title }),
             ],
             cssClasses: ['ui-titlebar-top'],
@@ -641,9 +644,7 @@ export namespace UIFactory {
 
 
   const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(uiContainer, seekBar, audioToggleButton, subtitleToggleButton, closeButton),
-    new NavigationGroup(subtitleListPanel, subtitleListBox),
-    new NavigationGroup(audioTrackListPanel, audioTrackListBox),
+    new RootNavigationGroup(uiContainer, seekBar, nextButton, replayButton, closeButton),
   );
 
   return {

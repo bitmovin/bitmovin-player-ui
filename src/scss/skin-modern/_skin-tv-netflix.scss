@@ -48,7 +48,6 @@
   }
 
 
-
   .#{$prefix}-ui-titlebar-bottom {
     > .#{$prefix}-container-wrapper {
       width: 100%;
@@ -91,10 +90,6 @@
   .#{$prefix}-ui-audiotracksettingstogglebutton {
     font-size: $large-size;
 
-    &:hover {
-      filter: drop-shadow(0 0 0.3em $color-highlight);
-      -webkit-filter: drop-shadow(0 0 0.3em $color-highlight);
-    }
   }
 
   .#{$prefix}-ui-closebutton {
@@ -103,10 +98,27 @@
 
   }
 
+  .#{$prefix}-ui-replaybutton {
+    margin: 1vw;
+    background-image: svg('assets/skin-modern/images/restart.svg');
+
+  }
+
+  .#{$prefix}-ui-nextbutton {
+    @extend %ui-button;
+    margin: 1vw;
+    background-image: svg('assets/skin-modern/images/next_netflix.svg');
+  
+    &:hover {
+      @include svg-icon-shadow;
+    }
+  }
+
 // Controlbar hierarchy
   .#{$prefix}-ui-controlbar {
     font-size: $medium-large-size;
 
+    //WRAPPER
     > .#{$prefix}-container-wrapper {
       margin: $overscan-margin auto;
       width: 80%;
@@ -114,6 +126,7 @@
       > .#{$prefix}-controlbar-top {
         font-size: $medium-large-size;
 
+        //WRAPPER
         > .#{$prefix}-container-wrapper {
           font-size: $medium-large-size;
           margin: auto;
@@ -130,43 +143,51 @@
               > .#{$prefix}-seekbar-bufferlevel{
                 background-color: grey
               }
-              >  .#{$prefix}-seekbar-position{
-                background-color: red
-              }
               >  .#{$prefix}-seekbar-playbackposition{
                 background-color: red
-              }
-              >  .#{$prefix}-seekbar{
-                background-color: red
-
               }
               >  .#{$prefix}-seekbar-markers{
                 visibility: hidden;
               }
               >  .#{$prefix}-seekbar-playbackposition-marker{
                 visibility: hidden;
+              }  
 
-                
-              }
-
-              
             }
-          };
+
+            >  .#{$prefix}-ui-seekbar-label{
+              background: none;
+
+              >  .#{$prefix}-container-wrapper {
+
+                > .#{$prefix}-seekbar-label-inner {
+                  border: 0;
+
+                  &::after {
+                    content: none;
+                  }
+                }
+              }
+            }
+
+          }
+
           > .#{$prefix}-ui-playbacktimelabel {
             font-size: $medium-size;
             margin: auto;
             width: 5vw;
-
+  
           }
         }
       }
-    } 
+    }
+  } 
+
+  .#{$prefix}-seekbar-label-metadata {
+    visibility: hidden;
   }
 
-  .#{$prefix}-restart-button {
-    
-    background-image: svg('assets/skin-modern/images/play_netflix.svg');
-  }
+
 
   .#{$prefix}-ui-playbacktogglebutton {
     @extend %ui-button;
