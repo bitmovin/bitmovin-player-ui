@@ -1,0 +1,12 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-nextbutton {
+  @extend %ui-button;
+  
+  background-image: svg('assets/skin-modern/images/next_netflix.svg');
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+}
