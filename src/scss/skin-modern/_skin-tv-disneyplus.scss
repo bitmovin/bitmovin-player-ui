@@ -18,7 +18,7 @@
   }
 
   .#{$prefix}-ui-titlebar {
-    padding: 0;
+    padding: 1em 1em 0.5em;
 
     .#{$prefix}-label-metadata-title {
       font-size: $large-size;
@@ -29,11 +29,15 @@
       font-size: $medium-size;
     }
   }
+  
+  .#{$prefix}-controlbar-bottom {
+    padding-top: 1em;
+    padding-bottom: 1em;
 
-  .#{$prefix}-controlbar-bottom 
-  .#{$prefix}-container-wrapper 
-  > * {
-    margin: auto 1em;
+    .#{$prefix}-container-wrapper 
+    > * {
+      margin: auto 1em;
+    }
   }
 
   // COMPONENT CSS OVERRIDES
@@ -86,11 +90,62 @@
     background-color: $greyish !important;
   }
 
+  .#{$prefix}-seekbar-seekposition {
+    background-color: $accentColor !important;
+  }
+
   .#{$prefix}-seekbar-bufferlevel {
     background-color: rgba(0, 0, 0, 0) !important;
   }
 
   .#{$prefix}-seekbar-playbackposition {
     background-color: $accentColor !important;
+  }
+
+  .#{$prefix}-ui-seekbar {
+    .#{$prefix}-hidden {
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  }
+
+  .#{$prefix}-ui-seekbar-label {
+    font-size: 4vw;
+    border-radius: 5px;
+
+    .#{$prefix}-seekbar-label-inner {
+      border: none;
+
+      .#{$prefix}-container-wrapper {
+        .#{$prefix}-seekbar-label-metadata {
+          border-radius: 8px;
+          bottom: -1.2em;
+          background: none;
+
+          .#{$prefix}-seekbar-label-title {
+            display: none;
+          }
+
+          .#{$prefix}-seekbar-label-time {
+            font-size: 1.5vh;
+            background-color: $white;
+            color: black;
+            width: 30%;
+            margin: auto;
+            height: 2vh;
+            padding-top: 0.5vh;
+            border-radius: 2vh;
+          }
+        }
+      }
+
+      .#{$prefix}-seekbar-thumbnail {
+        border-radius: 8px;
+      }
+    }
+
+    .#{$prefix}-seekbar-label-inner::after {
+      content: unset;
+    }
   }
 }
