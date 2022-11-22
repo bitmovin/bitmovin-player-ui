@@ -22,6 +22,7 @@
     top: 0;
     left: 0;
     width: 100% !important;
+    padding: 3em;
   }
 
   .#{$prefix}-ui-titlebar {
@@ -154,5 +155,19 @@
     .#{$prefix}-seekbar-label-inner::after {
       content: unset;
     }
+  }
+
+  .#{$prefix}-ui-settings-panel {
+    height: 30%;
+
+    .#{$prefix}-ui-settings-panel-page {
+      .#{$prefix}-container-wrapper > *.#{$prefix}-ui-label {
+        width: 20%;
+      }
+    }
+  }
+
+  .#{$prefix}-ui-listbox {
+    display: inline-flex;
   }
 }
