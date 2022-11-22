@@ -43,11 +43,10 @@ import { Label } from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
-import Player, { PlayerAPI } from 'bitmovin-player';
+import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './main';
-import { Button } from './components/button';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { NavigationGroup } from './spatialnavigation/navigationgroup';
@@ -56,7 +55,7 @@ import { ReplayButton } from './components/replaybutton';
 export namespace UIFactory {
 
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return UIFactory.buildNetflixTvUI(player, config); //added for convenience
+    return UIFactory.buildModernUI(player, config);
   }
 
   export function buildDefaultSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -432,9 +431,6 @@ export namespace UIFactory {
       hidden: true,
     });
 
-    
-    
-
     const audioTrackListBox = new AudioTrackListBox();
     const audioTrackListPanel = new SettingsPanel({
       components: [
@@ -535,16 +531,13 @@ export namespace UIFactory {
     cssClasses: ['ui-skin-tv-netflix'],
     hideDelay: 20000,
     hidePlayerStateExceptions: [
-    PlayerUtils.PlayerState.Prepared,
-    PlayerUtils.PlayerState.Paused,
-    PlayerUtils.PlayerState.Idle,
-    PlayerUtils.PlayerState.Finished,
-  ],
+      PlayerUtils.PlayerState.Prepared,
+      PlayerUtils.PlayerState.Paused,
+      PlayerUtils.PlayerState.Idle,
+      PlayerUtils.PlayerState.Finished,
+    ],
     // userInteractionEventSource: 
- } );
-
-
-
+  });
 
   const subtitleListBox = new SubtitleListBox();
   const subtitleListPanel = new SettingsPanel({
@@ -570,12 +563,10 @@ export namespace UIFactory {
     hidden: true,
   });
 
-  const closeButton = new CloseButton({ target: uiContainer })
+  const closeButton = new CloseButton({ target: uiContainer });
 
+  const seekBar = new SeekBar({ label: new SeekBarLabel });
 
-
-  const seekBar = new SeekBar({ label: new SeekBarLabel,
-   });
   const subtitleToggleButton = new SettingsToggleButton({
     settingsPanel: subtitleListPanel,
     autoHideWhenNoActiveSettings: true,
@@ -637,8 +628,6 @@ export namespace UIFactory {
   });
 
   uiContainer.addComponent(uiComponents);
-
-
 
   const spatialNavigation = new SpatialNavigation(
     new RootNavigationGroup(uiContainer, seekBar, audioToggleButton, subtitleToggleButton, closeButton),
