@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [development]
 
 ### Added
 - Replay button which can be used within the controlbar and works also during playback
+
+### Fixed
+- Unnecessary DOM element creation on release
 
 ## [3.38.0] - 2022-08-30
 
