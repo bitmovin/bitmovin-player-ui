@@ -2,12 +2,13 @@
 @import 'mixins';
 
 .#{$prefix}-ui-skin-tv-youtube {
-  $overscan-margin: 5%;
+  visibility: visible !important;
+  $overscan-margin: 3%;
   $large-size: 3.5vh;
   $medium-large-size: 3vh;
   $medium-size: 2vh;
-  $small-size: 1.5vh;
-  font-family: Helvetica, sans-serif;
+  $small-size: 1.2vh;
+  font-family: Roboto;
   letter-spacing: 0em;
   
   $color-highlight: #FFFFFF;
@@ -31,18 +32,19 @@
       height: 5vh;
       font-size: $small-size;
 
-      display: inline-flex;
-      // Start from the right side
-      justify-content: flex-end;
-      align-items: center;
+      display: inline-block;
+      flex-direction: column;
 
 
-      .#{$prefix}-label-metadata-title {
+      > .#{$prefix}-label-metadata-title {
         // Moves rest of the items starting with this one to the very left
         // margin auto will fill up the rest of the space in between.
-        margin-left: auto;
-        font-weight: bold;
-        font-size: $medium-size;
+        font-weight: 400;
+        font-size: $medium-large-size;
+      }
+      > .#{$prefix}-label-metadata-description {
+        font-size: 1.5vh;
+        width: 60%;
       }
     }
   }
@@ -53,17 +55,14 @@
       width: 100%;
       font-size: $small-size;
 
+
       position: relative;
       display: inline-flex;
       justify-content: right;
       align-items: flex-start;
     }
 
-    .#{$prefix}-label-metadata-description {
-      font-size: $small-size;
-      text-align: right;
-      width: 40%;
-    }
+
   }
 
   // Position the settings panel top left below the settings icons
@@ -85,46 +84,19 @@
     }
   }
 
-  // Increase icon sizes and texts in the controlbar such as current time
-  .#{$prefix}-ui-subtitlesettingstogglebutton,
-  .#{$prefix}-ui-audiotracksettingstogglebutton {
-    font-size: $large-size;
 
-  }
-
-  .#{$prefix}-ui-closebutton {
-    margin: 1vw;
-    background-image: svg('assets/skin-modern/images/return.svg');
-
-  }
-
-  .#{$prefix}-ui-replaybutton {
-    margin: 1vw;
-    background-image: svg('assets/skin-modern/images/restart.svg');
-
-  }
-
-  .#{$prefix}-ui-nextbutton {
-    @extend %ui-button;
-    margin: 1vw;
-    background-image: svg('assets/skin-modern/images/next_netflix.svg');
-  
-    &:hover {
-      @include svg-icon-shadow;
-    }
-  }
 
 // Controlbar hierarchy
   .#{$prefix}-ui-controlbar {
-    font-size: $medium-large-size;
+    font-size: $medium-size;
 
     //WRAPPER
     > .#{$prefix}-container-wrapper {
       margin: $overscan-margin auto;
-      width: 80%;
+      width: 90%;
 
-      > .#{$prefix}-controlbar-top {
-        font-size: $medium-large-size;
+      > .#{$prefix}-controlbar-bottom {
+        font-size: $medium-size;
 
         //WRAPPER
         > .#{$prefix}-container-wrapper {
@@ -132,13 +104,14 @@
           margin: auto;
 
           > .#{$prefix}-ui-seekbar {
-            font-size: $small-size;
+            font-size: $medium-size;
             margin: auto;
+
 
             >  .#{$prefix}-seekbar{
 
               > .#{$prefix}-seekbar-backdrop{
-                // background-color: red
+
               }
               > .#{$prefix}-seekbar-bufferlevel{
                 background-color: grey
@@ -150,13 +123,19 @@
                 visibility: hidden;
               }
               >  .#{$prefix}-seekbar-playbackposition-marker{
-                visibility: hidden;
+                background-color: #FFFFFF;
+                border-color: rgb(255, 255, 255);
+                box-shadow: 0 0 0 calc($medium-size / 4) rgba(255,255,255,0.5);  
+                width: $medium-size;
+                height: $medium-size;
+
               }  
 
             }
 
             >  .#{$prefix}-ui-seekbar-label{
               background: none;
+              margin-bottom: $large-size * 2;
 
               >  .#{$prefix}-container-wrapper {
 
@@ -172,46 +151,111 @@
 
           }
 
-          > .#{$prefix}-ui-playbacktimelabel {
-            font-size: $medium-size;
-            margin: auto;
-            width: 5vw;
-  
-          }
         }
       }
     }
   } 
 
-  .#{$prefix}-seekbar-label-metadata {
-    visibility: hidden;
+// SETTINGS ABOVE SEEKBAR
+  .#{$prefix}-controlbar-top {
+    font-size: $medium-size;
+    > .#{$prefix}-container-wrapper {
+      font-size: $small-size;
+      height: 8vh;
+      margin: auto;
+
+
+      > .#{$prefix}-ui-subtitlesettingstogglebutton,
+      .#{$prefix}-ui-audiotracksettingstogglebutton,
+      .#{$prefix}-ui-replaybutton{
+        font-size: $medium-size;
+        margin-top: 0;
+    
+      }
+
+      > .#{$prefix}-ui-replaybutton {
+        background-image: svg('assets/skin-modern/images/avatar_youtube.svg');
+      }
+
+      > .#{$prefix}-ui-subtitlesettingstogglebutton {
+        background-image: svg('assets/skin-modern/images/subtitles_youtube.svg');
+      }
+
+      > .#{$prefix}-ui-audiotracksettingstogglebutton {
+        background-image: svg('assets/skin-modern/images/settings_youtube2.svg');
+      }
+    
+      > .#{$prefix}-ui-playbacktimelabel {
+        font-size: $medium-size;
+        text-align: right;
+        margin-right: 0;
+        margin-left: auto;
+        margin-top: auto;
+        margin-bottom: $small-size;
+      }
+
+    }
+
   }
 
+  // SPECIFIC STYLES TO BUTTONS
+  .#{$prefix}-ui-replaybutton {
+    font-size: $small-size;
+    background-image: svg('assets/skin-modern/images/restart.svg');
 
+  }
 
-  .#{$prefix}-ui-playbacktogglebutton {
+  .#{$prefix}-ui-nextbutton {
     @extend %ui-button;
-    font-size: $medium-size;
-    padding-right: 1vw;
-  
-    background-image: svg('assets/skin-modern/images/play_netflix.svg');
+    background-image: svg('assets/skin-modern/images/next_netflix.svg');
   
     &:hover {
       @include svg-icon-shadow;
     }
-  
-    &.#{$prefix}-on {
-      background-image: svg('assets/skin-modern/images/pause_netflix.svg');
+  }
 
+
+  //Thumbnail
+  .#{$prefix}-seekbar-label-title {
+    visibility: hidden;
+  }
+  .#{$prefix}-seekbar-label-time {
+    font-size: $medium-size;
+    position: relative;
+    bottom: ($medium-size * -2);
+  }
+
+
+  .#{$prefix}-ui-hugeplaybacktogglebutton {
+    @extend %ui-button;
+
+  &.#{$prefix}-on {
+    .#{$prefix}-image {
+      background-image: svg('assets/skin-modern/images/play_big_youtube.svg');
+      background-size: 10em;
+      animation: fade-out $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
+      transition: visibility 1s $animation-duration;
+      visibility: hidden;
     }
   }
+
+  &.#{$prefix}-off {
+    .#{$prefix}-image {
+      background-image: svg('assets/skin-modern/images/pause_big_youtube.svg');
+      background-size: 10em;
+      animation: fade-in $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
+      visibility: hidden;
+    }
+  }
+}
+
 
   :focus {
     transition: all .05s ease-in-out;
     // box-shadow: $focus-element-box-shadow;
     outline: none;
     border: none;
-    -webkit-filter: drop-shadow(0 0 0.3em $color-highlight);
-    filter: drop-shadow(0 0 0.3em $color-highlight);
+    // -webkit-filter: drop-shadow(0 0 0.1em $color-highlight);
+    // filter: drop-shadow(0 0 0.1em $color-highlight);
   }
 }

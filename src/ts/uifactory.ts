@@ -742,9 +742,6 @@ export namespace UIFactory {
     hidden: true,
   });
 
-  const closeButton = new CloseButton({ target: uiContainer });
-
-  const seekBar = new SeekBar({ label: new SeekBarLabel });
 
   const subtitleToggleButton = new SettingsToggleButton({
     settingsPanel: subtitleListPanel,
@@ -760,7 +757,8 @@ export namespace UIFactory {
     text: i18n.getLocalizer('settings.audio.track'),
   });
 
-  const playbackToggleButton = new PlaybackToggleButton()
+  const playbackToggleOverlay = new PlaybackToggleOverlay();
+  const seekBar = new SeekBar({ label: new SeekBarLabel });
   const replayButton = new ReplayButton()
   const nextButton = new NextButton()
 
@@ -768,17 +766,23 @@ export namespace UIFactory {
     components: [
       new SubtitleOverlay(),
       new BufferingOverlay(),
-      // playbackToggleOverlay,
+      playbackToggleOverlay,
       new ControlBar({
         components: [
           new Container({
             components: [
-              playbackToggleButton,
-              new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
-              seekBar,
-              new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
+              replayButton,
+              subtitleToggleButton,
+              audioToggleButton,
+              new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentAndTotalTime, hideInLivePlayback: true}),
             ],
             cssClasses: ['controlbar-top'],
+          }),
+          new Container({
+            components: [
+              seekBar,
+            ],
+            cssClasses: ['controlbar-bottom'],
           }),
         ],
       }),
@@ -786,10 +790,8 @@ export namespace UIFactory {
         components: [
           new Container({
             components: [
-              closeButton,
-              replayButton,
-              nextButton,
               new MetadataLabel({ content: MetadataLabelContent.Title }),
+              new MetadataLabel({ content: MetadataLabelContent.Description })
             ],
             cssClasses: ['ui-titlebar-top'],
           }),
@@ -797,10 +799,9 @@ export namespace UIFactory {
             components: [
               subtitleListPanel,
               audioTrackListPanel,
-              new MetadataLabel({ content: MetadataLabelContent.Description }),
-            ],
-            cssClasses: ['ui-titlebar-bottom'],
-          }),
+            ], 
+            cssClasses: ['ui-settings-panel']
+          })
         ],
       }),
       new RecommendationOverlay(),
@@ -811,7 +812,7 @@ export namespace UIFactory {
   uiContainer.addComponent(uiComponents);
 
   const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(uiContainer, seekBar, nextButton, replayButton, closeButton),
+    new RootNavigationGroup(uiContainer, seekBar,  audioToggleButton, subtitleToggleButton, replayButton ),
   );
 
   return {
