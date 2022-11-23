@@ -17,8 +17,16 @@
       padding: 2em;
   }
 
+  .#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    padding: 3em;
+  }
+
   .#{$prefix}-ui-titlebar {
-    padding: 0;
+    padding: 1em 1em 0.5em;
 
     .#{$prefix}-label-metadata-title {
       font-size: $large-size;
@@ -29,11 +37,14 @@
       font-size: $medium-size;
     }
   }
+  
+  .#{$prefix}-controlbar-bottom {
+    font-size: 2.5vh;
 
-  .#{$prefix}-controlbar-bottom 
-  .#{$prefix}-container-wrapper 
-  > * {
-    margin: auto 1em;
+    .#{$prefix}-container-wrapper 
+    > * {
+      margin: auto 0.5em;
+    }
   }
 
   // COMPONENT CSS OVERRIDES
@@ -45,9 +56,17 @@
     &:hover {
       @include svg-icon-shadow;
     }
+
+    &:focus {
+      background-image: svg('assets/skin-modern/disney/playX.svg');
+    }
   
     &.#{$prefix}-on {
       background-image: svg('assets/skin-modern/disney/pause.svg');
+
+      &:focus {
+        background-image: svg('assets/skin-modern/disney/pauseX.svg');
+      }
     }
   }
 
@@ -59,12 +78,20 @@
     &:hover {
       @include svg-icon-shadow;
     }
+
+    &:focus {
+      background-image: svg('assets/skin-modern/disney/restartX.svg');
+    }
   }
 
   .#{$prefix}-ui-settingstogglebutton {
     @extend %ui-settingstogglebutton;
   
     background-image: svg('assets/skin-modern/disney/settings.svg');
+
+    &:focus {
+      background-image: svg('assets/skin-modern/disney/settingsX.svg');
+    }
   }
 
   .#{$prefix}-seekbar-backdrop,
@@ -86,11 +113,69 @@
     background-color: $greyish !important;
   }
 
+  .#{$prefix}-seekbar-seekposition {
+    background-color: $accentColor !important;
+  }
+
   .#{$prefix}-seekbar-bufferlevel {
     background-color: rgba(0, 0, 0, 0) !important;
   }
 
   .#{$prefix}-seekbar-playbackposition {
     background-color: $accentColor !important;
+  }
+
+  .#{$prefix}-ui-seekbar-label {
+    font-size: 4vw;
+    border-radius: 5px;
+
+    .#{$prefix}-seekbar-label-inner {
+      border: none;
+
+      .#{$prefix}-container-wrapper {
+        .#{$prefix}-seekbar-label-metadata {
+          border-radius: 8px;
+          bottom: -1.2em;
+          background: none;
+
+          .#{$prefix}-seekbar-label-title {
+            display: none;
+          }
+
+          .#{$prefix}-seekbar-label-time {
+            font-size: 1.5vh;
+            background-color: $white;
+            color: black;
+            width: 30%;
+            margin: auto;
+            height: 2vh;
+            padding-top: 0.5vh;
+            border-radius: 2vh;
+          }
+        }
+      }
+
+      .#{$prefix}-seekbar-thumbnail {
+        border-radius: 8px;
+      }
+    }
+
+    .#{$prefix}-seekbar-label-inner::after {
+      content: unset;
+    }
+  }
+
+  .#{$prefix}-ui-settings-panel {
+    height: 30%;
+
+    .#{$prefix}-ui-settings-panel-page {
+      .#{$prefix}-container-wrapper > *.#{$prefix}-ui-label {
+        width: 20%;
+      }
+    }
+  }
+
+  .#{$prefix}-ui-listbox {
+    display: inline-flex;
   }
 }

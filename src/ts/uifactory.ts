@@ -537,7 +537,7 @@ export namespace UIFactory {
       PlayerUtils.PlayerState.Idle,
       PlayerUtils.PlayerState.Finished,
     ],
-    // userInteractionEventSource: 
+    // userInteractionEventSource:
   });
 
 
@@ -605,11 +605,14 @@ export namespace UIFactory {
   }
 
   export function disneyPlusTvUI() {
-    let subtitleOverlay = new SubtitleOverlay();
+    const subtitleOverlay = new SubtitleOverlay();
+    const audioTrackList = new AudioTrackListBox();
+    const subtitleList = new SubtitleListBox();
 
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), audioTrackList),
+        new SettingsPanelItem(i18n.getLocalizer('settings.subtitles'), subtitleList),
       ],
     });
 
@@ -625,39 +628,18 @@ export namespace UIFactory {
       overlay: subtitleOverlay,
     });
 
-    const subtitleSelectBox = new SubtitleSelectBox();
-
-    let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
-      targetPage: subtitleSettingsPanelPage,
-      container: settingsPanel,
-      ariaLabel: i18n.getLocalizer('settings.subtitles'),
-      text: i18n.getLocalizer('open'),
-    });
-
-    mainSettingsPanelPage.addComponent(
-      new SettingsPanelItem(
-        new SubtitleSettingsLabel({
-          text: i18n.getLocalizer('settings.subtitles'),
-          opener: subtitleSettingsOpenButton,
-        }),
-        subtitleSelectBox,
-        {
-          role: 'menubar',
-        },
-      ));
-
     settingsPanel.addComponent(subtitleSettingsPanelPage);
 
     const replayButton = new ReplayButton();
     const playbackToggleButton = new PlaybackToggleButton();
     const settingsToggleButton = new SettingsToggleButton({ settingsPanel: settingsPanel });
+    const seekBar = new SeekBar({ label: new SeekBarLabel() });
 
     let controlBar = new ControlBar({
       components: [
-        settingsPanel,
         new Container({
           components: [
-            new SeekBar({ label: new SeekBarLabel() }),
+            seekBar,
             new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
           ],
           cssClasses: ['controlbar-top'],
@@ -681,6 +663,7 @@ export namespace UIFactory {
         new BufferingOverlay(),
         controlBar,
         new TitleBar(),
+        settingsPanel,
         new RecommendationOverlay(),
         new ErrorMessageOverlay(),
       ],
@@ -689,12 +672,19 @@ export namespace UIFactory {
         PlayerUtils.PlayerState.Prepared,
         PlayerUtils.PlayerState.Paused,
         PlayerUtils.PlayerState.Finished,
+        PlayerUtils.PlayerState.Idle,
       ],
       cssClasses: ['ui-skin-tv-disneyplus'],
     });
 
+    const spatialNavigation = new SpatialNavigation(
+      new RootNavigationGroup(uiContainer, seekBar, replayButton, playbackToggleButton, settingsToggleButton),
+      new NavigationGroup(settingsPanel, audioTrackList, subtitleList),
+    );
+
     return {
       ui: uiContainer,
+      spatialNavigation: spatialNavigation,
     };
   }
 
@@ -715,7 +705,6 @@ export namespace UIFactory {
       PlayerUtils.PlayerState.Idle,
       PlayerUtils.PlayerState.Finished,
     ],
-    // userInteractionEventSource: 
   });
 
   const subtitleListBox = new SubtitleListBox();
@@ -761,6 +750,7 @@ export namespace UIFactory {
   const seekBar = new SeekBar({ label: new SeekBarLabel });
   const replayButton = new ReplayButton()
   const nextButton = new NextButton()
+
 
   const uiComponents = new UIContainer({
     components: [
