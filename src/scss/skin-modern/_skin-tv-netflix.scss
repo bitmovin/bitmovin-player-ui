@@ -93,25 +93,41 @@
   }
 
   .#{$prefix}-ui-closebutton {
-    margin: 1vw;
-    background-image: svg('assets/skin-modern/images/return.svg');
+    margin: 1vh;
+    font-size: $medium-size;
+    background-image: svg('assets/skin-modern/images/return_netflix.svg');
 
   }
 
   .#{$prefix}-ui-replaybutton {
-    margin: 1vw;
-    background-image: svg('assets/skin-modern/images/restart.svg');
+    margin: 1vh;
+    font-size: $medium-large-size;
+    background-image: svg('assets/skin-modern/images/restart_netflix.svg');
 
   }
 
   .#{$prefix}-ui-nextbutton {
     @extend %ui-button;
-    margin: 1vw;
+    margin: 1vh;
+    font-size: $medium-size;
     background-image: svg('assets/skin-modern/images/next_netflix.svg');
   
     &:hover {
       @include svg-icon-shadow;
     }
+  }
+
+  .#{$prefix}-ui-label-options {
+    // background-color: red;
+    text-align: center;
+    font-size: $small-size;
+    font-weight: lighter;
+    width: 20.5vh;
+    margin-top: 0.5vh;
+    margin-left: 0;
+    margin-right: auto;
+
+
   }
 
 // Controlbar hierarchy
@@ -157,6 +173,8 @@
 
             >  .#{$prefix}-ui-seekbar-label{
               background: none;
+              left: 50% !important;
+
 
               >  .#{$prefix}-container-wrapper {
 

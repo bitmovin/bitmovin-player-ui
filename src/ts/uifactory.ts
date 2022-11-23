@@ -546,6 +546,7 @@ export namespace UIFactory {
   const playbackToggleButton = new PlaybackToggleButton()
   const replayButton = new ReplayButton()
   const nextButton = new NextButton()
+  const optionsLabel = new Label({ text: "OPTIONS", cssClass: "ui-label-options"})
 
   const uiComponents = new UIContainer({
     components: [
@@ -575,6 +576,7 @@ export namespace UIFactory {
           }),
           new Container({
             components: [
+              optionsLabel,
               new MetadataLabel({ content: MetadataLabelContent.Description }),
             ],
             cssClasses: ['ui-titlebar-bottom'],
