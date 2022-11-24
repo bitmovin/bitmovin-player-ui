@@ -2,6 +2,8 @@ import { ButtonConfig, Button } from './button';
 import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
+import { PlayerUtils } from '../playerutils';
+import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 
 /**
  * A button to play/replay a video.
@@ -19,6 +21,19 @@ export class ReplayButton extends Button<ButtonConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    if (player.isLive()) {
+      this.hide();
+    }
+
+    const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
+    liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
+      if (args.live) {
+        this.hide();
+      } else {
+        this.show();
+      }
+    })
 
     this.onClick.subscribe(() => {
       if (!player.hasEnded()) {
