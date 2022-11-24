@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - `display` method on `ErrorMessageOverlay` to enable usage for application errors without a player error
+- Replay button which can be used within the controlbar and works also during playback
 
 ### Fixed
 - Unnecessary DOM element creation on release
