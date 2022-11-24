@@ -45,6 +45,7 @@ import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
+import { CustomUIFactory } from './customuifactory';
 
 export namespace UIFactory {
 
@@ -53,7 +54,7 @@ export namespace UIFactory {
   }
 
   export function buildDefaultSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return UIFactory.buildModernSmallScreenUI(player, config);
+    return CustomUIFactory.buildModernSmallScreenUI(player, config);
   }
 
   export function buildDefaultCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
