@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [development]
 
 ### Added
-- `display` method on `ErrorMessageOverlay` to enable usage for application errors without player error
+- `display` method on `ErrorMessageOverlay` to enable usage for application errors without a player error
 
 ### Fixed
 - Unnecessary DOM element creation on release
