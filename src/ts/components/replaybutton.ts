@@ -33,7 +33,7 @@ export class ReplayButton extends Button<ButtonConfig> {
       } else {
         this.show();
       }
-    })
+    });
 
     this.onClick.subscribe(() => {
       if (!player.hasEnded()) {
