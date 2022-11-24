@@ -23,8 +23,11 @@ export class ReplayButton extends Button<ButtonConfig> {
     this.onClick.subscribe(() => {
       if (!player.hasEnded()) {
         player.seek(0);
+        // Not calling `play` will keep the play/pause state as is
+      } else {
+        // If playback has already ended, calling `play` will automatically restart from the beginning
+        player.play('ui');
       }
-      player.play('ui');
     });
   }
 }
