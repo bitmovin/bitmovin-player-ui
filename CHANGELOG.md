@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Support for spatial navigation
-- SmartTV UI via `UIFactory.buildModernTvUI`
+- SmartTV UI via `UIFactory.buildDefaultTvUI`
 
 ## [3.37.0] - 2022-04-12
 

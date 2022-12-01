@@ -65,6 +65,10 @@ export namespace UIFactory {
     return UIFactory.buildModernCastReceiverUI(player, config);
   }
 
+  export function buildDefaultTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return UIFactory.buildModernTvUI(player, config);
+  }
+
   export function modernUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
