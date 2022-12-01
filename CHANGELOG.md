@@ -10,6 +10,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Support for spatial navigation
 - SmartTV UI via `UIFactory.buildDefaultTvUI`
 
+## [3.39.0] - 2022-12-01
+
+### Added
+- `display` method on `ErrorMessageOverlay` to enable usage for application errors without a player error
+- Replay button which can be used within the controlbar and works also during playback
+
+### Fixed
+- Unnecessary DOM element creation on release
+
+## [3.38.0] - 2022-08-30
+
+### Fixed
+- Duration format not getting updated from `mm:ss` to `hh:mm:ss`
+
 ## [3.37.0] - 2022-04-12
 
 ### Fixed
@@ -796,6 +810,9 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.38.0...HEAD
+[3.39.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.38.0...v3.39.0
+[3.38.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.37.0...v3.38.0
 [3.37.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.36.0...v3.37.0
 [3.36.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.35.0...v3.36.0
 [3.35.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.34.0...v3.35.0
