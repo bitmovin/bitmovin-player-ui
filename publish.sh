@@ -2,7 +2,7 @@
 set -e
 
 PACKAGE_NAME="bitmovin-player-ui"
-CI_BRANCH=$TRAVIS_BRANCH
+CI_BRANCH=$GITHUB_REF_NAME # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
 
 echo "INFO branch is set to ${CI_BRANCH}"
 
