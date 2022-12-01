@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.39.0]
+## [3.39.0] - 2022-12-01
 
 ### Added
 - `display` method on `ErrorMessageOverlay` to enable usage for application errors without a player error
