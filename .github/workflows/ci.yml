@@ -30,8 +30,3 @@ jobs:
 
       - name: Build
         run: gulp build-prod
-      
-      - name: Publish
-        run: bash publish.sh
-        env:
-          NPM_DRY_RUN: false
