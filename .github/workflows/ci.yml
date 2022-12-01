@@ -33,3 +33,5 @@ jobs:
       
       - name: Publish
         run: bash publish.sh
+        env:
+          NPM_DRY_RUN: false
