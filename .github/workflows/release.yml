@@ -20,6 +20,8 @@ jobs:
           path: .
 
       - run: ls -lah
+      - run: cd artifact
+      - run: ls -lah
 
       - name: Publish
         run: ./publish.sh
