@@ -44,7 +44,11 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          path: '*'
+          path: |
+            '*'
+            !node_modules
+            !.idea
+            !.vscode
           if-no-files-found: error
           retention-days: 1
 
