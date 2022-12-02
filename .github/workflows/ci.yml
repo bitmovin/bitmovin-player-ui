@@ -40,7 +40,7 @@ jobs:
         run: npm test
 
       - name: Build
-        run: gulp build-prod
+        run: gulp npm-prepare
 
       - uses: actions/upload-artifact@v3
         with:
