@@ -19,12 +19,13 @@ jobs:
         with:
           path: .
 
+      - run: ls -lah artifact
       - run: ls -lah
-      - run: cd artifact
-      - run: ls -lah
+        working-directory: artifact
 
       - name: Publish
         run: ./publish.sh
+        working-directory: artifact
         shell: bash
         env:
           NPM_DRY_RUN: true
