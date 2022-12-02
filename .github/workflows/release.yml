@@ -12,6 +12,7 @@ jobs:
 
   download_artifact:
     needs: test_and_build
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/download-artifact@v3
