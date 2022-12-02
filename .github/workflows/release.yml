@@ -8,13 +8,17 @@ on:
 
 jobs:
   ci:
-    uses: ./ci.yml@feature/github-actions
+    uses: ./ci.yml
 
   download_artifact:
+    needs: ci
+
     uses: actions/download-artifact@v3
     with:
       path: .
+
   publish:
+    needs: download_artifact
     runs-on: ubuntu-latest
 
     steps:
