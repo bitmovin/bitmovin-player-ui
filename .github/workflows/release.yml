@@ -2,9 +2,9 @@ name: Release
 
 on: 
   push:
-    tags:
-      - '!player/'
-      - 'v*'
+    # tags:
+    #   - '!player/'
+    #   - 'v*'
 
 jobs:
   test_and_build:
@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: ls -lah
+
       - name: Publish
         run: ./publish.sh
         shell: bash
