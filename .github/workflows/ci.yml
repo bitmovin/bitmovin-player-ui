@@ -42,10 +42,12 @@ jobs:
       - name: Build
         run: gulp build-prod
 
+      - run: echo "${{ github.workspace }}"
+
       - uses: actions/upload-artifact@v3
         with:
           path: |
-            './**/*'
+            ${{ github.workspace }}/**/*
             !node_modules
             !.idea
             !.vscode
