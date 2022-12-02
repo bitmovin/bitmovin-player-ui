@@ -18,6 +18,11 @@
     "url": "https://github.com/bitmovin/bitmovin-player-ui/issues"
   },
   "homepage": "https://github.com/bitmovin/bitmovin-player-ui#readme",
+  "browserslist": [
+    "> 1%", 
+    "last 2 versions", 
+    "Firefox ESR"
+  ],
   "devDependencies": {
     "@inrupt/jest-jsdom-polyfills": "^1.4.3",
     "@types/jest": "^24.0.11",
