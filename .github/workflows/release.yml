@@ -19,8 +19,8 @@ jobs:
         with:
           path: .
 
-      - run: ls -lah artifact
-      - run: ls -lah
+      - name: Allow execution of publish script
+        run: chmod +x publish.sh
         working-directory: artifact
 
       - name: Publish
