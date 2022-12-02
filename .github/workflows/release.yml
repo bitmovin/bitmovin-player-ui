@@ -13,9 +13,10 @@ jobs:
   download_artifact:
     needs: test_and_build
 
-    uses: actions/download-artifact@v3
-    with:
-      path: .
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: .
 
   publish:
     needs: download_artifact
