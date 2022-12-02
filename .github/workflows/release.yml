@@ -8,7 +8,7 @@ on:
 
 jobs:
   ci:
-    uses: bitmovin/bitmovin-player-ui/.github/workflows/ci.yml@feature/github-actions
+    uses: .github/workflows/ci.yml@feature/github-actions
 
   download_artifact:
     uses: actions/download-artifact@v3
@@ -22,5 +22,5 @@ jobs:
         run: ./publish.sh
         shell: bash
         env:
-          NPM_DRY_RUN: false
+          NPM_DRY_RUN: true
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
