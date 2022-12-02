@@ -10,7 +10,7 @@ on:
   workflow_call:
 
 jobs:
-  prepare_environment:
+  test_and_build:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,36 +35,9 @@ jobs:
       - name: Install dependencies
         if: steps.cache-nodemodules.outputs.cache-hit != 'true'
         run: npm ci
-  test:
-    needs: prepare_environment
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Cache node modules
-        id: cache-nodemodules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Test
         run: npm test
-
-  build:
-    needs: prepare_environment
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Cache node modules
-        id: cache-nodemodules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Build
         run: gulp build-prod
