@@ -42,10 +42,13 @@ jobs:
       - name: Build
         run: gulp build-prod
 
+      - run: pwd
+      - run: ls -lah
+
       - uses: actions/upload-artifact@v3
         with:
           path: |
-            '**/*'
+            '**'
             !node_modules
             !.idea
             !.vscode
