@@ -6,7 +6,7 @@
   "types": "./dist/js/framework/main.d.ts",
   "scripts": {
     "test": "npx jest",
-    "prepare": "gulp npm-prepare"
+    "prepare": "npx gulp npm-prepare"
   },
   "repository": {
     "type": "git",
