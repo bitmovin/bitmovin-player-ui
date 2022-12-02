@@ -8,8 +8,7 @@ on:
 
 jobs:
   ci:
-    steps:
-      - uses: bitmovin/bitmovin-player-ui/.github/workflows/ci.yml@feature/github-actions
+    uses: bitmovin/bitmovin-player-ui/.github/workflows/ci.yml@aa751942
 
   download_artifact:
     needs: ci
