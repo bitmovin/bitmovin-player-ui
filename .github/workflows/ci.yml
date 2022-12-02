@@ -43,6 +43,7 @@ jobs:
         run: gulp build-prod
 
   upload_artifact:
+    steps:
       - uses: actions/upload-artifcat@v3
         with:
           path: '*'
