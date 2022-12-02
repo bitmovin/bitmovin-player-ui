@@ -40,6 +40,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: Test
         run: npm test
 
@@ -48,14 +57,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: Build
         run: gulp build-prod
 
-  upload_artifact:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
       - uses: actions/upload-artifact@v3
         with:
           path: |
