@@ -54,6 +54,9 @@ if [[ ${NPM_TAG}  == -1 ]]; then
     exit 1
 fi
 
+NPM_VERSION=$(npm --version)
+echo "npm version: ${NPM_VERSION}"
+
 # Check if this version was already published.
 # If something went wrong during a later build step and we re-run the release
 # after fixing the problem, the npm publish would fail the build.
