@@ -10,11 +10,11 @@ on:
   workflow_call:
 
 jobs:
-  ci:
+  prepare_environment:
     runs-on: ubuntu-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -35,15 +35,27 @@ jobs:
       - name: Install dependencies
         if: steps.cache-nodemodules.outputs.cache-hit != 'true'
         run: npm ci
+  test:
+    needs: prepare_environment
+    runs-on: ubuntu-latest
 
+    steps:
       - name: Test
         run: npm test
 
+  build:
+    needs: prepare_environment
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Build
         run: gulp build-prod
 
-      - run: echo "${{ github.workspace }}"
+  upload_artifact:
+    needs: build
+    runs-on: ubuntu-latest
 
+    steps:
       - uses: actions/upload-artifact@v3
         with:
           path: |
