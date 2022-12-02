@@ -42,9 +42,6 @@ jobs:
       - name: Build
         run: gulp build-prod
 
-      - run: pwd
-      - run: ls -lah
-
       - uses: actions/upload-artifact@v3
         with:
           path: |
@@ -52,6 +49,6 @@ jobs:
             !node_modules
             !.idea
             !.vscode
-          if-no-files-found: error
+          # if-no-files-found: error
           retention-days: 1
 
