@@ -48,6 +48,9 @@ jobs:
         with:
           path: |
             ${{ github.workspace }}/**/*
+            .npmignore
+            .nvmrc
+            .gitignore
             !node_modules
             !.idea
             !.vscode
