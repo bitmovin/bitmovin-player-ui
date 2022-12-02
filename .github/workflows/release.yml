@@ -2,9 +2,9 @@ name: Release
 
 on: 
   push:
-    # tags:
-    #   - '!player/'
-    #   - 'v*'
+    tags:
+      - '!player/'
+      - 'v*'
 
 jobs:
   test_and_build:
