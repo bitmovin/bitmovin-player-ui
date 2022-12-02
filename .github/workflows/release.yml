@@ -30,7 +30,8 @@ jobs:
         run: gulp build-prod
 
       - name: Publish
-        run: bash publish.sh
+        run: ./publish.sh
+        shell: bash
         env:
           NPM_DRY_RUN: false
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
