@@ -8,7 +8,7 @@ on:
 
 jobs:
   ci:
-    uses: ./ci.yml@feature/github-actions
+    uses: bitmovin/bitmovin-player-ui/.github/workflows/ci.yml@feature/github-actions
 
   download_artifact:
     needs: ci
