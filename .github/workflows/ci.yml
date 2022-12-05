@@ -42,6 +42,10 @@ jobs:
       - name: Build and prepare for a potential 'npm publish'
         run: gulp npm-prepare
 
+      - name: Package artifact for upload
+        run: tar -czvf artifact.tar.gz dist
+        shell: bash
+
       - uses: actions/upload-artifact@v3
         with:
           path: |
