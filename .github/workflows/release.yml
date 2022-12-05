@@ -30,5 +30,5 @@ jobs:
         run: ./publish.sh
         shell: bash
         env:
-          NPM_DRY_RUN: true
+          NPM_DRY_RUN: false
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
