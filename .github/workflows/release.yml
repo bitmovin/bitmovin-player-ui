@@ -23,7 +23,7 @@ jobs:
           path: .
 
       - name: Unpackage artifact files
-        run: tar -xzvf artifact.tar.gz
+        run: tar -xzvf artifact/artifact.tar.gz -C .
         shell: bash
 
       - name: Check files are where they are expected
