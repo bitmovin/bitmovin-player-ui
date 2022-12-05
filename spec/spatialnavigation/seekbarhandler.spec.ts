@@ -33,8 +33,8 @@ describe('SeekBarHandler', () => {
   afterAll(() => jest.useRealTimers());
 
   it('should overwrite the onAction and onNavigation callbacks on the RootNavigationGroup', () => {
-    expect(rootNavigationGroupMock.onAction).toEqual(jasmine.any(Function));
-    expect(rootNavigationGroupMock.onNavigation).toEqual(jasmine.any(Function));
+    expect(rootNavigationGroupMock.onAction).toEqual(expect.any(Function));
+    expect(rootNavigationGroupMock.onNavigation).toEqual(expect.any(Function));
   });
 
   describe('onNavigation', () => {
@@ -132,10 +132,10 @@ describe('SeekBarHandler', () => {
       expect(preventDefaultSpy).toHaveBeenCalled();
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mousedown'));
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mouseleave'));
-      expect(eventSubscriberOnSpy).toHaveBeenCalledWith(seekBarMock, 'mousedown', jasmine.any(Function));
-      expect(eventSubscriberOffSpy).toHaveBeenCalledWith(seekBarMock, 'mousedown', jasmine.any(Function));
+      expect(eventSubscriberOnSpy).toHaveBeenCalledWith(seekBarMock, 'mousedown', expect.any(Function));
+      expect(eventSubscriberOffSpy).toHaveBeenCalledWith(seekBarMock, 'mousedown', expect.any(Function));
       expect(documentDispatchEventSpy).toHaveBeenCalledWith(
-        new MouseEvent('mouseup', jasmine.anything() as MouseEventInit),
+        new MouseEvent('mouseup', expect.anything() as MouseEventInit),
       );
     });
 
