@@ -35,5 +35,5 @@ jobs:
         working-directory: artifact
         shell: bash
         env:
-          NPM_DRY_RUN: false
+          NPM_DRY_RUN: true
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
