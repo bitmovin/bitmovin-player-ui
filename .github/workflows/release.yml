@@ -15,9 +15,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - uses: actions/download-artifact@v3
         with:
           path: .
+
+      - name: Unpackage artifact files
+        run: tar -xzvf artifact.tar.gz
+        shell: bash
 
       - name: Allow execution of publish script
         run: chmod +x publish.sh
