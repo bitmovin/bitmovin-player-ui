@@ -39,7 +39,7 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Build
+      - name: Build and prepare for a potential 'npm publish'
         run: gulp npm-prepare
 
       - uses: actions/upload-artifact@v3
