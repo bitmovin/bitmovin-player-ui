@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [develop]
 
 ### Added
 - Support for spatial navigation
 - SmartTV UI via `UIFactory.buildDefaultTvUI`
+
+### Changed
+- Node.js from 10 to 16
+- Typescript from ^3.9.6 to 4.3
 
 ## [3.39.0] - 2022-12-01
 
