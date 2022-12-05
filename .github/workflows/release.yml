@@ -26,9 +26,6 @@ jobs:
         run: tar -xzvf artifact/artifact.tar.gz -C .
         shell: bash
 
-      - name: Check files are where they are expected
-        run: ls -l dist/; ls -l dist/css; ls -l dist/js; 
-
       - name: Publish
         run: ./publish.sh
         shell: bash
