@@ -26,13 +26,8 @@ jobs:
         run: tar -xzvf artifact.tar.gz
         shell: bash
 
-      - name: Allow execution of publish script
-        run: chmod +x publish.sh
-        working-directory: artifact
-
       - name: Publish
         run: ./publish.sh
-        working-directory: artifact
         shell: bash
         env:
           NPM_DRY_RUN: true
