@@ -27,7 +27,7 @@ describe('ErrorUtils', () => {
     it('falls back to returning the error code and name if the associated error message could not be found', () => {
       const errorCode = 9999;
       const errorName = 'unknown-error';
-      const errorEvent = { code: errorCode, name: errorName } as ErrorEvent;
+      const errorEvent = { code: errorCode as unknown, name: errorName } as ErrorEvent;
 
       expect(defaultWebErrorMessageTranslator(errorEvent)).toEqual(`${errorCode} ${errorName}`);
     });

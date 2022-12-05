@@ -171,7 +171,7 @@ gulp.task('sass', function() {
       './node_modules'],
   }).on('error', sass.logError))
   .pipe(postcss([
-    autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}),
+    autoprefixer(),
     postcssSVG()
   ]))
   .pipe(cssBase64())
