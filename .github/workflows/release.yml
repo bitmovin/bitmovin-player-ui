@@ -15,17 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - uses: actions/download-artifact@v3
         with:
           path: .
 
-      - name: Allow execution of publish script
-        run: chmod +x publish.sh
-        working-directory: artifact
+      - name: Unpackage artifact files
+        run: tar -xzvf artifact/artifact.tar.gz -C .
+        shell: bash
 
       - name: Publish
         run: ./publish.sh
-        working-directory: artifact
         shell: bash
         env:
           NPM_DRY_RUN: false

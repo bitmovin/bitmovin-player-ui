@@ -42,16 +42,14 @@ jobs:
       - name: Build and prepare for a potential 'npm publish'
         run: gulp npm-prepare
 
+      - name: Package artifact for upload
+        run: tar -czvf artifact.tar.gz dist
+        shell: bash
+
       - uses: actions/upload-artifact@v3
         with:
           path: |
-            ${{ github.workspace }}/**/*
-            .npmignore
-            .nvmrc
-            .gitignore
-            !node_modules
-            !.idea
-            !.vscode
+            ${{ github.workspace }}/artifact.tar.gz
           if-no-files-found: error
           retention-days: 1
 
