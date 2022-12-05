@@ -1,0 +1,32 @@
+name: Release
+
+on: 
+  push:
+    tags:
+      - '!player/'
+      - 'v*'
+
+jobs:
+  test_and_build:
+    uses: ./.github/workflows/ci.yml
+
+  download_and_publish:
+    needs: test_and_build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: .
+
+      - name: Allow execution of publish script
+        run: chmod +x publish.sh
+        working-directory: artifact
+
+      - name: Publish
+        run: ./publish.sh
+        working-directory: artifact
+        shell: bash
+        env:
+          NPM_DRY_RUN: false
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
