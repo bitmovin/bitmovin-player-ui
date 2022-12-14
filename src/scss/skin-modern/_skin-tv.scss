@@ -76,23 +76,22 @@
 
   .#{$prefix}-ui-controlbar {
     font-size: $medium-large-size;
+
+    > .#{$prefix}-container-wrapper {
+      // Increase margin area around the UI but spread the dark shadow still 
+      // to the edge of the video by applying it to only the container-wrapper
+
+      margin: $overscan-margin 0;
+      width: 99%;
+    }
   }
 
   .#{$prefix}-ui-playbacktimelabel {
     font-size: 2.5vh;
   }
 
-  // Increase margin area around the UI but spread the dark shadow still 
-  // to the edge of the video by applying it to only the container-wrapper
-  .#{$prefix}-ui-controlbar {
-    > .#{$prefix}-container-wrapper {
-      margin: $overscan-margin 0;
-      width: 99%;
-    } 
-  }
-
   :focus {
-    border: none;
+    border: 0;
     box-shadow: $focus-element-box-shadow;
     filter: drop-shadow(0 0 .3em $color-highlight);
     outline: none;

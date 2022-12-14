@@ -1,71 +1,73 @@
 @import '../variables';
 @import '../mixins';
 
-.#{$prefix}-ui-uicontainer .#{$prefix}-ui-subtitle-overlay {
-  @extend %ui-container;
+.#{$prefix}-ui-uicontainer {
+  .#{$prefix}-ui-subtitle-overlay {
+    @extend %ui-container;
 
-  @include hidden;
+    @include hidden;
 
-  bottom: 0;
-  font-size: 1.2em;
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  text-align: center;
-  top: 0;
-  transition: bottom $animation-duration-short ease-out;
-
-  * {
-    // This aims to prevent possibly conflicting style definitions inherited
-    // from target applications which can break subtitles styling. It's still possible
-    // to override this with selector of higher priority score.
-    all: unset;
-  }
-
-  p {
-    // It may happen that we render <p> inside of an <span> and the `all: unset;` reseting above sets
-    // p to inherit the inline display instead of its default display block so this sets it back.
-    display: block;
-  }
-
-  .#{$prefix}-subtitle-region-container {
+    bottom: 0;
+    font-size: 1.2em;
+    left: 0;
+    pointer-events: none;
     position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    transition: bottom $animation-duration-short ease-out;
 
-    &.#{$prefix}-subtitle-position-default {
-      bottom: 2em;
-      left: 3em;
-      right: 3em;
-      top: initial;
+    * {
+      // This aims to prevent possibly conflicting style definitions inherited
+      // from target applications which can break subtitles styling. It's still possible
+      // to override this with selector of higher priority score.
+      all: unset;
     }
 
-    &.#{$prefix}-subtitle-position-bottom > div {
-      bottom: 0;
+    p {
+      // It may happen that we render <p> inside of an <span> and the `all: unset;` reseting above sets
+      // p to inherit the inline display instead of its default display block so this sets it back.
+      display: block;
+    }
+
+    .#{$prefix}-subtitle-region-container {
       position: absolute;
-      width: 100%;
+
+      &.#{$prefix}-subtitle-position-default {
+        bottom: 2em;
+        left: 3em;
+        right: 3em;
+        top: initial;
+      }
+
+      &.#{$prefix}-subtitle-position-bottom > div {
+        bottom: 0;
+        position: absolute;
+        width: 100%;
+      }
     }
-  }
 
-  .#{$prefix}-ui-subtitle-label {
-    @include text-border($subtitle-text-border-color);
+    .#{$prefix}-ui-subtitle-label {
+      @include text-border($subtitle-text-border-color);
 
-    color: $subtitle-text-color;
-    height: fit-content;
+      color: $subtitle-text-color;
+      height: fit-content;
 
-    // Break labels into separate lines
-    // sass-lint:disable force-pseudo-nesting
-    &:nth-child(1n-1)::after {
-      content: '\A';
-      // VTT flex styling can increase this elements height, making the background larger
-      height: 0;
-      white-space: pre-line;
-      width: 0;
+      // Break labels into separate lines
+      // sass-lint:disable force-pseudo-nesting
+      &:nth-child(1n-1)::after {
+        content: '\A';
+        // VTT flex styling can increase this elements height, making the background larger
+        height: 0;
+        white-space: pre-line;
+        width: 0;
+      }
     }
-  }
 
-  // Move the subtitle up above the controlbar when it appears to avoid them overlapping
-  &.#{$prefix}-controlbar-visible {
-    bottom: 5em;
-    transition: bottom $animation-duration-short ease-in;
+    // Move the subtitle up above the controlbar when it appears to avoid them overlapping
+    &.#{$prefix}-controlbar-visible {
+      bottom: 5em;
+      transition: bottom $animation-duration-short ease-in;
+    }
   }
 }
