@@ -49,6 +49,7 @@ import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './main';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
+import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 import { NavigationGroup } from './spatialnavigation/navigationgroup';
 import { ReplayButton } from './components/replaybutton';
 import { NextButton } from './components/nextbutton';
@@ -65,6 +66,10 @@ export namespace UIFactory {
 
   export function buildDefaultCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return UIFactory.buildModernCastReceiverUI(player, config);
+  }
+
+  export function buildDefaultTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return UIFactory.buildModernTvUI(player, config);
   }
 
   export function modernUI() {
@@ -510,8 +515,8 @@ export namespace UIFactory {
 
     const spatialNavigation = new SpatialNavigation(
       new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, audioToggleButton, subtitleToggleButton),
-      new NavigationGroup(subtitleListPanel, subtitleListBox),
-      new NavigationGroup(audioTrackListPanel, audioTrackListBox),
+      new ListNavigationGroup(ListOrientation.Vertical, subtitleListPanel, subtitleListBox),
+      new ListNavigationGroup(ListOrientation.Vertical, audioTrackListPanel, audioTrackListBox),
     );
 
     return {

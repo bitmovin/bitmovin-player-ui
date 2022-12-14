@@ -127,8 +127,8 @@ describe('NavigationGroup', () => {
       const nodeSubscriber = rootNavigationGroup['eventSubscriber'];
       rootNavigationGroup.enable();
 
-      expect(nodeSubscriber.on).toHaveBeenCalledWith(subtitleButtonHtml, 'mouseenter', jasmine.anything());
-      expect(nodeSubscriber.on).toHaveBeenCalledWith(playbackButtonHtml, 'mouseenter', jasmine.anything());
+      expect(nodeSubscriber.on).toHaveBeenCalledWith(subtitleButtonHtml, 'mouseenter', expect.anything());
+      expect(nodeSubscriber.on).toHaveBeenCalledWith(playbackButtonHtml, 'mouseenter', expect.anything());
     });
 
     it('should remove mouse over listener when called twice', () => {
@@ -138,8 +138,8 @@ describe('NavigationGroup', () => {
       rootNavigationGroup.enable();
       rootNavigationGroup.enable();
 
-      expect(nodeSubscriber.off).toHaveBeenCalledWith(subtitleButtonHtml, 'mouseenter', jasmine.anything());
-      expect(nodeSubscriber.off).toHaveBeenCalledWith(playbackButtonHtml, 'mouseenter', jasmine.anything());
+      expect(nodeSubscriber.off).toHaveBeenCalledWith(subtitleButtonHtml, 'mouseenter', expect.anything());
+      expect(nodeSubscriber.off).toHaveBeenCalledWith(playbackButtonHtml, 'mouseenter', expect.anything());
     });
   });
 

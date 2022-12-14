@@ -2,7 +2,7 @@
 set -e
 
 PACKAGE_NAME="bitmovin-player-ui"
-CI_BRANCH=$TRAVIS_BRANCH
+CI_BRANCH=$GITHUB_REF_NAME # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
 
 echo "INFO branch is set to ${CI_BRANCH}"
 
@@ -54,10 +54,19 @@ if [[ ${NPM_TAG}  == -1 ]]; then
     exit 1
 fi
 
+NPM_VERSION=$(npm --version)
+echo "npm version: ${NPM_VERSION}"
+
+# In more recent npm versions, the below command fails, and fails this whole
+# script due to `set -e` at the top of the file. To gracefully handle this
+# change, we're disabling bash's abort on error setting temporarily, for this
+# command.
+set +e
 # Check if this version was already published.
 # If something went wrong during a later build step and we re-run the release
 # after fixing the problem, the npm publish would fail the build.
 IS_PUBLISHED=$(npm view ${PACKAGE_NAME}@${VERSION} dist-tags)
+set -e
 
 if [[ ${IS_PUBLISHED} ]]; then
     echo "WARNING ${VERSION} is already published, skipping."

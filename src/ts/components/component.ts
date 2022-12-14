@@ -292,6 +292,13 @@ export class Component<Config extends ComponentConfig> {
     return this.element;
   }
 
+  /**
+   * Checks if this component has a DOM element.
+   */
+  hasDomElement(): boolean {
+    return Boolean(this.element);
+  }
+
   setAriaLabel(label: LocalizableText): void {
     this.setAriaAttr('label', i18n.performLocalization(label));
   }

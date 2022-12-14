@@ -79,6 +79,7 @@ export { SettingsPanelPageBackButton } from './components/settingspanelpagebackb
 export { SettingsPanelPageOpenButton } from './components/settingspanelpageopenbutton';
 export { SubtitleSettingsPanelPage } from './components/subtitlesettings/subtitlesettingspanelpage';
 export { SettingsPanelItem } from './components/settingspanelitem';
+export { ReplayButton } from './components/replaybutton';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
