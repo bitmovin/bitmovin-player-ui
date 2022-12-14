@@ -49,6 +49,9 @@ export class UIContainer extends Container<UIContainerConfig> {
   private userInteractionEventSource: DOM;
   private userInteractionEvents: { name: string, handler: EventListenerOrEventListenerObject }[];
 
+  public hideUi: () => void = () => {};
+  public showUi: () => void = () => {};
+
   constructor(config: UIContainerConfig) {
     super(config);
 
@@ -94,7 +97,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
     };
 
-    let showUi = () => {
+    this.showUi = () => {
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
         uimanager.onControlsShow.dispatch(this);
@@ -106,7 +109,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
-    let hideUi = () => {
+    this.hideUi = () => {
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
         // Issue a preview event to check if we are good to hide the controls
@@ -119,13 +122,13 @@ export class UIContainer extends Container<UIContainerConfig> {
           isUiShown = false;
         } else {
           // If the hide preview was canceled, continue to show UI
-          showUi();
+          this.showUi();
         }
       }
     };
 
     // Timeout to defer UI hiding by the configured delay time
-    this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
+    this.uiHideTimeout = new Timeout(config.hideDelay, this.hideUi);
 
     this.userInteractionEvents = [{
       // On touch displays, the first touch reveals the UI
@@ -141,30 +144,30 @@ export class UIContainer extends Container<UIContainerConfig> {
           } else {
             e.preventDefault();
           }
-          showUi();
+          this.showUi();
         }
       },
     }, {
       // When the mouse enters, we show the UI
       name: 'mouseenter',
       handler: () => {
-        showUi();
+        this.showUi();
       },
     }, {
       // When the mouse moves within, we show the UI
       name: 'mousemove',
       handler: () => {
-        showUi();
+        this.showUi();
       },
     }, {
       name: 'focusin',
       handler: () => {
-        showUi();
+        this.showUi();
       },
     }, {
       name: 'keydown',
       handler: () => {
-        showUi();
+        this.showUi();
       },
     }, {
       // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
@@ -191,14 +194,14 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     });
     player.on(player.exports.PlayerEvent.CastStarted, () => {
-      showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
+      this.showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
     });
     this.playerStateChange.subscribe((_, state) => {
       playerState = state;
       if (hidingPrevented()) {
         // Entering a player state that prevents hiding and forces the controls to be shown
         this.uiHideTimeout.clear();
-        showUi();
+        this.showUi();
       } else {
         // Entering a player state that allows hiding
         this.uiHideTimeout.start();

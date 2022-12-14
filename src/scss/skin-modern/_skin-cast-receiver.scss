@@ -50,10 +50,10 @@
       .#{$prefix}-ui-subtitle-label {
         background-color: transparentize($subtitle-text-border-color, .5);
         box-decoration-break: clone;
+        display: inline-flex;
         line-height: 2em;
         padding: .3em .5em;
         text-shadow: none;
-        display: inline-flex;
       }
     }
 

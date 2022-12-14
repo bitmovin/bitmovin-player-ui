@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Support for spatial navigation
+- SmartTV UI via `UIFactory.buildDefaultTvUI`
+
 ### Changed
 - Node.js from 10 to 16
 - Typescript from ^3.9.6 to 4.3

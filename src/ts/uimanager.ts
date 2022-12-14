@@ -13,6 +13,7 @@ import { VolumeController } from './volumecontroller';
 import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 import { FocusVisibilityTracker } from './focusvisibilitytracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './mobilev3playerapi';
+import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 
 export interface LocalizationConfig {
   /**
@@ -86,6 +87,7 @@ export interface UIConditionResolver {
 export interface UIVariant {
   ui: UIContainer;
   condition?: UIConditionResolver;
+  spatialNavigation?: SpatialNavigation;
 }
 
 export class UIManager {
@@ -224,7 +226,12 @@ export class UIManager {
         uiVariantsWithoutCondition.push(uiVariant);
       }
       // Create the instance manager for a UI variant
-      this.uiInstanceManagers.push(new InternalUIInstanceManager(player, uiVariant.ui, this.config));
+      this.uiInstanceManagers.push(new InternalUIInstanceManager(
+        player,
+        uiVariant.ui,
+        this.config,
+        uiVariant.spatialNavigation,
+      ));
     }
     // Make sure that there is only one UI variant without a condition
     // It does not make sense to have multiple variants without condition, because only the first one in the list
@@ -560,6 +567,7 @@ export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
   private ui: UIContainer;
   private config: InternalUIConfig;
+  protected spatialNavigation?: SpatialNavigation;
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
@@ -574,10 +582,11 @@ export class UIInstanceManager {
     onRelease: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
-  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig) {
+  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig, spatialNavigation?: SpatialNavigation) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
+    this.spatialNavigation = spatialNavigation;
   }
 
   getConfig(): InternalUIConfig {
@@ -743,6 +752,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
       this.releaseControlsTree(this.getUI());
       this.configured = false;
     }
+    this.spatialNavigation?.release();
     this.released = true;
   }
 
