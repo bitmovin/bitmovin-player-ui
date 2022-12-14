@@ -20,19 +20,20 @@
     margin-bottom: 1vh;
 
     > .#{$prefix}-container-wrapper {
-      width: 100%;
+      align-items: center;
+      display: inline-flex;
       font-size: $large-size;
 
-      display: inline-flex;
       // Start from the right side
       justify-content: flex-end;
-      align-items: center;
+      width: 100%;
 
       .#{$prefix}-label-metadata-title {
+        font-size: $large-size;
+
         // Moves rest of the items starting with this one to the very left
         // margin auto will fill up the rest of the space in between.
         margin-right: auto;
-        font-size: $large-size;
       }
     }
   }
@@ -45,26 +46,25 @@
 
   .#{$prefix}-ui-titlebar-bottom {
     > .#{$prefix}-container-wrapper {
-      width: 100%;
-      font-size: $large-size;
-
-      position: relative;
-      display: inline-flex;
-      justify-content: space-between;
       align-items: flex-start;
+      display: inline-flex;
+      font-size: $large-size;
+      justify-content: space-between;
+      position: relative;
+      width: 100%;
     }
 
     .#{$prefix}-label-metadata-description {
       font-size: $medium-size;
-      width: 66%;
       line-height: 2em;
+      width: 66%;
     }
 
     // Position the settings panel top right below the settings icons
     .#{$prefix}-ui-settings-panel {
       font-size: $medium-large-size;
-      top: 0;
       right: 0;
+      top: 0;
     }
   }
 
@@ -92,11 +92,11 @@
   }
 
   :focus {
-    transition: all .05s ease-in-out;
-    box-shadow: $focus-element-box-shadow;
-    outline: none;
     border: none;
+    box-shadow: $focus-element-box-shadow;
     -webkit-filter: drop-shadow(0 0 .3em $color-highlight);
     filter: drop-shadow(0 0 .3em $color-highlight);
+    outline: none;
+    transition: all .05s ease-in-out;
   }
 }

@@ -56,9 +56,9 @@
     // sass-lint:disable force-pseudo-nesting
     &:nth-child(1n-1)::after {
       content: '\A';
-      white-space: pre-line;
       // VTT flex styling can increase this elements height, making the background larger
       height: 0;
+      white-space: pre-line;
       width: 0;
     }
   }
