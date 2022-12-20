@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.40.0] - 2022-12-20
+
+### Added
+- Support for spatial navigation
+- SmartTV UI via `UIFactory.buildDefaultTvUI`
+
+### Changed
+- Node.js from 10 to 16
+- Typescript from ^3.9.6 to 4.3
+
 ## [3.39.0] - 2022-12-01
 
 ### Added
@@ -804,7 +814,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.38.0...HEAD
+[3.40.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.39.0...v3.40.0
 [3.39.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.38.0...v3.39.0
 [3.38.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.37.0...v3.38.0
 [3.37.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.36.0...v3.37.0
