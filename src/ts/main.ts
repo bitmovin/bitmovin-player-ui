@@ -12,6 +12,8 @@ export { UIUtils } from './uiutils';
 export { BrowserUtils } from './browserutils';
 export { StorageUtils } from './storageutils';
 export { ErrorUtils } from './errorutils';
+// Localization
+export { i18n } from './localization/i18n';
 // Components
 export { Button } from './components/button';
 export { ControlBar } from './components/controlbar';
