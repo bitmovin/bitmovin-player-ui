@@ -12,6 +12,13 @@ export { UIUtils } from './uiutils';
 export { BrowserUtils } from './browserutils';
 export { StorageUtils } from './storageutils';
 export { ErrorUtils } from './errorutils';
+// Localization
+export { i18n } from './localization/i18n';
+// Spatial Navigation
+export { SpatialNavigation } from './spatialnavigation/spatialnavigation';
+export { NavigationGroup } from './spatialnavigation/navigationgroup';
+export { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
+export { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 // Components
 export { Button } from './components/button';
 export { ControlBar } from './components/controlbar';

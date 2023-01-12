@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.41.0] - 2023-01-12
+
+### Added
+- Export Localization and SpatialNavigation to use in external UI configuration
+
 ## [3.40.0] - 2022-12-20
 
 ### Added
@@ -814,6 +819,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.41.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.40.0...v3.41.0
 [3.40.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.39.0...v3.40.0
 [3.39.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.38.0...v3.39.0
 [3.38.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.37.0...v3.38.0
