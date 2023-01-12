@@ -1,10 +1,12 @@
 import vocabularyDe from './languages/de.json';
 import vocabularyEn from './languages/en.json';
+import vocabularyEs from './languages/es.json';
 import { LocalizationConfig } from '../uimanager.js';
 
 export const defaultVocabularies: Vocabularies = {
   'en': vocabularyEn,
   'de': vocabularyDe,
+  'es': vocabularyEs
 };
 
 const defaultLocalizationConfig: LocalizationConfig = {
