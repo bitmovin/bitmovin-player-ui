@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.41.0] - 2023-01-12
+
+### Added
+- Export Localization and SpatialNavigation to use in external UI configuration
+
 ## [3.40.0] - 2022-12-20
 
 ### Added
