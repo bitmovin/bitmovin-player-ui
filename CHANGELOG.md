@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Added
-- Language locatization for Spanish
+- Language localization for Spanish
 
 ## [3.40.0] - 2022-12-20
 
