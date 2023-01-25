@@ -6,7 +6,7 @@ import { LocalizationConfig } from '../uimanager.js';
 export const defaultVocabularies: Vocabularies = {
   'en': vocabularyEn,
   'de': vocabularyDe,
-  'es': vocabularyEs
+  'es': vocabularyEs,
 };
 
 const defaultLocalizationConfig: LocalizationConfig = {
