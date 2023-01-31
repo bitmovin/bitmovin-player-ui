@@ -1,14 +1,23 @@
 import {Container, ContainerConfig} from './container';
 import {HugePlaybackToggleButton} from './hugeplaybacktogglebutton';
 
+export interface PlaybackToggleOverlayConfig extends ContainerConfig {
+  /**
+   * Specify whether the player should be set to enter fullscreen by clicking on the playback toggle button
+   * when initiating the initial playback.
+   * Default is false.
+   */
+  enterFullscreenOnInitialPlayback?: boolean;
+}
+
 /**
  * Overlays the player and displays error messages.
  */
-export class PlaybackToggleOverlay extends Container<ContainerConfig> {
+export class PlaybackToggleOverlay extends Container<PlaybackToggleOverlayConfig> {
 
   private playbackToggleButton: HugePlaybackToggleButton;
 
-  constructor(config: ContainerConfig = {}) {
+  constructor(config: PlaybackToggleOverlayConfig = {}) {
     super(config);
 
     this.playbackToggleButton = new HugePlaybackToggleButton();
