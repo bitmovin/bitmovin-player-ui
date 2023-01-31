@@ -1,5 +1,4 @@
-import {ToggleButtonConfig} from './togglebutton';
-import {PlaybackToggleButton} from './playbacktogglebutton';
+import {PlaybackToggleButton, PlaybackToggleButtonConfig} from './playbacktogglebutton';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
@@ -10,7 +9,7 @@ import { i18n } from '../localization/i18n';
  */
 export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
-  constructor(config: ToggleButtonConfig = {}) {
+  constructor(config: PlaybackToggleButtonConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {

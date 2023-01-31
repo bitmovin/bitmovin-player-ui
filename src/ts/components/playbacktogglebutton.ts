@@ -4,15 +4,24 @@ import {PlayerUtils} from '../playerutils';
 import { PlayerAPI, WarningEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
+export interface PlaybackToggleButtonConfig extends ToggleButtonConfig {
+  /**
+   * Specify whether the player should be set to enter fullscreen by clicking on the playback toggle button
+   * when initiating the initial playback.
+   * Default is false.
+   */
+  enterFullscreenOnInitialPlayback?: boolean;
+}
+
 /**
  * A button that toggles between playback and pause.
  */
-export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
+export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfig> {
 
   private static readonly CLASS_STOPTOGGLE = 'stoptoggle';
   protected isPlayInitiated: boolean;
 
-  constructor(config: ToggleButtonConfig = {}) {
+  constructor(config: PlaybackToggleButtonConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
