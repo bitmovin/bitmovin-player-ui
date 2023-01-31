@@ -129,7 +129,7 @@ export namespace UIFactory {
         }),
         new Container({
           components: [
-            new PlaybackToggleButton(),
+            new PlaybackToggleButton({ enterFullscreenOnInitialPlayback: false }),
             new VolumeToggleButton(),
             new VolumeSlider(),
             new Spacer(),
@@ -149,7 +149,7 @@ export namespace UIFactory {
       components: [
         subtitleOverlay,
         new BufferingOverlay(),
-        new PlaybackToggleOverlay(),
+        new PlaybackToggleOverlay({ enterFullscreenOnInitialPlayback: false }),
         new CastStatusOverlay(),
         controlBar,
         new TitleBar(),
@@ -171,7 +171,7 @@ export namespace UIFactory {
       components: [
         new BufferingOverlay(),
         new AdClickOverlay(),
-        new PlaybackToggleOverlay(),
+        new PlaybackToggleOverlay({ enterFullscreenOnInitialPlayback: false }),
         new Container({
           components: [
             new AdMessageLabel({ text: i18n.getLocalizer('ads.remainingTime')}),
@@ -183,7 +183,7 @@ export namespace UIFactory {
           components: [
             new Container({
               components: [
-                new PlaybackToggleButton(),
+                new PlaybackToggleButton({ enterFullscreenOnInitialPlayback: false }),
                 new VolumeToggleButton(),
                 new VolumeSlider(),
                 new Spacer(),
@@ -274,7 +274,7 @@ export namespace UIFactory {
         subtitleOverlay,
         new BufferingOverlay(),
         new CastStatusOverlay(),
-        new PlaybackToggleOverlay(),
+        new PlaybackToggleOverlay({ enterFullscreenOnInitialPlayback: false }),
         new RecommendationOverlay(),
         controlBar,
         new TitleBar({
@@ -308,7 +308,7 @@ export namespace UIFactory {
       components: [
         new BufferingOverlay(),
         new AdClickOverlay(),
-        new PlaybackToggleOverlay(),
+        new PlaybackToggleOverlay({ enterFullscreenOnInitialPlayback: false }),
         new TitleBar({
           components: [
             // dummy label with no content to move buttons to the right
@@ -352,7 +352,7 @@ export namespace UIFactory {
       components: [
         new SubtitleOverlay(),
         new BufferingOverlay(),
-        new PlaybackToggleOverlay(),
+        new PlaybackToggleOverlay({ enterFullscreenOnInitialPlayback: false }),
         new Watermark(),
         controlBar,
         new TitleBar({ keepHiddenWithoutMetadata: true }),
@@ -447,7 +447,7 @@ export namespace UIFactory {
     });
 
     const seekBar = new SeekBar({ label: new SeekBarLabel() });
-    const playbackToggleOverlay = new PlaybackToggleOverlay();
+    const playbackToggleOverlay = new PlaybackToggleOverlay({ enterFullscreenOnInitialPlayback: false });
     const subtitleToggleButton = new SettingsToggleButton({
       settingsPanel: subtitleListPanel,
       autoHideWhenNoActiveSettings: true,
