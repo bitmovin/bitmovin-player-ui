@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased]
 
 ### Added
-- Configuration option to enter fullscreen when clicking `PlaybackToggleButton` or `HugePlaybackToggleButton` to initiate the initial playback
+- `UIConfig.enterFullscreenOnInitialPlayback` to enter fullscreen when clicking `PlaybackToggleButton` or `HugePlaybackToggleButton` to initiate the initial playback
 
 ## [3.42.0]
 
