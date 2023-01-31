@@ -38,6 +38,7 @@ export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfi
     super.configure(player, uimanager);
 
     let isSeeking = false;
+    let firstPlay = true;
 
     // Handler to update button state based on player state
     let playbackStateHandler = () => {
@@ -57,6 +58,7 @@ export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfi
     // Call handler upon these events
     player.on(player.exports.PlayerEvent.Play, (e) => {
       this.isPlayInitiated = true;
+      firstPlay = false;
       playbackStateHandler();
     });
 
@@ -82,6 +84,7 @@ export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfi
     player.on(player.exports.PlayerEvent.Warning, (event: WarningEvent) => {
       if (event.code === player.exports.WarningCode.PLAYBACK_COULD_NOT_BE_STARTED) {
         this.isPlayInitiated = false;
+        firstPlay = true;
         this.off();
       }
     });
@@ -115,6 +118,10 @@ export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfi
           player.pause('ui');
         } else {
           player.play('ui');
+
+          if (firstPlay && this.config.enterFullscreenOnInitialPlayback) {
+            player.setViewMode(player.exports.ViewMode.Fullscreen);
+          }
         }
       });
     }

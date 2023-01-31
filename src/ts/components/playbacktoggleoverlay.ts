@@ -20,7 +20,9 @@ export class PlaybackToggleOverlay extends Container<PlaybackToggleOverlayConfig
   constructor(config: PlaybackToggleOverlayConfig = {}) {
     super(config);
 
-    this.playbackToggleButton = new HugePlaybackToggleButton();
+    this.playbackToggleButton = new HugePlaybackToggleButton({
+      enterFullscreenOnInitialPlayback: Boolean(config.enterFullscreenOnInitialPlayback),
+    });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-playbacktoggle-overlay',

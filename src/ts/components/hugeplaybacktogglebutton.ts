@@ -70,6 +70,11 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         // playback is blocked (e.g. on mobile devices due to the programmatic play() call), we loose the chance to
         // ever start playback through a user interaction again with this button.
         togglePlayback();
+
+        if (this.config.enterFullscreenOnInitialPlayback) {
+          player.setViewMode(player.exports.ViewMode.Fullscreen);
+        }
+
         return;
       }
 
