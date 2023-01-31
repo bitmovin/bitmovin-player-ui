@@ -37,6 +37,11 @@ export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfi
   configure(player: PlayerAPI, uimanager: UIInstanceManager, handleClickEvent: boolean = true): void {
     super.configure(player, uimanager);
 
+    // Set enterFullscreenOnInitialPlayback if set in the uimanager config
+    if (typeof uimanager.getConfig().enterFullscreenOnInitialPlayback === 'boolean') {
+      this.config.enterFullscreenOnInitialPlayback = uimanager.getConfig().enterFullscreenOnInitialPlayback;
+    }
+
     let isSeeking = false;
     let firstPlay = true;
 
