@@ -91,8 +91,8 @@ export interface UIConfig {
    */
   enableSeekPreview?: boolean;
   /**
-   * Specifies if the player should be set to fullscreen by clicking on the `PlaybackToggleButton` or
-   * `HugePlaybackToggleButton` when attempting the initial playback start.
+   * Specifies if the player should enter fullscreen by clicking on the `PlaybackToggleButton`,
+   * `HugePlaybackToggleButton`, or `PlaybackToggleOverlay` when attempting the initial playback start.
    * Default: false
    */
   enterFullscreenOnInitialPlayback?: boolean;
