@@ -46,7 +46,7 @@ import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/subtitlelistbox';
-import { AudioTrackListBox } from './main';
+import { AudioTrackListBox } from './components/audiotracklistbox';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
