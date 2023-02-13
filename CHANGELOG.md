@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.44.0]
+
+### Fixed
+- Circular dependency in the import of `AudioTrackListBox` between `main.ts` and `uifactory.ts`
+
 ## [3.43.0]
 
 ### Added
@@ -829,6 +834,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.44.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.43.0...v3.44.0
 [3.43.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.42.0...v3.43.0
 [3.42.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.41.0...v3.42.0
 [3.41.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.40.0...v3.41.0
