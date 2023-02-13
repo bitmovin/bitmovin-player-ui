@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.44.0]
+## [3.44.0] - 2023-02-13
 
 ### Fixed
 - Circular dependency in the import of `AudioTrackListBox` between `main.ts` and `uifactory.ts`
