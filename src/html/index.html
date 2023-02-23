@@ -100,6 +100,12 @@
 <script src="js/bitmovinplayer-ui.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
+
+    document.addEventListener('keydown', function (inEvent) {
+        console.log('HTML keydown: ');
+        console.log(inEvent);
+    });
+
   var sources = {
     fullyFeatured: {
       dash: '//bitdash-a.akamaihd.net/content/sintel/sintel.mpd',
@@ -706,9 +712,15 @@
     uiManager.release();
     var factoryMethod = $(this).val();
     if (factoryMethod.indexOf('buildDemo') === 0) {
+        console.log('IsBuildDemo');
       uiManager = bitmovin.playerui.DemoFactory[factoryMethod](player, uiConfig);
     } else {
+        console.log('Is NOT BuildDemo');
       uiManager = bitmovin.playerui.UIFactory[factoryMethod](player, uiConfig);
+      uiManager.getUiVariants()[0].spatialNavigation.onSpatialNavigationKeyPress.subscribe((a, b) => {
+          console.log('onSpatialNavigationKeyPress');
+          console.log(b)
+      });
     }
   });
 
