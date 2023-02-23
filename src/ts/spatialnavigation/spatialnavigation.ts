@@ -77,8 +77,8 @@ export class SpatialNavigation {
       group.container.onHide.subscribe(onHideHandler);
 
       this.unsubscribeVisibilityChangesFns.push(
-        () => group.container.onShow.unsubscribe(onShowHandler),
-        () => group.container.onHide.unsubscribe(onHideHandler),
+          () => group.container.onShow.unsubscribe(onShowHandler),
+          () => group.container.onHide.unsubscribe(onHideHandler),
       );
     });
   }
