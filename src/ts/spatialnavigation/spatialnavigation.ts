@@ -5,6 +5,8 @@ import { SeekBarHandler } from './seekbarhandler';
 import { getKeyMapForPlatform } from './keymap';
 import { Action, Direction, KeyMap } from './types';
 import { isAction, isDirection } from './typeguards';
+import {EventDispatcher} from '../eventdispatcher';
+import {UIConditionContext} from '../uimanager';
 
 /**
  * SpatialNavigation keeps track of all navigation groups, and updates the active navigation group when visibility
@@ -21,6 +23,10 @@ export class SpatialNavigation {
   private readonly seekBarHandler: SeekBarHandler;
   private readonly keyMap: KeyMap;
 
+  private events = {
+    onSpatialNavigationKeyPress: new EventDispatcher<SpatialNavigation, KeyboardEvent>(),
+  };
+
   constructor(rootNavigationGroup: RootNavigationGroup, ...navigationGroups: NavigationGroup[]) {
     this.seekBarHandler = new SeekBarHandler(rootNavigationGroup);
 
@@ -33,6 +39,10 @@ export class SpatialNavigation {
     this.subscribeToNavigationGroupVisibilityChanges();
     this.attachKeyEventHandler();
     this.enableDefaultNavigationGroup();
+  }
+
+  get onSpatialNavigationKeyPress(): EventDispatcher<SpatialNavigation, KeyboardEvent> {
+    return this.events.onSpatialNavigationKeyPress;
   }
 
   private attachKeyEventHandler(): void {
@@ -126,12 +136,14 @@ export class SpatialNavigation {
 
       e.preventDefault();
       e.stopPropagation();
+      this.events.onSpatialNavigationKeyPress.dispatch(this, e);
     }
     if (isAction(event)) {
       this.getActiveNavigationGroup().handleAction(event);
 
       e.preventDefault();
       e.stopPropagation();
+      this.events.onSpatialNavigationKeyPress.dispatch(this, e);
     }
   };
 
