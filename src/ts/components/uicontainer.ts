@@ -51,6 +51,8 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   public hideUi: () => void = () => {};
   public showUi: () => void = () => {};
+  public isUiShown: () => boolean = () => false;
+  public shouldShowUi = (_: KeyboardEvent) => true;
 
   constructor(config: UIContainerConfig) {
     super(config);
@@ -127,6 +129,8 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
+    this.isUiShown = () => isUiShown;
+
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, this.hideUi);
 
@@ -166,8 +170,10 @@ export class UIContainer extends Container<UIContainerConfig> {
       },
     }, {
       name: 'keydown',
-      handler: () => {
-        this.showUi();
+      handler: (event: KeyboardEvent) => {
+        if (this.shouldShowUi(event)) {
+          this.showUi();
+        }
       },
     }, {
       // When the mouse leaves, we can prepare to hide the UI, except a seek is going on

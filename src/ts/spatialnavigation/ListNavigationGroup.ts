@@ -25,16 +25,18 @@ export class ListNavigationGroup extends NavigationGroup {
     }
   }
 
-  public handleAction(action: Action): void {
+  public handleAction(action: Action): boolean {
     super.handleAction(action);
 
     if (action === Action.SELECT) {
       // close the container when a list entry is selected
       this.handleAction(Action.BACK);
     }
+
+    return true;
   }
 
-  public handleNavigation(direction: Direction): void {
+  public handleNavigation(direction: Direction): boolean {
     super.handleNavigation(direction);
 
     if (!this.listNavigationDirections.includes(direction)) {
@@ -42,5 +44,7 @@ export class ListNavigationGroup extends NavigationGroup {
       // with the orientation of the list
       this.handleAction(Action.BACK);
     }
+
+    return true;
   }
 }

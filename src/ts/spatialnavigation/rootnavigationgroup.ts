@@ -9,26 +9,38 @@ import { Action, Direction } from './types';
 export class RootNavigationGroup extends NavigationGroup {
   constructor(public readonly container: UIContainer, ...elements: Component<unknown>[]) {
     super(container, ...elements);
+
+    this.container.shouldShowUi = this.shouldShowUi;
+  }
+
+  private shouldShowUi = (_: KeyboardEvent): boolean => {
+    return false;
   }
 
   public handleAction(action: Action) {
-    this.container.showUi();
+    if (action !== Action.BACK) {
+      this.container.showUi();
+    }
 
-    super.handleAction(action);
+    return super.handleAction(action);
   }
 
   public handleNavigation(direction: Direction) {
     this.container.showUi();
 
-    super.handleNavigation(direction);
+    return super.handleNavigation(direction);
   }
 
-  protected defaultActionHandler(action: Action): void {
-    if (action === Action.BACK) {
-      this.container.hideUi();
-    } else {
-      super.defaultActionHandler(action);
+  protected defaultActionHandler(action: Action): boolean {
+    if (action !== Action.BACK) {
+      return super.defaultActionHandler(action);
+    } else if (!this.container.isUiShown()) {
+      return false;
     }
+
+    this.container.hideUi();
+
+    return true;
   }
 
   public release(): void {

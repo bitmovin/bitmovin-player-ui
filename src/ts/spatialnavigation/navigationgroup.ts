@@ -70,7 +70,7 @@ export class NavigationGroup {
     }
   }
 
-  protected defaultNavigationHandler(direction: Direction): void {
+  protected defaultNavigationHandler(direction: Direction): boolean {
     const targetElement = getElementInDirection(
       this.activeElement,
       getHtmlElementsFromComponents(this.components),
@@ -79,10 +79,14 @@ export class NavigationGroup {
 
     if (targetElement) {
       this.focusElement(targetElement);
+
+      return true;
     }
+
+    return false;
   }
 
-  protected defaultActionHandler(action: Action): void {
+  protected defaultActionHandler(action: Action): boolean {
     switch (action) {
       case(Action.SELECT):
         this.activeElement.click();
@@ -91,17 +95,20 @@ export class NavigationGroup {
         this.container.hide();
         break;
     }
+
+    return true;
   }
 
-  private handleInput<T>(data: T, defaultHandler: (data: T) => void, userHandler?: Callback<T>): void {
+  private handleInput<T>(data: T, defaultHandler: (data: T) => void, userHandler?: Callback<T>): boolean {
     let handleDefault = true;
     const preventDefault = () => (handleDefault = false);
-
-    userHandler?.(data, this.activeElement, preventDefault);
+    let stopPropagation = userHandler?.(data, this.activeElement, preventDefault);
 
     if (handleDefault) {
-      defaultHandler.call(this, data);
+      stopPropagation = defaultHandler.call(this, data) || stopPropagation;
     }
+
+    return stopPropagation;
   }
 
   /**
@@ -109,8 +116,8 @@ export class NavigationGroup {
    *
    * @param direction The direction of the navigation event
    */
-  public handleNavigation(direction: Direction): void {
-    this.handleInput(direction, this.defaultNavigationHandler, this.onNavigation);
+  public handleNavigation(direction: Direction): boolean {
+    return this.handleInput(direction, this.defaultNavigationHandler, this.onNavigation);
   }
 
   /**
@@ -118,8 +125,8 @@ export class NavigationGroup {
    *
    * @param action The action of the event
    */
-  public handleAction(action: Action): void {
-    this.handleInput(action, this.defaultActionHandler, this.onAction);
+  public handleAction(action: Action): boolean {
+    return this.handleInput(action, this.defaultActionHandler, this.onAction);
   }
 
   /**

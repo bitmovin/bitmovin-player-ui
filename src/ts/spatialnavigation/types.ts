@@ -1,4 +1,4 @@
-export type Callback<T> = (data: T, target: HTMLElement, preventDefault: () => void) => void;
+export type Callback<T> = (data: T, target: HTMLElement, preventDefault: () => void) => boolean;
 export type NavigationCallback = Callback<Direction>;
 export type ActionCallback = Callback<Action>;
 export type KeyMap = {
