@@ -463,15 +463,26 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   };
 
-  private seek = (percentage: number) => {
+  private getTargetSeekPosition = (percentage: number) => {
+    let target: number;
     if (this.player.isLive()) {
       const maxTimeShift = this.player.getMaxTimeShift();
-      this.player.timeShift(maxTimeShift - (maxTimeShift * (percentage / 100)), 'ui');
+      target = maxTimeShift - (maxTimeShift * (percentage / 100));
     } else {
       const seekableRangeStart = PlayerUtils.getSeekableRangeStart(this.player, 0);
       const relativeSeekTarget = this.player.getDuration() * (percentage / 100);
-      const absoluteSeekTarget = relativeSeekTarget + seekableRangeStart;
-      this.player.seek(absoluteSeekTarget, 'ui');
+      target = relativeSeekTarget + seekableRangeStart;
+    }
+
+    return target;
+  }
+
+  private seek = (percentage: number) => {
+    const targetPlaybackPosition = this.getTargetSeekPosition(percentage);
+    if (this.player.isLive()) {
+      this.player.timeShift(targetPlaybackPosition, 'ui');
+    } else {
+      this.player.seek(targetPlaybackPosition, 'ui');
     }
   };
 
