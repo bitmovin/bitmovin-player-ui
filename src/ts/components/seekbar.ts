@@ -1,3 +1,4 @@
+import { ExtendedPlayerAPI, GroupPlaybackSuspension, GroupPlaybackSuspensionReason } from './../groupplaybackapi';
 import { Component, ComponentConfig } from './component';
 import { DOM } from '../dom';
 import { Event, EventDispatcher, NoArgs } from '../eventdispatcher';
@@ -236,6 +237,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isPlaying = false;
     let scrubbing = false;
     let isPlayerSeeking = false;
+    let suspension: GroupPlaybackSuspension | undefined;
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
@@ -328,14 +330,18 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeShift, onPlayerSeek);
     player.on(player.exports.PlayerEvent.TimeShifted, onPlayerSeeked);
 
-    this.onSeek.subscribe((sender) => {
-      this.isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
+    let isGroupPlaybackAPIAvailable = (player: PlayerAPI): player is ExtendedPlayerAPI => {
+      return !!(player as ExtendedPlayerAPI).groupPlayback;
+    }
 
-      // Notify UI manager of started seek
-      uimanager.onSeek.dispatch(sender);
-
-      // Save current playback state before performing the seek
-      if (!isPlayerSeeking) {
+    let handleSeekEvent = () => {
+      // If group playback is present and user still seeking after 100ms then it might be a scrubbing.
+      if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined() && this.isUserSeeking && !suspension) {
+        suspension = player.groupPlayback.beginSuspension(GroupPlaybackSuspensionReason.UserIsScrubbing);
+      }
+      
+       // Save current playback state before performing the seek
+       if (!isPlayerSeeking) {
         isPlaying = player.isPlaying();
 
         // Pause playback while seeking
@@ -344,8 +350,21 @@ export class SeekBar extends Component<SeekBarConfig> {
           player.pause('ui-seek');
         }
       }
+    };
 
+    this.onSeek.subscribe((sender) => {
+      // track seeking status so we can catch events from seek preview seeks
+      this.isUserSeeking = true;
+      // Notify UI manager of started seek
+      uimanager.onSeek.dispatch(sender);
+
+      if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined()) {
+        setTimeout(() => handleSeekEvent(), 100);
+      } else {
+        handleSeekEvent()
+      }
     });
+
     this.onSeekPreview.subscribe((sender: SeekBar, args: SeekPreviewEventArgs) => {
       // Notify UI manager of seek preview
       uimanager.onSeekPreview.dispatch(sender, args);
@@ -373,6 +392,12 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Continue playback after seek if player was playing when seek started
       restorePlayingState();
+
+      if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined() && suspension) {
+        const proposedPlaybackTime = this.getTargetSeekPosition(percentage);
+        player.groupPlayback.endSuspension(suspension, { proposedPlaybackTime });
+        suspension = undefined;
+      }
     });
 
     if (this.hasLabel()) {
