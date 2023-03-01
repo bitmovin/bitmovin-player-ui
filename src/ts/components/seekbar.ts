@@ -332,14 +332,14 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     let isGroupPlaybackAPIAvailable = (player: PlayerAPI): player is ExtendedPlayerAPI => {
       return !!(player as ExtendedPlayerAPI).groupPlayback;
-    }
+    };
 
     let handleSeekEvent = () => {
       // If group playback is present and user still seeking after 100ms then it might be a scrubbing.
       if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined() && this.isUserSeeking && !suspension) {
         suspension = player.groupPlayback.beginSuspension(GroupPlaybackSuspensionReason.UserIsScrubbing);
       }
-      
+
        // Save current playback state before performing the seek
        if (!isPlayerSeeking) {
         isPlaying = player.isPlaying();
