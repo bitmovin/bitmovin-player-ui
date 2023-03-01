@@ -361,7 +361,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined()) {
         setTimeout(() => handleSeekEvent(), 100);
       } else {
-        handleSeekEvent()
+        handleSeekEvent();
       }
     });
 

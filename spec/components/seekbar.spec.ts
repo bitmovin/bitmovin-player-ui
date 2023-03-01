@@ -135,7 +135,88 @@ describe('SeekBar', () => {
         expect(setBufferPositionSpy).toHaveBeenLastCalledWith(18)
       });
     });
-  })
+  });
+
+  describe('group playback', () => {
+    beforeEach(() => {
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(0)
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+    });
+
+    it('should delay seek event handler when group playback is active', () => {
+      const setTimeoutSpy = jest.spyOn(window, 'setTimeout');
+      (playerMock as any).groupPlayback = {
+        hasJoined: () => true,
+        beginSuspension: () => {},
+      };
+
+      seekbar['onSeekEvent']();
+
+      expect(seekbar['isUserSeeking']).toBe(true);
+      expect(uiInstanceManagerMock.onSeek.dispatch).toHaveBeenCalled();
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
+    });
+
+    it('should not delay seek event handler when group playback api is not present', () => {
+      const setTimeoutSpy = jest.spyOn(window, 'setTimeout');
+
+      seekbar['onSeekEvent']();
+
+      expect(seekbar['isUserSeeking']).toBe(true);
+      expect(uiInstanceManagerMock.onSeek.dispatch).toHaveBeenCalled();
+      expect(setTimeoutSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not delay seek event handler when no group playback is active', () => {
+      const setTimeoutSpy = jest.spyOn(window, 'setTimeout');
+
+      (playerMock as any).groupPlayback = {
+        hasJoined: () => false,
+        beginSuspension: () => {},
+      };
+
+      seekbar['onSeekEvent']();
+
+      expect(seekbar['isUserSeeking']).toBe(true);
+      expect(uiInstanceManagerMock.onSeek.dispatch).toHaveBeenCalled();
+      expect(setTimeoutSpy).not.toHaveBeenCalled();
+    });
+
+    it('should suspend active group session on scrubbing', done => {
+      const beginSuspensionSpy = jest.fn();
+      (playerMock as any).groupPlayback = {
+        hasJoined: () => true,
+        beginSuspension: beginSuspensionSpy,
+      };
+
+      seekbar['onSeekEvent']();
+
+      setTimeout(() => {
+        expect(seekbar['isUserSeeking']).toBe(true);
+        expect(uiInstanceManagerMock.onSeek.dispatch).toHaveBeenCalled();
+        expect(beginSuspensionSpy).toHaveBeenCalled();
+        done();
+      }, 150);
+    });
+
+    it('should not suspend active group session on seeking', done => {
+      const beginSuspensionSpy = jest.fn();
+      (playerMock as any).groupPlayback = {
+        hasJoined: () => true,
+        beginSuspension: beginSuspensionSpy,
+      };
+
+      seekbar['onSeekEvent']();
+      seekbar['onSeekedEvent'](10);
+
+      setTimeout(() => {
+        expect(seekbar['isUserSeeking']).toBe(false);
+        expect(uiInstanceManagerMock.onSeek.dispatch).toHaveBeenCalled();
+        expect(beginSuspensionSpy).not.toHaveBeenCalled();
+        done();
+      }, 150);
+    });
+  });
 
   describe('buffer levels', () => {
     beforeEach(() => {
