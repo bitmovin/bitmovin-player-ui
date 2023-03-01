@@ -340,8 +340,8 @@ export class SeekBar extends Component<SeekBarConfig> {
         suspension = player.groupPlayback.beginSuspension(GroupPlaybackSuspensionReason.UserIsScrubbing);
       }
 
-       // Save current playback state before performing the seek
-       if (!isPlayerSeeking) {
+      // Save current playback state before performing the seek
+      if (!isPlayerSeeking) {
         isPlaying = player.isPlaying();
 
         // Pause playback while seeking
