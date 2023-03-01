@@ -1,7 +1,7 @@
 import { PlayerAPI } from 'bitmovin-player';
 /**
  * The Group Playback API offers control over synchronized playback of a group of clients, e.g. for Apple SharePlay
- * sessions. 
+ * sessions.
 
  * Note: The API currently only covers the immediate needs of the iOS SDK in combination with our UI which is regarding
  * temporarily suspending synchronization of the player from the group. But it is open to be extended as needed in the
@@ -12,7 +12,7 @@ import { PlayerAPI } from 'bitmovin-player';
  * Reason for suspending the synchronization with the group.
  */
 export enum GroupPlaybackSuspensionReason {
-  UserIsScrubbing = "userIsScrubbing",
+  UserIsScrubbing = 'userIsScrubbing',
 }
 
 /**
