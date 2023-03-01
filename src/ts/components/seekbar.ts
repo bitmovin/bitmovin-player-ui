@@ -334,9 +334,13 @@ export class SeekBar extends Component<SeekBarConfig> {
       return !!(player as ExtendedPlayerAPI).groupPlayback;
     };
 
-    let handleSeekEvent = () => {
-      // If group playback is present and user still seeking after 100ms then it might be a scrubbing.
-      if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined() && this.isUserSeeking && !suspension) {
+    this.onSeek.subscribe((sender) => {
+      // track seeking status so we can catch events from seek preview seeks
+      this.isUserSeeking = true;
+      // Notify UI manager of started seek
+      uimanager.onSeek.dispatch(sender);
+
+      if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined() && !suspension) {
         suspension = player.groupPlayback.beginSuspension(GroupPlaybackSuspensionReason.UserIsScrubbing);
       }
 
@@ -349,19 +353,6 @@ export class SeekBar extends Component<SeekBarConfig> {
           // use a different issuer here, as play/pause on seek is not "really" triggerd by the user
           player.pause('ui-seek');
         }
-      }
-    };
-
-    this.onSeek.subscribe((sender) => {
-      // track seeking status so we can catch events from seek preview seeks
-      this.isUserSeeking = true;
-      // Notify UI manager of started seek
-      uimanager.onSeek.dispatch(sender);
-
-      if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined()) {
-        setTimeout(() => handleSeekEvent(), 100);
-      } else {
-        handleSeekEvent();
       }
     });
 
