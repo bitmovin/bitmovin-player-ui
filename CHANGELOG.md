@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [development]
 
 ### Added
-- Support for SharePlay scrubbing
+- Scrubbing during a FaceTime call automatically creates a SharePlay suspension to not synchronize scrubbing to other participants.
 
 ## [3.44.0] - 2023-02-13
 
