@@ -14,12 +14,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Circular dependency in the import of `AudioTrackListBox` between `main.ts` and `uifactory.ts`
 
-## [3.43.0]
+## [3.43.0] - 2023-02-06
 
 ### Added
 - `UIConfig.enterFullscreenOnInitialPlayback` to enter fullscreen when clicking `PlaybackToggleButton` or `HugePlaybackToggleButton` to initiate the initial playback
 
-## [3.42.0]
+## [3.42.0] - 2023-01-30
 
 ### Added
 - Language localization for Spanish
