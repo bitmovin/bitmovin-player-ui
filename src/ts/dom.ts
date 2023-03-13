@@ -562,6 +562,14 @@ export class DOM {
     }
   }
 
+  /**
+   * Removes an inline CSS property if it exists
+   * @param propertyName name of the property to remove
+   */
+  removeInlineCss(propertyName: string): void {
+    this.setCss(propertyName, null);
+  }
+
   private getCss(propertyName: string): string | null {
     return getComputedStyle(this.elements[0])[<any>propertyName];
   }
