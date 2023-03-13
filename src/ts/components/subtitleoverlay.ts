@@ -169,22 +169,22 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     if (cropDetection.top) {
       labelDomElement.css('top', '0');
-      labelDomElement.removeInlineCss('bottom');
+      labelDomElement.removeCss('bottom');
     }
 
     if (cropDetection.right) {
       labelDomElement.css('right', '0');
-      labelDomElement.removeInlineCss('left');
+      labelDomElement.removeCss('left');
     }
 
     if (cropDetection.bottom) {
       labelDomElement.css('bottom', '0');
-      labelDomElement.removeInlineCss('top');
+      labelDomElement.removeCss('top');
     }
 
     if (cropDetection.left) {
       labelDomElement.css('left', '0');
-      labelDomElement.removeInlineCss('right');
+      labelDomElement.removeCss('right');
     }
   }
 
