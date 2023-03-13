@@ -74,6 +74,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.subtitleContainerManager.addLabel(label, this.getDomElement().size());
       this.updateComponents();
+
+      if (uimanager.getConfig().forceSubtitlesIntoViewContainer) {
+        this.handleSubtitleCropping(label);
+      }
     });
 
     player.on(player.exports.PlayerEvent.CueUpdate, (event: SubtitleCueEvent) => {
@@ -84,6 +88,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       if (labelToReplace) {
         this.subtitleContainerManager.replaceLabel(labelToReplace, label);
+      }
+
+      if (uimanager.getConfig().forceSubtitlesIntoViewContainer) {
+        this.handleSubtitleCropping(label);
       }
     });
 
