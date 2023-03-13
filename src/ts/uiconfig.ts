@@ -97,7 +97,7 @@ export interface UIConfig {
    */
   enterFullscreenOnInitialPlayback?: boolean;
   /**
-  * Forces subtitle-labels back into their respective container if they overflow and are therefore cropped.
-  */
+   * Forces subtitle-labels back into their respective container if they overflow and are therefore cropped.
+   */
   forceSubtitlesIntoViewContainer?: boolean;
 }
