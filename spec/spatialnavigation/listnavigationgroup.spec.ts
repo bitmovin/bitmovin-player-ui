@@ -19,7 +19,7 @@ describe('ListNavigationGroup', () => {
       const listNavigationGroup = new ListNavigationGroup(ListOrientation.Vertical, containerUiMock);
       const handleActionSpy = jest.spyOn(listNavigationGroup, 'handleAction');
 
-      listNavigationGroup.handleAction(Action.SELECT);
+      expect(listNavigationGroup.handleAction(Action.SELECT)).toBeTruthy();
 
       expect(handleActionSpy).toHaveBeenCalledWith(Action.BACK);
     });
@@ -42,7 +42,7 @@ describe('ListNavigationGroup', () => {
         const listNavigationGroup = new ListNavigationGroup(orientation, containerUiMock);
         const handleActionSpy = jest.spyOn(listNavigationGroup, 'handleAction');
 
-        listNavigationGroup.handleNavigation(direction);
+        expect(listNavigationGroup.handleNavigation(direction)).toBeTruthy();
 
         if (shouldDispatch) {
           expect(handleActionSpy).toHaveBeenCalledWith(Action.BACK);
