@@ -140,6 +140,8 @@ describe('SeekBarHandler', () => {
     });
 
     it('should stop seeking when the BACK action is triggered', () => {
+      seekBarHandler['isScrubbing'] = true;
+
       rootNavigationGroupMock.onAction!(Action.BACK, seekBarWrapperMock, preventDefaultSpy);
 
       expect(preventDefaultSpy).toHaveBeenCalled();

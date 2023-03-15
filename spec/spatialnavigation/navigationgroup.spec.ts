@@ -80,7 +80,11 @@ describe('NavigationGroup', () => {
 
     describe('onNavigation', () => {
       it('should not call default navigation handler if propagation was stopped from the outside', () => {
-        rootNavigationGroup.onNavigation = (_direction, _element, preventDefault) => preventDefault();
+        rootNavigationGroup.onNavigation = (_direction, _element, preventDefault) => {
+          preventDefault();
+
+          return true;
+        };
 
         rootNavigationGroup.handleNavigation(Direction.DOWN);
 
@@ -111,7 +115,12 @@ describe('NavigationGroup', () => {
 
     describe('onAction', () => {
       it('should not call default action handler if propagation was stopped from the outside', () => {
-        rootNavigationGroup.onAction = (_action, _element, preventDefault) => preventDefault();
+        rootNavigationGroup.onAction = (_action, _element, preventDefault) => {
+          preventDefault();
+
+          return true;
+        }
+
         rootNavigationGroup.handleAction(Action.SELECT);
 
         expect(playButtonHTML.click).not.toHaveBeenCalled();

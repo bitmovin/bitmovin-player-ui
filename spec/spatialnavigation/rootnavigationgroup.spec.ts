@@ -13,6 +13,7 @@ describe('RootNavigationGroup', () => {
     containerUiMock = mockClass(UIContainer);
     containerUiMock.showUi = jest.fn();
     containerUiMock.hideUi = jest.fn();
+    containerUiMock.isUiShown = jest.fn();
 
     rootNavigationGroup = new RootNavigationGroup(containerUiMock);
 
@@ -26,6 +27,8 @@ describe('RootNavigationGroup', () => {
     });
 
     it('should call hideUi on UIContainer on Action.BACK', () => {
+      containerUiMock.isUiShown.mockReturnValue(true);
+
       rootNavigationGroup['defaultActionHandler'](Action.BACK);
 
       expect(containerUiMock.hideUi).toHaveBeenCalled();
