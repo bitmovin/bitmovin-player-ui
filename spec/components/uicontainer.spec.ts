@@ -52,4 +52,74 @@ describe('UIContainer', () => {
       });
     });
   });
+
+  describe('isUiShown', () => {
+    let uiContainer: UIContainer;
+
+    beforeEach(() => {
+      uiContainer = new UIContainer({ components: [] });
+      uiContainer.configure(playerMock, uiInstanceManagerMock);
+    });
+
+    it('should return false if the container is hidden', () => {
+      uiContainer.hideUi();
+
+      expect(uiContainer.isUiShown()).toBeFalsy();
+    });
+
+    it('should return true if the container is shown', () => {
+      uiContainer.showUi();
+
+      expect(uiContainer.isUiShown()).toBeTruthy();
+    });
+  });
+
+  describe('userInteractionEvents', () => {
+    describe('on keydown', () => {
+      let uiContainer: UIContainer;
+      let showUiSpy: jest.SpyInstance;
+      let keyDownEvent: KeyboardEvent;
+      let keyDownEventHandler: EventListener;
+
+      beforeEach(() => {
+        keyDownEvent = new KeyboardEvent('keydown');
+        uiContainer = new UIContainer({ components: [] });
+        uiContainer.configure(playerMock, uiInstanceManagerMock);
+        keyDownEventHandler = getKeyDownEventHandler(uiContainer);
+        showUiSpy = jest.spyOn(uiContainer, 'showUi');
+      });
+
+      it('should show the UI by default', () => {
+        keyDownEventHandler(keyDownEvent);
+
+        expect(showUiSpy).toHaveBeenCalled();
+      });
+
+      it('should show the UI if shouldShowUi returns true', () => {
+        uiContainer.shouldShowUi = () => true;
+
+        keyDownEventHandler(keyDownEvent);
+
+        expect(showUiSpy).toHaveBeenCalled();
+      });
+
+      it('should not show the UI if shouldShowUi returns false', () => {
+        uiContainer.shouldShowUi = () => false;
+
+        keyDownEventHandler(keyDownEvent);
+
+        expect(showUiSpy).not.toHaveBeenCalled();
+      });
+    });
+  });
 });
+
+function getKeyDownEventHandler(uiContainer: UIContainer): EventListener {
+  const keyDownEventHandler = uiContainer['userInteractionEvents'].find(userInteractionEvent => userInteractionEvent.name === 'keydown');
+
+  if (!keyDownEventHandler || typeof keyDownEventHandler.handler !== 'function') {
+    throw new Error('keydown event handler not available');
+  }
+
+  return keyDownEventHandler.handler;
+}
