@@ -31,7 +31,7 @@
     "browser-sync": "^2.29.0",
     "browserify": "^17.0.0",
     "cssnano": "^5.1.15",
-    "del": "^7.0.0",
+    "del": "^2.2.2",
     "gulp": "^4.0.2",
     "gulp-css-base64": "^2.0.0",
     "gulp-header": "^2.0.9",
