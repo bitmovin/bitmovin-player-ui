@@ -5,7 +5,6 @@ declare global {
 }
 
 export class BrowserUtils {
-  
   // isMobile only needs to be evaluated once (it cannot change during a browser session)
   // Mobile detection according to Mozilla recommendation: "In summary, we recommend looking for the string “Mobi”
   // anywhere in the User Agent to detect a mobile device."
