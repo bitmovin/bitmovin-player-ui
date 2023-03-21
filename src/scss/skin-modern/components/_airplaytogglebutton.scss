@@ -4,13 +4,13 @@
 .#{$prefix}-ui-airplaytogglebutton {
   @extend %ui-button;
 
-  background-image: svg('assets/skin-modern/images/airplay.svg');
+  background-image: url('../../assets/skin-modern/images/airplay.svg');
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   &.#{$prefix}-on {
-    background-image: svg('assets/skin-modern/images/airplayX.svg');
+    background-image: url('../../assets/skin-modern/images/airplayX.svg');
   }
 }
