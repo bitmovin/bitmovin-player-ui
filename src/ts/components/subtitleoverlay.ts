@@ -10,6 +10,13 @@ import { i18n } from '../localization/i18n';
 import { VttUtils } from '../vttutils';
 import { VTTProperties } from 'bitmovin-player/types/subtitles/vtt/API';
 
+interface SubtitleCropDetectionResult {
+  top: boolean;
+  right: boolean;
+  bottom: boolean;
+  left: boolean;
+}
+
 /**
  * Overlays the player to display subtitles.
  */
@@ -67,6 +74,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.subtitleContainerManager.addLabel(label, this.getDomElement().size());
       this.updateComponents();
+
+      if (uimanager.getConfig().forceSubtitlesIntoViewContainer) {
+        this.handleSubtitleCropping(label);
+      }
     });
 
     player.on(player.exports.PlayerEvent.CueUpdate, (event: SubtitleCueEvent) => {
@@ -77,6 +88,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       if (labelToReplace) {
         this.subtitleContainerManager.replaceLabel(labelToReplace, label);
+      }
+
+      if (uimanager.getConfig().forceSubtitlesIntoViewContainer) {
+        this.handleSubtitleCropping(label);
       }
     });
 
@@ -128,6 +143,49 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.configureCea608Captions(player, uimanager);
     // Init
     subtitleClearHandler();
+  }
+
+  detectCroppedSubtitleLabel(
+    labelElement: HTMLElement,
+  ): SubtitleCropDetectionResult {
+    const parent = this.getDomElement().get(0);
+
+    const childRect = labelElement.getBoundingClientRect();
+    const parentRect = parent.getBoundingClientRect();
+
+    return {
+      top: childRect.top < parentRect.top,
+      right: childRect.right > parentRect.right,
+      bottom: childRect.bottom > parentRect.bottom,
+      left: childRect.left < parentRect.left,
+    };
+  }
+
+  handleSubtitleCropping(label: SubtitleLabel) {
+    const labelDomElement = label.getDomElement();
+    const cropDetection = this.detectCroppedSubtitleLabel(
+      labelDomElement.get(0),
+    );
+
+    if (cropDetection.top) {
+      labelDomElement.css('top', '0');
+      labelDomElement.removeCss('bottom');
+    }
+
+    if (cropDetection.right) {
+      labelDomElement.css('right', '0');
+      labelDomElement.removeCss('left');
+    }
+
+    if (cropDetection.bottom) {
+      labelDomElement.css('bottom', '0');
+      labelDomElement.removeCss('top');
+    }
+
+    if (cropDetection.left) {
+      labelDomElement.css('left', '0');
+      labelDomElement.removeCss('right');
+    }
   }
 
   generateLabel(event: SubtitleCueEvent): SubtitleLabel {
