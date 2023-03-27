@@ -62,7 +62,7 @@
   // Decrease huge play button size and replace icon with normal play icon
   .#{$prefix}-ui-hugeplaybacktogglebutton {
     .#{$prefix}-image {
-      background-image: svg('assets/skin-modern/images/play.svg');
+      background-image: url('../../assets/skin-modern/images/play.svg');
       background-size: 4em;
     }
   }
@@ -74,7 +74,7 @@
       &.#{$prefix}-on {
         .#{$prefix}-image {
           animation: none;
-          background-image: svg('assets/skin-modern/images/pause.svg');
+          background-image: url('../../assets/skin-modern/images/pause.svg');
           visibility: visible;
         }
       }

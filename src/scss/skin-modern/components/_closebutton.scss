@@ -22,7 +22,7 @@
     }
   }
 
-  background-image: svg('assets/skin-modern/images/close.svg');
+  background-image: url('../../assets/skin-modern/images/close.svg');
 
   &:hover {
     @include svg-icon-shadow;

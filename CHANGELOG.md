@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Config option `forceSubtitlesIntoViewContainer` to handle overflowing subtitle labels
 
+### Changed
+- Updated package dependencies.
+
 ## [3.45.0] - 2023-03-06
 
 ### Added
