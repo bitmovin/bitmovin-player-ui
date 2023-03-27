@@ -4,13 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Changed
+- Updated package dependencies.
+
 ## [3.46.0]
 
 ### Added
 - Config option `forceSubtitlesIntoViewContainer` to handle overflowing subtitle labels
-
-### Changed
-- Updated package dependencies.
 
 ## [3.45.0] - 2023-03-06
 
