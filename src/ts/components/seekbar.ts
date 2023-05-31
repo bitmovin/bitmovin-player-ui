@@ -623,6 +623,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.config.enableSeekPreview) {
       this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
     }
+    
+    if(this.timelineMarkersHandler) {
+      this.timelineMarkersHandler.release()
+    }
   }
 
   protected toDomElement(): DOM {

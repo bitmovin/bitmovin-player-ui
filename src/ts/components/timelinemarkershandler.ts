@@ -35,7 +35,11 @@ export class TimelineMarkersHandler {
     this.uimanager = uimanager;
     this.configureMarkers();
   }
-
+  
+  public release() {
+    this.pausedTimeshiftUpdater.clear()
+  }
+  
   private configureMarkers(): void {
     // Remove markers when unloaded
     this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => this.clearMarkers());
