@@ -68,6 +68,7 @@ describe('SpatialNavigation', () => {
 
   describe('handleKeyEvent', () => {
       it('should call handle navigation on active group on key event', () => {
+        rootNavigationContainer.show();
         const rootHandleNavigationSpy = jest.spyOn(rootNavigationGroup, 'handleNavigation');
         spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key:'Up', keyCode: 38 } as any));
 
@@ -75,6 +76,7 @@ describe('SpatialNavigation', () => {
       });
 
     it('should call handle action on active group on key event', () => {
+      rootNavigationContainer.show();
       const rootHandleActionSpy = jest.spyOn(rootNavigationGroup, 'handleAction');
       spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key:'Escape', keyCode: 27 } as any));
 
