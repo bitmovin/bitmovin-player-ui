@@ -451,9 +451,12 @@ export class UIManager {
     // Select new UI variant
     // If no variant condition is fulfilled, we switch to *no* UI
     for (let uiVariant of this.uiVariants) {
-      if (uiVariant.condition == null || uiVariant.condition(switchingContext) === true) {
+      const matchesCondition = uiVariant.condition == null || uiVariant.condition(switchingContext) === true;
+      if (nextUiVariant == null && matchesCondition) {
         nextUiVariant = uiVariant;
-        break;
+      } else {
+        // hide all UIs besides the one which should be active
+        uiVariant.ui.hide();
       }
     }
 
