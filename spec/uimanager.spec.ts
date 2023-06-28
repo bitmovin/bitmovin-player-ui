@@ -8,7 +8,7 @@ jest.mock('../src/ts/dom');
 // This just simulates a Class that can be wrapped by our PlayerWrapper.
 // To enable this simple class structure we need a lot of any casts in the tests.
 class A {
-  private value: object = undefined;
+  private value?: object = undefined;
 
   get a() {
     return this.value;
