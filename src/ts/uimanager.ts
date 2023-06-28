@@ -402,21 +402,21 @@ export class UIManager {
 
     // When we switch to a different UI instance, there's some additional stuff to manage. If we do not switch
     // to an instance, we're done here.
-    if (this.currentUi != null) {
-      // Add the UI to the DOM (and configure it) the first time it is selected
-      if (!this.currentUi.isConfigured()) {
-        this.addUi(this.currentUi);
-      }
-      if (onShow) {
-        onShow();
-      }
-
+    if (this.currentUi == null) {
+      return;
+    }
+    // Add the UI to the DOM (and configure it) the first time it is selected
+    if (!this.currentUi.isConfigured()) {
+      this.addUi(this.currentUi);
+      // ensure that the internal state is ready for the upcoming show call
       if (!this.currentUi.getUI().isHidden()) {
-        console.debug('Hiding UI before showing it. Maybe the initial state is wrong');
         this.currentUi.getUI().hide();
       }
-      this.currentUi.getUI().show();
     }
+    if (onShow) {
+      onShow();
+    }
+    this.currentUi.getUI().show();
   }
 
   /**
