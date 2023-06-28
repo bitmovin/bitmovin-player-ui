@@ -1,7 +1,14 @@
-import { InternalUIConfig, PlayerWrapper, UIManager } from '../src/ts/uimanager';
+import {
+  InternalUIConfig,
+  PlayerWrapper,
+  UIManager,
+  UIVariant,
+} from '../src/ts/uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/mobilev3playerapi';
+import { UIContainer } from '../src/ts/components/uicontainer';
+import { Container } from '../src/ts/components/container';
 
 jest.mock('../src/ts/dom');
 
@@ -66,6 +73,47 @@ describe('UIManager', () => {
       });
     });
   });
+
+  describe('switchToUiVariant', () => {
+    let firstUi: UIVariant, secondUI: UIVariant, defaultUI: UIVariant;
+    let playerMock: TestingPlayerAPI;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      firstUi = {
+        ui: new UIContainer({ components: [new Container({})]}),
+        condition: (context) => context.isPlaying,
+      };
+      secondUI = {
+        ui: new UIContainer({ components: [new Container({})]}),
+        condition: (context) => context.isAd,
+      }
+      defaultUI = {
+        ui: new UIContainer({ components: [new Container({})]}),
+      }
+
+    });
+
+    it('should mark invisible UIs as hidden', () => {
+      new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      expect(firstUi.ui.isHidden()).toBeTruthy()
+      expect(secondUI.ui.isHidden()).toBeTruthy()
+      expect(defaultUI.ui.isHidden()).toBeFalsy()
+    });
+
+    it('should switch UIs when the player emits an event', () => {
+      new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      (playerMock.isPlaying as jest.Mock).mockReturnValue(true);
+      playerMock.eventEmitter.firePlayEvent();
+
+      expect(firstUi.ui.isHidden()).toBeFalsy()
+      expect(secondUI.ui.isHidden()).toBeTruthy()
+      expect(defaultUI.ui.isHidden()).toBeTruthy()
+    });
+  });
+
   describe('mobile v3 handling', () => {
     let playerMock: TestingPlayerAPI;
     beforeEach(() => {
