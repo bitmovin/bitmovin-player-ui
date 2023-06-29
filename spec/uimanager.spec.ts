@@ -102,7 +102,7 @@ describe('UIManager', () => {
       expect(defaultUI.ui.isHidden()).toBeFalsy()
     });
 
-    it('should switch UIs when the player emits an event', () => {
+    it('should switch to the corresponding ui when a play event is fired', () => {
       new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
 
       (playerMock.isPlaying as jest.Mock).mockReturnValue(true);
