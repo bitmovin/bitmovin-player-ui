@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [develop]
+
+### Fixed
+- When more than one UI with spatial navigation is managed by the UI manager, all UIs would handle key events, instead of only the active one.
+
 ## [3.47.0]
 
 ### Changed
