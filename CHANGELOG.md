@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [develop]
 
 ### Fixed
-- When more than one UI with spatial navigation is managed by the UI manager, only the active one will handle key events.
+- When more than one UI with spatial navigation is managed by the UI manager, all UIs would handle key events, instead of only the active one.
 
 ## [3.47.0]
 
