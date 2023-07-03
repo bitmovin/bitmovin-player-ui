@@ -121,14 +121,19 @@ export class SpatialNavigation {
   private handleKeyEvent = (e: KeyboardEvent): void => {
     const event: Direction | Action | undefined = this.keyMap[getKeyCode(e)];
 
+    const active = this.getActiveNavigationGroup();
+    if (!active || !active.container || active.container.isHidden() || active.container.isDisabled()) {
+      return;
+    }
+
     if (isDirection(event)) {
-      this.getActiveNavigationGroup().handleNavigation(event);
+      active.handleNavigation(event);
 
       e.preventDefault();
       e.stopPropagation();
     }
     if (isAction(event)) {
-      this.getActiveNavigationGroup().handleAction(event);
+      active.handleAction(event);
 
       e.preventDefault();
       e.stopPropagation();
