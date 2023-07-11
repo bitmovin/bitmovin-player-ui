@@ -522,6 +522,13 @@ export class UIManager {
   }
 
   /**
+   * The current active {@link UIInstanceManager}.
+   */
+  get activeUi(): UIInstanceManager {
+    return this.currentUi;
+  }
+
+  /**
    * Returns the list of all added markers in undefined order.
    */
   getTimelineMarkers(): TimelineMarker[] {
