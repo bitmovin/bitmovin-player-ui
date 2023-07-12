@@ -1,6 +1,6 @@
 import {
   InternalUIConfig,
-  PlayerWrapper,
+  PlayerWrapper, UIInstanceManager,
   UIManager,
   UIVariant,
 } from '../src/ts/uimanager';
@@ -150,6 +150,16 @@ describe('UIManager', () => {
       uiManager.switchToUiVariant(secondUI);
 
       expect(onUiChanged).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('activeUi', () => {
+    it('should return the active UI instance manager', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      const uiVariant = { ui: new UIContainer({ components: [new Container({})]}) };
+      const uiManager = new UIManager(playerMock, [uiVariant]);
+
+      expect(uiManager.activeUi).toBeInstanceOf(UIInstanceManager);
     });
   });
 
