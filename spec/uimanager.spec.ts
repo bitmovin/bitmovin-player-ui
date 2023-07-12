@@ -112,6 +112,45 @@ describe('UIManager', () => {
       expect(secondUI.ui.isHidden()).toBeTruthy()
       expect(defaultUI.ui.isHidden()).toBeTruthy()
     });
+
+    it('should dispatch the onActiveUiChanged event', () => {
+      const onUiChanged = jest.fn();
+      const uiManager = new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      uiManager.switchToUiVariant(firstUi);
+      uiManager.onActiveUiChanged.subscribe(onUiChanged);
+      uiManager.switchToUiVariant(secondUI);
+
+      expect(onUiChanged).toHaveBeenCalledWith(
+        uiManager,
+        {
+          previousUi: uiManager['uiInstanceManagers'][0],
+          currentUi: uiManager['uiInstanceManagers'][1],
+        },
+      );
+    });
+
+    it('should not dispatch the onActiveUiChanged event if the selected variant is already active', () => {
+      const onUiChanged = jest.fn();
+      const uiManager = new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      uiManager.switchToUiVariant(firstUi);
+      uiManager.onActiveUiChanged.subscribe(onUiChanged);
+      uiManager.switchToUiVariant(firstUi);
+
+      expect(onUiChanged).not.toHaveBeenCalled();
+    });
+
+    it('should not dispatch the onActiveUiChanged event if the selected variant is not yet set up', () => {
+      const onUiChanged = jest.fn();
+      const uiManager = new UIManager(playerMock, [firstUi, defaultUI]);
+
+      uiManager.switchToUiVariant(firstUi);
+      uiManager.onActiveUiChanged.subscribe(onUiChanged);
+      uiManager.switchToUiVariant(secondUI);
+
+      expect(onUiChanged).not.toHaveBeenCalled();
+    });
   });
 
   describe('mobile v3 handling', () => {
