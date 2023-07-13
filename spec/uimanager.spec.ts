@@ -1,6 +1,7 @@
 import {
   InternalUIConfig,
   PlayerWrapper,
+  UIInstanceManager,
   UIManager,
   UIVariant,
 } from '../src/ts/uimanager';
@@ -111,6 +112,55 @@ describe('UIManager', () => {
       expect(firstUi.ui.isHidden()).toBeFalsy()
       expect(secondUI.ui.isHidden()).toBeTruthy()
       expect(defaultUI.ui.isHidden()).toBeTruthy()
+    });
+
+    it('should dispatch the onActiveUiChanged event', () => {
+      const onUiChanged = jest.fn();
+      const uiManager = new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      uiManager.switchToUiVariant(firstUi);
+      uiManager.onActiveUiChanged.subscribe(onUiChanged);
+      uiManager.switchToUiVariant(secondUI);
+
+      expect(onUiChanged).toHaveBeenCalledWith(
+        uiManager,
+        {
+          previousUi: uiManager['uiInstanceManagers'][0],
+          currentUi: uiManager['uiInstanceManagers'][1],
+        },
+      );
+    });
+
+    it('should not dispatch the onActiveUiChanged event if the selected variant is already active', () => {
+      const onUiChanged = jest.fn();
+      const uiManager = new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      uiManager.switchToUiVariant(firstUi);
+      uiManager.onActiveUiChanged.subscribe(onUiChanged);
+      uiManager.switchToUiVariant(firstUi);
+
+      expect(onUiChanged).not.toHaveBeenCalled();
+    });
+
+    it('should not dispatch the onActiveUiChanged event if the selected variant is not yet set up', () => {
+      const onUiChanged = jest.fn();
+      const uiManager = new UIManager(playerMock, [firstUi, defaultUI]);
+
+      uiManager.switchToUiVariant(firstUi);
+      uiManager.onActiveUiChanged.subscribe(onUiChanged);
+      uiManager.switchToUiVariant(secondUI);
+
+      expect(onUiChanged).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('activeUi', () => {
+    it('should return the active UI instance manager', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      const uiVariant = { ui: new UIContainer({ components: [new Container({})]}) };
+      const uiManager = new UIManager(playerMock, [uiVariant]);
+
+      expect(uiManager.activeUi).toBeInstanceOf(UIInstanceManager);
     });
   });
 

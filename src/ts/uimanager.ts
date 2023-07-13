@@ -90,6 +90,17 @@ export interface UIVariant {
   spatialNavigation?: SpatialNavigation;
 }
 
+export interface ActiveUiChangedArgs extends NoArgs {
+  /**
+   * The previously active {@link UIInstanceManager} prior to the {@link UIManager} switching to a different UI variant.
+   */
+  previousUi: UIInstanceManager;
+  /**
+   * The currently active {@link UIInstanceManager}.
+   */
+  currentUi: UIInstanceManager;
+}
+
 export class UIManager {
 
   private player: PlayerAPI;
@@ -103,6 +114,7 @@ export class UIManager {
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
+    onActiveUiChanged: new EventDispatcher<UIManager, ActiveUiChangedArgs>(),
   };
 
   /**
@@ -383,6 +395,7 @@ export class UIManager {
   switchToUiVariant(uiVariant: UIVariant, onShow?: () => void): void {
     let uiVariantIndex = this.uiVariants.indexOf(uiVariant);
 
+    const previousUi = this.currentUi;
     const nextUi: InternalUIInstanceManager = this.uiInstanceManagers[uiVariantIndex];
     // Determine if the UI variant is changing
     // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
@@ -417,6 +430,7 @@ export class UIManager {
       onShow();
     }
     this.currentUi.getUI().show();
+    this.events.onActiveUiChanged.dispatch(this, { previousUi, currentUi: nextUi });
   }
 
   /**
@@ -519,6 +533,21 @@ export class UIManager {
    */
   get onUiVariantResolve(): EventDispatcher<UIManager, UIConditionContext> {
     return this.events.onUiVariantResolve;
+  }
+
+  /**
+   * Fires after the UIManager has switched to a different UI variant.
+   * @returns {EventDispatcher<UIManager, ActiveUiChangedArgs>}
+   */
+  get onActiveUiChanged(): EventDispatcher<UIManager, ActiveUiChangedArgs> {
+    return this.events.onActiveUiChanged;
+  }
+
+  /**
+   * The current active {@link UIInstanceManager}.
+   */
+  get activeUi(): UIInstanceManager {
+    return this.currentUi;
   }
 
   /**
