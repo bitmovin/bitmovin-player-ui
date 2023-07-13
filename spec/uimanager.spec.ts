@@ -1,6 +1,7 @@
 import {
   InternalUIConfig,
-  PlayerWrapper, UIInstanceManager,
+  PlayerWrapper,
+  UIInstanceManager,
   UIManager,
   UIVariant,
 } from '../src/ts/uimanager';
