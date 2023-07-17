@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.49.0]
+
+### Added
+- `onActiveUiChanged` event on the `UIManager` that is dispatched when the UI manager switches to a different UI variant
+- Readonly `currentUi` field on the `UIManager` that exposes the active `UIInstanceManager`
+
 ## [3.48.0]
 
 ### Fixed
@@ -854,7 +860,8 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[3.48.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.47.0...develop
+[3.49.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.48.0...develop
+[3.48.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.47.0...v3.48.0
 [3.47.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.46.0...v3.47.0
 [3.46.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.45.0...v3.46.0
 [3.45.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.44.0...v3.45.0
