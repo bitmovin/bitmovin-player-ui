@@ -81,7 +81,7 @@ export class ControlBar extends Container<ControlBarConfig> {
 
     uimanager.onPreviewControlsHide.subscribe((sender, args) => {
       // Cancel the hide event if hovered child components block hiding or if the settings panel is active on mobile.
-      args.cancel = (hoverStackCount > 0 || isSettingsPanelShown);
+      args.cancel = args.cancel || (hoverStackCount > 0 || isSettingsPanelShown);
     });
 
     uimanager.onControlsHide.subscribe(() => {
