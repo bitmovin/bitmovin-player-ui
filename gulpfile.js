@@ -209,26 +209,19 @@ gulp.task('build-prod', gulp.series(function(callback) {
 gulp.task('default', gulp.series('build'));
 
 // Watches files for changes and runs their build tasks
-gulp.task('watch', function() {
+gulp.task('watch', gulp.series('build', function() {
   // Watch for changed html files
   gulp.watch(paths.source.html).on('change', gulp.series('html'));
 
   // Watch SASS files
   gulp.watch(paths.source.sass).on('change', gulp.series('sass'));
 
-  // Watch JSON files 
+  // Watch JSON files
   gulp.watch(paths.source.json).on('change', gulp.series('browserify'));
 
-  // Watch files for changes through Browserify with Watchify
-  catchBrowserifyErrors = true;
-  return browserifyInstance
-  .plugin(watchify)
-  // When a file has changed, rerun the browserify task to create an updated bundle
-  .on('update', function() {
-    gulp.start('browserify');
-  })
-  .bundle();
-});
+  // Watch TypeScript files
+  gulp.watch(paths.source.ts).on('change', gulp.series('browserify'));
+}));
 
 // Serves the project in the browser and updates it automatically on changes
 gulp.task('serve', gulp.series('build', function() {

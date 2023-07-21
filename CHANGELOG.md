@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Settings panel does not close on single tap on mobile devices
 - Restoring volume on unmute not working when volume was changed through the player API
+- Gulp `watch` task not working
 
 ## [3.49.0]
 
