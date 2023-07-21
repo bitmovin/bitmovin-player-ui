@@ -88,6 +88,8 @@ export class VolumeController {
     const uiMuted = playerMuted || playerVolume === 0;
     const uiVolume = playerMuted ? 0 : playerVolume;
 
+    this.storeVolume();
+
     this.events.onChanged.dispatch(this, { volume: uiVolume, muted: uiMuted });
   }
 
