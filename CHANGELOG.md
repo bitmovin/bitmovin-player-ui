@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.50.0]
+
+### Fixed
+- Settings panel does not close on single tap on mobile devices
+- Restoring volume on unmute not working when volume was changed through the player API
+- Gulp `watch` task not working
+
 ## [3.49.0]
 
 ### Added
