@@ -4,30 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.50.0]
+## [3.50.0] - 2023-07-24
 
 ### Fixed
 - Settings panel does not close on single tap on mobile devices
 - Restoring volume on unmute not working when volume was changed through the player API
 - Gulp `watch` task not working
 
-## [3.49.0]
+## [3.49.0] - 2023-07-17
 
 ### Added
 - `onActiveUiChanged` event on the `UIManager` that is dispatched when the UI manager switches to a different UI variant
 - Readonly `currentUi` field on the `UIManager` that exposes the active `UIInstanceManager`
 
-## [3.48.0]
+## [3.48.0] - 2023-07-03
 
 ### Fixed
 - When more than one UI with spatial navigation is managed by the UI manager, all UIs would handle key events, instead of only the active one.
 
-## [3.47.0]
+## [3.47.0] - 2023-05-17
 
 ### Changed
 - Updated package dependencies.
 
-## [3.46.0]
+## [3.46.0] - 2023-03-22
 
 ### Added
 - Config option `forceSubtitlesIntoViewContainer` to handle overflowing subtitle labels
@@ -867,7 +867,8 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[3.49.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.48.0...develop
+[3.50.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.49.0...v3.50.0
+[3.49.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.48.0...v3.49.0
 [3.48.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.47.0...v3.48.0
 [3.47.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.46.0...v3.47.0
 [3.46.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.45.0...v3.46.0
