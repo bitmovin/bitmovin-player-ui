@@ -27,7 +27,7 @@
     "@types/jest": "^29.5.0",
     "@types/jsdom": "^21.1.0",
     "autoprefixer": "^10.4.14",
-    "bitmovin-player": "^8.109.0",
+    "bitmovin-player": "^8.128.0",
     "browser-sync": "^2.29.0",
     "browserify": "^17.0.0",
     "cssnano": "^5.1.15",
