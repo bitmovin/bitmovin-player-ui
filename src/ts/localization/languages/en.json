@@ -52,6 +52,8 @@
   "vr" : "VR",
   "off": "off",
   "auto": "auto",
+  "ecoMode": "ecoMode",
+  "ecoMode.title":"Eco Mode",
   "back" : "Back",
   "reset": "Reset",
   "replay": "Replay",

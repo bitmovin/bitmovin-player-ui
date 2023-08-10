@@ -87,6 +87,8 @@ interface Vocabulary {
   'seekBar.value': string;
   'seekBar.timeshift': string;
   'seekBar.durationText': string;
+  'ecoMode': string;
+  'ecoMode.title': string;
 }
 
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;
