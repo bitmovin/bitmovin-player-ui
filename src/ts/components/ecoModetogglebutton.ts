@@ -40,7 +40,7 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality => {
       console.log(quality)
       if (quality.targetQuality.height !== null) {
-        console.log('entrou')
+
              this.off();
              ecoModeOffConfig(player);
       }
