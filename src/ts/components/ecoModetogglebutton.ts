@@ -25,46 +25,61 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    console.log(uimanager.getConfig());
-
     this.onClick.subscribe(() => {
       clicked = true;
       if (clicked === true && !isOn) {
-        this.on();
-        clicked = false;
-        isOn = true;
-        adaptationConfig = player.adaptation.getConfig();
-
-        if (player.getAvailableVideoQualities()[0].codec.includes('avc')) {
-          player.adaptation.setConfig({
-            resolution: { maxSelectableVideoHeight: 720 },
-          } as any);
-        }
-        if (
-          player.getAvailableVideoQualities()[0].codec.includes('hvc') ||
-          player.getAvailableVideoQualities()[0].codec.includes('hev')
-        ) {
-          player.adaptation.setConfig({
-            resolution: { maxSelectableVideoHeight: 1080 },
-          } as any);
-        }
-        if (
-          player.getAvailableVideoQualities()[0].codec.includes('av1') ||
-          player.getAvailableVideoQualities()[0].codec.includes('av01')
-        ) {
-          player.adaptation.setConfig({
-            resolution: { maxSelectableVideoHeight: 1440 },
-          } as any);
-        }
+       this.on();
+        ecoModeOnConfig(player);
+        player.setVideoQuality('auto')
       } else {
         this.off();
-        clicked = false;
-        isOn = false;
-        player.adaptation.setConfig(adaptationConfig);
+        ecoModeOffConfig(player);
       }
     });
-    const selectBox = document.getElementById('bmpui-id-131');
 
-    //uimanager.getConfig().events.onUpdated.subscribe(updateVideoQualities);
+    player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality => {
+      console.log(quality)
+      if (quality.targetQuality.height !== null) {
+        console.log('entrou')
+             this.off();
+             ecoModeOffConfig(player);
+      }
+    }));
   }
+
+}
+
+function ecoModeOnConfig(player: PlayerAPI) {
+
+   clicked = false;
+   isOn = true;
+   adaptationConfig = player.adaptation.getConfig();
+
+   if (player.getAvailableVideoQualities()[0].codec.includes('avc')) {
+     player.adaptation.setConfig({
+       resolution: { maxSelectableVideoHeight: 720 },
+     } as any);
+   }
+   if (
+     player.getAvailableVideoQualities()[0].codec.includes('hvc') ||
+     player.getAvailableVideoQualities()[0].codec.includes('hev')
+   ) {
+     player.adaptation.setConfig({
+       resolution: { maxSelectableVideoHeight: 1080 },
+     } as any);
+   }
+   if (
+     player.getAvailableVideoQualities()[0].codec.includes('av1') ||
+     player.getAvailableVideoQualities()[0].codec.includes('av01')
+   ) {
+     player.adaptation.setConfig({
+       resolution: { maxSelectableVideoHeight: 1440 },
+     } as any);
+   }
+}
+
+function ecoModeOffConfig(player: PlayerAPI) {
+clicked = false;
+isOn = false;
+player.adaptation.setConfig(adaptationConfig);
 }
