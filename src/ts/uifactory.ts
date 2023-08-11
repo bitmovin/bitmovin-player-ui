@@ -42,7 +42,7 @@ import {AdSkipButton} from './components/adskipbutton';
 import {CloseButton} from './components/closebutton';
 import {MetadataLabel, MetadataLabelContent} from './components/metadatalabel';
 import {PlayerUtils} from './playerutils';
-import {Label} from './components/label';
+import {Label, LabelConfig} from './components/label';
 import {CastUIContainer} from './components/castuicontainer';
 import {UIConditionContext, UIManager} from './uimanager';
 import {UIConfig} from './uiconfig';
@@ -57,6 +57,7 @@ import {
   ListNavigationGroup,
   ListOrientation,
 } from './spatialnavigation/ListNavigationGroup';
+
 
 export namespace UIFactory {
   export function buildDefaultUI(
@@ -90,28 +91,20 @@ export namespace UIFactory {
   export function modernUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
+      const EcoModeToggleT = new  EcoModeToggle();
+      const labelEcoMode = new Label({
+        text: i18n.getLocalizer('ecoMode.title'),
+        for: EcoModeToggleT.getConfig().id,
+        id: 'ecoModeLabel',
+      } as LabelConfig);
+    
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
-        new SettingsPanelItem(
-          i18n.getLocalizer('ecoMode.title'),
-          new EcoModeToggle()
-        ),
-        new SettingsPanelItem(
-          i18n.getLocalizer('settings.video.quality'),
-          new VideoQualitySelectBox()
-        ),
-        new SettingsPanelItem(
-          i18n.getLocalizer('speed'),
-          new PlaybackSpeedSelectBox()
-        ),
-        new SettingsPanelItem(
-          i18n.getLocalizer('settings.audio.track'),
-          new AudioTrackSelectBox()
-        ),
-        new SettingsPanelItem(
-          i18n.getLocalizer('settings.audio.quality'),
-          new AudioQualitySelectBox()
-        ),
+        new SettingsPanelItem(labelEcoMode, EcoModeToggleT),
+        new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+        new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
       ],
     });
 

@@ -1,6 +1,6 @@
 import { ToggleButton, ToggleButtonConfig } from './togglebutton';
 import { UIInstanceManager } from '../uimanager';
-import { PlayerAPI } from 'bitmovin-player';
+import { PlayerAPI, VideoQuality, VideoQualityChangedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { VideoQualitySelectBox } from './videoqualityselectbox';
 
@@ -37,7 +37,7 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
       }
     });
 
-    player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality => {
+    player.on(player.exports.PlayerEvent.VideoQualityChanged, ((quality :VideoQualityChangedEvent) => {
       console.log(quality)
       if (quality.targetQuality.height !== null) {
 
