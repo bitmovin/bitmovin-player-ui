@@ -11,26 +11,25 @@
 
   &.#{$prefix}-on {
     background-image: url('../../assets/skin-modern/images/toggleOn.svg');
+    background-position: 20px center;
     background-size: 45% auto;
-    background-position: 20px center; 
   }
 
   &.#{$prefix}-off {
-      background-image: url('../../assets/skin-modern/images/toggleOff.svg');
-      background-size: 45% auto;
-      background-position: 20px center; 
+    background-image: url('../../assets/skin-modern/images/toggleOff.svg');
+    background-position: 20px center;
+    background-size: 45% auto;
   }
-
 }
 
+#ecoModeLabel::before {
 
-#ecoModeLabel::before{
- content: " ";
   background-image: url('../../assets/skin-modern/images/leaf.svg');
-  background-size: 1.7em auto;
   background-repeat: no-repeat;
+  background-size: 1.7em auto;
+  content: ' ';
   display: inline-block;
-  width: 2em;
   height: 1.5em;
+  width: 2em;
 
 }
