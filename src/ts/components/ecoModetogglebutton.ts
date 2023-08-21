@@ -4,8 +4,7 @@ import { PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
 
-let clicked = false;
-let isOn = false;
+
 let adaptationConfig: any;
 export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
   constructor(config: ToggleButtonConfig = {}) {
@@ -26,16 +25,18 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {
-      clicked = true;
-      if (clicked === true && !isOn) {
-        this.on();
-        ecoModeOnConfig(player);
-        player.setVideoQuality('auto');
-      } else {
-        this.off();
-        ecoModeOffConfig(player);
-      }
+      this.toggle();
     });
+
+    this.onToggleOn.subscribe(() => {
+        ecoModeOnConfig(player);
+        player.setVideoQuality('auto')
+      
+    });
+
+    this.onToggleOff.subscribe(() => {
+      ecoModeOffConfig(player);
+    })
 
     player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality: VideoQualityChangedEvent) => {
       if (quality.targetQuality.height !== null) {
@@ -47,8 +48,6 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
 }
 
 function ecoModeOnConfig(player: PlayerAPI) {
-  clicked = false;
-  isOn = true;
   adaptationConfig = player.adaptation.getConfig();
 
   if (player.getAvailableVideoQualities()[0].codec.includes('avc')) {
@@ -75,7 +74,5 @@ function ecoModeOnConfig(player: PlayerAPI) {
 }
 
 function ecoModeOffConfig(player: PlayerAPI) {
-  clicked = false;
-  isOn = false;
   player.adaptation.setConfig(adaptationConfig);
 }
