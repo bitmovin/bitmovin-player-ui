@@ -43,27 +43,21 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
       }
     });
   }
-  
+
   enableEcoMode(player: PlayerAPI) {
     this.adaptationConfig = player.adaptation.getConfig();
-
-    if (player.getAvailableVideoQualities()[0].codec.includes('avc')) {
+    let codec = player.getAvailableVideoQualities()[0].codec;
+    if (codec.includes('avc')) {
       player.adaptation.setConfig({
         resolution: { maxSelectableVideoHeight: 720 },
       });
     }
-    if (
-      player.getAvailableVideoQualities()[0].codec.includes('hvc') ||
-      player.getAvailableVideoQualities()[0].codec.includes('hev')
-    ) {
+    if (codec.includes('hvc') || codec.includes('hev')) {
       player.adaptation.setConfig({
         resolution: { maxSelectableVideoHeight: 1080 },
       });
     }
-    if (
-      player.getAvailableVideoQualities()[0].codec.includes('av1') ||
-      player.getAvailableVideoQualities()[0].codec.includes('av01')
-    ) {
+    if (codec.includes('av1') || codec.includes('av01')) {
       player.adaptation.setConfig({
         resolution: { maxSelectableVideoHeight: 1440 },
       });
