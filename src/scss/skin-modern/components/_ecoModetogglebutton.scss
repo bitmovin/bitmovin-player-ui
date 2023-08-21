@@ -1,7 +1,7 @@
 @import '../variables';
 @import '../mixins';
 
-.#{$prefix}-ui-ecoModetogglebutton {
+.#{$prefix}-ui-ecomodetogglebutton {
   @extend %ui-button;
   height: 1em;
   min-width: 5em;

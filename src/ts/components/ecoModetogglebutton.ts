@@ -11,7 +11,7 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
 
     const defaultConfig: ToggleButtonConfig = {
       text: i18n.getLocalizer('ecoMode'),
-      cssClass: 'ui-ecoModetogglebutton',
+      cssClass: 'ui-ecomodetogglebutton',
       onClass: 'on',
       offClass: 'off',
       ariaLabel: i18n.getLocalizer('ecoMode'),
