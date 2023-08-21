@@ -1,11 +1,11 @@
 import { ToggleButton, ToggleButtonConfig } from './togglebutton';
 import { UIInstanceManager } from '../uimanager';
-import { PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
+import { DynamicAdaptationConfig, PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
 
 
-let adaptationConfig: any;
+let adaptationConfig: DynamicAdaptationConfig;
 export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
@@ -53,7 +53,7 @@ function ecoModeOnConfig(player: PlayerAPI) {
   if (player.getAvailableVideoQualities()[0].codec.includes('avc')) {
     player.adaptation.setConfig({
       resolution: { maxSelectableVideoHeight: 720 },
-    } as any);
+    } as DynamicAdaptationConfig);
   }
   if (
     player.getAvailableVideoQualities()[0].codec.includes('hvc') ||
@@ -61,7 +61,7 @@ function ecoModeOnConfig(player: PlayerAPI) {
   ) {
     player.adaptation.setConfig({
       resolution: { maxSelectableVideoHeight: 1080 },
-    } as any);
+    } as DynamicAdaptationConfig);
   }
   if (
     player.getAvailableVideoQualities()[0].codec.includes('av1') ||
@@ -69,7 +69,7 @@ function ecoModeOnConfig(player: PlayerAPI) {
   ) {
     player.adaptation.setConfig({
       resolution: { maxSelectableVideoHeight: 1440 },
-    } as any);
+    } as DynamicAdaptationConfig);
   }
 }
 
