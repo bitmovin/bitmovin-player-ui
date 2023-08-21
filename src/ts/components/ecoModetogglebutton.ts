@@ -1,12 +1,9 @@
 import { ToggleButton, ToggleButtonConfig } from './togglebutton';
 import { UIInstanceManager } from '../uimanager';
-import { PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
+import { DynamicAdaptationConfig, PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
-let clicked = false;
-let isOn = false;
-let adaptationConfig: any;
-
+let adaptationConfig: DynamicAdaptationConfig;
 export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
@@ -26,15 +23,16 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     super.configure(player, uimanager);
 
     this.onClick.subscribe(() => {
-      clicked = true;
-      if (clicked === true && !isOn) {
-        this.on();
-        ecoModeOnConfig(player);
-        player.setVideoQuality('auto');
-      } else {
-        this.off();
-        ecoModeOffConfig(player);
-      }
+      this.toggle();
+    });
+
+    this.onToggleOn.subscribe(() => {
+      ecoModeOnConfig(player);
+      player.setVideoQuality('auto');
+    });
+
+    this.onToggleOff.subscribe(() => {
+      ecoModeOffConfig(player);
     });
 
     player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality: VideoQualityChangedEvent) => {
@@ -47,14 +45,12 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
 }
 
 function ecoModeOnConfig(player: PlayerAPI) {
-  clicked = false;
-  isOn = true;
   adaptationConfig = player.adaptation.getConfig();
 
   if (player.getAvailableVideoQualities()[0].codec.includes('avc')) {
     player.adaptation.setConfig({
       resolution: { maxSelectableVideoHeight: 720 },
-    } as any);
+    } as DynamicAdaptationConfig);
   }
   if (
     player.getAvailableVideoQualities()[0].codec.includes('hvc') ||
@@ -62,7 +58,7 @@ function ecoModeOnConfig(player: PlayerAPI) {
   ) {
     player.adaptation.setConfig({
       resolution: { maxSelectableVideoHeight: 1080 },
-    } as any);
+    } as DynamicAdaptationConfig);
   }
   if (
     player.getAvailableVideoQualities()[0].codec.includes('av1') ||
@@ -70,12 +66,10 @@ function ecoModeOnConfig(player: PlayerAPI) {
   ) {
     player.adaptation.setConfig({
       resolution: { maxSelectableVideoHeight: 1440 },
-    } as any);
+    } as DynamicAdaptationConfig);
   }
 }
 
 function ecoModeOffConfig(player: PlayerAPI) {
-  clicked = false;
-  isOn = false;
   player.adaptation.setConfig(adaptationConfig);
 }
