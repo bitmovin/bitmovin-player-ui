@@ -3,8 +3,6 @@ import { UIInstanceManager } from '../uimanager';
 import { DynamicAdaptationConfig, PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
-
-
 let adaptationConfig: DynamicAdaptationConfig;
 export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
   constructor(config: ToggleButtonConfig = {}) {
@@ -29,14 +27,13 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     });
 
     this.onToggleOn.subscribe(() => {
-        ecoModeOnConfig(player);
-        player.setVideoQuality('auto')
-      
+      ecoModeOnConfig(player);
+      player.setVideoQuality('auto');
     });
 
     this.onToggleOff.subscribe(() => {
       ecoModeOffConfig(player);
-    })
+    });
 
     player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality: VideoQualityChangedEvent) => {
       if (quality.targetQuality.height !== null) {
