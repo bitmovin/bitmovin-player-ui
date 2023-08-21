@@ -3,8 +3,8 @@ import { UIInstanceManager } from '../uimanager';
 import { DynamicAdaptationConfig, PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
-let adaptationConfig: DynamicAdaptationConfig;
 export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
+  private adaptationConfig: DynamicAdaptationConfig;
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
 
@@ -27,49 +27,48 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     });
 
     this.onToggleOn.subscribe(() => {
-      ecoModeOnConfig(player);
+      this.enableEcoMode(player);
       player.setVideoQuality('auto');
     });
 
     this.onToggleOff.subscribe(() => {
-      ecoModeOffConfig(player);
+      this.disableEcoMode(player);
     });
 
     player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality: VideoQualityChangedEvent) => {
       if (quality.targetQuality.height !== null) {
         this.off();
-        ecoModeOffConfig(player);
+        this.disableEcoMode(player);
       }
     });
   }
-}
+  enableEcoMode(player: PlayerAPI) {
+    this.adaptationConfig = player.adaptation.getConfig();
 
-function ecoModeOnConfig(player: PlayerAPI) {
-  adaptationConfig = player.adaptation.getConfig();
+    if (player.getAvailableVideoQualities()[0].codec.includes('avc')) {
+      player.adaptation.setConfig({
+        resolution: { maxSelectableVideoHeight: 720 },
+      } as DynamicAdaptationConfig);
+    }
+    if (
+      player.getAvailableVideoQualities()[0].codec.includes('hvc') ||
+      player.getAvailableVideoQualities()[0].codec.includes('hev')
+    ) {
+      player.adaptation.setConfig({
+        resolution: { maxSelectableVideoHeight: 1080 },
+      } as DynamicAdaptationConfig);
+    }
+    if (
+      player.getAvailableVideoQualities()[0].codec.includes('av1') ||
+      player.getAvailableVideoQualities()[0].codec.includes('av01')
+    ) {
+      player.adaptation.setConfig({
+        resolution: { maxSelectableVideoHeight: 1440 },
+      } as DynamicAdaptationConfig);
+    }
+  }
 
-  if (player.getAvailableVideoQualities()[0].codec.includes('avc')) {
-    player.adaptation.setConfig({
-      resolution: { maxSelectableVideoHeight: 720 },
-    } as DynamicAdaptationConfig);
+  disableEcoMode(player: PlayerAPI) {
+    player.adaptation.setConfig(this.adaptationConfig);
   }
-  if (
-    player.getAvailableVideoQualities()[0].codec.includes('hvc') ||
-    player.getAvailableVideoQualities()[0].codec.includes('hev')
-  ) {
-    player.adaptation.setConfig({
-      resolution: { maxSelectableVideoHeight: 1080 },
-    } as DynamicAdaptationConfig);
-  }
-  if (
-    player.getAvailableVideoQualities()[0].codec.includes('av1') ||
-    player.getAvailableVideoQualities()[0].codec.includes('av01')
-  ) {
-    player.adaptation.setConfig({
-      resolution: { maxSelectableVideoHeight: 1440 },
-    } as DynamicAdaptationConfig);
-  }
-}
-
-function ecoModeOffConfig(player: PlayerAPI) {
-  player.adaptation.setConfig(adaptationConfig);
 }
