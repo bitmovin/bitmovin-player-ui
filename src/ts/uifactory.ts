@@ -39,7 +39,7 @@ import { AdSkipButton } from './components/adskipbutton';
 import { CloseButton } from './components/closebutton';
 import { MetadataLabel, MetadataLabelContent } from './components/metadatalabel';
 import { PlayerUtils } from './playerutils';
-import { Label, LabelConfig } from './components/label';
+import { Label } from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
@@ -49,9 +49,8 @@ import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './components/audiotracklistbox';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
-import { EcoModeToggle } from './components/ecoModetogglebutton';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
-
+import { EcoModeContainer } from './components/ecomodecontainer';
 export namespace UIFactory {
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return UIFactory.buildModernUI(player, config);
@@ -72,16 +71,14 @@ export namespace UIFactory {
   export function modernUI() {
     let subtitleOverlay = new SubtitleOverlay();
 
-    const EcoModeToggleT = new EcoModeToggle();
-    const labelEcoMode = new Label({
-      text: i18n.getLocalizer('ecoMode.title'),
-      for: EcoModeToggleT.getConfig().id,
-      id: 'ecoModeLabel',
-    } as LabelConfig);
+    const ecoModeContainer = new EcoModeContainer();
+    ecoModeContainer.setOnActiveChangeCallback(() => {
+      settingsPanel.getDomElement().css({ width: '', height: '' }); // let css auto settings kick in again
+    });
 
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
-        new SettingsPanelItem(labelEcoMode, EcoModeToggleT),
+        ecoModeContainer,
         new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
         new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
         new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),

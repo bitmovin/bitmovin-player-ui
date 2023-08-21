@@ -3,10 +3,10 @@ import { UIInstanceManager } from '../uimanager';
 import { PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
-
 let clicked = false;
 let isOn = false;
 let adaptationConfig: any;
+
 export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
@@ -38,7 +38,6 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     });
 
     player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality: VideoQualityChangedEvent) => {
-      console.log(quality);
       if (quality.targetQuality.height !== null) {
         this.off();
         ecoModeOffConfig(player);
