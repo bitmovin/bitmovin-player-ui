@@ -5,6 +5,7 @@ import { i18n } from '../localization/i18n';
 
 export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
   private adaptationConfig: DynamicAdaptationConfig;
+
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
 
@@ -42,13 +43,14 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
       }
     });
   }
+  
   enableEcoMode(player: PlayerAPI) {
     this.adaptationConfig = player.adaptation.getConfig();
 
     if (player.getAvailableVideoQualities()[0].codec.includes('avc')) {
       player.adaptation.setConfig({
         resolution: { maxSelectableVideoHeight: 720 },
-      } as DynamicAdaptationConfig);
+      });
     }
     if (
       player.getAvailableVideoQualities()[0].codec.includes('hvc') ||
@@ -56,7 +58,7 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     ) {
       player.adaptation.setConfig({
         resolution: { maxSelectableVideoHeight: 1080 },
-      } as DynamicAdaptationConfig);
+      });
     }
     if (
       player.getAvailableVideoQualities()[0].codec.includes('av1') ||
@@ -64,7 +66,7 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     ) {
       player.adaptation.setConfig({
         resolution: { maxSelectableVideoHeight: 1440 },
-      } as DynamicAdaptationConfig);
+      });
     }
   }
 
