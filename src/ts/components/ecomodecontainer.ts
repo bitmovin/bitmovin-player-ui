@@ -1,7 +1,7 @@
 import { PlayerAPI, SegmentPlaybackEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Container, ContainerConfig } from './container';
-import { EcoModeToggle } from './ecoModetogglebutton';
+import { EcoModeToggle } from './ecomodetogglebutton';
 import { Label, LabelConfig } from './label';
 import { SettingsPanelItem } from './settingspanelitem';
 import { UIInstanceManager } from '../uimanager';
@@ -90,7 +90,7 @@ function energySaved(
   const maxEmissons = numerator / denominator;
 
   if (!isNaN(currentEmissions) && !isNaN(maxEmissons)) {
-    energyTest += currentEmissions/441
+    energyTest += currentEmissions / 441;
     console.log(energyTest.toFixed(5));
     SavedEnergy += maxEmissons - currentEmissions;
     helloLabel.setText(SavedEnergy.toFixed(3) + ' gCO2/kWh');
