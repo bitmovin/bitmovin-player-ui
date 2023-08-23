@@ -69,7 +69,7 @@ export namespace UIFactory {
     return UIFactory.buildModernTvUI(player, config);
   }
 
-  export function modernUI() {
+  export function modernUI(config: UIConfig) {
     let subtitleOverlay = new SubtitleOverlay();
 
     const EcoModeToggleT = new EcoModeToggle();
@@ -79,14 +79,20 @@ export namespace UIFactory {
       id: 'ecoModeLabel',
     } as LabelConfig);
 
-    let mainSettingsPanelPage = new SettingsPanelPage({
-      components: [
-        new SettingsPanelItem(labelEcoMode, EcoModeToggleT),
-        new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
-      ],
+    let mainSettingsPanelPage;
+
+    const components = [
+      new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
+    ];
+
+    if (config.ecoMode) {
+      components.unshift(new SettingsPanelItem(labelEcoMode, EcoModeToggleT));
+    }
+    mainSettingsPanelPage = new SettingsPanelPage({
+      components,
     });
 
     let settingsPanel = new SettingsPanel({
@@ -419,7 +425,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: modernUI(),
+          ui: modernUI(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
