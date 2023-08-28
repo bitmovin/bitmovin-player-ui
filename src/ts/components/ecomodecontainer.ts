@@ -25,18 +25,18 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       cssClass: 'ui-label-savedEnergy',
     } as LabelConfig);
 
-    enerySavedKmLabel = new Label({
+    /*     enerySavedKmLabel = new Label({
       text: '',
       cssClass: 'ui-label-savedEnergy',
-    } as LabelConfig);
+    } as LabelConfig); */
 
     const ecoButtonItem = new SettingsPanelItem(labelEcoMode, EcoModeToggleT);
     const ecoButtonItem2 = new SettingsPanelItem('Saved Energy', energySavedLabel, { hidden: true });
-    const ecoButtonItem3 = new SettingsPanelItem('Saved KM driven ', enerySavedKmLabel, { hidden: true });
+    /*     const ecoButtonItem3 = new SettingsPanelItem('Saved KM driven ', enerySavedKmLabel, { hidden: true }); */
 
     this.addComponent(ecoButtonItem);
     this.addComponent(ecoButtonItem2);
-    this.addComponent(ecoButtonItem3);
+    /*     this.addComponent(ecoButtonItem3); */
 
     EcoModeToggleT.onToggleOn.subscribe(() => {
       ecoButtonItem2.show();
@@ -78,13 +78,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
       const maxEnergyInKilowatts = maxEnergyinWatts / 3.6e6; // convert into kwh
 
-      if (energySavedLabel.isShown()) {
-        energySaved(currentEnergyInKilowatts, maxEnergyInKilowatts, energySavedLabel, enerySavedKmLabel);
-      } else {
-        SavedEnergy = 0;
-        energySavedLabel.setText(SavedEnergy.toFixed(3) + ' gCO2/kWh');
-        energySavedLabel.setText(SavedEnergy.toFixed(0));
-      }
+      energySaved(currentEnergyInKilowatts, maxEnergyInKilowatts, energySavedLabel);
     });
   }
 }
@@ -94,17 +88,16 @@ function energySaved(
   energyConsumption_kWh: number,
   maxEnergyInKilowatts: number,
   energySavedLabel: Label<LabelConfig>,
-  enerySavedKmLabel: Label<LabelConfig>,
 ) {
-  currentEmissions = energyConsumption_kWh * 441;
-  maxEmissons = maxEnergyInKilowatts * 441;
+  currentEmissions = energyConsumption_kWh * 475; // 475 is the average country intensity of all countries in gCO2/kWh
+  maxEmissons = maxEnergyInKilowatts * 475;
 
   if (!isNaN(currentEmissions) && !isNaN(maxEmissons)) {
     energyTest += energyConsumption_kWh;
 
     SavedEnergy += maxEmissons - currentEmissions;
+    console.log(SavedEnergy);
     energySavedLabel.setText(SavedEnergy.toFixed(4) + ' gCO2/kWh');
-    SavedEnergyKm += SavedEnergy / 107.5;
-    enerySavedKmLabel.setText(SavedEnergyKm.toFixed(5));
+    /*  SavedEnergyKm += SavedEnergy / 107.5; */
   }
 }
