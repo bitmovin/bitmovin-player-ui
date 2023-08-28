@@ -4,9 +4,8 @@ import { Container, ContainerConfig } from './container';
 import { EcoModeToggle } from './ecomodetogglebutton';
 import { Label, LabelConfig } from './label';
 import { SettingsPanelItem } from './settingspanelitem';
-import { UIInstanceManager } from '../uimanager';
 
-let helloLabel: Label<LabelConfig>;
+let enerySavedLabel: Label<LabelConfig>;
 let SavedEnergy = 0;
 let energyTest = 0;
 export class EcoModeContainer extends Container<ContainerConfig> {
@@ -19,13 +18,13 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       for: EcoModeToggleT.getConfig().id,
       id: 'ecoModeLabel',
     } as LabelConfig);
-    helloLabel = new Label({
+    enerySavedLabel = new Label({
       text: '',
       cssClass: 'ui-label-savedEnergy',
     } as LabelConfig);
 
     const ecoButtonItem = new SettingsPanelItem(labelEcoMode, EcoModeToggleT);
-    const ecoButtonItem2 = new SettingsPanelItem('Saved Energy', helloLabel, { hidden: true });
+    const ecoButtonItem2 = new SettingsPanelItem('Saved Energy', enerySavedLabel, { hidden: true });
 
     this.addComponent(ecoButtonItem);
     this.addComponent(ecoButtonItem2);
@@ -46,53 +45,48 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     this.onActivecallback = callback;
   }
 
-  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
+  configure(player: PlayerAPI): void {
     player.on(player.exports.PlayerEvent.SegmentPlayback, (segment: SegmentPlaybackEvent) => {
       const { height, width, bitrate, frameRate } = segment.mediaInfo;
-
-      const time = segment.presentationTimestamp;
-
-      const numerator = (0.1 * frameRate + 0.2 * height * width + (0.3 + 0.2) * bitrate + 0.2) * time;
-      const bitrate_in_Gbps = bitrate / 1000; // convert bitrate to Gbps
-
-      const denominator = bitrate_in_Gbps * 3600 * 1e9; // 1e9 is the scientific notation for 10^9
-
-      const energyConsumption_kWh_per_GB = numerator / denominator;
 
       const highQuality = player.getAvailableVideoQualities().length - 1;
       const maxHeight = player.getAvailableVideoQualities()[highQuality].height;
       const maxbitrate = player.getAvailableVideoQualities()[highQuality].bitrate;
       const maxwidth = player.getAvailableVideoQualities()[highQuality].width;
-      if (helloLabel.isShown()) {
-        energySaved(energyConsumption_kWh_per_GB, frameRate, time, maxHeight, maxwidth, maxbitrate, helloLabel);
+
+      const currentEnergyinWatts =
+        0.035 * frameRate + 5.76e-9 * height * width + (6.97e-6 + 3.24e-5) * (bitrate / 1000) + 4.16 + 8.52 + 1.15;
+      const currentEnergyInKilowatts = currentEnergyinWatts / 3.6e6; // convert into kwh
+
+      const maxEnergyinWatts =
+        0.035 * frameRate +
+        5.76e-9 * maxHeight * maxwidth +
+        (6.97e-6 + 3.24e-5) * (maxbitrate / 1000) +
+        4.16 +
+        8.52 +
+        1.15;
+
+      const maxEnergyInKilowatts = maxEnergyinWatts / 3.6e6; // convert into kwh
+
+      if (enerySavedLabel.isShown()) {
+        energySaved(currentEnergyInKilowatts, maxEnergyInKilowatts, enerySavedLabel);
       } else {
         SavedEnergy = 0;
-        helloLabel.setText(SavedEnergy.toFixed(3) + ' gCO2/kWh');
+        enerySavedLabel.setText(SavedEnergy.toFixed(3) + ' gCO2/kWh');
       }
     });
   }
 }
 let currentEmissions: number;
-function energySaved(
-  energyConsumption_kWh_per_GB: number,
-  frameRate: number,
-  time: number,
-  maxbitrate: number,
-  maxHeight: number,
-  maxwidth: number,
-  helloLabel: Label<LabelConfig>,
-) {
-  currentEmissions = energyConsumption_kWh_per_GB * 441;
-
-  const numerator = (0.1 * frameRate + 0.2 * maxHeight * maxwidth + (0.3 + 0.2) * maxbitrate + 0.2) * time;
-  const bitrate_in_Gbps = maxbitrate / 1000; // convert bitrate to Gbps
-  const denominator = bitrate_in_Gbps * 3600 * 1e9; // 1e9 is the scientific notation for 10^9
-  const maxEmissons = numerator / denominator;
+let maxEmissons: number;
+function energySaved(energyConsumption_kWh: number, maxEnergyInKilowatts: number, helloLabel: Label<LabelConfig>) {
+  currentEmissions = energyConsumption_kWh * 441;
+  maxEmissons = maxEnergyInKilowatts * 441;
 
   if (!isNaN(currentEmissions) && !isNaN(maxEmissons)) {
-    energyTest += currentEmissions / 441;
-    console.log(energyTest.toFixed(5));
+    energyTest += energyConsumption_kWh;
+
     SavedEnergy += maxEmissons - currentEmissions;
-    helloLabel.setText(SavedEnergy.toFixed(3) + ' gCO2/kWh');
+    helloLabel.setText(SavedEnergy.toFixed(4) + ' gCO2/kWh');
   }
 }
