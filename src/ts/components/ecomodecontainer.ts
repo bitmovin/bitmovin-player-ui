@@ -5,8 +5,10 @@ import { EcoModeToggle } from './ecomodetogglebutton';
 import { Label, LabelConfig } from './label';
 import { SettingsPanelItem } from './settingspanelitem';
 
-let enerySavedLabel: Label<LabelConfig>;
+let energySavedLabel: Label<LabelConfig>;
+let enerySavedKmLabel: Label<LabelConfig>;
 let SavedEnergy = 0;
+let SavedEnergyKm = 0;
 let energyTest = 0;
 export class EcoModeContainer extends Container<ContainerConfig> {
   constructor(config: ContainerConfig = {}) {
@@ -18,16 +20,24 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       for: EcoModeToggleT.getConfig().id,
       id: 'ecoModeLabel',
     } as LabelConfig);
-    enerySavedLabel = new Label({
+    energySavedLabel = new Label({
+      text: '',
+      cssClass: 'ui-label-savedEnergy',
+    } as LabelConfig);
+
+    enerySavedKmLabel = new Label({
       text: '',
       cssClass: 'ui-label-savedEnergy',
     } as LabelConfig);
 
     const ecoButtonItem = new SettingsPanelItem(labelEcoMode, EcoModeToggleT);
-    const ecoButtonItem2 = new SettingsPanelItem('Saved Energy', enerySavedLabel, { hidden: true });
+    const ecoButtonItem2 = new SettingsPanelItem('Saved Energy', energySavedLabel, { hidden: true });
+    const ecoButtonItem3 = new SettingsPanelItem('Saved KM driven ', enerySavedKmLabel, { hidden: true });
 
     this.addComponent(ecoButtonItem);
     this.addComponent(ecoButtonItem2);
+    this.addComponent(ecoButtonItem3);
+
     EcoModeToggleT.onToggleOn.subscribe(() => {
       ecoButtonItem2.show();
       this.onActivecallback();
@@ -68,18 +78,24 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
       const maxEnergyInKilowatts = maxEnergyinWatts / 3.6e6; // convert into kwh
 
-      if (enerySavedLabel.isShown()) {
-        energySaved(currentEnergyInKilowatts, maxEnergyInKilowatts, enerySavedLabel);
+      if (energySavedLabel.isShown()) {
+        energySaved(currentEnergyInKilowatts, maxEnergyInKilowatts, energySavedLabel, enerySavedKmLabel);
       } else {
         SavedEnergy = 0;
-        enerySavedLabel.setText(SavedEnergy.toFixed(3) + ' gCO2/kWh');
+        energySavedLabel.setText(SavedEnergy.toFixed(3) + ' gCO2/kWh');
+        energySavedLabel.setText(SavedEnergy.toFixed(0));
       }
     });
   }
 }
 let currentEmissions: number;
 let maxEmissons: number;
-function energySaved(energyConsumption_kWh: number, maxEnergyInKilowatts: number, helloLabel: Label<LabelConfig>) {
+function energySaved(
+  energyConsumption_kWh: number,
+  maxEnergyInKilowatts: number,
+  energySavedLabel: Label<LabelConfig>,
+  enerySavedKmLabel: Label<LabelConfig>,
+) {
   currentEmissions = energyConsumption_kWh * 441;
   maxEmissons = maxEnergyInKilowatts * 441;
 
@@ -87,6 +103,8 @@ function energySaved(energyConsumption_kWh: number, maxEnergyInKilowatts: number
     energyTest += energyConsumption_kWh;
 
     SavedEnergy += maxEmissons - currentEmissions;
-    helloLabel.setText(SavedEnergy.toFixed(4) + ' gCO2/kWh');
+    energySavedLabel.setText(SavedEnergy.toFixed(4) + ' gCO2/kWh');
+    SavedEnergyKm += SavedEnergy / 107.5;
+    enerySavedKmLabel.setText(SavedEnergyKm.toFixed(5));
   }
 }
