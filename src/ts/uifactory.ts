@@ -71,28 +71,21 @@ export namespace UIFactory {
 
   export function modernUI(config: UIConfig) {
     let subtitleOverlay = new SubtitleOverlay();
-
-    const EcoModeToggleT = new EcoModeToggle();
+    const ecoModeToggle = new EcoModeToggle();
     const labelEcoMode = new Label({
       text: i18n.getLocalizer('ecoMode.title'),
-      for: EcoModeToggleT.getConfig().id,
-      id: 'ecoModeLabel',
+      for: ecoModeToggle.getConfig().id,
+      id: 'ecomodelabel',
     } as LabelConfig);
 
-    let mainSettingsPanelPage;
-
-    const components = [
-      new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
-    ];
-
-    if (config.ecoMode) {
-      components.unshift(new SettingsPanelItem(labelEcoMode, EcoModeToggleT));
-    }
-    mainSettingsPanelPage = new SettingsPanelPage({
-      components,
+    let mainSettingsPanelPage = new SettingsPanelPage({
+      components: [
+        new SettingsPanelItem(labelEcoMode, ecoModeToggle),
+        new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+        new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+        new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
+      ],
     });
 
     let settingsPanel = new SettingsPanel({
