@@ -1,7 +1,7 @@
 import { PlayerAPI, SegmentPlaybackEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Container, ContainerConfig } from './container';
-import { EcoModeToggle } from './ecomodetogglebutton';
+import { EcoModeToggleButton } from './ecomodetogglebutton';
 import { Label, LabelConfig } from './label';
 import { SettingsPanelItem } from './settingspanelitem';
 
@@ -12,7 +12,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
   constructor(config: ContainerConfig = {}) {
     super(config);
 
-    const EcoModeToggleT = new EcoModeToggle();
+    const EcoModeToggleT = new EcoModeToggleButton();
     const labelEcoMode = new Label({
       text: i18n.getLocalizer('ecoMode.title'),
       for: EcoModeToggleT.getConfig().id,
@@ -85,9 +85,7 @@ function energySaved(
 
   if (!isNaN(currentEmissions) && !isNaN(maxEmissons)) {
     energyTest += energyConsumption_kWh;
-
     SavedEnergy += maxEmissons - currentEmissions;
-    console.log(SavedEnergy);
     energySavedLabel.setText(SavedEnergy.toFixed(4) + ' gCO2/kWh');
     /*  SavedEnergyKm += SavedEnergy / 107.5; */
   }

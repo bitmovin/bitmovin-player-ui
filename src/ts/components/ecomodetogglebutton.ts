@@ -3,7 +3,7 @@ import { UIInstanceManager } from '../uimanager';
 import { DynamicAdaptationConfig, PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
-export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
+export class EcoModeToggleButton extends ToggleButton<ToggleButtonConfig> {
   private adaptationConfig: DynamicAdaptationConfig;
 
   constructor(config: ToggleButtonConfig = {}) {
@@ -44,7 +44,7 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     });
   }
 
-  enableEcoMode(player: PlayerAPI) {
+  enableEcoMode(player: PlayerAPI): void {
     this.adaptationConfig = player.adaptation.getConfig();
     let codec = player.getAvailableVideoQualities()[0].codec;
     if (codec.includes('avc')) {
@@ -64,7 +64,7 @@ export class EcoModeToggle extends ToggleButton<ToggleButtonConfig> {
     }
   }
 
-  disableEcoMode(player: PlayerAPI) {
+  disableEcoMode(player: PlayerAPI): void {
     player.adaptation.setConfig(this.adaptationConfig);
   }
 }

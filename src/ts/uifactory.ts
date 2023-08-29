@@ -11,7 +11,7 @@ import { SettingsPanelPageOpenButton } from './components/settingspanelpageopenb
 import { SubtitleSettingsLabel } from './components/subtitlesettings/subtitlesettingslabel';
 import { SubtitleSelectBox } from './components/subtitleselectbox';
 import { ControlBar } from './components/controlbar';
-import { Container } from './components/container';
+import { Container, ContainerConfig } from './components/container';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from './components/playbacktimelabel';
 import { SeekBar } from './components/seekbar';
 import { SeekBarLabel } from './components/seekbarlabel';
@@ -49,7 +49,7 @@ import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './components/audiotracklistbox';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
-import { EcoModeToggle } from './components/ecomodetogglebutton';
+import { EcoModeToggleButton } from './components/ecomodetogglebutton';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 import { EcoModeContainer } from './components/ecomodecontainer';
 export namespace UIFactory {
@@ -69,22 +69,27 @@ export namespace UIFactory {
     return UIFactory.buildModernTvUI(player, config);
   }
 
-  export function modernUI() {
+  export function modernUI(config: UIConfig) {
     let subtitleOverlay = new SubtitleOverlay();
-
     const ecoModeContainer = new EcoModeContainer();
     ecoModeContainer.setOnActiveChangeCallback(() => {
       settingsPanel.getDomElement().css({ width: '', height: '' }); // let css auto settings kick in again
     });
 
-    let mainSettingsPanelPage = new SettingsPanelPage({
-      components: [
-        ecoModeContainer,
-        new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
-      ],
+    let mainSettingsPanelPage;
+
+    const components: Container<ContainerConfig>[] = [
+      new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
+    ];
+
+    if (config.ecoMode) {
+      components.unshift(ecoModeContainer);
+    }
+    mainSettingsPanelPage = new SettingsPanelPage({
+      components,
     });
 
     let settingsPanel = new SettingsPanel({
@@ -417,7 +422,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: modernUI(),
+          ui: modernUI(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
