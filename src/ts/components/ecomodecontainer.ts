@@ -5,37 +5,40 @@ import { EcoModeToggleButton } from './ecomodetogglebutton';
 import { Label, LabelConfig } from './label';
 import { SettingsPanelItem } from './settingspanelitem';
 
-let energySavedLabel: Label<LabelConfig>;
-let SavedEnergy = 0;
-let ecoButtonItem2: SettingsPanelItem;
 export class EcoModeContainer extends Container<ContainerConfig> {
+  private ecoModeSavedEnergyItem: SettingsPanelItem;
+  private energySavedLabel: Label<LabelConfig>;
+  private savedEnergy = 0;
+  private currentEnergyEmission: number;
+  private maxEnergyEmisson: number;
+
   constructor(config: ContainerConfig = {}) {
     super(config);
 
-    const EcoModeToggleT = new EcoModeToggleButton();
+    const ecoModeToggleButton = new EcoModeToggleButton();
     const labelEcoMode = new Label({
       text: i18n.getLocalizer('ecoMode.title'),
-      for: EcoModeToggleT.getConfig().id,
+      for: ecoModeToggleButton.getConfig().id,
       id: 'ecoModeLabel',
     } as LabelConfig);
-    energySavedLabel = new Label({
+    this.energySavedLabel = new Label({
       text: '',
       cssClass: 'ui-label-savedEnergy',
     } as LabelConfig);
 
-    const ecoButtonItem = new SettingsPanelItem(labelEcoMode, EcoModeToggleT);
-    ecoButtonItem2 = new SettingsPanelItem('Saved Energy', energySavedLabel, { hidden: true });
+    const ecoModeToggleButtonItem = new SettingsPanelItem(labelEcoMode, ecoModeToggleButton);
+    this.ecoModeSavedEnergyItem = new SettingsPanelItem('Saved Energy', this.energySavedLabel, { hidden: true });
 
-    this.addComponent(ecoButtonItem);
-    this.addComponent(ecoButtonItem2);
+    this.addComponent(ecoModeToggleButtonItem);
+    this.addComponent(this.ecoModeSavedEnergyItem);
 
-    EcoModeToggleT.onToggleOn.subscribe(() => {
-      ecoButtonItem2.show();
+    ecoModeToggleButton.onToggleOn.subscribe(() => {
+      this.ecoModeSavedEnergyItem.show();
       this.onActivecallback();
     });
 
-    EcoModeToggleT.onToggleOff.subscribe(() => {
-      ecoButtonItem2.hide();
+    ecoModeToggleButton.onToggleOff.subscribe(() => {
+      this.ecoModeSavedEnergyItem.hide();
       this.onActivecallback();
     });
   }
@@ -50,47 +53,43 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     player.on(player.exports.PlayerEvent.SegmentPlayback, (segment: SegmentPlaybackEvent) => {
       const { height, width, bitrate, frameRate } = segment.mediaInfo;
 
-      const highQuality = player.getAvailableVideoQualities().length - 1;
-      const maxHeight = player.getAvailableVideoQualities()[highQuality].height;
-      const maxbitrate = player.getAvailableVideoQualities()[highQuality].bitrate;
-      const maxwidth = player.getAvailableVideoQualities()[highQuality].width;
+      const maxQualityAvailable = player.getAvailableVideoQualities().length - 1;
+      const maxHeight = player.getAvailableVideoQualities()[maxQualityAvailable].height;
+      const maxBitrate = player.getAvailableVideoQualities()[maxQualityAvailable].bitrate;
+      const maxWidth = player.getAvailableVideoQualities()[maxQualityAvailable].width;
 
-      const currentEnergyinWatts =
+      const currentEnergyW =
         0.035 * frameRate + 5.76e-9 * height * width + (6.97e-6 + 3.24e-5) * (bitrate / 1000) + 4.16 + 8.52 + 1.15;
-      const currentEnergyInKilowatts = currentEnergyinWatts / 3.6e6; // convert into kwh
 
-      const maxEnergyinWatts =
+      const currentEnergyKwh = currentEnergyW / 3.6e6;
+
+      const maxEnergyWs =
         0.035 * frameRate +
-        5.76e-9 * maxHeight * maxwidth +
-        (6.97e-6 + 3.24e-5) * (maxbitrate / 1000) +
+        5.76e-9 * maxHeight * maxWidth +
+        (6.97e-6 + 3.24e-5) * (maxBitrate / 1000) +
         4.16 +
         8.52 +
         1.15;
 
-      const maxEnergyInKilowatts = maxEnergyinWatts / 3.6e6; // convert into kwh
+      const maxEnergyKwh = maxEnergyWs / 3.6e6;
 
-      if (ecoButtonItem2.isActive()) {
-        energySaved(currentEnergyInKilowatts, maxEnergyInKilowatts, energySavedLabel);
+      if (this.ecoModeSavedEnergyItem.isActive()) {
+        this.energySaved(currentEnergyKwh, maxEnergyKwh, this.energySavedLabel);
       } else {
-        SavedEnergy = 0;
-        energySavedLabel.setText(SavedEnergy.toFixed(4) + ' gCO2/kWh');
+        this.savedEnergy = 0;
+        this.energySavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
       }
     });
   }
-}
-let currentEmissions: number;
-let maxEmissons: number;
-function energySaved(
-  energyConsumption_kWh: number,
-  maxEnergyInKilowatts: number,
-  energySavedLabel: Label<LabelConfig>,
-) {
-  currentEmissions = energyConsumption_kWh * 475; // 475 is the average country intensity of all countries in gCO2/kWh
-  maxEmissons = maxEnergyInKilowatts * 475;
 
-  if (!isNaN(currentEmissions) && !isNaN(maxEmissons)) {
-    SavedEnergy += maxEmissons - currentEmissions;
-    energySavedLabel.setText(SavedEnergy.toFixed(4) + ' gCO2/kWh');
-    /*  SavedEnergyKm += SavedEnergy / 107.5; */
+  energySaved(currentEnergyConsuption: number, maxEnergyConsuption: number, energySavedLabel: Label<LabelConfig>) {
+    this.currentEnergyEmission = currentEnergyConsuption * 475; // 475 is the average country intensity of all countries in gCO2/kWh
+    this.maxEnergyEmisson = maxEnergyConsuption * 475;
+
+    if (!isNaN(this.currentEnergyEmission) && !isNaN(this.maxEnergyEmisson)) {
+      this.savedEnergy += this.maxEnergyEmisson - this.currentEnergyEmission;
+      energySavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
+      /*  savedEnergyKm += this.savedEnergy / 107.5; */
+    }
   }
 }
