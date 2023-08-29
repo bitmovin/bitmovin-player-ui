@@ -78,14 +78,20 @@ export namespace UIFactory {
       id: 'ecomodelabel',
     } as LabelConfig);
 
-    let mainSettingsPanelPage = new SettingsPanelPage({
-      components: [
-        new SettingsPanelItem(labelEcoMode, ecoModeToggle),
-        new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
-      ],
+    let mainSettingsPanelPage;
+
+    const components = [
+      new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
+    ];
+
+    if (config.ecoMode) {
+      components.unshift(new SettingsPanelItem(labelEcoMode, ecoModeToggle));
+    }
+    mainSettingsPanelPage = new SettingsPanelPage({
+      components,
     });
 
     let settingsPanel = new SettingsPanel({
