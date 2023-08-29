@@ -71,17 +71,16 @@ export namespace UIFactory {
 
   export function modernUI() {
     let subtitleOverlay = new SubtitleOverlay();
-
-    const EcoModeToggleT = new EcoModeToggle();
+    const ecoModeToggle = new EcoModeToggle();
     const labelEcoMode = new Label({
       text: i18n.getLocalizer('ecoMode.title'),
-      for: EcoModeToggleT.getConfig().id,
-      id: 'ecoModeLabel',
+      for: ecoModeToggle.getConfig().id,
+      id: 'ecomodelabel',
     } as LabelConfig);
 
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
-        new SettingsPanelItem(labelEcoMode, EcoModeToggleT),
+        new SettingsPanelItem(labelEcoMode, ecoModeToggle),
         new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
         new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
         new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
