@@ -7,7 +7,6 @@ import { SettingsPanelItem } from './settingspanelitem';
 
 let energySavedLabel: Label<LabelConfig>;
 let SavedEnergy = 0;
-let energyTest = 0;
 let ecoButtonItem2: SettingsPanelItem;
 export class EcoModeContainer extends Container<ContainerConfig> {
   constructor(config: ContainerConfig = {}) {
@@ -90,7 +89,6 @@ function energySaved(
   maxEmissons = maxEnergyInKilowatts * 475;
 
   if (!isNaN(currentEmissions) && !isNaN(maxEmissons)) {
-    energyTest += energyConsumption_kWh;
     SavedEnergy += maxEmissons - currentEmissions;
     energySavedLabel.setText(SavedEnergy.toFixed(4) + ' gCO2/kWh');
     /*  SavedEnergyKm += SavedEnergy / 107.5; */
