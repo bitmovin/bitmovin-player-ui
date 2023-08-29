@@ -6,9 +6,7 @@ import { Label, LabelConfig } from './label';
 import { SettingsPanelItem } from './settingspanelitem';
 
 let energySavedLabel: Label<LabelConfig>;
-let enerySavedKmLabel: Label<LabelConfig>;
 let SavedEnergy = 0;
-let SavedEnergyKm = 0;
 let energyTest = 0;
 export class EcoModeContainer extends Container<ContainerConfig> {
   constructor(config: ContainerConfig = {}) {
@@ -25,18 +23,11 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       cssClass: 'ui-label-savedEnergy',
     } as LabelConfig);
 
-    /*     enerySavedKmLabel = new Label({
-      text: '',
-      cssClass: 'ui-label-savedEnergy',
-    } as LabelConfig); */
-
     const ecoButtonItem = new SettingsPanelItem(labelEcoMode, EcoModeToggleT);
     const ecoButtonItem2 = new SettingsPanelItem('Saved Energy', energySavedLabel, { hidden: true });
-    /*     const ecoButtonItem3 = new SettingsPanelItem('Saved KM driven ', enerySavedKmLabel, { hidden: true }); */
 
     this.addComponent(ecoButtonItem);
     this.addComponent(ecoButtonItem2);
-    /*     this.addComponent(ecoButtonItem3); */
 
     EcoModeToggleT.onToggleOn.subscribe(() => {
       ecoButtonItem2.show();
