@@ -8,6 +8,7 @@ import { SettingsPanelItem } from './settingspanelitem';
 let energySavedLabel: Label<LabelConfig>;
 let SavedEnergy = 0;
 let energyTest = 0;
+let ecoButtonItem2: SettingsPanelItem;
 export class EcoModeContainer extends Container<ContainerConfig> {
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -21,24 +22,21 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     energySavedLabel = new Label({
       text: '',
       cssClass: 'ui-label-savedEnergy',
-      disabled: true,
     } as LabelConfig);
 
     const ecoButtonItem = new SettingsPanelItem(labelEcoMode, EcoModeToggleT);
-    const ecoButtonItem2 = new SettingsPanelItem('Saved Energy', energySavedLabel, { hidden: true });
+    ecoButtonItem2 = new SettingsPanelItem('Saved Energy', energySavedLabel, { hidden: true });
 
     this.addComponent(ecoButtonItem);
     this.addComponent(ecoButtonItem2);
 
     EcoModeToggleT.onToggleOn.subscribe(() => {
       ecoButtonItem2.show();
-      energySavedLabel.enable();
       this.onActivecallback();
     });
 
     EcoModeToggleT.onToggleOff.subscribe(() => {
       ecoButtonItem2.hide();
-      energySavedLabel.disable();
       this.onActivecallback();
     });
   }
@@ -72,7 +70,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
       const maxEnergyInKilowatts = maxEnergyinWatts / 3.6e6; // convert into kwh
 
-      if (energySavedLabel.isEnabled()) {
+      if (ecoButtonItem2.isActive()) {
         energySaved(currentEnergyInKilowatts, maxEnergyInKilowatts, energySavedLabel);
       } else {
         SavedEnergy = 0;
