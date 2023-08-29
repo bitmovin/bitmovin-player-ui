@@ -101,7 +101,7 @@ export interface UIConfig {
    */
   forceSubtitlesIntoViewContainer?: boolean;
   /**
-   * Specifies if the `ecoModeToggleButton` should be displayed within the `SettingsPanel`
+   * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    */
   ecoMode?: boolean;
 }
