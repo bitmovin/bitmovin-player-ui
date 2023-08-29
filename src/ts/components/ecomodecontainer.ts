@@ -63,7 +63,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
       const currentEnergyKwh = currentEnergyW / 3.6e6;
 
-      const maxEnergyWs =
+      const maxEnergyW =
         0.035 * frameRate +
         5.76e-9 * maxHeight * maxWidth +
         (6.97e-6 + 3.24e-5) * (maxBitrate / 1000) +
@@ -71,7 +71,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
         8.52 +
         1.15;
 
-      const maxEnergyKwh = maxEnergyWs / 3.6e6;
+      const maxEnergyKwh = maxEnergyW / 3.6e6;
 
       if (this.ecoModeSavedEnergyItem.isActive()) {
         this.energySaved(currentEnergyKwh, maxEnergyKwh, this.energySavedLabel);
