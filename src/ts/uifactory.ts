@@ -49,7 +49,7 @@ import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './components/audiotracklistbox';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
-import { EcoModeToggle } from './components/ecomodetogglebutton';
+import { EcoModeToggleButton } from './components/ecomodetogglebutton';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 
 export namespace UIFactory {
@@ -71,16 +71,16 @@ export namespace UIFactory {
 
   export function modernUI() {
     let subtitleOverlay = new SubtitleOverlay();
-    const ecoModeToggle = new EcoModeToggle();
-    const labelEcoMode = new Label({
+    const ecoModeToggleButton = new EcoModeToggleButton();
+    const ecoModeLabel = new Label({
       text: i18n.getLocalizer('ecoMode.title'),
-      for: ecoModeToggle.getConfig().id,
+      for: ecoModeToggleButton.getConfig().id,
       id: 'ecomodelabel',
     } as LabelConfig);
 
     let mainSettingsPanelPage = new SettingsPanelPage({
       components: [
-        new SettingsPanelItem(labelEcoMode, ecoModeToggle),
+        new SettingsPanelItem(ecoModeLabel, ecoModeToggleButton),
         new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
         new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
         new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
