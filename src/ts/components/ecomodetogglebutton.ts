@@ -47,6 +47,7 @@ export class EcoModeToggleButton extends ToggleButton<ToggleButtonConfig> {
   enableEcoMode(player: PlayerAPI): void {
     this.adaptationConfig = player.adaptation.getConfig();
     let codec = player.getAvailableVideoQualities()[0].codec;
+    player.adaptation.setConfig({ limitToPlayerSize: true });
     if (codec.includes('avc')) {
       player.adaptation.setConfig({
         resolution: { maxSelectableVideoHeight: 720 },
