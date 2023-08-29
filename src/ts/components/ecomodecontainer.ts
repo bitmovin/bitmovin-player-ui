@@ -58,20 +58,9 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       const maxBitrate = player.getAvailableVideoQualities()[maxQualityAvailable].bitrate;
       const maxWidth = player.getAvailableVideoQualities()[maxQualityAvailable].width;
 
-      const currentEnergyW =
-        0.035 * frameRate + 5.76e-9 * height * width + (6.97e-6 + 3.24e-5) * (bitrate / 1000) + 4.16 + 8.52 + 1.15;
+      const currentEnergyKwh = this.calculateEnergyConsumption(frameRate, height, width, bitrate);
 
-      const currentEnergyKwh = currentEnergyW / 3.6e6;
-
-      const maxEnergyW =
-        0.035 * frameRate +
-        5.76e-9 * maxHeight * maxWidth +
-        (6.97e-6 + 3.24e-5) * (maxBitrate / 1000) +
-        4.16 +
-        8.52 +
-        1.15;
-
-      const maxEnergyKwh = maxEnergyW / 3.6e6;
+      const maxEnergyKwh = this.calculateEnergyConsumption(frameRate, maxHeight, maxWidth, maxBitrate);
 
       if (this.ecoModeSavedEnergyItem.isActive()) {
         this.energySaved(currentEnergyKwh, maxEnergyKwh, this.energySavedLabel);
@@ -91,5 +80,28 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       energySavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
       /*  savedEnergyKm += this.savedEnergy / 107.5; */
     }
+  }
+
+  /* The calculations are based on the following paper :  https://arxiv.org/pdf/2210.05444.pdf*/
+  calculateEnergyConsumption(fps: number, height: number, width: number, bitrate: number): number {
+    const fpsWeight = 0.035;
+    const pixeldWeight = 5.76e-9;
+    const birateWeight = 6.97e-6;
+    const constantOffset = 8.52;
+    const bitrateInternetWeight = 3.24e-5;
+    const internetConnectionOffset = 1.15;
+    const videoCodec = 4.16;
+
+    const energyConsumptionW =
+      fpsWeight * fps +
+      pixeldWeight * height * width +
+      (birateWeight + bitrateInternetWeight) * (bitrate / 1000) +
+      videoCodec +
+      constantOffset +
+      internetConnectionOffset;
+
+    const energyConsumptionKwh = energyConsumptionW / 3.6e6;
+
+    return energyConsumptionKwh;
   }
 }
