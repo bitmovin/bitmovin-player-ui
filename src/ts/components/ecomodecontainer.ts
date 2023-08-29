@@ -21,6 +21,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     energySavedLabel = new Label({
       text: '',
       cssClass: 'ui-label-savedEnergy',
+      disabled: true,
     } as LabelConfig);
 
     const ecoButtonItem = new SettingsPanelItem(labelEcoMode, EcoModeToggleT);
@@ -31,11 +32,13 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
     EcoModeToggleT.onToggleOn.subscribe(() => {
       ecoButtonItem2.show();
+      energySavedLabel.enable();
       this.onActivecallback();
     });
 
     EcoModeToggleT.onToggleOff.subscribe(() => {
       ecoButtonItem2.hide();
+      energySavedLabel.disable();
       this.onActivecallback();
     });
   }
@@ -69,7 +72,12 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
       const maxEnergyInKilowatts = maxEnergyinWatts / 3.6e6; // convert into kwh
 
-      energySaved(currentEnergyInKilowatts, maxEnergyInKilowatts, energySavedLabel);
+      if (energySavedLabel.isEnabled()) {
+        energySaved(currentEnergyInKilowatts, maxEnergyInKilowatts, energySavedLabel);
+      } else {
+        SavedEnergy = 0;
+        energySavedLabel.setText(SavedEnergy.toFixed(4) + ' gCO2/kWh');
+      }
     });
   }
 }
