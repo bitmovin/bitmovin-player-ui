@@ -49,7 +49,7 @@ import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './components/audiotracklistbox';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
-import { EcoModeToggle } from './components/ecomodetogglebutton';
+import { EcoModeToggleButton } from './components/ecomodetogglebutton';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 
 export namespace UIFactory {
@@ -71,10 +71,10 @@ export namespace UIFactory {
 
   export function modernUI(config: UIConfig) {
     let subtitleOverlay = new SubtitleOverlay();
-    const ecoModeToggle = new EcoModeToggle();
-    const labelEcoMode = new Label({
+    const ecoModeToggleButton = new EcoModeToggleButton();
+    const ecoModeLabel = new Label({
       text: i18n.getLocalizer('ecoMode.title'),
-      for: ecoModeToggle.getConfig().id,
+      for: ecoModeToggleButton.getConfig().id,
       id: 'ecomodelabel',
     } as LabelConfig);
 
@@ -88,7 +88,7 @@ export namespace UIFactory {
     ];
 
     if (config.ecoMode) {
-      components.unshift(new SettingsPanelItem(labelEcoMode, ecoModeToggle));
+      components.unshift(new SettingsPanelItem(ecoModeLabel, ecoModeToggleButton));
     }
     mainSettingsPanelPage = new SettingsPanelPage({
       components,
