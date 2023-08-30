@@ -9,6 +9,9 @@
   white-space: nowrap;
 }
 
+.#{$prefix}-ui-label {
+  @extend %ui-label;
+}
 
 .#{$prefix}-ui-label-savedEnergy {
   @extend %ui-label;
