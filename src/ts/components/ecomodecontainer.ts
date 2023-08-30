@@ -52,7 +52,6 @@ export class EcoModeContainer extends Container<ContainerConfig> {
   configure(player: PlayerAPI): void {
     player.on(player.exports.PlayerEvent.SegmentPlayback, (segment: SegmentPlaybackEvent) => {
       const { height, width, bitrate, frameRate } = segment.mediaInfo;
-
       const maxQualityAvailable = player.getAvailableVideoQualities().length - 1;
       const maxHeight = player.getAvailableVideoQualities()[maxQualityAvailable].height;
       const maxBitrate = player.getAvailableVideoQualities()[maxQualityAvailable].bitrate;
@@ -63,7 +62,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       const maxEnergyKwh = this.calculateEnergyConsumption(frameRate, maxHeight, maxWidth, maxBitrate);
 
       if (this.ecoModeSavedEnergyItem.isActive()) {
-        this.energySaved(currentEnergyKwh, maxEnergyKwh, this.energySavedLabel);
+        this.updateSavedEmissons(currentEnergyKwh, maxEnergyKwh, this.energySavedLabel);
       } else {
         this.savedEnergy = 0;
         this.energySavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
@@ -71,13 +70,17 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     });
   }
 
-  energySaved(currentEnergyConsuption: number, maxEnergyConsuption: number, energySavedLabel: Label<LabelConfig>) {
+  updateSavedEmissons(
+    currentEnergyConsuption: number,
+    maxEnergyConsuption: number,
+    emissonsSavedLabel: Label<LabelConfig>,
+  ) {
     this.currentEnergyEmission = currentEnergyConsuption * 475; // 475 is the average country intensity of all countries in gCO2/kWh
     this.maxEnergyEmisson = maxEnergyConsuption * 475;
 
     if (!isNaN(this.currentEnergyEmission) && !isNaN(this.maxEnergyEmisson)) {
       this.savedEnergy += this.maxEnergyEmisson - this.currentEnergyEmission;
-      energySavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
+      emissonsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
       /*  savedEnergyKm += this.savedEnergy / 107.5; */
     }
   }
