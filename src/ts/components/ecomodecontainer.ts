@@ -87,6 +87,8 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       this.savedEnergy += this.maxEnergyEmisson - this.currentEnergyEmission;
       emissonsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
       /*  savedEnergyKm += this.savedEnergy / 107.5; */
+    } else {
+      this.energySavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
     }
   }
 
