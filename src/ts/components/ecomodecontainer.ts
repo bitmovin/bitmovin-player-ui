@@ -74,7 +74,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       if (this.ecoModeSavedEmissionsItem.isShown()) {
         this.updateSavedEmissions(currentEnergyKwh, maxEnergyKwh, this.emissionsSavedLabel);
       } else {
-        this.emissionsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
+        this.emissionsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2');
       }
     });
   }
@@ -89,7 +89,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
     if (!isNaN(this.currentEnergyEmission) && !isNaN(this.maxEnergyEmisson)) {
       this.savedEnergy += this.maxEnergyEmisson - this.currentEnergyEmission;
-      emissionsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
+      emissionsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2');
       /*  savedEnergyKm += this.savedEnergy / 107.5; */
     }
   }
