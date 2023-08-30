@@ -103,6 +103,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       constantOffset +
       internetConnectionOffset;
 
+    // Convert energy consumption from Watts (W) to Kilowatt-hours (kWh).
     const energyConsumptionKwh = energyConsumptionW / 3.6e6;
 
     return energyConsumptionKwh;
