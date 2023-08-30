@@ -6,9 +6,9 @@ import { Label, LabelConfig } from './label';
 import { SettingsPanelItem } from './settingspanelitem';
 
 export class EcoModeContainer extends Container<ContainerConfig> {
-  private ecoModeSavedEmissonsItem: SettingsPanelItem;
+  private ecoModeSavedEmissionsItem: SettingsPanelItem;
   private ecoModeToggleButtonItem: SettingsPanelItem;
-  private emissonsSavedLabel: Label<LabelConfig>;
+  private emissionsSavedLabel: Label<LabelConfig>;
   private savedEnergy = 0;
   private currentEnergyEmission: number;
   private maxEnergyEmisson: number;
@@ -22,24 +22,26 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       for: ecoModeToggleButton.getConfig().id,
       id: 'ecomodelabel',
     } as LabelConfig);
-    this.emissonsSavedLabel = new Label({
+    this.emissionsSavedLabel = new Label({
       text: '',
       cssClass: 'ui-label-savedEnergy',
     } as LabelConfig);
 
     this.ecoModeToggleButtonItem = new SettingsPanelItem(labelEcoMode, ecoModeToggleButton);
-    this.ecoModeSavedEmissonsItem = new SettingsPanelItem('Saved Energy', this.emissonsSavedLabel, { hidden: true });
+    this.ecoModeSavedEmissionsItem = new SettingsPanelItem('Saved Emissions', this.emissionsSavedLabel, {
+      hidden: true,
+    });
 
     this.addComponent(this.ecoModeToggleButtonItem);
-    this.addComponent(this.ecoModeSavedEmissonsItem);
+    this.addComponent(this.ecoModeSavedEmissionsItem);
 
     ecoModeToggleButton.onToggleOn.subscribe(() => {
-      this.ecoModeSavedEmissonsItem.show();
+      this.ecoModeSavedEmissionsItem.show();
       this.onActivecallback();
     });
 
     ecoModeToggleButton.onToggleOff.subscribe(() => {
-      this.ecoModeSavedEmissonsItem.hide();
+      this.ecoModeSavedEmissionsItem.hide();
       this.onActivecallback();
     });
   }
@@ -69,25 +71,25 @@ export class EcoModeContainer extends Container<ContainerConfig> {
         segment.duration,
       );
 
-      if (this.ecoModeSavedEmissonsItem.isShown()) {
-        this.updateSavedEmissons(currentEnergyKwh, maxEnergyKwh, this.emissonsSavedLabel);
+      if (this.ecoModeSavedEmissionsItem.isShown()) {
+        this.updateSavedEmissions(currentEnergyKwh, maxEnergyKwh, this.emissionsSavedLabel);
       } else {
-        this.emissonsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
+        this.emissionsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
       }
     });
   }
 
-  updateSavedEmissons(
+  updateSavedEmissions(
     currentEnergyConsuption: number,
     maxEnergyConsuption: number,
-    emissonsSavedLabel: Label<LabelConfig>,
+    emissionsSavedLabel: Label<LabelConfig>,
   ) {
     this.currentEnergyEmission = currentEnergyConsuption * 475; // 475 is the average country intensity of all countries in gCO2/kWh
     this.maxEnergyEmisson = maxEnergyConsuption * 475;
 
     if (!isNaN(this.currentEnergyEmission) && !isNaN(this.maxEnergyEmisson)) {
       this.savedEnergy += this.maxEnergyEmisson - this.currentEnergyEmission;
-      emissonsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
+      emissionsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
       /*  savedEnergyKm += this.savedEnergy / 107.5; */
     }
   }
