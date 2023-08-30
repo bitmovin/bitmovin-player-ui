@@ -6,9 +6,9 @@ import { Label, LabelConfig } from './label';
 import { SettingsPanelItem } from './settingspanelitem';
 
 export class EcoModeContainer extends Container<ContainerConfig> {
-  private ecoModeSavedEnergyItem: SettingsPanelItem;
+  private ecoModeSavedEmissonsItem: SettingsPanelItem;
   private ecoModeToggleButtonItem: SettingsPanelItem;
-  private energySavedLabel: Label<LabelConfig>;
+  private emissonsSavedLabel: Label<LabelConfig>;
   private savedEnergy = 0;
   private currentEnergyEmission: number;
   private maxEnergyEmisson: number;
@@ -20,26 +20,26 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     const labelEcoMode = new Label({
       text: i18n.getLocalizer('ecoMode.title'),
       for: ecoModeToggleButton.getConfig().id,
-      id: 'ecoModeLabel',
+      id: 'ecomodelabel',
     } as LabelConfig);
-    this.energySavedLabel = new Label({
+    this.emissonsSavedLabel = new Label({
       text: '',
       cssClass: 'ui-label-savedEnergy',
     } as LabelConfig);
 
     this.ecoModeToggleButtonItem = new SettingsPanelItem(labelEcoMode, ecoModeToggleButton);
-    this.ecoModeSavedEnergyItem = new SettingsPanelItem('Saved Energy', this.energySavedLabel, { hidden: true });
+    this.ecoModeSavedEmissonsItem = new SettingsPanelItem('Saved Energy', this.emissonsSavedLabel, { hidden: true });
 
     this.addComponent(this.ecoModeToggleButtonItem);
-    this.addComponent(this.ecoModeSavedEnergyItem);
+    this.addComponent(this.ecoModeSavedEmissonsItem);
 
     ecoModeToggleButton.onToggleOn.subscribe(() => {
-      this.ecoModeSavedEnergyItem.show();
+      this.ecoModeSavedEmissonsItem.show();
       this.onActivecallback();
     });
 
     ecoModeToggleButton.onToggleOff.subscribe(() => {
-      this.ecoModeSavedEnergyItem.hide();
+      this.ecoModeSavedEmissonsItem.hide();
       this.onActivecallback();
     });
   }
@@ -69,8 +69,10 @@ export class EcoModeContainer extends Container<ContainerConfig> {
         segment.duration,
       );
 
-      if (this.ecoModeToggleButtonItem.isShown()) {
-        this.updateSavedEmissons(currentEnergyKwh, maxEnergyKwh, this.energySavedLabel);
+      if (this.ecoModeSavedEmissonsItem.isShown()) {
+        this.updateSavedEmissons(currentEnergyKwh, maxEnergyKwh, this.emissonsSavedLabel);
+      } else {
+        this.emissonsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
       }
     });
   }
@@ -87,8 +89,6 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       this.savedEnergy += this.maxEnergyEmisson - this.currentEnergyEmission;
       emissonsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
       /*  savedEnergyKm += this.savedEnergy / 107.5; */
-    } else {
-      this.energySavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
     }
   }
 
