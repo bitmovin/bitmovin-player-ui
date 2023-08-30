@@ -7,6 +7,7 @@ import { SettingsPanelItem } from './settingspanelitem';
 
 export class EcoModeContainer extends Container<ContainerConfig> {
   private ecoModeSavedEnergyItem: SettingsPanelItem;
+  private ecoModeToggleButtonItem: SettingsPanelItem;
   private energySavedLabel: Label<LabelConfig>;
   private savedEnergy = 0;
   private currentEnergyEmission: number;
@@ -26,10 +27,10 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       cssClass: 'ui-label-savedEnergy',
     } as LabelConfig);
 
-    const ecoModeToggleButtonItem = new SettingsPanelItem(labelEcoMode, ecoModeToggleButton);
+    this.ecoModeToggleButtonItem = new SettingsPanelItem(labelEcoMode, ecoModeToggleButton);
     this.ecoModeSavedEnergyItem = new SettingsPanelItem('Saved Energy', this.energySavedLabel, { hidden: true });
 
-    this.addComponent(ecoModeToggleButtonItem);
+    this.addComponent(this.ecoModeToggleButtonItem);
     this.addComponent(this.ecoModeSavedEnergyItem);
 
     ecoModeToggleButton.onToggleOn.subscribe(() => {
@@ -52,20 +53,24 @@ export class EcoModeContainer extends Container<ContainerConfig> {
   configure(player: PlayerAPI): void {
     player.on(player.exports.PlayerEvent.SegmentPlayback, (segment: SegmentPlaybackEvent) => {
       const { height, width, bitrate, frameRate } = segment.mediaInfo;
+
       const maxQualityAvailable = player.getAvailableVideoQualities().length - 1;
       const maxHeight = player.getAvailableVideoQualities()[maxQualityAvailable].height;
       const maxBitrate = player.getAvailableVideoQualities()[maxQualityAvailable].bitrate;
       const maxWidth = player.getAvailableVideoQualities()[maxQualityAvailable].width;
 
-      const currentEnergyKwh = this.calculateEnergyConsumption(frameRate, height, width, bitrate);
+      const currentEnergyKwh = this.calculateEnergyConsumption(frameRate, height, width, bitrate, segment.duration);
 
-      const maxEnergyKwh = this.calculateEnergyConsumption(frameRate, maxHeight, maxWidth, maxBitrate);
+      const maxEnergyKwh = this.calculateEnergyConsumption(
+        frameRate,
+        maxHeight,
+        maxWidth,
+        maxBitrate,
+        segment.duration,
+      );
 
-      if (this.ecoModeSavedEnergyItem.isActive()) {
+      if (this.ecoModeToggleButtonItem.isShown()) {
         this.updateSavedEmissons(currentEnergyKwh, maxEnergyKwh, this.energySavedLabel);
-      } else {
-        this.savedEnergy = 0;
-        this.energySavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2/kWh');
       }
     });
   }
@@ -86,7 +91,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
   }
 
   /* The calculations are based on the following paper :  https://arxiv.org/pdf/2210.05444.pdf*/
-  calculateEnergyConsumption(fps: number, height: number, width: number, bitrate: number): number {
+  calculateEnergyConsumption(fps: number, height: number, width: number, bitrate: number, duration: number): number {
     const fpsWeight = 0.035;
     const pixeldWeight = 5.76e-9;
     const birateWeight = 6.97e-6;
@@ -103,8 +108,8 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       constantOffset +
       internetConnectionOffset;
 
-    // Convert energy consumption from Watts (W) to Kilowatt-hours (kWh).
-    const energyConsumptionKwh = energyConsumptionW / 3.6e6;
+    // Convert energy consumption from Watts (W) to Kilowatt-hours (kWh) for the given time duration of the segment
+    const energyConsumptionKwh = (energyConsumptionW * duration) / 3.6e6;
 
     return energyConsumptionKwh;
   }
