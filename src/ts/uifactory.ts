@@ -71,10 +71,6 @@ export namespace UIFactory {
 
   export function modernUI(config: UIConfig) {
     let subtitleOverlay = new SubtitleOverlay();
-    const ecoModeContainer = new EcoModeContainer();
-    ecoModeContainer.setOnActiveChangeCallback(() => {
-      settingsPanel.getDomElement().css({ width: '', height: '' }); // let css auto settings kick in again
-    });
 
     let mainSettingsPanelPage;
 
@@ -85,9 +81,6 @@ export namespace UIFactory {
       new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
     ];
 
-    if (config.ecoMode) {
-      components.unshift(ecoModeContainer);
-    }
     mainSettingsPanelPage = new SettingsPanelPage({
       components,
     });
@@ -97,6 +90,7 @@ export namespace UIFactory {
       hidden: true,
     });
 
+    addEcoModePanelItem(config, settingsPanel, components);
     let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
       settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
@@ -217,16 +211,20 @@ export namespace UIFactory {
     });
   }
 
-  export function modernSmallScreenUI() {
+  export function modernSmallScreenUI(config: UIConfig) {
     let subtitleOverlay = new SubtitleOverlay();
 
-    let mainSettingsPanelPage = new SettingsPanelPage({
-      components: [
-        new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
-      ],
+    let mainSettingsPanelPage;
+
+    const components: Container<ContainerConfig>[] = [
+      new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
+    ];
+
+    mainSettingsPanelPage = new SettingsPanelPage({
+      components,
     });
 
     let settingsPanel = new SettingsPanel({
@@ -235,7 +233,7 @@ export namespace UIFactory {
       pageTransitionAnimation: false,
       hideDelay: -1,
     });
-
+    addEcoModePanelItem(config, settingsPanel, components);
     let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
       settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
@@ -411,7 +409,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: modernSmallScreenUI(),
+          ui: modernSmallScreenUI(config),
           condition: (context: UIConditionContext) => {
             return (
               !context.isAd &&
@@ -443,7 +441,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: modernSmallScreenUI(),
+          ui: modernSmallScreenUI(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -570,5 +568,20 @@ export namespace UIFactory {
       ui: uiContainer,
       spatialNavigation: spatialNavigation,
     };
+  }
+
+  function addEcoModePanelItem(
+    config: UIConfig,
+    settingsPanel: SettingsPanel,
+    components: Container<ContainerConfig>[],
+  ) {
+    const ecoModeContainer = new EcoModeContainer();
+    ecoModeContainer.setOnActiveChangeCallback(() => {
+      settingsPanel.getDomElement().css({ width: '', height: '' }); // let css auto settings kick in again
+    });
+
+    if (config.ecoMode) {
+      components.unshift(ecoModeContainer);
+    }
   }
 }
