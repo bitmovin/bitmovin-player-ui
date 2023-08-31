@@ -49,9 +49,9 @@ import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './components/audiotracklistbox';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
-import { EcoModeToggleButton } from './components/ecomodetogglebutton';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 import { EcoModeContainer } from './components/ecomodecontainer';
+
 export namespace UIFactory {
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return UIFactory.buildModernUI(player, config);
