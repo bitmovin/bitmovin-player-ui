@@ -91,10 +91,11 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     this.savedEmissons += maxEnergyEmisson - this.currentEnergyEmission;
     emissionsSavedLabel.setText(this.savedEmissons.toFixed(4) + ' gCO2');
     /*  savedEnergyKm += this.savedEnergy / 107.5; */
-    
   }
 
-  /* The calculations are based on the following paper :  https://arxiv.org/pdf/2210.05444.pdf*/
+  /**
+   * The calculations are based on the following paper: https://arxiv.org/pdf/2210.05444.pdf
+   */
   calculateEnergyConsumption(fps: number, height: number, width: number, bitrate: number, duration: number): number {
     const fpsWeight = 0.035;
     const pixeldWeight = 5.76e-9;
