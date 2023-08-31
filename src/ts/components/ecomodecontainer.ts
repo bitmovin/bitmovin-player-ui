@@ -1,4 +1,4 @@
-import { PlayerAPI, SegmentPlaybackEvent } from 'bitmovin-player';
+import { MediaType, PlayerAPI, SegmentPlaybackEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Container, ContainerConfig } from './container';
 import { EcoModeToggleButton } from './ecomodetogglebutton';
@@ -54,8 +54,11 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
   configure(player: PlayerAPI): void {
     player.on(player.exports.PlayerEvent.SegmentPlayback, (segment: SegmentPlaybackEvent) => {
-      const { height, width, bitrate, frameRate } = segment.mediaInfo;
+      if (!segment.mimeType.includes('video')) {
+        return;
+      }
 
+      const { height, width, bitrate, frameRate } = segment.mediaInfo;
       const maxQualityAvailable = player.getAvailableVideoQualities().length - 1;
       const maxHeight = player.getAvailableVideoQualities()[maxQualityAvailable].height;
       const maxBitrate = player.getAvailableVideoQualities()[maxQualityAvailable].bitrate;
@@ -86,12 +89,10 @@ export class EcoModeContainer extends Container<ContainerConfig> {
   ) {
     this.currentEnergyEmission = currentEnergyConsuption * 475; // 475 is the average country intensity of all countries in gCO2/kWh
     this.maxEnergyEmisson = maxEnergyConsuption * 475;
-
-    if (!isNaN(this.currentEnergyEmission) && !isNaN(this.maxEnergyEmisson)) {
-      this.savedEmissons += this.maxEnergyEmisson - this.currentEnergyEmission;
-      emissionsSavedLabel.setText(this.savedEmissons.toFixed(4) + ' gCO2');
-      /*  savedEnergyKm += this.savedEnergy / 107.5; */
-    }
+    this.savedEmissons += this.maxEnergyEmisson - this.currentEnergyEmission;
+    emissionsSavedLabel.setText(this.savedEmissons.toFixed(4) + ' gCO2');
+    /*  savedEnergyKm += this.savedEnergy / 107.5; */
+    
   }
 
   /* The calculations are based on the following paper :  https://arxiv.org/pdf/2210.05444.pdf*/
