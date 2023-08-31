@@ -20,11 +20,11 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       text: i18n.getLocalizer('ecoMode.title'),
       for: ecoModeToggleButton.getConfig().id,
       id: 'ecomodelabel',
-    } as LabelConfig);
+    });
     this.emissionsSavedLabel = new Label({
       text: '',
       cssClass: 'ui-label-savedEnergy',
-    } as LabelConfig);
+    });
 
     this.ecoModeToggleButtonItem = new SettingsPanelItem(labelEcoMode, ecoModeToggleButton);
     this.ecoModeSavedEmissionsItem = new SettingsPanelItem('Saved Emissions', this.emissionsSavedLabel, {
