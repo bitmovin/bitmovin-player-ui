@@ -1,4 +1,4 @@
-import { MediaType, PlayerAPI, SegmentPlaybackEvent } from 'bitmovin-player';
+import { MediaType, PlayerAPI, SegmentPlaybackEvent, VideoQuality } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Container, ContainerConfig } from './container';
 import { EcoModeToggleButton } from './ecomodetogglebutton';
@@ -19,18 +19,17 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     const labelEcoMode = new Label({
       text: i18n.getLocalizer('ecoMode.title'),
       for: ecoModeToggleButton.getConfig().id,
-      id: 'ecomodelabel'
+      id: 'ecomodelabel',
     });
     this.emissionsSavedLabel = new Label({
       text: this.savedEmissons.toFixed(4) + ' gCO2',
       cssClass: 'ui-label-savedEnergy',
     });
- 
+
     this.ecoModeToggleButtonItem = new SettingsPanelItem(labelEcoMode, ecoModeToggleButton);
     this.ecoModeSavedEmissionsItem = new SettingsPanelItem('Saved Emissions', this.emissionsSavedLabel, {
       hidden: true,
     });
-
 
     this.addComponent(this.ecoModeToggleButtonItem);
     this.addComponent(this.ecoModeSavedEmissionsItem);
@@ -59,10 +58,11 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       }
 
       const { height, width, bitrate, frameRate } = segment.mediaInfo;
-      const maxQualityAvailable = player.getAvailableVideoQualities().length - 1;
-      const maxHeight = player.getAvailableVideoQualities()[maxQualityAvailable].height;
-      const maxBitrate = player.getAvailableVideoQualities()[maxQualityAvailable].bitrate;
-      const maxWidth = player.getAvailableVideoQualities()[maxQualityAvailable].width;
+      const {
+        height: maxHeight,
+        bitrate: maxBitrate,
+        width: maxWidth,
+      } = this.getMaxQualityAvailable(player.getAvailableVideoQualities());
 
       const currentEnergyKwh = this.calculateEnergyConsumption(frameRate, height, width, bitrate, segment.duration);
 
@@ -118,5 +118,9 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     const energyConsumptionKwh = (energyConsumptionW * duration) / 3.6e6;
 
     return energyConsumptionKwh;
+  }
+  getMaxQualityAvailable(availableVideoQualities: VideoQuality[]) {
+    const sortedQualities = availableVideoQualities.sort((a, b) => a.bitrate - b.bitrate);
+    return sortedQualities[sortedQualities.length - 1];
   }
 }
