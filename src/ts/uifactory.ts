@@ -11,7 +11,7 @@ import { SettingsPanelPageOpenButton } from './components/settingspanelpageopenb
 import { SubtitleSettingsLabel } from './components/subtitlesettings/subtitlesettingslabel';
 import { SubtitleSelectBox } from './components/subtitleselectbox';
 import { ControlBar } from './components/controlbar';
-import { Container } from './components/container';
+import { Container, ContainerConfig } from './components/container';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from './components/playbacktimelabel';
 import { SeekBar } from './components/seekbar';
 import { SeekBarLabel } from './components/seekbarlabel';
@@ -39,7 +39,7 @@ import { AdSkipButton } from './components/adskipbutton';
 import { CloseButton } from './components/closebutton';
 import { MetadataLabel, MetadataLabelContent } from './components/metadatalabel';
 import { PlayerUtils } from './playerutils';
-import { Label, LabelConfig } from './components/label';
+import { Label } from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
@@ -49,8 +49,8 @@ import { SubtitleListBox } from './components/subtitlelistbox';
 import { AudioTrackListBox } from './components/audiotracklistbox';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
-import { EcoModeToggleButton } from './components/ecomodetogglebutton';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
+import { EcoModeContainer } from './components/ecomodecontainer';
 
 export namespace UIFactory {
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -71,16 +71,14 @@ export namespace UIFactory {
 
   export function modernUI(config: UIConfig) {
     let subtitleOverlay = new SubtitleOverlay();
-    const ecoModeToggleButton = new EcoModeToggleButton();
-    const ecoModeLabel = new Label({
-      text: i18n.getLocalizer('ecoMode.title'),
-      for: ecoModeToggleButton.getConfig().id,
-      id: 'ecomodelabel',
-    } as LabelConfig);
+    const ecoModeContainer = new EcoModeContainer();
+    ecoModeContainer.setOnActiveChangeCallback(() => {
+      settingsPanel.getDomElement().css({ width: '', height: '' }); // let css auto settings kick in again
+    });
 
     let mainSettingsPanelPage;
 
-    const components = [
+    const components: Container<ContainerConfig>[] = [
       new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
       new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
       new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
@@ -88,7 +86,7 @@ export namespace UIFactory {
     ];
 
     if (config.ecoMode) {
-      components.unshift(new SettingsPanelItem(ecoModeLabel, ecoModeToggleButton));
+      components.unshift(ecoModeContainer);
     }
     mainSettingsPanelPage = new SettingsPanelPage({
       components,
