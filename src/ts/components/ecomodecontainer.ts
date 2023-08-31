@@ -11,7 +11,6 @@ export class EcoModeContainer extends Container<ContainerConfig> {
   private emissionsSavedLabel: Label<LabelConfig>;
   private savedEmissons = 0;
   private currentEnergyEmission: number;
-  private maxEnergyEmisson: number;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -88,8 +87,8 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     emissionsSavedLabel: Label<LabelConfig>,
   ) {
     this.currentEnergyEmission = currentEnergyConsuption * 475; // 475 is the average country intensity of all countries in gCO2/kWh
-    this.maxEnergyEmisson = maxEnergyConsuption * 475;
-    this.savedEmissons += this.maxEnergyEmisson - this.currentEnergyEmission;
+    const maxEnergyEmisson = maxEnergyConsuption * 475;
+    this.savedEmissons += maxEnergyEmisson - this.currentEnergyEmission;
     emissionsSavedLabel.setText(this.savedEmissons.toFixed(4) + ' gCO2');
     /*  savedEnergyKm += this.savedEnergy / 107.5; */
     
