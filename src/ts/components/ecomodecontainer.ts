@@ -9,7 +9,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
   private ecoModeSavedEmissionsItem: SettingsPanelItem;
   private ecoModeToggleButtonItem: SettingsPanelItem;
   private emissionsSavedLabel: Label<LabelConfig>;
-  private savedEnergy = 0;
+  private savedEmissons = 0;
   private currentEnergyEmission: number;
   private maxEnergyEmisson: number;
 
@@ -74,7 +74,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       if (this.ecoModeSavedEmissionsItem.isShown()) {
         this.updateSavedEmissions(currentEnergyKwh, maxEnergyKwh, this.emissionsSavedLabel);
       } else {
-        this.emissionsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2');
+        this.emissionsSavedLabel.setText(this.savedEmissons.toFixed(4) + ' gCO2');
       }
     });
   }
@@ -88,8 +88,8 @@ export class EcoModeContainer extends Container<ContainerConfig> {
     this.maxEnergyEmisson = maxEnergyConsuption * 475;
 
     if (!isNaN(this.currentEnergyEmission) && !isNaN(this.maxEnergyEmisson)) {
-      this.savedEnergy += this.maxEnergyEmisson - this.currentEnergyEmission;
-      emissionsSavedLabel.setText(this.savedEnergy.toFixed(4) + ' gCO2');
+      this.savedEmissons += this.maxEnergyEmisson - this.currentEnergyEmission;
+      emissionsSavedLabel.setText(this.savedEmissons.toFixed(4) + ' gCO2');
       /*  savedEnergyKm += this.savedEnergy / 107.5; */
     }
   }
