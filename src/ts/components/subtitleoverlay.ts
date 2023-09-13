@@ -121,11 +121,18 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
     };
 
+    const clearInactiveSubtitles = () => {
+      const removedActiveSubtitles = subtitleManager.clearInactiveCues(player.getCurrentTime());
+      removedActiveSubtitles.forEach(toRemove => {
+        this.subtitleContainerManager.removeLabel(toRemove.label);
+      });
+    };
+
     player.on(player.exports.PlayerEvent.AudioChanged, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SubtitleDisabled, subtitleClearHandler);
-    player.on(player.exports.PlayerEvent.Seek, subtitleClearHandler);
-    player.on(player.exports.PlayerEvent.TimeShift, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.Seeked, clearInactiveSubtitles);
+    player.on(player.exports.PlayerEvent.TimeShifted, clearInactiveSubtitles);
     player.on(player.exports.PlayerEvent.PlaybackFinished, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SourceUnloaded, subtitleClearHandler);
 
@@ -468,6 +475,24 @@ class ActiveSubtitleManager {
 
       return activeSubtitleCue.label;
     }
+  }
+
+  /**
+   * Removes all active cues which don't enclose the given time
+   * @param time the time for which subtitles should remain
+   */
+  public clearInactiveCues(time: number): ActiveSubtitleCue[] {
+    const removedEvents: ActiveSubtitleCue[] = [];
+    Object.keys(this.activeSubtitleCueMap).forEach(key => {
+      const activeCues = this.activeSubtitleCueMap[key];
+      activeCues.forEach(element => {
+        if (time < element.event.start || time > element.event.end) {
+          this.popCueFromMap(element.event);
+          removedEvents.push(element);
+        }
+      });
+    });
+    return removedEvents;
   }
 
   static generateImageTagText(imageData: string): string | undefined {
