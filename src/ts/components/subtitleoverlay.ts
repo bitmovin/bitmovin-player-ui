@@ -482,17 +482,17 @@ class ActiveSubtitleManager {
    * @param time the time for which subtitles should remain
    */
   public clearInactiveCues(time: number): ActiveSubtitleCue[] {
-    const removedEvents: ActiveSubtitleCue[] = [];
+    const removedCues: ActiveSubtitleCue[] = [];
     Object.keys(this.activeSubtitleCueMap).forEach(key => {
       const activeCues = this.activeSubtitleCueMap[key];
-      activeCues.forEach(element => {
-        if (time < element.event.start || time > element.event.end) {
-          this.popCueFromMap(element.event);
-          removedEvents.push(element);
+      activeCues.forEach(cue => {
+        if (time < cue.event.start || time > cue.event.end) {
+          this.popCueFromMap(cue.event);
+          removedCues.push(cue);
         }
       });
     });
-    return removedEvents;
+    return removedCues;
   }
 
   static generateImageTagText(imageData: string): string | undefined {
