@@ -121,9 +121,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
     };
 
-    const clearInactiveSubtitles = () => {
-      const removedActiveSubtitles = subtitleManager.clearInactiveCues(player.getCurrentTime());
-      removedActiveSubtitles.forEach(toRemove => {
+    const clearInactiveCues = () => {
+      const removedActiveCues = subtitleManager.clearInactiveCues(player.getCurrentTime());
+      removedActiveCues.forEach(toRemove => {
         this.subtitleContainerManager.removeLabel(toRemove.label);
       });
     };
@@ -131,8 +131,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.on(player.exports.PlayerEvent.AudioChanged, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SubtitleDisabled, subtitleClearHandler);
-    player.on(player.exports.PlayerEvent.Seeked, clearInactiveSubtitles);
-    player.on(player.exports.PlayerEvent.TimeShifted, clearInactiveSubtitles);
+    player.on(player.exports.PlayerEvent.Seeked, clearInactiveCues);
+    player.on(player.exports.PlayerEvent.TimeShifted, clearInactiveCues);
     player.on(player.exports.PlayerEvent.PlaybackFinished, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SourceUnloaded, subtitleClearHandler);
 
