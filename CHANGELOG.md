@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [development]
+## [3.51.0]
 
 ### Changed
 - On seek/timeshift operations the UI will only remove subtitle cues which do not enclose the seek target instead of removing all.
