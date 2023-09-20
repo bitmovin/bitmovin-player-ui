@@ -1,6 +1,6 @@
 import { Container } from '../components/container';
 import { Component } from '../components/component';
-import { getElementInDirection } from './navigationalgorithm';
+import { getElementInDirection, getElementInDirectionFromPoint } from './navigationalgorithm';
 import { getHtmlElementsFromComponents } from './gethtmlelementsfromcomponents';
 import { NodeEventSubscriber } from './nodeeventsubscriber';
 import { isSettingsPanel } from './typeguards';
@@ -20,6 +20,7 @@ export class NavigationGroup {
   private readonly components: Component<unknown>[];
   private removeElementHoverEventListeners = () => {};
   private readonly eventSubscriber: NodeEventSubscriber;
+  private mousePosition?: {x: number, y: number};
 
   constructor(public readonly container: Container<unknown>, ...components: Component<unknown>[]) {
     this.components = components;
@@ -97,6 +98,14 @@ export class NavigationGroup {
     let handleDefault = true;
     const preventDefault = () => (handleDefault = false);
 
+    if (!this.activeElement) {
+      if (this.activeElementBeforeDisable) {
+        this.focusElement(this.activeElementBeforeDisable);
+      } else {
+        this.focusFirstElement();
+      }
+    }
+
     userHandler?.(data, this.activeElement, preventDefault);
 
     if (handleDefault) {
@@ -110,7 +119,22 @@ export class NavigationGroup {
    * @param direction The direction of the navigation event
    */
   public handleNavigation(direction: Direction): void {
-    this.handleInput(direction, this.defaultNavigationHandler, this.onNavigation);
+    if (!this.activeElement && this.mousePosition) {
+      const targetElement = getElementInDirectionFromPoint(
+        this.mousePosition,
+        getHtmlElementsFromComponents(this.components),
+        direction
+      );
+      if (targetElement) {
+        this.focusElement(targetElement);
+      }
+    } else {
+      this.handleInput(
+        direction,
+        this.defaultNavigationHandler,
+        this.onNavigation
+      );
+    }
   }
 
   /**
@@ -160,14 +184,37 @@ export class NavigationGroup {
     this.removeElementHoverEventListeners();
 
     const removeEventListenerFunctions = getHtmlElementsFromComponents(this.components).map(htmlElem => {
-      const listener = this.focusElement.bind(this, htmlElem);
+      const listener = () => {
+        console.log('MouseOver' + htmlElem.id);
+        this.focusElement(htmlElem);
+      };
+      const exitListener = () => {
+        console.log('Mouse leave ' + htmlElem.id);
+        this.disable();
+      };
 
       this.eventSubscriber.on(htmlElem, 'mouseenter', listener);
+      this.eventSubscriber.on(htmlElem, 'mouseleave', exitListener);
 
-      return () => this.eventSubscriber.off(htmlElem, 'mouseenter', listener);
+      return [
+        () => this.eventSubscriber.off(htmlElem, 'mouseenter', listener),
+        () => this.eventSubscriber.off(htmlElem, 'mouseleave', exitListener),
+      ];
     });
 
-    this.removeElementHoverEventListeners = () => removeEventListenerFunctions.forEach(fn => fn());
+    const saveLastMousePosition = (ev: MouseEvent) =>
+      (this.mousePosition = { x: ev.clientX, y: ev.clientY });
+    document.addEventListener('mousemove', saveLastMousePosition);
+    removeEventListenerFunctions.push([
+      () => {
+        document.removeEventListener('mousemove', saveLastMousePosition);
+      },
+    ]);
+
+    this.removeElementHoverEventListeners = () =>
+      removeEventListenerFunctions.forEach((listeners) =>
+        listeners.forEach((fn) => fn())
+      );
   }
 
   /**
