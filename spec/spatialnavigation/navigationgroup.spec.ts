@@ -73,8 +73,18 @@ describe('NavigationGroup', () => {
     });
 
     it('should focus element found by algorithm', () => {
+      rootNavigationGroup['activeElement'] = getFirstDomElement(playbackToggleButtonMock);
       rootNavigationGroup.handleNavigation(Direction.DOWN);
 
+      expect(subtitleToggleButtonHTML.focus).toHaveBeenCalled();
+    });
+
+    it('should default to the last selected item when there is no active item', () => {
+      rootNavigationGroup['activeElementBeforeDisable'] = subtitleToggleButtonHTML;
+      rootNavigationGroup['activeElement'] = undefined;
+
+      rootNavigationGroup.handleNavigation(Direction.LEFT);
+      
       expect(subtitleToggleButtonHTML.focus).toHaveBeenCalled();
     });
 
