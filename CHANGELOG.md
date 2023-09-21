@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [development]
+
+### Changed
+- When having a spatial navigation and using a mouselike device, elements will lose focus when the mouse leaves the hovered component. Spatial navigation will continue at the last active element when using arrow keys again.
+
 ## [3.51.0] - 2023-09-18
 
 ### Changed
