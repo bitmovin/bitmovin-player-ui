@@ -111,12 +111,14 @@ export class NavigationGroup {
    */
   public handleNavigation(direction: Direction): void {
     if (!this.activeElement) {
+      // If we do not have an active element, the active element has been disabled by a mouseleave
+      // event. We should continue the navigation at the exact place where we left off.
       if (this.activeElementBeforeDisable) {
         this.focusElement(this.activeElementBeforeDisable);
-        return;
       } else {
         this.focusFirstElement();
       }
+      return;
     }
     this.handleInput(direction, this.defaultNavigationHandler, this.onNavigation);
   }
