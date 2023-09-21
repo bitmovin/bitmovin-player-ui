@@ -110,6 +110,14 @@ export class NavigationGroup {
    * @param direction The direction of the navigation event
    */
   public handleNavigation(direction: Direction): void {
+    if (!this.activeElement) {
+      if (this.activeElementBeforeDisable) {
+        this.focusElement(this.activeElementBeforeDisable);
+        return;
+      } else {
+        this.focusFirstElement();
+      }
+    }
     this.handleInput(direction, this.defaultNavigationHandler, this.onNavigation);
   }
 
@@ -160,11 +168,16 @@ export class NavigationGroup {
     this.removeElementHoverEventListeners();
 
     const removeEventListenerFunctions = getHtmlElementsFromComponents(this.components).map(htmlElem => {
-      const listener = this.focusElement.bind(this, htmlElem);
+      const enterListener = this.focusElement.bind(this, htmlElem);
+      const exitListener = () => this.disable();
 
-      this.eventSubscriber.on(htmlElem, 'mouseenter', listener);
+      this.eventSubscriber.on(htmlElem, 'mouseenter', enterListener);
+      this.eventSubscriber.on(htmlElem, 'mouseleave', exitListener);
 
-      return () => this.eventSubscriber.off(htmlElem, 'mouseenter', listener);
+      return () => {
+        this.eventSubscriber.off(htmlElem, 'mouseenter', enterListener);
+        this.eventSubscriber.off(htmlElem, 'mouseleave', exitListener);
+      };
     });
 
     this.removeElementHoverEventListeners = () => removeEventListenerFunctions.forEach(fn => fn());
