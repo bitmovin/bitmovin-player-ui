@@ -100,21 +100,21 @@ function calculateAngle(a: Vector, b: Vector, direction: Direction): number {
 export function getElementInDirection(
   activeElement: HTMLElement,
   elements: HTMLElement[],
-  direction: Direction
+  direction: Direction,
 ): HTMLElement | undefined {
   if (!activeElement) return undefined;
 
   return getElementInDirectionFromPoint(
     getElementVector(activeElement),
     elements.filter((elem) => elem !== activeElement),
-    direction
+    direction,
   );
 }
 
 export function getElementInDirectionFromPoint(
   vector: Vector,
   elements: HTMLElement[],
-  direction: Direction
+  direction: Direction,
 ): HTMLElement | undefined {
   const cutoffAngle = 45;
 

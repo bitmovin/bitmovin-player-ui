@@ -123,7 +123,7 @@ export class NavigationGroup {
       const targetElement = getElementInDirectionFromPoint(
         this.mousePosition,
         getHtmlElementsFromComponents(this.components),
-        direction
+        direction,
       );
       if (targetElement) {
         this.focusElement(targetElement);
@@ -132,7 +132,7 @@ export class NavigationGroup {
       this.handleInput(
         direction,
         this.defaultNavigationHandler,
-        this.onNavigation
+        this.onNavigation,
       );
     }
   }
@@ -213,7 +213,7 @@ export class NavigationGroup {
 
     this.removeElementHoverEventListeners = () =>
       removeEventListenerFunctions.forEach((listeners) =>
-        listeners.forEach((fn) => fn())
+        listeners.forEach((fn) => fn()),
       );
   }
 
