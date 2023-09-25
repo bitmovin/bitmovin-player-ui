@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.52.0]
+## [3.52.0] - 2023-09-25
 
 ### Fixed
 - When having a spatial navigation and using a mouselike device, components will lose focus when the mouse leaves the hovered component. Spatial navigation will continue at the last active component when using arrow keys again.
@@ -877,6 +877,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.52.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.51.0...v3.52.0
 [3.51.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.50.0...v3.51.0
 [3.50.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.49.0...v3.50.0
 [3.49.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.48.0...v3.49.0
