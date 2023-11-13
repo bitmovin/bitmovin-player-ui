@@ -71,4 +71,13 @@
       }
     }
   }
+  // disable position arrow if seekbar label was
+  // moved due to overflow
+  &[style*="transform"] {
+    .#{$prefix}-seekbar-label-inner {
+      &::after {
+        content: unset;
+      }
+    }
+  }
 }

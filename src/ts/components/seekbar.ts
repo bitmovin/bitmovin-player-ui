@@ -52,6 +52,11 @@ export interface SeekBarConfig extends ComponentConfig {
    * Used to enable/disable seek preview
    */
   enableSeekPreview?: boolean;
+
+  /**
+   * Prevent overflow of seekpreview
+   */
+  preventSeekPreviewOverflow?: boolean;
 }
 
 /**
@@ -134,6 +139,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     onSeeked: new EventDispatcher<SeekBar, number>(),
   };
 
+  private uimanager: UIInstanceManager;
+
   constructor(config: SeekBarConfig = {}) {
     super(config);
 
@@ -151,6 +158,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       tabIndex: 0,
       snappingRange: 1,
       enableSeekPreview: true,
+      preventSeekPreviewOverflow: false
     }, this.config);
 
     this.label = this.config.label;
@@ -204,7 +212,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager, configureSeek: boolean = true): void {
     super.configure(player, uimanager);
-
+    this.uimanager = uimanager;
     this.player = player;
 
     // Apply scaling transform to the backdrop bar to have all bars rendered similarly
@@ -1016,7 +1024,23 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.label) {
       this.label.getDomElement().css({
         'left': seekPositionPercentage + '%',
+        'transform': null
       });
+      if (this.config.preventSeekPreviewOverflow) {
+        const uiBounding =  this.uimanager.getUI().getDomElement().get(0).getBoundingClientRect();
+        const labelBounding = this.label.getDomElement().get(0).getBoundingClientRect();
+        let preventOverflowOffset = 0;
+        if ((labelBounding.right - labelBounding.width/2 ) > uiBounding.right) {
+          preventOverflowOffset = -(labelBounding.width/2);
+        } else if ((labelBounding.left - labelBounding.width/2) < uiBounding.left) {
+          preventOverflowOffset = +(labelBounding.width/2);
+        }
+        if (preventOverflowOffset) {
+          this.label.getDomElement().css({
+            transform: `translateX(${preventOverflowOffset}px)`
+          })
+        }
+      }
     }
 
     this.seekBarEvents.onSeekPreview.dispatch(this, {
