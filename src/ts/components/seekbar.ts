@@ -158,7 +158,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       tabIndex: 0,
       snappingRange: 1,
       enableSeekPreview: true,
-      preventSeekPreviewOverflow: false
+      preventSeekPreviewOverflow: false,
     }, this.config);
 
     this.label = this.config.label;
@@ -1024,21 +1024,21 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.label) {
       this.label.getDomElement().css({
         'left': seekPositionPercentage + '%',
-        'transform': null
+        'transform': null,
       });
       if (this.config.preventSeekPreviewOverflow) {
         const uiBounding =  this.uimanager.getUI().getDomElement().get(0).getBoundingClientRect();
         const labelBounding = this.label.getDomElement().get(0).getBoundingClientRect();
         let preventOverflowOffset = 0;
-        if ((labelBounding.right - labelBounding.width/2 ) > uiBounding.right) {
-          preventOverflowOffset = -(labelBounding.width/2);
-        } else if ((labelBounding.left - labelBounding.width/2) < uiBounding.left) {
-          preventOverflowOffset = +(labelBounding.width/2);
+        if ((labelBounding.right - labelBounding.width / 2 ) > uiBounding.right) {
+          preventOverflowOffset = -(labelBounding.width / 2);
+        } else if ((labelBounding.left - labelBounding.width / 2) < uiBounding.left) {
+          preventOverflowOffset = +(labelBounding.width / 2);
         }
         if (preventOverflowOffset) {
           this.label.getDomElement().css({
-            transform: `translateX(${preventOverflowOffset}px)`
-          })
+            transform: `translateX(${preventOverflowOffset}px)`,
+          });
         }
       }
     }
