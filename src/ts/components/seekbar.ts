@@ -254,7 +254,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       // At the same time when the user is scrubbing, we also move the position of the seekbar to display a preview during scrubbing.
       // When the user is scrubbing we do not record this as a user seek operation, as the user has yet to finish their seek,
       // but we should not move the playback position to not create a jumping behaviour.
-      if (scrubbing && event.type === player.exports.PlayerEvent.SegmentRequestFinished && playbackPositionPercentage !== this.playbackPositionPercentage) {
+      if (scrubbing && event && event.type === player.exports.PlayerEvent.SegmentRequestFinished && playbackPositionPercentage !== this.playbackPositionPercentage) {
         playbackPositionPercentage = this.playbackPositionPercentage;
       }
 
