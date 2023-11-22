@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- Potential name clashing in CSS animations due to missing `bmpui` prefix
+
 ## [3.52.1] - 2023-11-13
 
 ### Fixed
