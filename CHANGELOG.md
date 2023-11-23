@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [3.52.2] - 2023-11-23
+
 ### Fixed
 - Potential name clashing in CSS animations due to missing `bmpui` prefix
 
@@ -887,6 +889,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.52.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.1...v3.52.2
 [3.52.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.0...v3.52.1
 [3.52.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.51.0...v3.52.0
 [3.51.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.50.0...v3.51.0
