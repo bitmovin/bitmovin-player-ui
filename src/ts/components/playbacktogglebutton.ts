@@ -4,15 +4,24 @@ import {PlayerUtils} from '../playerutils';
 import { PlayerAPI, WarningEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
+export interface PlaybackToggleButtonConfig extends ToggleButtonConfig {
+  /**
+   * Specify whether the player should be set to enter fullscreen by clicking on the playback toggle button
+   * when initiating the initial playback.
+   * Default is false.
+   */
+  enterFullscreenOnInitialPlayback?: boolean;
+}
+
 /**
  * A button that toggles between playback and pause.
  */
-export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
+export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfig> {
 
   private static readonly CLASS_STOPTOGGLE = 'stoptoggle';
   protected isPlayInitiated: boolean;
 
-  constructor(config: ToggleButtonConfig = {}) {
+  constructor(config: PlaybackToggleButtonConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
@@ -28,7 +37,13 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager, handleClickEvent: boolean = true): void {
     super.configure(player, uimanager);
 
+    // Set enterFullscreenOnInitialPlayback if set in the uimanager config
+    if (typeof uimanager.getConfig().enterFullscreenOnInitialPlayback === 'boolean') {
+      this.config.enterFullscreenOnInitialPlayback = uimanager.getConfig().enterFullscreenOnInitialPlayback;
+    }
+
     let isSeeking = false;
+    let firstPlay = true;
 
     // Handler to update button state based on player state
     let playbackStateHandler = () => {
@@ -48,6 +63,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     // Call handler upon these events
     player.on(player.exports.PlayerEvent.Play, (e) => {
       this.isPlayInitiated = true;
+      firstPlay = false;
       playbackStateHandler();
     });
 
@@ -73,6 +89,7 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
     player.on(player.exports.PlayerEvent.Warning, (event: WarningEvent) => {
       if (event.code === player.exports.WarningCode.PLAYBACK_COULD_NOT_BE_STARTED) {
         this.isPlayInitiated = false;
+        firstPlay = true;
         this.off();
       }
     });
@@ -106,6 +123,10 @@ export class PlaybackToggleButton extends ToggleButton<ToggleButtonConfig> {
           player.pause('ui');
         } else {
           player.play('ui');
+
+          if (firstPlay && this.config.enterFullscreenOnInitialPlayback) {
+            player.setViewMode(player.exports.ViewMode.Fullscreen);
+          }
         }
       });
     }

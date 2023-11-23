@@ -45,6 +45,11 @@ import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
+import { SubtitleListBox } from './components/subtitlelistbox';
+import { AudioTrackListBox } from './components/audiotracklistbox';
+import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
+import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
+import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 
 export namespace UIFactory {
 
@@ -58,6 +63,10 @@ export namespace UIFactory {
 
   export function buildDefaultCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return UIFactory.buildModernCastReceiverUI(player, config);
+  }
+
+  export function buildDefaultTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return UIFactory.buildModernTvUI(player, config);
   }
 
   export function modernUI() {
@@ -404,5 +413,112 @@ export namespace UIFactory {
 
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(player, modernCastReceiverUI(), config);
+  }
+
+  export function buildModernTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+        return new UIManager(player, [{
+          ...modernTvUI(),
+        }], config);
+  }
+
+  export function modernTvUI() {
+    const subtitleListBox = new SubtitleListBox();
+    const subtitleListPanel = new SettingsPanel({
+      components: [
+        new SettingsPanelPage({
+          components: [
+            new SettingsPanelItem(null, subtitleListBox),
+          ],
+        }),
+      ],
+      hidden: true,
+    });
+
+    const audioTrackListBox = new AudioTrackListBox();
+    const audioTrackListPanel = new SettingsPanel({
+      components: [
+        new SettingsPanelPage({
+          components: [
+            new SettingsPanelItem(null, audioTrackListBox),
+          ],
+        }),
+      ],
+      hidden: true,
+    });
+
+    const seekBar = new SeekBar({ label: new SeekBarLabel() });
+    const playbackToggleOverlay = new PlaybackToggleOverlay();
+    const subtitleToggleButton = new SettingsToggleButton({
+      settingsPanel: subtitleListPanel,
+      autoHideWhenNoActiveSettings: true,
+      cssClass: 'ui-subtitlesettingstogglebutton',
+      text: i18n.getLocalizer('settings.subtitles'),
+    });
+    const audioToggleButton = new SettingsToggleButton({
+      settingsPanel: audioTrackListPanel,
+      autoHideWhenNoActiveSettings: true,
+      cssClass: 'ui-audiotracksettingstogglebutton',
+      ariaLabel: i18n.getLocalizer('settings.audio.track'),
+      text: i18n.getLocalizer('settings.audio.track'),
+    });
+    const uiContainer = new UIContainer({
+      components: [
+        new SubtitleOverlay(),
+        new BufferingOverlay(),
+        playbackToggleOverlay,
+        new ControlBar({
+          components: [
+            new Container({
+              components: [
+                new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+                seekBar,
+                new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
+              ],
+              cssClasses: ['controlbar-top'],
+            }),
+          ],
+        }),
+        new TitleBar({
+          components: [
+            new Container({
+              components: [
+                new MetadataLabel({ content: MetadataLabelContent.Title }),
+                subtitleToggleButton,
+                audioToggleButton,
+              ],
+              cssClasses: ['ui-titlebar-top'],
+            }),
+            new Container({
+              components: [
+                new MetadataLabel({ content: MetadataLabelContent.Description }),
+                subtitleListPanel,
+                audioTrackListPanel,
+              ],
+              cssClasses: ['ui-titlebar-bottom'],
+            }),
+          ],
+        }),
+        new RecommendationOverlay(),
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-skin-tv'],
+      hideDelay: 2000,
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+    });
+
+    const spatialNavigation = new SpatialNavigation(
+      new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, audioToggleButton, subtitleToggleButton),
+      new ListNavigationGroup(ListOrientation.Vertical, subtitleListPanel, subtitleListBox),
+      new ListNavigationGroup(ListOrientation.Vertical, audioTrackListPanel, audioTrackListBox),
+    );
+
+    return {
+      ui: uiContainer,
+      spatialNavigation: spatialNavigation,
+    };
   }
 }

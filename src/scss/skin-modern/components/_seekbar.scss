@@ -85,15 +85,15 @@ $seekbar-height: .3125em;
 
         background-color: $color-primary;
         height: 100%;
-        width: $marker-width;
         text-align: center;
-        transition-property: transform;
         transition-duration: 1s;
+        transition-property: transform;
         transition-timing-function: linear;
+        width: $marker-width;
 
         > .#{$prefix}-seekbar-marker-image {
-          position: absolute;
           height: $seekbar-height * 4;
+          position: absolute;
           transform: translate(-50%, calc(-100% - .2em));
         }
       }

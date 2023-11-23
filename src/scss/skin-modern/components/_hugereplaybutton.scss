@@ -9,14 +9,14 @@
   width: 5em;
 
   .#{$prefix}-image {
-    background-image: svg('assets/skin-modern/images/replayX.svg');
+    background-image: url('../../assets/skin-modern/images/replayX.svg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: 5em;
     height: 100%;
     width: 100%;
 
-    @keyframes spin {
+    @keyframes #{$prefix}-spin {
       50% {
         transform: rotate(180deg) scale(1.1);
       }
@@ -27,7 +27,7 @@
     }
 
     &:hover {
-      animation: spin .5s ease-in;
+      animation: #{$prefix}-spin .5s ease-in;
     }
   }
 }

@@ -13,6 +13,7 @@ import { VolumeController } from './volumecontroller';
 import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 import { FocusVisibilityTracker } from './focusvisibilitytracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './mobilev3playerapi';
+import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 
 export interface LocalizationConfig {
   /**
@@ -86,6 +87,18 @@ export interface UIConditionResolver {
 export interface UIVariant {
   ui: UIContainer;
   condition?: UIConditionResolver;
+  spatialNavigation?: SpatialNavigation;
+}
+
+export interface ActiveUiChangedArgs extends NoArgs {
+  /**
+   * The previously active {@link UIInstanceManager} prior to the {@link UIManager} switching to a different UI variant.
+   */
+  previousUi: UIInstanceManager;
+  /**
+   * The currently active {@link UIInstanceManager}.
+   */
+  currentUi: UIInstanceManager;
 }
 
 export class UIManager {
@@ -101,6 +114,7 @@ export class UIManager {
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
+    onActiveUiChanged: new EventDispatcher<UIManager, ActiveUiChangedArgs>(),
   };
 
   /**
@@ -224,7 +238,12 @@ export class UIManager {
         uiVariantsWithoutCondition.push(uiVariant);
       }
       // Create the instance manager for a UI variant
-      this.uiInstanceManagers.push(new InternalUIInstanceManager(player, uiVariant.ui, this.config));
+      this.uiInstanceManagers.push(new InternalUIInstanceManager(
+        player,
+        uiVariant.ui,
+        this.config,
+        uiVariant.spatialNavigation,
+      ));
     }
     // Make sure that there is only one UI variant without a condition
     // It does not make sense to have multiple variants without condition, because only the first one in the list
@@ -376,41 +395,42 @@ export class UIManager {
   switchToUiVariant(uiVariant: UIVariant, onShow?: () => void): void {
     let uiVariantIndex = this.uiVariants.indexOf(uiVariant);
 
+    const previousUi = this.currentUi;
     const nextUi: InternalUIInstanceManager = this.uiInstanceManagers[uiVariantIndex];
-    let uiVariantChanged = false;
-
     // Determine if the UI variant is changing
-    if (nextUi !== this.currentUi) {
-      uiVariantChanged = true;
+    // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
+    if (nextUi === this.currentUi) {
+      return;
       // console.log('switched from ', this.currentUi ? this.currentUi.getUI() : 'none',
       //   ' to ', nextUi ? nextUi.getUI() : 'none');
     }
 
-    // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
-    if (uiVariantChanged) {
-      // Hide the currently active UI variant
-      if (this.currentUi) {
+    // Hide the currently active UI variant
+    if (this.currentUi) {
+      this.currentUi.getUI().hide();
+    }
+
+    // Assign the new UI variant as current UI
+    this.currentUi = nextUi;
+
+    // When we switch to a different UI instance, there's some additional stuff to manage. If we do not switch
+    // to an instance, we're done here.
+    if (this.currentUi == null) {
+      return;
+    }
+    // Add the UI to the DOM (and configure it) the first time it is selected
+    if (!this.currentUi.isConfigured()) {
+      this.addUi(this.currentUi);
+      // ensure that the internal state is ready for the upcoming show call
+      if (!this.currentUi.getUI().isHidden()) {
         this.currentUi.getUI().hide();
       }
-
-      // Assign the new UI variant as current UI
-      this.currentUi = nextUi;
-
-      // When we switch to a different UI instance, there's some additional stuff to manage. If we do not switch
-      // to an instance, we're done here.
-      if (this.currentUi != null) {
-        // Add the UI to the DOM (and configure it) the first time it is selected
-        if (!this.currentUi.isConfigured()) {
-          this.addUi(this.currentUi);
-        }
-
-        if (onShow) {
-          onShow();
-        }
-
-        this.currentUi.getUI().show();
-      }
     }
+    if (onShow) {
+      onShow();
+    }
+    this.currentUi.getUI().show();
+    this.events.onActiveUiChanged.dispatch(this, { previousUi, currentUi: nextUi });
   }
 
   /**
@@ -444,9 +464,12 @@ export class UIManager {
     // Select new UI variant
     // If no variant condition is fulfilled, we switch to *no* UI
     for (let uiVariant of this.uiVariants) {
-      if (uiVariant.condition == null || uiVariant.condition(switchingContext) === true) {
+      const matchesCondition = uiVariant.condition == null || uiVariant.condition(switchingContext) === true;
+      if (nextUiVariant == null && matchesCondition) {
         nextUiVariant = uiVariant;
-        break;
+      } else {
+        // hide all UIs besides the one which should be active
+        uiVariant.ui.hide();
       }
     }
 
@@ -513,6 +536,21 @@ export class UIManager {
   }
 
   /**
+   * Fires after the UIManager has switched to a different UI variant.
+   * @returns {EventDispatcher<UIManager, ActiveUiChangedArgs>}
+   */
+  get onActiveUiChanged(): EventDispatcher<UIManager, ActiveUiChangedArgs> {
+    return this.events.onActiveUiChanged;
+  }
+
+  /**
+   * The current active {@link UIInstanceManager}.
+   */
+  get activeUi(): UIInstanceManager {
+    return this.currentUi;
+  }
+
+  /**
    * Returns the list of all added markers in undefined order.
    */
   getTimelineMarkers(): TimelineMarker[] {
@@ -560,6 +598,7 @@ export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
   private ui: UIContainer;
   private config: InternalUIConfig;
+  protected spatialNavigation?: SpatialNavigation;
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
@@ -574,10 +613,11 @@ export class UIInstanceManager {
     onRelease: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
-  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig) {
+  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig, spatialNavigation?: SpatialNavigation) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
+    this.spatialNavigation = spatialNavigation;
   }
 
   getConfig(): InternalUIConfig {
@@ -743,6 +783,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
       this.releaseControlsTree(this.getUI());
       this.configured = false;
     }
+    this.spatialNavigation?.release();
     this.released = true;
   }
 

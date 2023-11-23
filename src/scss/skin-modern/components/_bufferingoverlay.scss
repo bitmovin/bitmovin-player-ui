@@ -36,9 +36,9 @@
 
   .#{$prefix}-ui-buffering-overlay-indicator {
     $buffering-animation-duration: 2s;
-    $buffering-animation-delay: $buffering-animation-duration * 0.1;
+    $buffering-animation-delay: $buffering-animation-duration * .1;
 
-    @keyframes fancy {
+    @keyframes #{$prefix}-fancy {
       0% {
         opacity: 0;
         transform: scale(1);
@@ -63,8 +63,8 @@
       }
     }
 
-    animation: fancy $buffering-animation-duration ease-in infinite;
-    background: svg('assets/skin-modern/images/loader.svg') no-repeat center;
+    animation: #{$prefix}-fancy $buffering-animation-duration ease-in infinite;
+    background: url('../../assets/skin-modern/images/loader.svg') no-repeat center;
     display: inline-block;
     height: 2em;
     margin: .2em;

@@ -4,6 +4,91 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+## [3.52.2] - 2023-11-23
+
+### Fixed
+- Potential name clashing in CSS animations due to missing `bmpui` prefix
+
+## [3.52.1] - 2023-11-13
+
+### Fixed
+- Crash when receiving a `SourceLoaded` event during scrubbing
+
+## [3.52.0] - 2023-09-25
+
+### Fixed
+- When having a spatial navigation and using a mouselike device, components will lose focus when the mouse leaves the hovered component. Spatial navigation will continue at the last active component when using arrow keys again.
+
+## [3.51.0] - 2023-09-18
+
+### Changed
+- On seek/timeshift operations the UI will only remove subtitle cues which do not enclose the seek target instead of removing all.
+
+## [3.50.0] - 2023-07-24
+
+### Fixed
+- Settings panel does not close on single tap on mobile devices
+- Restoring volume on unmute not working when volume was changed through the player API
+- Gulp `watch` task not working
+
+## [3.49.0] - 2023-07-17
+
+### Added
+- `onActiveUiChanged` event on the `UIManager` that is dispatched when the UI manager switches to a different UI variant
+- Readonly `currentUi` field on the `UIManager` that exposes the active `UIInstanceManager`
+
+## [3.48.0] - 2023-07-03
+
+### Fixed
+- When more than one UI with spatial navigation is managed by the UI manager, all UIs would handle key events, instead of only the active one.
+
+## [3.47.0] - 2023-05-17
+
+### Changed
+- Updated package dependencies.
+
+## [3.46.0] - 2023-03-22
+
+### Added
+- Config option `forceSubtitlesIntoViewContainer` to handle overflowing subtitle labels
+
+## [3.45.0] - 2023-03-06
+
+### Added
+- Scrubbing during a FaceTime call automatically creates a SharePlay suspension to not synchronize scrubbing to other participants.
+
+## [3.44.0] - 2023-02-13
+
+### Fixed
+- Circular dependency in the import of `AudioTrackListBox` between `main.ts` and `uifactory.ts`
+
+## [3.43.0] - 2023-02-06
+
+### Added
+- `UIConfig.enterFullscreenOnInitialPlayback` to enter fullscreen when clicking `PlaybackToggleButton` or `HugePlaybackToggleButton` to initiate the initial playback
+
+## [3.42.0] - 2023-01-30
+
+### Added
+- Language localization for Spanish
+
+## [3.41.0] - 2023-01-12
+
+### Added
+- Export Localization and SpatialNavigation to use in external UI configuration
+
+## [3.40.0] - 2022-12-20
+
+### Added
+- Support for spatial navigation
+- SmartTV UI via `UIFactory.buildDefaultTvUI`
+
+### Changed
+- Node.js from 10 to 16
+- Typescript from ^3.9.6 to 4.3
+
 ## [3.39.0] - 2022-12-01
 
 ### Added
@@ -804,7 +889,21 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[develop]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.38.0...HEAD
+[3.52.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.1...v3.52.2
+[3.52.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.0...v3.52.1
+[3.52.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.51.0...v3.52.0
+[3.51.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.50.0...v3.51.0
+[3.50.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.49.0...v3.50.0
+[3.49.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.48.0...v3.49.0
+[3.48.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.47.0...v3.48.0
+[3.47.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.46.0...v3.47.0
+[3.46.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.45.0...v3.46.0
+[3.45.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.44.0...v3.45.0
+[3.44.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.43.0...v3.44.0
+[3.43.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.42.0...v3.43.0
+[3.42.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.41.0...v3.42.0
+[3.41.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.40.0...v3.41.0
+[3.40.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.39.0...v3.40.0
 [3.39.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.38.0...v3.39.0
 [3.38.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.37.0...v3.38.0
 [3.37.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.36.0...v3.37.0

@@ -90,4 +90,14 @@ export interface UIConfig {
    * Default: true
    */
   enableSeekPreview?: boolean;
+  /**
+   * Specifies if the player should enter fullscreen by clicking on the `PlaybackToggleButton`,
+   * `HugePlaybackToggleButton`, or `PlaybackToggleOverlay` when attempting the initial playback start.
+   * Default: false
+   */
+  enterFullscreenOnInitialPlayback?: boolean;
+  /**
+   * Forces subtitle-labels back into their respective container if they overflow and are therefore cropped.
+   */
+  forceSubtitlesIntoViewContainer?: boolean;
 }

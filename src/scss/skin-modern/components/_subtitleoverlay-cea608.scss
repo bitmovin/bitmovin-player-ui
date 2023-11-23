@@ -1,16 +1,16 @@
 .#{$prefix}-ui-subtitle-overlay {
   &.#{$prefix}-cea608 {
 
-    top: 2em;
     bottom: 2em;
     left: 3em;
     right: 3em;
+    top: 2em;
 
     .#{$prefix}-subtitle-region-container.#{$prefix}-subtitle-position-default {
-      top: 0;
       bottom: 0;
       left: 0;
       right: 0;
+      top: 0;
     }
 
     .#{$prefix}-ui-subtitle-label {
