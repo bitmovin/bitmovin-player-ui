@@ -6,9 +6,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
-### Added
-- Automated release on PR merge
-
 ## [3.52.2] - 2023-11-23
 
 ### Fixed
