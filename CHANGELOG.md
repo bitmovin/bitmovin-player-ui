@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Sample PR for testing automated release workflow
+- Another PR for testing
 
 ## [3.52.2] - 2023-11-23
 
