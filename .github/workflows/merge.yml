@@ -12,9 +12,6 @@ jobs:
   if_merged:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    outputs:
-      package-json-version: ${{ steps.define-package-json-version.outputs.packageJsonVersion }}
-      full-release-version: ${{ fromJson(steps.define-release-version.outputs.result).full }}
     steps:
       - name: Read package.json version
         uses: actions/github-script@v6
@@ -30,7 +27,7 @@ jobs:
         with:
           script: |
             const { defineReleaseVersion } = require('./.github/scripts/defineVersion.js')
-            return defineReleaseVersion({core}, "${{ inputs.release-type || 'minor' }}", "${{ inputs.prerelease-label }}", "${{ outputs.package-json-version }}" )
+            return defineReleaseVersion({core}, "${{ inputs.release-type || 'minor' }}", "${{ inputs.prerelease-label }}", "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
       - name: Checkout develop
         uses: actions/checkout@v2
         with:
@@ -40,7 +37,7 @@ jobs:
       - name: Bump package.json version
         run: |
           git pull
-          RELEASE-VERSION=${{ outputs.full-release-version }}
+          RELEASE-VERSION=${{ fromJson(steps.define-release-version.outputs.result).full }}
           npm version "${RELEASE-VERSION}"
       - name: Update Changelog
         uses: actions/github-script@v6
@@ -50,7 +47,7 @@ jobs:
             const { execSync } = require('child_process');
             const { updateChangeLog } = require('./.github/scripts/updateChangelog.js') 
 
-            const stableVersion = '${{ outputs.full-release-version }}'.split('-')[0]
+            const stableVersion = '${{ fromJson(steps.define-release-version.outputs.result).full }}'.split('-')[0]
             const releaseDate = new Date().toISOString().split('T')[0]
 
             const data = fs.readFileSync('./CHANGELOG.md',{encoding:'utf8', flag:'r'});
@@ -66,7 +63,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
         run: |
           git add .
-          git commit -m "Bump version ${{ outputs.full-release-version }} and update changelog"
+          git commit -m "Bump version ${{ fromJson(steps.define-release-version.outputs.result).full }} and update changelog"
           git push origin feature/test-automated-release
       - name: Tag and push
         uses: actions/github-script@v6
@@ -75,7 +72,7 @@ jobs:
         with:
           script: |
             const { execSync } = require('child_process');
-            const { fullReleaseVersion } = ${{ outputs.full-release-version }}
+            const { fullReleaseVersion } = ${{ fromJson(steps.define-release-version.outputs.result).full }}
 
             const tag = `v${fullReleaseVersion}`;
             const message = `Release ${fullReleaseVersion}`;
