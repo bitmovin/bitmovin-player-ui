@@ -60,26 +60,27 @@ jobs:
 
             fs.writeFileSync('./CHANGELOG.md', changelogFileContents, 'utf-8');
       - name: Push changes
+        with:
+          # Running a task with github token will not trigger a new workflow run
+          token: ${{ secrets.GH_TOKEN }}
         run: |
-          git config --global user.name 'Automated Release'
-          git config --global user.email 'release-automation@bitmovin.com'
           git add .
           git commit -m "Bump version ${{ full-release-version }} and update changelog"
           git push
       - name: Tag and push
         uses: actions/github-script@v6
+        # Tag push should happen without a token, otherwise it will not trigger release workflow
         with:
           script: |
             const { execSync } = require('child_process');
             const { fullReleaseVersion } = ${{ full-release-version }}
-            const { github } = require('@actions/github');
-
-            const octokit = github.getOctokit('${{ secrets.GH_TOKEN }}');
 
             const tag = `v${fullReleaseVersion}`;
             const message = `Release ${fullReleaseVersion}`;
 
             core.info(`Creating tag ${tag} with message ${message}`);
 
+            execSync(`git config --global user.name 'Automated Release'`);
+            execSync(`git config --global user.email 'release-automation@bitmovin.com'`);
             execSync(`git tag -a ${tag} -m "${message}"`);
             execSync(`git push origin ${tag}`);

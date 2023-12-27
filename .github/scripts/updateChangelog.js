@@ -15,4 +15,3 @@ function updateChangeLog(changelogString, version, releaseDate) {
   }
   
   module.exports.updateChangeLog = updateChangeLog;
-  
