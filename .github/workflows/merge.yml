@@ -1,12 +1,20 @@
 name: Merge
 run-name: Starting release for ${{ github.actor }} PR merge
-on:
-  pull_request:
-    types:
-      - closed
-    branches:
+#on:
+ # pull_request:
+  #  types:
+   #   - closed
+   # branches:
       # Test branch for testing the merge workflow, will be changed to develop
-      - feature/test-automated-release
+    #  - feature/test-automated-release
+# Use the workflow_dispatch event for testing the changes
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: 'Release type'
+        required: true
+        default: 'minor'
 
 jobs:
   if_merged:
