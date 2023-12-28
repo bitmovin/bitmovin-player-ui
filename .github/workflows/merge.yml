@@ -1,6 +1,9 @@
 name: Merge
 run-name: Starting release for ${{ github.actor }} PR merge
 on:
+  push:
+    branches:
+      - feature/test-automated-release
   pull_request:
     types:
       - closed
@@ -18,6 +21,9 @@ jobs:
         with:
           # For testing checkout to a temp branch, will be changed to develop
           ref: feature/test-automated-release
+          # token: ${{ secrets.GH_TOKEN }}
+      - name: Install dep
+        run: npm ci
       - name: Read package.json version
         uses: actions/github-script@v6
         id: define-package-json-version
@@ -32,7 +38,7 @@ jobs:
         with:
           script: |
             const { defineReleaseVersion } = require('./.github/scripts/defineVersion.js')
-            return defineReleaseVersion({core}, "${{ inputs.release-type || 'minor' }}", "${{ inputs.prerelease-label }}", "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
+            return defineReleaseVersion({core}, 'minor', undefined, "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
       - name: Bump package.json version
         run: |
           git pull
@@ -43,7 +49,6 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const { execSync } = require('child_process');
             const { updateChangeLog } = require('./.github/scripts/updateChangelog.js') 
 
             const stableVersion = '${{ fromJson(steps.define-release-version.outputs.result).full }}'.split('-')[0]
@@ -57,31 +62,12 @@ jobs:
 
             fs.writeFileSync('./CHANGELOG.md', changelogFileContents, 'utf-8');
       - name: Push changes
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { execSync } = require('child_process');
-            const fullReleaseVersion = ${{ fromJson(steps.define-release-version.outputs.result).full }};
-
-            core.info(`Pushing changes to branch`);
-
-            execSync(`git add .`);
-            execSync(`git commit -m "Bump version ${fullReleaseVersion} and update changelog"`);
-            execSync(`git push origin feature/test-automated-release`);
-      - name: Tag and push
-        uses: actions/github-script@v6
-        # Tag push should happen without a token, otherwise it will not trigger release workflow
-        # DO NOT PUSH TAG FOR TESTING
-        with:
-          script: |
-            const { execSync } = require('child_process');
-            const fullReleaseVersion = ${{ fromJson(steps.define-release-version.outputs.result).full }}
-
-            const tag = `v${fullReleaseVersion}`;
-            const message = `Release ${fullReleaseVersion}`;
-
-            core.info(`Creating tag ${tag} with message ${message}`);
-
-            execSync(`git config --global user.name 'Automated Release'`);
-            execSync(`git config --global user.email 'release-automation@bitmovin.com'`);
-            execSync(`git tag -a ${tag} -m "${message}"`);
+          # Running a task with github token will not trigger a new workflow run
+          # token: ${{ secrets.GH_TOKEN }}
+        run: |
+          git config --global user.name 'Automated Release'
+          git config --global user.email 'release-automation@bitmovin.com'
+          git add .
+          git commit -m "Bump version ${{ fromJson(steps.define-release-version.outputs.result).full }} and update changelog"
+          git push origin feature/test-automated-release
+          git push origin --tags
