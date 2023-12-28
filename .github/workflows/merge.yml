@@ -1,4 +1,4 @@
-name: Merge
+name: Trigger release on merge
 run-name: Starting release for ${{ github.actor }} PR merge
 on:
   push:
@@ -12,7 +12,7 @@ on:
       - feature/test-automated-release
 
 jobs:
-  if_merged:
+  on_pr_merge:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
