@@ -42,6 +42,8 @@ jobs:
       - name: Bump package.json version
         run: |
           git pull
+          git config --global user.email 'release-automation@bitmovin.com'
+          git config --global user.name 'Automated Release'
           npm version "${{ fromJson(steps.define-release-version.outputs.result).full }}"
       - name: Update Changelog
         uses: actions/github-script@v6
@@ -64,8 +66,6 @@ jobs:
           # Running a task with github token will not trigger a new workflow run
           # token: ${{ secrets.GH_TOKEN }}
         run: |
-          git config --global user.name 'Automated Release'
-          git config --global user.email 'release-automation@bitmovin.com'
           git add .
           git commit -m "Bump version ${{ fromJson(steps.define-release-version.outputs.result).full }} and update changelog"
           git push origin feature/test-automated-release
