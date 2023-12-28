@@ -1,9 +1,6 @@
 name: Trigger release on merge
 run-name: Starting release for ${{ github.actor }} PR merge
 on:
-  push:
-    branches:
-      - feature/test-automated-release
   pull_request:
     types:
       - closed
@@ -22,8 +19,10 @@ jobs:
           # For testing checkout to a temp branch, will be changed to develop
           ref: feature/test-automated-release
           # token: ${{ secrets.GH_TOKEN }}
+
       - name: Install dep
         run: npm ci
+
       - name: Read package.json version
         uses: actions/github-script@v6
         id: define-package-json-version
@@ -32,6 +31,7 @@ jobs:
             const { version } = require('./package.json')
             core.info(`performing a ${{ inputs.release-type }} release for existing version ${version}`)
             core.setOutput('packageJsonVersion', version)
+
       - name: Define release version
         uses: actions/github-script@v6
         id: define-release-version
@@ -39,11 +39,13 @@ jobs:
           script: |
             const { defineReleaseVersion } = require('./.github/scripts/defineVersion.js')
             return defineReleaseVersion({core}, 'minor', undefined, "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
+
       - name: Bump package.json version
         run: |
           git config --global user.name 'Automated Release'
           git config --global user.email 'release-automation@bitmovin.com'
           npm version "${{ fromJson(steps.define-release-version.outputs.result).full }}"
+
       - name: Update Changelog
         uses: actions/github-script@v6
         with:
@@ -61,6 +63,7 @@ jobs:
             const changelogFileContents = updateChangeLog(data, stableVersion, releaseDate);
 
             fs.writeFileSync('./CHANGELOG.md', changelogFileContents, 'utf-8');
+
       - name: Push changes
           # Running a task with github token will not trigger a new workflow run
           # token: ${{ secrets.GH_TOKEN }}
