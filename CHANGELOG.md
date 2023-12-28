@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Another PR for testing
 - Another one for testing
 - PR 4 changelog
+- Yet another one
 
 ## [3.52.2] - 2023-11-23
 
