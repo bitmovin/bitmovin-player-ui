@@ -42,8 +42,7 @@ jobs:
       - name: Bump package.json version
         run: |
           git pull
-          RELEASE-VERSION=${{ fromJson(steps.define-release-version.outputs.result).full }}
-          npm version "${RELEASE-VERSION}"
+          npm version "${{ fromJson(steps.define-release-version.outputs.result).full }}"
       - name: Update Changelog
         uses: actions/github-script@v6
         with:
@@ -70,4 +69,3 @@ jobs:
           git add .
           git commit -m "Bump version ${{ fromJson(steps.define-release-version.outputs.result).full }} and update changelog"
           git push origin feature/test-automated-release
-          git push origin --tags
