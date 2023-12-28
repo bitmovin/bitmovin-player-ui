@@ -69,3 +69,6 @@ jobs:
           git add .
           git commit -m "Bump version ${{ fromJson(steps.define-release-version.outputs.result).full }} and update changelog"
           git push origin feature/test-automated-release
+      - name: Notify team
+        run: |
+          node ./.github/scripts/notifySlackTeam.js ${{ fromJson(steps.define-release-version.outputs.result).full }} CHANGELOG.md

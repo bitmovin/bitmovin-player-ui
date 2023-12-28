@@ -47,6 +47,7 @@
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "merge2": "^1.4.1",
+    "node-slack": "^0.0.7",
     "postcss-svg": "^3.0.0",
     "sass": "^1.59.3",
     "semver": "^7.5.4",
