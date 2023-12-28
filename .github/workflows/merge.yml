@@ -12,7 +12,7 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-       - name: Checkout develop
+      - name: Checkout develop
         uses: actions/checkout@v4
         with:
           ref: develop
