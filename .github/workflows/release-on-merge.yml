@@ -21,7 +21,7 @@ jobs:
         with:
           script: |
             const { version } = require('./package.json')
-            core.info(`performing a ${{ inputs.release-type }} release for existing version ${version}`)
+            core.info(`performing a minor release for existing version ${version}`)
             core.setOutput('packageJsonVersion', version)
 
       - name: Define release version
