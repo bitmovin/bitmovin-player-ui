@@ -13,6 +13,12 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+       - name: Checkout develop
+        uses: actions/checkout@v2
+        with:
+          # For testing checkout to a temp branch, will be changed to develop
+          ref: feature/test-automated-release
+          token: ${{ secrets.GH_TOKEN }}
       - name: Read package.json version
         uses: actions/github-script@v6
         id: define-package-json-version
@@ -28,12 +34,6 @@ jobs:
           script: |
             const { defineReleaseVersion } = require('./.github/scripts/defineVersion.js')
             return defineReleaseVersion({core}, "${{ inputs.release-type || 'minor' }}", "${{ inputs.prerelease-label }}", "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
-      - name: Checkout develop
-        uses: actions/checkout@v2
-        with:
-          # For testing checkout to a temp branch, will be changed to develop
-          ref: feature/test-automated-release
-          token: ${{ secrets.GH_TOKEN }}
       - name: Bump package.json version
         run: |
           git pull
