@@ -41,9 +41,7 @@ jobs:
             return defineReleaseVersion({core}, 'minor', undefined, "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
       - name: Bump package.json version
         run: |
-          git pull
-          RELEASE-VERSION=${{ fromJson(steps.define-release-version.outputs.result).full }}
-          npm version "${RELEASE-VERSION}"
+          npm version "${{ fromJson(steps.define-release-version.outputs.result).full }}"
       - name: Update Changelog
         uses: actions/github-script@v6
         with:
