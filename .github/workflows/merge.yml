@@ -5,8 +5,7 @@ on:
     types:
       - closed
     branches:
-      # Test branch for testing the merge workflow, will be changed to develop
-      - feature/test-automated-release
+      - develop
 
 jobs:
   on_pr_merge:
@@ -16,11 +15,9 @@ jobs:
        - name: Checkout develop
         uses: actions/checkout@v4
         with:
-          # For testing checkout to a temp branch, will be changed to develop
-          ref: feature/test-automated-release
-          # token: ${{ secrets.GH_TOKEN }}
+          ref: develop
 
-      - name: Install dep
+      - name: Install dependencies
         run: npm ci
 
       - name: Read package.json version
@@ -65,10 +62,8 @@ jobs:
             fs.writeFileSync('./CHANGELOG.md', changelogFileContents, 'utf-8');
 
       - name: Push changes
-          # Running a task with github token will not trigger a new workflow run
-          # token: ${{ secrets.GH_TOKEN }}
         run: |
           git add .
           git commit -m "Bump version ${{ fromJson(steps.define-release-version.outputs.result).full }} and update changelog"
-          git push origin feature/test-automated-release
+          git push origin develop
           git push origin --tags
