@@ -16,6 +16,11 @@ jobs:
     #if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          # For testing checkout to a temp branch, will be changed to develop
+          ref: feature/test-automated-release
           # token: ${{ secrets.GH_TOKEN }}
       - name: Install dep
         run: npm ci
