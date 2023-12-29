@@ -8,7 +8,7 @@ on:
       - develop
 
 jobs:
-  on_pr_merge:
+  trigger-ui-release:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
