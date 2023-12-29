@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
 
+### Added
+- Automate release on every PR merge to develop
+
 ## [3.52.2] - 2023-11-23
 
 ### Fixed
