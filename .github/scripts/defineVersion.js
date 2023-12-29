@@ -1,16 +1,9 @@
 const semver = require('semver');
 
 function getPlayerUiVersion(versionInput) {
-  let targetVersion = versionInput ?? process.env.CI_BRANCH;
-
-  if (!targetVersion) {
-    console.log('no version provided using CI_BRANCH');
-    process.exit(1);
-  }
-
-  const playerUiVersion = semver.valid(targetVersion);
+  const playerUiVersion = semver.valid(versionInput);
   if (!playerUiVersion) {
-    console.error(`${targetVersion} is not a valid semver`);
+    console.error(`${versionInput} is not a valid semver`);
     process.exit(1);
   }
 
