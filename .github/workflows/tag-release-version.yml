@@ -6,12 +6,19 @@ on:
       - closed
     branches:
       - develop
+  push:
+    branches:
+      - feature/notify-team-on-release-workflow
 
 jobs:
   trigger-ui-release:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: feature/notify-team-on-release-workflow
       - name: Install dependencies
         run: npm ci
 
@@ -60,8 +67,6 @@ jobs:
         run: |
           git add .
           git commit -m "Add release date to changelog"
-          git push origin develop
-          git push origin --tags
       - name: Notify team
         uses: actions/github-script@v6
         with:
