@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.RELEASE_DEPLOY_KEY }}
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
           ref: develop
 
       - name: Install dependencies
