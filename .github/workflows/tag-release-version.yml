@@ -16,9 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          ref: feature/notify-team-on-release-workflow
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
+          ref: develop
+
       - name: Install dependencies
         run: npm ci
 
