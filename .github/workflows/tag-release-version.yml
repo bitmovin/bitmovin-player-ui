@@ -6,9 +6,6 @@ on:
       - closed
     branches:
       - develop
-  push:
-    branches:
-      - feature/fix-checkout-version-github-action
 
 jobs:
   trigger-ui-release:
