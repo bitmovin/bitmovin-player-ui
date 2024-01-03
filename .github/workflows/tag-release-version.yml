@@ -12,6 +12,11 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: develop
+
       - name: Install dependencies
         run: npm ci
 
@@ -30,7 +35,7 @@ jobs:
         with:
           script: |
             const { defineReleaseVersion } = require('./.github/scripts/defineVersion.js')
-            return defineReleaseVersion({core}, 'minor', undefined, "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
+            return defineReleaseVersion({core}, 'minor', "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
 
       - name: Bump package.json version
         run: |
