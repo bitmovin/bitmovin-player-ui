@@ -32,3 +32,7 @@ jobs:
         env:
           NPM_DRY_RUN: false
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Notify team
+        run: |
+          node .github/scripts/notifySlackTeam.js 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' 'C06BYVC27QU' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}

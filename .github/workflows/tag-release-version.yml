@@ -66,6 +66,5 @@ jobs:
         run: |
           git add .
           git commit -m "Add release date to changelog"
-      - name: Notify team
-        run: |
-          node .github/scripts/notifySlackTeam.js 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' 'C06BYVC27QU' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
+          git push origin develop
+          git push origin --tags
