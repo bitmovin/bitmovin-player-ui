@@ -35,7 +35,7 @@ jobs:
         with:
           script: |
             const { defineReleaseVersion } = require('./.github/scripts/defineVersion.js')
-            return defineReleaseVersion({core}, 'minor', undefined, "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
+            return defineReleaseVersion({core}, 'minor', "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
 
       - name: Bump package.json version
         run: |
