@@ -6,7 +6,6 @@ const changelogPath = process.argv[3];
 const releaseVersion = process.argv[4];
 const slackWebhookUrl = process.argv[5];
 const runId = process.argv[6];
-const jobId = process.argv[7];
 
 const slackChannelId = 'C06BYVC27QU'
 
@@ -36,7 +35,7 @@ function sendSlackMessage(slackChannelId, releaseVersion, changelogContent) {
   if (jobStatus === 'success') {
     message = `Changelog v${releaseVersion}\n${changelogContent}`
   } else {
-    message = `Release v${releaseVersion} failed.\nPlease check https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}/job/${jobId}`
+    message = `Release v${releaseVersion} failed.\nPlease check https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}`
   }
 
   const sampleData = JSON.stringify({
