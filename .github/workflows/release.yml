@@ -25,7 +25,7 @@ jobs:
           path: .
 
       - name: Unpackage artifact files
-        run: echo Unpack
+        run: exit 1
 
       - name: Publish
         run: echo Publish
