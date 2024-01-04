@@ -6,10 +6,13 @@ on:
       - closed
     branches:
       - develop
+  push:
+    branches:
+      - feature/notify-team-on-release-workflow
 
 jobs:
   trigger-ui-release:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -66,8 +69,6 @@ jobs:
         run: |
           git add .
           git commit -m "Add release date to changelog"
-          git push origin develop
-          git push origin --tags
       - name: Notify failure
         if: ${{ failure() }}
         run: |
