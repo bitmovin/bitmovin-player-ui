@@ -31,7 +31,7 @@ jobs:
         run: echo Publish
 
       - name: Notify team
-        run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
+        run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
 
   handle_failure:
     needs: [test_and_build, download_and_publish]
@@ -42,7 +42,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: feature/notify-team-on-release-workflow
+          ref: feature/test-slack-notify-step
 
       - name: Notify team
-        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
+        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
