@@ -22,7 +22,7 @@ jobs:
           ref: feature/notify-team-on-release-workflow
 
       - name: Install dependencies
-        run: npm ci
+        run: exit 1
 
       - name: Read package.json version
         uses: actions/github-script@v6
@@ -72,4 +72,4 @@ jobs:
       - name: Notify failure
         if: ${{ failure() }}
         run: |
-          node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }} ${{ github.job }}
+          node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_number }} ${{ github.job }}
