@@ -22,7 +22,8 @@ jobs:
           ref: feature/notify-team-on-release-workflow
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          exit 1
 
       - name: Read package.json version
         uses: actions/github-script@v6
