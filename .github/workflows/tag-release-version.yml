@@ -68,6 +68,7 @@ jobs:
           git commit -m "Add release date to changelog"
           git push origin develop
           git push origin --tags
+
       - name: Notify failure
         if: ${{ failure() }}
         run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
