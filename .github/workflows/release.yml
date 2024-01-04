@@ -2,6 +2,8 @@ name: Release
 
 on: 
   push:
+    branches:
+      - feature/test-slack-notify-step
     tags:
       - '!player/'
       - 'v*'
@@ -27,11 +29,7 @@ jobs:
         shell: bash
 
       - name: Publish
-        run: ./publish.sh
-        shell: bash
-        env:
-          NPM_DRY_RUN: false
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        run: echo Publish
 
       - name: Notify team
         run: |
