@@ -41,4 +41,4 @@ jobs:
 
     steps:
       - name: Notify team
-        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
+        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' undefined ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
