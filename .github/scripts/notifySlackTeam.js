@@ -6,7 +6,8 @@ const changelogPath = process.argv[3];
 const slackWebhookUrl = process.argv[4];
 const runId = process.argv[5];
 
-const slackChannelId = 'C06BYVC27QU'
+const failureSlackChannelId = 'CGRK9DV7H';
+const successSlackChannelId = 'C0LJ16JBS';
 
 fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
   if (err) {
@@ -15,7 +16,7 @@ fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
 
   const changelogContent = parseChangelogEntry(fileContent);
   const releaseVersion = parseReleaseVersion(fileContent);
-  sendSlackMessage(slackChannelId, releaseVersion, changelogContent);
+  sendSlackMessage(releaseVersion, changelogContent);
 });
 
 function parseReleaseVersion(fileContent) {
@@ -37,11 +38,14 @@ function parseChangelogEntry(fileContent) {
   return changelogContent.toString();
 }
 
-function sendSlackMessage(slackChannelId, releaseVersion, changelogContent) {
+function sendSlackMessage(releaseVersion, changelogContent) {
   let message;
+  let slackChannelId;
   if (jobStatus === 'success') {
+    slackChannelId = successSlackChannelId
     message = `Changelog v${releaseVersion}\n${changelogContent}`
   } else {
+    slackChannelId = failureSlackChannelId
     message = `Release v${releaseVersion} failed.\nPlease check https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}`
   }
 
