@@ -43,7 +43,6 @@ jobs:
         run: echo 'npm publish'
 
       - name: Package artifact for upload
-        run: tar -czvf artifact.tar.gz dist
-        shell: bash
+        run: echo 'package artifact'
 
 

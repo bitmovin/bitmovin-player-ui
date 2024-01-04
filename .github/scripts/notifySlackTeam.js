@@ -35,7 +35,7 @@ function sendSlackMessage(slackChannelId, releaseVersion, changelogContent) {
   if (jobStatus === 'success') {
     message = `Changelog v${releaseVersion}\n${changelogContent}`
   } else {
-    message = `Release v${releaseVersion} failed.\nPlease check https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}`
+    message = `Release failed.\nPlease check https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}`
   }
 
   const sampleData = JSON.stringify({
