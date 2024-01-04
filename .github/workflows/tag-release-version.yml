@@ -72,4 +72,4 @@ jobs:
       - name: Notify failure
         if: ${{ failure() }}
         run: |
-          node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' 'C06BYVC27QU' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }}
+          node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }} ${{ github.job }}

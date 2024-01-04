@@ -4,8 +4,11 @@ const https = require('https');
 const jobStatus = process.argv[2];
 const changelogPath = process.argv[3];
 const releaseVersion = process.argv[4];
-const slackChannelId = process.argv[5];
-const slackWebhookUrl = process.argv[6];
+const slackWebhookUrl = process.argv[5];
+const runId = process.argv[6];
+const jobId = process.argv[7];
+
+const slackChannelId = 'C06BYVC27QU'
 
 fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
   if (err) {
@@ -33,7 +36,7 @@ function sendSlackMessage(slackChannelId, releaseVersion, changelogContent) {
   if (jobStatus === 'success') {
     message = `Changelog v${releaseVersion}\n${changelogContent}`
   } else {
-    message = `Release v${releaseVersion} failed.`
+    message = `Release v${releaseVersion} failed.\nPlease check https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}/job/${jobId}`
   }
 
   const sampleData = JSON.stringify({
