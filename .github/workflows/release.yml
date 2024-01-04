@@ -16,7 +16,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          ref: develop
 
       - uses: actions/download-artifact@v3
         with:
@@ -41,5 +43,10 @@ jobs:
       needs: [test_and_build, download_and_publish]
       if: ${{ always() && (needs.download_and_publish.result == 'failure' || needs.test_and_build.result == 'failure') }}
       steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            ref: develop
+
         - name: Notify team
           run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
