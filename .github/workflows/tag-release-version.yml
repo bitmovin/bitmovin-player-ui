@@ -22,8 +22,7 @@ jobs:
           ref: feature/notify-team-on-release-workflow
 
       - name: Install dependencies
-        run: |
-          exit 1
+        run: npm ci
 
       - name: Read package.json version
         uses: actions/github-script@v6
@@ -43,10 +42,7 @@ jobs:
             return defineReleaseVersion({core}, 'minor', "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
 
       - name: Bump package.json version
-        run: |
-          git config --global user.name 'Automated Release'
-          git config --global user.email 'release-automation@bitmovin.com'
-          npm version "${{ fromJson(steps.define-release-version.outputs.result).full }}"
+        run: exit 1
 
       - name: Update Changelog
         uses: actions/github-script@v6
@@ -72,5 +68,4 @@ jobs:
           git commit -m "Add release date to changelog"
       - name: Notify failure
         if: ${{ failure() }}
-        run: |
-          node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full || '' }}' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
+        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
