@@ -9,14 +9,14 @@ on:
 
 jobs:
   trigger-ui-release:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
-          ref: feature/notify-team-on-release-workflow
+          ref: develop
 
       - name: Install dependencies
         run: npm ci
