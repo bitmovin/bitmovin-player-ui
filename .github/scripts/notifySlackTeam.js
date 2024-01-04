@@ -3,9 +3,8 @@ const https = require('https');
 
 const jobStatus = process.argv[2];
 const changelogPath = process.argv[3];
-const releaseVersion = process.argv[4];
-const slackWebhookUrl = process.argv[5];
-const runId = process.argv[6];
+const slackWebhookUrl = process.argv[4];
+const runId = process.argv[5];
 
 const slackChannelId = 'C06BYVC27QU'
 
@@ -15,9 +14,20 @@ fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
   }
 
   const changelogContent = parseChangelogEntry(fileContent);
+  const releaseVersion = parseReleaseVersion(fileContent);
   sendSlackMessage(slackChannelId, releaseVersion, changelogContent);
 });
 
+function parseReleaseVersion(fileContent) {
+  const regex = /##\s\[(\d+\.\d+.\d+)\]/;
+  const releaseVersion = fileContent.match(regex);
+
+  if (!releaseVersion) {
+    return '';
+  }
+
+  return releaseVersion[1];
+}
 function parseChangelogEntry(fileContent) {
   // The regex looks for the first paragraph starting with "###" until it finds
   // a paragraph starting with "##".
