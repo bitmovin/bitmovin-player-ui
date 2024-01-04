@@ -32,13 +32,12 @@ jobs:
         run: echo Publish
 
       - name: Notify team
-        run: |
-          node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
+        run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
 
-    handle_failure:
-      runs-on: ubuntu-latest
-      needs: [test_and_build, download_and_publish]
-      if: ${{ always() && (needs.download_and_publish.result == 'failure' || needs.test_and_build.result == 'failure') }}
-      steps:
-        name: Notify team
-        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
+  handle_failure:
+    runs-on: ubuntu-latest
+    needs: [test_and_build, download_and_publish]
+    if: ${{ always() && (needs.download_and_publish.result == 'failure' || needs.test_and_build.result == 'failure') }}
+    steps:
+      name: Notify team
+      run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '${{ fromJson(steps.define-release-version.outputs.result).full }}' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
