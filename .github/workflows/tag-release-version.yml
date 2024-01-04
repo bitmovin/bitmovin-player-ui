@@ -42,7 +42,10 @@ jobs:
             return defineReleaseVersion({core}, 'minor', "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
 
       - name: Bump package.json version
-        run: exit 1
+        run: |
+          git config --global user.name 'Automated Release'
+          git config --global user.email 'release-automation@bitmovin.com'
+          npm version "${{ fromJson(steps.define-release-version.outputs.result).full }}"
 
       - name: Update Changelog
         uses: actions/github-script@v6
