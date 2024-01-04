@@ -22,12 +22,9 @@ function parseReleaseVersion(fileContent) {
   const regex = /##\s\[(\d+\.\d+.\d+)\]/;
   const releaseVersion = fileContent.match(regex);
 
-  if (!releaseVersion) {
-    return '';
-  }
-
   return releaseVersion[1];
 }
+
 function parseChangelogEntry(fileContent) {
   // The regex looks for the first paragraph starting with "###" until it finds
   // a paragraph starting with "##".
