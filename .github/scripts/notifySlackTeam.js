@@ -1,10 +1,11 @@
 const fs = require('fs');
 const https = require('https');
 
-const changelogPath = process.argv[2];
-const releaseVersion = process.argv[3];
-const slackChannelId = process.argv[4];
-const slackWebhookUrl = process.argv[5];
+const jobStatus = process.argv[2];
+const changelogPath = process.argv[3];
+const releaseVersion = process.argv[4];
+const slackChannelId = process.argv[5];
+const slackWebhookUrl = process.argv[6];
 
 fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
   if (err) {
@@ -28,9 +29,16 @@ function parseChangelogEntry(fileContent) {
 }
 
 function sendSlackMessage(slackChannelId, releaseVersion, changelogContent) {
+  let message;
+  if (jobStatus === 'success') {
+    message = `Changelog v${releaseVersion}\n${changelogContent}`
+  } else {
+    message = `Release v${releaseVersion} failed.`
+  }
+
   const sampleData = JSON.stringify({
     "channel": slackChannelId,
-    "message": `Changelog v${releaseVersion}\n${changelogContent}`
+    "message": message
   });
   const options = {
     method: 'POST',
