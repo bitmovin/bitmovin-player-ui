@@ -25,8 +25,7 @@ jobs:
           path: .
 
       - name: Unpackage artifact files
-        run: tar -xzvf artifact/artifact.tar.gz -C .
-        shell: bash
+        run: echo Unpack
 
       - name: Publish
         run: echo Publish
