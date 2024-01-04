@@ -37,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: Test
-        run: exit 1
+        run: npm test
 
       - name: Build and prepare for a potential 'npm publish'
         run: gulp npm-prepare
