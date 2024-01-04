@@ -40,5 +40,10 @@ jobs:
     if: ${{ always() && (needs.download_and_publish.result == 'failure' || needs.test_and_build.result == 'failure') }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: feature/notify-team-on-release-workflow
+
       - name: Notify team
         run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' '' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
