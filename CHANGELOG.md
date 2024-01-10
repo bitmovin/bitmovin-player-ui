@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
+### Fixed
+- Fix issue where in the FCC subtitle settings menu, two options were returning the same value
 
 ### Added
 - Automate release on every PR merge to develop
