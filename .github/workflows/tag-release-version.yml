@@ -12,6 +12,12 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
+          ref: develop
+
       - name: Install dependencies
         run: npm ci
 
@@ -30,7 +36,7 @@ jobs:
         with:
           script: |
             const { defineReleaseVersion } = require('./.github/scripts/defineVersion.js')
-            return defineReleaseVersion({core}, 'minor', undefined, "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
+            return defineReleaseVersion({core}, 'minor', "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
 
       - name: Bump package.json version
         run: |
@@ -62,3 +68,7 @@ jobs:
           git commit -m "Add release date to changelog"
           git push origin develop
           git push origin --tags
+
+      - name: Notify failure
+        if: ${{ failure() }}
+        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}

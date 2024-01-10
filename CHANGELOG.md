@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Fix issue where in the FCC subtitle settings menu, two options were returning the same value
 
+## [3.53.0] - 2024-01-03
+
 ### Added
 - Automate release on every PR merge to develop
 
