@@ -4,6 +4,7 @@ import {Component, ComponentConfig} from './components/component';
 import {Container} from './components/container';
 import { SeekBar, SeekBarMarker } from './components/seekbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
+import {SignatureOverlay} from './components/SignatureOverlay';
 import {UIUtils} from './uiutils';
 import {ArrayUtils} from './arrayutils';
 import {BrowserUtils} from './browserutils';
@@ -533,6 +534,10 @@ export class UIManager {
    */
   get onUiVariantResolve(): EventDispatcher<UIManager, UIConditionContext> {
     return this.events.onUiVariantResolve;
+  }
+
+  get signatureOverlay(): SignatureOverlay {
+    return SignatureOverlay.getInstance();
   }
 
   /**

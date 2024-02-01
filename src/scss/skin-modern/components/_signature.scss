@@ -1,0 +1,9 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-signature {
+  @extend %ui-container;
+  @include layout-align-top;
+  height: 100%;
+  width: 100%;
+}

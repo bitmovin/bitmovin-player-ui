@@ -50,6 +50,7 @@ import { AudioTrackListBox } from './components/audiotracklistbox';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
+import {SignatureOverlay} from './components/SignatureOverlay';
 
 export namespace UIFactory {
 
@@ -147,6 +148,7 @@ export namespace UIFactory {
 
     return new UIContainer({
       components: [
+          SignatureOverlay.getInstance(),
         subtitleOverlay,
         new BufferingOverlay(),
         new PlaybackToggleOverlay(),
