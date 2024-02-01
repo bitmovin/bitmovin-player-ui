@@ -5,8 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [develop]
+
 ### Fixed
-- Fix issue where in the FCC subtitle settings menu, two options were returning the same value
+- FCC subtitle settings menu showing two options with the same value
 
 ## [3.53.0] - 2024-01-03
 
