@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [develop]
+## [3.54.0] - 2024-02-01
 
 ### Fixed
 - FCC subtitle settings menu showing two options with the same value
