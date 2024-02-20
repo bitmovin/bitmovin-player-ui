@@ -266,9 +266,14 @@
 
     // Add UI
     uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
+      uiManager.uiInstanceManagers.forEach(instanceManager => {instanceManager.onTheatreModeToggled.subscribe((uiInstanceManager, args)  => {
+          console.log(`TheaterMode toggled to ${args.isOn}`);
+      });
+    });
 
     player.load(sources.fullyFeatured).then(function() {
       console.log('source successfully loaded');
+        uiManager.signatureOverlay.renderSignature('https://mcarriga-player-demos.s3.us-east-2.amazonaws.com/angel/signature.png');
     }, function(errorEvent) {
       console.log('error while loading source', errorEvent);
     });

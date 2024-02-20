@@ -51,6 +51,7 @@ import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 import {SignatureOverlay} from './components/SignatureOverlay';
+import {Theatermodetogglebutton} from './components/theatermodetogglebutton';
 
 export namespace UIFactory {
 
@@ -136,6 +137,7 @@ export namespace UIFactory {
             new Spacer(),
             new PictureInPictureToggleButton(),
             new AirPlayToggleButton(),
+            new Theatermodetogglebutton(),
             new CastToggleButton(),
             new VRToggleButton(),
             new SettingsToggleButton({ settingsPanel: settingsPanel }),
@@ -148,7 +150,7 @@ export namespace UIFactory {
 
     return new UIContainer({
       components: [
-          SignatureOverlay.getInstance(),
+        SignatureOverlay.getInstance(),
         subtitleOverlay,
         new BufferingOverlay(),
         new PlaybackToggleOverlay(),

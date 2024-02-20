@@ -102,6 +102,10 @@ export interface ActiveUiChangedArgs extends NoArgs {
   currentUi: UIInstanceManager;
 }
 
+export interface TheaterModeChangedArgs extends NoArgs {
+  isOn: boolean;
+}
+
 export class UIManager {
 
   private player: PlayerAPI;
@@ -616,6 +620,7 @@ export class UIInstanceManager {
     onPreviewControlsHide: new EventDispatcher<UIContainer, CancelEventArgs>(),
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
     onRelease: new EventDispatcher<UIContainer, NoArgs>(),
+    onTheatreModeToggled: new EventDispatcher<UIInstanceManager, TheaterModeChangedArgs>(),
   };
 
   constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig, spatialNavigation?: SpatialNavigation) {
@@ -635,6 +640,10 @@ export class UIInstanceManager {
 
   getPlayer(): PlayerAPI {
     return this.playerWrapper.getPlayer();
+  }
+
+  get onTheatreModeToggled(): EventDispatcher<UIInstanceManager, TheaterModeChangedArgs> {
+    return this.events.onTheatreModeToggled;
   }
 
   /**
