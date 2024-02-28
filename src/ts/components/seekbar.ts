@@ -1041,7 +1041,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         }
         if (preventOverflowOffset) {
           labelDomElement.css({
-            transform: `translateX(${-preventOverflowOffset}px)`
+            transform: `translateX(${-preventOverflowOffset}px)`,
           });
           labelDomElement.get(0).style.setProperty(`--${this.prefixCss('seekbar-label-overflow-offset')}`, String(preventOverflowOffset));
         }
