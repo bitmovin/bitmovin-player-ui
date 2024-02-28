@@ -1022,23 +1022,28 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     if (this.label) {
-      this.label.getDomElement().css({
+      const labelDomElement = this.label.getDomElement();
+      labelDomElement.css({
         'left': seekPositionPercentage + '%',
         'transform': null,
       });
       if (this.config.preventSeekPreviewOverflow) {
+        const overflowMargin = 5;
         const uiBounding =  this.uimanager.getUI().getDomElement().get(0).getBoundingClientRect();
-        const labelBounding = this.label.getDomElement().get(0).getBoundingClientRect();
+        const labelBounding = labelDomElement.get(0).getBoundingClientRect();
+        const labelRight = (labelBounding.right - labelBounding.width / 2 );
+        const labelLeft = (labelBounding.left - labelBounding.width / 2);
         let preventOverflowOffset = 0;
-        if ((labelBounding.right - labelBounding.width / 2 ) > uiBounding.right) {
-          preventOverflowOffset = -(labelBounding.width / 2);
-        } else if ((labelBounding.left - labelBounding.width / 2) < uiBounding.left) {
-          preventOverflowOffset = +(labelBounding.width / 2);
+        if (labelRight + overflowMargin > uiBounding.right) {
+          preventOverflowOffset = labelRight - uiBounding.right + overflowMargin;
+        } else if (labelLeft - overflowMargin < uiBounding.left) {
+          preventOverflowOffset = labelLeft - uiBounding.left - overflowMargin;
         }
         if (preventOverflowOffset) {
-          this.label.getDomElement().css({
-            transform: `translateX(${preventOverflowOffset}px)`,
+          labelDomElement.css({
+            transform: `translateX(${-preventOverflowOffset}px)`
           });
+          labelDomElement.get(0).style.setProperty(`--${this.prefixCss('seekbar-label-overflow-offset')}`, String(preventOverflowOffset));
         }
       }
     }

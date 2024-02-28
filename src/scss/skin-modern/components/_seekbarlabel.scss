@@ -76,7 +76,7 @@
   &[style*="transform"] {
     .#{$prefix}-seekbar-label-inner {
       &::after {
-        content: unset;
+        transform: translateX(calc(1px * var(--bmpui-seekbar-label-overflow-offset)));
       }
     }
   }
