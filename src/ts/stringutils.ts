@@ -120,7 +120,6 @@ export namespace StringUtils {
           let durations: number[] = [];
           let activeAd = player.ads.getActiveAd();
           let indexOfActiveAd: number = 0;
-          let totaldurationOfAdsPlayed: number = 0;
   
           for(let i=0; i<scheduledAds.length; i++) {
             let iAd = scheduledAds[i];
@@ -132,12 +131,11 @@ export namespace StringUtils {
               }
             }
           }
-          // Compute total duration of adbreak
-          time = durations.reduce((time, current) => time + current, 0);
+          // Compute duration of ads to be played (incl active ad)
+          time = durations.slice(indexOfActiveAd).reduce((time, current) => time + current, 0);
   
-          // Compute duration of ads in adreak already played 
-          totaldurationOfAdsPlayed = durations.slice(0, indexOfActiveAd).reduce((totaldurationOfAdsPlayed, current) => totaldurationOfAdsPlayed + current, 0);
-          time = time - player.getCurrentTime() - totaldurationOfAdsPlayed;  
+          // And minus time played
+          time = time - player.getCurrentTime(); 
         }
       }
       
