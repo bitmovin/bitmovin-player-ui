@@ -1,4 +1,4 @@
-import { PlayerAPI } from 'bitmovin-player';
+import { LinearAd, PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 
 export namespace StringUtils {
@@ -96,7 +96,7 @@ export namespace StringUtils {
    */
   export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: PlayerAPI) {
     let adMessagePlaceholderRegex = new RegExp(
-      '\\{(remainingTime|playedTime|adDuration)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
+      '\\{(remainingTime|playedTime|adDuration|adBreakRemainingTime)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g',
     );
 
@@ -112,7 +112,35 @@ export namespace StringUtils {
         time = player.getCurrentTime();
       } else if (formatString.indexOf('adDuration') > -1) {
         time = player.getDuration();
+      } else if (formatString.indexOf('adBreakRemainingTime') > -1) { // To display the remaining time in the ad bread as opposed to in the ad
+        time = 0;
+        
+        if (player.ads.isLinearAdActive()) {
+          let scheduledAds = player.ads.getActiveAdBreak().ads;
+          let durations: number[] = [];
+          let activeAd = player.ads.getActiveAd();
+          let indexOfActiveAd: number = 0;
+          let totaldurationOfAdsPlayed: number = 0;
+  
+          for(let i=0; i<scheduledAds.length; i++) {
+            let iAd = scheduledAds[i];
+            if(iAd.isLinear) {
+              durations.push((iAd as LinearAd).duration);
+  
+              if(iAd.id == activeAd.id) {
+                indexOfActiveAd = i;
+              }
+            }
+          }
+          // Compute total duration of adbreak
+          time = durations.reduce((time, current) => time + current, 0);
+  
+          // Compute duration of ads in adreak already played 
+          totaldurationOfAdsPlayed = durations.slice(0, indexOfActiveAd).reduce((totaldurationOfAdsPlayed, current) => totaldurationOfAdsPlayed + current, 0);
+          time = time - player.getCurrentTime() - totaldurationOfAdsPlayed;  
+        }
       }
+      
       return formatNumber(Math.round(time), formatString);
     });
   }
