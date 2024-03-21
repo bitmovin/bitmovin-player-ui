@@ -12,7 +12,7 @@ function updateChangeLog(changelogString, version, releaseDate) {
     'gi',
   );
 
-  const lastReleaseVersion = changelogString.match(/\[(\d+.\d+.\d+)\]/)[1];
+  const lastReleaseVersion = changelogString.match(/## \[(\d+.\d+.\d+)\] - \d{4}-\d{2}-\d{2}/)[1];
   const changelogWithReleaseVersionAndDate = changelogString.replace(changelogVersionRegExp, `[${version}] - ${releaseDate}`);
 
   return changelogWithReleaseVersionAndDate.replace(
