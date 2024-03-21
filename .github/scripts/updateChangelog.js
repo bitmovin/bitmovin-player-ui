@@ -17,7 +17,7 @@ function updateChangeLog(changelogString, version, releaseDate) {
 
   return changelogString.replace(
     '## 1.0.0 (2017-02-03)\n- First release\n\n',
-    `## 1.0.0 (2017-02-03)\n- First release\n\n[${version}]: https://github.com/bitmovin/bitmovin-player-ui/compare/v${version}...v${lastReleaseVersion}\n`
+    `## 1.0.0 (2017-02-03)\n- First release\n\n[${version}]: https://github.com/bitmovin/bitmovin-player-ui/compare/v${lastReleaseVersion}...v${version}\n`
   );
 }
 
