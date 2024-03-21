@@ -898,6 +898,8 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.54.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.53.0...v3.54.0
+[3.53.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.2...v3.53.0
 [3.52.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.1...v3.52.2
 [3.52.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.0...v3.52.1
 [3.52.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.51.0...v3.52.0
