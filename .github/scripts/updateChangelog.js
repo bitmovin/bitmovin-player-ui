@@ -13,9 +13,9 @@ function updateChangeLog(changelogString, version, releaseDate) {
   );
 
   const lastReleaseVersion = changelogString.match(/\[(\d+.\d+.\d+)\]/)[1];
-  changelogString = changelogString.replace(changelogVersionRegExp, `[${version}] - ${releaseDate}`);
+  const changelogWithReleaseVersionAndDate = changelogString.replace(changelogVersionRegExp, `[${version}] - ${releaseDate}`);
 
-  return changelogString.replace(
+  return changelogWithReleaseVersionAndDate.replace(
     '## 1.0.0 (2017-02-03)\n- First release\n\n',
     `## 1.0.0 (2017-02-03)\n- First release\n\n[${version}]: https://github.com/bitmovin/bitmovin-player-ui/compare/v${lastReleaseVersion}...v${version}\n`
   );
