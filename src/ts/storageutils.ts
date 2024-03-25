@@ -3,8 +3,8 @@ export namespace StorageUtils {
     try {
       return (
         window.localStorage &&
-        typeof localStorage.getItem === "function" &&
-        typeof localStorage.setItem === "function"
+        typeof localStorage.getItem === 'function' &&
+        typeof localStorage.setItem === 'function'
       );
     } catch (e) {
       return false;
