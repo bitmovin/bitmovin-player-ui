@@ -23,6 +23,7 @@ export namespace StorageUtils {
       }
     } catch (e) {
       /* Can get triggered e.g. by QuotaExceededError in Safari private mode */
+      console.warn(`Failed to set storage entry for ${key}`);
     }
   }
 
@@ -37,8 +38,9 @@ export namespace StorageUtils {
         return window.localStorage.getItem(key);
       }
     } catch (e) {
-      return null;
+      console.warn(`Failed to retrieve storage entry for ${key}`);
     }
+    return null;
   }
 
   /**
@@ -50,10 +52,8 @@ export namespace StorageUtils {
    * @param data the object to store
    */
   export function setObject<T>(key: string, data: T): void {
-    if (StorageUtils.isLocalStorageAvailable()) {
-      let json = JSON.stringify(data);
-      setItem(key, json);
-    }
+    let json = JSON.stringify(data);
+    setItem(key, json);
   }
 
   /**
@@ -64,14 +64,12 @@ export namespace StorageUtils {
    * @param key the key to look up its associated object
    * @return {any} Returns the object if found, null otherwise
    */
-  export function getObject<T>(key: string): T {
-    if (StorageUtils.isLocalStorageAvailable()) {
-      let json = getItem(key);
+  export function getObject<T>(key: string): T | null {
+    let json = getItem(key);
 
-      if (key) {
-        let object = JSON.parse(json);
-        return <T>object;
-      }
+    if (json) {
+      let object = JSON.parse(json);
+      return <T>object;
     }
     return null;
   }
