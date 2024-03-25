@@ -17,8 +17,12 @@ export namespace StorageUtils {
    * @param data the item's data
    */
   export function setItem(key: string, data: string): void {
-    if (StorageUtils.isLocalStorageAvailable()) {
-      window.localStorage.setItem(key, data);
+    try {
+      if (StorageUtils.isLocalStorageAvailable()) {
+        window.localStorage.setItem(key, data);
+      }
+    } catch (e) {
+      /* Can get triggered e.g. by QuotaExceededError in Safari private mode */
     }
   }
 
@@ -28,9 +32,11 @@ export namespace StorageUtils {
    * @return {string | null} Returns the string if found, null if there is no data stored for the key
    */
   export function getItem(key: string): string | null {
-    if (StorageUtils.isLocalStorageAvailable()) {
-      return window.localStorage.getItem(key);
-    } else {
+    try {
+      if (StorageUtils.isLocalStorageAvailable()) {
+        return window.localStorage.getItem(key);
+      }
+    } catch (e) {
       return null;
     }
   }
