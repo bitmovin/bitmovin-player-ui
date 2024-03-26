@@ -14,15 +14,16 @@ export namespace StorageUtils {
 
   function isLocalStorageAvailable(): Promise<boolean> {
     return uiConfigSetPromise
-      .then(() => {
+      .then((uiConfig) => {
         return (
+          !uiConfig.disableStorageApi &&
           window.localStorage &&
           typeof localStorage.getItem === "function" &&
           typeof localStorage.setItem === "function"
         );
       })
       .catch((e) => {
-        console.debug('Error while checking localStorage availablility');
+        console.debug("Error while checking localStorage availablility", e);
         return false;
       });
   }
