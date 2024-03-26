@@ -2,10 +2,8 @@ import { UIConfig } from './uiconfig';
 
 export namespace StorageUtils {
   let res: (uiConfig: UIConfig) => void;
-  let rej;
-  let uiConfigSetPromise = new Promise<UIConfig>((resolve, reject) => {
+  let uiConfigSetPromise = new Promise<UIConfig>((resolve) => {
     res = resolve;
-    rej = reject;
   });
 
   export function resolveStorageAccess(uiConfig: UIConfig) {
