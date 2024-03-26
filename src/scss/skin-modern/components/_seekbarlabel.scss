@@ -71,4 +71,13 @@
       }
     }
   }
+
+  // move arrow if the seekbar label was offset too
+  &[style*='transform'] {
+    .#{$prefix}-seekbar-label-inner {
+      &::after {
+        transform: translateX(calc(1px * var(--bmpui-seekbar-label-overflow-offset)));
+      }
+    }
+  }
 }
