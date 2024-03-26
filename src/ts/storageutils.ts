@@ -1,5 +1,5 @@
 export namespace StorageUtils {
-  export function isLocalStorageAvailable(): boolean {
+  function isLocalStorageAvailable(): boolean {
     try {
       return (
         window.localStorage &&
@@ -17,7 +17,7 @@ export namespace StorageUtils {
    * @param data the item's data
    */
   export function setItem(key: string, data: string): void {
-    if (StorageUtils.isLocalStorageAvailable()) {
+    if (isLocalStorageAvailable()) {
       window.localStorage.setItem(key, data);
     }
   }
@@ -28,7 +28,7 @@ export namespace StorageUtils {
    * @return {string | null} Returns the string if found, null if there is no data stored for the key
    */
   export function getItem(key: string): string | null {
-    if (StorageUtils.isLocalStorageAvailable()) {
+    if (isLocalStorageAvailable()) {
       return window.localStorage.getItem(key);
     }
 
