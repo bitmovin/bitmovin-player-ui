@@ -12,7 +12,7 @@ export namespace StorageUtils {
     res?.(uiConfig);
   }
 
-  function isLocalStorageAvailable(): Promise<boolean> {
+  function shouldUseLocalStorage(): Promise<boolean> {
     return uiConfigSetPromise
       .then((uiConfig) => {
         return (
@@ -34,7 +34,7 @@ export namespace StorageUtils {
    * @param data the item's data
    */
   export async function setItem(key: string, data: string): Promise<void> {
-    if (await isLocalStorageAvailable()) {
+    if (await shouldUseLocalStorage()) {
       window.localStorage.setItem(key, data);
     }
   }
@@ -45,7 +45,7 @@ export namespace StorageUtils {
    * @return {string | null} Returns the string if found, null if there is no data stored for the key
    */
   export async function getItem(key: string): Promise<string | null> {
-    if (await isLocalStorageAvailable()) {
+    if (await shouldUseLocalStorage()) {
       return window.localStorage.getItem(key);
     }
 
