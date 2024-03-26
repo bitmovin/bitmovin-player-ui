@@ -14,6 +14,7 @@ import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 import { FocusVisibilityTracker } from './focusvisibilitytracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './mobilev3playerapi';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
+import { StorageUtils } from './storageutils';
 
 export interface LocalizationConfig {
   /**
@@ -154,6 +155,7 @@ export class UIManager {
       this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
     }
 
+    StorageUtils.resolveStorageAccess(uiconfig);
     this.player = player;
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
