@@ -100,4 +100,9 @@ export interface UIConfig {
    * Forces subtitle-labels back into their respective container if they overflow and are therefore cropped.
    */
   forceSubtitlesIntoViewContainer?: boolean;
+
+  /**
+   * When set to true, the ad module will never write anything to the browser's `localStorage`.
+   */
+  disableStorageApi?: boolean;
 }
