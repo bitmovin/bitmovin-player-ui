@@ -1,13 +1,13 @@
 import { UIConfig } from './uiconfig';
 
 export namespace StorageUtils {
-  let res: (uiConfig: UIConfig) => void;
+  let uiConfigSetResolver: (uiConfig: UIConfig) => void;
   let uiConfigSetPromise = new Promise<UIConfig>((resolve) => {
-    res = resolve;
+    uiConfigSetResolver = resolve;
   });
 
   export function resolveStorageAccess(uiConfig: UIConfig) {
-    res?.(uiConfig);
+    uiConfigSetResolver?.(uiConfig);
   }
 
   function isLocalStorageAvailable(): boolean {
