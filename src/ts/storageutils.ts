@@ -1,6 +1,11 @@
 import { UIConfig } from './uiconfig';
 
 export namespace StorageUtils {
+  /*
+    At the time of using `storageutils` inside components, the config isn't yet processed.
+    In order to know if we are allowed to use the `localStorage` API, we wait for the config to be
+    provided.
+  */
   let uiConfigSetResolver: (uiConfig: UIConfig) => void;
   let uiConfigSetPromise = new Promise<UIConfig>((resolve) => {
     uiConfigSetResolver = resolve;
@@ -36,7 +41,11 @@ export namespace StorageUtils {
    */
   export async function setItem(key: string, data: string): Promise<void> {
     if (await shouldUseLocalStorage()) {
-      window.localStorage.setItem(key, data);
+      try {
+        window.localStorage.setItem(key, data);
+      } catch (e) {
+        console.debug(`Failed to set storage item ${key}`, e);
+      }
     }
   }
 
@@ -47,7 +56,11 @@ export namespace StorageUtils {
    */
   export async function getItem(key: string): Promise<string | null> {
     if (await shouldUseLocalStorage()) {
-      return window.localStorage.getItem(key);
+      try {
+        return window.localStorage.getItem(key);
+      } catch (e) {
+        console.debug(`Failed to get storage item ${key}`, e);
+      }
     }
 
     return null;
