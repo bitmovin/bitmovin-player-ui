@@ -1,36 +1,14 @@
 export namespace StorageUtils {
-  let hasLocalStorageCache: boolean;
-
-  export function hasLocalStorage(): boolean {
-    if (hasLocalStorageCache) {
-      return hasLocalStorageCache;
-    }
-
-    // hasLocalStorage is used to safely ensure we can use localStorage
-    // taken from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
-    let storage: any = { length: 0 };
+  function isLocalStorageAvailable(): boolean {
     try {
-      storage = window['localStorage'];
-      let x = '__storage_test__';
-      storage.setItem(x, x);
-      storage.removeItem(x);
-      hasLocalStorageCache = true;
+      return (
+        window.localStorage &&
+        typeof localStorage.getItem === 'function' &&
+        typeof localStorage.setItem === 'function'
+      );
+    } catch (e) {
+      return false;
     }
-    catch (e) {
-      hasLocalStorageCache = e instanceof DOMException && (
-          // everything except Firefox
-        e.code === 22 ||
-        // Firefox
-        e.code === 1014 ||
-        // test name field too, because code might not be present
-        // everything except Firefox
-        e.name === 'QuotaExceededError' ||
-        // Firefox
-        e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-        // acknowledge QuotaExceededError only if there's something already stored
-        storage.length !== 0;
-    }
-    return hasLocalStorageCache;
   }
 
   /**
@@ -39,8 +17,12 @@ export namespace StorageUtils {
    * @param data the item's data
    */
   export function setItem(key: string, data: string): void {
-    if (StorageUtils.hasLocalStorage()) {
-      window.localStorage.setItem(key, data);
+    if (isLocalStorageAvailable()) {
+      try {
+        window.localStorage.setItem(key, data);
+      } catch (e) {
+        console.debug(`Failed to set storage item ${key}`, e);
+      }
     }
   }
 
@@ -50,11 +32,15 @@ export namespace StorageUtils {
    * @return {string | null} Returns the string if found, null if there is no data stored for the key
    */
   export function getItem(key: string): string | null {
-    if (StorageUtils.hasLocalStorage()) {
-      return window.localStorage.getItem(key);
-    } else {
-      return null;
+    if (isLocalStorageAvailable()) {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (e) {
+        console.debug(`Failed to get storage item ${key}`, e);
+      }
     }
+
+    return null;
   }
 
   /**
@@ -66,10 +52,8 @@ export namespace StorageUtils {
    * @param data the object to store
    */
   export function setObject<T>(key: string, data: T): void {
-    if (StorageUtils.hasLocalStorage()) {
-      let json = JSON.stringify(data);
-      setItem(key, json);
-    }
+    let json = JSON.stringify(data);
+    setItem(key, json);
   }
 
   /**
@@ -80,14 +64,12 @@ export namespace StorageUtils {
    * @param key the key to look up its associated object
    * @return {any} Returns the object if found, null otherwise
    */
-  export function getObject<T>(key: string): T {
-    if (StorageUtils.hasLocalStorage()) {
-      let json = getItem(key);
+  export function getObject<T>(key: string): T | null {
+    let json = getItem(key);
 
-      if (key) {
-        let object = JSON.parse(json);
-        return <T>object;
-      }
+    if (json) {
+      let object = JSON.parse(json);
+      return <T>object;
     }
     return null;
   }
