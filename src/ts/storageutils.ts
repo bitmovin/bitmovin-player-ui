@@ -1,4 +1,4 @@
-import { UIConfig } from "./uiconfig";
+import { UIConfig } from './uiconfig';
 
 export namespace StorageUtils {
   let res: (uiConfig: UIConfig) => void;
@@ -16,11 +16,11 @@ export namespace StorageUtils {
     try {
       return (
         window.localStorage &&
-        typeof localStorage.getItem === "function" &&
-        typeof localStorage.setItem === "function"
+        typeof localStorage.getItem === 'function' &&
+        typeof localStorage.setItem === 'function'
       );
     } catch (e) {
-      console.debug("Error while checking localStorage availablility", e);
+      console.debug('Error while checking localStorage availablility', e);
       return false;
     }
   }
