@@ -41,6 +41,7 @@ export namespace StorageUtils {
    */
   export async function setItem(key: string, data: string): Promise<void> {
     if (await shouldUseLocalStorage()) {
+
       try {
         window.localStorage.setItem(key, data);
       } catch (e) {
