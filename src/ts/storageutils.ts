@@ -18,7 +18,11 @@ export namespace StorageUtils {
    */
   export function setItem(key: string, data: string): void {
     if (isLocalStorageAvailable()) {
-      window.localStorage.setItem(key, data);
+      try {
+        window.localStorage.setItem(key, data);
+      } catch (e) {
+        console.debug(`Failed to set storage item ${key}`, e);
+      }
     }
   }
 
@@ -29,7 +33,11 @@ export namespace StorageUtils {
    */
   export function getItem(key: string): string | null {
     if (isLocalStorageAvailable()) {
-      return window.localStorage.getItem(key);
+      try {
+        return window.localStorage.getItem(key);
+      } catch (e) {
+        console.debug(`Failed to get storage item ${key}`, e);
+      }
     }
 
     return null;
