@@ -12,20 +12,23 @@ export namespace StorageUtils {
     res?.(uiConfig);
   }
 
+  function isLocalStorageAvailable(): boolean {
+    try {
+      return (
+        window.localStorage &&
+        typeof localStorage.getItem === "function" &&
+        typeof localStorage.setItem === "function"
+      );
+    } catch (e) {
+      console.debug("Error while checking localStorage availablility", e);
+      return false;
+    }
+  }
+
   function shouldUseLocalStorage(): Promise<boolean> {
-    return uiConfigSetPromise
-      .then((uiConfig) => {
-        return (
-          !uiConfig.disableStorageApi &&
-          window.localStorage &&
-          typeof localStorage.getItem === "function" &&
-          typeof localStorage.setItem === "function"
-        );
-      })
-      .catch((e) => {
-        console.debug("Error while checking localStorage availablility", e);
-        return false;
-      });
+    return uiConfigSetPromise.then((uiConfig) => {
+      return !uiConfig.disableStorageApi && isLocalStorageAvailable();
+    });
   }
 
   /**
