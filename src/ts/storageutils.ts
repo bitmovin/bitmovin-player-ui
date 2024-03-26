@@ -3,8 +3,8 @@ export namespace StorageUtils {
     try {
       return (
         window.localStorage &&
-        typeof localStorage.getItem === 'function' &&
-        typeof localStorage.setItem === 'function'
+        typeof localStorage.getItem === "function" &&
+        typeof localStorage.setItem === "function"
       );
     } catch (e) {
       return false;
@@ -17,13 +17,8 @@ export namespace StorageUtils {
    * @param data the item's data
    */
   export function setItem(key: string, data: string): void {
-    try {
-      if (StorageUtils.isLocalStorageAvailable()) {
-        window.localStorage.setItem(key, data);
-      }
-    } catch (e) {
-      /* Can get triggered e.g. by QuotaExceededError in Safari private mode */
-      console.warn(`Failed to set storage entry for ${key}`);
+    if (StorageUtils.isLocalStorageAvailable()) {
+      window.localStorage.setItem(key, data);
     }
   }
 
@@ -33,13 +28,10 @@ export namespace StorageUtils {
    * @return {string | null} Returns the string if found, null if there is no data stored for the key
    */
   export function getItem(key: string): string | null {
-    try {
-      if (StorageUtils.isLocalStorageAvailable()) {
-        return window.localStorage.getItem(key);
-      }
-    } catch (e) {
-      console.warn(`Failed to retrieve storage entry for ${key}`);
+    if (StorageUtils.isLocalStorageAvailable()) {
+      return window.localStorage.getItem(key);
     }
+
     return null;
   }
 
