@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-- Config option `disableLocalStorageApi`
+- Config option `disableStorageApi` to prevent `localStorage` operations
 
 ### Changed
 - `localStorage` availability check to not create a test-entry anymore
