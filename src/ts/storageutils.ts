@@ -1,4 +1,20 @@
+import { UIConfig } from './uiconfig';
+
 export namespace StorageUtils {
+  /*
+    At the time of using `storageutils` inside components, the config isn't yet processed.
+    In order to know if we are allowed to use the `localStorage` API, we wait for the config to be
+    provided.
+  */
+  let uiConfigSetResolver: (uiConfig: UIConfig) => void;
+  let uiConfigSetPromise = new Promise<UIConfig>((resolve) => {
+    uiConfigSetResolver = resolve;
+  });
+
+  export function resolveStorageAccess(uiConfig: UIConfig) {
+    uiConfigSetResolver?.(uiConfig);
+  }
+
   function isLocalStorageAvailable(): boolean {
     try {
       return (
@@ -7,8 +23,15 @@ export namespace StorageUtils {
         typeof localStorage.setItem === 'function'
       );
     } catch (e) {
+      console.debug('Error while checking localStorage availablility', e);
       return false;
     }
+  }
+
+  function shouldUseLocalStorage(): Promise<boolean> {
+    return uiConfigSetPromise.then((uiConfig) => {
+      return !uiConfig.disableStorageApi && isLocalStorageAvailable();
+    });
   }
 
   /**
@@ -16,8 +39,9 @@ export namespace StorageUtils {
    * @param key the item's key
    * @param data the item's data
    */
-  export function setItem(key: string, data: string): void {
-    if (isLocalStorageAvailable()) {
+  export async function setItem(key: string, data: string): Promise<void> {
+    if (await shouldUseLocalStorage()) {
+
       try {
         window.localStorage.setItem(key, data);
       } catch (e) {
@@ -31,8 +55,8 @@ export namespace StorageUtils {
    * @param key the key to look up its associated value
    * @return {string | null} Returns the string if found, null if there is no data stored for the key
    */
-  export function getItem(key: string): string | null {
-    if (isLocalStorageAvailable()) {
+  export async function getItem(key: string): Promise<string | null> {
+    if (await shouldUseLocalStorage()) {
       try {
         return window.localStorage.getItem(key);
       } catch (e) {
@@ -51,9 +75,9 @@ export namespace StorageUtils {
    * @param key the key to store the data to
    * @param data the object to store
    */
-  export function setObject<T>(key: string, data: T): void {
+  export async function setObject<T>(key: string, data: T): Promise<void> {
     let json = JSON.stringify(data);
-    setItem(key, json);
+    await setItem(key, json);
   }
 
   /**
@@ -64,8 +88,8 @@ export namespace StorageUtils {
    * @param key the key to look up its associated object
    * @return {any} Returns the object if found, null otherwise
    */
-  export function getObject<T>(key: string): T | null {
-    let json = getItem(key);
+  export async function getObject<T>(key: string): Promise<T | null> {
+    let json = await getItem(key);
 
     if (json) {
       let object = JSON.parse(json);

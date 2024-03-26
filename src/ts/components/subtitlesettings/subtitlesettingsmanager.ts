@@ -108,8 +108,8 @@ export class SubtitleSettingsManager {
   /**
    * Loads the settings from local storage
    */
-  public load(): void {
-    this.userSettings = StorageUtils.getObject<SubtitleSettings>(this.localStorageKey) || {};
+  public async load(): Promise<void> {
+    this.userSettings = await StorageUtils.getObject<SubtitleSettings>(this.localStorageKey) || {};
 
     // Apply the loaded settings
     for (let property in this.userSettings) {
