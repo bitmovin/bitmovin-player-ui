@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `UIConfig#seekbarShouldSeekToMarkerStartPosition` config property to configure seek behaviour for `TimelineMarker` with duration 
 
-## [3.57.0] - 2024-03-26
+## [3.57.0] - 2024-03-28
 
 ### Added
 - `disableStorageApi` config option
