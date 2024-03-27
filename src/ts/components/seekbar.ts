@@ -479,7 +479,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     const timelineMarkerConfig = {
       cssPrefix: this.config.cssPrefix,
       snappingRange: this.config.snappingRange,
-      shouldSeekToMarkerStartPosition: this.config.shouldSeekToMarkerStartPosition
+      shouldSeekToMarkerStartPosition: this.config.shouldSeekToMarkerStartPosition,
     };
     this.timelineMarkersHandler = new TimelineMarkersHandler(timelineMarkerConfig, () => this.seekBar.width(), this.seekBarMarkersContainer);
     this.timelineMarkersHandler.initialize(player, uimanager);
