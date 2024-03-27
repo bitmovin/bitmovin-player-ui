@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- `UIConfig#seekbarShouldSeekToMarkerStartPosition` config property to configure seek behaviour for `TimelineMarker` with duration 
+
 ## [3.56.0] - 2024-03-26
 
 ### Changed
