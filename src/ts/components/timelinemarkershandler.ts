@@ -12,6 +12,11 @@ export interface MarkersConfig extends ComponentConfig {
    * Used for seekBar marker snapping range percentage
    */
   snappingRange?: number;
+
+  /**
+   * Used to enable/disable seeking to start of Marker position
+   */
+  shouldSeekToMarkerStartPosition?: boolean;
 }
 
 export class TimelineMarkersHandler {

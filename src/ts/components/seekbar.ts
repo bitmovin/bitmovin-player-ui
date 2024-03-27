@@ -52,6 +52,11 @@ export interface SeekBarConfig extends ComponentConfig {
    * Used to enable/disable seek preview
    */
   enableSeekPreview?: boolean;
+
+  /**
+   * Used to enable/disable seeking to start of marker position
+   */
+  shouldSeekToMarkerStartPosition?: boolean;
 }
 
 /**
@@ -151,6 +156,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       tabIndex: 0,
       snappingRange: 1,
       enableSeekPreview: true,
+      shouldSeekToMarkerStartPosition: true,
     }, this.config);
 
     this.label = this.config.label;
@@ -452,6 +458,11 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.config.snappingRange = uimanager.getConfig().seekbarSnappingRange;
     }
 
+    // Set the shouldSeekToMarkerStartPosition if set in the uimanager config
+    if (typeof uimanager.getConfig().seekbarShouldSeekToMarkerStartPosition === 'boolean') {
+      this.config.shouldSeekToMarkerStartPosition = uimanager.getConfig().seekbarShouldSeekToMarkerStartPosition;
+    }
+
     // Initialize seekbar
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
@@ -468,6 +479,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     const timelineMarkerConfig = {
       cssPrefix: this.config.cssPrefix,
       snappingRange: this.config.snappingRange,
+      shouldSeekToMarkerStartPosition: this.config.shouldSeekToMarkerStartPosition
     };
     this.timelineMarkersHandler = new TimelineMarkersHandler(timelineMarkerConfig, () => this.seekBar.width(), this.seekBarMarkersContainer);
     this.timelineMarkersHandler.initialize(player, uimanager);
@@ -705,7 +717,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       new DOM(document).off('touchend mouseup', mouseTouchUpHandler);
 
       let targetPercentage = 100 * this.getOffset(e);
-      let snappedChapter = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(targetPercentage);
+      let snappedChapter = null ;
+      if (this.config.shouldSeekToMarkerStartPosition ===  true) {
+        snappedChapter = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(targetPercentage);
+      }
 
       this.setSeeking(false);
       seeking = false;
