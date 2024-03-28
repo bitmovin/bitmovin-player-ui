@@ -9,13 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `UIConfig#seekbarShouldSeekToMarkerStartPosition` config property to configure seek behaviour for `TimelineMarker` with duration 
 
-## [3.56.0] - 2024-03-26
+## [3.57.0] - 2024-03-26
 
 ### Added
 - `disableStorageApi` config option
 
 ### Fixed
 - Subtitle settings not being retained when the UI variant switches
+
+## [3.56.0] - 2024-03-26
 
 ### Changed
 - `localStorage` availability check to not create a test-entry anymore
