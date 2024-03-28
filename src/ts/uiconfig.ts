@@ -104,5 +104,5 @@ export interface UIConfig {
   /**
    * If set to true, prevents the UI from using `localStorage`.
    */
-  disableStorageApi: boolean;
+  disableStorageApi?: boolean;
 }
