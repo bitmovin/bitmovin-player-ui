@@ -14,7 +14,7 @@ export interface SubtitleSettingSelectBoxConfig extends ListSelectorConfig {
  **/
 export class SubtitleSettingSelectBox extends SelectBox {
 
-  protected settingsManager: SubtitleSettingsManager;
+  protected settingsManager?: SubtitleSettingsManager;
   protected overlay: SubtitleOverlay;
   private currentCssClass: string;
 
@@ -43,6 +43,6 @@ export class SubtitleSettingSelectBox extends SelectBox {
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
-      this.settingsManager = uimanager.subtitleSettingsManager;
+      this.settingsManager = uimanager.getSubtitleSettingsManager();
   }
 }
