@@ -383,7 +383,7 @@ export class UIManager {
     i18n.setConfig(localizationConfig);
   }
 
-  get subtitleSettingsManager(){
+  get subtitleSettingsManager() {
     return this._subtitleSettingsManager;
   }
 

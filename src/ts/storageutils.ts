@@ -1,4 +1,4 @@
-import { UIConfig } from "./uiconfig";
+import { UIConfig } from './uiconfig';
 
 export namespace StorageUtils {
  let disableStorageApi: boolean;
