@@ -15,6 +15,7 @@ import { FocusVisibilityTracker } from './focusvisibilitytracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './mobilev3playerapi';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { SubtitleSettingsManager } from './components/subtitlesettings/subtitlesettingsmanager';
+import { StorageUtils } from './storageutils';
 
 export interface LocalizationConfig {
   /**
@@ -201,6 +202,8 @@ export class UIManager {
       this.config.metadata.description = playerSourceUiConfig.metadata.description || uiconfig.metadata.description;
       this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [];
       this.config.recommendations = playerSourceUiConfig.recommendations || uiconfig.recommendations || [];
+
+      StorageUtils.setStorageApiDisabled(uiconfig);
     };
 
     updateConfig();

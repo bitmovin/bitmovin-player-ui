@@ -1,5 +1,11 @@
+import { UIConfig } from "./uiconfig";
+
 export namespace StorageUtils {
-  let disableStorageApi: boolean;
+ let disableStorageApi: boolean;
+
+  export function setStorageApiDisabled(uiConfig: UIConfig) {
+    disableStorageApi = uiConfig.disableStorageApi;
+  }
 
   function shouldUseLocalStorage(): boolean {
     try {
