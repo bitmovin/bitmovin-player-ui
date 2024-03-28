@@ -113,7 +113,7 @@ export class UIManager {
   private config: InternalUIConfig; // Conjunction of provided uiConfig and sourceConfig from the player
   private managerPlayerWrapper: PlayerWrapper;
   private focusVisibilityTracker: FocusVisibilityTracker;
-  private _subtitleSettingsManager: SubtitleSettingsManager;
+  private subtitleSettingsManager: SubtitleSettingsManager;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -157,7 +157,7 @@ export class UIManager {
       this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
     }
 
-    this._subtitleSettingsManager = new SubtitleSettingsManager();
+    this.subtitleSettingsManager = new SubtitleSettingsManager();
     this.player = player;
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
@@ -207,7 +207,7 @@ export class UIManager {
     };
 
     updateConfig();
-    this._subtitleSettingsManager.initialize();
+    this.subtitleSettingsManager.initialize();
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
     const updateSource = () => {
@@ -383,8 +383,8 @@ export class UIManager {
     i18n.setConfig(localizationConfig);
   }
 
-  get subtitleSettingsManager() {
-    return this._subtitleSettingsManager;
+  getSubtitleSettingsManager() {
+    return this.subtitleSettingsManager;
   }
 
   getConfig(): UIConfig {
@@ -611,7 +611,7 @@ export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
   private ui: UIContainer;
   private config: InternalUIConfig;
-  private _subtitleSettingsManager: SubtitleSettingsManager;
+  private subtitleSettingsManager: SubtitleSettingsManager;
   protected spatialNavigation?: SpatialNavigation;
 
   private events = {
@@ -631,12 +631,12 @@ export class UIInstanceManager {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
-    this._subtitleSettingsManager = subtitleSettingsManager;
+    this.subtitleSettingsManager = subtitleSettingsManager;
     this.spatialNavigation = spatialNavigation;
   }
 
-  get subtitleSettingsManager() {
-    return this._subtitleSettingsManager;
+  getSubtitleSettingsManager() {
+    return this.subtitleSettingsManager;
   }
 
   getConfig(): InternalUIConfig {

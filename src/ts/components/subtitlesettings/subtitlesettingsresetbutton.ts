@@ -22,7 +22,7 @@ export class SubtitleSettingsResetButton extends Button<ButtonConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
-    this.settingsManager = uimanager.subtitleSettingsManager;
+    this.settingsManager = uimanager.getSubtitleSettingsManager();
 
     this.onClick.subscribe(() => {
       this.settingsManager.reset();
