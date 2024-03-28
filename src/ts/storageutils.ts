@@ -1,7 +1,16 @@
+import { UIConfig } from './uiconfig';
+
 export namespace StorageUtils {
-  function isLocalStorageAvailable(): boolean {
+ let disableStorageApi: boolean;
+
+  export function setStorageApiDisabled(uiConfig: UIConfig) {
+    disableStorageApi = uiConfig.disableStorageApi;
+  }
+
+  function shouldUseLocalStorage(): boolean {
     try {
       return (
+        !disableStorageApi &&
         window.localStorage &&
         typeof localStorage.getItem === 'function' &&
         typeof localStorage.setItem === 'function'
@@ -17,7 +26,7 @@ export namespace StorageUtils {
    * @param data the item's data
    */
   export function setItem(key: string, data: string): void {
-    if (isLocalStorageAvailable()) {
+    if (shouldUseLocalStorage()) {
       try {
         window.localStorage.setItem(key, data);
       } catch (e) {
@@ -32,7 +41,7 @@ export namespace StorageUtils {
    * @return {string | null} Returns the string if found, null if there is no data stored for the key
    */
   export function getItem(key: string): string | null {
-    if (isLocalStorageAvailable()) {
+    if (shouldUseLocalStorage()) {
       try {
         return window.localStorage.getItem(key);
       } catch (e) {

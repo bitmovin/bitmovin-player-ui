@@ -100,4 +100,9 @@ export interface UIConfig {
    * Forces subtitle-labels back into their respective container if they overflow and are therefore cropped.
    */
   forceSubtitlesIntoViewContainer?: boolean;
+
+  /**
+   * If set to true, prevents the UI from using `localStorage`.
+   */
+  disableStorageApi?: boolean;
 }
