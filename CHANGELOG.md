@@ -4,13 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.56.0] - 2024-03-26
+## [Unreleased]
 
 ### Added
 - `disableStorageApi` config option
 
 ### Fixed
 - Subtitle settings not being retained when the UI variant switches
+
+## [3.56.0] - 2024-03-26
 
 ### Changed
 - `localStorage` availability check to not create a test-entry anymore
