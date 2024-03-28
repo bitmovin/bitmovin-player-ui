@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.56.0] - 2024-03-26
 
+### Added
+- `disableStorageApi` config option
+
+### Fixed
+- Subtitle settings not being retained when the UI variant switches
+
 ### Changed
 - `localStorage` availability check to not create a test-entry anymore
 
