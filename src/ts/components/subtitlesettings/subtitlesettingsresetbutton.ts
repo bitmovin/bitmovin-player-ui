@@ -4,16 +4,14 @@ import {Button, ButtonConfig} from '../button';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
-export interface SubtitleSettingsResetButtonConfig extends ButtonConfig {
-  settingsManager: SubtitleSettingsManager;
-}
-
 /**
  * A button that resets all subtitle settings to their defaults.
  */
 export class SubtitleSettingsResetButton extends Button<ButtonConfig> {
 
-  constructor(config: SubtitleSettingsResetButtonConfig) {
+  private settingsManager: SubtitleSettingsManager;
+
+  constructor(config: ButtonConfig) {
     super(config);
 
     this.config = this.mergeConfig(config, {
@@ -24,9 +22,10 @@ export class SubtitleSettingsResetButton extends Button<ButtonConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+    this.settingsManager = uimanager.subtitleSettingsManager;
 
     this.onClick.subscribe(() => {
-      (<SubtitleSettingsResetButtonConfig>this.config).settingsManager.reset();
+      this.settingsManager.reset();
     });
   }
 }
