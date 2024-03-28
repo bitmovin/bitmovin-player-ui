@@ -102,6 +102,11 @@ export interface UIConfig {
   forceSubtitlesIntoViewContainer?: boolean;
 
   /**
+   * If set to true, prevents the UI from using `localStorage`.
+   */
+  disableStorageApi: boolean;
+
+  /**
    * Used to enable/disable seeking to start of marker position. Default is true
    */
   seekbarShouldSeekToMarkerStartPosition?: boolean;
