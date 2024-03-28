@@ -1,7 +1,11 @@
 export namespace StorageUtils {
+  let disableStorageApi: boolean;
+
+
   function isLocalStorageAvailable(): boolean {
     try {
       return (
+        !disableStorageApi &&
         window.localStorage &&
         typeof localStorage.getItem === 'function' &&
         typeof localStorage.setItem === 'function'
