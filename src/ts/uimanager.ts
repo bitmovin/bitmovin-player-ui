@@ -14,6 +14,7 @@ import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 import { FocusVisibilityTracker } from './focusvisibilitytracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './mobilev3playerapi';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
+import { SubtitleSettingsManager } from './components/subtitlesettings/subtitlesettingsmanager';
 
 export interface LocalizationConfig {
   /**
@@ -111,6 +112,7 @@ export class UIManager {
   private config: InternalUIConfig; // Conjunction of provided uiConfig and sourceConfig from the player
   private managerPlayerWrapper: PlayerWrapper;
   private focusVisibilityTracker: FocusVisibilityTracker;
+  private _subtitleSettingsManager: SubtitleSettingsManager;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -154,6 +156,7 @@ export class UIManager {
       this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
     }
 
+    this._subtitleSettingsManager = new SubtitleSettingsManager();
     this.player = player;
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
@@ -242,6 +245,7 @@ export class UIManager {
         player,
         uiVariant.ui,
         this.config,
+        this.subtitleSettingsManager,
         uiVariant.spatialNavigation,
       ));
     }
@@ -375,6 +379,10 @@ export class UIManager {
     i18n.setConfig(localizationConfig);
   }
 
+  get subtitleSettingsManager(){
+    return this._subtitleSettingsManager;
+  }
+
   getConfig(): UIConfig {
     return this.config;
   }
@@ -493,6 +501,7 @@ export class UIManager {
     // When the UI is loaded after a source was loaded, we need to tell the components to initialize themselves
     if (player.getSource()) {
       this.config.events.onUpdated.dispatch(this);
+
     }
 
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
@@ -598,6 +607,7 @@ export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
   private ui: UIContainer;
   private config: InternalUIConfig;
+  private _subtitleSettingsManager: SubtitleSettingsManager;
   protected spatialNavigation?: SpatialNavigation;
 
   private events = {
@@ -613,11 +623,16 @@ export class UIInstanceManager {
     onRelease: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
-  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig, spatialNavigation?: SpatialNavigation) {
+  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig, subtitleSettingsManager: SubtitleSettingsManager, spatialNavigation?: SpatialNavigation) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
+    this._subtitleSettingsManager = subtitleSettingsManager;
     this.spatialNavigation = spatialNavigation;
+  }
+
+  get subtitleSettingsManager() {
+    return this._subtitleSettingsManager;
   }
 
   getConfig(): InternalUIConfig {
