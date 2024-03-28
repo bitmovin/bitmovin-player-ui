@@ -207,6 +207,7 @@ export class UIManager {
     };
 
     updateConfig();
+    this._subtitleSettingsManager.initialize();
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
     const updateSource = () => {
