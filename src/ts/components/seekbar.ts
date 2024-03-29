@@ -52,6 +52,11 @@ export interface SeekBarConfig extends ComponentConfig {
    * Used to enable/disable seek preview
    */
   enableSeekPreview?: boolean;
+
+  /**
+   * Used for allowing seeking inside timeline marker duration. Default is false
+   */
+  allowSeekInMarkerDuration?: boolean;
 }
 
 /**
@@ -151,6 +156,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       tabIndex: 0,
       snappingRange: 1,
       enableSeekPreview: true,
+      allowSeekInMarkerDuration: false,
     }, this.config);
 
     this.label = this.config.label;
@@ -452,6 +458,11 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.config.snappingRange = uimanager.getConfig().seekbarSnappingRange;
     }
 
+    // Set the allowSeekInMarkerDuration if set in the uimanager config
+    if (typeof uimanager.getConfig().seekbarAllowSeekInMarkerDuration === 'boolean') {
+      this.config.allowSeekInMarkerDuration = uimanager.getConfig().seekbarAllowSeekInMarkerDuration;
+    }
+
     // Initialize seekbar
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
@@ -706,6 +717,10 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       let targetPercentage = 100 * this.getOffset(e);
       let snappedChapter = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(targetPercentage);
+      if (this.config.allowSeekInMarkerDuration ===  true && (snappedChapter && snappedChapter.duration &&  snappedChapter.duration > 0))  {
+        // do not consider timeline marker position if seek is allowed inside marker duration
+        snappedChapter = null;
+      }
 
       this.setSeeking(false);
       seeking = false;

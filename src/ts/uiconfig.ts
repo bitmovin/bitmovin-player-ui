@@ -105,4 +105,9 @@ export interface UIConfig {
    * If set to true, prevents the UI from using `localStorage`.
    */
   disableStorageApi?: boolean;
+
+  /**
+   * If set to true, allows seeking inside timeline marker duration. Default is false
+   */
+  seekbarAllowSeekInMarkerDuration?: boolean;
 }
