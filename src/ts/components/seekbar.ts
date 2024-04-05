@@ -44,7 +44,13 @@ export interface SeekBarConfig extends ComponentConfig {
   keyStepIncrements?: { leftRight: number, upDown: number };
 
   /**
-   * Used for seekBar marker snapping range percentage
+   * Used to enable/disable snapping to markers on the seek bar when seeking near them.
+   * Default: true
+   */
+  snappingEnabled?: boolean;
+
+  /**
+   * Defines tolerance for snapping markers, if snapping to seek bar markers is enabled.
    */
   snappingRange?: number;
 
@@ -52,11 +58,6 @@ export interface SeekBarConfig extends ComponentConfig {
    * Used to enable/disable seek preview
    */
   enableSeekPreview?: boolean;
-
-  /**
-   * Used for allowing seeking inside timeline marker duration. Default is false
-   */
-  allowSeekInMarkerDuration?: boolean;
 }
 
 /**
@@ -156,7 +157,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       tabIndex: 0,
       snappingRange: 1,
       enableSeekPreview: true,
-      allowSeekInMarkerDuration: false,
+      snappingEnabled: true,
     }, this.config);
 
     this.label = this.config.label;
@@ -458,9 +459,8 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.config.snappingRange = uimanager.getConfig().seekbarSnappingRange;
     }
 
-    // Set the allowSeekInMarkerDuration if set in the uimanager config
-    if (typeof uimanager.getConfig().seekbarAllowSeekInMarkerDuration === 'boolean') {
-      this.config.allowSeekInMarkerDuration = uimanager.getConfig().seekbarAllowSeekInMarkerDuration;
+    if (typeof uimanager.getConfig().seekbarSnappingEnabled === 'boolean') {
+      this.config.snappingEnabled = uimanager.getConfig().seekbarSnappingEnabled;
     }
 
     // Initialize seekbar
@@ -717,8 +717,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       let targetPercentage = 100 * this.getOffset(e);
 
-      const shouldSnapToMarkerStartTime = !this.config.allowSeekInMarkerDuration;
-      if (shouldSnapToMarkerStartTime) {
+      if (this.config.snappingEnabled) {
         const matchingMarker = this.timelineMarkersHandler?.getMarkerAtPosition(targetPercentage);
         targetPercentage = matchingMarker ? matchingMarker.position : targetPercentage;
       }
