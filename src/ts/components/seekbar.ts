@@ -716,17 +716,18 @@ export class SeekBar extends Component<SeekBarConfig> {
       new DOM(document).off('touchend mouseup', mouseTouchUpHandler);
 
       let targetPercentage = 100 * this.getOffset(e);
-      let snappedChapter = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(targetPercentage);
-      if (this.config.allowSeekInMarkerDuration ===  true && (snappedChapter && snappedChapter.duration &&  snappedChapter.duration > 0))  {
-        // do not consider timeline marker position if seek is allowed inside marker duration
-        snappedChapter = null;
+
+      const shouldSnapToMarkerStartTime = !this.config.allowSeekInMarkerDuration;
+      if (shouldSnapToMarkerStartTime) {
+        const matchingMarker = this.timelineMarkersHandler?.getMarkerAtPosition(targetPercentage);
+        targetPercentage = matchingMarker ? matchingMarker.position : targetPercentage;
       }
 
       this.setSeeking(false);
       seeking = false;
 
       // Fire seeked event
-      this.onSeekedEvent(snappedChapter ? snappedChapter.position : targetPercentage);
+      this.onSeekedEvent(targetPercentage);
     };
 
     // A seek always start with a touchstart or mousedown directly on the seekbar.
