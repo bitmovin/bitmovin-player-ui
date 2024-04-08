@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- `UIConfig#seekbarSnappingEnabled` config option to enable/disable the play head snapping to markers on the seek bar when seeking near them. Default is `true`.
+
 ## [3.57.0] - 2024-03-28
 
 ### Added
