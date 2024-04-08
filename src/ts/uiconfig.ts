@@ -78,13 +78,13 @@ export interface UIConfig {
   /**
    * Whether the play head should snap to markers on the seek bar when seeking sufficiently near them.
    *
-   * The config option `seekbarSnappingRange` defines the tolerance that is used to determine whether a seek time hits a
-   * marker.
+   * The related config option `seekbarSnappingRange` defines the tolerance that is used to determine whether a seek
+   * time hits a marker.
    *
    * Note:
    * - When hitting a point marker (i.e. one without duration), the play head would snap to the exact time of the
    *   marker.
-   * - Likewise, when hitting a range marker (i.e. one with duration), which effectively snaps to the start of the time
+   * - Likewise, when hitting a range marker (i.e. one with duration) which effectively snaps to the start of the time
    *   range that it defines.
    *
    * Default: true
