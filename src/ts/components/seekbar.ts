@@ -50,7 +50,7 @@ export interface SeekBarConfig extends ComponentConfig {
   snappingEnabled?: boolean;
 
   /**
-   * Defines tolerance for snapping markers, if snapping to seek bar markers is enabled.
+   * Defines tolerance for snapping to markers, if snapping to seek bar markers is enabled.
    */
   snappingRange?: number;
 
