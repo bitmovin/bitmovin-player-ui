@@ -76,7 +76,23 @@ export interface UIConfig {
    */
   disableAutoHideWhenHovered?: boolean;
   /**
-   * Specifies the seekbar snapping range in percentage
+   * Whether the play head should snap to markers on the seek bar when seeking sufficiently near them.
+   *
+   * The related config option `seekbarSnappingRange` defines the tolerance that is used to determine whether a seek
+   * time hits a marker.
+   *
+   * Note:
+   * - When hitting a point marker (i.e. one without duration), the play head would snap to the exact time of the
+   *   marker.
+   * - Likewise, when hitting a range marker (i.e. one with duration) which effectively snaps to the start of the time
+   *   range that it defines.
+   *
+   * Default: true
+   */
+  seekbarSnappingEnabled?: boolean;
+  /**
+   * Specifies the seek bar marker snapping tolerance in percent. This option has no effect if `seekbarSnappingEnabled`
+   * is set to false.
    * Default: 1
    */
   seekbarSnappingRange?: number;
@@ -100,4 +116,9 @@ export interface UIConfig {
    * Forces subtitle-labels back into their respective container if they overflow and are therefore cropped.
    */
   forceSubtitlesIntoViewContainer?: boolean;
+
+  /**
+   * If set to true, prevents the UI from using `localStorage`.
+   */
+  disableStorageApi?: boolean;
 }

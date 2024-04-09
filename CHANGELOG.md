@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `UIContainerConfig.hideImmediatelyOnMouseLeave` to immediately hide the UI when mouse leaves it
 
+## [3.58.0] - 2024-04-08
+
+### Added
+- `UIConfig#seekbarSnappingEnabled` config option to enable/disable the play head snapping to markers on the seek bar when seeking near them. Default is `true`.
+
+## [3.57.0] - 2024-03-28
+
+### Added
+- `disableStorageApi` config option
+
+### Fixed
+- Subtitle settings not being retained when the UI variant switches
+
+## [3.56.0] - 2024-03-26
+
+### Changed
+- `localStorage` availability check to not create a test-entry anymore
+
+## [3.55.0] - 2024-03-21
+
+### Added
+- Automatically add compare link in changelog file in relase workflow
+
+### Fixed
+- Missing compare link in the changelog file
+
 ## [3.54.0] - 2024-02-01
 
 ### Fixed
@@ -903,6 +929,12 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.58.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.57.0...v3.58.0
+[3.57.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.56.0...v3.57.0
+[3.56.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.55.0...v3.56.0
+[3.55.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.54.0...v3.55.0
+[3.54.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.53.0...v3.54.0
+[3.53.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.2...v3.53.0
 [3.52.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.1...v3.52.2
 [3.52.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.0...v3.52.1
 [3.52.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.51.0...v3.52.0
