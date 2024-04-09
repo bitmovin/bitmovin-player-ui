@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- `UIContainerConfig.hideImmediatelyOnMouseLeave` to immediately hide the UI when mouse leaves it
+
 ## [3.54.0] - 2024-02-01
 
 ### Fixed
