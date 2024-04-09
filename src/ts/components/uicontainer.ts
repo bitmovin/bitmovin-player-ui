@@ -189,7 +189,6 @@ export class UIContainer extends Container<UIContainerConfig> {
           } else {
             this.uiHideTimeout.start();
           }
-
         }
       },
     }];
