@@ -27,6 +27,13 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: the UI container itself
    */
   userInteractionEventSource?: HTMLElement;
+
+  /**
+   * Specify whether the UI should be hidden immediatly if the mouse leaves the userInteractionEventSource.
+   * If false or not set it will wait for the hideDelay.
+   * Default: false
+   */
+  hideImmediatelyOnMouseLeave?: boolean;
 }
 
 /**
@@ -60,6 +67,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       role: 'region',
       ariaLabel: i18n.getLocalizer('player'),
       hideDelay: 5000,
+      hideImmediatelyOnMouseLeave: false,
     }, this.config);
 
     this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
@@ -176,7 +184,11 @@ export class UIContainer extends Container<UIContainerConfig> {
         // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
         // hide the UI in such cases
         if (!isSeeking && !hidingPrevented()) {
-          this.uiHideTimeout.start();
+          if (this.config.hideImmediatelyOnMouseLeave) {
+            this.hideUi();
+          } else {
+            this.uiHideTimeout.start();
+          }
         }
       },
     }];
