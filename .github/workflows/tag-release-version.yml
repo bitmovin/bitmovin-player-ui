@@ -1,7 +1,7 @@
 name: Trigger release on merge
 run-name: Starting release for ${{ github.actor }} PR merge
 on:
-  pull_request:
+  pull_request_target:
     types:
       - closed
     branches:

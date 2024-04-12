@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [3.59.0] - 2024-04-12
 
 ### Added
 - `UIContainerConfig.hideImmediatelyOnMouseLeave` to immediately hide the UI when mouse leaves it
+
+### Fixed
+- Triggering UI release after merging a PR from a fork
 
 ## [3.58.0] - 2024-04-08
 
@@ -929,6 +932,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.59.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.58.0...v3.59.0
 [3.58.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.57.0...v3.58.0
 [3.57.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.56.0...v3.57.0
 [3.56.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.55.0...v3.56.0
