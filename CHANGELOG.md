@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `UIContainerConfig.hideImmediatelyOnMouseLeave` to immediately hide the UI when mouse leaves it
 
+### Fixed
+- Triggering UI release after merging a PR from a fork
+
 ## [3.58.0] - 2024-04-08
 
 ### Added
