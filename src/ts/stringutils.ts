@@ -1,4 +1,4 @@
-import { LinearAd, PlayerAPI } from 'bitmovin-player';
+import { LinearAd, PlayerAPI, TimeMode } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 
 export namespace StringUtils {
@@ -115,6 +115,7 @@ export namespace StringUtils {
       } else if (formatString.indexOf('adBreakRemainingTime') > -1) { // To display the remaining time in the ad bread as opposed to in the ad
         time = 0;
         
+        // compute list of ads and index of active ad
         if (player.ads.isLinearAdActive()) {
           let scheduledAds = player.ads.getActiveAdBreak().ads;
           let durations: number[] = [];
@@ -132,10 +133,13 @@ export namespace StringUtils {
             }
           }
           // Compute duration of ads to be played (incl active ad)
-          time = durations.slice(indexOfActiveAd).reduce((time, current) => time + current, 0);
-  
+          let duration = durations.slice(indexOfActiveAd).reduce((prev, current) => prev + current, 0);
+ 
+          // time played
+          let currentTime = player.getCurrentTime();
+
           // And minus time played
-          time = time - player.getCurrentTime(); 
+          time = duration - currentTime;
         }
       }
       
