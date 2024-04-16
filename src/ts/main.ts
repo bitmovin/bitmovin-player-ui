@@ -1,6 +1,6 @@
 export const version: string = '{{VERSION}}';
 // Management
-export { UIManager, UIInstanceManager } from './uimanager';
+export { UIManager, UIInstanceManager, UIVariant } from './uimanager';
 // Factories
 export { UIFactory } from './uifactory';
 export { DemoFactory } from './demofactory';
