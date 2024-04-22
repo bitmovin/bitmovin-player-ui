@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- `ControlBar` not auto-hiding when `UIConfig.disableAutoHideWhenHovered` is set to `true` on some touch screen devices
+
 ## [3.60.0] - 2024-04-16
 
 ### Added
