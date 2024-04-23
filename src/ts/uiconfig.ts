@@ -70,8 +70,8 @@ export interface UIConfig {
   playbackSpeedSelectionEnabled?: boolean;
   /**
    * Specifies if the player controls including `SettingsPanel` should auto hide when still hovered. This
-   * configuration does not apply to mobile platforms. On mobile platforms the `SettingsPanel` is by default
-   * configured to not auto-hide and the behaviour cannot be changed using this configuration.
+   * configuration does not apply to devices using a touch screen. On touch screen devices the `SettingsPanel`
+   * is by default configured to not auto-hide and the behaviour cannot be changed using this configuration.
    * Default: false
    */
   disableAutoHideWhenHovered?: boolean;
