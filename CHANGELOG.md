@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Fixed
-- "Skip ad" button and ad click-through URL cannot be triggered with a single touch when small screen UI is used
+- "Skip ad" button and ad click-through URL cannot be triggered with a single touch when small screen ad UI is used
 
 ## [3.62.0] - 2024-05-06
 
