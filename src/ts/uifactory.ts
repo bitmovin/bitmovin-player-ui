@@ -325,7 +325,7 @@ export namespace UIFactory {
         }),
       ],
       cssClasses: ['ui-skin-ads', 'ui-skin-smallscreen'],
-      // Disable auto-hide to not require two touches to skip an ad or trigger the click-through
+      // Disable auto-hide to not require two touches to skip an ad or trigger the click-through URL
       hideDelay: -1,
       hidePlayerStateExceptions: [
         PlayerUtils.PlayerState.Prepared,
