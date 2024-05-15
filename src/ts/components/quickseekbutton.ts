@@ -1,12 +1,12 @@
-import { Button, ButtonConfig } from "./button";
-import { i18n } from "../localization/i18n";
-import { PlayerAPI } from "bitmovin-player";
-import { UIInstanceManager } from "../uimanager";
-import { PlayerUtils } from "../playerutils";
+import { Button, ButtonConfig } from './button';
+import { i18n } from '../localization/i18n';
+import { PlayerAPI } from 'bitmovin-player';
+import { UIInstanceManager } from '../uimanager';
+import { PlayerUtils } from '../playerutils';
 
 export enum QuickSeekDirection {
-  Forward = "forward",
-  Rewind = "rewind",
+  Forward = 'forward',
+  Rewind = 'rewind',
 }
 
 export interface QuickSeekButtonConfig extends ButtonConfig {
@@ -32,17 +32,21 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
       {
         seekSeconds: 10,
         direction: QuickSeekDirection.Rewind,
-        cssClass: "ui-quickseekbutton",
+        cssClass: 'ui-quickseekbutton',
       },
-      this.config
+      this.config,
     );
 
-    this.config.text = this.config.text || i18n.getLocalizer(`quickseek.${this.config.direction}`);
-    this.config.ariaLabel = this.config.ariaLabel || i18n.getLocalizer(`quickseek.${this.config.direction}`);
+    this.config.text =
+      this.config.text ||
+      i18n.getLocalizer(`quickseek.${this.config.direction}`);
+    this.config.ariaLabel =
+      this.config.ariaLabel ||
+      i18n.getLocalizer(`quickseek.${this.config.direction}`);
 
     this.getDomElement().data(
-      this.prefixCss("seek-direction"),
-      this.config.direction
+      this.prefixCss('seek-direction'),
+      this.config.direction,
     );
   }
 
