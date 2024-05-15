@@ -11,6 +11,10 @@ export interface ButtonConfig extends ComponentConfig {
    * The text as string or localize callback on the button.
    */
   text?: LocalizableText;
+  /**
+   * WCAG20 standard for defining info about the component (usually the name)
+   */
+  ariaLabel?: LocalizableText;
 }
 
 /**

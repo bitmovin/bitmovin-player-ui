@@ -38,6 +38,7 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
     );
 
     this.config.text = this.config.text || i18n.getLocalizer(`quickseek.${this.config.direction}`);
+    this.config.ariaLabel = this.config.ariaLabel || i18n.getLocalizer(`quickseek.${this.config.direction}`);
 
     this.getDomElement().data(
       this.prefixCss("seek-direction"),
