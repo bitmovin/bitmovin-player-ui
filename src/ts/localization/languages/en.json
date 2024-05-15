@@ -68,5 +68,7 @@
   "seekBar": "Video timeline",
   "seekBar.value": "Value",
   "seekBar.timeshift": "Timeshift",
-  "seekBar.durationText": "out of"
+  "seekBar.durationText": "out of",
+  "quickseek.forward": "Fast Forward",
+  "quickseek.rewind": "Rewind"
 }

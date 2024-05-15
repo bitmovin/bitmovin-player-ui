@@ -68,5 +68,7 @@
   "seekBar": "Línea de Tiempo",
   "seekBar.value": "posición",
   "seekBar.timeshift": "cambio de posición",
-  "seekBar.durationText": "de"
+  "seekBar.durationText": "de",
+  "quickseek.forward": "Adelantar",
+  "quickseek.rewind": "Rebobinar"
 }
