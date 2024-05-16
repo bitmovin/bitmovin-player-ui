@@ -326,6 +326,7 @@ export namespace UIFactory {
       ],
       cssClasses: ['ui-skin-ads', 'ui-skin-smallscreen'],
       hideDelay: 2000,
+      allowDefaultActionOnFirstTouch: true,
       hidePlayerStateExceptions: [
         PlayerUtils.PlayerState.Prepared,
         PlayerUtils.PlayerState.Paused,
