@@ -112,9 +112,19 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
       }
 
       if (isLive) {
-        player.timeShift(newSeekTime);
+        const clampedValue = PlayerUtils.clampValueToRange(
+          newSeekTime,
+          player.getMaxTimeShift(),
+          0,
+        );
+        player.timeShift(clampedValue);
       } else {
-        player.seek(newSeekTime);
+        const clampedValue = PlayerUtils.clampValueToRange(
+          newSeekTime,
+          0,
+          player.getDuration(),
+        );
+        player.seek(clampedValue);
       }
     });
   }
