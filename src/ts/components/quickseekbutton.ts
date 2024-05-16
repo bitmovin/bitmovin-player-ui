@@ -53,16 +53,56 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    if (player.isLive()) {
-      this.hide();
-    }
+    let isLive: boolean;
+    let hasTimeShift: boolean;
+
+    const switchVisibility = (isLive: boolean, hasTimeShift: boolean) => {
+      if (isLive && !hasTimeShift) {
+        this.hide();
+      } else {
+        this.show();
+      }
+    };
+
+    const timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(
+      player,
+    );
+    timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe(
+      (sender, args: PlayerUtils.TimeShiftAvailabilityChangedArgs) => {
+        hasTimeShift = args.timeShiftAvailable;
+        switchVisibility(isLive, hasTimeShift);
+      },
+    );
+
+    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(
+      player,
+      uimanager,
+    );
+    liveStreamDetector.onLiveChanged.subscribe(
+      (sender, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
+        isLive = args.live;
+        switchVisibility(isLive, hasTimeShift);
+      },
+    );
+
+    // Initial detection
+    timeShiftDetector.detect();
+    liveStreamDetector.detect();
 
     this.onClick.subscribe(() => {
-      if (player.isLive()) {
+      if (isLive && !hasTimeShift) {
+        // If no DVR window is available, the button should be hidden anyway, so this is to be absolutely sure
         return;
       }
 
-      const currentPosition = player.getCurrentTime();
+      if (isLive && this.config.direction === QuickSeekDirection.Forward && player.getTimeShift() === 0) {
+        // Don't do anything if the player is already on the live edge
+        return;
+      }
+
+      const currentPosition = isLive
+        ? player.getTimeShift()
+        : player.getCurrentTime();
 
       let newSeekTime = 0;
       if (this.config.direction === QuickSeekDirection.Forward) {
@@ -71,7 +111,11 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
         newSeekTime = currentPosition - this.config.seekSeconds;
       }
 
-      player.seek(newSeekTime);
+      if (isLive) {
+        player.timeShift(newSeekTime);
+      } else {
+        player.seek(newSeekTime);
+      }
     });
   }
 }
