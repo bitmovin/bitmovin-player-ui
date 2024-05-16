@@ -112,7 +112,6 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     let isUiShown = false;
     let isSeeking = false;
-    let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
 
     const hidingPrevented = (): boolean => {
@@ -157,15 +156,13 @@ export class UIContainer extends Container<UIContainerConfig> {
       name: 'touchend',
       handler: (e) => {
         if (!isUiShown) {
-          // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
-          // instead. The first touch is not prevented to let other listeners receive the event and trigger an
-          // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
-          // tap which 1. reveals the UI and 2. starts playback.
+          // If the UI is hidden, we prevent other actions and reveal the UI instead. 
+          // Exceptions are when we are not playing or when the config specifically allows the default action. This is 
+          // e.g. needed so that the huge playback button can directly start playback instead of requiring a double
+          // tap which 1. reveals the UI and 2. starts playback. The same holds for the ad click-through and the skip-ad 
+          // button, where we do not want double taps to be required.
           let allowDefaultOnFirstTouch = !player.isPlaying() || config.allowDefaultActionOnFirstTouch === true;
-          if (isFirstTouch && allowDefaultOnFirstTouch) {
-            console.log('First touch');
-            isFirstTouch = false;
-          } else {
+          if (!allowDefaultOnFirstTouch) {
             e.preventDefault();
           }
           this.showUi();
