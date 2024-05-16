@@ -17,12 +17,12 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: 5 seconds (5000)
    */
   hideDelay?: number;
-  
+
   /**
    * An array of player states in which the UI will not be hidden, no matter what the {@link hideDelay} is.
    */
   hidePlayerStateExceptions?: PlayerUtils.PlayerState[];
-  
+
   /**
    * The HTML element on which user interaction events (e.g. mouse and touch events) will be tracked to detect
    * interaction with the UI. These basically trigger showing and hiding of the UI.
@@ -38,13 +38,13 @@ export interface UIContainerConfig extends ContainerConfig {
   hideImmediatelyOnMouseLeave?: boolean;
 
   /**
-   * On touch enabled devices, when the UI is hidden, the first touch shows the UI again. This flag specifies whether 
-   * to allow the default action (e.g. button interaction) in addition to showing the UI for first touches. 
+   * On touch enabled devices, when the UI is hidden, the first touch shows the UI again. This flag specifies whether
+   * to allow the default action (e.g. button interaction) in addition to showing the UI for first touches.
    * If set to false, only the UI will show. If set to true, the UI will show and the default action will be executed.
-   * 
-   * Note: The play() action will always be executed on first touch if the player is paused and is excluded from this 
+   *
+   * Note: The play() action will always be executed on first touch if the player is paused and is excluded from this
    * config flag.
-   * 
+   *
    * Default: false
    */
   allowDefaultActionOnFirstTouch?: boolean;
@@ -161,7 +161,7 @@ export class UIContainer extends Container<UIContainerConfig> {
           // instead. The first touch is not prevented to let other listeners receive the event and trigger an
           // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
           // tap which 1. reveals the UI and 2. starts playback.
-          let allowDefaultOnFirstTouch = !player.isPlaying() || config.allowDefaultActionOnFirstTouch == true;
+          let allowDefaultOnFirstTouch = !player.isPlaying() || config.allowDefaultActionOnFirstTouch === true;
           if (isFirstTouch && allowDefaultOnFirstTouch) {
             console.log('First touch');
             isFirstTouch = false;
