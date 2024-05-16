@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- `UIContainerConfig.allowDefaultActionOnFirstTouch` to configure whether the default action should be executed for first touches when the UI is hidden
+
+### Fixed
+- "Skip ad" button and ad click-through URL cannot be triggered with a single touch when modern small screen ad UI is used
+
 ## [3.62.0] - 2024-05-06
 
 ### Fixed
