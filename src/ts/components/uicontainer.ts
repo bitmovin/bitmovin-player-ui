@@ -156,10 +156,10 @@ export class UIContainer extends Container<UIContainerConfig> {
       name: 'touchend',
       handler: (e) => {
         if (!isUiShown) {
-          // If the UI is hidden, we prevent other actions and reveal the UI instead. 
-          // Exceptions are when we are not playing or when the config specifically allows the default action. This is 
+          // If the UI is hidden, we prevent other actions and reveal the UI instead.
+          // Exceptions are when we are not playing or when the config specifically allows the default action. This is
           // e.g. needed so that the huge playback button can directly start playback instead of requiring a double
-          // tap which 1. reveals the UI and 2. starts playback. The same holds for the ad click-through and the skip-ad 
+          // tap which 1. reveals the UI and 2. starts playback. The same holds for the ad click-through and the skip-ad
           // button, where we do not want double taps to be required.
           let allowDefaultOnFirstTouch = !player.isPlaying() || config.allowDefaultActionOnFirstTouch === true;
           if (!allowDefaultOnFirstTouch) {
