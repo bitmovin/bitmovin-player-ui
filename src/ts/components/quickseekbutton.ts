@@ -1,6 +1,6 @@
 import { Button, ButtonConfig } from './button';
 import { i18n } from '../localization/i18n';
-import { PlayerAPI } from 'bitmovin-player';
+import { PlayerAPI, PlayerEventBase, SeekEvent } from 'bitmovin-player';
 import { UIInstanceManager } from '../uimanager';
 import { PlayerUtils } from '../playerutils';
 
@@ -14,8 +14,12 @@ export interface QuickSeekButtonConfig extends ButtonConfig {
 }
 
 export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
+  private currentSeekTarget: number | null;
+  private player: PlayerAPI;
+
   constructor(config: QuickSeekButtonConfig = {}) {
     super(config);
+    this.currentSeekTarget = null;
 
     this.config = this.mergeConfig(
       config,
@@ -36,6 +40,7 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+    this.player = player;
 
     let isLive: boolean;
     let hasTimeShift: boolean;
@@ -77,7 +82,12 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
         return;
       }
 
-      const currentPosition = isLive ? player.getTimeShift() : player.getCurrentTime();
+      const currentPosition =
+        this.currentSeekTarget !== null
+          ? this.currentSeekTarget
+          : isLive
+            ? player.getTimeShift()
+            : player.getCurrentTime();
 
       const newSeekTime = currentPosition + this.config.seekSeconds;
 
@@ -89,5 +99,23 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
         player.seek(clampedValue);
       }
     });
+
+    this.player.on(this.player.exports.PlayerEvent.Seek, this.onSeek);
+    this.player.on(this.player.exports.PlayerEvent.Seeked, this.onSeeked);
+  }
+
+  private onSeek = (event: SeekEvent): void => {
+    this.currentSeekTarget = event.seekTarget;
+  };
+
+  private onSeeked = (event: PlayerEventBase) => {
+    this.currentSeekTarget = null;
+  };
+
+  release(): void {
+    this.player.off(this.player.exports.PlayerEvent.Seek, this.onSeek);
+    this.player.off(this.player.exports.PlayerEvent.Seeked, this.onSeeked);
+    this.currentSeekTarget = null;
+    this.player = null;
   }
 }
