@@ -1,6 +1,6 @@
 import { Button, ButtonConfig } from './button';
 import { i18n } from '../localization/i18n';
-import { PlayerAPI, PlayerEventBase, SeekEvent } from 'bitmovin-player';
+import { PlayerAPI, SeekEvent, TimeShiftEvent } from 'bitmovin-player';
 import { UIInstanceManager } from '../uimanager';
 import { PlayerUtils } from '../playerutils';
 
@@ -101,20 +101,28 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
     });
 
     this.player.on(this.player.exports.PlayerEvent.Seek, this.onSeek);
-    this.player.on(this.player.exports.PlayerEvent.Seeked, this.onSeeked);
+    this.player.on(this.player.exports.PlayerEvent.Seeked, this.onSeekedOrTimeShifted);
+    this.player.on(this.player.exports.PlayerEvent.TimeShift, this.onTimeShift);
+    this.player.on(this.player.exports.PlayerEvent.TimeShifted, this.onSeekedOrTimeShifted);
   }
 
   private onSeek = (event: SeekEvent): void => {
     this.currentSeekTarget = event.seekTarget;
   };
 
-  private onSeeked = (event: PlayerEventBase) => {
+  private onSeekedOrTimeShifted = () => {
     this.currentSeekTarget = null;
   };
 
+  private onTimeShift = (event: TimeShiftEvent): void => {
+    this.currentSeekTarget = this.player.getTimeShift() + (event.target - event.position);
+  }
+
   release(): void {
     this.player.off(this.player.exports.PlayerEvent.Seek, this.onSeek);
-    this.player.off(this.player.exports.PlayerEvent.Seeked, this.onSeeked);
+    this.player.off(this.player.exports.PlayerEvent.Seeked, this.onSeekedOrTimeShifted);
+    this.player.off(this.player.exports.PlayerEvent.TimeShift, this.onTimeShift);
+    this.player.off(this.player.exports.PlayerEvent.TimeShifted, this.onSeekedOrTimeShifted);
     this.currentSeekTarget = null;
     this.player = null;
   }
