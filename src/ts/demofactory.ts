@@ -34,7 +34,7 @@ import {SettingsPanelPage} from './components/settingspanelpage';
 import { UIFactory } from './uifactory';
 import { UIConfig } from './uiconfig';
 import { PlayerAPI } from 'bitmovin-player';
-import { QuickSeekButton, QuickSeekDirection } from './main';
+import { QuickSeekButton } from './main';
 
 export namespace DemoFactory {
 
@@ -119,8 +119,8 @@ export namespace DemoFactory {
         new Container({
           components: [
             new PlaybackToggleButton(),
-            new QuickSeekButton({ direction: QuickSeekDirection.Rewind, seekSeconds: 10 }),
-            new QuickSeekButton({ direction: QuickSeekDirection.Forward, seekSeconds: 10 }),
+            new QuickSeekButton({ seekSeconds: -10 }),
+            new QuickSeekButton({ seekSeconds: 10 }),
             new VolumeToggleButton(),
             new VolumeSlider(),
             new Spacer(),

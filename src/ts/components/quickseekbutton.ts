@@ -4,23 +4,13 @@ import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../uimanager';
 import { PlayerUtils } from '../playerutils';
 
-export enum QuickSeekDirection {
-  Forward = 'forward',
-  Rewind = 'rewind',
-}
-
 export interface QuickSeekButtonConfig extends ButtonConfig {
   /**
    * Specify how many seconds the player should seek forward/backwards in the stream.
-   * Default is 10.
+   * Negative values mean a backwards seek, positive values mean a forward seek.
+   * Default is -10.
    */
   seekSeconds?: number;
-
-  /**
-   * Specify whether the button should fast-forward or rewind.
-   * Default is rewind.
-   */
-  direction?: QuickSeekDirection;
 }
 
 export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
@@ -30,24 +20,18 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
     this.config = this.mergeConfig(
       config,
       {
-        seekSeconds: 10,
-        direction: QuickSeekDirection.Rewind,
+        seekSeconds: -10,
         cssClass: 'ui-quickseekbutton',
       },
       this.config,
     );
 
-    this.config.text =
-      this.config.text ||
-      i18n.getLocalizer(`quickseek.${this.config.direction}`);
-    this.config.ariaLabel =
-      this.config.ariaLabel ||
-      i18n.getLocalizer(`quickseek.${this.config.direction}`);
+    const seekDirection = this.config.seekSeconds < 0 ? 'rewind' : 'forward';
 
-    this.getDomElement().data(
-      this.prefixCss('seek-direction'),
-      this.config.direction,
-    );
+    this.config.text = this.config.text || i18n.getLocalizer(`quickseek.${seekDirection}`);
+    this.config.ariaLabel = this.config.ariaLabel || i18n.getLocalizer(`quickseek.${seekDirection}`);
+
+    this.getDomElement().data(this.prefixCss('seek-direction'), seekDirection);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -64,9 +48,7 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
       }
     };
 
-    const timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(
-      player,
-    );
+    const timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
     timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe(
       (sender, args: PlayerUtils.TimeShiftAvailabilityChangedArgs) => {
         hasTimeShift = args.timeShiftAvailable;
@@ -74,16 +56,11 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
       },
     );
 
-    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(
-      player,
-      uimanager,
-    );
-    liveStreamDetector.onLiveChanged.subscribe(
-      (sender, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
-        isLive = args.live;
-        switchVisibility(isLive, hasTimeShift);
-      },
-    );
+    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
+    liveStreamDetector.onLiveChanged.subscribe((sender, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
+      isLive = args.live;
+      switchVisibility(isLive, hasTimeShift);
+    });
 
     // Initial detection
     timeShiftDetector.detect();
@@ -95,35 +72,20 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
         return;
       }
 
-      if (isLive && this.config.direction === QuickSeekDirection.Forward && player.getTimeShift() === 0) {
+      if (isLive && this.config.seekSeconds > 0 && player.getTimeShift() === 0) {
         // Don't do anything if the player is already on the live edge
         return;
       }
 
-      const currentPosition = isLive
-        ? player.getTimeShift()
-        : player.getCurrentTime();
+      const currentPosition = isLive ? player.getTimeShift() : player.getCurrentTime();
 
-      let newSeekTime = 0;
-      if (this.config.direction === QuickSeekDirection.Forward) {
-        newSeekTime = currentPosition + this.config.seekSeconds;
-      } else if (this.config.direction === QuickSeekDirection.Rewind) {
-        newSeekTime = currentPosition - this.config.seekSeconds;
-      }
+      const newSeekTime = currentPosition + this.config.seekSeconds;
 
       if (isLive) {
-        const clampedValue = PlayerUtils.clampValueToRange(
-          newSeekTime,
-          player.getMaxTimeShift(),
-          0,
-        );
+        const clampedValue = PlayerUtils.clampValueToRange(newSeekTime, player.getMaxTimeShift(), 0);
         player.timeShift(clampedValue);
       } else {
-        const clampedValue = PlayerUtils.clampValueToRange(
-          newSeekTime,
-          0,
-          player.getDuration(),
-        );
+        const clampedValue = PlayerUtils.clampValueToRange(newSeekTime, 0, player.getDuration());
         player.seek(clampedValue);
       }
     });
