@@ -22,6 +22,11 @@
     "last 2 versions",
     "Firefox ESR"
   ],
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@inrupt/jest-jsdom-polyfills": "^1.6.0",
     "@types/jest": "^29.5.0",
