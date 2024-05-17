@@ -16,7 +16,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          ref: develop
 
       - uses: actions/download-artifact@v3
         with:
@@ -32,3 +34,19 @@ jobs:
         env:
           NPM_DRY_RUN: false
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Notify team
+        run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
+
+  handle_failure:
+    runs-on: ubuntu-latest
+    needs: [test_and_build, download_and_publish]
+    if: ${{ always() && (needs.download_and_publish.result == 'failure' || needs.test_and_build.result == 'failure') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+
+      - name: Notify team
+        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
