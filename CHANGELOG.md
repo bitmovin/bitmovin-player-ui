@@ -64,6 +64,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Automate release on every PR merge to develop
 
+### Added
+- `QuickSeekButton` control bar component for jumping +/- a configurable number of seconds (10 second default)
+
 ## [3.52.2] - 2023-11-23
 
 ### Fixed
