@@ -5,6 +5,7 @@
   "main": "./dist/js/framework/main.js",
   "types": "./dist/js/framework/main.d.ts",
   "scripts": {
+    "prepare": "husky",
     "test": "npx jest"
   },
   "repository": {
