@@ -1,4 +1,4 @@
-import {Component, ComponentConfig} from './components/component';
+import { Component, ComponentConfig } from './components/component';
 
 export interface Offset {
   left: number;
