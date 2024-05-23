@@ -35,6 +35,7 @@
         box-shadow: inset -4px -3px 2px 9px $color-focus;
       }
 
+      // sass-lint:disable force-pseudo-nesting
       &:focus:not(.#{$prefix}-focus-visible) {
         box-shadow: none;
       }

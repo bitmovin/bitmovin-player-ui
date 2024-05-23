@@ -78,7 +78,7 @@
     font-size: $medium-large-size;
 
     > .#{$prefix}-container-wrapper {
-      // Increase margin area around the UI but spread the dark shadow still 
+      // Increase margin area around the UI but spread the dark shadow still
       // to the edge of the video by applying it to only the container-wrapper
 
       margin: $overscan-margin 0;
@@ -95,6 +95,7 @@
     box-shadow: $focus-element-box-shadow;
     filter: drop-shadow(0 0 .3em $color-highlight);
     outline: none;
+    // sass-lint:disable no-transition-all
     transition: all .05s ease-in-out;
   }
 }
