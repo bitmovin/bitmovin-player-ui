@@ -14,6 +14,9 @@ export interface CssProperties {
   [propertyName: string]: string;
 }
 
+/**
+ * Extends the {@link HTMLElement} interface with a component attribute to store the associated component.
+ */
 export interface HTMLElementWithComponent extends HTMLElement {
   component?: Component<ComponentConfig>;
 }
