@@ -15,6 +15,13 @@ export interface ButtonConfig extends ComponentConfig {
    * WCAG20 standard for defining info about the component (usually the name)
    */
   ariaLabel?: LocalizableText;
+
+  /**
+   * Specifies whether the first touch event received by the {@link UIContainer} should be prevented or not.
+   *
+   * Default: false
+   */
+  acceptsTouchWithUiHidden?: boolean;
 }
 
 /**
@@ -33,6 +40,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       cssClass: 'ui-button',
       role: 'button',
       tabIndex: 0,
+      acceptsTouchWithUiHidden: false,
     } as Config, this.config);
   }
 
