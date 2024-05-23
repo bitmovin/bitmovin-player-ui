@@ -1,11 +1,12 @@
 import {ContainerConfig, Container} from './container';
 import {UIInstanceManager} from '../uimanager';
-import {DOM} from '../dom';
+import { DOM, HTMLElementWithComponent } from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
 import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
+import { Button, ButtonConfig } from './button';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -142,6 +143,28 @@ export class UIContainer extends Container<UIContainerConfig> {
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
       handler: (e) => {
+        const shouldPreventDefault = ((e: Event): Boolean => {
+          const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | null => {
+            if (
+                !element
+                  || element === this.userInteractionEventSource.get(0)
+                  || element.component instanceof UIContainer
+            ) {
+              return null;
+            }
+
+            if (element.component && element.component instanceof Button) {
+              return element.component;
+            } else {
+              return findButtonComponent(element.parentElement);
+            }
+          });
+
+          const buttonComponent = findButtonComponent(e.target as HTMLElementWithComponent);
+
+          return !(buttonComponent && buttonComponent.getConfig().acceptsTouchWithUiHidden);
+        });
+
         if (!isUiShown) {
           // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
           // instead. The first touch is not prevented to let other listeners receive the event and trigger an
@@ -150,7 +173,14 @@ export class UIContainer extends Container<UIContainerConfig> {
           if (isFirstTouch && !player.isPlaying()) {
             isFirstTouch = false;
           } else {
-            e.preventDefault();
+            // On touch input devices, the first touch is expected to display the UI controls and not be propagated to
+            // other components.
+            // When buttons are always visible this causes UX problems, as the first touch is not recognized.
+            // This is the case for the {@link AdSkipButton} and {@link AdClickOverlay}.
+            // To prevent UX issues where the buttons need to be touched twice, we do not prevent the first touch event.
+            if (shouldPreventDefault(e)) {
+              e.preventDefault();
+            }
           }
           this.showUi();
         }
