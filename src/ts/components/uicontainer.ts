@@ -161,7 +161,6 @@ export class UIContainer extends Container<UIContainerConfig> {
           });
 
           const buttonComponent = findButtonComponent(e.target as HTMLElementWithComponent);
-
           return !(buttonComponent && buttonComponent.getConfig().acceptsTouchWithUiHidden);
         });
 
