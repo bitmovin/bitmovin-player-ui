@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- `Component` instances are now assigned to their `HTMLElements` for easier accessing
+
 ## [3.63.0] - 2024-05-17
 
 ### Added
