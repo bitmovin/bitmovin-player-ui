@@ -25,7 +25,7 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
     let listElement = new DOM('ul', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    });
+    }, this);
 
     this.listElement = listElement;
     this.updateDomItems();

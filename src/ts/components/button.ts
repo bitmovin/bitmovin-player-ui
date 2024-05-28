@@ -54,7 +54,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     }
 
     // Create the button element with the text label
-    let buttonElement = new DOM('button', buttonElementAttributes).append(new DOM('span', {
+    let buttonElement = new DOM('button', buttonElementAttributes, this).append(new DOM('span', {
       'class': this.prefixCss('label'),
     }).html(i18n.performLocalization(this.config.text)));
 

@@ -647,7 +647,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       'role': 'slider',
       'aria-label': i18n.performLocalization(this.config.ariaLabel),
       'tabindex': this.config.tabIndex.toString(),
-    });
+    }, this);
 
     let seekBar = new DOM('div', {
       'class': this.prefixCss('seekbar'),

@@ -44,7 +44,7 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
     let listBoxElement = new DOM('div', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    });
+    }, this);
 
     this.listBoxElement = listBoxElement;
     this.createListBoxDomItems();
