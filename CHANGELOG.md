@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `Component` instances are now assigned to their `HTMLElements` for easier accessing
 
+### Fixed
+- Two touch interactions needed to skip an ad or open the click through link
+
 ## [3.63.0] - 2024-05-17
 
 ### Added
