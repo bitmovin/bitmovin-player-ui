@@ -11,6 +11,17 @@ export interface ButtonConfig extends ComponentConfig {
    * The text as string or localize callback on the button.
    */
   text?: LocalizableText;
+  /**
+   * WCAG20 standard for defining info about the component (usually the name)
+   */
+  ariaLabel?: LocalizableText;
+
+  /**
+   * Specifies whether the first touch event received by the {@link UIContainer} should be prevented or not.
+   *
+   * Default: false
+   */
+  acceptsTouchWithUiHidden?: boolean;
 }
 
 /**
@@ -29,6 +40,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       cssClass: 'ui-button',
       role: 'button',
       tabIndex: 0,
+      acceptsTouchWithUiHidden: false,
     } as Config, this.config);
   }
 
@@ -50,7 +62,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     }
 
     // Create the button element with the text label
-    let buttonElement = new DOM('button', buttonElementAttributes).append(new DOM('span', {
+    let buttonElement = new DOM('button', buttonElementAttributes, this).append(new DOM('span', {
       'class': this.prefixCss('label'),
     }).html(i18n.performLocalization(this.config.text)));
 

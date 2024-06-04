@@ -1,0 +1,74 @@
+name: Trigger release on merge
+run-name: Starting release for ${{ github.actor }} PR merge
+on:
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - develop
+
+jobs:
+  trigger-ui-release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
+          ref: develop
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Read package.json version
+        uses: actions/github-script@v6
+        id: define-package-json-version
+        with:
+          script: |
+            const { version } = require('./package.json')
+            core.info(`performing a minor release for existing version ${version}`)
+            core.setOutput('packageJsonVersion', version)
+
+      - name: Define release version
+        uses: actions/github-script@v6
+        id: define-release-version
+        with:
+          script: |
+            const { defineReleaseVersion } = require('./.github/scripts/defineVersion.js')
+            return defineReleaseVersion({core}, 'minor', "${{ steps.define-package-json-version.outputs.packageJsonVersion }}" )
+
+      - name: Bump package.json version
+        run: |
+          git config --global user.name 'Automated Release'
+          git config --global user.email 'release-automation@bitmovin.com'
+          npm version "${{ fromJson(steps.define-release-version.outputs.result).full }}"
+
+      - name: Update Changelog
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const { updateChangeLog } = require('./.github/scripts/updateChangelog.js') 
+
+            const stableVersion = '${{ fromJson(steps.define-release-version.outputs.result).full }}'.split('-')[0]
+            const releaseDate = new Date().toISOString().split('T')[0]
+
+            const data = fs.readFileSync('./CHANGELOG.md',{encoding:'utf8', flag:'r'});
+
+            core.info(`Updating ${stableVersion} with date ${releaseDate} in Changelog`);
+
+            const changelogFileContents = updateChangeLog(data, stableVersion, releaseDate);
+
+            fs.writeFileSync('./CHANGELOG.md', changelogFileContents, 'utf-8');
+
+      - name: Push changes
+        run: |
+          git add .
+          git commit -m "Add release date to changelog"
+          git push origin develop
+          git push origin --tags
+
+      - name: Notify failure
+        if: ${{ failure() }}
+        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}

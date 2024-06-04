@@ -23,7 +23,7 @@ export class FontFamilySelectBox extends SubtitleSettingSelectBox {
     this.addItem('monospacedserif', i18n.getLocalizer('settings.subtitles.font.family.monospacedserif'));
     this.addItem('proportionalserif', i18n.getLocalizer('settings.subtitles.font.family.proportionalserif'));
     this.addItem('monospacedsansserif', i18n.getLocalizer('settings.subtitles.font.family.monospacedsansserif'));
-    this.addItem('proportionalsansserif', i18n.getLocalizer('settings.subtitles.font.family.proportionalserif'));
+    this.addItem('proportionalsansserif', i18n.getLocalizer('settings.subtitles.font.family.proportionalsansserif'));
     this.addItem('casual', i18n.getLocalizer('settings.subtitles.font.family.casual'));
     this.addItem('cursive', i18n.getLocalizer('settings.subtitles.font.family.cursive'));
     this.addItem('smallcapital', i18n.getLocalizer('settings.subtitles.font.family.smallcapital'));

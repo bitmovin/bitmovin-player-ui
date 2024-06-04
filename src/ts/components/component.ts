@@ -272,7 +272,7 @@ export class Component<Config extends ComponentConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'role': this.config.role,
-    });
+    }, this);
 
     return element;
   }

@@ -16,7 +16,7 @@
     height: 100%;
     width: 100%;
 
-    @keyframes spin {
+    @keyframes #{$prefix}-spin {
       50% {
         transform: rotate(180deg) scale(1.1);
       }
@@ -27,7 +27,7 @@
     }
 
     &:hover {
-      animation: spin .5s ease-in;
+      animation: #{$prefix}-spin .5s ease-in;
     }
   }
 }

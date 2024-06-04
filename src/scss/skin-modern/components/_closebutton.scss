@@ -4,7 +4,7 @@
 .#{$prefix}-ui-closebutton {
   @extend %ui-button;
 
-  @keyframes pulsate {
+  @keyframes #{$prefix}-pulsate {
     20% {
       transform: scale(1.1);
     }
@@ -27,6 +27,6 @@
   &:hover {
     @include svg-icon-shadow;
 
-    animation: pulsate 1s;
+    animation: #{$prefix}-pulsate 1s;
   }
 }

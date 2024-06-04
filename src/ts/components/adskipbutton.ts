@@ -31,6 +31,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       cssClass: 'ui-button-ad-skip',
       untilSkippableMessage: 'Skip ad in {remainingTime}',
       skippableMessage: 'Skip ad',
+      acceptsTouchWithUiHidden: true,
     }, this.config);
   }
 
