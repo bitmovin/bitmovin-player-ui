@@ -22,7 +22,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       id: 'ecomodelabel',
     });
     this.emissionsSavedLabel = new Label({
-      text: this.savedEmissons.toFixed(4) + ' gCO2',
+      text: `${this.savedEmissons.toFixed(4)} gCO2`,
       cssClass: 'ui-label-savedEnergy',
     });
 
