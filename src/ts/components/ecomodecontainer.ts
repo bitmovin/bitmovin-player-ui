@@ -1,4 +1,4 @@
-import { MediaType, PlayerAPI, SegmentPlaybackEvent, VideoQuality } from 'bitmovin-player';
+import { PlayerAPI, SegmentPlaybackEvent, VideoQuality } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Container, ContainerConfig } from './container';
 import { EcoModeToggleButton } from './ecomodetogglebutton';
