@@ -71,11 +71,6 @@ export namespace UIFactory {
 
   export function modernUI(config: UIConfig) {
     let subtitleOverlay = new SubtitleOverlay();
-    const ecoModeContainer = new EcoModeContainer();
-    ecoModeContainer.setOnToggleCallback(() => {
-      // forces the browser to re-calculate the height of the settings panel when adding/removing elements
-      settingsPanel.getDomElement().css({ width: '', height: '' });
-    });
 
     let mainSettingsPanelPage: SettingsPanelPage;
 
@@ -87,6 +82,13 @@ export namespace UIFactory {
     ];
 
     if (config.ecoMode) {
+      const ecoModeContainer = new EcoModeContainer();
+
+      ecoModeContainer.setOnToggleCallback(() => {
+        // forces the browser to re-calculate the height of the settings panel when adding/removing elements
+        settingsPanel.getDomElement().css({ width: '', height: '' });
+      });
+
       components.unshift(ecoModeContainer);
     }
     mainSettingsPanelPage = new SettingsPanelPage({
