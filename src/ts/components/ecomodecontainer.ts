@@ -76,8 +76,6 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
       if (this.ecoModeSavedEmissionsItem.isShown()) {
         this.updateSavedEmissions(currentEnergyKwh, maxEnergyKwh, this.emissionsSavedLabel);
-      } else {
-        this.emissionsSavedLabel.setText(this.savedEmissons.toFixed(4) + ' gCO2');
       }
     });
   }
