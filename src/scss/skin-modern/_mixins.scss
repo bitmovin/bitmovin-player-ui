@@ -6,7 +6,7 @@
 
 @mixin hidden {
   &.#{$prefix}-hidden {
-    display: none !important;
+    display: none;
   }
 }
 
