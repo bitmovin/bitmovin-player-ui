@@ -77,7 +77,7 @@ export namespace UIFactory {
       settingsPanel.getDomElement().css({ width: '', height: '' });
     });
 
-    let mainSettingsPanelPage;
+    let mainSettingsPanelPage: SettingsPanelPage;
 
     const components: Container<ContainerConfig>[] = [
       new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
