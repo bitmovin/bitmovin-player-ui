@@ -36,19 +36,19 @@ export class EcoModeContainer extends Container<ContainerConfig> {
 
     ecoModeToggleButton.onToggleOn.subscribe(() => {
       this.ecoModeSavedEmissionsItem.show();
-      this.onActivecallback();
+      this.onToggleCallback();
     });
 
     ecoModeToggleButton.onToggleOff.subscribe(() => {
       this.ecoModeSavedEmissionsItem.hide();
-      this.onActivecallback();
+      this.onToggleCallback();
     });
   }
 
-  private onActivecallback: () => void;
+  private onToggleCallback: () => void;
 
-  public setOnActiveChangeCallback(callback: () => void) {
-    this.onActivecallback = callback;
+  public setOnToggleCallback(callback: () => void) {
+    this.onToggleCallback = callback;
   }
 
   configure(player: PlayerAPI): void {
