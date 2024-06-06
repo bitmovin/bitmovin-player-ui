@@ -23,7 +23,7 @@ export class EcoModeToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    if(this.areAdaptationApisAvailable(player)) {
+    if (this.areAdaptationApisAvailable(player)) {
       this.onClick.subscribe(() => {
         this.toggle();
       });
