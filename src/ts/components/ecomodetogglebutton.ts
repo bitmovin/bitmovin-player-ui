@@ -23,25 +23,37 @@ export class EcoModeToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.onClick.subscribe(() => {
-      this.toggle();
-    });
+    if(this.areAdaptationApisAvailable(player)) {
+      this.onClick.subscribe(() => {
+        this.toggle();
+      });
 
-    this.onToggleOn.subscribe(() => {
-      this.enableEcoMode(player);
-      player.setVideoQuality('auto');
-    });
+      this.onToggleOn.subscribe(() => {
+        this.enableEcoMode(player);
+        player.setVideoQuality('auto');
+      });
 
-    this.onToggleOff.subscribe(() => {
-      this.disableEcoMode(player);
-    });
-
-    player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality: VideoQualityChangedEvent) => {
-      if (quality.targetQuality.height !== null) {
-        this.off();
+      this.onToggleOff.subscribe(() => {
         this.disableEcoMode(player);
-      }
-    });
+      });
+
+      player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality: VideoQualityChangedEvent) => {
+        if (quality.targetQuality.height !== null) {
+          this.off();
+          this.disableEcoMode(player);
+        }
+      });
+    } else {
+      super.disable();
+    }
+
+  }
+
+  private areAdaptationApisAvailable(player: PlayerAPI): boolean {
+    const isGetConfigAvailable = Boolean(player.adaptation.getConfig && typeof player.adaptation.getConfig === 'function');
+    const isSetConfigAvailable = Boolean(player.adaptation.setConfig && typeof player.adaptation.setConfig === 'function');
+
+    return Boolean(player.adaptation && isGetConfigAvailable && isSetConfigAvailable);
   }
 
   enableEcoMode(player: PlayerAPI): void {
