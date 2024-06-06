@@ -11,7 +11,7 @@ import { SettingsPanelPageOpenButton } from './components/settingspanelpageopenb
 import { SubtitleSettingsLabel } from './components/subtitlesettings/subtitlesettingslabel';
 import { SubtitleSelectBox } from './components/subtitleselectbox';
 import { ControlBar } from './components/controlbar';
-import { Container } from './components/container';
+import { Container, ContainerConfig } from './components/container';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from './components/playbacktimelabel';
 import { SeekBar } from './components/seekbar';
 import { SeekBarLabel } from './components/seekbarlabel';
@@ -50,9 +50,9 @@ import { AudioTrackListBox } from './components/audiotracklistbox';
 import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
+import { EcoModeContainer } from './components/ecomodecontainer';
 
 export namespace UIFactory {
-
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return UIFactory.buildModernUI(player, config);
   }
@@ -69,22 +69,35 @@ export namespace UIFactory {
     return UIFactory.buildModernTvUI(player, config);
   }
 
-  export function modernUI() {
+  export function modernUI(config: UIConfig) {
     let subtitleOverlay = new SubtitleOverlay();
 
-    let mainSettingsPanelPage = new SettingsPanelPage({
-      components: [
-        new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
-        new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
-      ],
+    let mainSettingsPanelPage: SettingsPanelPage;
+
+    const components: Container<ContainerConfig>[] = [
+      new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+      new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
+    ];
+
+    if (config.ecoMode) {
+      const ecoModeContainer = new EcoModeContainer();
+
+      ecoModeContainer.setOnToggleCallback(() => {
+        // forces the browser to re-calculate the height of the settings panel when adding/removing elements
+        settingsPanel.getDomElement().css({ width: '', height: '' });
+      });
+
+      components.unshift(ecoModeContainer);
+    }
+
+    mainSettingsPanelPage = new SettingsPanelPage({
+      components,
     });
 
     let settingsPanel = new SettingsPanel({
-      components: [
-        mainSettingsPanelPage,
-      ],
+      components: [mainSettingsPanelPage],
       hidden: true,
     });
 
@@ -112,7 +125,8 @@ export namespace UIFactory {
         {
           role: 'menubar',
         },
-      ));
+      ),
+    );
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);
 
@@ -121,9 +135,15 @@ export namespace UIFactory {
         settingsPanel,
         new Container({
           components: [
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+              hideInLivePlayback: true,
+            }),
             new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+              cssClasses: ['text-right'],
+            }),
           ],
           cssClasses: ['controlbar-top'],
         }),
@@ -173,10 +193,7 @@ export namespace UIFactory {
         new AdClickOverlay(),
         new PlaybackToggleOverlay(),
         new Container({
-          components: [
-            new AdMessageLabel({ text: i18n.getLocalizer('ads.remainingTime')}),
-            new AdSkipButton(),
-          ],
+          components: [new AdMessageLabel({ text: i18n.getLocalizer('ads.remainingTime') }), new AdSkipButton()],
           cssClass: 'ui-ads-status',
         }),
         new ControlBar({
@@ -217,9 +234,7 @@ export namespace UIFactory {
     });
 
     let settingsPanel = new SettingsPanel({
-      components: [
-        mainSettingsPanelPage,
-      ],
+      components: [mainSettingsPanelPage],
       hidden: true,
       pageTransitionAnimation: false,
       hideDelay: -1,
@@ -249,7 +264,8 @@ export namespace UIFactory {
         {
           role: 'menubar',
         },
-      ));
+      ),
+    );
 
     settingsPanel.addComponent(subtitleSettingsPanelPage);
 
@@ -260,9 +276,15 @@ export namespace UIFactory {
       components: [
         new Container({
           components: [
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+              hideInLivePlayback: true,
+            }),
             new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+              cssClasses: ['text-right'],
+            }),
           ],
           cssClasses: ['controlbar-top'],
         }),
@@ -317,10 +339,7 @@ export namespace UIFactory {
           ],
         }),
         new Container({
-          components: [
-            new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
-            new AdSkipButton(),
-          ],
+          components: [new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }), new AdSkipButton()],
           cssClass: 'ui-ads-status',
         }),
       ],
@@ -339,9 +358,15 @@ export namespace UIFactory {
       components: [
         new Container({
           components: [
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+              hideInLivePlayback: true,
+            }),
             new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 }),
-            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.TotalTime, cssClasses: ['text-right'] }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+              cssClasses: ['text-right'],
+            }),
           ],
           cssClasses: ['controlbar-top'],
         }),
@@ -372,43 +397,64 @@ export namespace UIFactory {
     // show smallScreen UI only on mobile/handheld devices
     let smallScreenSwitchWidth = 600;
 
-    return new UIManager(player, [{
-      ui: modernSmallScreenAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAd
-          && context.adRequiresUi;
-      },
-    }, {
-      ui: modernAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAd && context.adRequiresUi;
-      },
-    }, {
-      ui: modernSmallScreenUI(),
-      condition: (context: UIConditionContext) => {
-        return !context.isAd && !context.adRequiresUi && context.isMobile
-          && context.documentWidth < smallScreenSwitchWidth;
-      },
-    }, {
-      ui: modernUI(),
-      condition: (context: UIConditionContext) => {
-        return !context.isAd && !context.adRequiresUi;
-      },
-    }], config);
+    return new UIManager(
+      player,
+      [
+        {
+          ui: modernSmallScreenAdsUI(),
+          condition: (context: UIConditionContext) => {
+            return (
+              context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAd && context.adRequiresUi
+            );
+          },
+        },
+        {
+          ui: modernAdsUI(),
+          condition: (context: UIConditionContext) => {
+            return context.isAd && context.adRequiresUi;
+          },
+        },
+        {
+          ui: modernSmallScreenUI(),
+          condition: (context: UIConditionContext) => {
+            return (
+              !context.isAd &&
+              !context.adRequiresUi &&
+              context.isMobile &&
+              context.documentWidth < smallScreenSwitchWidth
+            );
+          },
+        },
+        {
+          ui: modernUI(config),
+          condition: (context: UIConditionContext) => {
+            return !context.isAd && !context.adRequiresUi;
+          },
+        },
+      ],
+      config,
+    );
   }
 
   export function buildModernSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, [{
-      ui: modernSmallScreenAdsUI(),
-      condition: (context: UIConditionContext) => {
-        return context.isAd && context.adRequiresUi;
-      },
-    }, {
-      ui: modernSmallScreenUI(),
-      condition: (context: UIConditionContext) => {
-        return !context.isAd && !context.adRequiresUi;
-      },
-    }], config);
+    return new UIManager(
+      player,
+      [
+        {
+          ui: modernSmallScreenAdsUI(),
+          condition: (context: UIConditionContext) => {
+            return context.isAd && context.adRequiresUi;
+          },
+        },
+        {
+          ui: modernSmallScreenUI(),
+          condition: (context: UIConditionContext) => {
+            return !context.isAd && !context.adRequiresUi;
+          },
+        },
+      ],
+      config,
+    );
   }
 
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -416,9 +462,15 @@ export namespace UIFactory {
   }
 
   export function buildModernTvUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-        return new UIManager(player, [{
+    return new UIManager(
+      player,
+      [
+        {
           ...modernTvUI(),
-        }], config);
+        },
+      ],
+      config,
+    );
   }
 
   export function modernTvUI() {
@@ -426,9 +478,7 @@ export namespace UIFactory {
     const subtitleListPanel = new SettingsPanel({
       components: [
         new SettingsPanelPage({
-          components: [
-            new SettingsPanelItem(null, subtitleListBox),
-          ],
+          components: [new SettingsPanelItem(null, subtitleListBox)],
         }),
       ],
       hidden: true,
@@ -438,9 +488,7 @@ export namespace UIFactory {
     const audioTrackListPanel = new SettingsPanel({
       components: [
         new SettingsPanelPage({
-          components: [
-            new SettingsPanelItem(null, audioTrackListBox),
-          ],
+          components: [new SettingsPanelItem(null, audioTrackListBox)],
         }),
       ],
       hidden: true,
@@ -470,9 +518,15 @@ export namespace UIFactory {
           components: [
             new Container({
               components: [
-                new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime, hideInLivePlayback: true }),
+                new PlaybackTimeLabel({
+                  timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+                  hideInLivePlayback: true,
+                }),
                 seekBar,
-                new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime, cssClasses: ['text-right'] }),
+                new PlaybackTimeLabel({
+                  timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+                  cssClasses: ['text-right'],
+                }),
               ],
               cssClasses: ['controlbar-top'],
             }),

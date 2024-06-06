@@ -121,4 +121,8 @@ export interface UIConfig {
    * If set to true, prevents the UI from using `localStorage`.
    */
   disableStorageApi?: boolean;
+  /**
+   * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
+   */
+  ecoMode?: boolean;
 }
