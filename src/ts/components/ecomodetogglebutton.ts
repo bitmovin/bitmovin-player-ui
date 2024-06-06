@@ -38,7 +38,7 @@ export class EcoModeToggleButton extends ToggleButton<ToggleButtonConfig> {
       });
 
       player.on(player.exports.PlayerEvent.VideoQualityChanged, (quality: VideoQualityChangedEvent) => {
-        if (quality.targetQuality.height !== null) {
+        if (quality.targetQuality.id !== 'auto') {
           this.off();
           this.disableEcoMode(player);
         }
