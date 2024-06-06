@@ -58,7 +58,7 @@ export class EcoModeToggleButton extends ToggleButton<ToggleButtonConfig> {
 
   enableEcoMode(player: PlayerAPI): void {
     this.adaptationConfig = player.adaptation.getConfig();
-    let codec = player.getAvailableVideoQualities()[0].codec;
+    const codec = player.getAvailableVideoQualities()[0].codec;
 
     if (codec.includes('avc')) {
       player.adaptation.setConfig({
