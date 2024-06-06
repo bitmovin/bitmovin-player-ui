@@ -91,6 +91,7 @@ export namespace UIFactory {
 
       components.unshift(ecoModeContainer);
     }
+
     mainSettingsPanelPage = new SettingsPanelPage({
       components,
     });
