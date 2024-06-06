@@ -1,4 +1,4 @@
-import { PlayerAPI, PlayerEvent, SegmentPlaybackEvent, VideoQuality } from 'bitmovin-player';
+import { PlayerAPI, SegmentPlaybackEvent, VideoQuality } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Container, ContainerConfig } from './container';
 import { EcoModeToggleButton } from './ecomodetogglebutton';
@@ -52,7 +52,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
   }
 
   configure(player: PlayerAPI): void {
-    player.on(PlayerEvent.SegmentPlayback, (segment: SegmentPlaybackEvent) => {
+    player.on(player.exports.PlayerEvent.SegmentPlayback, (segment: SegmentPlaybackEvent) => {
       if (!segment.mimeType.includes('video')) {
         return;
       }
