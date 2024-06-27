@@ -41,6 +41,14 @@
                 </div>
                 <span class="col-sm-4 form-text">The UI skin or skin type to display.</span>
             </div>
+
+            <div class="form-group form-check row">
+              <label for="config-ads" class="col-sm-4 form-check-label" for="config-ads">Ads</label>
+              <div class="col-sm-4 form-check">
+                  <input type="checkbox" id="config-ads">
+              </div>
+              <span class="col-sm-4 form-text">Schedule client-side ads.</span>
+            </div>
         </div>
 
         <div class="card-block">
@@ -97,6 +105,7 @@
 </div>
 
 <script src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
+<script src="https://cdn.bitmovin.com/player/web/8/modules/bitmovinplayer-advertising-bitmovin.js"></script>
 <script src="js/bitmovinplayer-ui.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
@@ -183,27 +192,24 @@
     }
   };
 
-  var advertisingConfig = {
-    adBreaks: [
-      {
-        tag: {
-          // skippable
-          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/skippable_ad_unit&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=http%3A%2F%2Freleasetest.dash-player.com%2Fads%2F&description_url=[description_url]&correlator=[random]',
-          type: 'vast',
-        },
-        position: 'pre',
+  var adBreaks = [
+    {
+      tag: {
+        // skippable
+        url: 'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=[random]',
+        type: 'vast',
       },
-      {
-        tag: {
-          // nonskippable
-          url: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/32573358/2nd_test_ad_unit&ciu_szs=300x100&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[random]',
-          type: 'vast',
-        },
-        position: '10',
-      }
-    ]
-  };
-  var adsEnabled = false;
+      position: 'pre',
+    },
+    {
+      tag: {
+        // nonskippable
+        url: 'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=[random]',
+        type: 'vast',
+      },
+      position: '10',
+    }
+  ];
 
   var config = {
     key: 'YOUR KEY HERE',
@@ -211,7 +217,7 @@
     remotecontrol: {
       type: 'googlecast',
     },
-    advertising: adsEnabled ? advertisingConfig : null
+    advertising: {},
   };
 
   var uiConfig = {
@@ -255,6 +261,8 @@
   var player;
   var uiManager;
   bitmovin.playerui.UIManager.setLocalizationConfig({ language: 'en', browserLanguageDetection: false });
+
+  bitmovin.player.Player.addModule(bitmovin.player["advertising-bitmovin"].default);
 
   var playerSetup = function(config) {
     player = new bitmovin.player.Player(document.getElementById('player'), config);
@@ -709,6 +717,22 @@
       uiManager = bitmovin.playerui.DemoFactory[factoryMethod](player, uiConfig);
     } else {
       uiManager = bitmovin.playerui.UIFactory[factoryMethod](player, uiConfig);
+    }
+  });
+
+  var scheduleAdsCheckbox = $('#config-ads');
+  scheduleAdsCheckbox.change(function() {
+    const isChecked = $(this).is(':checked');
+
+    if (isChecked) {
+      adBreaks.forEach(function(adBreak) {
+        player.ads.schedule(adBreak);
+      });
+    } else {
+      const ads = player.ads.list();
+      ads.forEach(function(ad) {
+        player.ads.discardAdBreak(ad.id);
+      })
     }
   });
 
