@@ -547,13 +547,6 @@ export namespace UIFactory {
           components: [
             new Container({
               components: [
-                subtitleMenuCaption,
-                audioMenuCaption,
-              ],
-              cssClasses: ['ui-menucaption'],
-            }),
-            new Container({
-              components: [
                 new MetadataLabel({ content: MetadataLabelContent.Title }),
                 subtitleToggleButton,
                 audioToggleButton,
@@ -565,6 +558,8 @@ export namespace UIFactory {
                 new MetadataLabel({ content: MetadataLabelContent.Description }),
                 subtitleListPanel,
                 audioTrackListPanel,
+                subtitleMenuCaption,
+                audioMenuCaption,
               ],
               cssClasses: ['ui-titlebar-bottom'],
             }),
