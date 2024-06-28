@@ -773,7 +773,7 @@
       const loadedEntry = window.localStorage.getItem('bmpui-playground-config');
       if (!loadedEntry) {
         console.log('No local storage entry found');
-        return;
+        return {};
       }
       config = JSON.parse(loadedEntry);
     } catch (e) {
