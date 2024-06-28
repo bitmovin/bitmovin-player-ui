@@ -55,6 +55,7 @@ export namespace MockHelper {
       empty: jest.fn(),
       append: jest.fn(),
       attr: jest.fn(),
+      get: jest.fn(),
     }));
 
     return new DOMClass() as jest.Mocked<DOM>;
@@ -107,6 +108,7 @@ export namespace MockHelper {
         isCasting: jest.fn(),
         isViewModeAvailable: jest.fn(),
         seek: jest.fn(),
+        isMuted: jest.fn(),
 
         // Event faker
         eventEmitter: eventHelper,

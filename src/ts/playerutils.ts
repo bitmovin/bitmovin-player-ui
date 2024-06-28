@@ -195,4 +195,10 @@ export namespace PlayerUtils {
       return this.liveChangedEvent.getEvent();
     }
   }
+
+  export function clampValueToRange(value: number, boundary1: number, boundary2: number): number {
+    const lowerBoundary = Math.min(boundary1, boundary2);
+    const upperBoundary = Math.max(boundary1, boundary2);
+    return Math.min(Math.max(value, lowerBoundary), upperBoundary);
+  }
 }

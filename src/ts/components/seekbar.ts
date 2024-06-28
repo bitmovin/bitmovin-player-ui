@@ -1,3 +1,4 @@
+import { ExtendedPlayerAPI, GroupPlaybackSuspension, GroupPlaybackSuspensionReason } from './../groupplaybackapi';
 import { Component, ComponentConfig } from './component';
 import { DOM } from '../dom';
 import { Event, EventDispatcher, NoArgs } from '../eventdispatcher';
@@ -43,7 +44,13 @@ export interface SeekBarConfig extends ComponentConfig {
   keyStepIncrements?: { leftRight: number, upDown: number };
 
   /**
-   * Used for seekBar marker snapping range percentage
+   * Used to enable/disable snapping to markers on the seek bar when seeking near them.
+   * Default: true
+   */
+  snappingEnabled?: boolean;
+
+  /**
+   * Defines tolerance for snapping to markers, if snapping to seek bar markers is enabled.
    */
   snappingRange?: number;
 
@@ -150,6 +157,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       tabIndex: 0,
       snappingRange: 1,
       enableSeekPreview: true,
+      snappingEnabled: true,
     }, this.config);
 
     this.label = this.config.label;
@@ -236,6 +244,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let isPlaying = false;
     let scrubbing = false;
     let isPlayerSeeking = false;
+    let suspension: GroupPlaybackSuspension | undefined;
 
     // Update playback and buffer positions
     let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
@@ -252,7 +261,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       // At the same time when the user is scrubbing, we also move the position of the seekbar to display a preview during scrubbing.
       // When the user is scrubbing we do not record this as a user seek operation, as the user has yet to finish their seek,
       // but we should not move the playback position to not create a jumping behaviour.
-      if (scrubbing && event.type === player.exports.PlayerEvent.SegmentRequestFinished && playbackPositionPercentage !== this.playbackPositionPercentage) {
+      if (scrubbing && event && event.type === player.exports.PlayerEvent.SegmentRequestFinished && playbackPositionPercentage !== this.playbackPositionPercentage) {
         playbackPositionPercentage = this.playbackPositionPercentage;
       }
 
@@ -328,11 +337,19 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeShift, onPlayerSeek);
     player.on(player.exports.PlayerEvent.TimeShifted, onPlayerSeeked);
 
-    this.onSeek.subscribe((sender) => {
-      this.isUserSeeking = true; // track seeking status so we can catch events from seek preview seeks
+    let isGroupPlaybackAPIAvailable = (player: PlayerAPI): player is ExtendedPlayerAPI => {
+      return !!(player as ExtendedPlayerAPI).groupPlayback;
+    };
 
+    this.onSeek.subscribe((sender) => {
+      // track seeking status so we can catch events from seek preview seeks
+      this.isUserSeeking = true;
       // Notify UI manager of started seek
       uimanager.onSeek.dispatch(sender);
+
+      if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined() && !suspension) {
+        suspension = player.groupPlayback.beginSuspension(GroupPlaybackSuspensionReason.UserIsScrubbing);
+      }
 
       // Save current playback state before performing the seek
       if (!isPlayerSeeking) {
@@ -344,8 +361,8 @@ export class SeekBar extends Component<SeekBarConfig> {
           player.pause('ui-seek');
         }
       }
-
     });
+
     this.onSeekPreview.subscribe((sender: SeekBar, args: SeekPreviewEventArgs) => {
       // Notify UI manager of seek preview
       uimanager.onSeekPreview.dispatch(sender, args);
@@ -373,6 +390,12 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Continue playback after seek if player was playing when seek started
       restorePlayingState();
+
+      if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined() && suspension) {
+        const proposedPlaybackTime = this.getTargetSeekPosition(percentage);
+        player.groupPlayback.endSuspension(suspension, { proposedPlaybackTime });
+        suspension = undefined;
+      }
     });
 
     if (this.hasLabel()) {
@@ -436,6 +459,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.config.snappingRange = uimanager.getConfig().seekbarSnappingRange;
     }
 
+    if (typeof uimanager.getConfig().seekbarSnappingEnabled === 'boolean') {
+      this.config.snappingEnabled = uimanager.getConfig().seekbarSnappingEnabled;
+    }
+
     // Initialize seekbar
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
@@ -463,15 +490,26 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   };
 
-  private seek = (percentage: number) => {
+  private getTargetSeekPosition = (percentage: number) => {
+    let target: number;
     if (this.player.isLive()) {
       const maxTimeShift = this.player.getMaxTimeShift();
-      this.player.timeShift(maxTimeShift - (maxTimeShift * (percentage / 100)), 'ui');
+      target = maxTimeShift - (maxTimeShift * (percentage / 100));
     } else {
       const seekableRangeStart = PlayerUtils.getSeekableRangeStart(this.player, 0);
       const relativeSeekTarget = this.player.getDuration() * (percentage / 100);
-      const absoluteSeekTarget = relativeSeekTarget + seekableRangeStart;
-      this.player.seek(absoluteSeekTarget, 'ui');
+      target = relativeSeekTarget + seekableRangeStart;
+    }
+
+    return target;
+  }
+
+  private seek = (percentage: number) => {
+    const targetPlaybackPosition = this.getTargetSeekPosition(percentage);
+    if (this.player.isLive()) {
+      this.player.timeShift(targetPlaybackPosition, 'ui');
+    } else {
+      this.player.seek(targetPlaybackPosition, 'ui');
     }
   };
 
@@ -609,7 +647,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       'role': 'slider',
       'aria-label': i18n.performLocalization(this.config.ariaLabel),
       'tabindex': this.config.tabIndex.toString(),
-    });
+    }, this);
 
     let seekBar = new DOM('div', {
       'class': this.prefixCss('seekbar'),
@@ -678,13 +716,17 @@ export class SeekBar extends Component<SeekBarConfig> {
       new DOM(document).off('touchend mouseup', mouseTouchUpHandler);
 
       let targetPercentage = 100 * this.getOffset(e);
-      let snappedChapter = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(targetPercentage);
+
+      if (this.config.snappingEnabled) {
+        const matchingMarker = this.timelineMarkersHandler?.getMarkerAtPosition(targetPercentage);
+        targetPercentage = matchingMarker ? matchingMarker.position : targetPercentage;
+      }
 
       this.setSeeking(false);
       seeking = false;
 
       // Fire seeked event
-      this.onSeekedEvent(snappedChapter ? snappedChapter.position : targetPercentage);
+      this.onSeekedEvent(targetPercentage);
     };
 
     // A seek always start with a touchstart or mousedown directly on the seekbar.

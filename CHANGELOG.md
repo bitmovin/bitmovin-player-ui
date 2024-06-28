@@ -4,6 +4,176 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.64.0] - 2024-05-28
+
+### Added
+- `Component` instances are now assigned to their `HTMLElements` for easier accessing
+
+### Fixed
+- Two touch interactions needed to skip an ad or open the click through link
+
+## [3.63.0] - 2024-05-17
+
+### Added
+- `QuickSeekButton` control bar component for jumping +/- a configurable number of seconds (10 second default)
+
+## [3.62.0] - 2024-05-06
+
+### Fixed
+- No subtitle is shown when switching between different tracks
+
+## [3.61.0] - 2024-04-23
+
+### Fixed
+- `ControlBar` not auto-hiding when `UIConfig.disableAutoHideWhenHovered` is set to `true` on some touch screen devices
+
+## [3.60.0] - 2024-04-16
+
+### Added
+- Type export for `UIVariant` interface
+
+## [3.59.0] - 2024-04-12
+
+### Added
+- `UIContainerConfig.hideImmediatelyOnMouseLeave` to immediately hide the UI when mouse leaves it
+
+### Fixed
+- Triggering UI release after merging a PR from a fork
+
+## [3.58.0] - 2024-04-08
+
+### Added
+- `UIConfig#seekbarSnappingEnabled` config option to enable/disable the play head snapping to markers on the seek bar when seeking near them. Default is `true`.
+
+## [3.57.0] - 2024-03-28
+
+### Added
+- `disableStorageApi` config option
+
+### Fixed
+- Subtitle settings not being retained when the UI variant switches
+
+## [3.56.0] - 2024-03-26
+
+### Changed
+- `localStorage` availability check to not create a test-entry anymore
+
+## [3.55.0] - 2024-03-21
+
+### Added
+- Automatically add compare link in changelog file in relase workflow
+
+### Fixed
+- Missing compare link in the changelog file
+
+## [3.54.0] - 2024-02-01
+
+### Fixed
+- FCC subtitle settings menu showing two options with the same value
+- Invalid release workflow file
+
+## [3.53.0] - 2024-01-03
+
+### Added
+- Automate release on every PR merge to develop
+
+## [3.52.2] - 2023-11-23
+
+### Fixed
+- Potential name clashing in CSS animations due to missing `bmpui` prefix
+
+## [3.52.1] - 2023-11-13
+
+### Fixed
+- Crash when receiving a `SourceLoaded` event during scrubbing
+
+## [3.52.0] - 2023-09-25
+
+### Fixed
+- When having a spatial navigation and using a mouselike device, components will lose focus when the mouse leaves the hovered component. Spatial navigation will continue at the last active component when using arrow keys again.
+
+## [3.51.0] - 2023-09-18
+
+### Changed
+- On seek/timeshift operations the UI will only remove subtitle cues which do not enclose the seek target instead of removing all.
+
+## [3.50.0] - 2023-07-24
+
+### Fixed
+- Settings panel does not close on single tap on mobile devices
+- Restoring volume on unmute not working when volume was changed through the player API
+- Gulp `watch` task not working
+
+## [3.49.0] - 2023-07-17
+
+### Added
+- `onActiveUiChanged` event on the `UIManager` that is dispatched when the UI manager switches to a different UI variant
+- Readonly `currentUi` field on the `UIManager` that exposes the active `UIInstanceManager`
+
+## [3.48.0] - 2023-07-03
+
+### Fixed
+- When more than one UI with spatial navigation is managed by the UI manager, all UIs would handle key events, instead of only the active one.
+
+## [3.47.0] - 2023-05-17
+
+### Changed
+- Updated package dependencies.
+
+## [3.46.0] - 2023-03-22
+
+### Added
+- Config option `forceSubtitlesIntoViewContainer` to handle overflowing subtitle labels
+
+## [3.45.0] - 2023-03-06
+
+### Added
+- Scrubbing during a FaceTime call automatically creates a SharePlay suspension to not synchronize scrubbing to other participants.
+
+## [3.44.0] - 2023-02-13
+
+### Fixed
+- Circular dependency in the import of `AudioTrackListBox` between `main.ts` and `uifactory.ts`
+
+## [3.43.0] - 2023-02-06
+
+### Added
+- `UIConfig.enterFullscreenOnInitialPlayback` to enter fullscreen when clicking `PlaybackToggleButton` or `HugePlaybackToggleButton` to initiate the initial playback
+
+## [3.42.0] - 2023-01-30
+
+### Added
+- Language localization for Spanish
+
+## [3.41.0] - 2023-01-12
+
+### Added
+- Export Localization and SpatialNavigation to use in external UI configuration
+
+## [3.40.0] - 2022-12-20
+
+### Added
+- Support for spatial navigation
+- SmartTV UI via `UIFactory.buildDefaultTvUI`
+
+### Changed
+- Node.js from 10 to 16
+- Typescript from ^3.9.6 to 4.3
+
+## [3.39.0] - 2022-12-01
+
+### Added
+- `display` method on `ErrorMessageOverlay` to enable usage for application errors without a player error
+- Replay button which can be used within the controlbar and works also during playback
+
+### Fixed
+- Unnecessary DOM element creation on release
+
+## [3.38.0] - 2022-08-30
+
+### Fixed
+- Duration format not getting updated from `mm:ss` to `hh:mm:ss`
+
 ## [3.37.0] - 2022-04-12
 
 ### Fixed
@@ -790,6 +960,36 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.65.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.64.0...v3.65.0
+[3.64.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.63.0...v3.64.0
+[3.63.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.62.0...v3.63.0
+[3.62.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.61.0...v3.62.0
+[3.61.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.60.0...v3.61.0
+[3.60.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.59.0...v3.60.0
+[3.59.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.58.0...v3.59.0
+[3.58.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.57.0...v3.58.0
+[3.57.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.56.0...v3.57.0
+[3.56.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.55.0...v3.56.0
+[3.55.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.54.0...v3.55.0
+[3.54.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.53.0...v3.54.0
+[3.53.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.2...v3.53.0
+[3.52.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.1...v3.52.2
+[3.52.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.52.0...v3.52.1
+[3.52.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.51.0...v3.52.0
+[3.51.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.50.0...v3.51.0
+[3.50.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.49.0...v3.50.0
+[3.49.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.48.0...v3.49.0
+[3.48.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.47.0...v3.48.0
+[3.47.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.46.0...v3.47.0
+[3.46.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.45.0...v3.46.0
+[3.45.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.44.0...v3.45.0
+[3.44.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.43.0...v3.44.0
+[3.43.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.42.0...v3.43.0
+[3.42.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.41.0...v3.42.0
+[3.41.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.40.0...v3.41.0
+[3.40.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.39.0...v3.40.0
+[3.39.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.38.0...v3.39.0
+[3.38.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.37.0...v3.38.0
 [3.37.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.36.0...v3.37.0
 [3.36.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.35.0...v3.36.0
 [3.35.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.34.0...v3.35.0

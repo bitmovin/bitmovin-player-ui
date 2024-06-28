@@ -13,6 +13,9 @@ import { VolumeController } from './volumecontroller';
 import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
 import { FocusVisibilityTracker } from './focusvisibilitytracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './mobilev3playerapi';
+import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
+import { SubtitleSettingsManager } from './components/subtitlesettings/subtitlesettingsmanager';
+import { StorageUtils } from './storageutils';
 
 export interface LocalizationConfig {
   /**
@@ -86,6 +89,18 @@ export interface UIConditionResolver {
 export interface UIVariant {
   ui: UIContainer;
   condition?: UIConditionResolver;
+  spatialNavigation?: SpatialNavigation;
+}
+
+export interface ActiveUiChangedArgs extends NoArgs {
+  /**
+   * The previously active {@link UIInstanceManager} prior to the {@link UIManager} switching to a different UI variant.
+   */
+  previousUi: UIInstanceManager;
+  /**
+   * The currently active {@link UIInstanceManager}.
+   */
+  currentUi: UIInstanceManager;
 }
 
 export class UIManager {
@@ -98,9 +113,11 @@ export class UIManager {
   private config: InternalUIConfig; // Conjunction of provided uiConfig and sourceConfig from the player
   private managerPlayerWrapper: PlayerWrapper;
   private focusVisibilityTracker: FocusVisibilityTracker;
+  private subtitleSettingsManager: SubtitleSettingsManager;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
+    onActiveUiChanged: new EventDispatcher<UIManager, ActiveUiChangedArgs>(),
   };
 
   /**
@@ -140,6 +157,7 @@ export class UIManager {
       this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
     }
 
+    this.subtitleSettingsManager = new SubtitleSettingsManager();
     this.player = player;
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
@@ -184,9 +202,12 @@ export class UIManager {
       this.config.metadata.description = playerSourceUiConfig.metadata.description || uiconfig.metadata.description;
       this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [];
       this.config.recommendations = playerSourceUiConfig.recommendations || uiconfig.recommendations || [];
+
+      StorageUtils.setStorageApiDisabled(uiconfig);
     };
 
     updateConfig();
+    this.subtitleSettingsManager.initialize();
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
     const updateSource = () => {
@@ -224,7 +245,13 @@ export class UIManager {
         uiVariantsWithoutCondition.push(uiVariant);
       }
       // Create the instance manager for a UI variant
-      this.uiInstanceManagers.push(new InternalUIInstanceManager(player, uiVariant.ui, this.config));
+      this.uiInstanceManagers.push(new InternalUIInstanceManager(
+        player,
+        uiVariant.ui,
+        this.config,
+        this.subtitleSettingsManager,
+        uiVariant.spatialNavigation,
+      ));
     }
     // Make sure that there is only one UI variant without a condition
     // It does not make sense to have multiple variants without condition, because only the first one in the list
@@ -356,6 +383,10 @@ export class UIManager {
     i18n.setConfig(localizationConfig);
   }
 
+  getSubtitleSettingsManager() {
+    return this.subtitleSettingsManager;
+  }
+
   getConfig(): UIConfig {
     return this.config;
   }
@@ -376,41 +407,42 @@ export class UIManager {
   switchToUiVariant(uiVariant: UIVariant, onShow?: () => void): void {
     let uiVariantIndex = this.uiVariants.indexOf(uiVariant);
 
+    const previousUi = this.currentUi;
     const nextUi: InternalUIInstanceManager = this.uiInstanceManagers[uiVariantIndex];
-    let uiVariantChanged = false;
-
     // Determine if the UI variant is changing
-    if (nextUi !== this.currentUi) {
-      uiVariantChanged = true;
+    // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
+    if (nextUi === this.currentUi) {
+      return;
       // console.log('switched from ', this.currentUi ? this.currentUi.getUI() : 'none',
       //   ' to ', nextUi ? nextUi.getUI() : 'none');
     }
 
-    // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
-    if (uiVariantChanged) {
-      // Hide the currently active UI variant
-      if (this.currentUi) {
+    // Hide the currently active UI variant
+    if (this.currentUi) {
+      this.currentUi.getUI().hide();
+    }
+
+    // Assign the new UI variant as current UI
+    this.currentUi = nextUi;
+
+    // When we switch to a different UI instance, there's some additional stuff to manage. If we do not switch
+    // to an instance, we're done here.
+    if (this.currentUi == null) {
+      return;
+    }
+    // Add the UI to the DOM (and configure it) the first time it is selected
+    if (!this.currentUi.isConfigured()) {
+      this.addUi(this.currentUi);
+      // ensure that the internal state is ready for the upcoming show call
+      if (!this.currentUi.getUI().isHidden()) {
         this.currentUi.getUI().hide();
       }
-
-      // Assign the new UI variant as current UI
-      this.currentUi = nextUi;
-
-      // When we switch to a different UI instance, there's some additional stuff to manage. If we do not switch
-      // to an instance, we're done here.
-      if (this.currentUi != null) {
-        // Add the UI to the DOM (and configure it) the first time it is selected
-        if (!this.currentUi.isConfigured()) {
-          this.addUi(this.currentUi);
-        }
-
-        if (onShow) {
-          onShow();
-        }
-
-        this.currentUi.getUI().show();
-      }
     }
+    if (onShow) {
+      onShow();
+    }
+    this.currentUi.getUI().show();
+    this.events.onActiveUiChanged.dispatch(this, { previousUi, currentUi: nextUi });
   }
 
   /**
@@ -444,9 +476,12 @@ export class UIManager {
     // Select new UI variant
     // If no variant condition is fulfilled, we switch to *no* UI
     for (let uiVariant of this.uiVariants) {
-      if (uiVariant.condition == null || uiVariant.condition(switchingContext) === true) {
+      const matchesCondition = uiVariant.condition == null || uiVariant.condition(switchingContext) === true;
+      if (nextUiVariant == null && matchesCondition) {
         nextUiVariant = uiVariant;
-        break;
+      } else {
+        // hide all UIs besides the one which should be active
+        uiVariant.ui.hide();
       }
     }
 
@@ -470,6 +505,7 @@ export class UIManager {
     // When the UI is loaded after a source was loaded, we need to tell the components to initialize themselves
     if (player.getSource()) {
       this.config.events.onUpdated.dispatch(this);
+
     }
 
     // Fire onConfigured after UI DOM elements are successfully added. When fired immediately, the DOM elements
@@ -485,7 +521,12 @@ export class UIManager {
 
   private releaseUi(ui: InternalUIInstanceManager): void {
     ui.releaseControls();
-    ui.getUI().getDomElement().remove();
+
+    const uiContainer = ui.getUI();
+    if (uiContainer.hasDomElement()) {
+      uiContainer.getDomElement().remove();
+    }
+
     ui.clearEventHandlers();
   }
 
@@ -505,6 +546,21 @@ export class UIManager {
    */
   get onUiVariantResolve(): EventDispatcher<UIManager, UIConditionContext> {
     return this.events.onUiVariantResolve;
+  }
+
+  /**
+   * Fires after the UIManager has switched to a different UI variant.
+   * @returns {EventDispatcher<UIManager, ActiveUiChangedArgs>}
+   */
+  get onActiveUiChanged(): EventDispatcher<UIManager, ActiveUiChangedArgs> {
+    return this.events.onActiveUiChanged;
+  }
+
+  /**
+   * The current active {@link UIInstanceManager}.
+   */
+  get activeUi(): UIInstanceManager {
+    return this.currentUi;
   }
 
   /**
@@ -555,6 +611,8 @@ export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
   private ui: UIContainer;
   private config: InternalUIConfig;
+  private subtitleSettingsManager: SubtitleSettingsManager;
+  protected spatialNavigation?: SpatialNavigation;
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
@@ -569,10 +627,16 @@ export class UIInstanceManager {
     onRelease: new EventDispatcher<UIContainer, NoArgs>(),
   };
 
-  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig) {
+  constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig, subtitleSettingsManager: SubtitleSettingsManager, spatialNavigation?: SpatialNavigation) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
+    this.subtitleSettingsManager = subtitleSettingsManager;
+    this.spatialNavigation = spatialNavigation;
+  }
+
+  getSubtitleSettingsManager() {
+    return this.subtitleSettingsManager;
   }
 
   getConfig(): InternalUIConfig {
@@ -738,6 +802,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
       this.releaseControlsTree(this.getUI());
       this.configured = false;
     }
+    this.spatialNavigation?.release();
     this.released = true;
   }
 

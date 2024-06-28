@@ -1,11 +1,12 @@
 import {ContainerConfig, Container} from './container';
 import {UIInstanceManager} from '../uimanager';
-import {DOM} from '../dom';
+import { DOM, HTMLElementWithComponent } from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
 import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
+import { Button, ButtonConfig } from './button';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -27,6 +28,13 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: the UI container itself
    */
   userInteractionEventSource?: HTMLElement;
+
+  /**
+   * Specify whether the UI should be hidden immediatly if the mouse leaves the userInteractionEventSource.
+   * If false or not set it will wait for the hideDelay.
+   * Default: false
+   */
+  hideImmediatelyOnMouseLeave?: boolean;
 }
 
 /**
@@ -49,6 +57,9 @@ export class UIContainer extends Container<UIContainerConfig> {
   private userInteractionEventSource: DOM;
   private userInteractionEvents: { name: string, handler: EventListenerOrEventListenerObject }[];
 
+  public hideUi: () => void = () => {};
+  public showUi: () => void = () => {};
+
   constructor(config: UIContainerConfig) {
     super(config);
 
@@ -57,6 +68,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       role: 'region',
       ariaLabel: i18n.getLocalizer('player'),
       hideDelay: 5000,
+      hideImmediatelyOnMouseLeave: false,
     }, this.config);
 
     this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
@@ -94,7 +106,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
     };
 
-    let showUi = () => {
+    this.showUi = () => {
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
         uimanager.onControlsShow.dispatch(this);
@@ -106,7 +118,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
-    let hideUi = () => {
+    this.hideUi = () => {
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
         // Issue a preview event to check if we are good to hide the controls
@@ -119,18 +131,39 @@ export class UIContainer extends Container<UIContainerConfig> {
           isUiShown = false;
         } else {
           // If the hide preview was canceled, continue to show UI
-          showUi();
+          this.showUi();
         }
       }
     };
 
     // Timeout to defer UI hiding by the configured delay time
-    this.uiHideTimeout = new Timeout(config.hideDelay, hideUi);
+    this.uiHideTimeout = new Timeout(config.hideDelay, this.hideUi);
 
     this.userInteractionEvents = [{
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
       handler: (e) => {
+        const shouldPreventDefault = ((e: Event): Boolean => {
+          const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | null => {
+            if (
+                !element
+                  || element === this.userInteractionEventSource.get(0)
+                  || element.component instanceof UIContainer
+            ) {
+              return null;
+            }
+
+            if (element.component && element.component instanceof Button) {
+              return element.component;
+            } else {
+              return findButtonComponent(element.parentElement);
+            }
+          });
+
+          const buttonComponent = findButtonComponent(e.target as HTMLElementWithComponent);
+          return !(buttonComponent && buttonComponent.getConfig().acceptsTouchWithUiHidden);
+        });
+
         if (!isUiShown) {
           // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
           // instead. The first touch is not prevented to let other listeners receive the event and trigger an
@@ -139,32 +172,39 @@ export class UIContainer extends Container<UIContainerConfig> {
           if (isFirstTouch && !player.isPlaying()) {
             isFirstTouch = false;
           } else {
-            e.preventDefault();
+            // On touch input devices, the first touch is expected to display the UI controls and not be propagated to
+            // other components.
+            // When buttons are always visible this causes UX problems, as the first touch is not recognized.
+            // This is the case for the {@link AdSkipButton} and {@link AdClickOverlay}.
+            // To prevent UX issues where the buttons need to be touched twice, we do not prevent the first touch event.
+            if (shouldPreventDefault(e)) {
+              e.preventDefault();
+            }
           }
-          showUi();
+          this.showUi();
         }
       },
     }, {
       // When the mouse enters, we show the UI
       name: 'mouseenter',
       handler: () => {
-        showUi();
+        this.showUi();
       },
     }, {
       // When the mouse moves within, we show the UI
       name: 'mousemove',
       handler: () => {
-        showUi();
+        this.showUi();
       },
     }, {
       name: 'focusin',
       handler: () => {
-        showUi();
+        this.showUi();
       },
     }, {
       name: 'keydown',
       handler: () => {
-        showUi();
+        this.showUi();
       },
     }, {
       // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
@@ -173,7 +213,11 @@ export class UIContainer extends Container<UIContainerConfig> {
         // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
         // hide the UI in such cases
         if (!isSeeking && !hidingPrevented()) {
-          this.uiHideTimeout.start();
+          if (this.config.hideImmediatelyOnMouseLeave) {
+            this.hideUi();
+          } else {
+            this.uiHideTimeout.start();
+          }
         }
       },
     }];
@@ -191,14 +235,14 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     });
     player.on(player.exports.PlayerEvent.CastStarted, () => {
-      showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
+      this.showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
     });
     this.playerStateChange.subscribe((_, state) => {
       playerState = state;
       if (hidingPrevented()) {
         // Entering a player state that prevents hiding and forces the controls to be shown
         this.uiHideTimeout.clear();
-        showUi();
+        this.showUi();
       } else {
         // Entering a player state that allows hiding
         this.uiHideTimeout.start();

@@ -1,14 +1,22 @@
-import { InternalUIConfig, PlayerWrapper, UIManager } from '../src/ts/uimanager';
+import {
+  InternalUIConfig,
+  PlayerWrapper,
+  UIInstanceManager,
+  UIManager,
+  UIVariant,
+} from '../src/ts/uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/mobilev3playerapi';
+import { UIContainer } from '../src/ts/components/uicontainer';
+import { Container } from '../src/ts/components/container';
 
 jest.mock('../src/ts/dom');
 
 // This just simulates a Class that can be wrapped by our PlayerWrapper.
 // To enable this simple class structure we need a lot of any casts in the tests.
 class A {
-  private value: object = undefined;
+  private value?: object = undefined;
 
   get a() {
     return this.value;
@@ -66,6 +74,96 @@ describe('UIManager', () => {
       });
     });
   });
+
+  describe('switchToUiVariant', () => {
+    let firstUi: UIVariant, secondUI: UIVariant, defaultUI: UIVariant;
+    let playerMock: TestingPlayerAPI;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      firstUi = {
+        ui: new UIContainer({ components: [new Container({})]}),
+        condition: (context) => context.isPlaying,
+      };
+      secondUI = {
+        ui: new UIContainer({ components: [new Container({})]}),
+        condition: (context) => context.isAd,
+      }
+      defaultUI = {
+        ui: new UIContainer({ components: [new Container({})]}),
+      }
+
+    });
+
+    it('should mark invisible UIs as hidden', () => {
+      new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      expect(firstUi.ui.isHidden()).toBeTruthy()
+      expect(secondUI.ui.isHidden()).toBeTruthy()
+      expect(defaultUI.ui.isHidden()).toBeFalsy()
+    });
+
+    it('should switch to the corresponding ui when a play event is fired', () => {
+      new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      (playerMock.isPlaying as jest.Mock).mockReturnValue(true);
+      playerMock.eventEmitter.firePlayEvent();
+
+      expect(firstUi.ui.isHidden()).toBeFalsy()
+      expect(secondUI.ui.isHidden()).toBeTruthy()
+      expect(defaultUI.ui.isHidden()).toBeTruthy()
+    });
+
+    it('should dispatch the onActiveUiChanged event', () => {
+      const onUiChanged = jest.fn();
+      const uiManager = new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      uiManager.switchToUiVariant(firstUi);
+      uiManager.onActiveUiChanged.subscribe(onUiChanged);
+      uiManager.switchToUiVariant(secondUI);
+
+      expect(onUiChanged).toHaveBeenCalledWith(
+        uiManager,
+        {
+          previousUi: uiManager['uiInstanceManagers'][0],
+          currentUi: uiManager['uiInstanceManagers'][1],
+        },
+      );
+    });
+
+    it('should not dispatch the onActiveUiChanged event if the selected variant is already active', () => {
+      const onUiChanged = jest.fn();
+      const uiManager = new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
+
+      uiManager.switchToUiVariant(firstUi);
+      uiManager.onActiveUiChanged.subscribe(onUiChanged);
+      uiManager.switchToUiVariant(firstUi);
+
+      expect(onUiChanged).not.toHaveBeenCalled();
+    });
+
+    it('should not dispatch the onActiveUiChanged event if the selected variant is not yet set up', () => {
+      const onUiChanged = jest.fn();
+      const uiManager = new UIManager(playerMock, [firstUi, defaultUI]);
+
+      uiManager.switchToUiVariant(firstUi);
+      uiManager.onActiveUiChanged.subscribe(onUiChanged);
+      uiManager.switchToUiVariant(secondUI);
+
+      expect(onUiChanged).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('activeUi', () => {
+    it('should return the active UI instance manager', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      const uiVariant = { ui: new UIContainer({ components: [new Container({})]}) };
+      const uiManager = new UIManager(playerMock, [uiVariant]);
+
+      expect(uiManager.activeUi).toBeInstanceOf(UIInstanceManager);
+    });
+  });
+
   describe('mobile v3 handling', () => {
     let playerMock: TestingPlayerAPI;
     beforeEach(() => {

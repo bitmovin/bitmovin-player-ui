@@ -5,6 +5,8 @@ import {Spacer} from './spacer';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
+import {Component, ComponentConfig} from './component';
+import {SettingsPanel} from './settingspanel';
 
 /**
  * Configuration interface for the {@link ControlBar}.
@@ -35,11 +37,13 @@ export class ControlBar extends Container<ControlBarConfig> {
 
     // Counts how many components are hovered and block hiding of the control bar
     let hoverStackCount = 0;
+    let isSettingsPanelShown = false;
 
-    // only enabling this for non-mobile platforms without touch input. enabling this
-    // for touch devices causes the UI to not disappear after hideDelay seconds.
+    // Only enabling this for platforms without touch input.
+    // Enabling this for touch devices causes the UI to not disappear after hideDelay seconds,
+    // because `mouseleave` event is not emitted.
     // Instead, it will stay visible until another manual interaction is performed.
-    if (uimanager.getConfig().disableAutoHideWhenHovered && !BrowserUtils.isMobile) {
+    if (uimanager.getConfig().disableAutoHideWhenHovered && !BrowserUtils.isTouchSupported) {
       // Track hover status of child components
       UIUtils.traverseTree(this, (component) => {
         // Do not track hover status of child containers or spacers, only of 'real' controls
@@ -58,13 +62,27 @@ export class ControlBar extends Container<ControlBarConfig> {
       });
     }
 
+    if (BrowserUtils.isMobile) {
+      uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
+        if (component instanceof SettingsPanel) {
+          isSettingsPanelShown = true;
+        }
+      });
+
+      uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
+        if (component instanceof SettingsPanel) {
+          isSettingsPanelShown = false;
+        }
+      });
+    }
+
     uimanager.onControlsShow.subscribe(() => {
       this.show();
     });
 
     uimanager.onPreviewControlsHide.subscribe((sender, args) => {
-      // Cancel the hide event if hovered child components block hiding
-      args.cancel = (hoverStackCount > 0);
+      // Cancel the hide event if hovered child components block hiding or if the settings panel is active on mobile.
+      args.cancel = args.cancel || (hoverStackCount > 0 || isSettingsPanelShown);
     });
 
     uimanager.onControlsHide.subscribe(() => {

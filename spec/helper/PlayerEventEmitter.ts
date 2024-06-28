@@ -107,6 +107,7 @@ export class PlayerEventEmitter {
       type: PlayerEvent.AdError,
       code: 1001,
       name: 'AdErrorEvent',
+      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1001'
     });
   }
 
@@ -141,6 +142,7 @@ export class PlayerEventEmitter {
       type: PlayerEvent.Error,
       code: 1000,
       name: 'ErrorEvent',
+      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1000'
     });
   }
 
@@ -273,6 +275,13 @@ export class PlayerEventEmitter {
       time,
       timestamp: Date.now(),
       type: PlayerEvent.TimeChanged,
+    });
+  }
+
+  fireReadyEvent(): void {
+    this.fireEvent<PlayerEventBase>({
+      type: PlayerEvent.Ready,
+      timestamp: Date.now()
     });
   }
 

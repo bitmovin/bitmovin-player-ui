@@ -272,7 +272,7 @@ export class Component<Config extends ComponentConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'role': this.config.role,
-    });
+    }, this);
 
     return element;
   }
@@ -290,6 +290,13 @@ export class Component<Config extends ComponentConfig> {
     }
 
     return this.element;
+  }
+
+  /**
+   * Checks if this component has a DOM element.
+   */
+  hasDomElement(): boolean {
+    return Boolean(this.element);
   }
 
   setAriaLabel(label: LocalizableText): void {

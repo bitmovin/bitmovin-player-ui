@@ -135,7 +135,28 @@ describe('SeekBar', () => {
         expect(setBufferPositionSpy).toHaveBeenLastCalledWith(18)
       });
     });
-  })
+  });
+
+  describe('group playback', () => {
+    beforeEach(() => {
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(0)
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+    });
+
+    it('should suspend active group session on seeking', () => {
+      const beginSuspensionSpy = jest.fn();
+      (playerMock as any).groupPlayback = {
+        hasJoined: () => true,
+        beginSuspension: beginSuspensionSpy,
+      };
+
+      seekbar['onSeekEvent']();
+
+      expect(seekbar['isUserSeeking']).toBe(true);
+      expect(uiInstanceManagerMock.onSeek.dispatch).toHaveBeenCalled();
+      expect(beginSuspensionSpy).toHaveBeenCalled();
+    });
+  });
 
   describe('buffer levels', () => {
     beforeEach(() => {

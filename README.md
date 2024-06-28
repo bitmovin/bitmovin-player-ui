@@ -186,6 +186,7 @@ There are various conditions upon which the `UIManager` can automatically switch
  * `buildDefaultUI`: The default UI as used by the player by default
  * `buildDefaultCastReceiverUI`: A light UI specifically for Google Cast receivers
  * `buildDefaultSmallScreenUI`: A light UI specifically for small handheld devices
+ * `buildDefaultTvUI`: A UI specifically for big screens with remote control ans main input option
 
 You can easily test and switch between these UIs in the UI playground.
 

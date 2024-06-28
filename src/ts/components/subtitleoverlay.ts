@@ -10,6 +10,13 @@ import { i18n } from '../localization/i18n';
 import { VttUtils } from '../vttutils';
 import { VTTProperties } from 'bitmovin-player/types/subtitles/vtt/API';
 
+interface SubtitleCropDetectionResult {
+  top: boolean;
+  right: boolean;
+  bottom: boolean;
+  left: boolean;
+}
+
 /**
  * Overlays the player to display subtitles.
  */
@@ -67,6 +74,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       this.subtitleContainerManager.addLabel(label, this.getDomElement().size());
       this.updateComponents();
+
+      if (uimanager.getConfig().forceSubtitlesIntoViewContainer) {
+        this.handleSubtitleCropping(label);
+      }
     });
 
     player.on(player.exports.PlayerEvent.CueUpdate, (event: SubtitleCueEvent) => {
@@ -77,6 +88,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       if (labelToReplace) {
         this.subtitleContainerManager.replaceLabel(labelToReplace, label);
+      }
+
+      if (uimanager.getConfig().forceSubtitlesIntoViewContainer) {
+        this.handleSubtitleCropping(label);
       }
     });
 
@@ -106,11 +121,17 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
     };
 
+    const clearInactiveCues = () => {
+      const removedActiveCues = subtitleManager.clearInactiveCues(player.getCurrentTime());
+      removedActiveCues.forEach(toRemove => {
+        this.subtitleContainerManager.removeLabel(toRemove.label);
+      });
+    };
+
     player.on(player.exports.PlayerEvent.AudioChanged, subtitleClearHandler);
-    player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SubtitleDisabled, subtitleClearHandler);
-    player.on(player.exports.PlayerEvent.Seek, subtitleClearHandler);
-    player.on(player.exports.PlayerEvent.TimeShift, subtitleClearHandler);
+    player.on(player.exports.PlayerEvent.Seeked, clearInactiveCues);
+    player.on(player.exports.PlayerEvent.TimeShifted, clearInactiveCues);
     player.on(player.exports.PlayerEvent.PlaybackFinished, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SourceUnloaded, subtitleClearHandler);
 
@@ -128,6 +149,49 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.configureCea608Captions(player, uimanager);
     // Init
     subtitleClearHandler();
+  }
+
+  detectCroppedSubtitleLabel(
+    labelElement: HTMLElement,
+  ): SubtitleCropDetectionResult {
+    const parent = this.getDomElement().get(0);
+
+    const childRect = labelElement.getBoundingClientRect();
+    const parentRect = parent.getBoundingClientRect();
+
+    return {
+      top: childRect.top < parentRect.top,
+      right: childRect.right > parentRect.right,
+      bottom: childRect.bottom > parentRect.bottom,
+      left: childRect.left < parentRect.left,
+    };
+  }
+
+  handleSubtitleCropping(label: SubtitleLabel) {
+    const labelDomElement = label.getDomElement();
+    const cropDetection = this.detectCroppedSubtitleLabel(
+      labelDomElement.get(0),
+    );
+
+    if (cropDetection.top) {
+      labelDomElement.css('top', '0');
+      labelDomElement.removeCss('bottom');
+    }
+
+    if (cropDetection.right) {
+      labelDomElement.css('right', '0');
+      labelDomElement.removeCss('left');
+    }
+
+    if (cropDetection.bottom) {
+      labelDomElement.css('bottom', '0');
+      labelDomElement.removeCss('top');
+    }
+
+    if (cropDetection.left) {
+      labelDomElement.css('left', '0');
+      labelDomElement.removeCss('right');
+    }
   }
 
   generateLabel(event: SubtitleCueEvent): SubtitleLabel {
@@ -410,6 +474,24 @@ class ActiveSubtitleManager {
 
       return activeSubtitleCue.label;
     }
+  }
+
+  /**
+   * Removes all active cues which don't enclose the given time
+   * @param time the time for which subtitles should remain
+   */
+  public clearInactiveCues(time: number): ActiveSubtitleCue[] {
+    const removedCues: ActiveSubtitleCue[] = [];
+    Object.keys(this.activeSubtitleCueMap).forEach(key => {
+      const activeCues = this.activeSubtitleCueMap[key];
+      activeCues.forEach(cue => {
+        if (time < cue.event.start || time > cue.event.end) {
+          this.popCueFromMap(cue.event);
+          removedCues.push(cue);
+        }
+      });
+    });
+    return removedCues;
   }
 
   static generateImageTagText(imageData: string): string | undefined {

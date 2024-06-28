@@ -1,5 +1,4 @@
-import {ToggleButtonConfig} from './togglebutton';
-import {PlaybackToggleButton} from './playbacktogglebutton';
+import {PlaybackToggleButton, PlaybackToggleButtonConfig} from './playbacktogglebutton';
 import {DOM} from '../dom';
 import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
@@ -10,7 +9,7 @@ import { i18n } from '../localization/i18n';
  */
 export class HugePlaybackToggleButton extends PlaybackToggleButton {
 
-  constructor(config: ToggleButtonConfig = {}) {
+  constructor(config: PlaybackToggleButtonConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
@@ -23,6 +22,11 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     // Update button state through API events
     super.configure(player, uimanager, false);
+
+    // Set enterFullscreenOnInitialPlayback if set in the uimanager config
+    if (typeof uimanager.getConfig().enterFullscreenOnInitialPlayback === 'boolean') {
+      this.config.enterFullscreenOnInitialPlayback = uimanager.getConfig().enterFullscreenOnInitialPlayback;
+    }
 
     let togglePlayback = () => {
       if (player.isPlaying() || this.isPlayInitiated) {
@@ -71,6 +75,11 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         // playback is blocked (e.g. on mobile devices due to the programmatic play() call), we loose the chance to
         // ever start playback through a user interaction again with this button.
         togglePlayback();
+
+        if (this.config.enterFullscreenOnInitialPlayback) {
+          player.setViewMode(player.exports.ViewMode.Fullscreen);
+        }
+
         return;
       }
 

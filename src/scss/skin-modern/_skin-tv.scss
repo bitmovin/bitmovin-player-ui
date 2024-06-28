@@ -2,10 +2,10 @@
 @import 'mixins';
 
 .#{$prefix}-ui-skin-tv {
-  $overscan-margin: 10%;
-  $large-size: 4vh;
-  $medium-large-size: 3.5vh;
-  $medium-size: 3vh;
+  $overscan-margin: 2%;
+  $large-size: 3.5vh;
+  $medium-large-size: 3vh;
+  $medium-size: 2vh;
 
   font-size: $medium-size;
 
@@ -17,18 +17,20 @@
   }
 
   .#{$prefix}-ui-titlebar-top,.#{$prefix}-ui-menucaption {
-    margin-bottom: $medium-size;
+    margin-bottom: 1vh;
 
     > .#{$prefix}-container-wrapper {
-      width: 100%;
-      font-size: $large-size;
-      
+      align-items: center;
       display: inline-flex;
+      font-size: $large-size;
+
       // Start from the right side
       justify-content: flex-end;
-      align-items: center;
+      width: 100%;
 
       .#{$prefix}-label-metadata-title {
+        font-size: $large-size;
+
         // Moves rest of the items starting with this one to the very left
         // margin auto will fill up the rest of the space in between.
         margin-right: auto;
@@ -36,45 +38,63 @@
     }
   }
 
+  .#{$prefix}-ui-hugeplaybacktogglebutton {
+    > .#{$prefix}-image {
+      background-size: 20vh;
+    }
+  }
+
   .#{$prefix}-ui-titlebar-bottom {
     > .#{$prefix}-container-wrapper {
-      width: 100%;
-      font-size: $large-size;
-
-      position: relative;
-      display: inline-flex;
-      justify-content: space-between;
       align-items: flex-start;
+      display: inline-flex;
+      font-size: $large-size;
+      justify-content: space-between;
+      position: relative;
+      width: 100%;
     }
 
     .#{$prefix}-label-metadata-description {
       font-size: $medium-size;
-      width: 100%;
+      line-height: 2em;
+      width: 66%;
     }
 
     // Position the settings panel top right below the settings icons
     .#{$prefix}-ui-settings-panel {
       font-size: $medium-large-size;
-      top: 0;
       right: 0;
+      top: 0;
     }
   }
 
   // Increase icon sizes and texts in the controlbar such as current time
   .#{$prefix}-ui-subtitlesettingstogglebutton,
-  .#{$prefix}-ui-audiotracksettingstogglebutton,
-  .#{$prefix}-ui-controlbar,
-  .#{$prefix}-label-metadata-title,
-  .#{$prefix}-ui-playbacktimelabel {
-    font-size: $large-size;
+  .#{$prefix}-ui-audiotracksettingstogglebutton {
+    font-size: 5vh;
   }
 
-  // Increase margin area around the UI but spread the dark shadow still 
-  // to the edge of the video by applying it to only the container-wrapper
   .#{$prefix}-ui-controlbar {
+    font-size: $medium-large-size;
+
     > .#{$prefix}-container-wrapper {
-      margin: $overscan-margin;
-      width: 100% - 2 * $overscan-margin;
-    } 
+      // Increase margin area around the UI but spread the dark shadow still 
+      // to the edge of the video by applying it to only the container-wrapper
+
+      margin: $overscan-margin 0;
+      width: 99%;
+    }
+  }
+
+  .#{$prefix}-ui-playbacktimelabel {
+    font-size: 2.5vh;
+  }
+
+  :focus {
+    border: 0;
+    box-shadow: $focus-element-box-shadow;
+    filter: drop-shadow(0 0 .3em $color-highlight);
+    outline: none;
+    transition: all .05s ease-in-out;
   }
 }

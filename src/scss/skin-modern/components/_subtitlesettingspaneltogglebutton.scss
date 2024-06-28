@@ -4,9 +4,9 @@
 .#{$prefix}-ui-subtitlesettingstogglebutton {
   @extend %ui-settingstogglebutton;
 
-  background-image: svg('assets/skin-modern/images/subtitles.svg');
+  background-image: url('../../assets/skin-modern/images/subtitles.svg');
 
   &.#{$prefix}-on {
-    background-image: svg('assets/skin-modern/images/subtitlesX.svg');
+    background-image: url('../../assets/skin-modern/images/subtitlesX.svg');
   }
 }

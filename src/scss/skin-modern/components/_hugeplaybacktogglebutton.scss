@@ -3,7 +3,7 @@
 .#{$prefix}-ui-hugeplaybacktogglebutton {
   @extend %ui-button;
 
-  @keyframes fade-out {
+  @keyframes #{$prefix}-fade-out {
     from {
       opacity: 1;
       visibility: visible;
@@ -16,7 +16,7 @@
     }
   }
 
-  @keyframes fade-in {
+  @keyframes #{$prefix}-fade-in {
     from {
       opacity: 0;
       transform: scale(2);
@@ -28,7 +28,7 @@
     }
   }
 
-  @keyframes breathe {
+  @keyframes #{$prefix}-breathe {
     30% {
       transform: scale(1.1);
     }
@@ -45,7 +45,7 @@
   width: 8em;
 
   .#{$prefix}-image {
-    background-image: svg('assets/skin-modern/images/play_big.svg');
+    background-image: url('../../assets/skin-modern/images/play_big.svg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: 7em;
@@ -53,13 +53,13 @@
     width: 100%;
 
     &:hover {
-      animation: breathe 3s ease-in-out infinite;
+      animation:  #{$prefix}-breathe 3s ease-in-out infinite;
     }
   }
 
   &.#{$prefix}-on {
     .#{$prefix}-image {
-      animation: fade-out $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
+      animation: #{$prefix}-fade-out $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
       transition: visibility 0s $animation-duration;
       visibility: hidden;
     }
@@ -67,7 +67,7 @@
 
   &.#{$prefix}-off {
     .#{$prefix}-image {
-      animation: fade-in $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
+      animation:  #{$prefix}-fade-in $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
       visibility: visible;
     }
   }

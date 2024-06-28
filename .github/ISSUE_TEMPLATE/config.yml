@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a Bug
+    url: https://dashboard.bitmovin.com/support/tickets
+    about: Report a Bug you encountered in our Bitmovin Player UI in your Bitmovin Customer Dashboard.
+  - name: Feature Requests
+    url: https://community.bitmovin.com/t/how-to-submit-a-feature-request-to-us/1463
+    about: Learn how to suggest new features for our Player SDKs.
+  - name: Report a security vulnerability
+    url: https://bitmovin.atlassian.net/wiki/external/1502085332/YTYwODMwZjQyNjkwNGQ0ODg5MTgwM2NhMDliNjRmODE
+    about: Report a security vulnerability.

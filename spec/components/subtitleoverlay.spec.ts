@@ -3,7 +3,7 @@ import { UIInstanceManager } from '../../src/ts/uimanager';
 import { SubtitleOverlay, SubtitleRegionContainerManager } from '../../src/ts/components/subtitleoverlay';
 import { DOM } from '../../src/ts/dom';
 
-let playerMock: TestingPlayerAPI;
+let playerMock: jest.Mocked<TestingPlayerAPI>;
 let uiInstanceManagerMock: UIInstanceManager;
 let subtitleOverlay: SubtitleOverlay;
 
@@ -15,7 +15,7 @@ describe('SubtitleOverlay', () => {
   describe('Subtitle Region Container', () => {
     let mockDomElement: DOM;
     beforeEach(() => {
-      playerMock = MockHelper.getPlayerMock();
+      playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
       uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
 
       subtitleOverlay = new SubtitleOverlay();
@@ -60,6 +60,22 @@ describe('SubtitleOverlay', () => {
 
       playerMock.eventEmitter.fireSubtitleCueUpdateEvent('some different text');
       expect(updateLabelSpy).not.toHaveBeenCalled();
+    });
+
+    it('remove only inactive cues when the player finishes seeking', () => {
+      const removeLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'removeLabel');
+      // create one active cue
+      playerMock.getCurrentTime.mockReturnValue(1);
+      playerMock.eventEmitter.fireSubtitleCueEnterEvent();
+
+      // seek inside the cue and ensure it has not been removed
+      playerMock.eventEmitter.fireSeekedEvent();
+      expect(removeLabelSpy).not.toHaveBeenCalled();
+
+      // seek outside of the cue and ensure it is removed
+      playerMock.getCurrentTime.mockReturnValue(15);
+      playerMock.eventEmitter.fireSeekedEvent();
+      expect(removeLabelSpy).toHaveBeenCalled();
     });
   });
 });

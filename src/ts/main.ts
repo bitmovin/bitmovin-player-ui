@@ -1,6 +1,6 @@
 export const version: string = '{{VERSION}}';
 // Management
-export { UIManager, UIInstanceManager } from './uimanager';
+export { UIManager, UIInstanceManager, UIVariant } from './uimanager';
 // Factories
 export { UIFactory } from './uifactory';
 export { DemoFactory } from './demofactory';
@@ -12,6 +12,13 @@ export { UIUtils } from './uiutils';
 export { BrowserUtils } from './browserutils';
 export { StorageUtils } from './storageutils';
 export { ErrorUtils } from './errorutils';
+// Localization
+export { i18n } from './localization/i18n';
+// Spatial Navigation
+export { SpatialNavigation } from './spatialnavigation/spatialnavigation';
+export { NavigationGroup } from './spatialnavigation/navigationgroup';
+export { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
+export { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 // Components
 export { Button } from './components/button';
 export { ControlBar } from './components/controlbar';
@@ -79,6 +86,8 @@ export { SettingsPanelPageBackButton } from './components/settingspanelpagebackb
 export { SettingsPanelPageOpenButton } from './components/settingspanelpageopenbutton';
 export { SubtitleSettingsPanelPage } from './components/subtitlesettings/subtitlesettingspanelpage';
 export { SettingsPanelItem } from './components/settingspanelitem';
+export { ReplayButton } from './components/replaybutton';
+export { QuickSeekButton, QuickSeekButtonConfig } from './components/quickseekbutton';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign

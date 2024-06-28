@@ -9,12 +9,12 @@
   }
 
   &.#{$prefix}-muted {
-    background-image: svg('assets/skin-modern/images/music-off.svg');
+    background-image: url('../../assets/skin-modern/images/music-off.svg');
   }
 
   &.#{$prefix}-unmuted {
     &[data-#{$prefix}-volume-level-tens='0'] {
-      background-image: svg('assets/skin-modern/images/music-off.svg');
+      background-image: url('../../assets/skin-modern/images/music-off.svg');
     }
 
     &[data-#{$prefix}-volume-level-tens='1'],
@@ -22,7 +22,7 @@
     &[data-#{$prefix}-volume-level-tens='3'],
     &[data-#{$prefix}-volume-level-tens='4'],
     &[data-#{$prefix}-volume-level-tens='5'] {
-      background-image: svg('assets/skin-modern/images/music-low.svg');
+      background-image: url('../../assets/skin-modern/images/music-low.svg');
     }
 
     &[data-#{$prefix}-volume-level-tens='6'],
@@ -30,7 +30,7 @@
     &[data-#{$prefix}-volume-level-tens='8'],
     &[data-#{$prefix}-volume-level-tens='9'],
     &[data-#{$prefix}-volume-level-tens='10'] {
-      background-image: svg('assets/skin-modern/images/music-on.svg');
+      background-image: url('../../assets/skin-modern/images/music-on.svg');
     }
   }
 }

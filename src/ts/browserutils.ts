@@ -1,5 +1,10 @@
-export class BrowserUtils {
+declare global {
+  interface Navigator {
+    msMaxTouchPoints?: number;
+  }
+}
 
+export class BrowserUtils {
   // isMobile only needs to be evaluated once (it cannot change during a browser session)
   // Mobile detection according to Mozilla recommendation: "In summary, we recommend looking for the string “Mobi”
   // anywhere in the User Agent to detect a mobile device."
@@ -22,7 +27,7 @@ export class BrowserUtils {
     if (!this.windowExists()) {
       return false;
     }
-    return navigator && navigator.userAgent && /Android/.test(navigator.userAgent);
+    return navigator && navigator.userAgent && /Android/.test(navigator.userAgent) && !this.isHisense;
   }
 
   static get isIOS(): boolean {
@@ -37,6 +42,38 @@ export class BrowserUtils {
       return false;
     }
     return navigator && navigator.userAgent && navigator.platform === 'MacIntel';
+  }
+
+  static get isHisense(): boolean {
+    if (!this.windowExists()) {
+      return false;
+    }
+    return navigator && navigator.userAgent && /Hisense/.test(navigator.userAgent);
+  }
+
+  static get isPlayStation(): boolean {
+    if (!this.windowExists()) {
+      return false;
+    }
+    return navigator && navigator.userAgent && /PlayStation/i.test(navigator.userAgent);
+  }
+
+  static get isWebOs(): boolean {
+    if (!this.windowExists()) {
+      return false;
+    }
+    return (
+      navigator &&
+      navigator.userAgent &&
+      (navigator.userAgent.includes('Web0S') || navigator.userAgent.includes('NetCast'))
+    );
+  }
+
+  static get isTizen(): boolean {
+    if (!this.windowExists()) {
+      return false;
+    }
+    return navigator && navigator.userAgent && /Tizen/.test(navigator.userAgent);
   }
 
   // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/

@@ -50,10 +50,10 @@
       .#{$prefix}-ui-subtitle-label {
         background-color: transparentize($subtitle-text-border-color, .5);
         box-decoration-break: clone;
+        display: inline-flex;
         line-height: 2em;
         padding: .3em .5em;
         text-shadow: none;
-        display: inline-flex;
       }
     }
 
@@ -61,7 +61,7 @@
     // We also display a pause image while playback is paused, instead of a play action button
     .#{$prefix}-ui-hugeplaybacktogglebutton {
       .#{$prefix}-image {
-        background-image: svg('assets/skin-modern/images/pause.svg');
+        background-image: url('../../assets/skin-modern/images/pause.svg');
         opacity: .7;
       }
 
