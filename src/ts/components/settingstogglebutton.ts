@@ -83,12 +83,10 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     settingsPanel.onShow.subscribe(() => {
       // Set toggle status to on when the settings panel shows
       this.on();
-      if (menuCaption) menuCaption.show();
     });
     settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides
       this.off();
-      if (menuCaption) menuCaption.hide();
     });
 
     // Ensure that only one `SettingPanel` is visible at once
@@ -119,5 +117,16 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       // Call handler for first init at startup
       settingsPanelItemsChangedHandler();
     }
+
+    this.getDomElement().on('focusin', (e) => {
+      if (menuCaption) {
+        menuCaption.show();
+      }
+    });
+    this.getDomElement().on('focusout', (e) => {
+      if (menuCaption) {
+        menuCaption.hide();
+      }
+    });
   }
 }
