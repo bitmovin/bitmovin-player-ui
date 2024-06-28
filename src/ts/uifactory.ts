@@ -51,7 +51,7 @@ import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 import { EcoModeContainer } from './components/ecomodecontainer';
-import { Menucaption } from './components/menucaption';
+import { MenuCaption } from './components/menucaption';
 
 export namespace UIFactory {
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -481,8 +481,8 @@ export namespace UIFactory {
   }
 
   export function modernTvUI() {
-    const subtitleMenuCaption = new Menucaption({text: i18n.getLocalizer('settings.subtitles')});
-    const audioMenuCaption = new Menucaption({text: i18n.getLocalizer('settings.audio.track')});
+    const subtitleMenuCaption = new MenuCaption({text: i18n.getLocalizer('settings.subtitles')});
+    const audioMenuCaption = new MenuCaption({text: i18n.getLocalizer('settings.audio.track')});
     const subtitleListBox = new SubtitleListBox();
     const subtitleListPanel = new SettingsPanel({
       components: [

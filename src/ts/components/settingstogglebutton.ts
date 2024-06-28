@@ -5,7 +5,7 @@ import {Component, ComponentConfig} from './component';
 import {ArrayUtils} from '../arrayutils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
-import { Menucaption } from './menucaption';
+import { MenuCaption } from './menucaption';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -25,7 +25,7 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
   /**
    * The Menu caption component whose visibility the button should toggle.
    */
-  menuCaption?: Menucaption;
+  menuCaption?: MenuCaption;
 }
 
 /**

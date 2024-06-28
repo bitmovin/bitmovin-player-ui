@@ -5,7 +5,7 @@ import { PlayerAPI } from 'bitmovin-player';
 /**
  * A label that displays a caption about the menu.
  */
-export class Menucaption extends Label<LabelConfig> {
+export class MenuCaption extends Label<LabelConfig> {
 
   constructor(config: LabelConfig = {}) {
     super(config);
