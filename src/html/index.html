@@ -272,11 +272,17 @@
       updateApiMethods();
     });
 
-    // Add UI
-    uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, uiConfig);
+    const playgroundConfig = getConfigFromStorage();
 
-    player.load(sources.fullyFeatured).then(function() {
+    // Add UI
+    uiManager = bitmovin.playerui.UIFactory[playgroundConfig.uiOption || 'buildDefaultUI'](player, uiConfig);
+
+    player.load(sources[playgroundConfig.source || 'fullyFeatured']).then(function() {
       console.log('source successfully loaded');
+
+      if (playgroundConfig.adsEnabled) {
+        scheduleAds();
+      }
     }, function(errorEvent) {
       console.log('error while loading source', errorEvent);
     });
@@ -290,6 +296,7 @@
   $('#config-source').change(function() {
     player.unload();
     player.load(sources[$(this).val()]);
+    storeConfigInStorage();
   });
 
   var printResult = function(result, method) {
@@ -718,6 +725,7 @@
     } else {
       uiManager = bitmovin.playerui.UIFactory[factoryMethod](player, uiConfig);
     }
+    storeConfigInStorage();
   });
 
   var scheduleAdsCheckbox = $('#config-ads');
@@ -725,20 +733,69 @@
     const isChecked = $(this).is(':checked');
 
     if (isChecked) {
-      adBreaks.forEach(function(adBreak) {
-        player.ads.schedule(adBreak);
-      });
+      scheduleAds();
     } else {
       const ads = player.ads.list();
       ads.forEach(function(ad) {
         player.ads.discardAdBreak(ad.id);
       })
     }
+
+    storeConfigInStorage();
   });
+
+  function scheduleAds() {
+    adBreaks.forEach(function(adBreak) {
+      player.ads.schedule(adBreak);
+    });
+  }
 
   // Populate stats
   $('#userAgent').html(navigator.userAgent);
 
+  function storeConfigInStorage() {
+    var data = {
+      adsEnabled: $('#config-ads').is(':checked'),
+      source: $('#config-source').val(),
+      uiOption: $('#config-ui').val(),
+    };
+
+    try {
+      window.localStorage.setItem('bmpui-playground-config', JSON.stringify(data));
+    } catch (e) {
+      console.error('Local storage access denied', e);
+    }
+  }
+
+  function getConfigFromStorage() {
+    let config = {};
+    try {
+      const loadedEntry = window.localStorage.getItem('bmpui-playground-config');
+      if (!loadedEntry) {
+        console.log('No local storage entry found');
+        return;
+      }
+      config = JSON.parse(loadedEntry);
+    } catch (e) {
+      console.error('Problem loading playground config from localStorage', e);
+    }
+
+    return config || {};
+  }
+
+  (function applyInitialConfiguration() {
+    const config = getConfigFromStorage();
+
+    if ($('#config-source') && config.source) {
+      $('#config-source').val(config.source);
+    }
+    if ($('#config-ui') && config.uiOption) {
+      $('#config-ui').val(config.uiOption);
+    }
+    if ($('#config-ads') && config.adsEnabled !== undefined) {
+      $('#config-ads').prop('checked', config.adsEnabled);
+    }
+  })();
 </script>
 </body>
 </html>
