@@ -482,11 +482,11 @@ export namespace UIFactory {
   export function modernTvUI() {
     const subtitleMenuLabel = new Label<LabelConfig>({
       text: i18n.getLocalizer('settings.subtitles'),
-      hidden: true
+      hidden: true,
     });
     const audioMenuLabel = new Label<LabelConfig>({
       text: i18n.getLocalizer('settings.audio.track'),
-      hidden: true
+      hidden: true,
     });
     const subtitleListBox = new SubtitleListBox();
     const subtitleListPanel = new SettingsPanel({
