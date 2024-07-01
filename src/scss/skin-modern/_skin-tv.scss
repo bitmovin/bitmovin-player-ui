@@ -16,7 +16,8 @@
     }
   }
 
-  .#{$prefix}-ui-titlebar-top,.#{$prefix}-ui-menucaption {
+  .#{$prefix}-ui-titlebar-top,
+  .#{$prefix}-ui-menucaption {
     margin-bottom: 1vh;
 
     > .#{$prefix}-container-wrapper {
