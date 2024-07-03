@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- Missing changelog entries of `3.65.0` and `3.66.0` release versions
+
+## [3.66.0] - 2024-07-01
+
+### Changed
+- Playground demo page to include checkbox to enable/disbale ads
+- Store basic configuration of playground demo page in localStorage
+
+## [3.65.0] - 2024-06-24
+
+### Added
+- Eco Mode toggle button
+
 ## [3.64.0] - 2024-05-28
 
 ### Added
@@ -960,7 +976,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
-[3.66.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.64.0...v3.66.0
+[3.66.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.65.0...v3.66.0
 [3.65.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.64.0...v3.65.0
 [3.64.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.63.0...v3.64.0
 [3.63.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.62.0...v3.63.0
