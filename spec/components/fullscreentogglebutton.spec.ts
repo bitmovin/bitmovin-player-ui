@@ -14,6 +14,14 @@ describe('FullscreenToggleButton', () => {
     uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
 
     fullscreenToggleButton = new FullscreenToggleButton();
+    (<any>fullscreenToggleButton).textLabel = {
+      setText: jest.fn(),
+      getDomElement: () => MockHelper.generateDOMMock(),
+      initialize: jest.fn(),
+      show: jest.fn(),
+      hide: jest.fn(),
+      release: jest.fn(),
+    };
     fullscreenToggleButton.initialize();
 
     // Setup DOM Mock
