@@ -53,12 +53,6 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       showTextOnFocus: false,
     } as Config, this.config);
 
-    this.textLabel = new Label({
-      text: i18n.performLocalization(this.config.text),
-      for: this.config.id,
-      hidden: true,
-    });
-
     if (this.config.showTextOnFocus) {
       this.config.cssClasses = this.config.cssClasses.concat('ui-labeledbutton');
     }
@@ -80,6 +74,12 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     if (this.config.role != null) {
       buttonElementAttributes['role'] = this.config.role;
     }
+
+    this.textLabel = new Label({
+      text: i18n.performLocalization(this.config.text),
+      for: this.config.id,
+      hidden: true,
+    });
 
     // Create the button element with the text label
     let buttonElement = new DOM('button', buttonElementAttributes, this).append(this.textLabel.getDomElement());
