@@ -50,7 +50,6 @@
   span,
   label {
     text-align: center;
-    margin-top: 1.2em;
     position: absolute;
     color: $color-primary;
     transform: translateX(-50%);
@@ -60,5 +59,23 @@
   span.#{$prefix}-hidden,
   label.#{$prefix}-hidden {
     display: none;
+  }
+}
+
+.#{$prefix}-ui-controlbar {
+  .#{$prefix}-ui-labeledbutton {
+    span,
+    label {
+      margin-top: -1.7em;
+    }
+  }
+}
+
+.#{$prefix}-ui-titlebar {
+  .#{$prefix}-ui-labeledbutton {
+    span,
+    label {
+      margin-top: 1.2em;
+    }
   }
 }
