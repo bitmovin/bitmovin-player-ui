@@ -2,6 +2,7 @@ import {ComponentConfig, Component} from './component';
 import {DOM} from '../dom';
 import {EventDispatcher, NoArgs, Event} from '../eventdispatcher';
 import { LocalizableText , i18n } from '../localization/i18n';
+import { Label, LabelConfig } from './label';
 
 /**
  * Configuration interface for a {@link Button} component.
@@ -28,6 +29,7 @@ export interface ButtonConfig extends ComponentConfig {
  * A simple clickable button.
  */
 export class Button<Config extends ButtonConfig> extends Component<Config> {
+  protected textLabel: Label<LabelConfig>;
 
   private buttonEvents = {
     onClick: new EventDispatcher<Button<Config>, NoArgs>(),
@@ -42,6 +44,12 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       tabIndex: 0,
       acceptsTouchWithUiHidden: false,
     } as Config, this.config);
+
+    this.textLabel = new Label({
+      text: i18n.performLocalization(this.config.text),
+      for: this.config.id,
+      hidden: true,
+    });
   }
 
   protected toDomElement(): DOM {
@@ -62,9 +70,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     }
 
     // Create the button element with the text label
-    let buttonElement = new DOM('button', buttonElementAttributes, this).append(new DOM('span', {
-      'class': this.prefixCss('label'),
-    }).html(i18n.performLocalization(this.config.text)));
+    let buttonElement = new DOM('button', buttonElementAttributes, this).append(this.textLabel.getDomElement());
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', () => {
@@ -84,6 +90,10 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
 
   protected onClickEvent() {
     this.buttonEvents.onClick.dispatch(this);
+  }
+
+  initialize(): void {
+    this.textLabel.initialize();
   }
 
   /**
