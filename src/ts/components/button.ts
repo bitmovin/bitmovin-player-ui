@@ -104,7 +104,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
    * @param text the text to put into the label of the button
    */
   setText(text: LocalizableText): void {
-    this.textLabel.setText(text)
+    this.textLabel.setText(text);
   }
 
   protected onClickEvent() {
