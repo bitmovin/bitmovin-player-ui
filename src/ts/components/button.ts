@@ -25,9 +25,11 @@ export interface ButtonConfig extends ComponentConfig {
   acceptsTouchWithUiHidden?: boolean;
 
   /**
-   * 
+   * Specifies whether the text of the button should be shown when the button is hovered or focused.
+   *
+   * Default: false
    */
-  showTextOnFocus?: boolean
+  showTextOnFocus?: boolean;
 }
 
 /**
