@@ -43,3 +43,39 @@
 .#{$prefix}-ui-button {
   @extend %ui-button;
 }
+
+.#{$prefix}-ui-labeledbutton {
+  @extend %ui-button;
+
+  span,
+  label {
+    text-align: center;
+    position: absolute;
+    color: $color-primary;
+    transform: translateX(-50%);
+    white-space: normal;
+  }
+
+  span.#{$prefix}-hidden,
+  label.#{$prefix}-hidden {
+    display: none;
+  }
+}
+
+.#{$prefix}-ui-controlbar {
+  .#{$prefix}-ui-labeledbutton {
+    span,
+    label {
+      margin-top: -1.7em;
+    }
+  }
+}
+
+.#{$prefix}-ui-titlebar {
+  .#{$prefix}-ui-labeledbutton {
+    span,
+    label {
+      margin-top: 1.2em;
+    }
+  }
+}

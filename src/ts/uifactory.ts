@@ -39,7 +39,7 @@ import { AdSkipButton } from './components/adskipbutton';
 import { CloseButton } from './components/closebutton';
 import { MetadataLabel, MetadataLabelContent } from './components/metadatalabel';
 import { PlayerUtils } from './playerutils';
-import { Label } from './components/label';
+import { Label, LabelConfig } from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
@@ -193,7 +193,10 @@ export namespace UIFactory {
         new AdClickOverlay(),
         new PlaybackToggleOverlay(),
         new Container({
-          components: [new AdMessageLabel({ text: i18n.getLocalizer('ads.remainingTime') }), new AdSkipButton()],
+          components: [
+            new AdMessageLabel({ text: i18n.getLocalizer('ads.remainingTime') }),
+            new AdSkipButton(),
+          ],
           cssClass: 'ui-ads-status',
         }),
         new ControlBar({
@@ -339,7 +342,10 @@ export namespace UIFactory {
           ],
         }),
         new Container({
-          components: [new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }), new AdSkipButton()],
+          components: [
+            new AdMessageLabel({ text: 'Ad: {remainingTime} secs' }),
+            new AdSkipButton(),
+          ],
           cssClass: 'ui-ads-status',
         }),
       ],

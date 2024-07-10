@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## [unreleased]
+
+### Added
+- Configuration option in `Button` component to show button title on hover/focus
+
 ## [3.67.0] - 2024-07-03
 
 ### Added
@@ -19,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Eco Mode toggle button
+
 
 ## [3.64.0] - 2024-05-28
 

@@ -14,6 +14,14 @@ describe('PictureInPictureToggleButton', () => {
     uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
 
     pictureInPictureToggleButton = new PictureInPictureToggleButton();
+    (<any>pictureInPictureToggleButton).textLabel = {
+      setText: jest.fn(),
+      getDomElement: () => MockHelper.generateDOMMock(),
+      initialize: jest.fn(),
+      show: jest.fn(),
+      hide: jest.fn(),
+      release: jest.fn(),
+    };
     pictureInPictureToggleButton.initialize();
 
     // Setup DOM Mock
