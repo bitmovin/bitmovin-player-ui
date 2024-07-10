@@ -112,7 +112,13 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
   }
 
   initialize(): void {
+    super.initialize();
     this.textLabel.initialize();
+  }
+
+  release(): void {
+    super.release();
+    this.textLabel.release();
   }
 
   /**
