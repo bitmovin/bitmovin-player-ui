@@ -23,6 +23,11 @@ export interface ButtonConfig extends ComponentConfig {
    * Default: false
    */
   acceptsTouchWithUiHidden?: boolean;
+
+  /**
+   * 
+   */
+  showTextOnFocus?: boolean
 }
 
 /**
@@ -43,6 +48,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       role: 'button',
       tabIndex: 0,
       acceptsTouchWithUiHidden: false,
+      showTextOnFocus: false,
     } as Config, this.config);
 
     this.textLabel = new Label({
@@ -50,6 +56,10 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       for: this.config.id,
       hidden: true,
     });
+
+    if (this.config.showTextOnFocus) {
+      this.config.cssClasses = this.config.cssClasses.concat('ui-labeledbutton');
+    }
   }
 
   protected toDomElement(): DOM {
@@ -71,6 +81,13 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
 
     // Create the button element with the text label
     let buttonElement = new DOM('button', buttonElementAttributes, this).append(this.textLabel.getDomElement());
+
+    if (this.config.showTextOnFocus) {
+      buttonElement.on('focusin', (e) => this.textLabel.show());
+      buttonElement.on('mouseenter', (e) => this.textLabel.show());
+      buttonElement.on('focusout', (e) => this.textLabel.hide());
+      buttonElement.on('mouseleave', (e) => this.textLabel.hide());
+    }
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', () => {

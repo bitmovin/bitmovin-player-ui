@@ -43,3 +43,22 @@
 .#{$prefix}-ui-button {
   @extend %ui-button;
 }
+
+.#{$prefix}-ui-labeledbutton {
+  @extend %ui-button;
+
+  span,
+  label {
+    text-align: center;
+    margin-top: 1.2em;
+    position: absolute;
+    color: $color-primary;
+    transform: translateX(-50%);
+    white-space: normal;
+  }
+
+  span.#{$prefix}-hidden,
+  label.#{$prefix}-hidden {
+    display: none;
+  }
+}
