@@ -5,7 +5,6 @@ import {Component, ComponentConfig} from './component';
 import {ArrayUtils} from '../arrayutils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
-import { Label, LabelConfig } from './label';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -21,11 +20,6 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
    * Default: true
    */
   autoHideWhenNoActiveSettings?: boolean;
-
-  /**
-   * The Menu caption component whose visibility the button should toggle.
-   */
-  menuLabel?: Label<LabelConfig>;
 }
 
 /**
@@ -46,7 +40,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       cssClass: 'ui-settingstogglebutton',
       text: i18n.getLocalizer('settings'),
       settingsPanel: null,
-      menuLabel: null,
       autoHideWhenNoActiveSettings: true,
       role: 'pop-up button',
     }, <SettingsToggleButtonConfig>this.config);
@@ -68,7 +61,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
 
     let config = this.getConfig();
     let settingsPanel = config.settingsPanel;
-    let menuLabel = config.menuLabel;
 
     this.onClick.subscribe(() => {
       // only hide other `SettingsPanel`s if a new one will be opened
@@ -117,16 +109,5 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       // Call handler for first init at startup
       settingsPanelItemsChangedHandler();
     }
-
-    this.getDomElement().on('focusin', (e) => {
-      if (menuLabel) {
-        menuLabel.show();
-      }
-    });
-    this.getDomElement().on('focusout', (e) => {
-      if (menuLabel) {
-        menuLabel.hide();
-      }
-    });
   }
 }

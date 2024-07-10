@@ -480,14 +480,6 @@ export namespace UIFactory {
   }
 
   export function modernTvUI() {
-    const subtitleMenuLabel = new Label<LabelConfig>({
-      text: i18n.getLocalizer('settings.subtitles'),
-      hidden: true,
-    });
-    const audioMenuLabel = new Label<LabelConfig>({
-      text: i18n.getLocalizer('settings.audio.track'),
-      hidden: true,
-    });
     const subtitleListBox = new SubtitleListBox();
     const subtitleListPanel = new SettingsPanel({
       components: [
@@ -512,14 +504,12 @@ export namespace UIFactory {
     const playbackToggleOverlay = new PlaybackToggleOverlay();
     const subtitleToggleButton = new SettingsToggleButton({
       settingsPanel: subtitleListPanel,
-      menuLabel: subtitleMenuLabel,
       autoHideWhenNoActiveSettings: true,
       cssClass: 'ui-subtitlesettingstogglebutton',
       text: i18n.getLocalizer('settings.subtitles'),
     });
     const audioToggleButton = new SettingsToggleButton({
       settingsPanel: audioTrackListPanel,
-      menuLabel: audioMenuLabel,
       autoHideWhenNoActiveSettings: true,
       cssClass: 'ui-audiotracksettingstogglebutton',
       ariaLabel: i18n.getLocalizer('settings.audio.track'),
@@ -563,8 +553,6 @@ export namespace UIFactory {
                 new MetadataLabel({ content: MetadataLabelContent.Description }),
                 subtitleListPanel,
                 audioTrackListPanel,
-                subtitleMenuLabel,
-                audioMenuLabel,
               ],
               cssClasses: ['ui-titlebar-bottom'],
             }),
