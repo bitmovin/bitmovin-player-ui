@@ -439,29 +439,6 @@ export namespace UIFactory {
       config,
     );
   }
-/*
-  export function buildSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(
-      player,
-      [
-        {
-          ui: superModernMobileAdsUI(),
-          condition: (context: UIConditionContext) => {
-            //maybe add the document width
-            return (context.isMobile && context.isAd && context.adRequiresUi);
-          }
-        },
-        {
-          ui: superModernAdsUI(),
-          condition: (context: UIConditionContext) => {
-            return context.isAd && context.adRequiresUi;
-          }
-        }
-      ],
-      config
-    );
-  }
-*/
 
 export function superModernMobileAdsUI() {
   return new UIContainer({});
