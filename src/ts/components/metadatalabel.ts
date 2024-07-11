@@ -11,7 +11,7 @@ export enum MetadataLabelContent {
    */
   Title,
   /**
-   * Description fo the data source.
+   * Description of the data source.
    */
   Description,
 }
