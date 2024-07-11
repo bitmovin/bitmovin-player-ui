@@ -53,6 +53,10 @@ import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNa
 import { EcoModeContainer } from './components/ecomodecontainer';
 
 export namespace UIFactory {
+  export function buildDefaultSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return UIFactory.buildSuperModernUI(player, config);
+  }
+
   export function buildDefaultUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return UIFactory.buildModernUI(player, config);
   }
@@ -435,6 +439,89 @@ export namespace UIFactory {
       config,
     );
   }
+/*
+  export function buildSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return new UIManager(
+      player,
+      [
+        {
+          ui: superModernMobileAdsUI(),
+          condition: (context: UIConditionContext) => {
+            //maybe add the document width
+            return (context.isMobile && context.isAd && context.adRequiresUi);
+          }
+        },
+        {
+          ui: superModernAdsUI(),
+          condition: (context: UIConditionContext) => {
+            return context.isAd && context.adRequiresUi;
+          }
+        }
+      ],
+      config
+    );
+  }
+*/
+
+export function superModernMobileAdsUI() {
+  return new UIContainer({});
+}
+
+export function superModernAdsUI(){
+  return new UIContainer({});
+}
+
+export function superModernMobileUI(){
+  return new UIContainer({});
+}
+
+export function superModerUI(){
+  return new UIContainer({});
+}
+
+  export function buildSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    // show smallScreen UI only on mobile/handheld devices
+    let smallScreenSwitchWidth = 600;
+
+  return new UIManager(
+    player,
+    [
+      {
+        ui: superModernMobileAdsUI(),
+        condition: (context: UIConditionContext) => {
+          return (
+            context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAd && context.adRequiresUi
+          );
+        },
+      },
+      {
+        ui: superModernAdsUI(),
+        condition: (context: UIConditionContext) => {
+          return context.isAd && context.adRequiresUi;
+        },
+      },
+      {
+        ui: superModernMobileUI(),
+        condition: (context: UIConditionContext) => {
+          return (
+            !context.isAd &&
+            !context.adRequiresUi &&
+            context.isMobile &&
+            context.documentWidth < smallScreenSwitchWidth
+          );
+        },
+      },
+      {
+        ui: modernUI(config),
+        condition: (context: UIConditionContext) => {
+          return !context.isAd && !context.adRequiresUi;
+        },
+      },
+    ],
+    config,
+  );
+}
+
 
   export function buildModernSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(

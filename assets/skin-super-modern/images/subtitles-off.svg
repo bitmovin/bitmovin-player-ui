@@ -1,0 +1,18 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g opacity="0.5" filter="url(#filter0_b_9_923)">
+<circle cx="12" cy="12" r="12" fill="url(#paint0_radial_9_923)" fill-opacity="0.25"/>
+</g>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6.33333 7C6.14924 7 6 7.14924 6 7.33333V16C6 16.1841 6.14924 16.3333 6.33333 16.3333H17.6667C17.8508 16.3333 18 16.1841 18 16V7.33333C18 7.14924 17.8508 7 17.6667 7H6.33333ZM8.33362 14.3332C8.14952 14.3332 8.00028 14.1839 8.00028 13.9998V9.33317C8.00028 9.14908 8.14952 8.99984 8.33362 8.99984H11.0003C11.1844 8.99984 11.3336 9.14908 11.3336 9.33317V9.99984C11.3336 10.1839 11.1844 10.3332 11.0003 10.3332H9.40028C9.36347 10.3332 9.33362 10.363 9.33362 10.3998V12.9332C9.33362 12.97 9.36347 12.9998 9.40028 12.9998H11.0003C11.1844 12.9998 11.3336 13.1491 11.3336 13.3332V13.9998C11.3336 14.1839 11.1844 14.3332 11.0003 14.3332H8.33362ZM13.0003 14.3332C12.8162 14.3332 12.667 14.1839 12.667 13.9998V9.33317C12.667 9.14908 12.8162 8.99984 13.0003 8.99984H15.667C15.851 8.99984 16.0003 9.14908 16.0003 9.33317V9.99984C16.0003 10.1839 15.851 10.3332 15.667 10.3332H14.067C14.0301 10.3332 14.0003 10.363 14.0003 10.3998V12.9332C14.0003 12.97 14.0301 12.9998 14.067 12.9998H15.667C15.851 12.9998 16.0003 13.1491 16.0003 13.3332V13.9998C16.0003 14.1839 15.851 14.3332 15.667 14.3332H13.0003Z" fill="#F5F5F5"/>
+<defs>
+<filter id="filter0_b_9_923" x="-10" y="-10" width="44" height="44" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feGaussianBlur in="BackgroundImageFix" stdDeviation="5"/>
+<feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_9_923"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_9_923" result="shape"/>
+</filter>
+<radialGradient id="paint0_radial_9_923" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(12 12) rotate(90) scale(12)">
+<stop/>
+<stop offset="1" stop-opacity="0.01"/>
+</radialGradient>
+</defs>
+</svg>
