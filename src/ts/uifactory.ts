@@ -551,7 +551,6 @@ export function superModernMobileUI() {
         ],
       }),
       settingsPanel,
-      new Watermark(),
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-skin-smallscreen'],
