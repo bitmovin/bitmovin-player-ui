@@ -563,7 +563,7 @@ export function superModernMobileUI() {
   });
 }
 
-export function superModerUI(){
+export function superModerUI() {
   return new UIContainer({});
 }
 
