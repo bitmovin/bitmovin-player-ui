@@ -444,11 +444,11 @@ export function superModernMobileAdsUI() {
   return new UIContainer({});
 }
 
-export function superModernAdsUI(){
+export function superModernAdsUI() {
   return new UIContainer({});
 }
 
-export function superModernMobileUI(){
+export function superModernMobileUI() {
   let subtitleOverlay = new SubtitleOverlay();
 
   let mainSettingsPanelPage = new SettingsPanelPage({
@@ -457,7 +457,7 @@ export function superModernMobileUI(){
       new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
       new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
       new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
-    ]
+    ],
   });
 
   let settingsPanel = new SettingsPanel({
@@ -480,8 +480,8 @@ export function superModernMobileUI(){
   });
 
   const subtitleSelectBox = new SubtitleSelectBox();
-  
-  //TODO: Remove subtitle settings and instead use that settings page for the subtitles itself
+
+  // TODO: Remove subtitle settings and instead use that settings page for the subtitles itself
   mainSettingsPanelPage.addComponent(
     new SettingsPanelItem(
       new SubtitleSettingsLabel({
@@ -497,7 +497,7 @@ export function superModernMobileUI(){
 
   settingsPanel.addComponent(subtitleSettingsPanelPage);
 
-  //TODO: we don´t need the CloseButtons anymore(settings page will be closed by tapping inside the view)
+  // TODO: we don´t need the CloseButtons anymore(settings page will be closed by tapping inside the view)
   settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
   subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
 
@@ -523,7 +523,7 @@ export function superModernMobileUI(){
           new VolumeToggleButton(),
           new Spacer(),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
-          //TODO: make a subtitles toggle button
+          // TODO: make a subtitles toggle button
           new FullscreenToggleButton(),
         ],
         cssClasses: ['controlbar-bottom'],
@@ -537,7 +537,7 @@ export function superModernMobileUI(){
       subtitleOverlay,
       new BufferingOverlay(),
       new CastStatusOverlay(),
-      //TODO: make an overlay for the quickseek buttons/double tab
+      // TODO: make an overlay for the quickseek buttons/double tab
       new PlaybackToggleOverlay(),
       new RecommendationOverlay(),
       controlBar,
@@ -547,8 +547,7 @@ export function superModernMobileUI(){
           new CastToggleButton(),
           new AirPlayToggleButton(),
           new VRToggleButton(),
-          //TODO: make a Share button
-          //new PictureInPictureToggleButton(), probably not needed in mobile version
+          // TODO: make a Share button
         ],
       }),
       settingsPanel,
