@@ -2,6 +2,7 @@ import { ListItem, ListSelector, ListSelectorConfig } from './components/listsel
 import { UIInstanceManager } from './uimanager';
 import { PlayerAPI, SubtitleEvent, SubtitleTrack } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
+import { StorageUtils } from './storageutils';
 
 /**
  * Helper class to handle all subtitle related events
@@ -36,6 +37,7 @@ export class SubtitleSwitchHandler {
         }
       } else {
         this.player.subtitles.enable(value, true);
+        StorageUtils.setItem("bmpiu-subtitlelanguage", value);
       }
     });
   }

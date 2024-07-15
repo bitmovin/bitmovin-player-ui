@@ -51,6 +51,7 @@ import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 import { EcoModeContainer } from './components/ecomodecontainer';
+import { SubtitleToggleButton } from './components/subtitletogglebutton';
 
 export namespace UIFactory {
   export function buildDefaultSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -480,7 +481,6 @@ export function superModernMobileUI() {
   });
 
   const subtitleSelectBox = new SubtitleSelectBox();
-
   // TODO: Remove subtitle settings and instead use that settings page for the subtitles itself
   mainSettingsPanelPage.addComponent(
     new SettingsPanelItem(
@@ -524,6 +524,7 @@ export function superModernMobileUI() {
           new Spacer(),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
           // TODO: make a subtitles toggle button
+          new SubtitleToggleButton(settingsPanel, subtitleSelectBox),
           new FullscreenToggleButton(),
         ],
         cssClasses: ['controlbar-bottom'],

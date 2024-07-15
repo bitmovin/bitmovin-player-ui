@@ -1,0 +1,18 @@
+@import '../../skin-modern/variables';
+@import '../../skin-modern/mixins';
+
+.#{$prefix}-ui-subtitletogglebutton {
+  @extend %ui-button;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-subtitles-on {
+    background-image: url('../../assets/skin-super-modern/images/subtitles-on.svg');
+  }
+
+  &.#{$prefix}-subtitles-off {
+    background-image: url('../../assets/skin-super-modern/images/subtitles-off.svg');
+  }
+}
