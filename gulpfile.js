@@ -100,6 +100,7 @@ gulp.task('lint-ts', function() {
   .pipe(tslint({
     formatter: 'verbose',
     program: program,
+    fix: true
   }))
   .pipe(tslint.report({
     // Print just the number of errors (instead of printing all errors again)
