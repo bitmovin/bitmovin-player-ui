@@ -37,7 +37,7 @@ export class SubtitleSwitchHandler {
         }
       } else {
         this.player.subtitles.enable(value, true);
-        StorageUtils.setItem("bmpiu-subtitlelanguage", value);
+        StorageUtils.setItem('bmpiu-subtitlelanguage', value);
       }
     });
   }

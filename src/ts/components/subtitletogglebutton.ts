@@ -33,10 +33,10 @@ export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
 
         this.onClick.subscribe(() => {
             const availableSubtitles = player.subtitles.list();
-            const subtitleID = StorageUtils.getItem("bmpiu-subtitlelanguage");
-            if(!subtitleID || !availableSubtitles.find(e => e.id == subtitleID)) {
+            const subtitleID = StorageUtils.getItem('bmpiu-subtitlelanguage');
+            if (!subtitleID || !availableSubtitles.find(e => e.id == subtitleID)) {
                 this.settingsPanel.show();
-            } else if(this.isOff() && subtitleID) {
+            } else if (this.isOff() && subtitleID) {
                 this.on();
                 player.subtitles.enable(subtitleID);
             } else {
