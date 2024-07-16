@@ -63,7 +63,7 @@ export class SubtitleSwitchHandler {
   public static setSubtitleLanguageStorage = (player: PlayerAPI, subtitleID?: string) => {
     const prefixCss = DummyComponent.instance().prefixCss('subtitlelanguage');
     let subtitleLanguageSettings: StoredSubtitleLanguage;
-    if(subtitleID) {
+    if (subtitleID) {
       const lang = player.subtitles.list().find(subtitle => subtitle.id === subtitleID).lang;
       subtitleLanguageSettings = {language: lang, active: true};
     } else {
