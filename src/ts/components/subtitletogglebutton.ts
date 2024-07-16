@@ -79,7 +79,7 @@ export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
         subtitleList.length > 0 ? this.show() : this.hide();
 
         // if the stored subtitle is set active and available, that subtitle is enabled
-        let subtitleToActivate: SubtitleTrack = subtitleList.find(subtitle => subtitle.lang === storedSubtitle.language);
+        const subtitleToActivate: SubtitleTrack = subtitleList.find(subtitle => subtitle.lang === storedSubtitle?.language);
         if (storedSubtitle?.active && subtitleToActivate) {
             this.on();
             this.player.subtitles.enable(subtitleToActivate.id);
