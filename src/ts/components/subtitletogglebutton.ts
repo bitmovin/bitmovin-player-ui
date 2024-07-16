@@ -9,8 +9,8 @@ import { DummyComponent } from './dummycomponent';
 import { SubtitleSwitchHandler } from '../subtitleutils';
 
 export interface StoredSubtitleLanguage {
-    language: string,
-    active: boolean,
+    language: string;
+    active: boolean;
 }
 
 export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
@@ -40,7 +40,7 @@ export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
         this.player = player;
         this.hide();
         this.initPlayerEvents();
-        
+
         this.onClick.subscribe(() => {
             const availableSubtitles = player.subtitles.list();
             const storedSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(DummyComponent.instance().prefixCss('subtitlelanguage'));
@@ -80,7 +80,7 @@ export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
 
         // if the stored subtitle is set active and available, that subtitle is enabled
         let subtitleToActivate: SubtitleTrack;
-        if(storedSubtitle && storedSubtitle.active && (subtitleToActivate = subtitleList.find(subtitle => subtitle.lang === storedSubtitle.language))) {
+        if (storedSubtitle && storedSubtitle.active && (subtitleToActivate = subtitleList.find(subtitle => subtitle.lang === storedSubtitle.language))) {
             this.on();
             this.player.subtitles.enable(subtitleToActivate.id);
         }
