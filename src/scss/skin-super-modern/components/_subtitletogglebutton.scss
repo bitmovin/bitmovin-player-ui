@@ -1,5 +1,5 @@
-@import '../../skin-modern/variables';
-@import '../../skin-modern/mixins';
+@import '../variables';
+@import '../mixins';
 
 .#{$prefix}-ui-subtitletogglebutton {
   @extend %ui-button;

@@ -1,0 +1,146 @@
+@import 'variables';
+
+@function hidden-animated-transition($duration) {
+  @return opacity $duration, visibility 0s;
+}
+
+@mixin hidden {
+  &.#{$prefix}-hidden {
+    display: none;
+  }
+}
+
+@mixin hidden-animated($duration: $animation-duration) {
+  opacity: 1;
+  transition: hidden-animated-transition($duration);
+  visibility: visible;
+
+  &.#{$prefix}-hidden {
+    opacity: 0;
+    transition: opacity $duration, visibility $duration;
+    visibility: hidden;
+  }
+}
+
+@mixin hidden-animated-focusable($duration: $animation-duration) {
+  opacity: 1;
+  transition: hidden-animated-transition($duration);
+
+  &.#{$prefix}-hidden {
+    opacity: 0;
+    transition: opacity $duration;
+  }
+}
+
+/*
+ * this will use the existing `hidden-animated` mixin and add additional transitions properties
+ *
+ * Example:
+ * @include hidden-animated-with-additional-transitions($animation-duration,
+ *         (
+ *                 height: (.35s, cubic-bezier(.4, 0, .2, 1)),
+ *                 width: (.35s, cubic-bezier(.4, 0, .2, 1))
+ *         )
+ * );
+ */
+@mixin hidden-animated-with-additional-transitions($duration: $animation-duration, $transitions: ()) {
+  $transitions-string: hidden-animated-transition($duration);
+  @each $property, $property-options in $transitions {
+    $property-settings: $property;
+    @each $option in $property-options {
+      $property-settings: $property-settings $option;
+    }
+    $transitions-string: $transitions-string, $property-settings;
+  }
+
+  @include hidden-animated($duration);
+  transition: $transitions-string;
+}
+
+// Cover the whole parent element
+@mixin layout-cover {
+  height: 100%;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+// Align to parent's bottom
+@mixin layout-align-bottom {
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+}
+
+// Align to parent's top
+@mixin layout-align-top {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+// H/V center items in the middle of the overlay
+@mixin layout-center-children-in-container {
+  display: table;
+
+  > .#{$prefix}-container-wrapper {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+@mixin animate-slide-in-from-bottom($max-height, $duration: $animation-duration, $inner-selector: '') {
+  // Animate show
+  & #{$inner-selector} {
+    max-height: $max-height;
+    transition: max-height $duration ease-in;
+  }
+
+  // Animate hide
+  // sass-lint:disable force-element-nesting
+  &.#{$prefix}-hidden #{$inner-selector} {
+    max-height: 0;
+    transition: max-height $duration ease-out;
+  }
+}
+
+@mixin text-border($color: $color-primary) {
+  // Shift shadow in all 8 directions to get a homogeneous stroke around the text (works only for 1px width)
+  text-shadow: -1px -1px 0 $color,
+  0 -1px 0 $color,
+  1px -1px 0 $color,
+  -1px 0 0 $color,
+  1px 0 0 $color,
+  -1px 1px 0 $color,
+  0 1px 0 $color,
+  1px 1px 0 $color;
+}
+
+@mixin svg-icon-shadow {
+  filter: drop-shadow(0 0 1px $color-primary);
+}
+
+@mixin svg-icon-on-shadow {
+  filter: drop-shadow(0 0 1px $color-highlight);
+}
+
+@mixin seekbar-position-marker($marker-dimension) {
+  height: $marker-dimension;
+  left: -$marker-dimension * .5;
+  width: $marker-dimension;
+}
+
+@mixin focusable {
+  &:focus {
+    box-shadow: $focus-element-box-shadow;
+    outline: none;
+  }
+
+  &:focus:not(.#{$prefix}-focus-visible) {
+    box-shadow: none;
+    outline: none;
+  }
+}

@@ -1,11 +1,17 @@
 import { ToggleButton, ToggleButtonConfig } from './togglebutton';
 import { i18n } from '../localization/i18n';
-import { PlayerAPI } from 'bitmovin-player';
+import { PlayerAPI, SubtitleTrack } from 'bitmovin-player';
 import { UIInstanceManager } from '../uimanager';
 import { StorageUtils } from '../storageutils';
 import { SubtitleSelectBox } from './subtitleselectbox';
 import { SettingsPanel } from './settingspanel';
+import { DummyComponent } from './dummycomponent';
+import { SubtitleSwitchHandler } from '../subtitleutils';
 
+export interface StoredSubtitleLanguage {
+    language: string,
+    active: boolean,
+}
 
 export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
     private settingsPanel: SettingsPanel;
@@ -26,28 +32,29 @@ export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
             ariaLabel: i18n.getLocalizer('settings.subtitles'),
         };
 
-        this.config = this.mergeConfig(config, defaultConfig as ToggleButtonConfig, this.config);
+        this.config = this.mergeConfig(config, defaultConfig, this.config);
     }
 
     configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
         super.configure(player, uimanager);
         this.player = player;
         this.hide();
-
-        player.on(player.exports.PlayerEvent.SubtitleAdded, this.checkSubtitleAvailability);
-        player.on(player.exports.PlayerEvent.SubtitleRemoved, this.checkSubtitleAvailability);
-
+        this.initPlayerEvents();
+        
         this.onClick.subscribe(() => {
             const availableSubtitles = player.subtitles.list();
-            const subtitleID = StorageUtils.getItem('bmpiu-subtitlelanguage');
-            if (!subtitleID || !availableSubtitles.find(e => e.id === subtitleID)) {
+            const storedSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(DummyComponent.instance().prefixCss('subtitlelanguage'));
+            const subtitleTrack = storedSubtitle ? availableSubtitles.find(e => e.lang === storedSubtitle.language) : undefined;
+            if (!subtitleTrack) {
                 this.settingsPanel.show();
-            } else if (this.isOff() && subtitleID) {
+            } else if (this.isOff() && subtitleTrack) {
                 this.on();
-                player.subtitles.enable(subtitleID);
+                player.subtitles.enable(subtitleTrack.id);
+                SubtitleSwitchHandler.setSubtitleLanguageStorage(this.player, subtitleTrack.id);
             } else {
                 this.off();
-                player.subtitles.disable(subtitleID);
+                player.subtitles.disable(subtitleTrack.id);
+                SubtitleSwitchHandler.setSubtitleLanguageStorage(this.player);
             }
         });
 
@@ -57,7 +64,25 @@ export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
         });
     }
 
+    private initPlayerEvents = () => {
+        this.player.on(this.player.exports.PlayerEvent.SubtitleAdded, this.checkSubtitleAvailability);
+        this.player.on(this.player.exports.PlayerEvent.SubtitleRemoved, this.checkSubtitleAvailability);
+        this.player.on(this.player.exports.PlayerEvent.PeriodSwitch, this.checkSubtitleAvailability);
+        this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, this.checkSubtitleAvailability);
+    }
+
     private checkSubtitleAvailability = () => {
-        this.player.subtitles.list().length > 0 ? this.show() : this.hide();
+        const storedSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(DummyComponent.instance().prefixCss('subtitlelanguage'));
+        const subtitleList = this.player.subtitles.list();
+
+        // only shows the button when subtitles are existing
+        subtitleList.length > 0 ? this.show() : this.hide();
+
+        // if the stored subtitle is set active and available, that subtitle is enabled
+        let subtitleToActivate: SubtitleTrack;
+        if(storedSubtitle && storedSubtitle.active && (subtitleToActivate = subtitleList.find(subtitle => subtitle.lang === storedSubtitle.language))) {
+            this.on();
+            this.player.subtitles.enable(subtitleToActivate.id);
+        }
     }
 }
