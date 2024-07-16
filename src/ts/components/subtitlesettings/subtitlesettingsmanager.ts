@@ -1,7 +1,7 @@
 import { StorageUtils } from '../../storageutils';
 import { Component, ComponentConfig } from '../component';
 import { EventDispatcher, Event } from '../../eventdispatcher';
-import { DummyComponent } from '../dummycomponent';
+import { prefixCss } from '../dummycomponent';
 
 interface SubtitleSettings {
   fontColor?: string;
@@ -37,8 +37,7 @@ export class SubtitleSettingsManager {
 
   constructor() {
     this.userSettings = {};
-    this.localStorageKey =
-      DummyComponent.instance().prefixCss('subtitlesettings');
+    this.localStorageKey = prefixCss('subtitlesettings');
   }
 
   public reset(): void {

@@ -3,7 +3,7 @@ import { UIInstanceManager } from './uimanager';
 import { PlayerAPI, SubtitleEvent, SubtitleTrack } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { StorageUtils } from './storageutils';
-import { DummyComponent } from './components/dummycomponent';
+import { prefixCss } from './components/dummycomponent';
 import { StoredSubtitleLanguage } from './components/subtitletogglebutton';
 
 /**
@@ -61,16 +61,16 @@ export class SubtitleSwitchHandler {
    * @param subtitleID (optional) If set, the according stored subtitle language will be set to active; If not set, the stored stored subtitle language will be set to inactive
    */
   public static setSubtitleLanguageStorage = (player: PlayerAPI, subtitleID?: string) => {
-    const prefixCss = DummyComponent.instance().prefixCss('subtitlelanguage');
+    const prefixCssId = prefixCss('subtitlelanguage');
     let subtitleLanguageSettings: StoredSubtitleLanguage;
     if (subtitleID) {
       const lang = player.subtitles.list().find(subtitle => subtitle.id === subtitleID).lang;
       subtitleLanguageSettings = {language: lang, active: true};
     } else {
-      const currentStoredSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(prefixCss);
+      const currentStoredSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(prefixCssId);
       subtitleLanguageSettings = {language: currentStoredSubtitle.language, active: false};
     }
-    StorageUtils.setObject(prefixCss, subtitleLanguageSettings);
+    StorageUtils.setObject(prefixCssId, subtitleLanguageSettings);
   }
 
   private addSubtitle = (event: SubtitleEvent) => {

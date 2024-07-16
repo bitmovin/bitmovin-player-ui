@@ -1,9 +1,6 @@
 import { Component, ComponentConfig } from './component';
 
-/**
- * A dummy component whose sole purpose is to expose the {@link #prefixCss} method to classes that do not extend {@link Component}.
- */
-export class DummyComponent extends Component<ComponentConfig> {
+class DummyComponent extends Component<ComponentConfig> {
     private static _instance: DummyComponent;
 
     public static instance(): DummyComponent {
@@ -17,4 +14,11 @@ export class DummyComponent extends Component<ComponentConfig> {
     public prefixCss(cssClassOrId: string): string {
         return super.prefixCss(cssClassOrId);
     }
+}
+
+/**
+ * Prefixes any CSS Class or ID with the configured prefix.
+ */
+export function prefixCss(cssClassOrId: string): string {
+    return DummyComponent.instance().prefixCss(cssClassOrId);
 }
