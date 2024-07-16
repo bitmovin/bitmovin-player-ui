@@ -1,0 +1,21 @@
+@import '../variables';
+
+.#{$prefix}-ui-watermark {
+  @extend %ui-clickoverlay;
+
+  $watermark-size: 4em;
+
+  background-image: url('../../assets/skin-modern/images/logo.svg');
+  background-size: initial;
+  height: $watermark-size;
+  margin: 2em;
+  opacity: .8;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: $watermark-size;
+
+  &:hover {
+    opacity: 1;
+  }
+}

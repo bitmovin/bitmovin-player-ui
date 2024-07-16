@@ -1,0 +1,12 @@
+@import '../variables';
+
+%ui-spacer {
+  @extend %ui-component;
+
+  height: 100%;
+  width: 100%;
+}
+
+.#{$prefix}-ui-spacer {
+  @extend %ui-spacer;
+}

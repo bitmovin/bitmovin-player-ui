@@ -554,7 +554,7 @@ export function superModernMobileUI() {
       settingsPanel,
       new ErrorMessageOverlay(),
     ],
-    cssClasses: ['ui-skin-smallscreen'],
+    cssClasses: ['ui-skin-smallscreen', 'ui-skin-super-modern'],
     hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,

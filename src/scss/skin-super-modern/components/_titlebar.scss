@@ -1,0 +1,39 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-titlebar {
+  @extend %ui-container;
+
+  @include hidden-animated-focusable;
+  @include layout-align-top;
+
+  background: linear-gradient(to top, $color-transparent, $color-background-bars);
+  box-sizing: border-box;
+  padding: .5em 1em 1em;
+  pointer-events: none;
+
+  > .#{$prefix}-container-wrapper {
+    padding: .5em;
+    pointer-events: none;
+
+    .#{$prefix}-label-metadata {
+      pointer-events: none;
+    }
+
+    .#{$prefix}-label-metadata-title {
+      cursor: default;
+      display: block;
+      font-size: 1.2em;
+      text-shadow: 0 0 5px $color-black;
+      white-space: normal;
+    }
+
+    .#{$prefix}-label-metadata-description {
+      color: lighten($color-secondary, 30%);
+      cursor: default;
+      display: block;
+      text-shadow: 0 0 5px $color-black;
+      white-space: normal;
+    }
+  }
+}

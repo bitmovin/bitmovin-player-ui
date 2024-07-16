@@ -1,0 +1,164 @@
+@import '../variables';
+@import '../mixins';
+
+$seekbar-height: .3125em;
+
+%ui-seekbar {
+  @extend %ui-component;
+
+  @include hidden;
+  @include focusable;
+
+  cursor: pointer;
+  font-size: 1em;
+  height: 1em;
+  position: relative;
+  width: 100%;
+
+  $bar-inset: auto;
+
+  .#{$prefix}-seekbar {
+
+    %bar {
+      // sass-lint:disable no-vendor-prefixes
+      -ms-transform-origin: 0 0; // required for IE9
+      -webkit-transform-origin: 0 0; // required for Android 4.4 WebView
+      bottom: 0;
+      box-sizing: border-box;
+      height: $seekbar-height;
+      left: 0;
+      margin: auto;
+      position: absolute;
+      right: auto;
+      top: 0;
+      transform-origin: 0 0;
+      width: 100%;
+    }
+
+    .#{$prefix}-seekbar-backdrop {
+      @extend %bar;
+      background-color: transparentize($color-primary, .8);
+      margin: $bar-inset 0;
+      width: 100%;
+    }
+
+    .#{$prefix}-seekbar-bufferlevel {
+      @extend %bar;
+      background-color: $color-primary;
+      margin: $bar-inset 0;
+      transition: .3s linear, .3s linear;
+      transition-property: transform;
+    }
+
+    .#{$prefix}-seekbar-seekposition {
+      @extend %bar;
+      background-color: transparentize($color-primary, .8);
+      margin: $bar-inset 0;
+    }
+
+    .#{$prefix}-seekbar-playbackposition {
+      @extend %bar;
+      background-color: $color-highlight;
+      margin: $bar-inset 0;
+      transition: .1s linear, .1s linear;
+      transition-property: transform;
+    }
+
+    .#{$prefix}-seekbar-playbackposition-marker {
+      @extend %bar;
+      @include seekbar-position-marker($seekbar-height * 3);
+
+      background-color: transparentize($color-highlight, .5);
+      border: solid $color-highlight .1875em;
+      border-radius: 50%;
+    }
+
+    .#{$prefix}-seekbar-markers {
+      @extend %bar;
+
+      $marker-width: 2px;
+
+      height: $seekbar-height * 3 - .375em;
+
+      > .#{$prefix}-seekbar-marker {
+        @extend %bar;
+
+        background-color: $color-primary;
+        height: 100%;
+        text-align: center;
+        transition-duration: 1s;
+        transition-property: transform;
+        transition-timing-function: linear;
+        width: $marker-width;
+
+        > .#{$prefix}-seekbar-marker-image {
+          height: $seekbar-height * 4;
+          position: absolute;
+          transform: translate(-50%, calc(-100% - .2em));
+        }
+      }
+    }
+  }
+
+  // disable animations during seeks
+  &.#{$prefix}-seeking {
+    .#{$prefix}-seekbar {
+      .#{$prefix}-seekbar-bufferlevel,
+      .#{$prefix}-seekbar-playbackposition {
+        transition: none;
+      }
+    }
+  }
+
+  &.#{$prefix}-vertical {
+    .#{$prefix}-seekbar {
+      //overflow-y: hidden;
+      height: 100%;
+      width: auto;
+
+      %bar-vertical {
+        right: 0;
+        top: auto;
+      }
+
+      %positionmarker-vertical {
+        //@extend %positionmarker-horizontal;
+
+        .#{$prefix}-seekbar-playbackposition-marker {
+          height: 1em;
+          top: -.5em;
+          width: 100%;
+        }
+      }
+
+      .#{$prefix}-seekbar-backdrop {
+        @extend %bar-vertical;
+
+        height: 100%;
+        margin: 0 $bar-inset;
+        width: auto;
+      }
+
+      .#{$prefix}-seekbar-bufferlevel {
+        @extend %bar-vertical;
+
+        margin: 0 $bar-inset;
+      }
+
+      .#{$prefix}-seekbar-seekposition {
+        @extend %bar-vertical;
+
+        margin: 0 $bar-inset;
+      }
+
+      .#{$prefix}-seekbar-playbackposition {
+        @extend %bar-vertical;
+        @extend %positionmarker-vertical;
+      }
+    }
+  }
+}
+
+.#{$prefix}-ui-seekbar {
+  @extend %ui-seekbar;
+}

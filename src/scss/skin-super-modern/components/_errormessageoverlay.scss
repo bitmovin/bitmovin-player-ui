@@ -1,0 +1,47 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-errormessage-overlay {
+  @extend %ui-container;
+
+  @include layout-cover;
+  @include hidden;
+
+  background-color: $color-background;
+  pointer-events: none;
+
+  .#{$prefix}-ui-errormessage-label {
+    color: $color-primary;
+    font-size: 1.2em;
+    left: 3em;
+    position: absolute;
+    right: 3em;
+    text-align: center;
+    user-select: text;
+    white-space: pre-line; // enable linebreak in text
+
+    // Vertically center the label
+    & {
+      // sass-lint:disable no-vendor-prefixes
+      -ms-transform: translateY(-50%); // required for IE9
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    ul {
+      color: $color-secondary;
+      font-size: .9em;
+      padding: 0;
+
+      li {
+        list-style: none;
+      }
+    }
+  }
+
+  .#{$prefix}-ui-tvnoisecanvas {
+    @include layout-cover;
+
+    filter: blur(4px);
+  }
+}

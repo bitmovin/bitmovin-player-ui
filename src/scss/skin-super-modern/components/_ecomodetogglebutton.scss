@@ -1,0 +1,35 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-ecomodetogglebutton {
+  @extend %ui-button;
+  height: 1em;
+  min-width: 5em;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    background-image: url('../../assets/skin-modern/images/toggleOn.svg');
+    background-position: 20px center;
+    background-size: 45% auto;
+    margin-left: 2%;
+  }
+
+  &.#{$prefix}-off {
+    background-image: url('../../assets/skin-modern/images/toggleOff.svg');
+    background-position: 20px center;
+    background-size: 45% auto;
+  }
+}
+
+#ecomodelabel::before {
+  background-image: url('../../assets/skin-modern/images/leaf.svg');
+  background-repeat: no-repeat;
+  background-size: 1.7em auto;
+  content: ' ';
+  display: inline-block;
+  height: 1.5em;
+  width: 2em;
+}

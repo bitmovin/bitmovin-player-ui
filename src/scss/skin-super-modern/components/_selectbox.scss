@@ -1,0 +1,23 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-selectbox {
+  @extend %ui-component;
+
+  @include focusable;
+
+  background-color: transparent;
+  border: 0;
+  color: $color-highlight;
+  cursor: pointer;
+  font-size: .8em;
+  padding: .3em;
+
+  option {
+    color: $color-secondary;
+
+    &:checked {
+      color: $color-highlight;
+    }
+  }
+}

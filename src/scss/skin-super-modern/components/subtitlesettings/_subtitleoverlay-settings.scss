@@ -1,0 +1,134 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-subtitle-overlay {
+
+  $colors: (
+    'white': #fff,
+    'black': #000,
+    'red': #f00,
+    'green': #0f0,
+    'blue': #00f,
+    'cyan': #0ff,
+    'yellow': #ff0,
+    'magenta': #f0f,
+  );
+
+  $opacities: (
+    100: 1,
+    75: .75,
+    50: .5,
+    25: .25,
+  );
+
+  $character-edges: (
+    'none': 'none',
+    'raised': '0px 0px 4px rgba(0, 0, 0, 0.9), 0px 1px 4px rgba(0, 0, 0, 0.9), 0px 2px 4px rgba(0, 0, 0, 0.9)',
+    'depressed': 'rgba(0, 0, 0, 0.8) 0px -2px 1px',
+    'uniform': '-2px 0px 1px rgba(0, 0, 0, 0.8), 2px 0px 1px rgba(0, 0, 0, 0.8), 0px -2px 1px rgba(0, 0, 0, 0.8), 0px 2px 1px rgba(0, 0, 0, 0.8), -1px 1px 1px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(0, 0, 0, 0.8), 1px -1px 1px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(0, 0, 0, 0.8)',
+    'dropshadowed': ' 0px 2px 1px rgba(0, 0, 0, 0.8)',
+  );
+
+  $font-sizes: (
+    50: .5,
+    75: .75,
+    100: 1,
+    150: 1.5,
+    200: 2,
+    300: 3,
+    400: 4,
+  );
+
+  // Font color + opacity
+  @each $color-name, $color-value in $colors {
+    @each $opacity-name, $opacity-value in $opacities {
+      &.#{$prefix}-fontcolor-#{$color-name}#{$opacity-name} {
+        .#{$prefix}-ui-subtitle-label {
+          color: transparentize($color-value, 1 - $opacity-value);
+        }
+      }
+    }
+  }
+
+  // Background color + opacity
+  @each $color-name, $color-value in $colors {
+    @each $opacity-name, $opacity-value in $opacities {
+      &.#{$prefix}-bgcolor-#{$color-name}#{$opacity-name} .#{$prefix}-subtitle-region-container {
+        .#{$prefix}-ui-subtitle-label {
+          background-color: transparentize($color-value, 1 - $opacity-value);
+        }
+      }
+    }
+  }
+
+  // Window color + opacity
+  @each $color-name, $color-value in $colors {
+    @each $opacity-name, $opacity-value in $opacities {
+      &.#{$prefix}-windowcolor-#{$color-name}#{$opacity-name} .#{$prefix}-subtitle-region-container {
+        background-color: transparentize($color-value, 1 - $opacity-value);
+      }
+    }
+  }
+
+  // Font size
+  @each $name, $value in $font-sizes {
+    &.#{$prefix}-fontsize-#{$name} {
+      .#{$prefix}-ui-subtitle-label {
+        font-size: $value + em;
+      }
+    }
+  }
+
+  // Font character edge
+  @each $name, $value in $character-edges {
+    &.#{$prefix}-characteredge-#{$name} {
+      .#{$prefix}-ui-subtitle-label {
+        text-shadow: unquote($value);
+      }
+    }
+  }
+
+  // Font family
+  &.#{$prefix}-fontfamily-monospacedserif {
+    .#{$prefix}-ui-subtitle-label {
+      font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
+    }
+  }
+
+  &.#{$prefix}-fontfamily-proportionalserif {
+    .#{$prefix}-ui-subtitle-label {
+      font-family: 'Times New Roman', Times, Georgia, Cambria, 'PT Serif Caption', serif;
+    }
+  }
+
+  &.#{$prefix}-fontfamily-monospacedsansserif {
+    .#{$prefix}-ui-subtitle-label {
+      font-family: 'Deja Vu Sans Mono', 'Lucida Console', Monaco, Consolas, 'PT Mono', monospace;
+    }
+  }
+
+  &.#{$prefix}-fontfamily-proportionalsansserif {
+    .#{$prefix}-ui-subtitle-label {
+      font-family: Roboto, 'Arial Unicode Ms', Arial, Helvetica, Verdana, 'PT Sans Caption', sans-serif;
+    }
+  }
+
+  &.#{$prefix}-fontfamily-casual {
+    .#{$prefix}-ui-subtitle-label {
+      font-family: 'Comic Sans MS', Impact, Handlee, fantasy;
+    }
+  }
+
+  &.#{$prefix}-fontfamily-cursive {
+    .#{$prefix}-ui-subtitle-label {
+      font-family: 'Monotype Corsiva', 'URW Chancery L', 'Apple Chancery', 'Dancing Script', cursive;
+      font-style: italic;
+    }
+  }
+
+  &.#{$prefix}-fontfamily-smallcapital {
+    .#{$prefix}-ui-subtitle-label {
+      font-variant: small-caps;
+    }
+  }
+}
