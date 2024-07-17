@@ -1,0 +1,25 @@
+$prefix: 'bmpui' !default;
+
+$color-black: #000 !default;
+$color-transparent: rgba(0, 0, 0, 0) !default;
+$color-red: #f00 !default;
+
+$color-highlight: #1fabe2 !default; //Bitmovin blue
+$color-primary: #fff !default;
+$color-secondary: #999 !default;
+
+$color-background: #111 !default;
+$color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3) !default;
+$color-background-bars: transparentize($color-black, .3) !default;
+$color-focus: #1b7fcc;
+
+$font-family: sans-serif !default;
+$font-size: 1em !default;
+
+$subtitle-text-color: #fff !default;
+$subtitle-text-border-color: #000 !default;
+
+$animation-duration: .3s !default;
+$animation-duration-short: $animation-duration * .5 !default;
+
+$focus-element-box-shadow: 0 0 0 2px rgba($color-focus, .8);

@@ -1,6 +1,7 @@
 import { StorageUtils } from '../../storageutils';
 import { Component, ComponentConfig } from '../component';
 import { EventDispatcher, Event } from '../../eventdispatcher';
+import { prefixCss } from '../dummycomponent';
 
 interface SubtitleSettings {
   fontColor?: string;
@@ -36,8 +37,7 @@ export class SubtitleSettingsManager {
 
   constructor() {
     this.userSettings = {};
-    this.localStorageKey =
-      DummyComponent.instance().prefixCss('subtitlesettings');
+    this.localStorageKey = prefixCss('subtitlesettings');
   }
 
   public reset(): void {
@@ -118,26 +118,6 @@ export class SubtitleSettingsManager {
     for (let property in this.userSettings) {
       this._properties[property].value = (<any>this.userSettings)[property];
     }
-  }
-}
-
-/**
- * A dummy component whose sole purpose is to expose the {@link #prefixCss} method to the
- * {@link SubtitleSettingsManager}.
- */
-class DummyComponent extends Component<ComponentConfig> {
-  private static _instance: DummyComponent;
-
-  public static instance(): DummyComponent {
-    if (!DummyComponent._instance) {
-      DummyComponent._instance = new DummyComponent();
-    }
-
-    return DummyComponent._instance;
-  }
-
-  public prefixCss(cssClassOrId: string): string {
-    return super.prefixCss(cssClassOrId);
   }
 }
 
