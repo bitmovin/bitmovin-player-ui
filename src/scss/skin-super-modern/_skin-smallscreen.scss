@@ -1,0 +1,146 @@
+@import 'variables';
+@import 'mixins';
+
+.#{$prefix}-ui-skin-smallscreen {
+  font-size: 1.2em;
+
+  .#{$prefix}-ui-settings-panel {
+    @include layout-cover;
+    @include layout-center-children-in-container;
+
+    display: flex;
+
+    .#{$prefix}-ui-settings-panel-page {
+      min-width: 15em;
+    }
+
+    > .#{$prefix}-container-wrapper {
+      margin: auto;
+    }
+
+    .#{$prefix}-ui-settings-panel-item {
+      text-align: left;
+    }
+
+    .#{$prefix}-ui-closebutton {
+      margin: 2em;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+  }
+
+  // Do not display watermark in mobile view
+  .#{$prefix}-ui-watermark {
+    display: none;
+  }
+
+  .#{$prefix}-ui-titlebar {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+
+      .#{$prefix}-ui-label {
+        align-items: center;
+        display: inline-flex;
+        font-size: 1em;
+      }
+
+      .#{$prefix}-label-metadata-title {
+        width: 100%;
+      }
+    }
+  }
+
+  .#{$prefix}-ui-cast-status-overlay {
+    background: $color-background; // Remove background Cast icon
+
+    .#{$prefix}-ui-cast-status-label {
+      top: 30%;
+    }
+  }
+
+  // Decrease huge play button size and replace icon with normal play icon
+  .#{$prefix}-ui-hugeplaybacktogglebutton {
+    .#{$prefix}-image {
+      background-image: url('../../assets/skin-modern/images/play.svg');
+      background-size: 4em;
+    }
+  }
+
+  // When casting, also display pause icon and disable animations because the transition doesn't look right
+  // sass-lint:disable nesting-depth
+  &.#{$prefix}-remote-control {
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      &.#{$prefix}-on {
+        .#{$prefix}-image {
+          animation: none;
+          background-image: url('../../assets/skin-modern/images/pause.svg');
+          visibility: visible;
+        }
+      }
+
+      &.#{$prefix}-off {
+        .#{$prefix}-image {
+          animation: none;
+        }
+      }
+    }
+  }
+
+  // Adjustments for screen width x <= 400
+  &.#{$prefix}-layout-max-width-400 {
+    .#{$prefix}-ui-settings-panel,
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-hugereplaybutton,
+    .#{$prefix}-ui-errormessage-overlay,
+    .#{$prefix}-ui-buffering-overlay,
+    .#{$prefix}-ui-subtitle-overlay,
+    .#{$prefix}-ui-cast-status-overlay {
+      font-size: .6em;
+    }
+  }
+
+  // Adjustments for screen width 400 < x <= 600
+  &.#{$prefix}-layout-max-width-600 {
+    .#{$prefix}-ui-settings-panel,
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-hugereplaybutton,
+    .#{$prefix}-ui-errormessage-overlay,
+    .#{$prefix}-ui-buffering-overlay,
+    .#{$prefix}-ui-subtitle-overlay,
+    .#{$prefix}-ui-cast-status-overlay {
+      font-size: .8em;
+    }
+  }
+
+  // Adjustments for screen width x <= 600
+  // sass-lint:disable no-empty-rulesets
+  &.#{$prefix}-layout-max-width-400,
+  &.#{$prefix}-layout-max-width-600 {
+    // none yet
+  }
+
+  // IE9 compatibility: fallback for missing flexbox support
+  // sass-lint:disable nesting-depth
+  &.#{$prefix}-no-flexbox {
+    .#{$prefix}-ui-titlebar {
+      > .#{$prefix}-container-wrapper {
+        border-spacing: .5em 0;
+        display: table;
+        width: 100%;
+
+        > * {
+          @include hidden; // Add hidden here too, else it is overwritten by display: table-cell
+
+          display: table-cell;
+          vertical-align: middle;
+          width: 1em;
+        }
+
+        .#{$prefix}-label-metadata-title {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
