@@ -1,7 +1,7 @@
 @import 'variables';
 @import 'mixins';
 
-.#{$prefix}-ui-skin-smallscreen {
+.#{$prefix}-ui-skin-modern-smallscreen {
   font-size: 1.2em;
 
   .#{$prefix}-ui-settings-panel {
@@ -11,7 +11,8 @@
     display: flex;
 
     .#{$prefix}-ui-settings-panel-page {
-      min-width: 15em;
+      min-width: auto;
+      border: solid green thin;
     }
 
     > .#{$prefix}-container-wrapper {

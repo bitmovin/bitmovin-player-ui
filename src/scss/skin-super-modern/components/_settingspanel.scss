@@ -11,21 +11,30 @@
     )
   );
 
-  $background-color: transparentize($color-background, .15);
+  $background-color: transparentize(#212226, .15);
+  //#3e3f40
 
   background-color: $background-color;
-  bottom: 5em;
+  //top: 5em;
   overflow: hidden;
   padding: 0;
   position: absolute;
   right: 2em;
 
+  height: fit-content;
+  max-height: 60%;
+  min-width: 170px;
+  width: 40%;
+  border-radius: 6px;
+  overflow-y: auto;
+  bottom: 3.5em;
+  right: 1em;
+
   > .#{$prefix}-container-wrapper {
-    margin: .5em;
     overflow-y: auto;
 
     > * {
-      margin: 0 .5em;
+      //margin: 0 .5em;
     }
   }
 }

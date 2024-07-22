@@ -1,5 +1,5 @@
+@import 'variables';
 .#{$prefix}-ui-skin-super-modern {
-    @import 'variables';
     @import 'mixins';
     @import 'components/subtitletogglebutton';
     @import 'components/component';
@@ -49,7 +49,7 @@
     @import 'components/audiotracksettingspaneltogglebutton';
     @import 'skin-ads';
     @import 'skin-cast-receiver';
-    @import 'skin-smallscreen';
+    @import 'skin-modern-smallscreen';
     @import 'skin-tv';
 
     .#{$prefix}-ui-uicontainer {

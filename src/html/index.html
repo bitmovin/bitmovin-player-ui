@@ -6,6 +6,7 @@
     <title>Bitmovin Player UI Demo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
     <link rel="stylesheet" href="css/demo.css">
+    <!--<link rel="stylesheet" href="css/bitmovinplayer-modern-ui.css">-->
     <link rel="stylesheet" href="css/bitmovinplayer-ui.css">
 </head>
 <body>
@@ -110,6 +111,16 @@
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script type="text/javascript">
   var sources = {
+    onlyCoolVideoSource: {
+      dash: '//bitdash-a.akamaihd.net/content/MI201109210084_1/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd',
+      hls: '//bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8',
+      progressive: '//bitdash-a.akamaihd.net/content/MI201109210084_1/MI201109210084_mpeg-4_hd_high_1080p25_10mbits.mp4',
+      poster: '//bitdash-a.akamaihd.net/content/art-of-motion_drm/art-of-motion_poster.jpg',
+      thumbnailTrack: {
+          url: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.vtt',
+      },
+      title: "Parkour",
+    },
     fullyFeatured: {
       dash: '//bitdash-a.akamaihd.net/content/sintel/sintel.mpd',
       hls: '//bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
