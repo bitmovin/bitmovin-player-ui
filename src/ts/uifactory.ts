@@ -389,7 +389,7 @@ export namespace UIFactory {
         new TitleBar({ keepHiddenWithoutMetadata: true }),
         new ErrorMessageOverlay(),
       ],
-      cssClasses: ['ui-skin-cast-receiver'],
+      cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver'],
       hideDelay: 2000,
       hidePlayerStateExceptions: [
         PlayerUtils.PlayerState.Prepared,

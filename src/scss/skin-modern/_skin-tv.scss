@@ -1,7 +1,7 @@
 @import 'variables';
 @import 'mixins';
 
-.#{$prefix}-ui-skin-tv {
+&.#{$prefix}-ui-skin-tv {
   $overscan-margin: 2%;
   $large-size: 3.5vh;
   $medium-large-size: 3vh;
