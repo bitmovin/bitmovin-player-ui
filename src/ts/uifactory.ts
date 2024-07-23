@@ -188,7 +188,7 @@ export namespace UIFactory {
         PlayerUtils.PlayerState.Paused,
         PlayerUtils.PlayerState.Finished,
       ],
-      cssClasses: ['ui-skin-modern']
+      cssClasses: ['ui-skin-modern'],
     });
   }
 
@@ -321,7 +321,7 @@ export namespace UIFactory {
         new Watermark(),
         new ErrorMessageOverlay(),
       ],
-      cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen'],
+      cssClasses: ['ui-skin-smallscreen', 'ui-skin-modern'],
       hideDelay: 2000,
       hidePlayerStateExceptions: [
         PlayerUtils.PlayerState.Prepared,
@@ -498,8 +498,6 @@ export function superModernMobileUI() {
 
   settingsPanel.addComponent(subtitleSettingsPanelPage);
 
-  // TODO: we don´t need the CloseButtons anymore(settings page will be closed by tapping inside the view)
-  //settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
   subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
 
   let controlBar = new ControlBar({
@@ -554,7 +552,7 @@ export function superModernMobileUI() {
       settingsPanel,
       new ErrorMessageOverlay(),
     ],
-    cssClasses: ['ui-skin-modern-smallscreen', 'ui-skin-super-modern'], //'ui-skin-modern-smallscreen', 'ui-skin-smallscreen'
+    cssClasses: ['ui-skin-modern-smallscreen', 'ui-skin-super-modern'],
     hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,

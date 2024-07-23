@@ -1,34 +1,16 @@
 @import 'variables';
 @import 'mixins';
 
-.#{$prefix}-ui-skin-modern-smallscreen {
+&.#{$prefix}-ui-skin-modern-smallscreen {
   font-size: 1.2em;
 
-  .#{$prefix}-ui-settings-panel {
-    @include layout-cover;
-    @include layout-center-children-in-container;
-
-    display: flex;
-
-    .#{$prefix}-ui-settings-panel-page {
-      min-width: auto;
-      border: solid green thin;
+  .#{$prefix}-ui-fullscreentogglebutton {  
+    background-image: url('../../assets/skin-super-modern/images/fullscreensmall.svg');
+  
+    &.#{$prefix}-on {
+      background-image: url('../../assets/skin-super-modern/images/fullscreenXsmall.svg');
     }
-
-    > .#{$prefix}-container-wrapper {
-      margin: auto;
-    }
-
-    .#{$prefix}-ui-settings-panel-item {
-      text-align: left;
-    }
-
-    .#{$prefix}-ui-closebutton {
-      margin: 2em;
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
+  
   }
 
   // Do not display watermark in mobile view
@@ -63,8 +45,8 @@
   // Decrease huge play button size and replace icon with normal play icon
   .#{$prefix}-ui-hugeplaybacktogglebutton {
     .#{$prefix}-image {
-      background-image: url('../../assets/skin-modern/images/play.svg');
-      background-size: 4em;
+      background-image: url('../../assets/skin-super-modern/images/play.svg');
+      background-size: 3em;
     }
   }
 
@@ -75,7 +57,7 @@
       &.#{$prefix}-on {
         .#{$prefix}-image {
           animation: none;
-          background-image: url('../../assets/skin-modern/images/pause.svg');
+          background-image: url('../../assets/skin-super-modern/images/pause.svg');
           visibility: visible;
         }
       }

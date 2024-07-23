@@ -1,5 +1,5 @@
 @import 'variables';
-//.#{$prefix}-ui-skin-modern {
+.#{$prefix}-ui-skin-modern {
   @import 'mixins';
   @import 'components/component';
   @import 'components/container';
@@ -96,4 +96,4 @@
       }
     }
   }
-//}
+}
