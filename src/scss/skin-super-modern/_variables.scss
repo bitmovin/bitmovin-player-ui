@@ -13,6 +13,9 @@ $color-background-highlight: transparentize(mix($color-black, $color-highlight, 
 $color-background-bars: transparentize($color-black, .3) !default;
 $color-focus: #1b7fcc;
 
+$color-item-hover: #54565a !default;
+$color-background-menu: #212226 !default;
+
 $font-family: sans-serif !default;
 $font-size: 1em !default;
 

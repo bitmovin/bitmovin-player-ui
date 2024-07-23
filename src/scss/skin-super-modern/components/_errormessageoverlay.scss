@@ -23,7 +23,6 @@
     // Vertically center the label
     & {
       // sass-lint:disable no-vendor-prefixes
-      -ms-transform: translateY(-50%); // required for IE9
       top: 50%;
       transform: translateY(-50%);
     }
