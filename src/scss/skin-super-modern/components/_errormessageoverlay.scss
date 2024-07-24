@@ -22,7 +22,6 @@
 
     // Vertically center the label
     & {
-      // sass-lint:disable no-vendor-prefixes
       top: 50%;
       transform: translateY(-50%);
     }

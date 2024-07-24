@@ -1,6 +1,7 @@
 @import '../variables';
 
 %ui-settings-panel-page {
+  display: none;
   &.#{$prefix}-active {
     display: block;
   }
