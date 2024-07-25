@@ -1,0 +1,26 @@
+@import '../variables';
+@import '../mixins';
+
+%ui-settingstogglebutton {
+  @extend %ui-button;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    &:hover {
+      @include svg-icon-on-shadow;
+    }
+  }
+}
+
+.#{$prefix}-ui-settingstogglebutton {
+  @extend %ui-settingstogglebutton;
+
+  background-image: url('../../assets/skin-super-modern/images/setting.svg');
+
+  &.#{$prefix}-on {
+    background-image: url('../../assets/skin-super-modern/images/setting.svg');
+  }
+}

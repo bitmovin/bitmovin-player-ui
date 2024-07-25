@@ -1,0 +1,41 @@
+@import '../variables';
+@import '../mixins';
+
+%ui-settings-panel {
+  @extend %ui-container;
+
+  @include hidden-animated-with-additional-transitions($animation-duration,
+    (
+      height: (.35s, cubic-bezier(.4, 0, .2, 1)),
+      width: (.35s, cubic-bezier(.4, 0, .2, 1))
+    )
+  );
+
+  $background-color: transparentize($color-background-menu, .15);
+
+  background-color: $background-color;
+  border-radius: 6px;
+  bottom: 3.5em;
+  height: fit-content;
+  max-height: 60%;
+  min-width: 170px;
+  overflow: hidden;
+  overflow-y: auto;
+  padding: 0;
+  position: absolute;
+  right: 1em;
+  width: 40%;
+
+  > .#{$prefix}-container-wrapper {
+    overflow-y: auto;
+  }
+}
+
+.#{$prefix}-ui-settings-panel {
+  @extend %ui-settings-panel;
+}
+
+// Remove margin inherited from controlbar
+.#{$prefix}-container-wrapper > .#{$prefix}-ui-settings-panel {
+  margin: 0;
+}

@@ -1,0 +1,23 @@
+@import '../variables';
+@import '../mixins';
+
+%ui-settingspanelpageopenbutton {
+  @extend %ui-button;
+
+  background-image: url('../../assets/skin-super-modern/images/setting.svg');
+  max-height: .8em;
+  padding: .5em 0;
+  vertical-align: bottom;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    background-image: url('../../assets/skin-super-modern/images/setting.svg');
+  }
+}
+
+.#{$prefix}-ui-settingspanelpageopenbutton {
+  @extend %ui-settingspanelpageopenbutton;
+}

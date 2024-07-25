@@ -1,0 +1,18 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-quickseekbutton {
+  @extend %ui-button;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &[data-#{$prefix}-seek-direction='forward'] {
+    background-image: url('../../assets/skin-super-modern/images/quickseek-fastforward.svg');
+  }
+
+  &[data-#{$prefix}-seek-direction='rewind'] {
+    background-image: url('../../assets/skin-super-modern/images/quickseek-rewind.svg');
+  }
+}

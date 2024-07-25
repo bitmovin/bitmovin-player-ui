@@ -188,6 +188,7 @@ export namespace UIFactory {
         PlayerUtils.PlayerState.Paused,
         PlayerUtils.PlayerState.Finished,
       ],
+      cssClasses: ['ui-skin-modern'],
     });
   }
 
@@ -216,7 +217,7 @@ export namespace UIFactory {
           ],
         }),
       ],
-      cssClasses: ['ui-skin-ads'],
+      cssClasses: ['ui-skin-modern', 'ui-skin-ads'],
       hideDelay: 2000,
       hidePlayerStateExceptions: [
         PlayerUtils.PlayerState.Prepared,
@@ -320,7 +321,7 @@ export namespace UIFactory {
         new Watermark(),
         new ErrorMessageOverlay(),
       ],
-      cssClasses: ['ui-skin-smallscreen'],
+      cssClasses: ['ui-skin-smallscreen', 'ui-skin-modern'],
       hideDelay: 2000,
       hidePlayerStateExceptions: [
         PlayerUtils.PlayerState.Prepared,
@@ -348,7 +349,7 @@ export namespace UIFactory {
           cssClass: 'ui-ads-status',
         }),
       ],
-      cssClasses: ['ui-skin-ads', 'ui-skin-smallscreen'],
+      cssClasses: ['ui-skin-modern', 'ui-skin-smallscreen', 'ui-skin-ads'],
       hideDelay: 2000,
       hidePlayerStateExceptions: [
         PlayerUtils.PlayerState.Prepared,
@@ -388,7 +389,7 @@ export namespace UIFactory {
         new TitleBar({ keepHiddenWithoutMetadata: true }),
         new ErrorMessageOverlay(),
       ],
-      cssClasses: ['ui-skin-cast-receiver'],
+      cssClasses: ['ui-skin-modern', 'ui-skin-cast-receiver'],
       hideDelay: 2000,
       hidePlayerStateExceptions: [
         PlayerUtils.PlayerState.Prepared,
@@ -497,8 +498,6 @@ export function superModernMobileUI() {
 
   settingsPanel.addComponent(subtitleSettingsPanelPage);
 
-  // TODO: we don´t need the CloseButtons anymore(settings page will be closed by tapping inside the view)
-  settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
   subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
 
   let controlBar = new ControlBar({
@@ -523,7 +522,6 @@ export function superModernMobileUI() {
           new VolumeToggleButton(),
           new Spacer(),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
-          // TODO: make a subtitles toggle button
           new SubtitleToggleButton(settingsPanel, subtitleSelectBox),
           new FullscreenToggleButton(),
         ],
@@ -554,7 +552,7 @@ export function superModernMobileUI() {
       settingsPanel,
       new ErrorMessageOverlay(),
     ],
-    cssClasses: ['ui-skin-smallscreen'],
+    cssClasses: ['ui-skin-modern-smallscreen', 'ui-skin-super-modern'],
     hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
@@ -731,7 +729,7 @@ export function superModerUI() {
         new RecommendationOverlay(),
         new ErrorMessageOverlay(),
       ],
-      cssClasses: ['ui-skin-tv'],
+      cssClasses: ['ui-skin-modern', 'ui-skin-tv'],
       hideDelay: 2000,
       hidePlayerStateExceptions: [
         PlayerUtils.PlayerState.Prepared,

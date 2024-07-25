@@ -1,0 +1,17 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-vrtogglebutton {
+  @extend %ui-button;
+
+  // svg() usage: http://pavliko.github.io/postcss-svg/
+  background-image: url('../../assets/skin-modern/images/glasses.svg');
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    background-image: url('../../assets/skin-modern/images/glassesX.svg');
+  }
+}

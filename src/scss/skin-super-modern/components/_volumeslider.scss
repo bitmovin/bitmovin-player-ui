@@ -1,0 +1,19 @@
+@import '../variables';
+@import '../mixins';
+@import './seekbar';
+
+.#{$prefix}-ui-volumeslider {
+  @extend %ui-seekbar;
+
+  .#{$prefix}-seekbar {
+    .#{$prefix}-seekbar-playbackposition-marker {
+      @include seekbar-position-marker($seekbar-height * 3 - .25em);
+      background-color: $color-highlight;
+      border: 0;
+    }
+
+    .#{$prefix}-seekbar-bufferlevel {
+      display: none;
+    }
+  }
+}
