@@ -60,6 +60,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   public hideUi: () => void = () => {};
   public showUi: () => void = () => {};
+  public toggleUiShown: () => void = () => {};
 
   constructor(config: UIContainerConfig) {
     super(config);
@@ -137,6 +138,10 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
+    this.toggleUiShown = () => {
+      isUiShown ? this.hideUi() : this.showUi();
+    }
+
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, this.hideUi);
 
@@ -159,8 +164,6 @@ export class UIContainer extends Container<UIContainerConfig> {
           return;
         }
         
-        console.log("touchend: ");
-        console.log(e);
         const shouldPreventDefault = ((e: Event): Boolean => {
           const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | TouchControlOverlay | null => {
             if (
@@ -206,7 +209,6 @@ export class UIContainer extends Container<UIContainerConfig> {
       // When the mouse enters, we show the UI
       name: 'mouseenter',
       handler: (e) => {
-        console.log("mouseenter");
         if(checkActionAllowed(e)) {
           this.showUi();
         }
@@ -215,7 +217,6 @@ export class UIContainer extends Container<UIContainerConfig> {
       // When the mouse moves within, we show the UI
       name: 'mousemove',
       handler: (e) => {
-        console.log("mousemove");
         if(checkActionAllowed(e)) {
           this.showUi();
         }
@@ -223,7 +224,6 @@ export class UIContainer extends Container<UIContainerConfig> {
     }, {
       name: 'focusin',
       handler: (e) => {
-        console.log("focusin");
         if(checkActionAllowed(e)) {
           this.showUi();
         }
@@ -231,7 +231,6 @@ export class UIContainer extends Container<UIContainerConfig> {
     }, {
       name: 'keydown',
       handler: (e) => {
-        console.log("keydown");
         if(checkActionAllowed(e)) {
           this.showUi();
         }
