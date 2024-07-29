@@ -2,7 +2,7 @@ import { Container, ContainerConfig } from './container';
 import { SmallCenteredPlaybackToggleButton } from './smallcenteredplaybacktogglebutton';
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../uimanager';
-import { EventDispatcher, NoArgs, Event } from '../eventdispatcher';
+import { EventDispatcher, NoArgs, Event as EDEvent } from '../eventdispatcher';
 import { Timeout } from '../timeout';
 import { HTMLElementWithComponent } from '../dom';
 
@@ -20,6 +20,12 @@ export interface TouchControlOverlayConfig extends ContainerConfig {
    * Default: true
    */
   acceptsTouchWithUiHidden?: boolean;
+
+  /**
+   * Specifies how many seconds are seeked incase user seeks through double-tapping
+   * Default: 10sec
+   */
+  seekTime?: number,
 }
 
 /**
@@ -27,9 +33,11 @@ export interface TouchControlOverlayConfig extends ContainerConfig {
  */
 export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
 
-  private divTapEvents = {
+  private touchControlEvents = {
     onSingleClick: new EventDispatcher<TouchControlOverlay, NoArgs>(),
     onDoubleClick: new EventDispatcher<TouchControlOverlay, NoArgs>(),
+    onSeekBackward: new EventDispatcher<TouchControlOverlay, NoArgs>(),
+    onSeekForward: new EventDispatcher<TouchControlOverlay, NoArgs>(),
   };
 
   private playbackToggleButton: SmallCenteredPlaybackToggleButton;
@@ -44,6 +52,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-touchcontrol-overlay',
       acceptsTouchWithUiHidden: true,
+      seekTime: 10,
       components: [this.playbackToggleButton],
     }, this.config);
   }
@@ -59,32 +68,70 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       this.playbackToggleButton.show();
     });
 
+    this.touchControlEvents.onSeekBackward.subscribe(() => {
+      console.log("seek backward");
+      player.seek(player.getCurrentTime() - this.config.seekTime);
+    });
+
+    this.touchControlEvents.onSeekForward.subscribe(() => {
+      console.log("seek forward");
+      player.seek(player.getCurrentTime() + this.config.seekTime);
+    });
+
+    this.touchControlEvents.onSingleClick.subscribe(() => {
+      uimanager.getUI().toggleUiShown();
+    });
+
+    this.touchControlEvents.onDoubleClick.subscribe((_, e) => {
+      uimanager.getUI().hideUi();
+      const event = e as Event;
+      const eventTarget = event.target as HTMLElementWithComponent;
+      if(!eventTarget || !((eventTarget).component instanceof TouchControlOverlay)) {
+        return;
+      }
+
+      const width = eventTarget.clientWidth;
+      const tapMargin = width * 0.4;
+      const rect = eventTarget.getBoundingClientRect();
+      const eventTapX = ((<any>e).clientX) - rect.left;
+      if(eventTapX < tapMargin) {
+        this.touchControlEvents.onSeekBackward.dispatch(this);
+      }
+      else if(eventTapX > (width - tapMargin)) {
+        this.touchControlEvents.onSeekForward.dispatch(this);
+      }
+    });
+
     const thisDomElement = this.getDomElement();
     thisDomElement.on('click', (e) => {
       if((e.target as HTMLElementWithComponent).component instanceof TouchControlOverlay) {
-        console.log("clicked overlay for sure");
+        clickEventDispatcher(e);
       }
-      console.log(e)
-      this.onClickEvent();
-      this.clickCheckHandler();
     });
 
+    let lastClickTime = 0;
+    const clickEventDispatcher = (e: Event): void => {
+      
+      let now = Date.now();
+      if(now - lastClickTime < 500) {
+        this.onDoubleClickEvent(e);
+      } else {
+        this.onSingelClickEvent();
+      }
+      lastClickTime = now;
+    }
 
-
-    this.divTapEvents.onSingleClick.subscribe(() => {
-      let timeout = new Timeout(200, () => {})
-    });
   }
 
-  private clickCheckHandler() {
-
+  protected onDoubleClickEvent(e: Event) {
+    this.touchControlEvents.onDoubleClick.dispatch(this, e);
   }
 
-  protected onClickEvent() {
-    this.divTapEvents.onSingleClick.dispatch(this);
+  protected onSingelClickEvent() {
+    this.touchControlEvents.onSingleClick.dispatch(this);
   }
 
-  get onClick(): Event<TouchControlOverlay, NoArgs> {
-    return this.divTapEvents.onSingleClick.getEvent();
+  get onClick(): EDEvent<TouchControlOverlay, NoArgs> {
+    return this.touchControlEvents.onSingleClick.getEvent();
   }
 }
