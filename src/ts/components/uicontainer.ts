@@ -163,7 +163,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         if (!checkActionAllowed(e)) {
           return;
         }
-
+        
         const shouldPreventDefault = ((e: Event): Boolean => {
           const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | TouchControlOverlay | null => {
             if (
