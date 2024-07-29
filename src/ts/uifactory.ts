@@ -52,6 +52,7 @@ import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 import { EcoModeContainer } from './components/ecomodecontainer';
 import { SubtitleToggleButton } from './components/subtitletogglebutton';
+import { TouchControlOverlay } from './components/touchcontroloverlay';
 
 export namespace UIFactory {
   export function buildDefaultSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -534,10 +535,12 @@ export function superModernMobileUI() {
   return new UIContainer({
     components: [
       subtitleOverlay,
-      new BufferingOverlay(),
+      
       new CastStatusOverlay(),
       // TODO: make an overlay for the quickseek buttons/double tab
-      new PlaybackToggleOverlay(),
+      new TouchControlOverlay(),
+      new BufferingOverlay(),
+      //new PlaybackToggleOverlay(),
       new RecommendationOverlay(),
       controlBar,
       new TitleBar({
