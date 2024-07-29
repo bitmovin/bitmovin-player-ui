@@ -1,0 +1,81 @@
+@import '../variables';
+
+.#{$prefix}-ui-smallcenteredplaybacktogglebutton {
+  @extend %ui-button;
+
+  @keyframes #{$prefix}-fade-out {
+    from {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    to {
+      opacity: 0;
+      transform: scale(2);
+      visibility: hidden;
+    }
+  }
+
+  @keyframes #{$prefix}-fade-in {
+    from {
+      opacity: 0;
+      transform: scale(2);
+      visibility: visible;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes #{$prefix}-breathe {
+    30% {
+      transform: scale(1.1);
+    }
+
+    60% {
+      transform: scale(1);
+    }
+  }
+
+  cursor: default;
+  height: 2.5em;
+  outline: none;
+  overflow: hidden; // hide overflow from scale animation
+  width: 2.5em;
+
+  .#{$prefix}-image {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 4em;
+    height: 100%;
+    width: 100%;
+  }
+
+  &.#{$prefix}-on {
+    .#{$prefix}-image {
+      background-image: url('../../assets/skin-super-modern/images/pause.svg');
+      //animation: #{$prefix}-fade-out $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
+      //transition: visibility 0s $animation-duration;
+      //visibility: hidden;
+    }
+  }
+
+  &.#{$prefix}-off {
+    .#{$prefix}-image {
+      background-image: url('../../assets/skin-super-modern/images/play.svg');
+      //animation:  #{$prefix}-fade-in $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
+      //visibility: visible;
+    }
+  }
+
+  &.#{$prefix}-no-transition-animations {
+    &.#{$prefix}-on,
+    &.#{$prefix}-off {
+      .#{$prefix}-image {
+        animation: none;
+        transition: none;
+      }
+    }
+  }
+}
