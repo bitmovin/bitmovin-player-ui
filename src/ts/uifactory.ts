@@ -535,13 +535,12 @@ export function superModernMobileUI() {
   return new UIContainer({
     components: [
       subtitleOverlay,
-      
+
       new CastStatusOverlay(),
       // TODO: make an overlay for the quickseek buttons/double tab
       new TouchControlOverlay(),
       // TODO: make a new buffer overlay
-      //new BufferingOverlay(),
-      //new PlaybackToggleOverlay(),
+      // new BufferingOverlay(),
       new RecommendationOverlay(),
       controlBar,
       new TitleBar({

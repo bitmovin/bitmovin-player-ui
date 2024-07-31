@@ -31,7 +31,7 @@ export interface TouchControlOverlayConfig extends ContainerConfig {
    * The second tap of a double tap has to be in a specific range of the first tap
    * This specifies how many pixels off the second tap is allowed to be from the first tap
    * in order to trigger the seek events
-   * 
+   *
    * Default: 15px
    */
   seekDoubleTapMargin?: number;
@@ -84,7 +84,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     this.doubleTapTimeout = new Timeout(500, () => {
       this.couldBeDoubleTapping = false;
     });
-    
+
     uimanager.onControlsHide.subscribe(() => {
       this.playbackToggleButton.hide();
     });
@@ -106,7 +106,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     });
 
     this.touchControlEvents.onSingleClick.subscribe(() => {
-      playerSeekTime = player.getCurrentTime()
+      playerSeekTime = player.getCurrentTime();
       uimanager.getUI().toggleUiShown();
     });
 
@@ -114,7 +114,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       uimanager.getUI().hideUi();
       const event = e as Event;
       const eventTarget = event.target as HTMLElementWithComponent;
-      if(!eventTarget || !((eventTarget).component instanceof TouchControlOverlay)) {
+      if (!eventTarget || !((eventTarget).component instanceof TouchControlOverlay)) {
         return;
       }
 
@@ -123,15 +123,15 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       const rect = eventTarget.getBoundingClientRect();
       const eventTapX = ((<any>e).clientX) - rect.left;
       const eventTapY = ((<any>e).clientY) - rect.top;
-      if(this.latestTapPosition.x === -1 && this.latestTapPosition.y === -1) {
+      if (this.latestTapPosition.x === -1 && this.latestTapPosition.y === -1) {
         this.latestTapPosition = {x: eventTapX, y: eventTapY};
       }
       const doubleTapMargin = this.config.seekDoubleTapMargin;
-      if(Math.abs(this.latestTapPosition.x - eventTapX) <= doubleTapMargin && Math.abs(this.latestTapPosition.y - eventTapY) <= doubleTapMargin)
-        if(eventTapX < tapMargin) {
+      if (Math.abs(this.latestTapPosition.x - eventTapX) <= doubleTapMargin && Math.abs(this.latestTapPosition.y - eventTapY) <= doubleTapMargin)
+        if (eventTapX < tapMargin) {
           this.touchControlEvents.onSeekBackward.dispatch(this);
         }
-        else if(eventTapX > (width - tapMargin)) {
+        else if (eventTapX > (width - tapMargin)) {
           this.touchControlEvents.onSeekForward.dispatch(this);
         }
       this.latestTapPosition = {x: eventTapX, y: eventTapY};
@@ -139,20 +139,20 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
 
     const thisDomElement = this.getDomElement();
     thisDomElement.on('click', (e) => {
-      if((e.target as HTMLElementWithComponent).component instanceof TouchControlOverlay) {
+      if ((e.target as HTMLElementWithComponent).component instanceof TouchControlOverlay) {
         clickEventDispatcher(e);
       }
     });
 
     const clickEventDispatcher = (e: Event): void => {
-      if(this.couldBeDoubleTapping) {
+      if (this.couldBeDoubleTapping) {
         this.onDoubleClickEvent(e);
       } else {
         this.onSingelClickEvent();
       }
       this.couldBeDoubleTapping = true;
       this.doubleTapTimeout.start();
-    }
+    };
   }
 
   protected onDoubleClickEvent(e: Event) {
