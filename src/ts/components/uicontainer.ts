@@ -140,7 +140,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     this.toggleUiShown = () => {
       isUiShown ? this.hideUi() : this.showUi();
-    }
+    };
 
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, this.hideUi);
@@ -150,20 +150,20 @@ export class UIContainer extends Container<UIContainerConfig> {
        * The super-modern-UI has its own component, with its own listeners,
        * to detect touches on empty space {@link TouchControlOverlay}.
        * Because the {@link UIContainer} is the root container, it also detects these touches.
-       * In order to let the {@link TouchControlOverlay} do its work correctly, 
+       * In order to let the {@link TouchControlOverlay} do its work correctly,
        * we check if the touched target is an instance of it.
        */
       return !((e.target as HTMLElementWithComponent).component instanceof TouchControlOverlay);
-    }
+    };
 
     this.userInteractionEvents = [{
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
       handler: (e) => {
-        if(!checkActionAllowed(e)) {
+        if (!checkActionAllowed(e)) {
           return;
         }
-        
+
         const shouldPreventDefault = ((e: Event): Boolean => {
           const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | TouchControlOverlay | null => {
             if (
@@ -209,7 +209,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       // When the mouse enters, we show the UI
       name: 'mouseenter',
       handler: (e) => {
-        if(checkActionAllowed(e)) {
+        if (checkActionAllowed(e)) {
           this.showUi();
         }
       },
@@ -217,21 +217,21 @@ export class UIContainer extends Container<UIContainerConfig> {
       // When the mouse moves within, we show the UI
       name: 'mousemove',
       handler: (e) => {
-        if(checkActionAllowed(e)) {
+        if (checkActionAllowed(e)) {
           this.showUi();
         }
       },
     }, {
       name: 'focusin',
       handler: (e) => {
-        if(checkActionAllowed(e)) {
+        if (checkActionAllowed(e)) {
           this.showUi();
         }
       },
     }, {
       name: 'keydown',
       handler: (e) => {
-        if(checkActionAllowed(e)) {
+        if (checkActionAllowed(e)) {
           this.showUi();
         }
       },
