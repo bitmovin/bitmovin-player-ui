@@ -29,16 +29,29 @@
     }
   }
 
-  // sass-lint:disable nesting-depth
   &.#{$prefix}-controls-shown {
     .#{$prefix}-ui-hugeplaybacktogglebutton {
       &:focus {
         box-shadow: inset -4px -3px 2px 9px $color-focus;
-
-        &:not(.#{$prefix}-focus-visible) {
-          box-shadow: none;
-        }
       }
+
+      &:focus:not(.#{$prefix}-focus-visible) {
+        box-shadow: none;
+      }
+    }
+  }
+
+  // IE9 compatibility: set transparent 1x1 pixel png background image to make it capture mouse events (IE9 does not capture events in areas without image or color content)
+  // We abuse the no-flexbox class which is only set in IE9 (of all supported browsers)
+  &.#{$prefix}-no-flexbox {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
+
+    // Fullscreen legacy mode for IE9 needs additional special care to get UI visible and spanned over viewport
+    &.#{$prefix}-fullscreen {
+      left: 0;
+      position: fixed;
+      top: 0;
+      z-index: 999999; // render UI above player
     }
   }
 }

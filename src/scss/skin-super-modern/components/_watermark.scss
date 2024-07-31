@@ -1,7 +1,7 @@
 @import '../variables';
 
 .#{$prefix}-ui-watermark {
-  @extend %ui-button;
+  @extend %ui-clickoverlay;
 
   $watermark-size: 4em;
 

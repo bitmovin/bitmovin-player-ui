@@ -20,6 +20,8 @@ $seekbar-height: .3125em;
   .#{$prefix}-seekbar {
 
     %bar {
+      // sass-lint:disable no-vendor-prefixes
+      -ms-transform-origin: 0 0; // required for IE9
       -webkit-transform-origin: 0 0; // required for Android 4.4 WebView
       bottom: 0;
       box-sizing: border-box;
@@ -104,6 +106,54 @@ $seekbar-height: .3125em;
       .#{$prefix}-seekbar-bufferlevel,
       .#{$prefix}-seekbar-playbackposition {
         transition: none;
+      }
+    }
+  }
+
+  &.#{$prefix}-vertical {
+    .#{$prefix}-seekbar {
+      //overflow-y: hidden;
+      height: 100%;
+      width: auto;
+
+      %bar-vertical {
+        right: 0;
+        top: auto;
+      }
+
+      %positionmarker-vertical {
+        //@extend %positionmarker-horizontal;
+
+        .#{$prefix}-seekbar-playbackposition-marker {
+          height: 1em;
+          top: -.5em;
+          width: 100%;
+        }
+      }
+
+      .#{$prefix}-seekbar-backdrop {
+        @extend %bar-vertical;
+
+        height: 100%;
+        margin: 0 $bar-inset;
+        width: auto;
+      }
+
+      .#{$prefix}-seekbar-bufferlevel {
+        @extend %bar-vertical;
+
+        margin: 0 $bar-inset;
+      }
+
+      .#{$prefix}-seekbar-seekposition {
+        @extend %bar-vertical;
+
+        margin: 0 $bar-inset;
+      }
+
+      .#{$prefix}-seekbar-playbackposition {
+        @extend %bar-vertical;
+        @extend %positionmarker-vertical;
       }
     }
   }

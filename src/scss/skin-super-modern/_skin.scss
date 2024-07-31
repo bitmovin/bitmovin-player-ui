@@ -1,106 +1,104 @@
 @import 'variables';
-
 .#{$prefix}-ui-skin-super-modern {
-  @import 'mixins';
-  @import 'components/subtitletogglebutton';
-  @import 'components/component';
-  @import 'components/container';
-  @import 'components/uicontainer';
-  @import 'components/controlbar';
-  @import 'components/button';
-  @import 'components/playbacktogglebutton';
-  @import 'components/quickseekbutton';
-  @import 'components/fullscreentogglebutton';
-  @import 'components/vrtogglebutton';
-  @import 'components/volumetogglebutton';
-  @import 'components/ecomodetogglebutton';
-  @import 'components/seekbar';
-  @import 'components/watermark';
-  @import 'components/hugeplaybacktogglebutton';
-  @import 'components/label';
-  @import 'components/settingspanel';
-  @import 'components/settingspanelpage';
-  @import 'components/settingspanelpageopenbutton';
-  @import 'components/settingspanelpagebackbutton';
-  @import 'components/settingstogglebutton';
-  @import 'components/selectbox';
-  @import 'components/listbox';
-  @import 'components/seekbarlabel';
-  @import 'components/volumeslider';
-  @import 'components/subtitleoverlay';
-  @import 'components/subtitleoverlay-cea608';
-  @import 'components/volumecontrolbutton';
-  @import 'components/casttogglebutton';
-  @import 'components/caststatusoverlay';
-  @import 'components/errormessageoverlay';
-  @import 'components/titlebar';
-  @import 'components/recommendationoverlay';
-  @import 'components/clickoverlay';
-  @import 'components/hugereplaybutton';
-  @import 'components/replaybutton';
-  @import 'components/playbacktimelabel';
-  @import 'components/bufferingoverlay';
-  @import 'components/playbacktoggleoverlay';
-  @import 'components/closebutton';
-  @import 'components/airplaytogglebutton';
-  @import 'components/pictureinpicturetogglebutton';
-  @import 'components/spacer';
-  @import 'components/subtitlesettings/subtitlesettings';
-  @import 'components/subtitlesettingspaneltogglebutton';
-  @import 'components/smallcenteredplaybacktoggleoverlay';
-  @import 'components/smallcenteredplaybacktogglebutton';
-  @import 'skin-ads';
-  @import 'skin-cast-receiver';
-  @import 'skin-modern-smallscreen';
-  @import 'skin-tv';
+    @import 'mixins';
+    @import 'components/subtitletogglebutton';
+    @import 'components/component';
+    @import 'components/container';
+    @import 'components/uicontainer';
+    @import 'components/controlbar';
+    @import 'components/button';
+    @import 'components/playbacktogglebutton';
+    @import 'components/quickseekbutton';
+    @import 'components/fullscreentogglebutton';
+    @import 'components/vrtogglebutton';
+    @import 'components/volumetogglebutton';
+    @import 'components/ecomodetogglebutton';
+    @import 'components/seekbar';
+    @import 'components/watermark';
+    @import 'components/hugeplaybacktogglebutton';
+    @import 'components/label';
+    @import 'components/settingspanel';
+    @import 'components/settingspanelpage';
+    @import 'components/settingspanelpageopenbutton';
+    @import 'components/settingspanelpagebackbutton';
+    @import 'components/settingstogglebutton';
+    @import 'components/selectbox';
+    @import 'components/listbox';
+    @import 'components/seekbarlabel';
+    @import 'components/volumeslider';
+    @import 'components/subtitleoverlay';
+    @import 'components/subtitleoverlay-cea608';
+    @import 'components/volumecontrolbutton';
+    @import 'components/casttogglebutton';
+    @import 'components/caststatusoverlay';
+    @import 'components/errormessageoverlay';
+    @import 'components/titlebar';
+    @import 'components/recommendationoverlay';
+    @import 'components/clickoverlay';
+    @import 'components/hugereplaybutton';
+    @import 'components/replaybutton';
+    @import 'components/playbacktimelabel';
+    @import 'components/bufferingoverlay';
+    @import 'components/playbacktoggleoverlay';
+    @import 'components/closebutton';
+    @import 'components/airplaytogglebutton';
+    @import 'components/pictureinpicturetogglebutton';
+    @import 'components/spacer';
+    @import 'components/subtitlesettings/subtitlesettings';
+    @import 'components/subtitlesettingspaneltogglebutton';
+    @import 'components/smallcenteredplaybacktoggleoverlay';
+    @import 'components/smallcenteredplaybacktogglebutton';
+    @import 'skin-ads';
+    @import 'skin-cast-receiver';
+    @import 'skin-modern-smallscreen';
+    @import 'skin-tv';
 
-  // sass-lint:disable nesting-depth
-  .#{$prefix}-ui-uicontainer {
-    color: $color-primary;
-    font-family: $font-family;
-    font-size: $font-size;
-    text-align: left;
-    user-select: none;
+    .#{$prefix}-ui-uicontainer {
+        color: $color-primary;
+        font-family: $font-family;
+        font-size: $font-size;
+        text-align: left;
+        user-select: none;
 
-    &.#{$prefix}-player-state-idle {
+        &.#{$prefix}-player-state-idle {
 
-      .#{$prefix}-ui-controlbar,
-      .#{$prefix}-ui-titlebar,
-      .#{$prefix}-ui-hugeplaybacktogglebutton {
-        display: none;
-      }
+            .#{$prefix}-ui-controlbar,
+            .#{$prefix}-ui-titlebar,
+            .#{$prefix}-ui-hugeplaybacktogglebutton {
+                display: none;
+            }
+        }
+
+        &.#{$prefix}-player-state-finished {
+
+            .#{$prefix}-ui-controlbar,
+            .#{$prefix}-ui-hugeplaybacktogglebutton {
+                display: none;
+            }
+        }
+
+        .#{$prefix}-text-right {
+            text-align: right;
+        }
+
+        // sass-lint:disable force-element-nesting
+        &.#{$prefix}-layout-max-width-400 {
+
+            // Hide the description in ultra tiny players to not clog the UI too much
+            .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {
+                display: none;
+            }
+        }
+
+        &.#{$prefix}-layout-max-width-400,
+        &.#{$prefix}-layout-max-width-600 {
+            .#{$prefix}-ui-hugeplaybacktogglebutton {
+                font-size: .7em;
+            }
+
+            .#{$prefix}-ui-watermark {
+                font-size: .7em;
+            }
+        }
     }
-
-    &.#{$prefix}-player-state-finished {
-
-      .#{$prefix}-ui-controlbar,
-      .#{$prefix}-ui-hugeplaybacktogglebutton {
-        display: none;
-      }
-    }
-
-    .#{$prefix}-text-right {
-      text-align: right;
-    }
-
-    // sass-lint:disable force-element-nesting
-    &.#{$prefix}-layout-max-width-400 {
-
-      // Hide the description in ultra tiny players to not clog the UI too much
-      .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {
-        display: none;
-      }
-    }
-
-    &.#{$prefix}-layout-max-width-400,
-    &.#{$prefix}-layout-max-width-600 {
-      .#{$prefix}-ui-hugeplaybacktogglebutton {
-        font-size: .7em;
-      }
-
-      .#{$prefix}-ui-watermark {
-        font-size: .7em;
-      }
-    }
-  }
 }

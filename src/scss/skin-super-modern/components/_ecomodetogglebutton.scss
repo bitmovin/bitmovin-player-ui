@@ -24,15 +24,12 @@
   }
 }
 
-// sass-lint:disable no-ids
-#ecomodelabel {
-  &::before {
-    background-image: url('../../assets/skin-modern/images/leaf.svg');
-    background-repeat: no-repeat;
-    background-size: 1.7em auto;
-    content: ' ';
-    display: inline-block;
-    height: 1.5em;
-    width: 2em;
-  }
+#ecomodelabel::before {
+  background-image: url('../../assets/skin-modern/images/leaf.svg');
+  background-repeat: no-repeat;
+  background-size: 1.7em auto;
+  content: ' ';
+  display: inline-block;
+  height: 1.5em;
+  width: 2em;
 }
