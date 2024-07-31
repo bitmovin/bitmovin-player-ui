@@ -42,3 +42,28 @@
     }
   }
 }
+
+// IE9 compatibility: fallback for missing flexbox support
+// sass-lint:disable nesting-depth
+.#{$prefix}-no-flexbox {
+  .#{$prefix}-ui-controlbar {
+    .#{$prefix}-controlbar-top,
+    .#{$prefix}-controlbar-bottom {
+      > .#{$prefix}-container-wrapper {
+        border-spacing: .5em 0;
+        display: table;
+
+        > * {
+          @include hidden; // Add hidden here too, else it is overwritten by display: table-cell
+
+          display: table-cell;
+          vertical-align: middle;
+        }
+
+        .#{$prefix}-ui-volumeslider {
+          width: 10%;
+        }
+      }
+    }
+  }
+}
