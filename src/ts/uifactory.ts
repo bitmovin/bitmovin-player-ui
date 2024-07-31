@@ -539,7 +539,8 @@ export function superModernMobileUI() {
       new CastStatusOverlay(),
       // TODO: make an overlay for the quickseek buttons/double tab
       new TouchControlOverlay(),
-      new BufferingOverlay(),
+      // TODO: make a new buffer overlay
+      //new BufferingOverlay(),
       //new PlaybackToggleOverlay(),
       new RecommendationOverlay(),
       controlBar,
