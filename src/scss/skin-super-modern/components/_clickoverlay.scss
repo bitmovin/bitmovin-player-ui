@@ -1,11 +1,7 @@
 @import '../variables';
 
-%ui-clickoverlay {
-  @extend %ui-button;
-}
-
 .#{$prefix}-ui-clickoverlay {
-  @extend %ui-clickoverlay;
+  @extend %ui-button;
 
   @include layout-cover;
 }
