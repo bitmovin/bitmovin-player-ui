@@ -42,6 +42,11 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
 
   private playbackToggleButton: SmallCenteredPlaybackToggleButton;
 
+  // true if the last tap on the overlay was less than 500msec ago
+  private couldBeDoubleTapping: Boolean;
+
+  private doubleTapTimeout: Timeout;
+
   constructor(config: TouchControlOverlayConfig = {}) {
     super(config);
 
@@ -59,6 +64,10 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    this.doubleTapTimeout = new Timeout(500, () => {
+      this.couldBeDoubleTapping = false;
+    });
     
     uimanager.onControlsHide.subscribe(() => {
       this.playbackToggleButton.hide();
@@ -68,17 +77,20 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       this.playbackToggleButton.show();
     });
 
+    let playerSeekTime = 0;
+
     this.touchControlEvents.onSeekBackward.subscribe(() => {
-      console.log("seek backward");
-      player.seek(player.getCurrentTime() - this.config.seekTime);
+      playerSeekTime -= this.config.seekTime;
+      player.seek(playerSeekTime);
     });
 
     this.touchControlEvents.onSeekForward.subscribe(() => {
-      console.log("seek forward");
-      player.seek(player.getCurrentTime() + this.config.seekTime);
+      playerSeekTime += this.config.seekTime;
+      player.seek(playerSeekTime);
     });
 
     this.touchControlEvents.onSingleClick.subscribe(() => {
+      playerSeekTime = player.getCurrentTime()
       uimanager.getUI().toggleUiShown();
     });
 
@@ -109,18 +121,15 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       }
     });
 
-    let lastClickTime = 0;
     const clickEventDispatcher = (e: Event): void => {
-      
-      let now = Date.now();
-      if(now - lastClickTime < 500) {
+      if(this.couldBeDoubleTapping) {
         this.onDoubleClickEvent(e);
       } else {
         this.onSingelClickEvent();
       }
-      lastClickTime = now;
+      this.couldBeDoubleTapping = true;
+      this.doubleTapTimeout.start();
     }
-
   }
 
   protected onDoubleClickEvent(e: Event) {
