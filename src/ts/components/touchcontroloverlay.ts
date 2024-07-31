@@ -25,7 +25,21 @@ export interface TouchControlOverlayConfig extends ContainerConfig {
    * Specifies how many seconds are seeked incase user seeks through double-tapping
    * Default: 10sec
    */
-  seekTime?: number,
+  seekTime?: number;
+
+  /**
+   * The second tap of a double tap has to be in a specific range of the first tap
+   * This specifies how many pixels off the second tap is allowed to be from the first tap
+   * in order to trigger the seek events
+   * 
+   * Default: 15px
+   */
+  seekDoubleTapMargin?: number;
+}
+
+interface ClickPosition {
+  x: number;
+  y: number;
 }
 
 /**
@@ -44,8 +58,9 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
 
   // true if the last tap on the overlay was less than 500msec ago
   private couldBeDoubleTapping: Boolean;
-
   private doubleTapTimeout: Timeout;
+
+  private latestTapPosition: ClickPosition = {x: -1, y: -1};
 
   constructor(config: TouchControlOverlayConfig = {}) {
     super(config);
@@ -58,6 +73,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       cssClass: 'ui-touchcontrol-overlay',
       acceptsTouchWithUiHidden: true,
       seekTime: 10,
+      seekDoubleTapMargin: 15,
       components: [this.playbackToggleButton],
     }, this.config);
   }
@@ -106,12 +122,19 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       const tapMargin = width * 0.4;
       const rect = eventTarget.getBoundingClientRect();
       const eventTapX = ((<any>e).clientX) - rect.left;
-      if(eventTapX < tapMargin) {
-        this.touchControlEvents.onSeekBackward.dispatch(this);
+      const eventTapY = ((<any>e).clientY) - rect.top;
+      if(this.latestTapPosition.x === -1 && this.latestTapPosition.y === -1) {
+        this.latestTapPosition = {x: eventTapX, y: eventTapY};
       }
-      else if(eventTapX > (width - tapMargin)) {
-        this.touchControlEvents.onSeekForward.dispatch(this);
-      }
+      const doubleTapMargin = this.config.seekDoubleTapMargin;
+      if(Math.abs(this.latestTapPosition.x - eventTapX) <= doubleTapMargin && Math.abs(this.latestTapPosition.y - eventTapY) <= doubleTapMargin)
+        if(eventTapX < tapMargin) {
+          this.touchControlEvents.onSeekBackward.dispatch(this);
+        }
+        else if(eventTapX > (width - tapMargin)) {
+          this.touchControlEvents.onSeekForward.dispatch(this);
+        }
+      this.latestTapPosition = {x: eventTapX, y: eventTapY};
     });
 
     const thisDomElement = this.getDomElement();
