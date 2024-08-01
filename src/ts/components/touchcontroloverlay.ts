@@ -105,9 +105,15 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       player.seek(playerSeekTime);
     });
 
-    this.touchControlEvents.onSingleClick.subscribe(() => {
-      playerSeekTime = player.getCurrentTime();
+    this.touchControlEvents.onSingleClick.subscribe((_, e) => {
       uimanager.getUI().toggleUiShown();
+      playerSeekTime = player.getCurrentTime();
+      
+      const eventTarget = (e as Event).target as HTMLElementWithComponent;
+      const rect = eventTarget.getBoundingClientRect();
+      const eventTapX = ((<any>e).clientX) - rect.left;
+      const eventTapY = ((<any>e).clientY) - rect.top;
+      this.latestTapPosition = {x: eventTapX, y: eventTapY};
     });
 
     this.touchControlEvents.onDoubleClick.subscribe((_, e) => {
@@ -148,7 +154,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       if (this.couldBeDoubleTapping) {
         this.onDoubleClickEvent(e);
       } else {
-        this.onSingelClickEvent();
+        this.onSingelClickEvent(e);
       }
       this.couldBeDoubleTapping = true;
       this.doubleTapTimeout.start();
@@ -159,8 +165,8 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     this.touchControlEvents.onDoubleClick.dispatch(this, e);
   }
 
-  protected onSingelClickEvent() {
-    this.touchControlEvents.onSingleClick.dispatch(this);
+  protected onSingelClickEvent(e: Event) {
+    this.touchControlEvents.onSingleClick.dispatch(this, e);
   }
 
   get onClick(): EDEvent<TouchControlOverlay, NoArgs> {
