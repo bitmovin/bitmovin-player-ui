@@ -43,16 +43,9 @@ export class SmallCenteredPlaybackToggleButton extends PlaybackToggleButton {
       }
     });
 
-    player.on(player.exports.PlayerEvent.Play, () => {
+    player.on(player.exports.PlayerEvent.Playing, () => {
       // Playback has really started, we can disable the flag to switch to normal toggle button handling
       firstPlay = false;
-    });
-
-    player.on(player.exports.PlayerEvent.Warning, (event: WarningEvent) => {
-      if (event.code === player.exports.WarningCode.PLAYBACK_COULD_NOT_BE_STARTED) {
-        // if playback could not be started, reset the first play flag as we need the user interaction to start
-        firstPlay = true;
-      }
     });
 
     const suppressPlayButtonTransitionAnimation = () => {
@@ -68,8 +61,8 @@ export class SmallCenteredPlaybackToggleButton extends PlaybackToggleButton {
     // Hide the play button animation when the UI is loaded (it should only be animated on state changes)
     suppressPlayButtonTransitionAnimation();
 
-    const isAutoplayEnabled = player.getConfig().playback && Boolean(player.getConfig().playback.autoplay);
-    // We only know if an autoplay attempt is upcoming if the player is not yet ready. It the player is already ready,
+    const isAutoplayEnabled = Boolean(player.getConfig().playback?.autoplay);
+    // We only know if an autoplay attempt is upcoming if the player is not yet ready. If the player is already ready,
     // the attempt might be upcoming or might have already happened, but we don't have to handle that because we can
     // simply rely on isPlaying and the play state events.
     const isAutoplayUpcoming = !player.getSource() && isAutoplayEnabled;

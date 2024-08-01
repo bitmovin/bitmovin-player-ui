@@ -10,7 +10,7 @@ export interface TouchControlOverlayConfig extends ContainerConfig {
   /**
    * Specify whether the player should be set to enter fullscreen by clicking on the playback toggle button
    * when initiating the initial playback.
-   * Default is false.
+   * Default: false.
    */
   enterFullscreenOnInitialPlayback?: boolean;
 
@@ -60,7 +60,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
   private couldBeDoubleTapping: Boolean;
   private doubleTapTimeout: Timeout;
 
-  private latestTapPosition: ClickPosition = {x: -1, y: -1};
+  private latestTapPosition: ClickPosition;
 
   constructor(config: TouchControlOverlayConfig = {}) {
     super(config);
@@ -111,8 +111,8 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
 
       const eventTarget = (e as Event).target as HTMLElementWithComponent;
       const rect = eventTarget.getBoundingClientRect();
-      const eventTapX = ((<any>e).clientX) - rect.left;
-      const eventTapY = ((<any>e).clientY) - rect.top;
+      const eventTapX = ((<MouseEvent>e).clientX) - rect.left;
+      const eventTapY = ((<MouseEvent>e).clientY) - rect.top;
       this.latestTapPosition = {x: eventTapX, y: eventTapY};
     });
 
@@ -127,11 +127,9 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       const width = eventTarget.clientWidth;
       const tapMargin = width * 0.4;
       const rect = eventTarget.getBoundingClientRect();
-      const eventTapX = ((<any>e).clientX) - rect.left;
-      const eventTapY = ((<any>e).clientY) - rect.top;
-      if (this.latestTapPosition.x === -1 && this.latestTapPosition.y === -1) {
-        this.latestTapPosition = {x: eventTapX, y: eventTapY};
-      }
+      const eventTapX = ((<MouseEvent>e).clientX) - rect.left;
+      const eventTapY = ((<MouseEvent>e).clientY) - rect.top;
+      
       const doubleTapMargin = this.config.seekDoubleTapMargin;
       if (Math.abs(this.latestTapPosition.x - eventTapX) <= doubleTapMargin && Math.abs(this.latestTapPosition.y - eventTapY) <= doubleTapMargin)
         if (eventTapX < tapMargin) {
@@ -143,8 +141,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       this.latestTapPosition = {x: eventTapX, y: eventTapY};
     });
 
-    const thisDomElement = this.getDomElement();
-    thisDomElement.on('click', (e) => {
+    this.getDomElement().on('click', (e) => {
       if ((e.target as HTMLElementWithComponent).component instanceof TouchControlOverlay) {
         clickEventDispatcher(e);
       }

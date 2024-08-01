@@ -55,17 +55,12 @@
   &.#{$prefix}-on {
     .#{$prefix}-image {
       background-image: url('../../assets/skin-super-modern/images/pause.svg');
-      //animation: #{$prefix}-fade-out $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
-      //transition: visibility 0s $animation-duration;
-      //visibility: hidden;
     }
   }
 
   &.#{$prefix}-off {
     .#{$prefix}-image {
       background-image: url('../../assets/skin-super-modern/images/play.svg');
-      //animation:  #{$prefix}-fade-in $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
-      //visibility: visible;
     }
   }
 
