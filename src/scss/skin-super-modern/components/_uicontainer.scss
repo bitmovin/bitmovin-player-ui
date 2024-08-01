@@ -34,6 +34,7 @@
     .#{$prefix}-ui-hugeplaybacktogglebutton {
       &:focus {
         box-shadow: inset -4px -3px 2px 9px $color-focus;
+        
         &:not(.#{$prefix}-focus-visible) {
           box-shadow: none;
         }

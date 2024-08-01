@@ -27,7 +27,7 @@
     white-space: nowrap;
 
     &:hover {
-      background-color: transparentize($color-item-hover, .15);;
+      background-color: transparentize($color-item-hover, .15);
     }
 
     &.#{$prefix}-hidden {

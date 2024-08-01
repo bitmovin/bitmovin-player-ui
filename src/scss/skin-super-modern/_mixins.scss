@@ -137,6 +137,7 @@
   &:focus {
     box-shadow: $focus-element-box-shadow;
     outline: none;
+    
     &:not(.#{$prefix}-focus-visible) {
       box-shadow: none;
       outline: none;
