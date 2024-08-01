@@ -52,6 +52,7 @@ import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 import { EcoModeContainer } from './components/ecomodecontainer';
 import { SubtitleToggleButton } from './components/subtitletogglebutton';
+import { ModernSettingsPanelItem } from './components/modernsettingspanelitem';
 
 export namespace UIFactory {
   export function buildDefaultSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
