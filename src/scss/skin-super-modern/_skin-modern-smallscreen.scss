@@ -42,7 +42,8 @@
   }
 
   // Decrease huge play button size and replace icon with normal play icon
-  .#{$prefix}-ui-hugeplaybacktogglebutton, .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
+  .#{$prefix}-ui-hugeplaybacktogglebutton,
+  .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
     .#{$prefix}-image {
       //background-image: url('../../assets/skin-super-modern/images/play.svg');
       background-size: 3em;
@@ -52,7 +53,8 @@
   // When casting, also display pause icon and disable animations because the transition doesn't look right
   // sass-lint:disable nesting-depth
   &.#{$prefix}-remote-control {
-    .#{$prefix}-ui-hugeplaybacktogglebutton, .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
       &.#{$prefix}-on {
         .#{$prefix}-image {
           animation: none;
