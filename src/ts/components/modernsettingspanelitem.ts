@@ -13,7 +13,7 @@ import { LocalizableText } from '../localization/i18n';
 import { ListSelector, ListSelectorConfig } from './listselector';
 
 /**
- * An item for a {@link SettingsPanelPage},
+ * An item for a {@link ModernSettingsPanelPage},
  * Containing an optional {@link Label} and a component that configures a setting.
  * If the components is a {@link SelectBox} it will handle the logic of displaying it or not
  */
@@ -45,10 +45,10 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
       this.addComponent(this.label);
     }
     this.addComponent(setting);
-    /*
+    
     if(setting instanceof ListSelector) {
       this.addComponent(new Label({ text: setting.getSelectedItem() } as LabelConfig));
-    }*/
+    }
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -108,7 +108,7 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
   /**
    * Gets the event that is fired when the 'active' state of this item changes.
    * @see #isActive
-   * @returns {Event<SettingsPanelItem, NoArgs>}
+   * @returns {Event<ModernSettingsPanelItem, NoArgs>}
    */
   get onActiveChanged(): Event<ModernSettingsPanelItem, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();

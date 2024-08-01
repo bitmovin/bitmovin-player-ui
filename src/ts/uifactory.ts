@@ -53,6 +53,8 @@ import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNa
 import { EcoModeContainer } from './components/ecomodecontainer';
 import { SubtitleToggleButton } from './components/subtitletogglebutton';
 import { ModernSettingsPanelItem } from './components/modernsettingspanelitem';
+import { ModernSettingsPanelPage } from './components/modernsettingspanelpage'
+import { ModernSettingsPanel } from './components/modernsettingspanel';
 
 export namespace UIFactory {
   export function buildDefaultSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -240,13 +242,13 @@ export namespace UIFactory {
       ],
     });
 
-    let settingsPanel = new SettingsPanel({
+    let settingsPanel = new ModernSettingsPanel({
       components: [mainSettingsPanelPage],
       hidden: true,
       pageTransitionAnimation: false,
       hideDelay: -1,
     });
-
+/*
     let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
       settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
@@ -258,9 +260,10 @@ export namespace UIFactory {
       ariaLabel: i18n.getLocalizer('settings.subtitles'),
       text: i18n.getLocalizer('open'),
     });
+    */
 
     const subtitleSelectBox = new SubtitleSelectBox();
-
+/*
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({
@@ -273,11 +276,12 @@ export namespace UIFactory {
         },
       ),
     );
+    */
 
-    settingsPanel.addComponent(subtitleSettingsPanelPage);
+    //settingsPanel.addComponent(subtitleSettingsPanelPage);
 
     settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
-    subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
+    //subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
 
     let controlBar = new ControlBar({
       components: [
@@ -454,9 +458,9 @@ export function superModernAdsUI() {
 export function superModernMobileUI() {
   let subtitleOverlay = new SubtitleOverlay();
 
-  let mainSettingsPanelPage = new SettingsPanelPage({
+  let mainSettingsPanelPage = new ModernSettingsPanelPage({
     components: [
-      new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+      new ModernSettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
       new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
       new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
       new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),

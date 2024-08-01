@@ -5,6 +5,7 @@ import {Component, ComponentConfig} from './component';
 import {ArrayUtils} from '../arrayutils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
+import { ModernSettingsPanel } from './modernsettingspanel';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -13,7 +14,7 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
   /**
    * The settings panel whose visibility the button should toggle.
    */
-  settingsPanel: SettingsPanel;
+  settingsPanel: SettingsPanel | ModernSettingsPanel;
 
   /**
    * Decides if the button should be automatically hidden when the settings panel does not contain any active settings.

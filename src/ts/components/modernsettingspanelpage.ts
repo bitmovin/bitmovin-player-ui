@@ -1,21 +1,21 @@
 import {Container, ContainerConfig} from './container';
-import {SettingsPanelItem} from './settingspanelitem';
 import {UIInstanceManager} from '../uimanager';
 import {Event, EventDispatcher, NoArgs} from '../eventdispatcher';
 import { PlayerAPI } from 'bitmovin-player';
 import { BrowserUtils } from '../browserutils';
+import { ModernSettingsPanelItem } from './modernsettingspanelitem';
 
 /**
- * A panel containing a list of {@link SettingsPanelItem items} that represent labelled settings.
+ * A panel containing a list of {@link ModernSettingsPanelItem items} that represent labelled settings.
  */
-export class SettingsPanelPage extends Container<ContainerConfig> {
+export class ModernSettingsPanelPage extends Container<ContainerConfig> {
 
   private static readonly CLASS_LAST = 'last';
 
   private settingsPanelPageEvents = {
-    onSettingsStateChanged: new EventDispatcher<SettingsPanelPage, NoArgs>(),
-    onActive: new EventDispatcher<SettingsPanelPage, NoArgs>(),
-    onInactive: new EventDispatcher<SettingsPanelPage, NoArgs>(),
+    onSettingsStateChanged: new EventDispatcher<ModernSettingsPanelPage, NoArgs>(),
+    onActive: new EventDispatcher<ModernSettingsPanelPage, NoArgs>(),
+    onInactive: new EventDispatcher<ModernSettingsPanelPage, NoArgs>(),
   };
 
   constructor(config: ContainerConfig) {
@@ -37,13 +37,13 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
       // Attach marker class to last visible item
       let lastShownItem = null;
       for (let component of this.getItems()) {
-        component.getDomElement().removeClass(this.prefixCss(SettingsPanelPage.CLASS_LAST));
+        component.getDomElement().removeClass(this.prefixCss(ModernSettingsPanelPage.CLASS_LAST));
         if (component.isShown()) {
           lastShownItem = component;
         }
       }
       if (lastShownItem) {
-        lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanelPage.CLASS_LAST));
+        lastShownItem.getDomElement().addClass(this.prefixCss(ModernSettingsPanelPage.CLASS_LAST));
       }
     };
     for (let component of this.getItems()) {
@@ -61,15 +61,15 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
     return false;
   }
 
-  getItems(): SettingsPanelItem[] {
-    return <SettingsPanelItem[]>this.config.components.filter(component => component instanceof SettingsPanelItem);
+  getItems(): ModernSettingsPanelItem[] {
+    return <ModernSettingsPanelItem[]>this.config.components.filter(component => component instanceof ModernSettingsPanelItem);
   }
 
   onSettingsStateChangedEvent() {
     this.settingsPanelPageEvents.onSettingsStateChanged.dispatch(this);
   }
 
-  get onSettingsStateChanged(): Event<SettingsPanelPage, NoArgs> {
+  get onSettingsStateChanged(): Event<ModernSettingsPanelPage, NoArgs> {
     return this.settingsPanelPageEvents.onSettingsStateChanged.getEvent();
   }
 
@@ -83,7 +83,7 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
     }
   }
 
-  get onActive(): Event<SettingsPanelPage, NoArgs> {
+  get onActive(): Event<ModernSettingsPanelPage, NoArgs> {
     return this.settingsPanelPageEvents.onActive.getEvent();
   }
 
@@ -91,7 +91,7 @@ export class SettingsPanelPage extends Container<ContainerConfig> {
     this.settingsPanelPageEvents.onInactive.dispatch(this);
   }
 
-  get onInactive(): Event<SettingsPanelPage, NoArgs> {
+  get onInactive(): Event<ModernSettingsPanelPage, NoArgs> {
     return this.settingsPanelPageEvents.onInactive.getEvent();
   }
 }
