@@ -6,11 +6,14 @@
     right: 3em;
     top: 2em;
 
-    .#{$prefix}-subtitle-region-container.#{$prefix}-subtitle-position-default {
-      bottom: 0;
-      left: 0;
-      right: 0;
-      top: 0;
+    // sass-lint:disable nesting-depth
+    .#{$prefix}-subtitle-region-container {
+      .#{$prefix}-subtitle-position-default {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+      }
     }
 
     .#{$prefix}-ui-subtitle-label {

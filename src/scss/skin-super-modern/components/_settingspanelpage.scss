@@ -2,19 +2,12 @@
 
 %ui-settings-panel-page {
   display: none;
-  //width: 100%;
-  //min-width: 10px;
-  //overflow: hidden;
-
   &.#{$prefix}-active {
     display: block;
   }
 
   // A "line" in the panel: a container holding a label + control
   .#{$prefix}-container-wrapper > * {
-    // Labels
-    //width: 100%;
-    //overflow: hidden;
     &.#{$prefix}-ui-label {
       display: inline-block;
       font-size: .7em;
@@ -30,20 +23,17 @@
   }
 
   .#{$prefix}-ui-settings-panel-item {
-    //border-bottom: 1px solid transparentize($color-secondary, .7);
-    //padding: .2em 0;
     padding: 0 .5em;
     white-space: nowrap;
 
     &:hover {
-      background-color: transparentize(#54565a, .15);;
+      background-color: transparentize($color-item-hover, .15);;
     }
 
     &.#{$prefix}-hidden {
       display: none;
     }
   }
-  //border: green solid thin;
 }
 
 .#{$prefix}-ui-settings-panel-page {

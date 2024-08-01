@@ -47,7 +47,6 @@
   @import 'components/spacer';
   @import 'components/subtitlesettings/subtitlesettings';
   @import 'components/subtitlesettingspaneltogglebutton';
-  @import 'components/audiotracksettingspaneltogglebutton';
   @import 'components/smallcenteredplaybacktoggleoverlay';
   @import 'components/smallcenteredplaybacktogglebutton';
   @import 'skin-ads';
@@ -55,6 +54,7 @@
   @import 'skin-modern-smallscreen';
   @import 'skin-tv';
 
+  // sass-lint:disable nesting-depth
   .#{$prefix}-ui-uicontainer {
     color: $color-primary;
     font-family: $font-family;

@@ -53,9 +53,11 @@
   // Background color + opacity
   @each $color-name, $color-value in $colors {
     @each $opacity-name, $opacity-value in $opacities {
-      &.#{$prefix}-bgcolor-#{$color-name}#{$opacity-name} .#{$prefix}-subtitle-region-container {
-        .#{$prefix}-ui-subtitle-label {
-          background-color: transparentize($color-value, 1 - $opacity-value);
+      &.#{$prefix}-bgcolor-#{$color-name}#{$opacity-name} {
+        .#{$prefix}-subtitle-region-container {
+          .#{$prefix}-ui-subtitle-label {
+            background-color: transparentize($color-value, 1 - $opacity-value);
+          }
         }
       }
     }
@@ -64,8 +66,10 @@
   // Window color + opacity
   @each $color-name, $color-value in $colors {
     @each $opacity-name, $opacity-value in $opacities {
-      &.#{$prefix}-windowcolor-#{$color-name}#{$opacity-name} .#{$prefix}-subtitle-region-container {
-        background-color: transparentize($color-value, 1 - $opacity-value);
+      &.#{$prefix}-windowcolor-#{$color-name}#{$opacity-name} {
+        .#{$prefix}-subtitle-region-container {
+          background-color: transparentize($color-value, 1 - $opacity-value);
+        }
       }
     }
   }
