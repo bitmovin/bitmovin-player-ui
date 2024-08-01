@@ -108,7 +108,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     this.touchControlEvents.onSingleClick.subscribe((_, e) => {
       uimanager.getUI().toggleUiShown();
       playerSeekTime = player.getCurrentTime();
-      
+
       const eventTarget = (e as Event).target as HTMLElementWithComponent;
       const rect = eventTarget.getBoundingClientRect();
       const eventTapX = ((<any>e).clientX) - rect.left;
