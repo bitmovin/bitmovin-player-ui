@@ -129,7 +129,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       const rect = eventTarget.getBoundingClientRect();
       const eventTapX = ((<MouseEvent>e).clientX) - rect.left;
       const eventTapY = ((<MouseEvent>e).clientY) - rect.top;
-      
+
       const doubleTapMargin = this.config.seekDoubleTapMargin;
       if (Math.abs(this.latestTapPosition.x - eventTapX) <= doubleTapMargin && Math.abs(this.latestTapPosition.y - eventTapY) <= doubleTapMargin)
         if (eventTapX < tapMargin) {
