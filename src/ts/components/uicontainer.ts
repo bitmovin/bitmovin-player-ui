@@ -7,6 +7,7 @@ import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Button, ButtonConfig } from './button';
+import { TouchControlOverlay, TouchControlOverlayConfig } from './touchcontroloverlay';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -59,6 +60,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   public hideUi: () => void = () => {};
   public showUi: () => void = () => {};
+  public toggleUiShown: () => void = () => {};
 
   constructor(config: UIContainerConfig) {
     super(config);
@@ -136,15 +138,34 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
+    this.toggleUiShown = () => {
+      isUiShown ? this.hideUi() : this.showUi();
+    };
+
     // Timeout to defer UI hiding by the configured delay time
     this.uiHideTimeout = new Timeout(config.hideDelay, this.hideUi);
+
+    const checkActionAllowed = (e: Event): Boolean => {
+      /**
+       * The super-modern-UI has its own component, with its own listeners,
+       * to detect touches on empty space {@link TouchControlOverlay}.
+       * Because the {@link UIContainer} is the root container, it also detects these touches.
+       * In order to let the {@link TouchControlOverlay} do its work correctly,
+       * we check if the touched target is an instance of it.
+       */
+      return !((e.target as HTMLElementWithComponent).component instanceof TouchControlOverlay);
+    };
 
     this.userInteractionEvents = [{
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
       handler: (e) => {
+        if (!checkActionAllowed(e)) {
+          return;
+        }
+
         const shouldPreventDefault = ((e: Event): Boolean => {
-          const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | null => {
+          const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | TouchControlOverlay | null => {
             if (
                 !element
                   || element === this.userInteractionEventSource.get(0)
@@ -153,7 +174,7 @@ export class UIContainer extends Container<UIContainerConfig> {
               return null;
             }
 
-            if (element.component && element.component instanceof Button) {
+            if (element.component && element.component instanceof Button || element.component instanceof TouchControlOverlay) {
               return element.component;
             } else {
               return findButtonComponent(element.parentElement);
@@ -187,24 +208,32 @@ export class UIContainer extends Container<UIContainerConfig> {
     }, {
       // When the mouse enters, we show the UI
       name: 'mouseenter',
-      handler: () => {
-        this.showUi();
+      handler: (e) => {
+        if (checkActionAllowed(e)) {
+          this.showUi();
+        }
       },
     }, {
       // When the mouse moves within, we show the UI
       name: 'mousemove',
-      handler: () => {
-        this.showUi();
+      handler: (e) => {
+        if (checkActionAllowed(e)) {
+          this.showUi();
+        }
       },
     }, {
       name: 'focusin',
-      handler: () => {
-        this.showUi();
+      handler: (e) => {
+        if (checkActionAllowed(e)) {
+          this.showUi();
+        }
       },
     }, {
       name: 'keydown',
-      handler: () => {
-        this.showUi();
+      handler: (e) => {
+        if (checkActionAllowed(e)) {
+          this.showUi();
+        }
       },
     }, {
       // When the mouse leaves, we can prepare to hide the UI, except a seek is going on

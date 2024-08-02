@@ -19,6 +19,7 @@ $seekbar-height: .3125em;
 
   .#{$prefix}-seekbar {
 
+    // sass-lint:disable no-vendor-prefixes
     %bar {
       -webkit-transform-origin: 0 0; // required for Android 4.4 WebView
       bottom: 0;
