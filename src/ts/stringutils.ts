@@ -1,4 +1,4 @@
-import { LinearAd, PlayerAPI, TimeMode } from 'bitmovin-player';
+import { Ad, LinearAd, PlayerAPI, TimeMode } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 
 export namespace StringUtils {
@@ -70,8 +70,8 @@ export namespace StringUtils {
   /**
    * Fills out placeholders in an ad message.
    *
-   * Has the placeholders '{remainingTime[formatString]}', '{playedTime[formatString]}' and
-   * '{adDuration[formatString]}', which are replaced by the remaining time until the ad can be skipped, the current
+   * Has the placeholders '{remainingTime[formatString]}', '{playedTime[formatString]}', 
+   * '{adDuration[formatString]}' and {adBreakRemainingTime[formatString]}, which are replaced by the remaining time until the ad can be skipped, the current
    * time or the ad duration. The format string is optional. If not specified, the placeholder is replaced by the time
    * in seconds. If specified, it must be of the following format:
    * - %d - Inserts the time as an integer.
@@ -88,6 +88,8 @@ export namespace StringUtils {
    * An input value of 100 would be displayed as: 'Ad: 01:40 secs'
    * - { text: 'Ad: {remainingTime%f} secs' }
    * An input value of 100 would be displayed as: 'Ad: 100.0 secs'
+   * - { text: 'Adbreak: {adBreakRemainingTime%f} secs' }
+   * Adbreak with 2 ads each 50 seconds would be displayed as: 'Adbreak: 100.0 secs' 
    *
    * @param adMessage an ad message with optional placeholders to fill
    * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
@@ -115,25 +117,19 @@ export namespace StringUtils {
       } else if (formatString.indexOf('adBreakRemainingTime') > -1) { // To display the remaining time in the ad bread as opposed to in the ad
         time = 0;
         
-        // compute list of ads and index of active ad
+        // compute list of ads and calculate duration of remaining ads based on index of active ad
         if (player.ads.isLinearAdActive()) {
-          let scheduledAds = player.ads.getActiveAdBreak().ads;
-          let durations: number[] = [];
-          let activeAd = player.ads.getActiveAd();
-          let indexOfActiveAd: number = 0;
-  
-          for(let i=0; i<scheduledAds.length; i++) {
-            let iAd = scheduledAds[i];
-            if(iAd.isLinear) {
-              durations.push((iAd as LinearAd).duration);
-  
-              if(iAd.id == activeAd.id) {
-                indexOfActiveAd = i;
+          const isActiveAd = (ad : Ad) => player.ads.getActiveAd().id == ad.id;
+          const indexOfActiveAd = player.ads.getActiveAdBreak().ads.findIndex(isActiveAd)
+          const duration = player.ads.getActiveAdBreak().ads.slice(indexOfActiveAd)
+            .map(ad => {
+              if(ad.isLinear) {
+                return (ad as LinearAd).duration
+              } else {
+                return 0
               }
-            }
-          }
-          // Compute duration of ads to be played (incl active ad)
-          let duration = durations.slice(indexOfActiveAd).reduce((prev, current) => prev + current, 0);
+            })
+            .reduce((prev, current) => prev + current, 0);
  
           // time played
           let currentTime = player.getCurrentTime();
