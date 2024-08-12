@@ -131,11 +131,8 @@ export namespace StringUtils {
             })
             .reduce((prev, current) => prev + current, 0);
  
-          // time played
-          let currentTime = player.getCurrentTime();
-
-          // And minus time played
-          time = duration - currentTime;
+          // And remaning ads duration minus time played
+          time = duration - player.getCurrentTime();
         }
       }
       
