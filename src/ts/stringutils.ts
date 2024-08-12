@@ -1,4 +1,4 @@
-import { Ad, LinearAd, PlayerAPI, TimeMode } from 'bitmovin-player';
+import { Ad, LinearAd, PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 
 export namespace StringUtils {
@@ -89,7 +89,7 @@ export namespace StringUtils {
    * - { text: 'Ad: {remainingTime%f} secs' }
    * An input value of 100 would be displayed as: 'Ad: 100.0 secs'
    * - { text: 'Adbreak: {adBreakRemainingTime%f} secs' }
-   * Adbreak with 2 ads each 50 seconds would be displayed as: 'Adbreak: 100.0 secs' 
+   * Adbreak with 2 ads each 50 seconds would be displayed as: 'Ad: 100.0 secs' 
    *
    * @param adMessage an ad message with optional placeholders to fill
    * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
