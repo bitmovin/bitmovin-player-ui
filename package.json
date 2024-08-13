@@ -54,6 +54,7 @@
     "ts-jest": "^29.0.5",
     "tsify": "^5.0.4",
     "tslint": "^5.20.1",
+    "typedoc": "^0.26.5",
     "typescript": "^5.0.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
