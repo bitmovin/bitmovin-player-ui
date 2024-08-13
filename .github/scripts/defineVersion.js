@@ -27,3 +27,4 @@ function defineReleaseVersion({ core }, targetReleaseLevel, givenVersion) {
 }
 
 module.exports.defineReleaseVersion = defineReleaseVersion;
+module.exports.getPlayerUiVersion = getPlayerUiVersion;
