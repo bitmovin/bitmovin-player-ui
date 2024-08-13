@@ -20,6 +20,9 @@ jobs:
         with:
           ref: develop
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Extract version from tag
         uses: actions/github-script@v6
         id: extract-version
