@@ -23,6 +23,9 @@ export type Localizer = () => string;
  */
 export type LocalizableText = string | Localizer;
 
+/**
+ * @category Localization
+ */
 export interface Vocabulary {
   'settings.video.quality': string;
   'settings.audio.quality': string;
