@@ -14,10 +14,10 @@ const defaultLocalizationConfig: LocalizationConfig = {
   vocabularies: defaultVocabularies,
 };
 
-type Localizer = () => string;
+export type Localizer = () => string;
 export type LocalizableText = string | Localizer;
 
-interface Vocabulary {
+export interface Vocabulary {
   'settings.video.quality': string;
   'settings.audio.quality': string;
   'settings.audio.track': string;
@@ -97,7 +97,7 @@ export interface Vocabularies {
   [key: string]: CustomVocabulary<Record<string, string>>;
 }
 
-class I18n {
+export class I18n {
   private language: string;
   private vocabulary: CustomVocabulary<Record<string, string>>;
 
