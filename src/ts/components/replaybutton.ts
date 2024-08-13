@@ -7,6 +7,8 @@ import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 
 /**
  * A button to play/replay a video.
+ *
+ * @category Buttons
  */
 export class ReplayButton extends Button<ButtonConfig> {
 

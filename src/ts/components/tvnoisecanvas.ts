@@ -3,6 +3,8 @@ import {DOM} from '../dom';
 
 /**
  * Animated analog TV static noise.
+ *
+ * @category Components
  */
 export class TvNoiseCanvas extends Component<ComponentConfig> {
 

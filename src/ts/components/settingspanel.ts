@@ -10,6 +10,8 @@ import { Component, ComponentConfig } from './component';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
+ *
+ * @category Configs
  */
 export interface SettingsPanelConfig extends ContainerConfig {
   /**
@@ -53,6 +55,8 @@ enum NavigationDirection {
  *  settingsPanel.addComponent(secondSettingsPanelPage);
  *
  * For an example how to navigate between pages @see SettingsPanelPageNavigatorButton
+ *
+ * @category Components
  */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
@@ -162,7 +166,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    * Use {@link popSettingsPanelPage} to navigate backwards.
    *
    * Results in no-op if the target page is the current page.
-   * @params page
+   * @param targetPage
    */
   setActivePage(targetPage: SettingsPanelPage): void {
     if (targetPage === this.getActivePage()) {

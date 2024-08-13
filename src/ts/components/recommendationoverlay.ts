@@ -9,6 +9,8 @@ import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Overlays the player and displays recommended videos.
+ *
+ * @category Containers
  */
 export class RecommendationOverlay extends Container<ContainerConfig> {
 

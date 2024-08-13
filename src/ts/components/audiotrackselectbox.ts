@@ -6,6 +6,8 @@ import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A select box providing a selection between available audio tracks (e.g. different languages).
+ *
+ * @category Components
  */
 export class AudioTrackSelectBox extends SelectBox {
 

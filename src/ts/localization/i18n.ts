@@ -14,7 +14,13 @@ const defaultLocalizationConfig: LocalizationConfig = {
   vocabularies: defaultVocabularies,
 };
 
+/**
+ * @category Localization
+ */
 export type Localizer = () => string;
+/**
+ * @category Localization
+ */
 export type LocalizableText = string | Localizer;
 
 export interface Vocabulary {
@@ -91,12 +97,21 @@ export interface Vocabulary {
   'ecoMode.title': string;
 }
 
+/**
+ * @category Localization
+ */
 export type CustomVocabulary<V> = V & Partial<Vocabulary>;
 
+/**
+ * @category Localization
+ */
 export interface Vocabularies {
   [key: string]: CustomVocabulary<Record<string, string>>;
 }
 
+/**
+ * @category Localization
+ */
 export class I18n {
   private language: string;
   private vocabulary: CustomVocabulary<Record<string, string>>;
@@ -193,4 +208,7 @@ export class I18n {
   }
 }
 
+/**
+ * @category Localization
+ */
 export const i18n = new I18n(defaultLocalizationConfig);

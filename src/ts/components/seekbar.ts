@@ -19,6 +19,8 @@ import { getMinBufferLevel } from './seekbarbufferlevel';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
+ *
+ * @category Configs
  */
 export interface SeekBarConfig extends ComponentConfig {
   /**
@@ -70,6 +72,9 @@ export interface SeekPreviewEventArgs extends SeekPreviewArgs {
   scrubbing: boolean;
 }
 
+/**
+ * @category Components
+ */
 export interface SeekBarMarker {
   marker: TimelineMarker;
   position: number;
@@ -85,6 +90,8 @@ export interface SeekBarMarker {
  *  - the playback position, i.e. the position in the media at which the player current playback pointer is positioned
  *  - the buffer position, which usually is the playback position plus the time span that is already buffered ahead
  *  - the seek position, used to preview to where in the timeline a seek will jump to
+ *
+ *  @category Components
  */
 export class SeekBar extends Component<SeekBarConfig> {
 

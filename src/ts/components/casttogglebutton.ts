@@ -5,6 +5,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles casting to a Cast receiver.
+ *
+ * @category Buttons
  */
 export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
 

@@ -26,6 +26,9 @@ export enum PlaybackTimeLabelMode {
   RemainingTime,
 }
 
+/**
+ * @category Configs
+ */
 export interface PlaybackTimeLabelConfig extends LabelConfig {
   /**
    * The type of which time should be displayed in the label.
@@ -41,6 +44,8 @@ export interface PlaybackTimeLabelConfig extends LabelConfig {
 /**
  * A label that display the current playback time and the total time through {@link PlaybackTimeLabel#setTime setTime}
  * or any string through {@link PlaybackTimeLabel#setText setText}.
+ *
+ * @category Labels
  */
 export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 

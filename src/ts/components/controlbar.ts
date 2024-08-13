@@ -10,6 +10,8 @@ import {SettingsPanel} from './settingspanel';
 
 /**
  * Configuration interface for the {@link ControlBar}.
+ *
+ * @category Configs
  */
 export interface ControlBarConfig extends ContainerConfig {
   // nothing yet
@@ -18,6 +20,8 @@ export interface ControlBarConfig extends ContainerConfig {
 /**
  * A container for main player control components, e.g. play toggle button, seek bar, volume control, fullscreen toggle
  * button.
+ *
+ * @category Components
  */
 export class ControlBar extends Container<ControlBarConfig> {
 

@@ -12,6 +12,8 @@ import { i18n, LocalizableText } from '../localization/i18n';
  *         ...
  *     </select>
  * </code>
+ *
+ * @category Components
  */
 
 export class SelectBox extends ListSelector<ListSelectorConfig> {

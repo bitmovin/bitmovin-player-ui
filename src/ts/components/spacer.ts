@@ -2,6 +2,8 @@ import {Component, ComponentConfig} from './component';
 
 /**
  * A dummy component that just reserves some space and does nothing else.
+ *
+ * @category Components
  */
 export class Spacer extends Component<ComponentConfig> {
 

@@ -3,6 +3,9 @@ import {SettingsPanelPageNavigatorButton, SettingsPanelPageNavigatorConfig} from
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
+/**
+ * @category Buttons
+ */
 export class SettingsPanelPageOpenButton extends SettingsPanelPageNavigatorButton {
   constructor(config: SettingsPanelPageNavigatorConfig) {
     super(config);

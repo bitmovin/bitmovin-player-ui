@@ -33,6 +33,9 @@ const coerceValueIntoRange = (
   }
 };
 
+/**
+ * @category Utils
+ */
 export class SeekBarController {
   protected keyStepIncrements: KeyStepIncrementsConfig;
   protected player: PlayerAPI;

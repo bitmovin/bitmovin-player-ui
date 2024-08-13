@@ -2,6 +2,8 @@ import {Button, ButtonConfig} from './button';
 
 /**
  * Configuration interface for a {@link ClickOverlay}.
+ *
+ * @category Configs
  */
 export interface ClickOverlayConfig extends ButtonConfig {
   /**
@@ -12,6 +14,8 @@ export interface ClickOverlayConfig extends ButtonConfig {
 
 /**
  * A click overlay that opens an url in a new tab if clicked.
+ *
+ * @category Components
  */
 export class ClickOverlay extends Button<ClickOverlayConfig> {
 

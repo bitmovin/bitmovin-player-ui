@@ -3,6 +3,9 @@ import {BrowserUtils} from './browserutils';
 import { UIInstanceManager } from './uimanager';
 import { PlayerAPI, TimeRange } from 'bitmovin-player';
 
+/**
+ * @category Utils
+ */
 export namespace PlayerUtils {
 
   export enum PlayerState {

@@ -5,6 +5,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles the player between windowed and fullscreen view.
+ *
+ * @category Buttons
  */
 export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
 

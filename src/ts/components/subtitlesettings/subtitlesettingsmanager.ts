@@ -18,6 +18,9 @@ interface Properties {
   [name: string]: SubtitleSettingsProperty<string>;
 }
 
+/**
+ * @category Utils
+ */
 export class SubtitleSettingsManager {
   private userSettings: SubtitleSettings;
   private localStorageKey: string;

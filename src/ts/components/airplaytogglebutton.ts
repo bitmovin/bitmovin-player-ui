@@ -5,6 +5,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles Apple AirPlay.
+ *
+ * @category Buttons
  */
 export class AirPlayToggleButton extends ToggleButton<ToggleButtonConfig> {
 

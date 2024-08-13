@@ -45,6 +45,8 @@ export interface ListItemLabelTranslator {
 
 /**
  * Configuration interface for a {@link ListSelector}.
+ *
+ * @category Configs
  */
 export interface ListSelectorConfig extends ComponentConfig {
   items?: ListItem[];

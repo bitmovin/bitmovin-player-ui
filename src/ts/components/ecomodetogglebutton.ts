@@ -3,6 +3,9 @@ import { UIInstanceManager } from '../uimanager';
 import { DynamicAdaptationConfig, PlayerAPI, VideoQualityChangedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 
+/**
+ * @category Buttons
+ */
 export class EcoModeToggleButton extends ToggleButton<ToggleButtonConfig> {
   private adaptationConfig: DynamicAdaptationConfig;
 

@@ -1,6 +1,9 @@
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 
+/**
+ * @category Utils
+ */
 export namespace StringUtils {
 
   export let FORMAT_HHMMSS: string = 'hh:mm:ss';

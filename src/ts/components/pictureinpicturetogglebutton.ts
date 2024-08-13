@@ -5,6 +5,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles Apple macOS picture-in-picture mode.
+ *
+ * @category Buttons
  */
 export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfig> {
 

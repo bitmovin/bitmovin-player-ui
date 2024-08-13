@@ -19,6 +19,8 @@ export interface ErrorMessageMap {
 
 /**
  * Configuration interface for the {@link ErrorMessageOverlay}.
+ *
+ * @category Configs
  */
 export interface ErrorMessageOverlayConfig extends ContainerConfig {
   /**
@@ -80,6 +82,8 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
 
 /**
  * Overlays the player and displays error messages.
+ *
+ * @category Components
  */
 export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
