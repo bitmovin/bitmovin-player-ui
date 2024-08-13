@@ -20,6 +20,14 @@ jobs:
         with:
           ref: develop
 
+      - name: Extract version from tag
+        uses: actions/github-script@v6
+        id: extract-version
+        with:
+          script: |
+            const { getPlayerUiVersion } = require('./.github/scripts/defineVersion.js')
+            return getPlayerUiVersion("${{ github.ref }}")
+
       - uses: actions/download-artifact@v3
         with:
           path: .
@@ -34,6 +42,22 @@ jobs:
         env:
           NPM_DRY_RUN: false
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Upload API Docs
+        uses: ./.github/actions/publish-docs
+        with:
+          docs_path: './docs/'
+          destination_path: "player/ui/${{ fromJson(steps.extract-version.outputs.result).full }}/"
+          bucket: ${{ secrets.GCS_BUCKET }}
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
+      - name: Upload API Docs for major version
+        uses: ./.github/actions/publish-docs
+        with:
+          docs_path: './docs/'
+          destination_path: 'player/ui/3/'
+          bucket: ${{ secrets.GCS_BUCKET }}
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
 
       - name: Notify team
         run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}

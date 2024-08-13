@@ -1,0 +1,41 @@
+name: Publish API Docs
+description: Builds and publishes the API documentation to Google Cloud Storage
+inputs:
+  # The path to the directory containing the API documentation
+  docs_path:
+    description: 'The path to the directory containing the API documentation'
+    required: true
+    default: '/docs/'
+  # The destination path in Google Cloud Storage
+  destination_path:
+    description: 'The destination path in Google Cloud Storage'
+    required: true
+  # The Google Cloud Storage bucket to upload the documentation to
+  bucket:
+    description: 'The Google Cloud Storage bucket to upload the documentation to'
+    required: true
+  # The Google Cloud Storage bucket to upload the documentation to
+  credentials_json:
+    description: 'The Google Cloud Storage bucket to upload the documentation to'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Build documentation
+      run: npx typedoc
+      shell: bash
+
+    - name: Authenticate
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: ${{ inputs.credentials_json }}
+
+    - name: Upload documentation
+      uses: 'google-github-actions/upload-cloud-storage@v2'
+      with:
+        path: ${{ inputs.docs_path }}
+        destination: "${{ inputs.bucket }}/${{ inputs.destination_path }}"
