@@ -28,8 +28,8 @@ jobs:
         id: extract-version
         with:
           script: |
-            const { getPlayerUiVersion } = require('./.github/scripts/defineVersion.js')
-            return getPlayerUiVersion("v3.67.0")
+            const defineVersion = require('./.github/scripts/defineVersion.js')
+            return defineVersion.getPlayerUiVersion("v3.67.0")
 
       - uses: actions/download-artifact@v3
         with:
