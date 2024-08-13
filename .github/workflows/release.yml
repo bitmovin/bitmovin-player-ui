@@ -29,7 +29,7 @@ jobs:
         with:
           script: |
             const { getPlayerUiVersion } = require('./.github/scripts/defineVersion.js')
-            return getPlayerUiVersion("${{ github.ref }}")
+            return getPlayerUiVersion("v3.67.0")
 
       - uses: actions/download-artifact@v3
         with:
