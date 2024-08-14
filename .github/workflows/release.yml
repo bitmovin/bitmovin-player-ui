@@ -2,9 +2,9 @@ name: Release
 
 on: 
   push:
-#    tags:
-#      - '!player/'
-#      - 'v*'
+    tags:
+      - '!player/'
+      - 'v*'
 
 jobs:
   test_and_build:
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: feature/generate-docu-using-typedoc
+          ref: develop
 
       - name: Install dependencies
         run: npm ci
@@ -39,12 +39,12 @@ jobs:
         run: tar -xzvf artifact/artifact.tar.gz -C .
         shell: bash
 
-#      - name: Publish
-#        run: ./publish.sh
-#        shell: bash
-#        env:
-#          NPM_DRY_RUN: false
-#          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Publish
+        run: ./publish.sh
+        shell: bash
+        env:
+          NPM_DRY_RUN: false
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
       - name: Build documentation
         run: npx typedoc
@@ -67,18 +67,18 @@ jobs:
           path: './docs/'
           destination: "${{ secrets.GCS_BUCKET }}/player/ui/3"
 
-#      - name: Notify team
-#        run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
+      - name: Notify team
+        run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
 
-#  handle_failure:
-#    runs-on: ubuntu-latest
-#    needs: [test_and_build, download_and_publish]
-#    if: ${{ always() && (needs.download_and_publish.result == 'failure' || needs.test_and_build.result == 'failure') }}
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#        with:
-#          ref: develop
-#
-#      - name: Notify team
-#        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
+  handle_failure:
+    runs-on: ubuntu-latest
+    needs: [test_and_build, download_and_publish]
+    if: ${{ always() && (needs.download_and_publish.result == 'failure' || needs.test_and_build.result == 'failure') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+
+      - name: Notify team
+        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
