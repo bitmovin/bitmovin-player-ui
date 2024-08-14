@@ -2,8 +2,6 @@
 @import 'mixins';
 
 &.#{$prefix}-ui-skin-modern-smallscreen {
-  font-size: 1.2em;
-
   .#{$prefix}-ui-fullscreentogglebutton {
     background-image: url('../../assets/skin-super-modern/images/fullscreensmall.svg');
 

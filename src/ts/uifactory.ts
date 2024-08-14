@@ -55,6 +55,7 @@ import { SubtitleToggleButton } from './components/subtitletogglebutton';
 import { ModernSettingsPanelItem } from './components/modernsettingspanelitem';
 import { ModernSettingsPanelPage } from './components/modernsettingspanelpage'
 import { ModernSettingsPanel } from './components/modernsettingspanel';
+import { ModernSettingsToggleButton } from './components/modernsettingstogglebutton';
 
 export namespace UIFactory {
   export function buildDefaultSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -242,13 +243,13 @@ export namespace UIFactory {
       ],
     });
 
-    let settingsPanel = new ModernSettingsPanel({
+    let settingsPanel = new SettingsPanel({
       components: [mainSettingsPanelPage],
       hidden: true,
       pageTransitionAnimation: false,
       hideDelay: -1,
     });
-/*
+
     let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
       settingsPanel: settingsPanel,
       overlay: subtitleOverlay,
@@ -260,10 +261,10 @@ export namespace UIFactory {
       ariaLabel: i18n.getLocalizer('settings.subtitles'),
       text: i18n.getLocalizer('open'),
     });
-    */
+
 
     const subtitleSelectBox = new SubtitleSelectBox();
-/*
+
     mainSettingsPanelPage.addComponent(
       new SettingsPanelItem(
         new SubtitleSettingsLabel({
@@ -276,12 +277,11 @@ export namespace UIFactory {
         },
       ),
     );
-    */
 
-    //settingsPanel.addComponent(subtitleSettingsPanelPage);
+    settingsPanel.addComponent(subtitleSettingsPanelPage);
 
     settingsPanel.addComponent(new CloseButton({ target: settingsPanel }));
-    //subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
+    subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
 
     let controlBar = new ControlBar({
       components: [
@@ -461,19 +461,19 @@ export function superModernMobileUI() {
   let mainSettingsPanelPage = new ModernSettingsPanelPage({
     components: [
       new ModernSettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
+      new ModernSettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+      new ModernSettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+      new ModernSettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
     ],
   });
 
-  let settingsPanel = new SettingsPanel({
+  let settingsPanel = new ModernSettingsPanel({
     components: [mainSettingsPanelPage],
     hidden: true,
     pageTransitionAnimation: false,
     hideDelay: -1,
   });
-
+/*
   let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
     settingsPanel: settingsPanel,
     overlay: subtitleOverlay,
@@ -485,6 +485,7 @@ export function superModernMobileUI() {
     ariaLabel: i18n.getLocalizer('settings.subtitles'),
     text: i18n.getLocalizer('open'),
   });
+  
 
   const subtitleSelectBox = new SubtitleSelectBox();
   // TODO: Remove subtitle settings and instead use that settings page for the subtitles itself
@@ -504,7 +505,7 @@ export function superModernMobileUI() {
   settingsPanel.addComponent(subtitleSettingsPanelPage);
 
   subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
-
+*/
   let controlBar = new ControlBar({
     components: [
       new Container({
@@ -526,8 +527,8 @@ export function superModernMobileUI() {
           new PlaybackToggleButton(),
           new VolumeToggleButton(),
           new Spacer(),
-          new SettingsToggleButton({ settingsPanel: settingsPanel }),
-          new SubtitleToggleButton(settingsPanel, subtitleSelectBox),
+          new ModernSettingsToggleButton({ settingsPanel: settingsPanel }),
+          //new SubtitleToggleButton(settingsPanel, subtitleSelectBox),
           new FullscreenToggleButton(),
         ],
         cssClasses: ['controlbar-bottom'],

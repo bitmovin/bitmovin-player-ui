@@ -16,6 +16,8 @@ export class ModernSettingsPanelPage extends Container<ContainerConfig> {
     onSettingsStateChanged: new EventDispatcher<ModernSettingsPanelPage, NoArgs>(),
     onActive: new EventDispatcher<ModernSettingsPanelPage, NoArgs>(),
     onInactive: new EventDispatcher<ModernSettingsPanelPage, NoArgs>(),
+    onRequestsDisplaySubPage: new EventDispatcher<ModernSettingsPanelPage, ModernSettingsPanelPage>(),
+    onRequestsNavigateBack: new EventDispatcher<ModernSettingsPanelPage, ModernSettingsPanelPage>(),
   };
 
   constructor(config: ContainerConfig) {
@@ -48,6 +50,13 @@ export class ModernSettingsPanelPage extends Container<ContainerConfig> {
     };
     for (let component of this.getItems()) {
       component.onActiveChanged.subscribe(settingsStateChangedHandler);
+      component.getOnDisplaySubPage.subscribe((_, args: ModernSettingsPanelPage) => this.requestsDisplaySubMenu(this, args));
+      component.getOnRequestNavigateBack.subscribe(() => this.settingsPanelPageEvents.onRequestsNavigateBack.dispatch(this));
+      component.onItemSelect.subscribe((sender, key) => {
+        for (let component of this.getItems()) {
+          component.lable.getDomElement().removeClass(this.prefixCss("selected"));
+        }
+      });
     }
   }
 
@@ -69,8 +78,25 @@ export class ModernSettingsPanelPage extends Container<ContainerConfig> {
     this.settingsPanelPageEvents.onSettingsStateChanged.dispatch(this);
   }
 
+  requestsDisplaySubMenu<Sender, Args>(_: Sender, args: ModernSettingsPanelPage) {
+    this.settingsPanelPageEvents.onRequestsDisplaySubPage.dispatch(this, args);
+  }
+
   get onSettingsStateChanged(): Event<ModernSettingsPanelPage, NoArgs> {
     return this.settingsPanelPageEvents.onSettingsStateChanged.getEvent();
+  }
+
+  /**
+   * Is fired, when an item inside this page wants to show its sub-page
+   * This event is subscribed by the {@link ModernSettingsPanel}, which 
+   * takes the page as an argument in order to display it.
+   */
+  get onRequestsDisplaySubMenu(): Event<ModernSettingsPanelPage, NoArgs> {
+    return this.settingsPanelPageEvents.onRequestsDisplaySubPage.getEvent();
+  }
+
+  get onRequestsNavigateBack(): Event<ModernSettingsPanelPage, NoArgs> {
+    return this.settingsPanelPageEvents.onRequestsNavigateBack.getEvent();
   }
 
   onActiveEvent() {

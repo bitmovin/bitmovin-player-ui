@@ -10,9 +10,59 @@
   .#{$prefix}-container-wrapper > * {
     &.#{$prefix}-ui-label {
       display: inline-block;
-      font-size: .7em;
+      text-align: justify;
+      font-size: .6em;
+      margin: 0;
       font-weight: 600;
       width: 45%;
+    }
+
+    &.#{$prefix}-ui-label-setting-selected-option {
+      font-weight: normal;
+      width: fit-content;
+      margin-left: auto;
+      align-self: center;
+
+      &:after {
+        background-image: url('../../assets/skin-super-modern/images/angle-right.svg');
+        background-repeat: no-repeat;
+        vertical-align: -.4em;
+        background-size: 1.5em auto;
+        content: ' ';
+        display: inline-block;
+        height: 1.5em;
+        width: 1.5em;
+      }
+    }
+
+    &.#{$prefix}-option {
+      font-weight: normal;
+    }
+
+    &.#{$prefix}-heading {
+      &:before {
+        background-image: url('../../assets/skin-super-modern/images/angle-left.svg');
+        background-repeat: no-repeat;
+        vertical-align: -.4em;
+        background-size: 1.5em auto;
+        content: ' ';
+        display: inline-block;
+        height: 1.5em;
+        width: 1.5em;
+      }
+    }
+
+    &.#{$prefix}-selected {
+      &:before {
+        background-image: url('../../assets/skin-super-modern/images/check.svg');
+        background-repeat: no-repeat;
+        vertical-align: -.4em;
+        background-size: 1.5em auto;
+        content: ' ';
+        display: inline-block;
+        height: 1.5em;
+        width: 1.5em;
+      }
     }
 
     // Controls (e.g. selectbox)
@@ -23,8 +73,9 @@
   }
 
   .#{$prefix}-ui-settings-panel-item {
-    padding: 0 .5em;
+    padding: 0 .4em;
     white-space: nowrap;
+    height: 20px;
 
     &:hover {
       background-color: transparentize($color-item-hover, .15);
@@ -32,6 +83,13 @@
 
     &.#{$prefix}-hidden {
       display: none;
+    }
+
+    .#{$prefix}-container-wrapper {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      width: 100%;
     }
   }
 }

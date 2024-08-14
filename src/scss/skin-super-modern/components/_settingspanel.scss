@@ -14,17 +14,18 @@
   $background-color: transparentize($color-background-menu, .15);
 
   background-color: $background-color;
-  border-radius: 6px;
+  border-radius: 4px;
   bottom: 3.5em;
   height: fit-content;
   max-height: 60%;
-  min-width: 170px;
+  min-width: fit-content;
+  max-width: 140px;
   overflow: hidden;
   overflow-y: auto;
   padding: 0;
   position: absolute;
   right: 1em;
-  width: 40%;
+  width: 35%;
 
   > .#{$prefix}-container-wrapper {
     overflow-y: auto;

@@ -1,5 +1,4 @@
 import {ToggleButton, ToggleButtonConfig} from './togglebutton';
-import {SettingsPanel} from './settingspanel';
 import {UIInstanceManager} from '../uimanager';
 import {Component, ComponentConfig} from './component';
 import {ArrayUtils} from '../arrayutils';
@@ -8,13 +7,13 @@ import { i18n } from '../localization/i18n';
 import { ModernSettingsPanel } from './modernsettingspanel';
 
 /**
- * Configuration interface for the {@link SettingsToggleButton}.
+ * Configuration interface for the {@link ModernSettingsToggleButton}.
  */
-export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
+export interface ModernSettingsToggleButtonConfig extends ToggleButtonConfig {
   /**
    * The settings panel whose visibility the button should toggle.
    */
-  settingsPanel: SettingsPanel;
+  settingsPanel: ModernSettingsPanel;
 
   /**
    * Decides if the button should be automatically hidden when the settings panel does not contain any active settings.
@@ -26,11 +25,11 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
 /**
  * A button that toggles visibility of a settings panel.
  */
-export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfig> {
+export class ModernSettingsToggleButton extends ToggleButton<ModernSettingsToggleButtonConfig> {
 
-  private visibleSettingsPanels: SettingsPanel[] = [];
+  private visibleSettingsPanels: ModernSettingsPanel[] = [];
 
-  constructor(config: SettingsToggleButtonConfig) {
+  constructor(config: ModernSettingsToggleButtonConfig) {
     super(config);
 
     if (!config.settingsPanel) {
@@ -43,7 +42,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       settingsPanel: null,
       autoHideWhenNoActiveSettings: true,
       role: 'pop-up button',
-    }, <SettingsToggleButtonConfig>this.config);
+    }, <ModernSettingsToggleButtonConfig>this.config);
 
     /**
      * WCAG20 standard defines which popup menu (element id) is owned by the button
@@ -85,7 +84,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     // Ensure that only one `SettingPanel` is visible at once
     // Keep track of shown SettingsPanels
     uimanager.onComponentShow.subscribe((sender: Component<ComponentConfig>) => {
-      if (sender instanceof SettingsPanel) {
+      if (sender instanceof ModernSettingsPanel) {
         this.visibleSettingsPanels.push(sender);
         sender.onHide.subscribeOnce(() => ArrayUtils.remove(this.visibleSettingsPanels, sender));
       }

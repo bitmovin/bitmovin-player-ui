@@ -78,6 +78,7 @@ export class ModernSettingsPanel extends Container<ModernSettingsPanelConfig> {
     } as ModernSettingsPanelConfig, this.config);
 
     this.activePage = this.getRootPage();
+    this.activePage.onRequestsDisplaySubMenu.subscribe(this.handleShowSubPage);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -270,6 +271,18 @@ export class ModernSettingsPanel extends Container<ModernSettingsPanelConfig> {
     this.updateActivePageClass();
   }
 
+  private handleShowSubPage = (sender: ModernSettingsPanelPage, subPage: ModernSettingsPanelPage) => {
+    this.addComponent(subPage);
+    this.updateComponents();
+    this.setActivePage(subPage);
+  }
+
+  private handleNavigateBack = (page: ModernSettingsPanelPage) => {
+    this.popSettingsPanelPage();
+    this.removeComponent(page);
+    this.updateComponents();
+  }
+
   private navigateToPage(
     targetPage: ModernSettingsPanelPage,
     sourcePage: ModernSettingsPanelPage,
@@ -279,6 +292,8 @@ export class ModernSettingsPanel extends Container<ModernSettingsPanelConfig> {
     this.activePage = targetPage;
 
     if (direction === NavigationDirection.Forwards) {
+      targetPage.onRequestsDisplaySubMenu.subscribe(this.handleShowSubPage);
+      targetPage.onRequestsNavigateBack.subscribe(() => this.handleNavigateBack(targetPage));
       this.navigationStack.push(targetPage);
     } else {
       this.navigationStack.pop();
