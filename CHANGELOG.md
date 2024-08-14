@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [3.69.0] - 2024-08-14
 ### Added
 - API doc generation and publishing. The API doc from the UI can be found [here](https://cdn.bitmovin.com/player/ui/3/docs/index.html)
 
@@ -980,6 +980,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.69.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.67.0...v3.69.0
 [3.68.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.67.0...v3.68.0
 [3.67.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.66.0...v3.67.0
 [3.66.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.65.0...v3.66.0
