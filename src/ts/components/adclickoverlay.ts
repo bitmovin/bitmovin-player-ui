@@ -4,6 +4,8 @@ import { Ad, AdEvent, PlayerAPI } from 'bitmovin-player';
 
 /**
  * A simple click capture overlay for clickThroughUrls of ads.
+ *
+ * @category Components
  */
 export class AdClickOverlay extends ClickOverlay {
   constructor(config: ClickOverlayConfig = {}) {

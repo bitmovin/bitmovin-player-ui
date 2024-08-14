@@ -6,6 +6,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
+ *
+ * @category Components
  */
 export class AdMessageLabel extends Label<LabelConfig> {
 

@@ -6,6 +6,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A select box providing a selection between 'auto' and the available audio qualities.
+ *
+ * @category Components
  */
 export class AudioQualitySelectBox extends SelectBox {
 

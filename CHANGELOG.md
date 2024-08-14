@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- API doc generation and publishing. The API doc from the UI can be found [here](https://cdn.bitmovin.com/player/ui/3/docs/index.html)
+
 ## [3.67.0] - 2024-07-03
 
 ### Added

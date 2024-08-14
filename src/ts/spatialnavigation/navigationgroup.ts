@@ -13,6 +13,8 @@ import { Action, ActionCallback, Callback, Direction, NavigationCallback } from 
  * Responsible for finding elements in direction on navigation and for tracking active element inside the group.
  * Triggers blur and focus on element when active element is changed, as well as click on element on `Action.SELECT`.
  * Will call `hideUi()` on passed in container if `Action.BACK` is called.
+ *
+ * @category Components
  */
 export class NavigationGroup {
   private activeElement?: HTMLElement;

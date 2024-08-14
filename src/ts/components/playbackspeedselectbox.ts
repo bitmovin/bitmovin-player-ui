@@ -6,6 +6,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A select box providing a selection of different playback speeds.
+ *
+ * @category Components
  */
 export class PlaybackSpeedSelectBox extends SelectBox {
   protected defaultPlaybackSpeeds: number[];

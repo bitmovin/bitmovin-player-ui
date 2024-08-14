@@ -4,6 +4,9 @@ import { PlayerAPI, SeekEvent, TimeShiftEvent } from 'bitmovin-player';
 import { UIInstanceManager } from '../uimanager';
 import { PlayerUtils } from '../playerutils';
 
+/**
+ * @category Configs
+ */
 export interface QuickSeekButtonConfig extends ButtonConfig {
   /**
    * Specify how many seconds the player should seek forward/backwards in the stream.
@@ -13,6 +16,9 @@ export interface QuickSeekButtonConfig extends ButtonConfig {
   seekSeconds?: number;
 }
 
+/**
+ * @category Buttons
+ */
 export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
   private currentSeekTarget: number | null;
   private player: PlayerAPI;

@@ -7,6 +7,8 @@ import { BrowserUtils } from '../browserutils';
 
 /**
  * A panel containing a list of {@link SettingsPanelItem items} that represent labelled settings.
+ *
+ * @category Components
  */
 export class SettingsPanelPage extends Container<ContainerConfig> {
 

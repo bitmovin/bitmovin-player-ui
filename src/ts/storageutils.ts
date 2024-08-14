@@ -1,5 +1,8 @@
 import { UIConfig } from './uiconfig';
 
+/**
+ * @category Utils
+ */
 export namespace StorageUtils {
  let disableStorageApi: boolean;
 

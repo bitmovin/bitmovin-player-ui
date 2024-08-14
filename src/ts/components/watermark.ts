@@ -3,6 +3,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link ClickOverlay}.
+ *
+ * @category Configs
  */
 export interface WatermarkConfig extends ClickOverlayConfig {
   // nothing yet
@@ -10,6 +12,8 @@ export interface WatermarkConfig extends ClickOverlayConfig {
 
 /**
  * A watermark overlay with a clickable logo.
+ *
+ * @category Components
  */
 export class Watermark extends ClickOverlay {
 

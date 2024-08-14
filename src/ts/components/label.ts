@@ -5,6 +5,8 @@ import { LocalizableText, i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Label} component.
+ *
+ * @category Configs
  */
 export interface LabelConfig extends ComponentConfig {
   /**
@@ -25,6 +27,8 @@ export interface LabelConfig extends ComponentConfig {
  * <code>
  *     <span class='ui-label'>...some text...</span>
  * </code>
+ *
+ * @category Components
  */
 export class Label<Config extends LabelConfig> extends Component<Config> {
 

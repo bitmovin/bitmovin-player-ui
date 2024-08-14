@@ -5,6 +5,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles audio muting.
+ *
+ * @category Buttons
  */
 export class VolumeToggleButton extends ToggleButton<ToggleButtonConfig> {
 

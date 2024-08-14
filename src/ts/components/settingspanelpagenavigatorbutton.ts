@@ -6,6 +6,8 @@ import { UIInstanceManager } from '../uimanager';
 
 /**
  * Configuration interface for a {@link SettingsPanelPageNavigatorButton}
+ *
+ * @category Configs
  */
 export interface SettingsPanelPageNavigatorConfig extends ButtonConfig {
   /**
@@ -36,6 +38,8 @@ export interface SettingsPanelPageNavigatorConfig extends ButtonConfig {
  *  settingsPanelPage.addComponent(settingPanelNavigationButton);
  *
  * Don't forget to add the settingPanelNavigationButton to the settingsPanelPage.
+ *
+ * @category Buttons
  */
 export class SettingsPanelPageNavigatorButton extends Button<SettingsPanelPageNavigatorConfig> {
   private readonly container: SettingsPanel;

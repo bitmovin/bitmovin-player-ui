@@ -6,6 +6,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * Overlays the player and displays the status of a Cast session.
+ *
+ * @category Components
  */
 export class CastStatusOverlay extends Container<ContainerConfig> {
 

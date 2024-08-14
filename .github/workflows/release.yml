@@ -20,6 +20,17 @@ jobs:
         with:
           ref: develop
 
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Read package.json version
+        uses: actions/github-script@v6
+        id: extract-version
+        with:
+          script: |
+            const { version } = require('./package.json')
+            core.setOutput('packageJsonVersion', version)
+
       - uses: actions/download-artifact@v3
         with:
           path: .
@@ -34,6 +45,27 @@ jobs:
         env:
           NPM_DRY_RUN: false
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Build documentation
+        run: npx typedoc
+        shell: bash
+
+      - name: Authenticate
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
+      - name: Upload docs
+        uses: 'google-github-actions/upload-cloud-storage@v2'
+        with:
+          path: './docs/'
+          destination: "${{ secrets.GCS_BUCKET }}/player/ui/${{ steps.extract-version.outputs.packageJsonVersion }}"
+
+      - name: Upload docs for major version
+        uses: 'google-github-actions/upload-cloud-storage@v2'
+        with:
+          path: './docs/'
+          destination: "${{ secrets.GCS_BUCKET }}/player/ui/3"
 
       - name: Notify team
         run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
