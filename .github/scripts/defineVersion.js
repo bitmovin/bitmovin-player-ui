@@ -26,4 +26,4 @@ function defineReleaseVersion({ core }, targetReleaseLevel, givenVersion) {
   return parsedPlayerVersion;
 }
 
-module.exports = { defineReleaseVersion, getPlayerUiVersion };
+module.exports.defineReleaseVersion = defineReleaseVersion;
