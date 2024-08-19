@@ -476,16 +476,15 @@ export function superModernMobileUI() {
 
   const subtitleSelectBox = new SubtitleSelectBox();
   // TODO: Build a new subtitle settings page
-  mainSettingsPanelPage.addComponent(
-    new ModernSettingsPanelItem(
-      new Label({ text: i18n.getLocalizer('settings.subtitles') } as LabelConfig),
-      subtitleSelectBox,
-      null,
-      {
-        role: 'menubar',
-      },
-    ),
+  let subtitleSelectItem = new ModernSettingsPanelItem(
+    new Label({ text: i18n.getLocalizer('settings.subtitles') } as LabelConfig),
+    subtitleSelectBox,
+    null,
+    {
+      role: 'menubar',
+    },
   );
+  mainSettingsPanelPage.addComponent(subtitleSelectItem);
 
   let controlBar = new ControlBar({
     components: [
@@ -509,7 +508,7 @@ export function superModernMobileUI() {
           new VolumeToggleButton(),
           new Spacer(),
           new ModernSettingsToggleButton({ settingsPanel: settingsPanel }),
-          new SubtitleToggleButton(settingsPanel, subtitleSelectBox),
+          new SubtitleToggleButton(subtitleSelectItem, subtitleSelectBox),
           new FullscreenToggleButton(),
         ],
         cssClasses: ['controlbar-bottom'],

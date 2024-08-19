@@ -275,6 +275,7 @@ export class ModernSettingsPanel extends Container<ModernSettingsPanelConfig> {
   }
 
   private handleShowSubPage = (sender: ModernSettingsPanelPage, subPage: ModernSettingsPanelPage) => {
+    this.show();
     this.addComponent(subPage);
     this.updateComponents();
     this.setActivePage(subPage);

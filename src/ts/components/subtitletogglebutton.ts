@@ -6,7 +6,7 @@ import { StorageUtils } from '../storageutils';
 import { SubtitleSelectBox } from './subtitleselectbox';
 import { prefixCss } from './dummycomponent';
 import { SubtitleSwitchHandler } from '../subtitleutils';
-import { ModernSettingsPanel } from './modernsettingspanel';
+import { ModernSettingsPanelItem } from './modernsettingspanelitem';
 
 export interface StoredSubtitleLanguage {
     language: string;
@@ -14,14 +14,17 @@ export interface StoredSubtitleLanguage {
 }
 
 export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
-    private settingsPanel: ModernSettingsPanel;
+  /**
+   * Requires the settingsPanelItem which holds the SubtitleSelectBox in its setting
+   */
+    private settingsPanelItem: ModernSettingsPanelItem;
     private subtitleSelectBox: SubtitleSelectBox;
     private player: PlayerAPI;
 
-    constructor(subtitleSettingsOpenButton: ModernSettingsPanel, subtitleSelectBox: SubtitleSelectBox, config: ToggleButtonConfig = {}) {
+    constructor(settingsPanelItem: ModernSettingsPanelItem, subtitleSelectBox: SubtitleSelectBox, config: ToggleButtonConfig = {}) {
         super(config);
 
-        this.settingsPanel = subtitleSettingsOpenButton;
+        this.settingsPanelItem = settingsPanelItem;
         this.subtitleSelectBox = subtitleSelectBox;
 
         const defaultConfig: ToggleButtonConfig = {
@@ -46,7 +49,7 @@ export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
             const storedSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(prefixCss('subtitlelanguage'));
             const subtitleTrack = storedSubtitle ? availableSubtitles.find(e => e.lang === storedSubtitle.language) : undefined;
             if (!subtitleTrack) {
-                this.settingsPanel.show();
+                this.settingsPanelItem.displayItemsSubPage();
             } else if (this.isOff() && subtitleTrack) {
                 this.on();
                 player.subtitles.enable(subtitleTrack.id);

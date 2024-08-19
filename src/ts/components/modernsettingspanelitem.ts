@@ -139,8 +139,7 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
     const handleItemClick = (e: Event) => {
       if (this.setting !== null) {
         if (!this.isOption) {
-          let page = this.getSubPage();
-          this.settingsPanelItemEvents.onRequestSubPage.dispatch(this, page);
+          this.displayItemsSubPage();
         }
 
         else {
@@ -189,6 +188,15 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
    */
   isActive(): boolean {
     return this.isShown();
+  }
+
+  public getSetting(): Component<ComponentConfig> {
+    return this.setting;
+  }
+
+  public displayItemsSubPage(): void {
+    let page = this.getSubPage();
+    this.settingsPanelItemEvents.onRequestSubPage.dispatch(this, page);
   }
 
   protected onActiveChangedEvent() {
