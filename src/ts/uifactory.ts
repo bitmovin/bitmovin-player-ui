@@ -262,7 +262,6 @@ export namespace UIFactory {
       text: i18n.getLocalizer('open'),
     });
 
-
     const subtitleSelectBox = new SubtitleSelectBox();
 
     mainSettingsPanelPage.addComponent(

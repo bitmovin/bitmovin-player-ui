@@ -5,7 +5,6 @@ import {Component, ComponentConfig} from './component';
 import {ArrayUtils} from '../arrayutils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
-import { ModernSettingsPanel } from './modernsettingspanel';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
