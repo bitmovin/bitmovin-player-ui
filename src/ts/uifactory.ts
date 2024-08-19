@@ -56,6 +56,7 @@ import { ModernSettingsPanelItem } from './components/modernsettingspanelitem';
 import { ModernSettingsPanelPage } from './components/modernsettingspanelpage';
 import { ModernSettingsPanel } from './components/modernsettingspanel';
 import { ModernSettingsToggleButton } from './components/modernsettingstogglebutton';
+import { TouchControlOverlay } from './components/touchcontroloverlay';
 
 export namespace UIFactory {
   export function buildDefaultSuperModernUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
@@ -521,10 +522,12 @@ export function superModernMobileUI() {
   return new UIContainer({
     components: [
       subtitleOverlay,
-      new BufferingOverlay(),
+
       new CastStatusOverlay(),
-      // TODO: make an overlay for the quickseek buttons/double tab and make a new buffer overlay
-      new PlaybackToggleOverlay(),
+      // TODO: make an overlay for the quickseek buttons/double tab
+      new TouchControlOverlay(),
+      // TODO: make a new buffer overlay
+      // new BufferingOverlay(),
       new RecommendationOverlay(),
       controlBar,
       new TitleBar({

@@ -10,7 +10,7 @@
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
   line-height: 1em;
-  padding: 1em 1em .5em;
+  padding: 0 1em .5em;
 
   .#{$prefix}-controlbar-top,
   .#{$prefix}-controlbar-bottom {

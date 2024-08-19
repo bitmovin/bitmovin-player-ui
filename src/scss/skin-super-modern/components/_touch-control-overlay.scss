@@ -1,0 +1,12 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-touchcontrol-overlay {
+  @extend %ui-container;
+  @include layout-cover;
+
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
