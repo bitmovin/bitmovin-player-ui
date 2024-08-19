@@ -40,9 +40,9 @@
   }
 
   // Decrease huge play button size and replace icon with normal play icon
-  .#{$prefix}-ui-hugeplaybacktogglebutton {
+  .#{$prefix}-ui-hugeplaybacktogglebutton,
+  .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
     .#{$prefix}-image {
-      background-image: url('../../assets/skin-super-modern/images/play.svg');
       background-size: 3em;
     }
   }
@@ -50,7 +50,8 @@
   // When casting, also display pause icon and disable animations because the transition doesn't look right
   // sass-lint:disable nesting-depth
   &.#{$prefix}-remote-control {
-    .#{$prefix}-ui-hugeplaybacktogglebutton {
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
       &.#{$prefix}-on {
         .#{$prefix}-image {
           animation: none;
@@ -71,6 +72,7 @@
   &.#{$prefix}-layout-max-width-400 {
     .#{$prefix}-ui-settings-panel,
     .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton,
     .#{$prefix}-ui-hugereplaybutton,
     .#{$prefix}-ui-errormessage-overlay,
     .#{$prefix}-ui-buffering-overlay,
@@ -84,6 +86,7 @@
   &.#{$prefix}-layout-max-width-600 {
     .#{$prefix}-ui-settings-panel,
     .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton,
     .#{$prefix}-ui-hugereplaybutton,
     .#{$prefix}-ui-errormessage-overlay,
     .#{$prefix}-ui-buffering-overlay,
