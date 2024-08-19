@@ -86,7 +86,10 @@ export class ModernSettingsPanel extends Container<ModernSettingsPanelConfig> {
 
     let config = this.getConfig();
 
-    uimanager.onControlsHide.subscribe(() => this.hideHoveredSelectBoxes());
+    uimanager.onControlsHide.subscribe(() => {
+      this.hideHoveredSelectBoxes();
+      this.hide();
+    });
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
