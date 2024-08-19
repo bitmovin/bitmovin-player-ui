@@ -81,7 +81,12 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
       this.setting.onItemSelected.subscribe(() => {
         this.removeComponent(this.selectedOptionLabel);
         const setting = this.setting as ListSelector<ListSelectorConfig>;
-        this.selectedOptionLabel = new Label({ text: setting.getItemForKey(setting.getSelectedItem()).label, for: this.getConfig().id } as LabelConfig);
+        let selectedOptionLabel: LocalizableText = setting.getItemForKey(setting.getSelectedItem()).label;
+        if(this.setting instanceof SubtitleSelectBox) {
+          let availableSettings = setting.getItems().length;
+          selectedOptionLabel = selectedOptionLabel + " (" + (availableSettings-1) + ")"
+        }
+        this.selectedOptionLabel = new Label({ text: selectedOptionLabel, for: this.getConfig().id } as LabelConfig);
         this.selectedOptionLabel.getDomElement().addClass(this.prefixCss('ui-label-setting-selected-option'));
         this.addComponent(this.selectedOptionLabel);
         this.updateComponents();
