@@ -54,7 +54,7 @@ export class ModernSettingsPanelPage extends Container<ContainerConfig> {
       component.getOnRequestNavigateBack.subscribe(() => this.settingsPanelPageEvents.onRequestsNavigateBack.dispatch(this));
       component.onItemSelect.subscribe(() => {
         for (let component of this.getItems()) {
-          component.lable.getDomElement().removeClass(this.prefixCss("selected"));
+          component.lable.getDomElement().removeClass(this.prefixCss('selected'));
         }
       });
     }
@@ -88,7 +88,7 @@ export class ModernSettingsPanelPage extends Container<ContainerConfig> {
 
   /**
    * Is fired, when an item inside this page wants to show its sub-page
-   * This event is subscribed by the {@link ModernSettingsPanel}, which 
+   * This event is subscribed by the {@link ModernSettingsPanel}, which
    * takes the page as an argument in order to display it.
    */
   get onRequestsDisplaySubMenu(): Event<ModernSettingsPanelPage, NoArgs> {

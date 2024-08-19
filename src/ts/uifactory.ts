@@ -53,7 +53,7 @@ import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNa
 import { EcoModeContainer } from './components/ecomodecontainer';
 import { SubtitleToggleButton } from './components/subtitletogglebutton';
 import { ModernSettingsPanelItem } from './components/modernsettingspanelitem';
-import { ModernSettingsPanelPage } from './components/modernsettingspanelpage'
+import { ModernSettingsPanelPage } from './components/modernsettingspanelpage';
 import { ModernSettingsPanel } from './components/modernsettingspanel';
 import { ModernSettingsToggleButton } from './components/modernsettingstogglebutton';
 

@@ -72,9 +72,11 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     this.player = player;
     this.uimanager = uimanager;
-    if(this.setting !== null) {
+
+    if (this.setting !== null) {
       this.setting.configure(this.player, this.uimanager);
     }
+
     if (!this.isOption && (this.setting instanceof SelectBox || this.setting instanceof ListBox)) {
       this.setting.onItemSelected.subscribe(() => {
         this.removeComponent(this.selectedOptionLabel);
@@ -85,7 +87,7 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
         this.updateComponents();
       });
 
-      let handleConfigItemChanged = () => {        
+      let handleConfigItemChanged = () => {
         if (!(this.setting instanceof SelectBox) && !(this.setting instanceof ListBox)) {
           return;
         }
@@ -121,29 +123,31 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
 
       // Initialize hidden state
       handleConfigItemChanged();
-    } else if(this.isOption) {
+    }
+    else if (this.isOption) {
       this.show();
       this.onActiveChangedEvent();
       this.label.getDomElement().addClass(this.prefixCss('option'));
     }
 
     const handleItemClick = (e: Event) => {
-      if(this.setting !== null) {
-        if(!this.isOption) {
+      if (this.setting !== null) {
+        if (!this.isOption) {
           let page = this.getSubPage();
           this.settingsPanelItemEvents.onRequestSubPage.dispatch(this, page);
         }
+
         else {
-          if(this.setting instanceof SelectBox || this.setting instanceof ListBox) {
+          if (this.setting instanceof SelectBox || this.setting instanceof ListBox) {
             this.setting.selectItem(this.key);
             this.settingsPanelItemEvents.onItemSelect.dispatch(this, this.key);
-            this.label.getDomElement().addClass(this.prefixCss("selected"));
+            this.label.getDomElement().addClass(this.prefixCss('selected'));
           }
         }
       } else {
         this.settingsPanelItemEvents.onRequestNavigateBack.dispatch(this);
       }
-    }
+    };
     const domElement = this.getDomElement();
     domElement.on('click', (e) => handleItemClick(e));
   }
@@ -158,11 +162,13 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
       let itemToAdd = new ModernSettingsPanelItem(label, null);
       itemToAdd.configure(this.player, this.uimanager);
       page.addComponent(itemToAdd);
-      for(let option of menuOptions) {
+
+      for (let option of menuOptions) {
         let itemToAdd = new ModernSettingsPanelItem(option.label, this.setting, option.key);
         itemToAdd.configure(this.player, this.uimanager);
-        if(option.key === selectedItem) {
-          itemToAdd.label.getDomElement().addClass(this.prefixCss("selected"));
+
+        if (option.key === selectedItem) {
+          itemToAdd.label.getDomElement().addClass(this.prefixCss('selected'));
         }
         page.addComponent(itemToAdd);
       }

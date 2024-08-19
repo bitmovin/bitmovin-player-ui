@@ -2,6 +2,7 @@
 
 %ui-settings-panel-page {
   display: none;
+
   &.#{$prefix}-active {
     display: block;
   }
@@ -10,27 +11,27 @@
   .#{$prefix}-container-wrapper > * {
     &.#{$prefix}-ui-label {
       display: inline-block;
-      text-align: justify;
       font-size: .6em;
-      margin: 0;
       font-weight: 600;
+      margin: 0;
+      text-align: justify;
       width: 45%;
     }
 
     &.#{$prefix}-ui-label-setting-selected-option {
-      font-weight: normal;
-      width: fit-content;
-      margin-left: auto;
       align-self: center;
+      font-weight: normal;
+      margin-left: auto;
+      width: fit-content;
 
-      &:after {
+      &::after {
         background-image: url('../../assets/skin-super-modern/images/angle-right.svg');
         background-repeat: no-repeat;
-        vertical-align: -.4em;
         background-size: 1.5em auto;
         content: ' ';
         display: inline-block;
         height: 1.5em;
+        vertical-align: -.4em;
         width: 1.5em;
       }
     }
@@ -40,27 +41,27 @@
     }
 
     &.#{$prefix}-heading {
-      &:before {
+      &::before {
         background-image: url('../../assets/skin-super-modern/images/angle-left.svg');
         background-repeat: no-repeat;
-        vertical-align: -.4em;
         background-size: 1.5em auto;
         content: ' ';
         display: inline-block;
         height: 1.5em;
+        vertical-align: -.4em;
         width: 1.5em;
       }
     }
 
     &.#{$prefix}-selected {
-      &:before {
+      &::before {
         background-image: url('../../assets/skin-super-modern/images/check.svg');
         background-repeat: no-repeat;
-        vertical-align: -.4em;
         background-size: 1.5em auto;
         content: ' ';
         display: inline-block;
         height: 1.5em;
+        vertical-align: -.4em;
         width: 1.5em;
       }
     }
@@ -73,9 +74,9 @@
   }
 
   .#{$prefix}-ui-settings-panel-item {
+    height: 20px;
     padding: 0 .4em;
     white-space: nowrap;
-    height: 20px;
 
     &:hover {
       background-color: transparentize($color-item-hover, .15);
@@ -86,8 +87,8 @@
     }
 
     .#{$prefix}-container-wrapper {
-      display: flex;
       align-items: center;
+      display: flex;
       height: 100%;
       width: 100%;
     }
