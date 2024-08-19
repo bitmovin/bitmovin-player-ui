@@ -4,9 +4,9 @@ import { PlayerAPI, SubtitleTrack } from 'bitmovin-player';
 import { UIInstanceManager } from '../uimanager';
 import { StorageUtils } from '../storageutils';
 import { SubtitleSelectBox } from './subtitleselectbox';
-import { SettingsPanel } from './settingspanel';
 import { prefixCss } from './dummycomponent';
 import { SubtitleSwitchHandler } from '../subtitleutils';
+import { ModernSettingsPanel } from './modernsettingspanel';
 
 export interface StoredSubtitleLanguage {
     language: string;
@@ -14,11 +14,11 @@ export interface StoredSubtitleLanguage {
 }
 
 export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
-    private settingsPanel: SettingsPanel;
+    private settingsPanel: ModernSettingsPanel;
     private subtitleSelectBox: SubtitleSelectBox;
     private player: PlayerAPI;
 
-    constructor(subtitleSettingsOpenButton: SettingsPanel, subtitleSelectBox: SubtitleSelectBox, config: ToggleButtonConfig = {}) {
+    constructor(subtitleSettingsOpenButton: ModernSettingsPanel, subtitleSelectBox: SubtitleSelectBox, config: ToggleButtonConfig = {}) {
         super(config);
 
         this.settingsPanel = subtitleSettingsOpenButton;

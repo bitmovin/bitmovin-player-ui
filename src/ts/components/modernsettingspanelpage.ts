@@ -52,7 +52,7 @@ export class ModernSettingsPanelPage extends Container<ContainerConfig> {
       component.onActiveChanged.subscribe(settingsStateChangedHandler);
       component.getOnDisplaySubPage.subscribe((_, args: ModernSettingsPanelPage) => this.requestsDisplaySubMenu(this, args));
       component.getOnRequestNavigateBack.subscribe(() => this.settingsPanelPageEvents.onRequestsNavigateBack.dispatch(this));
-      component.onItemSelect.subscribe((sender, key) => {
+      component.onItemSelect.subscribe(() => {
         for (let component of this.getItems()) {
           component.lable.getDomElement().removeClass(this.prefixCss("selected"));
         }

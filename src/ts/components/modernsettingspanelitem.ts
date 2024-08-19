@@ -9,9 +9,10 @@ import {VideoQualitySelectBox} from './videoqualityselectbox';
 import {AudioQualitySelectBox} from './audioqualityselectbox';
 import {PlaybackSpeedSelectBox} from './playbackspeedselectbox';
 import { PlayerAPI } from 'bitmovin-player';
-import { LocalizableText } from '../localization/i18n';
+import { i18n, LocalizableText } from '../localization/i18n';
 import { ModernSettingsPanelPage } from './modernsettingspanelpage';
 import { ListSelector, ListSelectorConfig } from './listselector';
+import { SubtitleSelectBox } from './subtitleselectbox';
 
 /**
  * An item for a {@link ModernSettingsPanelPage},
@@ -115,9 +116,7 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
         this.getDomElement().attr('aria-haspopup', 'true');
       };
 
-      this.setting.onItemAdded.subscribe(() => {
-        handleConfigItemChanged();
-      });
+      this.setting.onItemAdded.subscribe(handleConfigItemChanged);
       this.setting.onItemRemoved.subscribe(handleConfigItemChanged);
 
       // Initialize hidden state
@@ -154,7 +153,7 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
       let menuOptions = this.setting.getItems();
       let selectedItem = this.setting.getSelectedItem();
       let page = new ModernSettingsPanelPage({});
-      let label = this.label instanceof Label ? new Label({ text: this.label.getConfig().text, for: page.getConfig().id } as LabelConfig) : new Label({ text: "Back", for: page.getConfig().id } as LabelConfig);
+      let label = this.label instanceof Label ? new Label({ text: this.label.getConfig().text, for: page.getConfig().id } as LabelConfig) : new Label({ text: i18n.getLocalizer('back'), for: page.getConfig().id } as LabelConfig);
       label.getDomElement().addClass(this.prefixCss('heading'));
       let itemToAdd = new ModernSettingsPanelItem(label, null);
       itemToAdd.configure(this.player, this.uimanager);
