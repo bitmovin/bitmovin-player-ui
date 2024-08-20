@@ -3,6 +3,7 @@
 %ui-button {
   @extend %ui-component;
 
+  transition: transform 0.15s ease;
   background-color: transparent;
   background-origin: content-box;
   background-position: center;
@@ -34,6 +35,10 @@
         text-decoration: none;
       }
     }
+  }
+
+  &:active {
+    transform: scale(0.9);
   }
 
   @include hidden;
