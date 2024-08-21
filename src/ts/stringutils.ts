@@ -73,7 +73,7 @@ export namespace StringUtils {
   /**
    * Fills out placeholders in an ad message.
    *
-   * Has the placeholders '{remainingTime[formatString]}', '{playedTime[formatString]}', 
+   * Has the placeholders '{remainingTime[formatString]}', '{playedTime[formatString]}',
    * '{adDuration[formatString]}' and {adBreakRemainingTime[formatString]}, which are replaced by the remaining time until the ad can be skipped, the current
    * time or the ad duration. The format string is optional. If not specified, the placeholder is replaced by the time
    * in seconds. If specified, it must be of the following format:
@@ -92,7 +92,7 @@ export namespace StringUtils {
    * - { text: 'Ad: {remainingTime%f} secs' }
    * An input value of 100 would be displayed as: 'Ad: 100.0 secs'
    * - { text: 'Adbreak: {adBreakRemainingTime%f} secs' }
-   * Adbreak with 2 ads each 50 seconds would be displayed as: 'Ad: 100.0 secs' 
+   * Adbreak with 2 ads each 50 seconds would be displayed as: 'Ad: 100.0 secs'
    *
    * @param adMessage an ad message with optional placeholders to fill
    * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
@@ -117,28 +117,22 @@ export namespace StringUtils {
         time = player.getCurrentTime();
       } else if (formatString.indexOf('adDuration') > -1) {
         time = player.getDuration();
-      } else if (formatString.indexOf('adBreakRemainingTime') > -1) { // To display the remaining time in the ad bread as opposed to in the ad
+      } else if (formatString.indexOf('adBreakRemainingTime') > -1) { // To display the remaining time in the ad break as opposed to in the ad
         time = 0;
-        
+
         // compute list of ads and calculate duration of remaining ads based on index of active ad
         if (player.ads.isLinearAdActive()) {
-          const isActiveAd = (ad : Ad) => player.ads.getActiveAd().id == ad.id;
-          const indexOfActiveAd = player.ads.getActiveAdBreak().ads.findIndex(isActiveAd)
-          const duration = player.ads.getActiveAdBreak().ads.slice(indexOfActiveAd)
-            .map(ad => {
-              if(ad.isLinear) {
-                return (ad as LinearAd).duration
-              } else {
-                return 0
-              }
-            })
-            .reduce((prev, current) => prev + current, 0);
- 
+          const isActiveAd = (ad: Ad) => player.ads.getActiveAd().id === ad.id;
+          const indexOfActiveAd = player.ads.getActiveAdBreak().ads.findIndex(isActiveAd);
+          const duration = player.ads.getActiveAdBreak().ads
+          .slice(indexOfActiveAd)
+          .reduce((total, ad) => total + (ad.isLinear ? (ad as LinearAd).duration : 0), 0);
+
           // And remaning ads duration minus time played
           time = duration - player.getCurrentTime();
         }
       }
-      
+
       return formatNumber(Math.round(time), formatString);
     });
   }
