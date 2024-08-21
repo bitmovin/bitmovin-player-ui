@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- Support for a new adMessagePlaceholder `adBreakRemainingTime` in [AdMessageLabel](https://cdn.bitmovin.com/player/ui/3/docs/classes/AdMessageLabel.html). It displays the remaining time in an ad break. [Documentation](https://cdn.bitmovin.com/player/ui/3/docs/functions/StringUtils.replaceAdMessagePlaceholders.html) on usage.
+- Support for a new placeholder `{adBreakRemainingTime}` in [AdMessageLabel](https://cdn.bitmovin.com/player/ui/3/docs/classes/AdMessageLabel.html) that displays the remaining time in an ad break. [Documentation](https://cdn.bitmovin.com/player/ui/3/docs/functions/StringUtils.replaceAdMessagePlaceholders.html) on usage.
 
 ## [3.69.0] - 2024-08-14
 ### Added
