@@ -2,25 +2,30 @@ import {SubtitleOverlay} from '../subtitleoverlay';
 import {ListSelectorConfig} from '../listselector';
 import {SelectBox} from '../selectbox';
 import {SubtitleSettingsManager} from './subtitlesettingsmanager';
+import { PlayerAPI } from 'bitmovin-player';
+import { UIInstanceManager } from '../../uimanager';
 
+/**
+ * @category Configs
+ */
 export interface SubtitleSettingSelectBoxConfig extends ListSelectorConfig {
   overlay: SubtitleOverlay;
-  settingsManager: SubtitleSettingsManager;
 }
 
 /**
  * Base class for all subtitles settings select box
+ *
+ * @category Components
  **/
 export class SubtitleSettingSelectBox extends SelectBox {
 
-  protected settingsManager: SubtitleSettingsManager;
+  protected settingsManager?: SubtitleSettingsManager;
   protected overlay: SubtitleOverlay;
   private currentCssClass: string;
 
   constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
 
-    this.settingsManager = config.settingsManager;
     this.overlay = config.overlay;
   }
 
@@ -40,5 +45,9 @@ export class SubtitleSettingSelectBox extends SelectBox {
       this.currentCssClass = this.prefixCss(cssClass);
       this.overlay.getDomElement().addClass(this.currentCssClass);
     }
+  }
+
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
+      this.settingsManager = uimanager.getSubtitleSettingsManager();
   }
 }

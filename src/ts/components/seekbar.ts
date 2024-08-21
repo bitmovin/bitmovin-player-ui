@@ -19,6 +19,8 @@ import { getMinBufferLevel } from './seekbarbufferlevel';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
+ *
+ * @category Configs
  */
 export interface SeekBarConfig extends ComponentConfig {
   /**
@@ -44,7 +46,13 @@ export interface SeekBarConfig extends ComponentConfig {
   keyStepIncrements?: { leftRight: number, upDown: number };
 
   /**
-   * Used for seekBar marker snapping range percentage
+   * Used to enable/disable snapping to markers on the seek bar when seeking near them.
+   * Default: true
+   */
+  snappingEnabled?: boolean;
+
+  /**
+   * Defines tolerance for snapping to markers, if snapping to seek bar markers is enabled.
    */
   snappingRange?: number;
 
@@ -64,6 +72,9 @@ export interface SeekPreviewEventArgs extends SeekPreviewArgs {
   scrubbing: boolean;
 }
 
+/**
+ * @category Components
+ */
 export interface SeekBarMarker {
   marker: TimelineMarker;
   position: number;
@@ -79,6 +90,8 @@ export interface SeekBarMarker {
  *  - the playback position, i.e. the position in the media at which the player current playback pointer is positioned
  *  - the buffer position, which usually is the playback position plus the time span that is already buffered ahead
  *  - the seek position, used to preview to where in the timeline a seek will jump to
+ *
+ *  @category Components
  */
 export class SeekBar extends Component<SeekBarConfig> {
 
@@ -151,6 +164,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       tabIndex: 0,
       snappingRange: 1,
       enableSeekPreview: true,
+      snappingEnabled: true,
     }, this.config);
 
     this.label = this.config.label;
@@ -452,6 +466,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.config.snappingRange = uimanager.getConfig().seekbarSnappingRange;
     }
 
+    if (typeof uimanager.getConfig().seekbarSnappingEnabled === 'boolean') {
+      this.config.snappingEnabled = uimanager.getConfig().seekbarSnappingEnabled;
+    }
+
     // Initialize seekbar
     playbackPositionHandler(); // Set the playback position
     this.setBufferPosition(0);
@@ -636,7 +654,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       'role': 'slider',
       'aria-label': i18n.performLocalization(this.config.ariaLabel),
       'tabindex': this.config.tabIndex.toString(),
-    });
+    }, this);
 
     let seekBar = new DOM('div', {
       'class': this.prefixCss('seekbar'),
@@ -705,13 +723,17 @@ export class SeekBar extends Component<SeekBarConfig> {
       new DOM(document).off('touchend mouseup', mouseTouchUpHandler);
 
       let targetPercentage = 100 * this.getOffset(e);
-      let snappedChapter = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(targetPercentage);
+
+      if (this.config.snappingEnabled) {
+        const matchingMarker = this.timelineMarkersHandler?.getMarkerAtPosition(targetPercentage);
+        targetPercentage = matchingMarker ? matchingMarker.position : targetPercentage;
+      }
 
       this.setSeeking(false);
       seeking = false;
 
       // Fire seeked event
-      this.onSeekedEvent(snappedChapter ? snappedChapter.position : targetPercentage);
+      this.onSeekedEvent(targetPercentage);
     };
 
     // A seek always start with a touchstart or mousedown directly on the seekbar.

@@ -5,6 +5,8 @@ import { i18n } from '../../localization/i18n';
 
 /**
  * A select box providing a selection of different font family.
+ *
+ * @category Components
  */
 export class FontFamilySelectBox extends SubtitleSettingSelectBox {
 

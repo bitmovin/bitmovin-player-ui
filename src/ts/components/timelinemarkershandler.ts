@@ -7,6 +7,9 @@ import { SeekBarMarker } from './seekbar';
 import { PlayerUtils } from '../playerutils';
 import { Timeout } from '../timeout';
 
+/**
+ * @category Configs
+ */
 export interface MarkersConfig extends ComponentConfig {
   /**
    * Used for seekBar marker snapping range percentage

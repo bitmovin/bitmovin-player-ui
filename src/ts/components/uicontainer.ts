@@ -1,14 +1,17 @@
 import {ContainerConfig, Container} from './container';
 import {UIInstanceManager} from '../uimanager';
-import {DOM} from '../dom';
+import { DOM, HTMLElementWithComponent } from '../dom';
 import {Timeout} from '../timeout';
 import {PlayerUtils} from '../playerutils';
 import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
+import { Button, ButtonConfig } from './button';
 
 /**
  * Configuration interface for a {@link UIContainer}.
+ *
+ * @category Configs
  */
 export interface UIContainerConfig extends ContainerConfig {
   /**
@@ -27,11 +30,20 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: the UI container itself
    */
   userInteractionEventSource?: HTMLElement;
+
+  /**
+   * Specify whether the UI should be hidden immediatly if the mouse leaves the userInteractionEventSource.
+   * If false or not set it will wait for the hideDelay.
+   * Default: false
+   */
+  hideImmediatelyOnMouseLeave?: boolean;
 }
 
 /**
  * The base container that contains all of the UI. The UIContainer is passed to the {@link UIManager} to build and
  * setup the UI.
+ *
+ * @category Containers
  */
 export class UIContainer extends Container<UIContainerConfig> {
 
@@ -60,6 +72,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       role: 'region',
       ariaLabel: i18n.getLocalizer('player'),
       hideDelay: 5000,
+      hideImmediatelyOnMouseLeave: false,
     }, this.config);
 
     this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
@@ -134,6 +147,27 @@ export class UIContainer extends Container<UIContainerConfig> {
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
       handler: (e) => {
+        const shouldPreventDefault = ((e: Event): Boolean => {
+          const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | null => {
+            if (
+                !element
+                  || element === this.userInteractionEventSource.get(0)
+                  || element.component instanceof UIContainer
+            ) {
+              return null;
+            }
+
+            if (element.component && element.component instanceof Button) {
+              return element.component;
+            } else {
+              return findButtonComponent(element.parentElement);
+            }
+          });
+
+          const buttonComponent = findButtonComponent(e.target as HTMLElementWithComponent);
+          return !(buttonComponent && buttonComponent.getConfig().acceptsTouchWithUiHidden);
+        });
+
         if (!isUiShown) {
           // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
           // instead. The first touch is not prevented to let other listeners receive the event and trigger an
@@ -142,7 +176,14 @@ export class UIContainer extends Container<UIContainerConfig> {
           if (isFirstTouch && !player.isPlaying()) {
             isFirstTouch = false;
           } else {
-            e.preventDefault();
+            // On touch input devices, the first touch is expected to display the UI controls and not be propagated to
+            // other components.
+            // When buttons are always visible this causes UX problems, as the first touch is not recognized.
+            // This is the case for the {@link AdSkipButton} and {@link AdClickOverlay}.
+            // To prevent UX issues where the buttons need to be touched twice, we do not prevent the first touch event.
+            if (shouldPreventDefault(e)) {
+              e.preventDefault();
+            }
           }
           this.showUi();
         }
@@ -176,7 +217,11 @@ export class UIContainer extends Container<UIContainerConfig> {
         // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
         // hide the UI in such cases
         if (!isSeeking && !hidingPrevented()) {
-          this.uiHideTimeout.start();
+          if (this.config.hideImmediatelyOnMouseLeave) {
+            this.hideUi();
+          } else {
+            this.uiHideTimeout.start();
+          }
         }
       },
     }];

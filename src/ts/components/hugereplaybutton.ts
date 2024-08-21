@@ -6,6 +6,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A button to play/replay a video.
+ *
+ * @category Buttons
  */
 export class HugeReplayButton extends Button<ButtonConfig> {
 

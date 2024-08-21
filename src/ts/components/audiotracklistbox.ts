@@ -5,6 +5,8 @@ import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * A element that is similar to a select box where the user can select a subtitle
+ *
+ * @category Components
  */
 export class AudioTrackListBox extends ListBox {
 

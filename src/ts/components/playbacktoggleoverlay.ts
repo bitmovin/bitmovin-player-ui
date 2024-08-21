@@ -1,6 +1,9 @@
 import {Container, ContainerConfig} from './container';
 import {HugePlaybackToggleButton} from './hugeplaybacktogglebutton';
 
+/**
+ * @category Configs
+ */
 export interface PlaybackToggleOverlayConfig extends ContainerConfig {
   /**
    * Specify whether the player should be set to enter fullscreen by clicking on the playback toggle button
@@ -12,6 +15,8 @@ export interface PlaybackToggleOverlayConfig extends ContainerConfig {
 
 /**
  * Overlays the player and displays error messages.
+ *
+ * @category Components
  */
 export class PlaybackToggleOverlay extends Container<PlaybackToggleOverlayConfig> {
 

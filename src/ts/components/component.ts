@@ -8,6 +8,8 @@ import { i18n, LocalizableText } from '../localization/i18n';
 /**
  * Base configuration interface for a component.
  * Should be extended by components that want to add additional configuration options.
+ *
+ * @category Configs
  */
 export interface ComponentConfig {
   /**
@@ -74,6 +76,8 @@ export interface ComponentHoverChangedEventArgs extends NoArgs {
 /**
  * The base class of the UI framework.
  * Each component must extend this class and optionally the config interface.
+ *
+ * @category Components
  */
 export class Component<Config extends ComponentConfig> {
 
@@ -272,7 +276,7 @@ export class Component<Config extends ComponentConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'role': this.config.role,
-    });
+    }, this);
 
     return element;
   }

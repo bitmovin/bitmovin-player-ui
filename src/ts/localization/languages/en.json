@@ -52,6 +52,8 @@
   "vr" : "VR",
   "off": "off",
   "auto": "auto",
+  "ecoMode": "ecoMode",
+  "ecoMode.title":"Eco Mode",
   "back" : "Back",
   "reset": "Reset",
   "replay": "Replay",
@@ -68,5 +70,7 @@
   "seekBar": "Video timeline",
   "seekBar.value": "Value",
   "seekBar.timeshift": "Timeshift",
-  "seekBar.durationText": "out of"
+  "seekBar.durationText": "out of",
+  "quickseek.forward": "Fast Forward",
+  "quickseek.rewind": "Rewind"
 }

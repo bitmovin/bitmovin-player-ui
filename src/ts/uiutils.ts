@@ -1,6 +1,9 @@
 import {Component, ComponentConfig} from './components/component';
 import {Container} from './components/container';
 
+/**
+ * @category Utils
+ */
 export namespace UIUtils {
   export interface TreeTraversalCallback {
     (component: Component<ComponentConfig>, parent?: Component<ComponentConfig>): void;

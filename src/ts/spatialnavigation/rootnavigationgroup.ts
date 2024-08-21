@@ -5,6 +5,8 @@ import { Action, Direction } from './types';
 
 /**
  * Extends NavigationGroup and provides additional logic for hiding and showing the UI on the root container.
+ *
+ * @category Components
  */
 export class RootNavigationGroup extends NavigationGroup {
   constructor(public readonly container: UIContainer, ...elements: Component<unknown>[]) {

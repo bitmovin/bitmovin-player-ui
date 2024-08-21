@@ -6,6 +6,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
+ *
+ * @category Configs
  */
 export interface VolumeSliderConfig extends SeekBarConfig {
   /**
@@ -18,6 +20,8 @@ export interface VolumeSliderConfig extends SeekBarConfig {
 
 /**
  * A simple volume slider component to adjust the player's volume setting.
+ *
+ * @category Components
  */
 export class VolumeSlider extends SeekBar {
   private volumeTransition: VolumeTransition;

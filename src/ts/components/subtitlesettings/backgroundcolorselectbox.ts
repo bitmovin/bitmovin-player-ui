@@ -5,6 +5,8 @@ import { i18n } from '../../localization/i18n';
 
 /**
  * A select box providing a selection of different background colors.
+ *
+ * @category Components
  */
 export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
 

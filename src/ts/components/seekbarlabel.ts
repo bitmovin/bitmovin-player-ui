@@ -11,6 +11,8 @@ import { PlayerUtils } from '../playerutils';
 
 /**
  * Configuration interface for a {@link SeekBarLabel}.
+ *
+ * @category Configs
  */
 export interface SeekBarLabelConfig extends ContainerConfig {
   // nothing yet
@@ -18,6 +20,8 @@ export interface SeekBarLabelConfig extends ContainerConfig {
 
 /**
  * A label for a {@link SeekBar} that can display the seek target time, a thumbnail, and title (e.g. chapter title).
+ *
+ * @category Components
  */
 export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 

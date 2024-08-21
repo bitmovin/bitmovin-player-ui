@@ -15,6 +15,8 @@ import { ArrayUtils } from '../arrayutils';
  *     ...
  *   </div
  * </code>
+ *
+ * @category Components
  */
 // TODO: change ListSelector to extends container in v4 to improve usage of ListBox.
 //       Currently we are creating the dom element of the list box with child elements manually here.
@@ -44,7 +46,7 @@ export class ListBox extends ListSelector<ListSelectorConfig> {
     let listBoxElement = new DOM('div', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    });
+    }, this);
 
     this.listBoxElement = listBoxElement;
     this.createListBoxDomItems();

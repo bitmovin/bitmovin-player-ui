@@ -1,11 +1,20 @@
-import { ClickOverlay } from './clickoverlay';
+import { ClickOverlay, ClickOverlayConfig } from './clickoverlay';
 import { UIInstanceManager } from '../uimanager';
 import { Ad, AdEvent, PlayerAPI } from 'bitmovin-player';
 
 /**
  * A simple click capture overlay for clickThroughUrls of ads.
+ *
+ * @category Components
  */
 export class AdClickOverlay extends ClickOverlay {
+  constructor(config: ClickOverlayConfig = {}) {
+    super(config);
+
+    this.config = this.mergeConfig(config, {
+      acceptsTouchWithUiHidden: true,
+    }, this.config);
+  }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);

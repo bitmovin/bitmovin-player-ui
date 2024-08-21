@@ -2,6 +2,9 @@ import {ErrorMessageMap, ErrorMessageTranslator} from './components/errormessage
 import { ErrorEvent } from 'bitmovin-player';
 import { MobileV3PlayerErrorEvent, MobileV3SourceErrorEvent } from './mobilev3playerapi';
 
+/**
+ * @category Utils
+ */
 export namespace ErrorUtils {
 
   export const defaultErrorMessages: ErrorMessageMap = {

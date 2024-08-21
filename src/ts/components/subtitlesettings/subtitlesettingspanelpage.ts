@@ -20,11 +20,17 @@ import {SettingsPanelItem} from '../settingspanelitem';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
+/**
+ * @category Configs
+ */
 export interface SubtitleSettingsPanelPageConfig extends ContainerConfig {
   settingsPanel: SettingsPanel;
   overlay: SubtitleOverlay;
 }
 
+/**
+ * @category Components
+ */
 export class SubtitleSettingsPanelPage extends SettingsPanelPage {
 
   private readonly overlay: SubtitleOverlay;
@@ -36,43 +42,40 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
     this.overlay = config.overlay;
     this.settingsPanel = config.settingsPanel;
 
-    let manager = new SubtitleSettingsManager();
 
     this.config = this.mergeConfig(config, {
       components: <Component<ComponentConfig>[]>[
         new SettingsPanelItem(i18n.getLocalizer('settings.subtitles.font.size'), new FontSizeSelectBox({
-          overlay: this.overlay, settingsManager: manager,
+          overlay: this.overlay,
         })),
         new SettingsPanelItem(i18n.getLocalizer('settings.subtitles.font.family'), new FontFamilySelectBox({
-          overlay: this.overlay, settingsManager: manager,
+          overlay: this.overlay,
         })),
         new SettingsPanelItem(i18n.getLocalizer('settings.subtitles.font.color'), new FontColorSelectBox({
-          overlay: this.overlay, settingsManager: manager,
+          overlay: this.overlay,
         })),
         new SettingsPanelItem(i18n.getLocalizer('settings.subtitles.font.opacity'), new FontOpacitySelectBox({
-          overlay: this.overlay, settingsManager: manager,
+          overlay: this.overlay,
         })),
         new SettingsPanelItem(i18n.getLocalizer('settings.subtitles.characterEdge'), new CharacterEdgeSelectBox({
-          overlay: this.overlay, settingsManager: manager,
+          overlay: this.overlay,
         })),
         new SettingsPanelItem(i18n.getLocalizer('settings.subtitles.background.color'), new BackgroundColorSelectBox({
-          overlay: this.overlay, settingsManager: manager,
+          overlay: this.overlay,
         })),
         new SettingsPanelItem(i18n.getLocalizer('settings.subtitles.background.opacity'), new BackgroundOpacitySelectBox({
-          overlay: this.overlay, settingsManager: manager,
+          overlay: this.overlay,
         })),
         new SettingsPanelItem(i18n.getLocalizer('settings.subtitles.window.color'), new WindowColorSelectBox({
-          overlay: this.overlay, settingsManager: manager,
+          overlay: this.overlay,
         })),
         new SettingsPanelItem(i18n.getLocalizer('settings.subtitles.window.opacity'), new WindowOpacitySelectBox({
-          overlay: this.overlay, settingsManager: manager,
+          overlay: this.overlay,
         })),
         new SettingsPanelItem(new SettingsPanelPageBackButton({
           container: this.settingsPanel,
           text: i18n.getLocalizer('back'),
-        }), new SubtitleSettingsResetButton({
-          settingsManager: manager,
-        }), {
+        }), new SubtitleSettingsResetButton({}), {
           role: 'menubar',
         }),
       ],

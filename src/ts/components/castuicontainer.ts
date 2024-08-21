@@ -6,6 +6,8 @@ import { PlayerAPI } from 'bitmovin-player';
 /**
  * The base container for Cast receivers that contains all of the UI and takes care that the UI is shown on
  * certain playback events.
+ *
+ * @category Containers
  */
 export class CastUIContainer extends UIContainer {
 

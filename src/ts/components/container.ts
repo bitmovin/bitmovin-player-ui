@@ -5,6 +5,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Container}.
+ *
+ * @category Configs
  */
 export interface ContainerConfig extends ComponentConfig {
   /**
@@ -31,6 +33,8 @@ export interface ContainerConfig extends ComponentConfig {
  *         </div>
  *     </div>
  * </code>
+ *
+ * @category Components
  */
 export class Container<Config extends ContainerConfig> extends Component<Config> {
 
@@ -121,7 +125,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
       'class': this.getCssClasses(),
       'role': this.config.role,
       'aria-label': i18n.performLocalization(this.config.ariaLabel),
-    });
+    }, this);
 
     // Create the inner container element (the inner <div>) that will contain the components
     let innerContainer = new DOM(this.config.tag, {

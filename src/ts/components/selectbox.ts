@@ -12,6 +12,8 @@ import { i18n, LocalizableText } from '../localization/i18n';
  *         ...
  *     </select>
  * </code>
+ *
+ * @category Components
  */
 
 export class SelectBox extends ListSelector<ListSelectorConfig> {
@@ -31,7 +33,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'aria-label': i18n.performLocalization(this.config.ariaLabel),
-    });
+    }, this);
 
     this.selectElement = selectElement;
     this.updateDomItems();

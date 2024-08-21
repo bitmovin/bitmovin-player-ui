@@ -7,6 +7,8 @@ import { i18n } from './localization/i18n';
  * Helper class to handle all subtitle related events
  *
  * This class listens to player events as well as the `ListSelector` event if selection changed
+ *
+ * @category Utils
  */
 export class SubtitleSwitchHandler {
 

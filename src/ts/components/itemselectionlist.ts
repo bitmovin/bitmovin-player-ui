@@ -2,6 +2,9 @@ import {ListSelector, ListSelectorConfig} from './listselector';
 import {DOM} from '../dom';
 import { i18n } from '../localization/i18n';
 
+/**
+ * @category Components
+ */
 export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
 
   private static readonly CLASS_SELECTED = 'selected';
@@ -25,7 +28,7 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
     let listElement = new DOM('ul', {
       'id': this.config.id,
       'class': this.getCssClasses(),
-    });
+    }, this);
 
     this.listElement = listElement;
     this.updateDomItems();

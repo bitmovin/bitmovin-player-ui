@@ -2,6 +2,9 @@ import {UIInstanceManager} from '../uimanager';
 import {SettingsPanelPageNavigatorButton, SettingsPanelPageNavigatorConfig} from './settingspanelpagenavigatorbutton';
 import { PlayerAPI } from 'bitmovin-player';
 
+/**
+ * @category Buttons
+ */
 export class SettingsPanelPageBackButton extends SettingsPanelPageNavigatorButton {
 
   constructor(config: SettingsPanelPageNavigatorConfig) {

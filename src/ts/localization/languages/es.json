@@ -52,6 +52,8 @@
   "vr" : "VR",
   "off": "off",
   "auto": "auto",
+  "ecoMode": "ecoMode",
+  "ecoMode.title": "Eco Mode",
   "back" : "Atrás",
   "reset": "Reiniciar",
   "replay": "Rebobinar",
@@ -68,5 +70,7 @@
   "seekBar": "Línea de Tiempo",
   "seekBar.value": "posición",
   "seekBar.timeshift": "cambio de posición",
-  "seekBar.durationText": "de"
+  "seekBar.durationText": "de",
+  "quickseek.forward": "Adelantar",
+  "quickseek.rewind": "Rebobinar"
 }
