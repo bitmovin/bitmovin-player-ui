@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.70.0] - 2024-08-21
+## [Unreleased]
 ### Added
 - Support for a new adMessagePlaceholder `adBreakRemainingTime` in [AdMessageLabel](https://cdn.bitmovin.com/player/ui/3/docs/classes/AdMessageLabel.html). It displays the remaining time in an ad break. [Documentation](https://cdn.bitmovin.com/player/ui/3/docs/functions/StringUtils.replaceAdMessagePlaceholders.html) on usage.
 
