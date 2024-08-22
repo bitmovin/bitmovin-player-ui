@@ -1,6 +1,21 @@
 @import '../variables';
 @import '../mixins';
 
+%seek-circle {
+  content: '';
+  position: absolute;
+  height: 200%;
+  width: 100%;
+  background-color: rgba(156, 156, 156, .35);
+  border-radius: 50%;
+  opacity: 0;
+  -webkit-transition: opacity .2s ease;
+  -moz-transition: opacity .2s ease;
+  -ms-transition: opacity .2s ease;
+  -o-transition: opacity .2s ease;
+  transition:  opacity .2s ease-out;
+}
+
 .#{$prefix}-ui-touchcontrol-overlay {
   @extend %ui-container;
   @include layout-cover;
@@ -9,4 +24,24 @@
   display: flex;
   justify-content: center;
   text-align: center;
+
+  &::before {
+    @extend %seek-circle;
+    left: -60%;
+  }
+  &::after {
+    @extend %seek-circle;
+    right: -60%;
+  }
+
+  &.#{$prefix}-seek-forward {
+    &::after {
+      opacity: 1;
+    }
+  }
+  &.#{$prefix}-seek-backward {
+    &::before {
+      opacity: 1;
+    }
+  }
 }

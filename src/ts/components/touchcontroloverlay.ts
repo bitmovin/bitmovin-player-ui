@@ -46,6 +46,8 @@ interface ClickPosition {
  * Overlays the player and detects touch input
  */
 export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
+  private readonly SEEK_FORWARD_CLASS = 'seek-forward';
+  private readonly SEEK_BACKWARD_CLASS = 'seek-backward';
 
   private touchControlEvents = {
     onSingleClick: new EventDispatcher<TouchControlOverlay, NoArgs>(),
@@ -83,6 +85,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
 
     this.doubleTapTimeout = new Timeout(500, () => {
       this.couldBeDoubleTapping = false;
+      this.removeSeekCssClasses();
     });
 
     uimanager.onControlsHide.subscribe(() => {
@@ -98,11 +101,15 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     this.touchControlEvents.onSeekBackward.subscribe(() => {
       playerSeekTime -= this.config.seekTime;
       player.seek(playerSeekTime);
+      this.getDomElement().removeClass(this.prefixCss(this.SEEK_FORWARD_CLASS));
+      this.getDomElement().addClass(this.prefixCss(this.SEEK_BACKWARD_CLASS));
     });
 
     this.touchControlEvents.onSeekForward.subscribe(() => {
       playerSeekTime += this.config.seekTime;
       player.seek(playerSeekTime);
+      this.getDomElement().removeClass(this.prefixCss(this.SEEK_BACKWARD_CLASS));
+      this.getDomElement().addClass(this.prefixCss(this.SEEK_FORWARD_CLASS));
     });
 
     this.touchControlEvents.onSingleClick.subscribe((_, e) => {
@@ -156,6 +163,11 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       this.couldBeDoubleTapping = true;
       this.doubleTapTimeout.start();
     };
+  }
+
+  private removeSeekCssClasses(): void {
+    this.getDomElement().removeClass(this.prefixCss(this.SEEK_FORWARD_CLASS));
+    this.getDomElement().removeClass(this.prefixCss(this.SEEK_BACKWARD_CLASS));
   }
 
   protected onDoubleClickEvent(e: Event) {
