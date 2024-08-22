@@ -3,15 +3,15 @@
 .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
   @extend %ui-button;
 
-  &:hover {
-    @include svg-icon-shadow;
-  }
-
   cursor: default;
   height: 2.5em;
   outline: none;
   overflow: hidden; // hide overflow from scale animation
   width: 2.5em;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
 
   .#{$prefix}-image {
     background-position: center;

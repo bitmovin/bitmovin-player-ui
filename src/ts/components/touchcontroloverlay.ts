@@ -5,6 +5,8 @@ import { UIInstanceManager } from '../uimanager';
 import { EventDispatcher, NoArgs, Event as EDEvent } from '../eventdispatcher';
 import { Timeout } from '../timeout';
 import { HTMLElementWithComponent } from '../dom';
+import { Label, LabelConfig } from './label';
+import { i18n } from '../main';
 
 export interface TouchControlOverlayConfig extends ContainerConfig {
   /**
@@ -57,6 +59,8 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
   };
 
   private playbackToggleButton: SmallCenteredPlaybackToggleButton;
+  private seekForwardLabel: Label<LabelConfig>;
+  private seekBackwardLabel: Label<LabelConfig>;
 
   // true if the last tap on the overlay was less than 500msec ago
   private couldBeDoubleTapping: Boolean;
@@ -71,21 +75,28 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       enterFullscreenOnInitialPlayback: Boolean(config.enterFullscreenOnInitialPlayback),
     });
 
+    this.seekForwardLabel = new Label({text: '', for: this.getConfig().id, cssClass: 'seek-forward-label', hidden: true});
+    this.seekBackwardLabel = new Label({text: '', for: this.getConfig().id, cssClass: 'seek-backward-label', hidden: true});
+
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-touchcontrol-overlay',
       acceptsTouchWithUiHidden: true,
       seekTime: 10,
       seekDoubleTapMargin: 15,
-      components: [this.playbackToggleButton],
+      components: [this.playbackToggleButton, this.seekForwardLabel, this.seekBackwardLabel],
     }, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
+    let playerSeekTime = 0;
+    let startSeekTime = 0;
+
     this.doubleTapTimeout = new Timeout(500, () => {
       this.couldBeDoubleTapping = false;
-      this.removeSeekCssClasses();
+      startSeekTime = 0;
+      setTimeout(() => this.hideSeekAnimationElements(), 150);
     });
 
     uimanager.onControlsHide.subscribe(() => {
@@ -96,25 +107,33 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       this.playbackToggleButton.show();
     });
 
-    let playerSeekTime = 0;
 
     this.touchControlEvents.onSeekBackward.subscribe(() => {
       playerSeekTime -= this.config.seekTime;
       player.seek(playerSeekTime);
-      this.getDomElement().removeClass(this.prefixCss(this.SEEK_FORWARD_CLASS));
+
+      this.seekBackwardLabel.setText(Math.abs(Math.round(playerSeekTime - startSeekTime)) + ' ' + i18n.performLocalization(i18n.getLocalizer('settings.time.seconds')));
+      this.seekBackwardLabel.show();
       this.getDomElement().addClass(this.prefixCss(this.SEEK_BACKWARD_CLASS));
+      this.seekForwardLabel.hide();
+      this.getDomElement().removeClass(this.prefixCss(this.SEEK_FORWARD_CLASS));
     });
 
     this.touchControlEvents.onSeekForward.subscribe(() => {
       playerSeekTime += this.config.seekTime;
       player.seek(playerSeekTime);
-      this.getDomElement().removeClass(this.prefixCss(this.SEEK_BACKWARD_CLASS));
+
+      this.seekForwardLabel.setText(Math.abs(Math.round(playerSeekTime - startSeekTime)) + ' ' + i18n.performLocalization(i18n.getLocalizer('settings.time.seconds')));
+      this.seekForwardLabel.show();
       this.getDomElement().addClass(this.prefixCss(this.SEEK_FORWARD_CLASS));
+      this.seekBackwardLabel.hide();
+      this.getDomElement().removeClass(this.prefixCss(this.SEEK_BACKWARD_CLASS));
     });
 
     this.touchControlEvents.onSingleClick.subscribe((_, e) => {
       uimanager.getUI().toggleUiShown();
       playerSeekTime = player.getCurrentTime();
+      startSeekTime = playerSeekTime;
 
       const eventTarget = (e as Event).target as HTMLElementWithComponent;
       const rect = eventTarget.getBoundingClientRect();
@@ -165,9 +184,11 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     };
   }
 
-  private removeSeekCssClasses(): void {
+  private hideSeekAnimationElements(): void {
     this.getDomElement().removeClass(this.prefixCss(this.SEEK_FORWARD_CLASS));
     this.getDomElement().removeClass(this.prefixCss(this.SEEK_BACKWARD_CLASS));
+    this.seekForwardLabel.hide();
+    this.seekBackwardLabel.hide();
   }
 
   protected onDoubleClickEvent(e: Event) {
