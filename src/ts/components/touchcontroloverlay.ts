@@ -6,7 +6,7 @@ import { EventDispatcher, NoArgs, Event as EDEvent } from '../eventdispatcher';
 import { Timeout } from '../timeout';
 import { HTMLElementWithComponent } from '../dom';
 import { Label, LabelConfig } from './label';
-import { i18n } from '../main';
+import { i18n } from '../localization/i18n';
 
 export interface TouchControlOverlayConfig extends ContainerConfig {
   /**
