@@ -3,7 +3,7 @@
 This repository contains the Bitmovin Player UI framework.
 It is designed as a flexible and modularized layer on the player API, enabling customers and users of the player to easily customize the UI to their needs in design, structure, and functionality. It makes it extremely easy and straightforward to add additional control components and we encourage our users to proactively contribute to our codebase.
 
-Read more about the Framework, its usage and customization possibilities in our [developer documentation](https://developer.bitmovin.com/playback/docs/bitmovin-player-ui).
+Read more about the Framework, its usage and customization possibilities in our [developer documentation](https://developer.bitmovin.com/playback/docs/bitmovin-player-ui) and the [API documentation](https://cdn.bitmovin.com/player/ui/3/docs/index.html).
 
 ## Installation
 
