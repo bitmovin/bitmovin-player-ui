@@ -4,7 +4,7 @@
 .#{$prefix}-ui-casttogglebutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/skin-modern/images/chromecast.svg');
+  background-image: url('../../assets/skin-super-modern/images/cast.svg');
 
   &:hover {
     @include svg-icon-shadow;

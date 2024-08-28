@@ -9,11 +9,11 @@
 
   background: linear-gradient(to top, $color-transparent, $color-background-bars);
   box-sizing: border-box;
-  padding: .5em 1em 1em;
+  padding: 0 .75em;
   pointer-events: none;
 
   > .#{$prefix}-container-wrapper {
-    padding: .5em;
+    padding: .5em 0;
     pointer-events: none;
 
     .#{$prefix}-label-metadata {
@@ -24,6 +24,7 @@
       cursor: default;
       display: block;
       font-size: 1.2em;
+      font-weight: bold;
       text-shadow: 0 0 5px $color-black;
       white-space: normal;
     }
