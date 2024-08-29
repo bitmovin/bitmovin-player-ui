@@ -44,7 +44,7 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       this.addComponent(this.label);
     }
 
-    if(addSettingAsComponent) {
+    if (addSettingAsComponent) {
       this.addComponent(this.setting);
     }
   }
