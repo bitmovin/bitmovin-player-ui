@@ -1,4 +1,4 @@
-import {Container, ContainerConfig} from './container';
+import { ContainerConfig} from './container';
 import {Component, ComponentConfig} from './component';
 import {Event as EDEvent, EventDispatcher, NoArgs} from '../eventdispatcher';
 import { Label, LabelConfig } from './label';
@@ -13,25 +13,19 @@ import { i18n, LocalizableText } from '../localization/i18n';
 import { ModernSettingsPanelPage } from './modernsettingspanelpage';
 import { ListSelector, ListSelectorConfig } from './listselector';
 import { SubtitleSelectBox } from './subtitleselectbox';
+import { SettingsPanelItem } from './settingspanelitem';
 
 /**
  * An item for a {@link ModernSettingsPanelPage},
  * Containing an optional {@link Label} and a component that configures a setting.
  * If the components is a {@link SelectBox} it will handle the logic of displaying it or not
  */
-export class ModernSettingsPanelItem extends Container<ContainerConfig> {
+export class ModernSettingsPanelItem extends SettingsPanelItem {
 
-  private label: Component<ComponentConfig>;
   /**
    * If setting is null, that means that the item is not an option and does not
    * have a submenu. So if setting is null we can assume that the item should be
    * used as a back button
-   */
-  private setting: Component<ComponentConfig>;
-  /**
-   * True if the key argument is not null. In context that means, that
-   * the item does not have a submenu, but is the option itself
-   * Default: false
    */
   private selectedOptionLabel: Label<LabelConfig>;
   private isOption: Boolean;
@@ -40,33 +34,22 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
   private player: PlayerAPI;
   private uimanager: UIInstanceManager;
 
-  private settingsPanelItemEvents = {
-    onActiveChanged: new EventDispatcher<ModernSettingsPanelItem, NoArgs>(),
+  private modernSettingsPanelItemEvents = {
     onRequestSubPage: new EventDispatcher<ModernSettingsPanelItem, ModernSettingsPanelPage>(),
     onRequestNavigateBack: new EventDispatcher<ModernSettingsPanelItem, NoArgs>(),
     onItemSelect: new EventDispatcher<ModernSettingsPanelItem, string>(),
   };
 
   constructor(label: LocalizableText | Component<ComponentConfig>, setting: Component<ComponentConfig>, key: string = null, config: ContainerConfig = {}) {
-    super(config);
+    super(label, setting, config, false);
 
     this.isOption = Boolean(key);
-    this.setting = setting;
     this.key = key;
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-item',
       role: 'menuitem',
     }, this.config);
-
-    if (label !== null) {
-      if (label instanceof Component) {
-        this.label = label;
-      } else {
-        this.label = new Label({ text: label, for: this.getConfig().id } as LabelConfig);
-      }
-      this.addComponent(this.label);
-    }
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -133,7 +116,7 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
     else if (this.isOption) {
       this.show();
       this.onActiveChangedEvent();
-      this.label.getDomElement().addClass(this.prefixCss('option'));
+      this.getLabel.getDomElement().addClass(this.prefixCss('option'));
     }
 
     const handleItemClick = (e: Event) => {
@@ -145,12 +128,12 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
         else {
           if (this.setting instanceof SelectBox || this.setting instanceof ListBox) {
             this.setting.selectItem(this.key);
-            this.settingsPanelItemEvents.onItemSelect.dispatch(this, this.key);
-            this.label.getDomElement().addClass(this.prefixCss('selected'));
+            this.modernSettingsPanelItemEvents.onItemSelect.dispatch(this, this.key);
+            this.getLabel.getDomElement().addClass(this.prefixCss('selected'));
           }
         }
       } else {
-        this.settingsPanelItemEvents.onRequestNavigateBack.dispatch(this);
+        this.modernSettingsPanelItemEvents.onRequestNavigateBack.dispatch(this);
       }
     };
     const domElement = this.getDomElement();
@@ -162,7 +145,7 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
       let menuOptions = this.setting.getItems();
       let selectedItem = this.setting.getSelectedItem();
       let page = new ModernSettingsPanelPage({});
-      let label = this.label instanceof Label ? new Label({ text: this.label.getConfig().text, for: page.getConfig().id } as LabelConfig) : new Label({ text: i18n.getLocalizer('back'), for: page.getConfig().id } as LabelConfig);
+      let label = this.getLabel instanceof Label ? new Label({ text: this.getLabel.getConfig().text, for: page.getConfig().id } as LabelConfig) : new Label({ text: i18n.getLocalizer('back'), for: page.getConfig().id } as LabelConfig);
       label.getDomElement().addClass(this.prefixCss('heading'));
       let itemToAdd = new ModernSettingsPanelItem(label, null);
       itemToAdd.configure(this.player, this.uimanager);
@@ -173,7 +156,7 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
         itemToAdd.configure(this.player, this.uimanager);
 
         if (option.key === selectedItem) {
-          itemToAdd.label.getDomElement().addClass(this.prefixCss('selected'));
+          itemToAdd.getLabel.getDomElement().addClass(this.prefixCss('selected'));
         }
         page.addComponent(itemToAdd);
       }
@@ -182,34 +165,13 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
     }
   }
 
-  /**
-   * Checks if this settings panel item is active, i.e. visible and enabled and a user can interact with it.
-   * @returns {boolean} true if the panel is active, else false
-   */
-  isActive(): boolean {
-    return this.isShown();
-  }
-
   public getSetting(): Component<ComponentConfig> {
     return this.setting;
   }
 
   public displayItemsSubPage(): void {
     let page = this.getSubPage();
-    this.settingsPanelItemEvents.onRequestSubPage.dispatch(this, page);
-  }
-
-  protected onActiveChangedEvent() {
-    this.settingsPanelItemEvents.onActiveChanged.dispatch(this);
-  }
-
-  /**
-   * Gets the event that is fired when the 'active' state of this item changes.
-   * @see #isActive
-   * @returns {EDEvent<ModernSettingsPanelItem, NoArgs>}
-   */
-  get onActiveChanged(): EDEvent<ModernSettingsPanelItem, NoArgs> {
-    return this.settingsPanelItemEvents.onActiveChanged.getEvent();
+    this.modernSettingsPanelItemEvents.onRequestSubPage.dispatch(this, page);
   }
 
   /**
@@ -217,18 +179,14 @@ export class ModernSettingsPanelItem extends Container<ContainerConfig> {
    * and wants to display its sub menu on the {@link ModernSettingsPanel} as a seperate {@link ModernSettingsPanelPage}
    */
   get getOnDisplaySubPage(): EDEvent<ModernSettingsPanelItem, NoArgs> {
-    return this.settingsPanelItemEvents.onRequestSubPage.getEvent();
+    return this.modernSettingsPanelItemEvents.onRequestSubPage.getEvent();
   }
 
   get getOnRequestNavigateBack(): EDEvent<ModernSettingsPanelItem, NoArgs> {
-    return this.settingsPanelItemEvents.onRequestNavigateBack.getEvent();
+    return this.modernSettingsPanelItemEvents.onRequestNavigateBack.getEvent();
   }
 
   get onItemSelect(): EDEvent<ModernSettingsPanelItem, string> {
-    return this.settingsPanelItemEvents.onItemSelect.getEvent();
-  }
-
-  get lable(): Component<ComponentConfig> {
-    return this.label;
+    return this.modernSettingsPanelItemEvents.onItemSelect.getEvent();
   }
 }

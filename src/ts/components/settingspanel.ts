@@ -26,7 +26,7 @@ export interface SettingsPanelConfig extends ContainerConfig {
   pageTransitionAnimation?: boolean;
 }
 
-enum NavigationDirection {
+export enum NavigationDirection {
   Forwards,
   Backwards,
 }
@@ -270,7 +270,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     this.updateActivePageClass();
   }
 
-  private navigateToPage(
+  protected navigateToPage(
     targetPage: SettingsPanelPage,
     sourcePage: SettingsPanelPage,
     direction: NavigationDirection,

@@ -55,7 +55,6 @@ import { SubtitleToggleButton } from './components/subtitletogglebutton';
 import { ModernSettingsPanelItem } from './components/modernsettingspanelitem';
 import { ModernSettingsPanelPage } from './components/modernsettingspanelpage';
 import { ModernSettingsPanel } from './components/modernsettingspanel';
-import { ModernSettingsToggleButton } from './components/modernsettingstogglebutton';
 import { TouchControlOverlay } from './components/touchcontroloverlay';
 
 export namespace UIFactory {
@@ -475,7 +474,6 @@ export function superModernMobileUI() {
   });
 
   const subtitleSelectBox = new SubtitleSelectBox();
-  // TODO: Build a new subtitle settings page
   let subtitleSelectItem = new ModernSettingsPanelItem(
     new Label({ text: i18n.getLocalizer('settings.subtitles') } as LabelConfig),
     subtitleSelectBox,
@@ -507,7 +505,7 @@ export function superModernMobileUI() {
           new PlaybackToggleButton(),
           new VolumeToggleButton(),
           new Spacer(),
-          new ModernSettingsToggleButton({ settingsPanel: settingsPanel }),
+          new SettingsToggleButton({ settingsPanel: settingsPanel }),
           new SubtitleToggleButton(subtitleSelectItem, subtitleSelectBox),
           new FullscreenToggleButton(),
         ],

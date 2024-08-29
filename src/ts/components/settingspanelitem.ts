@@ -19,13 +19,13 @@ import { LocalizableText } from '../localization/i18n';
 export class SettingsPanelItem extends Container<ContainerConfig> {
 
   private label: Component<ComponentConfig>;
-  private setting: Component<ComponentConfig>;
+  protected setting: Component<ComponentConfig>;
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem, NoArgs>(),
   };
 
-  constructor(label: LocalizableText | Component<ComponentConfig>, setting: Component<ComponentConfig>, config: ContainerConfig = {}) {
+  constructor(label: LocalizableText | Component<ComponentConfig>, setting: Component<ComponentConfig>, config: ContainerConfig = {}, addSettingAsComponent: boolean = true) {
     super(config);
 
     this.setting = setting;
@@ -39,12 +39,14 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
       if (label instanceof Component) {
         this.label = label;
       } else {
-        this.label = new Label({ text: label, for: this.setting.getConfig().id } as LabelConfig);
+        this.label = new Label({ text: label, for: this.setting.getConfig() ? this.setting.getConfig().id : this.getConfig().id } as LabelConfig);
       }
       this.addComponent(this.label);
     }
 
-    this.addComponent(this.setting);
+    if(addSettingAsComponent) {
+      this.addComponent(this.setting);
+    }
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -108,5 +110,8 @@ export class SettingsPanelItem extends Container<ContainerConfig> {
    */
   get onActiveChanged(): Event<SettingsPanelItem, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
+  }
+  get getLabel(): Component<ComponentConfig> {
+    return this.label;
   }
 }
