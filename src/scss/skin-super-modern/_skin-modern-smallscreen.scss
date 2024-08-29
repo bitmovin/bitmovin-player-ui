@@ -2,6 +2,7 @@
 @import 'mixins';
 
 &.#{$prefix}-ui-skin-modern-smallscreen {
+
   .#{$prefix}-ui-fullscreentogglebutton {
     background-image: url('../../assets/skin-super-modern/images/fullscreensmall.svg');
 

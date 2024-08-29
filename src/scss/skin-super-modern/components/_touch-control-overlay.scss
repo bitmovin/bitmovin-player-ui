@@ -1,6 +1,36 @@
 @import '../variables';
 @import '../mixins';
 
+// sass-lint:disable no-vendor-prefixes
+%opacity-transition {
+  -moz-transition: opacity .25s ease;
+  -ms-transition: opacity .25s ease;
+  -o-transition: opacity .25s ease;
+  -webkit-transition: opacity .25s ease;
+  transition:  opacity .25s ease-out;
+}
+
+%seek-circle {
+  @extend %opacity-transition;
+  background-color: $color-background-seek-circle;
+  border-radius: 50%;
+  content: '';
+  height: 200%;
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+}
+
+%seek-label {
+  @extend %opacity-transition;
+  font-size: .4em;
+  font-weight: 600;
+  margin: 0;
+  opacity: 1;
+  position: absolute;
+  text-shadow: $color-shadow-seek-label;
+}
+
 .#{$prefix}-ui-touchcontrol-overlay {
   @extend %ui-container;
   @include layout-cover;
@@ -9,4 +39,50 @@
   display: flex;
   justify-content: center;
   text-align: center;
+
+  // sass-lint:disable nesting-depth
+  > .#{$prefix}-container-wrapper {
+    align-items: center;
+    display: flex;
+
+    .#{$prefix}-seek-forward-label {
+      @extend %seek-label;
+      right: 15%;
+
+      &.#{$prefix}-hidden {
+        opacity: 0;
+      }
+    }
+
+    .#{$prefix}-seek-backward-label {
+      @extend %seek-label;
+      left: 15%;
+
+      &.#{$prefix}-hidden {
+        opacity: 0;
+      }
+    }
+  }
+
+  &::before {
+    @extend %seek-circle;
+    left: -60%;
+  }
+
+  &::after {
+    @extend %seek-circle;
+    right: -60%;
+  }
+
+  &.#{$prefix}-seek-forward {
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  &.#{$prefix}-seek-backward {
+    &::before {
+      opacity: 1;
+    }
+  }
 }

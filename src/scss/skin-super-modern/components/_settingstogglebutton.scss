@@ -7,12 +7,6 @@
   &:hover {
     @include svg-icon-shadow;
   }
-
-  &.#{$prefix}-on {
-    &:hover {
-      @include svg-icon-on-shadow;
-    }
-  }
 }
 
 .#{$prefix}-ui-settingstogglebutton {

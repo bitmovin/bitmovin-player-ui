@@ -15,6 +15,7 @@
   height: 1.5em;
   min-width: 1.5em;
   padding: .25em;
+  transition: transform .15s ease;
 
   .#{$prefix}-label {
     color: $color-primary;
@@ -34,6 +35,10 @@
         text-decoration: none;
       }
     }
+  }
+
+  &:active {
+    transform: scale(.9);
   }
 
   @include hidden;

@@ -3,46 +3,15 @@
 .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
   @extend %ui-button;
 
-  @keyframes #{$prefix}-fade-out {
-    from {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    to {
-      opacity: 0;
-      transform: scale(2);
-      visibility: hidden;
-    }
-  }
-
-  @keyframes #{$prefix}-fade-in {
-    from {
-      opacity: 0;
-      transform: scale(2);
-      visibility: visible;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes #{$prefix}-breathe {
-    30% {
-      transform: scale(1.1);
-    }
-
-    60% {
-      transform: scale(1);
-    }
-  }
-
   cursor: default;
   height: 2.5em;
   outline: none;
   overflow: hidden; // hide overflow from scale animation
   width: 2.5em;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
 
   .#{$prefix}-image {
     background-position: center;
