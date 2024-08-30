@@ -7,6 +7,7 @@ import { Timeout } from '../timeout';
 import { HTMLElementWithComponent } from '../dom';
 import { Label, LabelConfig } from './label';
 import { i18n } from '../localization/i18n';
+import { LoadingIcon } from './loadingicon';
 
 export interface TouchControlOverlayConfig extends ContainerConfig {
   /**
@@ -59,6 +60,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
   };
 
   private playbackToggleButton: SmallCenteredPlaybackToggleButton;
+  private loadingIcon: LoadingIcon;
   private seekForwardLabel: Label<LabelConfig>;
   private seekBackwardLabel: Label<LabelConfig>;
 
@@ -75,6 +77,8 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       enterFullscreenOnInitialPlayback: Boolean(config.enterFullscreenOnInitialPlayback),
     });
 
+    this.loadingIcon = new LoadingIcon();
+
     this.seekForwardLabel = new Label({text: '', for: this.getConfig().id, cssClass: 'seek-forward-label', hidden: true});
     this.seekBackwardLabel = new Label({text: '', for: this.getConfig().id, cssClass: 'seek-backward-label', hidden: true});
 
@@ -83,7 +87,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       acceptsTouchWithUiHidden: true,
       seekTime: 10,
       seekDoubleTapMargin: 15,
-      components: [this.playbackToggleButton, this.seekForwardLabel, this.seekBackwardLabel],
+      components: [this.loadingIcon, this.seekForwardLabel, this.seekBackwardLabel],
     }, this.config);
   }
 
