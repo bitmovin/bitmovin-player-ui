@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [3.72.0] - 2024-08-30
 
 ### Added
 - Dutch (nl) subtitles
@@ -996,6 +996,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.72.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.71.0...v3.72.0
 [3.71.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.70.0...v3.71.0
 [3.70.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.69.0...v3.70.0
 [3.69.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.67.0...v3.69.0
