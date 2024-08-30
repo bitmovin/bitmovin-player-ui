@@ -509,7 +509,7 @@ export function superModernMobileUI() {
             timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
             hideInLivePlayback: true,
           }),
-          new SeekBar({ label: new SeekBarLabel() }),
+          new SeekBar({ label: new SeekBarLabel(), renderSeekBarPlaybackPositionMarkerInOuterSeekBar: true }),
           new PlaybackTimeLabel({
             timeLabelMode: PlaybackTimeLabelMode.TotalTime,
             cssClasses: ['text-right'],

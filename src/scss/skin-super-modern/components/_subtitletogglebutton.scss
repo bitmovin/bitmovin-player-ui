@@ -9,12 +9,12 @@
   }
 
   &.#{$prefix}-subtitles-on {
-    background-size: 1.5em;
     background-image: url('../../assets/skin-super-modern/images/subtitles-on.svg');
+    background-size: 1.5em;
   }
 
   &.#{$prefix}-subtitles-off {
-    background-size: 1.5em;
     background-image: url('../../assets/skin-super-modern/images/subtitles-off.svg');
+    background-size: 1.5em;
   }
 }

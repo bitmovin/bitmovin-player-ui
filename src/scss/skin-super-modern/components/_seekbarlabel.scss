@@ -7,7 +7,7 @@
 
   bottom: 100%;
   left: 0;
-  margin-bottom: 1em;
+  margin-bottom: .75em;
   pointer-events: none;
   position: absolute;
   text-align: center;
@@ -24,29 +24,15 @@
   }
 
   .#{$prefix}-seekbar-label-inner {
-    border-bottom: .2em solid $color-primary;
-
-    // bottom arrow from http://www.cssarrowplease.com/
-    &::after {
-      border: solid transparent;
-      border-color: transparent;
-      border-top-color: $color-primary;
-      border-width: .5em;
-      content: ' ';
-      height: 0;
-      left: 50%;
-      margin-left: -.5em;
-      pointer-events: none;
-      position: absolute;
-      top: 100%;
-      width: 0;
-    }
+    border: solid $color-primary .0625em;
+    border-radius: .5em;
+    overflow: hidden;
 
     > .#{$prefix}-container-wrapper {
       position: relative;
 
       .#{$prefix}-seekbar-thumbnail {
-        width: 6em;
+        width: 7em;
       }
 
       .#{$prefix}-seekbar-label-metadata {
@@ -60,11 +46,13 @@
 
         .#{$prefix}-seekbar-label-time {
           display: block;
+          font-weight: bold;
           line-height: .8em;
         }
 
         .#{$prefix}-seekbar-label-title {
           display: block;
+          font-weight: bold;
           margin-bottom: .3em;
           white-space: normal;
         }

@@ -16,17 +16,13 @@
   .#{$prefix}-controlbar-bottom {
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: .5em 0;
+      margin: .25em 0;
     }
   }
 
   .#{$prefix}-controlbar-top {
     .#{$prefix}-ui-label {
       font-size: .6em;
-    }
-
-    > .#{$prefix}-container-wrapper > * {
-      margin: 0 .5em;
     }
   }
 
