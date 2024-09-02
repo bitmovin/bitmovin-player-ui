@@ -59,6 +59,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     onSeekForward: new EventDispatcher<TouchControlOverlay, NoArgs>(),
   };
 
+  private centeredElementPlaceholder: SmallCenteredPlaybackToggleButton | LoadingIcon;
   private playbackToggleButton: SmallCenteredPlaybackToggleButton;
   private loadingIcon: LoadingIcon;
   private seekForwardLabel: Label<LabelConfig>;
@@ -78,6 +79,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     });
 
     this.loadingIcon = new LoadingIcon();
+    this.centeredElementPlaceholder = this.playbackToggleButton;
 
     this.seekForwardLabel = new Label({text: '', for: this.getConfig().id, cssClass: 'seek-forward-label', hidden: true});
     this.seekBackwardLabel = new Label({text: '', for: this.getConfig().id, cssClass: 'seek-backward-label', hidden: true});
@@ -87,12 +89,33 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       acceptsTouchWithUiHidden: true,
       seekTime: 10,
       seekDoubleTapMargin: 15,
-      components: [this.loadingIcon, this.seekForwardLabel, this.seekBackwardLabel],
+      components: [this.centeredElementPlaceholder, this.seekForwardLabel, this.seekBackwardLabel],
     }, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    this.loadingIcon.configure(player, uimanager);
+
+    let showLoadingIcon = () => {
+      this.removeComponent(this.playbackToggleButton);
+      this.addComponent(this.loadingIcon);
+      this.updateComponents();
+    };
+
+    let hideLoadingIcon = () => {
+      this.removeComponent(this.loadingIcon);
+      this.addComponent(this.playbackToggleButton);
+      this.updateComponents();
+    };
+
+    if (this.loadingIcon.isSpinning) {
+      showLoadingIcon();
+    }
+
+    this.loadingIcon.loadingStartEvent.subscribe(showLoadingIcon);
+    this.loadingIcon.loadingEndEvent.subscribe(hideLoadingIcon);
 
     let playerSeekTime = 0;
     let startSeekTime = 0;

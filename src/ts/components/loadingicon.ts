@@ -1,9 +1,8 @@
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../uimanager';
-import {Component, ComponentConfig} from './component';
 import { Container, ContainerConfig } from './container';
 import { Timeout } from '../timeout';
-import { EventDispatcher, NoArgs } from '../eventdispatcher';
+import { EventDispatcher, NoArgs, Event } from '../eventdispatcher';
 
 export interface LoadingIconConfig extends ContainerConfig {
   /**
@@ -15,23 +14,19 @@ export interface LoadingIconConfig extends ContainerConfig {
 }
 
 export class LoadingIcon extends Container<LoadingIconConfig> {
-  private loader: Component<ComponentConfig>;
   private isLoading: boolean = false;
 
   private loadingEvents = {
     loadingStartEvent: new EventDispatcher<LoadingIcon, NoArgs>(),
     loadingEndEvent: new EventDispatcher<LoadingIcon, NoArgs>(),
-  }
+  };
 
   constructor(config: LoadingIconConfig = {}) {
     super(config);
 
-    this.loader = new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-loading-icon-image', role: 'img' });
-
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-loading-icon',
       role: 'icon',
-      components: [this.loader],
       showDelayMs: 1000,
     }, this.config);
   }
@@ -74,16 +69,16 @@ export class LoadingIcon extends Container<LoadingIconConfig> {
   private startLoader(): void {
     if (!this.isLoading) {
       this.isLoading = true;
-      this.loader.getDomElement().addClass(this.prefixCss('loading'));
       this.onLoadingStartEvent();
+      this.getDomElement().addClass(this.prefixCss('loading'));
     }
   }
 
   private stopLoader(): void {
     if (this.isLoading) {
       this.isLoading = false;
-      this.loader.getDomElement().removeClass(this.prefixCss('loading'));
       this.onLoadingEndEvent();
+      this.getDomElement().removeClass(this.prefixCss('loading'));
     }
   }
 
@@ -95,11 +90,15 @@ export class LoadingIcon extends Container<LoadingIconConfig> {
     this.loadingEvents.loadingEndEvent.dispatch(this);
   }
 
-  get loadingStartEvent(): EventDispatcher<LoadingIcon, NoArgs> {
-    return this.loadingEvents.loadingStartEvent;
+  public isSpinning(): boolean {
+    return this.isLoading;
   }
 
-  get loadingEndEvent(): EventDispatcher<LoadingIcon, NoArgs> {
-    return this.loadingEvents.loadingEndEvent;
+  get loadingStartEvent(): Event<LoadingIcon, NoArgs> {
+    return this.loadingEvents.loadingStartEvent.getEvent();
+  }
+
+  get loadingEndEvent(): Event<LoadingIcon, NoArgs> {
+    return this.loadingEvents.loadingEndEvent.getEvent();
   }
 }
