@@ -266,20 +266,13 @@ export class Component<Config extends ComponentConfig> {
    * @param uimanager the UIInstanceManager that manages this component
    */
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    this.onShow.subscribe(() => {
-      uimanager.onComponentShow.dispatch(this);
-    });
-    this.onHide.subscribe(() => {
-      uimanager.onComponentHide.dispatch(this);
-    });
+    this.onShow.subscribe(() => uimanager.onComponentShow.dispatch(this));
+    this.onHide.subscribe(() => uimanager.onComponentHide.dispatch(this));
+    this.onViewModeChanged.subscribe((_, args) => uimanager.onComponentViewModeChanged.dispatch(this, args));
 
     // Track the hovered state of the element
-    this.getDomElement().on('mouseenter', () => {
-      this.onHoverChangedEvent(true);
-    });
-    this.getDomElement().on('mouseleave', () => {
-      this.onHoverChangedEvent(false);
-    });
+    this.getDomElement().on('mouseenter', () => this.onHoverChangedEvent(true));
+    this.getDomElement().on('mouseleave', () => this.onHoverChangedEvent(false));
   }
 
   /**
