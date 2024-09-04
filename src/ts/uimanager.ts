@@ -1,6 +1,6 @@
 import {UIContainer} from './components/uicontainer';
 import {DOM} from './dom';
-import {Component, ComponentConfig} from './components/component';
+import { Component, ComponentConfig, ViewModeChangedEventArgs } from './components/component';
 import {Container} from './components/container';
 import { SeekBar, SeekBarMarker } from './components/seekbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
@@ -627,6 +627,7 @@ export class UIInstanceManager {
     onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
     onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+    onComponentViewModeChanged: new EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs>(),
     onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
     onPreviewControlsHide: new EventDispatcher<UIContainer, CancelEventArgs>(),
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
@@ -735,6 +736,10 @@ export class UIInstanceManager {
    */
   get onRelease(): EventDispatcher<UIContainer, NoArgs> {
     return this.events.onRelease;
+  }
+
+  get onComponentViewModeChanged(): EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs> {
+    return this.events.onComponentViewModeChanged;
   }
 
   protected clearEventHandlers(): void {

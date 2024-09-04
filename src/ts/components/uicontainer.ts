@@ -1,9 +1,9 @@
-import {ContainerConfig, Container} from './container';
-import {UIInstanceManager} from '../uimanager';
+import { Container, ContainerConfig } from './container';
+import { UIInstanceManager } from '../uimanager';
 import { DOM, HTMLElementWithComponent } from '../dom';
-import {Timeout} from '../timeout';
-import {PlayerUtils} from '../playerutils';
-import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
+import { Timeout } from '../timeout';
+import { PlayerUtils } from '../playerutils';
+import { CancelEventArgs, Event as UiEvent, EventDispatcher } from '../eventdispatcher';
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Button, ButtonConfig } from './button';
@@ -60,6 +60,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   private userInteractionEventSource: DOM;
   private userInteractionEvents: { name: string, handler: EventListenerOrEventListenerObject }[];
+  private hidingPrevented: () => boolean;
 
   public hideUi: () => void = () => {};
   public showUi: () => void = () => {};
@@ -76,6 +77,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     }, this.config);
 
     this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
+    this.hidingPrevented = () => false;
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -106,7 +108,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
 
-    const hidingPrevented = (): boolean => {
+    this.hidingPrevented = (): boolean => {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
     };
 
@@ -117,7 +119,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         isUiShown = true;
       }
       // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
-      if (!isSeeking && !player.isCasting() && !hidingPrevented()) {
+      if (!isSeeking && !player.isCasting() && !this.hidingPrevented()) {
         this.uiHideTimeout.start();
       }
     };
@@ -216,7 +218,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       handler: () => {
         // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
         // hide the UI in such cases
-        if (!isSeeking && !hidingPrevented()) {
+        if (!isSeeking && !this.hidingPrevented()) {
           if (this.config.hideImmediatelyOnMouseLeave) {
             this.hideUi();
           } else {
@@ -234,16 +236,17 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     uimanager.onSeeked.subscribe(() => {
       isSeeking = false;
-      if (!hidingPrevented()) {
+      if (!this.hidingPrevented()) {
         this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
       }
     });
+    uimanager.onComponentViewModeChanged.subscribe((_, { mode }) => this.trackComponentViewMode(mode));
     player.on(player.exports.PlayerEvent.CastStarted, () => {
       this.showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
     });
     this.playerStateChange.subscribe((_, state) => {
       playerState = state;
-      if (hidingPrevented()) {
+      if (this.hidingPrevented()) {
         // Entering a player state that prevents hiding and forces the controls to be shown
         this.uiHideTimeout.clear();
         this.showUi();
@@ -390,6 +393,18 @@ export class UIContainer extends Container<UIContainerConfig> {
     if (this.uiHideTimeout) {
       this.uiHideTimeout.clear();
     }
+  }
+
+  onPlayerStateChange(): UiEvent<UIContainer, PlayerUtils.PlayerState> {
+    return this.playerStateChange.getEvent();
+  }
+
+  protected suspendHideTimeout() {
+    this.uiHideTimeout.suspend();
+  }
+
+  protected resumeHideTimeout() {
+    this.uiHideTimeout.resume(!this.hidingPrevented());
   }
 
   protected toDomElement(): DOM {

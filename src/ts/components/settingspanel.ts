@@ -247,6 +247,15 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       this.activePage = component;
     }
     super.addComponent(component);
+    component.onViewModeChanged.subscribe((_, { mode }) => this.trackComponentViewMode(mode));
+  }
+
+  protected suspendHideTimeout() {
+    this.hideTimeout.suspend();
+  }
+
+  protected resumeHideTimeout() {
+    this.hideTimeout.resume(true);
   }
 
   private updateActivePageClass(): void {
