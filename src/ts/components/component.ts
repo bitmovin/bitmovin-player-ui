@@ -139,7 +139,7 @@ export class Component<Config extends ComponentConfig> {
   private hovered: boolean;
 
   /**
-   * Tge current view mode of the component.
+   * The current view mode of the component.
    */
   private viewMode: ViewMode;
 
