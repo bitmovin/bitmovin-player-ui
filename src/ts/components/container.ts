@@ -160,8 +160,6 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
       this.componentsInPersistentViewMode = Math.max(this.componentsInPersistentViewMode - 1, 0);
     }
 
-    console.error(this, this.componentsInPersistentViewMode);
-
     if (this.componentsInPersistentViewMode > 0) {
       // There is at least one component that must not be hidden,
       // therefore the hide timeout must be suspended
