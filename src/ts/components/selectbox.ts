@@ -7,7 +7,7 @@ import { UIContainer } from './uicontainer';
 import { PlayerUtils } from '../playerutils';
 import { ViewMode } from './component';
 
-const DocumentCancellingEvents = [
+const DocumentDropdownClosedEvents = [
   'mousemove',
   'mouseenter',
   'mouseleave',
@@ -22,13 +22,13 @@ const DocumentCancellingEvents = [
   'blur',
 ];
 
-const SelectCancellingEvents = [
+const SelectDropdownClosedEvents = [
   'change',
   'keyup',
   'mouseup',
 ];
 
-const EnteringEvents: [string, (event: Event) => boolean][] = [
+const DropdownOpenedEvents: [string, (event: Event) => boolean][] = [
   ['click', () => true],
   ['keydown', (event: KeyboardEvent) => [' ', 'ArrowUp', 'ArrowDown'].includes(event.key)],
   ['mousedown', () => true],
@@ -171,19 +171,21 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
     clearTimeout(this.dropdownCloseListenerTimeoutId);
 
-    DocumentCancellingEvents.forEach(event => document.addEventListener(event, this.onDropdownClosed, true));
-    SelectCancellingEvents.forEach(event => this.selectElement.on(event, this.onDropdownClosed, true));
+    DocumentDropdownClosedEvents.forEach(event => document.addEventListener(event, this.onDropdownClosed, true));
+    SelectDropdownClosedEvents.forEach(event => this.selectElement.on(event, this.onDropdownClosed, true));
 
     this.removeDropdownCloseListeners = () => {
-      DocumentCancellingEvents.forEach(event => document.removeEventListener(event, this.onDropdownClosed, true));
-      SelectCancellingEvents.forEach(event => this.selectElement.off(event, this.onDropdownClosed, true));
+      DocumentDropdownClosedEvents.forEach(event => document.removeEventListener(event, this.onDropdownClosed, true));
+      SelectDropdownClosedEvents.forEach(event => this.selectElement.off(event, this.onDropdownClosed, true));
     };
   }
 
   private addDropdownOpenedListeners() {
     const removeListenerFunctions: (() => void)[] = [];
 
-    for (const [event, filter] of EnteringEvents) {
+    this.removeDropdownOpenedListeners();
+
+    for (const [event, filter] of DropdownOpenedEvents) {
       const listener = (event: Event) => {
         if (filter(event)) {
           this.onDropdownOpened();
@@ -194,7 +196,6 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
       this.selectElement.on(event, listener, true);
     }
 
-    this.removeDropdownOpenedListeners();
     this.removeDropdownOpenedListeners = () => {
       for (const remove of removeListenerFunctions) {
         remove();
