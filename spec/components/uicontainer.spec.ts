@@ -3,6 +3,11 @@ import { PlayerUtils } from '../../src/ts/playerutils';
 import type { UIInstanceManager } from '../../src/ts/uimanager';
 import type { TestingPlayerAPI } from '../helper/MockHelper';
 import { MockHelper } from '../helper/MockHelper';
+import generateDOMMock = MockHelper.generateDOMMock;
+import getUiInstanceManagerMock = MockHelper.getUiInstanceManagerMock;
+import getPlayerMock = MockHelper.getPlayerMock;
+
+jest.mock('../../src/ts/dom', generateDOMMock);
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -10,8 +15,8 @@ let uiInstanceManagerMock: UIInstanceManager;
 describe('UIContainer', () => {
   let uiContainer: UIContainer;
   beforeEach(() => {
-    playerMock = MockHelper.getPlayerMock();
-    uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+    playerMock = getPlayerMock();
+    uiInstanceManagerMock = getUiInstanceManagerMock();
   });
 
   describe('release', () => {
