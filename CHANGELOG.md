@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- `Component` now has a `ViewMode` that can either be `Persistent` or `Temporary`
+
+### Fixed
+- `selectbox` dropdown not closing in Safari when the UI is hidden
+
+### Changed
+- `selectbox` now sets its `ViewMode` to `Persistent` whenever and as long as the select-dropdown is shown
+- `uicontainer` and `settingspanel` will no longer auto-hide if there are any components that are in the `Persistent` view mode
+
 ## [3.72.0] - 2024-08-30
 
 ### Added
