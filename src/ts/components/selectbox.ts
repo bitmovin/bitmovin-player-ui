@@ -159,7 +159,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
     this.onViewModeChangedEvent(ViewMode.Persistent);
   };
 
-  private onDropdownClosed = (e: any) => {
+  private onDropdownClosed = () => {
     clearTimeout(this.dropdownCloseListenerTimeoutId);
 
     this.removeDropdownCloseListeners();
