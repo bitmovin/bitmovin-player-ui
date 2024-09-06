@@ -1,25 +1,40 @@
+import type { PlayerAPI } from 'bitmovin-player';
+
+import type { Component, ComponentConfig, ViewModeChangedEventArgs } from '../../src/ts/components/component';
+import { ViewMode } from '../../src/ts/components/component';
 import { SettingsPanel } from '../../src/ts/components/settingspanel';
-import { MockHelper } from '../helper/MockHelper';
 import { SettingsPanelPage } from '../../src/ts/components/settingspanelpage';
+import { EventDispatcher } from '../../src/ts/eventdispatcher';
+import type { UIInstanceManager } from '../../src/ts/uimanager';
+import { MockHelper } from '../helper/MockHelper';
+import getPlayerMock = MockHelper.getPlayerMock;
+import getUiInstanceManagerMock = MockHelper.getUiInstanceManagerMock;
+import { Label } from '../../src/ts/components/label';
+import { SelectBox } from '../../src/ts/components/selectbox';
+import { SettingsPanelItem } from '../../src/ts/components/settingspanelitem';
+import { VolumeSlider } from '../../src/ts/components/volumeslider';
 
 let settingsPanel: SettingsPanel;
 
 describe('SettingsPanel', () => {
   describe('page navigation', () => {
+    let playerMock: PlayerAPI;
     let rootPage: SettingsPanelPage;
     let firstPage: SettingsPanelPage;
     let secondPage: SettingsPanelPage;
+    let uiInstanceManagerMock: UIInstanceManager;
 
     beforeEach(() => {
+      playerMock = getPlayerMock();
       rootPage = new SettingsPanelPage({});
       firstPage = new SettingsPanelPage({});
       secondPage = new SettingsPanelPage({});
-
-      settingsPanel = new SettingsPanel({
-        components: [rootPage, firstPage, secondPage],
+      settingsPanel = new SettingsPanel({ components: [rootPage, firstPage, secondPage] });
+      uiInstanceManagerMock = getUiInstanceManagerMock();
+      Object.defineProperty(uiInstanceManagerMock, 'onComponentViewModeChanged', {
+        value: new EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs>(),
       });
-      const uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
-      settingsPanel.configure(MockHelper.getPlayerMock(), uiInstanceManagerMock);
+      settingsPanel.configure(playerMock, uiInstanceManagerMock);
     });
 
     describe('popSettingsPanelPage', () => {
@@ -162,6 +177,59 @@ describe('SettingsPanel', () => {
         // Fake show event
         (settingsPanel as any).componentEvents.onShow.dispatch(settingsPanel);
         expect(spy).toHaveBeenCalled();
+      });
+    });
+
+    describe('configure', () => {
+      it('should subscribe to the onComponentViewModeChanged event', () => {
+        const subscribeSpy = jest.spyOn(uiInstanceManagerMock.onComponentViewModeChanged, 'subscribe');
+
+        settingsPanel.configure(playerMock, uiInstanceManagerMock);
+
+        expect(subscribeSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('onComponentViewModeChanged', () => {
+      it('should suspend the hide timeout when a component enters the persistent view mode', () => {
+        const suspendTimeoutSpy = jest.spyOn(settingsPanel['hideTimeout'], 'suspend');
+
+        uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Persistent });
+
+        expect(suspendTimeoutSpy).toHaveBeenCalled();
+      });
+
+      it('should resume the hide timeout when the last component left the persistent view mode', () => {
+        const resumeTimeoutSpy = jest.spyOn(settingsPanel['hideTimeout'], 'resume');
+
+        uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Persistent });
+        uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Persistent });
+        uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Persistent });
+
+        expect(resumeTimeoutSpy).not.toHaveBeenCalled();
+
+        uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Temporary });
+        uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Temporary });
+
+        expect(resumeTimeoutSpy).not.toHaveBeenCalled();
+
+        uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Temporary });
+
+        expect(resumeTimeoutSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('hideHoveredSelectBoxes', () => {
+      it('should close the dropdown on the select box', () => {
+        const selectBox = new SelectBox();
+        const closeDropdownSpy = jest.spyOn(selectBox, 'closeDropdown');
+
+        settingsPanel.getActivePage().addComponent(new SettingsPanelItem(new Label(), selectBox));
+        settingsPanel.getActivePage().addComponent(new SettingsPanelItem(new Label(), new VolumeSlider()));
+
+        settingsPanel['hideHoveredSelectBoxes']();
+
+        expect(closeDropdownSpy).toHaveBeenCalled();
       });
     });
   });

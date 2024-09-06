@@ -431,18 +431,19 @@ export class DOM {
    * Attaches an event handler to one or more events on all elements.
    * @param eventName the event name (or multiple names separated by space) to listen to
    * @param eventHandler the event handler to call when the event fires
+   * @param options the options for this event handler
    * @returns {DOM}
    */
-  on(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
+  on(eventName: string, eventHandler: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): DOM {
     let events = eventName.split(' ');
 
     events.forEach((event) => {
       if (this.elements == null) {
-        this.document.addEventListener(event, eventHandler);
+        this.document.addEventListener(event, eventHandler, options);
       }
       else {
         this.forEach((element) => {
-          element.addEventListener(event, eventHandler);
+          element.addEventListener(event, eventHandler, options);
         });
       }
     });
@@ -454,18 +455,19 @@ export class DOM {
    * Removes an event handler from one or more events on all elements.
    * @param eventName the event name (or multiple names separated by space) to remove the handler from
    * @param eventHandler the event handler to remove
+   * @param options the options for this event handler
    * @returns {DOM}
    */
-  off(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
+  off(eventName: string, eventHandler: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): DOM {
     let events = eventName.split(' ');
 
     events.forEach((event) => {
       if (this.elements == null) {
-        this.document.removeEventListener(event, eventHandler);
+        this.document.removeEventListener(event, eventHandler, options);
       }
       else {
         this.forEach((element) => {
-          element.removeEventListener(event, eventHandler);
+          element.removeEventListener(event, eventHandler, options);
         });
       }
     });

@@ -73,6 +73,26 @@ export interface ComponentHoverChangedEventArgs extends NoArgs {
   hovered: boolean;
 }
 
+export enum ViewMode {
+  /**
+   * Indicates that the component has entered a view mode where it must stay visible. Auto-hiding of this component
+   * must be disabled as long as it resides in this state.
+   */
+  Persistent = 'persistent',
+
+  /**
+   * The control can be hidden at any time.
+   */
+  Temporary = 'temporary',
+}
+
+export interface ViewModeChangedEventArgs extends NoArgs {
+  /**
+   * The `ViewMode` the control is currently in.
+   */
+  mode: ViewMode;
+}
+
 /**
  * The base class of the UI framework.
  * Each component must extend this class and optionally the config interface.
@@ -117,6 +137,11 @@ export class Component<Config extends ComponentConfig> {
    * Flag that keeps track of the hover state.
    */
   private hovered: boolean;
+
+  /**
+   * The current view mode of the component.
+   */
+  private viewMode: ViewMode;
 
   /**
    * The list of events that this component offers. These events should always be private and only directly
@@ -179,6 +204,7 @@ export class Component<Config extends ComponentConfig> {
   private componentEvents = {
     onShow: new EventDispatcher<Component<Config>, NoArgs>(),
     onHide: new EventDispatcher<Component<Config>, NoArgs>(),
+    onViewModeChanged: new EventDispatcher<Component<Config>, ViewModeChangedEventArgs>(),
     onHoverChanged: new EventDispatcher<Component<Config>, ComponentHoverChangedEventArgs>(),
     onEnabled: new EventDispatcher<Component<Config>, NoArgs>(),
     onDisabled: new EventDispatcher<Component<Config>, NoArgs>(),
@@ -200,6 +226,7 @@ export class Component<Config extends ComponentConfig> {
       hidden: false,
       disabled: false,
     }, {});
+    this.viewMode = ViewMode.Temporary;
   }
 
   /**
@@ -239,20 +266,13 @@ export class Component<Config extends ComponentConfig> {
    * @param uimanager the UIInstanceManager that manages this component
    */
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    this.onShow.subscribe(() => {
-      uimanager.onComponentShow.dispatch(this);
-    });
-    this.onHide.subscribe(() => {
-      uimanager.onComponentHide.dispatch(this);
-    });
+    this.onShow.subscribe(() => uimanager.onComponentShow.dispatch(this));
+    this.onHide.subscribe(() => uimanager.onComponentHide.dispatch(this));
+    this.onViewModeChanged.subscribe((_, args) => uimanager.onComponentViewModeChanged.dispatch(this, args));
 
     // Track the hovered state of the element
-    this.getDomElement().on('mouseenter', () => {
-      this.onHoverChangedEvent(true);
-    });
-    this.getDomElement().on('mouseleave', () => {
-      this.onHoverChangedEvent(false);
-    });
+    this.getDomElement().on('mouseenter', () => this.onHoverChangedEvent(true));
+    this.getDomElement().on('mouseleave', () => this.onHoverChangedEvent(false));
   }
 
   /**
@@ -490,6 +510,19 @@ export class Component<Config extends ComponentConfig> {
   }
 
   /**
+   * Fires the onViewModeChanged event.
+   * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
+   */
+  protected onViewModeChangedEvent(mode: ViewMode): void {
+    if (this.viewMode === mode) {
+      return;
+    }
+
+    this.viewMode = mode;
+    this.componentEvents.onViewModeChanged.dispatch(this, { mode });
+  }
+
+  /**
    * Fires the onHoverChanged event.
    * See the detailed explanation on event architecture on the {@link #componentEvents events list}.
    */
@@ -540,5 +573,13 @@ export class Component<Config extends ComponentConfig> {
    */
   get onHoverChanged(): Event<Component<Config>, ComponentHoverChangedEventArgs> {
     return this.componentEvents.onHoverChanged.getEvent();
+  }
+
+  /**
+   * Gets the event that is fired when the `ViewMode` of this component has changed.
+   * @returns {Event<Component<Config>, ViewModeChangedEventArgs>}
+   */
+  get onViewModeChanged(): Event<Component<Config>, ViewModeChangedEventArgs> {
+    return this.componentEvents.onViewModeChanged.getEvent();
   }
 }

@@ -1,4 +1,4 @@
-import {ComponentConfig, Component} from './component';
+import { ComponentConfig, Component, ViewModeChangedEventArgs, ViewMode } from './component';
 import {DOM} from '../dom';
 import {ArrayUtils} from '../arrayutils';
 import { i18n } from '../localization/i18n';
@@ -44,6 +44,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
   private innerContainerElement: DOM;
   private componentsToAdd: Component<ComponentConfig>[];
   private componentsToRemove: Component<ComponentConfig>[];
+  private componentsInPersistentViewMode: number;
 
   constructor(config: Config) {
     super(config);
@@ -55,6 +56,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
 
     this.componentsToAdd = [];
     this.componentsToRemove = [];
+    this.componentsInPersistentViewMode = 0;
   }
 
   /**
@@ -141,5 +143,29 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     containerElement.append(innerContainer);
 
     return containerElement;
+  }
+
+  protected suspendHideTimeout(): void {
+    // to be implemented in subclass
+  }
+
+  protected resumeHideTimeout(): void {
+    // to be implemented in subclass
+  }
+
+  protected trackComponentViewMode(mode: ViewMode) {
+    if (mode === ViewMode.Persistent) {
+      this.componentsInPersistentViewMode++;
+    } else if (mode === ViewMode.Temporary) {
+      this.componentsInPersistentViewMode = Math.max(this.componentsInPersistentViewMode - 1, 0);
+    }
+
+    if (this.componentsInPersistentViewMode > 0) {
+      // There is at least one component that must not be hidden,
+      // therefore the hide timeout must be suspended
+      this.suspendHideTimeout();
+    } else {
+      this.resumeHideTimeout();
+    }
   }
 }
