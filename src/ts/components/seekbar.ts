@@ -16,6 +16,7 @@ import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../browserutils';
 import { TimelineMarkersHandler } from './timelinemarkershandler';
 import { getMinBufferLevel } from './seekbarbufferlevel';
+import {throttle} from '../throttle';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -999,6 +1000,33 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.seekBarEvents.onSeek.dispatch(this);
   }
 
+  protected updateLabelPosition = throttle((seekPositionPercentage: number) => {
+    const labelDomElement = this.label.getDomElement();
+    labelDomElement.css({
+      'left': seekPositionPercentage + '%',
+      'transform': null,
+    });
+    if (this.config.preventSeekPreviewOverflow) {
+      const overflowMargin = 5;
+      const uiBounding =  this.uimanager.getUI().getDomElement().get(0).getBoundingClientRect();
+      const labelBounding = labelDomElement.get(0).getBoundingClientRect();
+      const labelRight = (labelBounding.right - labelBounding.width / 2 );
+      const labelLeft = (labelBounding.left - labelBounding.width / 2);
+      let preventOverflowOffset = 0;
+      if (labelRight + overflowMargin > uiBounding.right) {
+        preventOverflowOffset = labelRight - uiBounding.right + overflowMargin;
+      } else if (labelLeft - overflowMargin < uiBounding.left) {
+        preventOverflowOffset = labelLeft - uiBounding.left - overflowMargin;
+      }
+      if (preventOverflowOffset) {
+        labelDomElement.css({
+          transform: `translateX(${-preventOverflowOffset}px)`,
+        });
+        labelDomElement.get(0).style.setProperty(`--${this.prefixCss('seekbar-label-overflow-offset')}`, String(preventOverflowOffset));
+      }
+    }
+  }, 50)
+
   protected onSeekPreviewEvent(percentage: number, scrubbing: boolean) {
     let snappedMarker = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(percentage);
 
@@ -1022,30 +1050,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     if (this.label) {
-      const labelDomElement = this.label.getDomElement();
-      labelDomElement.css({
-        'left': seekPositionPercentage + '%',
-        'transform': null,
-      });
-      if (this.config.preventSeekPreviewOverflow) {
-        const overflowMargin = 5;
-        const uiBounding =  this.uimanager.getUI().getDomElement().get(0).getBoundingClientRect();
-        const labelBounding = labelDomElement.get(0).getBoundingClientRect();
-        const labelRight = (labelBounding.right - labelBounding.width / 2 );
-        const labelLeft = (labelBounding.left - labelBounding.width / 2);
-        let preventOverflowOffset = 0;
-        if (labelRight + overflowMargin > uiBounding.right) {
-          preventOverflowOffset = labelRight - uiBounding.right + overflowMargin;
-        } else if (labelLeft - overflowMargin < uiBounding.left) {
-          preventOverflowOffset = labelLeft - uiBounding.left - overflowMargin;
-        }
-        if (preventOverflowOffset) {
-          labelDomElement.css({
-            transform: `translateX(${-preventOverflowOffset}px)`,
-          });
-          labelDomElement.get(0).style.setProperty(`--${this.prefixCss('seekbar-label-overflow-offset')}`, String(preventOverflowOffset));
-        }
-      }
+      this.updateLabelPosition(seekPositionPercentage);
     }
 
     this.seekBarEvents.onSeekPreview.dispatch(this, {
