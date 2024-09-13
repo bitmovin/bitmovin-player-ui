@@ -31,7 +31,7 @@ export interface SeekBarConfig extends ComponentConfig {
   vertical?: boolean;
   /**
    * If set to true the seekBarPlaybackPositionMarker will be rendered
-   * directly inside the ??? element. Necessary when using the super-modern-ui skin
+   * directly inside the seekbar container. Necessary when using the super-modern-ui skin
    * Default: false
    */
   renderSeekBarPlaybackPositionMarkerInOuterSeekBar?: boolean;
