@@ -19,6 +19,8 @@ interface SubtitleCropDetectionResult {
 
 /**
  * Overlays the player to display subtitles.
+ *
+ * @category Components
  */
 export class SubtitleOverlay extends Container<ContainerConfig> {
 

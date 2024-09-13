@@ -5,6 +5,8 @@ import { LocalizableText , i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Button} component.
+ *
+ * @category Configs
  */
 export interface ButtonConfig extends ComponentConfig {
   /**
@@ -26,6 +28,8 @@ export interface ButtonConfig extends ComponentConfig {
 
 /**
  * A simple clickable button.
+ *
+ * @category Components
  */
 export class Button<Config extends ButtonConfig> extends Component<Config> {
 

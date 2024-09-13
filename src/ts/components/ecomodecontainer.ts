@@ -5,6 +5,9 @@ import { EcoModeToggleButton } from './ecomodetogglebutton';
 import { Label, LabelConfig } from './label';
 import { SettingsPanelItem } from './settingspanelitem';
 
+/**
+ * @category Containers
+ */
 export class EcoModeContainer extends Container<ContainerConfig> {
   private ecoModeSavedEmissionsItem: SettingsPanelItem;
   private ecoModeToggleButtonItem: SettingsPanelItem;

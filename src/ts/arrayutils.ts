@@ -1,3 +1,6 @@
+/**
+ * @category Utils
+ */
 export namespace ArrayUtils {
   /**
    * Removes an item from an array.

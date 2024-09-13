@@ -1,6 +1,6 @@
 import {UIContainer} from './components/uicontainer';
 import {DOM} from './dom';
-import {Component, ComponentConfig} from './components/component';
+import { Component, ComponentConfig, ViewModeChangedEventArgs } from './components/component';
 import {Container} from './components/container';
 import { SeekBar, SeekBarMarker } from './components/seekbar';
 import {NoArgs, EventDispatcher, CancelEventArgs} from './eventdispatcher';
@@ -17,6 +17,9 @@ import { SpatialNavigation } from './spatialnavigation/spatialnavigation';
 import { SubtitleSettingsManager } from './components/subtitlesettings/subtitlesettingsmanager';
 import { StorageUtils } from './storageutils';
 
+/**
+ * @category Configs
+ */
 export interface LocalizationConfig {
   /**
    * Sets the desired language, and falls back to 'en' if there is no vocabulary for the desired language. Setting it
@@ -30,6 +33,9 @@ export interface LocalizationConfig {
   vocabularies?: Vocabularies;
 }
 
+/**
+ * @category Configs
+ */
 export interface InternalUIConfig extends UIConfig {
   events: {
     /**
@@ -621,6 +627,7 @@ export class UIInstanceManager {
     onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
     onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
     onComponentHide: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
+    onComponentViewModeChanged: new EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs>(),
     onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
     onPreviewControlsHide: new EventDispatcher<UIContainer, CancelEventArgs>(),
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
@@ -729,6 +736,10 @@ export class UIInstanceManager {
    */
   get onRelease(): EventDispatcher<UIContainer, NoArgs> {
     return this.events.onRelease;
+  }
+
+  get onComponentViewModeChanged(): EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs> {
+    return this.events.onComponentViewModeChanged;
   }
 
   protected clearEventHandlers(): void {
@@ -840,6 +851,8 @@ export interface WrappedPlayer extends PlayerAPI {
 /**
  * Wraps the player to track event handlers and provide a simple method to remove all registered event
  * handlers from the player.
+ *
+ * @category Utils
  */
 export class PlayerWrapper {
 

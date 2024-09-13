@@ -6,6 +6,8 @@ import { LocalizableText } from '../localization/i18n';
 
 /**
  * Configuration interface for a toggle button component.
+ *
+ * @category Configs
  */
 export interface ToggleButtonConfig extends ButtonConfig {
   /**
@@ -41,6 +43,8 @@ export interface ToggleButtonConfig extends ButtonConfig {
 
 /**
  * A button that can be toggled between 'on' and 'off' states.
+ *
+ * @category Components
  */
 export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Config> {
 

@@ -5,6 +5,8 @@ import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
+ *
+ * @category Configs
  */
 export interface AdSkipButtonConfig extends ButtonConfig {
   /**
@@ -21,6 +23,8 @@ export interface AdSkipButtonConfig extends ButtonConfig {
 
 /**
  * A button that is displayed during ads and can be used to skip the ad.
+ *
+ * @category Buttons
  */
 export class AdSkipButton extends Button<AdSkipButtonConfig> {
 

@@ -5,6 +5,8 @@ import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for a {@link TitleBar}.
+ *
+ * @category Configs
  */
 export interface TitleBarConfig extends ContainerConfig {
   /**
@@ -17,6 +19,8 @@ export interface TitleBarConfig extends ContainerConfig {
 
 /**
  * Displays a title bar containing a label with the title of the video.
+ *
+ * @category Components
  */
 export class TitleBar extends Container<TitleBarConfig> {
 

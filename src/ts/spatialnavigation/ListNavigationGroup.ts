@@ -8,6 +8,9 @@ export enum ListOrientation {
   Vertical = 'vertical',
 }
 
+/**
+ * @category Components
+ */
 export class ListNavigationGroup extends NavigationGroup {
   private readonly listNavigationDirections: Direction[];
 

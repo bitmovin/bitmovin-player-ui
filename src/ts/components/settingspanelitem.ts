@@ -15,6 +15,8 @@ import { LocalizableText } from '../localization/i18n';
  * An item for a {@link SettingsPanelPage},
  * Containing an optional {@link Label} and a component that configures a setting.
  * If the components is a {@link SelectBox} it will handle the logic of displaying it or not
+ *
+ * @category Components
  */
 export class SettingsPanelItem extends Container<ContainerConfig> {
 

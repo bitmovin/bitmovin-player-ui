@@ -18,6 +18,8 @@ export enum MetadataLabelContent {
 
 /**
  * Configuration interface for {@link MetadataLabel}.
+ *
+ * @category Configs
  */
 export interface MetadataLabelConfig extends LabelConfig {
   /**
@@ -28,6 +30,8 @@ export interface MetadataLabelConfig extends LabelConfig {
 
 /**
  * A label that can be configured to display certain metadata.
+ *
+ * @category Labels
  */
 export class MetadataLabel extends Label<MetadataLabelConfig> {
 

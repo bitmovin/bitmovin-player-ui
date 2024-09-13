@@ -5,6 +5,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A button that toggles the video view between normal/mono and VR/stereo.
+ *
+ * @category Buttons
  */
 export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
 

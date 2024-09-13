@@ -7,6 +7,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A select box providing a selection between available subtitle and caption tracks.
+ *
+ * @category Components
  */
 export class SubtitleSelectBox extends SelectBox {
 

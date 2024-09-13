@@ -10,6 +10,8 @@ import { Component, ComponentConfig } from './component';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
+ *
+ * @category Configs
  */
 export interface SettingsPanelConfig extends ContainerConfig {
   /**
@@ -53,6 +55,8 @@ enum NavigationDirection {
  *  settingsPanel.addComponent(secondSettingsPanelPage);
  *
  * For an example how to navigate between pages @see SettingsPanelPageNavigatorButton
+ *
+ * @category Components
  */
 export class SettingsPanel extends Container<SettingsPanelConfig> {
 
@@ -86,6 +90,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
     let config = this.getConfig();
 
     uimanager.onControlsHide.subscribe(() => this.hideHoveredSelectBoxes());
+    uimanager.onComponentViewModeChanged.subscribe((_, { mode }) => this.trackComponentViewMode(mode));
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
@@ -162,7 +167,7 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
    * Use {@link popSettingsPanelPage} to navigate backwards.
    *
    * Results in no-op if the target page is the current page.
-   * @params page
+   * @param targetPage
    */
   setActivePage(targetPage: SettingsPanelPage): void {
     if (targetPage === this.getActivePage()) {
@@ -243,6 +248,14 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
       this.activePage = component;
     }
     super.addComponent(component);
+  }
+
+  protected suspendHideTimeout() {
+    this.hideTimeout.suspend();
+  }
+
+  protected resumeHideTimeout() {
+    this.hideTimeout.resume(true);
   }
 
   private updateActivePageClass(): void {
@@ -358,36 +371,15 @@ export class SettingsPanel extends Container<SettingsPanelConfig> {
   }
 
   /**
-   * Hack for IE + Firefox
+   * Workaround for IE, Firefox and Safari
    * when the settings panel fades out while an item of a select box is still hovered, the select box will not fade out
    * while the settings panel does. This would leave a floating select box, which is just weird
    */
   private hideHoveredSelectBoxes(): void {
-    this.getComputedItems().forEach((item: SettingsPanelItem) => {
-      if (item.isActive() && (item as any).setting instanceof SelectBox) {
-        const selectBox = (item as any).setting as SelectBox;
-        const oldDisplay = selectBox.getDomElement().css('display');
-        if (oldDisplay === 'none') {
-          // if oldDisplay is already 'none', no need to set to 'none' again. It could lead to race condition
-          // wherein the display is irreversibly set to 'none' when browser tab/window is not active because
-          // requestAnimationFrame is either delayed or paused in some browsers in inactive state
-          return;
-        }
-
-        // updating the display to none marks the select-box as inactive, so it will be hidden with the rest
-        // we just have to make sure to reset this as soon as possible
-        selectBox.getDomElement().css('display', 'none');
-        if (window.requestAnimationFrame) {
-          requestAnimationFrame(() => {
-            selectBox.getDomElement().css('display', oldDisplay);
-          });
-        } else {
-          // IE9 has no requestAnimationFrame, set the value directly. It has no optimization about ignoring DOM-changes
-          // between animationFrames
-          selectBox.getDomElement().css('display', oldDisplay);
-        }
-      }
-    });
+    this.getComputedItems()
+      .map(item => item['setting'])
+      .filter(component => component instanceof SelectBox)
+      .forEach((selectBox: SelectBox) => selectBox.closeDropdown());
   }
 
   // collect all items from all pages (see hideHoveredSelectBoxes)

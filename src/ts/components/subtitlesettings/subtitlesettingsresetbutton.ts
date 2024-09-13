@@ -6,6 +6,8 @@ import { i18n } from '../../localization/i18n';
 
 /**
  * A button that resets all subtitle settings to their defaults.
+ *
+ * @category Buttons
  */
 export class SubtitleSettingsResetButton extends Button<ButtonConfig> {
 
