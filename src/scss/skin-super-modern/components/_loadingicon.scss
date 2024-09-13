@@ -1,0 +1,28 @@
+@import '../variables';
+@import '../mixins';
+
+@keyframes #{$prefix}-rotating {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.#{$prefix}-ui-loading-icon {
+  @extend %ui-container;
+
+  background: url('../../assets/skin-super-modern/images/loader.svg') center no-repeat;
+  cursor: default;
+  display: none;
+  height: 2.5em;
+  outline: none;
+  width: 2.5em;
+
+  &.#{$prefix}-loading {
+    animation: #{$prefix}-rotating 3s linear infinite;
+    display: block;
+  }
+}
