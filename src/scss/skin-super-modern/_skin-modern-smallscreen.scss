@@ -23,7 +23,7 @@
       .#{$prefix}-ui-label {
         align-items: center;
         display: inline-flex;
-        font-size: 1em;
+        font-size: .9em;
       }
 
       .#{$prefix}-label-metadata-title {
@@ -44,7 +44,7 @@
   .#{$prefix}-ui-hugeplaybacktogglebutton,
   .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
     .#{$prefix}-image {
-      background-size: 3em;
+      background-size: 2.5em;
     }
   }
 

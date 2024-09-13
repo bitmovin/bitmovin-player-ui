@@ -30,6 +30,12 @@ export interface SeekBarConfig extends ComponentConfig {
    */
   vertical?: boolean;
   /**
+   * If set to true the seekBarPlaybackPositionMarker will be rendered
+   * directly inside the seekbar container. Necessary when using the super-modern-ui skin
+   * Default: false
+   */
+  renderSeekBarPlaybackPositionMarkerInOuterSeekBar?: boolean;
+  /**
    * The interval in milliseconds in which the playback position on the seek bar will be updated. The shorter the
    * interval, the smoother it looks and the more resource intense it is. The update interval will be kept as steady
    * as possible to avoid jitter.
@@ -158,6 +164,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       snappingRange: 1,
       enableSeekPreview: true,
       snappingEnabled: true,
+      renderSeekBarPlaybackPositionMarkerInOuterSeekBar: false,
     }, this.config);
 
     this.label = this.config.label;
@@ -690,7 +697,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.seekBarMarkersContainer = seekBarChapterMarkersContainer;
 
     seekBar.append(this.seekBarBackdrop, this.seekBarBufferPosition, this.seekBarSeekPosition,
-      this.seekBarPlaybackPosition, this.seekBarMarkersContainer, this.seekBarPlaybackPositionMarker);
+      this.seekBarPlaybackPosition, this.seekBarMarkersContainer);
+
+    if (!this.config.renderSeekBarPlaybackPositionMarkerInOuterSeekBar) {
+      seekBar.append(this.seekBarPlaybackPositionMarker);
+    }
 
     let seeking = false;
 
@@ -729,12 +740,14 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.onSeekedEvent(targetPercentage);
     };
 
+    let domElementToListen: DOM = this.config.renderSeekBarPlaybackPositionMarkerInOuterSeekBar ? seekBarContainer : seekBar;
+
     // A seek always start with a touchstart or mousedown directly on the seekbar.
     // To track a mouse seek also outside the seekbar (for touch events this works automatically),
     // so the user does not need to take care that the mouse always stays on the seekbar, we attach the mousemove
     // and mouseup handlers to the whole document. A seek is triggered when the user lifts the mouse key.
     // A seek mouse gesture is thus basically a click with a long time frame between down and up events.
-    seekBar.on('touchstart mousedown', (e: MouseEvent | TouchEvent) => {
+    domElementToListen.on('touchstart mousedown', (e: MouseEvent | TouchEvent) => {
       let isTouchEvent = BrowserUtils.isTouchSupported && this.isTouchEvent(e);
 
       // Prevent selection of DOM elements (also prevents mousedown if current event is touchstart)
@@ -756,7 +769,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     // Display seek target indicator when mouse hovers or finger slides over seekbar
-    seekBar.on('touchmove mousemove', (e: MouseEvent | TouchEvent) => {
+    domElementToListen.on('touchmove mousemove', (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
 
       if (seeking) {
@@ -774,7 +787,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     // Hide seek target indicator when mouse or finger leaves seekbar
-    seekBar.on('touchend mouseleave', (e: MouseEvent | TouchEvent) => {
+    domElementToListen.on('touchend mouseleave', (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
 
       this.setSeekPosition(0);
@@ -788,6 +801,10 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     if (this.label) {
       seekBarContainer.append(this.label.getDomElement());
+    }
+
+    if (this.config.renderSeekBarPlaybackPositionMarkerInOuterSeekBar) {
+      seekBarContainer.append(seekBarPlaybackPositionMarker);
     }
 
     return seekBarContainer;
