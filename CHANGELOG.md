@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- `seekbar` not resetting seek position when losing focus on certain TVs
+
 ## [3.73.0] - 2024-09-06
 
 ### Added
