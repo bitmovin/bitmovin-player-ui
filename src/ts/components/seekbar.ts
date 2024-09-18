@@ -780,8 +780,8 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     });
 
-    // Hide seek target indicator when mouse or finger leaves seekbar
-    seekBar.on('touchend mouseleave', (e: MouseEvent | TouchEvent) => {
+    // Hide seek target indicator when mouse or finger leaves seekbar or seekbar loses focus
+    seekBar.on('touchend mouseleave blur', (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
 
       this.setSeekPosition(0);
