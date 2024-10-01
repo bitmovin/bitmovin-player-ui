@@ -634,6 +634,27 @@ export function superModerUI() {
     );
   }
 
+  export function buildSuperModernSmallScreenUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return new UIManager(
+      player,
+      [
+        {
+          ui: superModernMobileAdsUI(),
+          condition: (context: UIConditionContext) => {
+            return context.isAd && context.adRequiresUi;
+          },
+        },
+        {
+          ui: superModernMobileUI(),
+          condition: (context: UIConditionContext) => {
+            return !context.isAd && !context.adRequiresUi;
+          },
+        }
+      ],
+      config,
+    );
+  }
+
   export function buildModernCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
     return new UIManager(player, modernCastReceiverUI(), config);
   }
