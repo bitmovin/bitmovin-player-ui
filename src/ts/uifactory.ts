@@ -39,7 +39,7 @@ import { AdSkipButton } from './components/adskipbutton';
 import { CloseButton } from './components/closebutton';
 import { MetadataLabel, MetadataLabelContent } from './components/metadatalabel';
 import { PlayerUtils } from './playerutils';
-import { Label } from './components/label';
+import { Label, LabelConfig } from './components/label';
 import { CastUIContainer } from './components/castuicontainer';
 import { UIConditionContext, UIManager } from './uimanager';
 import { UIConfig } from './uiconfig';
@@ -52,6 +52,9 @@ import { RootNavigationGroup } from './spatialnavigation/rootnavigationgroup';
 import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 import { EcoModeContainer } from './components/ecomodecontainer';
 import { SubtitleToggleButton } from './components/subtitletogglebutton';
+import { ModernSettingsPanelItem } from './components/modernsettingspanelitem';
+import { ModernSettingsPanelPage } from './components/modernsettingspanelpage';
+import { ModernSettingsPanel } from './components/modernsettingspanel';
 import { TouchControlOverlay } from './components/touchcontroloverlay';
 
 export namespace UIFactory {
@@ -454,52 +457,32 @@ export function superModernAdsUI() {
 export function superModernMobileUI() {
   let subtitleOverlay = new SubtitleOverlay();
 
-  let mainSettingsPanelPage = new SettingsPanelPage({
+  let mainSettingsPanelPage = new ModernSettingsPanelPage({
     components: [
-      new SettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
-      new SettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
+      new ModernSettingsPanelItem(i18n.getLocalizer('settings.video.quality'), new VideoQualitySelectBox()),
+      new ModernSettingsPanelItem(i18n.getLocalizer('speed'), new PlaybackSpeedSelectBox()),
+      new ModernSettingsPanelItem(i18n.getLocalizer('settings.audio.track'), new AudioTrackSelectBox()),
+      new ModernSettingsPanelItem(i18n.getLocalizer('settings.audio.quality'), new AudioQualitySelectBox()),
     ],
   });
 
-  let settingsPanel = new SettingsPanel({
+  let settingsPanel = new ModernSettingsPanel({
     components: [mainSettingsPanelPage],
     hidden: true,
     pageTransitionAnimation: false,
     hideDelay: -1,
   });
 
-  let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
-    settingsPanel: settingsPanel,
-    overlay: subtitleOverlay,
-  });
-
-  let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
-    targetPage: subtitleSettingsPanelPage,
-    container: settingsPanel,
-    ariaLabel: i18n.getLocalizer('settings.subtitles'),
-    text: i18n.getLocalizer('open'),
-  });
-
   const subtitleSelectBox = new SubtitleSelectBox();
-  // TODO: Remove subtitle settings and instead use that settings page for the subtitles itself
-  mainSettingsPanelPage.addComponent(
-    new SettingsPanelItem(
-      new SubtitleSettingsLabel({
-        text: i18n.getLocalizer('settings.subtitles'),
-        opener: subtitleSettingsOpenButton,
-      }),
-      subtitleSelectBox,
-      {
-        role: 'menubar',
-      },
-    ),
+  let subtitleSelectItem = new ModernSettingsPanelItem(
+    new Label({ text: i18n.getLocalizer('settings.subtitles') } as LabelConfig),
+    subtitleSelectBox,
+    null,
+    {
+      role: 'menubar',
+    },
   );
-
-  settingsPanel.addComponent(subtitleSettingsPanelPage);
-
-  subtitleSettingsPanelPage.addComponent(new CloseButton({ target: settingsPanel }));
+  mainSettingsPanelPage.addComponent(subtitleSelectItem);
 
   let controlBar = new ControlBar({
     components: [
@@ -523,7 +506,7 @@ export function superModernMobileUI() {
           new VolumeToggleButton(),
           new Spacer(),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
-          new SubtitleToggleButton(settingsPanel, subtitleSelectBox),
+          new SubtitleToggleButton(subtitleSelectItem, subtitleSelectBox),
           new FullscreenToggleButton(),
         ],
         cssClasses: ['controlbar-bottom'],
