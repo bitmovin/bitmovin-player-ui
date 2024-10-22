@@ -9,6 +9,8 @@ import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Overlays the player and displays recommended videos.
+ *
+ * @category Containers
  */
 export class RecommendationOverlay extends Container<ContainerConfig> {
 
@@ -106,7 +108,7 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'href': config.url,
-    }).css({ 'background-image': `url(${config.thumbnail})` });
+    }, this).css({ 'background-image': `url(${config.thumbnail})` });
 
     let bgElement = new DOM('div', {
       'class': this.prefixCss('background'),

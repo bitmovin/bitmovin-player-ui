@@ -206,6 +206,9 @@ const setCssForEndLineAlign = (
       cueContainerDom.css(opositeToOverlayReferenceEdge, `${100 - offset}%`);
 };
 
+/**
+ * @category Utils
+ */
 export namespace VttUtils {
   export const setVttCueBoxStyles = (
     cueContainer: SubtitleLabel,

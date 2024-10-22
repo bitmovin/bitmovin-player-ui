@@ -4,10 +4,16 @@ import {DOM} from '../../dom';
 import {SettingsPanelPageOpenButton} from '../settingspanelpageopenbutton';
 import { LocalizableText, i18n } from '../../localization/i18n';
 
+/**
+ * @category Configs
+ */
 export interface SubtitleSettingsLabelConfig extends LabelConfig {
   opener: SettingsPanelPageOpenButton;
 }
 
+/**
+ * @category Components
+ */
 export class SubtitleSettingsLabel extends Container<ContainerConfig> {
 
   private opener: SettingsPanelPageOpenButton;
@@ -36,7 +42,7 @@ export class SubtitleSettingsLabel extends Container<ContainerConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'for': this.for,
-    }).append(
+    }, this).append(
       new DOM('span', {}).html(i18n.performLocalization(this.text)),
       this.opener.getDomElement(),
     );

@@ -1,3 +1,5 @@
+import { Component, ComponentConfig } from './components/component';
+
 export interface Offset {
   left: number;
   top: number;
@@ -10,6 +12,13 @@ export interface Size {
 
 export interface CssProperties {
   [propertyName: string]: string;
+}
+
+/**
+ * Extends the {@link HTMLElement} interface with a component attribute to store the associated component.
+ */
+export interface HTMLElementWithComponent extends HTMLElement {
+  component?: Component<ComponentConfig>;
 }
 
 /**
@@ -31,14 +40,15 @@ export class DOM {
    * The list of elements that the instance wraps. Take care that not all methods can operate on the whole list,
    * getters usually just work on the first element.
    */
-  private elements: HTMLElement[];
+  private elements: HTMLElementWithComponent[];
 
   /**
    * Creates a DOM element.
    * @param tagName the tag name of the DOM element
    * @param attributes a list of attributes of the element
+   * @param component the {@link Component} the DOM element is associated with
    */
-  constructor(tagName: string, attributes: {[name: string]: string});
+  constructor(tagName: string, attributes: {[name: string]: string}, component?: Component<ComponentConfig>);
   /**
    * Selects all elements from the DOM that match the specified selector.
    * @param selector the selector to match DOM elements with
@@ -59,17 +69,21 @@ export class DOM {
    * @param document the document to wrap
    */
   constructor(document: Document);
-  constructor(something: string | HTMLElement | HTMLElement[] | Document, attributes?: {[name: string]: string}) {
+  constructor(
+      something: string | HTMLElement | HTMLElement[] | Document,
+      attributes?: {[name: string]: string},
+      component?: Component<ComponentConfig>,
+  ) {
     this.document = document; // Set the global document to the local document field
 
     if (something instanceof Array) {
       if (something.length > 0 && something[0] instanceof HTMLElement) {
-        let elements = something;
+        let elements = something as HTMLElementWithComponent[];
         this.elements = elements;
       }
     }
     else if (something instanceof HTMLElement) {
-      let element = something;
+      let element = something as HTMLElementWithComponent;
       this.elements = [element];
     }
     else if (something instanceof Document) {
@@ -80,7 +94,7 @@ export class DOM {
     }
     else if (attributes) {
       let tagName = something;
-      let element = document.createElement(tagName);
+      let element = document.createElement(tagName) as HTMLElementWithComponent;
 
       for (let attributeName in attributes) {
         let attributeValue = attributes[attributeName];
@@ -89,11 +103,15 @@ export class DOM {
         }
       }
 
+      if (component) {
+        element.component = component;
+      }
+
       this.elements = [element];
     }
     else {
       let selector = something;
-      this.elements = this.findChildElements(selector);
+      this.elements = this.findChildElements(selector) as HTMLElementWithComponent[];
     }
   }
 
@@ -109,14 +127,14 @@ export class DOM {
    * Gets the HTML elements that this DOM instance currently holds.
    * @returns {HTMLElement[]} the raw HTML elements
    */
-  get(): HTMLElement[];
+  get(): HTMLElementWithComponent[];
   /**
    * Gets an HTML element from the list elements that this DOM instance currently holds.
    * @param index The zero-based index into the element list. Can be negative to return an element from the end,
    *    e.g. -1 returns the last element.
    */
-  get(index: number): HTMLElement;
-  get(index?: number): HTMLElement | HTMLElement[] {
+  get(index: number): HTMLElementWithComponent;
+  get(index?: number): HTMLElementWithComponent | HTMLElementWithComponent[] {
     if (index === undefined) {
       return this.elements;
     } else if (!this.elements || index >= this.elements.length || index < -this.elements.length) {
@@ -170,7 +188,7 @@ export class DOM {
    * @returns {DOM} a new DOM instance representing all matched children
    */
   find(selector: string): DOM {
-    let allChildElements = this.findChildElements(selector);
+    let allChildElements = this.findChildElements(selector) as HTMLElementWithComponent[];
     return new DOM(allChildElements);
   }
 
@@ -413,18 +431,19 @@ export class DOM {
    * Attaches an event handler to one or more events on all elements.
    * @param eventName the event name (or multiple names separated by space) to listen to
    * @param eventHandler the event handler to call when the event fires
+   * @param options the options for this event handler
    * @returns {DOM}
    */
-  on(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
+  on(eventName: string, eventHandler: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): DOM {
     let events = eventName.split(' ');
 
     events.forEach((event) => {
       if (this.elements == null) {
-        this.document.addEventListener(event, eventHandler);
+        this.document.addEventListener(event, eventHandler, options);
       }
       else {
         this.forEach((element) => {
-          element.addEventListener(event, eventHandler);
+          element.addEventListener(event, eventHandler, options);
         });
       }
     });
@@ -436,18 +455,19 @@ export class DOM {
    * Removes an event handler from one or more events on all elements.
    * @param eventName the event name (or multiple names separated by space) to remove the handler from
    * @param eventHandler the event handler to remove
+   * @param options the options for this event handler
    * @returns {DOM}
    */
-  off(eventName: string, eventHandler: EventListenerOrEventListenerObject): DOM {
+  off(eventName: string, eventHandler: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): DOM {
     let events = eventName.split(' ');
 
     events.forEach((event) => {
       if (this.elements == null) {
-        this.document.removeEventListener(event, eventHandler);
+        this.document.removeEventListener(event, eventHandler, options);
       }
       else {
         this.forEach((element) => {
-          element.removeEventListener(event, eventHandler);
+          element.removeEventListener(event, eventHandler, options);
         });
       }
     });

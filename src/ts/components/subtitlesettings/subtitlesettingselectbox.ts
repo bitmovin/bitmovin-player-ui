@@ -5,12 +5,17 @@ import {SubtitleSettingsManager} from './subtitlesettingsmanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../../uimanager';
 
+/**
+ * @category Configs
+ */
 export interface SubtitleSettingSelectBoxConfig extends ListSelectorConfig {
   overlay: SubtitleOverlay;
 }
 
 /**
  * Base class for all subtitles settings select box
+ *
+ * @category Components
  **/
 export class SubtitleSettingSelectBox extends SelectBox {
 

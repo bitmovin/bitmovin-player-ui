@@ -7,6 +7,8 @@ import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for a {@link VolumeControlButton}.
+ *
+ * @category Configs
  */
 export interface VolumeControlButtonConfig extends ContainerConfig {
   /**
@@ -27,6 +29,8 @@ export interface VolumeControlButtonConfig extends ContainerConfig {
 /**
  * A composite volume control that consists of and internally manages a volume control button that can be used
  * for muting, and a (depending on the CSS style, e.g. slide-out) volume control bar.
+ *
+ * @category Buttons
  */
 export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
 

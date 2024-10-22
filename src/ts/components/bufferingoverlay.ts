@@ -6,6 +6,8 @@ import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Configuration interface for the {@link BufferingOverlay} component.
+ *
+ * @category Configs
  */
 export interface BufferingOverlayConfig extends ContainerConfig {
   /**
@@ -18,6 +20,8 @@ export interface BufferingOverlayConfig extends ContainerConfig {
 
 /**
  * Overlays the player and displays a buffering indicator.
+ *
+ * @category Components
  */
 export class BufferingOverlay extends Container<BufferingOverlayConfig> {
 

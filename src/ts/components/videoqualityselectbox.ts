@@ -6,6 +6,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A select box providing a selection between 'auto' and the available video qualities.
+ *
+ * @category Components
  */
 export class VideoQualitySelectBox extends SelectBox {
 

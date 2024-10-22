@@ -2,6 +2,7 @@ import { PlayerAPI, PlayerEvent } from 'bitmovin-player';
 import { UIInstanceManager } from '../../src/ts/uimanager';
 import { DOM } from '../../src/ts/dom';
 import { PlayerEventEmitter } from './PlayerEventEmitter';
+import { UIContainer } from '../../src/ts/components/uicontainer';
 
 jest.mock('../../src/ts/dom');
 
@@ -18,7 +19,14 @@ export namespace MockHelper {
     };
   }
 
+  export function getUiMock(): UIContainer {
+    return {
+      onPlayerStateChange: jest.fn().mockReturnValue({ subscribe: jest.fn() }),
+    } as unknown as UIContainer;
+  }
+
   export function getUiInstanceManagerMock(): UIInstanceManager {
+    const uiMock = getUiMock();
     const UiInstanceManagerMockClass: jest.Mock<UIInstanceManager> = jest.fn().mockImplementation(() => ({
       onConfigured: getEventDispatcherMock(),
       getConfig: jest.fn().mockReturnValue({
@@ -29,6 +37,7 @@ export namespace MockHelper {
           markers: [],
         },
       }),
+      getUI: () => uiMock,
       onControlsShow: getEventDispatcherMock(),
       onControlsHide: getEventDispatcherMock(),
       onComponentHide: getEventDispatcherMock(),
@@ -37,6 +46,7 @@ export namespace MockHelper {
       onSeek: getEventDispatcherMock(),
       onSeeked: getEventDispatcherMock(),
       onRelease: getEventDispatcherMock(),
+      onComponentViewModeChanged: getEventDispatcherMock(),
     }));
 
     return new UiInstanceManagerMockClass();

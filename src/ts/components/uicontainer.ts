@@ -1,14 +1,17 @@
-import {ContainerConfig, Container} from './container';
-import {UIInstanceManager} from '../uimanager';
-import {DOM} from '../dom';
-import {Timeout} from '../timeout';
-import {PlayerUtils} from '../playerutils';
-import { CancelEventArgs, EventDispatcher } from '../eventdispatcher';
+import { Container, ContainerConfig } from './container';
+import { UIInstanceManager } from '../uimanager';
+import { DOM, HTMLElementWithComponent } from '../dom';
+import { Timeout } from '../timeout';
+import { PlayerUtils } from '../playerutils';
+import { CancelEventArgs, Event as UiEvent, EventDispatcher } from '../eventdispatcher';
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
+import { Button, ButtonConfig } from './button';
 
 /**
  * Configuration interface for a {@link UIContainer}.
+ *
+ * @category Configs
  */
 export interface UIContainerConfig extends ContainerConfig {
   /**
@@ -39,6 +42,8 @@ export interface UIContainerConfig extends ContainerConfig {
 /**
  * The base container that contains all of the UI. The UIContainer is passed to the {@link UIManager} to build and
  * setup the UI.
+ *
+ * @category Containers
  */
 export class UIContainer extends Container<UIContainerConfig> {
 
@@ -55,6 +60,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   private userInteractionEventSource: DOM;
   private userInteractionEvents: { name: string, handler: EventListenerOrEventListenerObject }[];
+  private hidingPrevented: () => boolean;
 
   public hideUi: () => void = () => {};
   public showUi: () => void = () => {};
@@ -71,6 +77,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     }, this.config);
 
     this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
+    this.hidingPrevented = () => false;
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -101,7 +108,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
 
-    const hidingPrevented = (): boolean => {
+    this.hidingPrevented = (): boolean => {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
     };
 
@@ -112,7 +119,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         isUiShown = true;
       }
       // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
-      if (!isSeeking && !player.isCasting() && !hidingPrevented()) {
+      if (!isSeeking && !player.isCasting() && !this.hidingPrevented()) {
         this.uiHideTimeout.start();
       }
     };
@@ -142,6 +149,27 @@ export class UIContainer extends Container<UIContainerConfig> {
       // On touch displays, the first touch reveals the UI
       name: 'touchend',
       handler: (e) => {
+        const shouldPreventDefault = ((e: Event): Boolean => {
+          const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | null => {
+            if (
+                !element
+                  || element === this.userInteractionEventSource.get(0)
+                  || element.component instanceof UIContainer
+            ) {
+              return null;
+            }
+
+            if (element.component && element.component instanceof Button) {
+              return element.component;
+            } else {
+              return findButtonComponent(element.parentElement);
+            }
+          });
+
+          const buttonComponent = findButtonComponent(e.target as HTMLElementWithComponent);
+          return !(buttonComponent && buttonComponent.getConfig().acceptsTouchWithUiHidden);
+        });
+
         if (!isUiShown) {
           // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
           // instead. The first touch is not prevented to let other listeners receive the event and trigger an
@@ -150,7 +178,14 @@ export class UIContainer extends Container<UIContainerConfig> {
           if (isFirstTouch && !player.isPlaying()) {
             isFirstTouch = false;
           } else {
-            e.preventDefault();
+            // On touch input devices, the first touch is expected to display the UI controls and not be propagated to
+            // other components.
+            // When buttons are always visible this causes UX problems, as the first touch is not recognized.
+            // This is the case for the {@link AdSkipButton} and {@link AdClickOverlay}.
+            // To prevent UX issues where the buttons need to be touched twice, we do not prevent the first touch event.
+            if (shouldPreventDefault(e)) {
+              e.preventDefault();
+            }
           }
           this.showUi();
         }
@@ -183,7 +218,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       handler: () => {
         // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
         // hide the UI in such cases
-        if (!isSeeking && !hidingPrevented()) {
+        if (!isSeeking && !this.hidingPrevented()) {
           if (this.config.hideImmediatelyOnMouseLeave) {
             this.hideUi();
           } else {
@@ -201,16 +236,17 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     uimanager.onSeeked.subscribe(() => {
       isSeeking = false;
-      if (!hidingPrevented()) {
+      if (!this.hidingPrevented()) {
         this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
       }
     });
+    uimanager.onComponentViewModeChanged.subscribe((_, { mode }) => this.trackComponentViewMode(mode));
     player.on(player.exports.PlayerEvent.CastStarted, () => {
       this.showUi(); // Show UI when a Cast session has started (UI will then stay permanently on during the session)
     });
     this.playerStateChange.subscribe((_, state) => {
       playerState = state;
-      if (hidingPrevented()) {
+      if (this.hidingPrevented()) {
         // Entering a player state that prevents hiding and forces the controls to be shown
         this.uiHideTimeout.clear();
         this.showUi();
@@ -357,6 +393,18 @@ export class UIContainer extends Container<UIContainerConfig> {
     if (this.uiHideTimeout) {
       this.uiHideTimeout.clear();
     }
+  }
+
+  onPlayerStateChange(): UiEvent<UIContainer, PlayerUtils.PlayerState> {
+    return this.playerStateChange.getEvent();
+  }
+
+  protected suspendHideTimeout() {
+    this.uiHideTimeout.suspend();
+  }
+
+  protected resumeHideTimeout() {
+    this.uiHideTimeout.resume(!this.hidingPrevented());
   }
 
   protected toDomElement(): DOM {

@@ -51,5 +51,9 @@
   "seekBar": "Video-Timeline",
   "seekBar.value": "Wert",
   "seekBar.timeshift": "Timeshift",
-  "seekBar.durationText": "aus"
+  "seekBar.durationText": "aus",
+  "quickseek.forward": "Vor",
+  "quickseek.rewind": "Zurück",
+  "ecoMode": "ecoMode",
+  "ecoMode.title":"Eco Mode"
 }

@@ -8,6 +8,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
+ *
+ * @category Configs
  */
 export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
   /**
@@ -24,6 +26,8 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
 
 /**
  * A button that toggles visibility of a settings panel.
+ *
+ * @category Buttons
  */
 export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfig> {
 

@@ -6,6 +6,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * A button that overlays the video and toggles between playback and pause.
+ *
+ * @category Buttons
  */
 export class HugePlaybackToggleButton extends PlaybackToggleButton {
 

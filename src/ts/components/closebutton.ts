@@ -6,6 +6,8 @@ import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for the {@link CloseButton}.
+ *
+ * @category Configs
  */
 export interface CloseButtonConfig extends ButtonConfig {
   /**
@@ -16,6 +18,8 @@ export interface CloseButtonConfig extends ButtonConfig {
 
 /**
  * A button that closes (hides) a configured component.
+ *
+ * @category Buttons
  */
 export class CloseButton extends Button<CloseButtonConfig> {
 

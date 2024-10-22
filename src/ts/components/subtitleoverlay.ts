@@ -19,6 +19,8 @@ interface SubtitleCropDetectionResult {
 
 /**
  * Overlays the player to display subtitles.
+ *
+ * @category Components
  */
 export class SubtitleOverlay extends Container<ContainerConfig> {
 
@@ -129,7 +131,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     };
 
     player.on(player.exports.PlayerEvent.AudioChanged, subtitleClearHandler);
-    player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SubtitleDisabled, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.Seeked, clearInactiveCues);
     player.on(player.exports.PlayerEvent.TimeShifted, clearInactiveCues);

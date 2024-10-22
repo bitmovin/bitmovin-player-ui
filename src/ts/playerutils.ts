@@ -3,6 +3,9 @@ import {BrowserUtils} from './browserutils';
 import { UIInstanceManager } from './uimanager';
 import { PlayerAPI, TimeRange } from 'bitmovin-player';
 
+/**
+ * @category Utils
+ */
 export namespace PlayerUtils {
 
   export enum PlayerState {
@@ -194,5 +197,11 @@ export namespace PlayerUtils {
     get onLiveChanged(): Event<PlayerAPI, LiveStreamDetectorEventArgs> {
       return this.liveChangedEvent.getEvent();
     }
+  }
+
+  export function clampValueToRange(value: number, boundary1: number, boundary2: number): number {
+    const lowerBoundary = Math.min(boundary1, boundary2);
+    const upperBoundary = Math.max(boundary1, boundary2);
+    return Math.min(Math.max(value, lowerBoundary), upperBoundary);
   }
 }

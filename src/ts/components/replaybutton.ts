@@ -7,6 +7,8 @@ import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 
 /**
  * A button to play/replay a video.
+ *
+ * @category Buttons
  */
 export class ReplayButton extends Button<ButtonConfig> {
 
@@ -16,6 +18,7 @@ export class ReplayButton extends Button<ButtonConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-replaybutton',
       text: i18n.getLocalizer('replay'),
+      ariaLabel: i18n.getLocalizer('replay'),
     }, this.config);
   }
 

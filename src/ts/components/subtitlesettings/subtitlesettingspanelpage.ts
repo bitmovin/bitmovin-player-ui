@@ -20,11 +20,17 @@ import {SettingsPanelItem} from '../settingspanelitem';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
+/**
+ * @category Configs
+ */
 export interface SubtitleSettingsPanelPageConfig extends ContainerConfig {
   settingsPanel: SettingsPanel;
   overlay: SubtitleOverlay;
 }
 
+/**
+ * @category Components
+ */
 export class SubtitleSettingsPanelPage extends SettingsPanelPage {
 
   private readonly overlay: SubtitleOverlay;
