@@ -111,7 +111,6 @@ const DefaultKeyMap = {
  * Returns the matching key map for the current platform.
  */
 export function getKeyMapForPlatform(): KeyMap {
-  console.log("getKeyMapForPlatform, isAndrod", BrowserUtils.isAndroid);
   const applicableKeyMap = [
     WebOsKeyMap,
     TizenKeyMap,
