@@ -59,19 +59,17 @@ const AndroidKeyMap = {
   isApplicable: () => BrowserUtils.isAndroid,
   keyCodes: {
     // D-pad Up
-    19: Direction.UP,
+    38: Direction.UP,
     // D-pad Down
-    20: Direction.DOWN,
+    40: Direction.DOWN,
     // D-pad Left
-    21: Direction.LEFT,
+    37: Direction.LEFT,
     // D-pad Right
-    22: Direction.RIGHT,
-    // D-pad Center
-    23: Action.SELECT,
-    // Enter
-    66: Action.SELECT,
+    39: Direction.RIGHT,
+    // D-pad OK
+    13: Action.SELECT,
     // Back
-    4: Action.BACK,
+    27: Action.BACK,
   },
 };
 

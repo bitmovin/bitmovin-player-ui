@@ -24,7 +24,7 @@ describe('getKeyMapForPlatform', () => {
     ${userAgent.chrome}       | ${27}
     ${userAgent.playStation5} | ${27}
     ${userAgent.hisense}      | ${8}
-    ${userAgent.android}      | ${4}
+    ${userAgent.android}      | ${27}
   `('should return a key map with [$expectedBackKey]=Actions.BACK', ({ userAgent, expectedBackKey }) => {
     const userAgentSpy = jest.spyOn(window.navigator, 'userAgent', 'get').mockReturnValue(userAgent);
     const keyMap = getKeyMapForPlatform();
