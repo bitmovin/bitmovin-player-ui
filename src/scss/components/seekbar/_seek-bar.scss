@@ -56,7 +56,7 @@ $seekbar-height: .3125em;
     .#{$prefix}-seekbar-bars {
       @extend %bar;
       border-radius: 1em;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .#{$prefix}-seekbar-backdrop {
@@ -91,7 +91,9 @@ $seekbar-height: .3125em;
     .#{$prefix}-seekbar-markers {
       @extend %bar;
 
-      $marker-width: 2px;
+      $marker-width: 4px;
+      $marker-indicator-height: 10px;
+$marker-indicator-border-radius: 2px;
       height: $seekbar-height;
 
       > .#{$prefix}-seekbar-marker {
@@ -105,11 +107,30 @@ $seekbar-height: .3125em;
         transition-timing-function: linear;
         width: $marker-width;
 
+        transition: height 0.3s ease, border-radius 0.3s ease, transform 0.1s linear;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &:hover {
+          height: $marker-indicator-height;
+          border-radius: $marker-indicator-border-radius;
+        }
+
         > .#{$prefix}-seekbar-marker-image {
           height: $seekbar-height * 4;
           position: absolute;
           transform: translate(-50%, calc(-100% - .2em));
         }
+
+        > .#{$prefix}-seekbar-marker-indicator {
+          height: $marker-indicator-height;
+          width: $marker-width;
+          background-color: $color-primary;
+          border-radius: $marker-indicator-border-radius;
+        }
+
       }
     }
   }
