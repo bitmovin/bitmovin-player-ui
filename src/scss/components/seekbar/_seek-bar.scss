@@ -91,9 +91,10 @@ $seekbar-height: .3125em;
     .#{$prefix}-seekbar-markers {
       @extend %bar;
 
-      $marker-width: 4px;
-      $marker-indicator-height: 10px;
-$marker-indicator-border-radius: 2px;
+      $marker-width: 0.25em;
+      $marker-indicator-height: 0.625em;
+      $marker-indicator-border-radius: 0.125em;
+
       height: $seekbar-height;
 
       > .#{$prefix}-seekbar-marker {
