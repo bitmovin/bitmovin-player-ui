@@ -3,7 +3,7 @@ import { TimelineMarkersHandler } from '../../src/ts/utils/TimelineMarkersHandle
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../../src/ts/UIManager';
 import { TimelineMarker } from '../../src/ts/UIConfig';
-import { DOM } from '../../src/ts/DOM';
+import * as DOMClass from '../../src/ts/DOM';
 
 const getTimelineMarker = (time: number): TimelineMarker => ({
   time,
@@ -13,9 +13,13 @@ const getTimelineMarker = (time: number): TimelineMarker => ({
 
 describe('TimelineMarkersHandler', () => {
   let timelineMarkersHandlerMock: TimelineMarkersHandler;
-  let DOMMock: DOM;
+  let DOMMock: DOMClass.DOM;
   let playerMock: PlayerAPI;
   let uimanagerMock: UIInstanceManager;
+
+  beforeAll(() => {
+    jest.spyOn(DOMClass, 'DOM').mockImplementation(() => MockHelper.generateDOMMock());
+  });
 
   beforeEach(() => {
     DOMMock = MockHelper.generateDOMMock();
