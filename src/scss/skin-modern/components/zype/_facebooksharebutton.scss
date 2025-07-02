@@ -4,7 +4,7 @@
 .#{$prefix}-ui-facebooksharebutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/skin-modern/images/brands/facebook.svg');
+  background: transparent url('../../assets/skin-modern/images/brands/facebook.svg') center / 1.5em no-repeat content-box !important;
   font-size: 2em;
 
   &:hover {

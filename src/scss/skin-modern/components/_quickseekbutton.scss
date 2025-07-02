@@ -9,10 +9,10 @@
   }
 
   &[data-#{$prefix}-seek-direction='forward'] {
-    background-image: url('../../assets/skin-modern/images/quickseek-fastforward.svg');
+    background: transparent url('../../assets/skin-modern/images/quickseek-fastforward.svg') center / 1.5em no-repeat content-box !important;
   }
 
   &[data-#{$prefix}-seek-direction='rewind'] {
-    background-image: url('../../assets/skin-modern/images/quickseek-rewind.svg');
+    background: transparent url('../../assets/skin-modern/images/quickseek-rewind.svg') center / 1.5em no-repeat content-box !important;
   }
 }

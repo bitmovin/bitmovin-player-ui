@@ -4,17 +4,17 @@
 .#{$prefix}-ui-playbacktogglebutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/skin-modern/images/play.svg');
+  background: transparent url('../../assets/skin-modern/images/play.svg') center / 1.5em no-repeat content-box !important;
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   &.#{$prefix}-on {
-    background-image: url('../../assets/skin-modern/images/pause.svg');
+    background: transparent url('../../assets/skin-modern/images/pause.svg') center / 1.5em no-repeat content-box !important;
 
     &.#{$prefix}-stoptoggle {
-      background-image: url('../../assets/skin-modern/images/stop.svg');
+      background: transparent url('../../assets/skin-modern/images/stop.svg') center / 1.5em no-repeat content-box !important;
     }
   }
 }

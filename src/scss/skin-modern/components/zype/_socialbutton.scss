@@ -4,7 +4,7 @@
 .#{$prefix}-ui-socialbutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/skin-modern/images/brands/share.svg');
+  background: transparent url('../../assets/skin-modern/images/brands/share.svg') center / 1.5em no-repeat content-box !important;
 
   &:hover {
     @include svg-icon-shadow;

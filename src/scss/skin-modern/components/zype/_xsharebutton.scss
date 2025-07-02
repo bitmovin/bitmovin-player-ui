@@ -4,7 +4,7 @@
 .#{$prefix}-ui-xsharebutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/skin-modern/images/brands/x.svg');
+  background: transparent url('../../assets/skin-modern/images/brands/x.svg') center / 1.5em no-repeat content-box !important;
   font-size: 2em;
 
   &:hover {

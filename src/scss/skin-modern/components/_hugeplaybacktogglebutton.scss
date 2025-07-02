@@ -45,10 +45,7 @@
   width: 8em;
 
   .#{$prefix}-image {
-    background-image: url('../../assets/skin-modern/images/play_big.svg');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 7em;
+    background: transparent url('../../assets/skin-modern/images/play_big.svg') center / 7em no-repeat content-box !important;
     height: 100%;
     width: 100%;
 

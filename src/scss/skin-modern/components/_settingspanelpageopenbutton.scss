@@ -4,7 +4,7 @@
 %ui-settingspanelpageopenbutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/skin-modern/images/settings.svg');
+  background: transparent url('../../assets/skin-modern/images/settings.svg') center / 1.5em no-repeat content-box !important;
   max-height: .8em;
   padding: .3em 0;
   vertical-align: bottom;
@@ -14,7 +14,7 @@
   }
 
   &.#{$prefix}-on {
-    background-image: url('../../assets/skin-modern/images/settingsX.svg');
+    background: transparent url('../../assets/skin-modern/images/settingsX.svg') center / 1.5em no-repeat content-box !important;
   }
 }
 

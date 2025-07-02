@@ -9,10 +9,7 @@
   width: 5em;
 
   .#{$prefix}-image {
-    background-image: url('../../assets/skin-modern/images/replayX.svg');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 5em;
+    background: transparent url('../../assets/skin-modern/images/replayX.svg') center / 5em no-repeat content-box !important;
     height: 100%;
     width: 100%;
 
