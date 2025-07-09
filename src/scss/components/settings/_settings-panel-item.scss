@@ -14,12 +14,12 @@
 
   @media (hover: hover) {
     &:hover {
-      background-color: transparentize($color-item-hover, .15);
+      background-color: $color-background-menu-hover-overlay;
     }
   }
 
   &:active {
-    background-color: transparentize($color-item-hover, .15);
+    background-color: $color-background-menu-hover-overlay;
   }
 
   &.#{$prefix}-hidden {
@@ -81,7 +81,7 @@
   }
 
   &.#{$prefix}-title-item {
-    border-bottom: 1px solid transparentize($color-item-hover, .15);
+    background-color: $color-background-menu-title-overlay;
 
     .#{$prefix}-label {
       font-size: .8em;

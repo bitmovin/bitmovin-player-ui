@@ -8,7 +8,6 @@ import { AudioQualitySelectBox } from './components/settings/AudioQualitySelectB
 import { SettingsPanel } from './components/settings/SettingsPanel';
 import { SubtitleSettingsPanelPage } from './components/settings/subtitlesettings/SubtitleSettingsPanelPage';
 import { SettingsPanelPageOpenButton } from './components/settings/SettingsPanelPageOpenButton';
-import { SubtitleSettingsLabel } from './components/settings/subtitlesettings/SubtitleSettingsLabel';
 import { SubtitleSelectBox } from './components/settings/SubtitleSelectBox';
 import { ControlBar } from './components/ControlBar';
 import { Container, ContainerConfig } from './components/Container';
@@ -260,15 +259,13 @@ function uiLayout(config: UIConfig) {
     targetPage: subtitleSettingsPanelPage,
     container: settingsPanel,
     ariaLabel: i18n.getLocalizer('settings.subtitles'),
-    text: i18n.getLocalizer('open'),
+    text: i18n.getLocalizer('settings.subtitles.options'),
   });
 
   const subtitleSelectBox = new SubtitleSelectBox();
   let subtitleSelectItem = new DynamicSettingsPanelItem({
-    label: new SubtitleSettingsLabel({
-      text: i18n.getLocalizer('settings.subtitles'),
-      opener: subtitleSettingsOpenButton,
-    }),
+    label: i18n.getLocalizer('settings.subtitles'),
+    backNavigationRightComponent: subtitleSettingsOpenButton,
     settingComponent: subtitleSelectBox,
     container: settingsPanel,
   });
@@ -428,15 +425,13 @@ function smallScreenUILayout() {
     targetPage: subtitleSettingsPanelPage,
     container: settingsPanel,
     ariaLabel: i18n.getLocalizer('settings.subtitles'),
-    text: i18n.getLocalizer('open'),
+    text: i18n.getLocalizer('settings.subtitles.options'),
   });
 
   const subtitleSelectBox = new SubtitleSelectBox();
   let subtitleSelectItem = new DynamicSettingsPanelItem({
-    label: new SubtitleSettingsLabel({
-      text: i18n.getLocalizer('settings.subtitles'),
-      opener: subtitleSettingsOpenButton,
-    }),
+    label: i18n.getLocalizer('settings.subtitles'),
+    backNavigationRightComponent: subtitleSettingsOpenButton,
     settingComponent: subtitleSelectBox,
     role: 'menubar',
     container: settingsPanel,
