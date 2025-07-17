@@ -1,6 +1,6 @@
 import {LabelConfig, Label} from './Label';
 import {UIInstanceManager} from '../../UIManager';
-import { PlayerAPI } from 'bitmovin-player';
+import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
 
 /**
  * Enumerates the types of content that the {@link MetadataLabel} can display.
@@ -49,6 +49,9 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     let config = this.getConfig();
     let uiconfig = uimanager.getConfig();
 
+    let mainContentTitle = uiconfig.metadata.title; // TODO: get's updated with 'my lovely title' !!! prevent that!
+    let mainContentDescription = uiconfig.metadata.description;
+
     let init = () => {
       switch (config.content) {
         case MetadataLabelContent.Title:
@@ -64,11 +67,36 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
       this.setText(null);
     };
 
+    let restoreMainContentData = () => {
+      uiconfig.metadata.title = mainContentTitle;
+      uiconfig.metadata.description = mainContentDescription;
+      init();
+    };
+
     // Init label
     init();
     // Clear labels when source is unloaded
     player.on(player.exports.PlayerEvent.SourceUnloaded, unload);
 
-    uimanager.getConfig().events.onUpdated.subscribe(init);
+    player.on(player.exports.PlayerEvent.AdBreakStarted, () => {
+      mainContentTitle = uiconfig.metadata.title;
+      mainContentDescription = uiconfig.metadata.description;
+    });
+    player.on(player.exports.PlayerEvent.AdStarted, (event) => {
+      const ad = (event as AdEvent).ad;
+      if (!ad.isLinear) {
+        return;
+      }
+
+      const linearAd = ad as LinearAd;
+      uiconfig.metadata.title = linearAd.uiConfig?.message ?? '';
+      uiconfig.metadata.description = '';
+      init();
+    });
+    player.on(player.exports.PlayerEvent.AdBreakFinished, restoreMainContentData);
+
+    uimanager.getConfig().events.onUpdated.subscribe(() => {
+      init();
+    });
   }
 }
