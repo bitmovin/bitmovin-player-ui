@@ -367,7 +367,6 @@ function adsUILayout() {
       new AdStatusOverlay(),
       controlBar,
       new TitleBar({
-        // keepHiddenWithoutMetadata: true,
         components: [
           new Container({
             components: [

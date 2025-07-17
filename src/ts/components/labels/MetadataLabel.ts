@@ -49,7 +49,7 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     let config = this.getConfig();
     let uiconfig = uimanager.getConfig();
 
-    let mainContentTitle = uiconfig.metadata.title; // TODO: get's updated with 'my lovely title' !!! prevent that!
+    let mainContentTitle = uiconfig.metadata.title;
     let mainContentDescription = uiconfig.metadata.description;
 
     let init = () => {
@@ -95,8 +95,6 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     });
     player.on(player.exports.PlayerEvent.AdBreakFinished, restoreMainContentData);
 
-    uimanager.getConfig().events.onUpdated.subscribe(() => {
-      init();
-    });
+    uimanager.getConfig().events.onUpdated.subscribe(init);
   }
 }
