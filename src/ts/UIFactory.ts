@@ -341,7 +341,7 @@ function adsUILayout() {
           new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
           new SeekBar({ label: new SeekBarLabel() }),
           new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+            timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
             cssClasses: ['text-right'],
           }),
         ],
