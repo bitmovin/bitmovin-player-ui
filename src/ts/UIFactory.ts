@@ -370,15 +370,9 @@ function adsUILayout() {
         components: [
           new Container({
             components: [
-              new MetadataLabel({ content: MetadataLabelContent.Title }),
+              new MetadataLabel({ content: MetadataLabelContent.AdMessage }),
             ],
             cssClasses: ['ui-titlebar-top'],
-          }),
-          new Container({
-            components: [
-              new MetadataLabel({ content: MetadataLabelContent.Description }),
-            ],
-            cssClasses: ['ui-titlebar-bottom'],
           }),
         ],
       }),

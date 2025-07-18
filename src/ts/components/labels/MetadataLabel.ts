@@ -14,6 +14,10 @@ export enum MetadataLabelContent {
    * Description of the data source.
    */
   Description,
+  /**
+   * Message displayed when an ad is playing.
+   */
+  AdMessage,
 }
 
 /**
@@ -34,6 +38,7 @@ export interface MetadataLabelConfig extends LabelConfig {
  * @category Labels
  */
 export class MetadataLabel extends Label<MetadataLabelConfig> {
+  private adMessage: string = '';
 
   constructor(config: MetadataLabelConfig) {
     super(config);
@@ -49,9 +54,6 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     let config = this.getConfig();
     let uiconfig = uimanager.getConfig();
 
-    let mainContentTitle = uiconfig.metadata.title;
-    let mainContentDescription = uiconfig.metadata.description;
-
     let init = () => {
       switch (config.content) {
         case MetadataLabelContent.Title:
@@ -60,17 +62,15 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
         case MetadataLabelContent.Description:
           this.setText(uiconfig.metadata.description);
           break;
+        case MetadataLabelContent.AdMessage:
+          this.setText(this.adMessage);
+          break;
       }
     };
 
     let unload = () => {
       this.setText(null);
-    };
-
-    let restoreMainContentData = () => {
-      uiconfig.metadata.title = mainContentTitle;
-      uiconfig.metadata.description = mainContentDescription;
-      init();
+      this.adMessage = '';
     };
 
     // Init label
@@ -78,10 +78,6 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
     // Clear labels when source is unloaded
     player.on(player.exports.PlayerEvent.SourceUnloaded, unload);
 
-    player.on(player.exports.PlayerEvent.AdBreakStarted, () => {
-      mainContentTitle = uiconfig.metadata.title;
-      mainContentDescription = uiconfig.metadata.description;
-    });
     player.on(player.exports.PlayerEvent.AdStarted, (event) => {
       const ad = (event as AdEvent).ad;
       if (!ad.isLinear) {
@@ -89,11 +85,9 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
       }
 
       const linearAd = ad as LinearAd;
-      uiconfig.metadata.title = linearAd.uiConfig?.message ?? '';
-      uiconfig.metadata.description = '';
+      this.adMessage = linearAd.uiConfig?.message ?? '';
       init();
     });
-    player.on(player.exports.PlayerEvent.AdBreakFinished, restoreMainContentData);
 
     uimanager.getConfig().events.onUpdated.subscribe(init);
   }
