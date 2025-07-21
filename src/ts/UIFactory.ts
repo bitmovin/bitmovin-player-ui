@@ -50,6 +50,7 @@ import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsP
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
+import { AdMessageLabel } from './main';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -370,7 +371,7 @@ function adsUILayout() {
         components: [
           new Container({
             components: [
-              new MetadataLabel({ content: MetadataLabelContent.AdMessage }),
+              new AdMessageLabel(),
             ],
             cssClasses: ['ui-titlebar-top'],
           }),

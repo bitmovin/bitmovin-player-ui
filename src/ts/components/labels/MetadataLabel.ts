@@ -1,6 +1,6 @@
 import {LabelConfig, Label} from './Label';
 import {UIInstanceManager} from '../../UIManager';
-import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
+import { PlayerAPI } from 'bitmovin-player';
 
 /**
  * Enumerates the types of content that the {@link MetadataLabel} can display.
@@ -14,10 +14,6 @@ export enum MetadataLabelContent {
    * Description of the data source.
    */
   Description,
-  /**
-   * Message displayed when an ad is playing.
-   */
-  AdMessage,
 }
 
 /**
@@ -38,7 +34,6 @@ export interface MetadataLabelConfig extends LabelConfig {
  * @category Labels
  */
 export class MetadataLabel extends Label<MetadataLabelConfig> {
-  private adMessage: string = '';
 
   constructor(config: MetadataLabelConfig) {
     super(config);
@@ -62,32 +57,17 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
         case MetadataLabelContent.Description:
           this.setText(uiconfig.metadata.description);
           break;
-        case MetadataLabelContent.AdMessage:
-          this.setText(this.adMessage);
-          break;
       }
     };
 
     let unload = () => {
       this.setText(null);
-      this.adMessage = '';
     };
 
     // Init label
     init();
     // Clear labels when source is unloaded
     player.on(player.exports.PlayerEvent.SourceUnloaded, unload);
-
-    player.on(player.exports.PlayerEvent.AdStarted, (event) => {
-      const ad = (event as AdEvent).ad;
-      if (!ad.isLinear) {
-        return;
-      }
-
-      const linearAd = ad as LinearAd;
-      this.adMessage = linearAd.uiConfig?.message ?? '';
-      init();
-    });
 
     uimanager.getConfig().events.onUpdated.subscribe(init);
   }
