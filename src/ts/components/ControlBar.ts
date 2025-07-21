@@ -80,13 +80,19 @@ export class ControlBar extends Container<ControlBarConfig> {
       });
     }
 
+    player.on(player.exports.PlayerEvent.AdStarted, () => {
+      this.show();
+    });
+
     uimanager.onControlsShow.subscribe(() => {
       this.show();
     });
 
     uimanager.onPreviewControlsHide.subscribe((sender, args) => {
-      // Cancel the hide event if hovered child components block hiding or if the settings panel is active on mobile.
-      args.cancel = args.cancel || (hoverStackCount > 0 || isSettingsPanelShown);
+      // Cancel the hide event if hovered child components block hiding,
+      // if the settings panel is active on mobile, or if a linear ad is playing.
+      const isAdPlaying = player.ads.isLinearAdActive();
+      args.cancel = args.cancel || hoverStackCount > 0 || isSettingsPanelShown || isAdPlaying;
     });
 
     uimanager.onControlsHide.subscribe(() => {
