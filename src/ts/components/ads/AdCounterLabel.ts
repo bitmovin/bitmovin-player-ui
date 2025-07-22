@@ -1,5 +1,5 @@
 import { UIInstanceManager } from '../../UIManager';
-import {LabelConfig, Label} from '../labels/Label';
+import { LabelConfig, Label } from '../labels/Label';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**
