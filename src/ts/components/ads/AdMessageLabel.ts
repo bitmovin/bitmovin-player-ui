@@ -8,8 +8,6 @@ import { Label, LabelConfig } from '../labels/Label';
  * @category Labels
  */
 export class AdMessageLabel extends Label<LabelConfig> {
-  private adMessage: string = '';
-
   constructor(config: LabelConfig = {}) {
     super(config);
 
@@ -21,19 +19,14 @@ export class AdMessageLabel extends Label<LabelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    const init = () => {
-      this.setText(this.adMessage);
-    };
-
-    const unload = () => {
+    const clearText = () => {
       this.setText('');
-      this.adMessage = '';
     };
 
-    init();
+    clearText();
 
-    player.on(player.exports.PlayerEvent.SourceUnloaded, unload);
-    player.on(player.exports.PlayerEvent.AdFinished, unload);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, clearText);
+    player.on(player.exports.PlayerEvent.AdFinished, clearText);
     player.on(player.exports.PlayerEvent.AdStarted, (event) => {
       const ad = (event as AdEvent).ad;
       if (!ad.isLinear) {
@@ -41,10 +34,9 @@ export class AdMessageLabel extends Label<LabelConfig> {
       }
 
       const linearAd = ad as LinearAd;
-      this.adMessage = linearAd.uiConfig?.message ?? '';
-      init();
+      this.setText(linearAd.uiConfig?.message ?? '');
     });
 
-    uimanager.getConfig().events.onUpdated.subscribe(init);
+    uimanager.getConfig().events.onUpdated.subscribe(clearText);
   }
 }
