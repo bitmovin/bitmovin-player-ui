@@ -19,21 +19,16 @@ export class AdCounterLabel extends Label<LabelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let currentAdIndex: number = 0;
-    let totalAdsCount: number = 0;
-
-    const reset = () => {
-      currentAdIndex = 0;
-      totalAdsCount = 0;
+    const clearText = () => {
       this.setText('');
     };
 
     player.on(player.exports.PlayerEvent.AdStarted, () => {
-      currentAdIndex++;
-      totalAdsCount = player.ads.getActiveAdBreak().ads?.length ?? 0;
-      this.setText(`Ad ${currentAdIndex} of ${totalAdsCount}`);
+      const activeAdIndex = player.ads.getActiveAdBreak().ads.findIndex((ad) => ad === player.ads.getActiveAd()) + 1;
+      const totalAdsCount = player.ads.getActiveAdBreak().ads?.length ?? 0;
+      this.setText(`Ad ${activeAdIndex} of ${totalAdsCount}`);
     });
-    player.on(player.exports.PlayerEvent.AdBreakStarted, reset);
-    player.on(player.exports.PlayerEvent.AdBreakFinished, reset);
+    player.on(player.exports.PlayerEvent.AdBreakStarted, clearText);
+    player.on(player.exports.PlayerEvent.AdBreakFinished, clearText);
   }
 }
