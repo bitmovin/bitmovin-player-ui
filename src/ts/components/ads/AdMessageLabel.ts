@@ -26,6 +26,8 @@ export class AdMessageLabel extends Label<LabelConfig> {
     clearText();
 
     player.on(player.exports.PlayerEvent.SourceUnloaded, clearText);
+    player.on(player.exports.PlayerEvent.AdError, clearText);
+    player.on(player.exports.PlayerEvent.AdSkipped, clearText);
     player.on(player.exports.PlayerEvent.AdFinished, clearText);
     player.on(player.exports.PlayerEvent.AdStarted, (event) => {
       const ad = (event as AdEvent).ad;
