@@ -38,7 +38,5 @@ export class AdMessageLabel extends Label<LabelConfig> {
       const linearAd = ad as LinearAd;
       this.setText(linearAd.uiConfig?.message ?? '');
     });
-
-    uimanager.getConfig().events.onUpdated.subscribe(clearText);
   }
 }
