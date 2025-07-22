@@ -25,7 +25,7 @@ export class AdCounterLabel extends Label<LabelConfig> {
 
     player.on(player.exports.PlayerEvent.AdStarted, () => {
       const activeAdIndex = player.ads.getActiveAdBreak().ads.findIndex((ad) => ad === player.ads.getActiveAd()) + 1;
-      const totalAdsCount = player.ads.getActiveAdBreak().ads?.length ?? 0;
+      const totalAdsCount = player.ads.getActiveAdBreak().ads?.length ?? activeAdIndex;
       this.setText(`Ad ${activeAdIndex} of ${totalAdsCount}`);
     });
     player.on(player.exports.PlayerEvent.AdBreakStarted, clearText);
