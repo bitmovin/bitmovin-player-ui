@@ -12,7 +12,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['label-metadata', 'label-metadata-title'],
+      cssClass: 'ui-ad-message-label',
     }, this.config);
   }
 

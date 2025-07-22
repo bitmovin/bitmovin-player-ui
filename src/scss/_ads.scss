@@ -4,6 +4,7 @@
 .#{$prefix}-ui-ads {
   @import 'components/ads/ad-skip-button';
   @import 'components/ads/ad-status-overlay';
+  @import 'components/ads/ad-message-label';
 
   .#{$prefix}-ui-seekbar {
     .#{$prefix}-seekbar,
