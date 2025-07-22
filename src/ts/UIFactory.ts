@@ -376,6 +376,7 @@ function adsUILayout() {
             cssClasses: ['ui-titlebar-top'],
           }),
         ],
+        keepHiddenWithoutMetadata: true,
       }),
       new ErrorMessageOverlay(),
     ],
