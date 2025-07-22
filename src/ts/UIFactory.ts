@@ -11,6 +11,7 @@ import { SettingsPanelPageOpenButton } from './components/settings/SettingsPanel
 import { SubtitleSelectBox } from './components/settings/SubtitleSelectBox';
 import { ControlBar } from './components/ControlBar';
 import { Container, ContainerConfig } from './components/Container';
+import { AdCounterLabel } from './components/ads/AdCounterLabel';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from './components/labels/PlaybackTimeLabel';
 import { SeekBar } from './components/seekbar/SeekBar';
 import { SeekBarLabel } from './components/seekbar/SeekBarLabel';
@@ -339,10 +340,10 @@ function adsUILayout() {
     components: [
       new Container({
         components: [
-          new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
+          new AdCounterLabel(),
           new SeekBar({ label: new SeekBarLabel() }),
           new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+            timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
             cssClasses: ['text-right'],
           }),
         ],
