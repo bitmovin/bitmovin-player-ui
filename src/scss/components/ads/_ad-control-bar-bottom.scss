@@ -1,0 +1,22 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-controlbar {
+  .#{$prefix}-ad-controlbar-bottom {
+    @include hidden;
+    white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
+
+    > .#{$prefix}-container-wrapper {
+
+      .#{$prefix}-ui-volumeslider {
+        margin: auto .5em;
+        width: 5em;
+      }
+    }
+
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      margin: .5em 0;
+    }
+  }
+}
