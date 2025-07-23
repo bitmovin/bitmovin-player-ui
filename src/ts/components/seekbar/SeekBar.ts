@@ -273,6 +273,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     uimanager.onControlsShow.subscribe(resumeSeekBarUpdates);
 
     uimanager.onControlsHide.subscribe(() => {
+      const isAdPlaying = player.ads.isLinearAdActive();
+      if (isAdPlaying) {
+        return;
+      }
+
       this.isUiShown = false;
       if (this.smoothPlaybackPositionUpdater && this.smoothPlaybackPositionUpdater.isActive()) {
         this.smoothPlaybackPositionUpdater.clear();

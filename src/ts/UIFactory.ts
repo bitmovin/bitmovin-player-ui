@@ -33,6 +33,7 @@ import { RecommendationOverlay } from './components/overlays/RecommendationOverl
 import { Watermark } from './components/Watermark';
 import { ErrorMessageOverlay } from './components/overlays/ErrorMessageOverlay';
 import { AdClickOverlay } from './components/ads/AdClickOverlay';
+import { AdControlBarBottom } from './components/ads/AdControlBarBottom';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
@@ -347,15 +348,7 @@ function adsUILayout() {
         ],
         cssClasses: ['controlbar-top'],
       }),
-      new Container({
-        components: [
-          new PlaybackToggleButton(),
-          new VolumeToggleButton(),
-          new Spacer(),
-          new FullscreenToggleButton(),
-        ],
-        cssClasses: ['controlbar-bottom'],
-      }),
+      new AdControlBarBottom(),
     ],
   });
 

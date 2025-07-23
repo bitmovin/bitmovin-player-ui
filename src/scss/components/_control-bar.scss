@@ -6,6 +6,7 @@
 
   @include hidden-animated-focusable;
   @include layout-align-bottom;
+  @include hidden;
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
@@ -14,6 +15,12 @@
 
   .#{$prefix}-controlbar-top,
   .#{$prefix}-controlbar-bottom {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      margin: .5em 0;
+    }
+  }
+  .#{$prefix}-ad-controlbar-bottom {
     > .#{$prefix}-container-wrapper {
       display: flex;
       margin: .5em 0;
@@ -31,6 +38,19 @@
   }
 
   .#{$prefix}-controlbar-bottom {
+    white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
+
+    > .#{$prefix}-container-wrapper {
+
+      .#{$prefix}-ui-volumeslider {
+        margin: auto .5em;
+        width: 5em;
+      }
+    }
+  }
+
+  .#{$prefix}-ad-controlbar-bottom {
+    @include hidden;
     white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
 
     > .#{$prefix}-container-wrapper {

@@ -91,11 +91,17 @@ export class ControlBar extends Container<ControlBarConfig> {
     uimanager.onPreviewControlsHide.subscribe((sender, args) => {
       // Cancel the hide event if hovered child components block hiding,
       // if the settings panel is active on mobile, or if a linear ad is playing.
-      const isAdPlaying = player.ads.isLinearAdActive();
-      args.cancel = args.cancel || hoverStackCount > 0 || isSettingsPanelShown || isAdPlaying;
+      args.cancel = args.cancel || hoverStackCount > 0 || isSettingsPanelShown;
     });
 
     uimanager.onControlsHide.subscribe(() => {
+      // If ad is playing, do not hide the seek bar and remaining time.
+      // The hiding is handled by AdControlBarBottom
+      const isAdPlaying = player.ads.isLinearAdActive();
+      if (isAdPlaying) {
+        return;
+      }
+
       this.hide();
     });
   }
