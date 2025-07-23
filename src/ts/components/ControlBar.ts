@@ -94,8 +94,8 @@ export class ControlBar extends Container<ControlBarConfig> {
     });
 
     uimanager.onControlsHide.subscribe(() => {
-      // If ad is playing, do not hide the seek bar and remaining time.
-      // The hiding is handled by AdControlBarBottom
+      // In case of a linear ad playing, the control bar should not be fully hidden.
+      // In fact, only the bottom control bar should be hidden; this is handled in AdControlBarBottom.
       const isAdPlaying = player.ads.isLinearAdActive();
       if (isAdPlaying) {
         return;

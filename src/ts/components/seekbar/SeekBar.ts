@@ -273,6 +273,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     uimanager.onControlsShow.subscribe(resumeSeekBarUpdates);
 
     uimanager.onControlsHide.subscribe(() => {
+      // Keep seekbar always active during the playback of a linear ad
       const isAdPlaying = player.ads.isLinearAdActive();
       if (isAdPlaying) {
         return;
