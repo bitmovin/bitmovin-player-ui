@@ -11,6 +11,7 @@ import { SettingsPanelPageOpenButton } from './components/settings/SettingsPanel
 import { SubtitleSelectBox } from './components/settings/SubtitleSelectBox';
 import { ControlBar } from './components/ControlBar';
 import { Container, ContainerConfig } from './components/Container';
+import { AdCounterLabel } from './components/ads/AdCounterLabel';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from './components/labels/PlaybackTimeLabel';
 import { SeekBar } from './components/seekbar/SeekBar';
 import { SeekBarLabel } from './components/seekbar/SeekBarLabel';
@@ -51,6 +52,7 @@ import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsP
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
+import { AdMessageLabel } from './components/ads/AdMessageLabel';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -339,10 +341,10 @@ function adsUILayout() {
     components: [
       new Container({
         components: [
-          new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
+          new AdCounterLabel(),
           new SeekBar({ label: new SeekBarLabel() }),
           new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+            timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
             cssClasses: ['text-right'],
           }),
         ],
@@ -359,6 +361,17 @@ function adsUILayout() {
       new PlaybackToggleOverlay(),
       new AdStatusOverlay(),
       controlBar,
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              new AdMessageLabel(),
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+        ],
+        keepHiddenWithoutMetadata: true,
+      }),
       new ErrorMessageOverlay(),
     ],
     hideDelay: 2000,

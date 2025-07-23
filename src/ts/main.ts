@@ -56,6 +56,7 @@ export { AdSkipButton, AdSkipButtonConfig } from './components/ads/AdSkipButton'
 export { AdControlBarBottom } from './components/ads/AdControlBarBottom';
 export { AdMessageLabel } from './components/ads/AdMessageLabel';
 export { AdClickOverlay } from './components/ads/AdClickOverlay';
+export { AdCounterLabel } from './components/ads/AdCounterLabel';
 export { PlaybackSpeedSelectBox } from './components/settings/PlaybackSpeedSelectBox';
 export { HugeReplayButton } from './components/buttons/HugeReplayButton';
 export { BufferingOverlay, BufferingOverlayConfig } from './components/overlays/BufferingOverlay';
