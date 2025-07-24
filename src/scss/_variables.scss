@@ -11,6 +11,7 @@ $color-secondary: #999 !default;
 $color-background: #111 !default;
 $color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3) !default;
 $color-background-bars: transparentize($color-black, .3) !default;
+$color-background-seekbar-label: rgba(20, 20, 20, .8);
 $color-focus: #1b7fcc;
 
 $color-item-hover: #54565a !default;
