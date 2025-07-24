@@ -37,12 +37,12 @@
 
       .#{$prefix}-seekbar-thumbnail {
         width: 7em;
-        border: solid #fff 0.0625em;
+        border: solid $color-primary .0625em;
         border-radius: .4em;
       }
 
       .#{$prefix}-seekbar-label-metadata {
-        background-color: rgba(20, 20, 20, 0.80);
+        background-color: $color-background-seekbar-label;
         bottom: 0;
         box-sizing: border-box;
         display: inline-block;
