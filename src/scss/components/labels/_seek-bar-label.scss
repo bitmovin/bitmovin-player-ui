@@ -27,45 +27,45 @@
   }
 
   .#{$prefix}-seekbar-label-inner {
-    // border: solid $color-primary .0625em;
-    // border-radius: .5em;
     overflow: hidden;
 
     > .#{$prefix}-container-wrapper {
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
 
-      .#{$prefix}-seekbar-thumbnail {// THUMBNAIL
+      .#{$prefix}-seekbar-thumbnail {
         width: 7em;
         border: solid #fff 0.0625em;
         border-radius: .4em;
       }
 
-      .#{$prefix}-seekbar-label-metadata {// LABEL
-        margin-top: .5em;
-        // background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
-        background-color: rgba(20, 20, 20, 0.75);
+      .#{$prefix}-seekbar-label-metadata {
+        background-color: rgba(20, 20, 20, 0.80);
         bottom: 0;
         box-sizing: border-box;
         display: inline-block;
-        // padding: .5em; // use .2em if only keeping chapter title, and not time || if removing time tho, consider you may need to place it when the chapter has no title!
-        padding: .2em .4em;
-        // position: absolute;
-        width: 100%;
-        border-radius: .5em;
+        padding: .3em .5em;
+        width: fit-content;
+        border-radius: .4em;
+      }
 
-        .#{$prefix}-seekbar-label-time {
-          display: block;
-          // font-weight: 600;
-          font-weight: 500;
-          line-height: .8em;
-        }
+      .#{$prefix}-seekbar-label-time {
+        display: block;
+        font-weight: 500;
+        line-height: .8em;
+        margin-top: .5em;
+      }
 
-        .#{$prefix}-seekbar-label-title {
-          display: block;
-          font-weight: 600;
-          margin-bottom: .3em;
-          white-space: normal;
-        }
+      .#{$prefix}-seekbar-label-title {
+        @include hidden;
+
+        display: block;
+        font-weight: 600;
+        margin-bottom: .3em;
+        white-space: normal;
+        margin-bottom: .5em;
       }
     }
   }

@@ -41,18 +41,16 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   constructor(config: SeekBarLabelConfig = {}) {
     super(config);
 
-    this.timeLabel = new Label({ cssClasses: ['seekbar-label-time'] });
-    this.titleLabel = new Label({ cssClasses: ['seekbar-label-title'] });
+    this.timeLabel = new Label({ cssClasses: ['seekbar-label-metadata', 'seekbar-label-time'] });
+    this.titleLabel = new Label({ cssClasses: ['seekbar-label-metadata', 'seekbar-label-title'] });
     this.thumbnail = new Component({ cssClasses: ['seekbar-thumbnail'], role: 'img' });
     this.thumbnailImageLoader = new ImageLoader();
 
     this.container = new Container({
       components: [
+        this.titleLabel,
         this.thumbnail,
-        new Container({
-          components: [this.titleLabel, this.timeLabel],
-          cssClass: 'seekbar-label-metadata',
-        }),
+        this.timeLabel,
       ],
       cssClass: 'seekbar-label-inner',
     });
@@ -76,7 +74,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
       // Set initial state of title and thumbnail to handle sourceLoaded when switching to a live-stream
-      this.setTitleText(null);
+      this.setTitleText('');
       this.setThumbnail(null);
     };
 
@@ -116,7 +114,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     if (args.marker) {
       this.setTitleText(args.marker.marker.title);
     } else {
-      this.setTitleText(null);
+      this.setTitleText('');
     }
 
     // Remove CSS classes from previous marker
@@ -173,6 +171,12 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    */
   setTitleText(text = '') {
     this.titleLabel.setText(text);
+
+    if (!text || text === '') {
+      this.titleLabel.hide();
+    } else {
+      this.titleLabel.show();
+    }
   }
 
   /**
