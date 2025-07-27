@@ -1077,6 +1077,18 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.label.setPositionInBounds(pixelPosition, this.uiBoundingRect);
   };
 
+  private clearAllThickenedMarkers(): void {
+    this.seekBarMarkersContainer
+      .find(`.${this.prefixCss('seekbar-marker')}`)
+      .removeClass(this.prefixCss('thicken'));
+  }
+
+  private thickenMarker(marker: SeekBarMarker | null): void {
+    if (marker?.element) {
+      marker.element.addClass(this.prefixCss('thicken'));
+    }
+  }
+
   protected onSeekPreviewEvent(percentage: number, targetOffsetPx: number, scrubbing: boolean) {
     let snappedMarker = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(percentage);
 
@@ -1104,11 +1116,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     if (scrubbing) {
-      this.seekBarMarkersContainer.find(`.${this.prefixCss('seekbar-marker')}`).removeClass(this.prefixCss('thicken'));
-      if (snappedMarker?.element) {
-        snappedMarker.element.addClass(this.prefixCss('thicken'));
-        console.log(snappedMarker?.element);
-      }
+      this.clearAllThickenedMarkers();
+      this.thickenMarker(snappedMarker);
     }
 
     this.seekBarEvents.onSeekPreview.dispatch(this, {
@@ -1119,9 +1128,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekedEvent(percentage: number) {
-    this.seekBarMarkersContainer.find(`.${this.prefixCss('seekbar-marker')}`)
-      .removeClass(this.prefixCss('thicken'));
 
+    this.clearAllThickenedMarkers();
     this.seekBarEvents.onSeeked.dispatch(this, percentage);
   }
 
