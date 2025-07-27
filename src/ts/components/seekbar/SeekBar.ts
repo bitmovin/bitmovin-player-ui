@@ -1128,7 +1128,6 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekedEvent(percentage: number) {
-
     this.clearAllThickenedMarkers();
     this.seekBarEvents.onSeeked.dispatch(this, percentage);
   }
