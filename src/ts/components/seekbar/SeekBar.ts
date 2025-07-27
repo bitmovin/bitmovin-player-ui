@@ -1103,6 +1103,12 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.updateLabelPosition(targetOffsetPx);
     }
 
+    this.seekBarMarkersContainer.find(`.${this.prefixCss('seekbar-marker')}`).removeClass(this.prefixCss('thicken'));
+    if (snappedMarker?.element) {
+      snappedMarker.element.addClass(this.prefixCss('thicken'));
+      console.log(snappedMarker?.element);
+    }
+
     this.seekBarEvents.onSeekPreview.dispatch(this, {
       scrubbing: scrubbing,
       position: seekPositionPercentage,
