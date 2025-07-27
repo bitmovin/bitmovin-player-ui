@@ -1103,10 +1103,12 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.updateLabelPosition(targetOffsetPx);
     }
 
-    this.seekBarMarkersContainer.find(`.${this.prefixCss('seekbar-marker')}`).removeClass(this.prefixCss('thicken'));
-    if (snappedMarker?.element) {
-      snappedMarker.element.addClass(this.prefixCss('thicken'));
-      console.log(snappedMarker?.element);
+    if (scrubbing) {
+      this.seekBarMarkersContainer.find(`.${this.prefixCss('seekbar-marker')}`).removeClass(this.prefixCss('thicken'));
+      if (snappedMarker?.element) {
+        snappedMarker.element.addClass(this.prefixCss('thicken'));
+        console.log(snappedMarker?.element);
+      }
     }
 
     this.seekBarEvents.onSeekPreview.dispatch(this, {
@@ -1117,6 +1119,9 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekedEvent(percentage: number) {
+    this.seekBarMarkersContainer.find(`.${this.prefixCss('seekbar-marker')}`)
+      .removeClass(this.prefixCss('thicken'));
+
     this.seekBarEvents.onSeeked.dispatch(this, percentage);
   }
 
