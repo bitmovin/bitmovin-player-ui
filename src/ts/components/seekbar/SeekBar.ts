@@ -459,6 +459,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
       playbackPositionHandler(null, true);
       this.refreshPlaybackPosition();
+      this.initializeTimelineMarkers(player, uimanager);
     };
     let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
@@ -496,6 +497,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // It can also happen when a new source is loaded
     player.on(player.exports.PlayerEvent.SourceLoaded, () => {
       this.refreshPlaybackPosition();
+      this.initializeTimelineMarkers(player, uimanager);
     });
     // Add markers when a source is loaded or update when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(() => {
@@ -1171,6 +1173,10 @@ export class SeekBar extends Component<SeekBarConfig> {
     // For such cases, we refresh the position here in onShow because here it is guaranteed that the component knows
     // its size and can set the position correctly.
     this.refreshPlaybackPosition();
+
+    if (this.player && this.uiManager) {
+      this.initializeTimelineMarkers(this.player, this.uiManager);
+    }
   }
 
   /**
