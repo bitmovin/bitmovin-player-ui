@@ -473,12 +473,14 @@ export class SeekBar extends Component<SeekBarConfig> {
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
       this.refreshPlaybackPosition();
+      this.initializeTimelineMarkers(player, uimanager);
       this.uiBoundingRect = this.uiManager.getUI().getDomElement().get(0).getBoundingClientRect();
     });
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
     // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
     uimanager.onConfigured.subscribe(() => {
       this.refreshPlaybackPosition();
+      this.initializeTimelineMarkers(player, uimanager);
     });
     // It can also happen when a new source is loaded
     player.on(player.exports.PlayerEvent.SourceLoaded, () => {
