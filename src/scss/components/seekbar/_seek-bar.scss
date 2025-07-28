@@ -114,7 +114,7 @@ $seekbar-height: .3125em;
         justify-content: space-between;
         align-items: center;
 
-        &:hover {
+        &:hover, &.#{$prefix}-thicken {
           height: $marker-indicator-height;
           border-radius: $marker-indicator-border-radius;
         }
@@ -132,11 +132,6 @@ $seekbar-height: .3125em;
           border-radius: $marker-indicator-border-radius;
         }
 
-      }
-
-      .#{$prefix}-seekbar-marker.#{$prefix}-thicken {
-        height: $marker-indicator-height;
-        border-radius: $marker-indicator-border-radius;
       }
     }
   }
