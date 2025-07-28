@@ -1070,12 +1070,12 @@ export class SeekBar extends Component<SeekBarConfig> {
   private clearAllThickenedMarkers(): void {
     this.seekBarMarkersContainer
       .find(`.${this.prefixCss('seekbar-marker')}`)
-      ?.removeClass(this.prefixCss('thicken'));
+      ?.removeClass(this.prefixCss('hovered'));
   }
 
   private thickenMarker(marker: SeekBarMarker | null): void {
     if (marker?.element) {
-      marker.element.addClass(this.prefixCss('thicken'));
+      marker.element.addClass(this.prefixCss('hovered'));
     }
   }
 
