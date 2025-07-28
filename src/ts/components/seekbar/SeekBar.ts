@@ -107,6 +107,7 @@ export class SeekBar extends Component<SeekBarConfig> {
    * The CSS class that is added to the DOM element while the seek bar is in 'seeking' state.
    */
   private static readonly CLASS_SEEKING = 'seeking';
+  private static readonly CLASS_CHAPTER_HOVERED = 'hovered';
 
   private seekBar: DOM;
   private seekBarPlaybackPosition: DOM;
@@ -1080,12 +1081,12 @@ export class SeekBar extends Component<SeekBarConfig> {
   private clearAllThickenedMarkers(): void {
     this.seekBarMarkersContainer
       .find(`.${this.prefixCss('seekbar-marker')}`)
-      ?.removeClass(this.prefixCss('hovered'));
+      ?.removeClass(this.prefixCss(SeekBar.CLASS_CHAPTER_HOVERED));
   }
 
   private thickenMarker(marker: SeekBarMarker | null): void {
     if (marker?.element) {
-      marker.element.addClass(this.prefixCss('hovered'));
+      marker.element.addClass(this.prefixCss(SeekBar.CLASS_CHAPTER_HOVERED));
     }
   }
 
