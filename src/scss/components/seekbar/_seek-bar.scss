@@ -16,7 +16,6 @@ $seekbar-height: .3125em;
   top: 0;
   transform-origin: 0 0;
   width: 100%;
-  border-radius: 25px;
 }
 
 %ui-seekbar {
@@ -56,8 +55,8 @@ $seekbar-height: .3125em;
 
     .#{$prefix}-seekbar-bars {
       @extend %bar;
-      border-radius: 1em;
-      overflow: visible;
+      border-radius: 25px;
+      overflow: hidden;
     }
 
     .#{$prefix}-seekbar-backdrop {
