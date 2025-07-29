@@ -68,7 +68,7 @@ $seekbar-height: .3125em;
 
     .#{$prefix}-seekbar-bufferlevel {
       @extend %bar;
-      background-color: $color-primary;
+      background-color:  transparentize($color-primary, .8);
       margin: $bar-inset 0;
       transition: .3s linear, .3s linear;
       transition-property: transform;
