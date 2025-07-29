@@ -164,6 +164,14 @@ export class TimelineMarkersHandler {
     const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
       .map(cssClass => this.prefixCss(cssClass));
 
+    const markerStartIndicator = new DOM("div", {
+      class: this.prefixCss("seekbar-marker-indicator"),
+    });
+  
+    const markerEndIndicator = new DOM("div", {
+      class: this.prefixCss("seekbar-marker-indicator"),
+    });
+
     const markerElement = new DOM('div', {
       'class': markerClasses.join(' '),
       'data-marker-time': String(marker.marker.time),
@@ -181,6 +189,12 @@ export class TimelineMarkersHandler {
       }).on('error', removeImage);
 
       markerElement.append(imageElement);
+    }
+
+    markerElement.append(markerStartIndicator);
+    
+    if(marker.duration > 0) {
+      markerElement.append(markerEndIndicator);
     }
 
     marker.element = markerElement;
