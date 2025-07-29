@@ -1,51 +1,42 @@
-import {Label, LabelConfig} from '../labels/Label';
 import {UIInstanceManager} from '../../UIManager';
-import {StringUtils} from '../../utils/StringUtils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
-import { i18n } from '../../localization/i18n';
+import { Label, LabelConfig } from '../labels/Label';
 
 /**
- * A label that displays a message about a running ad, optionally with a countdown.
+ * A label that displays a message regarding the ad that's currently being played.
  *
- * @category Components
+ * @category Labels
  */
 export class AdMessageLabel extends Label<LabelConfig> {
-
   constructor(config: LabelConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-label-ad-message',
-      text: i18n.getLocalizer('ads.remainingTime') ,
+      cssClass: 'ui-ad-message-label',
     }, this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
-    let text = config.text;
-
-    let updateMessageHandler = () => {
-      this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(text), null, player));
+    const clearText = () => {
+      this.setText('');
     };
 
-    let adStartHandler = (event: AdEvent) => {
-      let uiConfig = (event.ad as LinearAd).uiConfig;
-      text = uiConfig && uiConfig.message || config.text;
+    clearText();
 
-      updateMessageHandler();
+    player.on(player.exports.PlayerEvent.SourceUnloaded, clearText);
+    player.on(player.exports.PlayerEvent.AdError, clearText);
+    player.on(player.exports.PlayerEvent.AdSkipped, clearText);
+    player.on(player.exports.PlayerEvent.AdFinished, clearText);
+    player.on(player.exports.PlayerEvent.AdStarted, (event) => {
+      const ad = (event as AdEvent).ad;
+      if (!ad.isLinear) {
+        return;
+      }
 
-      player.on(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);
-    };
-
-    let adEndHandler = () => {
-      player.off(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);
-    };
-
-    player.on(player.exports.PlayerEvent.AdStarted, adStartHandler);
-    player.on(player.exports.PlayerEvent.AdSkipped, adEndHandler);
-    player.on(player.exports.PlayerEvent.AdError, adEndHandler);
-    player.on(player.exports.PlayerEvent.AdFinished, adEndHandler);
+      const linearAd = ad as LinearAd;
+      this.setText(linearAd.uiConfig?.message ?? '');
+    });
   }
 }

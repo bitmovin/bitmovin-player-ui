@@ -55,6 +55,7 @@ export { ClickOverlay, ClickOverlayConfig } from './components/overlays/ClickOve
 export { AdSkipButton, AdSkipButtonConfig } from './components/ads/AdSkipButton';
 export { AdMessageLabel } from './components/ads/AdMessageLabel';
 export { AdClickOverlay } from './components/ads/AdClickOverlay';
+export { AdCounterLabel } from './components/ads/AdCounterLabel';
 export { PlaybackSpeedSelectBox } from './components/settings/PlaybackSpeedSelectBox';
 export { HugeReplayButton } from './components/buttons/HugeReplayButton';
 export { BufferingOverlay, BufferingOverlayConfig } from './components/overlays/BufferingOverlay';
@@ -74,7 +75,6 @@ export { FontFamilySelectBox } from './components/settings/subtitlesettings/Font
 export { FontOpacitySelectBox } from './components/settings/subtitlesettings/FontOpacitySelectBox';
 export { FontSizeSelectBox } from './components/settings/subtitlesettings/FontSizeSelectBox';
 export { SubtitleSettingSelectBox } from './components/settings/subtitlesettings/SubtitleSettingSelectBox';
-export { SubtitleSettingsLabel } from './components/settings/subtitlesettings/SubtitleSettingsLabel';
 export { WindowColorSelectBox } from './components/settings/subtitlesettings/WindowColorSelectBox';
 export { WindowOpacitySelectBox } from './components/settings/subtitlesettings/WindowOpacitySelectBox';
 export { SubtitleSettingsResetButton } from './components/settings/subtitlesettings/SubtitleSettingsResetButton';

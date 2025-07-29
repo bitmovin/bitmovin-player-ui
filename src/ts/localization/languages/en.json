@@ -11,6 +11,7 @@
   "settings.subtitles.font.opacity" : "Font opacity",
   "settings.subtitles.background.color" : "Background color",
   "settings.subtitles.background.opacity": "Background opacity",
+  "settings.subtitles.options": "Options",
   "colors.white": "white",
   "colors.black": "black",
   "colors.red": "red",

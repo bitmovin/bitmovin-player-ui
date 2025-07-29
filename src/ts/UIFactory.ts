@@ -8,10 +8,10 @@ import { AudioQualitySelectBox } from './components/settings/AudioQualitySelectB
 import { SettingsPanel } from './components/settings/SettingsPanel';
 import { SubtitleSettingsPanelPage } from './components/settings/subtitlesettings/SubtitleSettingsPanelPage';
 import { SettingsPanelPageOpenButton } from './components/settings/SettingsPanelPageOpenButton';
-import { SubtitleSettingsLabel } from './components/settings/subtitlesettings/SubtitleSettingsLabel';
 import { SubtitleSelectBox } from './components/settings/SubtitleSelectBox';
 import { ControlBar } from './components/ControlBar';
 import { Container, ContainerConfig } from './components/Container';
+import { AdCounterLabel } from './components/ads/AdCounterLabel';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from './components/labels/PlaybackTimeLabel';
 import { SeekBar } from './components/seekbar/SeekBar';
 import { SeekBarLabel } from './components/seekbar/SeekBarLabel';
@@ -51,6 +51,7 @@ import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsP
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
+import { AdMessageLabel } from './components/ads/AdMessageLabel';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -260,15 +261,13 @@ function uiLayout(config: UIConfig) {
     targetPage: subtitleSettingsPanelPage,
     container: settingsPanel,
     ariaLabel: i18n.getLocalizer('settings.subtitles'),
-    text: i18n.getLocalizer('open'),
+    text: i18n.getLocalizer('settings.subtitles.options'),
   });
 
   const subtitleSelectBox = new SubtitleSelectBox();
   let subtitleSelectItem = new DynamicSettingsPanelItem({
-    label: new SubtitleSettingsLabel({
-      text: i18n.getLocalizer('settings.subtitles'),
-      opener: subtitleSettingsOpenButton,
-    }),
+    label: i18n.getLocalizer('settings.subtitles'),
+    backNavigationRightComponent: subtitleSettingsOpenButton,
     settingComponent: subtitleSelectBox,
     container: settingsPanel,
   });
@@ -341,10 +340,10 @@ function adsUILayout() {
     components: [
       new Container({
         components: [
-          new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
+          new AdCounterLabel(),
           new SeekBar({ label: new SeekBarLabel() }),
           new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+            timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
             cssClasses: ['text-right'],
           }),
         ],
@@ -369,6 +368,17 @@ function adsUILayout() {
       new PlaybackToggleOverlay(),
       new AdStatusOverlay(),
       controlBar,
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              new AdMessageLabel(),
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+        ],
+        keepHiddenWithoutMetadata: true,
+      }),
       new ErrorMessageOverlay(),
     ],
     hideDelay: 2000,
@@ -428,15 +438,13 @@ function smallScreenUILayout() {
     targetPage: subtitleSettingsPanelPage,
     container: settingsPanel,
     ariaLabel: i18n.getLocalizer('settings.subtitles'),
-    text: i18n.getLocalizer('open'),
+    text: i18n.getLocalizer('settings.subtitles.options'),
   });
 
   const subtitleSelectBox = new SubtitleSelectBox();
   let subtitleSelectItem = new DynamicSettingsPanelItem({
-    label: new SubtitleSettingsLabel({
-      text: i18n.getLocalizer('settings.subtitles'),
-      opener: subtitleSettingsOpenButton,
-    }),
+    label: i18n.getLocalizer('settings.subtitles'),
+    backNavigationRightComponent: subtitleSettingsOpenButton,
     settingComponent: subtitleSelectBox,
     role: 'menubar',
     container: settingsPanel,

@@ -74,7 +74,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
         StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
       // Set initial state of title and thumbnail to handle sourceLoaded when switching to a live-stream
-      this.setTitleText('');
+      this.setTitleText(null);
       this.setThumbnail(null);
     };
 
@@ -114,7 +114,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     if (args.marker) {
       this.setTitleText(args.marker.marker.title);
     } else {
-      this.setTitleText('');
+      this.setTitleText(null);
     }
 
     // Remove CSS classes from previous marker
@@ -169,10 +169,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * Sets the text on the title label.
    * @param text the text to show on the label
    */
-  setTitleText(text = '') {
+  setTitleText(text?: string) {
     this.titleLabel.setText(text);
 
-    if (!text || text === '') {
+    if (text == null) {
       this.titleLabel.hide();
     } else {
       this.titleLabel.show();
