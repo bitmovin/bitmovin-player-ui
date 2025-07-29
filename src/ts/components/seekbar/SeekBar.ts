@@ -107,6 +107,7 @@ export class SeekBar extends Component<SeekBarConfig> {
    * The CSS class that is added to the DOM element while the seek bar is in 'seeking' state.
    */
   private static readonly CLASS_SEEKING = 'seeking';
+  private static readonly CLASS_CHAPTER_HOVERED = 'hovered';
 
   private seekBar: DOM;
   private seekBarPlaybackPosition: DOM;
@@ -1067,6 +1068,18 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.label.setPositionInBounds(pixelPosition, this.uiBoundingRect);
   };
 
+  private clearAllThickenedMarkers(): void {
+    this.seekBarMarkersContainer
+      .find(`.${this.prefixCss('seekbar-marker')}`)
+      ?.removeClass(this.prefixCss(SeekBar.CLASS_CHAPTER_HOVERED));
+  }
+
+  private thickenMarker(marker: SeekBarMarker | null): void {
+    if (marker?.element) {
+      marker.element.addClass(this.prefixCss(SeekBar.CLASS_CHAPTER_HOVERED));
+    }
+  }
+
   protected onSeekPreviewEvent(percentage: number, targetOffsetPx: number, scrubbing: boolean) {
     let snappedMarker = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(percentage);
 
@@ -1093,6 +1106,11 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.updateLabelPosition(targetOffsetPx);
     }
 
+    if (scrubbing) {
+      this.clearAllThickenedMarkers();
+      this.thickenMarker(snappedMarker);
+    }
+
     this.seekBarEvents.onSeekPreview.dispatch(this, {
       scrubbing: scrubbing,
       position: seekPositionPercentage,
@@ -1101,6 +1119,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekedEvent(percentage: number) {
+    this.clearAllThickenedMarkers();
     this.seekBarEvents.onSeeked.dispatch(this, percentage);
   }
 
