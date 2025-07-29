@@ -35,7 +35,7 @@ $seekbar-height: .3125em;
     @extend %bar;
 
     @include seekbar-position-marker($seekbar-height * 3);
-    background-color: $color-highlight;
+    background-color: $color-primary;
     border-radius: 50%;
     box-shadow: 0 0 3px 0 transparentize($color: #000, $amount: .75);
   }
@@ -82,7 +82,7 @@ $seekbar-height: .3125em;
 
     .#{$prefix}-seekbar-playbackposition {
       @extend %bar;
-      background-color: $color-highlight;
+      background-color: $color-primary;
       margin: $bar-inset 0;
       transition: .1s linear, .1s linear;
       transition-property: transform;
