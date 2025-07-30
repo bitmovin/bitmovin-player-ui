@@ -519,15 +519,7 @@ function smallScreenAdsUILayout() {
         ],
         cssClasses: ['controlbar-top'],
       }),
-      new Container({
-        components: [
-          new PlaybackToggleButton(),
-          new VolumeToggleButton(),
-          new Spacer(),
-          new FullscreenToggleButton(),
-        ],
-        cssClasses: ['controlbar-bottom'],
-      }),
+      new AdControlBarBottom(),
     ],
   });
 
