@@ -40,6 +40,7 @@ export class TimelineMarkersHandler {
   }
 
   private configureMarkers(): void {
+    this.clearMarkers();
     // Remove markers when unloaded
     this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => this.clearMarkers());
     this.player.on(this.player.exports.PlayerEvent.AdBreakStarted, () => this.clearMarkers());
