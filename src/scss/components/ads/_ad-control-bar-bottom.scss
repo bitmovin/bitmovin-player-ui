@@ -3,29 +3,18 @@
 
 .#{$prefix}-ui-controlbar {
   .#{$prefix}-ad-controlbar-bottom {
+    @include hidden-slide-down;
+
     white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
 
     > .#{$prefix}-container-wrapper {
       display: flex;
       margin: .5em 0;
+
+      .#{$prefix}-ui-volumeslider {
+        margin: auto .5em;
+        width: 5em;
+      }
     }
-
-    .#{$prefix}-container-wrapper .#{$prefix}-ui-volumeslider {
-      margin: auto .5em;
-      width: 5em;
-    }
-  }
-
-  .#{$prefix}-ad-controlbar-bottom {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: auto;
-  }
-
-  .#{$prefix}-ad-controlbar-bottom.bm-hide {
-    opacity: 0;
-    transform: translateY(20px); // slide down slightly
-    pointer-events: none;
   }
 }

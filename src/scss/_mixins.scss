@@ -57,6 +57,18 @@
   transition: $transitions-string;
 }
 
+@mixin hidden-slide-down($duration: $animation-duration, $distance: 20px) {
+  transition: opacity $duration ease, transform $duration ease;
+  opacity: 1;
+  transform: translateY(0);
+
+  &.#{$prefix}-hidden-slide-down {
+    opacity: 0;
+    transform: translateY($distance);
+    pointer-events: none;
+  }
+}
+
 // Cover the whole parent element
 @mixin layout-cover {
   height: 100%;
