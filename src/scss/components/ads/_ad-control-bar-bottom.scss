@@ -9,12 +9,12 @@
 
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: 0.5em 0;
+      margin: .5em 0;
+
+      .#{$prefix}-ui-volumeslider {
+        margin: auto .5em;
+        width: 5em;
+      }
     }
   }
-}
-
-.#{$prefix}-ad-controlbar-bottom > .#{$prefix}-container-wrapper .#{$prefix}-ui-volumeslider {
-  margin: auto 0.5em;
-  width: 5em;
 }
