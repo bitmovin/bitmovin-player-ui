@@ -62,7 +62,7 @@
   opacity: 1;
   transform: translateY(0);
 
-  &.#{$prefix}-hidden-slide-down {
+  &.#{$prefix}-hidden {
     opacity: 0;
     transform: translateY($distance);
     pointer-events: none;

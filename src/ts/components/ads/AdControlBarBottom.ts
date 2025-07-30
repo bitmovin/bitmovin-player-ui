@@ -31,11 +31,11 @@ export class AdControlBarBottom extends Container<ContainerConfig> {
     });
 
     uimanager.onControlsShow.subscribe(() => {
-      this.getDomElement().removeClass(this.prefixCss('hidden-slide-down'));
+      this.show();
     });
 
     uimanager.onControlsHide.subscribe(() => {
-      this.getDomElement().addClass(this.prefixCss('hidden-slide-down'));
+      this.hide();
     });
   }
 }
