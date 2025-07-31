@@ -107,6 +107,7 @@ export class SeekBar extends Component<SeekBarConfig> {
    * The CSS class that is added to the DOM element while the seek bar is in 'seeking' state.
    */
   private static readonly CLASS_SEEKING = 'seeking';
+  private static readonly CLASS_CHAPTER_HOVERED = 'hovered';
 
   private seekBar: DOM;
   private seekBarPlaybackPosition: DOM;
@@ -457,7 +458,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.show();
       }
       playbackPositionHandler(null, true);
-      this.refreshPlaybackPosition();
+      this.refreshLayout();
     };
     let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
@@ -482,17 +483,17 @@ export class SeekBar extends Component<SeekBarConfig> {
     // Refresh the playback position when the player resized or the UI is configured. The playback position marker
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
-      this.refreshPlaybackPosition();
+      this.refreshLayout();
       this.uiBoundingRect = this.uiManager.getUI().getDomElement().get(0).getBoundingClientRect();
     });
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
     // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
     uimanager.onConfigured.subscribe(() => {
-      this.refreshPlaybackPosition();
+      this.refreshLayout();
     });
     // It can also happen when a new source is loaded
     player.on(player.exports.PlayerEvent.SourceLoaded, () => {
-      this.refreshPlaybackPosition();
+      this.refreshLayout();
     });
     // Add markers when a source is loaded or update when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(() => {
@@ -745,10 +746,14 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
     this.seekBarMarkersContainer = seekBarChapterMarkersContainer;
 
-    seekBarBarsContainer.append(this.seekBarBackdrop, this.seekBarBufferPosition, this.seekBarSeekPosition,
-      this.seekBarPlaybackPosition, this.seekBarMarkersContainer);
+    seekBarBarsContainer.append(
+      this.seekBarBackdrop,
+      this.seekBarBufferPosition,
+      this.seekBarSeekPosition,
+      this.seekBarPlaybackPosition
+    );
 
-    seekBar.append(seekBarBarsContainer, this.seekBarPlaybackPositionMarker);
+    seekBar.append(seekBarBarsContainer, this.seekBarMarkersContainer, this.seekBarPlaybackPositionMarker);
 
     let seeking = false;
 
@@ -978,6 +983,24 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   /**
+   * Refreshes the layout of the seek bar.
+   *
+   * This includes:
+   * - Re-positioning the playback marker
+   * - Reinitializing timeline markers
+   *
+   * Should be called after UI resizes or layout-affecting events like showing the component.
+   * Subclasses may override this if they introduce custom layout logic.
+   */
+  protected refreshLayout(): void {
+    this.refreshPlaybackPosition();
+
+    if (this.player && this.uiManager) {
+      this.initializeTimelineMarkers(this.player, this.uiManager);
+    }
+  }
+
+  /**
    * Sets the position until which media is buffered.
    * @param percent a number between 0 and 100
    */
@@ -1077,6 +1100,18 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.label.setPositionInBounds(pixelPosition, this.uiBoundingRect);
   };
 
+  private clearAllThickenedMarkers(): void {
+    this.seekBarMarkersContainer
+      .find(`.${this.prefixCss('seekbar-marker')}`)
+      ?.removeClass(this.prefixCss(SeekBar.CLASS_CHAPTER_HOVERED));
+  }
+
+  private thickenMarker(marker: SeekBarMarker | null): void {
+    if (marker?.element) {
+      marker.element.addClass(this.prefixCss(SeekBar.CLASS_CHAPTER_HOVERED));
+    }
+  }
+
   protected onSeekPreviewEvent(percentage: number, targetOffsetPx: number, scrubbing: boolean) {
     let snappedMarker = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(percentage);
 
@@ -1103,6 +1138,11 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.updateLabelPosition(targetOffsetPx);
     }
 
+    if (scrubbing) {
+      this.clearAllThickenedMarkers();
+      this.thickenMarker(snappedMarker);
+    }
+
     this.seekBarEvents.onSeekPreview.dispatch(this, {
       scrubbing: scrubbing,
       position: seekPositionPercentage,
@@ -1111,6 +1151,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekedEvent(percentage: number) {
+    this.clearAllThickenedMarkers();
     this.seekBarEvents.onSeeked.dispatch(this, percentage);
   }
 
@@ -1144,12 +1185,14 @@ export class SeekBar extends Component<SeekBarConfig> {
   protected onShowEvent(): void {
     super.onShowEvent();
 
-    // Refresh the position of the playback position when the seek bar becomes visible. To correctly set the position,
-    // the DOM element must be fully initialized an have its size calculated, because the position is set as an absolute
-    // value calculated from the size. This required size is not known when it is hidden.
-    // For such cases, we refresh the position here in onShow because here it is guaranteed that the component knows
-    // its size and can set the position correctly.
-    this.refreshPlaybackPosition();
+    // Refresh the layout when the seek bar becomes visible.
+    // To correctly position the playback marker and timeline markers,
+    // the DOM element must be fully initialized and have its size calculated,
+    // as their positions are based on absolute values derived from the element's dimensions.
+    // When hidden (e.g., via `display: none`), these dimensions are not available.
+    // By refreshing the layout here in `onShow`, we ensure the component knows its size
+    // and can place the playback and timeline markers accurately.
+    this.refreshLayout();
   }
 
   /**

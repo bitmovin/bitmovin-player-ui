@@ -2,6 +2,7 @@ import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { SeekBar } from '../../../src/ts/components/seekbar/SeekBar';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { Timeout } from '../../../src/ts/utils/Timeout';
+import { DOM } from '../../../src/ts/DOM';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -14,6 +15,7 @@ describe('SeekBar', () => {
     uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
 
     seekbar = new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: 1 });
+    seekbar.getDomElement();
   });
 
   describe('becomes visible when switching from live to vod', () => {

@@ -7,7 +7,7 @@
 
   bottom: 100%;
   left: 0;
-  margin-bottom: .75em;
+  margin-bottom: .2em;
   pointer-events: none;
   position: absolute;
   text-align: center;
@@ -27,38 +27,44 @@
   }
 
   .#{$prefix}-seekbar-label-inner {
-    border: solid $color-primary .0625em;
-    border-radius: .5em;
     overflow: hidden;
 
     > .#{$prefix}-container-wrapper {
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
 
       .#{$prefix}-seekbar-thumbnail {
         width: 7em;
+        border: solid $color-primary .0625em;
+        border-radius: .4em;
       }
 
       .#{$prefix}-seekbar-label-metadata {
-        background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
+        background-color: $color-background-seekbar-label;
         bottom: 0;
         box-sizing: border-box;
+        display: inline-block;
+        padding: .3em .5em;
+        width: fit-content;
+        border-radius: .4em;
+      }
+
+      .#{$prefix}-seekbar-label-time {
         display: block;
-        padding: .5em;
-        position: absolute;
-        width: 100%;
+        font-weight: 500;
+        line-height: .8em;
+        margin-top: .5em;
+      }
 
-        .#{$prefix}-seekbar-label-time {
-          display: block;
-          font-weight: 500;
-          line-height: .8em;
-        }
+      .#{$prefix}-seekbar-label-title {
+        @include hidden;
 
-        .#{$prefix}-seekbar-label-title {
-          display: block;
-          font-weight: 500;
-          margin-bottom: .3em;
-          white-space: normal;
-        }
+        display: block;
+        font-weight: 600;
+        white-space: normal;
+        margin-bottom: .5em;
       }
     }
   }
