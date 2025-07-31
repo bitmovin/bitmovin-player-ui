@@ -702,9 +702,10 @@ function tvAdsUILayout() {
   });
   const uiContainer = new UIContainer({
     components: [
-      new SubtitleOverlay(),
       new BufferingOverlay(),
+      new AdClickOverlay(),
       playbackToggleOverlay,
+      new AdStatusOverlay(),
       new ControlBar({
         components: [
           new Container({
@@ -731,7 +732,6 @@ function tvAdsUILayout() {
         ],
         keepHiddenWithoutMetadata: true,
       }),
-      new RecommendationOverlay(),
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-tv', 'ui-ads'],
