@@ -682,9 +682,6 @@ function tvUILayout() {
 }
 
 function tvAdsUILayout() {
-  const subtitleListBox = new SubtitleListBox();
-  const audioTrackListBox = new AudioTrackListBox();
-
   const seekBar = new SeekBar({ label: new SeekBarLabel() });
   const playbackToggleOverlay = new PlaybackToggleOverlay();
   const uiContainer = new UIContainer({
@@ -732,8 +729,6 @@ function tvAdsUILayout() {
 
   const spatialNavigation = new SpatialNavigation(
     new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar),
-    new ListNavigationGroup(ListOrientation.Vertical, subtitleListBox),
-    new ListNavigationGroup(ListOrientation.Vertical, audioTrackListBox),
   );
 
   return {
