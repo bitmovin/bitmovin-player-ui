@@ -727,21 +727,12 @@ function tvAdsUILayout() {
         components: [
           new Container({
             components: [
-              new MetadataLabel({ content: MetadataLabelContent.Title }),
-              subtitleToggleButton,
-              audioToggleButton,
+              new AdMessageLabel(),
             ],
             cssClasses: ['ui-titlebar-top'],
           }),
-          new Container({
-            components: [
-              new MetadataLabel({ content: MetadataLabelContent.Description }),
-              subtitleListBox,
-              audioTrackListBox,
-            ],
-            cssClasses: ['ui-titlebar-bottom'],
-          }),
         ],
+        keepHiddenWithoutMetadata: true,
       }),
       new RecommendationOverlay(),
       new ErrorMessageOverlay(),
