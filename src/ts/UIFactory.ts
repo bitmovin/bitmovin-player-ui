@@ -106,15 +106,15 @@ export namespace UIFactory {
           },
         },
         {
-          ...tvUILayout(),
+          ...tvAdsUILayout(),
           condition: (context: UIConditionContext) => {
-            return context.isTv && !context.isAd;
+            return context.isTv && context.isAd && context.adRequiresUi;
           }
         },
         {
           ...tvUILayout(),
           condition: (context: UIConditionContext) => {
-            return context.isTv && context.isAd && context.adRequiresUi;
+            return context.isTv && !context.isAd && !context.adRequiresUi;
           }
         },
         {
@@ -193,7 +193,16 @@ export namespace UIFactory {
       player,
       [
         {
+          ...tvAdsUILayout(),
+          condition: (context: UIConditionContext) => {
+            return context.isAd && context.adRequiresUi;
+          },
+        },
+        {
           ...tvUILayout(),
+          condition: (context: UIConditionContext) => {
+            return !context.isAd && !context.adRequiresUi;
+          },
         },
       ],
       config,
