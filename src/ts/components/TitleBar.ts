@@ -52,7 +52,7 @@ export class TitleBar extends Container<TitleBarConfig> {
     let hasVisibleText = true;
 
     const checkTextAndUpdateVisibility = () => {
-      hasVisibleText = this.scanLabelsForText(this.getComponents());
+      hasVisibleText = this.hasNonEmptyComponents(this.getComponents());
 
       if (this.isShown()) {
         if (config.keepHiddenWithoutMetadata && !hasVisibleText) {
@@ -83,14 +83,14 @@ export class TitleBar extends Container<TitleBarConfig> {
     checkTextAndUpdateVisibility();
   }
 
-  private scanLabelsForText(components: Component<ComponentConfig>[]): boolean {
+  private hasNonEmptyComponents(components: Component<ComponentConfig>[]): boolean {
     for (const component of components) {
       if (component instanceof Label && !component.isEmpty()) {
         return true;
       }
 
       if (component instanceof Container) {
-        if (this.scanLabelsForText(component.getComponents())) {
+        if (this.hasNonEmptyComponents(component.getComponents())) {
           return true;
         }
       }
