@@ -709,10 +709,7 @@ function tvAdsUILayout() {
         components: [
           new Container({
             components: [
-              new PlaybackTimeLabel({
-                timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
-                hideInLivePlayback: true,
-              }),
+              new AdCounterLabel(),
               seekBar,
               new PlaybackTimeLabel({
                 timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
