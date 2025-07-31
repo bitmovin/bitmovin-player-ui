@@ -85,7 +85,7 @@ export class TitleBar extends Container<TitleBarConfig> {
 
   private hasNonEmptyComponents(components: Component<ComponentConfig>[]): boolean {
     for (const component of components) {
-      if (component instanceof Label && !component.isEmpty()) {
+      if (hasIsEmpty(component) && !component.isEmpty()) {
         return true;
       }
 
@@ -109,4 +109,8 @@ export class TitleBar extends Container<TitleBarConfig> {
       }
     }
   }
+}
+
+function hasIsEmpty(obj: unknown): obj is { isEmpty: () => boolean } {
+  return typeof obj === 'object' && obj !== null && typeof (obj as any).isEmpty === 'function';
 }
