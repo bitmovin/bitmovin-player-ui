@@ -687,19 +687,6 @@ function tvAdsUILayout() {
 
   const seekBar = new SeekBar({ label: new SeekBarLabel() });
   const playbackToggleOverlay = new PlaybackToggleOverlay();
-  const subtitleToggleButton = new SettingsToggleButton({
-    settingsPanel: subtitleListBox,
-    autoHideWhenNoActiveSettings: true,
-    cssClass: 'ui-subtitlesettingstogglebutton',
-    text: i18n.getLocalizer('settings.subtitles'),
-  });
-  const audioToggleButton = new SettingsToggleButton({
-    settingsPanel: audioTrackListBox,
-    autoHideWhenNoActiveSettings: true,
-    cssClass: 'ui-audiotracksettingstogglebutton',
-    ariaLabel: i18n.getLocalizer('settings.audio.track'),
-    text: i18n.getLocalizer('settings.audio.track'),
-  });
   const uiContainer = new UIContainer({
     components: [
       new BufferingOverlay(),
@@ -744,7 +731,7 @@ function tvAdsUILayout() {
   });
 
   const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, audioToggleButton, subtitleToggleButton),
+    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar),
     new ListNavigationGroup(ListOrientation.Vertical, subtitleListBox),
     new ListNavigationGroup(ListOrientation.Vertical, audioTrackListBox),
   );
