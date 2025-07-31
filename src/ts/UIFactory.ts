@@ -529,6 +529,17 @@ function smallScreenAdsUILayout() {
       new AdClickOverlay(),
       new PlaybackToggleOverlay(),
       controlBar,
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              new AdMessageLabel(),
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+        ],
+        keepHiddenWithoutMetadata: true,
+      }),
       new AdStatusOverlay(),
       new ErrorMessageOverlay(),
     ],
