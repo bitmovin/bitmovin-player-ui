@@ -682,8 +682,89 @@ function tvUILayout() {
 }
 
 function tvAdsUILayout() {
-  // TODO: implement once we have a design for TV ads
-  return tvUILayout();
+  const subtitleListBox = new SubtitleListBox();
+  const audioTrackListBox = new AudioTrackListBox();
+
+  const seekBar = new SeekBar({ label: new SeekBarLabel() });
+  const playbackToggleOverlay = new PlaybackToggleOverlay();
+  const subtitleToggleButton = new SettingsToggleButton({
+    settingsPanel: subtitleListBox,
+    autoHideWhenNoActiveSettings: true,
+    cssClass: 'ui-subtitlesettingstogglebutton',
+    text: i18n.getLocalizer('settings.subtitles'),
+  });
+  const audioToggleButton = new SettingsToggleButton({
+    settingsPanel: audioTrackListBox,
+    autoHideWhenNoActiveSettings: true,
+    cssClass: 'ui-audiotracksettingstogglebutton',
+    ariaLabel: i18n.getLocalizer('settings.audio.track'),
+    text: i18n.getLocalizer('settings.audio.track'),
+  });
+  const uiContainer = new UIContainer({
+    components: [
+      new SubtitleOverlay(),
+      new BufferingOverlay(),
+      playbackToggleOverlay,
+      new ControlBar({
+        components: [
+          new Container({
+            components: [
+              new PlaybackTimeLabel({
+                timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+                hideInLivePlayback: true,
+              }),
+              seekBar,
+              new PlaybackTimeLabel({
+                timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+                cssClasses: ['text-right'],
+              }),
+            ],
+            cssClasses: ['controlbar-top'],
+          }),
+        ],
+      }),
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              new MetadataLabel({ content: MetadataLabelContent.Title }),
+              subtitleToggleButton,
+              audioToggleButton,
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+          new Container({
+            components: [
+              new MetadataLabel({ content: MetadataLabelContent.Description }),
+              subtitleListBox,
+              audioTrackListBox,
+            ],
+            cssClasses: ['ui-titlebar-bottom'],
+          }),
+        ],
+      }),
+      new RecommendationOverlay(),
+      new ErrorMessageOverlay(),
+    ],
+    cssClasses: ['ui-tv'],
+    hideDelay: 2000,
+    hidePlayerStateExceptions: [
+      PlayerUtils.PlayerState.Prepared,
+      PlayerUtils.PlayerState.Paused,
+      PlayerUtils.PlayerState.Finished,
+    ],
+  });
+
+  const spatialNavigation = new SpatialNavigation(
+    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, audioToggleButton, subtitleToggleButton),
+    new ListNavigationGroup(ListOrientation.Vertical, subtitleListBox),
+    new ListNavigationGroup(ListOrientation.Vertical, audioTrackListBox),
+  );
+
+  return {
+    ui: uiContainer,
+    spatialNavigation: spatialNavigation,
+  };
 }
 
 /**
