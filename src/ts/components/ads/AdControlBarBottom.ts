@@ -23,6 +23,27 @@ export class AdControlBarBottom extends Container<ContainerConfig> {
     });
   }
 
+  hide(): void {
+    super.hide();
+
+    const controlBarTop = document.querySelector('.bmpui-ui-controlbar .ad-controlbar-top') as HTMLElement;
+    console.log(controlBarTop);
+    if (controlBarTop) {
+      controlBarTop.style.transition = 'transform 0.35s ease';
+      controlBarTop.style.transform = 'translateY(30px)';
+    }
+  }
+
+  show(): void {
+    super.show();
+
+    const controlBarTop = document.querySelector('.bmpui-ui-controlbar .ad-controlbar-top') as HTMLElement;
+    if (controlBarTop) {
+      controlBarTop.style.transition = 'transform 0.35s ease';
+      controlBarTop.style.transform = 'translateY(0)';
+    }
+  }
+
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
