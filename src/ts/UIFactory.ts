@@ -734,7 +734,7 @@ function tvAdsUILayout() {
       new RecommendationOverlay(),
       new ErrorMessageOverlay(),
     ],
-    cssClasses: ['ui-tv'],
+    cssClasses: ['ui-tv', 'ui-ads'],
     hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
