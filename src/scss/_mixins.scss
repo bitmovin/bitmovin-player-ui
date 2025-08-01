@@ -72,7 +72,7 @@
 @mixin slide-down($duration: $animation-duration, $distance: 30px) {
   transition: transform $duration ease;
   
-  &.#{$prefix}-bottom-hidden {
+  &.#{$prefix}-slid-down {
     transform: translateY($distance);
   }
 

@@ -12,7 +12,7 @@ import { UIInstanceManager } from '../../UIManager';
 export class AdControlBarBottom extends Container<ContainerConfig> {
   private static readonly CLASS_TOP_AD_CONTROL_BAR = 'ad-controlbar-top';
   private static readonly CLASS_AD_SKIP_BUTTON = 'ui-button-ad-skip';
-  private static readonly CLASS_BOTTOM_HIDDEN = 'bottom-hidden';
+  private static readonly CLASS_BOTTOM_HIDDEN = 'slid-down';
 
   constructor(config: Partial<ContainerConfig> = {}) {
     super({
