@@ -11,6 +11,7 @@ import { UIInstanceManager } from '../../UIManager';
  */
 export class AdControlBarBottom extends Container<ContainerConfig> {
   private static readonly CLASS_TOP_AD_CONTROL_BAR = 'ad-controlbar-top';
+  private static readonly CLASS_AD_SKIP_BUTTON = 'ui-button-ad-skip';
   private static readonly CLASS_BOTTOM_HIDDEN = 'bottom-hidden';
 
   constructor(config: Partial<ContainerConfig> = {}) {
@@ -33,6 +34,11 @@ export class AdControlBarBottom extends Container<ContainerConfig> {
     if (controlBarTop) {
       controlBarTop.classList.add(this.prefixCss(AdControlBarBottom.CLASS_BOTTOM_HIDDEN));
     }
+
+    const skipBtn = document.querySelector(`.${this.prefixCss(AdControlBarBottom.CLASS_AD_SKIP_BUTTON)}`) as HTMLElement;
+    if (skipBtn) {
+      skipBtn.classList.add(this.prefixCss(AdControlBarBottom.CLASS_BOTTOM_HIDDEN));
+    }
   }
 
   show(): void {
@@ -41,6 +47,11 @@ export class AdControlBarBottom extends Container<ContainerConfig> {
     const controlBarTop = document.querySelector(`.${AdControlBarBottom.CLASS_TOP_AD_CONTROL_BAR}`) as HTMLElement;
     if (controlBarTop) {
       controlBarTop.classList.remove(this.prefixCss(AdControlBarBottom.CLASS_BOTTOM_HIDDEN));
+    }
+
+    const skipBtn = document.querySelector(`.${this.prefixCss(AdControlBarBottom.CLASS_AD_SKIP_BUTTON)}`) as HTMLElement;
+    if (skipBtn) {
+      skipBtn.classList.remove(this.prefixCss(AdControlBarBottom.CLASS_BOTTOM_HIDDEN));
     }
   }
 
