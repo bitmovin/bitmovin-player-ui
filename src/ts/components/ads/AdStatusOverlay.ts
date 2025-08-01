@@ -9,8 +9,12 @@ import { ControlBar } from '../ControlBar';
 export class AdStatusOverlay extends Container<ContainerConfig> {
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
 
+  public readonly adSkipButton: AdSkipButton;
+
   constructor(config: ContainerConfig = {}) {
     super(config);
+
+    this.adSkipButton = new AdSkipButton();
 
     this.config = this.mergeConfig(
       config,
@@ -19,7 +23,7 @@ export class AdStatusOverlay extends Container<ContainerConfig> {
           new Container({
             components: [
               new Spacer(),
-              new AdSkipButton(),
+              this.adSkipButton,
             ],
             cssClasses: ['bar'],
           }),

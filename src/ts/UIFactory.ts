@@ -684,12 +684,14 @@ function tvUILayout() {
 function tvAdsUILayout() {
   const seekBar = new SeekBar({ label: new SeekBarLabel() });
   const playbackToggleOverlay = new PlaybackToggleOverlay();
+  const adStatusOverlay = new AdStatusOverlay();
+
   const uiContainer = new UIContainer({
     components: [
       new BufferingOverlay(),
       new AdClickOverlay(),
       playbackToggleOverlay,
-      new AdStatusOverlay(),
+      adStatusOverlay,
       new ControlBar({
         components: [
           new Container({
@@ -728,7 +730,12 @@ function tvAdsUILayout() {
   });
 
   const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar),
+    new RootNavigationGroup(
+      uiContainer,
+      playbackToggleOverlay,
+      seekBar,
+      adStatusOverlay.adSkipButton
+    ),
   );
 
   return {
