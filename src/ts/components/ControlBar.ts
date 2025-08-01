@@ -84,6 +84,10 @@ export class ControlBar extends Container<ControlBarConfig> {
       this.show();
     });
 
+    player.on(player.exports.PlayerEvent.AdBreakFinished, () => {
+      this.hide();
+    });
+
     uimanager.onControlsShow.subscribe(() => {
       this.show();
     });
