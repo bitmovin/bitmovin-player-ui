@@ -352,6 +352,7 @@ function adsUILayout() {
       }),
       new AdControlBarBottom(),
     ],
+    cssClasses: ['ad-controlbar'],
   });
 
   return new UIContainer({
@@ -521,6 +522,7 @@ function smallScreenAdsUILayout() {
       }),
       new AdControlBarBottom(),
     ],
+    cssClasses: ['ad-controlbar'],
   });
 
   return new UIContainer({
