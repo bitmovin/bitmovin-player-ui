@@ -129,8 +129,6 @@ export class UIManager {
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
 
-  private static readonly CLASS_UI_ADS = 'bmpui-ui-ads';
-
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
     onActiveUiChanged: new EventDispatcher<UIManager, ActiveUiChangedArgs>(),
@@ -463,19 +461,18 @@ export class UIManager {
     if (onShow) {
       onShow();
     }
+
     // Switch to new UI variant
     this.currentUi.getUI().show();
 
     // Trigger synthetic 'mousemove' to ensure UI show/hide logic is initialized.
-    // Otherwise events like ControlsHide will not automatically fire without an
-    // initial mouse movement from the user.
+    // In UIContainer, we detect user activity with mouse events (e.g. `mousemove`)
+    // and start the auto-hide logic accordingly. However, when switching UI,
+    // the mouse can already be inside the player, so no natural `mousemove` event fires. 
     const adUiContainer = this.currentUi.getUI();
-    const adDomElement = adUiContainer.getDomElement();
-    if (adDomElement.hasClass(UIManager.CLASS_UI_ADS)) {
-      const htmlElement = adDomElement.get(0);
-      if (htmlElement) {
-        htmlElement.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
-      }
+    const htmlElement = adUiContainer.getDomElement().get(0);
+    if (htmlElement) {
+      htmlElement.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
     }
 
     this.events.onActiveUiChanged.dispatch(this, { previousUi, currentUi: nextUi });
