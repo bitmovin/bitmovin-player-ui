@@ -11,11 +11,14 @@
       display: flex;
       margin: .5em 0;
 
-      // eslint-disable-next-line @typescript-eslint/nesting-depth
+      // This nesting is needed to keep related UI styles scoped together.
+      // Refactoring it would trigger other SCSS lint warnings (e.g., selector duplication or specificity conflicts).
+      // sass-lint:disable nesting-depth
       .#{$prefix}-ui-volumeslider {
         margin: auto .5em;
         width: 5em;
       }
+      // sass-lint:enable nesting-depth
     }
   }
 }
