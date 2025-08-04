@@ -1,14 +1,14 @@
-import { Container, ContainerConfig } from './container';
-import { UIInstanceManager } from '../uimanager';
-import { Label, LabelConfig } from './label';
-import { ComponentConfig, Component } from './component';
-import { ControlBar } from './controlbar';
-import { EventDispatcher } from '../eventdispatcher';
-import { DOM, Size } from '../dom';
 import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
-import { i18n } from '../localization/i18n';
-import { VttUtils } from '../vttutils';
 import { VTTProperties } from 'bitmovin-player/types/subtitles/vtt/API';
+import { DOM, Size } from '../dom';
+import { EventDispatcher } from '../eventdispatcher';
+import { i18n } from '../localization/i18n';
+import { UIInstanceManager } from '../uimanager';
+import { VttUtils } from '../vttutils';
+import { Component, ComponentConfig } from './component';
+import { Container, ContainerConfig } from './container';
+import { ControlBar } from './controlbar';
+import { Label, LabelConfig } from './label';
 import { ListItemFilter } from './listselector';
 
 interface SubtitleCropDetectionResult {
@@ -239,7 +239,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     // We need to keep track of the original row position in case of recalculation.
     const originalRowNumber = event.position?.row || 0;
 
-    if (event.position) {
+    if (isCea608SubtitleCue(event)) {
       event.position.row = this.resolveRowNumber(event.position.row) || 0;
       event.position.column = event.position.column || 0;
 
@@ -444,8 +444,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     });
 
     this.preprocessLabelEventCallback.subscribe((event: SubtitleCueEvent, label: SubtitleLabel) => {
-      const isCEA608 = event.position != null;
-      if (!isCEA608) {
+      if (!isCea608SubtitleCue(event)) {
         // Skip all non-CEA608 cues
         return;
       }
@@ -863,4 +862,8 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
   public isEmpty(): boolean {
     return this.labelCount === 0;
   }
+}
+
+function isCea608SubtitleCue(cue: SubtitleCueEvent): boolean {
+  return cue.position != null;
 }
