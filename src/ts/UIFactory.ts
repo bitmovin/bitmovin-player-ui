@@ -682,10 +682,8 @@ function tvUILayout() {
 }
 
 function tvAdsUILayout() {
-  const seekBar = new SeekBar({ label: new SeekBarLabel() });
   const playbackToggleOverlay = new PlaybackToggleOverlay();
   const adStatusOverlay = new AdStatusOverlay();
-
   const uiContainer = new UIContainer({
     components: [
       new BufferingOverlay(),
@@ -697,7 +695,7 @@ function tvAdsUILayout() {
           new Container({
             components: [
               new AdCounterLabel(),
-              seekBar,
+              new SeekBar({ label: new SeekBarLabel() }),
               new PlaybackTimeLabel({
                 timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
                 cssClasses: ['text-right'],
@@ -733,7 +731,6 @@ function tvAdsUILayout() {
     new RootNavigationGroup(
       uiContainer,
       playbackToggleOverlay,
-      seekBar,
       adStatusOverlay.adSkipButton
     ),
   );
