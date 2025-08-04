@@ -11,6 +11,7 @@
       display: flex;
       margin: .5em 0;
 
+      // eslint-disable-next-line @typescript-eslint/nesting-depth
       .#{$prefix}-ui-volumeslider {
         margin: auto .5em;
         width: 5em;
