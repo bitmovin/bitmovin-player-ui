@@ -69,6 +69,15 @@
   }
 }
 
+@mixin slide-down($duration: $animation-duration, $distance: 30px) {
+  transition: transform $duration ease;
+  transform: translateY(0);
+
+  &.#{$prefix}-slid-down {
+    transform: translateY($distance);
+  }
+}
+
 // Cover the whole parent element
 @mixin layout-cover {
   height: 100%;

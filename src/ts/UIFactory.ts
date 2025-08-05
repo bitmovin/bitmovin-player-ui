@@ -357,10 +357,11 @@ function adsUILayout() {
             cssClasses: ['text-right'],
           }),
         ],
-        cssClasses: ['controlbar-top'],
+        cssClasses: ['controlbar-top ad-controlbar-top'],
       }),
       new AdControlBarBottom(),
     ],
+    cssClasses: ['ad-controlbar'],
   });
 
   return new UIContainer({
@@ -526,10 +527,11 @@ function smallScreenAdsUILayout() {
             cssClasses: ['text-right'],
           }),
         ],
-        cssClasses: ['controlbar-top'],
+        cssClasses: ['controlbar-top ad-controlbar-top'],
       }),
       new AdControlBarBottom(),
     ],
+    cssClasses: ['ad-controlbar'],
   });
 
   return new UIContainer({
