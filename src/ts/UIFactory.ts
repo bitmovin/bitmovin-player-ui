@@ -106,15 +106,15 @@ export namespace UIFactory {
           },
         },
         {
-          ...tvUILayout(),
+          ...tvAdsUILayout(),
           condition: (context: UIConditionContext) => {
-            return context.isTv && !context.isAd;
+            return context.isTv && context.isAd && context.adRequiresUi;
           }
         },
         {
           ...tvUILayout(),
           condition: (context: UIConditionContext) => {
-            return context.isTv && context.isAd && context.adRequiresUi;
+            return context.isTv && !context.isAd && !context.adRequiresUi;
           }
         },
         {
@@ -193,7 +193,16 @@ export namespace UIFactory {
       player,
       [
         {
+          ...tvAdsUILayout(),
+          condition: (context: UIConditionContext) => {
+            return context.isAd && context.adRequiresUi;
+          },
+        },
+        {
           ...tvUILayout(),
+          condition: (context: UIConditionContext) => {
+            return !context.isAd && !context.adRequiresUi;
+          },
         },
       ],
       config,
@@ -675,8 +684,63 @@ function tvUILayout() {
 }
 
 function tvAdsUILayout() {
-  // TODO: implement once we have a design for TV ads
-  return tvUILayout();
+  const playbackToggleOverlay = new PlaybackToggleOverlay();
+  const adStatusOverlay = new AdStatusOverlay();
+  const uiContainer = new UIContainer({
+    components: [
+      new BufferingOverlay(),
+      new AdClickOverlay(),
+      playbackToggleOverlay,
+      adStatusOverlay,
+      new ControlBar({
+        components: [
+          new Container({
+            components: [
+              new AdCounterLabel(),
+              new SeekBar({ label: new SeekBarLabel() }),
+              new PlaybackTimeLabel({
+                timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+                cssClasses: ['text-right'],
+              }),
+            ],
+            cssClasses: ['controlbar-top'],
+          }),
+        ],
+      }),
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              new AdMessageLabel(),
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+        ],
+        keepHiddenWithoutMetadata: true,
+      }),
+      new ErrorMessageOverlay(),
+    ],
+    cssClasses: ['ui-tv', 'ui-ads'],
+    hideDelay: 2000,
+    hidePlayerStateExceptions: [
+      PlayerUtils.PlayerState.Prepared,
+      PlayerUtils.PlayerState.Paused,
+      PlayerUtils.PlayerState.Finished,
+    ],
+  });
+
+  const spatialNavigation = new SpatialNavigation(
+    new RootNavigationGroup(
+      uiContainer,
+      playbackToggleOverlay,
+      adStatusOverlay.adSkipButton
+    ),
+  );
+
+  return {
+    ui: uiContainer,
+    spatialNavigation: spatialNavigation,
+  };
 }
 
 /**
