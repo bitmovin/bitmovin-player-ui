@@ -261,15 +261,25 @@ export class SeekBar extends Component<SeekBarConfig> {
       return;
     }
 
-    uimanager.onControlsShow.subscribe(() => {
+    const resumeSeekBarUpdates = () => {
       this.isUiShown = true;
       if (this.smoothPlaybackPositionUpdater && !player.isLive() && !this.smoothPlaybackPositionUpdater.isActive()) {
         playbackPositionHandler(null, true);
         this.smoothPlaybackPositionUpdater.start();
       }
-    });
+    };
+
+    player.on(player.exports.PlayerEvent.AdStarted, resumeSeekBarUpdates);
+
+    uimanager.onControlsShow.subscribe(resumeSeekBarUpdates);
 
     uimanager.onControlsHide.subscribe(() => {
+      // Keep seekbar always active during the playback of a linear ad
+      const isAdPlaying = player.ads.isLinearAdActive();
+      if (isAdPlaying) {
+        return;
+      }
+
       this.isUiShown = false;
       if (this.smoothPlaybackPositionUpdater && this.smoothPlaybackPositionUpdater.isActive()) {
         this.smoothPlaybackPositionUpdater.clear();
