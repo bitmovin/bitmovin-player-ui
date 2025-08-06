@@ -16,6 +16,7 @@ import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './u
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
+import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 
 /**
  * @category Configs
@@ -648,6 +649,8 @@ export class UIInstanceManager {
     onPreviewControlsHide: new EventDispatcher<UIContainer, CancelEventArgs>(),
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
     onRelease: new EventDispatcher<UIContainer, NoArgs>(),
+    onBufferingShow: new EventDispatcher<BufferingOverlay, NoArgs>(),
+    onBufferingHide: new EventDispatcher<BufferingOverlay, NoArgs>(),
   };
 
   constructor(player: PlayerAPI, ui: UIContainer, config: InternalUIConfig, subtitleSettingsManager: SubtitleSettingsManager, spatialNavigation?: SpatialNavigation) {
@@ -744,6 +747,22 @@ export class UIInstanceManager {
    */
   get onControlsHide(): EventDispatcher<UIContainer, NoArgs> {
     return this.events.onControlsHide;
+  }
+
+  /**
+   * Fires when the BufferingOverlay shows.
+   * @returns {EventDispatcher}
+   */
+  get onBufferingShow(): EventDispatcher<BufferingOverlay, NoArgs> {
+    return this.events.onBufferingShow;
+  }
+
+  /**
+   * Fires when the BufferingOverlay hides.
+   * @returns {EventDispatcher}
+   */
+  get onBufferingHide(): EventDispatcher<BufferingOverlay, NoArgs> {
+    return this.events.onBufferingHide;
   }
 
   /**
