@@ -50,6 +50,7 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     let config = this.getConfig();
 
     let overlayShowTimeout = new Timeout(config.showDelayMs, () => {
+      uimanager.onBufferingShow.dispatch(this);
       this.show();
     });
 
@@ -57,8 +58,16 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
       overlayShowTimeout.start();
     };
 
+    // Only show overlay if player is playing, otherwise e.g. when doing paused seeks, the overlay should stay hidden
+    let showOverlayIfPlaying = () => {
+      if (player.isPlaying()) {
+        showOverlay();
+      }
+    }
+
     let hideOverlay = () => {
       overlayShowTimeout.clear();
+      uimanager.onBufferingHide.dispatch(this);
       this.hide();
     };
 
@@ -67,9 +76,9 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     player.on(player.exports.PlayerEvent.Play, showOverlay);
     player.on(player.exports.PlayerEvent.Playing, hideOverlay);
     player.on(player.exports.PlayerEvent.Paused, hideOverlay);
-    player.on(player.exports.PlayerEvent.Seek, showOverlay);
+    player.on(player.exports.PlayerEvent.Seek, showOverlayIfPlaying);
     player.on(player.exports.PlayerEvent.Seeked, hideOverlay);
-    player.on(player.exports.PlayerEvent.TimeShift, showOverlay);
+    player.on(player.exports.PlayerEvent.TimeShift, showOverlayIfPlaying);
     player.on(player.exports.PlayerEvent.TimeShifted, hideOverlay);
     player.on(player.exports.PlayerEvent.SourceUnloaded, hideOverlay);
 
