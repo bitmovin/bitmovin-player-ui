@@ -159,8 +159,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
           const overlayElement = this.getDomElement().get(0);
           const transitionEndHandler = () => {
-            this.updateCEA608FontSize();
             overlayElement.removeEventListener('transitionend', transitionEndHandler);
+            this.updateCEA608FontSize();
           };
           overlayElement.addEventListener('transitionend', transitionEndHandler);
         }
@@ -175,8 +175,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
           const overlayElement = this.getDomElement().get(0);
           const transitionEndHandler = () => {
-            this.updateCEA608FontSize();
             overlayElement.removeEventListener('transitionend', transitionEndHandler);
+            this.updateCEA608FontSize();
           };
           overlayElement.addEventListener('transitionend', transitionEndHandler);
         }
