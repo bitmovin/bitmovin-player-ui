@@ -321,8 +321,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let fontSize = 0;
     // The required letter spacing spread the text characters evenly across the grid
     let fontLetterSpacing = 0;
-    // Flag telling if a font size calculation is required of if the current values are valid
-    let fontSizeCalculationRequired = true;
     // The ratio of the caption window/row height that is used as padding to make the window enclose the caption
     const windowPaddingRatio = 0.2;
     let windowPadding: number;
@@ -456,8 +454,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
       if (this.cea608Enabled) {
         updateCEA608FontSize();
-      } else {
-        fontSizeCalculationRequired = true;
       }
     });
 
@@ -470,15 +466,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       if (!this.cea608Enabled) {
         this.cea608Enabled = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-
-        // We conditionally update the font size by this flag here to avoid updating every time a subtitle
-        // is added into an empty overlay. Because we reset the overlay when all subtitles are gone, this
-        // would trigger an unnecessary update every time, but it's only required under certain conditions,
-        // e.g. after the player size has changed.
-        if (fontSizeCalculationRequired) {
-          updateCEA608FontSize();
-          fontSizeCalculationRequired = false;
-        }
       }
 
       // We disable the grid and wrapping in case enlarged font size is used to prevent
