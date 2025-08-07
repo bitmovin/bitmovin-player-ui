@@ -375,7 +375,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // most browsers, but Safari has a "quantized" font size rendering with huge steps in between so we need
       // to subtract some more pixels to avoid line breaks there as well.
       const overlayElement = this.getDomElement();
-      const subtitleOverlayWidth = overlayElement.width() - 10;
+      const subtitleOverlayWidthUsableRatio = (1 - parseFloat(SubtitleOverlay.DEFAULT_CAPTION_LEFT_OFFSET) / 100);
+      const subtitleOverlayWidth = Math.floor(subtitleOverlayWidthUsableRatio * overlayElement.width()) - 10;
       const subtitleOverlayHeight = overlayElement.height();
 
       // The size ratio of the letter grid
