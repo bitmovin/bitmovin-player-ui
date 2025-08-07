@@ -154,15 +154,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
-        // Recalculate CEA-608 dimensions after transition completes
-        if (this.cea608Enabled && this.updateCEA608FontSize) {
 
-          const overlayElement = this.getDomElement().get(0);
-          const transitionEndHandler = () => {
-            overlayElement.removeEventListener('transitionend', transitionEndHandler);
-            this.updateCEA608FontSize();
-          };
-          overlayElement.addEventListener('transitionend', transitionEndHandler);
+        if (this.cea608Enabled && this.updateCEA608FontSize) {
+          // Recalculate CEA-608 grid params after transition completes
+          this.getDomElement().on('transitionend', () => this.updateCEA608FontSize(), { once: true });
         }
       }
     });
@@ -170,15 +165,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
         this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
-        // Recalculate CEA-608 dimensions after transition completes
-        if (this.cea608Enabled && this.updateCEA608FontSize) {
 
-          const overlayElement = this.getDomElement().get(0);
-          const transitionEndHandler = () => {
-            overlayElement.removeEventListener('transitionend', transitionEndHandler);
-            this.updateCEA608FontSize();
-          };
-          overlayElement.addEventListener('transitionend', transitionEndHandler);
+        if (this.cea608Enabled && this.updateCEA608FontSize) {
+          // Recalculate CEA-608 grid params after transition completes
+          this.getDomElement().on('transitionend', () => this.updateCEA608FontSize(), { once: true });
         }
       }
     });
