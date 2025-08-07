@@ -44,8 +44,7 @@
       // We don't want CEA-608 subtitles to make space for the controlbar because they're
       // positioned absolutely in relation to the video picture and thus cannot just move
       // somewhere else.
-      bottom: 2em;
-      transition: none;
+      bottom: 5em;
     }
   }
 }

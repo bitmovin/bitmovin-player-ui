@@ -47,6 +47,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private CEA608_COLUMN_OFFSET = 100 / this.CEA608_NUM_COLUMNS;
 
   private cea608Enabled = false;
+  private updateCEA608FontSize: () => void;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -145,14 +146,40 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.on(player.exports.PlayerEvent.PlaybackFinished, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SourceUnloaded, subtitleClearHandler);
 
+
+    this.onShow?.subscribe(() => {
+      this.updateCEA608FontSize?.();
+    });
+
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
+        // Recalculate CEA-608 dimensions after transition completes
+        if (this.cea608Enabled && this.updateCEA608FontSize) {
+
+          const overlayElement = this.getDomElement().get(0);
+          const transitionEndHandler = () => {
+            this.updateCEA608FontSize();
+            overlayElement.removeEventListener('transitionend', transitionEndHandler);
+          };
+          overlayElement.addEventListener('transitionend', transitionEndHandler);
+        }
       }
     });
+
     uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
         this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
+        // Recalculate CEA-608 dimensions after transition completes
+        if (this.cea608Enabled && this.updateCEA608FontSize) {
+
+          const overlayElement = this.getDomElement().get(0);
+          const transitionEndHandler = () => {
+            this.updateCEA608FontSize();
+            overlayElement.removeEventListener('transitionend', transitionEndHandler);
+          };
+          overlayElement.addEventListener('transitionend', transitionEndHandler);
+        }
       }
     });
 
@@ -329,7 +356,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       updateCEA608FontSize();
     });
 
-    const updateCEA608FontSize = () => {
+    const updateCEA608FontSize = this.updateCEA608FontSize = () => {
       const dummyLabel = new SubtitleLabel({ text: 'X' });
       dummyLabel.getDomElement().css({
         // By using a large font size we do not need to use multiple letters and can get still an
