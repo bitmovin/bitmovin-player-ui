@@ -2,6 +2,7 @@
 
 .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
   @extend %ui-button;
+  @include hidden;
 
   cursor: default;
   height: 2.5em;
