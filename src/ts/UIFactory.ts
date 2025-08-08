@@ -8,10 +8,10 @@ import { AudioQualitySelectBox } from './components/settings/AudioQualitySelectB
 import { SettingsPanel } from './components/settings/SettingsPanel';
 import { SubtitleSettingsPanelPage } from './components/settings/subtitlesettings/SubtitleSettingsPanelPage';
 import { SettingsPanelPageOpenButton } from './components/settings/SettingsPanelPageOpenButton';
-import { SubtitleSettingsLabel } from './components/settings/subtitlesettings/SubtitleSettingsLabel';
 import { SubtitleSelectBox } from './components/settings/SubtitleSelectBox';
 import { ControlBar } from './components/ControlBar';
 import { Container, ContainerConfig } from './components/Container';
+import { AdCounterLabel } from './components/ads/AdCounterLabel';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from './components/labels/PlaybackTimeLabel';
 import { SeekBar } from './components/seekbar/SeekBar';
 import { SeekBarLabel } from './components/seekbar/SeekBarLabel';
@@ -34,6 +34,7 @@ import { RecommendationOverlay } from './components/overlays/RecommendationOverl
 import { Watermark } from './components/Watermark';
 import { ErrorMessageOverlay } from './components/overlays/ErrorMessageOverlay';
 import { AdClickOverlay } from './components/ads/AdClickOverlay';
+import { AdControlBarBottom } from './components/ads/AdControlBarBottom';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
@@ -51,6 +52,7 @@ import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsP
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
+import { AdMessageLabel } from './components/ads/AdMessageLabel';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -104,15 +106,15 @@ export namespace UIFactory {
           },
         },
         {
-          ...tvUILayout(),
+          ...tvAdsUILayout(),
           condition: (context: UIConditionContext) => {
-            return context.isTv && !context.isAd;
+            return context.isTv && context.isAd && context.adRequiresUi;
           }
         },
         {
           ...tvUILayout(),
           condition: (context: UIConditionContext) => {
-            return context.isTv && context.isAd && context.adRequiresUi;
+            return context.isTv && !context.isAd && !context.adRequiresUi;
           }
         },
         {
@@ -191,7 +193,16 @@ export namespace UIFactory {
       player,
       [
         {
+          ...tvAdsUILayout(),
+          condition: (context: UIConditionContext) => {
+            return context.isAd && context.adRequiresUi;
+          },
+        },
+        {
           ...tvUILayout(),
+          condition: (context: UIConditionContext) => {
+            return !context.isAd && !context.adRequiresUi;
+          },
         },
       ],
       config,
@@ -260,15 +271,13 @@ function uiLayout(config: UIConfig) {
     targetPage: subtitleSettingsPanelPage,
     container: settingsPanel,
     ariaLabel: i18n.getLocalizer('settings.subtitles'),
-    text: i18n.getLocalizer('open'),
+    text: i18n.getLocalizer('settings.subtitles.options'),
   });
 
   const subtitleSelectBox = new SubtitleSelectBox();
   let subtitleSelectItem = new DynamicSettingsPanelItem({
-    label: new SubtitleSettingsLabel({
-      text: i18n.getLocalizer('settings.subtitles'),
-      opener: subtitleSettingsOpenButton,
-    }),
+    label: i18n.getLocalizer('settings.subtitles'),
+    backNavigationRightComponent: subtitleSettingsOpenButton,
     settingComponent: subtitleSelectBox,
     container: settingsPanel,
   });
@@ -327,7 +336,6 @@ function uiLayout(config: UIConfig) {
       settingsPanel,
       new ErrorMessageOverlay(),
     ],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -341,25 +349,18 @@ function adsUILayout() {
     components: [
       new Container({
         components: [
-          new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
+          new AdCounterLabel(),
           new SeekBar({ label: new SeekBarLabel() }),
           new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+            timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
             cssClasses: ['text-right'],
           }),
         ],
-        cssClasses: ['controlbar-top'],
+        cssClasses: ['controlbar-top ad-controlbar-top'],
       }),
-      new Container({
-        components: [
-          new PlaybackToggleButton(),
-          new VolumeToggleButton(),
-          new Spacer(),
-          new FullscreenToggleButton(),
-        ],
-        cssClasses: ['controlbar-bottom'],
-      }),
+      new AdControlBarBottom(),
     ],
+    cssClasses: ['ad-controlbar'],
   });
 
   return new UIContainer({
@@ -369,9 +370,19 @@ function adsUILayout() {
       new PlaybackToggleOverlay(),
       new AdStatusOverlay(),
       controlBar,
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              new AdMessageLabel(),
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+        ],
+        keepHiddenWithoutMetadata: true,
+      }),
       new ErrorMessageOverlay(),
     ],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -428,15 +439,13 @@ function smallScreenUILayout() {
     targetPage: subtitleSettingsPanelPage,
     container: settingsPanel,
     ariaLabel: i18n.getLocalizer('settings.subtitles'),
-    text: i18n.getLocalizer('open'),
+    text: i18n.getLocalizer('settings.subtitles.options'),
   });
 
   const subtitleSelectBox = new SubtitleSelectBox();
   let subtitleSelectItem = new DynamicSettingsPanelItem({
-    label: new SubtitleSettingsLabel({
-      text: i18n.getLocalizer('settings.subtitles'),
-      opener: subtitleSettingsOpenButton,
-    }),
+    label: i18n.getLocalizer('settings.subtitles'),
+    backNavigationRightComponent: subtitleSettingsOpenButton,
     settingComponent: subtitleSelectBox,
     role: 'menubar',
     container: settingsPanel,
@@ -495,7 +504,6 @@ function smallScreenUILayout() {
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-smallscreen'],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -516,18 +524,11 @@ function smallScreenAdsUILayout() {
             cssClasses: ['text-right'],
           }),
         ],
-        cssClasses: ['controlbar-top'],
+        cssClasses: ['controlbar-top ad-controlbar-top'],
       }),
-      new Container({
-        components: [
-          new PlaybackToggleButton(),
-          new VolumeToggleButton(),
-          new Spacer(),
-          new FullscreenToggleButton(),
-        ],
-        cssClasses: ['controlbar-bottom'],
-      }),
+      new AdControlBarBottom(),
     ],
+    cssClasses: ['ad-controlbar'],
   });
 
   return new UIContainer({
@@ -536,10 +537,20 @@ function smallScreenAdsUILayout() {
       new AdClickOverlay(),
       new PlaybackToggleOverlay(),
       controlBar,
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              new AdMessageLabel(),
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+        ],
+        keepHiddenWithoutMetadata: true,
+      }),
       new AdStatusOverlay(),
       new ErrorMessageOverlay(),
     ],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -584,7 +595,6 @@ function castReceiverUILayout(config: UIConfig) {
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-cast-receiver'],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -659,7 +669,6 @@ function tvUILayout() {
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-tv'],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -680,8 +689,62 @@ function tvUILayout() {
 }
 
 function tvAdsUILayout() {
-  // TODO: implement once we have a design for TV ads
-  return tvUILayout();
+  const playbackToggleOverlay = new PlaybackToggleOverlay();
+  const adStatusOverlay = new AdStatusOverlay();
+  const uiContainer = new UIContainer({
+    components: [
+      new BufferingOverlay(),
+      new AdClickOverlay(),
+      playbackToggleOverlay,
+      adStatusOverlay,
+      new ControlBar({
+        components: [
+          new Container({
+            components: [
+              new AdCounterLabel(),
+              new SeekBar({ label: new SeekBarLabel() }),
+              new PlaybackTimeLabel({
+                timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+                cssClasses: ['text-right'],
+              }),
+            ],
+            cssClasses: ['controlbar-top'],
+          }),
+        ],
+      }),
+      new TitleBar({
+        components: [
+          new Container({
+            components: [
+              new AdMessageLabel(),
+            ],
+            cssClasses: ['ui-titlebar-top'],
+          }),
+        ],
+        keepHiddenWithoutMetadata: true,
+      }),
+      new ErrorMessageOverlay(),
+    ],
+    cssClasses: ['ui-tv', 'ui-ads'],
+    hidePlayerStateExceptions: [
+      PlayerUtils.PlayerState.Prepared,
+      PlayerUtils.PlayerState.Paused,
+      PlayerUtils.PlayerState.Finished,
+    ],
+  });
+
+  const spatialNavigation = new SpatialNavigation(
+    new RootNavigationGroup(
+      uiContainer,
+      playbackToggleOverlay,
+      adStatusOverlay.adSkipButton
+    ),
+  );
+
+  return {
+    ui: uiContainer,
+    spatialNavigation: spatialNavigation,
+  };
 }
 
 /**

@@ -1,7 +1,9 @@
-import {Container, ContainerConfig} from './Container';
-import {UIInstanceManager} from '../UIManager';
-import {MetadataLabel, MetadataLabelContent} from './labels/MetadataLabel';
+import { Container, ContainerConfig } from './Container';
+import { UIInstanceManager } from '../UIManager';
+import { MetadataLabel, MetadataLabelContent } from './labels/MetadataLabel';
 import { PlayerAPI } from 'bitmovin-player';
+import { Label } from './labels/Label';
+import { Component, ComponentConfig } from './Component';
 
 /**
  * Configuration interface for a {@link TitleBar}.
@@ -10,84 +12,105 @@ import { PlayerAPI } from 'bitmovin-player';
  */
 export interface TitleBarConfig extends ContainerConfig {
   /**
-   * Specifies if the title bar should stay hidden when no metadata label contains any text. Does not make a lot
-   * of sense if the title bar contains other components than just MetadataLabels (like in the default configuration).
+   * Specifies if the title bar should stay hidden when no label contains any text.
+   * Applies to any label component with an isEmpty() method, not just MetadataLabels.
    * Default: false
    */
   keepHiddenWithoutMetadata?: boolean;
 }
 
 /**
- * Displays a title bar containing a label with the title of the video.
+ * Displays a title bar containing a label with the title of the video or other contextual messages.
  *
  * @category Components
  */
 export class TitleBar extends Container<TitleBarConfig> {
-
   constructor(config: TitleBarConfig = {}) {
     super(config);
+
+    // Only use default MetadataLabels if no custom components are provided.
+    const hasCustomComponents = Array.isArray(config.components) && config.components.length > 0;
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-titlebar',
       hidden: true,
-      components: [
-        new MetadataLabel({ content: MetadataLabelContent.Title }),
-        new MetadataLabel({ content: MetadataLabelContent.Description }),
-      ],
       keepHiddenWithoutMetadata: false,
+      components: hasCustomComponents
+        ? config.components
+        : [
+            new MetadataLabel({ content: MetadataLabelContent.Title }),
+            new MetadataLabel({ content: MetadataLabelContent.Description }),
+          ],
     }, <TitleBarConfig>this.config);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
+    const config = this.getConfig();
     let shouldBeShown = !this.isHidden();
-    let hasMetadataText = true; // Flag to track if any metadata label contains text
+    let hasVisibleText = true;
 
-    let checkMetadataTextAndUpdateVisibility = () => {
-      hasMetadataText = false;
-
-      // Iterate through metadata labels and check if at least one of them contains text
-      for (let component of this.getComponents()) {
-        if (component instanceof MetadataLabel) {
-          if (!component.isEmpty()) {
-            hasMetadataText = true;
-            break;
-          }
-        }
-      }
+    const checkTextAndUpdateVisibility = () => {
+      hasVisibleText = this.hasNonEmptyComponents(this.getComponents());
 
       if (this.isShown()) {
-        // Hide a visible titlebar if it does not contain any text and the hidden flag is set
-        if (config.keepHiddenWithoutMetadata && !hasMetadataText) {
+        if (config.keepHiddenWithoutMetadata && !hasVisibleText) {
           this.hide();
         }
       } else if (shouldBeShown) {
-        // Show a hidden titlebar if it should actually be shown
-        this.show();
+        if (!config.keepHiddenWithoutMetadata || hasVisibleText) {
+          this.show();
+        }
       }
     };
 
-    // Listen to text change events to update the hasMetadataText flag when the metadata dynamically changes
-    for (let component of this.getComponents()) {
-      if (component instanceof MetadataLabel) {
-        component.onTextChanged.subscribe(checkMetadataTextAndUpdateVisibility);
-      }
-    }
+    // Subscribe to any label-like component's text changes
+    this.subscribeToTextChanges(this.getComponents(), checkTextAndUpdateVisibility);
 
     uimanager.onControlsShow.subscribe(() => {
       shouldBeShown = true;
-      if (!(config.keepHiddenWithoutMetadata && !hasMetadataText)) {
+      if (!config.keepHiddenWithoutMetadata || hasVisibleText) {
         this.show();
       }
     });
+
     uimanager.onControlsHide.subscribe(() => {
       shouldBeShown = false;
       this.hide();
     });
 
-    // init
-    checkMetadataTextAndUpdateVisibility();
+    checkTextAndUpdateVisibility();
   }
+
+  private hasNonEmptyComponents(components: Component<ComponentConfig>[]): boolean {
+    for (const component of components) {
+      if (hasIsEmpty(component) && !component.isEmpty()) {
+        return true;
+      }
+
+      if (component instanceof Container) {
+        if (this.hasNonEmptyComponents(component.getComponents())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private subscribeToTextChanges(components: Component<ComponentConfig>[], onChange: () => void): void {
+    for (const component of components) {
+      if (component instanceof Label) {
+        component.onTextChanged.subscribe(onChange);
+      }
+
+      if (component instanceof Container) {
+        this.subscribeToTextChanges(component.getComponents(), onChange);
+      }
+    }
+  }
+}
+
+function hasIsEmpty(obj: unknown): obj is { isEmpty: () => boolean } {
+  return typeof obj === 'object' && obj !== null && typeof (obj as any).isEmpty === 'function';
 }

@@ -1,0 +1,13 @@
+@import '../../variables';
+
+.#{$prefix}-ui-settings-panel-navigation-text-button {
+  @extend %ui-button;
+
+  font-weight: 500;
+  padding-top: 0;
+
+  .#{$prefix}-label {
+    display: inline-block;
+    text-decoration: underline;
+  }
+}

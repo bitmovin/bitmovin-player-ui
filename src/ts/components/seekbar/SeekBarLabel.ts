@@ -41,18 +41,16 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   constructor(config: SeekBarLabelConfig = {}) {
     super(config);
 
-    this.timeLabel = new Label({ cssClasses: ['seekbar-label-time'] });
-    this.titleLabel = new Label({ cssClasses: ['seekbar-label-title'] });
+    this.timeLabel = new Label({ cssClasses: ['seekbar-label-metadata', 'seekbar-label-time'] });
+    this.titleLabel = new Label({ cssClasses: ['seekbar-label-metadata', 'seekbar-label-title'] });
     this.thumbnail = new Component({ cssClasses: ['seekbar-thumbnail'], role: 'img' });
     this.thumbnailImageLoader = new ImageLoader();
 
     this.container = new Container({
       components: [
+        this.titleLabel,
         this.thumbnail,
-        new Container({
-          components: [this.titleLabel, this.timeLabel],
-          cssClass: 'seekbar-label-metadata',
-        }),
+        this.timeLabel,
       ],
       cssClass: 'seekbar-label-inner',
     });
@@ -171,8 +169,14 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * Sets the text on the title label.
    * @param text the text to show on the label
    */
-  setTitleText(text = '') {
+  setTitleText(text?: string) {
     this.titleLabel.setText(text);
+
+    if (text == null) {
+      this.titleLabel.hide();
+    } else {
+      this.titleLabel.show();
+    }
   }
 
   /**
