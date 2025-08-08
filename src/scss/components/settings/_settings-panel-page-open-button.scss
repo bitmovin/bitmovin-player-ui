@@ -4,7 +4,9 @@
 %ui-settingspanelpageopenbutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/images/setting.svg');
+  .#{$prefix}-icon {
+    background-image: url('../../assets/images/setting.svg');
+  }
   max-height: .8em;
 
   &:hover {

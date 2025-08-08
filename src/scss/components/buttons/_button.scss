@@ -14,13 +14,29 @@
   font-size: 1em;
   height: 1.5em;
   min-width: 1.5em;
-  padding: .25em;
   transition: transform .15s ease;
   -webkit-tap-highlight-color: transparent;
+  padding: .25em;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
 
   .#{$prefix}-label {
     color: $color-primary;
     display: none;
+  }
+
+  .#{$prefix}-icon {
+    background-color: transparent;
+    background-origin: content-box;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 1.2em;
+    border: 0;
+    box-sizing: content-box;
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
   }
 
   &.#{$prefix}-disabled {

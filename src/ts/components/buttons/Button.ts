@@ -62,9 +62,22 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     }
 
     // Create the button element with the text label
-    let buttonElement = new DOM('button', buttonElementAttributes, this).append(new DOM('span', {
-      'class': this.prefixCss('label'),
-    }).html(i18n.performLocalization(this.config.text)));
+    let buttonElement = new DOM('button', buttonElementAttributes, this)
+      .append(
+        new DOM(
+          'div',
+          {
+            'class': this.prefixCss('icon'),
+            'alt': i18n.performLocalization(this.config.ariaLabel || this.config.text),
+          },
+        ),
+      )
+      .append(
+        new DOM('span', {
+          'class': this.prefixCss('label'),
+        }
+      )
+      .html(i18n.performLocalization(this.config.text)));
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', (e) => {

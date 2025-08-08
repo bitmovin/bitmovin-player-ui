@@ -4,9 +4,13 @@
 .#{$prefix}-ui-subtitlesettingstogglebutton {
   @extend %ui-settingstogglebutton;
 
-  background-image: url('../../assets/images/subtitles.svg');
+  .#{$prefix}-icon {
+    background-image: url('../../assets/images/subtitles.svg');
+  }
 
   &.#{$prefix}-on {
-    background-image: url('../../assets/images/subtitlesX.svg');
+    .#{$prefix}-icon {
+      background-image: url('../../assets/images/subtitlesX.svg');
+    }
   }
 }

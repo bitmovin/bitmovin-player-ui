@@ -60,14 +60,14 @@
     // Chromecast (v1) has very poor rendering performance, so we disable the animations.
     // We also display a pause image while playback is paused, instead of a play action button
     .#{$prefix}-ui-hugeplaybacktogglebutton {
-      .#{$prefix}-image {
+      .#{$prefix}-icon {
         background-image: url('../../assets/images/pause.svg');
         opacity: .7;
       }
 
       // sass-lint:disable force-element-nesting
-      &.#{$prefix}-on .#{$prefix}-image,
-      &.#{$prefix}-off .#{$prefix}-image {
+      &.#{$prefix}-on .#{$prefix}-icon,
+      &.#{$prefix}-off .#{$prefix}-icon {
         animation: none;
         transition: none;
       }
