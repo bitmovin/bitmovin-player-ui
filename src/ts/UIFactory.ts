@@ -336,7 +336,6 @@ function uiLayout(config: UIConfig) {
       settingsPanel,
       new ErrorMessageOverlay(),
     ],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -384,7 +383,6 @@ function adsUILayout() {
       }),
       new ErrorMessageOverlay(),
     ],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -506,7 +504,6 @@ function smallScreenUILayout() {
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-smallscreen'],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -554,7 +551,6 @@ function smallScreenAdsUILayout() {
       new AdStatusOverlay(),
       new ErrorMessageOverlay(),
     ],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -599,7 +595,6 @@ function castReceiverUILayout(config: UIConfig) {
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-cast-receiver'],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -674,7 +669,6 @@ function tvUILayout() {
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-tv'],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
@@ -732,7 +726,6 @@ function tvAdsUILayout() {
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-tv', 'ui-ads'],
-    hideDelay: 2000,
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,
       PlayerUtils.PlayerState.Paused,
