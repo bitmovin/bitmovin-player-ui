@@ -47,7 +47,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private CEA608_COLUMN_OFFSET = 100 / this.CEA608_NUM_COLUMNS;
 
   private cea608Enabled = false;
-  private updateCEA608FontSize: () => void;
+  private ensureCea608GridSizeUpdated: () => void;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -150,8 +150,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       if (component instanceof ControlBar) {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
 
-        if (this.cea608Enabled && this.updateCEA608FontSize) {
-          awaitTransitionEnd(this.getDomElement()).then(this.updateCEA608FontSize);
+        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated) {
+          awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
         }
       }
     });
@@ -160,8 +160,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       if (component instanceof ControlBar) {
         this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
 
-        if (this.cea608Enabled && this.updateCEA608FontSize) {
-          awaitTransitionEnd(this.getDomElement()).then(this.updateCEA608FontSize);
+        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated) {
+          awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
         }
       }
     });
@@ -336,15 +336,15 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       } else {
         this.setFontSizeFactor(1);
       }
-      updateCEA608FontSize();
+      this.ensureCea608GridSizeUpdated();
     });
 
     this.onShow?.subscribe(() => {
       // ensure CEA grid is updated whenever the overlay becomes visible
-      this.updateCEA608FontSize();
+      this.ensureCea608GridSizeUpdated();
     });
 
-    const updateCEA608FontSize = this.updateCEA608FontSize = () => {
+    this.ensureCea608GridSizeUpdated = () => {
       const overlayElement = this.getDomElement();
       const currentWidth = overlayElement.width();
       const currentHeight = overlayElement.height();
@@ -465,7 +465,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
       if (this.cea608Enabled) {
-        updateCEA608FontSize();
+        this.ensureCea608GridSizeUpdated();
       }
     });
 
