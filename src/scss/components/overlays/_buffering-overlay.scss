@@ -19,7 +19,7 @@
   @include layout-cover;
   @include hidden-animated($animation-duration * 2);
 
-  background-color: transparentize($color-black, 0.3);
+  background-color: transparentize($color-black, .3);
 
   > .#{$prefix}-container-wrapper {
     padding: 3em;
@@ -39,16 +39,20 @@
     $buffering-animation-delay: .2s;
 
     @keyframes #{$prefix}-fancy {
-      0%, 30% {
-        opacity: 0.3;
+      0%,
+      30% {
+        opacity: .3;
       }
 
-      45%, 50%, 55% {
+      45%,
+      50%,
+      55% {
         opacity: 1;
       }
 
-      70%, 100% {
-        opacity: 0.3;
+      70%,
+      100% {
+        opacity: .3;
       }
     }
 
