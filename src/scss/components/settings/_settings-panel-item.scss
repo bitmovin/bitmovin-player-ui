@@ -83,6 +83,10 @@
   &.#{$prefix}-title-item {
     background-color: $color-background-menu-title-overlay;
 
+    &:hover {
+      background-color: $color-background-menu-hover-overlay;
+    }
+
     .#{$prefix}-label {
       font-size: .8em;
     }

@@ -6,6 +6,13 @@
   font-weight: 500;
   padding-top: 0;
 
+  &.touched {
+    transform: unset;
+    .#{$prefix}-label {
+      color: darken($color-primary, 30%);
+    }
+  }
+
   .#{$prefix}-label {
     display: inline-block;
     text-decoration: underline;
