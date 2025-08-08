@@ -151,8 +151,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
 
         if (this.cea608Enabled && this.updateCEA608FontSize) {
-          // Recalculate CEA-608 grid params after transition completes
-          this.getDomElement().on('transitionend', () => this.updateCEA608FontSize(), { once: true });
+          awaitTransitionEnd(this.getDomElement()).then(this.updateCEA608FontSize);
         }
       }
     });
@@ -162,8 +161,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
 
         if (this.cea608Enabled && this.updateCEA608FontSize) {
-          // Recalculate CEA-608 grid params after transition completes
-          this.getDomElement().on('transitionend', () => this.updateCEA608FontSize(), { once: true });
+          awaitTransitionEnd(this.getDomElement()).then(this.updateCEA608FontSize);
         }
       }
     });
@@ -872,3 +870,15 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
 function isCea608SubtitleCue(cue: SubtitleCueEvent): boolean {
   return cue.position != null;
 }
+
+function awaitTransitionEnd(domElement: DOM) {
+  return new Promise<void>(resolve => {
+    const transitionHandler = () => {
+      domElement.off('transitionend', transitionHandler);
+      domElement.off('transitioncancel', transitionHandler);
+      resolve();
+    };
+    domElement.on('transitionend', transitionHandler);
+    domElement.on('transitioncancel', transitionHandler);
+  });
+};
