@@ -319,6 +319,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let windowPadding: number;
     // Flag telling if the CEA-608 mode is enabled
     this.cea608Enabled = false;
+    // Track last known dimensions to avoid unnecessary recalculations
+    let lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0 };
 
     const settingsManager = uimanager.getSubtitleSettingsManager();
     if (settingsManager.fontSize.value != null) {
@@ -343,6 +345,19 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     });
 
     const updateCEA608FontSize = this.updateCEA608FontSize = () => {
+      const overlayElement = this.getDomElement();
+      const currentWidth = overlayElement.width();
+      const currentHeight = overlayElement.height();
+      const hasOverlaySizeChanged = currentWidth !== lastCeaGridRecalculation.overlayWidth ||
+        currentHeight !== lastCeaGridRecalculation.overlayHeight;
+      
+      if (!hasOverlaySizeChanged) {
+        // subtitle overlay dimensions have not changed, no need to recalculate
+        return;
+      }
+      
+      lastCeaGridRecalculation = { overlayWidth: currentWidth, overlayHeight: currentHeight };
+      
       const dummyLabel = new SubtitleLabel({ text: 'X' });
       dummyLabel.getDomElement().css({
         // By using a large font size we do not need to use multiple letters and can get still an
@@ -370,10 +385,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // layouting, but the actual reason could not be determined. Aiming for a target width - 1px would work in
       // most browsers, but Safari has a "quantized" font size rendering with huge steps in between so we need
       // to subtract some more pixels to avoid line breaks there as well.
-      const overlayElement = this.getDomElement();
       const subtitleOverlayWidthUsableRatio = (1 - parseFloat(SubtitleOverlay.DEFAULT_CAPTION_LEFT_OFFSET) / 100);
-      const subtitleOverlayWidth = Math.floor(subtitleOverlayWidthUsableRatio * overlayElement.width()) - 10;
-      const subtitleOverlayHeight = overlayElement.height();
+      const subtitleOverlayWidth = Math.floor(subtitleOverlayWidthUsableRatio * currentWidth) - 10;
+      const subtitleOverlayHeight = currentHeight;
 
       // The size ratio of the letter grid
       const fontGridSizeRatio = (dummyLabelCharWidth * this.CEA608_NUM_COLUMNS) /
@@ -872,6 +886,12 @@ function isCea608SubtitleCue(cue: SubtitleCueEvent): boolean {
 }
 
 function awaitTransitionEnd(domElement: DOM) {
+  const hasTransition = getComputedStyle(domElement.get(0)).transitionProperty !== 'none';
+  
+  if (!hasTransition) {
+    return Promise.resolve();
+  }
+
   return new Promise<void>(resolve => {
     const transitionHandler = () => {
       domElement.off('transitionend', transitionHandler);
