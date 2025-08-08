@@ -146,11 +146,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     player.on(player.exports.PlayerEvent.PlaybackFinished, subtitleClearHandler);
     player.on(player.exports.PlayerEvent.SourceUnloaded, subtitleClearHandler);
 
-
-    this.onShow?.subscribe(() => {
-      this.updateCEA608FontSize?.();
-    });
-
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
@@ -342,6 +337,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.setFontSizeFactor(1);
       }
       updateCEA608FontSize();
+    });
+
+    this.onShow?.subscribe(() => {
+      // ensure CEA grid is updated whenever the overlay becomes visible
+      this.updateCEA608FontSize();
     });
 
     const updateCEA608FontSize = this.updateCEA608FontSize = () => {
