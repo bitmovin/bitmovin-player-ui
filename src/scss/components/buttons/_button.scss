@@ -38,8 +38,8 @@
     }
   }
 
-  &:active {
-    transform: scale(.9);
+  &.touched {
+    transform: scale(.8);
   }
 
   @include hidden;

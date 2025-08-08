@@ -33,6 +33,8 @@ export interface ButtonConfig extends ComponentConfig {
  */
 export class Button<Config extends ButtonConfig> extends Component<Config> {
 
+  private static readonly CLASS_TOUCHED = 'touched';
+
   private buttonEvents = {
     onClick: new EventDispatcher<Button<Config>, NoArgs>(),
   };
@@ -75,6 +77,14 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
 
     buttonElement.on('focusin focusout', (e) => {
       e.stopPropagation();
+    });
+
+    buttonElement.on('touchstart', (e) => {
+      this.getDomElement().addClass(Button.CLASS_TOUCHED);
+    });
+
+    buttonElement.on('touchend', (e) => {
+      this.getDomElement().removeClass(Button.CLASS_TOUCHED);
     });
 
     return buttonElement;
