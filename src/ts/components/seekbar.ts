@@ -767,7 +767,6 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.setSeekPosition(targetPercentage);
       this.setPlaybackPosition(targetPercentage);
 
-
       // Fire seeked event
       this.onSeekedEvent(targetPercentage);
     };
