@@ -347,7 +347,7 @@ export class DOM {
 
   /**
    * Appends one or more DOM elements as children to all elements.
-   * @param childElements the chrild elements to append
+   * @param childElements the child elements to append
    * @returns {DOM}
    */
   append(...childElements: DOM[]): DOM {
