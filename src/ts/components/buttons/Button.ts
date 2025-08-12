@@ -4,6 +4,30 @@ import {EventDispatcher, NoArgs, Event} from '../../EventDispatcher';
 import { LocalizableText , i18n } from '../../localization/i18n';
 
 /**
+ * Configures the style of a {@link Button} component.
+ */
+export enum ButtonStyle {
+  /**
+   * Only display the button as an icon.
+   */
+  Icon = 'icon',
+  /**
+   * Only display the button as text.
+   */
+  Text = 'text',
+  /**
+   * Display the button with an icon and text.
+   * The Icon is displayed before the text.
+   */
+  TextIconLeading = 'text-icon-leading',
+  /**
+   * Display the button with an icon and text.
+   * The Icon is displayed after the text.
+   */
+  TextIconTrailing = 'text-icon-trailing',
+}
+
+/**
  * Configuration interface for a {@link Button} component.
  *
  * @category Configs
