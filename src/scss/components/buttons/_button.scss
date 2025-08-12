@@ -16,6 +16,7 @@
   min-width: 1.5em;
   padding: .25em;
   transition: transform .15s ease;
+  // sass-lint:disable no-vendor-prefixes
   -webkit-tap-highlight-color: transparent;
 
   .#{$prefix}-label {
