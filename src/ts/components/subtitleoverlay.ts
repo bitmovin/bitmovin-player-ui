@@ -344,7 +344,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     this.onShow?.subscribe(() => {
       // ensure CEA grid is updated whenever the overlay becomes visible
-      this.ensureCea608GridSizeUpdated();
+      if (this.cea608Enabled) {
+        this.ensureCea608GridSizeUpdated();
+      }
     });
 
     this.ensureCea608GridSizeUpdated = () => {
