@@ -4,10 +4,6 @@
   @extend %ui-component;
 
   background-color: transparent;
-  background-origin: content-box;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 1.2em;
   border: 0;
   box-sizing: content-box;
   cursor: pointer;
@@ -18,15 +14,14 @@
   -webkit-tap-highlight-color: transparent;
   padding: .25em;
   display: flex;
-  flex-flow: column;
-  justify-content: center;
-
-  .#{$prefix}-label {
-    color: $color-primary;
-    display: none;
-  }
+  align-items: center;
+  flex-direction: column;
+  flex-flow: row;
+  justify-content: flex-start;
+  gap: .4em;
 
   .#{$prefix}-icon {
+    display: inline-block;
     background-color: transparent;
     background-origin: content-box;
     background-position: center;
@@ -35,8 +30,13 @@
     border: 0;
     box-sizing: content-box;
     cursor: pointer;
-    height: 100%;
     width: 100%;
+    height: 1.5em;
+    min-width: 1.5em;
+  }
+
+  .#{$prefix}-label {
+    color: $color-primary;
   }
 
   &.#{$prefix}-disabled {

@@ -48,6 +48,12 @@ export interface ButtonConfig extends ComponentConfig {
    * Default: false
    */
   acceptsTouchWithUiHidden?: boolean;
+
+  /**
+   * The style of the button.
+   * Default: `ButtonStyle.Icon`
+   */
+  buttonStyle?: ButtonStyle;
 }
 
 /**
@@ -69,6 +75,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       role: 'button',
       tabIndex: 0,
       acceptsTouchWithUiHidden: false,
+      buttonStyle: ButtonStyle.Icon,
     } as Config, this.config);
   }
 
@@ -87,21 +94,44 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
 
     // Create the button element with the text label
     let buttonElement = new DOM('button', buttonElementAttributes, this)
-      .append(
-        new DOM(
-          'div',
-          {
-            'class': this.prefixCss('icon'),
-            'alt': i18n.performLocalization(this.config.ariaLabel || this.config.text),
-          },
-        ),
-      )
-      .append(
-        new DOM('span', {
-          'class': this.prefixCss('label'),
-        }
-      )
-      .html(i18n.performLocalization(this.config.text)));
+
+    const addIconElement = () => {
+      buttonElement
+        .append(
+          new DOM(
+            'div',
+            {
+              'class': this.prefixCss('icon'),
+              'alt': i18n.performLocalization(this.config.ariaLabel || this.config.text),
+            },
+          ),
+        );
+    }
+
+    const addLabelElement = () => {
+      buttonElement
+        .append(
+          new DOM('span', { 'class': this.prefixCss('label'), })
+            .html(i18n.performLocalization(this.config.text))
+        );
+    }
+
+    switch (this.config.buttonStyle) {
+      case ButtonStyle.Icon:
+        addIconElement();
+        break;
+      case ButtonStyle.Text:
+        addLabelElement();
+        break;
+      case ButtonStyle.TextIconLeading:
+        addIconElement();
+        addLabelElement();
+        break;
+      case ButtonStyle.TextIconTrailing:
+        addLabelElement();
+        addIconElement();
+        break;
+    }
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', (e) => {
