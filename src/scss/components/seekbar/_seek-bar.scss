@@ -31,6 +31,7 @@ $seekbar-height: .3125em;
   width: 100%;
 
   $bar-inset: auto;
+
   .#{$prefix}-seekbar-playbackposition-marker {
     @extend %bar;
 
@@ -91,9 +92,9 @@ $seekbar-height: .3125em;
     .#{$prefix}-seekbar-markers {
       @extend %bar;
 
-      $marker-width: 0.25em;
-      $marker-indicator-height: 0.625em;
-      $marker-indicator-border-radius: 0.125em;
+      $marker-width: .25em;
+      $marker-indicator-height: .625em;
+      $marker-indicator-border-radius: .125em;
 
       height: $seekbar-height;
 
@@ -108,13 +109,14 @@ $seekbar-height: .3125em;
         transition-timing-function: linear;
         width: $marker-width;
 
-        transition: height 0.3s ease, border-radius 0.3s ease, transform 0.1s linear;
+        transition: height .3s ease, border-radius .3s ease, transform .1s linear;
 
         display: flex;
         justify-content: space-between;
         align-items: center;
 
-        &:hover, &.#{$prefix}-hovered {
+        &:hover,
+        &.#{$prefix}-hovered {
           height: $marker-indicator-height;
           border-radius: $marker-indicator-border-radius;
         }
