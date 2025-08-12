@@ -1,8 +1,8 @@
-import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './subtitlesettingselectbox';
-import { UIInstanceManager } from '../../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
+import { UIInstanceManager } from '../../uimanager';
 import { ListItem } from '../listselector';
+import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './subtitlesettingselectbox';
 
 /**
  * A select box providing a selection of different font sizes.
@@ -52,12 +52,6 @@ export class FontSizeSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.populateItemsWithFilter();
-
-    this.onShow.subscribe(() => {
-      this.populateItemsWithFilter();
-    });
-
     this.settingsManager.fontSize.onChanged.subscribe((sender, property) => {
       if (property.isSet()) {
         this.toggleOverlayClass('fontsize-' + property.value);
@@ -71,5 +65,12 @@ export class FontSizeSelectBox extends SubtitleSettingSelectBox {
     this.onItemSelected.subscribe((sender, key: string) => {
       this.settingsManager.fontSize.value = key;
     });
+
+    this.onShow.subscribe(() => {
+      this.populateItemsWithFilter();
+    });
+
+    // init
+    this.populateItemsWithFilter();
   }
 }
