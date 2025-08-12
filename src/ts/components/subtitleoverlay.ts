@@ -336,7 +336,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       } else {
         this.setFontSizeFactor(1);
       }
-      this.ensureCea608GridSizeUpdated();
+
+      if (this.cea608Enabled) {
+        this.ensureCea608GridSizeUpdated();
+      }
     });
 
     this.onShow?.subscribe(() => {
