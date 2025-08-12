@@ -47,25 +47,25 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
+    const config = this.getConfig();
 
-    let overlayShowTimeout = new Timeout(config.showDelayMs, () => {
+    const overlayShowTimeout = new Timeout(config.showDelayMs, () => {
       uimanager.onBufferingShow.dispatch(this);
       this.show();
     });
 
-    let showOverlay = () => {
+    const showOverlay = () => {
       overlayShowTimeout.start();
     };
 
     // Only show overlay if player is playing, otherwise e.g. when doing paused seeks, the overlay should stay hidden
-    let showOverlayIfPlaying = () => {
+    const showOverlayIfPlaying = () => {
       if (player.isPlaying()) {
         showOverlay();
       }
     }
 
-    let hideOverlay = () => {
+    const hideOverlay = () => {
       overlayShowTimeout.clear();
       uimanager.onBufferingHide.dispatch(this);
       this.hide();
