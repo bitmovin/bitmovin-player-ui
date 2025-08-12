@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Font size change in subtitle rendering options menu has no effect for CEA captions
 - Subtitle font size changes for VTT/TTML subtitles when the subtitle rendering options menu is opened
+- Subtitle font size preference from local storage is not restored upon UI initialization
 
 ## [3.100.0] - 2025-08-12
 
