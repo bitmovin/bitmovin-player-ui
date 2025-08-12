@@ -10,15 +10,16 @@
   font-size: 1em;
   height: 1.5em;
   min-width: 1.5em;
-  transition: transform .15s ease;
-  -webkit-tap-highlight-color: transparent;
   padding: .25em;
+  transition: transform .15s ease;
+  // sass-lint:disable no-vendor-prefixes
+  -webkit-tap-highlight-color: transparent;
   display: flex;
   align-items: center;
   flex-direction: column;
   flex-flow: row;
   justify-content: flex-start;
-  gap: .4em;
+  column-gap: .4em;
 
   .#{$prefix}-icon {
     display: inline-block;
