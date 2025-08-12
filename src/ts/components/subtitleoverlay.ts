@@ -1,14 +1,14 @@
-import { Container, ContainerConfig } from './container';
-import { UIInstanceManager } from '../uimanager';
-import { Label, LabelConfig } from './label';
-import { ComponentConfig, Component } from './component';
-import { ControlBar } from './controlbar';
-import { EventDispatcher } from '../eventdispatcher';
-import { DOM, Size } from '../dom';
 import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
-import { i18n } from '../localization/i18n';
-import { VttUtils } from '../vttutils';
 import { VTTProperties } from 'bitmovin-player/types/subtitles/vtt/API';
+import { DOM, Size } from '../dom';
+import { EventDispatcher } from '../eventdispatcher';
+import { i18n } from '../localization/i18n';
+import { UIInstanceManager } from '../uimanager';
+import { VttUtils } from '../vttutils';
+import { Component, ComponentConfig } from './component';
+import { Container, ContainerConfig } from './container';
+import { ControlBar } from './controlbar';
+import { Label, LabelConfig } from './label';
 import { ListItemFilter } from './listselector';
 
 interface SubtitleCropDetectionResult {
@@ -47,6 +47,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private CEA608_COLUMN_OFFSET = 100 / this.CEA608_NUM_COLUMNS;
 
   private cea608Enabled = false;
+  private ensureCea608GridSizeUpdated: () => void;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -148,11 +149,20 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
+
+        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated) {
+          awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
+        }
       }
     });
+
     uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
         this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
+
+        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated) {
+          awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
+        }
       }
     });
 
@@ -239,7 +249,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     // We need to keep track of the original row position in case of recalculation.
     const originalRowNumber = event.position?.row || 0;
 
-    if (event.position) {
+    if (isCea608SubtitleCue(event)) {
       event.position.row = this.resolveRowNumber(event.position.row) || 0;
       event.position.column = event.position.column || 0;
 
@@ -304,13 +314,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let fontSize = 0;
     // The required letter spacing spread the text characters evenly across the grid
     let fontLetterSpacing = 0;
-    // Flag telling if a font size calculation is required of if the current values are valid
-    let fontSizeCalculationRequired = true;
     // The ratio of the caption window/row height that is used as padding to make the window enclose the caption
     const windowPaddingRatio = 0.2;
     let windowPadding: number;
     // Flag telling if the CEA-608 mode is enabled
     this.cea608Enabled = false;
+    // Track last known dimensions to avoid unnecessary recalculations
+    let lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0 };
 
     const settingsManager = uimanager.getSubtitleSettingsManager();
     if (settingsManager.fontSize.value != null) {
@@ -326,10 +336,28 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       } else {
         this.setFontSizeFactor(1);
       }
-      updateCEA608FontSize();
+      this.ensureCea608GridSizeUpdated();
     });
 
-    const updateCEA608FontSize = () => {
+    this.onShow?.subscribe(() => {
+      // ensure CEA grid is updated whenever the overlay becomes visible
+      this.ensureCea608GridSizeUpdated();
+    });
+
+    this.ensureCea608GridSizeUpdated = () => {
+      const overlayElement = this.getDomElement();
+      const currentWidth = overlayElement.width();
+      const currentHeight = overlayElement.height();
+      const hasOverlaySizeChanged = currentWidth !== lastCeaGridRecalculation.overlayWidth ||
+        currentHeight !== lastCeaGridRecalculation.overlayHeight;
+      
+      if (!hasOverlaySizeChanged) {
+        // subtitle overlay dimensions have not changed, no need to recalculate
+        return;
+      }
+      
+      lastCeaGridRecalculation = { overlayWidth: currentWidth, overlayHeight: currentHeight };
+      
       const dummyLabel = new SubtitleLabel({ text: 'X' });
       dummyLabel.getDomElement().css({
         // By using a large font size we do not need to use multiple letters and can get still an
@@ -357,9 +385,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // layouting, but the actual reason could not be determined. Aiming for a target width - 1px would work in
       // most browsers, but Safari has a "quantized" font size rendering with huge steps in between so we need
       // to subtract some more pixels to avoid line breaks there as well.
-      const overlayElement = this.getDomElement();
-      const subtitleOverlayWidth = overlayElement.width() - 10;
-      const subtitleOverlayHeight = overlayElement.height();
+      const subtitleOverlayWidthUsableRatio = (1 - parseFloat(SubtitleOverlay.DEFAULT_CAPTION_LEFT_OFFSET) / 100);
+      const subtitleOverlayWidth = Math.floor(subtitleOverlayWidthUsableRatio * currentWidth) - 10;
+      const subtitleOverlayHeight = currentHeight;
 
       // The size ratio of the letter grid
       const fontGridSizeRatio = (dummyLabelCharWidth * this.CEA608_NUM_COLUMNS) /
@@ -437,15 +465,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
       if (this.cea608Enabled) {
-        updateCEA608FontSize();
-      } else {
-        fontSizeCalculationRequired = true;
+        this.ensureCea608GridSizeUpdated();
       }
     });
 
     this.preprocessLabelEventCallback.subscribe((event: SubtitleCueEvent, label: SubtitleLabel) => {
-      const isCEA608 = event.position != null;
-      if (!isCEA608) {
+      if (!isCea608SubtitleCue(event)) {
         // Skip all non-CEA608 cues
         return;
       }
@@ -453,15 +478,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       if (!this.cea608Enabled) {
         this.cea608Enabled = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-
-        // We conditionally update the font size by this flag here to avoid updating every time a subtitle
-        // is added into an empty overlay. Because we reset the overlay when all subtitles are gone, this
-        // would trigger an unnecessary update every time, but it's only required under certain conditions,
-        // e.g. after the player size has changed.
-        if (fontSizeCalculationRequired) {
-          updateCEA608FontSize();
-          fontSizeCalculationRequired = false;
-        }
       }
 
       // We disable the grid and wrapping in case enlarged font size is used to prevent
@@ -864,3 +880,25 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
     return this.labelCount === 0;
   }
 }
+
+function isCea608SubtitleCue(cue: SubtitleCueEvent): boolean {
+  return cue.position != null;
+}
+
+function awaitTransitionEnd(domElement: DOM) {
+  const hasTransition = getComputedStyle(domElement.get(0)).transitionProperty !== 'none';
+  
+  if (!hasTransition) {
+    return Promise.resolve();
+  }
+
+  return new Promise<void>(resolve => {
+    const transitionHandler = () => {
+      domElement.off('transitionend', transitionHandler);
+      domElement.off('transitioncancel', transitionHandler);
+      resolve();
+    };
+    domElement.on('transitionend', transitionHandler);
+    domElement.on('transitioncancel', transitionHandler);
+  });
+};
