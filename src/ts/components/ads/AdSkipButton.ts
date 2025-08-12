@@ -1,4 +1,4 @@
-import { ButtonConfig, Button } from '../buttons/Button';
+import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
 import { UIInstanceManager } from '../../UIManager';
 import { StringUtils } from '../../utils/StringUtils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
@@ -36,6 +36,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       untilSkippableMessage: 'Skip ad in {remainingTime} sec',
       skippableMessage: 'Skip',
       acceptsTouchWithUiHidden: true,
+      buttonStyle: ButtonStyle.TextIconTrailing,
     }, this.config);
   }
 

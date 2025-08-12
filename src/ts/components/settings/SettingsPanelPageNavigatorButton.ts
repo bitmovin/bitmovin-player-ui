@@ -1,8 +1,6 @@
-import {Button, ButtonConfig} from '../buttons/Button';
+import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
 import { SettingsPanel, SettingsPanelConfig } from './SettingsPanel';
-import {SettingsPanelPage} from './SettingsPanelPage';
-import { PlayerAPI } from 'bitmovin-player';
-import { UIInstanceManager } from '../../UIManager';
+import { SettingsPanelPage } from './SettingsPanelPage';
 
 /**
  * Configuration interface for a {@link SettingsPanelPageNavigatorButton}
@@ -47,7 +45,12 @@ export class SettingsPanelPageNavigatorButton extends Button<SettingsPanelPageNa
 
   constructor(config: SettingsPanelPageNavigatorConfig) {
     super(config);
-    this.config = this.mergeConfig(config, {} as SettingsPanelPageNavigatorConfig, this.config);
+    this.config = this.mergeConfig(
+      config, {
+        buttonStyle: ButtonStyle.Text,
+      },
+      this.config
+    );
 
     this.container = (this.config as SettingsPanelPageNavigatorConfig).container;
     this.targetPage = (this.config as SettingsPanelPageNavigatorConfig).targetPage;

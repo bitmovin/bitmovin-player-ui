@@ -9,28 +9,17 @@
   padding: .5em 1em;
   min-width: fit-content;
 
-  .#{$prefix}-label {
-    display: inline-block;
-    color: $color-ads;
+  .#{$prefix}-icon {
+    background-image: url('../../assets/images/ad-skip.svg');
+  }
 
-    &::after {
-      background-image: url('../../assets/images/ad-skip.svg');
-      background-repeat: no-repeat;
-      background-size: 1em auto;
-      content: ' ';
-      display: inline-block;
-      height: 1em;
-      vertical-align: bottom;
-      margin-left: .5em;
-      width: 1em;
-    }
+  .#{$prefix}-label {
+    color: $color-ads;
   }
 
   &.#{$prefix}-disabled {
-    .#{$prefix}-label {
-      &::after {
-        display: none;
-      }
+    .#{$prefix}-icon {
+      display: none;
     }
   }
 

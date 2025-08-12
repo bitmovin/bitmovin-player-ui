@@ -13,18 +13,18 @@
   &.#{$prefix}-on {
     .#{$prefix}-icon {
       background-image: url('../../assets/images/toggleOn.svg');
+      background-position: 20px center;
+      background-size: 45% auto;
+      margin-left: 2%;
     }
-    background-position: 20px center;
-    background-size: 45% auto;
-    margin-left: 2%;
   }
 
   &.#{$prefix}-off {
     .#{$prefix}-icon {
       background-image: url('../../assets/images/toggleOff.svg');
+      background-position: 20px center;
+      background-size: 45% auto;
     }
-    background-position: 20px center;
-    background-size: 45% auto;
   }
 }
 

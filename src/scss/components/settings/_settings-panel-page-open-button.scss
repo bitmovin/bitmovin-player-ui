@@ -6,15 +6,17 @@
 
   .#{$prefix}-icon {
     background-image: url('../../assets/images/setting.svg');
+    max-height: .8em;
   }
-  max-height: .8em;
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   &.#{$prefix}-on {
-    transform: rotate(30deg);
+    .#{$prefix}-icon {
+      transform: rotate(30deg);
+    }
   }
 }
 

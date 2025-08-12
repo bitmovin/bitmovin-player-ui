@@ -12,13 +12,11 @@
     .#{$prefix}-icon {
       background-image: url('../../assets/images/subtitles-on.svg');
     }
-    background-size: 1.5em;
   }
 
   &.#{$prefix}-subtitles-off {
     .#{$prefix}-icon {
       background-image: url('../../assets/images/subtitles-off.svg');
     }
-    background-size: 1.5em;
   }
 }
