@@ -763,6 +763,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.setSeeking(false);
       seeking = false;
 
+      // Update the UI in case we only have a click or touch
+      this.setSeekPosition(targetPercentage);
+      this.setPlaybackPosition(targetPercentage);
+
       // Fire seeked event
       this.onSeekedEvent(targetPercentage);
     };
