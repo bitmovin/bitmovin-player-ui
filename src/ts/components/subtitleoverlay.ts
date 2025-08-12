@@ -38,7 +38,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly DEFAULT_CEA608_NUM_COLUMNS = 32;
   private static readonly DEFAULT_CAPTION_LEFT_OFFSET = '0.5%';
 
-  private FONT_SIZE_FACTOR: number = 1;
+  private CEA608_FONT_SIZE_FACTOR = 1;
   // The number of rows in a cea608 grid
   private CEA608_NUM_ROWS = SubtitleOverlay.DEFAULT_CEA608_NUM_ROWS;
   // The number of columns in a cea608 grid
@@ -174,7 +174,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   setFontSizeFactor(factor: number): void {
     // We only allow range from 50% to 200% as suggested by spec
     // https://www.ecfr.gov/current/title-47/part-79/section-79.103#p-79.103(c)(4)
-    this.FONT_SIZE_FACTOR = Math.max(0.5, Math.min(2.0, factor));
+    this.CEA608_FONT_SIZE_FACTOR = Math.max(0.5, Math.min(2.0, factor));
 
     this.recalculateCEAGrid();
   }
@@ -182,8 +182,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   recalculateCEAGrid() {
     // Needs to get recalculated in case the font size will change also we need to floor this
     // to always align to the whole number represented in styles.
-    this.CEA608_NUM_ROWS = Math.floor(SubtitleOverlay.DEFAULT_CEA608_NUM_ROWS / Math.max(this.FONT_SIZE_FACTOR, 1));
-    this.CEA608_NUM_COLUMNS = Math.floor(SubtitleOverlay.DEFAULT_CEA608_NUM_COLUMNS / this.FONT_SIZE_FACTOR);
+    this.CEA608_NUM_ROWS = Math.floor(SubtitleOverlay.DEFAULT_CEA608_NUM_ROWS / Math.max(this.CEA608_FONT_SIZE_FACTOR, 1));
+    this.CEA608_NUM_COLUMNS = Math.floor(SubtitleOverlay.DEFAULT_CEA608_NUM_COLUMNS / this.CEA608_FONT_SIZE_FACTOR);
     this.CEA608_COLUMN_OFFSET = 100 / this.CEA608_NUM_COLUMNS;
   }
 
@@ -233,7 +233,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   resolveRowNumber(row: number): number {
     // In case there is a font size factor and the row from event would overflow
     // we need to apply an offset so it gets rendered to visible area.
-    if (this.FONT_SIZE_FACTOR > 1 && row > this.CEA608_NUM_ROWS) {
+    if (this.CEA608_FONT_SIZE_FACTOR > 1 && row > this.CEA608_NUM_ROWS) {
       const rowDelta = SubtitleOverlay.DEFAULT_CEA608_NUM_ROWS - this.CEA608_NUM_ROWS;
       return row - rowDelta;
     }
@@ -373,8 +373,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
       this.show();
 
-      const dummyLabelCharWidth = dummyLabel.getDomElement().width() * this.FONT_SIZE_FACTOR;
-      const dummyLabelCharHeight = dummyLabel.getDomElement().height() * this.FONT_SIZE_FACTOR;
+      const dummyLabelCharWidth = dummyLabel.getDomElement().width() * this.CEA608_FONT_SIZE_FACTOR;
+      const dummyLabelCharHeight = dummyLabel.getDomElement().height() * this.CEA608_FONT_SIZE_FACTOR;
       const fontSizeRatio = (dummyLabelCharWidth / dummyLabelCharHeight);
 
       this.removeComponent(dummyLabel);
@@ -435,7 +435,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       // Update font-size of all active subtitle labels
       const updateLabel = (label: SubtitleLabel) => {
-        const isLargerFontSize = this.FONT_SIZE_FACTOR > 1
+        const isLargerFontSize = this.CEA608_FONT_SIZE_FACTOR > 1
         label.getDomElement().css({
           'font-size': `${fontSize}px`,
           'line-height': `${fontSize}px`,
@@ -485,7 +485,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       // We disable the grid and wrapping in case enlarged font size is used to prevent
       // line and characters overflows
-      const isLargerFontSize = this.FONT_SIZE_FACTOR > 1
+      const isLargerFontSize = this.CEA608_FONT_SIZE_FACTOR > 1
       let leftOffset = event.position.column * this.CEA608_COLUMN_OFFSET + '%';
       if (leftOffset === '0%' || isLargerFontSize) {
         // ensure that a little of the window still shows for better readability
