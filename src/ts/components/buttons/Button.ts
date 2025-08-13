@@ -51,7 +51,7 @@ export interface ButtonConfig extends ComponentConfig {
 
   /**
    * The style of the button.
-   * Default: `ButtonStyle.Icon`
+   * Default: {@link ButtonStyle.Icon}
    */
   buttonStyle?: ButtonStyle;
 }
