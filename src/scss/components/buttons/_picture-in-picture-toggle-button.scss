@@ -4,13 +4,17 @@
 .#{$prefix}-ui-piptogglebutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/images/pip.svg');
+  .#{$prefix}-icon {
+    background-image: url('../../assets/images/pip.svg');
+  }
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   &.#{$prefix}-on {
-    background-image: url('../../assets/images/pip.svg');
+    .#{$prefix}-icon {
+      background-image: url('../../assets/images/pip.svg');
+    }
   }
 }

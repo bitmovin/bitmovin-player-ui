@@ -9,12 +9,16 @@
   }
 
   &.#{$prefix}-muted {
-    background-image: url('../../assets/images/volume-mute.svg');
+    .#{$prefix}-icon {
+      background-image: url('../../assets/images/volume-mute.svg');
+    }
   }
 
   &.#{$prefix}-unmuted {
     &[data-#{$prefix}-volume-level-tens='0'] {
-      background-image: url('../../assets/images/volume-mute.svg');
+      .#{$prefix}-icon {
+        background-image: url('../../assets/images/volume-mute.svg');
+      }
     }
 
     &[data-#{$prefix}-volume-level-tens='1'],
@@ -22,7 +26,9 @@
     &[data-#{$prefix}-volume-level-tens='3'],
     &[data-#{$prefix}-volume-level-tens='4'],
     &[data-#{$prefix}-volume-level-tens='5'] {
-      background-image: url('../../assets/images/volume.svg');
+      .#{$prefix}-icon {
+        background-image: url('../../assets/images/volume.svg');
+      }
     }
 
     &[data-#{$prefix}-volume-level-tens='6'],
@@ -30,7 +36,9 @@
     &[data-#{$prefix}-volume-level-tens='8'],
     &[data-#{$prefix}-volume-level-tens='9'],
     &[data-#{$prefix}-volume-level-tens='10'] {
-      background-image: url('../../assets/images/volume.svg');
+      .#{$prefix}-icon {
+        background-image: url('../../assets/images/volume.svg');
+      }
     }
   }
 }

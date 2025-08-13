@@ -4,13 +4,17 @@
 .#{$prefix}-ui-casttogglebutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/images/cast.svg');
+  .#{$prefix}-icon {
+    background-image: url('../../assets/images/cast.svg');
+  }
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   &.#{$prefix}-on {
-    background-image: url('../../assets/images/chromecastX.svg');
+    .#{$prefix}-icon {
+      background-image: url('../../assets/images/chromecastX.svg');
+    }
   }
 }

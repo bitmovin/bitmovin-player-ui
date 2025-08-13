@@ -44,7 +44,7 @@
   overflow: hidden; // hide overflow from scale animation
   width: 8em;
 
-  .#{$prefix}-image {
+  .#{$prefix}-icon {
     background-image: url('../../assets/images/play.svg');
     background-position: center;
     background-repeat: no-repeat;
@@ -58,7 +58,7 @@
   }
 
   &.#{$prefix}-on {
-    .#{$prefix}-image {
+    .#{$prefix}-icon {
       animation: #{$prefix}-fade-out $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
       transition: visibility 0s $animation-duration;
       visibility: hidden;
@@ -66,7 +66,7 @@
   }
 
   &.#{$prefix}-off {
-    .#{$prefix}-image {
+    .#{$prefix}-icon {
       animation:  #{$prefix}-fade-in $animation-duration cubic-bezier(.55, .055, .675, .19); // http://easings.net/de#easeInCubic
       visibility: visible;
     }
@@ -75,7 +75,7 @@
   &.#{$prefix}-no-transition-animations {
     &.#{$prefix}-on,
     &.#{$prefix}-off {
-      .#{$prefix}-image {
+      .#{$prefix}-icon {
         animation: none;
         transition: none;
       }
