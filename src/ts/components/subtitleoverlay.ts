@@ -320,7 +320,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     // Flag telling if the CEA-608 mode is enabled
     this.cea608Enabled = false;
     // Track last known dimensions to avoid unnecessary recalculations
-    let lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0 };
+    let lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0, fontSizeFactor: 0 };
 
     const settingsManager = uimanager.getSubtitleSettingsManager();
     if (settingsManager.fontSize.value != null) {
@@ -344,7 +344,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     this.onShow?.subscribe(() => {
       // ensure CEA grid is updated whenever the overlay becomes visible
-      this.ensureCea608GridSizeUpdated();
+      if (this.cea608Enabled) {
+        this.ensureCea608GridSizeUpdated();
+      }
     });
 
     this.ensureCea608GridSizeUpdated = () => {
@@ -353,13 +355,18 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       const currentHeight = overlayElement.height();
       const hasOverlaySizeChanged = currentWidth !== lastCeaGridRecalculation.overlayWidth ||
         currentHeight !== lastCeaGridRecalculation.overlayHeight;
-      
-      if (!hasOverlaySizeChanged) {
-        // subtitle overlay dimensions have not changed, no need to recalculate
+      const hasFontSizeFactorChanged = this.FONT_SIZE_FACTOR !== lastCeaGridRecalculation.fontSizeFactor;
+
+      if (!hasOverlaySizeChanged && !hasFontSizeFactorChanged) {
+        // none of the input variables changed, no need to recalculate
         return;
       }
       
-      lastCeaGridRecalculation = { overlayWidth: currentWidth, overlayHeight: currentHeight };
+      lastCeaGridRecalculation = {
+        overlayWidth: currentWidth,
+        overlayHeight: currentHeight,
+        fontSizeFactor: this.FONT_SIZE_FACTOR,
+      };
       
       const dummyLabel = new SubtitleLabel({ text: 'X' });
       dummyLabel.getDomElement().css({
