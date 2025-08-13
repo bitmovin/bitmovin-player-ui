@@ -19,12 +19,12 @@ export enum ButtonStyle {
    * Display the button with an icon and text.
    * The Icon is displayed before the text.
    */
-  TextIconLeading = 'text-icon-leading',
+  TextWithLeadingIcon = 'text-icon-leading',
   /**
    * Display the button with an icon and text.
    * The Icon is displayed after the text.
    */
-  TextIconTrailing = 'text-icon-trailing',
+  TextWithTrailingIcon = 'text-icon-trailing',
 }
 
 /**
@@ -123,11 +123,11 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       case ButtonStyle.Text:
         addLabelElement();
         break;
-      case ButtonStyle.TextIconLeading:
+      case ButtonStyle.TextWithLeadingIcon:
         addIconElement();
         addLabelElement();
         break;
-      case ButtonStyle.TextIconTrailing:
+      case ButtonStyle.TextWithTrailingIcon:
         addLabelElement();
         addIconElement();
         break;
