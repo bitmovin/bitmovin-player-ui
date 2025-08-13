@@ -4,10 +4,6 @@
   @extend %ui-component;
 
   background-color: transparent;
-  background-origin: content-box;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 1.2em;
   border: 0;
   box-sizing: content-box;
   cursor: pointer;
@@ -18,10 +14,30 @@
   transition: transform .15s ease;
   // sass-lint:disable no-vendor-prefixes
   -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  flex-flow: row;
+  justify-content: flex-start;
+  column-gap: .4em;
+
+  .#{$prefix}-icon {
+    display: inline-block;
+    background-color: transparent;
+    background-origin: content-box;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 1.2em;
+    border: 0;
+    box-sizing: content-box;
+    cursor: pointer;
+    width: 100%;
+    height: 1.5em;
+    min-width: 1.5em;
+  }
 
   .#{$prefix}-label {
     color: $color-primary;
-    display: none;
   }
 
   &.#{$prefix}-disabled {

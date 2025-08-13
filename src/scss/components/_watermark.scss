@@ -5,15 +5,20 @@
 
   $watermark-size: 4em;
 
-  background-image: url('../../assets/images/logo.svg');
-  background-size: initial;
   height: $watermark-size;
+  width: $watermark-size;
   margin: 2em;
   opacity: .8;
   position: absolute;
   right: 0;
   top: 0;
-  width: $watermark-size;
+
+  .#{$prefix}-icon {
+    background-size: initial;
+    background-image: url('../../assets/images/logo.svg');
+    height: $watermark-size;
+    width: $watermark-size;
+  }
 
   &:hover {
     opacity: 1;
