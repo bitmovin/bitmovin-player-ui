@@ -17,6 +17,8 @@
   }
 
   &.#{$prefix}-on {
-    transform: rotate(30deg);
+    .#{$prefix}-icon {
+      transform: rotate(30deg);
+    }
   }
 }
