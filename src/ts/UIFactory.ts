@@ -34,7 +34,7 @@ import { RecommendationOverlay } from './components/overlays/RecommendationOverl
 import { Watermark } from './components/Watermark';
 import { ErrorMessageOverlay } from './components/overlays/ErrorMessageOverlay';
 import { AdClickOverlay } from './components/ads/AdClickOverlay';
-import { AdControlBarBottom } from './components/ads/AdControlBarBottom';
+import { AdControlBar } from './components/ads/AdControlBar';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
@@ -345,22 +345,27 @@ function uiLayout(config: UIConfig) {
 }
 
 function adsUILayout() {
-  let controlBar = new ControlBar({
-    components: [
-      new Container({
-        components: [
-          new AdCounterLabel(),
-          new SeekBar({ label: new SeekBarLabel() }),
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
-            cssClasses: ['text-right'],
-          }),
-        ],
-        cssClasses: ['controlbar-top ad-controlbar-top'],
-      }),
-      new AdControlBarBottom(),
-    ],
-    cssClasses: ['ad-controlbar'],
+  let controlBar = new AdControlBar({
+    topComponents: new Container({
+      components: [
+        new AdCounterLabel(),
+        new SeekBar({ label: new SeekBarLabel() }),
+        new PlaybackTimeLabel({
+          timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+          cssClasses: ["text-right"],
+        }),
+      ],
+      cssClasses: ["controlbar-top ad-controlbar-top"],
+    }),
+    bottomComponents: new Container({
+      components: [
+        new PlaybackToggleButton(),
+        new VolumeToggleButton(),
+        new Spacer(),
+        new FullscreenToggleButton(),
+      ],
+      cssClasses: ["ad-controlbar-bottom"],
+    }),
   });
 
   return new UIContainer({
@@ -513,22 +518,27 @@ function smallScreenUILayout() {
 }
 
 function smallScreenAdsUILayout() {
-  let controlBar = new ControlBar({
-    components: [
-      new Container({
-        components: [
-          new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
-          new SeekBar({ label: new SeekBarLabel() }),
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
-            cssClasses: ['text-right'],
-          }),
-        ],
-        cssClasses: ['controlbar-top ad-controlbar-top'],
-      }),
-      new AdControlBarBottom(),
-    ],
-    cssClasses: ['ad-controlbar'],
+  let controlBar = new AdControlBar({
+    topComponents: new Container({
+      components: [
+        new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
+        new SeekBar({ label: new SeekBarLabel() }),
+        new PlaybackTimeLabel({
+          timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+          cssClasses: ['text-right'],
+        }),
+      ],
+      cssClasses: ['controlbar-top ad-controlbar-top'],
+    }),
+    bottomComponents: new Container({
+      components: [
+        new PlaybackToggleButton(),
+        new VolumeToggleButton(),
+        new Spacer(),
+        new FullscreenToggleButton(),
+      ],
+      cssClasses: ["ad-controlbar-bottom"],
+    }),
   });
 
   return new UIContainer({
@@ -603,7 +613,7 @@ function castReceiverUILayout(config: UIConfig) {
   });
 }
 
-function tvUILayout() {
+function tvUILayout() {// TODO: use AdControlBar instead of ControlBar
   const subtitleListBox = new SubtitleListBox();
   const audioTrackListBox = new AudioTrackListBox();
 
