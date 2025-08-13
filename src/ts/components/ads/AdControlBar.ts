@@ -40,69 +40,71 @@ export class AdControlBar extends ControlBar {
   }
 
   hide(): void {
-    super.hide();
+    // super.hide();
 
-    // Animate top container with slide down effect
+    // TODO: group logic into `slideComponents` or `componentsToSlide` - same for show()
+    // Slide down top container
     if (this.topContainer) {
       const topElement = this.topContainer.getDomElement();
       if (topElement) {
         topElement.addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
       }
     }
-
-    // Animate bottom container with slide down effect
-    if (this.bottomContainer) {
-      const bottomElement = this.bottomContainer.getDomElement();
-      if (bottomElement) {
-        bottomElement.addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-      }
-    }
-
-    // Handle skip button animation
+    // Slide down skip button
     const skipBtn = document.querySelector(`.${this.prefixCss(AdControlBar.CLASS_AD_SKIP_BUTTON)}`) as HTMLElement;
     if (skipBtn) {
       skipBtn.classList.add(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
     }
+
+    // Slide down and hide bottom container
+    if (this.bottomContainer) {
+      this.bottomContainer.hide();
+    }
+
+    // Top container slides down to bottom position (CSS handles this automatically)
+    // No need to add slid-down class to top - it stays visible
   }
 
   show(): void {
-    super.show();
+    // super.show();
 
-    // Remove slide down animations from top container
+    // Slide up top container
     if (this.topContainer) {
       const topElement = this.topContainer.getDomElement();
       if (topElement) {
         topElement.removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
       }
     }
-
-    // Remove slide down animations from bottom container
-    if (this.bottomContainer) {
-      const bottomElement = this.bottomContainer.getDomElement();
-      if (bottomElement) {
-        bottomElement.removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-      }
-    }
-
-    // Remove skip button animation
+    // Slide up skip button
     const skipBtn = document.querySelector(`.${this.prefixCss(AdControlBar.CLASS_AD_SKIP_BUTTON)}`) as HTMLElement;
     if (skipBtn) {
       skipBtn.classList.remove(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
     }
+
+    // Slide up and show bottom container
+    if (this.bottomContainer) {
+      console.log('[test] AdControlBar: Show bottom container');
+      this.bottomContainer.show();
+    }
+
+    // Top container automatically slides back up to original position (CSS handles this)
+    // since bottom is now visible again
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
     player.on(player.exports.PlayerEvent.AdStarted, () => {
-      this.show();
+      this.show();// TODO: for some reason, bottom is hidden by default !!!
     });
 
     uimanager.onControlsShow.subscribe(() => {
+      console.log('[test] AdControlBar: Controls show event triggered');
       this.show();
     });
 
     uimanager.onControlsHide.subscribe(() => {
+      console.log('[test] AdControlBar: Controls hide event triggered');
       this.hide();
     });
   }

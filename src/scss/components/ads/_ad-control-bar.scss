@@ -1,0 +1,59 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-controlbar {
+  @extend %ui-container;
+
+  @include hidden-animated-focusable;
+  @include layout-align-bottom;
+
+  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);// TODO: create transition to remove it
+  box-sizing: border-box;
+  line-height: 1em;
+  padding: 1em 1em .5em;
+
+  .#{$prefix}-ad-controlbar-top,
+  .#{$prefix}-ad-controlbar-bottom {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      margin: .5em 0;
+    }
+  }
+
+  .#{$prefix}-ad-controlbar-top {
+    @include slide-down;
+
+    .#{$prefix}-ui-label {
+      font-size: .9em;
+    }
+
+    > .#{$prefix}-container-wrapper > * {
+      margin: 0 .5em;
+    }
+  }
+
+  .#{$prefix}-ad-controlbar-bottom {
+    // @include hidden-slide-down;
+    @include slide-down($duration: $animation-duration, $distance: 100px);
+
+    white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
+
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      margin: .5em 0;
+
+      // This nesting is needed to keep related UI styles scoped together.
+      // Refactoring it would trigger other SCSS lint warnings (e.g., selector duplication or specificity conflicts).
+      // sass-lint:disable nesting-depth
+      .#{$prefix}-ui-volumeslider {
+        margin: auto .5em;
+        width: 5em;
+      }
+      // sass-lint:enable nesting-depth
+    }
+  }
+
+  .#{$prefix}-ad-controlbar-top {
+    @include slide-down;
+  }
+}
