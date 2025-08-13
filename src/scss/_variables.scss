@@ -4,15 +4,15 @@ $color-black: #000 !default;
 $color-transparent: rgba(0, 0, 0, 0) !default;
 $color-red: #f00 !default;
 
-$color-highlight: #1fabe2 !default; //Bitmovin blue
-$color-primary: #fff !default;
+$color-highlight: white !default;
+$color-primary: white !default;
 $color-secondary: #999 !default;
 
 $color-background: #111 !default;
 $color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3) !default;
 $color-background-bars: transparentize($color-black, .3) !default;
 $color-background-seekbar-label: rgba(20, 20, 20, .8);
-$color-focus: #1b7fcc;
+$color-focus: transparentize($color-highlight, .8);
 
 $color-background-menu-title-overlay: rgba(0, 0, 0, .25) !default;
 $color-background-menu: #2e2e2e !default;
@@ -29,5 +29,3 @@ $subtitle-text-border-color: #000 !default;
 
 $animation-duration: .3s !default;
 $animation-duration-short: $animation-duration * .5 !default;
-
-$focus-element-box-shadow: 0 0 0 2px rgba($color-focus, .8);
