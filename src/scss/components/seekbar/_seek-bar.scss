@@ -49,9 +49,10 @@ $seekbar-height: .3125em;
     cursor: pointer;
     font-size: 1em;
     height: $seekbar-height;
-    margin: calc((1em - $seekbar-height) / 2) 0;
+    margin: calc((1em - $seekbar-height) / 2) auto;
     position: relative;
-    width: 100%;
+    // Reduce width to leave some padding for the focus indicator on the left and right side
+    width: calc(100% - .5em);
 
     .#{$prefix}-seekbar-bars {
       @extend %bar;
