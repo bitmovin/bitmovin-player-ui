@@ -1,11 +1,10 @@
 import { SubtitleOverlay } from './components/overlays/SubtitleOverlay';
 import { SettingsPanelPage } from './components/settings/SettingsPanelPage';
-import { SettingsPanelItem } from './components/settings/SettingsPanelItem';
 import { VideoQualitySelectBox } from './components/settings/VideoQualitySelectBox';
 import { PlaybackSpeedSelectBox } from './components/settings/PlaybackSpeedSelectBox';
 import { AudioTrackSelectBox } from './components/settings/AudioTrackSelectBox';
 import { AudioQualitySelectBox } from './components/settings/AudioQualitySelectBox';
-import { SettingsPanel } from './components/settings/SettingsPanel';
+import { SettingsPanel, SettingsPanelConfig } from './components/settings/SettingsPanel';
 import { SubtitleSettingsPanelPage } from './components/settings/subtitlesettings/SubtitleSettingsPanelPage';
 import { SettingsPanelPageOpenButton } from './components/settings/SettingsPanelPageOpenButton';
 import { SubtitleSelectBox } from './components/settings/SubtitleSelectBox';
@@ -213,77 +212,7 @@ export namespace UIFactory {
 function uiLayout(config: UIConfig) {
   let subtitleOverlay = new SubtitleOverlay();
 
-  let mainSettingsPanelPage: SettingsPanelPage;
-
-  let settingsPanel = new SettingsPanel({
-    components: [],
-    hidden: true,
-    pageTransitionAnimation: true,
-  });
-
-  const components: Container<ContainerConfig>[] = [
-    new DynamicSettingsPanelItem({
-      label: i18n.getLocalizer('settings.video.quality'),
-      settingComponent: new VideoQualitySelectBox(),
-      container: settingsPanel,
-    }),
-    new DynamicSettingsPanelItem({
-      label: i18n.getLocalizer('speed'),
-      settingComponent: new PlaybackSpeedSelectBox(),
-      container: settingsPanel,
-    }),
-    new DynamicSettingsPanelItem({
-      label: i18n.getLocalizer('settings.audio.track'),
-      settingComponent: new AudioTrackSelectBox(),
-      container: settingsPanel,
-    }),
-    new DynamicSettingsPanelItem({
-      label: i18n.getLocalizer('settings.audio.quality'),
-      settingComponent: new AudioQualitySelectBox(),
-      container: settingsPanel,
-    }),
-  ];
-
-  if (config.ecoMode) {
-    const ecoModeContainer = new EcoModeContainer();
-
-    ecoModeContainer.setOnToggleCallback(() => {
-      // forces the browser to re-calculate the height of the settings panel when adding/removing elements
-      settingsPanel.getDomElement().css({ width: '', height: '' });
-    });
-
-    components.unshift(ecoModeContainer);
-  }
-
-  mainSettingsPanelPage = new SettingsPanelPage({
-    components,
-  });
-
-  settingsPanel.addComponent(mainSettingsPanelPage);
-
-  let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
-    settingsPanel: settingsPanel,
-    overlay: subtitleOverlay,
-    useDynamicSettingsPanelItem: true,
-  });
-
-  let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
-    targetPage: subtitleSettingsPanelPage,
-    container: settingsPanel,
-    ariaLabel: i18n.getLocalizer('settings.subtitles'),
-    text: i18n.getLocalizer('settings.subtitles.options'),
-  });
-
-  const subtitleSelectBox = new SubtitleSelectBox();
-  let subtitleSelectItem = new DynamicSettingsPanelItem({
-    label: i18n.getLocalizer('settings.subtitles'),
-    backNavigationRightComponent: subtitleSettingsOpenButton,
-    settingComponent: subtitleSelectBox,
-    container: settingsPanel,
-  });
-  mainSettingsPanelPage.addComponent(subtitleSelectItem);
-  settingsPanel.addComponent(subtitleSettingsPanelPage);
-
+  const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode != undefined);
   let controlBar = new ControlBar({
     components: [
       new Container({
@@ -397,63 +326,7 @@ function adsUILayout() {
 function smallScreenUILayout() {
   let subtitleOverlay = new SubtitleOverlay();
 
-  let settingsPanel = new SettingsPanel({
-    components: [],
-    hidden: true,
-    pageTransitionAnimation: true,
-    hideDelay: -1,
-  });
-
-  let mainSettingsPanelPage = new SettingsPanelPage({
-    components: [
-      new DynamicSettingsPanelItem({
-        label: i18n.getLocalizer('settings.video.quality'),
-        settingComponent: new VideoQualitySelectBox(),
-        container: settingsPanel,
-      }),
-      new DynamicSettingsPanelItem({
-        label: i18n.getLocalizer('speed'),
-        settingComponent: new PlaybackSpeedSelectBox(),
-        container: settingsPanel,
-      }),
-      new DynamicSettingsPanelItem({
-        label: i18n.getLocalizer('settings.audio.track'),
-        settingComponent: new AudioTrackSelectBox() ,
-        container: settingsPanel,
-      }),
-      new DynamicSettingsPanelItem({
-        label: i18n.getLocalizer('settings.audio.quality'),
-        settingComponent: new AudioQualitySelectBox(),
-        container: settingsPanel,
-      }),
-    ],
-  });
-
-  settingsPanel.addComponent(mainSettingsPanelPage);
-
-  let subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
-    settingsPanel: settingsPanel,
-    overlay: subtitleOverlay,
-    useDynamicSettingsPanelItem: true,
-  });
-
-  let subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
-    targetPage: subtitleSettingsPanelPage,
-    container: settingsPanel,
-    ariaLabel: i18n.getLocalizer('settings.subtitles'),
-    text: i18n.getLocalizer('settings.subtitles.options'),
-  });
-
-  const subtitleSelectBox = new SubtitleSelectBox();
-  let subtitleSelectItem = new DynamicSettingsPanelItem({
-    label: i18n.getLocalizer('settings.subtitles'),
-    backNavigationRightComponent: subtitleSettingsOpenButton,
-    settingComponent: subtitleSelectBox,
-    role: 'menubar',
-    container: settingsPanel,
-  });
-  mainSettingsPanelPage.addComponent(subtitleSelectItem);
-  settingsPanel.addComponent(subtitleSettingsPanelPage);
+  const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
 
   let controlBar = new ControlBar({
     components: [
@@ -609,67 +482,83 @@ function castReceiverUILayout(config: UIConfig) {
 }
 
 function tvUILayout() {
-  const subtitleListBox = new SubtitleListBox();
-  const audioTrackListBox = new AudioTrackListBox();
-
   const seekBar = new SeekBar({ label: new SeekBarLabel() });
-  const playbackToggleOverlay = new PlaybackToggleOverlay();
-  const subtitleToggleButton = new SettingsToggleButton({
+  const subtitleOverlay = new SubtitleOverlay();
+  const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay);
+
+  const subtitleListBox = new SubtitleListBox(i18n.getLocalizer('settings.subtitles'));
+  const subtitleListBoxOpenButton = new SettingsToggleButton({
     settingsPanel: subtitleListBox,
     autoHideWhenNoActiveSettings: true,
-    cssClass: 'ui-subtitlesettingstogglebutton',
+    cssClass: 'ui-subtitle-list-box-toggle-button',
     text: i18n.getLocalizer('settings.subtitles'),
   });
-  const audioToggleButton = new SettingsToggleButton({
-    settingsPanel: audioTrackListBox,
+
+  const audioListBox = new AudioTrackListBox(i18n.getLocalizer('settings.audio.track'));
+  const audioListBoxToggleButton = new SettingsToggleButton({
+    settingsPanel: audioListBox,
     autoHideWhenNoActiveSettings: true,
-    cssClass: 'ui-audiotracksettingstogglebutton',
-    ariaLabel: i18n.getLocalizer('settings.audio.track'),
+    cssClass: 'ui-audio-track-list-box-toggle-button',
     text: i18n.getLocalizer('settings.audio.track'),
   });
+
+  const titleBar = new TitleBar({
+    components: [
+      new Container({
+        components: [
+          new MetadataLabel({ content: MetadataLabelContent.Title }),
+        ],
+        cssClasses: ['ui-titlebar-top'],
+      }),
+      new Container({
+        components: [
+          new MetadataLabel({ content: MetadataLabelContent.Description }),
+        ],
+        cssClasses: ['ui-titlebar-bottom'],
+      }),
+    ],
+  });
+
+  const controlBar = new ControlBar({
+    components: [
+      new Container({
+        components: [
+          new PlaybackTimeLabel({
+            timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+            hideInLivePlayback: true,
+          }),
+          seekBar,
+          new PlaybackTimeLabel({
+            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+            cssClasses: ['text-right'],
+          }),
+        ],
+        cssClasses: ['controlbar-top'],
+      }),
+      new Container({
+        components: [
+          new PlaybackToggleButton(),
+          new Spacer(),
+          subtitleListBoxOpenButton,
+          audioListBoxToggleButton,
+          new SettingsToggleButton({ settingsPanel: settingsPanel }),
+        ],
+        cssClasses: ['controlbar-bottom'],
+      })
+    ],
+  });
+
+  const playbackToggleOverlay = new PlaybackToggleOverlay();
   const uiContainer = new UIContainer({
     components: [
-      new SubtitleOverlay(),
+      subtitleOverlay,
       new BufferingOverlay(),
+      controlBar,
+      titleBar,
       playbackToggleOverlay,
-      new ControlBar({
-        components: [
-          new Container({
-            components: [
-              new PlaybackTimeLabel({
-                timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
-                hideInLivePlayback: true,
-              }),
-              seekBar,
-              new PlaybackTimeLabel({
-                timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
-                cssClasses: ['text-right'],
-              }),
-            ],
-            cssClasses: ['controlbar-top'],
-          }),
-        ],
-      }),
-      new TitleBar({
-        components: [
-          new Container({
-            components: [
-              new MetadataLabel({ content: MetadataLabelContent.Title }),
-              subtitleToggleButton,
-              audioToggleButton,
-            ],
-            cssClasses: ['ui-titlebar-top'],
-          }),
-          new Container({
-            components: [
-              new MetadataLabel({ content: MetadataLabelContent.Description }),
-              subtitleListBox,
-              audioTrackListBox,
-            ],
-            cssClasses: ['ui-titlebar-bottom'],
-          }),
-        ],
-      }),
+      settingsPanel,
+      subtitleListBox,
+      audioListBox,
       new RecommendationOverlay(),
       new ErrorMessageOverlay(),
     ],
@@ -683,9 +572,10 @@ function tvUILayout() {
   });
 
   const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, audioToggleButton, subtitleToggleButton),
+    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, controlBar),
+    new ListNavigationGroup(ListOrientation.Vertical, settingsPanel),
     new ListNavigationGroup(ListOrientation.Vertical, subtitleListBox),
-    new ListNavigationGroup(ListOrientation.Vertical, audioTrackListBox),
+    new ListNavigationGroup(ListOrientation.Vertical, audioListBox),
   );
 
   return {
@@ -766,4 +656,87 @@ function emptyStateUILayout() {
     ],
     cssClasses: ['ui', 'ui-empty-state'],
   });
+}
+
+function buildDefaultSettingsPanel(
+  subtitleOverlay: SubtitleOverlay,
+  hideDelay: number | undefined = undefined,
+  enableEcoMode: boolean = false,
+): SettingsPanel<SettingsPanelConfig> {
+  let mainSettingsPanelPage: SettingsPanelPage;
+  const settingsPanelConfig: SettingsPanelConfig = {
+    components: [],
+    hidden: true,
+    pageTransitionAnimation: true,
+  };
+
+  if (hideDelay != undefined) {
+    settingsPanelConfig.hideDelay = hideDelay;
+  }
+
+  const settingsPanel = new SettingsPanel(settingsPanelConfig);
+  const components: Container<ContainerConfig>[] = [
+    new DynamicSettingsPanelItem({
+      label: i18n.getLocalizer('settings.video.quality'),
+      settingComponent: new VideoQualitySelectBox(),
+      container: settingsPanel,
+    }),
+    new DynamicSettingsPanelItem({
+      label: i18n.getLocalizer('speed'),
+      settingComponent: new PlaybackSpeedSelectBox(),
+      container: settingsPanel,
+    }),
+    new DynamicSettingsPanelItem({
+      label: i18n.getLocalizer('settings.audio.track'),
+      settingComponent: new AudioTrackSelectBox(),
+      container: settingsPanel,
+    }),
+    new DynamicSettingsPanelItem({
+      label: i18n.getLocalizer('settings.audio.quality'),
+      settingComponent: new AudioQualitySelectBox(),
+      container: settingsPanel,
+    }),
+  ];
+
+  if (enableEcoMode) {
+    const ecoModeContainer = new EcoModeContainer();
+
+    ecoModeContainer.setOnToggleCallback(() => {
+      // forces the browser to re-calculate the height of the settings panel when adding/removing elements
+      settingsPanel.getDomElement().css({ width: '', height: '' });
+    });
+
+    components.unshift(ecoModeContainer);
+  }
+
+  mainSettingsPanelPage = new SettingsPanelPage({
+    components,
+  });
+
+  settingsPanel.addComponent(mainSettingsPanelPage);
+
+  const subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
+    settingsPanel: settingsPanel,
+    overlay: subtitleOverlay,
+    useDynamicSettingsPanelItem: true,
+  });
+
+  const subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
+    targetPage: subtitleSettingsPanelPage,
+    container: settingsPanel,
+    ariaLabel: i18n.getLocalizer('settings.subtitles'),
+    text: i18n.getLocalizer('settings.subtitles.options'),
+  });
+
+  const subtitleSelectBox = new SubtitleSelectBox();
+  const subtitleSelectItem = new DynamicSettingsPanelItem({
+    label: i18n.getLocalizer('settings.subtitles'),
+    backNavigationRightComponent: subtitleSettingsOpenButton,
+    settingComponent: subtitleSelectBox,
+    container: settingsPanel,
+  });
+  mainSettingsPanelPage.addComponent(subtitleSelectItem);
+  settingsPanel.addComponent(subtitleSettingsPanelPage);
+
+  return settingsPanel
 }
