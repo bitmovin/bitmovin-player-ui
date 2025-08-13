@@ -157,20 +157,6 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
     }
   }
 
-  protected toDomElement(): DOM {
-    let buttonElement = super.toDomElement();
-
-    // Add child that contains the play button image
-    // Setting the image directly on the button does not work together with scaling animations, because the button
-    // can cover the whole video player are and scaling would extend it beyond. By adding an inner element, confined
-    // to the size if the image, it can scale inside the player without overshooting.
-    buttonElement.append(new DOM('div', {
-      'class': this.prefixCss('image'),
-    }));
-
-    return buttonElement;
-  }
-
   /**
    * Enables or disables the play state transition animations of the play button image. Can be used to suppress
    * animations.

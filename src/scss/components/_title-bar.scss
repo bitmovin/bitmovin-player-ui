@@ -9,11 +9,17 @@
 
   background: linear-gradient(to top, $color-transparent, $color-background-bars);
   box-sizing: border-box;
-  padding: .5em 1em 1em;
+  padding: 1em 1.5em;
   pointer-events: none;
 
+  .#{$prefix}-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    // sass-lint:disable no-misspelled-properties
+    row-gap: .5em;
+  }
+
   > .#{$prefix}-container-wrapper {
-    padding: .5em;
     pointer-events: none;
 
     .#{$prefix}-label-metadata {

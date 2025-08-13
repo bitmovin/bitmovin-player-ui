@@ -9,10 +9,14 @@
   }
 
   &[data-#{$prefix}-seek-direction='forward'] {
-    background-image: url('../../assets/images/quickseek-forward.svg');
+    .#{$prefix}-icon {
+      background-image: url('../../assets/images/quickseek-forward.svg');
+    }
   }
 
   &[data-#{$prefix}-seek-direction='rewind'] {
-    background-image: url('../../assets/images/quickseek-back.svg');
+    .#{$prefix}-icon {
+      background-image: url('../../assets/images/quickseek-back.svg');
+    }
   }
 }

@@ -99,12 +99,39 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       setTimeout(() => this.hideSeekAnimationElements(), 150);
     });
 
-    uimanager.onControlsHide.subscribe(() => {
+    let isBufferingOverlayVisible = false;
+    let areControlsVisible = false;
+
+    const showPlaybackToggleButton = (() => {
+      this.playbackToggleButton.show();
+    });
+
+    const hidePlaybackToggleButton = (() => {
       this.playbackToggleButton.hide();
     });
 
+    uimanager.onBufferingShow.subscribe(() => {
+      isBufferingOverlayVisible = true;
+      hidePlaybackToggleButton();
+    });
+
+    uimanager.onBufferingHide.subscribe(() => {
+      isBufferingOverlayVisible = false;
+      if (areControlsVisible) {
+        showPlaybackToggleButton();
+      }
+    });
+
+    uimanager.onControlsHide.subscribe(() => {
+      areControlsVisible = false;
+      hidePlaybackToggleButton();
+    });
+
     uimanager.onControlsShow.subscribe(() => {
-      this.playbackToggleButton.show();
+      areControlsVisible = true;
+      if (!isBufferingOverlayVisible) {
+        showPlaybackToggleButton();
+      }
     });
 
     this.touchControlEvents.onSeekBackward.subscribe(() => {
