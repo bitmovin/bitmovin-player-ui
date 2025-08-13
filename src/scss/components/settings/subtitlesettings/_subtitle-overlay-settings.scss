@@ -45,7 +45,8 @@
       &.#{$prefix}-fontcolor-#{$color-name}#{$opacity-name} {
         .#{$prefix}-ui-subtitle-label {
           color: transparentize($color-value, 1 - $opacity-value);
-          -WebKit-text-fill-color: transparentize($color-value, 1 - $opacity-value);
+          // sass-lint:disable no-vendor-prefixes
+          -webkit-text-fill-color: transparentize($color-value, 1 - $opacity-value);
         }
       }
     }

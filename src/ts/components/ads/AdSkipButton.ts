@@ -36,7 +36,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       untilSkippableMessage: 'Skip ad in {remainingTime} sec',
       skippableMessage: 'Skip',
       acceptsTouchWithUiHidden: true,
-      buttonStyle: ButtonStyle.TextIconTrailing,
+      buttonStyle: ButtonStyle.TextWithTrailingIcon,
     }, this.config);
   }
 
