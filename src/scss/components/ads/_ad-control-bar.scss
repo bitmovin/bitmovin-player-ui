@@ -4,21 +4,12 @@
 .#{$prefix}-ui-controlbar {
   @extend %ui-container;
 
-  @include hidden-animated-focusable;
   @include layout-align-bottom;
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);// TODO: create transition to remove it
   box-sizing: border-box;
   line-height: 1em;
   padding: 1em 1em .5em;
-
-  .#{$prefix}-ad-controlbar-top,
-  .#{$prefix}-ad-controlbar-bottom {
-    > .#{$prefix}-container-wrapper {
-      display: flex;
-      margin: .5em 0;
-    }
-  }
 
   .#{$prefix}-ad-controlbar-top {
     @include slide-down;
@@ -27,14 +18,18 @@
       font-size: .9em;
     }
 
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      margin: .5em 0;
+    }
+
     > .#{$prefix}-container-wrapper > * {
       margin: 0 .5em;
     }
   }
 
   .#{$prefix}-ad-controlbar-bottom {
-    // @include hidden-slide-down;
-    @include slide-down($duration: $animation-duration, $distance: 100px);
+    @include hidden-slide-down;
 
     white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
 
@@ -51,9 +46,5 @@
       }
       // sass-lint:enable nesting-depth
     }
-  }
-
-  .#{$prefix}-ad-controlbar-top {
-    @include slide-down;
   }
 }
