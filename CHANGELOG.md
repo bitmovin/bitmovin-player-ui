@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [3.102.0] - 2025-08-14
 
 ### Changed
 - Default font size for CEA captions is lowered, effectively making the previous 75% the new 100%.
@@ -1177,6 +1177,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.102.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.101.0...v3.102.0
 [3.101.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.100.0...v3.101.0
 [3.100.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.99.0...v3.100.0
 [3.99.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.98.0...v3.99.0
