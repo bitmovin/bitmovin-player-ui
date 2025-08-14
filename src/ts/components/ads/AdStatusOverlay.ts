@@ -3,9 +3,6 @@ import { AdSkipButton } from './AdSkipButton';
 import { Spacer } from '../Spacer';
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../../UIManager';
-import { Component, ComponentConfig } from '../Component';
-import { AdControlBar } from './AdControlBar';
-import { ControlBar } from '../ControlBar';
 
 export class AdStatusOverlay extends Container<ContainerConfig> {
   public readonly adSkipButton: AdSkipButton;

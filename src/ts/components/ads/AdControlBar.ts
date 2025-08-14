@@ -10,11 +10,18 @@ export interface AdControlBarConfig extends ControlBarConfig {
 }
 
 /**
- * A specialized control bar for ads that handles coordinated show/hide animations
- * for both top and bottom sections, including slide animations and shadow effects.
+ * Contains player control components displayed during ad playback,
+ * e.g., play toggle button, seek bar, volume control, fullscreen toggle button.
+ *
+ * @example
+ * const adBar = new AdControlBar({
+ *   topComponents: new Container(...),
+ *   bottomComponents: new Container(...)
+ * });
+ * 
+ * @category Components
  */
 export class AdControlBar extends ControlBar {
-  private static readonly CLASS_AD_SKIP_BUTTON = 'ui-button-ad-skip';
   private static readonly CLASS_SLID_DOWN = 'slid-down';
 
   private topContainer: Container<ContainerConfig> | null = null;
@@ -48,18 +55,14 @@ export class AdControlBar extends ControlBar {
 
   hide(): void {// TODO: maybe do not use hide() generic, use hideBottomPart, or hideWithAnimation instead - since hide() is used by Container, or UIManager more generally
     if (this.bottomContainer) {
-      // Fade out and hide bottom container
       this.bottomContainer.hide();
-
       this.getDomElement().addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
     }
   }
 
   show(): void {
     if (this.bottomContainer) {
-      // Fade in and show bottom container
       this.bottomContainer.show();
-
       this.getDomElement().removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
     }
   }
