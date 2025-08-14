@@ -36,7 +36,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CLASS_CEA_608 = 'cea608';
   private static readonly CEA608_NUM_ROWS = 15;
   private static readonly CEA608_NUM_COLUMNS = 32;
-  private static readonly CEA608_COLUMN_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_COLUMNS;;
+  private static readonly CEA608_COLUMN_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_COLUMNS;
   private static readonly DEFAULT_CAPTION_LEFT_OFFSET = '0.5%';
   
   private cea608Enabled = false;
@@ -254,17 +254,24 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   configureCea608Captions(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    // The calculated font size
-    let fontSize = 0;
+    /** The calculated row height in px */
     let rowHeight = 0;
-    // The required letter spacing spread the text characters evenly across the grid
+    /** The calculated font size in px */
+    let fontSize = 0;
+    /**
+     * The ratio of the font size of 100% to the row height.
+     * e.g. font size 100% fills up 65% of the available row height
+     */
+    const fontSize100PercentRatio = 0.65;
+    /** The required letter spacing spread the text characters evenly across the grid */
     let fontLetterSpacing = 0;
-    // The ratio of the caption window/row height that is used as margin so that the window encloses the caption
+    /** The ratio of the caption window/row height that is used as margin so that the window encloses the caption */
     const windowMarginRatio = 0.2;
+    /** The calculated window margin in px */
     let windowMargin: number;
-    // Flag telling if the CEA-608 mode is enabled
+    /** Flag telling if the CEA-608 rendering mode is currently enabled */
     this.cea608Enabled = false;
-    // Track last known dimensions to avoid unnecessary recalculations
+    /** Track last known grid params to avoid unnecessary recalculations */
     let lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0, fontSizeFactor: 0 };
 
     const settingsManager = uimanager.getSubtitleSettingsManager();
@@ -354,7 +361,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         // When the available space is wider than the text grid, the font size is simply
         // determined by the height of the available space.
         rowHeight = subtitleOverlayHeight / SubtitleOverlay.CEA608_NUM_ROWS;
-        fontSize = rowHeight * (1 - windowMarginRatio) * this.cea608FontSizeFactor * (2/3); // TODO: extract to constant
+        const fontSize100Percent = rowHeight * (1 - windowMarginRatio) * fontSize100PercentRatio;
+        fontSize = fontSize100Percent * this.cea608FontSizeFactor;
         // Calculate the additional letter spacing required to evenly spread the text across the grid's width
         const gridSlotWidth = subtitleOverlayWidth / SubtitleOverlay.CEA608_NUM_COLUMNS;
         const fontCharWidth = fontSize * fontSizeRatio;
@@ -364,7 +372,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         // the height as a base for the font size, so we need to limit the height. We do that
         // by determining the font size by the width of the available space.
         rowHeight = subtitleOverlayWidth / SubtitleOverlay.CEA608_NUM_COLUMNS / fontSizeRatio;
-        fontSize = rowHeight * (1 - windowMarginRatio) * this.cea608FontSizeFactor;
+        const fontSize100Percent = rowHeight * (1 - windowMarginRatio) * fontSize100PercentRatio;
+        fontSize = fontSize100Percent * this.cea608FontSizeFactor;
         fontLetterSpacing = 0;
       }
       
