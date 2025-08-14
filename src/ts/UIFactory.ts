@@ -355,7 +355,6 @@ function adsUILayout() {
           cssClasses: ["text-right"],
         }),
       ],
-      cssClasses: ["controlbar-top ad-controlbar-top"],
     }),
     bottomComponents: new Container({
       components: [
@@ -364,7 +363,6 @@ function adsUILayout() {
         new Spacer(),
         new FullscreenToggleButton(),
       ],
-      cssClasses: ["ad-controlbar-bottom"],
     }),
   });
 
@@ -528,7 +526,6 @@ function smallScreenAdsUILayout() {
           cssClasses: ['text-right'],
         }),
       ],
-      cssClasses: ['controlbar-top ad-controlbar-top'],
     }),
     bottomComponents: new Container({
       components: [
@@ -537,7 +534,6 @@ function smallScreenAdsUILayout() {
         new Spacer(),
         new FullscreenToggleButton(),
       ],
-      cssClasses: ["ad-controlbar-bottom"],
     }),
   });
 
@@ -613,7 +609,7 @@ function castReceiverUILayout(config: UIConfig) {
   });
 }
 
-function tvUILayout() {// TODO: use AdControlBar instead of ControlBar
+function tvUILayout() {
   const subtitleListBox = new SubtitleListBox();
   const audioTrackListBox = new AudioTrackListBox();
 
@@ -717,7 +713,6 @@ function tvAdsUILayout() {
               cssClasses: ["text-right"],
             }),
           ],
-          cssClasses: ["controlbar-top ad-controlbar-top"],// TODO: can I put these directly in AdControlBar constructor?
         }),
       }),
       new TitleBar({

@@ -29,10 +29,21 @@ export class AdControlBar extends ControlBar {
 
   constructor(config: AdControlBarConfig) {
     const components = [];
+
     if (config.topComponents) {
+      config.topComponents.getConfig().cssClasses = [
+        ...(config.topComponents.getConfig().cssClasses || []),
+        'controlbar-top',
+        'ad-controlbar-top'
+      ];
       components.push(config.topComponents);
     }
+
     if (config.bottomComponents) {
+      config.bottomComponents.getConfig().cssClasses = [
+        ...(config.bottomComponents.getConfig().cssClasses || []),
+        'ad-controlbar-bottom'
+      ];
       components.push(config.bottomComponents);
     }
 
