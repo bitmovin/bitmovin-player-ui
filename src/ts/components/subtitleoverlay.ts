@@ -260,9 +260,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let fontSize = 0;
     /**
      * The ratio of the font size of 100% to the row height.
-     * e.g. font size 100% fills up 65% of the available row height
+     * e.g. font size 100% fills up 75% of the available row height
      */
-    const fontSize100PercentRatio = 0.65;
+    const fontSize100PercentRatio = 0.75;
     /** The required letter spacing spread the text characters evenly across the grid */
     let fontLetterSpacing = 0;
     /** The ratio of the caption window/row height that is used as margin so that the window encloses the caption */
