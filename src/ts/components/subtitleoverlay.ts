@@ -388,18 +388,17 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       const updateLabel = (label: SubtitleLabel) => {
         label.getDomElement().css({
           'font-size': `${fontSize}px`,
-          'line-height': `${fontSize}px`,
+          'line-height': `${rowHeight - windowMargin}px`,
           'letter-spacing': `${fontLetterSpacing}px`,
           // 'left': SubtitleOverlay.DEFAULT_CAPTION_LEFT_OFFSET, TODO: double check
         });
 
-        label.regionStyle = `line-height: ${fontSize}px; margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
+        label.regionStyle = `margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
       }
 
       for (const childComponent of this.getComponents()) {
         if (childComponent instanceof SubtitleRegionContainer) {
           childComponent.getDomElement().css({
-            'line-height': `${fontSize}px`,
             margin: `${windowMargin / 2}px`,
             height: `${rowHeight}px`
           });
@@ -442,9 +441,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         'left': leftOffset,
         'font-size': `${fontSize}px`,
         'letter-spacing': `${fontLetterSpacing}px`,
+        'line-height': `${rowHeight - windowMargin}px`,
       });
 
-      label.regionStyle = `line-height: ${fontSize}px; margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
+      label.regionStyle = `margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
     });
 
     const reset = () => {
