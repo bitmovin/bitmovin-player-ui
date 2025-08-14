@@ -707,20 +707,18 @@ function tvAdsUILayout() {
       new AdClickOverlay(),
       playbackToggleOverlay,
       adStatusOverlay,
-      new ControlBar({
-        components: [
-          new Container({
-            components: [
-              new AdCounterLabel(),
-              new SeekBar({ label: new SeekBarLabel() }),
-              new PlaybackTimeLabel({
-                timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
-                cssClasses: ['text-right'],
-              }),
-            ],
-            cssClasses: ['controlbar-top'],
-          }),
-        ],
+      new AdControlBar({
+        topComponents: new Container({
+          components: [
+            new AdCounterLabel(),
+            new SeekBar({ label: new SeekBarLabel() }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+              cssClasses: ["text-right"],
+            }),
+          ],
+          cssClasses: ["controlbar-top ad-controlbar-top"],// TODO: can I put these directly in AdControlBar constructor?
+        }),
       }),
       new TitleBar({
         components: [

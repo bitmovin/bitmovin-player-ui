@@ -47,23 +47,21 @@ export class AdControlBar extends ControlBar {
   }
 
   hide(): void {// TODO: maybe do not use hide() generic, use hideBottomPart, or hideWithAnimation instead - since hide() is used by Container, or UIManager more generally
-    // Fade out and hide bottom container
     if (this.bottomContainer) {
+      // Fade out and hide bottom container
       this.bottomContainer.hide();
-    }
 
-    // this.getDomElement().addClass(this.prefixCss('hide-bg-shadows'));
-    this.getDomElement().addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
+      this.getDomElement().addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
+    }
   }
 
   show(): void {
-    // Fade in and show bottom container
     if (this.bottomContainer) {
-      console.log('[test] AdControlBar: Show bottom container');
+      // Fade in and show bottom container
       this.bottomContainer.show();
-    }
 
-    this.getDomElement().removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
+      this.getDomElement().removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
+    }
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
