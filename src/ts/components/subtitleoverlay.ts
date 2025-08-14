@@ -390,7 +390,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
           'font-size': `${fontSize}px`,
           'line-height': `${rowHeight - windowMargin}px`,
           'letter-spacing': `${fontLetterSpacing}px`,
-          // 'left': SubtitleOverlay.DEFAULT_CAPTION_LEFT_OFFSET, TODO: double check
         });
 
         label.regionStyle = `margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
