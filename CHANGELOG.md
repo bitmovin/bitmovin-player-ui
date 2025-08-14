@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Changed
-- Default font size for CEA captions is lowered, the previous 75% is the new 100%.
+- Default font size for CEA captions is lowered, effectively making the previous 75% the new 100%.
 
 ### Fixed
 - Long CEA captions are cut off when font size changed to greater than 100% via settings panel
