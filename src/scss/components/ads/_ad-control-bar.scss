@@ -5,15 +5,14 @@
   @extend %ui-container;
 
   @include layout-align-bottom;
+  @include slide-down;
 
-  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);// TODO: create transition to remove it
+  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
   line-height: 1em;
   padding: 1em 1em .5em;
 
   .#{$prefix}-ad-controlbar-top {
-    @include slide-down;
-
     .#{$prefix}-ui-label {
       font-size: .9em;
     }
@@ -29,7 +28,7 @@
   }
 
   .#{$prefix}-ad-controlbar-bottom {
-    @include hidden-slide-down;
+    @include hidden-animated-fade-out;
 
     white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
 

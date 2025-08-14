@@ -57,14 +57,12 @@
   transition: $transitions-string;
 }
 
-@mixin hidden-slide-down($duration: $animation-duration, $distance: 20px) {
-  transition: opacity $duration ease, transform $duration ease;
+@mixin hidden-animated-fade-out($duration: $animation-duration, $distance: 20px) {
+  transition: opacity $duration ease;
   opacity: 1;
-  transform: translateY(0);
 
   &.#{$prefix}-hidden {
     opacity: 0;
-    transform: translateY($distance);
     pointer-events: none;
   }
 }

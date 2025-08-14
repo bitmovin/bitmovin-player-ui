@@ -21,8 +21,6 @@
   }
 
   .#{$prefix}-controlbar-top {
-    @include slide-down;
-
     .#{$prefix}-ui-label {
       font-size: .9em;
     }

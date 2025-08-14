@@ -47,58 +47,23 @@ export class AdControlBar extends ControlBar {
   }
 
   hide(): void {// TODO: maybe do not use hide() generic, use hideBottomPart, or hideWithAnimation instead - since hide() is used by Container, or UIManager more generally
-    console.log('[test] AdControlBar: Hide called'); // for CLAUDE: who the hell is calling this method when the ad layout is created and used? Look at UIManager and UIFactory, those could have hints!!
-    // super.hide();
-
-    // TODO: group logic into `slideComponents` or `componentsToSlide` - same for show()
-    // Slide down top container
-    if (this.topContainer) {
-      const topElement = this.topContainer.getDomElement();
-      if (topElement) {
-        topElement.addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-      }
-    }
-    // Slide down skip button
-    const skipBtn = document.querySelector(`.${this.prefixCss(AdControlBar.CLASS_AD_SKIP_BUTTON)}`) as HTMLElement;
-    if (skipBtn) {
-      skipBtn.classList.add(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-    }
-
-    // Slide down and hide bottom container
+    // Fade out and hide bottom container
     if (this.bottomContainer) {
       this.bottomContainer.hide();
-      // const botElement = this.bottomContainer.getDomElement();
-      // if (botElement) {
-        // botElement.addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-      // }
     }
+
+    // this.getDomElement().addClass(this.prefixCss('hide-bg-shadows'));
+    this.getDomElement().addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
   }
 
   show(): void {
-    // super.show();
-
-    // Slide up top container
-    if (this.topContainer) {
-      const topElement = this.topContainer.getDomElement();
-      if (topElement) {
-        topElement.removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-      }
-    }
-    // Slide up skip button
-    const skipBtn = document.querySelector(`.${this.prefixCss(AdControlBar.CLASS_AD_SKIP_BUTTON)}`) as HTMLElement;
-    if (skipBtn) {
-      skipBtn.classList.remove(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-    }
-
-    // Slide up and show bottom container
+    // Fade in and show bottom container
     if (this.bottomContainer) {
       console.log('[test] AdControlBar: Show bottom container');
       this.bottomContainer.show();
-      // const botElement = this.bottomContainer.getDomElement();
-      // if (botElement) {
-        // botElement.removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-      // }
     }
+
+    this.getDomElement().removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
