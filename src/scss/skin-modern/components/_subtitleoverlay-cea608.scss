@@ -30,7 +30,11 @@
       font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
       position: absolute;
       text-transform: uppercase;
-      vertical-align: bottom;
+      white-space: nowrap;
+
+      // center vertically
+      top: 50%;
+      transform: translateY(-50%);
 
       // sass-lint:disable force-pseudo-nesting nesting-depth
       &:nth-child(1n-1)::after {

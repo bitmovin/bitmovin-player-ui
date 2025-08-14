@@ -34,25 +34,17 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
-  private static readonly DEFAULT_CEA608_NUM_ROWS = 15;
-  private static readonly DEFAULT_CEA608_NUM_COLUMNS = 32;
+  private static readonly CEA608_NUM_ROWS = 15;
+  private static readonly CEA608_NUM_COLUMNS = 32;
+  private static readonly CEA608_COLUMN_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_COLUMNS;
   private static readonly DEFAULT_CAPTION_LEFT_OFFSET = '0.5%';
-
-  private FONT_SIZE_FACTOR: number = 1;
-  // The number of rows in a cea608 grid
-  private CEA608_NUM_ROWS = SubtitleOverlay.DEFAULT_CEA608_NUM_ROWS;
-  // The number of columns in a cea608 grid
-  private CEA608_NUM_COLUMNS = SubtitleOverlay.DEFAULT_CEA608_NUM_COLUMNS;
-  // The offset in percent for one column (which is also the width of a column)
-  private CEA608_COLUMN_OFFSET = 100 / this.CEA608_NUM_COLUMNS;
-
+  
   private cea608Enabled = false;
+  private cea608FontSizeFactor = 1;
   private ensureCea608GridSizeUpdated: () => void;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
-
-    this.recalculateCEAGrid();
 
     this.previewSubtitleActive = false;
     this.previewSubtitle = new SubtitleLabel({ text: i18n.getLocalizer('subtitle.example') });
@@ -174,17 +166,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   setFontSizeFactor(factor: number): void {
     // We only allow range from 50% to 200% as suggested by spec
     // https://www.ecfr.gov/current/title-47/part-79/section-79.103#p-79.103(c)(4)
-    this.FONT_SIZE_FACTOR = Math.max(0.5, Math.min(2.0, factor));
-
-    this.recalculateCEAGrid();
-  }
-
-  recalculateCEAGrid() {
-    // Needs to get recalculated in case the font size will change also we need to floor this
-    // to always align to the whole number represented in styles.
-    this.CEA608_NUM_ROWS = Math.floor(SubtitleOverlay.DEFAULT_CEA608_NUM_ROWS / Math.max(this.FONT_SIZE_FACTOR, 1));
-    this.CEA608_NUM_COLUMNS = Math.floor(SubtitleOverlay.DEFAULT_CEA608_NUM_COLUMNS / this.FONT_SIZE_FACTOR);
-    this.CEA608_COLUMN_OFFSET = 100 / this.CEA608_NUM_COLUMNS;
+    this.cea608FontSizeFactor = Math.max(0.5, Math.min(2, factor));
   }
 
   detectCroppedSubtitleLabel(
@@ -230,17 +212,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     }
   }
 
-  resolveRowNumber(row: number): number {
-    // In case there is a font size factor and the row from event would overflow
-    // we need to apply an offset so it gets rendered to visible area.
-    if (this.FONT_SIZE_FACTOR > 1 && row > this.CEA608_NUM_ROWS) {
-      const rowDelta = SubtitleOverlay.DEFAULT_CEA608_NUM_ROWS - this.CEA608_NUM_ROWS;
-      return row - rowDelta;
-    }
-
-    return row;
-  }
-
   generateLabel(event: SubtitleCueEvent): SubtitleLabel {
     // Sanitize cue data (must be done before the cue ID is generated in subtitleManager.cueEnter / update)
     let region = event.region;
@@ -250,7 +221,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     const originalRowNumber = event.position?.row || 0;
 
     if (isCea608SubtitleCue(event)) {
-      event.position.row = this.resolveRowNumber(event.position.row) || 0;
+      event.position.row = event.position.row || 0;
       event.position.column = event.position.column || 0;
 
       region = region || `cea608-row-${event.position.row}`;
@@ -282,44 +253,25 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     return parseInt(value) / 100;
   }
 
-  updateRegionRowPosition(r: SubtitleRegionContainer): void {
-    const element = r.getDomElement().get()[0];
-    const label = r.getComponents()[0];
-
-    if (!element || !label) {
-      return;
-    }
-
-    const rowClassList = element.classList;
-    const originalRow = (label.getConfig() as SubtitleLabelConfig)?.originalRowPosition;
-    const rowClassRegex = /subtitle-position-cea608-row-(\d+)/;
-
-    const currentClass = Array.from(rowClassList).find(cls => rowClassRegex.test(cls));
-
-    if (!currentClass) {
-      return;
-    }
-
-    const match = rowClassRegex.exec(currentClass);
-    const rowNumber = match ? parseInt(match[1], 10) : null;
-    const newRowNum = this.resolveRowNumber(originalRow ?? rowNumber);
-    const newClass = currentClass.replace(rowClassRegex, `subtitle-position-cea608-row-${newRowNum}`);
-
-    rowClassList.replace(currentClass, newClass);
-  }
-
-
   configureCea608Captions(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    // The calculated font size
+    /** The calculated row height in px */
+    let rowHeight = 0;
+    /** The calculated font size in px */
     let fontSize = 0;
-    // The required letter spacing spread the text characters evenly across the grid
+    /**
+     * The ratio of the font size of 100% to the row height.
+     * e.g. font size 100% fills up 75% of the available row height
+     */
+    const fontSize100PercentRatio = 0.75;
+    /** The required letter spacing spread the text characters evenly across the grid */
     let fontLetterSpacing = 0;
-    // The ratio of the caption window/row height that is used as padding to make the window enclose the caption
-    const windowPaddingRatio = 0.2;
-    let windowPadding: number;
-    // Flag telling if the CEA-608 mode is enabled
+    /** The ratio of the caption window/row height that is used as margin so that the window encloses the caption */
+    const windowMarginRatio = 0.2;
+    /** The calculated window margin in px */
+    let windowMargin: number;
+    /** Flag telling if the CEA-608 rendering mode is currently enabled */
     this.cea608Enabled = false;
-    // Track last known dimensions to avoid unnecessary recalculations
+    /** Track last known grid params to avoid unnecessary recalculations */
     let lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0, fontSizeFactor: 0 };
 
     const settingsManager = uimanager.getSubtitleSettingsManager();
@@ -355,7 +307,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       const currentHeight = overlayElement.height();
       const hasOverlaySizeChanged = currentWidth !== lastCeaGridRecalculation.overlayWidth ||
         currentHeight !== lastCeaGridRecalculation.overlayHeight;
-      const hasFontSizeFactorChanged = this.FONT_SIZE_FACTOR !== lastCeaGridRecalculation.fontSizeFactor;
+      const hasFontSizeFactorChanged = this.cea608FontSizeFactor !== lastCeaGridRecalculation.fontSizeFactor;
 
       if (!hasOverlaySizeChanged && !hasFontSizeFactorChanged) {
         // none of the input variables changed, no need to recalculate
@@ -365,7 +317,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       lastCeaGridRecalculation = {
         overlayWidth: currentWidth,
         overlayHeight: currentHeight,
-        fontSizeFactor: this.FONT_SIZE_FACTOR,
+        fontSizeFactor: this.cea608FontSizeFactor,
       };
       
       const dummyLabel = new SubtitleLabel({ text: 'X' });
@@ -380,8 +332,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.updateComponents();
       this.show();
 
-      const dummyLabelCharWidth = dummyLabel.getDomElement().width() * this.FONT_SIZE_FACTOR;
-      const dummyLabelCharHeight = dummyLabel.getDomElement().height() * this.FONT_SIZE_FACTOR;
+      const dummyLabelCharWidth = dummyLabel.getDomElement().width();
+      const dummyLabelCharHeight = dummyLabel.getDomElement().height();
       const fontSizeRatio = (dummyLabelCharWidth / dummyLabelCharHeight);
 
       this.removeComponent(dummyLabel);
@@ -400,66 +352,54 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       const subtitleOverlayHeight = currentHeight;
 
       // The size ratio of the letter grid
-      const fontGridSizeRatio = (dummyLabelCharWidth * this.CEA608_NUM_COLUMNS) /
-        (dummyLabelCharHeight * this.CEA608_NUM_ROWS);
+      const fontGridSizeRatio = (dummyLabelCharWidth * SubtitleOverlay.CEA608_NUM_COLUMNS) /
+        (dummyLabelCharHeight * SubtitleOverlay.CEA608_NUM_ROWS);
       // The size ratio of the available space for the grid
       const subtitleOverlaySizeRatio = subtitleOverlayWidth / subtitleOverlayHeight;
-      let newRowHeight = 0;
 
       if (subtitleOverlaySizeRatio > fontGridSizeRatio) {
         // When the available space is wider than the text grid, the font size is simply
         // determined by the height of the available space.
-        newRowHeight = subtitleOverlayHeight / this.CEA608_NUM_ROWS;
-        fontSize = newRowHeight * (1 - windowPaddingRatio);
-        
+        rowHeight = subtitleOverlayHeight / SubtitleOverlay.CEA608_NUM_ROWS;
+        const fontSize100Percent = rowHeight * (1 - windowMarginRatio) * fontSize100PercentRatio;
+        fontSize = fontSize100Percent * this.cea608FontSizeFactor;
         // Calculate the additional letter spacing required to evenly spread the text across the grid's width
-        const gridSlotWidth = subtitleOverlayWidth / this.CEA608_NUM_COLUMNS;
+        const gridSlotWidth = subtitleOverlayWidth / SubtitleOverlay.CEA608_NUM_COLUMNS;
         const fontCharWidth = fontSize * fontSizeRatio;
         fontLetterSpacing = Math.max(gridSlotWidth - fontCharWidth, 0);
       } else {
         // When the available space is not wide enough, texts would vertically overlap if we take
         // the height as a base for the font size, so we need to limit the height. We do that
         // by determining the font size by the width of the available space.
-        newRowHeight = subtitleOverlayWidth / this.CEA608_NUM_COLUMNS / fontSizeRatio;
-        fontSize = newRowHeight * (1 - windowPaddingRatio);
+        rowHeight = subtitleOverlayWidth / SubtitleOverlay.CEA608_NUM_COLUMNS / fontSizeRatio;
+        const fontSize100Percent = rowHeight * (1 - windowMarginRatio) * fontSize100PercentRatio;
+        fontSize = fontSize100Percent * this.cea608FontSizeFactor;
         fontLetterSpacing = 0;
       }
       
-      windowPadding = newRowHeight * windowPaddingRatio;
-
-      // Update row position of regions
-      const regions = this.getComponents();
-      regions.forEach(r => {
-        if (r instanceof SubtitleRegionContainer) {
-          this.updateRegionRowPosition(r);
-        }
-      });
+      windowMargin = rowHeight * windowMarginRatio;
 
       // Update the CSS custom property on the overlay DOM element
       overlayElement.get().forEach((el) => {
-        el.style.setProperty("--cea608-row-height", `${newRowHeight}px`);
+        el.style.setProperty("--cea608-row-height", `${rowHeight}px`);
       });
 
       // Update font-size of all active subtitle labels
       const updateLabel = (label: SubtitleLabel) => {
-        const isLargerFontSize = this.FONT_SIZE_FACTOR > 1
         label.getDomElement().css({
           'font-size': `${fontSize}px`,
-          'line-height': `${fontSize}px`,
-          'letter-spacing': `${isLargerFontSize ? 0 : fontLetterSpacing}px`,
-          'white-space': `${isLargerFontSize ? 'nowrap' : 'normal'}`,
-          'left': isLargerFontSize && SubtitleOverlay.DEFAULT_CAPTION_LEFT_OFFSET,
+          'line-height': `${rowHeight - windowMargin}px`,
+          'letter-spacing': `${fontLetterSpacing}px`,
         });
 
-        label.regionStyle = `line-height: ${fontSize}px; padding: ${windowPadding / 2}px; height: ${fontSize}px`;
+        label.regionStyle = `margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
       }
 
       for (const childComponent of this.getComponents()) {
         if (childComponent instanceof SubtitleRegionContainer) {
           childComponent.getDomElement().css({
-            'line-height': `${fontSize}px`,
-            padding: `${windowPadding / 2}px`,
-            height: `${fontSize}px`
+            margin: `${windowMargin / 2}px`,
+            height: `${rowHeight}px`
           });
 
           childComponent.getComponents().forEach((l: SubtitleLabel) => {
@@ -490,11 +430,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
       }
 
-      // We disable the grid and wrapping in case enlarged font size is used to prevent
-      // line and characters overflows
-      const isLargerFontSize = this.FONT_SIZE_FACTOR > 1
-      let leftOffset = event.position.column * this.CEA608_COLUMN_OFFSET + '%';
-      if (leftOffset === '0%' || isLargerFontSize) {
+      let leftOffset = event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET + '%';
+      if (leftOffset === '0%') {
         // ensure that a little of the window still shows for better readability
         leftOffset = SubtitleOverlay.DEFAULT_CAPTION_LEFT_OFFSET;
       }
@@ -502,11 +439,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       label.getDomElement().css({
         'left': leftOffset,
         'font-size': `${fontSize}px`,
-        'letter-spacing': `${isLargerFontSize ? 0 : fontLetterSpacing}px`,
-        'white-space': `${isLargerFontSize ? 'nowrap' : 'normal'}`,
+        'letter-spacing': `${fontLetterSpacing}px`,
+        'line-height': `${rowHeight - windowMargin}px`,
       });
 
-      label.regionStyle = `line-height: ${fontSize}px; padding: ${windowPadding / 2}px; height: ${fontSize}px`;
+      label.regionStyle = `margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
     });
 
     const reset = () => {

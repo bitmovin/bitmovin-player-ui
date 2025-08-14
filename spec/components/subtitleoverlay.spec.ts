@@ -1,7 +1,7 @@
-import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
-import { UIInstanceManager } from '../../src/ts/uimanager';
-import { SubtitleOverlay, SubtitleRegionContainer, SubtitleRegionContainerManager } from '../../src/ts/components/subtitleoverlay';
+import { SubtitleOverlay, SubtitleRegionContainerManager } from '../../src/ts/components/subtitleoverlay';
 import { DOM } from '../../src/ts/dom';
+import { UIInstanceManager } from '../../src/ts/uimanager';
+import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
 
 let playerMock: jest.Mocked<TestingPlayerAPI>;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -87,75 +87,21 @@ describe('SubtitleOverlay', () => {
       subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
     });
 
-    it('should preserve default FONT_SIZE_FACTOR of 1 if no font size value on settings present', () => {
-      expect(subtitleOverlay['FONT_SIZE_FACTOR']).toBe(1);
+    it('should preserve default cea608FontSizeFactor of 1 if no font size value on settings present', () => {
+      expect(subtitleOverlay['cea608FontSizeFactor']).toBe(1);
     });
 
     // Font size factor clamping
     test.each([
-      [0.2, 0.5],  // Clamped to minimum
-      [3.0, 2.0],  // Clamped to maximum
-      [1.5, 1.5],  // Within range, no clamping
-      [0.5, 0.5],  // Exact minimum
-      [2.0, 2.0],  // Exact maximum
-      [1.0, 1.0],  // Default value
-    ])('setFontSizeFactor(%f) results in FONT_SIZE_FACTOR = %f', (inputFactor, expectedFactor) => {
+      [0.2, 0.5], // Clamped to minimum
+      [3.0, 2.0], // Clamped to maximum
+      [1.5, 1.5], // Within range, no clamping
+      [0.5, 0.5], // Exact minimum
+      [2.0, 2.0], // Exact maximum
+      [1.0, 1.0], // Default value
+    ])('setFontSizeFactor(%f) results in cea608FontSizeFactor = %f', (inputFactor, expectedFactor) => {
       subtitleOverlay.setFontSizeFactor(inputFactor);
-      expect(subtitleOverlay['FONT_SIZE_FACTOR']).toBe(expectedFactor);
+      expect(subtitleOverlay['cea608FontSizeFactor']).toBe(expectedFactor);
     });
-
-    // Grid recalculations
-    test.each([
-      [1.0, 15 / 1.0, 32 / 1.0],  // Standard grid
-      [2.0, 15 / 2.0, 32 / 2.0],  // Larger factor, smaller grid
-      [0.5, 15 / 1.0, 32 / 0.5],  // Factor <1 → rows stay 15, columns grow
-    ])('setFontSizeFactor(%f) recalculates grid: ROWS = %f, COLUMNS = %f', (factor, expectedRows, expectedColumns) => {
-      // We need to floor for whole rows as they are represented in precompiled sass styles
-      const expectedWholeRows = Math.floor(expectedRows)
-      subtitleOverlay.setFontSizeFactor(factor);
-      subtitleOverlay.recalculateCEAGrid();
-
-      expect(subtitleOverlay['CEA608_NUM_ROWS']).toBe(expectedWholeRows);
-      expect(subtitleOverlay['CEA608_NUM_COLUMNS']).toBe(expectedColumns);
-    });
-
-    test.each([
-      [1.0, 5, 5, 5],         // Factor 1.0: grid remains 15 rows; row 5 remains unchanged.
-      [1.0, 14, 14, 14],      // Factor 1.0: grid remains 15 rows; row 14 remains unchanged.
-      [2.0, 14, 14, 6],       // Factor 2.0: grid becomes floor(15/2)=7 rows; rowDelta = 15-7=8; 14-8=6.
-      [1.5, 12, 12, 7],       // Factor 1.5: grid becomes floor(15/1.5)=10 rows; 12 > 10 so rowDelta=15-10=5; 12-5=7.
-      [1.5, 8, 8, 8],         // Factor 1.5: grid becomes 10 rows; 8 <= 10 so no clamping.
-      [2.0, 14, undefined, 6] // If no originalRow provided, falls back to initial row (14) and is clamped to 6.
-    ])(
-      'with fontSizeFactor=%f, initialRow=%d, labelOriginalRow=%s, expected new row=%d',
-      (fontSizeFactor, initialRow, labelOriginalRow, expectedRow) => {
-        const element = document.createElement('div');
-        const initialClass = `subtitle-position-cea608-row-${initialRow}`;
-        element.classList.add(initialClass);
-
-        const label = {
-          getConfig: () =>
-            labelOriginalRow !== undefined
-              ? { originalRowPosition: labelOriginalRow }
-              : {}
-        };
-
-        const regionContainer = {
-          getDomElement: jest.fn(() => ({ get: () => [element] })),
-          getComponents: jest.fn(() => [label]),
-        } as unknown as SubtitleRegionContainer;
-
-        subtitleOverlay.setFontSizeFactor(fontSizeFactor);
-        subtitleOverlay.updateRegionRowPosition(regionContainer);
-
-        const expectedClass = `subtitle-position-cea608-row-${expectedRow}`;
-        expect(element.classList.contains(expectedClass)).toBe(true);
-
-        // If the new class differs from the original, ensure the original is removed.
-        if (expectedClass !== initialClass) {
-          expect(element.classList.contains(initialClass)).toBe(false);
-        }
-      }
-    );
   });
 });

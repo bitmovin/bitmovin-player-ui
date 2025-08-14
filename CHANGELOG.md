@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- Default font size for CEA captions is lowered, effectively making the previous 75% the new 100%.
+
+### Fixed
+- Long CEA captions are cut off when font size changed to greater than 100% via settings panel
+- CEA caption font size is not changing when font size set to 75% via settings panel
+- CEA caption positioning breaks when font size is changed via settings panel
+
 ## [3.101.0] - 2025-08-12
 
 ### Fixed
