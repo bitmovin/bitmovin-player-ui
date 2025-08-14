@@ -64,7 +64,7 @@ export class AdControlBar extends ControlBar {
     this.bottomContainer = config.bottomComponents || null;
   }
 
-  hide(): void {// TODO: maybe do not use hide() generic, use hideBottomPart, or hideWithAnimation instead - since hide() is used by Container, or UIManager more generally
+  hide(): void {
     if (this.bottomContainer) {
       this.bottomContainer.hide();
       this.getDomElement().addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
