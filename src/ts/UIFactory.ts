@@ -548,9 +548,9 @@ function tvUILayout() {
     components: [
       subtitleOverlay,
       new BufferingOverlay(),
+      playbackToggleOverlay,
       controlBar,
       titleBar,
-      playbackToggleOverlay,
       settingsPanel,
       subtitleListBox,
       audioListBox,

@@ -81,4 +81,14 @@
       }
     }
   }
+
+  &:focus {
+    border-radius: unset;
+    background-color: unset;
+    backdrop-filter: none;
+  }
+
+  &:active {
+    transform: unset;
+  }
 }
