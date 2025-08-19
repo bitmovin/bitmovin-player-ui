@@ -10,7 +10,14 @@
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
   line-height: 1em;
-  padding: 1em 1em .5em;
+  padding: 1em;
+
+  .#{$prefix}-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    // sass-lint:disable no-misspelled-properties
+    row-gap: .5em;
+  };
 
   .#{$prefix}-ad-controlbar-top {
     .#{$prefix}-ui-label {
@@ -19,7 +26,7 @@
 
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: .5em 0;
+      flex-direction: row;
     }
 
     > .#{$prefix}-container-wrapper > * {
@@ -30,11 +37,9 @@
   .#{$prefix}-ad-controlbar-bottom {
     @include hidden-animated-fade-out;
 
-    white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
-
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: .5em 0;
+      flex-direction: row;
 
       // This nesting is needed to keep related UI styles scoped together.
       // Refactoring it would trigger other SCSS lint warnings (e.g., selector duplication or specificity conflicts).
