@@ -233,6 +233,7 @@ export class Component<Config extends ComponentConfig> {
       cssClasses: [],
       hidden: false,
       disabled: false,
+      tabIndex: -1,
     }, {});
     this.viewMode = ViewMode.Temporary;
   }
