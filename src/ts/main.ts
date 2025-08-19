@@ -53,6 +53,7 @@ export { TitleBar, TitleBarConfig } from './components/TitleBar';
 export { VolumeControlButton, VolumeControlButtonConfig } from './components/buttons/VolumeControlButton';
 export { ClickOverlay, ClickOverlayConfig } from './components/overlays/ClickOverlay';
 export { AdSkipButton, AdSkipButtonConfig } from './components/ads/AdSkipButton';
+export { AdControlBar } from './components/ads/AdControlBar';
 export { AdMessageLabel } from './components/ads/AdMessageLabel';
 export { AdClickOverlay } from './components/ads/AdClickOverlay';
 export { AdCounterLabel } from './components/ads/AdCounterLabel';
