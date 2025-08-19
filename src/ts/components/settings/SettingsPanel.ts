@@ -263,6 +263,14 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return <SettingsPanelPage[]>this.config.components.filter(component => component instanceof SettingsPanelPage);
   }
 
+  /**
+   * Returns the root page of the settings panel.
+   * @returns {SettingsPanelPage}
+   */
+  getRootPage(): SettingsPanelPage {
+    return this.getPages()[0];
+  }
+
   get onSettingsStateChanged(): Event<SettingsPanel<SettingsPanelConfig>, NoArgs> {
     return this.settingsPanelEvents.onSettingsStateChanged.getEvent();
   }
@@ -435,10 +443,6 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       allItems.push(...page.getItems());
     }
     return allItems;
-  }
-
-  private getRootPage(): SettingsPanelPage {
-    return this.getPages()[0];
   }
 
   protected onSettingsStateChangedEvent() {
