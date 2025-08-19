@@ -346,24 +346,26 @@ function uiLayout(config: UIConfig) {
 
 function adsUILayout() {
   let controlBar = new AdControlBar({
-    topComponents: new Container({
-      components: [
-        new AdCounterLabel(),
-        new SeekBar({ label: new SeekBarLabel() }),
-        new PlaybackTimeLabel({
-          timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
-          cssClasses: ["text-right"],
-        }),
-      ],
-    }),
-    bottomComponents: new Container({
-      components: [
-        new PlaybackToggleButton(),
-        new VolumeToggleButton(),
-        new Spacer(),
-        new FullscreenToggleButton(),
-      ],
-    }),
+    components: [
+      new Container(<ContainerConfig>{
+        components: [
+          new AdCounterLabel(),
+          new SeekBar({ label: new SeekBarLabel() }),
+          new PlaybackTimeLabel({
+            timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+            cssClasses: ["text-right"],
+          }),
+        ],
+      }),
+      new Container(<ContainerConfig>{
+        components: [
+          new PlaybackToggleButton(),
+          new VolumeToggleButton(),
+          new Spacer(),
+          new FullscreenToggleButton(),
+        ],
+      }),
+    ],
   });
 
   return new UIContainer({
@@ -517,24 +519,26 @@ function smallScreenUILayout() {
 
 function smallScreenAdsUILayout() {
   let controlBar = new AdControlBar({
-    topComponents: new Container({
-      components: [
-        new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
-        new SeekBar({ label: new SeekBarLabel() }),
-        new PlaybackTimeLabel({
-          timeLabelMode: PlaybackTimeLabelMode.TotalTime,
-          cssClasses: ['text-right'],
-        }),
-      ],
-    }),
-    bottomComponents: new Container({
-      components: [
-        new PlaybackToggleButton(),
-        new VolumeToggleButton(),
-        new Spacer(),
-        new FullscreenToggleButton(),
-      ],
-    }),
+    components: [
+      new Container(<ContainerConfig>{
+        components: [
+          new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
+          new SeekBar({ label: new SeekBarLabel() }),
+          new PlaybackTimeLabel({
+            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+            cssClasses: ['text-right'],
+          }),
+        ],
+      }),
+      new Container(<ContainerConfig>{
+        components: [
+          new PlaybackToggleButton(),
+          new VolumeToggleButton(),
+          new Spacer(),
+          new FullscreenToggleButton(),
+        ],
+      }),
+    ],
   });
 
   return new UIContainer({
@@ -704,16 +708,18 @@ function tvAdsUILayout() {
       playbackToggleOverlay,
       adStatusOverlay,
       new AdControlBar({
-        topComponents: new Container({
-          components: [
-            new AdCounterLabel(),
-            new SeekBar({ label: new SeekBarLabel() }),
-            new PlaybackTimeLabel({
-              timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
-              cssClasses: ["text-right"],
-            }),
-          ],
-        }),
+        components: [
+          new Container(<ContainerConfig>{
+            components: [
+              new AdCounterLabel(),
+              new SeekBar({ label: new SeekBarLabel() }),
+              new PlaybackTimeLabel({
+                timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+                cssClasses: ["text-right"],
+              }),
+            ],
+          }),
+        ],
       }),
       new TitleBar({
         components: [
