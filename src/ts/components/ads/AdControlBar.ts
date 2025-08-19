@@ -45,7 +45,7 @@ export class AdControlBar extends ControlBar {
     }, <ControlBarConfig>this.config);
 
     // Classify containers based on whether they contain SeekBar and apply appropriate CSS classes
-    for (const component of this.config.components) {
+    this.config.components.forEach(component => {
       if (component instanceof Container) {
         if (this.findContainerWithSeekBar(component)) {
           component.getConfig().cssClasses = [
@@ -62,21 +62,21 @@ export class AdControlBar extends ControlBar {
           this.containersToHide.push(component);
         }
       }
-    }
+    });
   }
 
   hide(): void {
-    for (const container of this.containersToHide) {
+    this.containersToHide.forEach(container => {
       container.hide();
       this.getDomElement().addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-    }
+    });
   }
 
   show(): void {
-    for (const container of [...this.containersToHide, ...this.containersToKeepVisible]) {
+    [...this.containersToHide, ...this.containersToKeepVisible].forEach(container => {
       container.show();
       this.getDomElement().removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
-    }
+    });
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
