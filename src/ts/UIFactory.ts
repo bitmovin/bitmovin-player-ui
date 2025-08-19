@@ -353,7 +353,7 @@ function adsUILayout() {
           new SeekBar({ label: new SeekBarLabel() }),
           new PlaybackTimeLabel({
             timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
-            cssClasses: ["text-right"],
+            cssClasses: ['text-right'],
           }),
         ],
       }),
@@ -715,7 +715,7 @@ function tvAdsUILayout() {
               new SeekBar({ label: new SeekBarLabel() }),
               new PlaybackTimeLabel({
                 timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
-                cssClasses: ["text-right"],
+                cssClasses: ['text-right'],
               }),
             ],
           }),
