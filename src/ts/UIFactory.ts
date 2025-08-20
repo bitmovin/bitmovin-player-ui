@@ -575,7 +575,7 @@ function tvUILayout() {
   });
 
   const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, new FocusableContainer(bottomControlBar, playbackToggleButton), new FocusableContainer(titleBar)),
+    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, new FocusableContainer(bottomControlBar, playbackToggleButton)),
     new SettingsPanelNavigationGroup(settingsPanel),
     new SettingsPanelNavigationGroup(subtitleListBox),
     new SettingsPanelNavigationGroup(audioListBox),
