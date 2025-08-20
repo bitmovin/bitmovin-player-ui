@@ -1,6 +1,20 @@
 @import '../../variables';
 @import '../../mixins';
 
+// Keep this mixin here for now since it is specific to the ad control bar
+@mixin hidden-animated-collapse-and-fade-out($duration: $animation-duration, $original-height: 2em) {
+  // sass-lint:disable no-transition-all
+  transition: all $duration ease-out;
+  opacity: 1;
+  height: $original-height;
+
+  &.#{$prefix}-hidden {
+    opacity: 0;
+    height: 0;
+    pointer-events: none;
+  }
+}
+
 .#{$prefix}-ui-controlbar {
   @extend %ui-container;
 
@@ -34,7 +48,7 @@
   }
 
   .#{$prefix}-ad-controlbar-bottom {
-    @include hidden-animated-fade-out($animation-duration, 2em);
+    @include hidden-animated-collapse-and-fade-out($animation-duration, 2em);
 
     > .#{$prefix}-container-wrapper {
       display: flex;
@@ -49,19 +63,5 @@
       }
       // sass-lint:enable nesting-depth
     }
-  }
-}
-
-// Keep this mixin here for now since it is specific to the ad control bar
-@mixin hidden-animated-fade-out($duration: $animation-duration, $original-height: 2em) {
-  // sass-lint:disable no-transition-all
-  transition: all $duration ease-out;
-  opacity: 1;
-  height: $original-height;
-
-  &.#{$prefix}-hidden {
-    opacity: 0;
-    height: 0;
-    pointer-events: none;
   }
 }
