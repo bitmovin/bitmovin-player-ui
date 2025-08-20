@@ -54,6 +54,7 @@
 
 // Keep this mixin here for now since it is specific to the ad control bar
 @mixin hidden-animated-fade-out($duration: $animation-duration, $original-height: 2em) {
+  // sass-lint:disable no-transition-all
   transition: all $duration ease-out;
   opacity: 1;
   height: $original-height;
