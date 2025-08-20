@@ -5,6 +5,14 @@ import { resolveAllComponents } from './helper/resolveAllComponents';
 import { SettingsPanelSelectOption } from '../components/settings/SettingsPanelSelectOption';
 import { DynamicSettingsPanelItem } from '../components/settings/DynamicSettingsPanelItem';
 
+export class SettingsPanelNavigationGroupConfig {
+  /**
+   * If true, the SettingsPanel will close when an item is selected.
+   * Default: true.
+   */
+  closeOnSelect?: boolean;
+}
+
 /**
  * Extend NavigationGroup to provide additional logic for navigating within a SettingsPanel.
  *
@@ -12,13 +20,17 @@ import { DynamicSettingsPanelItem } from '../components/settings/DynamicSettings
  */
 export class SettingsPanelNavigationGroup extends NavigationGroup {
   private readonly settingsPanel: SettingsPanel<SettingsPanelConfig>;
+  private readonly config: SettingsPanelNavigationGroupConfig;
 
-  constructor(settingsPanel: SettingsPanel<SettingsPanelConfig>) {
+  constructor(settingsPanel: SettingsPanel<SettingsPanelConfig>, config: SettingsPanelNavigationGroupConfig | undefined = undefined) {
     const settingsPanelPage = settingsPanel.getRootPage();
     const components = settingsPanelPage.getItems();
 
     super(settingsPanel, ...components);
     this.settingsPanel = settingsPanel;
+    this.config = Object.assign({}, this.config, {
+      closeOnSelect: true,
+    }, config);
 
     // The SettingsPanel is created and updated dynamically. To keep the navigation working between pages,
     // we need to listen to page changes and reset the active component form the previous page and focus on
@@ -49,21 +61,23 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
     return componentsToConsider;
   }
 
-  public handleAction(action: Action): void {
-    super.handleAction(action);
-
-    // TODO: this doesn't work yet
-    if (action === Action.SELECT) {
-      // close the container when a list entry is selected
-      this.handleAction(Action.BACK);
-    }
-  }
-
   protected defaultActionHandler(action: Action) {
     if (action === Action.BACK) {
       this.settingsPanel.popSettingsPanelPage();
-    } else {
-      super.defaultActionHandler(action);
+      return;
     }
+
+    if (action === Action.SELECT) {
+      // Ensure that the click event is triggered on the focused component before handling the navigation.
+      super.defaultActionHandler(action);
+
+      if (this.config.closeOnSelect) {
+        this.settingsPanel.hide();
+        super.defaultActionHandler(Action.BACK);
+      }
+      return;
+    }
+
+    super.defaultActionHandler(action);
   }
 }
