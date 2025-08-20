@@ -1,7 +1,6 @@
 import { NavigationGroup } from './NavigationGroup';
-import { Component } from '../components/Component';
 import { UIContainer } from '../components/UIContainer';
-import { Action, Direction } from './types';
+import { Action, Direction, Focusable } from './types';
 
 /**
  * Extends NavigationGroup and provides additional logic for hiding and showing the UI on the root container.
@@ -9,7 +8,7 @@ import { Action, Direction } from './types';
  * @category Components
  */
 export class RootNavigationGroup extends NavigationGroup {
-  constructor(public readonly container: UIContainer, ...elements: Component<unknown>[]) {
+  constructor(public readonly container: UIContainer, ...elements: Focusable[]) {
     super(container, ...elements);
   }
 

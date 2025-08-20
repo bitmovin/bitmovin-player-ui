@@ -1,7 +1,7 @@
 import { Component, ComponentConfig } from '../components/Component';
-import { resolveAllComponents } from './getHtmlElementsFromComponents';
+import { resolveAllComponents } from './helper/resolveAllComponents';
 import { AnyComponent, AnyContainer } from './types';
-import { isFocusable } from './NavigationGroup';
+import { isFocusable } from './TypeGuards';
 
 /**
  * Enables grouping of focusable components within a container.
@@ -17,7 +17,7 @@ export class FocusableContainer {
    *
    * @param container The container that holds focusable components.
    * @param primaryComponent The primary component that should receive focus first when the container is focused.
-   *                        If not provided, the first focusable component in the container will be used.
+   *                         If not provided, the first focusable component in the container will be used.
    */
   constructor(container: AnyContainer, primaryComponent: Component<ComponentConfig> | undefined = undefined) {
     this.container = container;
