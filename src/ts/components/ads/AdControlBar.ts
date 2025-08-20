@@ -5,29 +5,45 @@ import { UIInstanceManager } from '../../UIManager';
 import { i18n } from '../../localization/i18n';
 import { SeekBar } from '../seekbar/SeekBar';
 
-export interface AdControlBarConfig extends ControlBarConfig {
-  // Uses the inherited 'components' property from ControlBarConfig
-  // Components containing SeekBar will be treated as "top" components
-  // Components without SeekBar will be treated as "bottom" components
-}
+
+export interface AdControlBarConfig extends ControlBarConfig {}
 
 /**
  * Contains player control components displayed during ad playback,
  * e.g., play toggle button, seek bar, volume control, fullscreen toggle button.
+ * 
+ * Usage: Pass one or more {@link Container} components via the `components` array.
+ * - Containers containing a {@link SeekBar} (directly or nested) are always shown.
+ * - Other containers are hidden/shown when controls hide.
  *
  * @example
- * const adBar = new AdControlBar({
+ * ```typescript
+ * new AdControlBar({
  *   components: [
- *     new Container({ components: [new SeekBar()] }),   // Will be treated as "top"
- *     new Container({ components: [new PlayButton()] }) // Will be treated as "bottom"
- *   ]
- * });
- * 
+ *     new Container({
+ *       components: [
+ *         new AdCounterLabel(),
+ *         new SeekBar({ label: new SeekBarLabel() }),
+ *         new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.RemainingTime }),
+ *       ],
+ *       cssClasses: ['ad-controlbar-top'],
+ *     }),
+ *     new Container({
+ *       components: [
+ *         new PlaybackToggleButton(),
+ *         new VolumeToggleButton(),
+ *         new Spacer(),
+ *         new FullscreenToggleButton(),
+ *       ],
+ *       cssClasses: ['ad-controlbar-bottom'],
+ *     }),
+ *   ],
+ * })
+ * ```
+ *
  * @category Components
  */
 export class AdControlBar extends ControlBar {
-  private static readonly CLASS_SLID_DOWN = 'slid-down';
-
   private containersToHide: Container<ContainerConfig>[] = [];
   private containersToKeepVisible: Container<ContainerConfig>[] = [];
 
@@ -44,21 +60,12 @@ export class AdControlBar extends ControlBar {
       ariaLabel: i18n.getLocalizer('controlBar'),
     }, <ControlBarConfig>this.config);
 
-    // Classify containers based on whether they contain SeekBar and apply appropriate CSS classes
+    // Classify containers based on whether they contain SeekBar
     this.config.components.forEach(component => {
       if (component instanceof Container) {
         if (this.findContainerWithSeekBar(component)) {
-          component.getConfig().cssClasses = [
-            ...(component.getConfig().cssClasses || []),
-            'controlbar-top',
-            'ad-controlbar-top'
-          ];
           this.containersToKeepVisible.push(component);
         } else {
-          component.getConfig().cssClasses = [
-            ...(component.getConfig().cssClasses || []),
-            'ad-controlbar-bottom'
-          ];
           this.containersToHide.push(component);
         }
       }
@@ -68,14 +75,12 @@ export class AdControlBar extends ControlBar {
   hide(): void {
     this.containersToHide.forEach(container => {
       container.hide();
-      this.getDomElement().addClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
     });
   }
 
   show(): void {
     [...this.containersToHide, ...this.containersToKeepVisible].forEach(container => {
       container.show();
-      this.getDomElement().removeClass(this.prefixCss(AdControlBar.CLASS_SLID_DOWN));
     });
   }
 

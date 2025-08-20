@@ -5,7 +5,6 @@
   @extend %ui-container;
 
   @include layout-align-bottom;
-  @include slide-down;
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
@@ -35,7 +34,7 @@
   }
 
   .#{$prefix}-ad-controlbar-bottom {
-    @include hidden-animated-fade-out;
+    @include hidden-animated-fade-out($animation-duration, 2em);
 
     > .#{$prefix}-container-wrapper {
       display: flex;
@@ -50,5 +49,18 @@
       }
       // sass-lint:enable nesting-depth
     }
+  }
+}
+
+// Keep this mixin here for now since it is specific to the ad control bar
+@mixin hidden-animated-fade-out($duration: $animation-duration, $original-height: 2em) {
+  transition: all $duration ease-out;
+  opacity: 1;
+  height: $original-height;
+
+  &.#{$prefix}-hidden {
+    opacity: 0;
+    height: 0;
+    pointer-events: none;
   }
 }

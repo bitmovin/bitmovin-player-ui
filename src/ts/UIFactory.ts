@@ -356,6 +356,8 @@ function adsUILayout() {
             cssClasses: ['text-right'],
           }),
         ],
+        cssClasses: ['ad-controlbar-top'],
+
       }),
       new Container(<ContainerConfig>{
         components: [
@@ -364,6 +366,7 @@ function adsUILayout() {
           new Spacer(),
           new FullscreenToggleButton(),
         ],
+        cssClasses: ['ad-controlbar-bottom'],
       }),
     ],
   });
@@ -529,6 +532,7 @@ function smallScreenAdsUILayout() {
             cssClasses: ['text-right'],
           }),
         ],
+        cssClasses: ['ad-controlbar-top'],
       }),
       new Container(<ContainerConfig>{
         components: [
@@ -537,6 +541,7 @@ function smallScreenAdsUILayout() {
           new Spacer(),
           new FullscreenToggleButton(),
         ],
+        cssClasses: ['ad-controlbar-bottom'],
       }),
     ],
   });
@@ -718,6 +723,7 @@ function tvAdsUILayout() {
                 cssClasses: ['text-right'],
               }),
             ],
+            cssClasses: ['ad-controlbar-top'],
           }),
         ],
       }),
