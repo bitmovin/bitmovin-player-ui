@@ -1,0 +1,69 @@
+import { NavigationGroup } from './NavigationGroup';
+import { Action, Focusable } from './types';
+import { SettingsPanel, SettingsPanelConfig } from '../components/settings/SettingsPanel';
+import { resolveAllComponents } from './helper/resolveAllComponents';
+import { SettingsPanelSelectOption } from '../components/settings/SettingsPanelSelectOption';
+import { DynamicSettingsPanelItem } from '../components/settings/DynamicSettingsPanelItem';
+
+/**
+ * Extend NavigationGroup to provide additional logic for navigating within a SettingsPanel.
+ *
+ * @category Components
+ */
+export class SettingsPanelNavigationGroup extends NavigationGroup {
+  private readonly settingsPanel: SettingsPanel<SettingsPanelConfig>;
+
+  constructor(settingsPanel: SettingsPanel<SettingsPanelConfig>) {
+    const settingsPanelPage = settingsPanel.getRootPage();
+    const components = settingsPanelPage.getItems();
+
+    super(settingsPanel, ...components);
+    this.settingsPanel = settingsPanel;
+
+    // The SettingsPanel is created and updated dynamically. To keep the navigation working between pages,
+    // we need to listen to page changes and reset the active component form the previous page and focus on
+    // the first component of the new page.
+    settingsPanel.onActivePageChanged.subscribe(() => {
+      this.activeComponent = undefined;
+      this.focusFirstComponent();
+    });
+  }
+
+  // Dynamically resolve all components from the SettingsPanels active page. The SettingsPanel is crated dynamically and
+  // during navigating between pages. To keep the navigation working, we need to resolve all components lazy.
+  protected get components(): Focusable[] {
+    const activeSettingsPanelPage = this.settingsPanel.getActivePage();
+    const pageComponents = activeSettingsPanelPage.getItems();
+
+    let componentsToConsider: Focusable[] = [];
+    pageComponents.forEach(component => {
+      if (component instanceof SettingsPanelSelectOption) {
+        componentsToConsider.push(component);
+      } else if (component instanceof DynamicSettingsPanelItem) {
+        componentsToConsider.push(component);
+      } else {
+        componentsToConsider.push(...resolveAllComponents(component));
+      }
+    });
+
+    return componentsToConsider;
+  }
+
+  public handleAction(action: Action): void {
+    super.handleAction(action);
+
+    // TODO: this doesn't work yet
+    if (action === Action.SELECT) {
+      // close the container when a list entry is selected
+      this.handleAction(Action.BACK);
+    }
+  }
+
+  protected defaultActionHandler(action: Action) {
+    if (action === Action.BACK) {
+      this.settingsPanel.popSettingsPanelPage();
+    } else {
+      super.defaultActionHandler(action);
+    }
+  }
+}
