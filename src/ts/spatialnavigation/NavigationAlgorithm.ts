@@ -1,4 +1,6 @@
-import { Direction } from './types';
+import { AnyComponent, Direction, Focusable } from './types';
+import { FocusableContainer } from './FocusableContainer';
+import { toHtmlElement } from './helper/toHtmlElement';
 
 interface Vector {
   x: number;
@@ -90,40 +92,68 @@ function calculateAngle(a: Vector, b: Vector, direction: Direction): number {
 }
 
 /**
- * Returns the closest element to the current element when trying to navigate in the provided direction. Returns
+ * Returns the best matching element to the current element when trying to navigate in the provided direction. Returns
  * undefined, if there is not element in the given direction.
  *
- * @param activeElement The currently selected element
- * @param elements The list of all elements that can be navigated to
+ * @param activeComponent The currently selected element
+ * @param components The list of all elements that can be navigated to
  * @param direction The direction in which to navigate
  */
-export function getElementInDirection(
-  activeElement: HTMLElement,
-  elements: HTMLElement[],
+export function getComponentInDirection(
+  activeComponent: AnyComponent,
+  components: Focusable[],
   direction: Direction,
-): HTMLElement | undefined {
-  if (!activeElement) return undefined;
+): Focusable | undefined {
+  if (!activeComponent) return undefined;
 
-  const cutoffAngle = 45;
+  // We use a cutoff angle of 89 degrees to avoid selecting elements that are in a square angle to the current element.
+  const cutoffAngle = 89;
+  const activeElement = toHtmlElement(activeComponent);
   const activeElemVector = getElementVector(activeElement);
 
-  return elements
+  const availableElements = components
+    // Convert components to HTML elements
+    .map(component => {
+      if (component instanceof FocusableContainer) {
+        // Use the whole container's HTML element if it is a FocusableContainer
+        return { component, element: toHtmlElement(component.container) }
+      } else {
+        return { component, element: toHtmlElement(component) }
+      }
+    })
     // don't take the current element into account
-    .filter(elem => elem !== activeElement)
+    .filter(({ component }) => component !== activeComponent)
     // get the angle between, and distance to any other element from the current element
-    .map(element => {
+    .map(({ element, component }) => {
       const elementVector = getElementVector(element);
       const dist = distance(activeElemVector, elementVector);
       const angle = calculateAngle(activeElemVector, elementVector, direction);
 
-      return { angle, dist, element };
+      return { angle, dist, element, component };
     })
-    // filter out any elements that don't align with the direction we're trying to move in
-    .filter(({ angle }) => angle <= cutoffAngle)
-    // sort the resulting elements based on their distance to the current element in ascending order
-    .sort(({ angle: angleA, dist: distA }, { angle: angleB, dist: distB }) => (angleA - angleB) + (distA - distB))
-    // return the element closest to the current element
-    .shift()?.element;
+    // filter out elements that are not in the given direction
+    .filter(({ angle }) => angle < cutoffAngle);
+
+  const zeroAngleElements = availableElements
+    .filter(({ angle }) => angle === 0);
+
+  let sortedElements: Focusable[];
+  if (zeroAngleElements.length > 0) {
+    sortedElements = zeroAngleElements
+      // Favor elements that are in the exact direction of the current element and sort them by distance
+      .sort(({ dist: distA }, { dist: distB }) => distA - distB)
+      .map(({ component }) => component);
+  } else {
+    const nonZeroAngleElements = availableElements.filter(({ angle }) => angle !== 0);
+    sortedElements = nonZeroAngleElements
+      // Sort all non-zero elements by distance to the current element
+      .sort(({ dist: distA }, { dist: distB }) => {
+        return distA - distB;
+      })
+      .map(({ component }) => component);
+  }
+
+  return sortedElements.shift();
 }
 
 /**
