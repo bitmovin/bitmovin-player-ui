@@ -18,7 +18,7 @@ export { i18n, I18n, Vocabulary, Vocabularies, CustomVocabulary, LocalizableText
 export { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 export { NavigationGroup } from './spatialnavigation/NavigationGroup';
 export { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
-export { SettingsPanelNavigationGroup, ListOrientation } from './spatialnavigation/SettingsPanelNavigationGroup';
+export { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelNavigationGroup';
 // Components
 export { Button, ButtonConfig } from './components/buttons/Button';
 export { ControlBar, ControlBarConfig } from './components/ControlBar';
