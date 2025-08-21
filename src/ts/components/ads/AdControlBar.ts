@@ -48,13 +48,10 @@ export class AdControlBar extends ControlBar {
   private containersToKeepVisible: Container<ContainerConfig>[] = [];
 
   constructor(config: AdControlBarConfig) {
-    super({
-      ...config,
-      cssClasses: ['ad-controlbar'],
-    });
+    super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClass: 'ui-controlbar',
+      cssClasses: ['ui-controlbar', 'ad-controlbar'],
       hidden: false,
       role: 'region',
       ariaLabel: i18n.getLocalizer('controlBar'),
