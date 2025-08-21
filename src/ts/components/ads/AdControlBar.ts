@@ -51,7 +51,7 @@ export class AdControlBar extends ControlBar {
     super(config);
 
     this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-controlbar', 'ad-controlbar'],
+      cssClasses: ['ad-controlbar'],
       hidden: false,
       role: 'region',
       ariaLabel: i18n.getLocalizer('controlBar'),
