@@ -276,7 +276,7 @@ function uiLayout(config: UIConfig) {
 function adsUILayout() {
   let controlBar = new AdControlBar({
     components: [
-      new Container(<ContainerConfig>{
+      new Container({
         components: [
           new AdCounterLabel(),
           new SeekBar({ label: new SeekBarLabel() }),
@@ -288,7 +288,7 @@ function adsUILayout() {
         cssClasses: ['ad-controlbar-top'],
 
       }),
-      new Container(<ContainerConfig>{
+      new Container({
         components: [
           new PlaybackToggleButton(),
           new VolumeToggleButton(),
@@ -396,7 +396,7 @@ function smallScreenUILayout() {
 function smallScreenAdsUILayout() {
   let controlBar = new AdControlBar({
     components: [
-      new Container(<ContainerConfig>{
+      new Container({
         components: [
           new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
           new SeekBar({ label: new SeekBarLabel() }),
@@ -407,7 +407,7 @@ function smallScreenAdsUILayout() {
         ],
         cssClasses: ['ad-controlbar-top'],
       }),
-      new Container(<ContainerConfig>{
+      new Container({
         components: [
           new PlaybackToggleButton(),
           new VolumeToggleButton(),
@@ -604,7 +604,7 @@ function tvAdsUILayout() {
       adStatusOverlay,
       new AdControlBar({
         components: [
-          new Container(<ContainerConfig>{
+          new Container({
             components: [
               new AdCounterLabel(),
               new SeekBar({ label: new SeekBarLabel() }),
