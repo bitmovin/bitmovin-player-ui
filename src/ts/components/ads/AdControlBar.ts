@@ -60,7 +60,7 @@ export class AdControlBar extends ControlBar {
     // Classify containers based on whether they contain SeekBar
     this.config.components.forEach(component => {
       if (component instanceof Container) {
-        if (this.findContainerWithSeekBar(component)) {
+        if (this.containsSeekBar(component)) {
           this.containersToKeepVisible.push(component);
         } else {
           this.containersToHide.push(component);
@@ -97,7 +97,7 @@ export class AdControlBar extends ControlBar {
     });
   }
 
-  private findContainerWithSeekBar(container: Container<ContainerConfig>): boolean {
+  private containsSeekBar(container: Container<ContainerConfig>): boolean {
     const components = container.getComponents();
     
     for (const component of components) {
@@ -106,7 +106,7 @@ export class AdControlBar extends ControlBar {
       }
       
       if (component instanceof Container) {
-        if (this.findContainerWithSeekBar(component)) {
+        if (this.containsSeekBar(component)) {
           return true;
         }
       }
