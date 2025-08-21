@@ -1,6 +1,6 @@
 import {UIInstanceManager} from '../../../UIManager';
 import {SubtitleSettingsManager} from '../../../utils/SubtitleSettingsManager';
-import {Button, ButtonConfig} from '../../buttons/Button';
+import { Button, ButtonConfig, ButtonStyle } from '../../buttons/Button';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../../localization/i18n';
 
@@ -19,6 +19,7 @@ export class SubtitleSettingsResetButton extends Button<ButtonConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel-navigation-text-button',
       text: i18n.getLocalizer('reset'),
+      buttonStyle: ButtonStyle.Text,
     }, this.config);
   }
 

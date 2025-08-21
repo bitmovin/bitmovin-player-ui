@@ -62,6 +62,7 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
 
       selectOption.configure(player, uimanager);
       this.settingsPanelPage.addSettingsPanelItem(selectOption);
+      this.onSettingsStateChangedEvent();
     };
 
     const onItemRemoved = (_: any, itemKey: string) => {
@@ -78,6 +79,7 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
       }
 
       this.settingsPanelPage.removeSettingsPanelItem(settingsPanelItem);
+      this.onSettingsStateChangedEvent();
     };
 
     this.listSelector.onItemAdded.subscribe(onItemAdded);
