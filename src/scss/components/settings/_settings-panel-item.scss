@@ -1,13 +1,14 @@
 @import '../../variables';
 
 %ui-settings-panel-item {
-  @include focusable(true);
+  @include focusable(true, 0, 0);
 
   line-height: 1.5em;
   padding: .5em .7em;
   white-space: nowrap;
 
   cursor: pointer;
+
   * {
     cursor: pointer;
   }
@@ -66,6 +67,7 @@
   &.#{$prefix}-ui-settings-panel-item-select-option {
     &.#{$prefix}-selected {
       .#{$prefix}-ui-label {
+        // sass-lint:disable nesting-depth
         &::before {
           background-image: url('../../assets/images/check.svg');
           background-repeat: no-repeat;

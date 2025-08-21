@@ -11,16 +11,20 @@
   }
 
   &.#{$prefix}-on {
-    background-image: url('../../assets/images/toggleOn.svg');
-    background-position: 20px center;
-    background-size: 45% auto;
-    margin-left: 2%;
+    .#{$prefix}-icon {
+      background-image: url('../../assets/images/toggleOn.svg');
+      background-position: 20px center;
+      background-size: 45% auto;
+      margin-left: 2%;
+    }
   }
 
   &.#{$prefix}-off {
-    background-image: url('../../assets/images/toggleOff.svg');
-    background-position: 20px center;
-    background-size: 45% auto;
+    .#{$prefix}-icon {
+      background-image: url('../../assets/images/toggleOff.svg');
+      background-position: 20px center;
+      background-size: 45% auto;
+    }
   }
 }
 

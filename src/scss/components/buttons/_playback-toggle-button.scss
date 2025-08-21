@@ -4,17 +4,23 @@
 .#{$prefix}-ui-playbacktogglebutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/images/play.svg');
+  .#{$prefix}-icon {
+    background-image: url('../../assets/images/play.svg');
+  }
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   &.#{$prefix}-on {
-    background-image: url('../../assets/images/pause.svg');
+    .#{$prefix}-icon {
+      background-image: url('../../assets/images/pause.svg');
+    }
 
     &.#{$prefix}-stoptoggle {
-      background-image: url('../../assets/images/stop.svg');
+      .#{$prefix}-icon {
+        background-image: url('../../assets/images/stop.svg');
+      }
     }
   }
 }

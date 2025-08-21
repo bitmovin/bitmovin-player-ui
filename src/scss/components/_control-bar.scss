@@ -10,13 +10,20 @@
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
   line-height: 1em;
-  padding: 1em 1em .5em;
+  padding: 1em;
+
+  .#{$prefix}-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    // sass-lint:disable no-misspelled-properties
+    row-gap: .5em;
+  }
 
   .#{$prefix}-controlbar-top,
   .#{$prefix}-controlbar-bottom {
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: .5em 0;
+      flex-direction: row;
     }
   }
 
@@ -31,10 +38,7 @@
   }
 
   .#{$prefix}-controlbar-bottom {
-    white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
-
     > .#{$prefix}-container-wrapper {
-
       .#{$prefix}-ui-volumeslider {
         margin: auto .5em;
         width: 5em;

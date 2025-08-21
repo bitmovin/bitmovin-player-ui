@@ -15,7 +15,7 @@
 
   backdrop-filter: blur(10px);
   background-color: $background-color;
-  border-radius: 4px;
+  border-radius: .2em;
   bottom: 3.5em;
   box-shadow: 0 0 3px 0 transparentize($color: #000, $amount: .75);
   height: fit-content;

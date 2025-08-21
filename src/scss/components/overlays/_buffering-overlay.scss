@@ -62,7 +62,7 @@
     height: 2em;
     margin: .2em;
     width: 2em;
-    opacity: 0.3;
+    opacity: .3;
 
     @for $i from 1 through 3 {
       &:nth-child(#{$i}) {

@@ -129,16 +129,23 @@
   width: $marker-dimension;
 }
 
-@mixin focusable($inset: false) {
+@mixin focusable($inset: false, $border-radius: .3em, $focus-element-box-shadow: 0 0 0 .1em rgba($color-focus, .4)) {
   &:focus {
     @if $inset == false {
       box-shadow: $focus-element-box-shadow;
     } @else {
       box-shadow: inset $focus-element-box-shadow;
     }
+
+    background-color: $color-focus;
+    backdrop-filter: blur(5px);
+    border-radius: $border-radius;
     outline: none;
 
     &:not(.#{$prefix}-focus-visible) {
+      background-color: unset;
+      backdrop-filter: unset;
+      border-radius: unset;
       box-shadow: none;
       outline: none;
     }
