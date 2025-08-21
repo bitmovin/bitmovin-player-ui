@@ -304,7 +304,7 @@ export class NavigationGroup {
   public release(): void {
     this.eventSubscriber.release();
     this.activeComponent = undefined;
-    this.components.splice(0, this.components.length);
+    this._components.splice(0, this._components.length);
     this.removeElementHoverEventListeners();
   }
 
