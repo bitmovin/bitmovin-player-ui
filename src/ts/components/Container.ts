@@ -172,4 +172,51 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
       this.resumeHideTimeout();
     }
   }
+
+  /**
+   * Enhanced hide method with JavaScript-assisted collapse for ad controlbar bottom containers.
+   * Uses transitionend event to set display: none after transition completes.
+   */
+  hide(animated: boolean = false): void {
+    if (!this.isHidden()) {
+      const element = this.getDomElement();
+
+      if (animated) {
+        // For animated element, use JavaScript-assisted hiding
+        const handleTransitionEnd = () => {
+          if (this.isHidden()) {
+            element.get(0).style.display = 'none';
+          }
+          element.off('transitionend', handleTransitionEnd);
+        };
+
+        element.on('transitionend', handleTransitionEnd);
+      }
+
+      super.hide();
+    }
+  }
+
+  /**
+   * Enhanced show method with JavaScript-assisted collapse for ad controlbar bottom containers.
+   * Resets display property before removing hidden class.
+   */
+  show(animated: boolean = false): void {
+    if (this.isHidden()) {
+      const element = this.getDomElement();
+
+      if (animated) {
+        // Reset display property first
+        element.get(0).style.display = 'flex';
+        
+        // Use requestAnimationFrame to ensure display change is applied before removing hidden class
+        requestAnimationFrame(() => {
+          super.show();
+        });
+      } else {
+        // Normal show behavior for other containers
+        super.show();
+      }
+    }
+  }
 }

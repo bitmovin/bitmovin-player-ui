@@ -71,13 +71,13 @@ export class AdControlBar extends ControlBar {
 
   hide(): void {
     this.containersToHide.forEach(container => {
-      container.hide();
+      container.hide(true);
     });
   }
 
   show(): void {
     [...this.containersToHide, ...this.containersToKeepVisible].forEach(container => {
-      container.show();
+      container.show(true);
     });
   }
 

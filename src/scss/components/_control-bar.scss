@@ -15,8 +15,6 @@
   .#{$prefix}-container-wrapper {
     display: flex;
     flex-direction: column;
-    // sass-lint:disable no-misspelled-properties
-    row-gap: .5em;
   }
 
   .#{$prefix}-controlbar-top,
@@ -28,6 +26,8 @@
   }
 
   .#{$prefix}-controlbar-top {
+    margin-bottom: .5em;
+
     .#{$prefix}-ui-label {
       font-size: .9em;
     }
