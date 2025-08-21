@@ -26,8 +26,6 @@
   }
 
   .#{$prefix}-controlbar-top {
-    margin-bottom: .5em;
-
     .#{$prefix}-ui-label {
       font-size: .9em;
     }
@@ -38,6 +36,8 @@
   }
 
   .#{$prefix}-controlbar-bottom {
+    margin-top: .5em;
+
     > .#{$prefix}-container-wrapper {
       .#{$prefix}-ui-volumeslider {
         margin: auto .5em;
