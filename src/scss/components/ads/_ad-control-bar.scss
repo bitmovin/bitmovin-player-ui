@@ -10,7 +10,7 @@
   &.#{$prefix}-hidden {
     opacity: 0;
     height: 0;
-    margin-bottom: 0;
+    margin: 0;
     pointer-events: none;
   }
 }
@@ -31,8 +31,6 @@
   };
 
   .#{$prefix}-ad-controlbar-top {
-    // margin-bottom: .5em;
-
     .#{$prefix}-ui-label {
       font-size: .9em;
     }
