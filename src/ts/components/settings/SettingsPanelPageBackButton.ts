@@ -15,7 +15,7 @@ export class SettingsPanelPageBackButton extends SettingsPanelPageNavigatorButto
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settingspanelpagebackbutton',
       text: i18n.getLocalizer('back'),
-      buttonStyle: ButtonStyle.TextIconLeading,
+      buttonStyle: ButtonStyle.TextWithLeadingIcon,
     } as SettingsPanelPageNavigatorConfig, this.config);
   }
 
