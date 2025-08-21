@@ -72,7 +72,7 @@ export class NavigationGroup {
     }
 
     // Add all non-focusable containers components and flat map other containers
-    const components = this._components.filter(component => !(component instanceof FocusableContainer))
+    const components = this._components.filter(component => !(component instanceof FocusableContainer));
     components.forEach(component => {
       if (component instanceof Container) {
         componentsToConsider.push(...resolveAllComponents(component));
