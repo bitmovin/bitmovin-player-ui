@@ -3,13 +3,15 @@
 
 // Keep this mixin here for now since it is specific to the ad control bar
 @mixin hidden-animated-collapse-and-fade-out($duration: $animation-duration, $original-height: 2em) {
-  transition: opacity $duration ease-out, height $duration ease-out;
+  transition: opacity $duration ease-out, height $duration ease-out, margin-bottom $duration ease-out, margin-top $duration ease-out;
   opacity: 1;
   height: $original-height;
 
   &.#{$prefix}-hidden {
     opacity: 0;
     height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
     pointer-events: none;
   }
 }
@@ -27,8 +29,6 @@
   .#{$prefix}-container-wrapper {
     display: flex;
     flex-direction: column;
-    // sass-lint:disable no-misspelled-properties
-    row-gap: .5em;
   };
 
   .#{$prefix}-ad-controlbar-top {
@@ -48,6 +48,8 @@
 
   .#{$prefix}-ad-controlbar-bottom {
     @include hidden-animated-collapse-and-fade-out($animation-duration, 2em);
+    flex-direction: column;
+    margin-top: .5em;
 
     > .#{$prefix}-container-wrapper {
       display: flex;

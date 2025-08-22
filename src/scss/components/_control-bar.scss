@@ -15,8 +15,6 @@
   .#{$prefix}-container-wrapper {
     display: flex;
     flex-direction: column;
-    // sass-lint:disable no-misspelled-properties
-    row-gap: .5em;
   }
 
   .#{$prefix}-controlbar-top,
@@ -38,6 +36,8 @@
   }
 
   .#{$prefix}-controlbar-bottom {
+    margin-top: .5em;
+
     > .#{$prefix}-container-wrapper {
       .#{$prefix}-ui-volumeslider {
         margin: auto .5em;
