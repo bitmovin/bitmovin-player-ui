@@ -91,6 +91,7 @@ export { ReplayButton } from './components/buttons/ReplayButton';
 export { QuickSeekButton, QuickSeekButtonConfig } from './components/buttons/QuickSeekButton';
 export { ListSelector, ListSelectorConfig, ListItem, ListItemFilter, ListItemLabelTranslator } from './components/lists/ListSelector';
 export { AdStatusOverlay } from './components/ads/AdStatusOverlay';
+export { Icon, IconConfig } from './components/Icon';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
