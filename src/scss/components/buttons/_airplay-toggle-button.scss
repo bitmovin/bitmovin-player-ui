@@ -4,7 +4,7 @@
 .#{$prefix}-ui-airplaytogglebutton {
   @extend %ui-button;
 
-  .#{$prefix}-icon {
+  .#{$prefix}-ui-icon {
     background-image: url('../../assets/images/airplay.svg');
   }
 
@@ -14,7 +14,7 @@
 
   &.#{$prefix}-on {
     // TODO: replace with filled cast icon once available
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/airplay.svg');
     }
   }

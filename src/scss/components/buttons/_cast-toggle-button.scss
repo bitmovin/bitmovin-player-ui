@@ -4,7 +4,7 @@
 .#{$prefix}-ui-casttogglebutton {
   @extend %ui-button;
 
-  .#{$prefix}-icon {
+  .#{$prefix}-ui-icon {
     background-image: url('../../assets/images/cast.svg');
   }
 

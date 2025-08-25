@@ -3,12 +3,12 @@
 .#{$prefix}-ui-subtitle-list-box-toggle-button {
   @extend %ui-settingstogglebutton;
 
-  .#{$prefix}-icon {
+  .#{$prefix}-ui-icon {
     background-image: url('../../assets/images/subtitles.svg');
   }
 
   &.#{$prefix}-on {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/subtitles.svg');
     }
   }
