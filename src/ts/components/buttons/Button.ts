@@ -2,6 +2,7 @@ import {ComponentConfig, Component} from '../Component';
 import {DOM} from '../../DOM';
 import {EventDispatcher, NoArgs, Event} from '../../EventDispatcher';
 import { LocalizableText , i18n } from '../../localization/i18n';
+import { Icon } from '../Icon';
 
 /**
  * Configures the style of a {@link Button} component.
@@ -96,16 +97,8 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     let buttonElement = new DOM('button', buttonElementAttributes, this)
 
     const addIconElement = () => {
-      buttonElement
-        .append(
-          new DOM(
-            'div',
-            {
-              'class': this.prefixCss('icon'),
-              'alt': i18n.performLocalization(this.config.ariaLabel || this.config.text),
-            },
-          ),
-        );
+      const icon = new Icon({ ariaLabel: this.config.ariaLabel, altText: this.config.text });
+      buttonElement.append(icon.getDomElement());
     }
 
     const addLabelElement = () => {
