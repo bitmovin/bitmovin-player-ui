@@ -2,6 +2,7 @@
 
 %ui-label {
   @extend %ui-component;
+  @include ui-icon-container;
 
   @include hidden;
 
@@ -9,6 +10,12 @@
   white-space: nowrap;
   // sass-lint:disable no-vendor-prefixes
   -webkit-tap-highlight-color: transparent;
+
+  .#{$prefix}-ui-label-text {
+    @extend %ui-label;
+
+    margin: 0;
+  }
 }
 
 .#{$prefix}-ui-label {

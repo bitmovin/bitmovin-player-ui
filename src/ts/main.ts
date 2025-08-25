@@ -20,7 +20,7 @@ export { NavigationGroup } from './spatialnavigation/NavigationGroup';
 export { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
 export { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 // Components
-export { Button, ButtonConfig } from './components/buttons/Button';
+export { Button, ButtonConfig, ButtonStyle } from './components/buttons/Button';
 export { ControlBar, ControlBarConfig } from './components/ControlBar';
 export { FullscreenToggleButton } from './components/buttons/FullscreenToggleButton';
 export { HugePlaybackToggleButton } from './components/buttons/HugePlaybackToggleButton';
@@ -38,7 +38,7 @@ export { VRToggleButton } from './components/buttons/VRToggleButton';
 export { Watermark, WatermarkConfig } from './components/Watermark';
 export { UIContainer, UIContainerConfig } from './components/UIContainer';
 export { Container, ContainerConfig } from './components/Container';
-export { Label, LabelConfig } from './components/labels/Label';
+export { Label, LabelConfig, LabelStyle } from './components/labels/Label';
 export { AudioQualitySelectBox } from './components/settings/AudioQualitySelectBox';
 export { AudioTrackSelectBox } from './components/settings/AudioTrackSelectBox';
 export { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
