@@ -1,4 +1,4 @@
-import { Label, LabelConfig } from '../labels/Label';
+import { Label, LabelConfig, LabelStyle } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../../localization/i18n';
@@ -61,6 +61,7 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
       text: '-',
       for: this.getConfig().id,
       cssClasses: ['ui-label-setting-selected-option'],
+      labelStyle: LabelStyle.TextWithTrailingIcon,
     });
 
     this.config = this.mergeConfig(config, {
@@ -137,6 +138,7 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
       .map((option) => {
         return new SettingsPanelSelectOption({
           label: option.label,
+          labelStyle: LabelStyle.TextWithLeadingIcon,
           settingComponent: this.settingComponent,
           settingsValue: option.key,
           addSettingAsComponent: false,
