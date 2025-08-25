@@ -7,6 +7,9 @@ export interface IconConfig extends ComponentConfig {
    * WCAG20 standard for defining info about the component (usually the name)
    */
   ariaLabel?: LocalizableText;
+  /**
+   * Alternative text for the icon, used for accessibility (e.g., screen readers).
+   */
   altText?: LocalizableText;
 }
 
