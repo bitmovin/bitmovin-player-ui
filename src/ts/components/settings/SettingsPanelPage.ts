@@ -90,7 +90,7 @@ export class SettingsPanelPage extends Container<SettingsPanelPageConfig> {
   }
 
   onActiveEvent() {
-    const activeItems = this.getItems().filter((item) => item.isActive());
+    const activeItems = this.getItems().filter((item) => item.isActive() && item.getConfig().isSetting);
 
     this.settingsPanelPageEvents.onActive.dispatch(this);
     // Disable focus for iOS and iPadOS 13. They open select boxes automatically on focus and we want to avoid that.
