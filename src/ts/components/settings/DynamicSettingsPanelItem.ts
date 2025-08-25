@@ -91,11 +91,10 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
     const handleSelectedItemChanged = () => {
       let selectedItem = this.settingComponent.getItemForKey(this.settingComponent.getSelectedItem());
       if (selectedItem == null) {
-        this.selectedOptionLabel.hide();
+        this.selectedOptionLabel.setText('-');
         return;
       }
 
-      this.selectedOptionLabel.show();
       let selectedOptionLabelText = selectedItem.label;
       if (this.settingComponent instanceof SubtitleSelectBox) {
         let availableSettings = this.settingComponent.getItems().length;
