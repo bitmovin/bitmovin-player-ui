@@ -11,11 +11,4 @@
   &:hover {
     @include svg-icon-shadow;
   }
-
-  &.#{$prefix}-on {
-    // TODO: replace with filled cast icon once available
-    .#{$prefix}-icon {
-      background-image: url('../../assets/images/cast.svg');
-    }
-  }
 }
