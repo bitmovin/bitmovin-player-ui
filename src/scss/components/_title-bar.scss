@@ -9,7 +9,13 @@
 
   background: linear-gradient(to top, $color-transparent, $color-background-bars);
   box-sizing: border-box;
-  padding: 1.5em;
+
+  $titlebar-padding: 1.5em;
+  padding: max($titlebar-padding, env(safe-area-inset-top))
+    max($titlebar-padding, env(safe-area-inset-right))
+    $titlebar-padding
+    max($titlebar-padding, env(safe-area-inset-left));
+
   pointer-events: none;
 
   .#{$prefix}-container-wrapper {

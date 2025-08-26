@@ -68,5 +68,10 @@
       bottom: 5em;
       transition: bottom $animation-duration-short ease-in;
     }
+
+    &:not(.#{$prefix}-controlbar-visible) {
+      top: env(safe-area-inset-top);
+      bottom: env(safe-area-inset-bottom);
+    }
   }
 }
