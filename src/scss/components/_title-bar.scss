@@ -19,6 +19,13 @@
     row-gap: .5em;
   }
 
+  .#{$prefix}-titlebar-row {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
   > .#{$prefix}-container-wrapper {
     pointer-events: none;
 
