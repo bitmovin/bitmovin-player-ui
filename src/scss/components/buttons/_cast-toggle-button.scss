@@ -11,10 +11,4 @@
   &:hover {
     @include svg-icon-shadow;
   }
-
-  &.#{$prefix}-on {
-    .#{$prefix}-icon {
-      background-image: url('../../assets/images/chromecastX.svg');
-    }
-  }
 }

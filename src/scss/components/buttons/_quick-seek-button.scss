@@ -10,13 +10,13 @@
 
   &[data-#{$prefix}-seek-direction='forward'] {
     .#{$prefix}-icon {
-      background-image: url('../../assets/images/quickseek-fastforward.svg');
+      background-image: url('../../assets/images/quickseek-forward.svg');
     }
   }
 
   &[data-#{$prefix}-seek-direction='rewind'] {
     .#{$prefix}-icon {
-      background-image: url('../../assets/images/quickseek-rewind.svg');
+      background-image: url('../../assets/images/quickseek-back.svg');
     }
   }
 }
