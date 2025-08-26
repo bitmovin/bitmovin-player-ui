@@ -84,6 +84,12 @@
     text-align: right;
   }
 
+  &.#{$prefix}-layout-max-width-400 {
+    .#{$prefix}-ui-volumeslider {
+      display: none;
+    }
+  }
+
   // sass-lint:disable force-element-nesting
   &.#{$prefix}-layout-max-width-400,
   &.#{$prefix}-layout-max-width-600 {
