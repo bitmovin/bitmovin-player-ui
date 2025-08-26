@@ -356,7 +356,6 @@ function smallScreenUILayout() {
           new VolumeToggleButton(),
           new Spacer(),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
-          // new SubtitleToggleButton(subtitleSelectItem, subtitleSelectBox),
           new FullscreenToggleButton(),
         ],
         cssClasses: ['controlbar-bottom'],
@@ -374,10 +373,16 @@ function smallScreenUILayout() {
       controlBar,
       new TitleBar({
         components: [
-          new MetadataLabel({ content: MetadataLabelContent.Title }),
-          new CastToggleButton(),
-          new AirPlayToggleButton(),
-          new VRToggleButton(),
+          new Container({
+            components: [
+              new MetadataLabel({ content: MetadataLabelContent.Title }),
+              new Spacer(),
+              new CastToggleButton(),
+              new AirPlayToggleButton(),
+              new VRToggleButton(),
+            ],
+            cssClasses: ['titlebar-row'],
+          }),
         ],
       }),
       new DismissClickOverlay({ target: settingsPanel }),

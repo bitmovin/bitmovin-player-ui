@@ -167,9 +167,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     });
 
     uimanager.onControlsHide.subscribe(() => {
-      this.hideTimeout.reset();
       this.hide();
-    })
+    });
 
     this.updateActivePageClass();
   }
