@@ -84,6 +84,12 @@
     text-align: right;
   }
 
+  &.#{$prefix}-controls-shown {
+    .#{$prefix}-ui-touch-control-overlay {
+      background-color: $color-touch-control-overlay-background;
+    }
+  }
+
   &.#{$prefix}-layout-max-width-400 {
     .#{$prefix}-ui-volumeslider {
       display: none;
@@ -132,10 +138,4 @@
       width: 50%;
     }
   }
-}
-
-/* Respect safe area insets to avoid UI element collision. */
-.bmpui-ui-uicontainer .bmpui-ui-subtitle-overlay:not(.bmpui-controlbar-visible) {
-  top: env(safe-area-inset-top);
-  bottom: env(safe-area-inset-bottom);
 }
