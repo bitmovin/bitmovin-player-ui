@@ -52,6 +52,7 @@ import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
 import { AdMessageLabel } from './components/ads/AdMessageLabel';
+import { BrowserUtils } from './utils/BrowserUtils';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -370,7 +371,8 @@ function smallScreenUILayout() {
       subtitleOverlay,
       new BufferingOverlay(),
       new CastStatusOverlay(),
-      new TouchControlOverlay(),
+      // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
+      BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
       new RecommendationOverlay(),
       controlBar,
       new TitleBar({
