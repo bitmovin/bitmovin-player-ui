@@ -89,7 +89,9 @@ export namespace UIFactory {
           ui: smallScreenAdsUILayout(),
           condition: (context: UIConditionContext) => {
             return (
-              context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAd && context.adRequiresUi
+              context.documentWidth < smallScreenSwitchWidth &&
+              context.isAd &&
+              context.adRequiresUi
             );
           },
         },
@@ -99,7 +101,6 @@ export namespace UIFactory {
             return (
               !context.isAd &&
               !context.adRequiresUi &&
-              context.isMobile &&
               context.documentWidth < smallScreenSwitchWidth
             );
           },
