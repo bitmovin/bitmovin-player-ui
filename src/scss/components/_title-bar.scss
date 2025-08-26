@@ -9,32 +9,58 @@
 
   background: linear-gradient(to top, $color-transparent, $color-background-bars);
   box-sizing: border-box;
-  padding: .5em 1em 1em;
+
+  $titlebar-padding: 1.5em;
+  padding: max($titlebar-padding, env(safe-area-inset-top))
+    max($titlebar-padding, env(safe-area-inset-right))
+    $titlebar-padding
+    max($titlebar-padding, env(safe-area-inset-left));
+
   pointer-events: none;
 
+  .#{$prefix}-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    // sass-lint:disable no-misspelled-properties
+    row-gap: .5em;
+  }
+
+  .#{$prefix}-titlebar-row {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      flex-direction: row;
+      column-gap: .3rem;
+    }
+  }
+
   > .#{$prefix}-container-wrapper {
-    padding: .5em;
     pointer-events: none;
 
     .#{$prefix}-label-metadata {
+      cursor: default;
       pointer-events: none;
+
+      > * {
+        cursor: default;
+        pointer-events: none;
+        display: block;
+        text-shadow: 0 0 5px $color-black;
+      }
     }
 
     .#{$prefix}-label-metadata-title {
-      cursor: default;
-      display: block;
-      font-size: 1.2em;
-      font-weight: 500;
-      text-shadow: 0 0 5px $color-black;
-      white-space: normal;
+      .#{$prefix}-ui-label-text {
+        font-size: $font-size-large;
+        line-height: $font-size-large;
+        white-space: nowrap;
+      }
     }
 
     .#{$prefix}-label-metadata-description {
-      color: lighten($color-secondary, 30%);
-      cursor: default;
-      display: block;
-      text-shadow: 0 0 5px $color-black;
-      white-space: normal;
+      .#{$prefix}-ui-label-text {
+        line-height: 1.5;
+        white-space: normal;
+      }
     }
   }
 }

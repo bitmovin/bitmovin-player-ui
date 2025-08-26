@@ -1,0 +1,25 @@
+@import '../variables';
+
+@mixin ui-icon-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  flex-flow: row;
+  justify-content: flex-start;
+  column-gap: .4em;
+}
+
+.#{$prefix}-ui-icon {
+  display: inline-block;
+  background-color: transparent;
+  background-origin: content-box;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: $icon-size;
+  border: 0;
+  box-sizing: content-box;
+  cursor: pointer;
+  width: 100%;
+  height: $icon-size;
+  min-width: $icon-size;
+}

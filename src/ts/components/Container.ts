@@ -42,7 +42,8 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
    * A reference to the inner element that contains the components of the container.
    */
   private innerContainerElement: DOM;
-  private componentsToAdd: Component<ComponentConfig>[];
+  private componentsToAppend: Component<ComponentConfig>[];
+  private componentsToPrepend: Component<ComponentConfig>[];
   private componentsToRemove: Component<ComponentConfig>[];
   private componentsInPersistentViewMode: number;
 
@@ -54,7 +55,8 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
       components: [],
     } as Config, this.config);
 
-    this.componentsToAdd = [];
+    this.componentsToAppend = [];
+    this.componentsToPrepend = [];
     this.componentsToRemove = [];
     this.componentsInPersistentViewMode = 0;
   }
@@ -65,7 +67,16 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
    */
   addComponent(component: Component<ComponentConfig>) {
     this.config.components.push(component);
-    this.componentsToAdd.push(component);
+    this.componentsToAppend.push(component);
+  }
+
+  /**
+   * Adds a child component as the first component in the container.
+   * @param component the component to add
+   */
+  prependComponent(component: Component<ComponentConfig>) {
+    this.config.components.unshift(component);
+    this.componentsToPrepend.push(component);
   }
 
   /**
@@ -115,8 +126,12 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
       component.getDomElement().remove();
     }
 
-    while ((component = this.componentsToAdd.shift()) !== undefined) {
+    while ((component = this.componentsToAppend.shift()) !== undefined) {
       this.innerContainerElement.append(component.getDomElement());
+    }
+
+    while ((component = this.componentsToPrepend.shift()) !== undefined) {
+      this.innerContainerElement.prepend(component.getDomElement());
     }
   }
 
@@ -140,7 +155,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     this.innerContainerElement = innerContainer;
 
     for (let initialComponent of this.config.components) {
-      this.componentsToAdd.push(initialComponent);
+      this.componentsToAppend.push(initialComponent);
     }
     this.updateComponents();
 

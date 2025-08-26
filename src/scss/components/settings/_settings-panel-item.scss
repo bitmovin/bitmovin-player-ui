@@ -1,13 +1,13 @@
 @import '../../variables';
 
 %ui-settings-panel-item {
-  @include focusable(true);
+  @include focusable(true, 0, 0);
 
-  line-height: 1.5em;
-  padding: .5em .7em;
+  padding: 1rem;
   white-space: nowrap;
 
   cursor: pointer;
+
   * {
     cursor: pointer;
   }
@@ -29,8 +29,6 @@
   .#{$prefix}-container-wrapper {
     align-items: center;
     display: flex;
-    height: 100%;
-    width: 100%;
   }
 
   > .#{$prefix}-container-wrapper {
@@ -38,57 +36,41 @@
   }
 
   .#{$prefix}-ui-label {
-    display: inline-block;
-    font-size: .8em;
-    font-weight: 500;
-    margin: 0;
-    text-align: justify;
+    line-height: $icon-size;
+    min-height: $icon-size;
   }
 
   .#{$prefix}-ui-label-setting-selected-option {
     align-self: center;
-    font-weight: normal;
     margin-left: auto;
     width: fit-content;
 
-    &::after {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/angle-right.svg');
-      background-repeat: no-repeat;
-      background-size: 1.5em auto;
-      content: ' ';
-      display: inline-block;
-      height: 1.5em;
-      vertical-align: -.4em;
-      width: 1.5em;
+      width: .8em;
+      min-width: unset;
     }
   }
 
   &.#{$prefix}-ui-settings-panel-item-select-option {
+    .#{$prefix}-ui-icon {
+      display: none;
+    }
+
     &.#{$prefix}-selected {
-      .#{$prefix}-ui-label {
-        &::before {
-          background-image: url('../../assets/images/check.svg');
-          background-repeat: no-repeat;
-          background-size: 1.5em auto;
-          content: ' ';
-          display: inline-block;
-          height: 1.5em;
-          vertical-align: -.4em;
-          width: 1.5em;
-        }
+      .#{$prefix}-ui-icon {
+        display: inline-block;
+        background-image: url('../../assets/images/check.svg');
       }
     }
   }
 
   &.#{$prefix}-title-item {
     background-color: $color-background-menu-title-overlay;
+    font-weight: $font-weight-medium;
 
     &:hover {
       background-color: $color-background-menu-hover-overlay;
-    }
-
-    .#{$prefix}-label {
-      font-size: .8em;
     }
   }
 }

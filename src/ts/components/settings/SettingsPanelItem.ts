@@ -1,12 +1,12 @@
-import {Container, ContainerConfig} from '../Container';
-import {Component, ComponentConfig} from '../Component';
-import {Event, EventDispatcher, NoArgs} from '../../EventDispatcher';
-import { Label, LabelConfig } from '../labels/Label';
-import {UIInstanceManager} from '../../UIManager';
-import {SelectBox} from './SelectBox';
-import {VideoQualitySelectBox} from './VideoQualitySelectBox';
-import {AudioQualitySelectBox} from './AudioQualitySelectBox';
-import {PlaybackSpeedSelectBox} from './PlaybackSpeedSelectBox';
+import { Container, ContainerConfig } from '../Container';
+import { Component, ComponentConfig } from '../Component';
+import { Event, EventDispatcher, NoArgs } from '../../EventDispatcher';
+import { Label, LabelConfig, LabelStyle } from '../labels/Label';
+import { UIInstanceManager } from '../../UIManager';
+import { SelectBox } from './SelectBox';
+import { VideoQualitySelectBox } from './VideoQualitySelectBox';
+import { AudioQualitySelectBox } from './AudioQualitySelectBox';
+import { PlaybackSpeedSelectBox } from './PlaybackSpeedSelectBox';
 import { PlayerAPI } from 'bitmovin-player';
 import { LocalizableText } from '../../localization/i18n';
 import { ListSelector } from '../lists/ListSelector';
@@ -21,6 +21,11 @@ export interface SettingsPanelItemConfig extends ContainerConfig {
    * The label component or the text for the label.
    */
   label?: LocalizableText | Component<ComponentConfig>;
+  /**
+   * The style of the label in case config.label is not a component already.
+   * Default: {@link LabelStyle.Text}
+   */
+  labelStyle?: LabelStyle;
   /**
    * The component that configures a setting.
    */
@@ -63,6 +68,7 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
       role: 'menuitem',
       addSettingAsComponent: true,
       isSetting: true,
+      labelStyle: LabelStyle.Text,
     } as Config, this.config);
 
     const label = config.label;
@@ -70,7 +76,7 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
       if (label instanceof Component) {
         this.label = label;
       } else {
-        this.label = new Label({ text: label } as LabelConfig);
+        this.label = new Label({ text: label, labelStyle: config.labelStyle } as LabelConfig);
       }
 
       this.addComponent(this.label);

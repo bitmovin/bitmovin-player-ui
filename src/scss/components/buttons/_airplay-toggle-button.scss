@@ -4,13 +4,18 @@
 .#{$prefix}-ui-airplaytogglebutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/images/airplay.svg');
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/airplay.svg');
+  }
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   &.#{$prefix}-on {
-    background-image: url('../../assets/images/airplayX.svg');
+    // TODO: replace with filled cast icon once available
+    .#{$prefix}-ui-icon {
+      background-image: url('../../assets/images/airplay.svg');
+    }
   }
 }

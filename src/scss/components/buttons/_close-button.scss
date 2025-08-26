@@ -22,7 +22,9 @@
     }
   }
 
-  background-image: url('../../assets/images/close.svg');
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/close.svg');
+  }
 
   &:hover {
     @include svg-icon-shadow;

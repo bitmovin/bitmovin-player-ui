@@ -9,37 +9,44 @@
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
-  line-height: 1em;
-  padding: 1em 1em .5em;
+
+  $controlbar-padding: 1em;
+  padding: $controlbar-padding
+    max($controlbar-padding, env(safe-area-inset-right))
+    max($controlbar-padding, env(safe-area-inset-bottom))
+    max($controlbar-padding, env(safe-area-inset-left));
+
+  .#{$prefix}-container-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
 
   .#{$prefix}-controlbar-top,
   .#{$prefix}-controlbar-bottom {
     > .#{$prefix}-container-wrapper {
       display: flex;
-      margin: .5em 0;
+      flex-direction: row;
+      column-gap: .3rem;
+      align-items: center;
     }
   }
 
   .#{$prefix}-controlbar-top {
-    @include slide-down;
-
-    .#{$prefix}-ui-label {
-      font-size: .9em;
-    }
-
-    > .#{$prefix}-container-wrapper > * {
+    > .#{$prefix}-container-wrapper {
+      column-gap: $font-size;
       margin: 0 .5em;
     }
   }
 
   .#{$prefix}-controlbar-bottom {
-    white-space: nowrap; // Required for iOS 8.2 to avoid wrapped controlbar due to wrong size calculation
+    // We can't use the row-gap property here because the AdControlBar collapses certain elements which
+    // would result in additional margins.
+    margin-top: .5em;
 
     > .#{$prefix}-container-wrapper {
-
       .#{$prefix}-ui-volumeslider {
         margin: auto .5em;
-        width: 5em;
+        width: 8rem;
       }
     }
   }

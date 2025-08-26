@@ -225,6 +225,9 @@
       type: 'googlecast',
     },
     advertising: {},
+    playback: {
+      muted: true
+    }
   };
 
   var uiConfig = {
@@ -611,6 +614,11 @@
       const player = uiManager.currentUi.playerWrapper.getPlayer();
 
       player.fireEventInUI(bitmovin.player.PlayerEvent.StallStarted, {});
+    },
+    'Enter Fullscreen': function() {
+      const player = uiManager.currentUi.playerWrapper.getPlayer();
+
+      player.setViewMode(bitmovin.player.ViewMode.Fullscreen);
     }
   };
   $.each(actions, function(title, handler) {

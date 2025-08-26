@@ -347,7 +347,7 @@ export class DOM {
 
   /**
    * Appends one or more DOM elements as children to all elements.
-   * @param childElements the chrild elements to append
+   * @param childElements the child elements to append
    * @returns {DOM}
    */
   append(...childElements: DOM[]): DOM {
@@ -355,6 +355,22 @@ export class DOM {
       childElements.forEach((childElement) => {
         childElement.elements.forEach((_, index) => {
           element.appendChild(childElement.elements[index]);
+        });
+      });
+    });
+    return this;
+  }
+
+  /**
+   * Prepends one or more DOM elements as children to all elements.
+   * @param childElements the child elements to prepend
+   * @returns {DOM}
+   */
+  prepend(...childElements: DOM[]): DOM {
+    this.forEach((element) => {
+      childElements.forEach((childElement) => {
+        childElement.elements.forEach((_, index) => {
+          element.insertBefore(childElement.elements[index], element.firstChild);
         });
       });
     });

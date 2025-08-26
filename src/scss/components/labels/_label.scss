@@ -2,12 +2,19 @@
 
 %ui-label {
   @extend %ui-component;
-
   @include hidden;
+  @include ui-icon-container;
 
-  cursor: default;
-  white-space: nowrap;
+  margin: 0;
+  // sass-lint:disable no-vendor-prefixes
   -webkit-tap-highlight-color: transparent;
+
+  .#{$prefix}-ui-label-text {
+    margin: 0;
+    white-space: nowrap;
+    // sass-lint:disable no-vendor-prefixes
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 .#{$prefix}-ui-label {
@@ -17,6 +24,5 @@
 .#{$prefix}-ui-label-savedEnergy {
   @extend %ui-label;
   color: $color-highlight;
-  font-size: .8em;
   margin-left: 2.2em;
 }

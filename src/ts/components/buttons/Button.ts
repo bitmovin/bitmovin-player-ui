@@ -2,6 +2,31 @@ import {ComponentConfig, Component} from '../Component';
 import {DOM} from '../../DOM';
 import {EventDispatcher, NoArgs, Event} from '../../EventDispatcher';
 import { LocalizableText , i18n } from '../../localization/i18n';
+import { Icon } from '../Icon';
+
+/**
+ * Configures the style of a {@link Button} component.
+ */
+export enum ButtonStyle {
+  /**
+   * Only display the button as an icon.
+   */
+  Icon = 'icon',
+  /**
+   * Only display the button as text.
+   */
+  Text = 'text',
+  /**
+   * Display the button with an icon and text.
+   * The Icon is displayed before the text.
+   */
+  TextWithLeadingIcon = 'text-icon-leading',
+  /**
+   * Display the button with an icon and text.
+   * The Icon is displayed after the text.
+   */
+  TextWithTrailingIcon = 'text-icon-trailing',
+}
 
 /**
  * Configuration interface for a {@link Button} component.
@@ -24,6 +49,12 @@ export interface ButtonConfig extends ComponentConfig {
    * Default: false
    */
   acceptsTouchWithUiHidden?: boolean;
+
+  /**
+   * The style of the button.
+   * Default: {@link ButtonStyle.Icon}
+   */
+  buttonStyle?: ButtonStyle;
 }
 
 /**
@@ -47,6 +78,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       role: 'button',
       tabIndex: 0,
       acceptsTouchWithUiHidden: false,
+      buttonStyle: ButtonStyle.Icon,
     } as Config, this.config);
   }
 
@@ -64,9 +96,37 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     }
 
     // Create the button element with the text label
-    let buttonElement = new DOM('button', buttonElementAttributes, this).append(new DOM('span', {
-      'class': this.prefixCss('label'),
-    }).html(i18n.performLocalization(this.config.text)));
+    let buttonElement = new DOM('button', buttonElementAttributes, this)
+
+    const addIconElement = () => {
+      const icon = new Icon({ ariaLabel: this.config.ariaLabel, altText: this.config.text });
+      buttonElement.append(icon.getDomElement());
+    }
+
+    const addLabelElement = () => {
+      buttonElement
+        .append(
+          new DOM('span', { 'class': this.prefixCss('label'), })
+            .html(i18n.performLocalization(this.config.text))
+        );
+    }
+
+    switch (this.config.buttonStyle) {
+      case ButtonStyle.Icon:
+        addIconElement();
+        break;
+      case ButtonStyle.Text:
+        addLabelElement();
+        break;
+      case ButtonStyle.TextWithLeadingIcon:
+        addIconElement();
+        addLabelElement();
+        break;
+      case ButtonStyle.TextWithTrailingIcon:
+        addLabelElement();
+        addIconElement();
+        break;
+    }
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', (e) => {
