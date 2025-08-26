@@ -135,7 +135,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * Clears the text on this label.
    */
   clearText() {
-    this.getDomElement().html('');
+    this.textElement?.html('');
     this.onTextChangedEvent(null);
   }
 

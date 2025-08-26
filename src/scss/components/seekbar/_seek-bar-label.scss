@@ -34,6 +34,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      // sass-lint:disable no-misspelled-properties
+      row-gap: .5em;
 
       .#{$prefix}-seekbar-thumbnail {
         width: 7em;

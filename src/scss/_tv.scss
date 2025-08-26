@@ -2,10 +2,6 @@
 @import 'mixins';
 
 .#{$prefix}-ui-tv {
-  %ui-button {
-    padding: .3em;
-  }
-
   .#{$prefix}-ui-seekbar-label {
     margin-bottom: .5em;
   }

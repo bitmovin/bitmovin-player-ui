@@ -14,8 +14,6 @@
   .#{$prefix}-container-wrapper {
     display: flex;
     flex-direction: column;
-    // sass-lint:disable no-misspelled-properties
-    row-gap: .5em;
   }
 
   .#{$prefix}-controlbar-top,
@@ -29,8 +27,6 @@
   }
 
   .#{$prefix}-controlbar-top {
-    @include slide-down;
-
     > .#{$prefix}-container-wrapper {
       column-gap: $font-size;
       margin: 0 .5em;
@@ -38,6 +34,10 @@
   }
 
   .#{$prefix}-controlbar-bottom {
+    // We can't use the row-gap property here because the AdControlBar collapses certain elements which
+    // would result in additional margins.
+    margin-top: .5em;
+
     > .#{$prefix}-container-wrapper {
       .#{$prefix}-ui-volumeslider {
         margin: auto .5em;
