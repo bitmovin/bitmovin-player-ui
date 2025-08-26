@@ -57,27 +57,6 @@
   transition: $transitions-string;
 }
 
-@mixin hidden-slide-down($duration: $animation-duration, $distance: 20px) {
-  transition: opacity $duration ease, transform $duration ease;
-  opacity: 1;
-  transform: translateY(0);
-
-  &.#{$prefix}-hidden {
-    opacity: 0;
-    transform: translateY($distance);
-    pointer-events: none;
-  }
-}
-
-@mixin slide-down($duration: $animation-duration, $distance: 30px) {
-  transition: transform $duration ease;
-  transform: translateY(0);
-
-  &.#{$prefix}-slid-down {
-    transform: translateY($distance);
-  }
-}
-
 // Cover the whole parent element
 @mixin layout-cover {
   height: 100%;
@@ -152,6 +131,10 @@
 
 @mixin focusable($inset: false, $border-radius: .3em, $focus-element-box-shadow: 0 0 0 .1em rgba($color-focus, .4)) {
   &:focus {
+    outline: none;
+  }
+
+  &.#{$prefix}-focus-visible {
     @if $inset == false {
       box-shadow: $focus-element-box-shadow;
     } @else {
@@ -162,14 +145,6 @@
     backdrop-filter: blur(5px);
     border-radius: $border-radius;
     outline: none;
-
-    &:not(.#{$prefix}-focus-visible) {
-      background-color: unset;
-      backdrop-filter: unset;
-      border-radius: unset;
-      box-shadow: none;
-      outline: none;
-    }
   }
 }
 

@@ -1,0 +1,68 @@
+@import '../../variables';
+@import '../../mixins';
+
+// Keep this mixin here for now since it is specific to the ad control bar
+@mixin hidden-animated-collapse-and-fade-out($duration: $animation-duration, $original-height: 2em) {
+  transition: opacity $duration ease-out, height $duration ease-out, margin-bottom $duration ease-out, margin-top $duration ease-out;
+  opacity: 1;
+  height: $original-height;
+
+  &.#{$prefix}-hidden {
+    opacity: 0;
+    height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    pointer-events: none;
+  }
+}
+
+.#{$prefix}-ad-controlbar {
+  @extend %ui-container;
+
+  @include layout-align-bottom;
+
+  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
+  box-sizing: border-box;
+  line-height: 1em;
+  padding: 1em;
+
+  .#{$prefix}-container-wrapper {
+    display: flex;
+    flex-direction: column;
+  };
+
+  .#{$prefix}-ad-controlbar-top {
+    .#{$prefix}-ui-label {
+      font-size: .9em;
+    }
+
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      flex-direction: row;
+    }
+
+    > .#{$prefix}-container-wrapper > * {
+      margin: 0 .5em;
+    }
+  }
+
+  .#{$prefix}-ad-controlbar-bottom {
+    @include hidden-animated-collapse-and-fade-out($animation-duration, 2em);
+    flex-direction: column;
+    margin-top: .5em;
+
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      flex-direction: row;
+
+      // This nesting is needed to keep related UI styles scoped together.
+      // Refactoring it would trigger other SCSS lint warnings (e.g., selector duplication or specificity conflicts).
+      // sass-lint:disable nesting-depth
+      .#{$prefix}-ui-volumeslider {
+        margin: auto .5em;
+        width: 5em;
+      }
+      // sass-lint:enable nesting-depth
+    }
+  }
+}
