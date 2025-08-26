@@ -3,6 +3,7 @@ import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { VolumeTransition } from '../../utils/VolumeController';
 import { i18n } from '../../localization/i18n';
+import { BrowserUtils } from '../../utils/BrowserUtils';
 
 /**
  * Configuration interface for the {@link VolumeSlider} component.
@@ -16,6 +17,11 @@ export interface VolumeSliderConfig extends SeekBarConfig {
    * Default: true
    */
   hideIfVolumeControlProhibited?: boolean;
+  /**
+   * Specifies if the volume slider should be automatically hidden on mobile devices.
+   * Default: true
+   */
+  hideOnMobile?: boolean;
 }
 
 /**
@@ -32,6 +38,7 @@ export class VolumeSlider extends SeekBar {
     this.config = this.mergeConfig(config, <VolumeSliderConfig>{
       cssClass: 'ui-volumeslider',
       hideIfVolumeControlProhibited: true,
+      hideOnMobile: true,
       ariaLabel: i18n.getLocalizer('settings.audio.volume'),
       tabIndex: 0,
     }, this.config);
@@ -51,7 +58,10 @@ export class VolumeSlider extends SeekBar {
 
     const volumeController = uimanager.getConfig().volumeController;
 
-    if (config.hideIfVolumeControlProhibited && !this.detectVolumeControlAvailability()) {
+    if (
+      config.hideOnMobile && BrowserUtils.isMobile ||
+      config.hideIfVolumeControlProhibited && !this.detectVolumeControlAvailability()
+    ) {
       this.hide();
 
       // We can just return from here, because the user will never interact with the control and any configured
