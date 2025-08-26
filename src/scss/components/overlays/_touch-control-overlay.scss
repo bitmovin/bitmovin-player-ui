@@ -19,7 +19,6 @@
 %seek-label {
   @extend %opacity-transition;
   @include hidden-animated;
-  font-weight: 500;
   margin: 0;
   opacity: 1;
   position: absolute;

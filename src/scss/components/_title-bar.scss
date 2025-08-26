@@ -9,7 +9,7 @@
 
   background: linear-gradient(to top, $color-transparent, $color-background-bars);
   box-sizing: border-box;
-  padding: 1em 1.5em;
+  padding: 1.5em;
   pointer-events: none;
 
   .#{$prefix}-container-wrapper {
@@ -37,14 +37,14 @@
 
     .#{$prefix}-label-metadata-title {
       .#{$prefix}-ui-label-text {
-        font-size: 1.2em;
-        font-weight: 500;
+        font-size: $font-size-large;
+        line-height: $font-size-large;
       }
     }
 
     .#{$prefix}-label-metadata-description {
       .#{$prefix}-ui-label-text {
-        color: lighten($color-secondary, 30%);
+        line-height: 1.5;
       }
     }
   }

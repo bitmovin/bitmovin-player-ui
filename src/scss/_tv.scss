@@ -2,14 +2,6 @@
 @import 'mixins';
 
 .#{$prefix}-ui-tv {
-  $large-size: 3.5vh;
-  $medium-large-size: 3vh;
-  $medium-size: 2vh;
-
-  > * {
-    font-size: $medium-size;
-  }
-
   %ui-button {
     padding: .3em;
   }

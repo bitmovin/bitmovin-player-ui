@@ -46,9 +46,7 @@
 
   .#{$prefix}-ui-icon {
     background-image: url('../../assets/images/play.svg');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 4em;
+    background-size: $icon-size-large;
     height: 100%;
     width: 100%;
 

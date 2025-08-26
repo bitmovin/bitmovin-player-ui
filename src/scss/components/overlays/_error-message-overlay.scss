@@ -12,13 +12,13 @@
 
   .#{$prefix}-ui-errormessage-label {
     color: $color-primary;
-    font-size: 1.2em;
     left: 3em;
     position: absolute;
     right: 3em;
     text-align: center;
     user-select: text;
     white-space: pre-line; // enable linebreak in text
+    line-height: 1.2;
 
     // Vertically center the label
     & {
@@ -28,7 +28,6 @@
 
     ul {
       color: $color-secondary;
-      font-size: .9em;
       padding: 0;
 
       li {

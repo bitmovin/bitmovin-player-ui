@@ -38,7 +38,7 @@
       .#{$prefix}-seekbar-thumbnail {
         width: 7em;
         border: solid $color-primary .0625em;
-        border-radius: .4em;
+        border-radius: $border-radius;
       }
 
       .#{$prefix}-seekbar-label-metadata {
@@ -48,22 +48,18 @@
         display: inline-block;
         padding: .3em .5em;
         width: fit-content;
-        border-radius: .4em;
+        border-radius: $border-radius;
       }
 
       .#{$prefix}-seekbar-label-time {
         display: block;
-        font-weight: 500;
-        line-height: .8em;
       }
 
       .#{$prefix}-seekbar-label-title {
         @include hidden;
 
         display: block;
-        font-weight: 600;
         white-space: normal;
-        margin-bottom: .5em;
       }
     }
   }

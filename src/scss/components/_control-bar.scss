@@ -9,7 +9,6 @@
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
-  line-height: 1em;
   padding: 1em;
 
   .#{$prefix}-container-wrapper {
@@ -24,17 +23,16 @@
     > .#{$prefix}-container-wrapper {
       display: flex;
       flex-direction: row;
+      column-gap: .3rem;
+      align-items: center;
     }
   }
 
   .#{$prefix}-controlbar-top {
     @include slide-down;
 
-    .#{$prefix}-ui-label {
-      font-size: .9em;
-    }
-
-    > .#{$prefix}-container-wrapper > * {
+    > .#{$prefix}-container-wrapper {
+      column-gap: $font-size;
       margin: 0 .5em;
     }
   }
@@ -43,7 +41,7 @@
     > .#{$prefix}-container-wrapper {
       .#{$prefix}-ui-volumeslider {
         margin: auto .5em;
-        width: 5em;
+        width: 8rem;
       }
     }
   }

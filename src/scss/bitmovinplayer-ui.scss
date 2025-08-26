@@ -60,6 +60,8 @@
   color: $color-primary;
   font-family: $font-family;
   font-size: $font-size;
+  font-weight: $font-weight-medium;
+  line-height: $font-size;
   text-align: left;
   user-select: none;
 
@@ -83,21 +85,44 @@
   }
 
   // sass-lint:disable force-element-nesting
-  &.#{$prefix}-layout-max-width-400 {
+  &.#{$prefix}-layout-max-width-400,
+  &.#{$prefix}-layout-max-width-600 {
     // Hide the description in ultra tiny players to not clog the UI too much
     .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {
       display: none;
     }
-  }
 
-  &.#{$prefix}-layout-max-width-400,
-  &.#{$prefix}-layout-max-width-600 {
-    .#{$prefix}-ui-hugeplaybacktogglebutton {
-      font-size: .7em;
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-watermark {
+      .#{$prefix}-ui-icon {
+        background-size: $icon-size-medium;
+      }
     }
 
     .#{$prefix}-ui-watermark {
-      font-size: .7em;
+      margin: 0;
+    }
+
+    .#{$prefix}-ui-cast-status-overlay {
+      background-size: $icon-size-large;
+      background-position: center 40%;
+      .#{$prefix}-ui-cast-status-label {
+        top: 55%;
+      }
+    }
+
+    .#{$prefix}-ui-settings-panel {
+      left: 1em;
+      right: 1em;
+      margin-top: 2em;
+      max-height: calc(100% - 2em - 3.5em);
+      width: unset;
+    }
+  }
+
+  &.#{$prefix}-layout-max-width-800 {
+    .#{$prefix}-ui-settings-panel {
+      width: 50%;
     }
   }
 }

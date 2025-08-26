@@ -15,11 +15,11 @@
   background-origin: content-box;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1.2em;
+  background-size: $icon-size;
   border: 0;
   box-sizing: content-box;
   cursor: pointer;
   width: 100%;
-  height: 1.5em;
-  min-width: 1.5em;
+  height: $icon-size;
+  min-width: $icon-size;
 }

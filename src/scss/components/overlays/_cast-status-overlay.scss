@@ -8,11 +8,10 @@
   @include hidden-animated;
 
   background: $color-background url('../../assets/images/cast.svg') center no-repeat;
-  background-size: 7em 7em;
+  background-size: 6em 6em;
 
   .#{$prefix}-ui-cast-status-label {
     color: $color-primary;
-    font-size: 1.2em;
     left: 0;
     margin: 0 2em;
     pointer-events: none;

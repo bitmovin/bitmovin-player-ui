@@ -5,6 +5,8 @@
   @include hidden;
   @include ui-icon-container;
 
+  margin: 0;
+
   .#{$prefix}-ui-label-text {
     margin: 0;
     white-space: nowrap;
@@ -20,6 +22,5 @@
 .#{$prefix}-ui-label-savedEnergy {
   @extend %ui-label;
   color: $color-highlight;
-  font-size: .8em;
   margin-left: 2.2em;
 }

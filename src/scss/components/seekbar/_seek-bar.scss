@@ -1,14 +1,15 @@
 @import '../../variables';
 @import '../../mixins';
 
-$seekbar-height: .3125em;
+// Defines the height of the bars within the seekbar container
+$seekbar-bar-height: calc($font-size / 3);
 
 // sass-lint:disable no-vendor-prefixes
 %bar {
   -webkit-transform-origin: 0 0; // required for Android 4.4 WebView
   bottom: 0;
   box-sizing: border-box;
-  height: $seekbar-height;
+  height: $seekbar-bar-height;
   left: 0;
   margin: auto;
   position: absolute;
@@ -24,9 +25,9 @@ $seekbar-height: .3125em;
   @include hidden;
   @include focusable;
 
+  display: flex;
   align-items: center;
-  font-size: 1em;
-  height: 1em;
+  height: $font-size;
   position: relative;
   width: 100%;
 
@@ -35,7 +36,7 @@ $seekbar-height: .3125em;
   .#{$prefix}-seekbar-playbackposition-marker {
     @extend %bar;
 
-    @include seekbar-position-marker($seekbar-height * 3);
+    @include seekbar-position-marker($seekbar-bar-height * 3);
     background-color: $color-highlight;
     border-radius: 50%;
     box-shadow: 0 0 3px 0 transparentize($color: #000, $amount: .75);
@@ -48,12 +49,11 @@ $seekbar-height: .3125em;
     @include focusable;
 
     cursor: pointer;
-    font-size: 1em;
-    height: $seekbar-height;
-    margin: calc((1em - $seekbar-height) / 2) auto;
+    height: $seekbar-bar-height;
+    margin: calc((1rem - $seekbar-bar-height) / 2) auto;
     position: relative;
     // Reduce width to leave some padding for the focus indicator on the left and right side
-    width: calc(100% - .5em);
+    width: calc(100% - .5rem);
 
     .#{$prefix}-seekbar-bars {
       @extend %bar;
@@ -93,11 +93,11 @@ $seekbar-height: .3125em;
     .#{$prefix}-seekbar-markers {
       @extend %bar;
 
-      $marker-width: .25em;
-      $marker-indicator-height: .625em;
-      $marker-indicator-border-radius: .125em;
+      $marker-width: .25rem;
+      $marker-indicator-height: .625rem;
+      $marker-indicator-border-radius: .125rem;
 
-      height: $seekbar-height;
+      height: $seekbar-bar-height;
 
       > .#{$prefix}-seekbar-marker {
         @extend %bar;
@@ -123,9 +123,9 @@ $seekbar-height: .3125em;
         }
 
         > .#{$prefix}-seekbar-marker-image {
-          height: $seekbar-height * 4;
+          height: $seekbar-bar-height * 4;
           position: absolute;
-          transform: translate(-50%, calc(-100% - .2em));
+          transform: translate(-50%, calc(-100% - .2rem));
         }
 
         > .#{$prefix}-seekbar-marker-indicator {
