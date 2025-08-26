@@ -25,7 +25,7 @@ export class Icon extends Component<IconConfig> {
   protected toDomElement(): DOM {
     return new DOM('div', {
       'class': this.getCssClasses(),
-      'alt': i18n.performLocalization(this.config.ariaLabel || this.config.altText),
+      'aria-label': i18n.performLocalization(this.config.ariaLabel || this.config.altText),
     });
   }
 }
