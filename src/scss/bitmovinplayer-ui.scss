@@ -125,7 +125,7 @@
     }
 
     .#{$prefix}-ui-settings-panel {
-      left: max(1em, env(safe-area-inset-right));
+      left: max(1em, env(safe-area-inset-left));
       right: max(1em, env(safe-area-inset-right));
       margin-top: 2em;
       max-height: calc(100% - 2em - 3.5em);
