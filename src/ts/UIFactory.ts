@@ -354,6 +354,7 @@ function smallScreenUILayout() {
         components: [
           new PlaybackToggleButton(),
           new VolumeToggleButton(),
+          new VolumeSlider(),
           new Spacer(),
           new PictureInPictureToggleButton(),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
