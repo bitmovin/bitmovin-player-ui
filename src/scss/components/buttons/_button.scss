@@ -8,6 +8,7 @@
   box-sizing: content-box;
   cursor: pointer;
   height: $icon-size;
+  font-size: $font-size; // Explicitly needed on iOS to ensure icon fonts are sized correctly
   min-width: $icon-size;
   padding: calc($icon-size * .25);
   transition: transform .15s ease;
