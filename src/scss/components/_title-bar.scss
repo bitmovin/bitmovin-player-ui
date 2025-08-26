@@ -23,6 +23,7 @@
     > .#{$prefix}-container-wrapper {
       display: flex;
       flex-direction: row;
+      column-gap: .3rem;
     }
   }
 
@@ -37,7 +38,6 @@
         cursor: default;
         pointer-events: none;
         display: block;
-        white-space: normal;
         text-shadow: 0 0 5px $color-black;
       }
     }
@@ -46,12 +46,14 @@
       .#{$prefix}-ui-label-text {
         font-size: $font-size-large;
         line-height: $font-size-large;
+        white-space: nowrap;
       }
     }
 
     .#{$prefix}-label-metadata-description {
       .#{$prefix}-ui-label-text {
         line-height: 1.5;
+        white-space: normal;
       }
     }
   }
