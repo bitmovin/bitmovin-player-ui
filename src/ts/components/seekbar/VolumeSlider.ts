@@ -59,8 +59,8 @@ export class VolumeSlider extends SeekBar {
     const volumeController = uimanager.getConfig().volumeController;
 
     if (
-      config.hideOnMobile && BrowserUtils.isMobile ||
-      config.hideIfVolumeControlProhibited && !this.detectVolumeControlAvailability()
+      (config.hideOnMobile && BrowserUtils.isMobile) ||
+      (config.hideIfVolumeControlProhibited && !this.detectVolumeControlAvailability())
     ) {
       this.hide();
 
