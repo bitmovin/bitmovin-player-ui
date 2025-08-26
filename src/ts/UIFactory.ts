@@ -73,8 +73,7 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    // show smallScreen UI only on mobile/handheld devices
-    let smallScreenSwitchWidth = 600;
+    const smallScreenSwitchWidth = 800;
 
     return new UIManager(
       player,
