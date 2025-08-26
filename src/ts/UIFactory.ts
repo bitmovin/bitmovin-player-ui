@@ -355,6 +355,7 @@ function smallScreenUILayout() {
           new PlaybackToggleButton(),
           new VolumeToggleButton(),
           new Spacer(),
+          new PictureInPictureToggleButton(),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
           new FullscreenToggleButton(),
         ],
