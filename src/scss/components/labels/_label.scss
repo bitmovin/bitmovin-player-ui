@@ -6,6 +6,8 @@
   @include ui-icon-container;
 
   margin: 0;
+  // sass-lint:disable no-vendor-prefixes
+  -webkit-tap-highlight-color: transparent;
 
   .#{$prefix}-ui-label-text {
     margin: 0;
