@@ -6,7 +6,7 @@ import { SettingsPanelPage } from '../settings/SettingsPanelPage';
 import { SettingsPanelSelectOption } from '../settings/SettingsPanelSelectOption';
 import { SettingsPanelItem } from '../settings/SettingsPanelItem';
 import { LocalizableText } from '../../localization/i18n';
-import { Label } from '../labels/Label';
+import { Label, LabelStyle } from '../labels/Label';
 
 export interface ListBoxConfig extends SettingsPanelConfig, ListSelectorConfig {
   /**
@@ -55,6 +55,7 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
       const item = this.listSelector.getItemForKey(itemKey);
       const selectOption = new SettingsPanelSelectOption({
         label: item.label,
+        labelStyle: LabelStyle.TextWithLeadingIcon,
         settingComponent: this.listSelector,
         settingsValue: item.key,
         addSettingAsComponent: false,

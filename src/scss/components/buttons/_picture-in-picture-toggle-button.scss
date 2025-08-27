@@ -4,7 +4,7 @@
 .#{$prefix}-ui-piptogglebutton {
   @extend %ui-button;
 
-  .#{$prefix}-icon {
+  .#{$prefix}-ui-icon {
     background-image: url('../../assets/images/pip.svg');
   }
 
@@ -13,7 +13,7 @@
   }
 
   &.#{$prefix}-on {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/pipX.svg');
     }
   }

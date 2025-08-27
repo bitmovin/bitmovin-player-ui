@@ -4,7 +4,7 @@
 .#{$prefix}-ui-fullscreentogglebutton {
   @extend %ui-button;
 
-  .#{$prefix}-icon {
+  .#{$prefix}-ui-icon {
     background-image: url('../../assets/images/fullscreen.svg');
   }
 
@@ -13,7 +13,7 @@
   }
 
   &.#{$prefix}-on {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/fullscreenX.svg');
     }
   }

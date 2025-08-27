@@ -9,13 +9,13 @@
   }
 
   &[data-#{$prefix}-seek-direction='forward'] {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/quickseek-forward.svg');
     }
   }
 
   &[data-#{$prefix}-seek-direction='rewind'] {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/quickseek-back.svg');
     }
   }

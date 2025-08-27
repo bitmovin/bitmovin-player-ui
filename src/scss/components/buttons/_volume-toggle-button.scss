@@ -9,14 +9,14 @@
   }
 
   &.#{$prefix}-muted {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/volume-mute.svg');
     }
   }
 
   &.#{$prefix}-unmuted {
     &[data-#{$prefix}-volume-level-tens='0'] {
-      .#{$prefix}-icon {
+      .#{$prefix}-ui-icon {
         background-image: url('../../assets/images/volume-mute.svg');
       }
     }
@@ -26,7 +26,7 @@
     &[data-#{$prefix}-volume-level-tens='3'],
     &[data-#{$prefix}-volume-level-tens='4'],
     &[data-#{$prefix}-volume-level-tens='5'] {
-      .#{$prefix}-icon {
+      .#{$prefix}-ui-icon {
         background-image: url('../../assets/images/volume-low.svg');
       }
     }
@@ -36,7 +36,7 @@
     &[data-#{$prefix}-volume-level-tens='8'],
     &[data-#{$prefix}-volume-level-tens='9'],
     &[data-#{$prefix}-volume-level-tens='10'] {
-      .#{$prefix}-icon {
+      .#{$prefix}-ui-icon {
         background-image: url('../../assets/images/volume.svg');
       }
     }

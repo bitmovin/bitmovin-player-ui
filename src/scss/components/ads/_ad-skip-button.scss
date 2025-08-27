@@ -8,7 +8,7 @@
   padding: .5em 1em;
   min-width: fit-content;
 
-  .#{$prefix}-icon {
+  .#{$prefix}-ui-icon {
     background-image: url('../../assets/images/ad-skip.svg');
   }
 
@@ -17,7 +17,7 @@
   }
 
   &.#{$prefix}-disabled {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       display: none;
     }
   }

@@ -9,13 +9,13 @@
   }
 
   &.#{$prefix}-subtitles-on {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/subtitles.svg');
     }
   }
 
   &.#{$prefix}-subtitles-off {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/subtitlesX.svg');
     }
   }

@@ -20,7 +20,7 @@ export { NavigationGroup } from './spatialnavigation/NavigationGroup';
 export { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
 export { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
 // Components
-export { Button, ButtonConfig } from './components/buttons/Button';
+export { Button, ButtonConfig, ButtonStyle } from './components/buttons/Button';
 export { ControlBar, ControlBarConfig } from './components/ControlBar';
 export { FullscreenToggleButton } from './components/buttons/FullscreenToggleButton';
 export { HugePlaybackToggleButton } from './components/buttons/HugePlaybackToggleButton';
@@ -38,7 +38,7 @@ export { VRToggleButton } from './components/buttons/VRToggleButton';
 export { Watermark, WatermarkConfig } from './components/Watermark';
 export { UIContainer, UIContainerConfig } from './components/UIContainer';
 export { Container, ContainerConfig } from './components/Container';
-export { Label, LabelConfig } from './components/labels/Label';
+export { Label, LabelConfig, LabelStyle } from './components/labels/Label';
 export { AudioQualitySelectBox } from './components/settings/AudioQualitySelectBox';
 export { AudioTrackSelectBox } from './components/settings/AudioTrackSelectBox';
 export { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
@@ -91,6 +91,7 @@ export { ReplayButton } from './components/buttons/ReplayButton';
 export { QuickSeekButton, QuickSeekButtonConfig } from './components/buttons/QuickSeekButton';
 export { ListSelector, ListSelectorConfig, ListItem, ListItemFilter, ListItemLabelTranslator } from './components/lists/ListSelector';
 export { AdStatusOverlay } from './components/ads/AdStatusOverlay';
+export { Icon, IconConfig } from './components/Icon';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign

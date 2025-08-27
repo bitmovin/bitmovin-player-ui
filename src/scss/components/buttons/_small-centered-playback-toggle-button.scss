@@ -14,7 +14,7 @@
     @include svg-icon-shadow;
   }
 
-  .#{$prefix}-icon {
+  .#{$prefix}-ui-icon {
     background-position: center;
     background-repeat: no-repeat;
     background-size: 4em;
@@ -23,13 +23,13 @@
   }
 
   &.#{$prefix}-on {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/pause.svg');
     }
   }
 
   &.#{$prefix}-off {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/play.svg');
     }
   }
@@ -37,7 +37,7 @@
   &.#{$prefix}-no-transition-animations {
     &.#{$prefix}-on,
     &.#{$prefix}-off {
-      .#{$prefix}-icon {
+      .#{$prefix}-ui-icon {
         animation: none;
         transition: none;
       }
