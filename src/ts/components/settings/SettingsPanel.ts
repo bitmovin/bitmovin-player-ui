@@ -70,6 +70,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
   private settingsPanelEvents = {
     onSettingsStateChanged: new EventDispatcher<SettingsPanel<SettingsPanelConfig>, NoArgs>(),
+    onActivePageChanged: new EventDispatcher<SettingsPanel<SettingsPanelConfig>, NoArgs>(),
   };
 
   private hideTimeout: Timeout;
@@ -84,6 +85,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     } as Config, this.config);
 
     this.activePage = this.getRootPage();
+    this.onActivePageChangedEvent();
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -265,8 +267,20 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return <SettingsPanelPage[]>this.config.components.filter(component => component instanceof SettingsPanelPage);
   }
 
+  /**
+   * Returns the root page of the settings panel.
+   * @returns {SettingsPanelPage}
+   */
+  getRootPage(): SettingsPanelPage {
+    return this.getPages()[0];
+  }
+
   get onSettingsStateChanged(): Event<SettingsPanel<SettingsPanelConfig>, NoArgs> {
     return this.settingsPanelEvents.onSettingsStateChanged.getEvent();
+  }
+
+  get onActivePageChanged(): Event<SettingsPanel<SettingsPanelConfig>, NoArgs> {
+    return this.settingsPanelEvents.onActivePageChanged.getEvent();
   }
 
   release(): void {
@@ -280,6 +294,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   addComponent(component: Component<ComponentConfig>) {
     if (this.getPages().length === 0 && component instanceof SettingsPanelPage) {
       this.activePage = component;
+      this.onActivePageChangedEvent();
     }
     super.addComponent(component);
   }
@@ -320,6 +335,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     this.animateNavigation(rootPage, sourcePage, resetNavigationOnShow);
     this.activePage = rootPage;
     this.updateActivePageClass();
+    this.onActivePageChangedEvent();
   }
 
   protected navigateToPage(
@@ -341,6 +357,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     this.updateActivePageClass();
     sourcePage.onInactiveEvent();
     targetPage.onActiveEvent();
+
+    this.onActivePageChangedEvent();
   }
 
   /**
@@ -431,11 +449,11 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return allItems;
   }
 
-  private getRootPage(): SettingsPanelPage {
-    return this.getPages()[0];
-  }
-
   protected onSettingsStateChangedEvent() {
     this.settingsPanelEvents.onSettingsStateChanged.dispatch(this);
+  }
+
+  protected onActivePageChangedEvent() {
+    this.settingsPanelEvents.onActivePageChanged.dispatch(this);
   }
 }

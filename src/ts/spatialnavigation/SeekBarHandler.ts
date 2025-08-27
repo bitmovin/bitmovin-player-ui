@@ -1,7 +1,8 @@
 import { RootNavigationGroup } from './RootNavigationGroup';
 import { NodeEventSubscriber } from './NodeEventSubscriber';
-import { Action, Direction } from './types';
+import { Action, AnyComponent, Direction } from './types';
 import {getBoundingRectFromElement} from './NavigationAlgorithm';
+import { toHtmlElement } from './helper/toHtmlElement';
 
 const DefaultScrubSpeedPercentage = 0.005;
 const ScrubSpeedClearInterval = 100;
@@ -83,19 +84,20 @@ export class SeekBarHandler {
     seekBar.dispatchEvent(new MouseEvent('mousemove', this.getCursorPositionMouseEventInit()));
   }
 
-  private readonly onNavigation = (direction: Direction, target: HTMLElement, preventDefault: () => void): void => {
-    if (!isSeekBarWrapper(target)) {
+  private readonly onNavigation = (direction: Direction, target: AnyComponent, preventDefault: () => void): void => {
+    const element = toHtmlElement(target);
+    if (!isSeekBarWrapper(element)) {
       return;
     }
 
     if (direction === Direction.UP || direction === Direction.DOWN) {
-      this.stopSeeking(getSeekBar(target));
+      this.stopSeeking(getSeekBar(element));
 
       return;
     }
 
-    this.initializeOrUpdateCursorPosition(target, direction);
-    this.dispatchMouseMoveEvent(getSeekBar(target));
+    this.initializeOrUpdateCursorPosition(element, direction);
+    this.dispatchMouseMoveEvent(getSeekBar(element));
 
     preventDefault();
   };
@@ -123,12 +125,13 @@ export class SeekBarHandler {
     seekBar.dispatchEvent(new MouseEvent('mouseleave'));
   }
 
-  private readonly onAction = (action: Action, target: HTMLElement, preventDefault: () => void): void => {
-    if (!isSeekBarWrapper(target)) {
+  private readonly onAction = (action: Action, target: AnyComponent, preventDefault: () => void): void => {
+    const element = toHtmlElement(target);
+    if (!isSeekBarWrapper(element)) {
       return;
     }
 
-    const seekBar = getSeekBar(target);
+    const seekBar = getSeekBar(element);
 
     if (action === Action.SELECT && this.isScrubbing) {
       this.dispatchMouseClickEvent(seekBar);

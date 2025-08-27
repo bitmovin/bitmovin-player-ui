@@ -45,13 +45,14 @@ import { SubtitleListBox } from './components/lists/SubtitleListBox';
 import { AudioTrackListBox } from './components/lists/AudioTrackListBox';
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
-import { ListNavigationGroup, ListOrientation } from './spatialnavigation/ListNavigationGroup';
+import { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelNavigationGroup';
 import { EcoModeContainer } from './components/EcoModeContainer';
 import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsPanelItem';
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
 import { AdMessageLabel } from './components/ads/AdMessageLabel';
+import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -499,7 +500,7 @@ function castReceiverUILayout(config: UIConfig) {
 function tvUILayout() {
   const seekBar = new SeekBar({ label: new SeekBarLabel() });
   const subtitleOverlay = new SubtitleOverlay();
-  const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay);
+  const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, 5000);
 
   const subtitleListBox = new SubtitleListBox(i18n.getLocalizer('settings.subtitles'));
   const subtitleListBoxOpenButton = new SettingsToggleButton({
@@ -534,6 +535,17 @@ function tvUILayout() {
     ],
   });
 
+  const playbackToggleButton = new PlaybackToggleButton();
+  const bottomControlBar = new Container({
+    components: [
+      playbackToggleButton,
+      new Spacer(),
+      subtitleListBoxOpenButton,
+      audioListBoxToggleButton,
+      new SettingsToggleButton({ settingsPanel: settingsPanel }),
+    ],
+    cssClasses: ['controlbar-bottom'],
+  });
   const controlBar = new ControlBar({
     components: [
       new Container({
@@ -550,16 +562,7 @@ function tvUILayout() {
         ],
         cssClasses: ['controlbar-top'],
       }),
-      new Container({
-        components: [
-          new PlaybackToggleButton(),
-          new Spacer(),
-          subtitleListBoxOpenButton,
-          audioListBoxToggleButton,
-          new SettingsToggleButton({ settingsPanel: settingsPanel }),
-        ],
-        cssClasses: ['controlbar-bottom'],
-      })
+      bottomControlBar,
     ],
   });
 
@@ -586,10 +589,10 @@ function tvUILayout() {
   });
 
   const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, controlBar),
-    new ListNavigationGroup(ListOrientation.Vertical, settingsPanel),
-    new ListNavigationGroup(ListOrientation.Vertical, subtitleListBox),
-    new ListNavigationGroup(ListOrientation.Vertical, audioListBox),
+    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, new FocusableContainer(bottomControlBar, playbackToggleButton)),
+    new SettingsPanelNavigationGroup(settingsPanel, { closeOnSelect: false }),
+    new SettingsPanelNavigationGroup(subtitleListBox),
+    new SettingsPanelNavigationGroup(audioListBox),
   );
 
   return {
