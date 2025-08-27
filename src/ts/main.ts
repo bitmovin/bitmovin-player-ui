@@ -46,6 +46,7 @@ export { CastToggleButton } from './components/buttons/CastToggleButton';
 export { Component, ComponentConfig, ComponentHoverChangedEventArgs } from './components/Component';
 export { ErrorMessageOverlay, ErrorMessageOverlayConfig, ErrorMessageTranslator, ErrorMessageMap } from './components/overlays/ErrorMessageOverlay';
 export { RecommendationOverlay } from './components/overlays/RecommendationOverlay';
+export { RecommendationItem, RecommendationItemConfig } from './components/RecommendationItem';
 export { SeekBarLabel, SeekBarLabelConfig } from './components/seekbar/SeekBarLabel';
 export { SubtitleOverlay } from './components/overlays/SubtitleOverlay';
 export { SubtitleSelectBox } from './components/settings/SubtitleSelectBox';
