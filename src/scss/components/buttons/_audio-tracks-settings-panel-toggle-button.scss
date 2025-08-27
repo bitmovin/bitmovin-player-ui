@@ -1,0 +1,12 @@
+@import '../../variables';
+
+.#{$prefix}-ui-audiotracksettingstogglebutton {
+  @extend %ui-settingstogglebutton;
+
+  background-image: url('../../assets/images/audio-tracks.svg');
+
+  &.#{$prefix}-on {
+    // TODO: replace with filled icon once available
+    background-image: url('../../assets/images/audio-tracks.svg');
+  }
+}

@@ -8,26 +8,12 @@
   outline: none;
   width: 5em;
 
-  .#{$prefix}-icon {
-    background-image: url('../../assets/images/replayX.svg');
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/replay-with-play.svg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: 5em;
     height: 100%;
     width: 100%;
-
-    @keyframes #{$prefix}-spin {
-      50% {
-        transform: rotate(180deg) scale(1.1);
-      }
-
-      100% {
-        transform: rotate(360deg) scale(1);
-      }
-    }
-
-    &:hover {
-      animation: #{$prefix}-spin .5s ease-in;
-    }
   }
 }

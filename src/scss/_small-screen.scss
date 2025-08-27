@@ -35,7 +35,7 @@
   // Decrease huge play button size and replace icon with normal play icon
   .#{$prefix}-ui-hugeplaybacktogglebutton,
   .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-size: 2.5em;
     }
   }
@@ -46,7 +46,7 @@
     .#{$prefix}-ui-hugeplaybacktogglebutton,
     .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
       &.#{$prefix}-on {
-        .#{$prefix}-icon {
+        .#{$prefix}-ui-icon {
           animation: none;
           background-image: url('../../assets/images/pause.svg');
           visibility: visible;
@@ -54,7 +54,7 @@
       }
 
       &.#{$prefix}-off {
-        .#{$prefix}-icon {
+        .#{$prefix}-ui-icon {
           animation: none;
         }
       }

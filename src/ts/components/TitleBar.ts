@@ -28,19 +28,24 @@ export class TitleBar extends Container<TitleBarConfig> {
   constructor(config: TitleBarConfig = {}) {
     super(config);
 
-    // Only use default MetadataLabels if no custom components are provided.
-    const hasCustomComponents = Array.isArray(config.components) && config.components.length > 0;
-
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-titlebar',
       hidden: true,
       keepHiddenWithoutMetadata: false,
-      components: hasCustomComponents
-        ? config.components
-        : [
+      components: [
+        new Container({
+          components: [
             new MetadataLabel({ content: MetadataLabelContent.Title }),
+          ],
+          cssClasses: ['titlebar-row']
+        }),
+        new Container({
+          components: [
             new MetadataLabel({ content: MetadataLabelContent.Description }),
           ],
+          cssClasses: ['titlebar-row']
+        }),
+      ],
     }, <TitleBarConfig>this.config);
   }
 

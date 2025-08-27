@@ -2,14 +2,13 @@
 
 %ui-button-ad-skip {
   @extend %ui-button;
-  @include slide-down;
 
   background-color: transparentize($color-black, .25);
   border-radius: 20px;
   padding: .5em 1em;
   min-width: fit-content;
 
-  .#{$prefix}-icon {
+  .#{$prefix}-ui-icon {
     background-image: url('../../assets/images/ad-skip.svg');
   }
 
@@ -18,7 +17,7 @@
   }
 
   &.#{$prefix}-disabled {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       display: none;
     }
   }

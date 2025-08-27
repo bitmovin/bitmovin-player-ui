@@ -362,6 +362,22 @@ export class DOM {
   }
 
   /**
+   * Prepends one or more DOM elements as children to all elements.
+   * @param childElements the child elements to prepend
+   * @returns {DOM}
+   */
+  prepend(...childElements: DOM[]): DOM {
+    this.forEach((element) => {
+      childElements.forEach((childElement) => {
+        childElement.elements.forEach((_, index) => {
+          element.insertBefore(childElement.elements[index], element.firstChild);
+        });
+      });
+    });
+    return this;
+  }
+
+  /**
    * Removes all elements from the DOM.
    */
   remove(): void {

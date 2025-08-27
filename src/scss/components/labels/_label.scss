@@ -2,13 +2,15 @@
 
 %ui-label {
   @extend %ui-component;
-
   @include hidden;
+  @include ui-icon-container;
 
-  cursor: default;
-  white-space: nowrap;
-  // sass-lint:disable no-vendor-prefixes
-  -webkit-tap-highlight-color: transparent;
+  .#{$prefix}-ui-label-text {
+    margin: 0;
+    white-space: nowrap;
+    // sass-lint:disable no-vendor-prefixes
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 .#{$prefix}-ui-label {

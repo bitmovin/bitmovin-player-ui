@@ -33,7 +33,7 @@ import { RecommendationOverlay } from './components/overlays/RecommendationOverl
 import { Watermark } from './components/Watermark';
 import { ErrorMessageOverlay } from './components/overlays/ErrorMessageOverlay';
 import { AdClickOverlay } from './components/ads/AdClickOverlay';
-import { AdControlBarBottom } from './components/ads/AdControlBarBottom';
+import { AdControlBar } from './components/ads/AdControlBar';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
@@ -275,7 +275,7 @@ function uiLayout(config: UIConfig) {
 }
 
 function adsUILayout() {
-  let controlBar = new ControlBar({
+  let controlBar = new AdControlBar({
     components: [
       new Container({
         components: [
@@ -286,11 +286,19 @@ function adsUILayout() {
             cssClasses: ['text-right'],
           }),
         ],
-        cssClasses: ['controlbar-top ad-controlbar-top'],
+        cssClasses: ['ad-controlbar-top'],
+
       }),
-      new AdControlBarBottom(),
+      new Container({
+        components: [
+          new PlaybackToggleButton(),
+          new VolumeToggleButton(),
+          new Spacer(),
+          new FullscreenToggleButton(),
+        ],
+        cssClasses: ['ad-controlbar-bottom'],
+      }),
     ],
-    cssClasses: ['ad-controlbar'],
   });
 
   return new UIContainer({
@@ -349,7 +357,6 @@ function smallScreenUILayout() {
           new VolumeToggleButton(),
           new Spacer(),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
-          // new SubtitleToggleButton(subtitleSelectItem, subtitleSelectBox),
           new FullscreenToggleButton(),
         ],
         cssClasses: ['controlbar-bottom'],
@@ -367,10 +374,16 @@ function smallScreenUILayout() {
       controlBar,
       new TitleBar({
         components: [
-          new MetadataLabel({ content: MetadataLabelContent.Title }),
-          new CastToggleButton(),
-          new AirPlayToggleButton(),
-          new VRToggleButton(),
+          new Container({
+            components: [
+              new MetadataLabel({ content: MetadataLabelContent.Title }),
+              new Spacer(),
+              new CastToggleButton(),
+              new AirPlayToggleButton(),
+              new VRToggleButton(),
+            ],
+            cssClasses: ['titlebar-row'],
+          }),
         ],
       }),
       new DismissClickOverlay({ target: settingsPanel }),
@@ -387,7 +400,7 @@ function smallScreenUILayout() {
 }
 
 function smallScreenAdsUILayout() {
-  let controlBar = new ControlBar({
+  let controlBar = new AdControlBar({
     components: [
       new Container({
         components: [
@@ -398,11 +411,18 @@ function smallScreenAdsUILayout() {
             cssClasses: ['text-right'],
           }),
         ],
-        cssClasses: ['controlbar-top ad-controlbar-top'],
+        cssClasses: ['ad-controlbar-top'],
       }),
-      new AdControlBarBottom(),
+      new Container({
+        components: [
+          new PlaybackToggleButton(),
+          new VolumeToggleButton(),
+          new Spacer(),
+          new FullscreenToggleButton(),
+        ],
+        cssClasses: ['ad-controlbar-bottom'],
+      }),
     ],
-    cssClasses: ['ad-controlbar'],
   });
 
   return new UIContainer({
@@ -590,7 +610,7 @@ function tvAdsUILayout() {
       new AdClickOverlay(),
       playbackToggleOverlay,
       adStatusOverlay,
-      new ControlBar({
+      new AdControlBar({
         components: [
           new Container({
             components: [
@@ -601,7 +621,7 @@ function tvAdsUILayout() {
                 cssClasses: ['text-right'],
               }),
             ],
-            cssClasses: ['controlbar-top'],
+            cssClasses: ['ad-controlbar-top'],
           }),
         ],
       }),

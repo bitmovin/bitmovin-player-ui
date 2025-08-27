@@ -12,12 +12,12 @@
 .#{$prefix}-ui-settingstogglebutton {
   @extend %ui-settingstogglebutton;
 
-  .#{$prefix}-icon {
-    background-image: url('../../assets/images/setting.svg');
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/settings.svg');
   }
 
   &.#{$prefix}-on {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       transform: rotate(30deg);
     }
   }

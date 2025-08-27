@@ -19,28 +19,40 @@
     row-gap: .5em;
   }
 
+  .#{$prefix}-titlebar-row {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
   > .#{$prefix}-container-wrapper {
     pointer-events: none;
 
     .#{$prefix}-label-metadata {
+      cursor: default;
       pointer-events: none;
+
+      > * {
+        cursor: default;
+        pointer-events: none;
+        display: block;
+        white-space: normal;
+        text-shadow: 0 0 5px $color-black;
+      }
     }
 
     .#{$prefix}-label-metadata-title {
-      cursor: default;
-      display: block;
-      font-size: 1.2em;
-      font-weight: 500;
-      text-shadow: 0 0 5px $color-black;
-      white-space: normal;
+      .#{$prefix}-ui-label-text {
+        font-size: 1.2em;
+        font-weight: 500;
+      }
     }
 
     .#{$prefix}-label-metadata-description {
-      color: lighten($color-secondary, 30%);
-      cursor: default;
-      display: block;
-      text-shadow: 0 0 5px $color-black;
-      white-space: normal;
+      .#{$prefix}-ui-label-text {
+        color: lighten($color-secondary, 30%);
+      }
     }
   }
 }

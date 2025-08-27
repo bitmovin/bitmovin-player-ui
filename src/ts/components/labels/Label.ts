@@ -2,6 +2,24 @@ import {ComponentConfig, Component} from '../Component';
 import {DOM} from '../../DOM';
 import {EventDispatcher, Event, NoArgs} from '../../EventDispatcher';
 import { LocalizableText, i18n } from '../../localization/i18n';
+import { Icon } from '../Icon';
+
+export enum LabelStyle {
+  /**
+   * Only display the label text.
+   */
+  Text = 'text',
+  /**
+   * Display the label with an icon and text.
+   * The Icon is displayed before the text.
+   */
+  TextWithLeadingIcon = 'text-icon-leading',
+  /**
+   * Display the label with an icon and text.
+   * The Icon is displayed after the text.
+   */
+  TextWithTrailingIcon = 'text-icon-trailing',
+}
 
 /**
  * Configuration interface for a {@link Label} component.
@@ -18,14 +36,22 @@ export interface LabelConfig extends ComponentConfig {
    * WCAG20 standard: Associate label to form control.
    */
   for?: string;
+
+  /**
+   * The style of the label.
+   * Default: {@link LabelStyle.Text}
+   */
+  labelStyle?: LabelStyle;
 }
 
 /**
- * A simple text label.
+ * A text label with optional icon.
  *
  * DOM example:
  * <code>
- *     <span class='ui-label'>...some text...</span>
+ *     <span class='ui-label'>
+ *         <span class='ui-label-text'>...some text...</span>
+ *     </span>
  * </code>
  *
  * @category Components
@@ -33,6 +59,7 @@ export interface LabelConfig extends ComponentConfig {
 export class Label<Config extends LabelConfig> extends Component<Config> {
 
   private text: LocalizableText;
+  private textElement: DOM | null = null;
 
   private labelEvents = {
     onClick: new EventDispatcher<Label<Config>, NoArgs>(),
@@ -44,25 +71,42 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-label',
+      labelStyle: LabelStyle.Text,
     } as Config, this.config);
     this.text = this.config.text;
   }
 
   protected toDomElement(): DOM {
     const tagName = this.config.for != null ? 'label' : 'span';
+    let textElement = new DOM('span', {
+      'class': this.prefixCss('ui-label-text'),
+    }, this).html(i18n.performLocalization(this.text));
+    this.textElement = textElement;
 
-    let labelElement = new DOM(tagName, {
+    const wrapperElement = new DOM(tagName, {
       'id': this.config.id,
       'for': this.config.for,
       'class': this.getCssClasses(),
       'tabindex': this.config.tabIndex.toString(),
-    }, this).html(i18n.performLocalization(this.text));
-
-    labelElement.on('click', () => {
+    }, this);
+    wrapperElement.append(textElement);
+    wrapperElement.on('click', () => {
       this.onClickEvent();
     });
 
-    return labelElement;
+    if (this.config.labelStyle !== LabelStyle.Text) {
+      const icon = new Icon({ ariaLabel: this.config.ariaLabel, altText: this.config.text });
+      switch (this.config.labelStyle) {
+        case LabelStyle.TextWithTrailingIcon:
+          wrapperElement.append(icon.getDomElement());
+          break;
+        case LabelStyle.TextWithLeadingIcon:
+          wrapperElement.prepend(icon.getDomElement());
+          break;
+      }
+    }
+
+    return wrapperElement;
   }
 
   /**
@@ -76,7 +120,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
 
     this.text = text;
     const localizedText = i18n.performLocalization(text);
-    this.getDomElement().html(localizedText);
+    this.textElement?.html(i18n.performLocalization(text));
     this.onTextChangedEvent(localizedText);
   }
 
@@ -92,7 +136,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * Clears the text on this label.
    */
   clearText() {
-    this.getDomElement().html('');
+    this.textElement?.html('');
     this.onTextChangedEvent(null);
   }
 

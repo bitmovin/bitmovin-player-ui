@@ -4,8 +4,8 @@
 %ui-settingspanelpageopenbutton {
   @extend %ui-button;
 
-  .#{$prefix}-icon {
-    background-image: url('../../assets/images/setting.svg');
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/settings.svg');
     max-height: .8em;
   }
 
@@ -14,7 +14,7 @@
   }
 
   &.#{$prefix}-on {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       transform: rotate(30deg);
     }
   }

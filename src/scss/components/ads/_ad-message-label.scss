@@ -3,12 +3,14 @@
 .#{$prefix}-ui-ad-message-label {
   @extend %ui-label;
 
-  pointer-events: none;
-  cursor: default;
-  display: block;
-  font-size: 1.2em;
-  font-weight: 500;
-  text-shadow: 0 0 5px $color-black;
-  white-space: normal;
-  margin-right: auto;
+  .#{$prefix}-ui-label-text {
+    pointer-events: none;
+    cursor: default;
+    display: block;
+    font-size: 1.2em;
+    font-weight: 500;
+    text-shadow: 0 0 5px $color-black;
+    white-space: normal;
+    margin-right: auto;
+  }
 }

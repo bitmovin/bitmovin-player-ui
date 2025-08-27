@@ -4,7 +4,7 @@
 .#{$prefix}-ui-playbacktogglebutton {
   @extend %ui-button;
 
-  .#{$prefix}-icon {
+  .#{$prefix}-ui-icon {
     background-image: url('../../assets/images/play.svg');
   }
 
@@ -13,12 +13,12 @@
   }
 
   &.#{$prefix}-on {
-    .#{$prefix}-icon {
+    .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/pause.svg');
     }
 
     &.#{$prefix}-stoptoggle {
-      .#{$prefix}-icon {
+      .#{$prefix}-ui-icon {
         background-image: url('../../assets/images/stop.svg');
       }
     }
