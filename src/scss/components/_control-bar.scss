@@ -12,9 +12,9 @@
 
   $controlbar-padding: 1em;
   padding: $controlbar-padding
-    max($controlbar-padding, env(safe-area-inset-right))
-    max($controlbar-padding, env(safe-area-inset-bottom))
-    max($controlbar-padding, env(safe-area-inset-left));
+    max($controlbar-padding, env(safe-area-inset-right, 0))
+    max($controlbar-padding, env(safe-area-inset-bottom, 0))
+    max($controlbar-padding, env(safe-area-inset-left, 0));
 
   .#{$prefix}-container-wrapper {
     display: flex;

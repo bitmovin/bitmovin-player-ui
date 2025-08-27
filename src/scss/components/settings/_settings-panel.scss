@@ -25,7 +25,7 @@
   overflow-y: auto;
   padding: 0;
   position: absolute;
-  right: max(1em, env(safe-area-inset-right));
+  right: max(1em, env(safe-area-inset-right, 0));
   width: 40%;
 
   > .#{$prefix}-container-wrapper {

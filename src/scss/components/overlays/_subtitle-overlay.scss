@@ -70,8 +70,8 @@
     }
 
     &:not(.#{$prefix}-controlbar-visible) {
-      top: env(safe-area-inset-top);
-      bottom: env(safe-area-inset-bottom);
+      top: env(safe-area-inset-top, 0);
+      bottom: env(safe-area-inset-bottom, 0);
     }
   }
 }
