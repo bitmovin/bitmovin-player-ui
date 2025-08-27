@@ -74,6 +74,7 @@
   }
 
   &.#{$prefix}-player-state-finished {
+    .#{$prefix}-ui-titlebar,
     .#{$prefix}-ui-controlbar,
     .#{$prefix}-ui-hugeplaybacktogglebutton {
       display: none;
@@ -82,6 +83,14 @@
 
   .#{$prefix}-text-right {
     text-align: right;
+  }
+
+  &.#{$prefix}-layout-max-width-400 {
+    .#{$prefix}-ui-recommendation-overlay {
+      .#{$prefix}-recommendations-section {
+        display: none;
+      }
+    }
   }
 
   // sass-lint:disable force-element-nesting
@@ -94,7 +103,8 @@
 
     .#{$prefix}-ui-hugeplaybacktogglebutton,
     .#{$prefix}-ui-smallcenteredplaybacktogglebutton,
-    .#{$prefix}-ui-watermark {
+    .#{$prefix}-ui-watermark,
+    .#{$prefix}-ui-hugereplaybutton {
       .#{$prefix}-ui-icon {
         background-size: $icon-size-medium;
       }
