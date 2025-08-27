@@ -206,8 +206,8 @@ export class UIManager {
           title: playerSourceConfig.title,
           description: playerSourceConfig.description,
           markers: (playerSourceConfig as any).markers,
+          recommendations: (playerSourceConfig as any).recommendations,
         },
-        recommendations: (playerSourceConfig as any).recommendations,
       };
 
       // Player source config takes precedence over the UI config, because the config in the source is attached
@@ -216,7 +216,7 @@ export class UIManager {
       this.config.metadata.title = playerSourceUiConfig.metadata.title || uiconfig.metadata.title;
       this.config.metadata.description = playerSourceUiConfig.metadata.description || uiconfig.metadata.description;
       this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [];
-      this.config.recommendations = playerSourceUiConfig.recommendations || uiconfig.recommendations || [];
+      this.config.metadata.recommendations = playerSourceUiConfig.metadata.recommendations || uiconfig.metadata.recommendations || [];
 
       StorageUtils.setStorageApiDisabled(uiconfig);
     };
