@@ -87,6 +87,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
       'id': this.config.id,
       'for': this.config.for,
       'class': this.getCssClasses(),
+      'tabindex': this.config.tabIndex.toString(),
     }, this);
     wrapperElement.append(textElement);
     wrapperElement.on('click', () => {

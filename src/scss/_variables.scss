@@ -23,18 +23,18 @@ $color-touch-control-overlay-background: rgba(0, 0, 0, .5) !default;
 $color-ads: #ffc737 !default;
 
 $font-family: sans-serif !default;
-$font-size: 1.125rem !default;
-
-$icon-size: calc($font-size * 1.3333333) !default;
-$icon-size-medium: calc($icon-size * 2) !default;
-$icon-size-large: calc($icon-size * 3) !default;
+$font-size: 1.125rem !default; /* 18px */
 $font-size-large: calc($font-size * 1.25) !default;
 $font-size-small: calc($font-size * 0.75) !default;
+
+$icon-size: calc($font-size * 4 / 3) !default; /* 24px */
+$icon-size-medium: calc($icon-size * 2) !default;
+$icon-size-large: calc($icon-size * 3) !default;
 
 $font-weight: normal !default; /* 400 */
 $font-weight-medium: 500 !default;
 $font-weight-semi-bold: 600 !default;
-$font-weight-bold: 700 !default; /* 700 */
+$font-weight-bold: 700 !default;
 $border-radius: .4rem !default;
 
 $subtitle-text-color: #fff !default;
