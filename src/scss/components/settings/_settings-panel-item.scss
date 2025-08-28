@@ -3,8 +3,7 @@
 %ui-settings-panel-item {
   @include focusable(true, 0, 0);
 
-  line-height: 1.5em;
-  padding: .5em .7em;
+  padding: 1rem;
   white-space: nowrap;
 
   cursor: pointer;
@@ -30,8 +29,6 @@
   .#{$prefix}-container-wrapper {
     align-items: center;
     display: flex;
-    height: 100%;
-    width: 100%;
   }
 
   > .#{$prefix}-container-wrapper {
@@ -39,15 +36,12 @@
   }
 
   .#{$prefix}-ui-label {
-    font-size: .8em;
-    font-weight: 500;
-    margin: 0;
-    text-align: justify;
+    line-height: $icon-size;
+    min-height: $icon-size;
   }
 
   .#{$prefix}-ui-label-setting-selected-option {
     align-self: center;
-    font-weight: normal;
     margin-left: auto;
     width: fit-content;
 
@@ -73,10 +67,7 @@
 
   &.#{$prefix}-title-item {
     background-color: $color-background-menu-title-overlay;
-
-    .#{$prefix}-label {
-      font-size: .8em;
-    }
+    font-weight: $font-weight-medium;
   }
 }
 

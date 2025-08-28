@@ -7,8 +7,8 @@
     pointer-events: none;
     cursor: default;
     display: block;
-    font-size: 1.2em;
-    font-weight: 500;
+    font-size: $font-size-large;
+    font-weight: $font-weight-medium;
     text-shadow: 0 0 5px $color-black;
     white-space: normal;
     margin-right: auto;

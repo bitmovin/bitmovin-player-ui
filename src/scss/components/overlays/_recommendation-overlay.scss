@@ -37,7 +37,6 @@
       background-position: center;
       background-size: cover;
       display: inline-block;
-      font-size: .7em;
       height: (9em * $item-scale);
       margin: .3em .6em;
       overflow: hidden;
@@ -64,7 +63,6 @@
         right: $margin;
 
         .#{$prefix}-innertitle {
-          font-size: 1.2em;
           white-space: normal;
           word-break: break-all;
         }

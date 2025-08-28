@@ -8,35 +8,11 @@
     display: none;
   }
 
-  .#{$prefix}-ui-titlebar {
-    > .#{$prefix}-container-wrapper {
-      display: flex;
-
-      .#{$prefix}-ui-label {
-        align-items: center;
-        display: inline-flex;
-        font-size: .9em;
-      }
-
-      .#{$prefix}-label-metadata-title {
-        width: 100%;
-      }
-    }
-  }
-
   .#{$prefix}-ui-cast-status-overlay {
     background: $color-background; // Remove background Cast icon
 
     .#{$prefix}-ui-cast-status-label {
       top: 30%;
-    }
-  }
-
-  // Decrease huge play button size and replace icon with normal play icon
-  .#{$prefix}-ui-hugeplaybacktogglebutton,
-  .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
-    .#{$prefix}-ui-icon {
-      background-size: 2.5em;
     }
   }
 
@@ -58,6 +34,14 @@
           animation: none;
         }
       }
+    }
+  }
+
+  .#{$prefix}-ui-titlebar {
+    padding: 1em;
+
+    .#{$prefix}-label-metadata {
+      margin: 0 .25em;
     }
   }
 

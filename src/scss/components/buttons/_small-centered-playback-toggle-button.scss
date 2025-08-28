@@ -5,19 +5,17 @@
   @include hidden;
 
   cursor: default;
-  height: 2.5em;
+  height: $icon-size-large;
   outline: none;
   overflow: hidden; // hide overflow from scale animation
-  width: 2.5em;
+  width: $icon-size-large;
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   .#{$prefix}-ui-icon {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 4em;
+    background-size: $icon-size-large;
     height: 100%;
     width: 100%;
   }

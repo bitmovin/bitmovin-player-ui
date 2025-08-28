@@ -3,7 +3,7 @@
 .#{$prefix}-ui-watermark {
   @extend %ui-button;
 
-  $watermark-size: 4em;
+  $watermark-size: $icon-size-large;
 
   height: $watermark-size;
   width: $watermark-size;
