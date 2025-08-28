@@ -53,6 +53,7 @@ import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
 import { AdMessageLabel } from './components/ads/AdMessageLabel';
 import { FocusableContainer } from './spatialnavigation/FocusableContainer';
+import { BrowserUtils } from './utils/BrowserUtils';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -74,8 +75,7 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    // show smallScreen UI only on mobile/handheld devices
-    let smallScreenSwitchWidth = 600;
+    const smallScreenSwitchWidth = 800;
 
     return new UIManager(
       player,
@@ -90,7 +90,9 @@ export namespace UIFactory {
           ui: smallScreenAdsUILayout(),
           condition: (context: UIConditionContext) => {
             return (
-              context.isMobile && context.documentWidth < smallScreenSwitchWidth && context.isAd && context.adRequiresUi
+              context.documentWidth < smallScreenSwitchWidth &&
+              context.isAd &&
+              context.adRequiresUi
             );
           },
         },
@@ -100,7 +102,6 @@ export namespace UIFactory {
             return (
               !context.isAd &&
               !context.adRequiresUi &&
-              context.isMobile &&
               context.documentWidth < smallScreenSwitchWidth
             );
           },
@@ -355,7 +356,9 @@ function smallScreenUILayout() {
         components: [
           new PlaybackToggleButton(),
           new VolumeToggleButton(),
+          new VolumeSlider(),
           new Spacer(),
+          new PictureInPictureToggleButton(),
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
           new FullscreenToggleButton(),
         ],
@@ -369,7 +372,8 @@ function smallScreenUILayout() {
       subtitleOverlay,
       new BufferingOverlay(),
       new CastStatusOverlay(),
-      new TouchControlOverlay(),
+      // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
+      BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
       new RecommendationOverlay(),
       controlBar,
       new TitleBar({

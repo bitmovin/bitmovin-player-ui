@@ -37,6 +37,12 @@ export interface TouchControlOverlayConfig extends ContainerConfig {
    * Default: 15px
    */
   seekDoubleTapMargin?: number;
+
+  /**
+   * Time in milliseconds within which two consecutive taps are considered a double tap.
+   * Default: 200ms
+   */
+  seekDoubleTapTimeout?: number;
 }
 
 interface ClickPosition {
@@ -75,14 +81,15 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       enterFullscreenOnInitialPlayback: Boolean(config.enterFullscreenOnInitialPlayback),
     });
 
-    this.seekForwardLabel = new Label({text: '', for: this.getConfig().id, cssClass: 'seek-forward-label', hidden: true});
-    this.seekBackwardLabel = new Label({text: '', for: this.getConfig().id, cssClass: 'seek-backward-label', hidden: true});
+    this.seekForwardLabel = new Label({ text: '', for: this.getConfig().id, cssClass: 'seek-forward-label', hidden: true });
+    this.seekBackwardLabel = new Label({ text: '', for: this.getConfig().id, cssClass: 'seek-backward-label', hidden: true });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-touch-control-overlay',
       acceptsTouchWithUiHidden: true,
       seekTime: 10,
       seekDoubleTapMargin: 15,
+      seekDoubleTapTimeout: 200,
       components: [this.seekBackwardLabel, this.playbackToggleButton, this.seekForwardLabel],
     }, this.config);
   }
@@ -93,7 +100,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     let playerSeekTime = 0;
     let startSeekTime = 0;
 
-    this.doubleTapTimeout = new Timeout(500, () => {
+    this.doubleTapTimeout = new Timeout(this.config.seekDoubleTapTimeout, () => {
       this.couldBeDoubleTapping = false;
       startSeekTime = 0;
       setTimeout(() => this.hideSeekAnimationElements(), 150);
