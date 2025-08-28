@@ -51,7 +51,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
 
       const recommendations = uimanager.getConfig().metadata.recommendations;
       const recommendationContainer = new Container({
-        component: [],
+        components: [],
         cssClasses: ['recommendation-overlay-row', 'recommendations-section']
       })
 
