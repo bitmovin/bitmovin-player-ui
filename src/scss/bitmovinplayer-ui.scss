@@ -88,7 +88,7 @@
 
   &.#{$prefix}-controls-shown {
     .#{$prefix}-ui-touch-control-overlay {
-      background-color: $color-touch-control-overlay-background;
+      background-color: $color-background-dimmed;
     }
   }
 
