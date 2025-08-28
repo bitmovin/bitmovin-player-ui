@@ -5,6 +5,8 @@
 .#{$prefix}-ui-volumeslider {
   @extend %ui-seekbar;
 
+  min-width: 50px;
+
   .#{$prefix}-seekbar-playbackposition-marker {
     @include seekbar-position-marker($seekbar-bar-height * 3 - .25rem);
     background-color: $color-highlight;

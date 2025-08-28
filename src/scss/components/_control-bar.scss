@@ -9,7 +9,12 @@
 
   background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
-  padding: 1em;
+
+  $controlbar-padding: 1em;
+  padding: $controlbar-padding
+    max($controlbar-padding, env(safe-area-inset-right, 0))
+    max($controlbar-padding, env(safe-area-inset-bottom, 0))
+    max($controlbar-padding, env(safe-area-inset-left, 0));
 
   .#{$prefix}-container-wrapper {
     display: flex;
