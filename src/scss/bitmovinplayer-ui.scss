@@ -74,8 +74,10 @@
   }
 
   &.#{$prefix}-player-state-finished {
+    .#{$prefix}-ui-titlebar,
     .#{$prefix}-ui-controlbar,
-    .#{$prefix}-ui-hugeplaybacktogglebutton {
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
       display: none;
     }
   }
@@ -86,13 +88,19 @@
 
   &.#{$prefix}-controls-shown {
     .#{$prefix}-ui-touch-control-overlay {
-      background-color: $color-touch-control-overlay-background;
+      background-color: $color-background-dimmed;
     }
   }
 
   &.#{$prefix}-layout-max-width-400 {
     .#{$prefix}-ui-volumeslider {
       display: none;
+    }
+
+    .#{$prefix}-ui-recommendation-overlay {
+      .#{$prefix}-recommendations-section {
+        display: none;
+      }
     }
   }
 
@@ -106,7 +114,8 @@
 
     .#{$prefix}-ui-hugeplaybacktogglebutton,
     .#{$prefix}-ui-smallcenteredplaybacktogglebutton,
-    .#{$prefix}-ui-watermark {
+    .#{$prefix}-ui-watermark,
+    .#{$prefix}-ui-hugereplaybutton {
       .#{$prefix}-ui-icon {
         background-size: $icon-size-medium;
       }

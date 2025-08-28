@@ -141,9 +141,23 @@
         {time: 755, title: 'Credits'},
       ],
       recommendations: [
-        {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
-        {title: 'Recommendation 2: The second best video', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 64},
-        {title: 'Recommendation 3: The third best video of all time', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 195},
+        {
+          title: 'Recommendation 1: The best video ever',
+          resource: {
+            dash: 'https://cdn.bitmovin.com/content/assets/sintel/sintel.mpd',
+            poster: 'https://cdn.bitmovin.com/content/assets/sintel/poster.png',
+          },
+          duration: 10.4
+        },
+        {
+          title: 'Recommendation 2: The second best video',
+            resource: { url: 'http://bitmovin.com', thumbnail: 'https://placehold.co/300x300/222/222' },
+          duration: 64
+        },
+        {
+          title: 'Recommendation 3: The third best video',
+            resource: { url: 'http://bitmovin.com' },
+        },
       ],
     },
     basicProgressive: {
@@ -235,37 +249,32 @@
 //      title: 'UI Demo Video Title',
 //      description: 'Bacon ipsum dolor amet t-bone prosciutto cupim kevin tongue, venison tail pork beef ribs boudin beef shoulder bacon jerky. Pork tail spare ribs jowl jerky andouille corned beef frankfurter. Burgdoggen meatloaf short ribs andouille tail tri-tip cow kevin doner.',
 //      markers: [
-//        {time: 50, title: 'Chapter 1'},
-//        {time: 80, title: 'Chapter Two'},
-//        {time: 200},
-//        {time: 300, title: 'Again a chapter with a title'},
+//        { time: 50, title: 'Chapter 1' },
+//        { time: 80, title: 'Chapter Two' },
+//        { time: 200 },
+//        { time: 300, title: 'Again a chapter with a title' },
 //      ],
+//      recommendations: [
+//        {
+//           title: 'Recommendation 1: The best video ever',
+//           resource: {
+//             dash: 'https://cdn.bitmovin.com/content/assets/sintel/sintel.mpd',
+//             poster: 'https://cdn.bitmovin.com/content/assets/sintel/poster.png',
+//           },
+//           duration: 10.4
+//         },
+//         {
+//           title: 'Recommendation 2: The second best video',
+//           resource: { url: 'http://bitmovin.com', thumbnail: 'https://placehold.co/300x300/222/222' },
+//           duration: 64
+//         },
+//         {
+//           title: 'Recommendation 2: The second best video',
+//           resource: { url: 'http://bitmovin.com' },
+//         },
+//       ],
     },
-//    subtitles: {
-//        fontColor: 'rgba(0, 0, 255, 0.5)',
-//        backgroundColor: 'rgba(0, 255, 0, 0.5)',
-//        windowColor: 'rgba(255, 0, 0, 0.25)',
-//        fontFamily: 'monospace',
-//        fontVariant: 'unset',
-//        fontStyle: 'unset',
-//        characterEdge: '1px 1px 2px black',
-//        fontCoefficient: '3',
-//    },
-//    recommendations: [
-//      {title: 'Recommendation 1: The best video ever', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 10.4},
-//      {title: 'Recommendation 2: The second best video', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 64},
-//      {title: 'Recommendation 3: The third best video of all time', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 195},
-//      {title: 'Recommendation 4: The fourth, you know what', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 15},
-//      {title: 'Recommendation 5', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 174},
-//      {title: 'Recommendation 6', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 26},
-//      {title: 'Recommendation 7', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 87},
-//      {title: 'Recommendation 8', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 54},
-//      {title: 'Recommendation 9', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 22},
-//      {title: 'Recommendation 10', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 44},
-//      {title: 'Recommendation 11', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 435},
-//      {title: 'Recommendation 12: Ain\'t no better video than this', url: 'http://bitmovin.com', thumbnail: 'http://placehold.it/300x300', duration: 34}
-//    ],
-//      seekbarSnappingRange: 0,
+//    seekbarSnappingRange: 0,
     includeWatermark: true,
   };
 

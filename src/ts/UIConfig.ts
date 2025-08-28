@@ -1,12 +1,44 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
+import { SourceConfig } from 'bitmovin-player';
 
 /**
+ * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
+ * playback of the current video has ended.
+ *
  * @category Configs
  */
-export interface UIRecommendationConfig {
-  title: string;
+export interface ExternalRecommendationLink {
+  /**
+   * The URL of the recommended video.
+   */
   url: string;
+  /**
+   * A thumbnail image URL representing the recommended video.
+   */
   thumbnail?: string;
+}
+
+/**
+ * A configuration for a recommended video that can be shown in the {@link RecommendationOverlay} after the
+ * playback of the current video has ended.
+ *
+ * @category Configs
+ */
+export interface RecommendationConfig {
+  /**
+   * The title of the recommended video.
+   */
+  title: string;
+  /**
+   * The recommendation item, either an external link or a source config that can be loaded into the player.
+   * If a source config is provided:
+   * - it will be loaded into the current player instance.
+   * - the poster image of the source config will be used as thumbnail if available.
+   */
+  resource: ExternalRecommendationLink | SourceConfig;
+  /**
+   * An optional duration of the recommended video which will be displayed on the recommendation.
+   */
   duration?: number;
 }
 
@@ -59,9 +91,8 @@ export interface UIConfig {
     title?: string;
     description?: string;
     markers?: TimelineMarker[];
+    recommendations?: RecommendationConfig[];
   };
-  // TODO move recommendations into metadata in next major release
-  recommendations?: UIRecommendationConfig[];
   /**
    * Specifies if the UI variants should be resolved and switched automatically upon certain player events. The default
    * is `true`. Should be set to `false` if purely manual switching through {@link UIManager.resolveUiVariant} is

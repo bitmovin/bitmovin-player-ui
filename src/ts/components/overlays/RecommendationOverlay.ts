@@ -1,11 +1,8 @@
 import {ContainerConfig, Container} from '../Container';
-import {Component, ComponentConfig} from '../Component';
-import {DOM} from '../../DOM';
 import {UIInstanceManager} from '../../UIManager';
-import {StringUtils} from '../../utils/StringUtils';
 import {HugeReplayButton} from '../buttons/HugeReplayButton';
-import { UIRecommendationConfig } from '../../UIConfig';
 import { PlayerAPI } from 'bitmovin-player';
+import { RecommendationItem } from '../RecommendationItem';
 
 /**
  * Overlays the player and displays recommended videos.
@@ -14,7 +11,9 @@ import { PlayerAPI } from 'bitmovin-player';
  */
 export class RecommendationOverlay extends Container<ContainerConfig> {
 
-  private replayButton: HugeReplayButton;
+  private static readonly CLASS_HAS_RECOMMENDATIONS = 'recommendations';
+  private readonly replayButton: HugeReplayButton;
+  private recommendationContainer: Container<ContainerConfig> | null;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -24,7 +23,14 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-recommendation-overlay',
       hidden: true,
-      components: [this.replayButton],
+      components: [
+        new Container({
+          components: [
+            this.replayButton
+          ],
+          cssClasses: ['recommendation-overlay-row', 'replay-section'],
+        }),
+      ],
     }, this.config);
   }
 
@@ -32,32 +38,41 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     super.configure(player, uimanager);
 
     let clearRecommendations = () => {
-      for (let component of this.getComponents().slice()) {
-        if (component instanceof RecommendationItem) {
-          this.removeComponent(component);
-        }
+      if (this.recommendationContainer) {
+        this.removeComponent(this.recommendationContainer);
+        this.recommendationContainer = null;
+        this.updateComponents();
+        this.getDomElement().removeClass(this.prefixCss(RecommendationOverlay.CLASS_HAS_RECOMMENDATIONS));
       }
-      this.updateComponents();
-      this.getDomElement().removeClass(this.prefixCss('recommendations'));
     };
 
     let setupRecommendations = () => {
       clearRecommendations();
 
-      const recommendations = uimanager.getConfig().recommendations;
+      const recommendations = uimanager.getConfig().metadata.recommendations;
+      const recommendationContainer = new Container({
+        components: [],
+        cssClasses: ['recommendation-overlay-row', 'recommendations-section']
+      })
 
-      if (recommendations.length > 0) {
-        let index = 1;
-        for (let item of recommendations) {
-          this.addComponent(new RecommendationItem({
-            itemConfig: item,
-            cssClasses: ['recommendation-item-' + (index++)],
-          }));
-        }
-        this.updateComponents(); // create container DOM elements
-
-        this.getDomElement().addClass(this.prefixCss('recommendations'));
+      if (recommendations.length == 0) {
+        return;
       }
+
+      let index = 1;
+      recommendations.forEach(recommendationConfig => {
+        const recommendationItem = new RecommendationItem({
+          recommendationConfig: recommendationConfig,
+          cssClasses: ['recommendation-item-' + (index++)],
+        });
+        recommendationContainer.addComponent(recommendationItem);
+        recommendationItem.configure(player, uimanager);
+      });
+
+      this.recommendationContainer = recommendationContainer;
+      this.addComponent(recommendationContainer);
+      this.updateComponents();
+      this.getDomElement().addClass(this.prefixCss(RecommendationOverlay.CLASS_HAS_RECOMMENDATIONS));
     };
 
     uimanager.getConfig().events.onUpdated.subscribe(setupRecommendations);
@@ -77,58 +92,5 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
 
     // Init on startup
     setupRecommendations();
-  }
-}
-
-/**
- * Configuration interface for the {@link RecommendationItem}
- */
-interface RecommendationItemConfig extends ComponentConfig {
-  itemConfig: UIRecommendationConfig;
-}
-
-/**
- * An item of the {@link RecommendationOverlay}. Used only internally in {@link RecommendationOverlay}.
- */
-class RecommendationItem extends Component<RecommendationItemConfig> {
-
-  constructor(config: RecommendationItemConfig) {
-    super(config);
-
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-recommendation-item',
-      itemConfig: null, // this must be passed in from outside
-    }, this.config);
-  }
-
-  protected toDomElement(): DOM {
-    let config = this.config.itemConfig;
-
-    let itemElement = new DOM('a', {
-      'id': this.config.id,
-      'class': this.getCssClasses(),
-      'href': config.url,
-    }, this).css({ 'background-image': `url(${config.thumbnail})` });
-
-    let bgElement = new DOM('div', {
-      'class': this.prefixCss('background'),
-    });
-    itemElement.append(bgElement);
-
-    let titleElement = new DOM('span', {
-      'class': this.prefixCss('title'),
-    }).append(new DOM('span', {
-      'class': this.prefixCss('innertitle'),
-    }).html(config.title));
-    itemElement.append(titleElement);
-
-    let timeElement = new DOM('span', {
-      'class': this.prefixCss('duration'),
-    }).append(new DOM('span', {
-      'class': this.prefixCss('innerduration'),
-    }).html(config.duration ? StringUtils.secondsToTime(config.duration) : ''));
-    itemElement.append(timeElement);
-
-    return itemElement;
   }
 }

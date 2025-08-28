@@ -19,7 +19,7 @@
   @include layout-cover;
   @include hidden-animated($animation-duration * 2);
 
-  background-color: transparentize($color-black, .3);
+  background-color: $color-background-dimmed;
 
   > .#{$prefix}-container-wrapper {
     padding: 3em;
