@@ -98,8 +98,7 @@ $seekbar-bar-height: calc($font-size / 3);
       // Marker indicator is 5/3 of the seekbar height to extend the indicator above and below the seekbar by 1/3
       // of the seekbar height
       $marker-indicator-height: calc($seekbar-bar-height * (5 / 3));
-      // Marker indicator border radius is half the height to make it fully rounded
-      $marker-indicator-border-radius: calc($marker-indicator-height / 2);
+      $marker-indicator-border-radius: .125em;
 
       height: $seekbar-bar-height;
 
