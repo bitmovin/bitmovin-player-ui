@@ -75,7 +75,6 @@ export class RecommendationItem extends Component<RecommendationItemConfig> {
     }
 
     const titleElement = new DOM('div', {
-      'id': this.config.id,
       'class': this.prefixCss('title-container'),
     }, this);
 
