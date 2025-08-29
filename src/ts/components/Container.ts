@@ -113,7 +113,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
   /**
    * Updates the DOM of the container with the current components.
    */
-  protected updateComponents(): void {
+  updateComponents(): void {
     /* We cannot just clear the container to remove all elements and then re-add those that should stay, because
      * IE looses the innerHTML of unattached elements, leading to empty elements within the container (e.g. missing
      * subtitle text in SubtitleLabel).
