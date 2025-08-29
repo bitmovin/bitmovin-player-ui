@@ -131,6 +131,8 @@ export function getComponentInDirection(
 
       return { angle, dist, element, component };
     })
+    // filter out elements which are currently not visible due to a parent being not visible
+    .filter(({ element }) => isVisible(element))
     // filter out elements that are not in the given direction
     .filter(({ angle }) => angle < cutoffAngle);
 
@@ -172,5 +174,20 @@ export function getBoundingRectFromElement(element: HTMLElement) {
   }
 
   return boundingRect;
+}
+
+/**
+ * Detects if the given element is currently visible within the DOM.
+ * Covers use-cases where a parent element is not visible.
+ */
+function isVisible(element: HTMLElement): boolean {
+  // offsetParent covers the use case when any parent has `display: none`
+  if (!element.offsetParent) {
+    return false;
+  }
+
+  // We use visibility hidden to enable animations which is not covered by offsetParent.
+  const visibility = getComputedStyle(element)['visibility'];
+  return visibility !== 'hidden';
 }
 
