@@ -10,7 +10,7 @@ import { isFocusable } from './TypeGuards';
  */
 export class FocusableContainer {
   readonly container: AnyContainer;
-  readonly primaryComponent: AnyComponent;
+  readonly _primaryComponent: AnyComponent;
 
   /**
    * Creates a new FocusableContainer.
@@ -21,11 +21,15 @@ export class FocusableContainer {
    */
   constructor(container: AnyContainer, primaryComponent: Component<ComponentConfig> | undefined = undefined) {
     this.container = container;
-    this.primaryComponent = primaryComponent ?? this.components[0];
+    this._primaryComponent = primaryComponent;
 
     if (primaryComponent && !this.components.includes(primaryComponent)) {
       throw new Error('The primary component must be part of the container.');
     }
+  }
+
+  get primaryComponent(): AnyComponent {
+    return this._primaryComponent ?? this.components[0];
   }
 
   get components(): AnyComponent[] {
