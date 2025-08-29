@@ -54,6 +54,7 @@ import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
 import { AdMessageLabel } from './components/ads/AdMessageLabel';
 import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 import { BrowserUtils } from './utils/BrowserUtils';
+import { RecommendationOverlayNavigationGroup } from './spatialnavigation/RecommendationOverlayNavigationGroup';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -571,6 +572,7 @@ function tvUILayout() {
   });
 
   const playbackToggleOverlay = new PlaybackToggleOverlay();
+  const recommendationOverlay = new RecommendationOverlay();
   const uiContainer = new UIContainer({
     components: [
       subtitleOverlay,
@@ -581,7 +583,7 @@ function tvUILayout() {
       settingsPanel,
       subtitleListBox,
       audioListBox,
-      new RecommendationOverlay(),
+      recommendationOverlay,
       new ErrorMessageOverlay(),
     ],
     cssClasses: ['ui-tv'],
@@ -597,6 +599,7 @@ function tvUILayout() {
     new SettingsPanelNavigationGroup(settingsPanel, { closeOnSelect: false }),
     new SettingsPanelNavigationGroup(subtitleListBox),
     new SettingsPanelNavigationGroup(audioListBox),
+    new RecommendationOverlayNavigationGroup(recommendationOverlay),
   );
 
   return {
