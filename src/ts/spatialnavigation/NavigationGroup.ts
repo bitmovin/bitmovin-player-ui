@@ -54,7 +54,7 @@ export class NavigationGroup {
   }
 
   // Dynamically resolve all components within this group respecting FocusableContainers.
-  protected get components(): Focusable[] {
+  protected getComponents(): Focusable[] {
     let componentsToConsider: Focusable[] = [];
     const focusableContainers = this._components
       .filter(component => component instanceof FocusableContainer)
@@ -135,7 +135,7 @@ export class NavigationGroup {
   }
 
   public focusFirstComponent(): void {
-    const component = this.components[0];
+    const component = this.getComponents()[0];
     if (component) {
       this.focusComponent(component);
     }
@@ -161,7 +161,7 @@ export class NavigationGroup {
     // If no component was found within the container itself, check all components within the group
     const targetComponent = getComponentInDirection(
       this.activeComponent,
-      this.components,
+      this.getComponents(),
       direction
     );
 
@@ -264,7 +264,7 @@ export class NavigationGroup {
     this.removeElementHoverEventListeners();
 
     let componentsToConsider: Component<ComponentConfig>[] = [];
-    this.components
+    this.getComponents()
       .forEach(component => {
         let elementsToConsider: Component<ComponentConfig>[];
         if (component instanceof Container) {
