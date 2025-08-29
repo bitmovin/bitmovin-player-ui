@@ -12,13 +12,17 @@ import { RecommendationItem } from '../RecommendationItem';
 export class RecommendationOverlay extends Container<ContainerConfig> {
 
   private static readonly CLASS_HAS_RECOMMENDATIONS = 'recommendations';
-  private readonly replayButton: HugeReplayButton;
-  private recommendationContainer: Container<ContainerConfig> | null;
+  readonly replayButton: HugeReplayButton;
+  readonly recommendationContainer: Container<ContainerConfig>;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
 
     this.replayButton = new HugeReplayButton();
+    this.recommendationContainer = new Container({
+      components: [],
+      cssClasses: ['recommendation-overlay-row', 'recommendations-section']
+    });
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-recommendation-overlay',
@@ -26,7 +30,8 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
       components: [
         new Container({
           components: [
-            this.replayButton
+            this.replayButton,
+            this.recommendationContainer,
           ],
           cssClasses: ['recommendation-overlay-row', 'replay-section'],
         }),
@@ -38,23 +43,15 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     super.configure(player, uimanager);
 
     let clearRecommendations = () => {
-      if (this.recommendationContainer) {
-        this.removeComponent(this.recommendationContainer);
-        this.recommendationContainer = null;
-        this.updateComponents();
-        this.getDomElement().removeClass(this.prefixCss(RecommendationOverlay.CLASS_HAS_RECOMMENDATIONS));
-      }
+      this.recommendationContainer.removeComponents();
+      this.recommendationContainer.updateComponents();
+      this.getDomElement().removeClass(this.prefixCss(RecommendationOverlay.CLASS_HAS_RECOMMENDATIONS));
     };
 
     let setupRecommendations = () => {
       clearRecommendations();
 
       const recommendations = uimanager.getConfig().metadata.recommendations;
-      const recommendationContainer = new Container({
-        components: [],
-        cssClasses: ['recommendation-overlay-row', 'recommendations-section']
-      })
-
       if (recommendations.length == 0) {
         return;
       }
@@ -65,13 +62,11 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
           recommendationConfig: recommendationConfig,
           cssClasses: ['recommendation-item-' + (index++)],
         });
-        recommendationContainer.addComponent(recommendationItem);
         recommendationItem.configure(player, uimanager);
+        this.recommendationContainer.addComponent(recommendationItem);
       });
 
-      this.recommendationContainer = recommendationContainer;
-      this.addComponent(recommendationContainer);
-      this.updateComponents();
+      this.recommendationContainer.updateComponents();
       this.getDomElement().addClass(this.prefixCss(RecommendationOverlay.CLASS_HAS_RECOMMENDATIONS));
     };
 
