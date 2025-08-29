@@ -32,6 +32,7 @@ export class RecommendationItem extends Component<RecommendationItemConfig> {
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-recommendation-item',
       recommendationConfig: null, // this must be passed in from outside
+      tabIndex: 0,
     }, this.config);
   }
 
@@ -68,6 +69,7 @@ export class RecommendationItem extends Component<RecommendationItemConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       ...additionalAttributes,
+      'tabindex': this.config.tabIndex.toString(),
     }, this);
 
     if (posterUrl) {
