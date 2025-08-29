@@ -4,6 +4,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.102.0] - 2025-08-14
+
+### Changed
+- Default font size for CEA captions is lowered, effectively making the previous 75% the new 100%.
+
+### Fixed
+- Long CEA captions are cut off when font size changed to greater than 100% via settings panel
+- CEA caption font size is not changing when font size set to 75% via settings panel
+- CEA caption positioning breaks when font size is changed via settings panel
+
+## [3.101.0] - 2025-08-12
+
+### Fixed
+- Font size change in subtitle rendering options menu has no effect for CEA captions
+- Subtitle font size changes for VTT/TTML subtitles when the subtitle rendering options menu is opened
+- Subtitle font size preference from local storage is not restored upon UI initialization
+
+## [3.100.0] - 2025-08-12
+
+### Fixed
+- CEA captions can overlap with player's control bar
+
+## [3.99.0] - 2025-08-11
+
+### Fixed
+- Immediately update the playback position when seeking using a click
+
+## [3.98.0] - 2025-06-13
+
+### Fixed
+- The `PlaybackTimeLabel`s time format was incorrectly displayed as `mm:ss` instead of `hh:mm:ss` when the duration is higher than 1 hour when transitioning from Live to VOD
+
+## [3.97.0] - 2025-06-12
+
+### Fixed
+- The `PlaybackTimeLabel`s now immediately display the time instead of flickering `LIVE` for a short time when transitioning from Live to VOD
+
+## [3.96.0] - 2025-05-16
+
+### Changed
+- Background of CEA captions now does not cover the subtitle window fully
+
+## [3.95.0] - 2025-05-16
+
+### Fixed
+- Seeking with active CEA captions left an empty window behind
+
+## [3.94.0] - 2025-05-15
+
+### Fixed
+- WebVTT doesn't render when region styles are present 
+
+## [3.93.0] - 2025-05-09
+
+### Fixed
+- CEA caption rendering broken if no user preference is present for subtitle font size
+
+## [3.92.0] - 2025-04-23
+
+### Added
+- Ads UI variant to default TV UI
+
 ## [3.91.0] - 2025-04-10
 
 ### Added
@@ -1115,6 +1177,17 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.102.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.101.0...v3.102.0
+[3.101.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.100.0...v3.101.0
+[3.100.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.99.0...v3.100.0
+[3.99.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.98.0...v3.99.0
+[3.98.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.97.0...v3.98.0
+[3.97.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.96.0...v3.97.0
+[3.96.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.95.0...v3.96.0
+[3.95.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.94.0...v3.95.0
+[3.94.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.93.0...v3.94.0
+[3.93.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.92.0...v3.93.0
+[3.92.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.91.0...v3.92.0
 [3.91.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.90.0...v3.91.0
 [3.90.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.89.0...v3.90.0
 [3.89.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.88.0...v3.89.0
