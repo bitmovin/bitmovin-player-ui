@@ -10,11 +10,11 @@ on:
   workflow_call:
 
 jobs:
-  test_and_build:
+  test:
+    name: Test
     runs-on: ubuntu-latest
 
     steps:
-        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -24,8 +24,30 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Lint
-        run: npx gulp lint
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
       - name: Build
         run: npx gulp build
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
+
+      - name: Lint
+        run: npx gulp lint
