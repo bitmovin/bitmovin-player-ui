@@ -74,8 +74,8 @@ export class UIContainer extends Container<UIContainerConfig> {
       cssClass: 'ui-uicontainer',
       role: 'region',
       ariaLabel: i18n.getLocalizer('player'),
-      hideDelay: 5000,
-      hideImmediatelyOnMouseLeave: false,
+      hideDelay: 2000,
+      hideImmediatelyOnMouseLeave: true,
     }, this.config);
 
     this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();

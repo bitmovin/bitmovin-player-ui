@@ -4,15 +4,19 @@
 %ui-settingspanelpageopenbutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/images/setting.svg');
-  max-height: .8em;
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/settings.svg');
+    max-height: .8em;
+  }
 
   &:hover {
     @include svg-icon-shadow;
   }
 
   &.#{$prefix}-on {
-    transform: rotate(30deg);
+    .#{$prefix}-ui-icon {
+      transform: rotate(30deg);
+    }
   }
 }
 

@@ -6,7 +6,7 @@ import { SettingsPanelPage } from '../settings/SettingsPanelPage';
 import { SettingsPanelSelectOption } from '../settings/SettingsPanelSelectOption';
 import { SettingsPanelItem } from '../settings/SettingsPanelItem';
 import { LocalizableText } from '../../localization/i18n';
-import { Label } from '../labels/Label';
+import { Label, LabelStyle } from '../labels/Label';
 
 export interface ListBoxConfig extends SettingsPanelConfig, ListSelectorConfig {
   /**
@@ -55,6 +55,7 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
       const item = this.listSelector.getItemForKey(itemKey);
       const selectOption = new SettingsPanelSelectOption({
         label: item.label,
+        labelStyle: LabelStyle.TextWithLeadingIcon,
         settingComponent: this.listSelector,
         settingsValue: item.key,
         addSettingAsComponent: false,
@@ -62,6 +63,7 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
 
       selectOption.configure(player, uimanager);
       this.settingsPanelPage.addSettingsPanelItem(selectOption);
+      this.onSettingsStateChangedEvent();
     };
 
     const onItemRemoved = (_: any, itemKey: string) => {
@@ -78,6 +80,7 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
       }
 
       this.settingsPanelPage.removeSettingsPanelItem(settingsPanelItem);
+      this.onSettingsStateChangedEvent();
     };
 
     this.listSelector.onItemAdded.subscribe(onItemAdded);

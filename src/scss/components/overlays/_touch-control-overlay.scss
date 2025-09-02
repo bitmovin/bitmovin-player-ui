@@ -19,11 +19,11 @@
 %seek-label {
   @extend %opacity-transition;
   @include hidden-animated;
-  font-weight: 500;
   margin: 0;
   opacity: 1;
   position: absolute;
   text-shadow: $color-shadow-seek-label;
+  z-index: 1;
 }
 
 .#{$prefix}-ui-touch-control-overlay {

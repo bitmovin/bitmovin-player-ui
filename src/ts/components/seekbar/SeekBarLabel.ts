@@ -189,7 +189,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     if (thumbnail == null) {
       thumbnailElement.css({
         'background-image': null,
-        'display': null,
+        'display': 'none',
         'width': null,
         'height': null,
       });

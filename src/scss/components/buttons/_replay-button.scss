@@ -4,7 +4,9 @@
 .#{$prefix}-ui-replaybutton {
   @extend %ui-button;
 
-  background-image: url('../../assets/images/replay-nocircle.svg');
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/replay.svg');
+  }
 
   &:hover {
     @include svg-icon-shadow;

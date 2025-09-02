@@ -24,7 +24,6 @@ export interface ControlBarConfig extends ContainerConfig {
  * @category Components
  */
 export class ControlBar extends Container<ControlBarConfig> {
-
   constructor(config: ControlBarConfig) {
     super(config);
 
@@ -80,10 +79,6 @@ export class ControlBar extends Container<ControlBarConfig> {
       });
     }
 
-    player.on(player.exports.PlayerEvent.AdStarted, () => {
-      this.show();
-    });
-
     uimanager.onControlsShow.subscribe(() => {
       this.show();
     });
@@ -94,13 +89,6 @@ export class ControlBar extends Container<ControlBarConfig> {
     });
 
     uimanager.onControlsHide.subscribe(() => {
-      // In case of a linear ad playing, the control bar should not be fully hidden.
-      // In fact, only the bottom control bar should be hidden; this is handled in AdControlBarBottom.
-      const isAdPlaying = player.ads.isLinearAdActive();
-      if (isAdPlaying) {
-        return;
-      }
-
       this.hide();
     });
   }

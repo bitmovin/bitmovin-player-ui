@@ -7,28 +7,22 @@
   padding: unset;
   flex: 1;
   text-align: left;
+  column-gap: .4em;
+  min-width: unset;
 
-  &:active {
+  &.touched {
     transform: unset;
+  }
+
+  .#{$prefix}-ui-icon {
+    width: .8em;
+    min-width: unset;
+    background-image: url('../../assets/images/angle-left.svg');
   }
 
   .#{$prefix}-label {
     display: inline-block;
-    font-size: .8em;
-    font-weight: 500;
     margin: 0;
-    text-align: justify;
-
-    &::before {
-      background-image: url('../../assets/images/angle-left.svg');
-      background-repeat: no-repeat;
-      background-size: 1.5em auto;
-      content: ' ';
-      display: inline-block;
-      height: 1.5em;
-      vertical-align: -.4em;
-      width: 1.5em;
-    }
   }
 }
 

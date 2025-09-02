@@ -132,6 +132,7 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
       }),
       settingComponent: new SubtitleSettingsResetButton({}),
       cssClasses: ['title-item'],
+      isSetting: false,
     });
 
     if (config.useDynamicSettingsPanelItem) {

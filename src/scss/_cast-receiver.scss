@@ -11,7 +11,6 @@
 
     %box {
       background: $background-color;
-      padding: .3em .5em;
     }
 
     .#{$prefix}-ui-controlbar {
@@ -51,7 +50,7 @@
         background-color: transparentize($subtitle-text-border-color, .5);
         box-decoration-break: clone;
         display: inline-flex;
-        line-height: 2em;
+        line-height: 2;
         padding: .3em .5em;
         text-shadow: none;
       }
@@ -60,14 +59,14 @@
     // Chromecast (v1) has very poor rendering performance, so we disable the animations.
     // We also display a pause image while playback is paused, instead of a play action button
     .#{$prefix}-ui-hugeplaybacktogglebutton {
-      .#{$prefix}-image {
+      .#{$prefix}-ui-icon {
         background-image: url('../../assets/images/pause.svg');
         opacity: .7;
       }
 
       // sass-lint:disable force-element-nesting
-      &.#{$prefix}-on .#{$prefix}-image,
-      &.#{$prefix}-off .#{$prefix}-image {
+      &.#{$prefix}-on .#{$prefix}-icon,
+      &.#{$prefix}-off .#{$prefix}-ui-icon {
         animation: none;
         transition: none;
       }

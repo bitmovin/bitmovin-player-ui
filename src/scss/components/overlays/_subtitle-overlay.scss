@@ -8,7 +8,6 @@
     @include hidden;
 
     bottom: 0;
-    font-size: 1.2em;
     left: 0;
     pointer-events: none;
     position: absolute;
@@ -68,6 +67,11 @@
     &.#{$prefix}-controlbar-visible {
       bottom: 5em;
       transition: bottom $animation-duration-short ease-in;
+    }
+
+    &:not(.#{$prefix}-controlbar-visible) {
+      top: env(safe-area-inset-top, 0);
+      bottom: env(safe-area-inset-bottom, 0);
     }
   }
 }

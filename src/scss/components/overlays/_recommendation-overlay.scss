@@ -5,86 +5,94 @@
   @extend %ui-container;
 
   @include layout-cover;
-  @include layout-center-children-in-container;
   @include hidden-animated($animation-duration * 2);
 
-  background-color: $color-background-highlight;
+  background-color: $color-background-dimmed;
 
-  > .#{$prefix}-container-wrapper {
-    padding: 3em;
+  .#{$prefix}-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 100%;
+    height: 100%;
   }
 
-  a {
-    color: $color-primary;
-
-    &:hover,
-    &:visited {
-      color: $color-primary;
+  .#{$prefix}-replay-section {
+    .#{$prefix}-container-wrapper {
+      align-items: center;
     }
   }
 
-  &.#{$prefix}-recommendations {
-    .#{$prefix}-ui-hugereplaybutton {
-      bottom: 2em;
-      left: 2em;
-      position: absolute;
+  .#{$prefix}-recommendations-section {
+    max-width: 100%;
+    width: 100%;
+
+    .#{$prefix}-container-wrapper {
+      align-items: center;
+      overflow-x: auto;
+      display: flex;
+      justify-content: space-evenly;
+      flex-direction: row;
+      column-gap: 5%;
+      padding: 1em 5%;
     }
 
     .#{$prefix}-ui-recommendation-item {
-      $margin: 1em;
-      $item-scale: 1;
+      @include focusable;
 
+      position: relative;
+      $padding: .5em;
+      cursor: pointer;
+      color: $color-primary;
+      background-color: #222222;
       background-position: center;
       background-size: cover;
-      display: inline-block;
-      font-size: .7em;
-      height: (9em * $item-scale);
-      margin: .3em .6em;
-      overflow: hidden;
-      position: relative;
+      border: solid $color-primary 2px;
+      border-radius: .5rem;
+      box-shadow: 0 0 5px 0 transparentize($color: #000, $amount: .75);
+      aspect-ratio: 16 / 9;
+      width: 30%;
+      min-width: 10em;
       text-align: left;
-      text-shadow: 0 0 3px $color-background;
+      overflow: hidden;
+      flex-shrink: 0;
       transform: scale(1);
-      transition: transform $animation-duration-short ease-out;
-      width: (16em * $item-scale);
+      transition: transform $animation-duration-short ease-in;
+      // sass-lint:disable no-vendor-prefixes
+      -webkit-tap-highlight-color: transparent;
 
-      .#{$prefix}-background {
-        background: linear-gradient(to bottom, $color-transparent, $color-transparent, $color-background-bars);
-        height: 100%;
-        position: absolute;
-        top: 20%;
-        transition: top $animation-duration-short ease-out;
-        width: 100%;
-      }
+      .#{$prefix}-title-container {
+        @include layout-align-top;
+        left: 0;
+        height: 50%;
+        min-height: fit-content;
+        padding: $padding;
+        background: linear-gradient(to top, $color-transparent, $color-background-bars);
 
-      .#{$prefix}-title {
-        bottom: $margin + 2em;
-        left: $margin;
-        position: absolute;
-        right: $margin;
-
-        .#{$prefix}-innertitle {
-          font-size: 1.2em;
+        .#{$prefix}-title {
+          display: inline-block;
+          top: $padding;
+          left: $padding;
+          right: $padding;
           white-space: normal;
-          word-break: break-all;
+          max-height: $font-size * 2;
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
       }
 
       .#{$prefix}-duration {
-        bottom: $margin;
-        left: $margin;
         position: absolute;
+        bottom: $padding;
+        right: $padding;
+        background-color: $color-background-seekbar-label;
+        box-sizing: border-box;
+        padding: .3em .5em;
+        border-radius: $border-radius;
       }
 
       &:hover {
-        outline: 2px solid $color-highlight;
         transform: scale(1.05);
-        transition: transform $animation-duration-short ease-in;
-
-        .#{$prefix}-background {
-          top: 0;
-          transition: top $animation-duration-short ease-in;
-        }
       }
     }
   }

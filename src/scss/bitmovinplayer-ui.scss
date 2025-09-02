@@ -1,5 +1,6 @@
 @import 'variables';
 @import 'mixins';
+@import 'components/icon';
 @import 'components/buttons/subtitle-toggle-button';
 @import 'components/component';
 @import 'components/container';
@@ -23,7 +24,7 @@
 @import 'components/settings/settings-panel-page-back-button';
 @import 'components/settings/settings-toggle-button';
 @import 'components/settings/select-box';
-@import 'components/labels/seek-bar-label';
+@import 'components/seekbar/seek-bar-label';
 @import 'components/seekbar/volume-slider';
 @import 'components/overlays/subtitle-overlay';
 @import 'components/overlays/subtitle-overlay-cea608';
@@ -45,7 +46,8 @@
 @import 'components/buttons/picture-in-picture-toggle-button';
 @import 'components/spacer';
 @import 'components/settings/subtitlesettings/subtitle-settings';
-@import 'components/buttons/subtitle-settings-panel-toggle-button';
+@import 'components/buttons/subtitle-list-box-toggle-button';
+@import 'components/buttons/audio-track-list-box-toggle-button';
 @import 'components/overlays/touch-control-overlay';
 @import 'components/buttons/small-centered-playback-toggle-button';
 @import 'ads';
@@ -58,6 +60,8 @@
   color: $color-primary;
   font-family: $font-family;
   font-size: $font-size;
+  font-weight: $font-weight-medium;
+  line-height: 1;
   text-align: left;
   user-select: none;
 
@@ -70,8 +74,10 @@
   }
 
   &.#{$prefix}-player-state-finished {
+    .#{$prefix}-ui-titlebar,
     .#{$prefix}-ui-controlbar,
-    .#{$prefix}-ui-hugeplaybacktogglebutton {
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
       display: none;
     }
   }
@@ -80,22 +86,65 @@
     text-align: right;
   }
 
-  // sass-lint:disable force-element-nesting
+  &.#{$prefix}-controls-shown {
+    .#{$prefix}-ui-touch-control-overlay {
+      background-color: $color-background-dimmed;
+    }
+  }
+
   &.#{$prefix}-layout-max-width-400 {
+    .#{$prefix}-ui-volumeslider {
+      display: none;
+    }
+
+    .#{$prefix}-ui-recommendation-overlay {
+      .#{$prefix}-recommendations-section {
+        display: none;
+      }
+    }
+  }
+
+  // sass-lint:disable force-element-nesting
+  &.#{$prefix}-layout-max-width-400,
+  &.#{$prefix}-layout-max-width-600 {
     // Hide the description in ultra tiny players to not clog the UI too much
     .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {
       display: none;
     }
-  }
 
-  &.#{$prefix}-layout-max-width-400,
-  &.#{$prefix}-layout-max-width-600 {
-    .#{$prefix}-ui-hugeplaybacktogglebutton {
-      font-size: .7em;
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton,
+    .#{$prefix}-ui-watermark,
+    .#{$prefix}-ui-hugereplaybutton {
+      .#{$prefix}-ui-icon {
+        background-size: $icon-size-medium;
+      }
     }
 
     .#{$prefix}-ui-watermark {
-      font-size: .7em;
+      margin: 0;
+    }
+
+    .#{$prefix}-ui-cast-status-overlay {
+      background-size: $icon-size-large;
+      background-position: center 40%;
+      .#{$prefix}-ui-cast-status-label {
+        top: 55%;
+      }
+    }
+
+    .#{$prefix}-ui-settings-panel {
+      left: max(1em, env(safe-area-inset-left, 0));
+      right: max(1em, env(safe-area-inset-right, 0));
+      margin-top: 2em;
+      max-height: calc(100% - 2em - 3.5em);
+      width: unset;
+    }
+  }
+
+  &.#{$prefix}-layout-max-width-800 {
+    .#{$prefix}-ui-settings-panel {
+      width: 50%;
     }
   }
 }

@@ -6,8 +6,8 @@
   @include layout-align-bottom;
 
   box-sizing: border-box;
-  line-height: 1em;
   padding: 1em 1em .5em;
+  bottom: 5em;
 
   .#{$prefix}-bar {
     > .#{$prefix}-container-wrapper {
@@ -15,12 +15,6 @@
       display: flex;
       margin: .5em 0;
     }
-  }
-
-  // Move the overlay up above the controlbar when it appears to avoid them overlapping
-  &.#{$prefix}-controlbar-visible {
-    bottom: 5em;
-    transition: bottom $animation-duration-short ease-in;
   }
 }
 

@@ -3,8 +3,15 @@
 .#{$prefix}-ui-settings-panel-navigation-text-button {
   @extend %ui-button;
 
-  font-weight: 500;
-  padding-top: 0;
+  padding: 0;
+  justify-content: flex-end;
+
+  &.touched {
+    transform: unset;
+    .#{$prefix}-label {
+      color: darken($color-primary, 30%);
+    }
+  }
 
   .#{$prefix}-label {
     display: inline-block;

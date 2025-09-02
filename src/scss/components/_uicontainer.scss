@@ -6,7 +6,6 @@
 
   @include layout-cover;
 
-  font-size: 1em;
   overflow: hidden;
   pointer-events: none; // Do not catch pointer events, pass them through
 
@@ -33,7 +32,7 @@
   &.#{$prefix}-controls-shown {
     .#{$prefix}-ui-hugeplaybacktogglebutton {
       &:focus {
-        box-shadow: inset -4px -3px 2px 9px $color-focus;
+        box-shadow: inset -4px -3px 10px 10px transparentize($color-highlight, .4);
 
         &:not(.#{$prefix}-focus-visible) {
           box-shadow: none;

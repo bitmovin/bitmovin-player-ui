@@ -275,7 +275,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     uimanager.onControlsHide.subscribe(() => {
       // Keep seekbar always active during the playback of a linear ad
-      const isAdPlaying = player.ads.isLinearAdActive();
+      const isAdPlaying = player.ads?.isLinearAdActive() ?? false;
       if (isAdPlaying) {
         return;
       }
@@ -790,6 +790,10 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       this.setSeeking(false);
       seeking = false;
+
+      // Update the UI in case we only have a click or touch
+      this.setSeekPosition(targetPercentage);
+      this.setPlaybackPosition(targetPercentage);
 
       // Fire seeked event
       this.onSeekedEvent(targetPercentage);
