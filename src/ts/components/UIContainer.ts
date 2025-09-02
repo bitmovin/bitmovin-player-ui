@@ -99,13 +99,21 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   private configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
     let config = this.getConfig();
+    let isUiShown = false;
+
+    uimanager.onConfigured.subscribe(() => {
+      if (isUiShown) {
+        uimanager.onControlsShow.dispatch(this);
+      } else {
+        uimanager.onControlsHide.dispatch(this);
+      }
+    });
 
     if (config.hideDelay === -1) {
-      uimanager.onConfigured.subscribe(() => uimanager.onControlsShow.dispatch(this));
+      isUiShown = true;
       return;
     }
 
-    let isUiShown = false;
     let isSeeking = false;
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
