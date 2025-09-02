@@ -10,7 +10,7 @@ import { isFocusable } from './TypeGuards';
  */
 export class FocusableContainer {
   readonly container: AnyContainer;
-  readonly _primaryComponent: AnyComponent;
+  private readonly _primaryComponent: AnyComponent;
 
   /**
    * Creates a new FocusableContainer.
