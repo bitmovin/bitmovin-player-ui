@@ -462,10 +462,7 @@ export class UIManager {
     if (onShow) {
       onShow();
     }
-
-    // Switch to new UI variant
     this.currentUi.getUI().show();
-
     this.events.onActiveUiChanged.dispatch(this, { previousUi, currentUi: nextUi });
   }
 
