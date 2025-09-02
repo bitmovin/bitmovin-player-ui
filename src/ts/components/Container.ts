@@ -112,6 +112,10 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
 
   /**
    * Updates the DOM of the container with the current components.
+   *
+   * This is called automatically after construction. However, when you dynamically
+   * add or remove components at runtime, you must call `updateComponents()` to
+   * re-render the container’s children.
    */
   updateComponents(): void {
     /* We cannot just clear the container to remove all elements and then re-add those that should stay, because
