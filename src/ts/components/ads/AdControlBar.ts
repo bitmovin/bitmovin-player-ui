@@ -84,10 +84,6 @@ export class AdControlBar extends ControlBar {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    player.on(player.exports.PlayerEvent.AdStarted, () => {
-      this.show();
-    });
-
     uimanager.onControlsShow.subscribe(() => {
       this.show();
     });
