@@ -185,7 +185,7 @@ describe('NavigationGroup', () => {
       rootNavigationGroup.release();
 
       expect(eventSubscribeReleaseSpy).toHaveBeenCalled();
-      expect(rootNavigationGroup['components']).toHaveLength(0);
+      expect(rootNavigationGroup['_components']).toHaveLength(0);
       expect(rootNavigationGroup['activeComponent']).toBeUndefined();
     });
   });

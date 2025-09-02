@@ -23,6 +23,12 @@
     }
   }
 
+  &:not(.#{$prefix}-recommendations) {
+    .#{$prefix}-recommendations-section {
+      display: none;
+    }
+  }
+
   .#{$prefix}-recommendations-section {
     max-width: 100%;
     width: 100%;
@@ -91,7 +97,8 @@
         border-radius: $border-radius;
       }
 
-      &:hover {
+      &:hover,
+      &:focus {
         transform: scale(1.05);
       }
     }

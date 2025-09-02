@@ -173,4 +173,3 @@ export function getBoundingRectFromElement(element: HTMLElement) {
 
   return boundingRect;
 }
-

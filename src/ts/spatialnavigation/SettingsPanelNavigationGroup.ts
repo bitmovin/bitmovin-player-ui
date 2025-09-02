@@ -43,7 +43,7 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
 
   // Dynamically resolve all components from the SettingsPanels active page. The SettingsPanel is crated dynamically and
   // during navigating between pages. To keep the navigation working, we need to resolve all components lazy.
-  protected get components(): Focusable[] {
+  override getComponents(): Focusable[] {
     const activeSettingsPanelPage = this.settingsPanel.getActivePage();
     const pageComponents = activeSettingsPanelPage.getItems();
 
