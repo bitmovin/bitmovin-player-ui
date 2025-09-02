@@ -466,16 +466,6 @@ export class UIManager {
     // Switch to new UI variant
     this.currentUi.getUI().show();
 
-    // Trigger synthetic 'mousemove' to ensure UI show/hide logic is initialized.
-    // In UIContainer, we detect user activity with mouse events (e.g. `mousemove`)
-    // and start the auto-hide logic accordingly. However, when switching UI,
-    // the mouse can already be inside the player, so no natural `mousemove` event fires. 
-    const adUiContainer = this.currentUi.getUI();
-    const htmlElement = adUiContainer.getDomElement().get(0);
-    if (htmlElement) {
-      htmlElement.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
-    }
-
     this.events.onActiveUiChanged.dispatch(this, { previousUi, currentUi: nextUi });
   }
 
