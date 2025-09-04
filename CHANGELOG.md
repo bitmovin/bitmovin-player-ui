@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - Change the default font size by overriding the `$font-size` SCSS variable in `_variables.scss`. All other sizes are calculated based on this variable to ensure a consistent sizing across the entire UI.
 - Icon design system to have a modern and consistent look and feel
   - Icon size to `24x24px`
-    - Change the default font size by overriding the `$icon-size` SCSS variable in `_variables.scss`
+    - Change the default icon size by overriding the `$icon-size` SCSS variable in `_variables.scss`
 - Updated `RecommendationOverlay` design and API
   - Reworked recommendation overlay design allowing displaying unlimited recommendations in a scrollable list
   - Updated the recommendation overlay API to provide more flexibility
