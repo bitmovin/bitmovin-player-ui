@@ -63,12 +63,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
         // Can be part of the SourceConfig or UIConfig  
         recommendations: [{
           title: 'Recommendation 2: The second best video',
-          resource: { 
-            resource: {
-             dash: 'YOUR_DASH_MANIFEST',
-             // .. additional SourceConfig properties
-             poster: 'YOUR_POSTER_URL',
-           },
+          resource: {
+            dash: 'YOUR_DASH_MANIFEST',
+            // .. additional SourceConfig properties
+            poster: 'YOUR_POSTER_URL',
           },
           duration: 64
         }]
