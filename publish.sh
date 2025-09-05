@@ -95,7 +95,7 @@ if [[ "${VERSION_NUMBER}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)-?([a-z]*) ]]; then
             ;;
     esac
 else
-    echo "INFO ${FULL_VERSION_NUMBER} is not a valid version to be published, skipping"
+    echo "INFO ${VERSION_NUMBER} is not a valid version to be published, skipping"
     exit 0
 fi
 
