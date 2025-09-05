@@ -4,6 +4,120 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- `Icon` component for generic icon rendering
+- Dedicated `Icon` component to `Button` to allow separate styling for icons, text and backgrounds
+  - `ButtonStyle` to have general button appearance customization
+    - `ButtonStyle.Icon` to have an icon-only button
+    - `ButtonStyle.Text` to have a text-only button
+    - `ButtonStyle.TextWithLeadingIcon` to have a button with icon on the left side of the text
+    - `ButtonStyle.TextWithTrailingIcon` to have a button with icon on the right side of the text
+- Dedicated `Icon` component to `Label` to allow separate styling for icons, text and backgrounds
+  - `LabelStyle` to have general label appearance customization
+    - `LabelStyle.Text` to have a regular text-only label
+    - `LabelStyle.TextWithLeadingIcon` to have a label with icon on the left side of the text
+    - `LabelStyle.TextWithTrailingIcon` to have a label with icon on the right side of the text
+- New touch interactions for touch input devices
+  - The UI node hides/shows on single tap anywhere on empty space
+  - Double-tap to skip forward/backward functionality
+- Out-of-the box safe-area support to put the UI controls into the view port without risking them being cut off by the shape of a non‑rectangular display
+- When navigating the UI either via the Keyboard or via Spatial Navigation, the `SettingsPanel` automatically focuses the first settings option
+- `UIConditionContext.isTv` to include the TV UI variant by default
+
+### Changed
+- Existing UI layouts and designs were updated to better fit modern Player UI experiences
+  - The TV UI layout got a complete rework and now provides a cleaner and more modern look and feel
+  - The design on TVs was updated to better feedback of the currently focused element and provides the same experience as on web browsers
+  - The Small Screen UI layout was updated to better distribute the UI elements and provide a more balanced layout
+  - The Ad UI was updated to take away less space on the screen
+    - The seek bar is now always visible during ad playback indicating the ad progress
+    - A new `AdCounterLabel` was added to indicate the current, and remaining, ad position within an ad break
+- Default font size to `18px`
+  - Change the default font size by overriding the `$font-size` SCSS variable in `_variables.scss`. All other sizes are calculated based on this variable to ensure a consistent sizing across the entire UI.
+- Icon design system to have a modern and consistent look and feel
+  - Icon size to `24x24px`
+    - Change the default icon size by overriding the `$icon-size` SCSS variable in `_variables.scss`
+- Updated `RecommendationOverlay` design and API
+  - Reworked recommendation overlay design allowing displaying unlimited recommendations in a scrollable list
+  - Updated the recommendation overlay API to provide more flexibility
+    - Added support for `ExternalRecommendationLink` to point to external websites
+      Example:
+      ```javascript
+      {
+        // Can be part of the SourceConfig or UIConfig
+        recommendations: [{
+          title: 'Recommendation 2: The second best video',
+          resource: { 
+            url: 'http://bitmovin.com', thumbnail: 'https://placehold.co/300x300/222/222'
+          },
+          duration: 64
+        }]
+      }
+      ```
+    - Added support for `SourceConfig` to directly load new content in the current player instance
+      Example:
+      ```javascript
+      {
+        // Can be part of the SourceConfig or UIConfig  
+        recommendations: [{
+          title: 'Recommendation 2: The second best video',
+          resource: {
+            dash: 'YOUR_DASH_MANIFEST',
+            // .. additional SourceConfig properties
+            poster: 'YOUR_POSTER_URL',
+          },
+          duration: 64
+        }]
+      }
+      ```
+- Updated `SettingsPanel` design for better navigation and extend functionality
+  - The settings panel, per default, no longer uses system provided select boxes but custom design selection items. 
+    To enable this, we added:
+    - `InteractiveSettingsPanelItem` which acts as a selection option within the `SettingsPanel`
+    - `DynamicSettingsPanelItem` which allows dynamically navigating within the `SettingsPanel` to a new `SettingsPanelPage` without the need to predefine the page and its content
+  - The previously used `SelectBox` components are still available and can be used by directly using them in combination with a `SettingsPanelItem` instead of the new `DynamicSettingsPanelItem` or `InteractiveSettingsPanelItem`
+  - Added `SettingsPanelNavigationGroup` for spatial navigation support
+- A `ListBox` now extends from `SettingsPanel` to inherit all the new features and design improvements from the `SettingsPanel`
+- The Bitmovin Watermark is no longer visible by default
+  - If you want to include your own watermark, you can replace the `logo.svg` file in the `src/assets` folder and enable the watermark in your `UIConfig` by setting `includeWatermark: true`
+- Improved spatial navigation
+  - Added `FocusableContainer` for grouping elements together to an either vertical or horizontal section
+    - Navigating will prioritize elements within the same `FocusableContainer`
+    - `FocusableContainer` can specify a priority element, which gets focused first when navigating into the container
+  - Increased cutoff angle from 45° to 89° for improved out-of-the-box support for more layouts
+  - Elements directly in the navigation direction are prioritized over diagonal elements even if they are closer
+  - The `RecommendationOverlay` and the `SettingsPanel` now support spatial navigation
+- Color Scheme Update
+  - The UI now uses white elements as the accent color instead of our Bitmovin blue
+  - To change the accent color, modify the `$color-highlight` variable in `_variables.scss`
+- The UI Controls now immediately hide on mouse leave on web browsers by default
+- Updated buffering indicator with updated design, animation and color
+- The Small Screen UI is now used on web browsers when the document width is less than `800px`
+- Folder Structure rework
+  - The entire codebase has been reorganized from a flat structure to a hierarchical folder structure
+  - Components are now grouped into folders based on their functionality or grouped by bigger features
+- File Naming changes
+  - All TypeScript files now use PascalCase instead of all lowercased
+  - All SCSS files now use kebab-case instead of all lowercased
+    - This includes the css-classes used as well
+
+### Removed
+- The terms `modern`, `skin` and `default` across the codebase
+  - Our UI is now simply referred as the UI and not as `modernUI` or `defaultUI` anymore
+  - The `UIFactory` still provides all the same builder methods, but without the `modern` or `default` prefix anymore
+  - Affected APIs:
+    - `UIFactory.buildModernUI`, `UIFactory.buildDefaultUI` -> `UIFactory.buildUI`
+    - `UIFactory.buildModernSmallScreenUI`, `UIFactory.buildDefaultSmallScreenUI` -> `UIFactory.buildSmallScreenUI`
+    - `UIFactory.buildModernTvUI`, `UIFactory.buildDefaultTvUI` -> `UIFactory.buildTvUI`
+    - `UIFactory.buildModernCastReceiverUI`, `UIFactory.buildDefaultCastReceiverUI` -> `UIFactory.buildCastReceiverUI`
+  - Affected CSS classes:
+    - `ui-skin-ads` -> `ui-ads`
+    - `ui-skin-smallscreen` -> `ui-smallscreen`
+    - `ui-skin-cast-receiver` -> `ui-cast-receiver`
+    - `ui-skin-tv` -> `ui-tv`
+
 ## [3.102.0] - 2025-08-14
 
 ### Changed
