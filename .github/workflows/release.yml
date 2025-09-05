@@ -1,50 +1,224 @@
 name: Release
 
-on: 
-  push:
-    tags:
-      - '!player/'
-      - 'v*'
+on:
+  # For manually triggered workflows
+  workflow_dispatch:
+    inputs:
+      version_number:
+        description: "Version number of the release (no `-rc.`, `-b.`, `-a.` suffix)"
+        type: string
+        required: true
+      release_type:
+        description: Select the type of the release
+        type: choice
+        options:
+          - alpha
+          - beta
+          - rc
+          - final
+        required: true
+
+  # For being called by other workflows
+  workflow_call:
+    inputs:
+      version_number:
+        description: "Version number of the release (no `-rc.`, `-b.`, `-a.` suffix)"
+        type: string
+        required: true
+      release_type:
+        description: Select the type of the release
+        type: string
+        required: true
+      branch_name:
+        description: Branch from which the release should be built. Useful when another workflow calls this one.
+        type: string
+        required: true
+    secrets:
+      NPM_AUTH_TOKEN:
+        description: 'NPM authentication token for publishing'
+        required: true
+      GCS_CREDENTIALS:
+        description: 'Google Cloud Storage credentials for uploading docs'
+        required: true
+      RELEASE_SUCCESS_SLACK_WEBHOOK:
+        description: 'Slack webhook URL for success notifications'
+        required: true
+      RELEASE_FAILURE_SLACK_WEBHOOK:
+        description: 'Slack webhook URL for failure notifications'
+        required: true
 
 jobs:
-  test_and_build:
+  version_bump:
+    name: Version Bump
+    runs-on: ubuntu-latest
+    outputs:
+      major_version: ${{ steps.version_number.outputs.major_version }}
+      version_number: ${{ steps.version_number.outputs.version_number }}
+      tag_name: ${{ steps.version_number.outputs.tag_name }}
+    steps:
+      - name: Get release type short name
+        id: short_name
+        if: inputs.release_type != 'final'
+        run: |
+          case "${{ inputs.release_type }}" in
+            "alpha")
+              short_name="a"
+              ;;
+            "beta")
+              short_name="b"
+              ;;
+            "rc")
+              short_name="rc"
+              ;;
+            *)
+              echo "Invalid release type"
+              exit 1
+              ;;
+          esac
+          
+          echo "short_name=$short_name" >> $GITHUB_OUTPUT
+          echo "Short name for ${{ inputs.release_type }}: $short_name"
+
+      - name: Get latest pre-release tag
+        id: latest_tag
+        if: inputs.release_type != 'final'
+        run: |
+          latest_tag=$(git tag --list "${{ inputs.version_number }}-${{ steps.short_name.outputs.short_name }}.*" | sort -V -r | head -n1 || echo "")
+          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+          echo "Found latest tag: $latest_tag"
+
+      - name: Calculate version number
+        uses: actions/github-script@v6
+        id: version_number
+        with:
+          script: |
+            const semver = require('semver');
+            const inputVersionNumber = '${{ inputs.version_number }}';
+            const releaseType = '${{ inputs.release_type }}';
+            const shortName = '${{ steps.short_name.outputs.short_name }}';
+            const latestTag = '${{ steps.latest_tag.outputs.latest_tag }}';
+            
+            const isValid = semver.valid(inputVersionNumber);
+            if (!isValid) {
+              core.setFailed(`Invalid version number: ${inputVersionNumber}`);
+              return;
+            }
+            
+            let fullVersion;
+            if (releaseType === 'final') {
+              fullVersion = inputVersionNumber;
+            } else {
+              let nextNumber = 1;
+              if (latestTag) {
+                const match = latestTag.match(new RegExp(`${inputVersionNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}-${shortName}\\.(\\d+)$`));
+                if (match) {
+                  nextNumber = parseInt(match[1]) + 1;
+                }
+              }
+              
+              fullVersion = `${inputVersionNumber}-${shortName}.${nextNumber}`;
+              core.info(`Latest tag: ${latestTag || 'none'}, next number: ${nextNumber}`);
+            }
+            
+            const isFullVersionValid = semver.valid(fullVersion);
+            if (!isFullVersionValid) {
+              core.setFailed(`Generated invalid version: ${fullVersion}`);
+              return;
+            }
+            
+            const majorVersion = semver.major(fullVersion);
+            const tagName = `v${fullVersion}`;
+            
+            core.info(`Input version: ${inputVersionNumber}`);
+            core.info(`Release type: ${releaseType}`);
+            core.info(`Full version: ${fullVersion}`);
+            core.info(`Major version: ${majorVersion}`);
+            core.info(`Tag name: ${tagName}`);
+            
+            core.setOutput('version_number', fullVersion);
+            core.setOutput('major_version', majorVersion);
+            core.setOutput('tag_name', tagName);
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch_name || github.ref }}
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
+
+      - name: Bump version in package.json
+        run: |
+          npm version "${{ steps.version_number.outputs.version_number }}" --no-git-tag-version
+        shell: bash
+
+      - name: Update changelog
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const { updateChangeLog } = require('./.github/scripts/updateChangelog.js');
+            
+            const versionNumber = '${{ steps.version_number.outputs.version_number }}';
+            const releaseDate = new Date().toISOString().split('T')[0];
+            
+            core.info(`Updating changelog with version ${versionNumber} and date ${releaseDate}`);
+            
+            const changelogContent = fs.readFileSync('./CHANGELOG.md', { encoding: 'utf8', flag: 'r' });
+            const updatedChangelog = updateChangeLog(changelogContent, versionNumber, releaseDate);
+            
+            fs.writeFileSync('./CHANGELOG.md', updatedChangelog, 'utf-8');
+            core.info('Changelog updated successfully');
+
+      - name: Commit and tag the changes
+        run: |
+          git config --global user.name 'Automated Release'
+          git config --global user.email 'release-automation@bitmovin.com'
+          git add package.json CHANGELOG.md
+          git commit -m "Bump version to ${{ steps.version_number.outputs.version_number }}"
+          git tag "${{ steps.version_number.outputs.tag_name }}"
+          git push origin ${{ inputs.branch_name || github.ref_name }}
+          git push origin "${{ steps.version_number.outputs.tag_name }}"
+
+  test:
+    needs: version_bump
+    name: Test, Build and Lint
     uses: ./.github/workflows/ci.yml
 
-  download_and_publish:
-    needs: test_and_build
+  release:
+    needs: [test, version_bump]
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: develop
+          ref: ${{ needs.version_bump.outputs.tag_name }}
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
-      - name: Read package.json version
-        uses: actions/github-script@v6
-        id: extract-version
-        with:
-          script: |
-            const { version } = require('./package.json')
-            core.setOutput('packageJsonVersion', version)
-
-      - uses: actions/download-artifact@v4
-        with:
-          path: .
-
-      - name: Unpackage artifact files
-        run: tar -xzvf artifact/artifact.tar.gz -C .
+      - name: Build Release
+        run: npx gulp npm-prepare
         shell: bash
 
-      - name: Publish
-        run: ./publish.sh
+      - name: Publish to NPM
+        run: ./publish.sh --version "${{ needs.version_bump.outputs.version_number }}"
         shell: bash
         env:
           NPM_DRY_RUN: false
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+  upload_docs:
+    needs: [test, version_bump, release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.version_bump.outputs.tag_name }}
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
       - name: Build documentation
         run: npx typedoc
@@ -59,21 +233,30 @@ jobs:
         uses: 'google-github-actions/upload-cloud-storage@v2'
         with:
           path: './docs/'
-          destination: "${{ secrets.GCS_BUCKET }}/player/ui/${{ steps.extract-version.outputs.packageJsonVersion }}"
+          destination: "${{ secrets.GCS_BUCKET }}/player/ui/${{ needs.version_bump.outputs.version_number }}"
 
       - name: Upload docs for major version
         uses: 'google-github-actions/upload-cloud-storage@v2'
         with:
           path: './docs/'
-          destination: "${{ secrets.GCS_BUCKET }}/player/ui/3"
+          destination: "${{ secrets.GCS_BUCKET }}/player/ui/${{ needs.version_bump.outputs.major_version }}"
+
+  notify_success:
+    needs: [test, version_bump, release, upload_docs]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.version_bump.outputs.tag_name }}
 
       - name: Notify team
         run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
 
   handle_failure:
     runs-on: ubuntu-latest
-    needs: [test_and_build, download_and_publish]
-    if: ${{ always() && (needs.download_and_publish.result == 'failure' || needs.test_and_build.result == 'failure') }}
+    needs: [test, version_bump, release, upload_docs, notify_success]
+    if: ${{ always() && (needs.test.result == 'failure' || needs.version_bump.result == 'failure' || needs.release.result == 'failure' || needs.upload_docs.result == 'failure' || needs.notify_success.result == 'failure') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
