@@ -56,8 +56,15 @@ jobs:
       version_number: ${{ steps.version_number.outputs.version_number }}
       tag_name: ${{ steps.version_number.outputs.tag_name }}
     steps:
-      - name: Get release type short name
-        id: short_name
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch_name || github.ref }}
+          # Fetch existing tags because we need to create a new one
+          # fetch-tags: true # do not use, currently broken: https://github.com/actions/checkout/issues/1781
+          fetch-depth: 0 # remove this line when `fetch-tags: true` is fixed
+
+      - name: Get latest pre-release tag
+        id: latest_tag
         if: inputs.release_type != 'final'
         run: |
           case "${{ inputs.release_type }}" in
@@ -76,68 +83,29 @@ jobs:
               ;;
           esac
           
-          echo "short_name=$short_name" >> $GITHUB_OUTPUT
-          echo "Short name for ${{ inputs.release_type }}: $short_name"
-
-      - name: Get latest pre-release tag
-        id: latest_tag
-        if: inputs.release_type != 'final'
-        run: |
-          latest_tag=$(git tag --list "${{ inputs.version_number }}-${{ steps.short_name.outputs.short_name }}.*" | sort -V -r | head -n1 || echo "")
+          latest_tag=$(git tag --list "${{ inputs.version_number }}-$short_name.*" | sort -V -r | head -n1 || echo "")
           echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
-          echo "Found latest tag: $latest_tag"
 
       - name: Calculate version number
         uses: actions/github-script@v6
         id: version_number
         with:
           script: |
-            const semver = require('semver');
+            const { calculateVersionNumber } = require('./.github/scripts/calculateVersionNumber.js');
+            
             const inputVersionNumber = '${{ inputs.version_number }}';
             const releaseType = '${{ inputs.release_type }}';
-            const shortName = '${{ steps.short_name.outputs.short_name }}';
             const latestTag = '${{ steps.latest_tag.outputs.latest_tag }}';
             
-            const isValid = semver.valid(inputVersionNumber);
-            if (!isValid) {
-              core.setFailed(`Invalid version number: ${inputVersionNumber}`);
-              return;
-            }
-            
-            let fullVersion;
-            if (releaseType === 'final') {
-              fullVersion = inputVersionNumber;
-            } else {
-              let nextNumber = 1;
-              if (latestTag) {
-                const match = latestTag.match(new RegExp(`${inputVersionNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}-${shortName}\\.(\\d+)$`));
-                if (match) {
-                  nextNumber = parseInt(match[1]) + 1;
-                }
-              }
+            try {
+              const result = calculateVersionNumber(core, inputVersionNumber, releaseType, latestTag);
               
-              fullVersion = `${inputVersionNumber}-${shortName}.${nextNumber}`;
-              core.info(`Latest tag: ${latestTag || 'none'}, next number: ${nextNumber}`);
+              core.setOutput('version_number', result.version_number);
+              core.setOutput('major_version', result.major_version);
+              core.setOutput('tag_name', result.tag_name);
+            } catch (error) {
+              core.setFailed(error.message);
             }
-            
-            const isFullVersionValid = semver.valid(fullVersion);
-            if (!isFullVersionValid) {
-              core.setFailed(`Generated invalid version: ${fullVersion}`);
-              return;
-            }
-            
-            const majorVersion = semver.major(fullVersion);
-            const tagName = `v${fullVersion}`;
-            
-            core.info(`Input version: ${inputVersionNumber}`);
-            core.info(`Release type: ${releaseType}`);
-            core.info(`Full version: ${fullVersion}`);
-            core.info(`Major version: ${majorVersion}`);
-            core.info(`Tag name: ${tagName}`);
-            
-            core.setOutput('version_number', fullVersion);
-            core.setOutput('major_version', majorVersion);
-            core.setOutput('tag_name', tagName);
 
       - name: Checkout
         uses: actions/checkout@v4
