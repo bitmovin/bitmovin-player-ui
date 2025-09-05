@@ -42,6 +42,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private cea608Enabled = false;
   private cea608FontSizeFactor = 1;
   private ensureCea608GridSizeUpdated: () => void;
+  private updateDynamicFontSize: () => void;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -298,6 +299,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // ensure CEA grid is updated whenever the overlay becomes visible
       if (this.cea608Enabled) {
         this.ensureCea608GridSizeUpdated();
+      } else {
+        this.updateDynamicFontSize();
       }
     });
 
@@ -413,9 +416,35 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     };
 
+    this.updateDynamicFontSize = () => {
+      if (this.cea608Enabled) {
+        return;
+      }
+
+      const overlayElement = this.getDomElement();
+      const overlayWidth = overlayElement.width();
+      
+      if (overlayWidth <= 0) {
+        return;
+      }
+
+      const baseWidth = 1280;
+      const minScaleFactor = 0.3;
+      const maxScaleFactor = 1.8;
+      
+      let scaleFactor = overlayWidth / baseWidth;
+      scaleFactor = Math.max(minScaleFactor, Math.min(maxScaleFactor, scaleFactor));
+      
+      overlayElement.get().forEach((el) => {
+        el.style.setProperty('--font-size-scaling-factor', scaleFactor.toString());
+      });
+    };
+
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
       if (this.cea608Enabled) {
         this.ensureCea608GridSizeUpdated();
+      } else {
+        this.updateDynamicFontSize();
       }
     });
 
