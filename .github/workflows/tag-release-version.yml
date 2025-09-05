@@ -31,9 +31,12 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  trigger-ui-release:
+  prepare-version:
+    name: Detect and build the version number for the release
     needs: verify-changelog
     if: ${{ needs.verify-changelog.outputs.HAS_CHANGELOG }}
+    outputs:
+      version_number: ${{ steps.define-release-version.outputs.version_number }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -77,16 +80,19 @@ jobs:
             const releaseLevel = '${{ steps.detect-release-level.outputs.release_level }}';
             const currentVersion = '${{ steps.define-package-json-version.outputs.packageJsonVersion }}';
             
-            return defineReleaseVersion({core}, releaseLevel, currentVersion);
+            const result = defineReleaseVersion({core}, releaseLevel, currentVersion);
+            core.setOutput('version_number', result.full);
 
-      - name: Trigger release
-        uses: ./.github/workflows/release.yml
-        with:
-          version_number: ${{ fromJson(steps.define-release-version.outputs.result).full }}
-          release_type: final
-          branch_name: develop
-        secrets:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-          GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
-          RELEASE_SUCCESS_SLACK_WEBHOOK: ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
-          RELEASE_FAILURE_SLACK_WEBHOOK: ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }}
+  release:
+    needs: [prepare-version]
+    name: Trigger release
+    uses: ./.github/workflows/release.yml
+    with:
+      version_number: ${{ needs.prepare-version.outputs.version_number }}
+      release_type: final
+      branch_name: develop
+    secrets:
+      NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
+      RELEASE_SUCCESS_SLACK_WEBHOOK: ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
+      RELEASE_FAILURE_SLACK_WEBHOOK: ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }}
