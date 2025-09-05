@@ -829,7 +829,7 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
 }
 
 function isCea608SubtitleCue(cue: SubtitleCueEvent): boolean {
-  return cue.position != null;
+  return false;
 }
 
 function awaitTransitionEnd(domElement: DOM) {
