@@ -23,6 +23,16 @@ show_usage() {
 EOF
 }
 
+show_error() {
+  cat <<EOF
+❌ Error: $1
+
+==================================
+
+$(show_usage)
+EOF
+}
+
 PACKAGE_NAME="bitmovin-player-ui"
 NPM_TAG=-1
 NPM_DRY_RUN=
