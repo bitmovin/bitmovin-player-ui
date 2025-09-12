@@ -1,5 +1,5 @@
 name: Release
-run-name: Release ${{ inputs.version_number }} ${{ inputs.release_type }}
+run-name: Release ${{ inputs.version_number }} ${{ inputs.release_type }}${{ inputs.dry_run && ' (dry run)' || '' }}
 
 on:
   # For manually triggered workflows
