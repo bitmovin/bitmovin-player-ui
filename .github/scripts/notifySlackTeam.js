@@ -33,19 +33,69 @@ function parseChangelogEntry(fileContent) {
 }
 
 function sendSlackMessage(releaseVersion, changelogContent) {
-  let message;
+  let blocks;
   let slackChannelId;
   if (jobStatus === 'success') {
     slackChannelId = successSlackChannelId
-    message = `Changelog v${releaseVersion}\n${changelogContent}`
+    blocks = [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": `Player UI release bot`
+        }
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": `Changelog *v${releaseVersion}*`
+        }
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": changelogContent
+        }
+      },
+      {
+        "type": "section",
+        "fields": [
+          {
+            "type": "mrkdwn",
+            "text": `*Version*\n*v${releaseVersion}*`
+          },
+          {
+            "type": "mrkdwn", 
+            "text": `*Channel*\n${releaseVersion.includes('-') ? 'pre-release' : 'release'}`
+          }
+        ]
+      }
+    ]
   } else {
     slackChannelId = failureSlackChannelId
-    message = `Release v${releaseVersion} failed.\nPlease check https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}`
+    blocks = [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": `Player UI release bot`
+        }
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": `Release *v${releaseVersion}* failed.\nPlease check the <https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}|failed run>`
+        }
+      }
+    ]
   }
 
   const sampleData = JSON.stringify({
     "channel": slackChannelId,
-    "message": message
+    "blocks": blocks
   });
   const options = {
     method: 'POST',
