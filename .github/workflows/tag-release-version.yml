@@ -42,9 +42,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
-          ref: develop
 
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
