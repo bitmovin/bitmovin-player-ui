@@ -8,6 +8,10 @@ on:
       - develop
       - support/*
 
+concurrency:
+  group: continuous-deployment-${{ github.event.pull_request.base.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify-changelog:
     name: Verify that CHANGELOG.md has been updated

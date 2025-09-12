@@ -53,6 +53,10 @@ on:
         description: 'Slack webhook URL for notifications'
         required: true
 
+concurrency:
+  group: release-${{ inputs.version_number }}-${{ inputs.release_type }}
+  cancel-in-progress: true
+
 jobs:
   version_bump:
     name: Version Bump
