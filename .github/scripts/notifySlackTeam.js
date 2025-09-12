@@ -33,70 +33,55 @@ function parseChangelogEntry(fileContent) {
 }
 
 function sendSlackMessage(releaseVersion, changelogContent) {
-  let blocks;
-  let slackChannelId;
+  const slackChannelId = jobStatus === 'success' ? successSlackChannelId : failureSlackChannelId;
+  
+  const generalPayload = {
+    channel: slackChannelId,
+    username: 'Player UI release bot'
+  };
+
+  let payload;
   if (jobStatus === 'success') {
-    slackChannelId = successSlackChannelId
-    blocks = [
-      {
-        "type": "header",
-        "text": {
-          "type": "plain_text",
-          "text": `Player UI release bot`
-        }
-      },
-      {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `Changelog *v${releaseVersion}*`
-        }
-      },
-      {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": changelogContent
-        }
-      },
-      {
-        "type": "section",
-        "fields": [
-          {
-            "type": "mrkdwn",
-            "text": `*Version*\n*v${releaseVersion}*`
-          },
-          {
-            "type": "mrkdwn", 
-            "text": `*Channel*\n${releaseVersion.includes('-') ? 'pre-release' : 'release'}`
-          }
-        ]
-      }
-    ]
+    payload = {
+      ...generalPayload,
+      text: `New Bitmovin Player UI version is released!`,
+      attachments: [
+        {
+          title: `CHANGELOG v${releaseVersion}`,
+          color: '#0e7aff',
+          fallback: 'Changelog of the newest release should be displayed here',
+          text: changelogContent,
+          fields: [
+            {
+              title: 'Version',
+              value: `v${releaseVersion}`,
+              short: true,
+            },
+            {
+              title: 'Channel',
+              value: releaseVersion.includes('-') ? 'pre-release' : 'release',
+              short: true,
+            },
+          ],
+        },
+      ],
+    }
   } else {
-    slackChannelId = failureSlackChannelId
-    blocks = [
-      {
-        "type": "header",
-        "text": {
-          "type": "plain_text",
-          "text": `Player UI release bot`
-        }
-      },
-      {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `Release *v${releaseVersion}* failed.\nPlease check the <https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}|failed run>`
-        }
-      }
-    ]
+    payload = {
+      ...generalPayload,
+      text: `Release v${releaseVersion} failed.`,
+      attachments: [
+        {
+          title: `Release Failure`,
+          color: '#ff0000',
+          fallback: 'Release failed',
+          text: `Please check the <https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}|failed run>`,
+        },
+      ],
+    }
   }
 
-  const sampleData = JSON.stringify({
-    "channel": slackChannelId,
-    "blocks": blocks
-  });
+  const sampleData = JSON.stringify(payload);
   const options = {
     method: 'POST',
     headers: {
