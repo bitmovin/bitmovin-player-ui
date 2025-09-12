@@ -74,7 +74,7 @@ if [[ $NPM_DRY_RUN = true ]]; then
     echo "INFO performing a dry run"
 fi
 
-if [[ "${VERSION_NUMBER}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)-?([a-z]*) ]]; then
+if [[ "${VERSION_NUMBER}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)-?([a-z]*) ]]; then
     PRE_RELEASE_TAG=${BASH_REMATCH[4]}
     case ${PRE_RELEASE_TAG} in
         "a")
