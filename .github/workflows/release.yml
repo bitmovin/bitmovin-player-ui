@@ -187,7 +187,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.version_bump.outputs.tag_name }}
+          ref: ${{ inputs.dry_run == true && github.ref || needs.version_bump.outputs.tag_name }}
 
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
