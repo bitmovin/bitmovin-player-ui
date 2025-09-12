@@ -219,7 +219,7 @@ jobs:
           ref: ${{ needs.version_bump.outputs.tag_name }}
 
       - name: Notify team
-        run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
+        run: node .github/scripts/notifySlackTeam.js ${{ needs.version_bump.outputs.version_number }} 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
 
 #  handle_failure:
 #    name: Handle Failure
@@ -233,4 +233,4 @@ jobs:
 #          ref: ${{ needs.version_bump.outputs.tag_name }}
 #
 #      - name: Notify team
-#        run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
+#        run: node .github/scripts/notifySlackTeam.js ${{ needs.version_bump.outputs.version_number }} 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
