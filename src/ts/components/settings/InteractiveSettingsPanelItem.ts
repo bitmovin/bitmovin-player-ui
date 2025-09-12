@@ -14,6 +14,13 @@ export class InteractiveSettingsPanelItem<Config extends SettingsPanelItemConfig
     onClick: new EventDispatcher<InteractiveSettingsPanelItem<Config>, NoArgs>(),
   };
 
+  private touchState = {
+    startX: 0,
+    startY: 0,
+    moved: false,
+    touchId: null as number | null,
+  };
+
   constructor(config: Config) {
     super(config);
   }
@@ -27,7 +34,64 @@ export class InteractiveSettingsPanelItem<Config extends SettingsPanelItemConfig
       this.onClickEvent();
     };
 
-    this.getDomElement().on('click touchend', handleClickEvent);
+    const handleTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (touch) {
+        this.touchState.startX = touch.clientX;
+        this.touchState.startY = touch.clientY;
+        this.touchState.moved = false;
+        this.touchState.touchId = touch.identifier;
+      }
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (this.touchState.touchId === null) {
+        return;
+      }
+
+      // Handle touch events with movement detection.
+      // This allows us to differentiate between a tap and a swipe.
+      const MOVEMENT_THRESHOLD = 10;  // pixels
+      const touch = Array.from(event.touches).find(t => t.identifier === this.touchState.touchId);
+      if (touch) {
+        if (this.touchState.moved) {
+          return;
+        }
+
+        const deltaX = Math.abs(touch.clientX - this.touchState.startX);
+        const deltaY = Math.abs(touch.clientY - this.touchState.startY);
+        
+        if (deltaX > MOVEMENT_THRESHOLD || deltaY > MOVEMENT_THRESHOLD) {
+          this.touchState.moved = true;
+        }
+      }
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      if (this.touchState.touchId === null) {
+        return;
+      }
+
+      const touch = Array.from(event.changedTouches).find(t => t.identifier === this.touchState.touchId);
+      if (touch && !this.touchState.moved) {
+        // Only trigger click if the touch didn't move significantly (indicating a tap)
+        handleClickEvent(event);
+      }
+
+      this.touchState.touchId = null;
+      this.touchState.moved = false;
+    };
+
+    this.getDomElement().on('click', (event: MouseEvent) => {
+      // Only handle mouse clicks, not touch events
+      if (event.type === 'click' && event.detail > 0) {
+        handleClickEvent(event);
+      }
+    });
+
+    this.getDomElement().on('touchstart', handleTouchStart);
+    this.getDomElement().on('touchmove', handleTouchMove);
+    this.getDomElement().on('touchend', handleTouchEnd);
 
     // Listen to keyboard events and trigger the click event when a select key is detected
     const handleKeyDown = (event: KeyboardEvent) => {
