@@ -96,7 +96,7 @@ if [[ "${VERSION_NUMBER}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)-?([a-z]*) ]]; then
     esac
 else
     echo "INFO ${VERSION_NUMBER} is not a valid version to be published, skipping"
-    exit 0
+    exit 1
 fi
 
 echo "INFO npm tag set to ${NPM_TAG}"
@@ -121,7 +121,7 @@ set -e
 
 if [[ ${IS_PUBLISHED} ]]; then
     echo "WARNING ${VERSION_NUMBER} is already published, skipping."
-    exit 0
+    exit 1
 else
     echo "INFO ${VERSION_NUMBER} not published yet, publishing now"
 fi
