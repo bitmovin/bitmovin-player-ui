@@ -116,6 +116,7 @@ jobs:
         shell: bash
 
       - name: Update changelog
+        if: inputs.release_type == 'final'
         uses: actions/github-script@v6
         with:
           script: |
