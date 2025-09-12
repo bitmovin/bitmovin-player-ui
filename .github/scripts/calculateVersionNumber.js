@@ -36,7 +36,7 @@ function calculateVersionNumber(core, inputVersionNumber, releaseType, latestTag
     
     let nextNumber = 1;
     if (latestTag) {
-      const match = latestTag.match(new RegExp(`${inputVersionNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}-${shortName}\\.(\\d+)$`));
+      const match = latestTag.match(new RegExp(`^v${inputVersionNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}-${shortName}\\.(\\d+)$`));
       if (match) {
         nextNumber = parseInt(match[1]) + 1;
       }

@@ -86,7 +86,7 @@ jobs:
               ;;
           esac
           
-          latest_tag=$(git tag --list "${{ inputs.version_number }}-$short_name.*" | sort -V -r | head -n1 || echo "")
+          latest_tag=$(git tag --list "v${{ inputs.version_number }}-$short_name.*" | sort -V -r | head -n1 || echo "")
           echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
 
       - name: Calculate version number

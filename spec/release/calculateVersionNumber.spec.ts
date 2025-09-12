@@ -30,12 +30,12 @@ describe('calculateVersionNumber', () => {
 
   describe('pre-release versions - alpha', () => {
     test.each`
-      inputVersion | latestTag              | expectedVersion
-      ${'1.0.0'}   | ${''}                  | ${'1.0.0-a.1'}
-      ${'1.0.0'}   | ${'1.0.0-a.1'}         | ${'1.0.0-a.2'}
-      ${'1.0.0'}   | ${'1.0.0-a.5'}         | ${'1.0.0-a.6'}
-      ${'2.5.3'}   | ${''}                  | ${'2.5.3-a.1'}
-      ${'2.5.3'}   | ${'2.5.3-a.10'}        | ${'2.5.3-a.11'}
+      inputVersion | latestTag               | expectedVersion
+      ${'1.0.0'}   | ${''}                   | ${'1.0.0-a.1'}
+      ${'1.0.0'}   | ${'v1.0.0-a.1'}         | ${'1.0.0-a.2'}
+      ${'1.0.0'}   | ${'v1.0.0-a.5'}         | ${'1.0.0-a.6'}
+      ${'2.5.3'}   | ${''}                   | ${'2.5.3-a.1'}
+      ${'2.5.3'}   | ${'v2.5.3-a.10'}        | ${'2.5.3-a.11'}
     `(
       'should return $expectedVersion for alpha release of $inputVersion with latest tag $latestTag',
       ({ inputVersion, latestTag, expectedVersion }) => {
@@ -50,12 +50,12 @@ describe('calculateVersionNumber', () => {
 
   describe('pre-release versions - beta', () => {
     test.each`
-      inputVersion | latestTag              | expectedVersion
-      ${'1.0.0'}   | ${''}                  | ${'1.0.0-b.1'}
-      ${'1.0.0'}   | ${'1.0.0-b.1'}         | ${'1.0.0-b.2'}
-      ${'1.0.0'}   | ${'1.0.0-b.3'}         | ${'1.0.0-b.4'}
-      ${'3.2.1'}   | ${''}                  | ${'3.2.1-b.1'}
-      ${'3.2.1'}   | ${'3.2.1-b.7'}         | ${'3.2.1-b.8'}
+      inputVersion | latestTag               | expectedVersion
+      ${'1.0.0'}   | ${''}                   | ${'1.0.0-b.1'}
+      ${'1.0.0'}   | ${'v1.0.0-b.1'}         | ${'1.0.0-b.2'}
+      ${'1.0.0'}   | ${'v1.0.0-b.3'}         | ${'1.0.0-b.4'}
+      ${'3.2.1'}   | ${''}                   | ${'3.2.1-b.1'}
+      ${'3.2.1'}   | ${'v3.2.1-b.7'}         | ${'3.2.1-b.8'}
     `(
       'should return $expectedVersion for beta release of $inputVersion with latest tag $latestTag',
       ({ inputVersion, latestTag, expectedVersion }) => {
@@ -70,12 +70,12 @@ describe('calculateVersionNumber', () => {
 
   describe('pre-release versions - rc', () => {
     test.each`
-      inputVersion | latestTag              | expectedVersion
-      ${'1.0.0'}   | ${''}                  | ${'1.0.0-rc.1'}
-      ${'1.0.0'}   | ${'1.0.0-rc.1'}        | ${'1.0.0-rc.2'}
-      ${'1.0.0'}   | ${'1.0.0-rc.15'}       | ${'1.0.0-rc.16'}
-      ${'4.1.2'}   | ${''}                  | ${'4.1.2-rc.1'}
-      ${'4.1.2'}   | ${'4.1.2-rc.3'}        | ${'4.1.2-rc.4'}
+      inputVersion | latestTag               | expectedVersion
+      ${'1.0.0'}   | ${''}                   | ${'1.0.0-rc.1'}
+      ${'1.0.0'}   | ${'v1.0.0-rc.1'}        | ${'1.0.0-rc.2'}
+      ${'1.0.0'}   | ${'v1.0.0-rc.15'}       | ${'1.0.0-rc.16'}
+      ${'4.1.2'}   | ${''}                   | ${'4.1.2-rc.1'}
+      ${'4.1.2'}   | ${'v4.1.2-rc.3'}        | ${'4.1.2-rc.4'}
     `(
       'should return $expectedVersion for rc release of $inputVersion with latest tag $latestTag',
       ({ inputVersion, latestTag, expectedVersion }) => {
