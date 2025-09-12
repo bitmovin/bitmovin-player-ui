@@ -224,7 +224,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: develop
+          ref: ${{ needs.version_bump.outputs.tag_name }}
 
       - name: Notify team
         run: node .github/scripts/notifySlackTeam.js 'failure' 'CHANGELOG.md' ${{ secrets.RELEASE_FAILURE_SLACK_WEBHOOK }} ${{ github.run_id }}
