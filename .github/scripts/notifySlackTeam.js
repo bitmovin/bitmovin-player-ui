@@ -34,10 +34,8 @@ function parseChangelogEntry(fileContent) {
 
 function sendSlackMessage(releaseVersion, changelogContent) {
   const slackChannelId = jobStatus === 'success' ? successSlackChannelId : failureSlackChannelId;
-  
   const generalPayload = {
-    channel: slackChannelId,
-    username: 'Player UI release bot'
+    channel: slackChannelId
   };
 
   let payload;
@@ -69,7 +67,7 @@ function sendSlackMessage(releaseVersion, changelogContent) {
   } else {
     payload = {
       ...generalPayload,
-      text: `Release v${releaseVersion} failed.`,
+      text: `<!subteam^S06RHTF937F> Release *v${releaseVersion}* failed.`,
       attachments: [
         {
           title: `Release Failure`,
