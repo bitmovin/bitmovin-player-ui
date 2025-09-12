@@ -14,7 +14,6 @@ export class InteractiveSettingsPanelItem<Config extends SettingsPanelItemConfig
     onClick: new EventDispatcher<InteractiveSettingsPanelItem<Config>, NoArgs>(),
   };
 
-
   constructor(config: Config) {
     super(config);
   }
@@ -27,7 +26,6 @@ export class InteractiveSettingsPanelItem<Config extends SettingsPanelItemConfig
       event.stopPropagation();
       this.onClickEvent();
     };
-
 
     this.getDomElement().on('click', handleClickEvent);
 
