@@ -69,7 +69,7 @@ if [ -z "$VERSION_NUMBER" ]; then
   exit 1
 fi
 
-if [[ $NPM_DRY_RUN = true ]]; then
+if [[ $NPM_DRY_RUN = 1 ]]; then
     NPM_DRY_RUN_CMD="--dry-run"
     echo "INFO performing a dry run"
 fi
@@ -156,7 +156,7 @@ if version_gt "$NPM_LATEST" "$VERSION_NUMBER"; then
     echo "INFO reverting '${NPM_TAG}' tag from the just published version ${VERSION_NUMBER} to the greater ${NPM_LATEST}"
     # It takes a while until the metadata after npm publish is updated so we need to wait to avoid a failed tag update
     # "npm WARN dist-tag add latest is already set to version ${VERSION_NUMBER}"
-    if [[ $NPM_DRY_RUN != true ]]; then
+    if [[ $NPM_DRY_RUN != 1 ]]; then
         sleep 10
         npm dist-tag add ${PACKAGE_NAME}@${NPM_LATEST} ${NPM_TAG}
     fi
