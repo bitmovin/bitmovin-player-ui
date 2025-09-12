@@ -12,7 +12,7 @@ show_usage() {
   This script publishes the UI to npm.js using the provided Version Number
 
   Options:
-    --version "SDK_VERSION"           The Version Number for the relase (required).
+    --version "SDK_VERSION"           The Version Number for the release (required).
     --dry-run                         Executes a dry run NPM publish without actually
                                       publishing the package.
 
