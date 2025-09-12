@@ -133,91 +133,91 @@ jobs:
             fs.writeFileSync('./CHANGELOG.md', updatedChangelog, 'utf-8');
             core.info('Changelog updated successfully');
 
-      - name: Commit and tag the changes
-        run: |
-          git config --global user.name 'Automated Release'
-          git config --global user.email 'release-automation@bitmovin.com'
-          git add package.json CHANGELOG.md
-          git commit -m "Bump version to ${{ steps.version_number.outputs.version_number }}"
-          git tag "${{ steps.version_number.outputs.tag_name }}"
-          git push origin ${{ inputs.branch_name || github.ref_name }}
-          git push origin "${{ steps.version_number.outputs.tag_name }}"
-
-  test:
-    needs: version_bump
-    name: Test, Build and Lint
-    uses: ./.github/workflows/ci.yml
-
-  release:
-    name: Publish Release
-    needs: [test, version_bump]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.version_bump.outputs.tag_name }}
-
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
-
-      - name: Build Release
-        run: npx gulp npm-prepare
-        shell: bash
-
-      - name: Publish to NPM
-        run: ./publish.sh --version "${{ needs.version_bump.outputs.version_number }}"
-        shell: bash
-        env:
-          NPM_DRY_RUN: false
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-
-  upload_docs:
-    name: Upload Documentation
-    needs: [test, version_bump, release]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.version_bump.outputs.tag_name }}
-
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
-
-      - name: Build documentation
-        run: npx typedoc
-        shell: bash
-
-      - name: Authenticate
-        uses: 'google-github-actions/auth@v2'
-        with:
-          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
-
-      - name: Upload docs
-        uses: 'google-github-actions/upload-cloud-storage@v2'
-        with:
-          path: './docs/'
-          destination: "${{ secrets.GCS_BUCKET }}/player/ui/${{ needs.version_bump.outputs.version_number }}"
-
-      - name: Upload docs for major version
-        uses: 'google-github-actions/upload-cloud-storage@v2'
-        with:
-          path: './docs/'
-          destination: "${{ secrets.GCS_BUCKET }}/player/ui/${{ needs.version_bump.outputs.major_version }}"
-
-  notify_success:
-    name: Notify Success
-    needs: [test, version_bump, release, upload_docs]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.version_bump.outputs.tag_name }}
-
-      - name: Notify team
-        run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
+#      - name: Commit and tag the changes
+#        run: |
+#          git config --global user.name 'Automated Release'
+#          git config --global user.email 'release-automation@bitmovin.com'
+#          git add package.json CHANGELOG.md
+#          git commit -m "Bump version to ${{ steps.version_number.outputs.version_number }}"
+#          git tag "${{ steps.version_number.outputs.tag_name }}"
+#          git push origin ${{ inputs.branch_name || github.ref_name }}
+#          git push origin "${{ steps.version_number.outputs.tag_name }}"
+#
+#  test:
+#    needs: version_bump
+#    name: Test, Build and Lint
+#    uses: ./.github/workflows/ci.yml
+#
+#  release:
+#    name: Publish Release
+#    needs: [test, version_bump]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ needs.version_bump.outputs.tag_name }}
+#
+#      - name: Setup dependencies
+#        uses: ./.github/actions/setup-dependencies
+#
+#      - name: Build Release
+#        run: npx gulp npm-prepare
+#        shell: bash
+#
+#      - name: Publish to NPM
+#        run: ./publish.sh --version "${{ needs.version_bump.outputs.version_number }}"
+#        shell: bash
+#        env:
+#          NPM_DRY_RUN: false
+#          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+#
+#  upload_docs:
+#    name: Upload Documentation
+#    needs: [test, version_bump, release]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ needs.version_bump.outputs.tag_name }}
+#
+#      - name: Setup dependencies
+#        uses: ./.github/actions/setup-dependencies
+#
+#      - name: Build documentation
+#        run: npx typedoc
+#        shell: bash
+#
+#      - name: Authenticate
+#        uses: 'google-github-actions/auth@v2'
+#        with:
+#          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+#
+#      - name: Upload docs
+#        uses: 'google-github-actions/upload-cloud-storage@v2'
+#        with:
+#          path: './docs/'
+#          destination: "${{ secrets.GCS_BUCKET }}/player/ui/${{ needs.version_bump.outputs.version_number }}"
+#
+#      - name: Upload docs for major version
+#        uses: 'google-github-actions/upload-cloud-storage@v2'
+#        with:
+#          path: './docs/'
+#          destination: "${{ secrets.GCS_BUCKET }}/player/ui/${{ needs.version_bump.outputs.major_version }}"
+#
+#  notify_success:
+#    name: Notify Success
+#    needs: [test, version_bump, release, upload_docs]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ needs.version_bump.outputs.tag_name }}
+#
+#      - name: Notify team
+#        run: node .github/scripts/notifySlackTeam.js 'success' 'CHANGELOG.md' ${{ secrets.RELEASE_SUCCESS_SLACK_WEBHOOK }}
 
 #  handle_failure:
 #    name: Handle Failure
