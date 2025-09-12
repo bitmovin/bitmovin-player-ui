@@ -63,6 +63,9 @@ jobs:
           # fetch-tags: true # do not use, currently broken: https://github.com/actions/checkout/issues/1781
           fetch-depth: 0 # remove this line when `fetch-tags: true` is fixed
 
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
+
       - name: Get latest pre-release tag
         id: latest_tag
         if: inputs.release_type != 'final'
@@ -106,9 +109,6 @@ jobs:
             } catch (error) {
               core.setFailed(error.message);
             }
-
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
 
       - name: Bump version in package.json
         run: |
