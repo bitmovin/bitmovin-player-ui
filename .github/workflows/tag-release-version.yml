@@ -90,7 +90,8 @@ jobs:
     with:
       version_number: ${{ needs.prepare-version.outputs.version_number }}
       release_type: final
-      branch_name: develop
+      branch_name: ${{ github.event.pull_request.base.ref }}
+      dry_run: true
     secrets:
       NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
