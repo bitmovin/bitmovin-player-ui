@@ -5,7 +5,7 @@ on:
     types:
       - closed
     branches:
-      - develop
+      - feature/prepare-release-automation-for-v4
 
 jobs:
   verify-changelog:
