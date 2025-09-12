@@ -9,6 +9,7 @@ on:
 
 jobs:
   verify-changelog:
+    name: Verify that CHANGELOG.md has been updated
     if: github.event.pull_request.merged == true
     outputs:
       HAS_CHANGELOG: ${{ steps.ensure-changelog.outputs.HAS_CHANGELOG }}
