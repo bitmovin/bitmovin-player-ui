@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version_number:
-        description: "Version number of the release (no `-rc.`, `-b.`, `-a.` suffix)"
+        description: "Version number of the release (no `v` prefix and no `-rc.`, `-b.`, `-a.` suffix)"
         type: string
         required: true
       release_type:
@@ -22,7 +22,7 @@ on:
   workflow_call:
     inputs:
       version_number:
-        description: "Version number of the release (no `-rc.`, `-b.`, `-a.` suffix)"
+        description: "Version number of the release (no `v` prefix and no `-rc.`, `-b.`, `-a.` suffix)"
         type: string
         required: true
       release_type:
