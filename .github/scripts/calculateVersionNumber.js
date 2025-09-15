@@ -19,31 +19,22 @@ function calculateVersionNumber(core, inputVersionNumber, releaseType, latestTag
   if (releaseType === 'final') {
     fullVersion = inputVersionNumber;
   } else {
-    let shortName;
-    switch (releaseType) {
-      case 'alpha':
-        shortName = 'a';
-        break;
-      case 'beta':
-        shortName = 'b';
-        break;
-      case 'rc':
-        shortName = 'rc';
-        break;
-      default:
-        throw new Error(`Invalid release type: ${releaseType}`);
+    // Use long prerelease identifiers directly (alpha, beta, rc)
+    const preReleaseTag = releaseType;
+    if (!['alpha', 'beta', 'rc'].includes(preReleaseTag)) {
+      throw new Error(`Invalid release type: ${releaseType}`);
     }
-    
+
     let nextNumber = 1;
     if (latestTag) {
-      const match = latestTag.match(new RegExp(`^v${inputVersionNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}-${shortName}\\.(\\d+)$`));
+      const match = latestTag.match(new RegExp(`^v${inputVersionNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}-${preReleaseTag}\\.(\\d+)$`));
       if (match) {
         nextNumber = parseInt(match[1]) + 1;
       }
     }
     
-    fullVersion = `${inputVersionNumber}-${shortName}.${nextNumber}`;
-    core.info(`Short name: ${shortName}, Latest tag: ${latestTag || 'none'}, next number: ${nextNumber}`);
+    fullVersion = `${inputVersionNumber}-${preReleaseTag}.${nextNumber}`;
+    core.info(`Pre-release tag: ${preReleaseTag}, Latest tag: ${latestTag || 'none'}, next number: ${nextNumber}`);
   }
   
   const isFullVersionValid = semver.valid(fullVersion);

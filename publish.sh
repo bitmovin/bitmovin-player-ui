@@ -20,6 +20,7 @@ show_usage() {
 
   Examples:
     $(basename "$0") --version "3.71.0"
+    $(basename "$0") --version "3.71.0-beta.3" --dry-run
 EOF
 }
 
@@ -74,13 +75,13 @@ if [[ $NPM_DRY_RUN = 1 ]]; then
     echo "INFO performing a dry run"
 fi
 
-if [[ "${VERSION_NUMBER}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)-?([a-z]*) ]]; then
-    PRE_RELEASE_TAG=${BASH_REMATCH[4]}
+if [[ "${VERSION_NUMBER}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)(-(alpha|beta|rc)\.([0-9]+))?$ ]]; then
+    PRE_RELEASE_TAG=${BASH_REMATCH[5]}
     case ${PRE_RELEASE_TAG} in
-        "a")
+        "alpha")
             NPM_TAG="alpha"
             ;;
-        "b")
+        "beta")
             NPM_TAG="beta"
             ;;
         "rc")

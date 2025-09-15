@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       version_number:
-        description: "Version number of the release (no `v` prefix and no `-rc.`, `-b.`, `-a.` suffix)"
+        description: "Version number of the release (no `v` prefix and no `-rc.`, `-beta.`, `-alpha.` suffix)"
         type: string
         required: true
       release_type:
@@ -27,7 +27,7 @@ on:
   workflow_call:
     inputs:
       version_number:
-        description: "Version number of the release (no `v` prefix and no `-rc.`, `-b.`, `-a.` suffix)"
+        description: "Version number of the release (no `v` prefix and no `-rc.`, `-beta.`, `-alpha.` suffix)"
         type: string
         required: true
       release_type:
@@ -80,23 +80,8 @@ jobs:
         id: latest_tag
         if: inputs.release_type != 'final'
         run: |
-          case "${{ inputs.release_type }}" in
-            "alpha")
-              short_name="a"
-              ;;
-            "beta")
-              short_name="b"
-              ;;
-            "rc")
-              short_name="rc"
-              ;;
-            *)
-              echo "Invalid release type"
-              exit 1
-              ;;
-          esac
-          
-          latest_tag=$(git tag --list "v${{ inputs.version_number }}-$short_name.*" | sort -V -r | head -n1 || echo "")
+          preReleaseTag="${{ inputs.release_type == 'final' && '' || inputs.release_type }}"
+          latest_tag=$(git tag --list "v${{ inputs.version_number }}-$preReleaseTag.*" | sort -V -r | head -n1 || echo "")
           echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
 
       - name: Calculate version number
