@@ -27,7 +27,7 @@ export class InteractiveSettingsPanelItem<Config extends SettingsPanelItemConfig
       this.onClickEvent();
     };
 
-    this.getDomElement().on('click touchend', handleClickEvent);
+    this.getDomElement().on('click', handleClickEvent);
 
     // Listen to keyboard events and trigger the click event when a select key is detected
     const handleKeyDown = (event: KeyboardEvent) => {
