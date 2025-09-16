@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Out-of-the box safe-area support to put the UI controls into the view port without risking them being cut off by the shape of a non‑rectangular display
 - When navigating the UI either via the Keyboard or via Spatial Navigation, the `SettingsPanel` automatically focuses the first settings option
 - `UIConditionContext.isTv` to include the TV UI variant by default
+- A dedicated UIVariant when no Source is loaded to avoid showing UI elements with undefined values
 
 ### Changed
 - Existing UI layouts and designs were updated to better fit modern Player UI experiences
