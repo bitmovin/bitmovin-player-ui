@@ -8,10 +8,11 @@ var postcss = require('gulp-postcss');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var gulpESLintNew = require('gulp-eslint-new');
-var sassLint = require('gulp-sass-lint');
 var ts = require('gulp-typescript');
 var replace = require('gulp-replace');
 var header = require('gulp-header');
+var prettier = require('gulp-prettier').default;
+var gulpStylelint = require('gulp-stylelint');
 
 // PostCSS plugins
 var postcssSVG = require('postcss-svg');
@@ -91,28 +92,84 @@ gulp.task('copy-json', function() {
 });
 
 // TypeScript linting
-gulp.task('lint-ts', function() {
-  return gulp.src(paths.source.ts)
+gulp.task('lint-ts', function () {
+  return gulp
+    .src(paths.source.ts)
     .pipe(gulpESLintNew())
-    .pipe(gulpESLintNew.format())           // Output lint results to the console.
+    .pipe(gulpESLintNew.format()) // Output lint results to the console.
+    .pipe(prettier.check()) // format with Prettier according to .prettierrc
     .pipe(gulpESLintNew.failAfterError());
 });
 
 // Sass/SCSS linting
-gulp.task('lint-sass', function() {
-  return gulp.src(paths.source.sass)
-  .pipe(sassLint({
-    rules: {
-      'no-css-comments': 0,
-      'property-sort-order': 0
-    }
-  }))
-  .pipe(sassLint.format())
-  .pipe(sassLint.failOnError())
+gulp.task('lint-sass', function () {
+  return (
+    gulp
+      .src(paths.source.sass)
+      // Enforce formatting via Prettier according to .prettierrc
+      .pipe(prettier.check())
+      // Rule-based linting via Stylelint
+      .pipe(
+        gulpStylelint({
+          failAfterError: true,
+          reporters: [{ formatter: 'string', console: true }],
+        }),
+      )
+  );
 });
 
 // Runs all linters
-gulp.task('lint', gulp.parallel('lint-ts', 'lint-sass'));
+gulp.task('lint', function (done) {
+  gulp.parallel(
+    'lint-ts',
+    'lint-sass',
+    'lint-other',
+  )(function () {
+    // Ignore errors and continue - all tasks will have run
+    done();
+  });
+});
+
+gulp.task('format-ts', function () {
+  return gulp
+    .src(paths.source.ts)
+    .pipe(gulpESLintNew({ fix: true }))
+    .pipe(prettier())
+    .pipe(gulp.dest(file => file.base))
+    .pipe(gulpESLintNew.format())
+    .pipe(gulpESLintNew.failAfterError());
+});
+
+gulp.task('format-sass', function () {
+  return gulp
+    .src(paths.source.sass)
+    .pipe(prettier())
+    .pipe(gulp.dest(file => file.base));
+});
+
+gulp.task('lint-other', function () {
+  return gulp
+    .src(['**/*.{json,html,md}', '!node_modules/**', '!dist/**'])
+    .pipe(prettier.check());
+});
+
+gulp.task('format-other', function () {
+  return gulp
+    .src(['**/*.{json,html,md}', '!node_modules/**', '!dist/**'])
+    .pipe(prettier())
+    .pipe(gulp.dest(file => file.base));
+});
+
+gulp.task('format', function (done) {
+  gulp.parallel(
+    'format-ts',
+    'format-sass',
+    'format-other',
+  )(function () {
+    // Ignore errors and continue
+    done();
+  });
+});
 
 // Copies html files to the target directory
 gulp.task('html', function() {

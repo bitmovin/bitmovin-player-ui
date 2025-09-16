@@ -24,16 +24,8 @@
     "Firefox ESR"
   ],
   "lint-staged": {
-    "!(*.spec.ts)": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.spec.ts": [
-      "prettier --write"
-    ],
-    "(*.json|*.js|*.mjs|*.html|*.md|*.scss)": [
-      "prettier --write"
-    ]
+    "*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.scss": "prettier --write"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -48,15 +40,20 @@
     "del": "^2.2.2",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.2.0",
+    "globals": "^16.3.0",
     "gulp": "^4.0.2",
     "gulp-css-base64": "^2.0.0",
     "gulp-eslint-new": "^2.4.0",
     "gulp-header": "^2.0.9",
     "gulp-postcss": "^9.0.1",
+    "gulp-prettier": "^6.0.0",
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.1.4",
     "gulp-sass": "^5.1.0",
-    "gulp-sass-lint": "^1.4.0",
+    "gulp-stylelint": "^13.0.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-typescript": "^5.0.1",
     "gulp-uglify": "^3.0.2",
@@ -66,15 +63,20 @@
     "lint-staged": "^15.3.0",
     "merge2": "^1.4.1",
     "postcss-svg": "^3.0.0",
+    "postcss-scss": "^4.0.9",
     "prettier": "^3.5.3",
     "sass": "^1.59.3",
     "semver": "^7.5.4",
     "stream-combiner2": "^1.1.1",
+    "stylelint": "^13.13.1",
+    "stylelint-config-standard": "^22.0.0",
+    "stylelint-config-standard-scss": "^1.1.0",
+    "stylelint-scss": "^3.21.0",
     "ts-jest": "^29.0.5",
     "tsify": "^5.0.4",
     "typedoc": "^0.26.5",
     "typescript": "^5.0.2",
-    "typescript-eslint": "^8.18.1",
+    "typescript-eslint": "^8.42.0",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^4.0.0",
