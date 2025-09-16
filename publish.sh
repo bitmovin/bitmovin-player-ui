@@ -1,55 +1,107 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 set -e
+set -o pipefail
+
+[ "$DEBUG" = 1 ] && set -x
+
+show_usage() {
+  cat <<EOF
+  Usage: $(basename "$0") --version "Version Number" [options]
+
+  This script publishes the UI to npm.js using the provided Version Number
+
+  Options:
+    --version "SDK_VERSION"           The Version Number for the release (required).
+    --dry-run                         Executes a dry run NPM publish without actually
+                                      publishing the package.
+
+    -h, --help                        Display this help message.
+
+  Examples:
+    $(basename "$0") --version "3.71.0"
+    $(basename "$0") --version "3.71.0-beta.3" --dry-run
+EOF
+}
+
+show_error() {
+  cat <<EOF
+❌ Error: $1
+
+==================================
+
+$(show_usage)
+EOF
+}
 
 PACKAGE_NAME="bitmovin-player-ui"
-CI_BRANCH=$GITHUB_REF_NAME # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-
-echo "INFO branch is set to ${CI_BRANCH}"
-
-CHANNEL=-1
 NPM_TAG=-1
-MAJOR=-1
-MINOR=-1
-POSTIFX=-1
-VERSION=-1
-
+NPM_DRY_RUN=
+VERSION_NUMBER=
 NPM_DRY_RUN_CMD=""
-if [[ $NPM_DRY_RUN = true ]]; then
+
+while test $# -gt 0; do
+    case "$1" in
+        --dry-run)
+            NPM_DRY_RUN=1
+            shift
+            ;;
+        --version)
+            if [[ -z "$2" || "$2" =~ ^- ]]; then
+                show_error "--version requires an argument!"
+                exit 1
+            fi
+            VERSION_NUMBER="$2"
+            shift 2
+            ;;
+        -h|--help)
+            show_usage
+            exit 0
+            ;;
+        *)
+            show_error "'$1' is not a recognized option!"
+            exit 1
+            ;;
+    esac
+done
+
+if [ -z "$VERSION_NUMBER" ]; then
+  show_error "Please provide a version number using --version."
+  exit 1
+fi
+
+if [[ $NPM_DRY_RUN = 1 ]]; then
     NPM_DRY_RUN_CMD="--dry-run"
     echo "INFO performing a dry run"
 fi
 
-if [[ "${CI_BRANCH}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)-?([a-z]*) ]]; then
-    MAJOR=${BASH_REMATCH[1]}
-    MINOR=${BASH_REMATCH[2]}
-    HOTFIX=${BASH_REMATCH[3]}
-    POSTFIX=${BASH_REMATCH[4]}
-    VERSION=${CI_BRANCH:1}
-    case ${POSTFIX} in
-        "b")
-            CHANNEL="beta"
+if [[ "${VERSION_NUMBER}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)(-(alpha|beta|rc)\.([0-9]+))?$ ]]; then
+    PRE_RELEASE_TAG=${BASH_REMATCH[5]}
+    case ${PRE_RELEASE_TAG} in
+        "alpha")
+            NPM_TAG="alpha"
+            ;;
+        "beta")
             NPM_TAG="beta"
             ;;
         "rc")
-            CHANNEL="staging"
             NPM_TAG="staging"
             ;;
         "")
-            CHANNEL="stable"
             NPM_TAG="latest"
             ;;
         *)
-            echo "ERROR postfix ${POSTFIX} not supported"
+            echo "ERROR postfix ${PRE_RELEASE_TAG} not supported"
             exit 1
             ;;
     esac
 else
-    echo "INFO ${CI_BRANCH} is not a valid version to be published, skipping"
-    exit 0
+    echo "INFO ${VERSION_NUMBER} is not a valid version to be published, skipping"
+    exit 1
 fi
 
 echo "INFO npm tag set to ${NPM_TAG}"
-if [[ ${NPM_TAG}  == -1 ]]; then
+if [[ ${NPM_TAG} == -1 ]]; then
     echo "ERROR npm tag ${NPM_TAG} not valid"
     exit 1
 fi
@@ -65,14 +117,14 @@ set +e
 # Check if this version was already published.
 # If something went wrong during a later build step and we re-run the release
 # after fixing the problem, the npm publish would fail the build.
-IS_PUBLISHED=$(npm view ${PACKAGE_NAME}@${VERSION} dist-tags)
+IS_PUBLISHED=$(npm view "${PACKAGE_NAME}@${VERSION_NUMBER}" dist-tags)
 set -e
 
 if [[ ${IS_PUBLISHED} ]]; then
-    echo "WARNING ${VERSION} is already published, skipping."
-    exit 0
+    echo "WARNING ${VERSION_NUMBER} is already published, skipping."
+    exit 1
 else
-    echo "INFO ${VERSION} not published yet, publishing now"
+    echo "INFO ${VERSION_NUMBER} not published yet, publishing now"
 fi
 
 echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
@@ -84,7 +136,7 @@ echo "INFO latest npm version is $NPM_LATEST"
 # We always publish the package with the channel/latest tag because there is no way to publish a package without
 # a tag (the default tag is always "latest"). If the published version is older that the currently tagged version,
 # we have to revert the tag afterwards to avoid version regressions.
-echo "INFO publishing ${VERSION} to npm with tag "${NPM_TAG}" (current tagged version is ${NPM_LATEST})"
+echo "INFO publishing ${VERSION_NUMBER} to npm with tag '${NPM_TAG}' (current tagged version is ${NPM_LATEST})"
 npm publish --tag ${NPM_TAG} ${NPM_DRY_RUN_CMD}
 
 # Checks if one version is greater than the other
@@ -98,14 +150,14 @@ npm publish --tag ${NPM_TAG} ${NPM_DRY_RUN_CMD}
 #    (as a workaround we could suffix "-zzzzz" to versions without a suffix)
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 
-if version_gt ${NPM_LATEST} ${VERSION}; then
+if version_gt "$NPM_LATEST" "$VERSION_NUMBER"; then
     # The version we just published is lower than the previously tagged version on npm, so we need to revert the
     # tag to the previous version to avoid version downgrades (this e.g. avoids that a 7.2.5 hotfix release overwrites
     # the latest-tagged 7.3.2)
-    echo "INFO reverting "${NPM_TAG}" tag from the just published version ${VERSION} to the greater ${NPM_LATEST}"
+    echo "INFO reverting '${NPM_TAG}' tag from the just published version ${VERSION_NUMBER} to the greater ${NPM_LATEST}"
     # It takes a while until the metadata after npm publish is updated so we need to wait to avoid a failed tag update
-    # "npm WARN dist-tag add latest is already set to version ${VERSION}"
-    if [[ $NPM_DRY_RUN != true ]]; then
+    # "npm WARN dist-tag add latest is already set to version ${VERSION_NUMBER}"
+    if [[ $NPM_DRY_RUN != 1 ]]; then
         sleep 10
         npm dist-tag add ${PACKAGE_NAME}@${NPM_LATEST} ${NPM_TAG}
     fi
