@@ -178,13 +178,13 @@ gulp.task('format-sass', function () {
 
 gulp.task('lint-other', function () {
   return gulp
-    .src(['**/*.{json,html,md}', '!node_modules/**', '!dist/**'])
+    .src(['**/*.{js,json,html,md}', '.github/**/*.{js,md,yml,yaml}', '!node_modules/**', '!dist/**'])
     .pipe(prettier.check());
 });
 
 gulp.task('format-other', function () {
   return gulp
-    .src(['**/*.{json,html,md}', '!node_modules/**', '!dist/**'])
+    .src(['**/*.{js,json,html,md}', '.github/**/*.{js,md,yml,yaml}', '!node_modules/**', '!dist/**'])
     .pipe(prettier())
     .pipe(gulp.dest(file => file.base));
 });
