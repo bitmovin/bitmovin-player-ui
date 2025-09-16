@@ -4,6 +4,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import prettier from 'eslint-config-prettier';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -18,11 +19,12 @@ export default tseslint.config({
     {
       languageOptions: {
         parserOptions: {
-          projectService: true,
+          project: 'eslint-tsconfig.json',
           tsconfigRootDir: __dirname,
         },
       },
     },
+    prettier, // needs to be last in the extends array
   ],
   rules: {
     'no-prototype-builtins': 'off',

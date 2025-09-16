@@ -24,8 +24,15 @@
     "Firefox ESR"
   ],
   "lint-staged": {
-    "*.ts": [
-      "eslint --fix"
+    "!(*.spec.ts)": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.spec.ts": [
+      "prettier --write"
+    ],
+    "(*.json|*.js|*.mjs|*.html|*.md|*.scss)": [
+      "prettier --write"
     ]
   },
   "devDependencies": {
@@ -40,6 +47,7 @@
     "cssnano": "^5.1.15",
     "del": "^2.2.2",
     "eslint": "^9.17.0",
+    "eslint-config-prettier": "^10.1.1",
     "gulp": "^4.0.2",
     "gulp-css-base64": "^2.0.0",
     "gulp-eslint-new": "^2.4.0",
@@ -58,6 +66,7 @@
     "lint-staged": "^15.3.0",
     "merge2": "^1.4.1",
     "postcss-svg": "^3.0.0",
+    "prettier": "^3.5.3",
     "sass": "^1.59.3",
     "semver": "^7.5.4",
     "stream-combiner2": "^1.1.1",
