@@ -1,10 +1,11 @@
 const fs = require('fs');
 const https = require('https');
 
-const jobStatus = process.argv[2];
-const changelogPath = process.argv[3];
-const slackWebhookUrl = process.argv[4];
-const runId = process.argv[5];
+const versionNumber = process.argv[2];
+const jobStatus = process.argv[3];
+const changelogPath = process.argv[4];
+const slackWebhookUrl = process.argv[5];
+const runId = process.argv[6];
 
 const failureSlackChannelId = 'CGRK9DV7H';
 const successSlackChannelId = 'C0LJ16JBS';
@@ -15,16 +16,9 @@ fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
   }
 
   const changelogContent = parseChangelogEntry(fileContent);
-  const releaseVersion = parseReleaseVersion(fileContent);
-  sendSlackMessage(releaseVersion, changelogContent);
+  sendSlackMessage(versionNumber, changelogContent);
 });
 
-function parseReleaseVersion(fileContent) {
-  const regex = /##\s\[(\d+\.\d+.\d+)\]/;
-  const releaseVersion = fileContent.match(regex);
-
-  return releaseVersion[1];
-}
 
 function parseChangelogEntry(fileContent) {
   // The regex looks for the first paragraph starting with "###" until it finds
@@ -39,20 +33,53 @@ function parseChangelogEntry(fileContent) {
 }
 
 function sendSlackMessage(releaseVersion, changelogContent) {
-  let message;
-  let slackChannelId;
+  const slackChannelId = jobStatus === 'success' ? successSlackChannelId : failureSlackChannelId;
+  const generalPayload = {
+    channel: slackChannelId
+  };
+
+  let payload;
   if (jobStatus === 'success') {
-    slackChannelId = successSlackChannelId
-    message = `Changelog v${releaseVersion}\n${changelogContent}`
+    payload = {
+      ...generalPayload,
+      text: `New Bitmovin Player UI version is released!`,
+      attachments: [
+        {
+          title: `CHANGELOG v${releaseVersion}`,
+          color: '#0e7aff',
+          fallback: 'Changelog of the newest release should be displayed here',
+          text: changelogContent,
+          fields: [
+            {
+              title: 'Version',
+              value: `v${releaseVersion}`,
+              short: true,
+            },
+            {
+              title: 'Channel',
+              value: releaseVersion.includes('-') ? 'pre-release' : 'release',
+              short: true,
+            },
+          ],
+        },
+      ],
+    }
   } else {
-    slackChannelId = failureSlackChannelId
-    message = `Release v${releaseVersion} failed.\nPlease check https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}`
+    payload = {
+      ...generalPayload,
+      text: `<!subteam^S06RHTF937F> Release *v${releaseVersion}* failed.`,
+      attachments: [
+        {
+          title: `Release Failure`,
+          color: '#ff0000',
+          fallback: 'Release failed',
+          text: `Please check the <https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}|failed run>`,
+        },
+      ],
+    }
   }
 
-  const sampleData = JSON.stringify({
-    "channel": slackChannelId,
-    "message": message
-  });
+  const sampleData = JSON.stringify(payload);
   const options = {
     method: 'POST',
     headers: {

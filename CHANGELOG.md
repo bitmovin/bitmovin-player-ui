@@ -118,6 +118,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - `ui-skin-cast-receiver` -> `ui-cast-receiver`
     - `ui-skin-tv` -> `ui-tv`
 
+## [Unreleased]
+
+### Changed
+- Update our release automation to prepare for the upcoming v4 release
+
 ## [3.102.0] - 2025-08-14
 
 ### Changed
