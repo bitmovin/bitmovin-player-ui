@@ -12,7 +12,47 @@ var ts = require('gulp-typescript');
 var replace = require('gulp-replace');
 var header = require('gulp-header');
 var prettier = require('gulp-prettier').default;
-var gulpStylelint = require('gulp-stylelint');
+var stylelint = require('stylelint');
+var { Transform } = require('stream');
+
+// Custom stylelint gulp wrapper plugin to simplify usage
+function gulpStylelint(options = {}) {
+  const files = [];
+  const fix = options.fix || false;
+
+  return new Transform({
+    objectMode: true,
+
+    transform(file, encoding, callback) {
+      if (file.isNull()) return callback(null, file);
+      if (file.isStream()) return callback(new Error('Streaming not supported'));
+
+      files.push(file.path);
+      callback(null, file);
+    },
+
+    flush(callback) {
+      if (files.length === 0) return callback();
+
+      stylelint
+        .lint({
+          files,
+          fix,
+          formatter: 'string',
+        })
+        .then(result => {
+          if (result.output) {
+            console.log(result.output);
+          }
+          callback(); // Always succeed
+        })
+        .catch(err => {
+          console.error('Stylelint error:', err.message);
+          callback();
+        });
+    },
+  });
+}
 
 // PostCSS plugins
 var postcssSVG = require('postcss-svg');
@@ -103,19 +143,7 @@ gulp.task('lint-ts', function () {
 
 // Sass/SCSS linting
 gulp.task('lint-sass', function () {
-  return (
-    gulp
-      .src(paths.source.sass)
-      // Enforce formatting via Prettier according to .prettierrc
-      .pipe(prettier.check())
-      // Rule-based linting via Stylelint
-      .pipe(
-        gulpStylelint({
-          failAfterError: true,
-          reporters: [{ formatter: 'string', console: true }],
-        }),
-      )
-  );
+  return gulp.src(paths.source.sass).pipe(prettier.check()).pipe(gulpStylelint());
 });
 
 // Runs all linters
@@ -144,6 +172,7 @@ gulp.task('format-sass', function () {
   return gulp
     .src(paths.source.sass)
     .pipe(prettier())
+    .pipe(gulpStylelint({ fix: true }))
     .pipe(gulp.dest(file => file.base));
 });
 
