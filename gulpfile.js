@@ -136,8 +136,8 @@ gulp.task('lint-ts', function () {
   return gulp
     .src(paths.source.ts)
     .pipe(gulpESLintNew())
-    .pipe(gulpESLintNew.format()) // Output lint results to the console.
-    .pipe(prettier.check()) // format with Prettier according to .prettierrc
+    .pipe(gulpESLintNew.format())
+    .pipe(prettier.check())
     .pipe(gulpESLintNew.failAfterError());
 });
 
