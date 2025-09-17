@@ -138,7 +138,12 @@ var browserifyInstance = browserify({
 }).plugin(tsify);
 
 var catchBrowserifyErrors = false;
+var continueOnLintErrors = false;
 var production = false;
+
+// Detect if we're running in GitHub Actions
+var isGitHubActions = process.env.GITHUB_ACTIONS === 'true';
+var eslintFormatter = isGitHubActions ? 'github' : 'stylish';
 
 function replaceAll() {
   var replacementStreams = replacements.map(function(replacement) { return replace(replacement[0], replacement[1]); });
@@ -157,7 +162,7 @@ gulp.task('copy-json', function() {
 
 // TypeScript linting
 gulp.task('lint-ts', () => {
-  const stream = gulp.src(paths.source.ts).pipe(gulpESLintNew()).pipe(gulpESLintNew.format()).pipe(prettier.check());
+  const stream = gulp.src(paths.source.ts).pipe(gulpESLintNew()).pipe(gulpESLintNew.format(eslintFormatter)).pipe(prettier.check());
 
   return continueOnLintErrors ? stream.pipe(continueOnError()) : stream.pipe(gulpESLintNew.failAfterError());
 });
@@ -173,7 +178,7 @@ gulp.task('lint-js', () => {
   const stream = gulp
     .src(['**/*.js', '.github/**/*.js', '!node_modules/**', '!dist/**'])
     .pipe(gulpESLintNew())
-    .pipe(gulpESLintNew.format());
+    .pipe(gulpESLintNew.format(eslintFormatter));
 
   return continueOnLintErrors ? stream.pipe(continueOnError()) : stream.pipe(gulpESLintNew.failAfterError());
 });
@@ -200,7 +205,7 @@ gulp.task('format-ts', function () {
     .pipe(gulpESLintNew({ fix: true }))
     .pipe(prettier())
     .pipe(gulp.dest(file => file.base))
-    .pipe(gulpESLintNew.format())
+    .pipe(gulpESLintNew.format(eslintFormatter))
     .pipe(gulpESLintNew.failAfterError());
 });
 
