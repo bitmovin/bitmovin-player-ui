@@ -103,6 +103,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - All TypeScript files now use PascalCase instead of all lowercased
   - All SCSS files now use kebab-case instead of all lowercased
     - This includes the css-classes used as well
+- Switched to Prettier and StyleLint for linting and formatting
 
 ### Removed
 - The terms `modern`, `skin` and `default` across the codebase
