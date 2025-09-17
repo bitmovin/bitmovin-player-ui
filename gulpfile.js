@@ -14,6 +14,7 @@ var header = require('gulp-header');
 var prettier = require('gulp-prettier').default;
 var stylelint = require('stylelint');
 var { Transform } = require('stream');
+const logger = require('gulplog');
 
 // Custom stylelint gulp wrapper plugin to simplify usage
 function gulpStylelint(options = {}) {
@@ -52,7 +53,7 @@ function gulpStylelint(options = {}) {
           callback();
         })
         .catch(err => {
-          console.error('Stylelint error:', err.message);
+          logger.error('Stylelint error:', err.message);
           callback();
         });
     },

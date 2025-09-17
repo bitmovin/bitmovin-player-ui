@@ -44,6 +44,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^16.3.0",
     "gulp": "^5.0.1",
+    "gulplog": "^2.2.0",
     "gulp-css-base64": "^2.0.0",
     "gulp-eslint-new": "^2.4.0",
     "gulp-header": "^2.0.9",
