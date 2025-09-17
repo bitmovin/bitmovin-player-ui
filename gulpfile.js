@@ -44,7 +44,12 @@ function gulpStylelint(options = {}) {
           if (result.output) {
             console.log(result.output);
           }
-          callback(); // Always succeed
+
+          if (result.errored) {
+            process.exitCode = 1;
+          }
+
+          callback();
         })
         .catch(err => {
           console.error('Stylelint error:', err.message);
