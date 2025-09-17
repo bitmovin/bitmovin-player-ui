@@ -1,4 +1,4 @@
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
@@ -6,29 +6,24 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 
 export default defineConfig([
+  globalIgnores([
+    'build/**/*',
+    'coverage/**/*',
+    'dist/**/*',
+    'docs/**/*',
+    'node_modules/**/*',
+    'release/**/*',
+    'testing/**/*',
+    '**/*.d.ts',
+  ]),
   {
-    ignores: [
-      'build/**/*',
-      'coverage/**/*',
-      'dist/**/*',
-      'docs/**/*',
-      'node_modules/**/*',
-      'release/**/*',
-      'testing/**/*',
-      '**/*.d.ts',
-    ],
-  },
-  {
-    files: ['**/*.ts'],
+    files: ['**/*.{js,mjs,cjs,ts}'],
     plugins: {
       js,
       'simple-import-sort': simpleImportSort,
     },
     extends: ['js/recommended'],
-    linterOptions: {
-      reportUnusedDisableDirectives: 'off',
-      reportUnusedInlineConfigs: 'off',
-    },
+    linterOptions: {},
   },
   tseslint.configs.recommended,
   eslintPluginPrettierRecommended,
@@ -39,11 +34,9 @@ export default defineConfig([
         ...globals.node,
         ...globals.jest,
       },
-
       parser: tseslint.parser,
       ecmaVersion: 5,
       sourceType: 'module',
-
       parserOptions: {
         project: './tsconfig.json',
       },
@@ -52,19 +45,17 @@ export default defineConfig([
     rules: {
       // Best Practices
       'no-eval': 'error',
-      // TODO: Enable no-console rule and introduce proper logging facility
-      // 'no-console': 'error',
+      'no-console': 'error',
       'accessor-pairs': 'off',
       'no-implied-eval': 'error',
       'no-nested-ternary': 'error',
       'no-array-constructor': 'error',
       'array-callback-return': ['error', { allowImplicit: true }],
       'no-unneeded-ternary': ['error', { defaultAssignment: false }],
-      // TODO: Enable magic numbers rule and replace magic numbers with named constants
-      // '@typescript-eslint/no-magic-numbers': [
-      //   'error',
-      //   { ignore: [-1, 0, 1], ignoreArrayIndexes: true, ignoreEnums: true, detectObjects: true, enforceConst: true },
-      // ],
+      '@typescript-eslint/no-magic-numbers': [
+        'error',
+        { ignore: [-1, 0, 1], ignoreArrayIndexes: true, ignoreEnums: true, detectObjects: true, enforceConst: true },
+      ],
 
       // Style
       'simple-import-sort/imports': 'error',
@@ -99,10 +90,8 @@ export default defineConfig([
       // Overrides of `recommended` rules
       'no-prototype-builtins': 'off',
       'no-case-declarations': 'off',
-      'prefer-spread': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-namespace': 'off',
-      '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/no-unsafe-function-type': 'off',
       '@typescript-eslint/no-wrapper-object-types': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
@@ -113,6 +102,8 @@ export default defineConfig([
     // TypeScript overrides
     files: ['*.ts'],
     rules: {
+      // Disable rule for TypeScript files as typescript-eslint explicitly recommends not using it:
+      // https://typescript-eslint.io/troubleshooting/faqs/eslint#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
       'no-undef': 'off',
       'no-redeclare': 'off',
       '@typescript-eslint/no-redeclare': 'warn',
@@ -120,17 +111,15 @@ export default defineConfig([
   },
   {
     // Unit test overrides
-    files: ['spec/**/*.ts'],
+    files: ['spec/**/*.{ts,js}'],
     rules: {
       '@typescript-eslint/no-magic-numbers': 'off',
       '@typescript-eslint/no-require-imports': 'off',
-      // Console allowed in tests
-      // 'no-console': 'off',
     },
   },
   {
     // Source file overrides
-    files: ['src/**/*.ts'],
+    files: ['src/**/*.{ts,js}'],
     languageOptions: {
       globals: globals.browser,
     },

@@ -24,7 +24,13 @@
     "Firefox ESR"
   ],
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.js": [
+      "prettier --write"
+    ],
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
     "*.scss": "prettier --write"
   },
   "devDependencies": {
