@@ -1,4 +1,4 @@
-import {
+import type {
   AdBreakEvent,
   AdEvent,
   AirplayChangedEvent,
@@ -9,7 +9,6 @@ import {
   LinearAd,
   PeriodSwitchedEvent,
   PlaybackEvent,
-  PlayerEvent,
   PlayerEventBase,
   PlayerEventCallback,
   SeekEvent,
@@ -22,6 +21,7 @@ import {
   VideoPlaybackQualityChangedEvent,
   ViewMode,
 } from 'bitmovin-player';
+import { PlayerEvent } from 'bitmovin-player';
 
 // TODO: remove once available in the type definitions of the player
 export interface ViewModeAvailabilityChangedEvent extends PlayerEventBase {
@@ -30,7 +30,7 @@ export interface ViewModeAvailabilityChangedEvent extends PlayerEventBase {
 }
 
 export class PlayerEventEmitter {
-  private eventHandlers: { [eventType: string]: PlayerEventCallback[]; } = {};
+  private eventHandlers: { [eventType: string]: PlayerEventCallback[] } = {};
 
   public on(eventType: PlayerEvent, callback: PlayerEventCallback) {
     if (!this.eventHandlers[eventType]) {
@@ -98,7 +98,7 @@ export class PlayerEventEmitter {
       adBreak: {
         id: 'Break-ID',
         scheduleTime: startTime,
-        ads: ads,
+        ads,
       },
     });
   }
@@ -109,7 +109,7 @@ export class PlayerEventEmitter {
       type: PlayerEvent.AdError,
       code: 1001,
       name: 'AdErrorEvent',
-      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1001'
+      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1001',
     });
   }
 
@@ -144,7 +144,7 @@ export class PlayerEventEmitter {
       type: PlayerEvent.Error,
       code: 1000,
       name: 'ErrorEvent',
-      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1000'
+      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1000',
     });
   }
 
@@ -256,7 +256,7 @@ export class PlayerEventEmitter {
       },
       targetQuality: {
         id: '2',
-        bitrate: bitrate,
+        bitrate,
         width: null,
         height: null,
       },
@@ -283,7 +283,7 @@ export class PlayerEventEmitter {
   fireReadyEvent(): void {
     this.fireEvent<PlayerEventBase>({
       type: PlayerEvent.Ready,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -396,8 +396,8 @@ export class PlayerEventEmitter {
   fireViewModeAvailabilityChangedEvent(viewMode: ViewMode, available: boolean): void {
     this.fireEvent<ViewModeAvailabilityChangedEvent>({
       timestamp: Date.now(),
-      viewMode: viewMode,
-      available: available,
+      viewMode,
+      available,
       type: 'viewmodeavailabilitychanged' as any,
     });
   }
