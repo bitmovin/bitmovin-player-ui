@@ -75,6 +75,8 @@ export class PlayerEventEmitter {
       size: 1,
       duration: 1,
       isInit: false,
+      url: '',
+      timeToFirstByte: 0,
     });
   }
 
