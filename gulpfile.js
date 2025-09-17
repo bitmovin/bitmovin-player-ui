@@ -110,7 +110,7 @@ var paths = {
   source: {
     html: ['./src/html/*.html'],
     tsmain: ['./src/ts/main.ts'],
-    ts: ['./src/ts/**/*.ts'],
+    ts: ['./src/ts/**/*.ts', './spec/**/*.ts'],
     sass: ['./src/scss/**/*.scss'],
     json: ['./src/ts/**/*.json']
   },
