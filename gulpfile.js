@@ -60,6 +60,24 @@ function gulpStylelint(options = {}) {
   });
 }
 
+// Custom gulp plugin to continue on error
+function continueOnError() {
+  return new Transform({
+    objectMode: true,
+    transform(file, encoding, callback) {
+      callback(null, file);
+    },
+  }).on('pipe', src => {
+    src.on('error', function (error) {
+      // Log the error message before suppressing the error
+      if (error.message) {
+        console.log(error.message);
+      }
+      this.emit('end');
+    });
+  });
+}
+
 // PostCSS plugins
 var postcssSVG = require('postcss-svg');
 var autoprefixer = require('autoprefixer');
@@ -138,28 +156,40 @@ gulp.task('copy-json', function() {
 });
 
 // TypeScript linting
-gulp.task('lint-ts', function () {
-  return gulp
-    .src(paths.source.ts)
-    .pipe(gulpESLintNew())
-    .pipe(gulpESLintNew.format())
-    .pipe(prettier.check())
-    .pipe(gulpESLintNew.failAfterError());
+gulp.task('lint-ts', () => {
+  const stream = gulp.src(paths.source.ts).pipe(gulpESLintNew()).pipe(gulpESLintNew.format()).pipe(prettier.check());
+
+  return continueOnLintErrors ? stream.pipe(continueOnError()) : stream.pipe(gulpESLintNew.failAfterError());
 });
 
 // Sass/SCSS linting
-gulp.task('lint-sass', function () {
-  return gulp.src(paths.source.sass).pipe(prettier.check()).pipe(gulpStylelint());
+gulp.task('lint-sass', () => {
+  const stream = gulp.src(paths.source.sass).pipe(prettier.check()).pipe(gulpStylelint());
+
+  return continueOnLintErrors ? stream.pipe(continueOnError()) : stream;
 });
 
-// Runs all linters
-gulp.task('lint', function (done) {
+gulp.task('lint-js', () => {
+  const stream = gulp
+    .src(['**/*.js', '.github/**/*.js', '!node_modules/**', '!dist/**'])
+    .pipe(gulpESLintNew())
+    .pipe(gulpESLintNew.format());
+
+  return continueOnLintErrors ? stream.pipe(continueOnError()) : stream.pipe(gulpESLintNew.failAfterError());
+});
+
+gulp.task('lint', done => {
+  continueOnLintErrors = true;
+
   gulp.parallel(
     'lint-ts',
+    'lint-js',
     'lint-sass',
-    'lint-other',
-  )(function () {
-    // Ignore errors and continue - all tasks will have run
+  )(() => {
+    if (process.exitCode === 1) {
+      logger.info('Linting completed with errors');
+      process.exitCode = 1;
+    }
     done();
   });
 });
@@ -180,12 +210,6 @@ gulp.task('format-sass', function () {
     .pipe(prettier())
     .pipe(gulpStylelint({ fix: true }))
     .pipe(gulp.dest(file => file.base));
-});
-
-gulp.task('lint-other', function () {
-  return gulp
-    .src(['**/*.{js,json,html,md}', '.github/**/*.{js,md,yml,yaml}', '!node_modules/**', '!dist/**'])
-    .pipe(prettier.check());
 });
 
 gulp.task('format-other', function () {
