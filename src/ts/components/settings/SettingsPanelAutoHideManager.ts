@@ -102,10 +102,13 @@ export class SettingsPanelAutoHideManager {
   }
 
   /**
-   * Returns the appropriate hide delay - extended if panels are open, normal otherwise
+   * Returns the appropriate hide delay - uses panel's hideDelay if open, normal otherwise
    */
   public getExtendedDelay(baseDelay: number): number {
-    return this.hasOpenPanels() ? baseDelay * 5 : baseDelay;
+    if (!this.hasOpenPanels()) return baseDelay;
+
+    const openPanel = this.openSettingsPanels[0];
+    return openPanel.getConfig().hideDelay;
   }
 
   public release(): void {

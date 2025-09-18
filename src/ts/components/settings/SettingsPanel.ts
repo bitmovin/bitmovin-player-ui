@@ -80,7 +80,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
     this.config = this.mergeConfig(config, {
       cssClass: 'ui-settings-panel',
-      hideDelay: 3000,
+      hideDelay: 10000,
       pageTransitionAnimation: true,
     } as Config, this.config);
 
