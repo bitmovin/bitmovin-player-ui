@@ -1,0 +1,44 @@
+$prefix: 'bmpui' !default;
+
+$color-black: #000 !default;
+$color-transparent: rgba(0, 0, 0, 0) !default;
+$color-red: #f00 !default;
+
+$color-highlight: #fff !default;
+$color-primary: #fff !default;
+$color-secondary: #999 !default;
+
+$color-background: #111 !default;
+$color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3) !default;
+$color-background-bars: transparentize($color-black, .3) !default;
+$color-background-seekbar-label: rgba(20, 20, 20, .8);
+$color-focus: transparentize($color-highlight, .8);
+
+$color-background-menu-title-overlay: rgba(0, 0, 0, .25) !default;
+$color-background-menu: #2e2e2e !default;
+$color-background-menu-hover-overlay: rgba(255, 255, 255, .07) !default;
+$color-background-seek-circle: rgba(255, 255, 255, .35) !default;
+$color-background-dimmed: rgba(0, 0, 0, .5) !default;
+$color-shadow-seek-label: 0 0 30px 0 rgba(0, 0, 0, .75) !default;
+$color-ads: #ffc737 !default;
+
+$font-family: sans-serif !default;
+$font-size: 1.125rem !default; /* 18px */
+$font-size-large: calc($font-size * 1.25) !default;
+$font-size-small: calc($font-size * 0.75) !default;
+
+$icon-size: calc($font-size * 4 / 3) !default; /* 24px */
+$icon-size-medium: calc($icon-size * 2) !default;
+$icon-size-large: calc($icon-size * 3) !default;
+
+$font-weight: normal !default; /* 400 */
+$font-weight-medium: 500 !default;
+$font-weight-semi-bold: 600 !default;
+$font-weight-bold: 700 !default;
+$border-radius: .4rem !default;
+
+$subtitle-text-color: #fff !default;
+$subtitle-text-border-color: #000 !default;
+
+$animation-duration: .3s !default;
+$animation-duration-short: $animation-duration * .5 !default;

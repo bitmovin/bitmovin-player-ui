@@ -1,0 +1,9 @@
+@import '../variables';
+
+%ui-container {
+  @extend %ui-component;
+}
+
+.#{$prefix}-ui-container {
+  @extend %ui-container;
+}

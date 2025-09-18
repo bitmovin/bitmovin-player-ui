@@ -1,0 +1,187 @@
+import { StorageUtils } from './StorageUtils';
+import { Component, ComponentConfig } from '../components/Component';
+import { EventDispatcher, Event } from '../EventDispatcher';
+import { prefixCss } from '../components/DummyComponent';
+
+interface SubtitleSettings {
+  fontColor?: string;
+  fontOpacity?: string;
+  fontFamily?: string;
+  fontSize?: string;
+  fontStyle?: string;
+  characterEdge?: string;
+  characterEdgeColor?: string;
+  backgroundColor?: string;
+  backgroundOpacity?: string;
+  windowColor?: string;
+  windowOpacity?: string;
+}
+
+interface Properties {
+  [name: string]: SubtitleSettingsProperty<string>;
+}
+
+/**
+ * @category Utils
+ */
+export class SubtitleSettingsManager {
+  private userSettings: SubtitleSettings;
+  private localStorageKey: string;
+
+  private _properties: Properties = {
+    fontColor: new SubtitleSettingsProperty<string>(this),
+    fontOpacity: new SubtitleSettingsProperty<string>(this),
+    fontFamily: new SubtitleSettingsProperty<string>(this),
+    fontSize: new SubtitleSettingsProperty<string>(this),
+    fontStyle: new SubtitleSettingsProperty<string>(this),
+    characterEdge: new SubtitleSettingsProperty<string>(this),
+    characterEdgeColor: new SubtitleSettingsProperty<string>(this),
+    backgroundColor: new SubtitleSettingsProperty<string>(this),
+    backgroundOpacity: new SubtitleSettingsProperty<string>(this),
+    windowColor: new SubtitleSettingsProperty<string>(this),
+    windowOpacity: new SubtitleSettingsProperty<string>(this),
+  };
+
+  constructor() {
+    this.userSettings = {};
+    this.localStorageKey = prefixCss('subtitlesettings');
+  }
+
+  public reset(): void {
+    for (let propertyName in this._properties) {
+      this._properties[propertyName].clear();
+    }
+  }
+
+  public get fontColor(): SubtitleSettingsProperty<string> {
+    return this._properties.fontColor;
+  }
+
+  public get fontOpacity(): SubtitleSettingsProperty<string> {
+    return this._properties.fontOpacity;
+  }
+
+  public get fontFamily(): SubtitleSettingsProperty<string> {
+    return this._properties.fontFamily;
+  }
+
+  public get fontSize(): SubtitleSettingsProperty<string> {
+    return this._properties.fontSize;
+  }
+
+  public get fontStyle(): SubtitleSettingsProperty<string> {
+    return this._properties.fontStyle;
+  }
+
+  public get characterEdge(): SubtitleSettingsProperty<string> {
+    return this._properties.characterEdge;
+  }
+
+  public get characterEdgeColor(): SubtitleSettingsProperty<string> {
+    return this._properties.characterEdgeColor;
+  }
+
+  public get backgroundColor(): SubtitleSettingsProperty<string> {
+    return this._properties.backgroundColor;
+  }
+
+  public get backgroundOpacity(): SubtitleSettingsProperty<string> {
+    return this._properties.backgroundOpacity;
+  }
+
+  public get windowColor(): SubtitleSettingsProperty<string> {
+    return this._properties.windowColor;
+  }
+
+  public get windowOpacity(): SubtitleSettingsProperty<string> {
+    return this._properties.windowOpacity;
+  }
+
+  public initialize() {
+    for (let propertyName in this._properties) {
+      this._properties[propertyName].onChanged.subscribe((sender, property) => {
+        if (property.isSet()) {
+          (<any>this.userSettings)[propertyName] = property.value;
+        } else {
+          // Delete the property from the settings object if unset to avoid serialization of null values
+          delete (<any>this.userSettings)[propertyName];
+        }
+
+        // Save the settings object when a property has changed
+        this.save();
+      });
+    }
+
+    this.load();
+  }
+
+  /**
+   * Saves the settings to local storage.
+   */
+  public save(): void {
+    StorageUtils.setObject(this.localStorageKey, this.userSettings);
+  }
+
+  /**
+   * Loads the settings from local storage
+   */
+  public load(): void {
+    this.userSettings =
+      StorageUtils.getObject<SubtitleSettings>(this.localStorageKey) || {};
+
+    // Apply the loaded settings
+    for (let property in this.userSettings) {
+      this._properties[property].value = (<any>this.userSettings)[property];
+    }
+  }
+}
+
+export class SubtitleSettingsProperty<T> {
+  private _manager: SubtitleSettingsManager;
+  private _onChanged: EventDispatcher<
+    SubtitleSettingsManager,
+    SubtitleSettingsProperty<T>
+  >;
+  private _value: T;
+
+  constructor(manager: SubtitleSettingsManager) {
+    this._manager = manager;
+    this._onChanged = new EventDispatcher<
+      SubtitleSettingsManager,
+      SubtitleSettingsProperty<T>
+    >();
+  }
+
+  public isSet(): boolean {
+    return this._value != null;
+  }
+
+  public clear(): void {
+    this._value = null;
+    this.onChangedEvent(null);
+  }
+
+  public get value(): T {
+    return this._value;
+  }
+
+  public set value(value: T) {
+    if (typeof value === 'string' && value === 'null') {
+      value = null;
+    }
+
+    this._value = value;
+    this.onChangedEvent(value);
+  }
+
+  protected onChangedEvent(value: T) {
+    this._onChanged.dispatch(this._manager, this);
+  }
+
+  public get onChanged(): Event<
+    SubtitleSettingsManager,
+    SubtitleSettingsProperty<T>
+  > {
+    return this._onChanged.getEvent();
+  }
+}

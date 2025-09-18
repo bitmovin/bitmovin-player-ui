@@ -1,0 +1,22 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-subtitletogglebutton {
+  @extend %ui-button;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-subtitles-on {
+    .#{$prefix}-ui-icon {
+      background-image: url('../../assets/images/subtitles.svg');
+    }
+  }
+
+  &.#{$prefix}-subtitles-off {
+    .#{$prefix}-ui-icon {
+      background-image: url('../../assets/images/subtitlesX.svg');
+    }
+  }
+}

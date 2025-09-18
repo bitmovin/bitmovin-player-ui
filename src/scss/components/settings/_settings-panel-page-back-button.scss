@@ -1,0 +1,31 @@
+@import '../../variables';
+
+%ui-settingspanelpagebackbutton {
+  @extend %ui-button;
+
+  border-collapse: collapse;
+  padding: unset;
+  flex: 1;
+  text-align: left;
+  column-gap: .4em;
+  min-width: unset;
+
+  &.touched {
+    transform: unset;
+  }
+
+  .#{$prefix}-ui-icon {
+    width: .8em;
+    min-width: unset;
+    background-image: url('../../assets/images/angle-left.svg');
+  }
+
+  .#{$prefix}-label {
+    display: inline-block;
+    margin: 0;
+  }
+}
+
+.#{$prefix}-ui-settingspanelpagebackbutton {
+  @extend %ui-settingspanelpagebackbutton;
+}

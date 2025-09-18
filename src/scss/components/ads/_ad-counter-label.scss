@@ -1,0 +1,5 @@
+@import '../../variables';
+
+.#{$prefix}-ui-label-ad-counter {
+  @extend %ui-label;
+}

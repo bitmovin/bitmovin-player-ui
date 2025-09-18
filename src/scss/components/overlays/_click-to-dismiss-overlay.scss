@@ -1,0 +1,7 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-dismiss-click-overlay {
+  @include layout-cover;
+  @include hidden;
+}

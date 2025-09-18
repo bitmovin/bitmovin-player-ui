@@ -1,0 +1,14 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-replaybutton {
+  @extend %ui-button;
+
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/replay.svg');
+  }
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+}

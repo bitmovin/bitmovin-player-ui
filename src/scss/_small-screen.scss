@@ -1,0 +1,63 @@
+@import 'variables';
+@import 'mixins';
+
+.#{$prefix}-ui-smallscreen {
+
+  // Do not display watermark in mobile view
+  .#{$prefix}-ui-watermark {
+    display: none;
+  }
+
+  .#{$prefix}-ui-cast-status-overlay {
+    background: $color-background; // Remove background Cast icon
+
+    .#{$prefix}-ui-cast-status-label {
+      top: 30%;
+    }
+  }
+
+  // When casting, also display pause icon and disable animations because the transition doesn't look right
+  // sass-lint:disable nesting-depth
+  &.#{$prefix}-remote-control {
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
+      &.#{$prefix}-on {
+        .#{$prefix}-ui-icon {
+          animation: none;
+          background-image: url('../../assets/images/pause.svg');
+          visibility: visible;
+        }
+      }
+
+      &.#{$prefix}-off {
+        .#{$prefix}-ui-icon {
+          animation: none;
+        }
+      }
+    }
+  }
+
+  .#{$prefix}-ui-titlebar {
+    // Adjust title bar padding for small screens to better align text with button elements
+    $titlebar-padding: 1em;
+    padding: max($titlebar-padding, env(safe-area-inset-top, 0))
+      max($titlebar-padding, env(safe-area-inset-right, 0))
+      $titlebar-padding
+      max($titlebar-padding, env(safe-area-inset-left, 0));
+
+    .#{$prefix}-label-metadata {
+      margin: 0 .25em;
+    }
+  }
+
+  // Adjustments for screen width x <= 400
+  &.#{$prefix}-layout-max-width-400 {
+    .#{$prefix}-ui-settings-panel {
+      left: 1em;
+      right: 1em;
+      margin-top: 3.5em;
+      max-height: calc(100% - 3.5em - 3.5em);
+      width: unset;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+@import '../variables';
+
+.#{$prefix}-ui-watermark {
+  @extend %ui-button;
+
+  $watermark-size: $icon-size-large;
+
+  height: $watermark-size;
+  width: $watermark-size;
+  margin: 2em;
+  opacity: .8;
+  position: absolute;
+  right: 0;
+  top: 0;
+
+  .#{$prefix}-ui-icon {
+    background-size: initial;
+    background-image: url('../../assets/images/logo.svg');
+    height: $watermark-size;
+    width: $watermark-size;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}

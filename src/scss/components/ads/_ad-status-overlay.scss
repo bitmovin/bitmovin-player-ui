@@ -1,0 +1,23 @@
+@import '../../variables';
+@import '../../mixins';
+
+%ad-status-overlay {
+  @extend %ui-container;
+  @include layout-align-bottom;
+
+  box-sizing: border-box;
+  padding: 1em 1em .5em;
+  bottom: 5em;
+
+  .#{$prefix}-bar {
+    > .#{$prefix}-container-wrapper {
+      pointer-events: none;
+      display: flex;
+      margin: .5em 0;
+    }
+  }
+}
+
+.#{$prefix}-ui-ad-status-overlay {
+  @extend %ad-status-overlay;
+}

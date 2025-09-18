@@ -59,7 +59,7 @@
     };
 
     var player = new bitmovin.player.Player(document.getElementById('player'), conf);
-    var uiManager = bitmovin.playerui.UIFactory.buildDefaultUI(player, {});
+    var uiManager = bitmovin.playerui.UIFactory.buildUI(player, { includeWatermark: true });
     player.load(source);
 </script>
 </body>

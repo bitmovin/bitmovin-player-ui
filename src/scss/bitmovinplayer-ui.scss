@@ -1,1 +1,150 @@
-@import 'skin-modern/skin';
+@import 'variables';
+@import 'mixins';
+@import 'components/icon';
+@import 'components/buttons/subtitle-toggle-button';
+@import 'components/component';
+@import 'components/container';
+@import 'components/uicontainer';
+@import 'components/control-bar';
+@import 'components/buttons/button';
+@import 'components/buttons/playback-toggle-button';
+@import 'components/buttons/quick-seek-button';
+@import 'components/buttons/fullscreen-toggle-button';
+@import 'components/buttons/vr-toggle-button';
+@import 'components/buttons/volume-toggle-button';
+@import 'components/buttons/eco-mode-toggle-button';
+@import 'components/seekbar/seek-bar';
+@import 'components/watermark';
+@import 'components/buttons/huge-playback-toggle-button';
+@import 'components/labels/label';
+@import 'components/settings/settings-panel';
+@import 'components/settings/settings-panel-page';
+@import 'components/settings/settings-panel-item';
+@import 'components/settings/settings-panel-page-open-button';
+@import 'components/settings/settings-panel-page-back-button';
+@import 'components/settings/settings-toggle-button';
+@import 'components/settings/select-box';
+@import 'components/seekbar/seek-bar-label';
+@import 'components/seekbar/volume-slider';
+@import 'components/overlays/subtitle-overlay';
+@import 'components/overlays/subtitle-overlay-cea608';
+@import 'components/buttons/volume-control-button';
+@import 'components/buttons/cast-toggle-button';
+@import 'components/overlays/cast-status-overlay';
+@import 'components/overlays/error-message-overlay';
+@import 'components/title-bar';
+@import 'components/overlays/recommendation-overlay';
+@import 'components/overlays/click-overlay';
+@import 'components/overlays/click-to-dismiss-overlay';
+@import 'components/buttons/huge-replay-button';
+@import 'components/buttons/replay-button';
+@import 'components/labels/playback-time-label';
+@import 'components/overlays/buffering-overlay';
+@import 'components/overlays/playback-toggle-overlay';
+@import 'components/buttons/close-button';
+@import 'components/buttons/airplay-toggle-button';
+@import 'components/buttons/picture-in-picture-toggle-button';
+@import 'components/spacer';
+@import 'components/settings/subtitlesettings/subtitle-settings';
+@import 'components/buttons/subtitle-list-box-toggle-button';
+@import 'components/buttons/audio-track-list-box-toggle-button';
+@import 'components/overlays/touch-control-overlay';
+@import 'components/buttons/small-centered-playback-toggle-button';
+@import 'ads';
+@import 'cast-receiver';
+@import 'small-screen';
+@import 'tv';
+
+// sass-lint:disable nesting-depth
+.#{$prefix}-ui-uicontainer {
+  color: $color-primary;
+  font-family: $font-family;
+  font-size: $font-size;
+  font-weight: $font-weight-medium;
+  line-height: 1;
+  text-align: left;
+  user-select: none;
+
+  &.#{$prefix}-player-state-idle {
+    .#{$prefix}-ui-controlbar,
+    .#{$prefix}-ui-titlebar,
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      display: none;
+    }
+  }
+
+  &.#{$prefix}-player-state-finished {
+    .#{$prefix}-ui-titlebar,
+    .#{$prefix}-ui-controlbar,
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
+      display: none;
+    }
+  }
+
+  .#{$prefix}-text-right {
+    text-align: right;
+  }
+
+  &.#{$prefix}-controls-shown {
+    .#{$prefix}-ui-touch-control-overlay {
+      background-color: $color-background-dimmed;
+    }
+  }
+
+  &.#{$prefix}-layout-max-width-400 {
+    .#{$prefix}-ui-volumeslider {
+      display: none;
+    }
+
+    .#{$prefix}-ui-recommendation-overlay {
+      .#{$prefix}-recommendations-section {
+        display: none;
+      }
+    }
+  }
+
+  // sass-lint:disable force-element-nesting
+  &.#{$prefix}-layout-max-width-400,
+  &.#{$prefix}-layout-max-width-600 {
+    // Hide the description in ultra tiny players to not clog the UI too much
+    .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata-description {
+      display: none;
+    }
+
+    .#{$prefix}-ui-hugeplaybacktogglebutton,
+    .#{$prefix}-ui-smallcenteredplaybacktogglebutton,
+    .#{$prefix}-ui-watermark,
+    .#{$prefix}-ui-hugereplaybutton {
+      .#{$prefix}-ui-icon {
+        background-size: $icon-size-medium;
+      }
+    }
+
+    .#{$prefix}-ui-watermark {
+      margin: 0;
+    }
+
+    .#{$prefix}-ui-cast-status-overlay {
+      background-size: $icon-size-large;
+      background-position: center 40%;
+      .#{$prefix}-ui-cast-status-label {
+        top: 55%;
+      }
+    }
+
+    .#{$prefix}-ui-settings-panel {
+      left: max(1em, env(safe-area-inset-left, 0));
+      right: max(1em, env(safe-area-inset-right, 0));
+      margin-top: 2em;
+      max-height: calc(100% - 2em - 3.5em);
+      width: unset;
+    }
+  }
+
+  &.#{$prefix}-layout-max-width-800 {
+    .#{$prefix}-ui-settings-panel {
+      width: 50%;
+    }
+  }
+}

@@ -1,0 +1,50 @@
+@import 'variables';
+
+// sass-lint:disable nesting-depth
+.#{$prefix}-ui-ads {
+  @import 'components/ads/ad-skip-button';
+  @import 'components/ads/ad-status-overlay';
+  @import 'components/ads/ad-counter-label';
+  @import 'components/ads/ad-message-label';
+  @import 'components/ads/ad-control-bar';
+
+  .#{$prefix}-ui-seekbar {
+    .#{$prefix}-seekbar,
+    .#{$prefix}-seekbar-bars,
+    .#{$prefix}-seekbar-bars > * {
+      pointer-events: none;
+    }
+
+    .#{$prefix}-seekbar-playbackposition-marker,
+    .#{$prefix}-seekbar-bufferlevel,
+    .#{$prefix}-seekbar-seekposition,
+    .#{$prefix}-seekbar-markers {
+      display: none;
+    }
+
+    .#{$prefix}-seekbar-playbackposition {
+      background-color: $color-ads;
+    }
+  }
+
+  /* Hide the huge playback button overlay while an ad is playing, so a click goes
+   * through to the click-through overlay which will register the click and then
+   * pause playback. In the paused state, the huge playback toggle button will be
+   * shown and continues playback of the ad when clicked.
+   */
+  &.#{$prefix}-player-state-playing {
+    .#{$prefix}-ui-playbacktoggle-overlay {
+      display: none;
+    }
+  }
+
+  &.#{$prefix}-ui-smallscreen {
+    .#{$prefix}-ui-ads-status {
+      bottom: 0;
+      left: 0;
+      padding: 1em 1.5em;
+      top: auto;
+      width: 100%;
+    }
+  }
+}

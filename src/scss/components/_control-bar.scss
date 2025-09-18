@@ -1,0 +1,53 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-controlbar {
+  @extend %ui-container;
+
+  @include hidden-animated-focusable;
+  @include layout-align-bottom;
+
+  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
+  box-sizing: border-box;
+
+  $controlbar-padding: 1em;
+  padding: $controlbar-padding
+    max($controlbar-padding, env(safe-area-inset-right, 0))
+    max($controlbar-padding, env(safe-area-inset-bottom, 0))
+    max($controlbar-padding, env(safe-area-inset-left, 0));
+
+  .#{$prefix}-container-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .#{$prefix}-controlbar-top,
+  .#{$prefix}-controlbar-bottom {
+    > .#{$prefix}-container-wrapper {
+      display: flex;
+      flex-direction: row;
+      column-gap: .3rem;
+      align-items: center;
+    }
+  }
+
+  .#{$prefix}-controlbar-top {
+    > .#{$prefix}-container-wrapper {
+      column-gap: $font-size;
+      margin: 0 .5em;
+    }
+  }
+
+  .#{$prefix}-controlbar-bottom {
+    // We can't use the row-gap property here because the AdControlBar collapses certain elements which
+    // would result in additional margins.
+    margin-top: .5em;
+
+    > .#{$prefix}-container-wrapper {
+      .#{$prefix}-ui-volumeslider {
+        margin: auto .5em;
+        width: 8rem;
+      }
+    }
+  }
+}

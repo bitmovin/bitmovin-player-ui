@@ -1,0 +1,80 @@
+@import '../../variables';
+
+%ui-settings-panel-item {
+  @include focusable(true, 0, 0);
+
+  padding: 1rem;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  * {
+    cursor: pointer;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: $color-background-menu-hover-overlay;
+    }
+  }
+
+  &:active {
+    background-color: $color-background-menu-hover-overlay;
+  }
+
+  &.#{$prefix}-hidden {
+    display: none;
+  }
+
+  .#{$prefix}-container-wrapper {
+    align-items: center;
+    display: flex;
+  }
+
+  > .#{$prefix}-container-wrapper {
+    column-gap: 10px;
+  }
+
+  .#{$prefix}-ui-label {
+    line-height: $icon-size;
+    min-height: $icon-size;
+  }
+
+  .#{$prefix}-ui-label-setting-selected-option {
+    align-self: center;
+    margin-left: auto;
+    width: fit-content;
+
+    .#{$prefix}-ui-icon {
+      background-image: url('../../assets/images/angle-right.svg');
+      width: .8em;
+      min-width: unset;
+    }
+  }
+
+  &.#{$prefix}-ui-settings-panel-item-select-option {
+    .#{$prefix}-ui-icon {
+      display: none;
+    }
+
+    &.#{$prefix}-selected {
+      .#{$prefix}-ui-icon {
+        display: inline-block;
+        background-image: url('../../assets/images/check.svg');
+      }
+    }
+  }
+
+  &.#{$prefix}-title-item {
+    background-color: $color-background-menu-title-overlay;
+    font-weight: $font-weight-medium;
+
+    &:hover {
+      background-color: $color-background-menu-hover-overlay;
+    }
+  }
+}
+
+.#{$prefix}-ui-settings-panel-item {
+  @extend %ui-settings-panel-item;
+}

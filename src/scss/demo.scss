@@ -6,3 +6,12 @@ body {
 #player {
   position: relative;
 }
+
+.player-wrapper {
+  &.portrait {
+    // sass-lint:disable no-misspelled-properties
+    aspect-ratio: 9 / 16;
+    margin: auto;
+    width: 300px;
+  }
+}

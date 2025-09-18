@@ -1,0 +1,24 @@
+@import '../../variables';
+@import '../../mixins';
+
+%ui-settingstogglebutton {
+  @extend %ui-button;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+}
+
+.#{$prefix}-ui-settingstogglebutton {
+  @extend %ui-settingstogglebutton;
+
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/settings.svg');
+  }
+
+  &.#{$prefix}-on {
+    .#{$prefix}-ui-icon {
+      transform: rotate(30deg);
+    }
+  }
+}

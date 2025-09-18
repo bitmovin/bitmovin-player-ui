@@ -1,0 +1,43 @@
+@import '../variables';
+@import '../mixins';
+
+.#{$prefix}-ui-uicontainer {
+  @extend %ui-container;
+
+  @include layout-cover;
+
+  overflow: hidden;
+  pointer-events: none; // Do not catch pointer events, pass them through
+
+  * {
+    pointer-events: auto;
+  }
+
+  &.#{$prefix}-hidden {
+    // Most hiding within the UI works through the "visibility" property, because "display" cannot be animated.
+    // For the outermost UI container we use "display" though, to not block any events (e.g. click events) on the video
+    // when the UI is hidden.
+    display: none;
+  }
+
+  // sass-lint:disable force-element-nesting
+  &.#{$prefix}-player-state-playing.#{$prefix}-controls-hidden {
+    // Hide cursor while the controls are hidden
+    * {
+      cursor: none;
+    }
+  }
+
+  // sass-lint:disable nesting-depth
+  &.#{$prefix}-controls-shown {
+    .#{$prefix}-ui-hugeplaybacktogglebutton {
+      &:focus {
+        box-shadow: inset -4px -3px 10px 10px transparentize($color-highlight, .4);
+
+        &:not(.#{$prefix}-focus-visible) {
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}

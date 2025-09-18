@@ -1,0 +1,16 @@
+@import '../../variables';
+
+.#{$prefix}-ui-ad-message-label {
+  @extend %ui-label;
+
+  .#{$prefix}-ui-label-text {
+    pointer-events: none;
+    cursor: default;
+    display: block;
+    font-size: $font-size-large;
+    font-weight: $font-weight-medium;
+    text-shadow: 0 0 5px $color-black;
+    white-space: normal;
+    margin-right: auto;
+  }
+}

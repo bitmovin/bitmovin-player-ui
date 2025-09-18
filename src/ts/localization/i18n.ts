@@ -3,7 +3,7 @@ import vocabularyEn from './languages/en.json';
 import vocabularyEs from './languages/es.json';
 import vocabularyNl from './languages/nl.json';
 
-import { LocalizationConfig } from '../uimanager.js';
+import { LocalizationConfig } from '../UIManager';
 
 export const defaultVocabularies: Vocabularies = {
   'en': vocabularyEn,

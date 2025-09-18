@@ -1,11 +1,11 @@
 import { PlayerAPI, PlayerEvent } from 'bitmovin-player';
-import { UIInstanceManager } from '../../src/ts/uimanager';
-import { DOM } from '../../src/ts/dom';
+import { UIInstanceManager } from '../../src/ts/UIManager';
+import { DOM } from '../../src/ts/DOM';
 import { PlayerEventEmitter } from './PlayerEventEmitter';
-import { UIContainer } from '../../src/ts/components/uicontainer';
-import { SubtitleSettingsManager } from '../../src/ts/components/subtitlesettings/subtitlesettingsmanager';
+import { UIContainer } from '../../src/ts/components/UIContainer';
+import { SubtitleSettingsManager } from '../../src/ts/utils/SubtitleSettingsManager';
 
-jest.mock('../../src/ts/dom');
+jest.mock('../../src/ts/DOM');
 
 export interface TestingPlayerAPI extends PlayerAPI {
   eventEmitter: PlayerEventEmitter;
@@ -55,7 +55,7 @@ export namespace MockHelper {
   }
 
   export function generateDOMMock(): jest.Mocked<DOM> {
-    const DOMClass: jest.Mock<DOM> = jest.fn().mockImplementation(() => ({
+    const mockedDomElement = {
       addClass: jest.fn(),
       removeClass: jest.fn(),
       on: jest.fn(),
@@ -68,6 +68,11 @@ export namespace MockHelper {
       append: jest.fn(),
       attr: jest.fn(),
       get: jest.fn(),
+    };
+
+    const DOMClass: jest.Mock<DOM> = jest.fn().mockImplementation(() => ({
+      ...mockedDomElement,
+      css: jest.fn().mockReturnValue(mockedDomElement),
     }));
 
     return new DOMClass() as jest.Mocked<DOM>;

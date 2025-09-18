@@ -1,0 +1,17 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-hugereplaybutton {
+  @extend %ui-button;
+
+  height: 5em;
+  outline: none;
+  width: 5em;
+
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/replay-with-play.svg');
+    background-size: $icon-size-large;
+    height: 100%;
+    width: 100%;
+  }
+}

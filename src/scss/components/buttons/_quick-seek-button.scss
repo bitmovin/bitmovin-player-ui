@@ -1,0 +1,22 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-quickseekbutton {
+  @extend %ui-button;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &[data-#{$prefix}-seek-direction='forward'] {
+    .#{$prefix}-ui-icon {
+      background-image: url('../../assets/images/quickseek-forward.svg');
+    }
+  }
+
+  &[data-#{$prefix}-seek-direction='rewind'] {
+    .#{$prefix}-ui-icon {
+      background-image: url('../../assets/images/quickseek-back.svg');
+    }
+  }
+}

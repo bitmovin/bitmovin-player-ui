@@ -1,0 +1,32 @@
+@import '../../variables';
+
+%ui-button-ad-skip {
+  @extend %ui-button;
+
+  background-color: transparentize($color-black, .25);
+  border-radius: 20px;
+  padding: .5em 1em;
+  min-width: fit-content;
+
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/ad-skip.svg');
+  }
+
+  .#{$prefix}-label {
+    color: $color-ads;
+  }
+
+  &.#{$prefix}-disabled {
+    .#{$prefix}-ui-icon {
+      display: none;
+    }
+  }
+
+  &:hover {
+    background-color: $color-black;
+  }
+}
+
+.#{$prefix}-ui-button-ad-skip {
+  @extend %ui-button-ad-skip;
+}

@@ -1,0 +1,21 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-airplaytogglebutton {
+  @extend %ui-button;
+
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/airplay.svg');
+  }
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    // TODO: replace with filled cast icon once available
+    .#{$prefix}-ui-icon {
+      background-image: url('../../assets/images/airplay.svg');
+    }
+  }
+}

@@ -1,0 +1,44 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-errormessage-overlay {
+  @extend %ui-container;
+
+  @include layout-cover;
+  @include hidden;
+
+  background-color: $color-background;
+  pointer-events: none;
+
+  .#{$prefix}-ui-errormessage-label {
+    color: $color-primary;
+    left: 3em;
+    position: absolute;
+    right: 3em;
+    text-align: center;
+    user-select: text;
+    white-space: pre-line; // enable linebreak in text
+    line-height: 1.2;
+
+    // Vertically center the label
+    & {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    ul {
+      color: $color-secondary;
+      padding: 0;
+
+      li {
+        list-style: none;
+      }
+    }
+  }
+
+  .#{$prefix}-ui-tvnoisecanvas {
+    @include layout-cover;
+
+    filter: blur(4px);
+  }
+}

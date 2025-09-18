@@ -1,0 +1,20 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-fullscreentogglebutton {
+  @extend %ui-button;
+
+  .#{$prefix}-ui-icon {
+    background-image: url('../../assets/images/fullscreen.svg');
+  }
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    .#{$prefix}-ui-icon {
+      background-image: url('../../assets/images/fullscreenX.svg');
+    }
+  }
+}
