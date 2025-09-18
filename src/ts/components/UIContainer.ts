@@ -275,6 +275,13 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     this.userInteractionEvents.forEach((event) => this.userInteractionEventSource.on(event.name, event.handler));
 
+    // Add click listener running on capture phase to intercept clicks before stopPropagation() in buttons
+    this.userInteractionEventSource.on('click', (e) => {
+      if (checkActionAllowed(e)) {
+        this.showUi();
+      }
+    }, { capture: true });
+
     uimanager.onSeek.subscribe(() => {
       this.uiHideTimeout.clear(); // Don't hide UI while a seek is in progress
       isSeeking = true;
