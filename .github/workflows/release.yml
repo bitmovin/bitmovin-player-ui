@@ -57,8 +57,6 @@ concurrency:
   group: release-${{ inputs.version_number }}-${{ inputs.release_type }}
   cancel-in-progress: true
 
-  workflow_dispatch:
-
 jobs:
   version_bump:
     name: Version Bump
