@@ -263,6 +263,14 @@ export class UIContainer extends Container<UIContainerConfig> {
           }
         }
       },
+    }, {
+      // When scrolling, we show the UI
+      name: 'wheel',
+      handler: (e) => {
+        if (checkActionAllowed(e)) {
+          this.showUi();
+        }
+      },
     }];
 
     this.userInteractionEvents.forEach((event) => this.userInteractionEventSource.on(event.name, event.handler));
