@@ -52,6 +52,9 @@ on:
       SLACK_WEBHOOK_URL:
         description: 'Slack webhook URL for notifications'
         required: true
+      RELEASE_DEPLOY_KEY:
+        description: 'SSH deploy key with write access to the repository'
+        required: true
 
 concurrency:
   group: release-${{ inputs.version_number }}-${{ inputs.release_type }}
@@ -68,6 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
           ref: ${{ inputs.branch_name || github.ref }}
           # Fetch existing tags because we need to create a new one
           # fetch-tags: true # do not use, currently broken: https://github.com/actions/checkout/issues/1781
