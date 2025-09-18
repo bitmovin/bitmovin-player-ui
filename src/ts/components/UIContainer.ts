@@ -72,6 +72,8 @@ export class UIContainer extends Container<UIContainerConfig> {
   private lastSettingsPanelState: {
     activePage: SettingsPanelPage;
     navigationStack: SettingsPanelPage[];
+    scrollTop: number;
+    wrapperScrollTop: number;
   } | null = null;
 
   public hideUi: () => void = () => {};
@@ -144,7 +146,12 @@ export class UIContainer extends Container<UIContainerConfig> {
 
         // Then restore the navigation state (this will override the resetNavigation call in onShow)
         setTimeout(() => {
-          panel.restoreNavigationState(state.activePage, state.navigationStack);
+          panel.restoreNavigationState(
+            state.activePage,
+            state.navigationStack,
+            state.scrollTop,
+            state.wrapperScrollTop
+          );
         }, 0);
 
         // Clear saved state
@@ -174,7 +181,9 @@ export class UIContainer extends Container<UIContainerConfig> {
         this.lastOpenSettingsPanel = panel;
         this.lastSettingsPanelState = {
           activePage: panel.getActivePage(),
-          navigationStack: [...(panel as any)['navigationStack']] // Copy the array
+          navigationStack: [...(panel as any)['navigationStack']], // Copy the array
+          scrollTop: panel.getDomElement().get(0).scrollTop,
+          wrapperScrollTop: panel.getDomElement().find('.bmpui-container-wrapper').get(0)?.scrollTop || 0
         };
       }
 

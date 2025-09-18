@@ -461,11 +461,25 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
    * Restores the navigation state without triggering resetNavigation.
    * Used to preserve the user's navigation position when reopening the panel.
    */
-  public restoreNavigationState(activePage: SettingsPanelPage, navigationStack: SettingsPanelPage[]): void {
+  public restoreNavigationState(
+    activePage: SettingsPanelPage,
+    navigationStack: SettingsPanelPage[],
+    scrollTop: number,
+    wrapperScrollTop: number
+  ): void {
     this.activePage = activePage;
     this.navigationStack = [...navigationStack];
     this.updateActivePageClass();
     this.onActivePageChangedEvent();
     this.activePage.onActiveEvent();
+
+    // Restore scroll positions after DOM is ready
+    setTimeout(() => {
+      this.getDomElement().get(0).scrollTop = scrollTop;
+      const wrapper = this.getDomElement().find('.bmpui-container-wrapper').get(0);
+      if (wrapper) {
+        wrapper.scrollTop = wrapperScrollTop;
+      }
+    }, 0);
   }
 }
