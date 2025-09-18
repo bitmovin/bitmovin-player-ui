@@ -130,7 +130,7 @@ fi
 echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
 chmod 0600 ~/.npmrc
 
-NPM_LATEST=$(npm view --json ${PACKAGE_NAME} dist-tags | jq -r ".${NPM_TAG}")
+NPM_LATEST=$(npm view --json ${PACKAGE_NAME} dist-tags | jq -r ".latest")
 echo "INFO latest npm version is $NPM_LATEST"
 
 # We always publish the package with the channel/latest tag because there is no way to publish a package without
