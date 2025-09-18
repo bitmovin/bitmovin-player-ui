@@ -456,4 +456,16 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   protected onActivePageChangedEvent() {
     this.settingsPanelEvents.onActivePageChanged.dispatch(this);
   }
+
+  /**
+   * Restores the navigation state without triggering resetNavigation.
+   * Used to preserve the user's navigation position when reopening the panel.
+   */
+  public restoreNavigationState(activePage: SettingsPanelPage, navigationStack: SettingsPanelPage[]): void {
+    this.activePage = activePage;
+    this.navigationStack = [...navigationStack];
+    this.updateActivePageClass();
+    this.onActivePageChangedEvent();
+    this.activePage.onActiveEvent();
+  }
 }

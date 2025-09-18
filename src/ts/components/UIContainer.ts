@@ -8,6 +8,10 @@ import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Button, ButtonConfig } from './buttons/Button';
 import { TouchControlOverlay, TouchControlOverlayConfig } from './overlays/TouchControlOverlay';
+import { SettingsPanel, SettingsPanelConfig } from './settings/SettingsPanel';
+import { SettingsPanelPage } from './settings/SettingsPanelPage';
+import { ArrayUtils } from '../utils/ArrayUtils';
+import { Component, ComponentConfig } from './Component';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -62,6 +66,13 @@ export class UIContainer extends Container<UIContainerConfig> {
   private userInteractionEventSource: DOM;
   private userInteractionEvents: { name: string, handler: EventListenerOrEventListenerObject }[];
   private hidingPrevented: () => boolean;
+
+  private openSettingsPanels: SettingsPanel<SettingsPanelConfig>[] = [];
+  private lastOpenSettingsPanel: SettingsPanel<SettingsPanelConfig> | null = null;
+  private lastSettingsPanelState: {
+    activePage: SettingsPanelPage;
+    navigationStack: SettingsPanelPage[];
+  } | null = null;
 
   public hideUi: () => void = () => {};
   public showUi: () => void = () => {};
@@ -123,6 +134,24 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     this.showUi = () => {
+      // Restore settings panel if it was open before auto-hide
+      if (this.lastOpenSettingsPanel && this.lastSettingsPanelState && this.openSettingsPanels.length === 0) {
+        const panel = this.lastOpenSettingsPanel;
+        const state = this.lastSettingsPanelState;
+
+        // Show the panel first
+        panel.show();
+
+        // Then restore the navigation state (this will override the resetNavigation call in onShow)
+        setTimeout(() => {
+          panel.restoreNavigationState(state.activePage, state.navigationStack);
+        }, 0);
+
+        // Clear saved state
+        this.lastOpenSettingsPanel = null;
+        this.lastSettingsPanelState = null;
+      }
+
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
         uimanager.onControlsShow.dispatch(this);
@@ -130,11 +159,25 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
       // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
       if (!isSeeking && !player.isCasting() && !this.hidingPrevented()) {
+        // Use extended timer if settings panel is open, normal timer otherwise
+        const hideDelay = this.openSettingsPanels.length > 0 ? config.hideDelay * 5 : config.hideDelay;
+        this.uiHideTimeout.clear();
+        this.uiHideTimeout = new Timeout(hideDelay, this.hideUi);
         this.uiHideTimeout.start();
       }
     };
 
     this.hideUi = () => {
+      // Before hiding, save the complete panel navigation state
+      if (this.openSettingsPanels.length > 0) {
+        const panel = this.openSettingsPanels[0];
+        this.lastOpenSettingsPanel = panel;
+        this.lastSettingsPanelState = {
+          activePage: panel.getActivePage(),
+          navigationStack: [...(panel as any)['navigationStack']] // Copy the array
+        };
+      }
+
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
         // Issue a preview event to check if we are good to hide the controls
@@ -305,6 +348,33 @@ export class UIContainer extends Container<UIContainerConfig> {
       } else {
         // Entering a player state that allows hiding
         this.uiHideTimeout.start();
+      }
+    });
+
+    // Track settings panel show/hide for extended timer behavior
+    uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
+      if (component instanceof SettingsPanel) {
+        this.openSettingsPanels.push(component);
+        this.lastOpenSettingsPanel = component;
+        // Reset timeout with extended duration when settings panel opens
+        if (!isSeeking && !player.isCasting() && !this.hidingPrevented()) {
+          this.uiHideTimeout.clear();
+          const extendedDelay = config.hideDelay * 5; // 5x longer timer
+          this.uiHideTimeout = new Timeout(extendedDelay, this.hideUi);
+          this.uiHideTimeout.start();
+        }
+      }
+    });
+
+    uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
+      if (component instanceof SettingsPanel) {
+        ArrayUtils.remove(this.openSettingsPanels, component);
+        // Reset to normal timeout when no settings panels are open
+        if (this.openSettingsPanels.length === 0 && !isSeeking && !player.isCasting() && !this.hidingPrevented()) {
+          this.uiHideTimeout.clear();
+          this.uiHideTimeout = new Timeout(config.hideDelay, this.hideUi);
+          this.uiHideTimeout.start();
+        }
       }
     });
   }
