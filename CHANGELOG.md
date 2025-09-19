@@ -85,6 +85,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - When the UI reappears (on mouse move or interaction), `SettingsPanel` restores in the same state
     - Restores the last-used navigation menu
     - Restores the previous scroll position
+    - The state is cleared after a longer inactivity period, where instead, the UI reappears in the initial state
 - A `ListBox` now extends from `SettingsPanel` to inherit all the new features and design improvements from the `SettingsPanel`
 - The Bitmovin Watermark is no longer visible by default
   - If you want to include your own watermark, you can replace the `logo.svg` file in the `src/assets` folder and enable the watermark in your `UIConfig` by setting `includeWatermark: true`
