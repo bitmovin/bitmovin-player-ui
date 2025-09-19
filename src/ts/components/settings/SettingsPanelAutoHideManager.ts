@@ -12,6 +12,8 @@ interface SettingsPanelState {
   navigationStack: SettingsPanelPage[];
   scrollTop: number;
   wrapperScrollTop: number;
+  panelWidth: number;
+  panelHeight: number;
 }
 
 /**
@@ -60,12 +62,15 @@ export class SettingsPanelAutoHideManager {
   public saveCurrentState(): void {
     if (this.openSettingsPanels.length > 0) {
       const panel = this.openSettingsPanels[0];
+      const panelElement = panel.getDomElement().get(0);
       this.lastOpenSettingsPanel = panel;
       this.lastSettingsPanelState = {
         activePage: panel.getActivePage(),
         navigationStack: [...(panel as any)['navigationStack']], // Copy the array
-        scrollTop: panel.getDomElement().get(0).scrollTop,
-        wrapperScrollTop: panel.getDomElement().find('.bmpui-container-wrapper').get(0)?.scrollTop || 0
+        scrollTop: panelElement.scrollTop,
+        wrapperScrollTop: panel.getDomElement().find('.bmpui-container-wrapper').get(0)?.scrollTop || 0,
+        panelWidth: panelElement.scrollWidth,
+        panelHeight: panelElement.scrollHeight
       };
     }
   }
@@ -87,7 +92,9 @@ export class SettingsPanelAutoHideManager {
           state.activePage,
           state.navigationStack,
           state.scrollTop,
-          state.wrapperScrollTop
+          state.wrapperScrollTop,
+          state.panelWidth,
+          state.panelHeight
         );
       }, 0);
 

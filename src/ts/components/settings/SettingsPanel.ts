@@ -465,13 +465,22 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     activePage: SettingsPanelPage,
     navigationStack: SettingsPanelPage[],
     scrollTop: number,
-    wrapperScrollTop: number
+    wrapperScrollTop: number,
+    panelWidth?: number,
+    panelHeight?: number
   ): void {
     this.activePage = activePage;
     this.navigationStack = [...navigationStack];
     this.updateActivePageClass();
     this.onActivePageChangedEvent();
     this.activePage.onActiveEvent();
+
+    if (panelWidth !== undefined && panelHeight !== undefined) {
+      this.getDomElement().css({
+        width: panelWidth + 'px',
+        height: panelHeight + 'px'
+      });
+    }
 
     // Restore scroll positions after DOM is ready
     setTimeout(() => {
