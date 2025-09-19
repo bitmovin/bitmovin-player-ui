@@ -130,14 +130,19 @@ fi
 echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
 chmod 0600 ~/.npmrc
 
-NPM_LATEST=$(npm view --json ${PACKAGE_NAME} dist-tags | jq -r ".latest")
+NPM_LATEST=$(npm view --json ${PACKAGE_NAME} dist-tags | jq -r ".${NPM_TAG}")
 echo "INFO latest npm version is $NPM_LATEST"
 
 # We always publish the package with the channel/latest tag because there is no way to publish a package without
 # a tag (the default tag is always "latest"). If the published version is older that the currently tagged version,
 # we have to revert the tag afterwards to avoid version regressions.
-echo "INFO publishing ${VERSION_NUMBER} to npm with tag '${NPM_TAG}' (current tagged version is ${NPM_LATEST})"
+echo "INFO publishing ${VERSION_NUMBER} to npm with tag '${NPM_TAG}' (current tagged version is ${NPM_LATEST:-"none"})"
 npm publish --tag ${NPM_TAG} ${NPM_DRY_RUN_CMD}
+
+# If there is no previously tagged version (e.g. for alpha/beta/rc releases) we don't need to do anything
+if [[ "$NPM_LATEST" == "null" ]]; then
+  exit 0
+fi
 
 # Checks if one version is greater than the other
 # https://stackoverflow.com/a/24067243/370252
