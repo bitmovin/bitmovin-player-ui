@@ -61,7 +61,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  test:
+    name: Test, Build and Lint
+    uses: ./.github/workflows/ci.yml
+
   version_bump:
+    needs: test
     name: Version Bump
     runs-on: ubuntu-latest
     outputs:
@@ -143,11 +148,6 @@ jobs:
           git tag "${{ steps.version_number.outputs.tag_name }}"
           git push origin ${{ inputs.branch_name || github.ref_name }}
           git push origin "${{ steps.version_number.outputs.tag_name }}"
-
-  test:
-    needs: version_bump
-    name: Test, Build and Lint
-    uses: ./.github/workflows/ci.yml
 
   release:
     name: Publish Release
