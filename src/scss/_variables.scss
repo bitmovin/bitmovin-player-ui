@@ -10,12 +10,15 @@ $color-secondary: #999 !default;
 
 $color-background: #111 !default;
 $color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), .3) !default;
-$color-background-seekbar-label: rgba(20, 20, 20, .8);
 $color-focus: transparentize($color-highlight, .8);
 /**
  * Used as gradient start color for text elements backgrounds and at the UI edges (top/bottom)
  */
 $color-background-gradient-start: transparentize($color-black, .3) !default;
+/**
+ * Used as solid color for text element backgrounds
+ */
+$color-background-text: rgba(20, 20, 20, .8);
 
 $color-background-menu-title-overlay: rgba(0, 0, 0, .25) !default;
 $color-background-menu: #2e2e2e !default;
