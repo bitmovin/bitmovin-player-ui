@@ -3,6 +3,7 @@ import { SettingsPanel, SettingsPanelConfig } from './SettingsPanel';
 import { SettingsPanelPage } from './SettingsPanelPage';
 import { ArrayUtils } from '../../utils/ArrayUtils';
 import { Component, ComponentConfig } from '../Component';
+import { Timeout } from '../../utils/Timeout';
 
 /**
  * State interface for preserving settings panel navigation and scroll position
@@ -27,8 +28,11 @@ export class SettingsPanelAutoHideManager {
   private openSettingsPanels: SettingsPanel<SettingsPanelConfig>[] = [];
   private lastOpenSettingsPanel: SettingsPanel<SettingsPanelConfig> | null = null;
   private lastSettingsPanelState: SettingsPanelState | null = null;
+  private stateClearTimeout: Timeout;
+  private readonly stateClearDelay: number;
 
-  constructor(private uimanager: UIInstanceManager) {
+  constructor(private uimanager: UIInstanceManager, stateClearDelay: number = 15000) {
+    this.stateClearDelay = stateClearDelay;
     this.setupEventListeners();
   }
 
@@ -56,6 +60,11 @@ export class SettingsPanelAutoHideManager {
     ArrayUtils.remove(this.openSettingsPanels, panel);
   }
 
+  private clearSavedState(): void {
+    this.lastOpenSettingsPanel = null;
+    this.lastSettingsPanelState = null;
+  }
+
   /**
    * Saves the current state of open settings panels for later restoration
    */
@@ -72,6 +81,12 @@ export class SettingsPanelAutoHideManager {
         panelWidth: panelElement.scrollWidth,
         panelHeight: panelElement.scrollHeight
       };
+
+      // Start timeout to clear saved state after the specified delay
+      this.stateClearTimeout = new Timeout(this.stateClearDelay, () => {
+        this.clearSavedState();
+      });
+      this.stateClearTimeout.start();
     }
   }
 
@@ -82,6 +97,11 @@ export class SettingsPanelAutoHideManager {
     if (this.lastOpenSettingsPanel && this.lastSettingsPanelState && this.openSettingsPanels.length === 0) {
       const panel = this.lastOpenSettingsPanel;
       const state = this.lastSettingsPanelState;
+
+      // Cancel the state clear timeout since we're restoring the state
+      if (this.stateClearTimeout) {
+        this.stateClearTimeout.clear();
+      }
 
       // Show the panel first
       panel.show();
@@ -99,8 +119,7 @@ export class SettingsPanelAutoHideManager {
       }, 0);
 
       // Clear saved state
-      this.lastOpenSettingsPanel = null;
-      this.lastSettingsPanelState = null;
+      this.clearSavedState();
     }
   }
 
@@ -120,7 +139,9 @@ export class SettingsPanelAutoHideManager {
 
   public release(): void {
     this.openSettingsPanels = [];
-    this.lastOpenSettingsPanel = null;
-    this.lastSettingsPanelState = null;
+    this.clearSavedState();
+    if (this.stateClearTimeout) {
+      this.stateClearTimeout.clear();
+    }
   }
 }
