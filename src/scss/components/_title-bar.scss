@@ -6,8 +6,8 @@
 
   @include hidden-animated-focusable;
   @include layout-align-top;
+  @include background-gradient(to top);
 
-  background: linear-gradient(to top, $color-transparent, $color-background-bars);
   box-sizing: border-box;
 
   $titlebar-padding: 1.5em;

@@ -20,8 +20,8 @@
   @extend %ui-container;
 
   @include layout-align-bottom;
+  @include background-gradient(to bottom);
 
-  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
   padding: 1em;
 

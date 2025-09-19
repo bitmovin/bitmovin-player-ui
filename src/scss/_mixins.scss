@@ -137,6 +137,13 @@
   }
 }
 
+/// Creates a gradient background from transparent to the gradient start color
+/// @param {String} $direction - Direction of the gradient (e.g., 'to bottom', 'to top')
+/// @param {Color} $start-color ($color-background-gradient-start) - The color to gradient to
+@mixin background-gradient($direction, $start-color: $color-background-gradient-start) {
+  background: linear-gradient($direction, $color-transparent, $start-color);
+}
+
 /// Replace `$search` with `$replace` in `$string`. From https://css-tricks.com/snippets/sass/str-replace-function/
 /// @param {String} $string - Initial string
 /// @param {String} $search - Substring to replace
