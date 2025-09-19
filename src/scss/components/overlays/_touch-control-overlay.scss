@@ -34,6 +34,7 @@
   display: flex;
   justify-content: center;
   text-align: center;
+  transition: background-color $animation-duration;
 
   // sass-lint:disable nesting-depth
   > .#{$prefix}-container-wrapper {
