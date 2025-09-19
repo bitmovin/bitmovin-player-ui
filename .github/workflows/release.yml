@@ -144,7 +144,7 @@ jobs:
           git config --global user.name 'Automated Release'
           git config --global user.email 'release-automation@bitmovin.com'
           git add package.json CHANGELOG.md
-          git commit -m "Bump version to ${{ steps.version_number.outputs.version_number }}"
+          git commit -m "[skip ci] Bump version to ${{ steps.version_number.outputs.version_number }}"
           git tag "${{ steps.version_number.outputs.tag_name }}"
           git push origin ${{ inputs.branch_name || github.ref_name }}
           git push origin "${{ steps.version_number.outputs.tag_name }}"
