@@ -24,14 +24,10 @@
     "Firefox ESR"
   ],
   "lint-staged": {
-    "!(*.spec.ts)": [
-      "eslint --fix",
-      "prettier --write"
+    "(src/**/*.ts)": [
+      "eslint --fix"
     ],
-    "*.spec.ts": [
-      "prettier --write"
-    ],
-    "(*.json|*.js|*.mjs|*.html|*.md|*.scss|*.prettierignore)": [
+    "(*.ts|*.json|*.js|*.mjs|*.html|*.md|*.scss|*.prettierignore)": [
       "prettier --write"
     ]
   },
