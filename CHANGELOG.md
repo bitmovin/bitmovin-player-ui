@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - When navigating the UI either via the Keyboard or via Spatial Navigation, the `SettingsPanel` automatically focuses the first settings option
 - `UIConditionContext.isTv` to include the TV UI variant by default
 - A dedicated UIVariant when no Source is loaded to avoid showing UI elements with undefined values
+- Prettier for automatic code formatting
 
 ### Changed
 
