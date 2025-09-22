@@ -40,6 +40,7 @@
     "cssnano": "^5.1.15",
     "del": "^2.2.2",
     "eslint": "^9.17.0",
+    "eslint-config-prettier": "^10.1.8",
     "gulp": "^4.0.2",
     "gulp-css-base64": "^2.0.0",
     "gulp-eslint-new": "^2.4.0",
