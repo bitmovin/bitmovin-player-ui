@@ -58,6 +58,7 @@
     "lint-staged": "^15.3.0",
     "merge2": "^1.4.1",
     "postcss-svg": "^3.0.0",
+    "prettier": "^3.6.2",
     "sass": "^1.59.3",
     "semver": "^7.5.4",
     "stream-combiner2": "^1.1.1",
