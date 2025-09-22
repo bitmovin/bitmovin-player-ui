@@ -1,5 +1,5 @@
-import {Event, EventDispatcher, NoArgs} from '../EventDispatcher';
-import {BrowserUtils} from './BrowserUtils';
+import { Event, EventDispatcher, NoArgs } from '../EventDispatcher';
+import { BrowserUtils } from './BrowserUtils';
 import { UIInstanceManager } from '../UIManager';
 import { PlayerAPI, TimeRange } from 'bitmovin-player';
 
@@ -7,7 +7,6 @@ import { PlayerAPI, TimeRange } from 'bitmovin-player';
  * @category Utils
  */
 export namespace PlayerUtils {
-
   export enum PlayerState {
     Idle,
     Prepared,
@@ -59,7 +58,7 @@ export namespace PlayerUtils {
    * @param defaultValue
    */
   export function getSeekableRangeStart(player: PlayerAPI, defaultValue: number = 0) {
-    return player.getSeekableRange() && player.getSeekableRange().start || defaultValue;
+    return (player.getSeekableRange() && player.getSeekableRange().start) || defaultValue;
   }
 
   /**
@@ -77,7 +76,7 @@ export namespace PlayerUtils {
     const maxTimeshift = -player.getMaxTimeShift();
     const currentTime = player.getCurrentTime();
 
-    const end = currentTime + (currentTimeshift);
+    const end = currentTime + currentTimeshift;
     const start = currentTime - (maxTimeshift - currentTimeshift);
 
     return { start, end };
@@ -88,7 +87,6 @@ export namespace PlayerUtils {
   }
 
   export class TimeShiftAvailabilityDetector {
-
     private player: PlayerAPI;
     private timeShiftAvailable: boolean;
     private timeShiftAvailabilityChangedEvent = new EventDispatcher<PlayerAPI, TimeShiftAvailabilityChangedArgs>();
@@ -148,7 +146,6 @@ export namespace PlayerUtils {
    * TODO: remove this class in next major release
    */
   export class LiveStreamDetector {
-
     private player: PlayerAPI;
     private live: boolean;
     private liveChangedEvent = new EventDispatcher<PlayerAPI, LiveStreamDetectorEventArgs>();

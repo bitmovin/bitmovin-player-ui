@@ -11,14 +11,13 @@ jest.mock('../../src/ts/spatialnavigation/SeekBarHandler.ts');
 jest.mock('../../src/ts/spatialnavigation/NodeEventSubscriber.ts');
 
 describe('SpatialNavigation', () => {
-
   let spatialNavigation: SpatialNavigation;
   let rootNavigationGroup: RootNavigationGroup;
   let rootNavigationContainer: UIContainer;
 
   let otherNavigationGroup: NavigationGroup;
   let otherNavigationContainer: SettingsPanel<SettingsPanelConfig>;
-  
+
   beforeEach(() => {
     rootNavigationContainer = new UIContainer({});
     rootNavigationGroup = new RootNavigationGroup(rootNavigationContainer);
@@ -63,26 +62,25 @@ describe('SpatialNavigation', () => {
       otherNavigationContainer.hide();
 
       expect(spatialNavigation.getActiveNavigationGroup()).toEqual(rootNavigationGroup);
-    })
+    });
   });
 
   describe('handleKeyEvent', () => {
-      it('should call handle navigation on active group on key event', () => {
-        rootNavigationContainer.show();
-        const rootHandleNavigationSpy = jest.spyOn(rootNavigationGroup, 'handleNavigation');
-        spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key:'Up', keyCode: 38 } as any));
+    it('should call handle navigation on active group on key event', () => {
+      rootNavigationContainer.show();
+      const rootHandleNavigationSpy = jest.spyOn(rootNavigationGroup, 'handleNavigation');
+      spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key: 'Up', keyCode: 38 } as any));
 
-        expect(rootHandleNavigationSpy).toHaveBeenCalledWith(Direction.UP);
-      });
+      expect(rootHandleNavigationSpy).toHaveBeenCalledWith(Direction.UP);
+    });
 
     it('should call handle action on active group on key event', () => {
       rootNavigationContainer.show();
       const rootHandleActionSpy = jest.spyOn(rootNavigationGroup, 'handleAction');
-      spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key:'Escape', keyCode: 27 } as any));
+      spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27 } as any));
 
       expect(rootHandleActionSpy).toHaveBeenCalledWith(Action.BACK);
     });
-
   });
 
   describe('release', () => {

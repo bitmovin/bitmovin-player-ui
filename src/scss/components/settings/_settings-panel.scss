@@ -4,20 +4,27 @@
 %ui-settings-panel {
   @extend %ui-container;
 
-  @include hidden-animated-with-additional-transitions($animation-duration,
+  @include hidden-animated-with-additional-transitions(
+    $animation-duration,
     (
-      height: (.35s, cubic-bezier(.4, 0, .2, 1)),
-      width: (.35s, cubic-bezier(.4, 0, .2, 1))
+      height: (
+        0.35s,
+        cubic-bezier(0.4, 0, 0.2, 1),
+      ),
+      width: (
+        0.35s,
+        cubic-bezier(0.4, 0, 0.2, 1),
+      ),
     )
   );
 
-  $background-color: transparentize($color-background-menu, .15);
+  $background-color: transparentize($color-background-menu, 0.15);
 
   backdrop-filter: blur(10px);
   background-color: $background-color;
   border-radius: $border-radius;
   bottom: 3.5em;
-  box-shadow: 0 0 3px 0 transparentize($color: #000, $amount: .75);
+  box-shadow: 0 0 3px 0 transparentize($color: #000, $amount: 0.75);
   height: fit-content;
   max-height: 60%;
   min-width: fit-content;

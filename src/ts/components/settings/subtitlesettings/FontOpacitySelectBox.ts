@@ -1,5 +1,5 @@
 import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './SubtitleSettingSelectBox';
-import {UIInstanceManager} from '../../../UIManager';
+import { UIInstanceManager } from '../../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../../localization/i18n';
 
@@ -9,13 +9,16 @@ import { i18n } from '../../../localization/i18n';
  * @category Components
  */
 export class FontOpacitySelectBox extends SubtitleSettingSelectBox {
-
   constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-subtitlesettingsfontopacityselectbox'],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-subtitlesettingsfontopacityselectbox'],
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

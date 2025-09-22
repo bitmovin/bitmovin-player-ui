@@ -17,14 +17,18 @@ export class Icon extends Component<IconConfig> {
   constructor(config: IconConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-icon',
-    } as IconConfig, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-icon',
+      } as IconConfig,
+      this.config,
+    );
   }
 
   protected toDomElement(): DOM {
     return new DOM('div', {
-      'class': this.getCssClasses(),
+      class: this.getCssClasses(),
       'aria-label': i18n.performLocalization(this.config.ariaLabel || this.config.altText),
     });
   }

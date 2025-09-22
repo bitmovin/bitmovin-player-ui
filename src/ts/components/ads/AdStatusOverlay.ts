@@ -17,10 +17,7 @@ export class AdStatusOverlay extends Container<ContainerConfig> {
       {
         components: [
           new Container({
-            components: [
-              new Spacer(),
-              this.adSkipButton,
-            ],
+            components: [new Spacer(), this.adSkipButton],
             cssClasses: ['bar'],
           }),
         ],

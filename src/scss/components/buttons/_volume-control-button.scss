@@ -17,13 +17,13 @@
     width: 1.5em;
 
     .#{$prefix}-seekbar {
-      bottom: .5em;
+      bottom: 0.5em;
       height: auto;
-      left: .3em;
+      left: 0.3em;
       overflow: hidden;
       position: absolute;
-      right: .3em;
-      top: .5em;
+      right: 0.3em;
+      top: 0.5em;
       width: auto;
     }
   }

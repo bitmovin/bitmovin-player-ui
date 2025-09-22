@@ -51,7 +51,6 @@ export interface ToggleButtonConfig extends ButtonConfig {
  * @category Components
  */
 export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Config> {
-
   private onState: boolean;
   private useAriaPressedAttributeAsToggleIndicator: boolean;
 
@@ -91,7 +90,7 @@ export class ToggleButton<Config extends ToggleButtonConfig> extends Button<Conf
        * WCAG20 standard to display if a button is pressed or not. In screenreaders, this converts the button to a
        * toggle button and the button label should not change. Unfortunately, not all devices and screenreaders support
        * this attribute (e.g. Samsung Tizen TVs).
-       * 
+       *
        * The alternative is to not use this attribute and toggle the button
        * label instead. This option will be used if both, `onAriaLabel` and `offAriaLabel` are set.
        */

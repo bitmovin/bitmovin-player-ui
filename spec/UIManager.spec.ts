@@ -1,10 +1,4 @@
-import {
-  InternalUIConfig,
-  PlayerWrapper,
-  UIInstanceManager,
-  UIManager,
-  UIVariant,
-} from '../src/ts/UIManager';
+import { InternalUIConfig, PlayerWrapper, UIInstanceManager, UIManager, UIVariant } from '../src/ts/UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
@@ -82,25 +76,24 @@ describe('UIManager', () => {
     beforeEach(() => {
       playerMock = MockHelper.getPlayerMock();
       firstUi = {
-        ui: new UIContainer({ components: [new Container({})]}),
-        condition: (context) => context.isPlaying,
+        ui: new UIContainer({ components: [new Container({})] }),
+        condition: context => context.isPlaying,
       };
       secondUI = {
-        ui: new UIContainer({ components: [new Container({})]}),
-        condition: (context) => context.isAd,
-      }
+        ui: new UIContainer({ components: [new Container({})] }),
+        condition: context => context.isAd,
+      };
       defaultUI = {
-        ui: new UIContainer({ components: [new Container({})]}),
-      }
-
+        ui: new UIContainer({ components: [new Container({})] }),
+      };
     });
 
     it('should mark invisible UIs as hidden', () => {
       new UIManager(playerMock, [firstUi, secondUI, defaultUI]);
 
-      expect(firstUi.ui.isHidden()).toBeTruthy()
-      expect(secondUI.ui.isHidden()).toBeTruthy()
-      expect(defaultUI.ui.isHidden()).toBeFalsy()
+      expect(firstUi.ui.isHidden()).toBeTruthy();
+      expect(secondUI.ui.isHidden()).toBeTruthy();
+      expect(defaultUI.ui.isHidden()).toBeFalsy();
     });
 
     it('should switch to the corresponding ui when a play event is fired', () => {
@@ -109,9 +102,9 @@ describe('UIManager', () => {
       (playerMock.isPlaying as jest.Mock).mockReturnValue(true);
       playerMock.eventEmitter.firePlayEvent();
 
-      expect(firstUi.ui.isHidden()).toBeFalsy()
-      expect(secondUI.ui.isHidden()).toBeTruthy()
-      expect(defaultUI.ui.isHidden()).toBeTruthy()
+      expect(firstUi.ui.isHidden()).toBeFalsy();
+      expect(secondUI.ui.isHidden()).toBeTruthy();
+      expect(defaultUI.ui.isHidden()).toBeTruthy();
     });
 
     it('should dispatch the onActiveUiChanged event', () => {
@@ -122,13 +115,10 @@ describe('UIManager', () => {
       uiManager.onActiveUiChanged.subscribe(onUiChanged);
       uiManager.switchToUiVariant(secondUI);
 
-      expect(onUiChanged).toHaveBeenCalledWith(
-        uiManager,
-        {
-          previousUi: uiManager['uiInstanceManagers'][0],
-          currentUi: uiManager['uiInstanceManagers'][1],
-        },
-      );
+      expect(onUiChanged).toHaveBeenCalledWith(uiManager, {
+        previousUi: uiManager['uiInstanceManagers'][0],
+        currentUi: uiManager['uiInstanceManagers'][1],
+      });
     });
 
     it('should not dispatch the onActiveUiChanged event if the selected variant is already active', () => {
@@ -157,7 +147,7 @@ describe('UIManager', () => {
   describe('activeUi', () => {
     it('should return the active UI instance manager', () => {
       const playerMock = MockHelper.getPlayerMock();
-      const uiVariant = { ui: new UIContainer({ components: [new Container({})]}) };
+      const uiVariant = { ui: new UIContainer({ components: [new Container({})] }) };
       const uiManager = new UIManager(playerMock, [uiVariant]);
 
       expect(uiManager.activeUi).toBeInstanceOf(UIInstanceManager);

@@ -57,7 +57,9 @@ export class TimelineMarkersHandler {
       }
     });
     this.uimanager.getConfig().events.onUpdated.subscribe(() => this.updateMarkers());
-    this.uimanager.onRelease.subscribe(() => this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.updateMarkers()));
+    this.uimanager.onRelease.subscribe(() =>
+      this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.updateMarkers()),
+    );
 
     // Init markers at startup
     this.updateMarkers();
@@ -76,8 +78,7 @@ export class TimelineMarkersHandler {
 
       // Handle position markers
       const positionMarkerMatch =
-        percentage >= marker.position - snappingRange &&
-        percentage <= marker.position + snappingRange;
+        percentage >= marker.position - snappingRange && percentage <= marker.position + snappingRange;
 
       return intervalMarkerMatch || positionMarkerMatch;
     });
@@ -91,12 +92,16 @@ export class TimelineMarkersHandler {
   }
 
   private removeMarkerFromConfig(marker: TimelineMarker): void {
-    this.uimanager.getConfig().metadata.markers = this.uimanager.getConfig().metadata.markers.filter(_marker => marker !== _marker);
+    this.uimanager.getConfig().metadata.markers = this.uimanager
+      .getConfig()
+      .metadata.markers.filter(_marker => marker !== _marker);
   }
 
   private filterRemovedMarkers(): void {
     this.timelineMarkers = this.timelineMarkers.filter(seekbarMarker => {
-      const matchingMarker = this.uimanager.getConfig().metadata.markers.find(_marker => seekbarMarker.marker === _marker);
+      const matchingMarker = this.uimanager
+        .getConfig()
+        .metadata.markers.find(_marker => seekbarMarker.marker === _marker);
       if (!matchingMarker) {
         this.removeMarkerFromDOM(seekbarMarker);
       }
@@ -146,11 +151,11 @@ export class TimelineMarkersHandler {
 
     const positionInPx = (seekBarWidthPx / 100) * (marker.position < 0 ? 0 : marker.position);
     const cssProperties: { [propertyName: string]: string } = {
-      'transform': `translateX(${positionInPx}px)`,
+      transform: `translateX(${positionInPx}px)`,
     };
 
     if (marker.duration > 0) {
-      const markerWidthPx = Math.round(seekBarWidthPx / 100 * marker.duration);
+      const markerWidthPx = Math.round((seekBarWidthPx / 100) * marker.duration);
       cssProperties['width'] = `${markerWidthPx}px`;
     }
 
@@ -162,19 +167,20 @@ export class TimelineMarkersHandler {
   }
 
   private createMarkerDOM(marker: SeekBarMarker): void {
-    const markerClasses = ['seekbar-marker'].concat(marker.marker.cssClasses || [])
+    const markerClasses = ['seekbar-marker']
+      .concat(marker.marker.cssClasses || [])
       .map(cssClass => this.prefixCss(cssClass));
 
-    const markerStartIndicator = new DOM("div", {
-      class: this.prefixCss("seekbar-marker-indicator"),
+    const markerStartIndicator = new DOM('div', {
+      class: this.prefixCss('seekbar-marker-indicator'),
     });
-  
-    const markerEndIndicator = new DOM("div", {
-      class: this.prefixCss("seekbar-marker-indicator"),
+
+    const markerEndIndicator = new DOM('div', {
+      class: this.prefixCss('seekbar-marker-indicator'),
     });
 
     const markerElement = new DOM('div', {
-      'class': markerClasses.join(' '),
+      class: markerClasses.join(' '),
       'data-marker-time': String(marker.marker.time),
       'data-marker-title': String(marker.marker.title),
     }).css(this.getMarkerCssProperties(marker));
@@ -185,16 +191,16 @@ export class TimelineMarkersHandler {
       };
 
       const imageElement = new DOM('img', {
-        'class': this.prefixCss('seekbar-marker-image'),
-        'src': marker.marker.imageUrl,
+        class: this.prefixCss('seekbar-marker-image'),
+        src: marker.marker.imageUrl,
       }).on('error', removeImage);
 
       markerElement.append(imageElement);
     }
 
     markerElement.append(markerStartIndicator);
-    
-    if(marker.duration > 0) {
+
+    if (marker.duration > 0) {
       markerElement.append(markerEndIndicator);
     }
 
@@ -212,9 +218,7 @@ export class TimelineMarkersHandler {
     });
   }
 
-  private configureLivePausedTimeshiftUpdater(
-    handler: () => void,
-  ): void {
+  private configureLivePausedTimeshiftUpdater(handler: () => void): void {
     // Regularly update the marker position while the timeout is active
     this.pausedTimeshiftUpdater = new Timeout(1000, handler, true);
 
@@ -237,8 +241,8 @@ export class TimelineMarkersHandler {
 function getMarkerPositions(player: PlayerAPI, marker: TimelineMarker) {
   const duration = getDuration(player);
 
-  const markerPosition = 100 / duration * getMarkerTime(marker, player, duration); // convert absolute time to percentage
-  let markerDuration = 100 / duration * marker.duration;
+  const markerPosition = (100 / duration) * getMarkerTime(marker, player, duration); // convert absolute time to percentage
+  let markerDuration = (100 / duration) * marker.duration;
 
   if (markerPosition < 0 && !isNaN(markerDuration)) {
     // Shrink marker duration for on live streams as they reach end

@@ -47,7 +47,6 @@ export interface UIContainerConfig extends ContainerConfig {
  * @category Containers
  */
 export class UIContainer extends Container<UIContainerConfig> {
-
   private static readonly STATE_PREFIX = 'player-state-';
 
   private static readonly FULLSCREEN = 'fullscreen';
@@ -60,7 +59,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   private playerStateChange: EventDispatcher<UIContainer, PlayerUtils.PlayerState>;
 
   private userInteractionEventSource: DOM;
-  private userInteractionEvents: { name: string, handler: EventListenerOrEventListenerObject }[];
+  private userInteractionEvents: { name: string; handler: EventListenerOrEventListenerObject }[];
   private hidingPrevented: () => boolean;
 
   public hideUi: () => void = () => {};
@@ -70,13 +69,17 @@ export class UIContainer extends Container<UIContainerConfig> {
   constructor(config: UIContainerConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, <UIContainerConfig>{
-      cssClass: 'ui-uicontainer',
-      role: 'region',
-      ariaLabel: i18n.getLocalizer('player'),
-      hideDelay: 2000,
-      hideImmediatelyOnMouseLeave: true,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      <UIContainerConfig>{
+        cssClass: 'ui-uicontainer',
+        role: 'region',
+        ariaLabel: i18n.getLocalizer('player'),
+        hideDelay: 2000,
+        hideImmediatelyOnMouseLeave: true,
+      },
+      this.config,
+    );
 
     this.playerStateChange = new EventDispatcher<UIContainer, PlayerUtils.PlayerState>();
     this.hidingPrevented = () => false;
@@ -170,117 +173,134 @@ export class UIContainer extends Container<UIContainerConfig> {
       return !((e.target as HTMLElementWithComponent).component instanceof TouchControlOverlay);
     };
 
-    this.userInteractionEvents = [{
-      // On touch displays, the first touch reveals the UI
-      name: 'touchend',
-      handler: (e) => {
-        if (!checkActionAllowed(e)) {
-          return;
-        }
+    this.userInteractionEvents = [
+      {
+        // On touch displays, the first touch reveals the UI
+        name: 'touchend',
+        handler: e => {
+          if (!checkActionAllowed(e)) {
+            return;
+          }
 
-        const shouldPreventDefault = ((e: Event): Boolean => {
-          const findButtonComponent = ((element: HTMLElementWithComponent): Button<ButtonConfig> | TouchControlOverlay | null => {
-            if (
-                !element
-                  || element === this.userInteractionEventSource.get(0)
-                  || element.component instanceof UIContainer
-            ) {
-              return null;
-            }
+          const shouldPreventDefault = (e: Event): Boolean => {
+            const findButtonComponent = (
+              element: HTMLElementWithComponent,
+            ): Button<ButtonConfig> | TouchControlOverlay | null => {
+              if (
+                !element ||
+                element === this.userInteractionEventSource.get(0) ||
+                element.component instanceof UIContainer
+              ) {
+                return null;
+              }
 
-            if (element.component && element.component instanceof Button || element.component instanceof TouchControlOverlay) {
-              return element.component;
+              if (
+                (element.component && element.component instanceof Button) ||
+                element.component instanceof TouchControlOverlay
+              ) {
+                return element.component;
+              } else {
+                return findButtonComponent(element.parentElement);
+              }
+            };
+
+            const buttonComponent = findButtonComponent(e.target as HTMLElementWithComponent);
+            return !(buttonComponent && buttonComponent.getConfig().acceptsTouchWithUiHidden);
+          };
+
+          if (!isUiShown) {
+            // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
+            // instead. The first touch is not prevented to let other listeners receive the event and trigger an
+            // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
+            // tap which 1. reveals the UI and 2. starts playback.
+            if (isFirstTouch && !player.isPlaying()) {
+              isFirstTouch = false;
             } else {
-              return findButtonComponent(element.parentElement);
+              // On touch input devices, the first touch is expected to display the UI controls and not be propagated to
+              // other components.
+              // When buttons are always visible this causes UX problems, as the first touch is not recognized.
+              // This is the case for the {@link AdSkipButton} and {@link AdClickOverlay}.
+              // To prevent UX issues where the buttons need to be touched twice, we do not prevent the first touch event.
+              if (shouldPreventDefault(e)) {
+                e.preventDefault();
+              }
             }
-          });
-
-          const buttonComponent = findButtonComponent(e.target as HTMLElementWithComponent);
-          return !(buttonComponent && buttonComponent.getConfig().acceptsTouchWithUiHidden);
-        });
-
-        if (!isUiShown) {
-          // Only if the UI is hidden, we prevent other actions (except for the first touch) and reveal the UI
-          // instead. The first touch is not prevented to let other listeners receive the event and trigger an
-          // initial action, e.g. the huge playback button can directly start playback instead of requiring a double
-          // tap which 1. reveals the UI and 2. starts playback.
-          if (isFirstTouch && !player.isPlaying()) {
-            isFirstTouch = false;
-          } else {
-            // On touch input devices, the first touch is expected to display the UI controls and not be propagated to
-            // other components.
-            // When buttons are always visible this causes UX problems, as the first touch is not recognized.
-            // This is the case for the {@link AdSkipButton} and {@link AdClickOverlay}.
-            // To prevent UX issues where the buttons need to be touched twice, we do not prevent the first touch event.
-            if (shouldPreventDefault(e)) {
-              e.preventDefault();
+            this.showUi();
+          }
+        },
+      },
+      {
+        // When the mouse enters, we show the UI
+        name: 'mouseenter',
+        handler: e => {
+          if (checkActionAllowed(e)) {
+            this.showUi();
+          }
+        },
+      },
+      {
+        // When the mouse moves within, we show the UI
+        name: 'mousemove',
+        handler: e => {
+          if (checkActionAllowed(e)) {
+            this.showUi();
+          }
+        },
+      },
+      {
+        name: 'focusin',
+        handler: e => {
+          if (checkActionAllowed(e)) {
+            this.showUi();
+          }
+        },
+      },
+      {
+        name: 'keydown',
+        handler: e => {
+          if (checkActionAllowed(e)) {
+            this.showUi();
+          }
+        },
+      },
+      {
+        // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
+        name: 'mouseleave',
+        handler: () => {
+          // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
+          // hide the UI in such cases
+          if (!isSeeking && !this.hidingPrevented()) {
+            if (this.config.hideImmediatelyOnMouseLeave) {
+              this.hideUi();
+            } else {
+              this.uiHideTimeout.start();
             }
           }
-          this.showUi();
-        }
+        },
       },
-    }, {
-      // When the mouse enters, we show the UI
-      name: 'mouseenter',
-      handler: (e) => {
-        if (checkActionAllowed(e)) {
-          this.showUi();
-        }
-      },
-    }, {
-      // When the mouse moves within, we show the UI
-      name: 'mousemove',
-      handler: (e) => {
-        if (checkActionAllowed(e)) {
-          this.showUi();
-        }
-      },
-    }, {
-      name: 'focusin',
-      handler: (e) => {
-        if (checkActionAllowed(e)) {
-          this.showUi();
-        }
-      },
-    }, {
-      name: 'keydown',
-      handler: (e) => {
-        if (checkActionAllowed(e)) {
-          this.showUi();
-        }
-      },
-    }, {
-      // When the mouse leaves, we can prepare to hide the UI, except a seek is going on
-      name: 'mouseleave',
-      handler: () => {
-        // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
-        // hide the UI in such cases
-        if (!isSeeking && !this.hidingPrevented()) {
-          if (this.config.hideImmediatelyOnMouseLeave) {
-            this.hideUi();
-          } else {
-            this.uiHideTimeout.start();
+      {
+        // When scrolling, we show the UI
+        name: 'wheel',
+        handler: e => {
+          if (checkActionAllowed(e)) {
+            this.showUi();
           }
-        }
+        },
       },
-    }, {
-      // When scrolling, we show the UI
-      name: 'wheel',
-      handler: (e) => {
-        if (checkActionAllowed(e)) {
-          this.showUi();
-        }
-      },
-    }];
+    ];
 
-    this.userInteractionEvents.forEach((event) => this.userInteractionEventSource.on(event.name, event.handler));
+    this.userInteractionEvents.forEach(event => this.userInteractionEventSource.on(event.name, event.handler));
 
     // Add click listener running on capture phase to intercept clicks before stopPropagation() in buttons
-    this.userInteractionEventSource.on('click', (e) => {
-      if (checkActionAllowed(e)) {
-        this.showUi();
-      }
-    }, { capture: true });
+    this.userInteractionEventSource.on(
+      'click',
+      e => {
+        if (checkActionAllowed(e)) {
+          this.showUi();
+        }
+      },
+      { capture: true },
+    );
 
     uimanager.onSeek.subscribe(() => {
       this.uiHideTimeout.clear(); // Don't hide UI while a seek is in progress
@@ -317,8 +337,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     for (let state in PlayerUtils.PlayerState) {
       if (isNaN(Number(state))) {
         let enumName = PlayerUtils.PlayerState[<any>PlayerUtils.PlayerState[state]];
-        stateClassNames[PlayerUtils.PlayerState[state]] =
-          this.prefixCss(UIContainer.STATE_PREFIX + enumName.toLowerCase());
+        stateClassNames[PlayerUtils.PlayerState[state]] = this.prefixCss(
+          UIContainer.STATE_PREFIX + enumName.toLowerCase(),
+        );
       }
     }
 
@@ -437,7 +458,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     // Explicitly unsubscribe user interaction event handlers because they could be attached to an external element
     // that isn't owned by the UI and therefore not removed on release.
     if (this.userInteractionEvents) {
-      this.userInteractionEvents.forEach((event) => this.userInteractionEventSource.off(event.name, event.handler));
+      this.userInteractionEvents.forEach(event => this.userInteractionEventSource.off(event.name, event.handler));
     }
 
     super.release();

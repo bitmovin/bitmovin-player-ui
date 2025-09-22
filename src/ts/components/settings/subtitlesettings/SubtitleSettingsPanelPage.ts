@@ -1,19 +1,19 @@
 import { SettingsPanelPage, SettingsPanelPageConfig } from '../SettingsPanelPage';
 import { SettingsPanel, SettingsPanelConfig } from '../SettingsPanel';
-import {SubtitleOverlay} from '../../overlays/SubtitleOverlay';
-import {Component, ComponentConfig} from '../../Component';
-import {FontSizeSelectBox} from './FontSizeSelectBox';
-import {FontFamilySelectBox} from './FontFamilySelectBox';
-import {FontColorSelectBox} from './FontColorSelectBox';
-import {FontOpacitySelectBox} from './FontOpacitySelectBox';
-import {CharacterEdgeSelectBox} from './CharacterEdgeSelectBox';
-import {BackgroundColorSelectBox} from './BackgroundColorSelectBox';
-import {BackgroundOpacitySelectBox} from './BackgroundOpacitySelectBox';
-import {WindowColorSelectBox} from './WindowColorSelectBox';
-import {WindowOpacitySelectBox} from './WindowOpacitySelectBox';
-import {SubtitleSettingsResetButton} from './SubtitleSettingsResetButton';
-import {UIInstanceManager} from '../../../UIManager';
-import {SettingsPanelPageBackButton} from '../SettingsPanelPageBackButton';
+import { SubtitleOverlay } from '../../overlays/SubtitleOverlay';
+import { Component, ComponentConfig } from '../../Component';
+import { FontSizeSelectBox } from './FontSizeSelectBox';
+import { FontFamilySelectBox } from './FontFamilySelectBox';
+import { FontColorSelectBox } from './FontColorSelectBox';
+import { FontOpacitySelectBox } from './FontOpacitySelectBox';
+import { CharacterEdgeSelectBox } from './CharacterEdgeSelectBox';
+import { BackgroundColorSelectBox } from './BackgroundColorSelectBox';
+import { BackgroundOpacitySelectBox } from './BackgroundOpacitySelectBox';
+import { WindowColorSelectBox } from './WindowColorSelectBox';
+import { WindowOpacitySelectBox } from './WindowOpacitySelectBox';
+import { SubtitleSettingsResetButton } from './SubtitleSettingsResetButton';
+import { UIInstanceManager } from '../../../UIManager';
+import { SettingsPanelPageBackButton } from '../SettingsPanelPageBackButton';
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../SettingsPanelItem';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../../../localization/i18n';
@@ -35,7 +35,6 @@ export interface SubtitleSettingsPanelPageConfig extends SettingsPanelPageConfig
  * @category Components
  */
 export class SubtitleSettingsPanelPage extends SettingsPanelPage {
-
   private readonly overlay: SubtitleOverlay;
   private readonly settingsPanel: SettingsPanel<SettingsPanelConfig>;
 
@@ -50,7 +49,7 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
         i18n.getLocalizer('settings.subtitles.font.size'),
         new FontSizeSelectBox({
           overlay: this.overlay,
-          filter: (item) => this.overlay.filterFontSizeOptions(item),
+          filter: item => this.overlay.filterFontSizeOptions(item),
         }),
         config.useDynamicSettingsPanelItem,
       ),
@@ -141,9 +140,13 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
       components.push(backItem);
     }
 
-    this.config = this.mergeConfig(config, {
-      components: components,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        components: components,
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -153,13 +156,15 @@ export class SubtitleSettingsPanelPage extends SettingsPanelPage {
       this.overlay.enablePreviewSubtitleLabel();
 
       // Dynamically reapply font size filter
-      const fontSizeComponent = this.getComponents().find((component: any) =>
-        component instanceof SettingsPanelItem &&
-        component.getComponents().some((c) => c instanceof FontSizeSelectBox)
+      const fontSizeComponent = this.getComponents().find(
+        (component: any) =>
+          component instanceof SettingsPanelItem && component.getComponents().some(c => c instanceof FontSizeSelectBox),
       ) as SettingsPanelItem<SettingsPanelItemConfig>;
 
       if (fontSizeComponent) {
-        const fontSizeSelectBox = fontSizeComponent.getComponents().find(c => c instanceof FontSizeSelectBox) as FontSizeSelectBox;
+        const fontSizeSelectBox = fontSizeComponent
+          .getComponents()
+          .find(c => c instanceof FontSizeSelectBox) as FontSizeSelectBox;
         fontSizeSelectBox?.reapplyFilterAndReload();
       }
     });

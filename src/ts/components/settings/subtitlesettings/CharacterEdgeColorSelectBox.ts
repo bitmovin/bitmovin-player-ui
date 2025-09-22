@@ -9,13 +9,16 @@ import { i18n } from '../../../localization/i18n';
  * @category Components
  */
 export class CharacterEdgeColorSelectBox extends SubtitleSettingSelectBox {
-
   constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-subtitle-settings-character-edge-color-select-box'],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-subtitle-settings-character-edge-color-select-box'],
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

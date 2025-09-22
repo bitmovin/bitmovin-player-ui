@@ -36,12 +36,12 @@
 
   .#{$prefix}-ui-buffering-overlay-indicator {
     $buffering-animation-duration: 1.5s;
-    $buffering-animation-delay: .2s;
+    $buffering-animation-delay: 0.2s;
 
     @keyframes #{$prefix}-fancy {
       0%,
       30% {
-        opacity: .3;
+        opacity: 0.3;
       }
 
       45%,
@@ -52,7 +52,7 @@
 
       70%,
       100% {
-        opacity: .3;
+        opacity: 0.3;
       }
     }
 
@@ -60,9 +60,9 @@
     background: url('../../assets/images/loader.svg') no-repeat center;
     display: inline-block;
     height: 2em;
-    margin: .2em;
+    margin: 0.2em;
     width: 2em;
-    opacity: .3;
+    opacity: 0.3;
 
     @for $i from 1 through 3 {
       &:nth-child(#{$i}) {

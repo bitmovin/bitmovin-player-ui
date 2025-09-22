@@ -48,9 +48,16 @@ export class BrowserUtils {
   }
 
   static get isTv(): boolean {
-    return this.isHisense || this.isPlayStation || this.isWebOs
-      || this.isTizen || this.isVizio || this.isXumo || this.isXbox
-      || this.isVidaa;
+    return (
+      this.isHisense ||
+      this.isPlayStation ||
+      this.isWebOs ||
+      this.isTizen ||
+      this.isVizio ||
+      this.isXumo ||
+      this.isXbox ||
+      this.isVidaa
+    );
   }
 
   static get isHisense(): boolean {
@@ -96,9 +103,11 @@ export class BrowserUtils {
     if (!this.windowExists()) {
       return false;
     }
-    return navigator && navigator.userAgent && /sky_ott/.test(navigator.userAgent.toLowerCase()) ||
-      navigator && navigator.userAgent && /xglobal/.test(navigator.userAgent.toLowerCase())  ||
-      navigator && navigator.userAgent && /xfinity/.test(navigator.userAgent.toLowerCase());
+    return (
+      (navigator && navigator.userAgent && /sky_ott/.test(navigator.userAgent.toLowerCase())) ||
+      (navigator && navigator.userAgent && /xglobal/.test(navigator.userAgent.toLowerCase())) ||
+      (navigator && navigator.userAgent && /xfinity/.test(navigator.userAgent.toLowerCase()))
+    );
   }
 
   static get isXbox(): boolean {
@@ -120,7 +129,10 @@ export class BrowserUtils {
     if (!this.windowExists()) {
       return false;
     }
-    return 'ontouchstart' in window || navigator && navigator.userAgent && (navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
+    return (
+      'ontouchstart' in window ||
+      (navigator && navigator.userAgent && (navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0))
+    );
   }
 
   private static windowExists(): boolean {

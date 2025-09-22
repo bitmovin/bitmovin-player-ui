@@ -1,6 +1,6 @@
 import { ComponentConfig, Component, ViewModeChangedEventArgs, ViewMode } from './Component';
-import {DOM} from '../DOM';
-import {ArrayUtils} from '../utils/ArrayUtils';
+import { DOM } from '../DOM';
+import { ArrayUtils } from '../utils/ArrayUtils';
 import { i18n } from '../localization/i18n';
 
 /**
@@ -37,7 +37,6 @@ export interface ContainerConfig extends ComponentConfig {
  * @category Components
  */
 export class Container<Config extends ContainerConfig> extends Component<Config> {
-
   /**
    * A reference to the inner element that contains the components of the container.
    */
@@ -50,10 +49,14 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
   constructor(config: Config) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-container',
-      components: [],
-    } as Config, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-container',
+        components: [],
+      } as Config,
+      this.config,
+    );
 
     this.componentsToAppend = [];
     this.componentsToPrepend = [];
@@ -141,12 +144,16 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
 
   protected toDomElement(): DOM {
     // Create the container element (the outer <div>)
-    let containerElement = new DOM(this.config.tag, {
-      'id': this.config.id,
-      'class': this.getCssClasses(),
-      'role': this.config.role,
-      'aria-label': i18n.performLocalization(this.config.ariaLabel),
-    }, this);
+    let containerElement = new DOM(
+      this.config.tag,
+      {
+        id: this.config.id,
+        class: this.getCssClasses(),
+        role: this.config.role,
+        'aria-label': i18n.performLocalization(this.config.ariaLabel),
+      },
+      this,
+    );
 
     if (typeof this.config.tabIndex === 'number') {
       containerElement.attr('tabindex', this.config.tabIndex.toString());
@@ -154,7 +161,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
 
     // Create the inner container element (the inner <div>) that will contain the components
     let innerContainer = new DOM(this.config.tag, {
-      'class': this.prefixCss('container-wrapper'),
+      class: this.prefixCss('container-wrapper'),
     });
     this.innerContainerElement = innerContainer;
 

@@ -2,7 +2,7 @@
 @import '../../mixins';
 
 %opacity-transition {
-  transition:  opacity .25s ease-out;
+  transition: opacity 0.25s ease-out;
 }
 
 %seek-circle {

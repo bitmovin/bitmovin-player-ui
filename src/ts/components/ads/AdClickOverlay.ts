@@ -11,9 +11,13 @@ export class AdClickOverlay extends ClickOverlay {
   constructor(config: ClickOverlayConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      acceptsTouchWithUiHidden: true,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        acceptsTouchWithUiHidden: true,
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

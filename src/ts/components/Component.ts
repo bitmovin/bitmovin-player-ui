@@ -1,7 +1,7 @@
-import {Guid} from '../utils/Guid';
-import {DOM} from '../DOM';
-import {EventDispatcher, NoArgs, Event} from '../EventDispatcher';
-import {UIInstanceManager} from '../UIManager';
+import { Guid } from '../utils/Guid';
+import { DOM } from '../DOM';
+import { EventDispatcher, NoArgs, Event } from '../EventDispatcher';
+import { UIInstanceManager } from '../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../localization/i18n';
 
@@ -107,7 +107,6 @@ export interface ComponentFocusChangedEventArgs extends NoArgs {
  * @category Components
  */
 export class Component<Config extends ComponentConfig> {
-
   /**
    * The classname that is attached to the element when it is in the hidden state.
    * @type {string}
@@ -183,29 +182,29 @@ export class Component<Config extends ComponentConfig> {
    * <code>
    * // Define an example component class with an example event
    * class ExampleComponent extends Component<ComponentConfig> {
-     *
-     *     private exampleComponentEvents = {
-     *         onExampleAction: new EventDispatcher<ExampleComponent, NoArgs>()
-     *     }
-     *
-     *     // constructor and other stuff...
-     *
-     *     protected onExampleActionEvent() {
-     *        this.exampleComponentEvents.onExampleAction.dispatch(this);
-     *    }
-     *
-     *    get onExampleAction(): Event<ExampleComponent, NoArgs> {
-     *        return this.exampleComponentEvents.onExampleAction.getEvent();
-     *    }
-     * }
+   *
+   *     private exampleComponentEvents = {
+   *         onExampleAction: new EventDispatcher<ExampleComponent, NoArgs>()
+   *     }
+   *
+   *     // constructor and other stuff...
+   *
+   *     protected onExampleActionEvent() {
+   *        this.exampleComponentEvents.onExampleAction.dispatch(this);
+   *    }
+   *
+   *    get onExampleAction(): Event<ExampleComponent, NoArgs> {
+   *        return this.exampleComponentEvents.onExampleAction.getEvent();
+   *    }
+   * }
    *
    * // Create an instance of the component somewhere
    * var exampleComponentInstance = new ExampleComponent();
    *
    * // Subscribe to the example event on the component
    * exampleComponentInstance.onExampleAction.subscribe(function (sender: ExampleComponent) {
-     *     console.log('onExampleAction of ' + sender + ' has fired!');
-     * });
+   *     console.log('onExampleAction of ' + sender + ' has fired!');
+   * });
    * </code>
    */
   private componentEvents = {
@@ -225,16 +224,20 @@ export class Component<Config extends ComponentConfig> {
    */
   constructor(config: ComponentConfig = {}) {
     // Create the configuration for this component
-    this.config = <Config>this.mergeConfig(config, {
-      tag: 'div',
-      id: '{{PREFIX}}-id-' + Guid.next(),
-      cssPrefix: '{{PREFIX}}',
-      cssClass: 'ui-component',
-      cssClasses: [],
-      hidden: false,
-      disabled: false,
-      tabIndex: -1,
-    }, {});
+    this.config = <Config>this.mergeConfig(
+      config,
+      {
+        tag: 'div',
+        id: '{{PREFIX}}-id-' + Guid.next(),
+        cssPrefix: '{{PREFIX}}',
+        cssClass: 'ui-component',
+        cssClasses: [],
+        hidden: false,
+        disabled: false,
+        tabIndex: -1,
+      },
+      {},
+    );
     this.viewMode = ViewMode.Temporary;
   }
 
@@ -305,11 +308,15 @@ export class Component<Config extends ComponentConfig> {
    * Subclasses usually overwrite this method to extend or replace the DOM element with their own design.
    */
   protected toDomElement(): DOM {
-    let element = new DOM(this.config.tag, {
-      'id': this.config.id,
-      'class': this.getCssClasses(),
-      'role': this.config.role,
-    }, this);
+    let element = new DOM(
+      this.config.tag,
+      {
+        id: this.config.id,
+        class: this.getCssClasses(),
+        role: this.config.role,
+      },
+      this,
+    );
 
     if (typeof this.config.tabIndex === 'number') {
       element.attr('tabindex', this.config.tabIndex.toString());
@@ -373,7 +380,7 @@ export class Component<Config extends ComponentConfig> {
     // Merge all CSS classes into single array
     let flattenedArray = [this.config.cssClass].concat(this.config.cssClasses);
     // Prefix classes
-    flattenedArray = flattenedArray.map((css) => {
+    flattenedArray = flattenedArray.map(css => {
       return this.prefixCss(css);
     });
     // Join array values into a string

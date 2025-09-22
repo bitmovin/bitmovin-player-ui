@@ -1,4 +1,4 @@
-import {ErrorMessageMap, ErrorMessageTranslator} from '../components/overlays/ErrorMessageOverlay';
+import { ErrorMessageMap, ErrorMessageTranslator } from '../components/overlays/ErrorMessageOverlay';
 import { ErrorEvent } from 'bitmovin-player';
 import { MobileV3PlayerErrorEvent, MobileV3SourceErrorEvent } from './MobileV3PlayerAPI';
 
@@ -6,7 +6,6 @@ import { MobileV3PlayerErrorEvent, MobileV3SourceErrorEvent } from './MobileV3Pl
  * @category Utils
  */
 export namespace ErrorUtils {
-
   export const defaultErrorMessages: ErrorMessageMap = {
     1000: 'Error is unknown',
     1001: 'The player API is not available after a call to PlayerAPI.destroy.',
@@ -21,7 +20,7 @@ export namespace ErrorUtils {
     1108: 'Could not initialize a rendering engine',
     1109: 'The used flash version does not support playback',
     1110: 'Native Flash is not authorized by a valid Adobe token',
-    1111: 'Flash doesn\'t have sufficient resources',
+    1111: "Flash doesn't have sufficient resources",
     1112: 'Flash container API not available',
     1113: 'Protocol not supported. This site has been loaded using "file" protocol, but unfortunately this is not supported. Please load the page using a web server (using http or https)',
     1200: 'General source error',
@@ -39,7 +38,7 @@ export namespace ErrorUtils {
     1300: 'General playback error',
     1301: 'Video decoder or demuxer had an error with the content',
     1302: 'General error if Flash renderer has an error',
-    1303: 'Flash doesn\'t have sufficient resources',
+    1303: "Flash doesn't have sufficient resources",
     1304: 'The transmuxer could not be initialized',
     1400: 'Network error while downloading',
     1401: 'The manifest download timed out',

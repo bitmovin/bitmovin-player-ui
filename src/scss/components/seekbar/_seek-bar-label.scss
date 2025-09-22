@@ -7,7 +7,7 @@
 
   bottom: 100%;
   left: 0;
-  margin-bottom: .2em;
+  margin-bottom: 0.2em;
   pointer-events: none;
   position: absolute;
   text-align: center;
@@ -35,11 +35,11 @@
       flex-direction: column;
       align-items: center;
       // sass-lint:disable no-misspelled-properties
-      row-gap: .5em;
+      row-gap: 0.5em;
 
       .#{$prefix}-seekbar-thumbnail {
         width: 7em;
-        border: solid $color-primary .0625em;
+        border: solid $color-primary 0.0625em;
         border-radius: $border-radius;
       }
 
@@ -48,7 +48,7 @@
         bottom: 0;
         box-sizing: border-box;
         display: inline-block;
-        padding: .3em .5em;
+        padding: 0.3em 0.5em;
         width: fit-content;
         border-radius: $border-radius;
       }

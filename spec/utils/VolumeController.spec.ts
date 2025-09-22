@@ -12,7 +12,6 @@ describe('VolumeController', () => {
   });
 
   describe('onChangedEvent', () => {
-
     it('should update the stored volume on VolumeChanged event', () => {
       volumeController.storeVolume = jest.fn();
 

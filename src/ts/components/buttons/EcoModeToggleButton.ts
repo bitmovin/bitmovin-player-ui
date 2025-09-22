@@ -49,12 +49,15 @@ export class EcoModeToggleButton extends ToggleButton<ToggleButtonConfig> {
     } else {
       super.disable();
     }
-
   }
 
   private areAdaptationApisAvailable(player: PlayerAPI): boolean {
-    const isGetConfigAvailable = Boolean(player.adaptation.getConfig && typeof player.adaptation.getConfig === 'function');
-    const isSetConfigAvailable = Boolean(player.adaptation.setConfig && typeof player.adaptation.setConfig === 'function');
+    const isGetConfigAvailable = Boolean(
+      player.adaptation.getConfig && typeof player.adaptation.getConfig === 'function',
+    );
+    const isSetConfigAvailable = Boolean(
+      player.adaptation.setConfig && typeof player.adaptation.setConfig === 'function',
+    );
 
     return Boolean(player.adaptation && isGetConfigAvailable && isSetConfigAvailable);
   }

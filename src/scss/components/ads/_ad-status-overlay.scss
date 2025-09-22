@@ -6,14 +6,14 @@
   @include layout-align-bottom;
 
   box-sizing: border-box;
-  padding: 1em 1em .5em;
+  padding: 1em 1em 0.5em;
   bottom: 5em;
 
   .#{$prefix}-bar {
     > .#{$prefix}-container-wrapper {
       pointer-events: none;
       display: flex;
-      margin: .5em 0;
+      margin: 0.5em 0;
     }
   }
 }

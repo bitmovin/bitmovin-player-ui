@@ -30,7 +30,7 @@ export interface ViewModeAvailabilityChangedEvent extends PlayerEventBase {
 }
 
 export class PlayerEventEmitter {
-  private eventHandlers: { [eventType: string]: PlayerEventCallback[]; } = {};
+  private eventHandlers: { [eventType: string]: PlayerEventCallback[] } = {};
 
   public on(eventType: PlayerEvent, callback: PlayerEventCallback) {
     if (!this.eventHandlers[eventType]) {
@@ -107,7 +107,7 @@ export class PlayerEventEmitter {
       type: PlayerEvent.AdError,
       code: 1001,
       name: 'AdErrorEvent',
-      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1001'
+      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1001',
     });
   }
 
@@ -142,7 +142,7 @@ export class PlayerEventEmitter {
       type: PlayerEvent.Error,
       code: 1000,
       name: 'ErrorEvent',
-      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1000'
+      troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1000',
     });
   }
 
@@ -281,7 +281,7 @@ export class PlayerEventEmitter {
   fireReadyEvent(): void {
     this.fireEvent<PlayerEventBase>({
       type: PlayerEvent.Ready,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 

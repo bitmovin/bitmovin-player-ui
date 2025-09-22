@@ -4,7 +4,7 @@ import { UIConfig } from '../UIConfig';
  * @category Utils
  */
 export namespace StorageUtils {
- let disableStorageApi: boolean;
+  let disableStorageApi: boolean;
 
   export function setStorageApiDisabled(uiConfig: UIConfig) {
     disableStorageApi = uiConfig.disableStorageApi;

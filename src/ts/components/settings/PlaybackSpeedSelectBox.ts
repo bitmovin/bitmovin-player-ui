@@ -1,6 +1,6 @@
-import {SelectBox} from './SelectBox';
-import {ListSelectorConfig} from '../lists/ListSelector';
-import {UIInstanceManager} from '../../UIManager';
+import { SelectBox } from './SelectBox';
+import { ListSelectorConfig } from '../lists/ListSelector';
+import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -16,9 +16,13 @@ export class PlaybackSpeedSelectBox extends SelectBox {
     super(config);
     this.defaultPlaybackSpeeds = [0.25, 0.5, 1, 1.5, 2];
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-playbackspeedselectbox'],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-playbackspeedselectbox'],
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

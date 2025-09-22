@@ -8,7 +8,10 @@ import { Action, Direction, Focusable } from './types';
  * @category Components
  */
 export class RootNavigationGroup extends NavigationGroup {
-  constructor(public readonly container: UIContainer, ...elements: Focusable[]) {
+  constructor(
+    public readonly container: UIContainer,
+    ...elements: Focusable[]
+  ) {
     super(container, ...elements);
   }
 

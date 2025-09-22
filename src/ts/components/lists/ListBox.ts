@@ -29,21 +29,25 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
     this.settingsPanelPage = new SettingsPanelPage({});
     this.listSelector = config.listSelector;
 
-    this.config = this.mergeConfig(config, {
-      hidden: true,
-      cssClasses: ['ui-listbox'],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        hidden: true,
+        cssClasses: ['ui-listbox'],
+      },
+      this.config,
+    );
 
     this.addComponent(this.settingsPanelPage);
 
     if (config.title) {
-      const label = new Label({ text: config.title, cssClasses: ['title-label'] })
+      const label = new Label({ text: config.title, cssClasses: ['title-label'] });
       this.settingsPanelPage.addComponent(
         new SettingsPanelItem({
           label: label,
           cssClasses: ['title-item'],
           isSetting: false,
-        })
+        }),
       );
     }
   }

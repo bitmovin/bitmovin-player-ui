@@ -1,12 +1,15 @@
-import {ContainerConfig, Container} from '../Container';
-import {Label, LabelConfig} from '../labels/Label';
-import {UIInstanceManager} from '../../UIManager';
-import {TvNoiseCanvas} from '../TvNoiseCanvas';
+import { ContainerConfig, Container } from '../Container';
+import { Label, LabelConfig } from '../labels/Label';
+import { UIInstanceManager } from '../../UIManager';
+import { TvNoiseCanvas } from '../TvNoiseCanvas';
 import { ErrorUtils } from '../../utils/ErrorUtils';
 import { ErrorEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import {
   isMobileV3PlayerAPI,
-  MobileV3PlayerAPI, MobileV3PlayerErrorEvent, MobileV3PlayerEvent, MobileV3SourceErrorEvent,
+  MobileV3PlayerAPI,
+  MobileV3PlayerErrorEvent,
+  MobileV3PlayerEvent,
+  MobileV3SourceErrorEvent,
 } from '../../utils/MobileV3PlayerAPI';
 
 export interface ErrorMessageTranslator {
@@ -86,7 +89,6 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
  * @category Components
  */
 export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
-
   private errorLabel: Label<LabelConfig>;
   private tvNoiseBackground: TvNoiseCanvas;
 
@@ -96,12 +98,16 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     this.errorLabel = new Label<LabelConfig>({ cssClass: 'ui-errormessage-label' });
     this.tvNoiseBackground = new TvNoiseCanvas();
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-errormessage-overlay',
-      components: [this.tvNoiseBackground, this.errorLabel],
-      hidden: true,
-      role: 'status',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-errormessage-overlay',
+        components: [this.tvNoiseBackground, this.errorLabel],
+        hidden: true,
+        role: 'status',
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI | MobileV3PlayerAPI, uimanager: UIInstanceManager): void {
