@@ -51,7 +51,7 @@ export class SettingsPanelPage extends Container<SettingsPanelPageConfig> {
       this.onSettingsStateChangedEvent();
 
       // Attach marker class to last visible item
-      let lastShownItem = null;
+      let lastShownItem: SettingsPanelItem<SettingsPanelItemConfig> = null;
       for (let component of this.getItems()) {
         component.getDomElement().removeClass(this.prefixCss(SettingsPanelPage.CLASS_LAST));
         if (component.isShown()) {

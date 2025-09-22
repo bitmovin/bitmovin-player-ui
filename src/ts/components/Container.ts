@@ -124,7 +124,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
      * Instead, we keep a list of elements to add and remove, leaving remaining elements alone. By keeping them in
      * the DOM, their content gets preserved in all browsers.
      */
-    let component;
+    let component: Component<ComponentConfig>;
 
     while ((component = this.componentsToRemove.shift()) !== undefined) {
       component.getDomElement().remove();

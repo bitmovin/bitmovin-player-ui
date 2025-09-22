@@ -71,10 +71,10 @@ export class SeekBarController {
   protected seekBarControls(type: SeekBarType) {
     if (type === SeekBarType.Live) {
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      return this.arrowKeyControls(this.player.getTimeShift(), { min: this.player.getMaxTimeShift(), max: 0 }, this.player.timeShift);
+      return this.arrowKeyControls(this.player.getTimeShift(), { min: this.player.getMaxTimeShift(), max: 0 }, (value: number) => this.player.timeShift(value));
     } else if (type === SeekBarType.Vod) {
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      return this.arrowKeyControls(this.player.getCurrentTime(), { min: 0, max: this.player.getDuration() }, this.player.seek);
+      return this.arrowKeyControls(this.player.getCurrentTime(), { min: 0, max: this.player.getDuration() }, (value: number) => this.player.seek(value));
     } else if (type === SeekBarType.Volume && this.volumeController != null) {
       const volumeTransition = this.volumeController.startTransition();
       return this.arrowKeyControls(this.player.getVolume(), { min: 0, max: 100 }, volumeTransition.finish.bind(volumeTransition));
