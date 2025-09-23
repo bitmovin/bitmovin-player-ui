@@ -6,8 +6,8 @@
 
   @include hidden-animated-focusable;
   @include layout-align-bottom;
+  @include background-gradient(to bottom);
 
-  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
 
   $controlbar-padding: 1em;

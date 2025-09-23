@@ -72,11 +72,12 @@
 
       .#{$prefix}-title-container {
         @include layout-align-top;
+        @include background-gradient(to top);
+
         left: 0;
         height: 50%;
         min-height: fit-content;
         padding: $padding;
-        background: linear-gradient(to top, $color-transparent, $color-background-bars);
 
         .#{$prefix}-title {
           display: inline-block;
@@ -94,7 +95,7 @@
         position: absolute;
         bottom: $padding;
         right: $padding;
-        background-color: $color-background-seekbar-label;
+        background-color: $color-background-text;
         box-sizing: border-box;
         padding: 0.3em 0.5em;
         border-radius: $border-radius;

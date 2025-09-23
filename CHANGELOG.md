@@ -105,6 +105,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The UI Controls now immediately hide on mouse leave on web browsers by default
 - Updated buffering indicator with updated design, animation and color
 - The Small Screen UI is now used on web browsers when the document width is less than `800px`
+- Renamed `$color-background-bars` to `$color-background-gradient-start`
 - Folder Structure rework
   - The entire codebase has been reorganized from a flat structure to a hierarchical folder structure
   - Components are now grouped into folders based on their functionality or grouped by bigger features
