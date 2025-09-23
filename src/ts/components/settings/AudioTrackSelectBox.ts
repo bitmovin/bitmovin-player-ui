@@ -1,7 +1,7 @@
-import {SelectBox} from './SelectBox';
-import {ListSelectorConfig} from '../lists/ListSelector';
-import {UIInstanceManager} from '../../UIManager';
-import {AudioTrackSwitchHandler} from '../../utils/AudioTrackUtils';
+import { SelectBox } from './SelectBox';
+import { ListSelectorConfig } from '../lists/ListSelector';
+import { UIInstanceManager } from '../../UIManager';
+import { AudioTrackSwitchHandler } from '../../utils/AudioTrackUtils';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**
@@ -10,13 +10,16 @@ import { PlayerAPI } from 'bitmovin-player';
  * @category Components
  */
 export class AudioTrackSelectBox extends SelectBox {
-
   constructor(config: ListSelectorConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-audiotrackselectbox'],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-audiotrackselectbox'],
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

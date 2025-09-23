@@ -1,7 +1,7 @@
-import {Container, ContainerConfig} from '../Container';
+import { Container, ContainerConfig } from '../Container';
 import { SettingsPanelItem, SettingsPanelItemConfig } from './SettingsPanelItem';
-import {UIInstanceManager} from '../../UIManager';
-import {Event, EventDispatcher, NoArgs} from '../../EventDispatcher';
+import { UIInstanceManager } from '../../UIManager';
+import { Event, EventDispatcher, NoArgs } from '../../EventDispatcher';
 import { PlayerAPI } from 'bitmovin-player';
 import { BrowserUtils } from '../../utils/BrowserUtils';
 import { InteractiveSettingsPanelItem } from './InteractiveSettingsPanelItem';
@@ -24,7 +24,6 @@ export interface SettingsPanelPageConfig extends ContainerConfig {
  * @category Components
  */
 export class SettingsPanelPage extends Container<SettingsPanelPageConfig> {
-
   private static readonly CLASS_LAST = 'last';
 
   private settingsPanelPageEvents = {
@@ -36,11 +35,15 @@ export class SettingsPanelPage extends Container<SettingsPanelPageConfig> {
   constructor(config: SettingsPanelPageConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-settings-panel-page',
-      role: 'menu',
-      removeOnPop: false,
-    } as SettingsPanelPageConfig, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-settings-panel-page',
+        role: 'menu',
+        removeOnPop: false,
+      } as SettingsPanelPageConfig,
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -51,7 +54,7 @@ export class SettingsPanelPage extends Container<SettingsPanelPageConfig> {
       this.onSettingsStateChangedEvent();
 
       // Attach marker class to last visible item
-      let lastShownItem = null;
+      let lastShownItem: SettingsPanelItem<SettingsPanelItemConfig> = null;
       for (let component of this.getItems()) {
         component.getDomElement().removeClass(this.prefixCss(SettingsPanelPage.CLASS_LAST));
         if (component.isShown()) {
@@ -78,7 +81,9 @@ export class SettingsPanelPage extends Container<SettingsPanelPageConfig> {
   }
 
   getItems(): SettingsPanelItem<SettingsPanelItemConfig>[] {
-    return <SettingsPanelItem<SettingsPanelItemConfig>[]>this.config.components.filter(component => component instanceof SettingsPanelItem);
+    return <SettingsPanelItem<SettingsPanelItemConfig>[]>(
+      this.config.components.filter(component => component instanceof SettingsPanelItem)
+    );
   }
 
   onSettingsStateChangedEvent() {
@@ -90,7 +95,7 @@ export class SettingsPanelPage extends Container<SettingsPanelPageConfig> {
   }
 
   onActiveEvent() {
-    const activeItems = this.getItems().filter((item) => item.isActive() && item.getConfig().isSetting);
+    const activeItems = this.getItems().filter(item => item.isActive() && item.getConfig().isSetting);
 
     this.settingsPanelPageEvents.onActive.dispatch(this);
     // Disable focus for iOS and iPadOS 13. They open select boxes automatically on focus and we want to avoid that.

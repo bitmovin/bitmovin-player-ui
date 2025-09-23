@@ -1,6 +1,7 @@
 import { BrowserUtils } from '../../src/ts/utils/BrowserUtils';
 
-const mobileSafariUserAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A356 Safari/604.1';
+const mobileSafariUserAgent =
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A356 Safari/604.1';
 
 declare const global: any;
 

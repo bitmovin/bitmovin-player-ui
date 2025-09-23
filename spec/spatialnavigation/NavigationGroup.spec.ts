@@ -28,12 +28,14 @@ describe('NavigationGroup', () => {
     playbackToggleButtonMock = mockComponent(PlaybackToggleButton);
     playbackToggleButtonHtmlMock = getFirstDomElement(playbackToggleButtonMock);
     jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockImplementation(component => {
-      if (component === playbackToggleButtonMock) { return playbackToggleButtonHtmlMock; }
+      if (component === playbackToggleButtonMock) {
+        return playbackToggleButtonHtmlMock;
+      }
       return undefined;
     });
 
     subtitleToggleButtonMock = mockComponent(SettingsToggleButton);
-    
+
     rootNavigationGroup = new NavigationGroup(rootContainerMock, playbackToggleButtonMock, subtitleToggleButtonMock);
   });
 
@@ -54,7 +56,7 @@ describe('NavigationGroup', () => {
     });
 
     it('should focus last activeComponentBeforeDisable if not settings panel', () => {
-      rootNavigationGroup['activeComponentBeforeDisable'] = playbackToggleButtonMock
+      rootNavigationGroup['activeComponentBeforeDisable'] = playbackToggleButtonMock;
 
       rootNavigationGroup.enable();
       expect(playbackToggleButtonHtmlMock.focus).toHaveBeenCalled();
@@ -71,7 +73,6 @@ describe('NavigationGroup', () => {
     });
   });
 
-
   describe('handleNavigation', () => {
     let subtitleToggleButtonHTML: HTMLElement;
 
@@ -79,8 +80,12 @@ describe('NavigationGroup', () => {
       subtitleToggleButtonHTML = getFirstDomElement(subtitleToggleButtonMock);
       jest.spyOn(navigationAlgorithm, 'getComponentInDirection').mockReturnValueOnce(subtitleToggleButtonMock);
       jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockImplementation(component => {
-        if (component === playbackToggleButtonMock) { return playbackToggleButtonHtmlMock; }
-        if (component === subtitleToggleButtonMock) { return subtitleToggleButtonHTML; }
+        if (component === playbackToggleButtonMock) {
+          return playbackToggleButtonHtmlMock;
+        }
+        if (component === subtitleToggleButtonMock) {
+          return subtitleToggleButtonHTML;
+        }
         return undefined;
       });
     });
@@ -97,7 +102,7 @@ describe('NavigationGroup', () => {
       rootNavigationGroup['activeComponent'] = undefined;
 
       rootNavigationGroup.handleNavigation(Direction.LEFT);
-      
+
       expect(subtitleToggleButtonHTML.focus).toHaveBeenCalled();
     });
 
@@ -118,8 +123,12 @@ describe('NavigationGroup', () => {
     beforeEach(() => {
       playButtonHTML = getFirstDomElement(subtitleToggleButtonMock);
       jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockImplementation(component => {
-        if (component === playbackToggleButtonMock) { return playbackToggleButtonHtmlMock; }
-        if (component === subtitleToggleButtonMock) { return playButtonHTML; }
+        if (component === playbackToggleButtonMock) {
+          return playbackToggleButtonHtmlMock;
+        }
+        if (component === subtitleToggleButtonMock) {
+          return playButtonHTML;
+        }
         return undefined;
       });
       rootNavigationGroup['activeComponent'] = subtitleToggleButtonMock;
@@ -143,7 +152,6 @@ describe('NavigationGroup', () => {
         rootNavigationGroup.handleAction(Action.SELECT);
 
         expect(playButtonHTML.click).not.toHaveBeenCalled();
-
       });
     });
   });
@@ -155,8 +163,12 @@ describe('NavigationGroup', () => {
       subtitleButtonHtml = getFirstDomElement(subtitleToggleButtonMock);
       playbackButtonHtml = getFirstDomElement(playbackToggleButtonMock);
       jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockImplementation(component => {
-        if (component === playbackToggleButtonMock) { return playbackButtonHtml; }
-        if (component === subtitleToggleButtonMock) { return subtitleButtonHtml; }
+        if (component === playbackToggleButtonMock) {
+          return playbackButtonHtml;
+        }
+        if (component === subtitleToggleButtonMock) {
+          return subtitleButtonHtml;
+        }
         return undefined;
       });
     });

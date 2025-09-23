@@ -28,25 +28,25 @@ export class TitleBar extends Container<TitleBarConfig> {
   constructor(config: TitleBarConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-titlebar',
-      hidden: true,
-      keepHiddenWithoutMetadata: false,
-      components: [
-        new Container({
-          components: [
-            new MetadataLabel({ content: MetadataLabelContent.Title }),
-          ],
-          cssClasses: ['titlebar-row']
-        }),
-        new Container({
-          components: [
-            new MetadataLabel({ content: MetadataLabelContent.Description }),
-          ],
-          cssClasses: ['titlebar-row']
-        }),
-      ],
-    }, <TitleBarConfig>this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-titlebar',
+        hidden: true,
+        keepHiddenWithoutMetadata: false,
+        components: [
+          new Container({
+            components: [new MetadataLabel({ content: MetadataLabelContent.Title })],
+            cssClasses: ['titlebar-row'],
+          }),
+          new Container({
+            components: [new MetadataLabel({ content: MetadataLabelContent.Description })],
+            cssClasses: ['titlebar-row'],
+          }),
+        ],
+      },
+      <TitleBarConfig>this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

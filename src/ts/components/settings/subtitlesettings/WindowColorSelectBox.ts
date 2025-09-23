@@ -1,5 +1,5 @@
 import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './SubtitleSettingSelectBox';
-import {UIInstanceManager} from '../../../UIManager';
+import { UIInstanceManager } from '../../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../../localization/i18n';
 
@@ -9,13 +9,16 @@ import { i18n } from '../../../localization/i18n';
  * @category Components
  */
 export class WindowColorSelectBox extends SubtitleSettingSelectBox {
-
   constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-subtitlesettingswindowcolorselectbox'],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-subtitlesettingswindowcolorselectbox'],
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -31,12 +34,11 @@ export class WindowColorSelectBox extends SubtitleSettingSelectBox {
     this.addItem('yellow', i18n.getLocalizer('colors.yellow'));
     this.addItem('magenta', i18n.getLocalizer('colors.magenta'));
 
-
-
     let setColorAndOpacity = () => {
       if (this.settingsManager.windowColor.isSet() && this.settingsManager.windowOpacity.isSet()) {
         this.toggleOverlayClass(
-          'windowcolor-' + this.settingsManager.windowColor.value + this.settingsManager.windowOpacity.value);
+          'windowcolor-' + this.settingsManager.windowColor.value + this.settingsManager.windowOpacity.value,
+        );
       } else {
         this.toggleOverlayClass(null);
       }

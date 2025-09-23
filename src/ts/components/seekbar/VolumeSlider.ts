@@ -35,18 +35,25 @@ export class VolumeSlider extends SeekBar {
   constructor(config: VolumeSliderConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, <VolumeSliderConfig>{
-      cssClass: 'ui-volumeslider',
-      hideIfVolumeControlProhibited: true,
-      hideOnMobile: true,
-      ariaLabel: i18n.getLocalizer('settings.audio.volume'),
-      tabIndex: 0,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      <VolumeSliderConfig>{
+        cssClass: 'ui-volumeslider',
+        hideIfVolumeControlProhibited: true,
+        hideOnMobile: true,
+        ariaLabel: i18n.getLocalizer('settings.audio.volume'),
+        tabIndex: 0,
+      },
+      this.config,
+    );
   }
 
   private setVolumeAriaSliderValues(value: number) {
     this.getDomElement().attr('aria-valuenow', Math.ceil(value).toString());
-    this.getDomElement().attr('aria-valuetext', `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${Math.ceil(value)}`);
+    this.getDomElement().attr(
+      'aria-valuetext',
+      `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${Math.ceil(value)}`,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

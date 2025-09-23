@@ -1,7 +1,7 @@
-import {SubtitleOverlay} from '../../overlays/SubtitleOverlay';
-import {ListSelectorConfig} from '../../lists/ListSelector';
-import {SelectBox} from '../SelectBox';
-import {SubtitleSettingsManager} from '../../../utils/SubtitleSettingsManager';
+import { SubtitleOverlay } from '../../overlays/SubtitleOverlay';
+import { ListSelectorConfig } from '../../lists/ListSelector';
+import { SelectBox } from '../SelectBox';
+import { SubtitleSettingsManager } from '../../../utils/SubtitleSettingsManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../../../UIManager';
 
@@ -18,7 +18,6 @@ export interface SubtitleSettingSelectBoxConfig extends ListSelectorConfig {
  * @category Components
  **/
 export class SubtitleSettingSelectBox extends SelectBox {
-
   protected settingsManager?: SubtitleSettingsManager;
   readonly overlay: SubtitleOverlay;
   private currentCssClass: string;
@@ -33,7 +32,7 @@ export class SubtitleSettingSelectBox extends SelectBox {
    * Removes a previously set class and adds the passed in class.
    * @param cssClass The new class to replace the previous class with or null to just remove the previous class
    */
-  protected toggleOverlayClass(cssClass: string|null): void {
+  protected toggleOverlayClass(cssClass: string | null): void {
     // Remove previous class if existing
     if (this.currentCssClass) {
       this.overlay.getDomElement().removeClass(this.currentCssClass);

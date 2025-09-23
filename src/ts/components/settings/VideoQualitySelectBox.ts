@@ -1,6 +1,6 @@
-import {SelectBox} from './SelectBox';
-import {ListSelectorConfig} from '../lists/ListSelector';
-import {UIInstanceManager} from '../../UIManager';
+import { SelectBox } from './SelectBox';
+import { ListSelectorConfig } from '../lists/ListSelector';
+import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -10,15 +10,18 @@ import { i18n } from '../../localization/i18n';
  * @category Components
  */
 export class VideoQualitySelectBox extends SelectBox {
-
   private hasAuto: boolean;
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-videoqualityselectbox'],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-videoqualityselectbox'],
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

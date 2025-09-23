@@ -9,14 +9,17 @@ import { i18n } from '../../localization/i18n';
  * @category Buttons
  */
 export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
-
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-fullscreentogglebutton',
-      text: i18n.getLocalizer('fullscreen'),
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-fullscreentogglebutton',
+        text: i18n.getLocalizer('fullscreen'),
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -38,10 +41,7 @@ export class FullscreenToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     // Available only in our native SDKs for now
     if ((player.exports.PlayerEvent as any).ViewModeAvailabilityChanged) {
-      player.on(
-        (player.exports.PlayerEvent as any).ViewModeAvailabilityChanged,
-        fullscreenAvailabilityChangedHandler,
-      );
+      player.on((player.exports.PlayerEvent as any).ViewModeAvailabilityChanged, fullscreenAvailabilityChangedHandler);
     }
 
     uimanager.getConfig().events.onUpdated.subscribe(fullscreenAvailabilityChangedHandler);

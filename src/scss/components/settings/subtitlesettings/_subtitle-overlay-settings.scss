@@ -2,7 +2,6 @@
 @import '../../../mixins';
 
 .#{$prefix}-ui-subtitle-overlay {
-
   $colors: (
     'white': #fff,
     'black': #000,
@@ -16,22 +15,23 @@
 
   $opacities: (
     100: 1,
-    75: .75,
-    50: .5,
-    25: .25,
+    75: 0.75,
+    50: 0.5,
+    25: 0.25,
   );
 
   $character-edges: (
     'none': 'none',
     'raised': '0px 0px 4px $COLOR$, 0px 1px 4px $COLOR$, 0px 2px 4px $COLOR$',
     'depressed': '$COLOR$ 0px -2px 1px',
-    'uniform': '-2px 0px 1px $COLOR$, 2px 0px 1px $COLOR$, 0px -2px 1px $COLOR$, 0px 2px 1px $COLOR$, -1px 1px 1px $COLOR$, 1px 1px 1px $COLOR$, 1px -1px 1px $COLOR$, 1px 1px 1px $COLOR$',
+    'uniform':
+      '-2px 0px 1px $COLOR$, 2px 0px 1px $COLOR$, 0px -2px 1px $COLOR$, 0px 2px 1px $COLOR$, -1px 1px 1px $COLOR$, 1px 1px 1px $COLOR$, 1px -1px 1px $COLOR$, 1px 1px 1px $COLOR$',
     'dropshadowed': ' 0px 2px 1px $COLOR$',
   );
 
   $font-sizes: (
-    50: .5,
-    75: .75,
+    50: 0.5,
+    75: 0.75,
     100: 1,
     150: 1.5,
     200: 2,

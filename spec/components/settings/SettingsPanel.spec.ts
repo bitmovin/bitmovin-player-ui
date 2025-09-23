@@ -74,7 +74,7 @@ describe('SettingsPanel', () => {
         expect(settingsPanel.getActivePage()).toEqual(firstPage);
       });
 
-      it('doesn\'t push the current page again', () => {
+      it("doesn't push the current page again", () => {
         settingsPanel.setActivePageIndex(1);
         settingsPanel.setActivePageIndex(1);
 
@@ -90,7 +90,7 @@ describe('SettingsPanel', () => {
         expect(settingsPanel.getActivePage()).toEqual(secondPage);
       });
 
-      it('doesn\'t push the current page again', () => {
+      it("doesn't push the current page again", () => {
         settingsPanel.setActivePage(secondPage);
         settingsPanel.setActivePage(secondPage);
 
@@ -224,8 +224,12 @@ describe('SettingsPanel', () => {
         const selectBox = new SelectBox();
         const closeDropdownSpy = jest.spyOn(selectBox, 'closeDropdown');
 
-        settingsPanel.getActivePage().addComponent(new SettingsPanelItem({ label: new Label(), settingComponent: selectBox }));
-        settingsPanel.getActivePage().addComponent(new SettingsPanelItem({ label: new Label(), settingComponent: new VolumeSlider() }));
+        settingsPanel
+          .getActivePage()
+          .addComponent(new SettingsPanelItem({ label: new Label(), settingComponent: selectBox }));
+        settingsPanel
+          .getActivePage()
+          .addComponent(new SettingsPanelItem({ label: new Label(), settingComponent: new VolumeSlider() }));
 
         settingsPanel['hideHoveredSelectBoxes']();
 

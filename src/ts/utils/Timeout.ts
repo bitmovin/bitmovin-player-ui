@@ -3,7 +3,6 @@
  * Executes a callback after a specified amount of time, optionally repeatedly until stopped.
  */
 export class Timeout {
-
   private readonly delay: number;
   private readonly callback: () => void;
   private readonly repeat: boolean;

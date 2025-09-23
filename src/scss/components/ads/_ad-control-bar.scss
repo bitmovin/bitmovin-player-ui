@@ -3,7 +3,11 @@
 
 // Keep this mixin here for now since it is specific to the ad control bar
 @mixin hidden-animated-collapse-and-fade-out($duration: $animation-duration, $original-height: 2em) {
-  transition: opacity $duration ease-out, height $duration ease-out, margin-bottom $duration ease-out, margin-top $duration ease-out;
+  transition:
+    opacity $duration ease-out,
+    height $duration ease-out,
+    margin-bottom $duration ease-out,
+    margin-top $duration ease-out;
   opacity: 1;
   height: $original-height;
 
@@ -28,11 +32,11 @@
   .#{$prefix}-container-wrapper {
     display: flex;
     flex-direction: column;
-  };
+  }
 
   .#{$prefix}-ad-controlbar-top {
     .#{$prefix}-ui-label {
-      font-size: .9em;
+      font-size: 0.9em;
     }
 
     > .#{$prefix}-container-wrapper {
@@ -41,14 +45,14 @@
     }
 
     > .#{$prefix}-container-wrapper > * {
-      margin: 0 .5em;
+      margin: 0 0.5em;
     }
   }
 
   .#{$prefix}-ad-controlbar-bottom {
     @include hidden-animated-collapse-and-fade-out($animation-duration, 2em);
     flex-direction: column;
-    margin-top: .5em;
+    margin-top: 0.5em;
 
     > .#{$prefix}-container-wrapper {
       display: flex;
@@ -58,7 +62,7 @@
       // Refactoring it would trigger other SCSS lint warnings (e.g., selector duplication or specificity conflicts).
       // sass-lint:disable nesting-depth
       .#{$prefix}-ui-volumeslider {
-        margin: auto .5em;
+        margin: auto 0.5em;
         width: 5em;
       }
       // sass-lint:enable nesting-depth

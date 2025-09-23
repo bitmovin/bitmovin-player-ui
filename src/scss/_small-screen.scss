@@ -2,7 +2,6 @@
 @import 'mixins';
 
 .#{$prefix}-ui-smallscreen {
-
   // Do not display watermark in mobile view
   .#{$prefix}-ui-watermark {
     display: none;
@@ -40,13 +39,11 @@
   .#{$prefix}-ui-titlebar {
     // Adjust title bar padding for small screens to better align text with button elements
     $titlebar-padding: 1em;
-    padding: max($titlebar-padding, env(safe-area-inset-top, 0))
-      max($titlebar-padding, env(safe-area-inset-right, 0))
-      $titlebar-padding
-      max($titlebar-padding, env(safe-area-inset-left, 0));
+    padding: max($titlebar-padding, env(safe-area-inset-top, 0)) max($titlebar-padding, env(safe-area-inset-right, 0))
+      $titlebar-padding max($titlebar-padding, env(safe-area-inset-left, 0));
 
     .#{$prefix}-label-metadata {
-      margin: 0 .25em;
+      margin: 0 0.25em;
     }
   }
 

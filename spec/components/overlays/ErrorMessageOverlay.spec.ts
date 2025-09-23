@@ -8,13 +8,13 @@ describe('ErrorMessageOverlay', () => {
     let errorMessageOverlay: ErrorMessageOverlay;
     let playerMock: TestingPlayerAPI;
     let uiInstanceManagerMock: UIInstanceManager;
-  
+
     beforeEach(() => {
       errorMessageOverlay = new ErrorMessageOverlay({});
       playerMock = MockHelper.getPlayerMock();
       uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
     });
-  
+
     it('adds an event listener for source loaded event', () => {
       const onSpy = jest.spyOn(playerMock, 'on');
       errorMessageOverlay.configure(playerMock, uiInstanceManagerMock);
@@ -42,24 +42,24 @@ describe('ErrorMessageOverlay', () => {
 
       it('adds an event listener for sourceerror and playererror when mobile v3', () => {
         errorMessageOverlay.configure(playerMock, uiInstanceManagerMock);
-  
+
         expect(onSpy).toHaveBeenCalledWith(MobileV3PlayerEvent.PlayerError, expect.any(Function));
         expect(onSpy).toHaveBeenCalledWith(MobileV3PlayerEvent.SourceError, expect.any(Function));
       });
-  
-      it('uses message from the error event when mobile v3', () => {  
+
+      it('uses message from the error event when mobile v3', () => {
         const setTextSpy = jest.spyOn(errorMessageOverlay['errorLabel'], 'setText');
-  
+
         errorMessageOverlay['tvNoiseBackground'] = { start: () => {} } as any;
-  
+
         errorMessageOverlay.configure(playerMock, uiInstanceManagerMock);
-  
+
         const playerErrorEvent = {
           type: MobileV3PlayerEvent.PlayerError,
           message: 'this is a player error',
         };
         playerMock.eventEmitter.fireEvent<any>(playerErrorEvent);
-  
+
         expect(onSpy).toHaveBeenCalledWith(MobileV3PlayerEvent.PlayerError, expect.any(Function));
         expect(setTextSpy).toHaveBeenCalledWith(playerErrorEvent.message);
       });

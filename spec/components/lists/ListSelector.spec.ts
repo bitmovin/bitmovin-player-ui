@@ -1,7 +1,6 @@
 import { ListItem, ListSelector, ListSelectorConfig } from '../../../src/ts/components/lists/ListSelector';
 
-class ListSelectorTestClass extends ListSelector<ListSelectorConfig> {
-}
+class ListSelectorTestClass extends ListSelector<ListSelectorConfig> {}
 
 let listSelector: ListSelectorTestClass;
 
@@ -11,8 +10,7 @@ describe('ListSelector', () => {
   });
 
   describe('addItem', () => {
-    beforeEach(() => {
-    });
+    beforeEach(() => {});
 
     it('adds a new item', () => {
       listSelector.addItem('itemKey', 'itemLabel');
@@ -65,7 +63,7 @@ describe('ListSelector', () => {
     it('adds a new item with custom aria label', () => {
       listSelector.addItem('itemKey', 'itemLabel', false, 'itemAriaLabel');
 
-      expect(listSelector.getItems()).toEqual([{ key: 'itemKey', label: 'itemLabel', ariaLabel: 'itemAriaLabel'}]);
+      expect(listSelector.getItems()).toEqual([{ key: 'itemKey', label: 'itemLabel', ariaLabel: 'itemAriaLabel' }]);
     });
 
     it('adds new items to the end of the list with custom aria label', () => {
@@ -74,9 +72,9 @@ describe('ListSelector', () => {
       listSelector.addItem('B', 'itemB', false, 'itemAriaLabelC');
 
       expect(listSelector.getItems()).toEqual([
-        { key: 'A', label: 'itemA', ariaLabel: 'itemAriaLabelA'},
-        { key: 'C', label: 'itemC', ariaLabel: 'itemAriaLabelB'},
-        { key: 'B', label: 'itemB', ariaLabel: 'itemAriaLabelC'},
+        { key: 'A', label: 'itemA', ariaLabel: 'itemAriaLabelA' },
+        { key: 'C', label: 'itemC', ariaLabel: 'itemAriaLabelB' },
+        { key: 'B', label: 'itemB', ariaLabel: 'itemAriaLabelC' },
       ]);
     });
 
@@ -87,7 +85,7 @@ describe('ListSelector', () => {
       listSelector.addItem('B', 'itemB', sortedInsert, 'itemAriaLabelB');
 
       expect(listSelector.getItems()).toEqual([
-        { key: 'A', label: 'itemA', ariaLabel: 'itemAriaLabelA'},
+        { key: 'A', label: 'itemA', ariaLabel: 'itemAriaLabelA' },
         { key: 'B', label: 'itemB', ariaLabel: 'itemAriaLabelB' },
         { key: 'C', label: 'itemC', ariaLabel: 'itemAriaLabelC' },
       ]);
@@ -97,7 +95,9 @@ describe('ListSelector', () => {
       listSelector.addItem('itemKey', 'itemLabelOld', false, 'itemAriaLabelOld');
       listSelector.addItem('itemKey', 'itemLabelNew', false, 'itemAriaLabelNew');
 
-      expect(listSelector.getItems()).toEqual([{ key: 'itemKey', label: 'itemLabelNew', ariaLabel: 'itemAriaLabelNew' }]);
+      expect(listSelector.getItems()).toEqual([
+        { key: 'itemKey', label: 'itemLabelNew', ariaLabel: 'itemAriaLabelNew' },
+      ]);
     });
   });
 
@@ -177,7 +177,7 @@ describe('ListSelector', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('does not trigger onItemSelectedEvent when we don\'t change the selected item', () => {
+    it("does not trigger onItemSelectedEvent when we don't change the selected item", () => {
       const spy = jest.fn();
       listSelector.onItemSelected.subscribe(spy);
 
@@ -189,7 +189,7 @@ describe('ListSelector', () => {
   describe('getItemForKey', () => {
     it('returns requested item', () => {
       listSelector.addItem('I-1', 'L-1');
-      expect(listSelector.getItemForKey('I-1')).toEqual({ key: 'I-1', label: 'L-1'});
+      expect(listSelector.getItemForKey('I-1')).toEqual({ key: 'I-1', label: 'L-1' });
     });
 
     it('returns undefined if key not found', () => {

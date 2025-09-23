@@ -1,4 +1,4 @@
-type Listeners = ([Node, EventListenerOrEventListenerObject, boolean | AddEventListenerOptions])[];
+type Listeners = [Node, EventListenerOrEventListenerObject, boolean | AddEventListenerOptions][];
 
 /**
  * Allows to subscribe to Node events.

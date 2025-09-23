@@ -35,7 +35,7 @@ describe('TimelineMarkersHandler', () => {
     it('should return TimelineMarker', () => {
       const expectedMarker = getTimelineMarker(4);
       uimanagerMock.getConfig().metadata.markers.push(expectedMarker);
-      jest.spyOn(playerMock, 'getSeekableRange').mockReturnValue({start: 0, end: 10});
+      jest.spyOn(playerMock, 'getSeekableRange').mockReturnValue({ start: 0, end: 10 });
       jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
       jest.spyOn(playerMock, 'getDuration').mockReturnValue(10);
 
@@ -59,7 +59,6 @@ describe('TimelineMarkersHandler', () => {
     it('should return TimelineMarker', () => {
       const expectedMarker = getTimelineMarker(180);
       uimanagerMock.getConfig().metadata.markers.push(expectedMarker);
-
 
       timelineMarkersHandlerMock.initialize(playerMock, uimanagerMock);
       const marker = timelineMarkersHandlerMock.getMarkerAtPosition(81);

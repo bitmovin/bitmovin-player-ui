@@ -96,7 +96,7 @@ describe('SeekBarLabel', () => {
     });
   });
 
-  describe("calculates correct values for thumbnail positioning", () => {
+  describe('calculates correct values for thumbnail positioning', () => {
     const uiContainerBoundingRect = {
       x: 200,
       y: 150,
@@ -111,9 +111,7 @@ describe('SeekBarLabel', () => {
     let containerGetDomElementMock: () => jest.Mocked<DOM>;
 
     beforeEach(() => {
-      containerGetDomElementMock = jest
-        .fn()
-        .mockReturnValue(MockHelper.generateDOMMock());
+      containerGetDomElementMock = jest.fn().mockReturnValue(MockHelper.generateDOMMock());
 
       containerGetDomElementMock().get = jest.fn().mockReturnValue({
         parentElement: jest.fn().mockReturnValue({
@@ -121,10 +119,10 @@ describe('SeekBarLabel', () => {
         }),
       });
 
-      seekbarLabel["container"].getDomElement = containerGetDomElementMock;
+      seekbarLabel['container'].getDomElement = containerGetDomElementMock;
     });
 
-    it("when thumbnail would overflow UI container leftside", () => {
+    it('when thumbnail would overflow UI container leftside', () => {
       const labelRect = {
         x: 180,
         y: 700,
@@ -136,15 +134,14 @@ describe('SeekBarLabel', () => {
         left: 180,
       } as DOMRect;
 
-      containerGetDomElementMock().get(0).parentElement!.getBoundingClientRect =
-        jest.fn().mockReturnValue(labelRect);
+      containerGetDomElementMock().get(0).parentElement!.getBoundingClientRect = jest.fn().mockReturnValue(labelRect);
 
       seekbarLabel.setPositionInBounds(100, uiContainerBoundingRect);
 
       expect(seekbarLabel.getDomElement().css).toHaveBeenCalledWith('left', '120px');
     });
 
-    it("when thumbnail would overflow UI container rightside", () => {
+    it('when thumbnail would overflow UI container rightside', () => {
       const labelRect = {
         x: 1650,
         y: 700,
@@ -156,8 +153,7 @@ describe('SeekBarLabel', () => {
         left: 1650,
       } as DOMRect;
 
-      containerGetDomElementMock().get(0).parentElement!.getBoundingClientRect =
-        jest.fn().mockReturnValue(labelRect);
+      containerGetDomElementMock().get(0).parentElement!.getBoundingClientRect = jest.fn().mockReturnValue(labelRect);
 
       seekbarLabel.setPositionInBounds(100, uiContainerBoundingRect);
 

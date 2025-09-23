@@ -5,7 +5,6 @@ import { i18n } from '../localization/i18n';
  * @category Utils
  */
 export namespace StringUtils {
-
   export let FORMAT_HHMMSS: string = 'hh:mm:ss';
   export let FORMAT_MMSS: string = 'mm:ss';
 
@@ -30,10 +29,13 @@ export namespace StringUtils {
     let minutes = Math.floor(totalSeconds / 60) - hours * 60;
     let seconds = Math.floor(totalSeconds) % 60;
 
-    return (isNegative ? '-' : '') + format
+    return (
+      (isNegative ? '-' : '') +
+      format
         .replace('hh', leftPadWithZeros(hours, 2))
         .replace('mm', leftPadWithZeros(minutes, 2))
-        .replace('ss', leftPadWithZeros(seconds, 2));
+        .replace('ss', leftPadWithZeros(seconds, 2))
+    );
   }
 
   export function secondsToText(totalSeconds: number): string {
@@ -50,10 +52,12 @@ export namespace StringUtils {
     const minutes = Math.floor(totalSeconds / 60) - hours * 60;
     const seconds = Math.floor(totalSeconds) % 60;
 
-    return (isNegative ? '-' : '') +
-    (hours !== 0 ? `${hours} ${i18n.performLocalization(i18n.getLocalizer('settings.time.hours'))} ` : '') +
-    (minutes !== 0 ? `${minutes} ${i18n.performLocalization(i18n.getLocalizer('settings.time.minutes'))} ` : '') +
-    `${seconds} ${i18n.performLocalization(i18n.getLocalizer('settings.time.seconds'))}`;
+    return (
+      (isNegative ? '-' : '') +
+      (hours !== 0 ? `${hours} ${i18n.performLocalization(i18n.getLocalizer('settings.time.hours'))} ` : '') +
+      (minutes !== 0 ? `${minutes} ${i18n.performLocalization(i18n.getLocalizer('settings.time.minutes'))} ` : '') +
+      `${seconds} ${i18n.performLocalization(i18n.getLocalizer('settings.time.seconds'))}`
+    );
   }
 
   /**
@@ -105,7 +109,7 @@ export namespace StringUtils {
       'g',
     );
 
-    return adMessage.replace(adMessagePlaceholderRegex, (formatString) => {
+    return adMessage.replace(adMessagePlaceholderRegex, formatString => {
       let time = 0;
       if (formatString.indexOf('remainingTime') > -1) {
         if (skipOffset) {
@@ -117,16 +121,18 @@ export namespace StringUtils {
         time = player.getCurrentTime();
       } else if (formatString.indexOf('adDuration') > -1) {
         time = player.getDuration();
-      } else if (formatString.indexOf('adBreakRemainingTime') > -1) { // To display the remaining time in the ad break as opposed to in the ad
+      } else if (formatString.indexOf('adBreakRemainingTime') > -1) {
+        // To display the remaining time in the ad break as opposed to in the ad
         time = 0;
 
         // compute list of ads and calculate duration of remaining ads based on index of active ad
         if (player.ads.isLinearAdActive()) {
           const isActiveAd = (ad: Ad) => player.ads.getActiveAd().id === ad.id;
           const indexOfActiveAd = player.ads.getActiveAdBreak().ads.findIndex(isActiveAd);
-          const duration = player.ads.getActiveAdBreak().ads
-          .slice(indexOfActiveAd)
-          .reduce((total, ad) => total + (ad.isLinear ? (ad as LinearAd).duration : 0), 0);
+          const duration = player.ads
+            .getActiveAdBreak()
+            .ads.slice(indexOfActiveAd)
+            .reduce((total, ad) => total + (ad.isLinear ? (ad as LinearAd).duration : 0), 0);
 
           // And remaning ads duration minus time played
           time = duration - player.getCurrentTime();
@@ -181,7 +187,6 @@ export namespace StringUtils {
       } else {
         return leftPadWithZeros(timeString, leadingZeroes);
       }
-
     }
     // Time format
     else if (format.indexOf(':') > -1) {

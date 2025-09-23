@@ -1,4 +1,4 @@
-import {Button, ButtonConfig} from '../buttons/Button';
+import { Button, ButtonConfig } from '../buttons/Button';
 
 /**
  * Configuration interface for a {@link ClickOverlay}.
@@ -18,14 +18,17 @@ export interface ClickOverlayConfig extends ButtonConfig {
  * @category Components
  */
 export class ClickOverlay extends Button<ClickOverlayConfig> {
-
   constructor(config: ClickOverlayConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-clickoverlay',
-      role: this.config.role,
-    }, <ClickOverlayConfig>this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-clickoverlay',
+        role: this.config.role,
+      },
+      <ClickOverlayConfig>this.config,
+    );
   }
 
   initialize(): void {

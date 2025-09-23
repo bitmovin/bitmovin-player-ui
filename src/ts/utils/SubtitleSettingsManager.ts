@@ -126,8 +126,7 @@ export class SubtitleSettingsManager {
    * Loads the settings from local storage
    */
   public load(): void {
-    this.userSettings =
-      StorageUtils.getObject<SubtitleSettings>(this.localStorageKey) || {};
+    this.userSettings = StorageUtils.getObject<SubtitleSettings>(this.localStorageKey) || {};
 
     // Apply the loaded settings
     for (let property in this.userSettings) {
@@ -138,18 +137,12 @@ export class SubtitleSettingsManager {
 
 export class SubtitleSettingsProperty<T> {
   private _manager: SubtitleSettingsManager;
-  private _onChanged: EventDispatcher<
-    SubtitleSettingsManager,
-    SubtitleSettingsProperty<T>
-  >;
+  private _onChanged: EventDispatcher<SubtitleSettingsManager, SubtitleSettingsProperty<T>>;
   private _value: T;
 
   constructor(manager: SubtitleSettingsManager) {
     this._manager = manager;
-    this._onChanged = new EventDispatcher<
-      SubtitleSettingsManager,
-      SubtitleSettingsProperty<T>
-    >();
+    this._onChanged = new EventDispatcher<SubtitleSettingsManager, SubtitleSettingsProperty<T>>();
   }
 
   public isSet(): boolean {
@@ -178,10 +171,7 @@ export class SubtitleSettingsProperty<T> {
     this._onChanged.dispatch(this._manager, this);
   }
 
-  public get onChanged(): Event<
-    SubtitleSettingsManager,
-    SubtitleSettingsProperty<T>
-  > {
+  public get onChanged(): Event<SubtitleSettingsManager, SubtitleSettingsProperty<T>> {
     return this._onChanged.getEvent();
   }
 }

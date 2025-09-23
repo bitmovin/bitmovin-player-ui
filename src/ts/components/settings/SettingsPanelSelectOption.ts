@@ -35,11 +35,15 @@ export class SettingsPanelSelectOption extends InteractiveSettingsPanelItem<Sett
 
     this.settingsValue = config.settingsValue;
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-settings-panel-item-select-option'],
-      role: 'menuitem',
-      tabIndex: 0,
-    } as SettingsPanelSelectOptionConfig, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-settings-panel-item-select-option'],
+        role: 'menuitem',
+        tabIndex: 0,
+      } as SettingsPanelSelectOptionConfig,
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager) {

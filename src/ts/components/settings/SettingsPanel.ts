@@ -61,7 +61,6 @@ export enum NavigationDirection {
  * @category Components
  */
 export class SettingsPanel<Config extends SettingsPanelConfig> extends Container<Config> {
-
   private static readonly CLASS_ACTIVE_PAGE = 'active';
 
   // navigation handling
@@ -78,11 +77,15 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   constructor(config: Config) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-settings-panel',
-      hideDelay: 3000,
-      pageTransitionAnimation: true,
-    } as Config, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-settings-panel',
+        hideDelay: 3000,
+        pageTransitionAnimation: true,
+      } as Config,
+      this.config,
+    );
 
     this.activePage = this.getRootPage();
     this.onActivePageChangedEvent();

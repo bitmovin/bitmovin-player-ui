@@ -8,6 +8,7 @@
 
   &.touched {
     transform: unset;
+
     .#{$prefix}-label {
       color: darken($color-primary, 30%);
     }

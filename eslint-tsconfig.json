@@ -1,0 +1,4 @@
+{
+  "include": ["./src", "./spec"],
+  "exclude": ["./dist", "./node_modules"]
+}

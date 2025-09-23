@@ -11,15 +11,18 @@ import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
  * @category Buttons
  */
 export class ReplayButton extends Button<ButtonConfig> {
-
   constructor(config: ButtonConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-replaybutton',
-      text: i18n.getLocalizer('replay'),
-      ariaLabel: i18n.getLocalizer('replay'),
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-replaybutton',
+        text: i18n.getLocalizer('replay'),
+        ariaLabel: i18n.getLocalizer('replay'),
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Bitmovin Text-To-Speech Demo</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Bitmovin Player -->
+    <script type="text/javascript" src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.bitmovin.com/player/web/8/modules/bitmovinplayer-advertising-bitmovin.js"
+    ></script>
+
+    <!-- UI -->
+    <script src="js/bitmovinplayer-ui.js"></script>
+    <link rel="stylesheet" href="css/bitmovinplayer-ui.css" />
+
+    <style>
+      .player-wrapper {
+        width: 95%;
+        margin: 20px auto;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+      }
+
+      .bmpui-ui-controlbar .bmpui-ui-subtitlesettingstogglebutton {
+        font-size: 1em !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <a href="index.html"><- Back to playground</a>
+        <div class="player-wrapper">
+          <div id="player"></div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var player;
+
+      window.onload = function () {
+        setupPlayer();
+      };
+
+      function setupPlayer() {
+        bitmovin.player.Player.addModule(window.bitmovin.player['advertising-bitmovin'].default);
+
+        const APP_ID = 'com.bitmovin.demo.webapp';
+        const PLAYER_KEY = '7b49d26a-8609-45ad-96a0-46c22240cef2'; // daniel.weinberger@bitmovin.com
+
+        const conf = new bitmovin.player.util.PlayerConfigBuilder(PLAYER_KEY)
+          .optimizeForPlatform({ appId: APP_ID })
+          .mergeWith({
+            playback: {
+              muted: true,
+            },
+            advertising: {},
+          })
+          .build();
+
+        // disable the default UI
+        conf.ui = false;
+
+        var source = {
+          dash: 'https://bitmovin-a.akamaihd.net/content/sintel/sintel.mpd',
+        };
+
+        var container = document.getElementById('player');
+        player = new bitmovin.player.Player(container, conf);
+        var uiManager = new bitmovin.playerui.UIManager(player, [buildCustomAdsTvUi(), buildCustomTvUi()], {});
+
+        player.load(source).then(function () {
+          player.ads.schedule({
+            tag: {
+              url:
+                'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=' +
+                Math.random(),
+              type: 'vast',
+            },
+            position: '20',
+          });
+        });
+
+        player.on(bitmovin.player.PlayerEvent.Warning, function (data) {
+          console.log('Warning Event: ' + JSON.stringify(data));
+        });
+
+        player.on(bitmovin.player.PlayerEvent.Error, function (data) {
+          console.log('Error Event: ' + JSON.stringify(data));
+        });
+      }
+
+      function buildCustomTvUi() {
+        const interval = 15;
+
+        const subtitleListBox = new bitmovin.playerui.SubtitleListBox();
+        const subtitleListPanel = new bitmovin.playerui.SettingsPanel({
+          components: [
+            new bitmovin.playerui.SettingsPanelPage({
+              components: [new bitmovin.playerui.SettingsPanelItem(null, subtitleListBox)],
+            }),
+          ],
+          hidden: true,
+        });
+
+        const audioTrackListBox = new bitmovin.playerui.AudioTrackListBox();
+        const audioTrackListPanel = new bitmovin.playerui.SettingsPanel({
+          components: [
+            new bitmovin.playerui.SettingsPanelPage({
+              components: [new bitmovin.playerui.SettingsPanelItem(null, audioTrackListBox)],
+            }),
+          ],
+          hidden: true,
+        });
+
+        const playbackToggleButton = new bitmovin.playerui.PlaybackToggleButton({
+          onAriaLabel: 'Stop',
+          offAriaLabel: 'Play',
+        });
+        const volumeMuteButton = new bitmovin.playerui.VolumeToggleButton({
+          onAriaLabel: 'Unmute',
+          offAriaLabel: 'Mute',
+        });
+
+        const rewindButton = new bitmovin.playerui.QuickSeekButton({
+          seekSeconds: -interval,
+          hideInLivePlayback: true,
+        });
+
+        const forwardButton = new bitmovin.playerui.QuickSeekButton({
+          seekSeconds: interval,
+          hideInLivePlayback: true,
+        });
+
+        const captionToggleButton = new bitmovin.playerui.ToggleButton({
+          id: 'caption-toggle-button',
+          cssClass: 'ui-subtitlesettingstogglebutton',
+          text: 'CC',
+          onAriaLabel: 'Disable closed captions',
+          offAriaLabel: 'Enable closed captions',
+        });
+        captionToggleButton.onClick.subscribe(function (e) {
+          if (captionToggleButton.isOn()) {
+            captionToggleButton.off();
+            player.subtitles
+              .list()
+              .filter(function (sub) {
+                return sub.enabled;
+              })
+              .forEach(function (sub) {
+                player.subtitles.disable(sub.id);
+              });
+            console.log('subtitles disabled');
+          } else {
+            if (player.subtitles.list().length > 0) {
+              captionToggleButton.on();
+              player.subtitles.enable(player.subtitles.list()[0].id);
+              console.log('subtitles enabled');
+            } else {
+              console.warn('no subtitles available to enable');
+            }
+          }
+        });
+
+        const fullscreenToggleButton = new bitmovin.playerui.FullscreenToggleButton({
+          onAriaLabel: 'Exit fullscreen',
+          offAriaLabel: 'Enter fullscreen',
+        });
+
+        const seekBar = new bitmovin.playerui.SeekBar({
+          label: new bitmovin.playerui.SeekBarLabel(),
+          ariaFallbackMode: true,
+        });
+
+        const subtitleToggleButton = new bitmovin.playerui.SettingsToggleButton({
+          settingsPanel: subtitleListPanel,
+          autoHideWhenNoActiveSettings: true,
+          cssClass: 'ui-subtitlesettingstogglebutton',
+          text: bitmovin.playerui.i18n.getLocalizer('settings.subtitles'),
+        });
+        const audioToggleButton = new bitmovin.playerui.SettingsToggleButton({
+          settingsPanel: audioTrackListPanel,
+          autoHideWhenNoActiveSettings: true,
+          cssClass: 'ui-audiotracksettingstogglebutton',
+          ariaLabel: bitmovin.playerui.i18n.getLocalizer('settings.audio.track'),
+          text: bitmovin.playerui.i18n.getLocalizer('settings.audio.track'),
+        });
+        const uiContainer = new bitmovin.playerui.UIContainer({
+          components: [
+            new bitmovin.playerui.SubtitleOverlay(),
+            new bitmovin.playerui.BufferingOverlay(),
+            // playbackToggleOverlay,
+            new bitmovin.playerui.ControlBar({
+              components: [
+                new bitmovin.playerui.Container({
+                  components: [
+                    playbackToggleButton,
+                    rewindButton,
+                    forwardButton,
+                    volumeMuteButton,
+                    captionToggleButton,
+                    fullscreenToggleButton,
+                  ],
+                  cssClasses: ['controlbar-bottom'],
+                }),
+                new bitmovin.playerui.Container({
+                  components: [
+                    new bitmovin.playerui.PlaybackTimeLabel({
+                      timeLabelMode: bitmovin.playerui.PlaybackTimeLabelMode.CurrentTime,
+                      hideInLivePlayback: true,
+                    }),
+                    seekBar,
+                    new bitmovin.playerui.PlaybackTimeLabel({
+                      timeLabelMode: bitmovin.playerui.PlaybackTimeLabelMode.RemainingTime,
+                      cssClasses: ['text-right'],
+                    }),
+                  ],
+                  cssClasses: ['controlbar-top'],
+                }),
+              ],
+            }),
+            new bitmovin.playerui.TitleBar({
+              components: [
+                new bitmovin.playerui.Container({
+                  components: [
+                    new bitmovin.playerui.MetadataLabel({ content: bitmovin.playerui.MetadataLabelContent.Title }),
+                    subtitleToggleButton,
+                    audioToggleButton,
+                  ],
+                  cssClasses: ['ui-titlebar-top'],
+                }),
+                new bitmovin.playerui.Container({
+                  components: [
+                    new bitmovin.playerui.MetadataLabel({
+                      content: bitmovin.playerui.MetadataLabelContent.Description,
+                    }),
+                    subtitleListPanel,
+                    audioTrackListPanel,
+                  ],
+                  cssClasses: ['ui-titlebar-bottom'],
+                }),
+              ],
+            }),
+            new bitmovin.playerui.RecommendationOverlay(),
+            new bitmovin.playerui.ErrorMessageOverlay(),
+          ],
+          cssClasses: ['ui-skin-tv'],
+          hideDelay: 2000,
+          hidePlayerStateExceptions: [
+            bitmovin.playerui.PlayerUtils.PlayerState.Prepared,
+            bitmovin.playerui.PlayerUtils.PlayerState.Paused,
+            bitmovin.playerui.PlayerUtils.PlayerState.Finished,
+          ],
+        });
+
+        const spatialNavigation = new bitmovin.playerui.SpatialNavigation(
+          new bitmovin.playerui.RootNavigationGroup(
+            uiContainer,
+            playbackToggleButton,
+            rewindButton,
+            forwardButton,
+            volumeMuteButton,
+            captionToggleButton,
+            fullscreenToggleButton,
+            seekBar,
+            audioToggleButton,
+            subtitleToggleButton,
+          ),
+          new bitmovin.playerui.ListNavigationGroup(
+            bitmovin.playerui.ListOrientation.Vertical,
+            subtitleListPanel,
+            subtitleListBox,
+          ),
+          new bitmovin.playerui.ListNavigationGroup(
+            bitmovin.playerui.ListOrientation.Vertical,
+            audioTrackListPanel,
+            audioTrackListBox,
+          ),
+        );
+
+        return {
+          ui: uiContainer,
+          spatialNavigation: spatialNavigation,
+          condition: function (context) {
+            return !context.isAd;
+          },
+        };
+      }
+
+      function buildCustomAdsTvUi() {
+        const playbackToggleButton = new bitmovin.playerui.PlaybackToggleButton();
+        const fullscreenBtn = new bitmovin.playerui.FullscreenToggleButton();
+
+        const skipAdButton = new bitmovin.playerui.AdSkipButton({
+          // skippableMessage:'Skip Ad',
+          // untilSkippableMessage: 'Skip Ad in {remainingTime%mm:ss}',
+        });
+
+        const uiContainer = new bitmovin.playerui.UIContainer({
+          components: [
+            new bitmovin.playerui.ControlBar({
+              components: [
+                new bitmovin.playerui.Container({
+                  components: [
+                    playbackToggleButton,
+                    new bitmovin.playerui.Spacer(),
+                    skipAdButton,
+                    // fullscreenBtn,
+                  ],
+                  cssClasses: ['controlbar-bottom'],
+                }),
+              ],
+            }),
+          ],
+          cssClasses: ['ui-skin-tv'],
+          hideDelay: 5000,
+          hidePlayerStateExceptions: [
+            bitmovin.playerui.PlayerUtils.PlayerState.Prepared,
+            bitmovin.playerui.PlayerUtils.PlayerState.Paused,
+            bitmovin.playerui.PlayerUtils.PlayerState.Finished,
+          ],
+        });
+
+        const spatialNavigation = new bitmovin.playerui.SpatialNavigation(
+          new bitmovin.playerui.RootNavigationGroup(uiContainer, playbackToggleButton, skipAdButton),
+        );
+
+        return {
+          ui: uiContainer,
+          spatialNavigation: spatialNavigation,
+          condition: function (context) {
+            return context.isAd;
+          },
+        };
+      }
+    </script>
+  </body>
+</html>

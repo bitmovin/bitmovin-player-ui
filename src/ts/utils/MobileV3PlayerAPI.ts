@@ -24,7 +24,9 @@ export interface MobileV3PlayerAPI extends PlayerAPI {
   exports: PlayerAPI['exports'] & { PlayerEvent: MobileV3PlayerEventType };
 }
 
-export function isMobileV3PlayerAPI(player: WrappedPlayer | PlayerAPI | MobileV3PlayerAPI): player is MobileV3PlayerAPI {
+export function isMobileV3PlayerAPI(
+  player: WrappedPlayer | PlayerAPI | MobileV3PlayerAPI,
+): player is MobileV3PlayerAPI {
   for (const key in MobileV3PlayerEvent) {
     if (MobileV3PlayerEvent.hasOwnProperty(key) && !player.exports.PlayerEvent.hasOwnProperty(key)) {
       return false;

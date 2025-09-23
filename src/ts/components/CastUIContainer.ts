@@ -1,6 +1,6 @@
-import {UIContainer, UIContainerConfig} from './UIContainer';
-import {UIInstanceManager} from '../UIManager';
-import {Timeout} from '../utils/Timeout';
+import { UIContainer, UIContainerConfig } from './UIContainer';
+import { UIInstanceManager } from '../UIManager';
+import { Timeout } from '../utils/Timeout';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**
@@ -10,7 +10,6 @@ import { PlayerAPI } from 'bitmovin-player';
  * @category Containers
  */
 export class CastUIContainer extends UIContainer {
-
   private castUiHideTimeout: Timeout;
 
   constructor(config: UIContainerConfig) {

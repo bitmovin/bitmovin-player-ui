@@ -57,15 +57,14 @@ const setVttLineAlign = (
   cueContainerDom: DOM,
   { lineAlign }: VTTProperties,
   direction: Direction,
-  relativeCueBoxPosition: number) => {
+  relativeCueBoxPosition: number,
+) => {
   switch (lineAlign) {
     case 'center':
-      setCssForCenterLineAlign(
-        cueContainerDom, direction, relativeCueBoxPosition);
+      setCssForCenterLineAlign(cueContainerDom, direction, relativeCueBoxPosition);
       break;
     case 'end':
-      setCssForEndLineAlign(
-        cueContainerDom, direction, relativeCueBoxPosition);
+      setCssForEndLineAlign(cueContainerDom, direction, relativeCueBoxPosition);
   }
 };
 
@@ -73,12 +72,7 @@ const setVttLineAlign = (
  * Defines the line positioning of the Cue Box
  * https://w3.org/TR/webvtt1/#webvtt-cue-line
  */
-const setVttLine = (
-  cueContainerDom: DOM,
-  vtt: VTTProperties,
-  direction: Direction,
-  subtitleOverLaySize: Size,
-) => {
+const setVttLine = (cueContainerDom: DOM, vtt: VTTProperties, direction: Direction, subtitleOverLaySize: Size) => {
   const overlayReferenceEdge = DirectionPair.get(direction);
   if (vtt.line === 'auto' && vtt.vertical) {
     cueContainerDom.css(overlayReferenceEdge, '0');
@@ -101,9 +95,7 @@ const setVttLine = (
     relativeLinePosition = (100 * absoluteLinePosition) / subtitleOverLaySize.height;
   }
 
-  if (vtt.lineAlign !== 'end')
-    cueContainerDom.css(
-      overlayReferenceEdge, `${relativeLinePosition}%`);
+  if (vtt.lineAlign !== 'end') cueContainerDom.css(overlayReferenceEdge, `${relativeLinePosition}%`);
   setVttLineAlign(cueContainerDom, vtt, direction, relativeLinePosition);
 };
 
@@ -112,23 +104,22 @@ const setVttLine = (
  * https://w3.org/TR/webvtt1/#webvtt-cue-writing-direction
  */
 const setVttWritingDirectionAndCueBoxPositioning = (
-  cueContainerDom: DOM, vtt: VTTProperties,
+  cueContainerDom: DOM,
+  vtt: VTTProperties,
   subtitleOverlaySize: Size,
 ) => {
   switch (vtt.vertical) {
-  case '':
-    cueContainerDom.css('writing-mode', 'horizontal-tb');
-    cueContainerDom.css(Direction.Bottom, '0');
-    setVttLine(cueContainerDom, vtt, Direction.Bottom, subtitleOverlaySize);
-    break;
-  case VttVerticalWriting.GrowingRight:
-    setCueBoxPositionForVerticalWriting(
-      cueContainerDom, Direction.Right, vtt, subtitleOverlaySize);
-    break;
-  case VttVerticalWriting.GrowingLeft:
-    setCueBoxPositionForVerticalWriting(
-      cueContainerDom, Direction.Left, vtt, subtitleOverlaySize);
-    break;
+    case '':
+      cueContainerDom.css('writing-mode', 'horizontal-tb');
+      cueContainerDom.css(Direction.Bottom, '0');
+      setVttLine(cueContainerDom, vtt, Direction.Bottom, subtitleOverlaySize);
+      break;
+    case VttVerticalWriting.GrowingRight:
+      setCueBoxPositionForVerticalWriting(cueContainerDom, Direction.Right, vtt, subtitleOverlaySize);
+      break;
+    case VttVerticalWriting.GrowingLeft:
+      setCueBoxPositionForVerticalWriting(cueContainerDom, Direction.Left, vtt, subtitleOverlaySize);
+      break;
   }
 };
 
@@ -138,12 +129,11 @@ const setCueBoxPositionForVerticalWriting = (
   vtt: VTTProperties,
   subtitleOverlaySize: Size,
 ) => {
-    const writingMode = direction === Direction.Right ?
-      'vertical-lr' : 'vertical-rl';
+  const writingMode = direction === Direction.Right ? 'vertical-lr' : 'vertical-rl';
 
-    cueContainerDom.css('writing-mode', writingMode);
-    cueContainerDom.css(Direction.Top, '0');
-    setVttLine(cueContainerDom, vtt, direction, subtitleOverlaySize);
+  cueContainerDom.css('writing-mode', writingMode);
+  cueContainerDom.css(Direction.Top, '0');
+  setVttLine(cueContainerDom, vtt, direction, subtitleOverlaySize);
 };
 
 /**
@@ -178,13 +168,9 @@ const setVttPositionAlign = (cueContainerDom: DOM, vtt: VTTProperties, direction
   }
 };
 
-const countLines = (innerHtml: string) =>
-  innerHtml.split('<br />').length;
+const countLines = (innerHtml: string) => innerHtml.split('<br />').length;
 
-const setCssForCenterLineAlign = (
-  cueContainerDom: DOM,
-  direction: Direction,
-  relativeCueBoxPosition: number) => {
+const setCssForCenterLineAlign = (cueContainerDom: DOM, direction: Direction, relativeCueBoxPosition: number) => {
   switch (direction) {
     case Direction.Bottom:
       cueContainerDom.css('transform', 'translateY(-50%)');
@@ -198,25 +184,18 @@ const setCssForCenterLineAlign = (
   }
 };
 
-const setCssForEndLineAlign = (
-  cueContainerDom: DOM,
-  direction: Direction,
-  offset: number) => {
-      const opositeToOverlayReferenceEdge = direction;
-      cueContainerDom.css(opositeToOverlayReferenceEdge, `${100 - offset}%`);
+const setCssForEndLineAlign = (cueContainerDom: DOM, direction: Direction, offset: number) => {
+  const opositeToOverlayReferenceEdge = direction;
+  cueContainerDom.css(opositeToOverlayReferenceEdge, `${100 - offset}%`);
 };
 
 /**
  * @category Utils
  */
 export namespace VttUtils {
-  export const setVttCueBoxStyles = (
-    cueContainer: SubtitleLabel,
-    subtitleOverlaySize: Size,
-  ) => {
+  export const setVttCueBoxStyles = (cueContainer: SubtitleLabel, subtitleOverlaySize: Size) => {
     const vtt = cueContainer.vtt;
     const cueContainerDom = cueContainer.getDomElement();
-
 
     setDefaultVttStyles(cueContainerDom, vtt);
 
@@ -247,8 +226,11 @@ export namespace VttUtils {
     overlaySize: Size,
   ) => {
     const regionContainerDom = regionContainer.getDomElement();
-    const regionPositionX = overlaySize.width * region.viewportAnchorX / 100 - ((overlaySize.width * region.width / 100) * region.regionAnchorX / 100);
-    const regionPositionY = overlaySize.height * region.viewportAnchorY / 100 - ((region.lines * lineHeight) * region.regionAnchorY / 100);
+    const regionPositionX =
+      (overlaySize.width * region.viewportAnchorX) / 100 -
+      (((overlaySize.width * region.width) / 100) * region.regionAnchorX) / 100;
+    const regionPositionY =
+      (overlaySize.height * region.viewportAnchorY) / 100 - (region.lines * lineHeight * region.regionAnchorY) / 100;
     regionContainerDom.css('position', 'absolute');
     regionContainerDom.css('overflow', 'hidden');
     regionContainerDom.css('width', `${region.width}%`);

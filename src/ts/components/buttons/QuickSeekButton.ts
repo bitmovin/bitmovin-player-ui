@@ -126,7 +126,7 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
 
   private onTimeShift = (event: TimeShiftEvent): void => {
     this.currentSeekTarget = this.player.getTimeShift() + (event.target - event.position);
-  }
+  };
 
   release(): void {
     this.player.off(this.player.exports.PlayerEvent.Seek, this.onSeek);

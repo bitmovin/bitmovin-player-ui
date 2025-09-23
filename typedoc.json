@@ -1,8 +1,6 @@
 {
   "out": "./docs/",
-  "entryPoints": [
-    "src/ts/main.ts"
-  ],
+  "entryPoints": ["src/ts/main.ts"],
   "tsconfig": "./tsconfig.json",
   "defaultCategory": "UI Framework",
   "navigation": {
@@ -10,14 +8,5 @@
     "includeGroups": true
   },
   "excludeProtected": true,
-  "categoryOrder": [
-    "UI Framework",
-    "Configs",
-    "Components",
-    "Buttons",
-    "Labels",
-    "Containers",
-    "Localization",
-    "Utils"
-  ]
+  "categoryOrder": ["UI Framework", "Configs", "Components", "Buttons", "Labels", "Containers", "Localization", "Utils"]
 }
