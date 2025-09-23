@@ -130,7 +130,7 @@ fi
 echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
 chmod 0600 ~/.npmrc
 
-NPM_LATEST=$(npm view --json ${PACKAGE_NAME} dist-tags | jq -r ".${NPM_TAG}")
+NPM_LATEST=$(npm view --json ${PACKAGE_NAME} dist-tags | jq -r ".${NPM_TAG} // empty")
 echo "INFO latest npm version is $NPM_LATEST"
 
 # We always publish the package with the channel/latest tag because there is no way to publish a package without
@@ -140,7 +140,7 @@ echo "INFO publishing ${VERSION_NUMBER} to npm with tag '${NPM_TAG}' (current ta
 npm publish --tag ${NPM_TAG} ${NPM_DRY_RUN_CMD}
 
 # If there is no previously tagged version (e.g. for alpha/beta/rc releases) we don't need to do anything
-if [[ "$NPM_LATEST" == "null" ]]; then
+if [[ -z "$NPM_LATEST" ]]; then
   exit 0
 fi
 
