@@ -95,7 +95,7 @@ describe('getElementInDirection', () => {
   });
 
   it('should return undefined if there is no component in the given direction', () => {
-    const otherComponents = [ createComponentMock(mockHtmlElement(50, 200, 100, 100)) ];
+    const otherComponents = [createComponentMock(mockHtmlElement(50, 200, 100, 100))];
 
     const elementInDirection = getComponentInDirection(currentComponent, otherComponents, Direction.RIGHT);
 

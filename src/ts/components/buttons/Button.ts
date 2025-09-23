@@ -1,7 +1,7 @@
-import {ComponentConfig, Component} from '../Component';
-import {DOM} from '../../DOM';
-import {EventDispatcher, NoArgs, Event} from '../../EventDispatcher';
-import { LocalizableText , i18n } from '../../localization/i18n';
+import { ComponentConfig, Component } from '../Component';
+import { DOM } from '../../DOM';
+import { EventDispatcher, NoArgs, Event } from '../../EventDispatcher';
+import { LocalizableText, i18n } from '../../localization/i18n';
 import { Icon } from '../Icon';
 
 /**
@@ -63,7 +63,6 @@ export interface ButtonConfig extends ComponentConfig {
  * @category Components
  */
 export class Button<Config extends ButtonConfig> extends Component<Config> {
-
   private static readonly CLASS_TOUCHED = 'touched';
 
   private buttonEvents = {
@@ -73,22 +72,26 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
   constructor(config: Config) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-button',
-      role: 'button',
-      tabIndex: 0,
-      acceptsTouchWithUiHidden: false,
-      buttonStyle: ButtonStyle.Icon,
-    } as Config, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-button',
+        role: 'button',
+        tabIndex: 0,
+        acceptsTouchWithUiHidden: false,
+        buttonStyle: ButtonStyle.Icon,
+      } as Config,
+      this.config,
+    );
   }
 
   protected toDomElement(): DOM {
     const buttonElementAttributes: { [name: string]: string } = {
-      'id': this.config.id,
+      id: this.config.id,
       'aria-label': i18n.performLocalization(this.config.ariaLabel || this.config.text),
-      'class': this.getCssClasses(),
-      'type' : 'button',
-      'tabindex': this.config.tabIndex.toString(),
+      class: this.getCssClasses(),
+      type: 'button',
+      tabindex: this.config.tabIndex.toString(),
     };
 
     if (this.config.role != null) {
@@ -96,20 +99,18 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     }
 
     // Create the button element with the text label
-    let buttonElement = new DOM('button', buttonElementAttributes, this)
+    let buttonElement = new DOM('button', buttonElementAttributes, this);
 
     const addIconElement = () => {
       const icon = new Icon({ ariaLabel: this.config.ariaLabel, altText: this.config.text });
       buttonElement.append(icon.getDomElement());
-    }
+    };
 
     const addLabelElement = () => {
-      buttonElement
-        .append(
-          new DOM('span', { 'class': this.prefixCss('label'), })
-            .html(i18n.performLocalization(this.config.text))
-        );
-    }
+      buttonElement.append(
+        new DOM('span', { class: this.prefixCss('label') }).html(i18n.performLocalization(this.config.text)),
+      );
+    };
 
     switch (this.config.buttonStyle) {
       case ButtonStyle.Icon:
@@ -129,21 +130,21 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     }
 
     // Listen for the click event on the button element and trigger the corresponding event on the button component
-    buttonElement.on('click', (e) => {
+    buttonElement.on('click', e => {
       e.preventDefault();
       e.stopPropagation();
       this.onClickEvent();
     });
 
-    buttonElement.on('focusin focusout', (e) => {
+    buttonElement.on('focusin focusout', e => {
       e.stopPropagation();
     });
 
-    buttonElement.on('touchstart', (e) => {
+    buttonElement.on('touchstart', e => {
       this.getDomElement().addClass(Button.CLASS_TOUCHED);
     });
 
-    buttonElement.on('touchend', (e) => {
+    buttonElement.on('touchend', e => {
       this.getDomElement().removeClass(Button.CLASS_TOUCHED);
     });
 
@@ -155,7 +156,9 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
    * @param text the text to put into the label of the button
    */
   setText(text: LocalizableText): void {
-    this.getDomElement().find('.' + this.prefixCss('label')).html(i18n.performLocalization(text));
+    this.getDomElement()
+      .find('.' + this.prefixCss('label'))
+      .html(i18n.performLocalization(text));
   }
 
   protected onClickEvent() {

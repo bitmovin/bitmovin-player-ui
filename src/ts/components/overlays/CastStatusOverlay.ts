@@ -1,6 +1,6 @@
-import {ContainerConfig, Container} from '../Container';
-import {Label, LabelConfig} from '../labels/Label';
-import {UIInstanceManager} from '../../UIManager';
+import { ContainerConfig, Container } from '../Container';
+import { Label, LabelConfig } from '../labels/Label';
+import { UIInstanceManager } from '../../UIManager';
 import { CastStartedEvent, CastWaitingForDeviceEvent, PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -10,7 +10,6 @@ import { i18n } from '../../localization/i18n';
  * @category Components
  */
 export class CastStatusOverlay extends Container<ContainerConfig> {
-
   private statusLabel: Label<LabelConfig>;
 
   constructor(config: ContainerConfig = {}) {
@@ -18,23 +17,26 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
 
     this.statusLabel = new Label<LabelConfig>({ cssClass: 'ui-cast-status-label' });
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-cast-status-overlay',
-      components: [this.statusLabel],
-      hidden: true,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-cast-status-overlay',
+        components: [this.statusLabel],
+        hidden: true,
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    player.on(player.exports.PlayerEvent.CastWaitingForDevice,
-      (event: CastWaitingForDeviceEvent) => {
-        this.show();
-        // Get device name and update status text while connecting
-        let castDeviceName = event.castPayload.deviceName;
-        this.statusLabel.setText(i18n.getLocalizer('connectingTo', { castDeviceName }));
-      });
+    player.on(player.exports.PlayerEvent.CastWaitingForDevice, (event: CastWaitingForDeviceEvent) => {
+      this.show();
+      // Get device name and update status text while connecting
+      let castDeviceName = event.castPayload.deviceName;
+      this.statusLabel.setText(i18n.getLocalizer('connectingTo', { castDeviceName }));
+    });
     player.on(player.exports.PlayerEvent.CastStarted, (event: CastStartedEvent) => {
       // Session is started or resumed
       // For cases when a session is resumed, we do not receive the previous events and therefore show the status panel
@@ -43,7 +45,7 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
       let castDeviceName = event.deviceName;
       this.statusLabel.setText(i18n.getLocalizer('playingOn', { castDeviceName }));
     });
-    player.on(player.exports.PlayerEvent.CastStopped, (event) => {
+    player.on(player.exports.PlayerEvent.CastStopped, event => {
       // Cast session gone, hide the status panel
       this.hide();
     });

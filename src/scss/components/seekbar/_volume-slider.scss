@@ -8,7 +8,7 @@
   min-width: 50px;
 
   .#{$prefix}-seekbar-playbackposition-marker {
-    @include seekbar-position-marker($seekbar-bar-height * 3 - .25rem);
+    @include seekbar-position-marker($seekbar-bar-height * 3 - 0.25rem);
     background-color: $color-highlight;
     border: 0;
   }

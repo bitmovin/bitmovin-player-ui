@@ -1,5 +1,5 @@
-import {Component, ComponentConfig} from './Component';
-import {DOM} from '../DOM';
+import { Component, ComponentConfig } from './Component';
+import { DOM } from '../DOM';
 
 /**
  * Animated analog TV static noise.
@@ -7,7 +7,6 @@ import {DOM} from '../DOM';
  * @category Components
  */
 export class TvNoiseCanvas extends Component<ComponentConfig> {
-
   private canvas: DOM;
 
   private canvasElement: HTMLCanvasElement;
@@ -24,13 +23,17 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
   constructor(config: ComponentConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-tvnoisecanvas',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-tvnoisecanvas',
+      },
+      this.config,
+    );
   }
 
   protected toDomElement(): DOM {
-    return this.canvas = new DOM('canvas', { 'class': this.getCssClasses() }, this);
+    return (this.canvas = new DOM('canvas', { class: this.getCssClasses() }, this));
   }
 
   start(): void {
@@ -72,7 +75,7 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
     // Fill texture with noise
     for (let y = 0; y < canvasHeight; y++) {
       for (let x = 0; x < canvasWidth; x++) {
-        currentPixelOffset = (canvasWidth * y * 4) + x * 4;
+        currentPixelOffset = canvasWidth * y * 4 + x * 4;
         noiseImage.data[currentPixelOffset] = Math.random() * 255;
         if (y < this.noiseAnimationWindowPos || y > this.noiseAnimationWindowPos + this.interferenceHeight) {
           noiseImage.data[currentPixelOffset] *= 0.85;

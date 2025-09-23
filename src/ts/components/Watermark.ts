@@ -1,4 +1,4 @@
-import {ClickOverlay, ClickOverlayConfig} from './overlays/ClickOverlay';
+import { ClickOverlay, ClickOverlayConfig } from './overlays/ClickOverlay';
 import { i18n } from '../localization/i18n';
 
 /**
@@ -16,16 +16,19 @@ export interface WatermarkConfig extends ClickOverlayConfig {
  * @category Components
  */
 export class Watermark extends ClickOverlay {
-
   constructor(config: WatermarkConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-watermark',
-      url: 'http://bitmovin.com',
-      role: 'link',
-      text: 'logo',
-      ariaLabel: i18n.getLocalizer('watermarkLink'),
-    }, <WatermarkConfig>this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-watermark',
+        url: 'http://bitmovin.com',
+        role: 'link',
+        text: 'logo',
+        ariaLabel: i18n.getLocalizer('watermarkLink'),
+      },
+      <WatermarkConfig>this.config,
+    );
   }
 }

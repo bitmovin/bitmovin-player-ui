@@ -1,4 +1,8 @@
-import { ExtendedPlayerAPI, GroupPlaybackSuspension, GroupPlaybackSuspensionReason } from '../../utils/GroupPlaybackAPI';
+import {
+  ExtendedPlayerAPI,
+  GroupPlaybackSuspension,
+  GroupPlaybackSuspensionReason,
+} from '../../utils/GroupPlaybackAPI';
 import { Component, ComponentConfig } from '../Component';
 import { DOM } from '../../DOM';
 import { Event, EventDispatcher, NoArgs } from '../../EventDispatcher';
@@ -43,7 +47,7 @@ export interface SeekBarConfig extends ComponentConfig {
   /**
    * Used for seekBar control increments and decrements
    */
-  keyStepIncrements?: { leftRight: number, upDown: number };
+  keyStepIncrements?: { leftRight: number; upDown: number };
 
   /**
    * Used to enable/disable snapping to markers on the seek bar when seeking near them.
@@ -100,7 +104,6 @@ export interface SeekBarMarker {
  *  @category Components
  */
 export class SeekBar extends Component<SeekBarConfig> {
-
   public static readonly SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED = -1;
 
   /**
@@ -165,17 +168,21 @@ export class SeekBar extends Component<SeekBarConfig> {
       upDown: 5,
     };
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-seekbar',
-      vertical: false,
-      smoothPlaybackPositionUpdateIntervalMs: 50,
-      keyStepIncrements,
-      ariaLabel: i18n.getLocalizer('seekBar'),
-      tabIndex: 0,
-      snappingRange: 1,
-      enableSeekPreview: true,
-      snappingEnabled: true,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-seekbar',
+        vertical: false,
+        smoothPlaybackPositionUpdateIntervalMs: 50,
+        keyStepIncrements,
+        ariaLabel: i18n.getLocalizer('seekBar'),
+        tabIndex: 0,
+        snappingRange: 1,
+        enableSeekPreview: true,
+        snappingEnabled: true,
+      },
+      this.config,
+    );
 
     this.label = this.config.label;
   }
@@ -210,21 +217,23 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.getDomElement().attr('aria-valuetext', ariaValueText);
 
       if (this.config.addCurrentTimeToAriaLabel) {
-        this.getDomElement().attr('aria-label', `${i18n.performLocalization(this.config.ariaLabel)}: ${StringUtils.secondsToText(this.player.getCurrentTime())}`);
+        this.getDomElement().attr(
+          'aria-label',
+          `${i18n.performLocalization(this.config.ariaLabel)}: ${StringUtils.secondsToText(this.player.getCurrentTime())}`,
+        );
       }
     }
   }
 
   private getPlaybackPositionPercentage(): number {
     if (this.player.isLive()) {
-      return 100 - (100 / this.player.getMaxTimeShift() * this.player.getTimeShift());
+      return 100 - (100 / this.player.getMaxTimeShift()) * this.player.getTimeShift();
     }
 
-    return 100 / this.player.getDuration() * this.getRelativeCurrentTime();
+    return (100 / this.player.getDuration()) * this.getRelativeCurrentTime();
   }
 
   private updateBufferLevel(playbackPositionPercentage: number): void {
-
     let bufferLoadedPercentageLevel: number;
     if (this.player.isLive()) {
       // Always show full buffer for live streams
@@ -247,7 +256,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPosition(this.seekBarBackdrop, 100);
 
     // Add seekbar controls to the seekbar
-    const seekBarController = new SeekBarController(this.config.keyStepIncrements, player, uimanager.getConfig().volumeController);
+    const seekBarController = new SeekBarController(
+      this.config.keyStepIncrements,
+      player,
+      uimanager.getConfig().volumeController,
+    );
 
     seekBarController.setSeekBarControls(this.getDomElement(), () => this.seekBarType);
 
@@ -306,7 +319,12 @@ export class SeekBar extends Component<SeekBarConfig> {
       // At the same time when the user is scrubbing, we also move the position of the seekbar to display a preview during scrubbing.
       // When the user is scrubbing we do not record this as a user seek operation, as the user has yet to finish their seek,
       // but we should not move the playback position to not create a jumping behaviour.
-      if (scrubbing && event && event.type === player.exports.PlayerEvent.SegmentRequestFinished && playbackPositionPercentage !== this.playbackPositionPercentage) {
+      if (
+        scrubbing &&
+        event &&
+        event.type === player.exports.PlayerEvent.SegmentRequestFinished &&
+        playbackPositionPercentage !== this.playbackPositionPercentage
+      ) {
         playbackPositionPercentage = this.playbackPositionPercentage;
       }
 
@@ -324,8 +342,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       } else {
         // Update playback position only in paused state or in the initial startup state where player is neither
         // paused nor playing. Playback updates are handled in the Timeout below.
-        const isInInitialStartupState = this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED
-          || forceUpdate || player.isPaused();
+        const isInInitialStartupState =
+          this.config.smoothPlaybackPositionUpdateIntervalMs === SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED ||
+          forceUpdate ||
+          player.isPaused();
         const isNeitherPausedNorPlaying = player.isPaused() === player.isPlaying();
 
         if ((isInInitialStartupState || isNeitherPausedNorPlaying) && !this.isSeeking()) {
@@ -386,7 +406,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       return !!(player as ExtendedPlayerAPI).groupPlayback;
     };
 
-    this.onSeek.subscribe((sender) => {
+    this.onSeek.subscribe(sender => {
       // track seeking status so we can catch events from seek preview seeks
       this.isUserSeeking = true;
       // Notify UI manager of started seek
@@ -526,7 +546,11 @@ export class SeekBar extends Component<SeekBarConfig> {
       cssPrefix: this.config.cssPrefix,
       snappingRange: this.config.snappingRange,
     };
-    this.timelineMarkersHandler = new TimelineMarkersHandler(timelineMarkerConfig, () => this.seekBar.width(), this.seekBarMarkersContainer);
+    this.timelineMarkersHandler = new TimelineMarkersHandler(
+      timelineMarkerConfig,
+      () => this.seekBar.width(),
+      this.seekBarMarkersContainer,
+    );
     this.timelineMarkersHandler.initialize(player, uimanager);
   }
 
@@ -540,7 +564,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let target: number;
     if (this.player.isLive()) {
       const maxTimeShift = this.player.getMaxTimeShift();
-      target = maxTimeShift - (maxTimeShift * (percentage / 100));
+      target = maxTimeShift - maxTimeShift * (percentage / 100);
     } else {
       const seekableRangeStart = PlayerUtils.getSeekableRangeStart(this.player, 0);
       const relativeSeekTarget = this.player.getDuration() * (percentage / 100);
@@ -548,7 +572,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
 
     return target;
-  }
+  };
 
   private seek = (percentage: number) => {
     const targetPlaybackPosition = this.getTargetSeekPosition(percentage);
@@ -596,53 +620,57 @@ export class SeekBar extends Component<SeekBarConfig> {
     let updateIntervalMs = 50;
     let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
-    this.smoothPlaybackPositionUpdater = new Timeout(updateIntervalMs, () => {
-      if (this.isSeeking()) {
-        return;
-      }
-
-      // Reset the currentTimeSeekBar and set the position to 0 if the player has no duration
-      if (this.player.getDuration() === 0) {
-        this.setPlaybackPosition(0);
-        currentTimeSeekBar = 0;
-        return;
-      }
-
-      currentTimeSeekBar += currentTimeUpdateDeltaSecs;
-
-      try {
-        currentTimePlayer = this.getRelativeCurrentTime();
-      } catch (error) {
-        // Detect if the player has been destroyed and stop updating if so
-        if (error instanceof player.exports.PlayerAPINotAvailableError) {
-          this.smoothPlaybackPositionUpdater.clear();
+    this.smoothPlaybackPositionUpdater = new Timeout(
+      updateIntervalMs,
+      () => {
+        if (this.isSeeking()) {
+          return;
         }
 
-        // If the current time cannot be read it makes no sense to continue
-        return;
-      }
+        // Reset the currentTimeSeekBar and set the position to 0 if the player has no duration
+        if (this.player.getDuration() === 0) {
+          this.setPlaybackPosition(0);
+          currentTimeSeekBar = 0;
+          return;
+        }
 
-      // Sync currentTime of seekbar to player
-      let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
-      // If the delta is larger that 2 secs, directly jump the seekbar to the
-      // player time instead of smoothly fast forwarding/rewinding.
-      if (Math.abs(currentTimeDelta) > 2) {
-        currentTimeSeekBar = currentTimePlayer;
-      }
-      // If currentTimeDelta is negative and below the adjustment threshold,
-      // the player is ahead of the seekbar and we 'fast forward' the seekbar
-      else if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
         currentTimeSeekBar += currentTimeUpdateDeltaSecs;
-      }
-      // If currentTimeDelta is positive and above the adjustment threshold,
-      // the player is behind the seekbar and we 'rewind' the seekbar
-      else if (currentTimeDelta >= currentTimeUpdateDeltaSecs) {
-        currentTimeSeekBar -= currentTimeUpdateDeltaSecs;
-      }
 
-      let playbackPositionPercentage = 100 / player.getDuration() * currentTimeSeekBar;
-      this.setPlaybackPosition(playbackPositionPercentage);
-    }, true);
+        try {
+          currentTimePlayer = this.getRelativeCurrentTime();
+        } catch (error) {
+          // Detect if the player has been destroyed and stop updating if so
+          if (error instanceof player.exports.PlayerAPINotAvailableError) {
+            this.smoothPlaybackPositionUpdater.clear();
+          }
+
+          // If the current time cannot be read it makes no sense to continue
+          return;
+        }
+
+        // Sync currentTime of seekbar to player
+        let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
+        // If the delta is larger that 2 secs, directly jump the seekbar to the
+        // player time instead of smoothly fast forwarding/rewinding.
+        if (Math.abs(currentTimeDelta) > 2) {
+          currentTimeSeekBar = currentTimePlayer;
+        }
+        // If currentTimeDelta is negative and below the adjustment threshold,
+        // the player is ahead of the seekbar and we 'fast forward' the seekbar
+        else if (currentTimeDelta <= -currentTimeUpdateDeltaSecs) {
+          currentTimeSeekBar += currentTimeUpdateDeltaSecs;
+        }
+        // If currentTimeDelta is positive and above the adjustment threshold,
+        // the player is behind the seekbar and we 'rewind' the seekbar
+        else if (currentTimeDelta >= currentTimeUpdateDeltaSecs) {
+          currentTimeSeekBar -= currentTimeUpdateDeltaSecs;
+        }
+
+        let playbackPositionPercentage = (100 / player.getDuration()) * currentTimeSeekBar;
+        this.setPlaybackPosition(playbackPositionPercentage);
+      },
+      true,
+    );
 
     let startSmoothPlaybackPositionUpdater = () => {
       if (!player.isLive()) {
@@ -676,7 +704,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   release(): void {
     super.release();
 
-    if (this.smoothPlaybackPositionUpdater) { // object must not necessarily exist, e.g. in volume slider subclass
+    if (this.smoothPlaybackPositionUpdater) {
+      // object must not necessarily exist, e.g. in volume slider subclass
       this.smoothPlaybackPositionUpdater.clear();
     }
 
@@ -694,55 +723,59 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.config.cssClasses.push('vertical');
     }
 
-    let seekBarContainer = new DOM('div', {
-      'id': this.config.id,
-      'class': this.getCssClasses(),
-      'role': 'slider',
-      'aria-label': i18n.performLocalization(this.config.ariaLabel),
-      'tabindex': this.config.tabIndex.toString(),
-    }, this);
+    let seekBarContainer = new DOM(
+      'div',
+      {
+        id: this.config.id,
+        class: this.getCssClasses(),
+        role: 'slider',
+        'aria-label': i18n.performLocalization(this.config.ariaLabel),
+        tabindex: this.config.tabIndex.toString(),
+      },
+      this,
+    );
 
     let seekBar = new DOM('div', {
-      'class': this.prefixCss('seekbar'),
+      class: this.prefixCss('seekbar'),
     });
     this.seekBar = seekBar;
 
     const seekBarBarsContainer = new DOM('div', {
-      'class': this.prefixCss('seekbar-bars'),
+      class: this.prefixCss('seekbar-bars'),
     });
 
     // Indicator that shows the buffer fill level
     let seekBarBufferLevel = new DOM('div', {
-      'class': this.prefixCss('seekbar-bufferlevel'),
+      class: this.prefixCss('seekbar-bufferlevel'),
     });
     this.seekBarBufferPosition = seekBarBufferLevel;
 
     // Indicator that shows the current playback position
     let seekBarPlaybackPosition = new DOM('div', {
-      'class': this.prefixCss('seekbar-playbackposition'),
+      class: this.prefixCss('seekbar-playbackposition'),
     });
     this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
     // A marker of the current playback position, e.g. a dot or line
     let seekBarPlaybackPositionMarker = new DOM('div', {
-      'class': this.prefixCss('seekbar-playbackposition-marker'),
+      class: this.prefixCss('seekbar-playbackposition-marker'),
     });
     this.seekBarPlaybackPositionMarker = seekBarPlaybackPositionMarker;
 
     // Indicator that show where a seek will go to
     let seekBarSeekPosition = new DOM('div', {
-      'class': this.prefixCss('seekbar-seekposition'),
+      class: this.prefixCss('seekbar-seekposition'),
     });
     this.seekBarSeekPosition = seekBarSeekPosition;
 
     // Indicator that shows the full seekbar
     let seekBarBackdrop = new DOM('div', {
-      'class': this.prefixCss('seekbar-backdrop'),
+      class: this.prefixCss('seekbar-backdrop'),
     });
     this.seekBarBackdrop = seekBarBackdrop;
 
     let seekBarChapterMarkersContainer = new DOM('div', {
-      'class': this.prefixCss('seekbar-markers'),
+      class: this.prefixCss('seekbar-markers'),
     });
     this.seekBarMarkersContainer = seekBarChapterMarkersContainer;
 
@@ -750,7 +783,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.seekBarBackdrop,
       this.seekBarBufferPosition,
       this.seekBarSeekPosition,
-      this.seekBarPlaybackPosition
+      this.seekBarPlaybackPosition,
     );
 
     seekBar.append(seekBarBarsContainer, this.seekBarMarkersContainer, this.seekBarPlaybackPositionMarker);
@@ -874,7 +907,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let elementOffsetPx = this.seekBar.offset().left;
     let widthPx = this.seekBar.width();
     let offsetPx = eventPageX - elementOffsetPx;
-    let offset = 1 / widthPx * offsetPx;
+    let offset = (1 / widthPx) * offsetPx;
 
     return this.sanitizeOffset(offset);
   }
@@ -888,7 +921,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let elementOffsetPx = this.seekBar.offset().top;
     let widthPx = this.seekBar.height();
     let offsetPx = eventPageY - elementOffsetPx;
-    let offset = 1 / widthPx * offsetPx;
+    let offset = (1 / widthPx) * offsetPx;
 
     return 1 - this.sanitizeOffset(offset);
   }
@@ -907,15 +940,13 @@ export class SeekBar extends Component<SeekBarConfig> {
       } else {
         return this.getHorizontalOffset(e.type === 'touchend' ? e.changedTouches[0].pageX : e.touches[0].pageX);
       }
-    }
-    else if (e instanceof MouseEvent) {
+    } else if (e instanceof MouseEvent) {
       if (this.config.vertical) {
         return this.getVerticalOffset(e.pageY);
       } else {
         return this.getHorizontalOffset(e.pageX);
       }
-    }
-    else {
+    } else {
       if (console) {
         console.warn('invalid event');
       }
@@ -956,25 +987,27 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPosition(this.seekBarPlaybackPosition, percent);
 
     // Set position of the marker
-    let totalSize = (this.config.vertical ? (this.seekBar.height() - this.seekBarPlaybackPositionMarker.height()) : this.seekBar.width());
-    let px = (totalSize) / 100 * percent;
+    let totalSize = this.config.vertical
+      ? this.seekBar.height() - this.seekBarPlaybackPositionMarker.height()
+      : this.seekBar.width();
+    let px = (totalSize / 100) * percent;
     if (this.config.vertical) {
       px = this.seekBar.height() - px - this.seekBarPlaybackPositionMarker.height();
     }
 
-    let style = this.config.vertical ?
-      // -ms-transform required for IE9
-      // -webkit-transform required for Android 4.4 WebView
-      {
-        'transform': 'translateY(' + px + 'px)',
-        '-ms-transform': 'translateY(' + px + 'px)',
-        '-webkit-transform': 'translateY(' + px + 'px)',
-      } :
-      {
-        'transform': 'translateX(' + px + 'px)',
-        '-ms-transform': 'translateX(' + px + 'px)',
-        '-webkit-transform': 'translateX(' + px + 'px)',
-      };
+    let style = this.config.vertical
+      ? // -ms-transform required for IE9
+        // -webkit-transform required for Android 4.4 WebView
+        {
+          transform: 'translateY(' + px + 'px)',
+          '-ms-transform': 'translateY(' + px + 'px)',
+          '-webkit-transform': 'translateY(' + px + 'px)',
+        }
+      : {
+          transform: 'translateX(' + px + 'px)',
+          '-ms-transform': 'translateX(' + px + 'px)',
+          '-webkit-transform': 'translateX(' + px + 'px)',
+        };
     this.seekBarPlaybackPositionMarker.css(style);
   }
 
@@ -1038,19 +1071,19 @@ export class SeekBar extends Component<SeekBarConfig> {
       scale = 0.99999;
     }
 
-    let style = this.config.vertical ?
-      // -ms-transform required for IE9
-      // -webkit-transform required for Android 4.4 WebView
-      {
-        'transform': 'scaleY(' + scale + ')',
-        '-ms-transform': 'scaleY(' + scale + ')',
-        '-webkit-transform': 'scaleY(' + scale + ')',
-      } :
-      {
-        'transform': 'scaleX(' + scale + ')',
-        '-ms-transform': 'scaleX(' + scale + ')',
-        '-webkit-transform': 'scaleX(' + scale + ')',
-      };
+    let style = this.config.vertical
+      ? // -ms-transform required for IE9
+        // -webkit-transform required for Android 4.4 WebView
+        {
+          transform: 'scaleY(' + scale + ')',
+          '-ms-transform': 'scaleY(' + scale + ')',
+          '-webkit-transform': 'scaleY(' + scale + ')',
+        }
+      : {
+          transform: 'scaleX(' + scale + ')',
+          '-ms-transform': 'scaleX(' + scale + ')',
+          '-webkit-transform': 'scaleX(' + scale + ')',
+        };
     element.css(style);
   }
 
@@ -1184,7 +1217,6 @@ export class SeekBar extends Component<SeekBarConfig> {
   get onSeeked(): Event<SeekBar, number> {
     return this.seekBarEvents.onSeeked.getEvent();
   }
-
 
   protected onShowEvent(): void {
     super.onShowEvent();

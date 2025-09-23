@@ -660,15 +660,13 @@ function generateSubtitleRegionContainerMock(): SubtitleRegionContainer {
 
 function generateSubtitleCueBoxMock(hasRegion: boolean, vttProps?: VTTProperties): SubtitleLabel {
   const region = hasRegion ? vttRegionProps : null;
-  const SubtitleCueBoxClass: jest.Mock<SubtitleLabel> = jest.fn().mockImplementation(() => (
-    {
-      getText: () => '',
-      vtt: {
-        ...generateVttProps(vttProps),
-        region,
-      },
-    }
-  ));
+  const SubtitleCueBoxClass: jest.Mock<SubtitleLabel> = jest.fn().mockImplementation(() => ({
+    getText: () => '',
+    vtt: {
+      ...generateVttProps(vttProps),
+      region,
+    },
+  }));
   return new SubtitleCueBoxClass();
 }
 

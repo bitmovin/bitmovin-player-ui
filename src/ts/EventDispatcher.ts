@@ -1,4 +1,4 @@
-import {ArrayUtils} from './utils/ArrayUtils';
+import { ArrayUtils } from './utils/ArrayUtils';
 import { Timeout } from './utils/Timeout';
 /**
  * Function interface for event listeners on the {@link EventDispatcher}.
@@ -10,8 +10,7 @@ export interface EventListener<Sender, Args> {
 /**
  * Empty type for creating {@link EventDispatcher event dispatchers} that do not carry any arguments.
  */
-export interface NoArgs {
-}
+export interface NoArgs {}
 
 /**
  * Event args for an event that can be canceled.
@@ -60,11 +59,9 @@ export interface Event<Sender, Args> {
  * Event dispatcher to subscribe and trigger events. Each event should have its own dispatcher.
  */
 export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
-
   private listeners: EventListenerWrapper<Sender, Args>[] = [];
 
-  constructor() {
-  }
+  constructor() {}
 
   /**
    * {@inheritDoc}
@@ -163,7 +160,6 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
  * for internal dispatcher use and it is therefore not exported.
  */
 class EventListenerWrapper<Sender, Args> {
-
   private eventListener: EventListener<Sender, Args>;
   private once: boolean;
 
@@ -197,8 +193,7 @@ class EventListenerWrapper<Sender, Args> {
     return this.once;
   }
 
-  clear(): void {
-  }
+  clear(): void {}
 }
 
 interface EventAttributes<Sender, Args> {
@@ -210,7 +205,6 @@ interface EventAttributes<Sender, Args> {
  * Extends the basic {@link EventListenerWrapper} with rate-limiting functionality.
  */
 class RateLimitedEventListenerWrapper<Sender, Args> extends EventListenerWrapper<Sender, Args> {
-
   private readonly rateMs: number;
   private readonly rateLimitingEventListener: EventListener<Sender, Args>;
 

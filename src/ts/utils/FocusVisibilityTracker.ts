@@ -65,7 +65,5 @@ function isBitmovinUi(element: Element, bitmovinUiPrefix: string): boolean {
 }
 
 function isHtmlElement(element: unknown): element is HTMLElement & { classList: DOMTokenList } {
-  return (
-    element instanceof HTMLElement && element.classList instanceof DOMTokenList
-  );
+  return element instanceof HTMLElement && element.classList instanceof DOMTokenList;
 }

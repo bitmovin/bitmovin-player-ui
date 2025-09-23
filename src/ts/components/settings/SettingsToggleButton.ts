@@ -1,8 +1,8 @@
-import {ToggleButton, ToggleButtonConfig} from '../buttons/ToggleButton';
+import { ToggleButton, ToggleButtonConfig } from '../buttons/ToggleButton';
 import { SettingsPanel, SettingsPanelConfig } from './SettingsPanel';
-import {UIInstanceManager} from '../../UIManager';
-import {Component, ComponentConfig} from '../Component';
-import {ArrayUtils} from '../../utils/ArrayUtils';
+import { UIInstanceManager } from '../../UIManager';
+import { Component, ComponentConfig } from '../Component';
+import { ArrayUtils } from '../../utils/ArrayUtils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -30,7 +30,6 @@ export interface SettingsToggleButtonConfig extends ToggleButtonConfig {
  * @category Buttons
  */
 export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfig> {
-
   private visibleSettingsPanels: SettingsPanel<SettingsPanelConfig>[] = [];
 
   constructor(config: SettingsToggleButtonConfig) {
@@ -40,13 +39,17 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       throw new Error('Required SettingsPanel is missing');
     }
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-settingstogglebutton',
-      text: i18n.getLocalizer('settings'),
-      settingsPanel: null,
-      autoHideWhenNoActiveSettings: true,
-      role: 'pop-up button',
-    }, <SettingsToggleButtonConfig>this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-settingstogglebutton',
+        text: i18n.getLocalizer('settings'),
+        settingsPanel: null,
+        autoHideWhenNoActiveSettings: true,
+        role: 'pop-up button',
+      },
+      <SettingsToggleButtonConfig>this.config,
+    );
 
     /**
      * WCAG20 standard defines which popup menu (element id) is owned by the button
@@ -57,7 +60,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
      * WCAG20 standard defines that a button has a popup menu bound to it
      */
     this.getDomElement().attr('aria-haspopup', 'true');
-
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

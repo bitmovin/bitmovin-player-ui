@@ -1,5 +1,5 @@
-import {LabelConfig, Label} from './Label';
-import {UIInstanceManager} from '../../UIManager';
+import { LabelConfig, Label } from './Label';
+import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**
@@ -34,13 +34,16 @@ export interface MetadataLabelConfig extends LabelConfig {
  * @category Labels
  */
 export class MetadataLabel extends Label<MetadataLabelConfig> {
-
   constructor(config: MetadataLabelConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['label-metadata', 'label-metadata-' + MetadataLabelContent[config.content].toLowerCase()],
-    } as MetadataLabelConfig, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['label-metadata', 'label-metadata-' + MetadataLabelContent[config.content].toLowerCase()],
+      } as MetadataLabelConfig,
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

@@ -3,7 +3,7 @@ import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from '../
 import { PlayerWrapper } from '../../src/ts/UIManager';
 
 describe('isMobileV3PlayerAPI', () => {
-  const playerApi = { exports: { PlayerEvent: { } } } as PlayerAPI;
+  const playerApi = { exports: { PlayerEvent: {} } } as PlayerAPI;
   const mobileV3PlayerApi = { exports: { PlayerEvent: MobileV3PlayerEvent } } as unknown as MobileV3PlayerAPI;
   const wrappedPlayerApi = new PlayerWrapper(playerApi);
   const wrappedMobileV3PlayerApi = new PlayerWrapper(mobileV3PlayerApi);

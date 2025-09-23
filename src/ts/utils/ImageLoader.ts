@@ -1,4 +1,4 @@
-import {DOM} from '../DOM';
+import { DOM } from '../DOM';
 
 export interface ImageLoadedCallback {
   (url: string, width: number, height: number): void;
@@ -17,8 +17,7 @@ interface ImageLoaderState {
  * Tracks the loading state of images.
  */
 export class ImageLoader {
-
-  private state: { [url: string]: ImageLoaderState; } = {};
+  private state: { [url: string]: ImageLoaderState } = {};
 
   /**
    * Loads an image and call the callback once the image is loaded. If the image is already loaded, the callback
@@ -42,7 +41,7 @@ export class ImageLoader {
       this.state[url] = state;
 
       // Listen to the load event, update the state and call the callback once the image is loaded
-      state.image.on('load', (e) => {
+      state.image.on('load', e => {
         state.loaded = true;
         state.width = (<HTMLImageElement>state.image.get(0)).width;
         state.height = (<HTMLImageElement>state.image.get(0)).height;

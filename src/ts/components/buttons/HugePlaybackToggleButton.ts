@@ -1,6 +1,6 @@
-import {PlaybackToggleButton, PlaybackToggleButtonConfig} from './PlaybackToggleButton';
-import {DOM} from '../../DOM';
-import {UIInstanceManager} from '../../UIManager';
+import { PlaybackToggleButton, PlaybackToggleButtonConfig } from './PlaybackToggleButton';
+import { DOM } from '../../DOM';
+import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -10,15 +10,18 @@ import { i18n } from '../../localization/i18n';
  * @category Buttons
  */
 export class HugePlaybackToggleButton extends PlaybackToggleButton {
-
   constructor(config: PlaybackToggleButtonConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-hugeplaybacktogglebutton',
-      text: i18n.getLocalizer('playPause'),
-      role: 'button',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-hugeplaybacktogglebutton',
+        text: i18n.getLocalizer('playPause'),
+        role: 'button',
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

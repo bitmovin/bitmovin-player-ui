@@ -1,6 +1,6 @@
 import { ListBox, ListBoxConfig } from './ListBox';
-import {UIInstanceManager} from '../../UIManager';
-import {AudioTrackSwitchHandler} from '../../utils/AudioTrackUtils';
+import { UIInstanceManager } from '../../UIManager';
+import { AudioTrackSwitchHandler } from '../../utils/AudioTrackUtils';
 import { PlayerAPI } from 'bitmovin-player';
 import { AudioTrackSelectBox } from '../settings/AudioTrackSelectBox';
 import { LocalizableText } from '../../localization/i18n';
@@ -11,7 +11,6 @@ import { LocalizableText } from '../../localization/i18n';
  * @category Components
  */
 export class AudioTrackListBox extends ListBox {
-
   constructor(title?: LocalizableText) {
     super({
       listSelector: new AudioTrackSelectBox(),

@@ -1,5 +1,5 @@
-import {Component, ComponentConfig} from '../components/Component';
-import {Container} from '../components/Container';
+import { Component, ComponentConfig } from '../components/Component';
+import { Container } from '../components/Container';
 
 /**
  * @category Utils

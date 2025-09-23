@@ -1,10 +1,10 @@
-import {Container, ContainerConfig} from '../Container';
-import {Label, LabelConfig} from '../labels/Label';
-import {Component, ComponentConfig} from '../Component';
+import { Container, ContainerConfig } from '../Container';
+import { Label, LabelConfig } from '../labels/Label';
+import { Component, ComponentConfig } from '../Component';
 import { UIInstanceManager } from '../../UIManager';
-import {StringUtils} from '../../utils/StringUtils';
-import {ImageLoader} from '../../utils/ImageLoader';
-import {CssProperties} from '../../DOM';
+import { StringUtils } from '../../utils/StringUtils';
+import { ImageLoader } from '../../utils/ImageLoader';
+import { CssProperties } from '../../DOM';
 import { PlayerAPI, Thumbnail } from 'bitmovin-player';
 import { SeekBar, SeekPreviewEventArgs } from './SeekBar';
 import { PlayerUtils } from '../../utils/PlayerUtils';
@@ -24,7 +24,6 @@ export interface SeekBarLabelConfig extends ContainerConfig {
  * @category Components
  */
 export class SeekBarLabel extends Container<SeekBarLabelConfig> {
-
   private timeLabel: Label<LabelConfig>;
   private titleLabel: Label<LabelConfig>;
   private thumbnail: Component<ComponentConfig>;
@@ -47,19 +46,19 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     this.thumbnailImageLoader = new ImageLoader();
 
     this.container = new Container({
-      components: [
-        this.titleLabel,
-        this.thumbnail,
-        this.timeLabel,
-      ],
+      components: [this.titleLabel, this.thumbnail, this.timeLabel],
       cssClass: 'seekbar-label-inner',
     });
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-seekbar-label',
-      components: [this.container],
-      hidden: true,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-seekbar-label',
+        components: [this.container],
+        hidden: true,
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -71,8 +70,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
     let init = () => {
       // Set time format depending on source duration
-      this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
-        StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
+      this.timeFormat =
+        Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600
+          ? StringUtils.FORMAT_HHMMSS
+          : StringUtils.FORMAT_MMSS;
       // Set initial state of title and thumbnail to handle sourceLoaded when switching to a live-stream
       this.setTitleText(null);
       this.setThumbnail(null);
@@ -101,7 +102,6 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
       const wallClockTime = convertTimeShiftPreviewToWallClockTime(timeShiftPreview);
       this.setThumbnail(this.player.getThumbnail(wallClockTime));
-
     } else {
       let time = this.player.getDuration() * (args.position / 100);
       this.setTime(time);
@@ -189,12 +189,11 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     if (thumbnail == null) {
       thumbnailElement.css({
         'background-image': null,
-        'display': 'none',
-        'width': null,
-        'height': null,
+        display: 'none',
+        width: null,
+        height: null,
       });
-    }
-    else {
+    } else {
       // We use the thumbnail image loader to make sure the thumbnail is loaded and it's size is known before be can
       // calculate the CSS properties and set them on the element.
       this.thumbnailImageLoader.load(thumbnail.url, (url, width, height) => {
@@ -222,13 +221,13 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     let offsetX = 100 * thumbnailIndexX;
     let offsetY = 100 * thumbnailIndexY;
 
-    let aspectRatio = 1 / thumbnail.width * thumbnail.height;
+    let aspectRatio = (1 / thumbnail.width) * thumbnail.height;
 
     // The thumbnail size is set by setting the CSS 'width' and 'padding-bottom' properties. 'padding-bottom' is
     // used because it is relative to the width and can be used to set the aspect ratio of the thumbnail.
     // A default value for width is set in the stylesheet and can be overwritten from there or anywhere else.
     return {
-      'display': 'inherit',
+      display: 'inherit',
       'background-image': `url(${thumbnail.url})`,
       'padding-bottom': `${100 * aspectRatio}%`,
       'background-size': `${sizeX}% ${sizeY}%`,
@@ -237,10 +236,10 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   }
 
   private thumbnailCssSingleImage(thumbnail: Thumbnail, width: number, height: number): CssProperties {
-    let aspectRatio = 1 / width * height;
+    let aspectRatio = (1 / width) * height;
 
     return {
-      'display': 'inherit',
+      display: 'inherit',
       'background-image': `url(${thumbnail.url})`,
       'padding-bottom': `${100 * aspectRatio}%`,
       'background-size': `100% 100%`,

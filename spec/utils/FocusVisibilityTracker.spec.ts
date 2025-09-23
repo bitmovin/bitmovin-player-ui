@@ -52,7 +52,7 @@ describe('FocusVisibilityTracker', () => {
 
       expect(uiButton.classList.contains(focusVisibileClassName)).toBe(false);
       expect(nonUiButton.classList.contains(focusVisibileClassName)).toBe(false);
-    }
+    },
   );
 
   it('removes the focus-visible class on a UI button once it loses focus', () => {
@@ -79,7 +79,7 @@ function createAndAddButton(document: Document, id: string): HTMLButtonElement {
   button.id = id;
   document.body.appendChild(button);
   return button;
-};
+}
 
 function dispatchEvent(document: Document, eventInterface: string, eventType: string): void {
   const event = document.createEvent(eventInterface);

@@ -1,6 +1,6 @@
-import {Component, ComponentConfig} from '../Component';
-import {EventDispatcher, Event} from '../../EventDispatcher';
-import {ArrayUtils} from '../../utils/ArrayUtils';
+import { Component, ComponentConfig } from '../Component';
+import { EventDispatcher, Event } from '../../EventDispatcher';
+import { ArrayUtils } from '../../utils/ArrayUtils';
 import { LocalizableText, i18n } from '../../localization/i18n';
 
 /**
@@ -55,7 +55,6 @@ export interface ListSelectorConfig extends ComponentConfig {
 }
 
 export abstract class ListSelector<Config extends ListSelectorConfig> extends Component<ListSelectorConfig> {
-
   protected items: ListItem[];
   protected selectedItem: string | null = null;
 
@@ -68,10 +67,14 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   constructor(config: ListSelectorConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      items: [],
-      cssClass: 'ui-listselector',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        items: [],
+        cssClass: 'ui-listselector',
+      },
+      this.config,
+    );
 
     this.items = this.config.items;
   }
@@ -111,8 +114,8 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param sortedInsert whether the item should be added respecting the order of keys
    * @param ariaLabel custom aria label for the listItem
    */
-  addItem(key: string|null, label: LocalizableText, sortedInsert = false, ariaLabel = '') {
-    const listItem = { key: key, label: i18n.performLocalization(label), ...(ariaLabel && { ariaLabel })};
+  addItem(key: string | null, label: LocalizableText, sortedInsert = false, ariaLabel = '') {
+    const listItem = { key: key, label: i18n.performLocalization(label), ...(ariaLabel && { ariaLabel }) };
 
     // Apply filter function
     if (this.config.filter && !this.config.filter(listItem)) {
@@ -193,7 +196,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @returns {ListItem} the item with the requested key. Undefined if no item with the given key exists.
    */
   getItemForKey(key: string): ListItem | null {
-    return this.items.find((item) => item.key === key);
+    return this.items.find(item => item.key === key);
   }
 
   /**
@@ -204,12 +207,12 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    */
   synchronizeItems(newItems: ListItem[]): void {
     newItems
-      .filter((item) => !this.hasItem(item.key))
-      .forEach((item) => this.addItem(item.key, item.label, item.sortedInsert, item.ariaLabel));
+      .filter(item => !this.hasItem(item.key))
+      .forEach(item => this.addItem(item.key, item.label, item.sortedInsert, item.ariaLabel));
 
     this.items
-      .filter((item) => newItems.filter((i) => i.key === item.key).length === 0)
-      .forEach((item) => this.removeItem(item.key));
+      .filter(item => newItems.filter(i => i.key === item.key).length === 0)
+      .forEach(item => this.removeItem(item.key));
   }
 
   /**

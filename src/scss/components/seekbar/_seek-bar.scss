@@ -39,7 +39,7 @@ $seekbar-bar-height: calc($font-size / 3);
     @include seekbar-position-marker($seekbar-bar-height * 3);
     background-color: $color-highlight;
     border-radius: 50%;
-    box-shadow: 0 0 3px 0 transparentize($color: #000, $amount: .75);
+    box-shadow: 0 0 3px 0 transparentize($color: #000, $amount: 0.75);
   }
 
   .#{$prefix}-seekbar {
@@ -53,7 +53,7 @@ $seekbar-bar-height: calc($font-size / 3);
     margin: calc((1rem - $seekbar-bar-height) / 2) auto;
     position: relative;
     // Reduce width to leave some padding for the focus indicator on the left and right side
-    width: calc(100% - .5rem);
+    width: calc(100% - 0.5rem);
 
     .#{$prefix}-seekbar-bars {
       @extend %bar;
@@ -63,22 +63,24 @@ $seekbar-bar-height: calc($font-size / 3);
 
     .#{$prefix}-seekbar-backdrop {
       @extend %bar;
-      background-color: transparentize($color-primary, .8);
+      background-color: transparentize($color-primary, 0.8);
       margin: $bar-inset 0;
       width: 100%;
     }
 
     .#{$prefix}-seekbar-bufferlevel {
       @extend %bar;
-      background-color:  transparentize($color-primary, .8);
+      background-color: transparentize($color-primary, 0.8);
       margin: $bar-inset 0;
-      transition: .3s linear, .3s linear;
+      transition:
+        0.3s linear,
+        0.3s linear;
       transition-property: transform;
     }
 
     .#{$prefix}-seekbar-seekposition {
       @extend %bar;
-      background-color: transparentize($color-primary, .8);
+      background-color: transparentize($color-primary, 0.8);
       margin: $bar-inset 0;
     }
 
@@ -86,7 +88,9 @@ $seekbar-bar-height: calc($font-size / 3);
       @extend %bar;
       background-color: $color-highlight;
       margin: $bar-inset 0;
-      transition: .1s linear, .1s linear;
+      transition:
+        0.1s linear,
+        0.1s linear;
       transition-property: transform;
     }
 
@@ -98,7 +102,7 @@ $seekbar-bar-height: calc($font-size / 3);
       // Marker indicator is 5/3 of the seekbar height to extend the indicator above and below the seekbar by 1/3
       // of the seekbar height
       $marker-indicator-height: calc($seekbar-bar-height * (5 / 3));
-      $marker-indicator-border-radius: .125em;
+      $marker-indicator-border-radius: 0.125em;
 
       height: $seekbar-bar-height;
 
@@ -108,12 +112,15 @@ $seekbar-bar-height: calc($font-size / 3);
         background-color: $color-primary;
         height: 100%;
         text-align: center;
-        transition-duration: .1s;
+        transition-duration: 0.1s;
         transition-property: transform;
         transition-timing-function: linear;
         width: $marker-width;
 
-        transition: height .3s ease, border-radius .3s ease, transform .1s linear;
+        transition:
+          height 0.3s ease,
+          border-radius 0.3s ease,
+          transform 0.1s linear;
 
         display: flex;
         justify-content: space-between;
@@ -128,7 +135,7 @@ $seekbar-bar-height: calc($font-size / 3);
         > .#{$prefix}-seekbar-marker-image {
           height: $seekbar-bar-height * 4;
           position: absolute;
-          transform: translate(-50%, calc(-100% - .2rem));
+          transform: translate(-50%, calc(-100% - 0.2rem));
         }
 
         > .#{$prefix}-seekbar-marker-indicator {
@@ -137,7 +144,6 @@ $seekbar-bar-height: calc($font-size / 3);
           background-color: $color-primary;
           border-radius: $marker-indicator-border-radius;
         }
-
       }
     }
   }

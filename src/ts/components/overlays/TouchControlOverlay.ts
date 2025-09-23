@@ -81,17 +81,31 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       enterFullscreenOnInitialPlayback: Boolean(config.enterFullscreenOnInitialPlayback),
     });
 
-    this.seekForwardLabel = new Label({ text: '', for: this.getConfig().id, cssClass: 'seek-forward-label', hidden: true });
-    this.seekBackwardLabel = new Label({ text: '', for: this.getConfig().id, cssClass: 'seek-backward-label', hidden: true });
+    this.seekForwardLabel = new Label({
+      text: '',
+      for: this.getConfig().id,
+      cssClass: 'seek-forward-label',
+      hidden: true,
+    });
+    this.seekBackwardLabel = new Label({
+      text: '',
+      for: this.getConfig().id,
+      cssClass: 'seek-backward-label',
+      hidden: true,
+    });
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-touch-control-overlay',
-      acceptsTouchWithUiHidden: true,
-      seekTime: 10,
-      seekDoubleTapMargin: 15,
-      seekDoubleTapTimeout: 200,
-      components: [this.seekBackwardLabel, this.playbackToggleButton, this.seekForwardLabel],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-touch-control-overlay',
+        acceptsTouchWithUiHidden: true,
+        seekTime: 10,
+        seekDoubleTapMargin: 15,
+        seekDoubleTapTimeout: 200,
+        components: [this.seekBackwardLabel, this.playbackToggleButton, this.seekForwardLabel],
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -109,13 +123,13 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     let isBufferingOverlayVisible = false;
     let areControlsVisible = false;
 
-    const showPlaybackToggleButton = (() => {
+    const showPlaybackToggleButton = () => {
       this.playbackToggleButton.show();
-    });
+    };
 
-    const hidePlaybackToggleButton = (() => {
+    const hidePlaybackToggleButton = () => {
       this.playbackToggleButton.hide();
-    });
+    };
 
     uimanager.onBufferingShow.subscribe(() => {
       isBufferingOverlayVisible = true;
@@ -145,7 +159,11 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       playerSeekTime -= this.config.seekTime;
       player.seek(playerSeekTime);
 
-      this.seekBackwardLabel.setText(Math.abs(Math.round(playerSeekTime - startSeekTime)) + ' ' + i18n.performLocalization(i18n.getLocalizer('settings.time.seconds')));
+      this.seekBackwardLabel.setText(
+        Math.abs(Math.round(playerSeekTime - startSeekTime)) +
+          ' ' +
+          i18n.performLocalization(i18n.getLocalizer('settings.time.seconds')),
+      );
       this.seekBackwardLabel.show();
       this.getDomElement().addClass(this.prefixCss(this.SEEK_BACKWARD_CLASS));
       this.seekForwardLabel.hide();
@@ -156,7 +174,11 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
       playerSeekTime += this.config.seekTime;
       player.seek(playerSeekTime);
 
-      this.seekForwardLabel.setText(Math.abs(Math.round(playerSeekTime - startSeekTime)) + ' ' + i18n.performLocalization(i18n.getLocalizer('settings.time.seconds')));
+      this.seekForwardLabel.setText(
+        Math.abs(Math.round(playerSeekTime - startSeekTime)) +
+          ' ' +
+          i18n.performLocalization(i18n.getLocalizer('settings.time.seconds')),
+      );
       this.seekForwardLabel.show();
       this.getDomElement().addClass(this.prefixCss(this.SEEK_FORWARD_CLASS));
       this.seekBackwardLabel.hide();
@@ -170,37 +192,39 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
 
       const eventTarget = (e as Event).target as HTMLElementWithComponent;
       const rect = eventTarget.getBoundingClientRect();
-      const eventTapX = ((<MouseEvent>e).clientX) - rect.left;
-      const eventTapY = ((<MouseEvent>e).clientY) - rect.top;
-      this.latestTapPosition = {x: eventTapX, y: eventTapY};
+      const eventTapX = (<MouseEvent>e).clientX - rect.left;
+      const eventTapY = (<MouseEvent>e).clientY - rect.top;
+      this.latestTapPosition = { x: eventTapX, y: eventTapY };
     });
 
     this.touchControlEvents.onDoubleClick.subscribe((_, e) => {
       uimanager.getUI().hideUi();
       const event = e as Event;
       const eventTarget = event.target as HTMLElementWithComponent;
-      if (!eventTarget || !((eventTarget).component instanceof TouchControlOverlay)) {
+      if (!eventTarget || !(eventTarget.component instanceof TouchControlOverlay)) {
         return;
       }
 
       const width = eventTarget.clientWidth;
       const tapMargin = width * 0.4;
       const rect = eventTarget.getBoundingClientRect();
-      const eventTapX = ((<MouseEvent>e).clientX) - rect.left;
-      const eventTapY = ((<MouseEvent>e).clientY) - rect.top;
+      const eventTapX = (<MouseEvent>e).clientX - rect.left;
+      const eventTapY = (<MouseEvent>e).clientY - rect.top;
 
       const doubleTapMargin = this.config.seekDoubleTapMargin;
-      if (Math.abs(this.latestTapPosition.x - eventTapX) <= doubleTapMargin && Math.abs(this.latestTapPosition.y - eventTapY) <= doubleTapMargin)
+      if (
+        Math.abs(this.latestTapPosition.x - eventTapX) <= doubleTapMargin &&
+        Math.abs(this.latestTapPosition.y - eventTapY) <= doubleTapMargin
+      )
         if (eventTapX < tapMargin) {
           this.touchControlEvents.onSeekBackward.dispatch(this);
-        }
-        else if (eventTapX > (width - tapMargin)) {
+        } else if (eventTapX > width - tapMargin) {
           this.touchControlEvents.onSeekForward.dispatch(this);
         }
-      this.latestTapPosition = {x: eventTapX, y: eventTapY};
+      this.latestTapPosition = { x: eventTapX, y: eventTapY };
     });
 
-    this.getDomElement().on('click', (e) => {
+    this.getDomElement().on('click', e => {
       if ((e.target as HTMLElementWithComponent).component instanceof TouchControlOverlay) {
         clickEventDispatcher(e);
       }

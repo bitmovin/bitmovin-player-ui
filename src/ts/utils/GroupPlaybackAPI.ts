@@ -81,7 +81,6 @@ interface GroupPlaybackAPI {
   isSuspended(): boolean;
 }
 
-
 export interface ExtendedPlayerAPI extends PlayerAPI {
   /**
    * Group Playback API

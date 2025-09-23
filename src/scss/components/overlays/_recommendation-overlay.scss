@@ -47,15 +47,18 @@
       @include focusable;
 
       position: relative;
-      $padding: .5em;
+      $padding: 0.5em;
       cursor: pointer;
       color: $color-primary;
-      background-color: #222222;
+      background-color: $color-background-recommendation-item;
       background-position: center;
       background-size: cover;
       border: solid $color-primary 2px;
-      border-radius: .5rem;
-      box-shadow: 0 0 5px 0 transparentize($color: #000, $amount: .75);
+      border-radius: 0.5rem;
+      box-shadow: 0 0 5px 0 transparentize($color: $color-black, $amount: 0.75);
+      // sass lint mentions 'aspect-ratio' as a misspelled property, but it's valid CSS: https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio.
+      // Therefore we're temporarily disabling that rule for one line.
+      // sass-lint:disable no-misspelled-properties
       aspect-ratio: 16 / 9;
       width: 30%;
       min-width: 10em;
@@ -93,7 +96,7 @@
         right: $padding;
         background-color: $color-background-seekbar-label;
         box-sizing: border-box;
-        padding: .3em .5em;
+        padding: 0.3em 0.5em;
         border-radius: $border-radius;
       }
 

@@ -6,10 +6,10 @@ import vocabularyNl from './languages/nl.json';
 import { LocalizationConfig } from '../UIManager';
 
 export const defaultVocabularies: Vocabularies = {
-  'en': vocabularyEn,
-  'de': vocabularyDe,
-  'es': vocabularyEs,
-  'nl': vocabularyNl,
+  en: vocabularyEn,
+  de: vocabularyDe,
+  es: vocabularyEs,
+  nl: vocabularyNl,
 };
 
 const defaultLocalizationConfig: LocalizationConfig = {
@@ -56,7 +56,7 @@ export interface Vocabulary {
   'settings.subtitles.font.family.smallcapital': string;
   'settings.subtitles.window.color': string;
   'settings.subtitles.window.opacity': string;
-  'play': string;
+  play: string;
   'settings.time.hours': string;
   'settings.time.minutes': string;
   'settings.time.seconds': string;
@@ -68,38 +68,38 @@ export interface Vocabulary {
   'colors.cyan': string;
   'colors.yellow': string;
   'colors.magenta': string;
-  'percent': string;
-  'settings': string;
+  percent: string;
+  settings: string;
   'ads.remainingTime': string;
-  'pictureInPicture': string;
-  'appleAirplay': string;
-  'googleCast': string;
-  'vr': string;
-  'off': string;
-  'auto': string;
-  'back': string;
-  'reset': string;
-  'replay': string;
-  'normal': string;
-  'default': string;
-  'open': string;
-  'close': string;
-  'fullscreen': string;
-  'speed': string;
-  'playPause': string;
-  'live': string;
+  pictureInPicture: string;
+  appleAirplay: string;
+  googleCast: string;
+  vr: string;
+  off: string;
+  auto: string;
+  back: string;
+  reset: string;
+  replay: string;
+  normal: string;
+  default: string;
+  open: string;
+  close: string;
+  fullscreen: string;
+  speed: string;
+  playPause: string;
+  live: string;
   'subtitle.example': string;
   'subtitle.select': string;
-  'playingOn': string;
-  'connectingTo': string;
-  'watermarkLink': string;
-  'controlBar': string;
-  'player': string;
-  'seekBar': string;
+  playingOn: string;
+  connectingTo: string;
+  watermarkLink: string;
+  controlBar: string;
+  player: string;
+  seekBar: string;
   'seekBar.value': string;
   'seekBar.timeshift': string;
   'seekBar.durationText': string;
-  'ecoMode': string;
+  ecoMode: string;
   'ecoMode.title': string;
 }
 
@@ -149,11 +149,7 @@ export class I18n {
     }, {});
   }
 
-  private initializeLanguage(
-    language: string,
-    browserLanguageDetectionEnabled: boolean,
-    vocabularies: Vocabularies,
-  ) {
+  private initializeLanguage(language: string, browserLanguageDetectionEnabled: boolean, vocabularies: Vocabularies) {
     if (browserLanguageDetectionEnabled) {
       const userLanguage = window.navigator.language;
 
@@ -172,8 +168,7 @@ export class I18n {
   }
 
   private initializeVocabulary(vocabularies: Vocabularies) {
-    this.vocabulary = ['en', this.language]
-      .reduce((vocab, lang) => ({ ...vocab, ...(vocabularies[lang] || {}) }), {});
+    this.vocabulary = ['en', this.language].reduce((vocab, lang) => ({ ...vocab, ...(vocabularies[lang] || {}) }), {});
   }
 
   private replaceVariableWithPlaceholderIfExists(text: string, config: any) {
@@ -182,10 +177,12 @@ export class I18n {
       return text;
     }
 
-    return matches
-      .map((m: string) => ({ match: m, key: m.slice(1, -1) }))
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      .reduce((str, { key, match }) => config.hasOwnProperty(key) ? str.replace(match, config[key]) : str, text);
+    return (
+      matches
+        .map((m: string) => ({ match: m, key: m.slice(1, -1) }))
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        .reduce((str, { key, match }) => (config.hasOwnProperty(key) ? str.replace(match, config[key]) : str), text)
+    );
   }
 
   public getLocalizer<V extends CustomVocabulary<Record<string, string>> = CustomVocabulary<Record<string, string>>>(
@@ -193,7 +190,8 @@ export class I18n {
     config?: Record<string, string | number>,
   ): Localizer {
     return () => {
-      if (key == null) { // because sometimes we call toDomElement() without configuring the component or setting text...
+      if (key == null) {
+        // because sometimes we call toDomElement() without configuring the component or setting text...
         return undefined;
       }
       let vocabularyString = this.vocabulary[key as string];

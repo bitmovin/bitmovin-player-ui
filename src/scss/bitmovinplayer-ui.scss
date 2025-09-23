@@ -128,6 +128,7 @@
     .#{$prefix}-ui-cast-status-overlay {
       background-size: $icon-size-large;
       background-position: center 40%;
+
       .#{$prefix}-ui-cast-status-label {
         top: 55%;
       }

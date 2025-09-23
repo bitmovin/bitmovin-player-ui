@@ -16,45 +16,41 @@ describe('detectReleaseLevel', () => {
 
   describe('minor releases', () => {
     test.each`
-      changelogContent                                                          | expectedLevel | reason
-      ${'## [Unreleased]\n\n### Added\n- New feature'}                        | ${'minor'}    | ${'Added section'}
-      ${'## [Unreleased]\n\n### Changed\n- Updated something'}                | ${'minor'}    | ${'Changed section'}
-      ${'## [Unreleased]\n\n### Removed\n- Removed old feature'}              | ${'minor'}    | ${'Removed section'}
-      ${'## [Unreleased]\n\n### Added\n- New\n\n### Fixed\n- Bug fix'}        | ${'minor'}    | ${'Added and Fixed sections'}
-      ${'## [Unreleased]\n\n### Changed\n- Update\n\n### Removed\n- Old'}     | ${'minor'}    | ${'Changed and Removed sections'}
-      ${'## [UNRELEASED]\n\n### ADDED\n- Feature'}                            | ${'minor'}    | ${'case insensitive matching'}
-    `(
-      'should return $expectedLevel for changelog with $reason',
-      ({ changelogContent, expectedLevel }) => {
-        mockedFs.readFileSync.mockReturnValue(changelogContent);
+      changelogContent                                                    | expectedLevel | reason
+      ${'## [Unreleased]\n\n### Added\n- New feature'}                    | ${'minor'}    | ${'Added section'}
+      ${'## [Unreleased]\n\n### Changed\n- Updated something'}            | ${'minor'}    | ${'Changed section'}
+      ${'## [Unreleased]\n\n### Removed\n- Removed old feature'}          | ${'minor'}    | ${'Removed section'}
+      ${'## [Unreleased]\n\n### Added\n- New\n\n### Fixed\n- Bug fix'}    | ${'minor'}    | ${'Added and Fixed sections'}
+      ${'## [Unreleased]\n\n### Changed\n- Update\n\n### Removed\n- Old'} | ${'minor'}    | ${'Changed and Removed sections'}
+      ${'## [UNRELEASED]\n\n### ADDED\n- Feature'}                        | ${'minor'}    | ${'case insensitive matching'}
+    `('should return $expectedLevel for changelog with $reason', ({ changelogContent, expectedLevel }) => {
+      mockedFs.readFileSync.mockReturnValue(changelogContent);
 
-        const result = detectReleaseLevel(mockCore);
+      const result = detectReleaseLevel(mockCore);
 
-        expect(result).toBe(expectedLevel);
-        expect(mockCore.info).toHaveBeenCalledWith('Found Added, Changed, or Removed sections - will create minor release');
-        expect(mockCore.info).toHaveBeenCalledWith(`Release level: ${expectedLevel}`);
-      },
-    );
+      expect(result).toBe(expectedLevel);
+      expect(mockCore.info).toHaveBeenCalledWith(
+        'Found Added, Changed, or Removed sections - will create minor release',
+      );
+      expect(mockCore.info).toHaveBeenCalledWith(`Release level: ${expectedLevel}`);
+    });
   });
 
   describe('patch releases', () => {
     test.each`
-      changelogContent                                            | expectedLevel | reason
-      ${'## [Unreleased]\n\n### Fixed\n- Bug fix'}              | ${'patch'}    | ${'only Fixed section'}
-      ${'## [Unreleased]\n\n### Fixed\n- Fix 1\n- Fix 2'}       | ${'patch'}    | ${'multiple fixes'}
-      ${'## [UNRELEASED]\n\n### FIXED\n- Bug'}                  | ${'patch'}    | ${'case insensitive matching'}
-    `(
-      'should return $expectedLevel for changelog with $reason',
-      ({ changelogContent, expectedLevel }) => {
-        mockedFs.readFileSync.mockReturnValue(changelogContent);
+      changelogContent                                    | expectedLevel | reason
+      ${'## [Unreleased]\n\n### Fixed\n- Bug fix'}        | ${'patch'}    | ${'only Fixed section'}
+      ${'## [Unreleased]\n\n### Fixed\n- Fix 1\n- Fix 2'} | ${'patch'}    | ${'multiple fixes'}
+      ${'## [UNRELEASED]\n\n### FIXED\n- Bug'}            | ${'patch'}    | ${'case insensitive matching'}
+    `('should return $expectedLevel for changelog with $reason', ({ changelogContent, expectedLevel }) => {
+      mockedFs.readFileSync.mockReturnValue(changelogContent);
 
-        const result = detectReleaseLevel(mockCore);
+      const result = detectReleaseLevel(mockCore);
 
-        expect(result).toBe(expectedLevel);
-        expect(mockCore.info).toHaveBeenCalledWith('Found only Fixed sections - will create patch release');
-        expect(mockCore.info).toHaveBeenCalledWith(`Release level: ${expectedLevel}`);
-      },
-    );
+      expect(result).toBe(expectedLevel);
+      expect(mockCore.info).toHaveBeenCalledWith('Found only Fixed sections - will create patch release');
+      expect(mockCore.info).toHaveBeenCalledWith(`Release level: ${expectedLevel}`);
+    });
   });
 
   describe('complex changelog scenarios', () => {

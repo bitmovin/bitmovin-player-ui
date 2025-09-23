@@ -13,7 +13,15 @@ export { BrowserUtils } from './utils/BrowserUtils';
 export { StorageUtils } from './utils/StorageUtils';
 export { ErrorUtils } from './utils/ErrorUtils';
 // Localization
-export { i18n, I18n, Vocabulary, Vocabularies, CustomVocabulary, LocalizableText, Localizer } from './localization/i18n';
+export {
+  i18n,
+  I18n,
+  Vocabulary,
+  Vocabularies,
+  CustomVocabulary,
+  LocalizableText,
+  Localizer,
+} from './localization/i18n';
 // Spatial Navigation
 export { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 export { NavigationGroup } from './spatialnavigation/NavigationGroup';
@@ -24,7 +32,11 @@ export { Button, ButtonConfig, ButtonStyle } from './components/buttons/Button';
 export { ControlBar, ControlBarConfig } from './components/ControlBar';
 export { FullscreenToggleButton } from './components/buttons/FullscreenToggleButton';
 export { HugePlaybackToggleButton } from './components/buttons/HugePlaybackToggleButton';
-export { PlaybackTimeLabel, PlaybackTimeLabelConfig, PlaybackTimeLabelMode } from './components/labels/PlaybackTimeLabel';
+export {
+  PlaybackTimeLabel,
+  PlaybackTimeLabelConfig,
+  PlaybackTimeLabelMode,
+} from './components/labels/PlaybackTimeLabel';
 export { PlaybackToggleButton, PlaybackToggleButtonConfig } from './components/buttons/PlaybackToggleButton';
 export { SeekBar, SeekBarConfig, SeekPreviewEventArgs, SeekBarMarker } from './components/seekbar/SeekBar';
 export { SelectBox } from './components/settings/SelectBox';
@@ -44,7 +56,12 @@ export { AudioTrackSelectBox } from './components/settings/AudioTrackSelectBox';
 export { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
 export { CastToggleButton } from './components/buttons/CastToggleButton';
 export { Component, ComponentConfig, ComponentHoverChangedEventArgs } from './components/Component';
-export { ErrorMessageOverlay, ErrorMessageOverlayConfig, ErrorMessageTranslator, ErrorMessageMap } from './components/overlays/ErrorMessageOverlay';
+export {
+  ErrorMessageOverlay,
+  ErrorMessageOverlayConfig,
+  ErrorMessageTranslator,
+  ErrorMessageMap,
+} from './components/overlays/ErrorMessageOverlay';
 export { RecommendationOverlay } from './components/overlays/RecommendationOverlay';
 export { RecommendationItem, RecommendationItemConfig } from './components/RecommendationItem';
 export { SeekBarLabel, SeekBarLabelConfig } from './components/seekbar/SeekBarLabel';
@@ -86,18 +103,27 @@ export { AudioTrackListBox } from './components/lists/AudioTrackListBox';
 export { SettingsPanelPage } from './components/settings/SettingsPanelPage';
 export { SettingsPanelPageBackButton } from './components/settings/SettingsPanelPageBackButton';
 export { SettingsPanelPageOpenButton } from './components/settings/SettingsPanelPageOpenButton';
-export { SubtitleSettingsPanelPage, SubtitleSettingsPanelPageConfig } from './components/settings/subtitlesettings/SubtitleSettingsPanelPage';
+export {
+  SubtitleSettingsPanelPage,
+  SubtitleSettingsPanelPageConfig,
+} from './components/settings/subtitlesettings/SubtitleSettingsPanelPage';
 export { SettingsPanelItem } from './components/settings/SettingsPanelItem';
 export { ReplayButton } from './components/buttons/ReplayButton';
 export { QuickSeekButton, QuickSeekButtonConfig } from './components/buttons/QuickSeekButton';
-export { ListSelector, ListSelectorConfig, ListItem, ListItemFilter, ListItemLabelTranslator } from './components/lists/ListSelector';
+export {
+  ListSelector,
+  ListSelectorConfig,
+  ListItem,
+  ListItemFilter,
+  ListItemLabelTranslator,
+} from './components/lists/ListSelector';
 export { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 export { Icon, IconConfig } from './components/Icon';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 if (typeof Object.assign !== 'function') {
-  Object.assign = function(target: any) {
+  Object.assign = function (target: any) {
     'use strict';
     if (target == null) {
       throw new TypeError('Cannot convert undefined or null to object');

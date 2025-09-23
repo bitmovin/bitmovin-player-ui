@@ -3,6 +3,8 @@
 %ui-button {
   @extend %ui-component;
 
+  @include ui-icon-container;
+
   background-color: transparent;
   border: 0;
   box-sizing: content-box;
@@ -10,12 +12,10 @@
   height: $icon-size;
   font-size: $font-size; // Explicitly needed on iOS to ensure icon fonts are sized correctly
   min-width: $icon-size;
-  padding: calc($icon-size * .25);
-  transition: transform .15s ease;
+  padding: calc($icon-size * 0.25);
+  transition: transform 0.15s ease;
   // sass-lint:disable no-vendor-prefixes
   -webkit-tap-highlight-color: transparent;
-
-  @include ui-icon-container;
 
   .#{$prefix}-label {
     color: $color-primary;
@@ -37,7 +37,7 @@
   }
 
   &.touched {
-    transform: scale(.8);
+    transform: scale(0.8);
   }
 
   @include hidden;

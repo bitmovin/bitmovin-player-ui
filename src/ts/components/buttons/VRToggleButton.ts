@@ -1,5 +1,5 @@
-import {ToggleButton, ToggleButtonConfig} from './ToggleButton';
-import {UIInstanceManager} from '../../UIManager';
+import { ToggleButton, ToggleButtonConfig } from './ToggleButton';
+import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI, PlayerEventBase, WarningEvent } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -9,14 +9,17 @@ import { i18n } from '../../localization/i18n';
  * @category Buttons
  */
 export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
-
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-vrtogglebutton',
-      text: i18n.getLocalizer('vr'),
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-vrtogglebutton',
+        text: i18n.getLocalizer('vr'),
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -37,8 +40,10 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
     };
 
     let vrStateHandler = (ev: PlayerEventBase) => {
-      if (ev.type === player.exports.PlayerEvent.Warning
-        && (ev as WarningEvent).code !== player.exports.WarningCode.VR_RENDERING_ERROR) {
+      if (
+        ev.type === player.exports.PlayerEvent.Warning &&
+        (ev as WarningEvent).code !== player.exports.WarningCode.VR_RENDERING_ERROR
+      ) {
         return;
       }
 

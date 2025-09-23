@@ -22,11 +22,7 @@ const DocumentDropdownClosedEvents = [
   'blur',
 ];
 
-const SelectDropdownClosedEvents = [
-  'change',
-  'keyup',
-  'mouseup',
-];
+const SelectDropdownClosedEvents = ['change', 'keyup', 'mouseup'];
 
 const DropdownOpenedEvents: [string, (event: Event) => boolean][] = [
   ['click', () => true],
@@ -60,17 +56,25 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
   constructor(config: ListSelectorConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-selectbox',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-selectbox',
+      },
+      this.config,
+    );
   }
 
   protected toDomElement(): DOM {
-    this.selectElement = new DOM('select', {
-      'id': this.config.id,
-      'class': this.getCssClasses(),
-      'aria-label': i18n.performLocalization(this.config.ariaLabel),
-    }, this);
+    this.selectElement = new DOM(
+      'select',
+      {
+        id: this.config.id,
+        class: this.getCssClasses(),
+        'aria-label': i18n.performLocalization(this.config.ariaLabel),
+      },
+      this,
+    );
 
     this.onDisabled.subscribe(this.closeDropdown);
     this.onHide.subscribe(this.closeDropdown);
@@ -108,10 +112,11 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
     // Add updated children
     for (let item of this.items) {
       let optionElement = new DOM('option', {
-        'value': String(item.key),
+        value: String(item.key),
       }).html(i18n.performLocalization(item.label));
 
-      if (item.key === String(selectedValue)) { // convert selectedValue to string to catch 'null'/null case
+      if (item.key === String(selectedValue)) {
+        // convert selectedValue to string to catch 'null'/null case
         optionElement.attr('selected', 'selected');
       }
 
