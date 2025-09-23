@@ -110,6 +110,8 @@ gulp.task('lint-sass', function () {
         rules: {
           'no-css-comments': 0,
           'property-sort-order': 0,
+          'leading-zero': 0,
+          indentation: 0,
         },
       }),
     )
