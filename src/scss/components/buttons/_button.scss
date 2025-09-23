@@ -3,6 +3,8 @@
 %ui-button {
   @extend %ui-component;
 
+  @include ui-icon-container;
+
   background-color: transparent;
   border: 0;
   box-sizing: content-box;
@@ -14,8 +16,6 @@
   transition: transform 0.15s ease;
   // sass-lint:disable no-vendor-prefixes
   -webkit-tap-highlight-color: transparent;
-
-  @include ui-icon-container;
 
   .#{$prefix}-label {
     color: $color-primary;
