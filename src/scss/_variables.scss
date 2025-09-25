@@ -1,45 +1,134 @@
+/**
+ * CSS class prefix for all components
+ *
+ * Can be customized by passing `--outputnames.cssPrefix=YOUR_PREFIX` to the build script
+ */
 $prefix: 'bmpui' !default;
 
 $color-black: #000 !default;
 $color-transparent: rgba(0, 0, 0, 0) !default;
 $color-red: #f00 !default;
 
+/**
+ * Accent color to highlight certain elements.
+ */
 $color-highlight: #fff !default;
+/**
+ * Primary text color
+ */
 $color-primary: #fff !default;
+/**
+ * Secondary text color
+ */
 $color-secondary: #999 !default;
-
+/**
+ * Background color for the UI in case the video is not visible
+ */
 $color-background: #111 !default;
-$color-background-highlight: transparentize(mix($color-black, $color-highlight, 75%), 0.3) !default;
-$color-background-bars: transparentize($color-black, 0.3) !default;
-$color-background-seekbar-label: rgba(20, 20, 20, 0.8);
-$color-focus: transparentize($color-highlight, 0.8);
+/**
+ * Used as gradient start color for text elements backgrounds and at the UI edges (top/bottom)
+ */
+$color-background-gradient-start: transparentize($color-black, 0.3) !default;
+/**
+ * Used as solid color for text element backgrounds
+ */
+$color-background-text: rgba(20, 20, 20, 0.8);
+/**
+ * Color for visualizing focus on elements
+ */
+$color-focus: transparentize($color-highlight, 0.8) !default;
 
+/**
+ * Background color for Settings Panel title rows
+ */
 $color-background-menu-title-overlay: rgba(0, 0, 0, 0.25) !default;
+/**
+ * Background color for menu elements
+ */
 $color-background-menu: #2e2e2e !default;
+/**
+ * Hover color for Settings Panel items
+ */
 $color-background-menu-hover-overlay: rgba(255, 255, 255, 0.07) !default;
+/**
+ * Background color for quick seek indicator
+ */
 $color-background-seek-circle: rgba(255, 255, 255, 0.35) !default;
+/**
+ * Background color for dimmed overlay effects
+ */
 $color-background-dimmed: rgba(0, 0, 0, 0.5) !default;
-$color-background-recommendation-item: #222 !default;
-$color-shadow-seek-label: 0 0 30px 0 rgba(0, 0, 0, 0.75) !default;
-$color-ads: #ffc737 !default;
+/**
+ * Color for ad-related UI elements
+ */
+$color-highlight-ads: #ffc737 !default;
 
+/**
+ * Base font family for all text elements
+ */
 $font-family: sans-serif !default;
+/**
+ * Base font size
+ */
 $font-size: 1.125rem !default; /* 18px */
+/**
+ * Large font size variant
+ */
 $font-size-large: calc($font-size * 1.25) !default;
+/**
+ * Small font size variant
+ */
 $font-size-small: calc($font-size * 0.75) !default;
 
+/**
+ * Base icon size
+ */
 $icon-size: calc($font-size * 4 / 3) !default; /* 24px */
+/**
+ * Medium icon size
+ */
 $icon-size-medium: calc($icon-size * 2) !default;
+/**
+ * Large icon size
+ */
 $icon-size-large: calc($icon-size * 3) !default;
 
+/**
+ * Normal font weight
+ */
 $font-weight: normal !default; /* 400 */
+/**
+ * Medium font weight
+ */
 $font-weight-medium: 500 !default;
+/**
+ * Semi-bold font weight
+ */
 $font-weight-semi-bold: 600 !default;
+/**
+ * Bold font weight
+ */
 $font-weight-bold: 700 !default;
+
+/**
+ * Default border radius for UI elements
+ */
 $border-radius: 0.4rem !default;
 
+/**
+ * Text color for subtitles
+ */
 $subtitle-text-color: #fff !default;
+/**
+ * Border color for subtitle text outlines
+ */
 $subtitle-text-border-color: #000 !default;
 
+/**
+ * Default animation duration
+ */
 $animation-duration: 0.3s !default;
+/**
+ * Short animation duration
+ */
 $animation-duration-short: $animation-duration * 0.5 !default;
