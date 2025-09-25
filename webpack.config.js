@@ -74,6 +74,7 @@ module.exports = {
                   [
                     'postcss-preset-env', // already includes autoprefixer
                   ],
+                  require('cssnano')({ preset: 'default' }),
                 ],
               },
             },
