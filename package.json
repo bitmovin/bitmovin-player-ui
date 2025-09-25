@@ -8,7 +8,7 @@
     "test": "npx jest",
     "start": "webpack-dev-server --mode development --open",
     "build": "npm run clean; npx webpack --mode development",
-    "build:prod": "npm run clean; npm run lint && npx webpack --mode production && npx tsc && npm run copy-json",
+    "build:prod": "npm run clean; npm run lint && npx webpack --mode production && npm run copy-json",
     "lint": "npm run lint-ts && npm run lint-sass",
     "format": "npx prettier --write *",
     "docs": "npx typedoc",
