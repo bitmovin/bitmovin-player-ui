@@ -28,6 +28,7 @@ module.exports = {
     },
     demo: './src/scss/demo.scss',
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {
