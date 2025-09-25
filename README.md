@@ -13,8 +13,8 @@ The UI framework is also available through the following distribution channels:
 
 The UI framework and default skin bundled with the latest player release are always available via CDN. This is the recommended way if you just want to work with the predefined UI components. All components will be available in the `bitmovin.playerui` namespace.
 
-- JavaScript library: `//cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.js`
-- CSS default skin: `//cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css`
+- JavaScript library: `https://cdn.jsdelivr.net/npm/bitmovin-player-ui@4/dist/js/bitmovinplayer-ui.js`
+- CSS file: `https://cdn.jsdelivr.net/npm/bitmovin-player-ui@4/dist/css/bitmovinplayer-ui.css`
 
 ### NPM
 
