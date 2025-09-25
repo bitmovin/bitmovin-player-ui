@@ -163,7 +163,7 @@ jobs:
         uses: ./.github/actions/setup-dependencies
 
       - name: Build Release
-        run: npx gulp npm-prepare
+        run: npm run prepublishOnly
         shell: bash
 
       - name: Publish to NPM
@@ -186,7 +186,7 @@ jobs:
         uses: ./.github/actions/setup-dependencies
 
       - name: Build documentation
-        run: npx typedoc
+        run: npm run docs
         shell: bash
 
       - name: Authenticate

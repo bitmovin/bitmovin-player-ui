@@ -38,7 +38,7 @@ jobs:
         uses: ./.github/actions/setup-dependencies
 
       - name: Build
-        run: npx gulp build
+        run: npm run build
 
   lint:
     name: Lint
@@ -52,4 +52,4 @@ jobs:
         uses: ./.github/actions/setup-dependencies
 
       - name: Lint
-        run: npx gulp lint
+        run: npm run lint
