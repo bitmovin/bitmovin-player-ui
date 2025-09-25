@@ -1,1 +1,7 @@
 .idea
+.vscode
+.github
+.husky
+spec
+artifact
+publish.sh
