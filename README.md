@@ -37,7 +37,7 @@ The UI framework is also available in the NPM repository and comes with all sour
 - `npm run format` to format all files with prettier
 - `npm run docs` to generate the HTML documentation
 
-To take a look at the project, run `npm run start`. For changes, check our [CHANGELOG](CHANGELOG.md). This UI framework version is for player v8. The UI framework for player v7 can be found in the `support/v2.x` branch.
+To take a look at the project, run `npm run start`. For changes, check our [CHANGELOG](CHANGELOG.md). This UI framework version is for player v8.
 
 ## UI Playground
 
