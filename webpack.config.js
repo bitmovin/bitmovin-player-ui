@@ -52,6 +52,10 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
+        test: /\.svg$/i,
+        type: 'asset/inline',
+      },
+      {
         test: /\.s[ac]ss$/i,
         use: [
           {
@@ -61,6 +65,18 @@ module.exports = {
             },
           },
           'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  [
+                    'postcss-preset-env', // already includes autoprefixer
+                  ],
+                ],
+              },
+            },
+          },
           'sass-loader',
         ],
         exclude: /node_modules/,
@@ -69,7 +85,8 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '../css/[name].css',
+      filename: './css/[name].css',
+      runtime: false,
     }),
     new HtmlWebpackPlugin({
       template: './src/html/index.html',
