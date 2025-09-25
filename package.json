@@ -13,7 +13,7 @@
     "format": "npx prettier --write *",
     "docs": "npx typedoc",
     "clean": "rm -r dist",
-    "copy-json": "mkdir -p dist/js/framework && cp src/ts/localization/languages/*.json dist/js/framework/",
+    "copy-json": "mkdir -p dist/js/framework/localization/languages && cp src/ts/localization/languages/*.json dist/js/framework/localization/languages/",
     "lint-ts": "npx eslint 'src/ts/**/*.ts'",
     "lint-sass": "npx sass-lint",
     "prepublishOnly": "npm run build:prod && npm run copy-json",
