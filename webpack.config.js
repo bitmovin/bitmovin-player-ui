@@ -13,7 +13,6 @@ const outputnames = {
 const globalNamespaceArray = outputnames.globalNamespace.split('.');
 
 module.exports = {
-  mode: 'production',
   entry: {
     [outputnames.filename]: {
       import: ['./src/scss/bitmovinplayer-ui.scss', './src/ts/main.ts'],
