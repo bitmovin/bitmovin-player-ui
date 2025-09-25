@@ -1,7 +1,7 @@
 /**
  * CSS class prefix for all components
  *
- * Can be customized by passing `--outputnames.cssPrefix=YOUR_PREFIX` to the build script
+ * See webpack.config.js on how to customize the prefix at build time
  */
 $prefix: 'bmpui' !default;
 
