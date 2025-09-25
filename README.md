@@ -31,8 +31,8 @@ The UI framework is also available in the NPM repository and comes with all sour
 
 - `npm start` to open test page in browser, build and reload changed files automatically
 - `npm run build` to build project into `dist` directory without minification
-- `npm run lint` to lint TypeScript and SASS files
 - `npm run build:prod` to build project with minified files into `dist` directory
+- `npm run lint` to lint TypeScript and SASS files
 - `npm test` to run the test suite
 - `npm run format` to format all files with prettier
 - `npm run docs` to generate the HTML documentation
