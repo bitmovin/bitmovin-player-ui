@@ -113,6 +113,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - All TypeScript files now use PascalCase instead of all lowercased
   - All SCSS files now use kebab-case instead of all lowercased
     - This includes the css-classes used as well
+- Use `webpack` instead of `gulp` now as build tool
 
 ### Removed
 
