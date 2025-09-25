@@ -5,13 +5,8 @@ import { UIInstanceManager } from '../../UIManager';
 import { StorageUtils } from '../../utils/StorageUtils';
 import { SubtitleSelectBox } from '../settings/SubtitleSelectBox';
 import { prefixCss } from '../DummyComponent';
-import { SubtitleSwitchHandler } from '../../utils/SubtitleUtils';
+import { StoredSubtitleLanguage, SubtitleSwitchHandler } from '../../utils/SubtitleUtils';
 import { DynamicSettingsPanelItem } from '../settings/DynamicSettingsPanelItem';
-
-export interface StoredSubtitleLanguage {
-  language: string;
-  active: boolean;
-}
 
 export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
   /**
@@ -50,7 +45,7 @@ export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     this.onClick.subscribe(() => {
       const availableSubtitles = player.subtitles.list();
-      const storedSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(prefixCss('subtitlelanguage'));
+      const storedSubtitle: StoredSubtitleLanguage | null = StorageUtils.getObject(prefixCss('subtitlelanguage'));
       const subtitleTrack = storedSubtitle
         ? availableSubtitles.find(e => e.lang === storedSubtitle.language)
         : undefined;
@@ -81,14 +76,16 @@ export class SubtitleToggleButton extends ToggleButton<ToggleButtonConfig> {
   };
 
   private onAvailableSubtitlesChanged = () => {
-    const storedSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(prefixCss('subtitlelanguage'));
+    const storedSubtitle: StoredSubtitleLanguage | null = StorageUtils.getObject(prefixCss('subtitlelanguage'));
     const subtitleList = this.player.subtitles.list();
 
     // only shows the button when subtitles are existing
     subtitleList.length > 0 ? this.show() : this.hide();
 
     // if the stored subtitle is set active and available, that subtitle is enabled
-    const subtitleToActivate: SubtitleTrack = subtitleList.find(subtitle => subtitle.lang === storedSubtitle?.language);
+    const subtitleToActivate: SubtitleTrack | undefined = subtitleList.find(
+      subtitle => subtitle.lang === storedSubtitle?.language,
+    );
     if (storedSubtitle?.active && subtitleToActivate) {
       this.on();
       this.player.subtitles.enable(subtitleToActivate.id);

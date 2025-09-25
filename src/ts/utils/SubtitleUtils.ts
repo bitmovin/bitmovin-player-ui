@@ -4,7 +4,11 @@ import { PlayerAPI, SubtitleEvent, SubtitleTrack } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { StorageUtils } from './StorageUtils';
 import { prefixCss } from '../components/DummyComponent';
-import { StoredSubtitleLanguage } from '../components/buttons/SubtitleToggleButton';
+
+export interface StoredSubtitleLanguage {
+  language: string;
+  active: boolean;
+}
 
 /**
  * Helper class to handle all subtitle related events
