@@ -2,13 +2,6 @@ import { ListItem, ListSelector, ListSelectorConfig } from '../components/lists/
 import { UIInstanceManager } from '../UIManager';
 import { PlayerAPI, SubtitleEvent, SubtitleTrack } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
-import { StorageUtils } from './StorageUtils';
-import { prefixCss } from '../components/DummyComponent';
-
-export interface StoredSubtitleLanguage {
-  language: string;
-  active: boolean;
-}
 
 /**
  * Helper class to handle all subtitle related events
@@ -44,11 +37,9 @@ export class SubtitleSwitchHandler {
           .pop();
         if (currentSubtitle) {
           this.player.subtitles.disable(currentSubtitle.id);
-          SubtitleSwitchHandler.setSubtitleLanguageStorage(this.player);
         }
       } else {
         this.player.subtitles.enable(value, true);
-        SubtitleSwitchHandler.setSubtitleLanguageStorage(this.player, value);
       }
     });
   }
@@ -64,22 +55,6 @@ export class SubtitleSwitchHandler {
     this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, this.refreshSubtitles);
     this.uimanager.getConfig().events.onUpdated.subscribe(this.refreshSubtitles);
   }
-
-  /**
-   * @param subtitleID (optional) If set, the according stored subtitle language will be set to active; If not set, the stored stored subtitle language will be set to inactive
-   */
-  public static setSubtitleLanguageStorage = (player: PlayerAPI, subtitleID?: string) => {
-    const prefixCssId = prefixCss('subtitlelanguage');
-    let subtitleLanguageSettings: StoredSubtitleLanguage;
-    if (subtitleID) {
-      const lang = player.subtitles.list().find(subtitle => subtitle.id === subtitleID).lang;
-      subtitleLanguageSettings = { language: lang, active: true };
-    } else {
-      const currentStoredSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(prefixCssId);
-      subtitleLanguageSettings = { language: currentStoredSubtitle.language, active: false };
-    }
-    StorageUtils.setObject(prefixCssId, subtitleLanguageSettings);
-  };
 
   private addSubtitle = (event: SubtitleEvent) => {
     const subtitle = event.subtitle;
