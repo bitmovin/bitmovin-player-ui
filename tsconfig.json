@@ -5,10 +5,10 @@
     "target": "es5",
     "declaration": true,
     "outDir": "dist/js/framework",
-    "lib": ["es6", "dom", "scripthost"],
+    "lib": ["ES2016.Array.Include", "dom", "scripthost"],
     "skipLibCheck": true,
     // To be able to import Json Files.
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": false
   }
 }

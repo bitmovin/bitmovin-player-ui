@@ -1,7 +1,7 @@
-import vocabularyDe from './languages/de.json';
-import vocabularyEn from './languages/en.json';
-import vocabularyEs from './languages/es.json';
-import vocabularyNl from './languages/nl.json';
+import * as vocabularyDe from './languages/de.json';
+import * as vocabularyEn from './languages/en.json';
+import * as vocabularyEs from './languages/es.json';
+import * as vocabularyNl from './languages/nl.json';
 
 import { LocalizationConfig } from '../UIManager';
 

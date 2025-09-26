@@ -1,0 +1,7 @@
+files:
+  include: 'src/scss/**/*.s+(a|c)ss'
+rules:
+  no-css-comments: 0
+  property-sort-order: 0
+  leading-zero: 0
+  indentation: 0

@@ -1,1 +1,14 @@
 .idea
+.vscode
+.github
+.husky
+spec
+artifact
+publish.sh
+.prettierignore
+.prettierrc
+.sasslintrc
+eslint-tsconfig.json
+eslint.config.mjs
+jest.config.js
+setup-jest.ts
