@@ -26,7 +26,10 @@ export {
 export { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 export { NavigationGroup } from './spatialnavigation/NavigationGroup';
 export { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
-export { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelNavigationGroup';
+export {
+  SettingsPanelNavigationGroup,
+  SettingsPanelNavigationGroupConfig,
+} from './spatialnavigation/SettingsPanelNavigationGroup';
 // Components
 export { Button, ButtonConfig, ButtonStyle } from './components/buttons/Button';
 export { ControlBar, ControlBarConfig } from './components/ControlBar';
@@ -41,7 +44,7 @@ export { PlaybackToggleButton, PlaybackToggleButtonConfig } from './components/b
 export { SeekBar, SeekBarConfig, SeekPreviewEventArgs, SeekBarMarker } from './components/seekbar/SeekBar';
 export { SelectBox } from './components/settings/SelectBox';
 export { ItemSelectionList } from './components/lists/ItemSelectionList';
-export { SettingsPanel, SettingsPanelConfig } from './components/settings/SettingsPanel';
+export { SettingsPanel, SettingsPanelConfig, NavigationDirection } from './components/settings/SettingsPanel';
 export { SettingsToggleButton, SettingsToggleButtonConfig } from './components/settings/SettingsToggleButton';
 export { ToggleButton, ToggleButtonConfig } from './components/buttons/ToggleButton';
 export { VideoQualitySelectBox } from './components/settings/VideoQualitySelectBox';
@@ -55,7 +58,14 @@ export { AudioQualitySelectBox } from './components/settings/AudioQualitySelectB
 export { AudioTrackSelectBox } from './components/settings/AudioTrackSelectBox';
 export { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
 export { CastToggleButton } from './components/buttons/CastToggleButton';
-export { Component, ComponentConfig, ComponentHoverChangedEventArgs } from './components/Component';
+export {
+  Component,
+  ComponentConfig,
+  ComponentHoverChangedEventArgs,
+  ViewMode,
+  ViewModeChangedEventArgs,
+  ComponentFocusChangedEventArgs,
+} from './components/Component';
 export {
   ErrorMessageOverlay,
   ErrorMessageOverlayConfig,
@@ -71,7 +81,7 @@ export { TitleBar, TitleBarConfig } from './components/TitleBar';
 export { VolumeControlButton, VolumeControlButtonConfig } from './components/buttons/VolumeControlButton';
 export { ClickOverlay, ClickOverlayConfig } from './components/overlays/ClickOverlay';
 export { AdSkipButton, AdSkipButtonConfig } from './components/ads/AdSkipButton';
-export { AdControlBar } from './components/ads/AdControlBar';
+export { AdControlBar, AdControlBarConfig } from './components/ads/AdControlBar';
 export { AdMessageLabel } from './components/ads/AdMessageLabel';
 export { AdClickOverlay } from './components/ads/AdClickOverlay';
 export { AdCounterLabel } from './components/ads/AdCounterLabel';
@@ -93,21 +103,28 @@ export { FontColorSelectBox } from './components/settings/subtitlesettings/FontC
 export { FontFamilySelectBox } from './components/settings/subtitlesettings/FontFamilySelectBox';
 export { FontOpacitySelectBox } from './components/settings/subtitlesettings/FontOpacitySelectBox';
 export { FontSizeSelectBox } from './components/settings/subtitlesettings/FontSizeSelectBox';
-export { SubtitleSettingSelectBox } from './components/settings/subtitlesettings/SubtitleSettingSelectBox';
+export {
+  SubtitleSettingSelectBox,
+  SubtitleSettingSelectBoxConfig,
+} from './components/settings/subtitlesettings/SubtitleSettingSelectBox';
 export { WindowColorSelectBox } from './components/settings/subtitlesettings/WindowColorSelectBox';
 export { WindowOpacitySelectBox } from './components/settings/subtitlesettings/WindowOpacitySelectBox';
 export { SubtitleSettingsResetButton } from './components/settings/subtitlesettings/SubtitleSettingsResetButton';
-export { ListBox } from './components/lists/ListBox';
+export { ListBox, ListBoxConfig } from './components/lists/ListBox';
 export { SubtitleListBox } from './components/lists/SubtitleListBox';
 export { AudioTrackListBox } from './components/lists/AudioTrackListBox';
-export { SettingsPanelPage } from './components/settings/SettingsPanelPage';
+export { SettingsPanelPage, SettingsPanelPageConfig } from './components/settings/SettingsPanelPage';
 export { SettingsPanelPageBackButton } from './components/settings/SettingsPanelPageBackButton';
 export { SettingsPanelPageOpenButton } from './components/settings/SettingsPanelPageOpenButton';
 export {
   SubtitleSettingsPanelPage,
   SubtitleSettingsPanelPageConfig,
 } from './components/settings/subtitlesettings/SubtitleSettingsPanelPage';
-export { SettingsPanelItem } from './components/settings/SettingsPanelItem';
+export { SettingsPanelItem, SettingsPanelItemConfig } from './components/settings/SettingsPanelItem';
+export {
+  DynamicSettingsPanelItem,
+  DynamicSettingsPanelItemConfig,
+} from './components/settings/DynamicSettingsPanelItem';
 export { ReplayButton } from './components/buttons/ReplayButton';
 export { QuickSeekButton, QuickSeekButtonConfig } from './components/buttons/QuickSeekButton';
 export {
