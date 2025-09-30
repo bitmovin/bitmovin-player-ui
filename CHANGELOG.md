@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Subtitle only UI, without visible UI elements
+- `UIFactory.buildSubtitleUI` to create a subtitle-only UI, without visible UI elements
 
 ### Fixed
 
