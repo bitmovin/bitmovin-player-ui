@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Subtitle only UI, without visible UI elements
+
 ### Fixed
 
 - Missing exports in `main.ts`
