@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Missing exports in `main.ts`
+
+## [4.0.0] - 2025-09-26
+
 ### Added
 
 - `Icon` component for generic icon rendering
@@ -131,7 +137,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - `ui-skin-cast-receiver` -> `ui-cast-receiver`
     - `ui-skin-tv` -> `ui-tv`
 
-## [Unreleased]
+## [4.0.0] - 2025-09-26
 
 ### Changed
 
