@@ -202,6 +202,41 @@ export namespace UIFactory {
       config,
     );
   }
+
+  /**
+   * Builds a simple UI which only contains the subtitle overlay, and elements required to support programmatic
+   * subtitle styling (e.g. using `uiManager.getSubtitleSettingsManager().fontSize.value = '150'`).
+   *
+   * This UI has no visible UI elements and only serves the purpose of displaying subtitles. Subtitles need to be
+   * enabled programmatically via the Player API.
+   *
+   * @param player The player instance used to build the UI
+   * @param config The UIConfig object
+   */
+  export function buildSubtitleUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return new UIManager(player, subtitleUi(), config);
+  }
+}
+
+function subtitleUi(): UIContainer {
+  const subtitleOverlay = new SubtitleOverlay();
+
+  // Subtitle styling only works if a `SubtitleSettingsPanelPage` (with the corresponding Subtitle Settings elements)
+  // are in the UI tree.
+  const settingsPanel = new SettingsPanel({
+    components: [],
+    hidden: true,
+  });
+  const subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
+    settingsPanel: settingsPanel,
+    overlay: subtitleOverlay,
+  });
+  settingsPanel.addComponent(subtitleSettingsPanelPage);
+
+  // Create a custom UI structure with only the SubtitleOverlay (and the hidden SettingsPanel to enable UI customizations)
+  return new UIContainer({
+    components: [subtitleOverlay, settingsPanel],
+  });
 }
 
 function uiLayout(config: UIConfig) {
