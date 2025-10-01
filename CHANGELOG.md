@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `UIFactory.buildSubtitleUI` to create a subtitle-only UI, without visible UI elements
+
 ### Fixed
 
 - Missing exports in `main.ts`
