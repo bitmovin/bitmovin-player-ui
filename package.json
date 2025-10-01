@@ -12,7 +12,7 @@
     "lint": "npm run lint-ts && npm run lint-sass",
     "format": "npx prettier --write *",
     "docs": "npx typedoc",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist; rm -rf docs",
     "lint-ts": "npx eslint 'src/ts/**/*.ts'",
     "lint-sass": "npx sass-lint",
     "prepublishOnly": "npm run build:prod && npm run copy-json",
