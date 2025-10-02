@@ -149,7 +149,7 @@ module.exports = (env, { mode }) => {
 };
 
 async function createJavascriptUiFrameworkFilesWithReplacedPrefix() {
-  await exec('npx tsc'); // run the typescript compiler to generate the dist-tsc folder
+  await exec('npx tsc'); // run the typescript compiler to generate the individual UI Framework JS files in `dist/js/framework/`
   const options = {
     templatingOn: false, // disable liquid syntax to avoid issues with {{ and }}
     find: '{{PREFIX}}',
