@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Missing exports in `main.ts`
+- CSS prefix not correctly replaced in JS files during the build process
 
 ## [4.0.0] - 2025-09-26
 

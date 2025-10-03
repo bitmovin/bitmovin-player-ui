@@ -1,6 +1,11 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const replacer = require('replacer-util').replacer;
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
+const OUTPUT_ROOT_DIRECTORY = 'dist';
 
 // You can customize the output names and css prefix by passing environment variables to the build script, e.g.:
 // ```
@@ -110,18 +115,25 @@ module.exports = (env, { mode }) => {
         inject: false,
         minify: false,
       }),
+      {
+        apply: compiler => {
+          compiler.hooks.done.tapAsync('CreateUiFrameworkFilesPlugin', async compilation => {
+            await createJavascriptUiFrameworkFilesWithReplacedPrefix();
+          });
+        },
+      },
     ],
     resolve: {
       extensions: ['.ts', '.js', '.scss', '.css'],
     },
     output: {
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, OUTPUT_ROOT_DIRECTORY),
       publicPath: '',
       clean: true,
     },
     devServer: {
       static: {
-        directory: path.join(__dirname, 'dist'),
+        directory: path.join(__dirname, OUTPUT_ROOT_DIRECTORY),
       },
       port: 9000,
       hot: true,
@@ -135,3 +147,14 @@ module.exports = (env, { mode }) => {
     target: ['web', 'es5'],
   };
 };
+
+async function createJavascriptUiFrameworkFilesWithReplacedPrefix() {
+  await exec('npx tsc'); // run the typescript compiler to generate the individual UI Framework JS files in `dist/js/framework/`
+  const options = {
+    templatingOn: false, // disable liquid syntax to avoid issues with {{ and }}
+    find: '{{PREFIX}}',
+    replacement: outputnames.cssPrefix,
+  };
+
+  replacer.transform(`${OUTPUT_ROOT_DIRECTORY}/js/framework`, `${OUTPUT_ROOT_DIRECTORY}/js/framework`, options);
+}
