@@ -15,7 +15,7 @@
     "clean": "rm -rf dist; rm -rf docs",
     "lint-ts": "npx eslint 'src/ts/**/*.ts'",
     "lint-sass": "npx sass-lint",
-    "prepublishOnly": "npm run build:prod && npm run copy-json",
+    "prepublishOnly": "npm run build:prod",
     "prepare": "husky"
   },
   "repository": {
