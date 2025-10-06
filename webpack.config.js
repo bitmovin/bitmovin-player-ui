@@ -117,9 +117,16 @@ module.exports = (env, { mode }) => {
       }),
       {
         apply: compiler => {
-          compiler.hooks.done.tapAsync('CreateUiFrameworkFilesPlugin', async compilation => {
-            await createJavascriptUiFrameworkFilesWithReplacedPrefix();
-          });
+          const isDevServer = process.env.WEBPACK_SERVE;
+
+          if (!isDevServer) {
+            // Doing this with the webpack-dev-server leads to an endless loop, so this is only done for normal builds
+            compiler.hooks.done.tapAsync('CreateUiFrameworkFilesPlugin', async compilation => {
+              await createJavascriptUiFrameworkFilesWithReplacedPrefix();
+            });
+          } else {
+            console.warn('Skipping creation of individual UI Framework JS files when using Webpack-Dev-Server');
+          }
         },
       },
     ],
