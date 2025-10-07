@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.103.0] - 2025-10-07
+## [Unreleased]
 
 ### Fixed
 
@@ -148,7 +148,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - `ui-skin-cast-receiver` -> `ui-cast-receiver`
     - `ui-skin-tv` -> `ui-tv`
 
-## [4.0.0] - 2025-09-26
+## [3.103.1] - 2025-10-07
 
 ### Changed
 
