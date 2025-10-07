@@ -9,6 +9,7 @@ import { PlayerAPI } from 'bitmovin-player';
 import { Component, ComponentConfig } from '../Component';
 import { getKeyMapForPlatform } from '../../spatialnavigation/getKeyMapForPlatform';
 import { Action } from '../../spatialnavigation/types';
+import { SettingsPanelState } from './SettingsPanelAutoHideManager';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -471,33 +472,26 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
    * Restores the navigation state without triggering resetNavigation.
    * Used to preserve the user's navigation position when reopening the panel.
    */
-  public restoreNavigationState(
-    activePage: SettingsPanelPage,
-    navigationStack: SettingsPanelPage[],
-    scrollTop: number,
-    wrapperScrollTop: number,
-    panelWidth?: number,
-    panelHeight?: number,
-  ): void {
-    this.activePage = activePage;
-    this.navigationStack = [...navigationStack];
+  public restoreNavigationState(state: SettingsPanelState): void {
+    this.activePage = state.activePage;
+    this.navigationStack = [...state.navigationStack];
     this.updateActivePageClass();
     this.onActivePageChangedEvent();
     this.activePage.onActiveEvent();
 
-    if (panelWidth !== undefined && panelHeight !== undefined) {
+    if (state.panelWidth !== undefined && state.panelHeight !== undefined) {
       this.getDomElement().css({
-        width: panelWidth + 'px',
-        height: panelHeight + 'px',
+        width: state.panelWidth + 'px',
+        height: state.panelHeight + 'px',
       });
     }
 
     // Restore scroll positions after DOM is ready
     setTimeout(() => {
-      this.getDomElement().get(0).scrollTop = scrollTop;
-      const wrapper = this.getDomElement().find('.bmpui-container-wrapper').get(0);
+      this.getDomElement().get(0).scrollTop = state.scrollTop;
+      const wrapper = this.getDomElement().find('.' + this.prefixCss('container-wrapper')).get(0);
       if (wrapper) {
-        wrapper.scrollTop = wrapperScrollTop;
+        wrapper.scrollTop = state.wrapperScrollTop;
       }
     }, 0);
   }

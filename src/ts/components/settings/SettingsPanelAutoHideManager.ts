@@ -8,7 +8,7 @@ import { Timeout } from '../../utils/Timeout';
 /**
  * State interface for preserving settings panel navigation and scroll position
  */
-interface SettingsPanelState {
+export interface SettingsPanelState {
   activePage: SettingsPanelPage;
   navigationStack: SettingsPanelPage[];
   scrollTop: number;
@@ -111,14 +111,7 @@ export class SettingsPanelAutoHideManager {
 
       // Then restore the navigation state (this will override the resetNavigation call in onShow)
       setTimeout(() => {
-        panel.restoreNavigationState(
-          state.activePage,
-          state.navigationStack,
-          state.scrollTop,
-          state.wrapperScrollTop,
-          state.panelWidth,
-          state.panelHeight,
-        );
+        panel.restoreNavigationState(state);
       }, 0);
 
       // Clear saved state
