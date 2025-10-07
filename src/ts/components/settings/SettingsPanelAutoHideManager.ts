@@ -80,7 +80,7 @@ export class SettingsPanelAutoHideManager {
         activePage: panel.getActivePage(),
         navigationStack: [...(panel as any)['navigationStack']], // Copy the array
         scrollTop: panelElement.scrollTop,
-        wrapperScrollTop: panel.getDomElement().find('.bmpui-container-wrapper').get(0)?.scrollTop || 0,
+        wrapperScrollTop: panel.getDomElement().find('.' + panel.getWrapperClassName()).get(0)?.scrollTop || 0,
         panelWidth: panelElement.scrollWidth,
         panelHeight: panelElement.scrollHeight,
       };
