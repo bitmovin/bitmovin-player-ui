@@ -99,7 +99,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     super.configure(player, uimanager);
 
-    this.settingsPanelManager = new SettingsPanelAutoHideManager(uimanager);
+    this.settingsPanelManager = new SettingsPanelAutoHideManager(uimanager, {});
     this.configureUIShowHide(player, uimanager);
     this.configurePlayerStates(player, uimanager);
   }
@@ -341,8 +341,6 @@ export class UIContainer extends Container<UIContainerConfig> {
         this.uiHideTimeout.start();
       }
     });
-
-    // Settings panel auto-hide management is now handled by SettingsPanelAutoHideManager
   }
 
   private configurePlayerStates(player: PlayerAPI, uimanager: UIInstanceManager): void {

@@ -28,6 +28,13 @@ export interface SettingsPanelConfig extends ContainerConfig {
    * Default: true
    */
   pageTransitionAnimation?: boolean;
+
+  /**
+   * The delay in milliseconds after which the saved settings panel state will be cleared when the panel is hidden.
+   * This is used to restore the panel state when reopening the panel within this timeframe.
+   * Default: 15 seconds (15000)
+   */
+  stateClearDelay?: number;
 }
 
 export enum NavigationDirection {
