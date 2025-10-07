@@ -8,15 +8,33 @@
     @include svg-icon-shadow;
   }
 
+  $seek-durations: 5, 10, 15, 20, 30, 60;
+
   &[data-#{$prefix}-seek-direction='forward'] {
     .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/quickseek-forward.svg');
+    }
+
+    @each $duration in $seek-durations {
+      &[data-#{$prefix}-seek-seconds='#{$duration}'] {
+        .#{$prefix}-ui-icon {
+          background-image: url('../../assets/images/quickseek-forward-#{$duration}.svg');
+        }
+      }
     }
   }
 
   &[data-#{$prefix}-seek-direction='rewind'] {
     .#{$prefix}-ui-icon {
       background-image: url('../../assets/images/quickseek-back.svg');
+    }
+
+    @each $duration in $seek-durations {
+      &[data-#{$prefix}-seek-seconds='#{$duration}'] {
+        .#{$prefix}-ui-icon {
+          background-image: url('../../assets/images/quickseek-back-#{$duration}.svg');
+        }
+      }
     }
   }
 }

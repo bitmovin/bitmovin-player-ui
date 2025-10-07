@@ -45,7 +45,9 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
         seekSeconds: Math.abs(this.config.seekSeconds),
       });
 
-    this.getDomElement().data(this.prefixCss('seek-direction'), seekDirection);
+    this.getDomElement()
+      .data(this.prefixCss('seek-direction'), seekDirection)
+      .data(this.prefixCss('seek-seconds'), Math.abs(this.config.seekSeconds).toString());
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
