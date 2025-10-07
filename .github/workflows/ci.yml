@@ -8,7 +8,7 @@ on:
   workflow_call:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ${{ github.event_name == 'workflow_call' && format('release-ci-{0}', github.run_id) || format('ci-{0}', github.ref) }}
   cancel-in-progress: true
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
         uses: ./.github/actions/setup-dependencies
 
       - name: Build
-        run: npx gulp build
+        run: npm run build
 
   lint:
     name: Lint
@@ -52,4 +52,4 @@ jobs:
         uses: ./.github/actions/setup-dependencies
 
       - name: Lint
-        run: npx gulp lint
+        run: npm run lint

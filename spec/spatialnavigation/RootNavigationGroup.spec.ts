@@ -15,7 +15,6 @@ describe('RootNavigationGroup', () => {
     containerUiMock.hideUi = jest.fn();
 
     rootNavigationGroup = new RootNavigationGroup(containerUiMock);
-
   });
 
   describe('handleAction', () => {
@@ -35,7 +34,7 @@ describe('RootNavigationGroup', () => {
       rootNavigationGroup['defaultActionHandler'](Action.SELECT);
 
       expect(containerUiMock.hideUi).not.toHaveBeenCalled();
-    })
+    });
   });
 
   describe('handleNavigation', () => {

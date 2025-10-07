@@ -33,7 +33,6 @@ export class FocusableContainer {
   }
 
   get components(): AnyComponent[] {
-    return resolveAllComponents(this.container)
-      .filter(component => isFocusable(component));
+    return resolveAllComponents(this.container).filter(component => isFocusable(component));
   }
 }

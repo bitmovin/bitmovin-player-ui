@@ -1,5 +1,5 @@
 import { SubtitleSettingSelectBox, SubtitleSettingSelectBoxConfig } from './SubtitleSettingSelectBox';
-import {UIInstanceManager} from '../../../UIManager';
+import { UIInstanceManager } from '../../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../../localization/i18n';
 
@@ -9,13 +9,16 @@ import { i18n } from '../../../localization/i18n';
  * @category Components
  */
 export class FontColorSelectBox extends SubtitleSettingSelectBox {
-
   constructor(config: SubtitleSettingSelectBoxConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-subtitlesettingsfontcolorselectbox'],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-subtitlesettingsfontcolorselectbox'],
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -34,7 +37,8 @@ export class FontColorSelectBox extends SubtitleSettingSelectBox {
     let setColorAndOpacity = () => {
       if (this.settingsManager.fontColor.isSet() && this.settingsManager.fontOpacity.isSet()) {
         this.toggleOverlayClass(
-          'fontcolor-' + this.settingsManager.fontColor.value + this.settingsManager.fontOpacity.value);
+          'fontcolor-' + this.settingsManager.fontColor.value + this.settingsManager.fontOpacity.value,
+        );
       } else {
         this.toggleOverlayClass(null);
       }

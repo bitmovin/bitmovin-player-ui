@@ -1,6 +1,6 @@
-import {ContainerConfig, Container} from '../Container';
-import {UIInstanceManager} from '../../UIManager';
-import {HugeReplayButton} from '../buttons/HugeReplayButton';
+import { ContainerConfig, Container } from '../Container';
+import { UIInstanceManager } from '../../UIManager';
+import { HugeReplayButton } from '../buttons/HugeReplayButton';
 import { PlayerAPI } from 'bitmovin-player';
 import { RecommendationItem } from '../RecommendationItem';
 
@@ -10,7 +10,6 @@ import { RecommendationItem } from '../RecommendationItem';
  * @category Containers
  */
 export class RecommendationOverlay extends Container<ContainerConfig> {
-
   private static readonly CLASS_HAS_RECOMMENDATIONS = 'recommendations';
   readonly replayButton: HugeReplayButton;
   readonly recommendationContainer: Container<ContainerConfig>;
@@ -21,22 +20,23 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
     this.replayButton = new HugeReplayButton();
     this.recommendationContainer = new Container({
       components: [],
-      cssClasses: ['recommendation-overlay-row', 'recommendations-section']
+      cssClasses: ['recommendation-overlay-row', 'recommendations-section'],
     });
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-recommendation-overlay',
-      hidden: true,
-      components: [
-        new Container({
-          components: [
-            this.replayButton,
-            this.recommendationContainer,
-          ],
-          cssClasses: ['recommendation-overlay-row', 'replay-section'],
-        }),
-      ],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-recommendation-overlay',
+        hidden: true,
+        components: [
+          new Container({
+            components: [this.replayButton, this.recommendationContainer],
+            cssClasses: ['recommendation-overlay-row', 'replay-section'],
+          }),
+        ],
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -60,7 +60,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
       recommendations.forEach(recommendationConfig => {
         const recommendationItem = new RecommendationItem({
           recommendationConfig: recommendationConfig,
-          cssClasses: ['recommendation-item-' + (index++)],
+          cssClasses: ['recommendation-item-' + index++],
         });
         recommendationItem.configure(player, uimanager);
         this.recommendationContainer.addComponent(recommendationItem);

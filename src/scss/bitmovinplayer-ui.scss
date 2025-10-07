@@ -1,7 +1,6 @@
 @import 'variables';
 @import 'mixins';
 @import 'components/icon';
-@import 'components/buttons/subtitle-toggle-button';
 @import 'components/component';
 @import 'components/container';
 @import 'components/uicontainer';
@@ -128,6 +127,7 @@
     .#{$prefix}-ui-cast-status-overlay {
       background-size: $icon-size-large;
       background-position: center 40%;
+
       .#{$prefix}-ui-cast-status-label {
         top: 55%;
       }

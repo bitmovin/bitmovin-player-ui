@@ -1,12 +1,11 @@
-import {ListSelector, ListSelectorConfig} from './ListSelector';
-import {DOM} from '../../DOM';
+import { ListSelector, ListSelectorConfig } from './ListSelector';
+import { DOM } from '../../DOM';
 import { i18n } from '../../localization/i18n';
 
 /**
  * @category Components
  */
 export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
-
   private static readonly CLASS_SELECTED = 'selected';
 
   private listElement: DOM;
@@ -14,10 +13,14 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
   constructor(config: ListSelectorConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      tag: 'ul',
-      cssClass: 'ui-itemselectionlist',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        tag: 'ul',
+        cssClass: 'ui-itemselectionlist',
+      },
+      this.config,
+    );
   }
 
   protected isActive(): boolean {
@@ -25,10 +28,14 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
   }
 
   protected toDomElement(): DOM {
-    let listElement = new DOM('ul', {
-      'id': this.config.id,
-      'class': this.getCssClasses(),
-    }, this);
+    let listElement = new DOM(
+      'ul',
+      {
+        id: this.config.id,
+        class: this.getCssClasses(),
+      },
+      this,
+    );
 
     this.listElement = listElement;
     this.updateDomItems();
@@ -52,15 +59,16 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
 
     for (let item of this.items) {
       let listItem = new DOM('li', {
-        'type': 'li',
-        'class': this.prefixCss('ui-selectionlistitem'),
-      }).append(new DOM('a', {
-      }).html(i18n.performLocalization(item.label)));
+        type: 'li',
+        class: this.prefixCss('ui-selectionlistitem'),
+      }).append(new DOM('a', {}).html(i18n.performLocalization(item.label)));
 
       if (!selectedListItem) {
-        if (selectedValue == null) { // If there is no pre-selected value, select the first one
+        if (selectedValue == null) {
+          // If there is no pre-selected value, select the first one
           selectedListItem = listItem;
-        } else if (String(selectedValue) === item.key) { // convert selectedValue to string to catch 'null'/null case
+        } else if (String(selectedValue) === item.key) {
+          // convert selectedValue to string to catch 'null'/null case
           selectedListItem = listItem;
         }
       }

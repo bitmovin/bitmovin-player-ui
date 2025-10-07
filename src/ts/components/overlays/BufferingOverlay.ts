@@ -1,7 +1,7 @@
-import {ContainerConfig, Container} from '../Container';
-import {UIInstanceManager} from '../../UIManager';
-import {Component, ComponentConfig} from '../Component';
-import {Timeout} from '../../utils/Timeout';
+import { ContainerConfig, Container } from '../Container';
+import { UIInstanceManager } from '../../UIManager';
+import { Component, ComponentConfig } from '../Component';
+import { Timeout } from '../../utils/Timeout';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**
@@ -24,7 +24,6 @@ export interface BufferingOverlayConfig extends ContainerConfig {
  * @category Components
  */
 export class BufferingOverlay extends Container<BufferingOverlayConfig> {
-
   private indicators: Component<ComponentConfig>[];
 
   constructor(config: BufferingOverlayConfig = {}) {
@@ -36,12 +35,16 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
       new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator', role: 'img' }),
     ];
 
-    this.config = this.mergeConfig(config, <BufferingOverlayConfig>{
-      cssClass: 'ui-buffering-overlay',
-      hidden: true,
-      components: this.indicators,
-      showDelayMs: 1000,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      <BufferingOverlayConfig>{
+        cssClass: 'ui-buffering-overlay',
+        hidden: true,
+        components: this.indicators,
+        showDelayMs: 1000,
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -63,7 +66,7 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
       if (player.isPlaying()) {
         showOverlay();
       }
-    }
+    };
 
     const hideOverlay = () => {
       overlayShowTimeout.clear();

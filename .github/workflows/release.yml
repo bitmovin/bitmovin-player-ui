@@ -52,13 +52,21 @@ on:
       SLACK_WEBHOOK_URL:
         description: 'Slack webhook URL for notifications'
         required: true
+      RELEASE_DEPLOY_KEY:
+        description: 'SSH deploy key with write access to the repository'
+        required: true
 
 concurrency:
   group: release-${{ inputs.version_number }}-${{ inputs.release_type }}
   cancel-in-progress: true
 
 jobs:
+  test:
+    name: Test, Build and Lint
+    uses: ./.github/workflows/ci.yml
+
   version_bump:
+    needs: test
     name: Version Bump
     runs-on: ubuntu-latest
     outputs:
@@ -68,6 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
           ref: ${{ inputs.branch_name || github.ref }}
           # Fetch existing tags because we need to create a new one
           # fetch-tags: true # do not use, currently broken: https://github.com/actions/checkout/issues/1781
@@ -135,15 +144,10 @@ jobs:
           git config --global user.name 'Automated Release'
           git config --global user.email 'release-automation@bitmovin.com'
           git add package.json CHANGELOG.md
-          git commit -m "Bump version to ${{ steps.version_number.outputs.version_number }}"
+          git commit -m "[skip ci] Bump version to ${{ steps.version_number.outputs.version_number }}"
           git tag "${{ steps.version_number.outputs.tag_name }}"
           git push origin ${{ inputs.branch_name || github.ref_name }}
           git push origin "${{ steps.version_number.outputs.tag_name }}"
-
-  test:
-    needs: version_bump
-    name: Test, Build and Lint
-    uses: ./.github/workflows/ci.yml
 
   release:
     name: Publish Release
@@ -159,7 +163,7 @@ jobs:
         uses: ./.github/actions/setup-dependencies
 
       - name: Build Release
-        run: npx gulp npm-prepare
+        run: npm run prepublishOnly
         shell: bash
 
       - name: Publish to NPM
@@ -182,7 +186,7 @@ jobs:
         uses: ./.github/actions/setup-dependencies
 
       - name: Build documentation
-        run: npx typedoc
+        run: npm run docs
         shell: bash
 
       - name: Authenticate

@@ -12,7 +12,7 @@
     &::before {
       color: $color-secondary;
       content: '●';
-      padding-right: .2em;
+      padding-right: 0.2em;
     }
 
     &.#{$prefix}-ui-playbacktimelabel-live-edge {

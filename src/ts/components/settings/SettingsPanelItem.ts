@@ -49,7 +49,6 @@ export interface SettingsPanelItemConfig extends ContainerConfig {
  * @category Components
  */
 export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends Container<Config> {
-
   private label: Component<ComponentConfig>;
   protected settingComponent: Component<ComponentConfig> | null;
 
@@ -57,19 +56,23 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
     onActiveChanged: new EventDispatcher<SettingsPanelItem<Config>, NoArgs>(),
   };
 
-  constructor(config: SettingsPanelItemConfig)
+  constructor(config: SettingsPanelItemConfig);
   constructor(config: Config) {
     super(config);
 
     this.settingComponent = config.settingComponent;
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-settings-panel-item',
-      role: 'menuitem',
-      addSettingAsComponent: true,
-      isSetting: true,
-      labelStyle: LabelStyle.Text,
-    } as Config, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-settings-panel-item',
+        role: 'menuitem',
+        addSettingAsComponent: true,
+        isSetting: true,
+        labelStyle: LabelStyle.Text,
+      } as Config,
+      this.config,
+    );
 
     const label = config.label;
     if (label !== null) {
@@ -101,16 +104,20 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
         let minItemsToDisplay = 2;
         // Audio/video quality select boxes contain an additional 'auto' mode, which in combination with a single
         // available quality also does not make sense
-        if ((this.settingComponent instanceof VideoQualitySelectBox && this.settingComponent.hasAutoItem())
-          || this.settingComponent instanceof AudioQualitySelectBox) {
+        if (
+          (this.settingComponent instanceof VideoQualitySelectBox && this.settingComponent.hasAutoItem()) ||
+          this.settingComponent instanceof AudioQualitySelectBox
+        ) {
           minItemsToDisplay = 3;
         }
 
         if (this.settingComponent.itemCount() < minItemsToDisplay) {
           // Hide the setting if no meaningful choice is available
           this.hide();
-        } else if (this.settingComponent instanceof PlaybackSpeedSelectBox
-          && !uimanager.getConfig().playbackSpeedSelectionEnabled) {
+        } else if (
+          this.settingComponent instanceof PlaybackSpeedSelectBox &&
+          !uimanager.getConfig().playbackSpeedSelectionEnabled
+        ) {
           // Hide the PlaybackSpeedSelectBox if disabled in config
           this.hide();
         } else {

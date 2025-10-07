@@ -48,7 +48,10 @@ export class NavigationGroup {
   private removeElementHoverEventListeners = () => {};
   private readonly eventSubscriber: NodeEventSubscriber;
 
-  constructor(public readonly container: Container<ContainerConfig>, ...components: Focusable[]) {
+  constructor(
+    public readonly container: Container<ContainerConfig>,
+    ...components: Focusable[]
+  ) {
     this._components = components;
     this.eventSubscriber = new NodeEventSubscriber();
   }
@@ -81,8 +84,7 @@ export class NavigationGroup {
       }
     });
 
-    return componentsToConsider
-      .filter(component => isFocusable(component));
+    return componentsToConsider.filter(component => isFocusable(component));
   }
 
   /**
@@ -142,7 +144,9 @@ export class NavigationGroup {
   }
 
   protected defaultNavigationHandler(direction: Direction): void {
-    if (!this.activeComponent) { return; }
+    if (!this.activeComponent) {
+      return;
+    }
 
     const containerContainingActiveComponent = this.getActiveFocusableContainer();
     if (containerContainingActiveComponent) {
@@ -159,11 +163,7 @@ export class NavigationGroup {
     }
 
     // If no component was found within the container itself, check all components within the group
-    const targetComponent = getComponentInDirection(
-      this.activeComponent,
-      this.getComponents(),
-      direction
-    );
+    const targetComponent = getComponentInDirection(this.activeComponent, this.getComponents(), direction);
 
     if (targetComponent) {
       this.focusComponent(targetComponent);
@@ -172,12 +172,12 @@ export class NavigationGroup {
 
   protected defaultActionHandler(action: Action): void {
     switch (action) {
-      case(Action.SELECT):
+      case Action.SELECT:
         if (this.activeComponent) {
           toHtmlElement(this.activeComponent).click();
         }
         break;
-      case(Action.BACK):
+      case Action.BACK:
         this.container.hide();
         break;
     }
@@ -264,24 +264,25 @@ export class NavigationGroup {
     this.removeElementHoverEventListeners();
 
     let componentsToConsider: Component<ComponentConfig>[] = [];
-    this.getComponents()
-      .forEach(component => {
-        let elementsToConsider: Component<ComponentConfig>[];
-        if (component instanceof Container) {
-          elementsToConsider = resolveAllComponents(component);
-        } else if (component instanceof FocusableContainer) {
-          elementsToConsider = resolveAllComponents(component.container);
-        } else {
-          elementsToConsider = [component];
-        }
+    this.getComponents().forEach(component => {
+      let elementsToConsider: Component<ComponentConfig>[];
+      if (component instanceof Container) {
+        elementsToConsider = resolveAllComponents(component);
+      } else if (component instanceof FocusableContainer) {
+        elementsToConsider = resolveAllComponents(component.container);
+      } else {
+        elementsToConsider = [component];
+      }
 
-        elementsToConsider.forEach(component => {
-          componentsToConsider.push(component);
-        });
+      elementsToConsider.forEach(component => {
+        componentsToConsider.push(component);
       });
+    });
 
     const removeEventListenerFunctions = componentsToConsider
-      .map(component => { return { component, element: toHtmlElement(component) } })
+      .map(component => {
+        return { component, element: toHtmlElement(component) };
+      })
       .map(({ element, component }) => {
         const enterListener = this.focusComponent.bind(this, component);
         const exitListener = () => this.disable();
@@ -309,7 +310,9 @@ export class NavigationGroup {
   }
 
   private getActiveFocusableContainer(): FocusableContainer | undefined {
-    if (!this.activeComponent) { return undefined; }
+    if (!this.activeComponent) {
+      return undefined;
+    }
 
     return this._components
       .filter(component => component instanceof FocusableContainer)

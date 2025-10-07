@@ -83,41 +83,33 @@ export namespace UIFactory {
       [
         {
           ui: emptyStateUILayout(),
-          condition: (context) => {
+          condition: context => {
             return !context.isSourceLoaded;
           },
         },
         {
           ui: smallScreenAdsUILayout(),
           condition: (context: UIConditionContext) => {
-            return (
-              context.documentWidth < smallScreenSwitchWidth &&
-              context.isAd &&
-              context.adRequiresUi
-            );
+            return context.documentWidth < smallScreenSwitchWidth && context.isAd && context.adRequiresUi;
           },
         },
         {
           ui: smallScreenUILayout(),
           condition: (context: UIConditionContext) => {
-            return (
-              !context.isAd &&
-              !context.adRequiresUi &&
-              context.documentWidth < smallScreenSwitchWidth
-            );
+            return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
         },
         {
           ...tvAdsUILayout(),
           condition: (context: UIConditionContext) => {
             return context.isTv && context.isAd && context.adRequiresUi;
-          }
+          },
         },
         {
           ...tvUILayout(),
           condition: (context: UIConditionContext) => {
             return context.isTv && !context.isAd && !context.adRequiresUi;
-          }
+          },
         },
         {
           ui: adsUILayout(),
@@ -210,6 +202,41 @@ export namespace UIFactory {
       config,
     );
   }
+
+  /**
+   * Builds a simple UI which only contains the subtitle overlay, and elements required to support programmatic
+   * subtitle styling (e.g. using `uiManager.getSubtitleSettingsManager().fontSize.value = '150'`).
+   *
+   * This UI has no visible UI elements and only serves the purpose of displaying subtitles. Subtitles need to be
+   * enabled programmatically via the Player API.
+   *
+   * @param player The player instance used to build the UI
+   * @param config The UIConfig object
+   */
+  export function buildSubtitleUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
+    return new UIManager(player, subtitleUi(), config);
+  }
+}
+
+function subtitleUi(): UIContainer {
+  const subtitleOverlay = new SubtitleOverlay();
+
+  // Subtitle styling only works if a `SubtitleSettingsPanelPage` (with the corresponding Subtitle Settings elements)
+  // are in the UI tree.
+  const settingsPanel = new SettingsPanel({
+    components: [],
+    hidden: true,
+  });
+  const subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
+    settingsPanel: settingsPanel,
+    overlay: subtitleOverlay,
+  });
+  settingsPanel.addComponent(subtitleSettingsPanelPage);
+
+  // Create a custom UI structure with only the SubtitleOverlay (and the hidden SettingsPanel to enable UI customizations)
+  return new UIContainer({
+    components: [subtitleOverlay, settingsPanel],
+  });
 }
 
 function uiLayout(config: UIConfig) {
@@ -250,9 +277,7 @@ function uiLayout(config: UIConfig) {
     ],
   });
 
-  const conditionalComponents = [
-    config.includeWatermark ? new Watermark() : null,
-  ].filter((e) => e);
+  const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
   return new UIContainer({
     components: [
@@ -289,15 +314,9 @@ function adsUILayout() {
           }),
         ],
         cssClasses: ['ad-controlbar-top'],
-
       }),
       new Container({
-        components: [
-          new PlaybackToggleButton(),
-          new VolumeToggleButton(),
-          new Spacer(),
-          new FullscreenToggleButton(),
-        ],
+        components: [new PlaybackToggleButton(), new VolumeToggleButton(), new Spacer(), new FullscreenToggleButton()],
         cssClasses: ['ad-controlbar-bottom'],
       }),
     ],
@@ -313,9 +332,7 @@ function adsUILayout() {
       new TitleBar({
         components: [
           new Container({
-            components: [
-              new AdMessageLabel(),
-            ],
+            components: [new AdMessageLabel()],
             cssClasses: ['ui-titlebar-top'],
           }),
         ],
@@ -419,12 +436,7 @@ function smallScreenAdsUILayout() {
         cssClasses: ['ad-controlbar-top'],
       }),
       new Container({
-        components: [
-          new PlaybackToggleButton(),
-          new VolumeToggleButton(),
-          new Spacer(),
-          new FullscreenToggleButton(),
-        ],
+        components: [new PlaybackToggleButton(), new VolumeToggleButton(), new Spacer(), new FullscreenToggleButton()],
         cssClasses: ['ad-controlbar-bottom'],
       }),
     ],
@@ -439,9 +451,7 @@ function smallScreenAdsUILayout() {
       new TitleBar({
         components: [
           new Container({
-            components: [
-              new AdMessageLabel(),
-            ],
+            components: [new AdMessageLabel()],
             cssClasses: ['ui-titlebar-top'],
           }),
         ],
@@ -479,9 +489,7 @@ function castReceiverUILayout(config: UIConfig) {
     ],
   });
 
-  const conditionalComponents = [
-    config.includeWatermark ? new Watermark() : null,
-  ].filter((e) => e);
+  const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
   return new CastUIContainer({
     components: [
@@ -526,15 +534,11 @@ function tvUILayout() {
   const titleBar = new TitleBar({
     components: [
       new Container({
-        components: [
-          new MetadataLabel({ content: MetadataLabelContent.Title }),
-        ],
+        components: [new MetadataLabel({ content: MetadataLabelContent.Title })],
         cssClasses: ['ui-titlebar-top'],
       }),
       new Container({
-        components: [
-          new MetadataLabel({ content: MetadataLabelContent.Description }),
-        ],
+        components: [new MetadataLabel({ content: MetadataLabelContent.Description })],
         cssClasses: ['ui-titlebar-bottom'],
       }),
     ],
@@ -595,7 +599,12 @@ function tvUILayout() {
   });
 
   const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(uiContainer, playbackToggleOverlay, seekBar, new FocusableContainer(bottomControlBar, playbackToggleButton)),
+    new RootNavigationGroup(
+      uiContainer,
+      playbackToggleOverlay,
+      seekBar,
+      new FocusableContainer(bottomControlBar, playbackToggleButton),
+    ),
     new SettingsPanelNavigationGroup(settingsPanel, { closeOnSelect: false }),
     new SettingsPanelNavigationGroup(subtitleListBox),
     new SettingsPanelNavigationGroup(audioListBox),
@@ -635,9 +644,7 @@ function tvAdsUILayout() {
       new TitleBar({
         components: [
           new Container({
-            components: [
-              new AdMessageLabel(),
-            ],
+            components: [new AdMessageLabel()],
             cssClasses: ['ui-titlebar-top'],
           }),
         ],
@@ -654,11 +661,7 @@ function tvAdsUILayout() {
   });
 
   const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(
-      uiContainer,
-      playbackToggleOverlay,
-      adStatusOverlay.adSkipButton
-    ),
+    new RootNavigationGroup(uiContainer, playbackToggleOverlay, adStatusOverlay.adSkipButton),
   );
 
   return {
@@ -672,11 +675,7 @@ function tvAdsUILayout() {
  */
 function emptyStateUILayout() {
   return new UIContainer({
-    components: [
-      new BufferingOverlay(),
-      new PlaybackToggleOverlay(),
-      new ErrorMessageOverlay(),
-    ],
+    components: [new BufferingOverlay(), new PlaybackToggleOverlay(), new ErrorMessageOverlay()],
     cssClasses: ['ui', 'ui-empty-state'],
   });
 }
@@ -761,5 +760,5 @@ function buildDefaultSettingsPanel(
   mainSettingsPanelPage.addComponent(subtitleSelectItem);
   settingsPanel.addComponent(subtitleSettingsPanelPage);
 
-  return settingsPanel
+  return settingsPanel;
 }

@@ -10,7 +10,6 @@ export interface VolumeSettingChangedArgs {
  * Can be used to centrally manage and control the volume and mute state of the player from multiple components.
  */
 export class VolumeController {
-
   private static readonly issuerName = 'ui-volumecontroller';
 
   private readonly events = {
@@ -102,7 +101,6 @@ export class VolumeController {
 }
 
 export class VolumeTransition {
-
   constructor(private controller: VolumeController) {
     // Store the volume at the beginning of a volume change so we can recall it later in case we set the volume to
     // zero and actually mute the player.

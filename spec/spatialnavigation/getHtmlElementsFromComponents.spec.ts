@@ -19,5 +19,3 @@ describe('resolveAllComponents', () => {
     expect(components).toEqual(expectedComponents);
   });
 });
-
-

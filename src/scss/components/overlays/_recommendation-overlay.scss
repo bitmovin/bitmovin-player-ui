@@ -47,15 +47,18 @@
       @include focusable;
 
       position: relative;
-      $padding: .5em;
+      $padding: 0.5em;
       cursor: pointer;
       color: $color-primary;
-      background-color: #222222;
+      background-color: $color-background-menu;
       background-position: center;
       background-size: cover;
       border: solid $color-primary 2px;
-      border-radius: .5rem;
-      box-shadow: 0 0 5px 0 transparentize($color: #000, $amount: .75);
+      border-radius: 0.5rem;
+      box-shadow: 0 0 5px 0 transparentize($color: $color-black, $amount: 0.75);
+      // sass lint mentions 'aspect-ratio' as a misspelled property, but it's valid CSS: https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio.
+      // Therefore we're temporarily disabling that rule for one line.
+      // sass-lint:disable no-misspelled-properties
       aspect-ratio: 16 / 9;
       width: 30%;
       min-width: 10em;
@@ -69,11 +72,12 @@
 
       .#{$prefix}-title-container {
         @include layout-align-top;
+        @include background-gradient(to top);
+
         left: 0;
         height: 50%;
         min-height: fit-content;
         padding: $padding;
-        background: linear-gradient(to top, $color-transparent, $color-background-bars);
 
         .#{$prefix}-title {
           display: inline-block;
@@ -91,9 +95,9 @@
         position: absolute;
         bottom: $padding;
         right: $padding;
-        background-color: $color-background-seekbar-label;
+        background-color: $color-background-text;
         box-sizing: border-box;
-        padding: .3em .5em;
+        padding: 0.3em 0.5em;
         border-radius: $border-radius;
       }
 

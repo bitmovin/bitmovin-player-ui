@@ -2,7 +2,7 @@
 @import '../../mixins';
 
 %opacity-transition {
-  transition:  opacity .25s ease-out;
+  transition: opacity 0.25s ease-out;
 }
 
 %seek-circle {
@@ -22,7 +22,6 @@
   margin: 0;
   opacity: 1;
   position: absolute;
-  text-shadow: $color-shadow-seek-label;
   z-index: 1;
 }
 
@@ -34,6 +33,7 @@
   display: flex;
   justify-content: center;
   text-align: center;
+  transition: background-color $animation-duration;
 
   // sass-lint:disable nesting-depth
   > .#{$prefix}-container-wrapper {

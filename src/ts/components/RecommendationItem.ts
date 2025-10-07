@@ -21,7 +21,6 @@ export interface RecommendationItemConfig extends ComponentConfig {
  * An item of the {@link RecommendationOverlay}.
  */
 export class RecommendationItem extends Component<RecommendationItemConfig> {
-
   private events = {
     onClick: new EventDispatcher<RecommendationItem, NoArgs>(),
   };
@@ -29,11 +28,15 @@ export class RecommendationItem extends Component<RecommendationItemConfig> {
   constructor(config: RecommendationItemConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-recommendation-item',
-      recommendationConfig: null, // this must be passed in from outside
-      tabIndex: 0,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-recommendation-item',
+        recommendationConfig: null, // this must be passed in from outside
+        tabIndex: 0,
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager) {
@@ -58,43 +61,51 @@ export class RecommendationItem extends Component<RecommendationItemConfig> {
     let posterUrl: string | null;
     if (isExternalRecommendationLink(recommendationResource)) {
       tagName = 'a';
-      additionalAttributes = {href: recommendationResource.url};
+      additionalAttributes = { href: recommendationResource.url };
       posterUrl = recommendationResource.thumbnail;
     } else {
       tagName = 'button';
       posterUrl = recommendationResource.poster;
     }
 
-    const itemElement = new DOM(tagName, {
-      'id': this.config.id,
-      'class': this.getCssClasses(),
-      ...additionalAttributes,
-      'tabindex': this.config.tabIndex.toString(),
-    }, this);
+    const itemElement = new DOM(
+      tagName,
+      {
+        id: this.config.id,
+        class: this.getCssClasses(),
+        ...additionalAttributes,
+        tabindex: this.config.tabIndex.toString(),
+      },
+      this,
+    );
 
     if (posterUrl) {
-      itemElement.css({'background-image': `url(${posterUrl})`});
+      itemElement.css({ 'background-image': `url(${posterUrl})` });
     }
 
-    const titleElement = new DOM('div', {
-      'class': this.prefixCss('title-container'),
-    }, this);
+    const titleElement = new DOM(
+      'div',
+      {
+        class: this.prefixCss('title-container'),
+      },
+      this,
+    );
 
-    let innerTitleElement = new Label({text: recommendationConfig.title, cssClass: 'title'});
+    let innerTitleElement = new Label({ text: recommendationConfig.title, cssClass: 'title' });
     titleElement.append(innerTitleElement.getDomElement());
     itemElement.append(titleElement);
 
     if (recommendationConfig.duration != null) {
       let timeElement = new Label({
         text: recommendationConfig.duration ? StringUtils.secondsToTime(recommendationConfig.duration) : '',
-        cssClass: 'duration'
+        cssClass: 'duration',
       });
       itemElement.append(timeElement.getDomElement());
     }
 
     if (!isExternalRecommendationLink(recommendationResource)) {
       // Only add click handler if it's not a link already and we need to load a new source
-      itemElement.on('click', (e) => {
+      itemElement.on('click', e => {
         e.preventDefault();
         e.stopPropagation();
         this.onClickEvent();

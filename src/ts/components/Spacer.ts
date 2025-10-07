@@ -1,4 +1,4 @@
-import {Component, ComponentConfig} from './Component';
+import { Component, ComponentConfig } from './Component';
 
 /**
  * A dummy component that just reserves some space and does nothing else.
@@ -6,15 +6,17 @@ import {Component, ComponentConfig} from './Component';
  * @category Components
  */
 export class Spacer extends Component<ComponentConfig> {
-
   constructor(config: ComponentConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-spacer',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-spacer',
+      },
+      this.config,
+    );
   }
-
 
   protected onShowEvent(): void {
     // disable event firing by overwriting and not calling super

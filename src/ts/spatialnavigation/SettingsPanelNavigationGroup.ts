@@ -22,15 +22,23 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
   private readonly settingsPanel: SettingsPanel<SettingsPanelConfig>;
   private readonly config: SettingsPanelNavigationGroupConfig;
 
-  constructor(settingsPanel: SettingsPanel<SettingsPanelConfig>, config: SettingsPanelNavigationGroupConfig | undefined = undefined) {
+  constructor(
+    settingsPanel: SettingsPanel<SettingsPanelConfig>,
+    config: SettingsPanelNavigationGroupConfig | undefined = undefined,
+  ) {
     const settingsPanelPage = settingsPanel.getRootPage();
     const components = settingsPanelPage.getItems();
 
     super(settingsPanel, ...components);
     this.settingsPanel = settingsPanel;
-    this.config = Object.assign({}, this.config, {
-      closeOnSelect: true,
-    }, config);
+    this.config = Object.assign(
+      {},
+      this.config,
+      {
+        closeOnSelect: true,
+      },
+      config,
+    );
 
     // The SettingsPanel is created and updated dynamically. To keep the navigation working between pages,
     // we need to listen to page changes and reset the active component form the previous page and focus on

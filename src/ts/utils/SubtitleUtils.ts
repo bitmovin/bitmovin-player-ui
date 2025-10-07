@@ -2,9 +2,6 @@ import { ListItem, ListSelector, ListSelectorConfig } from '../components/lists/
 import { UIInstanceManager } from '../UIManager';
 import { PlayerAPI, SubtitleEvent, SubtitleTrack } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
-import { StorageUtils } from './StorageUtils';
-import { prefixCss } from '../components/DummyComponent';
-import { StoredSubtitleLanguage } from '../components/buttons/SubtitleToggleButton';
 
 /**
  * Helper class to handle all subtitle related events
@@ -14,7 +11,6 @@ import { StoredSubtitleLanguage } from '../components/buttons/SubtitleToggleButt
  * @category Utils
  */
 export class SubtitleSwitchHandler {
-
   private static SUBTITLES_OFF_KEY: string = 'null';
 
   private player: PlayerAPI;
@@ -35,14 +31,15 @@ export class SubtitleSwitchHandler {
     this.listElement.onItemSelected.subscribe((_, value: string) => {
       // TODO add support for multiple concurrent subtitle selections
       if (value === SubtitleSwitchHandler.SUBTITLES_OFF_KEY) {
-        const currentSubtitle = this.player.subtitles.list().filter((subtitle) => subtitle.enabled).pop();
+        const currentSubtitle = this.player.subtitles
+          .list()
+          .filter(subtitle => subtitle.enabled)
+          .pop();
         if (currentSubtitle) {
           this.player.subtitles.disable(currentSubtitle.id);
-          SubtitleSwitchHandler.setSubtitleLanguageStorage(this.player);
         }
       } else {
         this.player.subtitles.enable(value, true);
-        SubtitleSwitchHandler.setSubtitleLanguageStorage(this.player, value);
       }
     });
   }
@@ -57,22 +54,6 @@ export class SubtitleSwitchHandler {
     // Update subtitles when the period within a source changes
     this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, this.refreshSubtitles);
     this.uimanager.getConfig().events.onUpdated.subscribe(this.refreshSubtitles);
-  }
-
-  /**
-   * @param subtitleID (optional) If set, the according stored subtitle language will be set to active; If not set, the stored stored subtitle language will be set to inactive
-   */
-  public static setSubtitleLanguageStorage = (player: PlayerAPI, subtitleID?: string) => {
-    const prefixCssId = prefixCss('subtitlelanguage');
-    let subtitleLanguageSettings: StoredSubtitleLanguage;
-    if (subtitleID) {
-      const lang = player.subtitles.list().find(subtitle => subtitle.id === subtitleID).lang;
-      subtitleLanguageSettings = {language: lang, active: true};
-    } else {
-      const currentStoredSubtitle: StoredSubtitleLanguage = StorageUtils.getObject(prefixCssId);
-      subtitleLanguageSettings = {language: currentStoredSubtitle.language, active: false};
-    }
-    StorageUtils.setObject(prefixCssId, subtitleLanguageSettings);
   }
 
   private addSubtitle = (event: SubtitleEvent) => {
@@ -97,13 +78,16 @@ export class SubtitleSwitchHandler {
       return;
     }
 
-    let currentSubtitle = this.player.subtitles.list().filter((subtitle) => subtitle.enabled).pop();
+    let currentSubtitle = this.player.subtitles
+      .list()
+      .filter(subtitle => subtitle.enabled)
+      .pop();
     this.listElement.selectItem(currentSubtitle ? currentSubtitle.id : SubtitleSwitchHandler.SUBTITLES_OFF_KEY);
   };
 
   private clearSubtitles = () => {
     this.listElement.clearItems();
-  }
+  };
 
   private refreshSubtitles = () => {
     if (!this.player.subtitles) {
@@ -121,9 +105,7 @@ export class SubtitleSwitchHandler {
       return { key: subtitle.id, label: subtitle.label };
     };
 
-    this.listElement.synchronizeItems([
-      offListItem, ...subtitles.map(subtitleToListItem),
-    ]);
+    this.listElement.synchronizeItems([offListItem, ...subtitles.map(subtitleToListItem)]);
     this.selectCurrentSubtitle();
   };
 }

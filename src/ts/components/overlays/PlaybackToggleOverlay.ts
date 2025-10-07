@@ -1,5 +1,5 @@
-import {Container, ContainerConfig} from '../Container';
-import {HugePlaybackToggleButton} from '../buttons/HugePlaybackToggleButton';
+import { Container, ContainerConfig } from '../Container';
+import { HugePlaybackToggleButton } from '../buttons/HugePlaybackToggleButton';
 
 /**
  * @category Configs
@@ -19,7 +19,6 @@ export interface PlaybackToggleOverlayConfig extends ContainerConfig {
  * @category Components
  */
 export class PlaybackToggleOverlay extends Container<PlaybackToggleOverlayConfig> {
-
   private playbackToggleButton: HugePlaybackToggleButton;
 
   constructor(config: PlaybackToggleOverlayConfig = {}) {
@@ -29,9 +28,13 @@ export class PlaybackToggleOverlay extends Container<PlaybackToggleOverlayConfig
       enterFullscreenOnInitialPlayback: Boolean(config.enterFullscreenOnInitialPlayback),
     });
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-playbacktoggle-overlay',
-      components: [this.playbackToggleButton],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-playbacktoggle-overlay',
+        components: [this.playbackToggleButton],
+      },
+      this.config,
+    );
   }
 }

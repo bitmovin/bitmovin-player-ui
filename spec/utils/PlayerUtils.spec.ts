@@ -21,11 +21,11 @@ describe('PlayerUtils', () => {
     });
 
     test.each`
-    timeshift | maxTimeshift  | currentTime   | expectedStart  | expectedEnd
-    ${0}      | ${-260}       | ${1594646367} | ${1594646107}  | ${1594646367}
-    ${-25}    | ${-260}       | ${1594646367} | ${1594646132}  | ${1594646392}
-    ${-60}    | ${-260}       | ${1594646367} | ${1594646167}  | ${1594646427}
-  `(
+      timeshift | maxTimeshift | currentTime   | expectedStart | expectedEnd
+      ${0}      | ${-260}      | ${1594646367} | ${1594646107} | ${1594646367}
+      ${-25}    | ${-260}      | ${1594646367} | ${1594646132} | ${1594646392}
+      ${-60}    | ${-260}      | ${1594646367} | ${1594646167} | ${1594646427}
+    `(
       'should calculate start=$expectedStart and end=$expectedEnd seekable range',
       ({ timeshift, maxTimeshift, currentTime, expectedStart, expectedEnd }) => {
         jest.spyOn(playerMock, 'isLive').mockReturnValue(true);

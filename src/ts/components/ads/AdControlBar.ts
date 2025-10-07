@@ -5,13 +5,12 @@ import { UIInstanceManager } from '../../UIManager';
 import { i18n } from '../../localization/i18n';
 import { SeekBar } from '../seekbar/SeekBar';
 
-
 export interface AdControlBarConfig extends ControlBarConfig {}
 
 /**
  * Contains player control components displayed during ad playback,
  * e.g., play toggle button, seek bar, volume control, fullscreen toggle button.
- * 
+ *
  * Usage: Pass one or more {@link Container} components via the `components` array.
  * - Containers containing a {@link SeekBar} (directly or nested) are always shown.
  * - Other containers are hidden/shown when controls hide.
@@ -50,12 +49,16 @@ export class AdControlBar extends ControlBar {
   constructor(config: AdControlBarConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ad-controlbar'],
-      hidden: false,
-      role: 'region',
-      ariaLabel: i18n.getLocalizer('controlBar'),
-    }, <ControlBarConfig>this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ad-controlbar'],
+        hidden: false,
+        role: 'region',
+        ariaLabel: i18n.getLocalizer('controlBar'),
+      },
+      <ControlBarConfig>this.config,
+    );
 
     // Classify containers based on whether they contain SeekBar
     this.config.components.forEach(component => {
@@ -95,19 +98,19 @@ export class AdControlBar extends ControlBar {
 
   private containsSeekBar(container: Container<ContainerConfig>): boolean {
     const components = container.getComponents();
-    
+
     for (const component of components) {
       if (component instanceof SeekBar) {
         return true;
       }
-      
+
       if (component instanceof Container) {
         if (this.containsSeekBar(component)) {
           return true;
         }
       }
     }
-    
+
     return false;
   }
 }

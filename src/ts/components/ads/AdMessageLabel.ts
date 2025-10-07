@@ -1,4 +1,4 @@
-import {UIInstanceManager} from '../../UIManager';
+import { UIInstanceManager } from '../../UIManager';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
 import { Label, LabelConfig } from '../labels/Label';
 
@@ -11,9 +11,13 @@ export class AdMessageLabel extends Label<LabelConfig> {
   constructor(config: LabelConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-ad-message-label',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-ad-message-label',
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -29,7 +33,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
     player.on(player.exports.PlayerEvent.AdError, clearText);
     player.on(player.exports.PlayerEvent.AdSkipped, clearText);
     player.on(player.exports.PlayerEvent.AdFinished, clearText);
-    player.on(player.exports.PlayerEvent.AdStarted, (event) => {
+    player.on(player.exports.PlayerEvent.AdStarted, event => {
       const ad = (event as AdEvent).ad;
       if (!ad.isLinear) {
         return;

@@ -1,6 +1,6 @@
-import {ButtonConfig, Button} from './Button';
-import {UIInstanceManager} from '../../UIManager';
-import {Component, ComponentConfig} from '../Component';
+import { ButtonConfig, Button } from './Button';
+import { UIInstanceManager } from '../../UIManager';
+import { Component, ComponentConfig } from '../Component';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -22,14 +22,17 @@ export interface CloseButtonConfig extends ButtonConfig {
  * @category Buttons
  */
 export class CloseButton extends Button<CloseButtonConfig> {
-
   constructor(config: CloseButtonConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-closebutton',
-      text: i18n.getLocalizer('close'),
-    } as CloseButtonConfig, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-closebutton',
+        text: i18n.getLocalizer('close'),
+      } as CloseButtonConfig,
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

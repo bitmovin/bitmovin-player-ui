@@ -46,10 +46,11 @@ export class SettingsPanelPageNavigatorButton extends Button<SettingsPanelPageNa
   constructor(config: SettingsPanelPageNavigatorConfig) {
     super(config);
     this.config = this.mergeConfig(
-      config, {
+      config,
+      {
         buttonStyle: ButtonStyle.Text,
       },
-      this.config
+      this.config,
     );
 
     this.container = (this.config as SettingsPanelPageNavigatorConfig).container;

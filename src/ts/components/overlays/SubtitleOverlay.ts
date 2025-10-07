@@ -24,7 +24,6 @@ interface SubtitleCropDetectionResult {
  * @category Components
  */
 export class SubtitleOverlay extends Container<ContainerConfig> {
-
   private subtitleManager: ActiveSubtitleManager;
   private previewSubtitleActive: boolean;
   private previewSubtitle: SubtitleLabel;
@@ -55,9 +54,13 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.previewSubtitleActive = false;
     this.previewSubtitle = new SubtitleLabel({ text: i18n.getLocalizer('subtitle.example') });
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitle-overlay',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-subtitle-overlay',
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -175,9 +178,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.CEA608_COLUMN_OFFSET = 100 / this.CEA608_NUM_COLUMNS;
   }
 
-  detectCroppedSubtitleLabel(
-    labelElement: HTMLElement,
-  ): SubtitleCropDetectionResult {
+  detectCroppedSubtitleLabel(labelElement: HTMLElement): SubtitleCropDetectionResult {
     const parent = this.getDomElement().get(0);
 
     const childRect = labelElement.getBoundingClientRect();
@@ -193,9 +194,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   handleSubtitleCropping(label: SubtitleLabel) {
     const labelDomElement = label.getDomElement();
-    const cropDetection = this.detectCroppedSubtitleLabel(
-      labelDomElement.get(0),
-    );
+    const cropDetection = this.detectCroppedSubtitleLabel(labelDomElement.get(0));
 
     if (cropDetection.top) {
       labelDomElement.css('top', '0');
@@ -257,17 +256,17 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     return label;
   }
 
-  filterFontSizeOptions: ListItemFilter = (listItem) => {
+  filterFontSizeOptions: ListItemFilter = listItem => {
     if (this.cea608Enabled && listItem.key !== null) {
       const percent = parseInt(listItem.key, 10);
       return !isNaN(percent) && percent <= 200;
     }
 
-    return true
+    return true;
   };
 
   resolveFontSizeFactor(value: string): number {
-    return parseInt(value) / 100;;
+    return parseInt(value) / 100;
   }
 
   updateRegionRowPosition(r: SubtitleRegionContainer): void {
@@ -296,7 +295,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     rowClassList.replace(currentClass, newClass);
   }
 
-
   configureCea608Captions(player: PlayerAPI, uimanager: UIInstanceManager): void {
     // The calculated font size
     let fontSize = 0;
@@ -306,7 +304,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     let fontSizeCalculationRequired = true;
     // Flag telling if the CEA-608 mode is enabled
     this.cea608Enabled = false;
-
 
     const settingsManager = uimanager.getSubtitleSettingsManager();
     const fontSizeFactorSettings = this.resolveFontSizeFactor(settingsManager.fontSize.value);
@@ -330,7 +327,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         // accurate measurement even though the returned size is an integer value
         'font-size': '200px',
         'line-height': '200px',
-        'visibility': 'hidden',
+        visibility: 'hidden',
       });
       this.addComponent(dummyLabel);
       this.updateComponents();
@@ -338,7 +335,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       const dummyLabelCharWidth = dummyLabel.getDomElement().width() * this.FONT_SIZE_FACTOR;
       const dummyLabelCharHeight = dummyLabel.getDomElement().height() * this.FONT_SIZE_FACTOR;
-      const fontSizeRatio = (dummyLabelCharWidth / dummyLabelCharHeight);
+      const fontSizeRatio = dummyLabelCharWidth / dummyLabelCharHeight;
 
       this.removeComponent(dummyLabel);
       this.updateComponents();
@@ -356,8 +353,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       const subtitleOverlayHeight = overlayElement.height();
 
       // The size ratio of the letter grid
-      const fontGridSizeRatio = (dummyLabelCharWidth * this.CEA608_NUM_COLUMNS) /
-        (dummyLabelCharHeight * this.CEA608_NUM_ROWS);
+      const fontGridSizeRatio =
+        (dummyLabelCharWidth * this.CEA608_NUM_COLUMNS) / (dummyLabelCharHeight * this.CEA608_NUM_ROWS);
       // The size ratio of the available space for the grid
       const subtitleOverlaySizeRatio = subtitleOverlayWidth / subtitleOverlayHeight;
 
@@ -390,29 +387,29 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       });
 
       // Update the CSS custom property on the overlay DOM element
-      overlayElement.get().forEach((el) => {
-        el.style.setProperty("--cea608-row-height", `${newRowHeight}px`);
+      overlayElement.get().forEach(el => {
+        el.style.setProperty('--cea608-row-height', `${newRowHeight}px`);
       });
 
       // Update font-size of all active subtitle labels
       const updateLabel = (label: SubtitleLabel) => {
-        const isLargerFontSize = this.FONT_SIZE_FACTOR > 1
+        const isLargerFontSize = this.FONT_SIZE_FACTOR > 1;
         label.getDomElement().css({
           'font-size': `${fontSize}px`,
           'line-height': `${fontSize}px`,
           'letter-spacing': `${isLargerFontSize ? 0 : fontLetterSpacing}px`,
           'white-space': `${isLargerFontSize ? 'nowrap' : 'normal'}`,
-          'left': isLargerFontSize && '0%',
+          left: isLargerFontSize && '0%',
         });
 
         label.regionStyle = `line-height: ${fontSize}px;`;
-      }
+      };
 
       for (let label of this.getComponents()) {
         if (label instanceof SubtitleRegionContainer) {
           label.getComponents().forEach((l: SubtitleLabel) => {
             updateLabel(l);
-          })
+          });
         }
 
         if (label instanceof SubtitleLabel) {
@@ -452,9 +449,9 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       // We disable the grid and wrapping in case enlarged font size is used to prevent
       // line and characters overflows
-      const isLargerFontSize = this.FONT_SIZE_FACTOR > 1
+      const isLargerFontSize = this.FONT_SIZE_FACTOR > 1;
       label.getDomElement().css({
-        'left': `${isLargerFontSize ? 0 : event.position.column * this.CEA608_COLUMN_OFFSET}%`,
+        left: `${isLargerFontSize ? 0 : event.position.column * this.CEA608_COLUMN_OFFSET}%`,
         'font-size': `${fontSize}px`,
         'letter-spacing': `${isLargerFontSize ? 0 : fontLetterSpacing}px`,
         'white-space': `${isLargerFontSize ? 'nowrap' : 'normal'}`,
@@ -516,13 +513,16 @@ interface SubtitleLabelConfig extends LabelConfig {
 }
 
 export class SubtitleLabel extends Label<SubtitleLabelConfig> {
-
   constructor(config: SubtitleLabelConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-subtitle-label',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-subtitle-label',
+      },
+      this.config,
+    );
   }
 
   get vtt(): VTTProperties {
@@ -551,7 +551,6 @@ export class SubtitleLabel extends Label<SubtitleLabelConfig> {
 }
 
 class ActiveSubtitleManager {
-
   private activeSubtitleCueMap: ActiveSubtitleCueMap;
   private activeSubtitleCueCount: number;
 
@@ -665,7 +664,7 @@ class ActiveSubtitleManager {
     let id = ActiveSubtitleManager.calculateId(event);
     let activeSubtitleCues = this.activeSubtitleCueMap[id];
     if (activeSubtitleCues && activeSubtitleCues.length > 0) {
-      return activeSubtitleCues.map((cue) => cue.label);
+      return activeSubtitleCues.map(cue => cue.label);
     }
   }
 
@@ -715,7 +714,7 @@ export class SubtitleRegionContainerManager {
     this.subtitleOverlay = subtitleOverlay;
   }
 
-  private getRegion(label: SubtitleLabel): { regionContainerId: string, regionName: string } {
+  private getRegion(label: SubtitleLabel): { regionContainerId: string; regionName: string } {
     if (label.vtt) {
       return {
         regionContainerId: label.vtt.region && label.vtt.region.id ? label.vtt.region.id : 'vtt',
@@ -816,9 +815,13 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
   constructor(config: ContainerConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'subtitle-region-container',
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'subtitle-region-container',
+      },
+      this.config,
+    );
   }
 
   addLabel(labelToAdd: SubtitleLabel, overlaySize?: Size) {

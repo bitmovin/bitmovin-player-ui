@@ -1,6 +1,6 @@
-import {ToggleButton, ToggleButtonConfig} from './ToggleButton';
-import {UIInstanceManager} from '../../UIManager';
-import {PlayerUtils} from '../../utils/PlayerUtils';
+import { ToggleButton, ToggleButtonConfig } from './ToggleButton';
+import { UIInstanceManager } from '../../UIManager';
+import { PlayerUtils } from '../../utils/PlayerUtils';
 import { PlayerAPI, WarningEvent } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -22,19 +22,22 @@ export interface PlaybackToggleButtonConfig extends ToggleButtonConfig {
  * @category Buttons
  */
 export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfig> {
-
   private static readonly CLASS_STOPTOGGLE = 'stoptoggle';
   protected isPlayInitiated: boolean;
 
   constructor(config: PlaybackToggleButtonConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-playbacktogglebutton',
-      text: i18n.getLocalizer('play'),
-      onAriaLabel: i18n.getLocalizer('pause'),
-      offAriaLabel: i18n.getLocalizer('play'),
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-playbacktogglebutton',
+        text: i18n.getLocalizer('play'),
+        onAriaLabel: i18n.getLocalizer('pause'),
+        offAriaLabel: i18n.getLocalizer('play'),
+      },
+      this.config,
+    );
 
     this.isPlayInitiated = false;
   }
@@ -66,18 +69,18 @@ export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfi
     };
 
     // Call handler upon these events
-    player.on(player.exports.PlayerEvent.Play, (e) => {
+    player.on(player.exports.PlayerEvent.Play, e => {
       this.isPlayInitiated = true;
       firstPlay = false;
       playbackStateHandler();
     });
 
-    player.on(player.exports.PlayerEvent.Paused, (e) => {
+    player.on(player.exports.PlayerEvent.Paused, e => {
       this.isPlayInitiated = false;
       playbackStateHandler();
     });
 
-    player.on(player.exports.PlayerEvent.Playing, (e) => {
+    player.on(player.exports.PlayerEvent.Playing, e => {
       this.isPlayInitiated = false;
       playbackStateHandler();
     });

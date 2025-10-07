@@ -29,7 +29,10 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       cssClass: 'ui-label-savedEnergy',
     });
 
-    this.ecoModeToggleButtonItem = new SettingsPanelItem({ label: labelEcoMode, settingComponent: ecoModeToggleButton });
+    this.ecoModeToggleButtonItem = new SettingsPanelItem({
+      label: labelEcoMode,
+      settingComponent: ecoModeToggleButton,
+    });
     this.ecoModeSavedEmissionsItem = new SettingsPanelItem({
       label: 'Saved Emissions',
       settingComponent: this.emissionsSavedLabel,

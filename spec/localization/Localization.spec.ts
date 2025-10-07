@@ -8,17 +8,17 @@ const successIt = 'successo';
 const defaultConfig = {
   language: 'en',
   vocabularies: {
-    'it': {
-      'test': successIt,
+    it: {
+      test: successIt,
       [fallbackTest]: successIt,
     },
-    'en': {
-      'test': successEn,
+    en: {
+      test: successEn,
       [fallbackTest]: successEn,
-      'variableTest': `{value}`,
+      variableTest: `{value}`,
     },
-    'de': {
-      'test': successDe,
+    de: {
+      test: successDe,
     },
   },
 };
@@ -29,22 +29,22 @@ describe('Localization', () => {
   });
 
   describe('Locale initialiization', () => {
-    it('uses vocabulary \'en\'', () => {
+    it("uses vocabulary 'en'", () => {
       expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successEn);
     });
 
-    it('uses vocabulary \'de\'', () => {
+    it("uses vocabulary 'de'", () => {
       i18n.setConfig({ ...defaultConfig, language: 'de' });
       expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successDe);
     });
 
-    it('uses vocabulary \'it\'', () => {
+    it("uses vocabulary 'it'", () => {
       i18n.setConfig({ ...defaultConfig, language: 'it' });
       expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successIt);
     });
   });
 
-  describe('Language Fallback\'s', () => {
+  describe("Language Fallback's", () => {
     it('falls back to `key` if it is not in vocabulary', () => {
       expect(i18n.performLocalization(i18n.getLocalizer('some word'))).toEqual('some word');
     });
@@ -56,7 +56,7 @@ describe('Localization', () => {
   });
 
   describe('Variable Injection', () => {
-    it ('injects the value to string passed by config', () => {
+    it('injects the value to string passed by config', () => {
       expect(i18n.performLocalization(i18n.getLocalizer('variableTest', { value: 1 }))).toEqual('1');
     });
   });

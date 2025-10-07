@@ -1,12 +1,12 @@
-import {ContainerConfig, Container} from './Container';
-import {UIInstanceManager} from '../UIManager';
-import {UIUtils} from '../utils/UIUtils';
-import {Spacer} from './Spacer';
+import { ContainerConfig, Container } from './Container';
+import { UIInstanceManager } from '../UIManager';
+import { UIUtils } from '../utils/UIUtils';
+import { Spacer } from './Spacer';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { BrowserUtils } from '../utils/BrowserUtils';
-import {Component, ComponentConfig} from './Component';
-import {SettingsPanel} from './settings/SettingsPanel';
+import { Component, ComponentConfig } from './Component';
+import { SettingsPanel } from './settings/SettingsPanel';
 
 /**
  * Configuration interface for the {@link ControlBar}.
@@ -27,12 +27,16 @@ export class ControlBar extends Container<ControlBarConfig> {
   constructor(config: ControlBarConfig) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-controlbar',
-      hidden: true,
-      role: 'region',
-      ariaLabel: i18n.getLocalizer('controlBar'),
-    }, <ControlBarConfig>this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-controlbar',
+        hidden: true,
+        role: 'region',
+        ariaLabel: i18n.getLocalizer('controlBar'),
+      },
+      <ControlBarConfig>this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -48,7 +52,7 @@ export class ControlBar extends Container<ControlBarConfig> {
     // Instead, it will stay visible until another manual interaction is performed.
     if (uimanager.getConfig().disableAutoHideWhenHovered && !BrowserUtils.isTouchSupported) {
       // Track hover status of child components
-      UIUtils.traverseTree(this, (component) => {
+      UIUtils.traverseTree(this, component => {
         // Do not track hover status of child containers or spacers, only of 'real' controls
         if (component instanceof Container || component instanceof Spacer) {
           return;
@@ -85,7 +89,7 @@ export class ControlBar extends Container<ControlBarConfig> {
 
     uimanager.onPreviewControlsHide.subscribe((sender, args) => {
       // Cancel the hide event if hovered child components block hiding or if the settings panel is active on mobile.
-      args.cancel = args.cancel || (hoverStackCount > 0 || isSettingsPanelShown);
+      args.cancel = args.cancel || hoverStackCount > 0 || isSettingsPanelShown;
     });
 
     uimanager.onControlsHide.subscribe(() => {

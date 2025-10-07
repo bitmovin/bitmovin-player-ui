@@ -6,15 +6,13 @@
 
   @include hidden-animated-focusable;
   @include layout-align-bottom;
+  @include background-gradient(to bottom);
 
-  background: linear-gradient(to bottom, $color-transparent, $color-background-bars);
   box-sizing: border-box;
 
   $controlbar-padding: 1em;
-  padding: $controlbar-padding
-    max($controlbar-padding, env(safe-area-inset-right, 0))
-    max($controlbar-padding, env(safe-area-inset-bottom, 0))
-    max($controlbar-padding, env(safe-area-inset-left, 0));
+  padding: $controlbar-padding max($controlbar-padding, env(safe-area-inset-right, 0))
+    max($controlbar-padding, env(safe-area-inset-bottom, 0)) max($controlbar-padding, env(safe-area-inset-left, 0));
 
   .#{$prefix}-container-wrapper {
     display: flex;
@@ -26,7 +24,7 @@
     > .#{$prefix}-container-wrapper {
       display: flex;
       flex-direction: row;
-      column-gap: .3rem;
+      column-gap: 0.3rem;
       align-items: center;
     }
   }
@@ -34,18 +32,18 @@
   .#{$prefix}-controlbar-top {
     > .#{$prefix}-container-wrapper {
       column-gap: $font-size;
-      margin: 0 .5em;
+      margin: 0 0.5em;
     }
   }
 
   .#{$prefix}-controlbar-bottom {
     // We can't use the row-gap property here because the AdControlBar collapses certain elements which
     // would result in additional margins.
-    margin-top: .5em;
+    margin-top: 0.5em;
 
     > .#{$prefix}-container-wrapper {
       .#{$prefix}-ui-volumeslider {
-        margin: auto .5em;
+        margin: auto 0.5em;
         width: 8rem;
       }
     }

@@ -11,7 +11,6 @@ import { i18n } from '../localization/i18n';
  * @category Utils
  */
 export class AudioTrackSwitchHandler {
-
   private player: PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
   private uimanager: UIInstanceManager;

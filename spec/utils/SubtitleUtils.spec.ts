@@ -24,20 +24,18 @@ describe('SubtitleUtils', () => {
   beforeEach(() => {
     listSelectorMock = new ListSelectorMockClass();
 
-    playerMock.subtitles.list = jest.fn().mockReturnValue(
-      [
-        {
-          id: 's-1',
-          label: 'S1',
-          enabled: true,
-        },
-        {
-          id: 's-2',
-          label: 'S2',
-          enabled: false,
-        },
-      ]
-    );
+    playerMock.subtitles.list = jest.fn().mockReturnValue([
+      {
+        id: 's-1',
+        label: 'S1',
+        enabled: true,
+      },
+      {
+        id: 's-2',
+        label: 'S2',
+        enabled: false,
+      },
+    ]);
 
     subtitleSwitchHandler = new SubtitleSwitchHandler(playerMock, listSelectorMock, uiManagerMock);
   });
@@ -80,18 +78,16 @@ describe('SubtitleUtils', () => {
         },
       ]);
 
-      playerMock.subtitles.list = jest.fn().mockReturnValue(
-        [
-          {
-            id: 's-1',
-            label: 'S1',
-          },
-          {
-            id: 's-3',
-            label: 'S3',
-          },
-        ]
-      );
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        {
+          id: 's-1',
+          label: 'S1',
+        },
+        {
+          id: 's-3',
+          label: 'S3',
+        },
+      ]);
       playerMock.eventEmitter.firePeriodSwitchedEvent();
 
       expect(listSelectorMock.synchronizeItems).toHaveBeenCalled();
@@ -104,39 +100,35 @@ describe('SubtitleUtils', () => {
     });
 
     it('on subtitleEnabled event', () => {
-      playerMock.subtitles.list = jest.fn().mockReturnValue(
-        [
-          {
-            id: 's-1',
-            label: 'S1',
-            enabled: false,
-          },
-          {
-            id: 's-3',
-            label: 'S3',
-            enabled: true,
-          },
-        ]
-      );
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        {
+          id: 's-1',
+          label: 'S1',
+          enabled: false,
+        },
+        {
+          id: 's-3',
+          label: 'S3',
+          enabled: true,
+        },
+      ]);
       playerMock.eventEmitter.fireSubtitleEnabled();
       expect(listSelectorMock.selectItem).toHaveBeenCalledWith('s-3');
     });
 
     it('on SubtitleDisabled event', () => {
-      playerMock.subtitles.list = jest.fn().mockReturnValue(
-        [
-          {
-            id: 's-1',
-            label: 'S1',
-            enabled: false,
-          },
-          {
-            id: 's-3',
-            label: 'S3',
-            enabled: false,
-          },
-        ]
-      );
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        {
+          id: 's-1',
+          label: 'S1',
+          enabled: false,
+        },
+        {
+          id: 's-3',
+          label: 'S3',
+          enabled: false,
+        },
+      ]);
       playerMock.eventEmitter.fireSubtitleDisabled();
       expect(listSelectorMock.selectItem).toHaveBeenCalledWith('null');
     });

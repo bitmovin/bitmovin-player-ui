@@ -1,8 +1,8 @@
-import {LabelConfig, Label} from './Label';
-import {UIInstanceManager} from '../../UIManager';
+import { LabelConfig, Label } from './Label';
+import { UIInstanceManager } from '../../UIManager';
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
-import {PlayerUtils} from '../../utils/PlayerUtils';
-import {StringUtils} from '../../utils/StringUtils';
+import { PlayerUtils } from '../../utils/PlayerUtils';
+import { StringUtils } from '../../utils/StringUtils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -48,17 +48,20 @@ export interface PlaybackTimeLabelConfig extends LabelConfig {
  * @category Labels
  */
 export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
-
   private timeFormat: string;
 
   constructor(config: PlaybackTimeLabelConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, <PlaybackTimeLabelConfig>{
-      cssClass: 'ui-playbacktimelabel',
-      timeLabelMode: PlaybackTimeLabelMode.CurrentAndTotalTime,
-      hideInLivePlayback: false,
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      <PlaybackTimeLabelConfig>{
+        cssClass: 'ui-playbacktimelabel',
+        timeLabelMode: PlaybackTimeLabelMode.CurrentAndTotalTime,
+        hideInLivePlayback: false,
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -116,9 +119,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
     let playbackTimeHandler = () => {
       if (!live && player.getDuration() !== Infinity) {
-        this.setTime(
-          PlayerUtils.getCurrentTimeRelativeToSeekableRange(player),
-          player.getDuration());
+        this.setTime(PlayerUtils.getCurrentTimeRelativeToSeekableRange(player), player.getDuration());
       }
 
       // To avoid 'jumping' in the UI by varying label sizes due to non-monospaced fonts,
@@ -134,8 +135,10 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
     let updateTimeFormatBasedOnDuration = () => {
       // Set time format depending on source duration
-      this.timeFormat = Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600 ?
-      StringUtils.FORMAT_HHMMSS : StringUtils.FORMAT_MMSS;
+      this.timeFormat =
+        Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600
+          ? StringUtils.FORMAT_HHMMSS
+          : StringUtils.FORMAT_MMSS;
       playbackTimeHandler();
     };
 

@@ -33,7 +33,6 @@ export interface HTMLElementWithComponent extends HTMLElement {
  * Built with the help of: http://youmightnotneedjquery.com/
  */
 export class DOM {
-
   private document: Document;
 
   /**
@@ -48,7 +47,7 @@ export class DOM {
    * @param attributes a list of attributes of the element
    * @param component the {@link Component} the DOM element is associated with
    */
-  constructor(tagName: string, attributes: {[name: string]: string}, component?: Component<ComponentConfig>);
+  constructor(tagName: string, attributes: { [name: string]: string }, component?: Component<ComponentConfig>);
   /**
    * Selects all elements from the DOM that match the specified selector.
    * @param selector the selector to match DOM elements with
@@ -70,9 +69,9 @@ export class DOM {
    */
   constructor(document: Document);
   constructor(
-      something: string | HTMLElement | HTMLElement[] | Document,
-      attributes?: {[name: string]: string},
-      component?: Component<ComponentConfig>,
+    something: string | HTMLElement | HTMLElement[] | Document,
+    attributes?: { [name: string]: string },
+    component?: Component<ComponentConfig>,
   ) {
     this.document = document; // Set the global document to the local document field
 
@@ -81,18 +80,15 @@ export class DOM {
         let elements = something as HTMLElementWithComponent[];
         this.elements = elements;
       }
-    }
-    else if (something instanceof HTMLElement) {
+    } else if (something instanceof HTMLElement) {
       let element = something as HTMLElementWithComponent;
       this.elements = [element];
-    }
-    else if (something instanceof Document) {
+    } else if (something instanceof Document) {
       // When a document is passed in, we do not do anything with it, but by setting this.elements to null
       // we give the event handling method a means to detect if the events should be registered on the document
       // instead of elements.
       this.elements = null;
-    }
-    else if (attributes) {
+    } else if (attributes) {
       let tagName = something;
       let element = document.createElement(tagName) as HTMLElementWithComponent;
 
@@ -108,8 +104,7 @@ export class DOM {
       }
 
       this.elements = [element];
-    }
-    else {
+    } else {
       let selector = something;
       this.elements = this.findChildElements(selector) as HTMLElementWithComponent[];
     }
@@ -154,7 +149,7 @@ export class DOM {
     if (!this.elements) {
       return;
     }
-    this.elements.forEach((element) => {
+    this.elements.forEach(element => {
       handler(element);
     });
   }
@@ -171,11 +166,10 @@ export class DOM {
     let allChildElements = <HTMLElement[]>[];
 
     if (this.elements) {
-      this.forEach((element) => {
+      this.forEach(element => {
         allChildElements = allChildElements.concat(this.findChildElementsOfElement(element, selector));
       });
-    }
-    else {
+    } else {
       return this.findChildElementsOfElement(document, selector);
     }
 
@@ -196,7 +190,9 @@ export class DOM {
    * Focuses to the first input element
    */
   focusToFirstInput() {
-    const inputElements = this.findChildElements('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const inputElements = this.findChildElements(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
 
     if (inputElements.length > 0) {
       inputElements[0].focus();
@@ -222,8 +218,7 @@ export class DOM {
   html(content?: string): string | DOM {
     if (arguments.length > 0) {
       return this.setHtml(content);
-    }
-    else {
+    } else {
       return this.getHtml();
     }
   }
@@ -238,7 +233,7 @@ export class DOM {
       content = '';
     }
 
-    this.forEach((element) => {
+    this.forEach(element => {
       element.innerHTML = content;
     });
 
@@ -250,7 +245,7 @@ export class DOM {
    * @returns {DOM}
    */
   empty(): DOM {
-    this.forEach((element) => {
+    this.forEach(element => {
       element.innerHTML = '';
     });
     return this;
@@ -266,8 +261,7 @@ export class DOM {
 
     if (element instanceof HTMLSelectElement || element instanceof HTMLInputElement) {
       return element.value;
-    }
-    else {
+    } else {
       // TODO add support for missing form elements
       throw new Error(`val() not supported for ${typeof element}`);
     }
@@ -287,8 +281,7 @@ export class DOM {
   attr(attribute: string, value?: string): string | null | DOM {
     if (arguments.length > 1) {
       return this.setAttr(attribute, value);
-    }
-    else {
+    } else {
       return this.getAttr(attribute);
     }
   }
@@ -298,7 +291,7 @@ export class DOM {
    * @param attribute
    */
   removeAttr(attribute: string) {
-    this.forEach((element) => {
+    this.forEach(element => {
       element.removeAttribute(attribute);
     });
   }
@@ -308,7 +301,7 @@ export class DOM {
   }
 
   private setAttr(attribute: string, value: string): DOM {
-    this.forEach((element) => {
+    this.forEach(element => {
       element.setAttribute(attribute, value);
     });
     return this;
@@ -328,8 +321,7 @@ export class DOM {
   data(dataAttribute: string, value?: string): string | null | DOM {
     if (arguments.length > 1) {
       return this.setData(dataAttribute, value);
-    }
-    else {
+    } else {
       return this.getData(dataAttribute);
     }
   }
@@ -339,7 +331,7 @@ export class DOM {
   }
 
   private setData(dataAttribute: string, value: string): DOM {
-    this.forEach((element) => {
+    this.forEach(element => {
       element.setAttribute('data-' + dataAttribute, value);
     });
     return this;
@@ -351,8 +343,8 @@ export class DOM {
    * @returns {DOM}
    */
   append(...childElements: DOM[]): DOM {
-    this.forEach((element) => {
-      childElements.forEach((childElement) => {
+    this.forEach(element => {
+      childElements.forEach(childElement => {
         childElement.elements.forEach((_, index) => {
           element.appendChild(childElement.elements[index]);
         });
@@ -367,8 +359,8 @@ export class DOM {
    * @returns {DOM}
    */
   prepend(...childElements: DOM[]): DOM {
-    this.forEach((element) => {
-      childElements.forEach((childElement) => {
+    this.forEach(element => {
+      childElements.forEach(childElement => {
         childElement.elements.forEach((_, index) => {
           element.insertBefore(childElement.elements[index], element.firstChild);
         });
@@ -381,7 +373,7 @@ export class DOM {
    * Removes all elements from the DOM.
    */
   remove(): void {
-    this.forEach((element) => {
+    this.forEach(element => {
       let parent = element.parentNode;
       if (parent) {
         parent.removeChild(element);
@@ -450,15 +442,18 @@ export class DOM {
    * @param options the options for this event handler
    * @returns {DOM}
    */
-  on(eventName: string, eventHandler: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): DOM {
+  on(
+    eventName: string,
+    eventHandler: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): DOM {
     let events = eventName.split(' ');
 
-    events.forEach((event) => {
+    events.forEach(event => {
       if (this.elements == null) {
         this.document.addEventListener(event, eventHandler, options);
-      }
-      else {
-        this.forEach((element) => {
+      } else {
+        this.forEach(element => {
           element.addEventListener(event, eventHandler, options);
         });
       }
@@ -474,15 +469,18 @@ export class DOM {
    * @param options the options for this event handler
    * @returns {DOM}
    */
-  off(eventName: string, eventHandler: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): DOM {
+  off(
+    eventName: string,
+    eventHandler: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): DOM {
     let events = eventName.split(' ');
 
-    events.forEach((event) => {
+    events.forEach(event => {
       if (this.elements == null) {
         this.document.removeEventListener(event, eventHandler, options);
-      }
-      else {
-        this.forEach((element) => {
+      } else {
+        this.forEach(element => {
           element.removeEventListener(event, eventHandler, options);
         });
       }
@@ -497,16 +495,14 @@ export class DOM {
    * @returns {DOM}
    */
   addClass(className: string): DOM {
-    this.forEach((element) => {
+    this.forEach(element => {
       if (element.classList) {
-        const classNames = className.split(' ')
-          .filter(className => className.length > 0);
+        const classNames = className.split(' ').filter(className => className.length > 0);
 
         if (classNames.length > 0) {
           element.classList.add(...classNames);
         }
-      }
-      else {
+      } else {
         element.className += ' ' + className;
       }
     });
@@ -520,18 +516,18 @@ export class DOM {
    * @returns {DOM}
    */
   removeClass(className: string): DOM {
-    this.forEach((element) => {
+    this.forEach(element => {
       if (element.classList) {
-        const classNames = className.split(' ')
-          .filter(className => className.length > 0);
+        const classNames = className.split(' ').filter(className => className.length > 0);
 
         if (classNames.length > 0) {
           element.classList.remove(...classNames);
         }
-      }
-      else {
+      } else {
         element.className = element.className.replace(
-          new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+          new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'),
+          ' ',
+        );
       }
     });
 
@@ -546,15 +542,14 @@ export class DOM {
   hasClass(className: string): boolean {
     let hasClass = false;
 
-    this.forEach((element) => {
+    this.forEach(element => {
       if (element.classList) {
         if (element.classList.contains(className)) {
           // Since we are inside a handler, we can't just 'return true'. Instead, we save it to a variable
           // and return it at the end of the function body.
           hasClass = true;
         }
-      }
-      else {
+      } else {
         if (new RegExp('(^| )' + className + '( |$)', 'gi').test(element.className)) {
           // See comment above
           hasClass = true;
@@ -587,12 +582,10 @@ export class DOM {
 
       if (arguments.length === 2) {
         return this.setCss(propertyName, value);
-      }
-      else {
+      } else {
         return this.getCss(propertyName);
       }
-    }
-    else {
+    } else {
       let propertyValueCollection = propertyNameOrCollection;
       return this.setCssCollection(propertyValueCollection);
     }
@@ -612,15 +605,15 @@ export class DOM {
   }
 
   private setCss(propertyName: string, value: string): DOM {
-    this.forEach((element) => {
+    this.forEach(element => {
       // <any> cast to resolve TS7015: http://stackoverflow.com/a/36627114/370252
       element.style[<any>propertyName] = value;
     });
     return this;
   }
 
-  private setCssCollection(ruleValueCollection: {[ruleName: string]: string}): DOM {
-    this.forEach((element) => {
+  private setCssCollection(ruleValueCollection: { [ruleName: string]: string }): DOM {
+    this.forEach(element => {
       // http://stackoverflow.com/a/34490573/370252
       Object.assign(element.style, ruleValueCollection);
     });

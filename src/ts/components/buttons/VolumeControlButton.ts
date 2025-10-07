@@ -1,8 +1,8 @@
-import {Container, ContainerConfig} from '../Container';
-import {VolumeSlider} from '../seekbar/VolumeSlider';
-import {VolumeToggleButton} from './VolumeToggleButton';
-import {UIInstanceManager} from '../../UIManager';
-import {Timeout} from '../../utils/Timeout';
+import { Container, ContainerConfig } from '../Container';
+import { VolumeSlider } from '../seekbar/VolumeSlider';
+import { VolumeToggleButton } from './VolumeToggleButton';
+import { UIInstanceManager } from '../../UIManager';
+import { Timeout } from '../../utils/Timeout';
 import { PlayerAPI } from 'bitmovin-player';
 
 /**
@@ -33,7 +33,6 @@ export interface VolumeControlButtonConfig extends ContainerConfig {
  * @category Buttons
  */
 export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
-
   private volumeToggleButton: VolumeToggleButton;
   private volumeSlider: VolumeSlider;
 
@@ -48,11 +47,15 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
       hidden: true,
     });
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-volumecontrolbutton',
-      components: [this.volumeToggleButton, this.volumeSlider],
-      hideDelay: 500,
-    }, <VolumeControlButtonConfig>this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-volumecontrolbutton',
+        components: [this.volumeToggleButton, this.volumeSlider],
+        hideDelay: 500,
+      },
+      <VolumeControlButtonConfig>this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

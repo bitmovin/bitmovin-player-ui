@@ -31,7 +31,10 @@ export class SettingsPanelAutoHideManager {
   private stateClearTimeout: Timeout;
   private readonly stateClearDelay: number;
 
-  constructor(private uimanager: UIInstanceManager, stateClearDelay: number = 15000) {
+  constructor(
+    private uimanager: UIInstanceManager,
+    stateClearDelay: number = 15000,
+  ) {
     this.stateClearDelay = stateClearDelay;
     this.setupEventListeners();
   }
@@ -79,7 +82,7 @@ export class SettingsPanelAutoHideManager {
         scrollTop: panelElement.scrollTop,
         wrapperScrollTop: panel.getDomElement().find('.bmpui-container-wrapper').get(0)?.scrollTop || 0,
         panelWidth: panelElement.scrollWidth,
-        panelHeight: panelElement.scrollHeight
+        panelHeight: panelElement.scrollHeight,
       };
 
       // Start timeout to clear saved state after the specified delay
@@ -114,7 +117,7 @@ export class SettingsPanelAutoHideManager {
           state.scrollTop,
           state.wrapperScrollTop,
           state.panelWidth,
-          state.panelHeight
+          state.panelHeight,
         );
       }, 0);
 

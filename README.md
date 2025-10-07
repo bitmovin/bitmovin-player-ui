@@ -13,36 +13,37 @@ The UI framework is also available through the following distribution channels:
 
 The UI framework and default skin bundled with the latest player release are always available via CDN. This is the recommended way if you just want to work with the predefined UI components. All components will be available in the `bitmovin.playerui` namespace.
 
- * JavaScript library: `//cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.js` 
- * CSS default skin: `//cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css`
+- JavaScript library: `https://cdn.jsdelivr.net/npm/bitmovin-player-ui@4/dist/js/bitmovinplayer-ui.js`
+- CSS file: `https://cdn.jsdelivr.net/npm/bitmovin-player-ui@4/dist/css/bitmovinplayer-ui.css`
 
 ### NPM
 
 The UI framework is also available in the NPM repository and comes with all source and distributable files, JavaScript modules and TypeScript type definitions.
 
- * `npm install bitmovin-player-ui`
-
+- `npm install bitmovin-player-ui`
 
 ## Getting Started with Development
 
- 0. Clone Git repository
- 1. Install node.js
- 2. Install Gulp: `npm install --global gulp-cli`
- 3. Install required npm packages: `npm install`
- 4. Run Gulp tasks (`gulp --tasks`)
-  * `gulp` to build project into `dist` directory
-  * `gulp watch` to develop and rebuild changed files automatically
-  * `gulp serve` to open test page in browser, build and reload changed files automatically
-  * `gulp lint` to lint TypeScript and SASS files
-  * `gulp build-prod` to build project with minified files into `dist` directory
-  
-To take a look at the project, run `gulp serve`. For changes, check our [CHANGELOG](CHANGELOG.md). This UI framework version is for player v8. The UI framework for player v7 can be found in the `support/v2.x` branch.
+0.  Clone Git repository
+1.  Install node.js
+2.  Install required npm packages: `npm ci`
+3.  Run `npm run` to see available scripts
+
+- `npm start` to open test page in browser, build and reload changed files automatically
+- `npm run build` to build project into `dist` directory without minification
+- `npm run build:prod` to build project with minified files into `dist` directory
+- `npm run lint` to lint TypeScript and SASS files
+- `npm test` to run the test suite
+- `npm run format` to format all files with prettier
+- `npm run docs` to generate the HTML documentation
+
+To take a look at the project, run `npm run start`. For changes, check our [CHANGELOG](CHANGELOG.md). This UI framework version is for player v8.
 
 ## UI Playground
 
-The UI playground can be launched with `gulp serve` and opens a page in a local browser window. On this page, you can switch between different sources and UI styles, trigger API actions and observe events.
+The UI playground can be launched with `npm start` and opens a page in a local browser window. On this page, you can switch between different sources and UI styles, trigger API actions and observe events.
 
-This page uses BrowserSync to sync the state across multiple tabs and browsers and recompiles and reloads automatically files automatically when any `.scss` or `.ts` files are modified. It makes a helpful tool for developing and testing the UI.
+This page recompiles and reloads files automatically when any `.scss` or `.ts` files are modified. It makes a helpful tool for developing and testing the UI.
 
 ## Contributing
 

@@ -77,8 +77,8 @@ function getElementVector(element: HTMLElement): Vector {
  */
 function calculateAngle(a: Vector, b: Vector, direction: Direction): number {
   const directionVector = {
-    x: (direction === Direction.LEFT ? -1 : direction === Direction.RIGHT ? 1 : 0),
-    y: (direction === Direction.UP ? -1 : direction === Direction.DOWN ? 1 : 0),
+    x: direction === Direction.LEFT ? -1 : direction === Direction.RIGHT ? 1 : 0,
+    y: direction === Direction.UP ? -1 : direction === Direction.DOWN ? 1 : 0,
   };
 
   const elementVector = normalize({
@@ -88,7 +88,7 @@ function calculateAngle(a: Vector, b: Vector, direction: Direction): number {
 
   const angleCos = dotProduct(directionVector, elementVector) / (length(directionVector) * length(elementVector));
 
-  return Math.acos(angleCos) * 180 / Math.PI;
+  return (Math.acos(angleCos) * 180) / Math.PI;
 }
 
 /**
@@ -116,9 +116,9 @@ export function getComponentInDirection(
     .map(component => {
       if (component instanceof FocusableContainer) {
         // Use the whole container's HTML element if it is a FocusableContainer
-        return { component, element: toHtmlElement(component.container) }
+        return { component, element: toHtmlElement(component.container) };
       } else {
-        return { component, element: toHtmlElement(component) }
+        return { component, element: toHtmlElement(component) };
       }
     })
     // don't take the current element into account
@@ -134,8 +134,7 @@ export function getComponentInDirection(
     // filter out elements that are not in the given direction
     .filter(({ angle }) => angle < cutoffAngle);
 
-  const zeroAngleElements = availableElements
-    .filter(({ angle }) => angle === 0);
+  const zeroAngleElements = availableElements.filter(({ angle }) => angle === 0);
 
   let sortedElements: Focusable[];
   if (zeroAngleElements.length > 0) {

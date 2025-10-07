@@ -131,14 +131,9 @@ const DefaultKeyMap = {
  * Returns the matching key map for the current platform.
  */
 export function getKeyMapForPlatform(): KeyMap {
-  const applicableKeyMap = [
-    WebOsKeyMap,
-    TizenKeyMap,
-    PlayStationKeyMap,
-    HisenseKeyMap,
-    AndroidKeyMap,
-    XboxKeyMap,
-  ].find(keyMap => keyMap.isApplicable());
+  const applicableKeyMap = [WebOsKeyMap, TizenKeyMap, PlayStationKeyMap, HisenseKeyMap, AndroidKeyMap, XboxKeyMap].find(
+    keyMap => keyMap.isApplicable(),
+  );
 
   if (applicableKeyMap) {
     return applicableKeyMap.keyCodes;

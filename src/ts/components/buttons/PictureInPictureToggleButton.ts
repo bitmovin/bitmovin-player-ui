@@ -1,5 +1,5 @@
-import {ToggleButton, ToggleButtonConfig} from './ToggleButton';
-import {UIInstanceManager} from '../../UIManager';
+import { ToggleButton, ToggleButtonConfig } from './ToggleButton';
+import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
@@ -9,14 +9,17 @@ import { i18n } from '../../localization/i18n';
  * @category Buttons
  */
 export class PictureInPictureToggleButton extends ToggleButton<ToggleButtonConfig> {
-
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
 
-    this.config = this.mergeConfig(config, {
-      cssClass: 'ui-piptogglebutton',
-      text: i18n.getLocalizer('pictureInPicture'),
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-piptogglebutton',
+        text: i18n.getLocalizer('pictureInPicture'),
+      },
+      this.config,
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
