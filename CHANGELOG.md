@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Improved auto-hide behavior for `SettingsPanel`
+  - Uses a longer inactivity timeout if the panel is left open without interaction
+  - When the UI reappears (on mouse move or interaction), `SettingsPanel` restores in the same state
+    - Restores the last-used navigation menu
+    - Restores the previous scroll position
+    - The state is cleared after a longer inactivity period, where instead, the UI reappears in the initial state
+
 ### Fixed
 
 - `npm start` not working anymore
@@ -106,12 +115,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - `DynamicSettingsPanelItem` which allows dynamically navigating within the `SettingsPanel` to a new `SettingsPanelPage` without the need to predefine the page and its content
   - The previously used `SelectBox` components are still available and can be used by directly using them in combination with a `SettingsPanelItem` instead of the new `DynamicSettingsPanelItem` or `InteractiveSettingsPanelItem`
   - Added `SettingsPanelNavigationGroup` for spatial navigation support
-- Improved auto-hide behavior for `SettingsPanel`
-  - Uses a longer inactivity timeout if the panel is left open without interaction
-  - When the UI reappears (on mouse move or interaction), `SettingsPanel` restores in the same state
-    - Restores the last-used navigation menu
-    - Restores the previous scroll position
-    - The state is cleared after a longer inactivity period, where instead, the UI reappears in the initial state
 - A `ListBox` now extends from `SettingsPanel` to inherit all the new features and design improvements from the `SettingsPanel`
 - The Bitmovin Watermark is no longer visible by default
   - If you want to include your own watermark, you can replace the `logo.svg` file in the `src/assets` folder and enable the watermark in your `UIConfig` by setting `includeWatermark: true`
