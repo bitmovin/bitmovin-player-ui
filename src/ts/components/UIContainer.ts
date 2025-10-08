@@ -109,7 +109,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     super.configure(player, uimanager);
 
     this.settingsPanelManager = new SettingsPanelAutoHideManager(uimanager, {
-      stateClearDelay: config.stateClearDelay,
+      stateClearDelay: config.stateClearDelay ?? 5000,
     });
     this.configureUIShowHide(player, uimanager);
     this.configurePlayerStates(player, uimanager);
