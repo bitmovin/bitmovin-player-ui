@@ -77,7 +77,6 @@ export class UIContainer extends Container<UIContainerConfig> {
         ariaLabel: i18n.getLocalizer('player'),
         hideDelay: 2000,
         hideImmediatelyOnMouseLeave: true,
-        stateClearDelay: 5000,
       },
       this.config,
     );
