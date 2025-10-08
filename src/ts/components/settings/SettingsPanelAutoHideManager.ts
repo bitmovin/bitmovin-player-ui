@@ -33,9 +33,9 @@ export class SettingsPanelAutoHideManager {
 
   constructor(
     private uimanager: UIInstanceManager,
-    config?: { stateClearDelay?: number },
+    config?: { stateClearDelay: number },
   ) {
-    this.stateClearDelay = config?.stateClearDelay ?? 15000;
+    this.stateClearDelay = config?.stateClearDelay;
     this.setupEventListeners();
   }
 
