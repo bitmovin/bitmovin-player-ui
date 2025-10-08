@@ -44,7 +44,7 @@ export interface UIContainerConfig extends ContainerConfig {
    * The delay in milliseconds after which saved UI component state will be cleared when hidden.
    * This controls how long the UI remembers component state (e.g., navigation position, scroll offset)
    * for restoration on reopen. Currently used by settings panels.
-   * Default: 6 seconds (6000)
+   * Default: 5 seconds (5000)
    */
   stateClearDelay?: number;
 }
@@ -88,7 +88,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         ariaLabel: i18n.getLocalizer('player'),
         hideDelay: 2000,
         hideImmediatelyOnMouseLeave: true,
-        stateClearDelay: 6000,
+        stateClearDelay: 5000,
       },
       this.config,
     );
