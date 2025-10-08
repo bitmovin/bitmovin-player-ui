@@ -4,6 +4,7 @@ import { DOM } from '../../src/ts/DOM';
 import { PlayerEventEmitter } from './PlayerEventEmitter';
 import { UIContainer } from '../../src/ts/components/UIContainer';
 import { SubtitleSettingsManager } from '../../src/ts/utils/SubtitleSettingsManager';
+import { SettingsPanelAutoHideManager } from '../../src/ts/components/settings/SettingsPanelAutoHideManager';
 
 jest.mock('../../src/ts/DOM');
 
@@ -31,6 +32,7 @@ export namespace MockHelper {
     const UiInstanceManagerMockClass: jest.Mock<UIInstanceManager> = jest.fn().mockImplementation(() => ({
       onConfigured: getEventDispatcherMock(),
       getSubtitleSettingsManager: jest.fn().mockReturnValue(new SubtitleSettingsManager()),
+      getSettingsPanelManager: jest.fn().mockReturnValue(new SettingsPanelAutoHideManager({ stateClearDelay: 5000 })),
       getConfig: jest.fn().mockReturnValue({
         events: {
           onUpdated: getEventDispatcherMock(),
