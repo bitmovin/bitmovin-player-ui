@@ -1,8 +1,6 @@
-import { UIInstanceManager } from '../../UIManager';
 import { SettingsPanel, SettingsPanelConfig } from './SettingsPanel';
 import { SettingsPanelPage } from './SettingsPanelPage';
 import { ArrayUtils } from '../../utils/ArrayUtils';
-import { Component, ComponentConfig } from '../Component';
 import { Timeout } from '../../utils/Timeout';
 
 /**
@@ -41,35 +39,16 @@ export class SettingsPanelAutoHideManager {
   private stateClearTimeout: Timeout;
   private readonly stateClearDelay: number;
 
-  constructor(
-    private uimanager: UIInstanceManager,
-    config: SettingsPanelAutoHideManagerConfig,
-  ) {
+  constructor(config: SettingsPanelAutoHideManagerConfig) {
     this.stateClearDelay = config.stateClearDelay;
-    this.setupEventListeners();
   }
 
-  // Sets up event listeners to track settings panel visibility changes
-  private setupEventListeners(): void {
-    this.uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
-      if (component instanceof SettingsPanel) {
-        this.onSettingsPanelShow(component);
-      }
-    });
-
-    this.uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
-      if (component instanceof SettingsPanel) {
-        this.onSettingsPanelHide(component);
-      }
-    });
-  }
-
-  private onSettingsPanelShow(panel: SettingsPanel<SettingsPanelConfig>): void {
+  public onSettingsPanelShow(panel: SettingsPanel<SettingsPanelConfig>): void {
     this.openSettingsPanels.push(panel);
     this.lastOpenSettingsPanel = panel;
   }
 
-  private onSettingsPanelHide(panel: SettingsPanel<SettingsPanelConfig>): void {
+  public onSettingsPanelHide(panel: SettingsPanel<SettingsPanelConfig>): void {
     ArrayUtils.remove(this.openSettingsPanels, panel);
   }
 

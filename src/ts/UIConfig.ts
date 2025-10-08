@@ -169,4 +169,16 @@ export interface UIConfig {
    * Default: false
    */
   includeWatermark?: boolean;
+  /**
+   * Configuration for settings panel behavior.
+   */
+  settingsPanelManager?: {
+    /**
+     * The delay in milliseconds after which saved settings panel state will be cleared when hidden.
+     * After this delay, reopening the settings panel will show the default state instead of restoring
+     * the previous navigation position and scroll offset.
+     * Default: 5000 (5 seconds)
+     */
+    stateClearDelay?: number;
+  };
 }

@@ -18,6 +18,7 @@ import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { SettingsPanelAutoHideManager } from './components/settings/SettingsPanelAutoHideManager';
+import { SettingsPanel } from './components/settings/SettingsPanel';
 
 /**
  * @category Configs
@@ -255,6 +256,12 @@ export class UIManager {
     // The instance managers map to the corresponding UI variants by their array index
     this.uiInstanceManagers = [];
     let uiVariantsWithoutCondition = [];
+
+    const stateClearDelay = uiconfig.settingsPanelManager?.stateClearDelay ?? 5000;
+    this.settingsPanelManager = new SettingsPanelAutoHideManager({
+      stateClearDelay,
+    });
+
     for (let uiVariant of this.uiVariants) {
       if (uiVariant.condition == null) {
         // Collect variants without conditions for error checking
@@ -267,10 +274,25 @@ export class UIManager {
           uiVariant.ui,
           this.config,
           this.subtitleSettingsManager,
+          this.settingsPanelManager,
           uiVariant.spatialNavigation,
         ),
       );
     }
+
+    for (let uiInstanceManager of this.uiInstanceManagers) {
+      uiInstanceManager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
+        if (component instanceof SettingsPanel) {
+          this.settingsPanelManager.onSettingsPanelShow(component);
+        }
+      });
+      uiInstanceManager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
+        if (component instanceof SettingsPanel) {
+          this.settingsPanelManager.onSettingsPanelHide(component);
+        }
+      });
+    }
+
     // Make sure that there is only one UI variant without a condition
     // It does not make sense to have multiple variants without condition, because only the first one in the list
     // (the one with the lowest index) will ever be selected.
@@ -395,19 +417,6 @@ export class UIManager {
     }
 
     this.focusVisibilityTracker = new FocusVisibilityTracker('{{PREFIX}}');
-
-    // Initialize settings panel manager with first UIInstanceManager
-    // Get stateClearDelay from first UI variant's config (all variants should have same value via mergeConfig)
-    const firstUi = this.uiInstanceManagers[0];
-    const stateClearDelay = firstUi?.getUI().getConfig().stateClearDelay ?? 5000;
-    this.settingsPanelManager = new SettingsPanelAutoHideManager(firstUi, {
-      stateClearDelay,
-    });
-
-    // Set the manager on all UIInstanceManagers so they can expose it to their UI components
-    for (let uiInstanceManager of this.uiInstanceManagers) {
-      uiInstanceManager.setSettingsPanelManager(this.settingsPanelManager);
-    }
 
     // Initialize the UI
     resolveUiVariant(null);
@@ -690,12 +699,14 @@ export class UIInstanceManager {
     ui: UIContainer,
     config: InternalUIConfig,
     subtitleSettingsManager: SubtitleSettingsManager,
+    settingsPanelManager: SettingsPanelAutoHideManager,
     spatialNavigation?: SpatialNavigation,
   ) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
     this.subtitleSettingsManager = subtitleSettingsManager;
+    this.settingsPanelManager = settingsPanelManager;
     this.spatialNavigation = spatialNavigation;
   }
 
@@ -705,10 +716,6 @@ export class UIInstanceManager {
 
   getSettingsPanelManager() {
     return this.settingsPanelManager;
-  }
-
-  setSettingsPanelManager(manager: SettingsPanelAutoHideManager) {
-    this.settingsPanelManager = manager;
   }
 
   getConfig(): InternalUIConfig {

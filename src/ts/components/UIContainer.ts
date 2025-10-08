@@ -38,14 +38,6 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: false
    */
   hideImmediatelyOnMouseLeave?: boolean;
-
-  /**
-   * The delay in milliseconds after which saved UI component state will be cleared when hidden.
-   * This controls how long the UI remembers component state (e.g., navigation position, scroll offset)
-   * for restoration on reopen. Currently used by settings panels.
-   * Default: 5 seconds (5000)
-   */
-  stateClearDelay?: number;
 }
 
 /**
