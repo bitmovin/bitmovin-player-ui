@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `UIConfig.settingsPanelManager.stateClearDelay` to control the delay after which the saved settings panel state will be cleared when hidden
+
 ### Changed
 
 - Improved auto-hide behavior for `SettingsPanel`
