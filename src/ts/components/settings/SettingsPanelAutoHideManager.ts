@@ -18,6 +18,16 @@ export interface SettingsPanelState {
 }
 
 /**
+ * Configuration interface for {@link SettingsPanelAutoHideManager}
+ */
+export interface SettingsPanelAutoHideManagerConfig {
+  /**
+   * The delay in milliseconds after which saved settings panel state will be cleared when hidden.
+   */
+  stateClearDelay: number;
+}
+
+/**
  * Manager class responsible for handling settings panel auto-hide behavior,
  * including state preservation and extended timeout logic.
  *
@@ -33,9 +43,9 @@ export class SettingsPanelAutoHideManager {
 
   constructor(
     private uimanager: UIInstanceManager,
-    config?: { stateClearDelay: number },
+    config: SettingsPanelAutoHideManagerConfig,
   ) {
-    this.stateClearDelay = config?.stateClearDelay;
+    this.stateClearDelay = config.stateClearDelay;
     this.setupEventListeners();
   }
 
