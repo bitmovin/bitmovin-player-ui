@@ -124,9 +124,21 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isSeeking = false;
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
+    const baseHideDelay = config.hideDelay;
 
     this.hidingPrevented = (): boolean => {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
+    };
+
+    const getUiHideDelay = (): number => {
+      return this.settingsPanelManager.getOpenSettingsPanelHideDelay() ?? baseHideDelay;
+    };
+
+    const startUiHideTimeoutWithCurrentDelay = (): void => {
+      const hideDelay = getUiHideDelay();
+      this.uiHideTimeout.clear();
+      this.uiHideTimeout = new Timeout(hideDelay, this.hideUi);
+      this.uiHideTimeout.start();
     };
 
     this.showUi = () => {
@@ -140,11 +152,7 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
       // Don't trigger timeout while seeking (it will be triggered once the seek is finished) or casting
       if (!isSeeking && !player.isCasting() && !this.hidingPrevented()) {
-        // Use extended timer if settings panel is open, normal timer otherwise
-        const hideDelay = this.settingsPanelManager.getExtendedDelay(config.hideDelay);
-        this.uiHideTimeout.clear();
-        this.uiHideTimeout = new Timeout(hideDelay, this.hideUi);
-        this.uiHideTimeout.start();
+        startUiHideTimeoutWithCurrentDelay();
       }
     };
 
@@ -287,7 +295,7 @@ export class UIContainer extends Container<UIContainerConfig> {
             if (this.config.hideImmediatelyOnMouseLeave) {
               this.hideUi();
             } else {
-              this.uiHideTimeout.start();
+              startUiHideTimeoutWithCurrentDelay();
             }
           }
         },
@@ -323,7 +331,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     uimanager.onSeeked.subscribe(() => {
       isSeeking = false;
       if (!this.hidingPrevented()) {
-        this.uiHideTimeout.start(); // Re-enable UI hide timeout after a seek
+        startUiHideTimeoutWithCurrentDelay(); // Re-enable UI hide timeout after a seek
       }
     });
     uimanager.onComponentViewModeChanged.subscribe((_, { mode }) => this.trackComponentViewMode(mode));
@@ -338,7 +346,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         this.showUi();
       } else {
         // Entering a player state that allows hiding
-        this.uiHideTimeout.start();
+        startUiHideTimeoutWithCurrentDelay();
       }
     });
   }

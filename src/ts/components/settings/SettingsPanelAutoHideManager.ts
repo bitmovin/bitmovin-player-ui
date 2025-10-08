@@ -124,10 +124,10 @@ export class SettingsPanelAutoHideManager {
   }
 
   /**
-   * Returns the appropriate hide delay - uses panel's hideDelay if open, normal otherwise
+   * Returns the hide delay of the open settings panel if one is open, otherwise undefined
    */
-  public getExtendedDelay(baseDelay: number): number {
-    if (!this.hasOpenPanels()) return baseDelay;
+  public getOpenSettingsPanelHideDelay(): number | undefined {
+    if (!this.hasOpenPanels()) return undefined;
 
     const openPanel = this.openSettingsPanels[0];
     return openPanel.getConfig().hideDelay;
