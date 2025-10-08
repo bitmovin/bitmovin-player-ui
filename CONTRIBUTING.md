@@ -1,3 +1,9 @@
+## Getting Started
+
+Install dependencies: `npm ci`
+
+Useful commands: `npm start` (dev server), `npm run build`, `npm test`, `npm run lint`
+
 ## Issues
 
 With bugs and problems, please try to describe the issue as detailed as possible to help us reproduce it. Don't forget to add the affected versions of the player (`bitmovin.player.version` or `playerInstance.version`) and UI (`bitmovin.playerui.version`).
