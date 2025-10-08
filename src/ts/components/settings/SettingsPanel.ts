@@ -20,7 +20,7 @@ export interface SettingsPanelConfig extends ContainerConfig {
   /**
    * The delay in milliseconds after which the settings panel will be hidden when there is no user interaction.
    * Set to -1 to disable automatic hiding.
-   * Default: 3 seconds (3000)
+   * Default: 4 seconds (4000)
    */
   hideDelay?: number;
 
