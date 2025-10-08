@@ -8,7 +8,6 @@ import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Button, ButtonConfig } from './buttons/Button';
 import { TouchControlOverlay, TouchControlOverlayConfig } from './overlays/TouchControlOverlay';
-import { SettingsPanelAutoHideManager } from './settings/SettingsPanelAutoHideManager';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -71,8 +70,6 @@ export class UIContainer extends Container<UIContainerConfig> {
   private userInteractionEvents: { name: string; handler: EventListenerOrEventListenerObject }[];
   private hidingPrevented: () => boolean;
 
-  private settingsPanelManager: SettingsPanelAutoHideManager;
-
   public hideUi: () => void = () => {};
   public showUi: () => void = () => {};
   public toggleUiShown: () => void = () => {};
@@ -108,9 +105,6 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     super.configure(player, uimanager);
 
-    this.settingsPanelManager = new SettingsPanelAutoHideManager(uimanager, {
-      stateClearDelay: config.stateClearDelay ?? 5000,
-    });
     this.configureUIShowHide(player, uimanager);
     this.configurePlayerStates(player, uimanager);
   }
@@ -142,7 +136,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     const getUiHideDelay = (): number => {
-      return this.settingsPanelManager.getOpenSettingsPanelHideDelay() ?? baseHideDelay;
+      return uimanager.getSettingsPanelManager().getOpenSettingsPanelHideDelay() ?? baseHideDelay;
     };
 
     const startUiHideTimeoutWithCurrentDelay = (): void => {
@@ -154,7 +148,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     this.showUi = () => {
       // Restore settings panel if it was open before auto-hide
-      this.settingsPanelManager.restoreLastState();
+      uimanager.getSettingsPanelManager().restoreLastState();
 
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
@@ -169,7 +163,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     this.hideUi = () => {
       // Before hiding, save the complete panel navigation state
-      this.settingsPanelManager.saveCurrentState();
+      uimanager.getSettingsPanelManager().saveCurrentState();
 
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
@@ -498,10 +492,6 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     if (this.uiHideTimeout) {
       this.uiHideTimeout.clear();
-    }
-
-    if (this.settingsPanelManager) {
-      this.settingsPanelManager.release();
     }
   }
 

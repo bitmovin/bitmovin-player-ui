@@ -17,6 +17,7 @@ import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
+import { SettingsPanelAutoHideManager } from './components/settings/SettingsPanelAutoHideManager';
 
 /**
  * @category Configs
@@ -128,6 +129,7 @@ export class UIManager {
   private managerPlayerWrapper: PlayerWrapper;
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
+  private settingsPanelManager: SettingsPanelAutoHideManager;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -394,6 +396,19 @@ export class UIManager {
 
     this.focusVisibilityTracker = new FocusVisibilityTracker('{{PREFIX}}');
 
+    // Initialize settings panel manager with first UIInstanceManager
+    // Get stateClearDelay from first UI variant's config (all variants should have same value via mergeConfig)
+    const firstUi = this.uiInstanceManagers[0];
+    const stateClearDelay = firstUi?.getUI().getConfig().stateClearDelay ?? 5000;
+    this.settingsPanelManager = new SettingsPanelAutoHideManager(firstUi, {
+      stateClearDelay,
+    });
+
+    // Set the manager on all UIInstanceManagers so they can expose it to their UI components
+    for (let uiInstanceManager of this.uiInstanceManagers) {
+      uiInstanceManager.setSettingsPanelManager(this.settingsPanelManager);
+    }
+
     // Initialize the UI
     resolveUiVariant(null);
   }
@@ -572,6 +587,9 @@ export class UIManager {
     }
     this.managerPlayerWrapper.clearEventHandlers();
     this.focusVisibilityTracker.release();
+    if (this.settingsPanelManager) {
+      this.settingsPanelManager.release();
+    }
   }
 
   /**
@@ -648,6 +666,7 @@ export class UIInstanceManager {
   private ui: UIContainer;
   private config: InternalUIConfig;
   private subtitleSettingsManager: SubtitleSettingsManager;
+  private settingsPanelManager: SettingsPanelAutoHideManager;
   protected spatialNavigation?: SpatialNavigation;
 
   private events = {
@@ -682,6 +701,14 @@ export class UIInstanceManager {
 
   getSubtitleSettingsManager() {
     return this.subtitleSettingsManager;
+  }
+
+  getSettingsPanelManager() {
+    return this.settingsPanelManager;
+  }
+
+  setSettingsPanelManager(manager: SettingsPanelAutoHideManager) {
+    this.settingsPanelManager = manager;
   }
 
   getConfig(): InternalUIConfig {
