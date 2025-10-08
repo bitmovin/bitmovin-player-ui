@@ -39,6 +39,14 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: false
    */
   hideImmediatelyOnMouseLeave?: boolean;
+
+  /**
+   * The delay in milliseconds after which saved UI component state will be cleared when hidden.
+   * This controls how long the UI remembers component state (e.g., navigation position, scroll offset)
+   * for restoration on reopen. Currently used by settings panels.
+   * Default: 15 seconds (15000)
+   */
+  stateClearDelay?: number;
 }
 
 /**
@@ -80,6 +88,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         ariaLabel: i18n.getLocalizer('player'),
         hideDelay: 2000,
         hideImmediatelyOnMouseLeave: true,
+        stateClearDelay: 15000,
       },
       this.config,
     );
@@ -99,7 +108,9 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     super.configure(player, uimanager);
 
-    this.settingsPanelManager = new SettingsPanelAutoHideManager(uimanager, {});
+    this.settingsPanelManager = new SettingsPanelAutoHideManager(uimanager, {
+      stateClearDelay: config.stateClearDelay,
+    });
     this.configureUIShowHide(player, uimanager);
     this.configurePlayerStates(player, uimanager);
   }
