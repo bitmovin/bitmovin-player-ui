@@ -10,12 +10,12 @@ Before creating a pull request, please
 
 - make sure all guidelines are followed
 - add an appropriate entry to the [CHANGELOG](CHANGELOG.md)
-- make sure that `gulp lint` is free of warnings and errors
+- make sure that `npm run lint` is free of warnings and errors
 - make sure your branch is free of merge conflicts
 
 ## TypeScript Code Style
 
-- Follow the `tslint` rules (`gulp lint-ts`)
+- Follow the `tslint` rules (`npm run lint-ts`)
 - Put single(!) blank lines between functions, classes, interfaces, etc...
 - Always add return values to functions (even if `void`)
 - No unused imports
@@ -27,7 +27,7 @@ Before creating a pull request, please
 
 ## SASS SCSS Code Style
 
-- Follow the `sass-lint` rules (`gulp lint-sass`)
+- Follow the `sass-lint` rules (`npm run lint-sass`)
 - Browser specific hacks must be commented with an explanation _why_ it is required and _what_ it does
 
 ## Component Architecture
