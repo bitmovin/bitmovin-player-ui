@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `UIConfig.settingsPanelManager.stateClearDelay` to configure how long the settings panel state is preserved after being hidden
+- `UIConfig.settingsPanelAutoHide.stateClearDelay` to configure how long the settings panel state is preserved after being hidden
 
 ### Changed
 

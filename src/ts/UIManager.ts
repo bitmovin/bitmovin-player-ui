@@ -257,7 +257,7 @@ export class UIManager {
     this.uiInstanceManagers = [];
     let uiVariantsWithoutCondition = [];
 
-    const stateClearDelay = uiconfig.settingsPanelManager?.stateClearDelay ?? 5000;
+    const stateClearDelay = uiconfig.settingsPanelAutoHide?.stateClearDelay ?? 5000;
     this.settingsPanelManager = new SettingsPanelAutoHideManager({
       stateClearDelay,
     });
