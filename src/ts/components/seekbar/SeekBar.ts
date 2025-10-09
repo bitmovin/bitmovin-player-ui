@@ -129,6 +129,9 @@ export class SeekBar extends Component<SeekBarConfig> {
   private player: PlayerAPI;
   private uiManager: UIInstanceManager;
 
+  // Necessary since player.ads?.isLinearAdActive?.() does not exist on mobile SDKs
+  private isAdPlaying: boolean = false;
+
   protected seekBarType: SeekBarType;
 
   protected isUiShown: boolean;
@@ -282,14 +285,22 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     };
 
-    player.on(player.exports.PlayerEvent.AdStarted, resumeSeekBarUpdates);
+    player.on(player.exports.PlayerEvent.AdStarted, () => {
+      this.isAdPlaying = true;
+      resumeSeekBarUpdates();
+    });
+    player.on(player.exports.PlayerEvent.AdBreakFinished, () => {
+      this.isAdPlaying = false;
+    });
+    player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
+      this.isAdPlaying = false;
+    });
 
     uimanager.onControlsShow.subscribe(resumeSeekBarUpdates);
 
     uimanager.onControlsHide.subscribe(() => {
       // Keep seekbar always active during the playback of a linear ad
-      const isAdPlaying = player.ads?.isLinearAdActive?.() ?? false;
-      if (isAdPlaying) {
+      if (this.isAdPlaying) {
         return;
       }
 
