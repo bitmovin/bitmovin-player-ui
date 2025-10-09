@@ -1,10 +1,9 @@
-import { DOM } from '../../../src/ts/DOM';
 import { SettingsPanelAutoHideManager } from '../../../src/ts/components/settings/SettingsPanelAutoHideManager';
-import type { SettingsPanel, SettingsPanelConfig } from '../../../src/ts/components/settings/SettingsPanel';
+import { SettingsPanel } from '../../../src/ts/components/settings/SettingsPanel';
+import type { SettingsPanelConfig } from '../../../src/ts/components/settings/SettingsPanel';
+import { SettingsPanelPage } from '../../../src/ts/components/settings/SettingsPanelPage';
 
-const CONTAINER_WRAPPER_CLASS = 'ui-container-wrapper';
-
-type PanelStubOptions = {
+type PanelSetupOptions = {
   hideDelay?: number;
   scrollTop?: number;
   wrapperScrollTop?: number;
@@ -14,45 +13,55 @@ type PanelStubOptions = {
   activePage?: unknown;
 };
 
-const createSettingsPanelStub = (options: PanelStubOptions = {}) => {
+const createSettingsPanelInstance = (options: PanelSetupOptions = {}) => {
   const {
     hideDelay,
     scrollTop = 12,
     wrapperScrollTop = 8,
     panelWidth = 320,
     panelHeight = 180,
-    navigationStack = ['root', 'child'],
+    navigationStack = [],
     activePage = { id: 'settings-page' },
   } = options;
 
-  const element = document.createElement('div');
+  const panel = new SettingsPanel({
+    components: [new SettingsPanelPage({})],
+    hidden: false,
+    hideDelay,
+  } as SettingsPanelConfig);
+
+  const domElement = panel.getDomElement();
+  const element = domElement.get(0) as HTMLElement;
+  const wrapper = (element.lastElementChild ?? element.firstElementChild) as HTMLElement;
+
   element.scrollTop = scrollTop;
-  Object.defineProperty(element, 'scrollWidth', { value: panelWidth });
-  Object.defineProperty(element, 'scrollHeight', { value: panelHeight });
+  Object.defineProperty(element, 'scrollWidth', { value: panelWidth, configurable: true });
+  Object.defineProperty(element, 'scrollHeight', { value: panelHeight, configurable: true });
 
-  const wrapper = document.createElement('div');
-  wrapper.className = CONTAINER_WRAPPER_CLASS;
-  wrapper.scrollTop = wrapperScrollTop;
-  element.appendChild(wrapper);
+  if (wrapper) {
+    wrapper.className = 'bmpui-container-wrapper';
+    wrapper.scrollTop = wrapperScrollTop;
+  }
 
-  const domElement = new DOM(element);
+  jest.spyOn(panel, 'getWrapperClassName').mockReturnValue('bmpui-container-wrapper');
 
-  const show = jest.fn();
-  const restoreNavigationState = jest.fn();
+  const panelNavigationStack =
+    navigationStack.length > 0
+      ? [...navigationStack]
+      : [panel.getActivePage(), new SettingsPanelPage({})];
+  (panel as any).navigationStack = panelNavigationStack;
 
-  const panelNavigationStack = [...navigationStack];
+  if (activePage) {
+    jest.spyOn(panel, 'getActivePage').mockReturnValue(activePage as any);
+  }
 
-  const panel = {
-    getConfig: jest.fn().mockReturnValue(({ hideDelay } as unknown) as SettingsPanelConfig),
-    getDomElement: jest.fn().mockReturnValue(domElement),
-    getWrapperClassName: jest.fn().mockReturnValue(CONTAINER_WRAPPER_CLASS),
-    getActivePage: jest.fn().mockReturnValue(activePage),
-    show,
-    restoreNavigationState,
+  return {
+    panel: panel as SettingsPanel<SettingsPanelConfig>,
+    element,
+    wrapper,
     navigationStack: panelNavigationStack,
-  } as unknown as SettingsPanel<SettingsPanelConfig> & { navigationStack: unknown[] };
-
-  return { panel, element, wrapper, show, restoreNavigationState, navigationStack: panelNavigationStack, activePage };
+    activePage: panel.getActivePage(),
+  };
 };
 
 describe('SettingsPanelAutoHideManager', () => {
@@ -69,7 +78,7 @@ describe('SettingsPanelAutoHideManager', () => {
 
     it('returns the hide delay of the first open panel', () => {
       const manager = new SettingsPanelAutoHideManager({ stateClearDelay: 1000 });
-      const { panel } = createSettingsPanelStub({ hideDelay: 4000 });
+      const { panel } = createSettingsPanelInstance({ hideDelay: 4000 });
 
       manager.onSettingsPanelShow(panel);
 
@@ -78,7 +87,7 @@ describe('SettingsPanelAutoHideManager', () => {
 
     it('ignores negative hide delays', () => {
       const manager = new SettingsPanelAutoHideManager({ stateClearDelay: 1000 });
-      const { panel } = createSettingsPanelStub({ hideDelay: -1 });
+      const { panel } = createSettingsPanelInstance({ hideDelay: -1 });
 
       manager.onSettingsPanelShow(panel);
 
@@ -97,8 +106,9 @@ describe('SettingsPanelAutoHideManager', () => {
 
     it('restores saved panel state when reopened before the clear timeout', () => {
       const manager = new SettingsPanelAutoHideManager({ stateClearDelay: 1000 });
-      const { panel, element, wrapper, show, restoreNavigationState, navigationStack, activePage } =
-        createSettingsPanelStub({ hideDelay: 3000 });
+      const { panel, element, wrapper, navigationStack, activePage } = createSettingsPanelInstance({ hideDelay: 3000 });
+      const showSpy = jest.spyOn(panel, 'show');
+      const restoreNavigationStateSpy = jest.spyOn(panel, 'restoreNavigationState').mockImplementation(() => {});
 
       manager.onSettingsPanelShow(panel);
       manager.saveCurrentState();
@@ -107,8 +117,8 @@ describe('SettingsPanelAutoHideManager', () => {
       manager.restoreLastState();
       jest.runOnlyPendingTimers();
 
-      expect(show).toHaveBeenCalledTimes(1);
-      expect(restoreNavigationState).toHaveBeenCalledWith(
+      expect(showSpy).toHaveBeenCalledTimes(1);
+      expect(restoreNavigationStateSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           activePage,
           navigationStack,
@@ -119,17 +129,21 @@ describe('SettingsPanelAutoHideManager', () => {
         }),
       );
 
-      show.mockClear();
-      restoreNavigationState.mockClear();
+      // Prove the manager clears its saved state and doesn't reopen the panel again
+
+      showSpy.mockClear();
+      restoreNavigationStateSpy.mockClear();
       manager.restoreLastState();
 
-      expect(show).not.toHaveBeenCalled();
-      expect(restoreNavigationState).not.toHaveBeenCalled();
+      expect(showSpy).not.toHaveBeenCalled();
+      expect(restoreNavigationStateSpy).not.toHaveBeenCalled();
     });
 
     it('clears saved state after the configured delay', () => {
       const manager = new SettingsPanelAutoHideManager({ stateClearDelay: 1500 });
-      const { panel, show, restoreNavigationState } = createSettingsPanelStub();
+      const { panel } = createSettingsPanelInstance();
+      const showSpy = jest.spyOn(panel, 'show');
+      const restoreNavigationStateSpy = jest.spyOn(panel, 'restoreNavigationState').mockImplementation(() => {});
 
       manager.onSettingsPanelShow(panel);
       manager.saveCurrentState();
@@ -141,8 +155,8 @@ describe('SettingsPanelAutoHideManager', () => {
       manager.restoreLastState();
       jest.runOnlyPendingTimers();
 
-      expect(show).not.toHaveBeenCalled();
-      expect(restoreNavigationState).not.toHaveBeenCalled();
+      expect(showSpy).not.toHaveBeenCalled();
+      expect(restoreNavigationStateSpy).not.toHaveBeenCalled();
     });
   });
 });
