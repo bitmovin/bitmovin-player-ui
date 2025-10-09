@@ -130,7 +130,7 @@ export class UIManager {
   private managerPlayerWrapper: PlayerWrapper;
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
-  private settingsPanelManager: SettingsPanelAutoHideManager;
+  private settingsPanelAutoHideManager: SettingsPanelAutoHideManager;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -258,7 +258,7 @@ export class UIManager {
     let uiVariantsWithoutCondition = [];
 
     const stateClearDelay = uiconfig.settingsPanelAutoHide?.stateClearDelay ?? 5000;
-    this.settingsPanelManager = new SettingsPanelAutoHideManager({
+    this.settingsPanelAutoHideManager = new SettingsPanelAutoHideManager({
       stateClearDelay,
     });
 
@@ -274,24 +274,11 @@ export class UIManager {
           uiVariant.ui,
           this.config,
           this.subtitleSettingsManager,
-          this.settingsPanelManager,
+          this.settingsPanelAutoHideManager,
           uiVariant.spatialNavigation,
         ),
       );
     }
-
-    // for (let uiInstanceManager of this.uiInstanceManagers) {
-    //   uiInstanceManager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
-    //     if (component instanceof SettingsPanel) {
-    //       this.settingsPanelManager.onSettingsPanelShow(component);
-    //     }
-    //   });
-    //   uiInstanceManager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
-    //     if (component instanceof SettingsPanel) {
-    //       this.settingsPanelManager.onSettingsPanelHide(component);
-    //     }
-    //   });
-    // }
 
     // Make sure that there is only one UI variant without a condition
     // It does not make sense to have multiple variants without condition, because only the first one in the list
@@ -489,17 +476,17 @@ export class UIManager {
     const settingsPanelShowHandler = (component: Component<ComponentConfig>) => {
       if (component instanceof SettingsPanel) {
         console.log("[test] UIManager switchToUiVariant settingsPanelShowHandler - Panel ID:", component.getConfig().id);
-        this.settingsPanelManager.onSettingsPanelShow(component);
+        this.settingsPanelAutoHideManager.onSettingsPanelShow(component);
       }
     }
     const settingsPanelHideHandler = (component: Component<ComponentConfig>) => {
       if (component instanceof SettingsPanel) {
         console.log("[test] UIManager switchToUiVariant settingsPanelHideHandler - Panel ID:", component.getConfig().id);
-        this.settingsPanelManager.onSettingsPanelHide(component);
+        this.settingsPanelAutoHideManager.onSettingsPanelHide(component);
       }
     }
 
-    this.settingsPanelManager.clearSavedState();
+    this.settingsPanelAutoHideManager.clearSavedState();
     if (this.currentUi) {
       this.currentUi.onComponentShow.unsubscribe(settingsPanelShowHandler);
       this.currentUi.onComponentHide.unsubscribe(settingsPanelHideHandler);
@@ -619,8 +606,8 @@ export class UIManager {
     }
     this.managerPlayerWrapper.clearEventHandlers();
     this.focusVisibilityTracker.release();
-    if (this.settingsPanelManager) {
-      this.settingsPanelManager.release();
+    if (this.settingsPanelAutoHideManager) {
+      this.settingsPanelAutoHideManager.release();
     }
   }
 
@@ -698,7 +685,7 @@ export class UIInstanceManager {
   private ui: UIContainer;
   private config: InternalUIConfig;
   private subtitleSettingsManager: SubtitleSettingsManager;
-  private settingsPanelManager: SettingsPanelAutoHideManager;
+  private settingsPanelAutoHideManager: SettingsPanelAutoHideManager;
   protected spatialNavigation?: SpatialNavigation;
 
   private events = {
@@ -722,14 +709,14 @@ export class UIInstanceManager {
     ui: UIContainer,
     config: InternalUIConfig,
     subtitleSettingsManager: SubtitleSettingsManager,
-    settingsPanelManager: SettingsPanelAutoHideManager,
+    settingsPanelAutoHideManager: SettingsPanelAutoHideManager,
     spatialNavigation?: SpatialNavigation,
   ) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
     this.subtitleSettingsManager = subtitleSettingsManager;
-    this.settingsPanelManager = settingsPanelManager;
+    this.settingsPanelAutoHideManager = settingsPanelAutoHideManager;
     this.spatialNavigation = spatialNavigation;
   }
 
@@ -737,8 +724,8 @@ export class UIInstanceManager {
     return this.subtitleSettingsManager;
   }
 
-  getSettingsPanelManager() {
-    return this.settingsPanelManager;
+  getSettingsPanelAutoHideManager() {
+    return this.settingsPanelAutoHideManager;
   }
 
   getConfig(): InternalUIConfig {

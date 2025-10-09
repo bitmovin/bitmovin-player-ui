@@ -32,7 +32,7 @@ export namespace MockHelper {
     const UiInstanceManagerMockClass: jest.Mock<UIInstanceManager> = jest.fn().mockImplementation(() => ({
       onConfigured: getEventDispatcherMock(),
       getSubtitleSettingsManager: jest.fn().mockReturnValue(new SubtitleSettingsManager()),
-      getSettingsPanelManager: jest.fn().mockReturnValue(new SettingsPanelAutoHideManager({ stateClearDelay: 5000 })),
+      getSettingsPanelAutoHideManager: jest.fn().mockReturnValue(new SettingsPanelAutoHideManager({ stateClearDelay: 5000 })),
       getConfig: jest.fn().mockReturnValue({
         events: {
           onUpdated: getEventDispatcherMock(),

@@ -127,7 +127,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     const getUiHideDelay = (): number => {
-      return uimanager.getSettingsPanelManager().getOpenSettingsPanelHideDelay() ?? baseHideDelay;
+      return uimanager.getSettingsPanelAutoHideManager().getOpenSettingsPanelHideDelay() ?? baseHideDelay;
     };
 
     const startUiHideTimeoutWithCurrentDelay = (): void => {
@@ -139,7 +139,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     this.showUi = () => {
       // Restore settings panel if it was open before auto-hide
-      uimanager.getSettingsPanelManager().restoreLastState();
+      uimanager.getSettingsPanelAutoHideManager().restoreLastState();
 
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
@@ -154,7 +154,7 @@ export class UIContainer extends Container<UIContainerConfig> {
 
     this.hideUi = () => {
       // Before hiding, save the complete panel navigation state
-      uimanager.getSettingsPanelManager().saveCurrentState();
+      uimanager.getSettingsPanelAutoHideManager().saveCurrentState();
 
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
