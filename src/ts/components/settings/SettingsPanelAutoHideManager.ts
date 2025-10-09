@@ -52,7 +52,7 @@ export class SettingsPanelAutoHideManager {
     ArrayUtils.remove(this.openSettingsPanels, panel);
   }
 
-  private clearSavedState(): void {
+  public clearSavedState(): void {
     this.lastOpenSettingsPanel = null;
     this.lastSettingsPanelState = null;
   }
@@ -119,7 +119,9 @@ export class SettingsPanelAutoHideManager {
     if (!this.hasOpenPanels()) return undefined;
 
     const openPanel = this.openSettingsPanels[0];
-    return openPanel.getConfig().hideDelay;
+    const hideDelay = openPanel.getConfig().hideDelay;
+
+    return hideDelay != null && hideDelay >= 0 ? hideDelay : undefined;
   }
 
   public release(): void {

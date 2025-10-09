@@ -280,18 +280,18 @@ export class UIManager {
       );
     }
 
-    for (let uiInstanceManager of this.uiInstanceManagers) {
-      uiInstanceManager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
-        if (component instanceof SettingsPanel) {
-          this.settingsPanelManager.onSettingsPanelShow(component);
-        }
-      });
-      uiInstanceManager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
-        if (component instanceof SettingsPanel) {
-          this.settingsPanelManager.onSettingsPanelHide(component);
-        }
-      });
-    }
+    // for (let uiInstanceManager of this.uiInstanceManagers) {
+    //   uiInstanceManager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
+    //     if (component instanceof SettingsPanel) {
+    //       this.settingsPanelManager.onSettingsPanelShow(component);
+    //     }
+    //   });
+    //   uiInstanceManager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
+    //     if (component instanceof SettingsPanel) {
+    //       this.settingsPanelManager.onSettingsPanelHide(component);
+    //     }
+    //   });
+    // }
 
     // Make sure that there is only one UI variant without a condition
     // It does not make sense to have multiple variants without condition, because only the first one in the list
@@ -485,6 +485,29 @@ export class UIManager {
     if (this.currentUi == null) {
       return;
     }
+
+    const settingsPanelShowHandler = (component: Component<ComponentConfig>) => {
+      if (component instanceof SettingsPanel) {
+        console.log("[test] UIManager switchToUiVariant settingsPanelShowHandler - Panel ID:", component.getConfig().id);
+        this.settingsPanelManager.onSettingsPanelShow(component);
+      }
+    }
+    const settingsPanelHideHandler = (component: Component<ComponentConfig>) => {
+      if (component instanceof SettingsPanel) {
+        console.log("[test] UIManager switchToUiVariant settingsPanelHideHandler - Panel ID:", component.getConfig().id);
+        this.settingsPanelManager.onSettingsPanelHide(component);
+      }
+    }
+
+    this.settingsPanelManager.clearSavedState();
+    if (this.currentUi) {
+      this.currentUi.onComponentShow.unsubscribe(settingsPanelShowHandler);
+      this.currentUi.onComponentHide.unsubscribe(settingsPanelHideHandler);
+    }
+    nextUi.onComponentShow.subscribe((component: Component<ComponentConfig>) => settingsPanelShowHandler(component));
+    nextUi.onComponentHide.subscribe((component: Component<ComponentConfig>) => settingsPanelHideHandler(component));
+    console.log("[test] UIManager switchToUiVariant currentUi", this.currentUi.getUI().getDomElement());
+
     // Add the UI to the DOM (and configure it) the first time it is selected
     if (!this.currentUi.isConfigured()) {
       this.addUi(this.currentUi);
