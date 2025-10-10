@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- New Icons for `QuickSeekButton` matching our new icon design system
+- Dedicated Icons for `QuickSeekButton` for intervals of 5, 10, 15, 20, 30 and 60 seconds
+
 ### Fixed
 
 - `npm start` not working anymore
