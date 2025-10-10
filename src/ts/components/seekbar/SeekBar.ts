@@ -129,9 +129,6 @@ export class SeekBar extends Component<SeekBarConfig> {
   private player: PlayerAPI;
   private uiManager: UIInstanceManager;
 
-  // We need to track the current ad state manually since our mobile SDKs don't expose an API to check if an ad is active.
-  private isAdPlaying: boolean = false;
-
   protected seekBarType: SeekBarType;
 
   protected isUiShown: boolean;
@@ -147,6 +144,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   private pausedTimeshiftUpdater: Timeout;
 
   private isUserSeeking = false;
+  // We need to track the current ad state manually since our mobile SDKs don't expose an API to check if an ad is active.
+  private isAdPlaying: boolean = false;
 
   private seekBarEvents = {
     /**
