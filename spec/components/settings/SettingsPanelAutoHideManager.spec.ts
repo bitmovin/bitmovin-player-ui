@@ -111,12 +111,18 @@ describe('SettingsPanelAutoHideManager', () => {
     it('restores saved panel state when reopened before the clear timeout', () => {
       const manager = new SettingsPanelAutoHideManager({ stateClearDelay: 1000 });
       const { panel, element, wrapper, navigationStack, activePage } = createSettingsPanelInstance({ hideDelay: 3000 });
-      const showSpy = jest.spyOn(panel, 'show');
+      const showSpy = jest.spyOn(panel, 'show').mockImplementation(function(this: any) {
+        // Call the original show method to trigger the event chain (onShow -> onAfterShow)
+        return SettingsPanel.prototype.show.call(this);
+      });
       const restoreNavigationStateSpy = jest.spyOn(panel, 'restoreNavigationState').mockImplementation(() => {});
 
       manager.onSettingsPanelShow(panel);
       manager.saveCurrentState();
       manager.onSettingsPanelHide(panel);
+
+      // Actually hide the panel so that show() will trigger the event chain
+      panel.hide();
 
       manager.restoreLastState();
       jest.runOnlyPendingTimers();

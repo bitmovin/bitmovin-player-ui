@@ -95,16 +95,13 @@ export class SettingsPanelAutoHideManager {
         this.stateClearTimeout.clear();
       }
 
-      // Show the panel first
-      panel.show();
-
-      // Then restore the navigation state (this will override the resetNavigation call in onShow)
-      setTimeout(() => {
+      panel.onAfterShow.subscribeOnce(() => {
         panel.restoreNavigationState(state);
-      }, 0);
+        this.clearSavedState();
+      });
 
-      // Clear saved state
-      this.clearSavedState();
+      // Show the panel. This will trigger onShow (which resets navigation), then onAfterShow (which restores state)
+      panel.show();
     }
   }
 

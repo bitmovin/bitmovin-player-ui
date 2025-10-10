@@ -71,6 +71,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   private settingsPanelEvents = {
     onSettingsStateChanged: new EventDispatcher<SettingsPanel<SettingsPanelConfig>, NoArgs>(),
     onActivePageChanged: new EventDispatcher<SettingsPanel<SettingsPanelConfig>, NoArgs>(),
+    onAfterShow: new EventDispatcher<SettingsPanel<SettingsPanelConfig>, NoArgs>(),
   };
 
   private hideTimeout: Timeout;
@@ -287,6 +288,10 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return this.settingsPanelEvents.onActivePageChanged.getEvent();
   }
 
+  get onAfterShow(): Event<SettingsPanel<SettingsPanelConfig>, NoArgs> {
+    return this.settingsPanelEvents.onAfterShow.getEvent();
+  }
+
   get wrapperScrollTop(): number {
     return this.innerContainerElement.get(0)?.scrollTop ?? 0;
   }
@@ -470,6 +475,23 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
   protected onActivePageChangedEvent() {
     this.settingsPanelEvents.onActivePageChanged.dispatch(this);
+  }
+
+  /**
+   * Override onShowEvent to dispatch onAfterShow after all onShow handlers complete.
+   * This ensures that any state restoration happens after navigation reset.
+   */
+  protected onShowEvent(): void {
+    super.onShowEvent();
+    this.onAfterShowEvent();
+  }
+
+  /**
+   * Fires the onAfterShow event.
+   * This event is dispatched after all onShow handlers have executed.
+   */
+  protected onAfterShowEvent(): void {
+    this.settingsPanelEvents.onAfterShow.dispatch(this);
   }
 
   /**
