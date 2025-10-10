@@ -69,7 +69,7 @@ export class SettingsPanelAutoHideManager {
         activePage: panel.getActivePage(),
         navigationStack: [...(panel as any)['navigationStack']], // Copy the array
         scrollTop: panelElement.scrollTop,
-        wrapperScrollTop: panel.getDomElement().find('.' + panel.getWrapperClassName()).get(0)?.scrollTop || 0,
+        wrapperScrollTop: panel.wrapperScrollTop,
         panelWidth: panelElement.scrollWidth,
         panelHeight: panelElement.scrollHeight,
       };

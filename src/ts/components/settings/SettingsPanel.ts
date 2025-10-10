@@ -287,6 +287,17 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return this.settingsPanelEvents.onActivePageChanged.getEvent();
   }
 
+  get wrapperScrollTop(): number {
+    return this.innerContainerElement.get(0)?.scrollTop ?? 0;
+  }
+
+  set wrapperScrollTop(value: number) {
+    const element = this.innerContainerElement.get(0);
+    if (element) {
+      element.scrollTop = value;
+    }
+  }
+
   release(): void {
     super.release();
     if (this.hideTimeout) {
@@ -482,10 +493,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     // Restore scroll positions after DOM is ready
     setTimeout(() => {
       this.getDomElement().get(0).scrollTop = state.scrollTop;
-      const wrapper = this.getDomElement().find('.' + this.prefixCss('container-wrapper')).get(0);
-      if (wrapper) {
-        wrapper.scrollTop = state.wrapperScrollTop;
-      }
+      this.wrapperScrollTop = state.wrapperScrollTop;
     }, 0);
   }
 }

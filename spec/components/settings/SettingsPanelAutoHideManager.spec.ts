@@ -43,7 +43,11 @@ const createSettingsPanelInstance = (options: PanelSetupOptions = {}) => {
     wrapper.scrollTop = wrapperScrollTop;
   }
 
-  jest.spyOn(panel, 'getWrapperClassName').mockReturnValue('bmpui-container-wrapper');
+  (panel as any).innerContainerElement = {
+    get: (index: number) => wrapper,
+  };
+
+  jest.spyOn(panel as any, 'wrapperScrollTop', 'get').mockReturnValue(wrapperScrollTop);
 
   const panelNavigationStack =
     navigationStack.length > 0

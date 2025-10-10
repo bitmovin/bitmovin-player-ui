@@ -40,7 +40,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
   /**
    * A reference to the inner element that contains the components of the container.
    */
-  private innerContainerElement: DOM;
+  protected innerContainerElement: DOM;
   private componentsToAppend: Component<ComponentConfig>[];
   private componentsToPrepend: Component<ComponentConfig>[];
   private componentsToRemove: Component<ComponentConfig>[];
@@ -142,14 +142,6 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     }
   }
 
-  /**
-   * Returns the prefixed CSS class name for the container wrapper
-   * @return {string}
-   */
-  getWrapperClassName(): string {
-    return this.prefixCss('container-wrapper');
-  }
-
   protected toDomElement(): DOM {
     // Create the container element (the outer <div>)
     let containerElement = new DOM(
@@ -169,7 +161,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
 
     // Create the inner container element (the inner <div>) that will contain the components
     let innerContainer = new DOM(this.config.tag, {
-      class: this.getWrapperClassName(),
+      class: this.prefixCss('container-wrapper'),
     });
     this.innerContainerElement = innerContainer;
 
