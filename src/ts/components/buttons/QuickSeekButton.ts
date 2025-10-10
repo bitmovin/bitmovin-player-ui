@@ -11,6 +11,10 @@ export interface QuickSeekButtonConfig extends ButtonConfig {
   /**
    * Specify how many seconds the player should seek forward/backwards in the stream.
    * Negative values mean a backwards seek, positive values mean a forward seek.
+   *
+   * Our UI provides default icons for intervals of 5, 10, 15, 20, 30 and 60 seconds and a fallback icon
+   * for other intervals.
+   *
    * Default is -10.
    */
   seekSeconds?: number;
