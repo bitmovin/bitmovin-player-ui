@@ -120,14 +120,13 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isSeeking = false;
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
-    const baseHideDelay = config.hideDelay;
 
     this.hidingPrevented = (): boolean => {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
     };
 
     const getUiHideDelay = (): number => {
-      return uimanager.getSettingsPanelAutoHideManager().getOpenSettingsPanelHideDelay() ?? baseHideDelay;
+      return uimanager.getSettingsPanelAutoHideManager().getOpenSettingsPanelHideDelay() ?? config.hideDelay;
     };
 
     const startUiHideTimeoutWithCurrentDelay = (): void => {
