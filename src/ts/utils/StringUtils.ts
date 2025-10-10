@@ -126,7 +126,7 @@ export namespace StringUtils {
         time = 0;
 
         // compute list of ads and calculate duration of remaining ads based on index of active ad
-        if (player.ads.isLinearAdActive()) {
+        if (player.ads?.isLinearAdActive?.()) {
           const isActiveAd = (ad: Ad) => player.ads.getActiveAd().id === ad.id;
           const indexOfActiveAd = player.ads.getActiveAdBreak().ads.findIndex(isActiveAd);
           const duration = player.ads
