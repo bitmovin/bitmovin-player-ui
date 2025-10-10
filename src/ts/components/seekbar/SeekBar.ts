@@ -129,7 +129,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   private player: PlayerAPI;
   private uiManager: UIInstanceManager;
 
-  // Necessary since player.ads?.isLinearAdActive?.() does not exist on mobile SDKs
+  // We need to track the current ad state manually since our mobile SDKs don't expose an API to check if an ad is active.
   private isAdPlaying: boolean = false;
 
   protected seekBarType: SeekBarType;
