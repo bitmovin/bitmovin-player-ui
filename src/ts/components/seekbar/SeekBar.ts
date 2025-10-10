@@ -144,6 +144,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   private pausedTimeshiftUpdater: Timeout;
 
   private isUserSeeking = false;
+  // We need to track the current ad state manually since our mobile SDKs don't expose an API to check if an ad is active.
+  private isAdPlaying: boolean = false;
 
   private seekBarEvents = {
     /**
@@ -282,14 +284,22 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     };
 
-    player.on(player.exports.PlayerEvent.AdStarted, resumeSeekBarUpdates);
+    player.on(player.exports.PlayerEvent.AdStarted, () => {
+      this.isAdPlaying = true;
+      resumeSeekBarUpdates();
+    });
+    player.on(player.exports.PlayerEvent.AdBreakFinished, () => {
+      this.isAdPlaying = false;
+    });
+    player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
+      this.isAdPlaying = false;
+    });
 
     uimanager.onControlsShow.subscribe(resumeSeekBarUpdates);
 
     uimanager.onControlsHide.subscribe(() => {
       // Keep seekbar always active during the playback of a linear ad
-      const isAdPlaying = player.ads?.isLinearAdActive() ?? false;
-      if (isAdPlaying) {
+      if (this.isAdPlaying) {
         return;
       }
 

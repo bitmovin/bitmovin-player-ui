@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- New Icons for `QuickSeekButton` matching our new icon design system
+- Dedicated Icons for `QuickSeekButton` for intervals of 5, 10, 15, 20, 30 and 60 seconds
 - `UIConfig.settingsPanelAutoHide.stateClearDelay` to configure how long the settings panel state is preserved after being hidden
 
 ### Changed
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - `npm start` not working anymore
+- Crash when using the Player Android SDK where `player.ads.isLinearAdActive` was invoked despite not being available on that platform
 
 ## [4.1.0] - 2025-10-06
 
@@ -161,7 +164,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - `ui-skin-cast-receiver` -> `ui-cast-receiver`
     - `ui-skin-tv` -> `ui-tv`
 
-## [4.0.0] - 2025-09-26
+## [3.103.1] - 2025-10-07
 
 ### Changed
 

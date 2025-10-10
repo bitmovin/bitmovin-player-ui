@@ -18,7 +18,7 @@ export interface UIContainerConfig extends ContainerConfig {
   /**
    * The delay in milliseconds after which the control bar will be hidden when there is no user interaction.
    * Set to -1 for the UI to be always shown.
-   * Default: 5 seconds (5000)
+   * Default: 2 seconds (2000)
    */
   hideDelay?: number;
   /**
@@ -35,7 +35,7 @@ export interface UIContainerConfig extends ContainerConfig {
   /**
    * Specify whether the UI should be hidden immediatly if the mouse leaves the userInteractionEventSource.
    * If false or not set it will wait for the hideDelay.
-   * Default: false
+   * Default: true
    */
   hideImmediatelyOnMouseLeave?: boolean;
 }
