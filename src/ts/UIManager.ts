@@ -475,13 +475,11 @@ export class UIManager {
 
     const settingsPanelShowHandler = (component: Component<ComponentConfig>) => {
       if (component instanceof SettingsPanel) {
-        console.log("[test] UIManager switchToUiVariant settingsPanelShowHandler - Panel ID:", component.getConfig().id);
         this.settingsPanelAutoHideManager.onSettingsPanelShow(component);
       }
     }
     const settingsPanelHideHandler = (component: Component<ComponentConfig>) => {
       if (component instanceof SettingsPanel) {
-        console.log("[test] UIManager switchToUiVariant settingsPanelHideHandler - Panel ID:", component.getConfig().id);
         this.settingsPanelAutoHideManager.onSettingsPanelHide(component);
       }
     }
@@ -493,7 +491,6 @@ export class UIManager {
     }
     nextUi.onComponentShow.subscribe((component: Component<ComponentConfig>) => settingsPanelShowHandler(component));
     nextUi.onComponentHide.subscribe((component: Component<ComponentConfig>) => settingsPanelHideHandler(component));
-    console.log("[test] UIManager switchToUiVariant currentUi", this.currentUi.getUI().getDomElement());
 
     // Add the UI to the DOM (and configure it) the first time it is selected
     if (!this.currentUi.isConfigured()) {
