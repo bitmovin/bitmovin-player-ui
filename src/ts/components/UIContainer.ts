@@ -8,6 +8,7 @@ import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Button, ButtonConfig } from './buttons/Button';
 import { TouchControlOverlay, TouchControlOverlayConfig } from './overlays/TouchControlOverlay';
+import { Component, ComponentConfig, SettingsPanel } from '../main';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -38,6 +39,11 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: true
    */
   hideImmediatelyOnMouseLeave?: boolean;
+
+  // whether the ui containers hide delay should be used, or the hide delay of the settings panel
+  hideDelayTimeoutIfSettingsPanelOpen?: boolean;
+  // detect if a settings panel gets opened, and keep track of it
+  // 
 }
 
 /**
@@ -62,7 +68,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   private userInteractionEvents: { name: string; handler: EventListenerOrEventListenerObject }[];
   private hidingPrevented: () => boolean;
 
-  public hideUi: () => void = () => {};
+  public hideUi: (force?: boolean) => void = () => {};
   public showUi: () => void = () => {};
   public toggleUiShown: () => void = () => {};
 
@@ -103,6 +109,8 @@ export class UIContainer extends Container<UIContainerConfig> {
   private configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
     let config = this.getConfig();
     let isUiShown = false;
+    let isSettingsPanelShown = false;
+    let hideUiPending = false;
 
     uimanager.onConfigured.subscribe(() => {
       if (isUiShown) {
@@ -126,6 +134,8 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     this.showUi = () => {
+      hideUiPending = false;
+
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
         uimanager.onControlsShow.dispatch(this);
@@ -137,9 +147,44 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
-    this.hideUi = () => {
+    uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
+      if (component instanceof SettingsPanel) {
+        isSettingsPanelShown = true;
+      }
+    });
+
+    uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
+      if (component instanceof SettingsPanel) {
+        isSettingsPanelShown = false;
+
+        if (hideUiPending) {
+          console.log('[test] UICONTAINER: hiding UI');
+          this.hideUi(true);
+          hideUiPending = false;
+        }
+      }
+    });
+
+    // only issue with current approach is that keeping mouse inside the settings apnel prevent the auto-hide timer
+
+    this.hideUi = (force: boolean = false) => {
+      // if settings panel is open, do not hide the UI (return)
+      // Then let's detect if the settings panel hides because we want to hide the whole UI
+
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
+        if (force) {
+          uimanager.onControlsHide.dispatch(this);
+          isUiShown = false;
+          return;
+        }
+
+        if (isSettingsPanelShown) {
+          console.log('[test] UICONTAINER: settings panel open, delaying hideUi');
+          hideUiPending = true
+          return
+        }
+
         // Issue a preview event to check if we are good to hide the controls
         let previewHideEventArgs = <CancelEventArgs>{};
         uimanager.onPreviewControlsHide.dispatch(this, previewHideEventArgs);
@@ -271,7 +316,7 @@ export class UIContainer extends Container<UIContainerConfig> {
           // hide the UI in such cases
           if (!isSeeking && !this.hidingPrevented()) {
             if (this.config.hideImmediatelyOnMouseLeave) {
-              this.hideUi();
+              this.hideUi(true);
             } else {
               this.uiHideTimeout.start();
             }
