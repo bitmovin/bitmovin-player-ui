@@ -168,6 +168,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     // only issue with current approach is that keeping mouse inside the settings apnel prevent the auto-hide timer
 
     this.hideUi = (force: boolean = false) => {
+      console.log('[test] UICONTAINER: hideUi called, force=', force);
       // if settings panel is open, do not hide the UI (return)
       // Then let's detect if the settings panel hides because we want to hide the whole UI
 

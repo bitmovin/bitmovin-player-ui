@@ -86,6 +86,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   currentState: SettingsPanelState = null;
 
   private resetStateTimerId: number | null = null;
+  private isDismissOverlayHide: boolean = false;
 
   private settingsPanelEvents = {
     onSettingsStateChanged: new EventDispatcher<SettingsPanel<SettingsPanelConfig>, NoArgs>(),
@@ -119,6 +120,17 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
     uimanager.onControlsHide.subscribe(() => this.hideHoveredSelectBoxes());
     uimanager.onComponentViewModeChanged.subscribe((_, { mode }) => this.trackComponentViewMode(mode));
+    // uimanager.onActiveUiChanged.subscribe(() => {
+    uimanager.onRelease.subscribe(() => {
+      console.log('[test] UI variant changed, resetting settings panel state');
+
+      if (this.resetStateTimerId !== null) {
+        clearTimeout(this.resetStateTimerId);
+        this.resetStateTimerId = null;
+      }
+
+      this.resetState();
+    });
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
@@ -132,6 +144,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
         }
       });
       this.getDomElement().on('mouseleave', () => {
+        // console.log('[test] SettingsPanel mouse leave');
         // On mouse leave activate the timeout
         this.hideTimeout.reset();
       });
@@ -168,21 +181,27 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
       this.resetStateTimerId = window.setTimeout(() => {
         this.resetState();
-        this.resetStateTimerId = null;
       }, config.resetDelay);
     };
 
     this.onHide.subscribe(() => {
       console.log('[test] onHide panel');
 
-      this.currentState = this.maybeSaveCurrentState();
+      const shouldResetImmediately = this.isDismissOverlayHide;
+
+      if (!shouldResetImmediately) {
+        this.currentState = this.maybeSaveCurrentState();
+        scheduleResetState(); // Delayed reset (5s)
+      } else {
+        // Don't save state, it will be reset immediately (silently)
+        this.currentState = null;
+        this.isDismissOverlayHide = false;
+      }
 
       if (config.hideDelay > -1) {
         // Clear timeout when hidden from outside
         this.hideTimeout.clear();
       }
-
-      scheduleResetState();
 
       // Since we don't reset the actual navigation here we need to simulate a onInactive event in case some panel
       // needs to do something when they become invisible / inactive.
@@ -202,6 +221,9 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       if (this.currentState !== null) {
         // restore state if we have one
         this.restoreNavigationState(this.currentState);
+      } else {
+        // No saved state (was reset), ensure visual classes are updated
+        this.updateActivePageClass();
       }
 
       // Since we don't need to navigate to the root page again we need to fire the onActive event when the settings
@@ -382,10 +404,22 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
   resetState = () => {
     console.log('[test] resetting state');
-    this.popToRootSettingsPanelPage();
-    // this.resetNavigation(false);
+
+    // Reset internal state without visual changes (silent reset)
+    this.activePage = this.getRootPage();
+    this.navigationStack = [];
     this.currentState = null;
     this.resetStateTimerId = null;
+
+    // If hidden, also update the visual state immediately (no one sees it)
+    if (this.isHidden()) {
+      console.log('[test] panel is hidden, updating visual state');
+      // no need to use these here! FIN !!! <<
+      // this.updateActivePageClass();
+      // this.onActivePageChangedEvent();
+      this.getDomElement().css({ width: '', height: '' });
+    }
+    // If shown, visual update will happen on next show via onShow handler
   };
 
   // Treat "default" as: on root page, no navigation stack, no scroll offsets.
