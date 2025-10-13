@@ -40,10 +40,12 @@ export interface UIContainerConfig extends ContainerConfig {
    */
   hideImmediatelyOnMouseLeave?: boolean;
 
-  // whether the ui containers hide delay should be used, or the hide delay of the settings panel
-  hideDelayTimeoutIfSettingsPanelOpen?: boolean;
-  // detect if a settings panel gets opened, and keep track of it
-  // 
+  /**
+   * When true, suspend the UIContainer's hide timer while a SettingsPanel is open,
+   * and resume it when the panel closes.
+   * Default: true
+   */
+  deferUiHideWhileSettingsOpen?: boolean;
 }
 
 /**
@@ -83,6 +85,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         ariaLabel: i18n.getLocalizer('player'),
         hideDelay: 2000,
         hideImmediatelyOnMouseLeave: true,
+        deferUiHideWhileSettingsOpen: true,
       },
       this.config,
     );
@@ -129,6 +132,24 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
 
+    if (config.deferUiHideWhileSettingsOpen) {
+      uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
+        if (component instanceof SettingsPanel) {
+          isSettingsPanelShown = true;
+        }
+      });
+      uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
+        if (component instanceof SettingsPanel) {
+          isSettingsPanelShown = false;
+
+          if (hideUiPending) {// TODO: find better name for var
+            this.hideUi(true);
+            hideUiPending = false;
+          }
+        }
+      });
+    }
+
     this.hidingPrevented = (): boolean => {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
     };
@@ -147,23 +168,6 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
-    uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
-      if (component instanceof SettingsPanel) {
-        isSettingsPanelShown = true;
-      }
-    });
-
-    uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
-      if (component instanceof SettingsPanel) {
-        isSettingsPanelShown = false;
-
-        if (hideUiPending) {
-          this.hideUi(true);
-          hideUiPending = false;
-        }
-      }
-    });
-
     this.hideUi = (force: boolean = false) => {
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
@@ -173,7 +177,7 @@ export class UIContainer extends Container<UIContainerConfig> {
           return;
         }
 
-        if (isSettingsPanelShown) {
+        if (config.deferUiHideWhileSettingsOpen && isSettingsPanelShown) {
           hideUiPending = true
           return
         }

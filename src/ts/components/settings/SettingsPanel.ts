@@ -351,17 +351,6 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return this.settingsPanelEvents.onActivePageChanged.getEvent();
   }
 
-  resetState(): void {
-    this.activePage = this.getRootPage();
-    this.navigationStack = [];
-    this.currentState = null;
-    this.resetStateTimerId = null;
-
-    if (this.isHidden()) {
-      this.getDomElement().css({ width: '', height: '' });
-    }
-  };
-
   hideAndReset(): void {
     this.shouldResetStateImmediately = true;
     this.hide();
@@ -433,6 +422,17 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       element.scrollTop = value;
     }
   }
+
+  private resetState(): void {
+    this.activePage = this.getRootPage();
+    this.navigationStack = [];
+    this.currentState = null;
+    this.resetStateTimerId = null;
+
+    if (this.isHidden()) {
+      this.getDomElement().css({ width: '', height: '' });
+    }
+  };
 
   private buildCurrentState(): SettingsPanelState {
     const panelElement = this.getDomElement().get(0);

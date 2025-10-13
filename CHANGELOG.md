@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - New Icons for `QuickSeekButton` matching our new icon design system
 - Dedicated Icons for `QuickSeekButton` for intervals of 5, 10, 15, 20, 30 and 60 seconds
+- `SettingsPanelConfig.stateResetDelay` to define the delay after hiding the `SettingsPanel` before its internal state (active page, navigation stack and scroll position) is reset
+- `SettingsPanel.hideAndReset()` to immediately hide the `SettingsPanel` and clear its internal state
+- `UIContainerConfig.deferUiHideWhileSettingsOpen` to suspend the `UIContainer`'s hide timer while a `SettingsPanel` is open and resume it when the panel closes. Enabled by default
+
+### Changed
+
+- `SettingsPanel` now supports state restoration
+	- It automatically restores its previous navigation state and scroll position when reopened within the configured `stateResetDelay`
+	- The internal state is cleared only after `stateResetDelay` elapses instead of immediately after hiding
 
 ### Fixed
 
