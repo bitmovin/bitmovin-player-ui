@@ -68,17 +68,14 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     let config = this.getConfig();
     let settingsPanel = config.settingsPanel;
 
-    this.onClick.subscribe(() => {// Not triggered when button goes to off !!
-      console.log('[test] SettingsToggleButton clicked');
+    this.onClick.subscribe(() => {
       // only hide other `SettingsPanel`s if a new one will be opened
       if (!settingsPanel.isShown()) {
-        console.log('[test] Toggle button clicked, hiding other settings panels');
         // Hide all open SettingsPanels before opening this button's panel
         // (We need to iterate a copy because hiding them will automatically remove themselves from the array
         // due to the subscribeOnce above)
         this.visibleSettingsPanels.slice().forEach(settingsPanel => settingsPanel.hide());
       }
-      // console.log('[test] Toggle button clicked, toggling settings panel');
       settingsPanel.toggleHidden();
     });
     settingsPanel.onShow.subscribe(() => {

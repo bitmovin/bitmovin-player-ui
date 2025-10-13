@@ -35,16 +35,10 @@ export class DismissClickOverlay extends Container<DismissClickOverlayConfig> {
 
     let element = this.getDomElement();
     element.on('click', () => {
-      console.log('[test] DismissClickOverlay clicked, hiding target');
-
       if (this.config.target instanceof SettingsPanel) {
-        this.config.target['isDismissOverlayHide'] = true;
-      }
-
-      this.config.target.hide();
-
-      if (this.config.target instanceof SettingsPanel) {
-        this.config.target.resetState();
+        this.config.target.hideAndReset();
+      } else {
+        this.config.target.hide();
       }
     });
   }
