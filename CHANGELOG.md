@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `npm start` not working anymore
 - Crash when using the Player Android SDK where `player.ads.isLinearAdActive` was invoked despite not being available on that platform
+- `SettingsPanel` automatically hiding in `modernSmallScreenUI`
 
 ## [4.1.0] - 2025-10-06
 
