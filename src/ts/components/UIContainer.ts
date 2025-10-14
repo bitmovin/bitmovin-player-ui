@@ -8,7 +8,8 @@ import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Button, ButtonConfig } from './buttons/Button';
 import { TouchControlOverlay, TouchControlOverlayConfig } from './overlays/TouchControlOverlay';
-import { Component, ComponentConfig, SettingsPanel } from '../main';
+import { Component, ComponentConfig } from './Component';
+import { SettingsPanel } from './settings/SettingsPanel';
 
 /**
  * Configuration interface for a {@link UIContainer}.

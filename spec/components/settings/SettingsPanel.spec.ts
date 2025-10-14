@@ -48,7 +48,7 @@ describe('SettingsPanel', () => {
         settingsPanel.popSettingsPanelPage();
 
         // Expect to be back at the root page
-        expect(settingsPanel.getActivePage()).toEqual(rootPage);
+        expect(settingsPanel.getActivePage()).toBe(rootPage);
       });
 
       it('navigates back one level', () => {
@@ -58,20 +58,20 @@ describe('SettingsPanel', () => {
         // Popping to levels back again
         settingsPanel.popSettingsPanelPage();
 
-        expect(settingsPanel.getActivePage()).toEqual(firstPage);
+        expect(settingsPanel.getActivePage()).toBe(firstPage);
       });
     });
 
     describe('getActivePage', () => {
       it('returns the root page if no navigation happened', () => {
-        expect(settingsPanel.getActivePage()).toEqual(rootPage);
+        expect(settingsPanel.getActivePage()).toBe(rootPage);
       });
     });
 
     describe('setActivePageIndex', () => {
       it('returns the page at index', () => {
         settingsPanel.setActivePageIndex(1);
-        expect(settingsPanel.getActivePage()).toEqual(firstPage);
+        expect(settingsPanel.getActivePage()).toBe(firstPage);
       });
 
       it("doesn't push the current page again", () => {
@@ -87,7 +87,7 @@ describe('SettingsPanel', () => {
     describe('setActivePage', () => {
       it('returns the set page', () => {
         settingsPanel.setActivePage(secondPage);
-        expect(settingsPanel.getActivePage()).toEqual(secondPage);
+        expect(settingsPanel.getActivePage()).toBe(secondPage);
       });
 
       it("doesn't push the current page again", () => {
@@ -96,7 +96,7 @@ describe('SettingsPanel', () => {
 
         // Not testable with public methods
         expect((settingsPanel as any).navigationStack.length).toEqual(1);
-        expect(settingsPanel.getActivePage()).toEqual(secondPage);
+        expect(settingsPanel.getActivePage()).toBe(secondPage);
       });
     });
 
@@ -106,17 +106,20 @@ describe('SettingsPanel', () => {
         settingsPanel.setActivePage(firstPage);
 
         settingsPanel.popToRootSettingsPanelPage();
-        expect(settingsPanel.getActivePage()).toEqual(rootPage);
+        expect(settingsPanel.getActivePage()).toBe(rootPage);
       });
     });
 
-    it('resets the navigation when the panel opens', () => {
-      settingsPanel.setActivePage(secondPage);
+    it('restores the last active page when the panel opens again', () => {
       settingsPanel.setActivePage(firstPage);
+      settingsPanel.setActivePage(secondPage);
 
-      // Fake show event
+      // Fake hide event to persist the state
+      (settingsPanel as any).componentEvents.onHide.dispatch(settingsPanel);
+
+      // Fake show event should restore the previous state
       (settingsPanel as any).componentEvents.onShow.dispatch(settingsPanel);
-      expect(settingsPanel.getActivePage()).toEqual(rootPage);
+      expect(settingsPanel.getActivePage()).toBe(secondPage);
     });
 
     describe('onInactiveEvent', () => {
@@ -166,9 +169,11 @@ describe('SettingsPanel', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it('fires for root page when the settings panel was hidden with another one', () => {
-        const spy = jest.fn();
-        rootPage.onActive.subscribe(spy);
+      it('fires for the previously active page when the settings panel becomes visible again', () => {
+        const rootSpy = jest.fn();
+        const secondPageSpy = jest.fn();
+        rootPage.onActive.subscribe(rootSpy);
+        secondPage.onActive.subscribe(secondPageSpy);
 
         settingsPanel.setActivePage(secondPage);
         // Fake hide event
@@ -176,7 +181,8 @@ describe('SettingsPanel', () => {
 
         // Fake show event
         (settingsPanel as any).componentEvents.onShow.dispatch(settingsPanel);
-        expect(spy).toHaveBeenCalled();
+        expect(secondPageSpy).toHaveBeenCalled();
+        expect(rootSpy).not.toHaveBeenCalled();
       });
     });
 

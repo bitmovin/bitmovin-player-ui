@@ -41,8 +41,8 @@ export interface SettingsPanelConfig extends ContainerConfig {
  * State interface for preserving settings panel navigation and scroll position
  */
 export interface SettingsPanelState {
-  activePage: SettingsPanelPage;
-  navigationStack: SettingsPanelPage[];
+  activePageIndex: number;
+  navigationStackIndices: number[];
   scrollTop: number;
   wrapperScrollTop: number;
   panelWidth: number;
@@ -435,11 +435,15 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   };
 
   private buildCurrentState(): SettingsPanelState {
+    const pages = this.getPages();
+    const activePageIndex = pages.indexOf(this.getActivePage());
+    const navigationStackIndices = this.navigationStack.map(p => pages.indexOf(p));
+
     const panelElement = this.getDomElement().get(0);
 
     return {
-      activePage: this.getActivePage(),
-      navigationStack: [...this.navigationStack],
+      activePageIndex,
+      navigationStackIndices,
       scrollTop: panelElement.scrollTop,
       wrapperScrollTop: this.wrapperScrollTop,
       panelWidth: panelElement.scrollWidth,
@@ -463,8 +467,11 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   }
 
   private restoreNavigationState(state: SettingsPanelState): void {
-    this.activePage = state.activePage;
-    this.navigationStack = [...state.navigationStack];
+    const pages = this.getPages();
+
+    this.activePage = pages[state.activePageIndex] ?? this.getRootPage();
+    this.navigationStack = state.navigationStackIndices.map(i => pages[i]).filter(Boolean);
+
     this.updateActivePageClass();
     this.onActivePageChangedEvent();
     this.activePage.onActiveEvent();
