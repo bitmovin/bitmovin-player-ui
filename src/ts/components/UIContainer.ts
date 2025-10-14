@@ -143,7 +143,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         if (component instanceof SettingsPanel) {
           isSettingsPanelShown = false;
 
-          if (hideUiPending) {// TODO: find better name for var
+          if (hideUiPending) {
             this.hideUi(true);
             hideUiPending = false;
           }

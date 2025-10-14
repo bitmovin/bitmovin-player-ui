@@ -221,17 +221,10 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       this.onSettingsStateChangedEvent();
     });
 
-    // implement onPreviewControlsHide and cancel the event if a settings panel is open
-    // So the global timeout is no longer an issue (canceled).
-    // And we start a custom timeout
-
     uimanager.onControlsHide.subscribe(() => {
       this.hide();
     });
     uimanager.onControlsShow.subscribe(() => {
-      // if the clear state timeout did not finish yet, then we are still waiting for the state to be reset
-      // we show the settings panel again since we're still in this timeout
-
       if (this.currentState !== null) {
         this.show()
       }

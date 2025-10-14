@@ -17,10 +17,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- `SettingsPanel` now supports state restoration
-	- It automatically restores its previous navigation state and scroll position when reopened within the configured `stateResetDelay`
-	- The internal state is cleared only after `stateResetDelay` elapses instead of immediately after hiding
-- Increased the default auto-hide delay for `SettingsPanel` to provide a smoother user experience when interacting with settings
+- `SettingsPanel` now temporarily preserves and restores its navigation state and scroll position when it's hidden and shown again without an explicit reset
+  - When reopened within the configured `stateResetDelay`, it automatically restores the last active page, navigation stack, and scroll position
+	- The internal state is cleared only after the `stateResetDelay` period has elapsed or when `hideAndReset()` is called
+- Increased the default auto-hide delay for `SettingsPanel` to provide a smoother experience while adjusting settings
 
 ### Fixed
 
