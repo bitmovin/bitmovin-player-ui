@@ -86,7 +86,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   private activePage: SettingsPanelPage;
   private navigationStack: SettingsPanelPage[] = [];
   
-  currentState: SettingsPanelState = null;
+  private currentState: SettingsPanelState = null;
 
   private resetStateTimerId: number | null = null;
   private shouldResetStateImmediately: boolean = false;
