@@ -85,7 +85,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   // navigation handling
   private activePage: SettingsPanelPage;
   private navigationStack: SettingsPanelPage[] = [];
-  
+
   private currentState: SettingsPanelState = null;
 
   private resetStateTimerId: number | null = null;
@@ -200,7 +200,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       if (this.currentState !== null) {
         this.restoreNavigationState(this.currentState);
       } else {
-        // No saved state (was reset), ensure visual classes are updated
+        // No saved state (was reset), reset dimensions to auto
+        this.getDomElement().css({ width: '', height: '' });
         this.updateActivePageClass();
       }
 
@@ -226,7 +227,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     });
     uimanager.onControlsShow.subscribe(() => {
       if (this.currentState !== null) {
-        this.show()
+        this.show();
       }
     });
 
@@ -418,11 +419,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     this.navigationStack = [];
     this.currentState = null;
     this.resetStateTimerId = null;
-
-    if (this.isHidden()) {
-      this.getDomElement().css({ width: '', height: '' });
-    }
-  };
+  }
 
   private buildCurrentState(): SettingsPanelState {
     const pages = this.getPages();
@@ -445,9 +442,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     const panelElement = this.getDomElement().get(0);
     const atRoot = this.getActivePage() === this.getRootPage();
     const noNav = this.navigationStack.length === 0;
-    const noScroll =
-      (panelElement?.scrollTop ?? 0) === 0 &&
-      this.wrapperScrollTop === 0;
+    const noScroll = (panelElement?.scrollTop ?? 0) === 0 && this.wrapperScrollTop === 0;
 
     return atRoot && noNav && noScroll;
   }
