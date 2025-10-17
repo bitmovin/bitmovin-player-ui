@@ -114,7 +114,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     let config = this.getConfig();
     let isUiShown = false;
     let isSettingsPanelShown = false;
-    let hideUiPending = false;
+    let isHideUiPending = false;
 
     uimanager.onConfigured.subscribe(() => {
       if (isUiShown) {
@@ -143,9 +143,9 @@ export class UIContainer extends Container<UIContainerConfig> {
         if (component instanceof SettingsPanel) {
           isSettingsPanelShown = false;
 
-          if (hideUiPending) {
+          if (isHideUiPending) {
             this.hideUi(true);
-            hideUiPending = false;
+            isHideUiPending = false;
           }
         }
       });
@@ -156,7 +156,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     this.showUi = () => {
-      hideUiPending = false;
+      isHideUiPending = false;
 
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
@@ -179,8 +179,8 @@ export class UIContainer extends Container<UIContainerConfig> {
         }
 
         if (config.deferUiHideWhileSettingsOpen && isSettingsPanelShown) {
-          hideUiPending = true
-          return
+          isHideUiPending = true;
+          return;
         }
 
         // Issue a preview event to check if we are good to hide the controls
