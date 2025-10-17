@@ -32,6 +32,7 @@ export interface SettingsPanelConfig extends ContainerConfig {
   /**
    * The delay in milliseconds after hiding the settings panel before its internal state
    * (e.g., navigation stack and scroll position) is reset.
+   * Set to -1 to disable automatic state reset.
    * Default: 5 seconds (5000)
    */
   stateResetDelay?: number;
@@ -167,7 +168,9 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
         this.resetStateTimerId = null;
       }
 
-      this.resetStateTimerId = window.setTimeout(() => this.resetState(), config.stateResetDelay);
+      if (config.stateResetDelay > -1) {
+        this.resetStateTimerId = window.setTimeout(() => this.resetState(), config.stateResetDelay);
+      }
     };
 
     this.onHide.subscribe(() => {
