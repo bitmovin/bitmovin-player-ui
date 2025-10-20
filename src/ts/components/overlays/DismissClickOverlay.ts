@@ -3,6 +3,7 @@ import { Component, ComponentConfig } from '../Component';
 import { Container } from '../Container';
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../../UIManager';
+import { SettingsPanel } from '../settings/SettingsPanel';
 
 export interface DismissClickOverlayConfig extends ButtonConfig {
   target: Component<ComponentConfig>;
@@ -34,7 +35,11 @@ export class DismissClickOverlay extends Container<DismissClickOverlayConfig> {
 
     let element = this.getDomElement();
     element.on('click', () => {
-      this.config.target.hide();
+      if (this.config.target instanceof SettingsPanel) {
+        this.config.target.hideAndReset();
+      } else {
+        this.config.target.hide();
+      }
     });
   }
 }

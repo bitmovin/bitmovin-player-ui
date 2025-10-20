@@ -8,6 +8,8 @@ import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Button, ButtonConfig } from './buttons/Button';
 import { TouchControlOverlay, TouchControlOverlayConfig } from './overlays/TouchControlOverlay';
+import { Component, ComponentConfig } from './Component';
+import { SettingsPanel } from './settings/SettingsPanel';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -38,6 +40,13 @@ export interface UIContainerConfig extends ContainerConfig {
    * Default: true
    */
   hideImmediatelyOnMouseLeave?: boolean;
+
+  /**
+   * When true, suspend the UIContainer's hide timer while a SettingsPanel is open,
+   * and resume it when the panel closes.
+   * Default: true
+   */
+  deferUiHideWhileSettingsOpen?: boolean;
 }
 
 /**
@@ -62,7 +71,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   private userInteractionEvents: { name: string; handler: EventListenerOrEventListenerObject }[];
   private hidingPrevented: () => boolean;
 
-  public hideUi: () => void = () => {};
+  public hideUi: (force?: boolean) => void = () => {};
   public showUi: () => void = () => {};
   public toggleUiShown: () => void = () => {};
 
@@ -77,6 +86,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         ariaLabel: i18n.getLocalizer('player'),
         hideDelay: 2000,
         hideImmediatelyOnMouseLeave: true,
+        deferUiHideWhileSettingsOpen: true,
       },
       this.config,
     );
@@ -103,6 +113,8 @@ export class UIContainer extends Container<UIContainerConfig> {
   private configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
     let config = this.getConfig();
     let isUiShown = false;
+    let isSettingsPanelShown = false;
+    let isHideUiPending = false;
 
     uimanager.onConfigured.subscribe(() => {
       if (isUiShown) {
@@ -121,11 +133,31 @@ export class UIContainer extends Container<UIContainerConfig> {
     let isFirstTouch = true;
     let playerState: PlayerUtils.PlayerState;
 
+    if (config.deferUiHideWhileSettingsOpen) {
+      uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
+        if (component instanceof SettingsPanel) {
+          isSettingsPanelShown = true;
+        }
+      });
+      uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
+        if (component instanceof SettingsPanel) {
+          isSettingsPanelShown = false;
+
+          if (isHideUiPending) {
+            this.hideUi(true);
+            isHideUiPending = false;
+          }
+        }
+      });
+    }
+
     this.hidingPrevented = (): boolean => {
       return config.hidePlayerStateExceptions && config.hidePlayerStateExceptions.indexOf(playerState) > -1;
     };
 
     this.showUi = () => {
+      isHideUiPending = false;
+
       if (!isUiShown) {
         // Let subscribers know that they should reveal themselves
         uimanager.onControlsShow.dispatch(this);
@@ -137,9 +169,20 @@ export class UIContainer extends Container<UIContainerConfig> {
       }
     };
 
-    this.hideUi = () => {
+    this.hideUi = (force: boolean = false) => {
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
+        if (force) {
+          uimanager.onControlsHide.dispatch(this);
+          isUiShown = false;
+          return;
+        }
+
+        if (config.deferUiHideWhileSettingsOpen && isSettingsPanelShown) {
+          isHideUiPending = true;
+          return;
+        }
+
         // Issue a preview event to check if we are good to hide the controls
         let previewHideEventArgs = <CancelEventArgs>{};
         uimanager.onPreviewControlsHide.dispatch(this, previewHideEventArgs);
@@ -271,7 +314,7 @@ export class UIContainer extends Container<UIContainerConfig> {
           // hide the UI in such cases
           if (!isSeeking && !this.hidingPrevented()) {
             if (this.config.hideImmediatelyOnMouseLeave) {
-              this.hideUi();
+              this.hideUi(true);
             } else {
               this.uiHideTimeout.start();
             }

@@ -19,7 +19,7 @@ export interface SettingsPanelConfig extends ContainerConfig {
   /**
    * The delay in milliseconds after which the settings panel will be hidden when there is no user interaction.
    * Set to -1 to disable automatic hiding.
-   * Default: 3 seconds (3000)
+   * Default: 5 seconds (5000)
    */
   hideDelay?: number;
 
@@ -28,6 +28,24 @@ export interface SettingsPanelConfig extends ContainerConfig {
    * Default: true
    */
   pageTransitionAnimation?: boolean;
+
+  /**
+   * The delay in milliseconds after hiding the settings panel before its internal state
+   * (e.g., navigation stack and scroll position) is reset.
+   * Set to -1 to disable automatic state reset.
+   * Default: 5 seconds (5000)
+   */
+  stateResetDelay?: number;
+}
+
+/**
+ * State interface for preserving settings panel navigation and scroll position
+ */
+export interface SettingsPanelState {
+  activePageIndex: number;
+  navigationStackIndices: number[];
+  scrollTop: number;
+  wrapperScrollTop: number;
 }
 
 export enum NavigationDirection {
@@ -67,6 +85,11 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   private activePage: SettingsPanelPage;
   private navigationStack: SettingsPanelPage[] = [];
 
+  private currentState: SettingsPanelState = null;
+
+  private resetStateTimerId: number | null = null;
+  private shouldResetStateImmediately: boolean = false;
+
   private settingsPanelEvents = {
     onSettingsStateChanged: new EventDispatcher<SettingsPanel<SettingsPanelConfig>, NoArgs>(),
     onActivePageChanged: new EventDispatcher<SettingsPanel<SettingsPanelConfig>, NoArgs>(),
@@ -81,8 +104,9 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       config,
       {
         cssClass: 'ui-settings-panel',
-        hideDelay: 3000,
+        hideDelay: 5000,
         pageTransitionAnimation: true,
+        stateResetDelay: 5000,
       } as Config,
       this.config,
     );
@@ -105,10 +129,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
         this.hideHoveredSelectBoxes();
       });
       this.getDomElement().on('mouseenter mousemove', () => {
-        // On mouse enter and mouse move clear the timeout
-        if (this.hideTimeout.isActive()) {
-          this.hideTimeout.clear();
-        }
+        this.hideTimeout.reset();
       });
       this.getDomElement().on('mouseleave', () => {
         // On mouse leave activate the timeout
@@ -135,10 +156,30 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       const action = getKeyMapForPlatform()[event.keyCode];
       if (action === Action.BACK) {
         this.hide();
+        this.resetState();
+      }
+    };
+
+    const scheduleResetState = () => {
+      if (this.resetStateTimerId !== null) {
+        clearTimeout(this.resetStateTimerId);
+        this.resetStateTimerId = null;
+      }
+
+      if (config.stateResetDelay > -1) {
+        this.resetStateTimerId = window.setTimeout(() => this.resetState(), config.stateResetDelay);
       }
     };
 
     this.onHide.subscribe(() => {
+      if (this.shouldResetStateImmediately) {
+        this.currentState = null;
+        this.shouldResetStateImmediately = false;
+      } else {
+        this.currentState = this.maybeSaveCurrentState();
+        scheduleResetState();
+      }
+
       if (config.hideDelay > -1) {
         // Clear timeout when hidden from outside
         this.hideTimeout.clear();
@@ -152,8 +193,18 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     });
 
     this.onShow.subscribe(() => {
-      // Reset navigation when te panel gets visible to avoid a weird animation when hiding
-      this.resetNavigation(true);
+      if (this.resetStateTimerId !== null) {
+        clearTimeout(this.resetStateTimerId);
+        this.resetStateTimerId = null;
+      }
+
+      if (this.currentState !== null) {
+        this.restoreNavigationState(this.currentState);
+      } else {
+        // No saved state (was reset), ensure visual classes are updated
+        this.updateActivePageClass();
+      }
+
       // Since we don't need to navigate to the root page again we need to fire the onActive event when the settings
       // panel gets visible.
       this.activePage.onActiveEvent();
@@ -173,6 +224,11 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
     uimanager.onControlsHide.subscribe(() => {
       this.hide();
+    });
+    uimanager.onControlsShow.subscribe(() => {
+      if (this.currentState !== null) {
+        this.show();
+      }
     });
 
     this.updateActivePageClass();
@@ -286,6 +342,12 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return this.settingsPanelEvents.onActivePageChanged.getEvent();
   }
 
+  hideAndReset(): void {
+    this.shouldResetStateImmediately = true;
+    this.hide();
+    this.resetState();
+  }
+
   release(): void {
     super.release();
     if (this.hideTimeout) {
@@ -339,6 +401,71 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     this.activePage = rootPage;
     this.updateActivePageClass();
     this.onActivePageChangedEvent();
+  }
+
+  private get wrapperScrollTop(): number {
+    return this.innerContainerElement.get(0)?.scrollTop ?? 0;
+  }
+
+  private set wrapperScrollTop(value: number) {
+    const element = this.innerContainerElement.get(0);
+    if (element) {
+      element.scrollTop = value;
+    }
+  }
+
+  private resetState(): void {
+    this.activePage = this.getRootPage();
+    this.navigationStack = [];
+    this.currentState = null;
+    this.resetStateTimerId = null;
+
+    if (this.isHidden()) {
+      // Clear dimensions only when hidden to avoid visible transition animation
+      this.getDomElement().css({ width: '', height: '' });
+    }
+  }
+
+  private buildCurrentState(): SettingsPanelState {
+    const pages = this.getPages();
+    const activePageIndex = pages.indexOf(this.getActivePage());
+    const navigationStackIndices = this.navigationStack.map(p => pages.indexOf(p));
+
+    const panelElement = this.getDomElement().get(0);
+
+    return {
+      activePageIndex,
+      navigationStackIndices,
+      scrollTop: panelElement.scrollTop,
+      wrapperScrollTop: this.wrapperScrollTop,
+    };
+  }
+
+  private isDefaultPanelState(): boolean {
+    const panelElement = this.getDomElement().get(0);
+    const atRoot = this.getActivePage() === this.getRootPage();
+    const noNav = this.navigationStack.length === 0;
+    const noScroll = (panelElement?.scrollTop ?? 0) === 0 && this.wrapperScrollTop === 0;
+
+    return atRoot && noNav && noScroll;
+  }
+
+  private maybeSaveCurrentState(): SettingsPanelState | null {
+    return this.isDefaultPanelState() ? null : this.buildCurrentState();
+  }
+
+  private restoreNavigationState(state: SettingsPanelState): void {
+    const pages = this.getPages();
+
+    this.activePage = pages[state.activePageIndex] ?? this.getRootPage();
+    this.navigationStack = state.navigationStackIndices.map(i => pages[i]).filter(Boolean);
+
+    this.updateActivePageClass();
+    this.onActivePageChangedEvent();
+    this.activePage.onActiveEvent();
+
+    this.getDomElement().get(0).scrollTop = state.scrollTop;
+    this.wrapperScrollTop = state.wrapperScrollTop;
   }
 
   protected navigateToPage(
