@@ -201,8 +201,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       if (this.currentState !== null) {
         this.restoreNavigationState(this.currentState);
       } else {
-        // No saved state (was reset), reset dimensions to auto
-        this.getDomElement().css({ width: '', height: '' });
+        // No saved state (was reset), ensure visual classes are updated
         this.updateActivePageClass();
       }
 
@@ -420,6 +419,11 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     this.navigationStack = [];
     this.currentState = null;
     this.resetStateTimerId = null;
+
+    if (this.isHidden()) {
+      // Clear dimensions only when hidden to avoid visible transition animation
+      this.getDomElement().css({ width: '', height: '' });
+    }
   }
 
   private buildCurrentState(): SettingsPanelState {
