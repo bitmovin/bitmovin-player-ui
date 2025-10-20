@@ -46,8 +46,6 @@ export interface SettingsPanelState {
   navigationStackIndices: number[];
   scrollTop: number;
   wrapperScrollTop: number;
-  panelWidth: number;
-  panelHeight: number;
 }
 
 export enum NavigationDirection {
@@ -436,8 +434,6 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       navigationStackIndices,
       scrollTop: panelElement.scrollTop,
       wrapperScrollTop: this.wrapperScrollTop,
-      panelWidth: panelElement.scrollWidth,
-      panelHeight: panelElement.scrollHeight,
     };
   }
 
@@ -463,13 +459,6 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     this.updateActivePageClass();
     this.onActivePageChangedEvent();
     this.activePage.onActiveEvent();
-
-    if (state.panelWidth !== undefined && state.panelHeight !== undefined) {
-      this.getDomElement().css({
-        width: state.panelWidth + 'px',
-        height: state.panelHeight + 'px',
-      });
-    }
 
     this.getDomElement().get(0).scrollTop = state.scrollTop;
     this.wrapperScrollTop = state.wrapperScrollTop;
