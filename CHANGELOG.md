@@ -5,12 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.2.0] - 2025-10-15
+## [Unreleased]
 
 ### Added
 
-- New Icons for `QuickSeekButton` matching our new icon design system
-- Dedicated Icons for `QuickSeekButton` for intervals of 5, 10, 15, 20, 30 and 60 seconds
 - `SettingsPanelConfig.stateResetDelay` to define the delay after hiding the `SettingsPanel` before its internal state (active page, navigation stack and scroll position) is reset
 - `SettingsPanel.hideAndReset()` to immediately hide the `SettingsPanel` and clear its internal state
 - `UIContainerConfig.deferUiHideWhileSettingsOpen` to suspend the `UIContainer`'s hide timer while a `SettingsPanel` is open and resume it when the panel closes. Enabled by default
@@ -24,9 +22,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- `SettingsPanel` automatically hiding in `modernSmallScreenUI`
+
+## [4.2.0] - 2025-10-15
+
+### Added
+
+- New Icons for `QuickSeekButton` matching our new icon design system
+- Dedicated Icons for `QuickSeekButton` for intervals of 5, 10, 15, 20, 30 and 60 seconds
+
+### Fixed
+
 - `npm start` not working anymore
 - Crash when using the Player Android SDK where `player.ads.isLinearAdActive` was invoked despite not being available on that platform
-- `SettingsPanel` automatically hiding in `modernSmallScreenUI`
 
 ## [4.1.0] - 2025-10-06
 
