@@ -68,5 +68,6 @@ export class AdMessageLabel extends Label<LabelConfig> {
     player.on(player.exports.PlayerEvent.AdSkipped, adEndHandler);
     player.on(player.exports.PlayerEvent.AdError, adEndHandler);
     player.on(player.exports.PlayerEvent.AdFinished, adEndHandler);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, adEndHandler);
   }
 }
