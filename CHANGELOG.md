@@ -17,12 +17,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `SettingsPanel` now temporarily preserves and restores its navigation state and scroll position when it's hidden and shown again without an explicit reset
   - When reopened within the configured `stateResetDelay`, it automatically restores the last active page, navigation stack, and scroll position
-	- The internal state is cleared only after the `stateResetDelay` period has elapsed or when `hideAndReset()` is called
+  - The internal state is cleared only after the `stateResetDelay` period has elapsed or when `hideAndReset()` is called
 - Increased the default auto-hide delay for `SettingsPanel` to provide a smoother experience while adjusting settings
 
 ### Fixed
 
 - `SettingsPanel` automatically hiding in `modernSmallScreenUI`
+- `AdMessageLabel` didn't show anything if a `LabelConfig.text` was configured
 
 ## [4.2.0] - 2025-10-15
 
