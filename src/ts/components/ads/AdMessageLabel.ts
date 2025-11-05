@@ -53,7 +53,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
 
     let adStartHandler = (event: AdEvent) => {
       let uiConfig = (event.ad as LinearAd).uiConfig;
-      text = (uiConfig && uiConfig.message) || config.text;
+      text = uiConfig?.message || config.text;
 
       updateMessageHandler();
 
