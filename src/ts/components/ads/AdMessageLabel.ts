@@ -44,15 +44,15 @@ export class AdMessageLabel extends Label<LabelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
+    const config = this.getConfig();
     let text = config.text;
 
-    let updateMessageHandler = () => {
+    const updateMessageHandler = () => {
       this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(text), null, player));
     };
 
-    let adStartHandler = (event: AdEvent) => {
-      let uiConfig = (event.ad as LinearAd).uiConfig;
+    const adStartHandler = (event: AdEvent) => {
+      const uiConfig = (event.ad as LinearAd).uiConfig;
       text = uiConfig?.message || config.text;
 
       updateMessageHandler();
@@ -60,7 +60,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
       player.on(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);
     };
 
-    let adEndHandler = () => {
+    const adEndHandler = () => {
       player.off(player.exports.PlayerEvent.TimeChanged, updateMessageHandler);
     };
 
