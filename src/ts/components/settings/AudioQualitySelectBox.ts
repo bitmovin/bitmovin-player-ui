@@ -25,12 +25,12 @@ export class AudioQualitySelectBox extends SelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let selectCurrentAudioQuality = () => {
+    const selectCurrentAudioQuality = () => {
       this.selectItem(player.getAudioQuality().id);
     };
 
-    let updateAudioQualities = () => {
-      let audioQualities = player.getAvailableAudioQualities();
+    const updateAudioQualities = () => {
+      const audioQualities = player.getAvailableAudioQualities();
 
       this.clearItems();
 
@@ -38,7 +38,7 @@ export class AudioQualitySelectBox extends SelectBox {
       this.addItem('auto', i18n.getLocalizer('auto'));
 
       // Add audio qualities
-      for (let audioQuality of audioQualities) {
+      for (const audioQuality of audioQualities) {
         this.addItem(audioQuality.id, audioQuality.label);
       }
 

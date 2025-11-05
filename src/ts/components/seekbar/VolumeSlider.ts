@@ -61,7 +61,7 @@ export class VolumeSlider extends SeekBar {
 
     this.setAriaSliderMinMax('0', '100');
 
-    let config = <VolumeSliderConfig>this.getConfig();
+    const config = <VolumeSliderConfig>this.getConfig();
 
     const volumeController = uimanager.getConfig().volumeController;
 

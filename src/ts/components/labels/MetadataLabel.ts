@@ -49,10 +49,10 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
-    let uiconfig = uimanager.getConfig();
+    const config = this.getConfig();
+    const uiconfig = uimanager.getConfig();
 
-    let init = () => {
+    const init = () => {
       switch (config.content) {
         case MetadataLabelContent.Title:
           this.setText(uiconfig.metadata.title);
@@ -63,7 +63,7 @@ export class MetadataLabel extends Label<MetadataLabelConfig> {
       }
     };
 
-    let unload = () => {
+    const unload = () => {
       this.setText(null);
     };
 

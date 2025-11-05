@@ -28,7 +28,7 @@ export class SmallCenteredPlaybackToggleButton extends PlaybackToggleButton {
       this.config.enterFullscreenOnInitialPlayback = uimanager.getConfig().enterFullscreenOnInitialPlayback;
     }
 
-    let togglePlayback = () => {
+    const togglePlayback = () => {
       if (player.isPlaying() || this.isPlayInitiated) {
         player.pause('ui');
       } else {

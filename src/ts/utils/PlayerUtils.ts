@@ -95,7 +95,7 @@ export namespace PlayerUtils {
       this.player = player;
       this.timeShiftAvailable = undefined;
 
-      let timeShiftDetector = () => {
+      const timeShiftDetector = () => {
         this.detect();
       };
       // Try to detect timeshift availability when source is loaded, which works for DASH streams
@@ -107,7 +107,7 @@ export namespace PlayerUtils {
 
     detect(): void {
       if (this.player.isLive()) {
-        let timeShiftAvailableNow = PlayerUtils.isTimeShiftAvailable(this.player);
+        const timeShiftAvailableNow = PlayerUtils.isTimeShiftAvailable(this.player);
 
         // When the availability changes, we fire the event
         if (timeShiftAvailableNow !== this.timeShiftAvailable) {
@@ -156,7 +156,7 @@ export namespace PlayerUtils {
       this.uimanager = uimanager;
       this.live = undefined;
 
-      let liveDetector = () => {
+      const liveDetector = () => {
         this.detect();
       };
       this.uimanager.getConfig().events.onUpdated.subscribe(liveDetector);
@@ -181,7 +181,7 @@ export namespace PlayerUtils {
     }
 
     detect(): void {
-      let liveNow = this.player.isLive();
+      const liveNow = this.player.isLive();
 
       // Compare current to previous live state flag and fire event when it changes. Since we initialize the flag
       // with undefined, there is always at least an initial event fired that tells listeners the live state.

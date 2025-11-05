@@ -95,7 +95,7 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
     }
 
     if (this.settingComponent instanceof ListSelector) {
-      let handleConfigItemChanged = () => {
+      const handleConfigItemChanged = () => {
         if (!(this.settingComponent instanceof ListSelector)) {
           return;
         }

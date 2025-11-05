@@ -91,12 +91,12 @@ export class RecommendationItem extends Component<RecommendationItemConfig> {
       this,
     );
 
-    let innerTitleElement = new Label({ text: recommendationConfig.title, cssClass: 'title' });
+    const innerTitleElement = new Label({ text: recommendationConfig.title, cssClass: 'title' });
     titleElement.append(innerTitleElement.getDomElement());
     itemElement.append(titleElement);
 
     if (recommendationConfig.duration != null) {
-      let timeElement = new Label({
+      const timeElement = new Label({
         text: recommendationConfig.duration ? StringUtils.secondsToTime(recommendationConfig.duration) : '',
         cssClass: 'duration',
       });

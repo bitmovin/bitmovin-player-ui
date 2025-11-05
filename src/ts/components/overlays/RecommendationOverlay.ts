@@ -42,13 +42,13 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let clearRecommendations = () => {
+    const clearRecommendations = () => {
       this.recommendationContainer.removeComponents();
       this.recommendationContainer.updateComponents();
       this.getDomElement().removeClass(this.prefixCss(RecommendationOverlay.CLASS_HAS_RECOMMENDATIONS));
     };
 
-    let setupRecommendations = () => {
+    const setupRecommendations = () => {
       clearRecommendations();
 
       const recommendations = uimanager.getConfig().metadata.recommendations;

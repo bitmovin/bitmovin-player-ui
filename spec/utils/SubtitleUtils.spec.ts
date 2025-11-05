@@ -3,11 +3,11 @@ import { MockHelper } from '../helper/MockHelper';
 import { ListSelector, ListSelectorConfig } from '../../src/ts/components/lists/ListSelector';
 import { PlayerSubtitlesAPI } from 'bitmovin-player';
 
-let playerMock = MockHelper.getPlayerMock();
+const playerMock = MockHelper.getPlayerMock();
 let subtitleSwitchHandler: SubtitleSwitchHandler;
-let uiManagerMock = MockHelper.getUiInstanceManagerMock();
+const uiManagerMock = MockHelper.getUiInstanceManagerMock();
 
-let ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.fn().mockImplementation(() => ({
+const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.fn().mockImplementation(() => ({
   onItemSelected: MockHelper.getEventDispatcherMock(),
   hasItem: jest.fn(),
   addItem: jest.fn(),

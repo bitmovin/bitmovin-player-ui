@@ -34,7 +34,7 @@ export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
     this.addItem('yellow', i18n.getLocalizer('colors.yellow'));
     this.addItem('magenta', i18n.getLocalizer('colors.magenta'));
 
-    let setColorAndOpacity = () => {
+    const setColorAndOpacity = () => {
       if (this.settingsManager.backgroundColor.isSet() && this.settingsManager.backgroundOpacity.isSet()) {
         this.toggleOverlayClass(
           'bgcolor-' + this.settingsManager.backgroundColor.value + this.settingsManager.backgroundOpacity.value,

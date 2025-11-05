@@ -65,8 +65,8 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
-    let settingsPanel = config.settingsPanel;
+    const config = this.getConfig();
+    const settingsPanel = config.settingsPanel;
 
     this.onClick.subscribe(() => {
       // only hide other `SettingsPanel`s if a new one will be opened
@@ -99,7 +99,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     // Handle automatic hiding of the button if there are no settings for the user to interact with
     if (config.autoHideWhenNoActiveSettings) {
       // Setup handler to show/hide button when the settings change
-      let settingsPanelItemsChangedHandler = () => {
+      const settingsPanelItemsChangedHandler = () => {
         if (settingsPanel.rootPageHasActiveSettings()) {
           if (this.isHidden()) {
             this.show();

@@ -5,8 +5,8 @@ import { i18n } from '../localization/i18n';
  * @category Utils
  */
 export namespace StringUtils {
-  export let FORMAT_HHMMSS: string = 'hh:mm:ss';
-  export let FORMAT_MMSS: string = 'mm:ss';
+  export const FORMAT_HHMMSS: string = 'hh:mm:ss';
+  export const FORMAT_MMSS: string = 'mm:ss';
 
   /**
    * Formats a number of seconds into a time string with the pattern hh:mm:ss.
@@ -16,7 +16,7 @@ export namespace StringUtils {
    * @returns {string} the formatted time string
    */
   export function secondsToTime(totalSeconds: number, format: string = FORMAT_HHMMSS): string {
-    let isNegative = totalSeconds < 0;
+    const isNegative = totalSeconds < 0;
 
     if (isNegative) {
       // If the time is negative, we make it positive for the calculation below
@@ -25,9 +25,9 @@ export namespace StringUtils {
     }
 
     // Split into separate time parts
-    let hours = Math.floor(totalSeconds / 3600);
-    let minutes = Math.floor(totalSeconds / 60) - hours * 60;
-    let seconds = Math.floor(totalSeconds) % 60;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor(totalSeconds / 60) - hours * 60;
+    const seconds = Math.floor(totalSeconds) % 60;
 
     return (
       (isNegative ? '-' : '') +
@@ -69,8 +69,8 @@ export namespace StringUtils {
    * @returns {string} the padded number as string
    */
   function leftPadWithZeros(num: number | string, length: number): string {
-    let text = num + '';
-    let padding = '0000000000'.substr(0, length - text.length);
+    const text = num + '';
+    const padding = '0000000000'.substr(0, length - text.length);
     return padding + text;
   }
 
@@ -104,7 +104,7 @@ export namespace StringUtils {
    * @returns {string} the ad message with filled placeholders
    */
   export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: PlayerAPI) {
-    let adMessagePlaceholderRegex = new RegExp(
+    const adMessagePlaceholderRegex = new RegExp(
       '\\{(remainingTime|playedTime|adDuration|adBreakRemainingTime)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g',
     );
@@ -144,9 +144,9 @@ export namespace StringUtils {
   }
 
   function formatNumber(time: number, format: string) {
-    let formatStringValidationRegex = /%((0[1-9]\d*(\.\d+(d|f)|d|f)|\.\d+f|d|f)|hh:mm:ss|mm:ss)/;
-    let leadingZeroesRegex = /(%0[1-9]\d*)(?=(\.\d+f|f|d))/;
-    let decimalPlacesRegex = /\.\d*(?=f)/;
+    const formatStringValidationRegex = /%((0[1-9]\d*(\.\d+(d|f)|d|f)|\.\d+f|d|f)|hh:mm:ss|mm:ss)/;
+    const leadingZeroesRegex = /(%0[1-9]\d*)(?=(\.\d+f|f|d))/;
+    const decimalPlacesRegex = /\.\d*(?=f)/;
 
     if (!formatStringValidationRegex.test(format)) {
       // If the format is invalid, we set a default fallback format
@@ -155,14 +155,14 @@ export namespace StringUtils {
 
     // Determine the number of leading zeros
     let leadingZeroes = 0;
-    let leadingZeroesMatches = format.match(leadingZeroesRegex);
+    const leadingZeroesMatches = format.match(leadingZeroesRegex);
     if (leadingZeroesMatches) {
       leadingZeroes = parseInt(leadingZeroesMatches[0].substring(2));
     }
 
     // Determine the number of decimal places
     let numDecimalPlaces = null;
-    let decimalPlacesMatches = format.match(decimalPlacesRegex);
+    const decimalPlacesMatches = format.match(decimalPlacesRegex);
     if (decimalPlacesMatches && !isNaN(parseInt(decimalPlacesMatches[0].substring(1)))) {
       numDecimalPlaces = parseInt(decimalPlacesMatches[0].substring(1));
       if (numDecimalPlaces > 20) {
@@ -190,7 +190,7 @@ export namespace StringUtils {
     }
     // Time format
     else if (format.indexOf(':') > -1) {
-      let totalSeconds = Math.ceil(time);
+      const totalSeconds = Math.ceil(time);
 
       // hh:mm:ss format
       if (format.indexOf('hh') > -1) {
@@ -198,8 +198,8 @@ export namespace StringUtils {
       }
       // mm:ss format
       else {
-        let minutes = Math.floor(totalSeconds / 60);
-        let seconds = totalSeconds % 60;
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
 
         return leftPadWithZeros(minutes, 2) + ':' + leftPadWithZeros(seconds, 2);
       }

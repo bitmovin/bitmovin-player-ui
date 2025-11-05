@@ -48,7 +48,7 @@ export class SubtitleSettingsManager {
   }
 
   public reset(): void {
-    for (let propertyName in this._properties) {
+    for (const propertyName in this._properties) {
       this._properties[propertyName].clear();
     }
   }
@@ -98,7 +98,7 @@ export class SubtitleSettingsManager {
   }
 
   public initialize() {
-    for (let propertyName in this._properties) {
+    for (const propertyName in this._properties) {
       this._properties[propertyName].onChanged.subscribe((sender, property) => {
         if (property.isSet()) {
           (<any>this.userSettings)[propertyName] = property.value;
@@ -129,7 +129,7 @@ export class SubtitleSettingsManager {
     this.userSettings = StorageUtils.getObject<SubtitleSettings>(this.localStorageKey) || {};
 
     // Apply the loaded settings
-    for (let property in this.userSettings) {
+    for (const property in this.userSettings) {
       this._properties[property].value = (<any>this.userSettings)[property];
     }
   }

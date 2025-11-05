@@ -50,12 +50,12 @@ export class SettingsPanelPage extends Container<SettingsPanelPageConfig> {
     super.configure(player, uimanager);
 
     // Fire event when the state of a settings-item has changed
-    let settingsStateChangedHandler = () => {
+    const settingsStateChangedHandler = () => {
       this.onSettingsStateChangedEvent();
 
       // Attach marker class to last visible item
       let lastShownItem: SettingsPanelItem<SettingsPanelItemConfig> = null;
-      for (let component of this.getItems()) {
+      for (const component of this.getItems()) {
         component.getDomElement().removeClass(this.prefixCss(SettingsPanelPage.CLASS_LAST));
         if (component.isShown()) {
           lastShownItem = component;
@@ -65,13 +65,13 @@ export class SettingsPanelPage extends Container<SettingsPanelPageConfig> {
         lastShownItem.getDomElement().addClass(this.prefixCss(SettingsPanelPage.CLASS_LAST));
       }
     };
-    for (let component of this.getItems()) {
+    for (const component of this.getItems()) {
       component.onActiveChanged.subscribe(settingsStateChangedHandler);
     }
   }
 
   hasActiveSettings(): boolean {
-    for (let component of this.getItems()) {
+    for (const component of this.getItems()) {
       if (component.getConfig().isSetting && component.isActive()) {
         return true;
       }

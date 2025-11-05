@@ -26,13 +26,13 @@ export class AdClickOverlay extends ClickOverlay {
     let clickThroughCallback: () => void = null;
 
     player.on(player.exports.PlayerEvent.AdStarted, (event: AdEvent) => {
-      let ad = event.ad;
+      const ad = event.ad;
       this.setUrl(ad.clickThroughUrl);
       clickThroughCallback = ad.clickThroughUrlOpened;
     });
 
     // Clear click-through URL when ad has finished
-    let adFinishedHandler = () => {
+    const adFinishedHandler = () => {
       this.setUrl(null);
     };
 

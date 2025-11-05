@@ -91,7 +91,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
     // Iterate through listeners, compare with parameter, and remove if found
     // NOTE: In case we ever remove all matching listeners instead of just the first, we need to reverse-iterate here
     for (let i = 0; i < this.listeners.length; i++) {
-      let subscribedListener = this.listeners[i];
+      const subscribedListener = this.listeners[i];
       if (subscribedListener.listener === listener) {
         subscribedListener.clear();
         ArrayUtils.remove(this.listeners, subscribedListener);
@@ -107,7 +107,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
    */
   unsubscribeAll(): void {
     // In case of RateLimitedEventListenerWrapper we need to make sure that the timeout callback won't be called
-    for (let listener of this.listeners) {
+    for (const listener of this.listeners) {
       listener.clear();
     }
 
@@ -120,7 +120,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
    * @param args the arguments for the event
    */
   dispatch(sender: Sender, args: Args = null) {
-    let listenersToRemove = [];
+    const listenersToRemove = [];
 
     // Call every listener
     // We iterate over a copy of the array of listeners to avoid the case where events are not fired on listeners when
@@ -130,7 +130,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
     // as listener y+1 will not be called when subscribed from within the handler of listener y.
     // Array.slice(0) is the fastest array copy method according to: https://stackoverflow.com/a/21514254/370252
     const listeners = this.listeners.slice(0);
-    for (let listener of listeners) {
+    for (const listener of listeners) {
       listener.fire(sender, args);
 
       if (listener.isOnce()) {
@@ -139,7 +139,7 @@ export class EventDispatcher<Sender, Args> implements Event<Sender, Args> {
     }
 
     // Remove one-time listener
-    for (let listenerToRemove of listenersToRemove) {
+    for (const listenerToRemove of listenersToRemove) {
       ArrayUtils.remove(this.listeners, listenerToRemove);
     }
   }

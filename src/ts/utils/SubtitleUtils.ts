@@ -78,7 +78,7 @@ export class SubtitleSwitchHandler {
       return;
     }
 
-    let currentSubtitle = this.player.subtitles
+    const currentSubtitle = this.player.subtitles
       .list()
       .filter(subtitle => subtitle.enabled)
       .pop();

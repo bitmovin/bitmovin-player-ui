@@ -3,11 +3,11 @@ import { ListSelector, ListSelectorConfig } from '../../src/ts/components/lists/
 import { AudioTrackSwitchHandler } from '../../src/ts/utils/AudioTrackUtils';
 import { AudioTrack } from 'bitmovin-player';
 
-let playerMock = MockHelper.getPlayerMock();
+const playerMock = MockHelper.getPlayerMock();
 let audioTrackSwitchHandler: AudioTrackSwitchHandler;
-let uiManagerMock = MockHelper.getUiInstanceManagerMock();
+const uiManagerMock = MockHelper.getUiInstanceManagerMock();
 
-let ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.fn().mockImplementation(() => ({
+const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.fn().mockImplementation(() => ({
   onItemSelected: MockHelper.getEventDispatcherMock(),
   hasItem: jest.fn(),
   addItem: jest.fn(),

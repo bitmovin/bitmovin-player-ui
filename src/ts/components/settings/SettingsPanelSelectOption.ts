@@ -50,7 +50,7 @@ export class SettingsPanelSelectOption extends InteractiveSettingsPanelItem<Sett
     super.configure(player, uimanager);
 
     const handleSelectedOptionChanged = () => {
-      let selectedItem = this.settingComponent.getSelectedItem();
+      const selectedItem = this.settingComponent.getSelectedItem();
 
       if (this.settingsValue === selectedItem) {
         this.getDomElement().addClass(this.prefixCss('selected'));

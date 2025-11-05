@@ -34,7 +34,7 @@ export class FontColorSelectBox extends SubtitleSettingSelectBox {
     this.addItem('yellow', i18n.getLocalizer('colors.yellow'));
     this.addItem('magenta', i18n.getLocalizer('colors.magenta'));
 
-    let setColorAndOpacity = () => {
+    const setColorAndOpacity = () => {
       if (this.settingsManager.fontColor.isSet() && this.settingsManager.fontOpacity.isSet()) {
         this.toggleOverlayClass(
           'fontcolor-' + this.settingsManager.fontColor.value + this.settingsManager.fontOpacity.value,

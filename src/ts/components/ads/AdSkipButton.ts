@@ -46,12 +46,12 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
+    const config = this.getConfig();
     let untilSkippableMessage = config.untilSkippableMessage;
     let skippableMessage = config.skippableMessage;
     let skipOffset = -1;
 
-    let updateSkipMessageHandler = () => {
+    const updateSkipMessageHandler = () => {
       this.show();
 
       // Update the skip message on the button
@@ -64,8 +64,8 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       }
     };
 
-    let adStartHandler = (event: AdEvent) => {
-      let ad = event.ad as LinearAd;
+    const adStartHandler = (event: AdEvent) => {
+      const ad = event.ad as LinearAd;
       skipOffset = ad.skippableAfter;
       untilSkippableMessage = (ad.uiConfig && ad.uiConfig.untilSkippableMessage) || config.untilSkippableMessage;
       skippableMessage = (ad.uiConfig && ad.uiConfig.skippableMessage) || config.skippableMessage;
@@ -80,7 +80,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       }
     };
 
-    let adEndHandler = () => {
+    const adEndHandler = () => {
       player.off(player.exports.PlayerEvent.TimeChanged, updateSkipMessageHandler);
     };
 

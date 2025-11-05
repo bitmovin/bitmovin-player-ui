@@ -67,17 +67,17 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
+    const config = this.getConfig();
     let live = false;
-    let liveCssClass = this.prefixCss('ui-playbacktimelabel-live');
-    let liveEdgeCssClass = this.prefixCss('ui-playbacktimelabel-live-edge');
+    const liveCssClass = this.prefixCss('ui-playbacktimelabel-live');
+    const liveEdgeCssClass = this.prefixCss('ui-playbacktimelabel-live-edge');
     let minWidth = 0;
 
-    let liveClickHandler = () => {
+    const liveClickHandler = () => {
       player.timeShift(0);
     };
 
-    let updateLiveState = () => {
+    const updateLiveState = () => {
       // Player is playing a live stream when the duration is infinite
       live = player.isLive();
 
@@ -98,7 +98,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    let updateLiveTimeshiftState = () => {
+    const updateLiveTimeshiftState = () => {
       if (!live) {
         return;
       }
@@ -117,14 +117,14 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    let playbackTimeHandler = () => {
+    const playbackTimeHandler = () => {
       if (!live && player.getDuration() !== Infinity) {
         this.setTime(PlayerUtils.getCurrentTimeRelativeToSeekableRange(player), player.getDuration());
       }
 
       // To avoid 'jumping' in the UI by varying label sizes due to non-monospaced fonts,
       // we gradually increase the min-width with the content to reach a stable size.
-      let width = this.getDomElement().width();
+      const width = this.getDomElement().width();
       if (width > minWidth) {
         minWidth = width;
         this.getDomElement().css({
@@ -133,7 +133,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    let updateTimeFormatBasedOnDuration = () => {
+    const updateTimeFormatBasedOnDuration = () => {
       // Set time format depending on source duration
       this.timeFormat =
         Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600
@@ -142,7 +142,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       playbackTimeHandler();
     };
 
-    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
+    const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       live = args.live;
       playbackTimeHandler();
@@ -162,7 +162,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     player.on(player.exports.PlayerEvent.StallStarted, updateLiveTimeshiftState);
     player.on(player.exports.PlayerEvent.StallEnded, updateLiveTimeshiftState);
 
-    let init = () => {
+    const init = () => {
       // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content
       // changes)
       minWidth = 0;
@@ -183,8 +183,8 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
    * @param durationSeconds the total duration in seconds
    */
   setTime(playbackSeconds: number, durationSeconds: number) {
-    let currentTime = StringUtils.secondsToTime(playbackSeconds, this.timeFormat);
-    let totalTime = StringUtils.secondsToTime(durationSeconds, this.timeFormat);
+    const currentTime = StringUtils.secondsToTime(playbackSeconds, this.timeFormat);
+    const totalTime = StringUtils.secondsToTime(durationSeconds, this.timeFormat);
 
     switch ((<PlaybackTimeLabelConfig>this.config).timeLabelMode) {
       case PlaybackTimeLabelMode.CurrentTime:

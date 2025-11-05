@@ -99,7 +99,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     }
 
     // Create the button element with the text label
-    let buttonElement = new DOM('button', buttonElementAttributes, this);
+    const buttonElement = new DOM('button', buttonElementAttributes, this);
 
     const addIconElement = () => {
       const icon = new Icon({ ariaLabel: this.config.ariaLabel, altText: this.config.text });

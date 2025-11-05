@@ -118,7 +118,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
+    const config = this.getConfig();
 
     uimanager.onControlsHide.subscribe(() => this.hideHoveredSelectBoxes());
     uimanager.onComponentViewModeChanged.subscribe((_, { mode }) => this.trackComponentViewMode(mode));
@@ -573,7 +573,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   // collect all items from all pages (see hideHoveredSelectBoxes)
   private getComputedItems(): SettingsPanelItem<SettingsPanelItemConfig>[] {
     const allItems: SettingsPanelItem<SettingsPanelItemConfig>[] = [];
-    for (let page of this.getPages()) {
+    for (const page of this.getPages()) {
       allItems.push(...page.getItems());
     }
     return allItems;

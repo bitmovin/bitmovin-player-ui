@@ -28,7 +28,7 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
   }
 
   protected toDomElement(): DOM {
-    let listElement = new DOM(
+    const listElement = new DOM(
       'ul',
       {
         id: this.config.id,
@@ -57,8 +57,8 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
       listItem.removeClass(this.prefixCss(ItemSelectionList.CLASS_SELECTED));
     };
 
-    for (let item of this.items) {
-      let listItem = new DOM('li', {
+    for (const item of this.items) {
+      const listItem = new DOM('li', {
         type: 'li',
         class: this.prefixCss('ui-selectionlistitem'),
       }).append(new DOM('a', {}).html(i18n.performLocalization(item.label)));

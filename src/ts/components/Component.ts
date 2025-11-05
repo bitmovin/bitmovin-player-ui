@@ -308,7 +308,7 @@ export class Component<Config extends ComponentConfig> {
    * Subclasses usually overwrite this method to extend or replace the DOM element with their own design.
    */
   protected toDomElement(): DOM {
-    let element = new DOM(
+    const element = new DOM(
       this.config.tag,
       {
         id: this.config.id,
@@ -365,7 +365,7 @@ export class Component<Config extends ComponentConfig> {
    */
   protected mergeConfig<Config>(config: Config, defaults: Partial<Config>, base: Config): Config {
     // Extend default config with supplied config
-    let merged = Object.assign({}, base, defaults, config);
+    const merged = Object.assign({}, base, defaults, config);
 
     // Return the extended config
     return merged;
@@ -384,7 +384,7 @@ export class Component<Config extends ComponentConfig> {
       return this.prefixCss(css);
     });
     // Join array values into a string
-    let flattenedString = flattenedArray.join(' ');
+    const flattenedString = flattenedArray.join(' ');
     // Return trimmed string to prevent whitespace at the end from the join operation
     return flattenedString.trim();
   }

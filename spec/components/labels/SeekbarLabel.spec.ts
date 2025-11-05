@@ -36,7 +36,7 @@ describe('SeekBarLabel', () => {
         jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(100);
         jest.spyOn(playerMock, 'getTimeShift').mockReturnValue(0);
 
-        let args: SeekPreviewEventArgs = {
+        const args: SeekPreviewEventArgs = {
           scrubbing: false,
           position: 10,
         };
@@ -50,7 +50,7 @@ describe('SeekBarLabel', () => {
         jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(95);
         jest.spyOn(playerMock, 'getTimeShift').mockReturnValue(-5);
 
-        let args: SeekPreviewEventArgs = {
+        const args: SeekPreviewEventArgs = {
           scrubbing: false,
           position: 80,
         };
@@ -68,7 +68,7 @@ describe('SeekBarLabel', () => {
       });
 
       it('with correct seek target value', () => {
-        let args: SeekPreviewEventArgs = {
+        const args: SeekPreviewEventArgs = {
           scrubbing: false,
           position: 10,
         };
@@ -84,7 +84,7 @@ describe('SeekBarLabel', () => {
           end: 20,
         });
 
-        let args: SeekPreviewEventArgs = {
+        const args: SeekPreviewEventArgs = {
           scrubbing: false,
           position: 10,
         };

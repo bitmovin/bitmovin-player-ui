@@ -108,7 +108,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
    * Removes all child components from the container.
    */
   removeComponents(): void {
-    for (let component of this.getComponents().slice()) {
+    for (const component of this.getComponents().slice()) {
       this.removeComponent(component);
     }
   }
@@ -144,7 +144,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
 
   protected toDomElement(): DOM {
     // Create the container element (the outer <div>)
-    let containerElement = new DOM(
+    const containerElement = new DOM(
       this.config.tag,
       {
         id: this.config.id,
@@ -160,12 +160,12 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     }
 
     // Create the inner container element (the inner <div>) that will contain the components
-    let innerContainer = new DOM(this.config.tag, {
+    const innerContainer = new DOM(this.config.tag, {
       class: this.prefixCss('container-wrapper'),
     });
     this.innerContainerElement = innerContainer;
 
-    for (let initialComponent of this.config.components) {
+    for (const initialComponent of this.config.components) {
       this.componentsToAppend.push(initialComponent);
     }
     this.updateComponents();

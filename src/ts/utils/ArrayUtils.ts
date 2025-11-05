@@ -9,7 +9,7 @@ export namespace ArrayUtils {
    * @returns {any} the removed item or null if it wasn't part of the array
    */
   export function remove<T>(array: T[], item: T): T | null {
-    let index = array.indexOf(item);
+    const index = array.indexOf(item);
 
     if (index > -1) {
       return array.splice(index, 1)[0];

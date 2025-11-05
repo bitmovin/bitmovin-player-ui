@@ -150,7 +150,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @returns {boolean} true if removal was successful, false if the item is not part of this selector
    */
   removeItem(key: string): boolean {
-    let index = this.getItemIndex(key);
+    const index = this.getItemIndex(key);
     if (index > -1) {
       ArrayUtils.remove(this.items, this.items[index]);
       this.onItemRemovedEvent(key);
@@ -171,7 +171,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       return true;
     }
 
-    let index = this.getItemIndex(key);
+    const index = this.getItemIndex(key);
 
     if (index > -1) {
       this.selectedItem = key;
@@ -220,7 +220,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    */
   clearItems() {
     // local copy for iteration after clear
-    let items = this.items;
+    const items = this.items;
     // clear items
     this.items = [];
 
@@ -228,7 +228,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     this.selectedItem = null;
 
     // fire events
-    for (let item of items) {
+    for (const item of items) {
       this.onItemRemovedEvent(item.key);
     }
   }
