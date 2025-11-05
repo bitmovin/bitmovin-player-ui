@@ -25,7 +25,6 @@ export default tseslint.config({
   ],
   rules: {
     'no-prototype-builtins': 'off',
-    'prefer-const': 'off', // TODO: enable rule and run autofix
     'prefer-rest-params': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
