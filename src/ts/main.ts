@@ -148,9 +148,9 @@ if (typeof Object.assign !== 'function') {
 
     target = Object(target);
     for (let index = 1; index < arguments.length; index++) {
-      let source = arguments[index];
+      const source = arguments[index];
       if (source != null) {
-        for (let key in source) {
+        for (const key in source) {
           if (Object.prototype.hasOwnProperty.call(source, key)) {
             target[key] = source[key];
           }

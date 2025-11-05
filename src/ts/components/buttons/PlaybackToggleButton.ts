@@ -54,7 +54,7 @@ export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfi
     let firstPlay = true;
 
     // Handler to update button state based on player state
-    let playbackStateHandler = () => {
+    const playbackStateHandler = () => {
       // If the UI is currently seeking, playback is temporarily stopped but the buttons should
       // not reflect that and stay as-is (e.g indicate playback while seeking).
       if (isSeeking) {
@@ -113,8 +113,8 @@ export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfi
     };
 
     // Detect absence of timeshifting on live streams and add tagging class to convert button icons to play/stop
-    let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
-    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
+    const timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
+    const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
 
     timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe(() => updateLiveState());
     liveStreamDetector.onLiveChanged.subscribe(() => updateLiveState());

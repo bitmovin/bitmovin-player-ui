@@ -111,7 +111,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   private configureUIShowHide(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    let config = this.getConfig();
+    const config = this.getConfig();
     let isUiShown = false;
     let isSettingsPanelShown = false;
     let isHideUiPending = false;
@@ -184,7 +184,7 @@ export class UIContainer extends Container<UIContainerConfig> {
         }
 
         // Issue a preview event to check if we are good to hide the controls
-        let previewHideEventArgs = <CancelEventArgs>{};
+        const previewHideEventArgs = <CancelEventArgs>{};
         uimanager.onPreviewControlsHide.dispatch(this, previewHideEventArgs);
 
         if (!previewHideEventArgs.cancel) {
@@ -373,20 +373,20 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   private configurePlayerStates(player: PlayerAPI, uimanager: UIInstanceManager): void {
-    let container = this.getDomElement();
+    const container = this.getDomElement();
 
     // Convert player states into CSS class names
-    let stateClassNames = <any>[];
-    for (let state in PlayerUtils.PlayerState) {
+    const stateClassNames = <any>[];
+    for (const state in PlayerUtils.PlayerState) {
       if (isNaN(Number(state))) {
-        let enumName = PlayerUtils.PlayerState[<any>PlayerUtils.PlayerState[state]];
+        const enumName = PlayerUtils.PlayerState[<any>PlayerUtils.PlayerState[state]];
         stateClassNames[PlayerUtils.PlayerState[state]] = this.prefixCss(
           UIContainer.STATE_PREFIX + enumName.toLowerCase(),
         );
       }
     }
 
-    let removeStates = () => {
+    const removeStates = () => {
       container.removeClass(stateClassNames[PlayerUtils.PlayerState.Idle]);
       container.removeClass(stateClassNames[PlayerUtils.PlayerState.Prepared]);
       container.removeClass(stateClassNames[PlayerUtils.PlayerState.Playing]);
@@ -470,7 +470,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
 
     // Layout size classes
-    let updateLayoutSizeClasses = (width: number, height: number) => {
+    const updateLayoutSizeClasses = (width: number, height: number) => {
       container.removeClass(this.prefixCss('layout-max-width-400'));
       container.removeClass(this.prefixCss('layout-max-width-600'));
       container.removeClass(this.prefixCss('layout-max-width-800'));
@@ -488,8 +488,8 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
     player.on(player.exports.PlayerEvent.PlayerResized, (e: PlayerResizedEvent) => {
       // Convert strings (with "px" suffix) to ints
-      let width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
-      let height = Math.round(Number(e.height.substring(0, e.height.length - 2)));
+      const width = Math.round(Number(e.width.substring(0, e.width.length - 2)));
+      const height = Math.round(Number(e.height.substring(0, e.height.length - 2)));
 
       updateLayoutSizeClasses(width, height);
     });
@@ -524,7 +524,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   protected toDomElement(): DOM {
-    let container = super.toDomElement();
+    const container = super.toDomElement();
 
     // Detect flexbox support (not supported in IE9)
     if (document && typeof document.createElement('p').style.flex !== 'undefined') {

@@ -77,7 +77,7 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
       },
     );
 
-    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
+    const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
       isLive = args.live;
       switchVisibility(isLive, hasTimeShift);

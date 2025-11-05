@@ -51,7 +51,7 @@ describe('UIContainer', () => {
         });
         uiContainer.configure(playerMock, uiInstanceManagerMock);
 
-        let uiHideTimeoutSpy: any = jest.spyOn((uiContainer as any).uiHideTimeout, 'start');
+        const uiHideTimeoutSpy: any = jest.spyOn((uiContainer as any).uiHideTimeout, 'start');
         playerMock.eventEmitter.fireSourceLoadedEvent();
 
         expect(uiHideTimeoutSpy).not.toHaveBeenCalled();

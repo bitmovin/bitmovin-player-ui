@@ -39,7 +39,7 @@ export class CastToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     });
 
-    let castAvailableHander = () => {
+    const castAvailableHander = () => {
       if (player.isCastAvailable()) {
         this.show();
       } else {

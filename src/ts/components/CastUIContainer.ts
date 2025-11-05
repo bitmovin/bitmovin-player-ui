@@ -19,7 +19,7 @@ export class CastUIContainer extends UIContainer {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
+    const config = this.getConfig();
 
     /*
      * Show UI on Cast devices at certain playback events
@@ -33,31 +33,31 @@ export class CastUIContainer extends UIContainer {
 
     let isUiShown = false;
 
-    let hideUi = () => {
+    const hideUi = () => {
       uimanager.onControlsHide.dispatch(this);
       isUiShown = false;
     };
 
     this.castUiHideTimeout = new Timeout(config.hideDelay, hideUi);
 
-    let showUi = () => {
+    const showUi = () => {
       if (!isUiShown) {
         uimanager.onControlsShow.dispatch(this);
         isUiShown = true;
       }
     };
 
-    let showUiPermanently = () => {
+    const showUiPermanently = () => {
       showUi();
       this.castUiHideTimeout.clear();
     };
 
-    let showUiWithTimeout = () => {
+    const showUiWithTimeout = () => {
       showUi();
       this.castUiHideTimeout.start();
     };
 
-    let showUiAfterSeek = () => {
+    const showUiAfterSeek = () => {
       if (player.isPlaying()) {
         showUiWithTimeout();
       } else {

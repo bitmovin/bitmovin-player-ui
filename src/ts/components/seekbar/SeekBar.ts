@@ -315,7 +315,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let suspension: GroupPlaybackSuspension | undefined;
 
     // Update playback and buffer positions
-    let playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
+    const playbackPositionHandler = (event: PlayerEventBase = null, forceUpdate: boolean = false) => {
       if (this.isUserSeeking) {
         // We caught a seek preview seek, do not update the seekbar
         return;
@@ -385,13 +385,13 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.configureLivePausedTimeshiftUpdater(player, uimanager, playbackPositionHandler);
 
     // Seek handling
-    let onPlayerSeek = () => {
+    const onPlayerSeek = () => {
       isPlayerSeeking = true;
       this.setSeeking(true);
       scrubbing = false;
     };
 
-    let onPlayerSeeked = (event: PlayerEventBase = null) => {
+    const onPlayerSeeked = (event: PlayerEventBase = null) => {
       isPlayerSeeking = false;
       this.setSeeking(false);
 
@@ -399,7 +399,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       playbackPositionHandler(event, true);
     };
 
-    let restorePlayingState = function () {
+    const restorePlayingState = function () {
       // Continue playback after seek if player was playing when seek started
       if (isPlaying) {
         // use the same issuer here as in the pause on seek
@@ -412,7 +412,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.TimeShift, onPlayerSeek);
     player.on(player.exports.PlayerEvent.TimeShifted, onPlayerSeeked);
 
-    let isGroupPlaybackAPIAvailable = (player: PlayerAPI): player is ExtendedPlayerAPI => {
+    const isGroupPlaybackAPIAvailable = (player: PlayerAPI): player is ExtendedPlayerAPI => {
       return !!(player as ExtendedPlayerAPI).groupPlayback;
     };
 
@@ -481,7 +481,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // Hide seekbar for live sources without timeshift
     let isLive = false;
     let hasTimeShift = false;
-    let switchVisibility = (isLive: boolean, hasTimeShift: boolean) => {
+    const switchVisibility = (isLive: boolean, hasTimeShift: boolean) => {
       if (isLive && !hasTimeShift) {
         this.hide();
       } else {
@@ -490,7 +490,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       playbackPositionHandler(null, true);
       this.refreshLayout();
     };
-    let liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
+    const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       isLive = args.live;
       if (isLive && this.smoothPlaybackPositionUpdater != null) {
@@ -501,7 +501,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
       switchVisibility(isLive, hasTimeShift);
     });
-    let timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
+    const timeShiftDetector = new PlayerUtils.TimeShiftAvailabilityDetector(player);
     timeShiftDetector.onTimeShiftAvailabilityChanged.subscribe((sender, args: TimeShiftAvailabilityChangedArgs) => {
       hasTimeShift = args.timeShiftAvailable;
       switchVisibility(isLive, hasTimeShift);
@@ -627,8 +627,8 @@ export class SeekBar extends Component<SeekBarConfig> {
      */
     let currentTimeSeekBar = 0;
     let currentTimePlayer = 0;
-    let updateIntervalMs = 50;
-    let currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
+    const updateIntervalMs = 50;
+    const currentTimeUpdateDeltaSecs = updateIntervalMs / 1000;
 
     this.smoothPlaybackPositionUpdater = new Timeout(
       updateIntervalMs,
@@ -659,7 +659,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         }
 
         // Sync currentTime of seekbar to player
-        let currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
+        const currentTimeDelta = currentTimeSeekBar - currentTimePlayer;
         // If the delta is larger that 2 secs, directly jump the seekbar to the
         // player time instead of smoothly fast forwarding/rewinding.
         if (Math.abs(currentTimeDelta) > 2) {
@@ -676,20 +676,20 @@ export class SeekBar extends Component<SeekBarConfig> {
           currentTimeSeekBar -= currentTimeUpdateDeltaSecs;
         }
 
-        let playbackPositionPercentage = (100 / player.getDuration()) * currentTimeSeekBar;
+        const playbackPositionPercentage = (100 / player.getDuration()) * currentTimeSeekBar;
         this.setPlaybackPosition(playbackPositionPercentage);
       },
       true,
     );
 
-    let startSmoothPlaybackPositionUpdater = () => {
+    const startSmoothPlaybackPositionUpdater = () => {
       if (!player.isLive()) {
         currentTimeSeekBar = this.getRelativeCurrentTime();
         this.smoothPlaybackPositionUpdater.start();
       }
     };
 
-    let stopSmoothPlaybackPositionUpdater = () => {
+    const stopSmoothPlaybackPositionUpdater = () => {
       this.smoothPlaybackPositionUpdater.clear();
     };
 
@@ -733,7 +733,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.config.cssClasses.push('vertical');
     }
 
-    let seekBarContainer = new DOM(
+    const seekBarContainer = new DOM(
       'div',
       {
         id: this.config.id,
@@ -745,7 +745,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       this,
     );
 
-    let seekBar = new DOM('div', {
+    const seekBar = new DOM('div', {
       class: this.prefixCss('seekbar'),
     });
     this.seekBar = seekBar;
@@ -755,36 +755,36 @@ export class SeekBar extends Component<SeekBarConfig> {
     });
 
     // Indicator that shows the buffer fill level
-    let seekBarBufferLevel = new DOM('div', {
+    const seekBarBufferLevel = new DOM('div', {
       class: this.prefixCss('seekbar-bufferlevel'),
     });
     this.seekBarBufferPosition = seekBarBufferLevel;
 
     // Indicator that shows the current playback position
-    let seekBarPlaybackPosition = new DOM('div', {
+    const seekBarPlaybackPosition = new DOM('div', {
       class: this.prefixCss('seekbar-playbackposition'),
     });
     this.seekBarPlaybackPosition = seekBarPlaybackPosition;
 
     // A marker of the current playback position, e.g. a dot or line
-    let seekBarPlaybackPositionMarker = new DOM('div', {
+    const seekBarPlaybackPositionMarker = new DOM('div', {
       class: this.prefixCss('seekbar-playbackposition-marker'),
     });
     this.seekBarPlaybackPositionMarker = seekBarPlaybackPositionMarker;
 
     // Indicator that show where a seek will go to
-    let seekBarSeekPosition = new DOM('div', {
+    const seekBarSeekPosition = new DOM('div', {
       class: this.prefixCss('seekbar-seekposition'),
     });
     this.seekBarSeekPosition = seekBarSeekPosition;
 
     // Indicator that shows the full seekbar
-    let seekBarBackdrop = new DOM('div', {
+    const seekBarBackdrop = new DOM('div', {
       class: this.prefixCss('seekbar-backdrop'),
     });
     this.seekBarBackdrop = seekBarBackdrop;
 
-    let seekBarChapterMarkersContainer = new DOM('div', {
+    const seekBarChapterMarkersContainer = new DOM('div', {
       class: this.prefixCss('seekbar-markers'),
     });
     this.seekBarMarkersContainer = seekBarChapterMarkersContainer;
@@ -801,7 +801,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     let seeking = false;
 
     // Define handler functions so we can attach/remove them later
-    let mouseTouchMoveHandler = (e: MouseEvent | TouchEvent) => {
+    const mouseTouchMoveHandler = (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
       // Avoid propagation to VR handler
       if (this.player.vr != null) {
@@ -817,7 +817,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.onSeekPreviewEvent(targetPercentage, seekPositionPx, true);
     };
 
-    let mouseTouchUpHandler = (e: MouseEvent | TouchEvent) => {
+    const mouseTouchUpHandler = (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
 
       // Remove handlers, seek operation is finished
@@ -848,7 +848,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // and mouseup handlers to the whole document. A seek is triggered when the user lifts the mouse key.
     // A seek mouse gesture is thus basically a click with a long time frame between down and up events.
     seekBar.on('touchstart mousedown', (e: MouseEvent | TouchEvent) => {
-      let isTouchEvent = BrowserUtils.isTouchSupported && this.isTouchEvent(e);
+      const isTouchEvent = BrowserUtils.isTouchSupported && this.isTouchEvent(e);
 
       // Prevent selection of DOM elements (also prevents mousedown if current event is touchstart)
       e.preventDefault();
@@ -914,10 +914,10 @@ export class SeekBar extends Component<SeekBarConfig> {
    * @returns {number} a number in the range of [0, 1], where 0 is the left edge and 1 is the right edge
    */
   private getHorizontalOffset(eventPageX: number): number {
-    let elementOffsetPx = this.seekBar.offset().left;
-    let widthPx = this.seekBar.width();
-    let offsetPx = eventPageX - elementOffsetPx;
-    let offset = (1 / widthPx) * offsetPx;
+    const elementOffsetPx = this.seekBar.offset().left;
+    const widthPx = this.seekBar.width();
+    const offsetPx = eventPageX - elementOffsetPx;
+    const offset = (1 / widthPx) * offsetPx;
 
     return this.sanitizeOffset(offset);
   }
@@ -928,10 +928,10 @@ export class SeekBar extends Component<SeekBarConfig> {
    * @returns {number} a number in the range of [0, 1], where 0 is the bottom edge and 1 is the top edge
    */
   private getVerticalOffset(eventPageY: number): number {
-    let elementOffsetPx = this.seekBar.offset().top;
-    let widthPx = this.seekBar.height();
-    let offsetPx = eventPageY - elementOffsetPx;
-    let offset = (1 / widthPx) * offsetPx;
+    const elementOffsetPx = this.seekBar.offset().top;
+    const widthPx = this.seekBar.height();
+    const offsetPx = eventPageY - elementOffsetPx;
+    const offset = (1 / widthPx) * offsetPx;
 
     return 1 - this.sanitizeOffset(offset);
   }
@@ -997,7 +997,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.setPosition(this.seekBarPlaybackPosition, percent);
 
     // Set position of the marker
-    let totalSize = this.config.vertical
+    const totalSize = this.config.vertical
       ? this.seekBar.height() - this.seekBarPlaybackPositionMarker.height()
       : this.seekBar.width();
     let px = (totalSize / 100) * percent;
@@ -1005,7 +1005,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       px = this.seekBar.height() - px - this.seekBarPlaybackPositionMarker.height();
     }
 
-    let style = this.config.vertical
+    const style = this.config.vertical
       ? // -ms-transform required for IE9
         // -webkit-transform required for Android 4.4 WebView
         {
@@ -1081,7 +1081,7 @@ export class SeekBar extends Component<SeekBarConfig> {
       scale = 0.99999;
     }
 
-    let style = this.config.vertical
+    const style = this.config.vertical
       ? // -ms-transform required for IE9
         // -webkit-transform required for Android 4.4 WebView
         {
@@ -1160,7 +1160,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   protected onSeekPreviewEvent(percentage: number, targetOffsetPx: number, scrubbing: boolean) {
-    let snappedMarker = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(percentage);
+    const snappedMarker = this.timelineMarkersHandler && this.timelineMarkersHandler.getMarkerAtPosition(percentage);
 
     let seekPositionPercentage = percentage;
 

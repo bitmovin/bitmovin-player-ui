@@ -58,7 +58,7 @@ export class NavigationGroup {
 
   // Dynamically resolve all components within this group respecting FocusableContainers.
   protected getComponents(): Focusable[] {
-    let componentsToConsider: Focusable[] = [];
+    const componentsToConsider: Focusable[] = [];
     const focusableContainers = this._components
       .filter(component => component instanceof FocusableContainer)
       .map(component => component as FocusableContainer);
@@ -263,7 +263,7 @@ export class NavigationGroup {
   private trackElementHover(): void {
     this.removeElementHoverEventListeners();
 
-    let componentsToConsider: Component<ComponentConfig>[] = [];
+    const componentsToConsider: Component<ComponentConfig>[] = [];
     this.getComponents().forEach(component => {
       let elementsToConsider: Component<ComponentConfig>[];
       if (component instanceof Container) {

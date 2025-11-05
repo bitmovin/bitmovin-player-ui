@@ -27,12 +27,12 @@ export class VideoQualitySelectBox extends SelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let selectCurrentVideoQuality = () => {
+    const selectCurrentVideoQuality = () => {
       this.selectItem(player.getVideoQuality().id);
     };
 
-    let updateVideoQualities = () => {
-      let videoQualities = player.getAvailableVideoQualities();
+    const updateVideoQualities = () => {
+      const videoQualities = player.getAvailableVideoQualities();
 
       this.clearItems();
 
@@ -45,7 +45,7 @@ export class VideoQualitySelectBox extends SelectBox {
       }
 
       // Add video qualities
-      for (let videoQuality of videoQualities) {
+      for (const videoQuality of videoQualities) {
         this.addItem(videoQuality.id, videoQuality.label);
       }
 

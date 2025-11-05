@@ -30,7 +30,7 @@ export class ImageLoader {
     if (!this.state[url]) {
       // When the image was never attempted to be loaded before, we create a state and store it in the state map
       // for later use when the same image is requested to be loaded again.
-      let state: ImageLoaderState = {
+      const state: ImageLoaderState = {
         url: url,
         image: new DOM('img', {}),
         loadedCallback: loadedCallback,
@@ -53,7 +53,7 @@ export class ImageLoader {
       state.image.attr('src', state.url);
     } else {
       // We have a state for the requested image, so it is either already loaded or currently loading
-      let state = this.state[url];
+      const state = this.state[url];
 
       // We overwrite the callback to make sure that only the callback of the latest call gets executed.
       // Earlier callbacks become invalid once a new load call arrives, and they are not called as long as the image

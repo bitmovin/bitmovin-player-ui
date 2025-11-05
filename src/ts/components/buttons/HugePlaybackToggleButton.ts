@@ -33,7 +33,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       this.config.enterFullscreenOnInitialPlayback = uimanager.getConfig().enterFullscreenOnInitialPlayback;
     }
 
-    let togglePlayback = () => {
+    const togglePlayback = () => {
       if (player.isPlaying() || this.isPlayInitiated) {
         player.pause('ui');
       } else {
@@ -41,7 +41,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
       }
     };
 
-    let toggleFullscreen = () => {
+    const toggleFullscreen = () => {
       if (player.getViewMode() === player.exports.ViewMode.Fullscreen) {
         player.setViewMode(player.exports.ViewMode.Inline);
       } else {
@@ -88,7 +88,7 @@ export class HugePlaybackToggleButton extends PlaybackToggleButton {
         return;
       }
 
-      let now = Date.now();
+      const now = Date.now();
 
       if (now - clickTime < 200) {
         // We have a double click inside the 200ms interval, just toggle fullscreen mode

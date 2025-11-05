@@ -158,8 +158,8 @@ export class UIManager {
   constructor(player: PlayerAPI, playerUiOrUiVariants: UIContainer | UIVariant[], uiconfig: UIConfig = {}) {
     if (playerUiOrUiVariants instanceof UIContainer) {
       // Single-UI constructor has been called, transform arguments to UIVariant[] signature
-      let playerUi = <UIContainer>playerUiOrUiVariants;
-      let uiVariants = [];
+      const playerUi = <UIContainer>playerUiOrUiVariants;
+      const uiVariants = [];
 
       // Add the default player UI
       uiVariants.push({ ui: playerUi });
@@ -252,8 +252,8 @@ export class UIManager {
     // Create UI instance managers for the UI variants
     // The instance managers map to the corresponding UI variants by their array index
     this.uiInstanceManagers = [];
-    let uiVariantsWithoutCondition = [];
-    for (let uiVariant of this.uiVariants) {
+    const uiVariantsWithoutCondition = [];
+    for (const uiVariant of this.uiVariants) {
       if (uiVariant.condition == null) {
         // Collect variants without conditions for error checking
         uiVariantsWithoutCondition.push(uiVariant);
@@ -296,7 +296,7 @@ export class UIManager {
     });
 
     // Dynamically select a UI variant that matches the current UI condition.
-    let resolveUiVariant = (event: PlayerEventBase) => {
+    const resolveUiVariant = (event: PlayerEventBase) => {
       // Make sure that the AdStarted event data is persisted through ad playback in case other events happen
       // in the meantime, e.g. player resize. We need to store this data because there is no other way to find out
       // ad details while an ad is playing (in v8.0 at least; from v8.1 there will be ads.getActiveAd()).
@@ -338,13 +338,13 @@ export class UIManager {
       }
 
       // Detect if an ad has started
-      let isAd = adStartedEvent != null;
+      const isAd = adStartedEvent != null;
       let adRequiresUi = false;
       if (isAd) {
-        let ad = adStartedEvent.ad;
+        const ad = adStartedEvent.ad;
         // for now only linear ads can request a UI
         if (ad.isLinear) {
-          let linearAd = ad as LinearAd;
+          const linearAd = ad as LinearAd;
           adRequiresUi = (linearAd.uiConfig && linearAd.uiConfig.requestsUi) || false;
         }
       }
@@ -436,7 +436,7 @@ export class UIManager {
    * @param {() => void} onShow a callback that is executed just before the new UI variant is shown
    */
   switchToUiVariant(uiVariant: UIVariant, onShow?: () => void): void {
-    let uiVariantIndex = this.uiVariants.indexOf(uiVariant);
+    const uiVariantIndex = this.uiVariants.indexOf(uiVariant);
 
     const previousUi = this.currentUi;
     const nextUi: InternalUIInstanceManager = this.uiInstanceManagers[uiVariantIndex];
@@ -508,7 +508,7 @@ export class UIManager {
 
     // Select new UI variant
     // If no variant condition is fulfilled, we switch to *no* UI
-    for (let uiVariant of this.uiVariants) {
+    for (const uiVariant of this.uiVariants) {
       const matchesCondition = uiVariant.condition == null || uiVariant.condition(switchingContext) === true;
       if (nextUiVariant == null && matchesCondition) {
         nextUiVariant = uiVariant;
@@ -526,8 +526,8 @@ export class UIManager {
   }
 
   private addUi(ui: InternalUIInstanceManager): void {
-    let dom = ui.getUI().getDomElement();
-    let player = ui.getWrappedPlayer();
+    const dom = ui.getUI().getDomElement();
+    const player = ui.getWrappedPlayer();
 
     ui.configureControls();
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization
@@ -567,7 +567,7 @@ export class UIManager {
   }
 
   release(): void {
-    for (let uiInstanceManager of this.uiInstanceManagers) {
+    for (const uiInstanceManager of this.uiInstanceManagers) {
       this.releaseUi(uiInstanceManager);
     }
     this.managerPlayerWrapper.clearEventHandlers();
@@ -799,9 +799,9 @@ export class UIInstanceManager {
   protected clearEventHandlers(): void {
     this.playerWrapper.clearEventHandlers();
 
-    let events = <any>this.events; // avoid TS7017
-    for (let event in events) {
-      let dispatcher = <EventDispatcher<Object, Object>>events[event];
+    const events = <any>this.events; // avoid TS7017
+    for (const event in events) {
+      const dispatcher = <EventDispatcher<Object, Object>>events[event];
       dispatcher.unsubscribeAll();
     }
   }
@@ -832,7 +832,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
   }
 
   private configureControlsTree(component: Component<ComponentConfig>) {
-    let configuredComponents: Component<ComponentConfig>[] = [];
+    const configuredComponents: Component<ComponentConfig>[] = [];
 
     UIUtils.traverseTree(component, component => {
       // First, check if we have already configured a component, and throw an error if we did. Multiple configuration
@@ -840,7 +840,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
       // times hints at a wrong UI structure.
       // We could just skip configuration in such a case and not throw an exception, but enforcing a clean UI tree
       // seems like the better choice.
-      for (let configuredComponent of configuredComponents) {
+      for (const configuredComponent of configuredComponents) {
         if (configuredComponent === component) {
           // Write the component to the console to simplify identification of the culprit
           // (e.g. by inspecting the config)
@@ -878,7 +878,7 @@ class InternalUIInstanceManager extends UIInstanceManager {
     component.release();
 
     if (component instanceof Container) {
-      for (let childComponent of component.getComponents()) {
+      for (const childComponent of component.getComponents()) {
         this.releaseControlsTree(childComponent);
       }
     }
@@ -921,10 +921,10 @@ export class PlayerWrapper {
     const namesToIgnore = ['constructor', ...objectProtoPropertyNames];
     const members = getAllPropertyNames(player).filter(name => namesToIgnore.indexOf(name) === -1);
     // Split the members into methods and properties
-    let methods = <any[]>[];
-    let properties = <any[]>[];
+    const methods = <any[]>[];
+    const properties = <any[]>[];
 
-    for (let member of members) {
+    for (const member of members) {
       if (typeof (<any>player)[member] === 'function') {
         methods.push(member);
       } else {
@@ -933,10 +933,10 @@ export class PlayerWrapper {
     }
 
     // Create wrapper object
-    let wrapper = <any>{};
+    const wrapper = <any>{};
 
     // Add function wrappers for all API methods that do nothing but calling the base method on the player
-    for (let method of methods) {
+    for (const method of methods) {
       wrapper[method] = function () {
         // console.log('called ' + member); // track method calls on the player
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -945,7 +945,7 @@ export class PlayerWrapper {
     }
 
     // Add all public properties of the player to the wrapper
-    for (let property of properties) {
+    for (const property of properties) {
       // Get an eventually existing property descriptor to differentiate between plain properties and properties with
       // getters/setters.
       const propertyDescriptor = ((target: PlayerAPI) => {
@@ -1000,7 +1000,7 @@ export class PlayerWrapper {
       if (this.eventHandlers[event]) {
         // check if there are handlers for this event registered
         // Extend the data object with default values to convert it to a {@link PlayerEventBase} object.
-        let playerEventData = <PlayerEventBase>Object.assign(
+        const playerEventData = <PlayerEventBase>Object.assign(
           {},
           {
             timestamp: Date.now(),
@@ -1012,7 +1012,7 @@ export class PlayerWrapper {
         );
 
         // Execute the registered callbacks
-        for (let callback of this.eventHandlers[event]) {
+        for (const callback of this.eventHandlers[event]) {
           callback(playerEventData);
         }
       }
@@ -1045,8 +1045,8 @@ export class PlayerWrapper {
       }
     }
 
-    for (let eventType in this.eventHandlers) {
-      for (let callback of this.eventHandlers[eventType]) {
+    for (const eventType in this.eventHandlers) {
+      for (const callback of this.eventHandlers[eventType]) {
         this.player.off(eventType as PlayerEvent, callback);
       }
     }

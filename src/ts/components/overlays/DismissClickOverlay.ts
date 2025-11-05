@@ -33,7 +33,7 @@ export class DismissClickOverlay extends Container<DismissClickOverlayConfig> {
       this.hide();
     });
 
-    let element = this.getDomElement();
+    const element = this.getDomElement();
     element.on('click', () => {
       if (this.config.target instanceof SettingsPanel) {
         this.config.target.hideAndReset();

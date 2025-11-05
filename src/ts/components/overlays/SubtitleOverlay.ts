@@ -66,7 +66,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let subtitleManager = new ActiveSubtitleManager();
+    const subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
 
     this.subtitleContainerManager = new SubtitleRegionContainerManager(this);
@@ -107,7 +107,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     });
 
     player.on(player.exports.PlayerEvent.CueExit, (event: SubtitleCueEvent) => {
-      let labelToRemove = subtitleManager.cueExit(event);
+      const labelToRemove = subtitleManager.cueExit(event);
 
       if (labelToRemove) {
         this.subtitleContainerManager.removeLabel(labelToRemove);
@@ -124,7 +124,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     });
 
-    let subtitleClearHandler = () => {
+    const subtitleClearHandler = () => {
       this.hide();
       this.subtitleContainerManager.clear();
       subtitleManager.clear();
@@ -405,7 +405,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         label.regionStyle = `line-height: ${fontSize}px;`;
       };
 
-      for (let label of this.getComponents()) {
+      for (const label of this.getComponents()) {
         if (label instanceof SubtitleRegionContainer) {
           label.getComponents().forEach((l: SubtitleLabel) => {
             updateLabel(l);
@@ -595,7 +595,7 @@ class ActiveSubtitleManager {
   }
 
   private addCueToMap(event: SubtitleCueEvent, label: SubtitleLabel): void {
-    let id = ActiveSubtitleManager.calculateId(event);
+    const id = ActiveSubtitleManager.calculateId(event);
 
     // Create array for id if it does not exist
     this.activeSubtitleCueMap[id] = this.activeSubtitleCueMap[id] || [];
@@ -606,8 +606,8 @@ class ActiveSubtitleManager {
   }
 
   private popCueFromMap(event: SubtitleCueEvent): SubtitleLabel | undefined {
-    let id = ActiveSubtitleManager.calculateId(event);
-    let activeSubtitleCues = this.activeSubtitleCueMap[id];
+    const id = ActiveSubtitleManager.calculateId(event);
+    const activeSubtitleCues = this.activeSubtitleCueMap[id];
 
     if (activeSubtitleCues && activeSubtitleCues.length > 0) {
       // Remove cue
@@ -618,7 +618,7 @@ class ActiveSubtitleManager {
        * cue end time (which can change between CueEnter and CueExit IN CueUpdate) and use it as an
        * additional hint to try and remove the correct one of the colliding cues.
        */
-      let activeSubtitleCue = activeSubtitleCues.shift();
+      const activeSubtitleCue = activeSubtitleCues.shift();
       this.activeSubtitleCueCount--;
 
       return activeSubtitleCue.label;
@@ -661,8 +661,8 @@ class ActiveSubtitleManager {
    * @return {SubtitleLabel}
    */
   getCues(event: SubtitleCueEvent): SubtitleLabel[] | undefined {
-    let id = ActiveSubtitleManager.calculateId(event);
-    let activeSubtitleCues = this.activeSubtitleCueMap[id];
+    const id = ActiveSubtitleManager.calculateId(event);
+    const activeSubtitleCues = this.activeSubtitleCueMap[id];
     if (activeSubtitleCues && activeSubtitleCues.length > 0) {
       return activeSubtitleCues.map(cue => cue.label);
     }

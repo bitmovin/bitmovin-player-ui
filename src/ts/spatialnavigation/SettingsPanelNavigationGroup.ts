@@ -55,7 +55,7 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
     const activeSettingsPanelPage = this.settingsPanel.getActivePage();
     const pageComponents = activeSettingsPanelPage.getItems();
 
-    let componentsToConsider: Focusable[] = [];
+    const componentsToConsider: Focusable[] = [];
     pageComponents.forEach(component => {
       if (component instanceof SettingsPanelSelectOption) {
         componentsToConsider.push(component);

@@ -92,7 +92,7 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
     }
 
     const handleSelectedItemChanged = () => {
-      let selectedItem = this.settingComponent.getItemForKey(this.settingComponent.getSelectedItem());
+      const selectedItem = this.settingComponent.getItemForKey(this.settingComponent.getSelectedItem());
       if (selectedItem == null) {
         this.selectedOptionLabel.setText('-');
         return;
@@ -100,7 +100,7 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
 
       let selectedOptionLabelText = selectedItem.label;
       if (this.settingComponent instanceof SubtitleSelectBox) {
-        let availableSettings = this.settingComponent.getItems().length;
+        const availableSettings = this.settingComponent.getItems().length;
         selectedOptionLabelText =
           i18n.performLocalization(selectedOptionLabelText) + ' (' + (availableSettings - 1) + ')';
       }
@@ -164,7 +164,7 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
   }
 
   public displayItemsSubPage(): void {
-    let page = this.buildSubPanelPage();
+    const page = this.buildSubPanelPage();
     this.config.container.addPage(page);
     this.config.container.setActivePage(page);
   }

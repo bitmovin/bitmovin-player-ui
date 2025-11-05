@@ -61,8 +61,8 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let volumeToggleButton = this.getVolumeToggleButton();
-    let volumeSlider = this.getVolumeSlider();
+    const volumeToggleButton = this.getVolumeToggleButton();
+    const volumeSlider = this.getVolumeSlider();
 
     this.volumeSliderHideTimeout = new Timeout(this.getConfig().hideDelay, () => {
       volumeSlider.hide();

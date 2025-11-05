@@ -34,7 +34,7 @@ export class WindowColorSelectBox extends SubtitleSettingSelectBox {
     this.addItem('yellow', i18n.getLocalizer('colors.yellow'));
     this.addItem('magenta', i18n.getLocalizer('colors.magenta'));
 
-    let setColorAndOpacity = () => {
+    const setColorAndOpacity = () => {
       if (this.settingsManager.windowColor.isSet() && this.settingsManager.windowOpacity.isSet()) {
         this.toggleOverlayClass(
           'windowcolor-' + this.settingsManager.windowColor.value + this.settingsManager.windowOpacity.value,

@@ -64,7 +64,7 @@ export namespace StorageUtils {
    * @param data the object to store
    */
   export function setObject<T>(key: string, data: T): void {
-    let json = JSON.stringify(data);
+    const json = JSON.stringify(data);
     setItem(key, json);
   }
 
@@ -77,10 +77,10 @@ export namespace StorageUtils {
    * @return {any} Returns the object if found, null otherwise
    */
   export function getObject<T>(key: string): T | null {
-    let json = getItem(key);
+    const json = getItem(key);
 
     if (json) {
-      let object = JSON.parse(json);
+      const object = JSON.parse(json);
       return <T>object;
     }
     return null;

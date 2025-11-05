@@ -66,11 +66,11 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
     }
 
     let currentPixelOffset;
-    let canvasWidth = this.canvasWidth;
-    let canvasHeight = this.canvasHeight;
+    const canvasWidth = this.canvasWidth;
+    const canvasHeight = this.canvasHeight;
 
     // Create texture
-    let noiseImage = this.canvasContext.createImageData(canvasWidth, canvasHeight);
+    const noiseImage = this.canvasContext.createImageData(canvasWidth, canvasHeight);
 
     // Fill texture with noise
     for (let y = 0; y < canvasHeight; y++) {

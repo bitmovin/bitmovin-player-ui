@@ -68,7 +68,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     this.uiManager = uimanager;
     uimanager.onSeekPreview.subscribeRateLimited(this.handleSeekPreview, 100);
 
-    let init = () => {
+    const init = () => {
       // Set time format depending on source duration
       this.timeFormat =
         Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600
@@ -85,8 +85,8 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
   private handleSeekPreview = (sender: SeekBar, args: SeekPreviewEventArgs) => {
     if (this.player.isLive()) {
-      let maxTimeShift = this.player.getMaxTimeShift();
-      let timeShiftPreview = maxTimeShift - maxTimeShift * (args.position / 100);
+      const maxTimeShift = this.player.getMaxTimeShift();
+      const timeShiftPreview = maxTimeShift - maxTimeShift * (args.position / 100);
 
       this.setTime(timeShiftPreview);
 
@@ -103,7 +103,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
       const wallClockTime = convertTimeShiftPreviewToWallClockTime(timeShiftPreview);
       this.setThumbnail(this.player.getThumbnail(wallClockTime));
     } else {
-      let time = this.player.getDuration() * (args.position / 100);
+      const time = this.player.getDuration() * (args.position / 100);
       this.setTime(time);
 
       const seekableRangeStart = PlayerUtils.getSeekableRangeStart(this.player, 0);
@@ -184,7 +184,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
    * @param thumbnail the thumbnail to display on the label or null to remove a displayed thumbnail
    */
   setThumbnail(thumbnail: Thumbnail = null) {
-    let thumbnailElement = this.thumbnail.getDomElement();
+    const thumbnailElement = this.thumbnail.getDomElement();
 
     if (thumbnail == null) {
       thumbnailElement.css({
@@ -209,19 +209,19 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   }
 
   private thumbnailCssSprite(thumbnail: Thumbnail, width: number, height: number): CssProperties {
-    let thumbnailCountX = width / thumbnail.width;
-    let thumbnailCountY = height / thumbnail.height;
+    const thumbnailCountX = width / thumbnail.width;
+    const thumbnailCountY = height / thumbnail.height;
 
-    let thumbnailIndexX = thumbnail.x / thumbnail.width;
-    let thumbnailIndexY = thumbnail.y / thumbnail.height;
+    const thumbnailIndexX = thumbnail.x / thumbnail.width;
+    const thumbnailIndexY = thumbnail.y / thumbnail.height;
 
-    let sizeX = 100 * thumbnailCountX;
-    let sizeY = 100 * thumbnailCountY;
+    const sizeX = 100 * thumbnailCountX;
+    const sizeY = 100 * thumbnailCountY;
 
-    let offsetX = 100 * thumbnailIndexX;
-    let offsetY = 100 * thumbnailIndexY;
+    const offsetX = 100 * thumbnailIndexX;
+    const offsetY = 100 * thumbnailIndexY;
 
-    let aspectRatio = (1 / thumbnail.width) * thumbnail.height;
+    const aspectRatio = (1 / thumbnail.width) * thumbnail.height;
 
     // The thumbnail size is set by setting the CSS 'width' and 'padding-bottom' properties. 'padding-bottom' is
     // used because it is relative to the width and can be used to set the aspect ratio of the thumbnail.
@@ -236,7 +236,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   }
 
   private thumbnailCssSingleImage(thumbnail: Thumbnail, width: number, height: number): CssProperties {
-    let aspectRatio = (1 / width) * height;
+    const aspectRatio = (1 / width) * height;
 
     return {
       display: 'inherit',

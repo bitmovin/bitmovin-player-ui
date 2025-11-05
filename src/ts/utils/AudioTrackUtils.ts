@@ -59,7 +59,7 @@ export class AudioTrackSwitchHandler {
   };
 
   private selectCurrentAudioTrack = () => {
-    let currentAudioTrack = this.player.getAudio();
+    const currentAudioTrack = this.player.getAudio();
 
     // HLS streams don't always provide this, so we have to check
     if (currentAudioTrack) {

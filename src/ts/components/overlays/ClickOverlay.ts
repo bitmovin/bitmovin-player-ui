@@ -35,7 +35,7 @@ export class ClickOverlay extends Button<ClickOverlayConfig> {
     super.initialize();
 
     this.setUrl((<ClickOverlayConfig>this.config).url);
-    let element = this.getDomElement();
+    const element = this.getDomElement();
     element.on('click', () => {
       if (element.data('url')) {
         window.open(element.data('url'), '_blank');

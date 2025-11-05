@@ -240,10 +240,10 @@ function subtitleUi(): UIContainer {
 }
 
 function uiLayout(config: UIConfig) {
-  let subtitleOverlay = new SubtitleOverlay();
+  const subtitleOverlay = new SubtitleOverlay();
 
   const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode != undefined);
-  let controlBar = new ControlBar({
+  const controlBar = new ControlBar({
     components: [
       new Container({
         components: [
@@ -302,7 +302,7 @@ function uiLayout(config: UIConfig) {
 }
 
 function adsUILayout() {
-  let controlBar = new AdControlBar({
+  const controlBar = new AdControlBar({
     components: [
       new Container({
         components: [
@@ -350,11 +350,11 @@ function adsUILayout() {
 }
 
 function smallScreenUILayout() {
-  let subtitleOverlay = new SubtitleOverlay();
+  const subtitleOverlay = new SubtitleOverlay();
 
   const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
 
-  let controlBar = new ControlBar({
+  const controlBar = new ControlBar({
     components: [
       new Container({
         components: [
@@ -422,7 +422,7 @@ function smallScreenUILayout() {
 }
 
 function smallScreenAdsUILayout() {
-  let controlBar = new AdControlBar({
+  const controlBar = new AdControlBar({
     components: [
       new Container({
         components: [
@@ -470,7 +470,7 @@ function smallScreenAdsUILayout() {
 }
 
 function castReceiverUILayout(config: UIConfig) {
-  let controlBar = new ControlBar({
+  const controlBar = new ControlBar({
     components: [
       new Container({
         components: [
@@ -685,7 +685,6 @@ function buildDefaultSettingsPanel(
   hideDelay: number | undefined = undefined,
   enableEcoMode: boolean = false,
 ): SettingsPanel<SettingsPanelConfig> {
-  let mainSettingsPanelPage: SettingsPanelPage;
   const settingsPanelConfig: SettingsPanelConfig = {
     components: [],
     hidden: true,
@@ -731,7 +730,7 @@ function buildDefaultSettingsPanel(
     components.unshift(ecoModeContainer);
   }
 
-  mainSettingsPanelPage = new SettingsPanelPage({
+  const mainSettingsPanelPage = new SettingsPanelPage({
     components,
   });
 

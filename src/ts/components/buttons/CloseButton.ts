@@ -38,7 +38,7 @@ export class CloseButton extends Button<CloseButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
+    const config = this.getConfig();
 
     this.onClick.subscribe(() => {
       config.target.hide();

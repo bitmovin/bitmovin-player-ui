@@ -177,7 +177,7 @@ describe('UIManager', () => {
       describe('and a PlaylistTransition event occurs', () => {
         it('dispatches onUpdated', () => {
           const uiManager = new UIManager(playerMock, MockHelper.generateDOMMock() as any);
-          let onUpdatedSpy = jest.fn();
+          const onUpdatedSpy = jest.fn();
           (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
 
           playerMock.eventEmitter.firePlaylistTransitionEvent();

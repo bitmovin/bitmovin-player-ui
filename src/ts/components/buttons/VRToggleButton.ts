@@ -25,7 +25,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let isVRConfigured = () => {
+    const isVRConfigured = () => {
       // VR availability cannot be checked through getVRStatus() because it is asynchronously populated and not
       // available at UI initialization. As an alternative, we check the VR settings in the config.
       // TODO use getVRStatus() through isVRStereoAvailable() once the player has been rewritten and the status is
@@ -34,12 +34,12 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
       return source && Boolean(source.vr);
     };
 
-    let isVRStereoAvailable = () => {
+    const isVRStereoAvailable = () => {
       const source = player.getSource();
       return player.vr && Boolean(source.vr);
     };
 
-    let vrStateHandler = (ev: PlayerEventBase) => {
+    const vrStateHandler = (ev: PlayerEventBase) => {
       if (
         ev.type === player.exports.PlayerEvent.Warning &&
         (ev as WarningEvent).code !== player.exports.WarningCode.VR_RENDERING_ERROR
@@ -60,7 +60,7 @@ export class VRToggleButton extends ToggleButton<ToggleButtonConfig> {
       }
     };
 
-    let vrButtonVisibilityHandler = () => {
+    const vrButtonVisibilityHandler = () => {
       if (isVRConfigured()) {
         this.show();
       } else {

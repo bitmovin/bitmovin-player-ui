@@ -93,7 +93,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
   }
 
   private readonly onChange = () => {
-    let value = this.selectElement.val();
+    const value = this.selectElement.val();
     this.onItemSelectedEvent(value, false);
   };
 
@@ -110,8 +110,8 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
     this.selectElement.empty();
 
     // Add updated children
-    for (let item of this.items) {
-      let optionElement = new DOM('option', {
+    for (const item of this.items) {
+      const optionElement = new DOM('option', {
         value: String(item.key),
       }).html(i18n.performLocalization(item.label));
 

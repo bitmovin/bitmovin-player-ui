@@ -113,7 +113,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
   configure(player: PlayerAPI | MobileV3PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    let config = this.getConfig();
+    const config = this.getConfig();
 
     const handleErrorMessage = (
       event: ErrorEvent | MobileV3SourceErrorEvent | MobileV3PlayerErrorEvent,
@@ -137,7 +137,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
       player.on(MobileV3PlayerEvent.SourceError, errorEventHandler);
     } else {
       player.on(player.exports.PlayerEvent.Error, (event: ErrorEvent) => {
-        let message = ErrorUtils.defaultWebErrorMessageTranslator(event);
+        const message = ErrorUtils.defaultWebErrorMessageTranslator(event);
         handleErrorMessage(event, message);
       });
     }

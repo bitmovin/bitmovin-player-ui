@@ -77,11 +77,11 @@ export class DOM {
 
     if (something instanceof Array) {
       if (something.length > 0 && something[0] instanceof HTMLElement) {
-        let elements = something as HTMLElementWithComponent[];
+        const elements = something as HTMLElementWithComponent[];
         this.elements = elements;
       }
     } else if (something instanceof HTMLElement) {
-      let element = something as HTMLElementWithComponent;
+      const element = something as HTMLElementWithComponent;
       this.elements = [element];
     } else if (something instanceof Document) {
       // When a document is passed in, we do not do anything with it, but by setting this.elements to null
@@ -89,11 +89,11 @@ export class DOM {
       // instead of elements.
       this.elements = null;
     } else if (attributes) {
-      let tagName = something;
-      let element = document.createElement(tagName) as HTMLElementWithComponent;
+      const tagName = something;
+      const element = document.createElement(tagName) as HTMLElementWithComponent;
 
-      for (let attributeName in attributes) {
-        let attributeValue = attributes[attributeName];
+      for (const attributeName in attributes) {
+        const attributeValue = attributes[attributeName];
         if (attributeValue != null) {
           element.setAttribute(attributeName, attributeValue);
         }
@@ -105,7 +105,7 @@ export class DOM {
 
       this.elements = [element];
     } else {
-      let selector = something;
+      const selector = something;
       this.elements = this.findChildElements(selector) as HTMLElementWithComponent[];
     }
   }
@@ -155,7 +155,7 @@ export class DOM {
   }
 
   private findChildElementsOfElement(element: HTMLElement | Document, selector: string): HTMLElement[] {
-    let childElements = element.querySelectorAll(selector);
+    const childElements = element.querySelectorAll(selector);
 
     // Convert NodeList to Array
     // https://toddmotto.com/a-comprehensive-dive-into-nodelists-arrays-converting-nodelists-and-understanding-the-dom/
@@ -182,7 +182,7 @@ export class DOM {
    * @returns {DOM} a new DOM instance representing all matched children
    */
   find(selector: string): DOM {
-    let allChildElements = this.findChildElements(selector) as HTMLElementWithComponent[];
+    const allChildElements = this.findChildElements(selector) as HTMLElementWithComponent[];
     return new DOM(allChildElements);
   }
 
@@ -257,7 +257,7 @@ export class DOM {
    * @returns {string} the value of a form element
    */
   val(): string {
-    let element = this.elements[0];
+    const element = this.elements[0];
 
     if (element instanceof HTMLSelectElement || element instanceof HTMLInputElement) {
       return element.value;
@@ -374,7 +374,7 @@ export class DOM {
    */
   remove(): void {
     this.forEach(element => {
-      let parent = element.parentNode;
+      const parent = element.parentNode;
       if (parent) {
         parent.removeChild(element);
       }
@@ -386,9 +386,9 @@ export class DOM {
    * @returns {Offset}
    */
   offset(): Offset {
-    let element = this.elements[0];
-    let elementRect = element.getBoundingClientRect();
-    let htmlRect = document.body.parentElement.getBoundingClientRect();
+    const element = this.elements[0];
+    const elementRect = element.getBoundingClientRect();
+    const htmlRect = document.body.parentElement.getBoundingClientRect();
 
     // Virtual viewport scroll handling (e.g. pinch zoomed viewports in mobile browsers or desktop Chrome/Edge)
     // 'normal' zooms and virtual viewport zooms (aka layout viewport) result in different
@@ -447,7 +447,7 @@ export class DOM {
     eventHandler: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions,
   ): DOM {
-    let events = eventName.split(' ');
+    const events = eventName.split(' ');
 
     events.forEach(event => {
       if (this.elements == null) {
@@ -474,7 +474,7 @@ export class DOM {
     eventHandler: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions,
   ): DOM {
-    let events = eventName.split(' ');
+    const events = eventName.split(' ');
 
     events.forEach(event => {
       if (this.elements == null) {
@@ -578,7 +578,7 @@ export class DOM {
   css(propertyValueCollection: CssProperties): DOM;
   css(propertyNameOrCollection: string | CssProperties, value?: string): string | null | DOM {
     if (typeof propertyNameOrCollection === 'string') {
-      let propertyName = propertyNameOrCollection;
+      const propertyName = propertyNameOrCollection;
 
       if (arguments.length === 2) {
         return this.setCss(propertyName, value);
@@ -586,7 +586,7 @@ export class DOM {
         return this.getCss(propertyName);
       }
     } else {
-      let propertyValueCollection = propertyNameOrCollection;
+      const propertyValueCollection = propertyNameOrCollection;
       return this.setCssCollection(propertyValueCollection);
     }
   }

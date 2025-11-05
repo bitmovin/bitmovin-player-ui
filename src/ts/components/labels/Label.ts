@@ -81,7 +81,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
 
   protected toDomElement(): DOM {
     const tagName = this.config.for != null ? 'label' : 'span';
-    let textElement = new DOM(
+    const textElement = new DOM(
       'span',
       {
         class: this.prefixCss('ui-label-text'),
