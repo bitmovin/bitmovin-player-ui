@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Incorrect sytnax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
+
 ## [4.3.0] - 2025-11-05
 
 ### Added
