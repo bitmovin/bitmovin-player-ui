@@ -108,7 +108,7 @@ class RecommendationItem extends Component<RecommendationItemConfig> {
       'id': this.config.id,
       'class': this.getCssClasses(),
       'href': config.url,
-    }, this).css({ 'background-image': `url(${config.thumbnail})` });
+    }, this).css({ 'background-image': `url("${config.thumbnail}")` });
 
     let bgElement = new DOM('div', {
       'class': this.prefixCss('background'),
