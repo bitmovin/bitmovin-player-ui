@@ -232,7 +232,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     // A default value for width is set in the stylesheet and can be overwritten from there or anywhere else.
     return {
       'display': 'inherit',
-      'background-image': `url(${thumbnail.url})`,
+      'background-image': `url("${thumbnail.url}")`,
       'padding-bottom': `${100 * aspectRatio}%`,
       'background-size': `${sizeX}% ${sizeY}%`,
       'background-position': `-${offsetX}% -${offsetY}%`,
@@ -244,7 +244,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
 
     return {
       'display': 'inherit',
-      'background-image': `url(${thumbnail.url})`,
+      'background-image': `url("${thumbnail.url}")`,
       'padding-bottom': `${100 * aspectRatio}%`,
       'background-size': `100% 100%`,
       'background-position': `0 0`,
