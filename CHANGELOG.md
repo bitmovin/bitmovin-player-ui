@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Fixed
-- Incorrect handling of thumbnail URLs
+- Incorrect sytnax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
 
 ## [3.103.1] - 2025-10-07
 
