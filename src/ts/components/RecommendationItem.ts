@@ -80,7 +80,7 @@ export class RecommendationItem extends Component<RecommendationItemConfig> {
     );
 
     if (posterUrl) {
-      itemElement.css({ 'background-image': `url(${posterUrl})` });
+      itemElement.css({ 'background-image': `url("${posterUrl}")` });
     }
 
     const titleElement = new DOM(
