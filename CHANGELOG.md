@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Incorrect sytnax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
+- Incorrect CEA608 caption rendering
 
 ## [4.3.0] - 2025-11-05
 
