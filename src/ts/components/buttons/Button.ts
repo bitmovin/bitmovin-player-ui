@@ -146,7 +146,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', e => {
       e.preventDefault();
-      if (this.config.stopPropagationFocus) {
+      if (this.config.stopPropagationClick) {
         e.stopPropagation();
       }
       this.onClickEvent();
