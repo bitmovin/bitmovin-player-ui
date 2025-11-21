@@ -55,6 +55,20 @@ export interface ButtonConfig extends ComponentConfig {
    * Default: {@link ButtonStyle.Icon}
    */
   buttonStyle?: ButtonStyle;
+
+  /**
+   * Specifics wether the focusin and focusout event propagation should be stopped.
+   *
+   * Default: false
+   */
+  stopPropagationFocus?: boolean;
+
+  /**
+   * Specifics wether the click event propagation should be stopped.
+   *
+   * Default: false
+   */
+  stopPropagationClick?: boolean;
 }
 
 /**
@@ -132,12 +146,16 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', e => {
       e.preventDefault();
-      e.stopPropagation();
+      if (this.config.stopPropagationFocus) {
+        e.stopPropagation();
+      }
       this.onClickEvent();
     });
 
     buttonElement.on('focusin focusout', e => {
-      e.stopPropagation();
+      if (this.config.stopPropagationFocus) {
+        e.stopPropagation();
+      }
     });
 
     buttonElement.on('touchstart', e => {
