@@ -102,7 +102,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     const buttonElement = new DOM('button', buttonElementAttributes, this);
 
     const addIconElement = () => {
-      const icon = new Icon({});
+      const icon = new Icon();
       buttonElement.append(icon.getDomElement());
     };
 
