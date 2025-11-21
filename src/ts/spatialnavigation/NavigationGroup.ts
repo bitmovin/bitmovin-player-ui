@@ -4,7 +4,16 @@ import { getComponentInDirection } from './NavigationAlgorithm';
 import { resolveAllComponents } from './helper/resolveAllComponents';
 import { NodeEventSubscriber } from './NodeEventSubscriber';
 import { isFocusable, isSettingsPanel } from './TypeGuards';
-import { Action, ActionCallback, AnyComponent, Callback, Direction, Focusable, NavigationCallback } from './types';
+import {
+  Action,
+  ActionCallback,
+  AnyComponent,
+  Callback,
+  Direction,
+  Focusable,
+  NavigationCallback,
+  NavigationNoTargetCallback,
+} from './types';
 import { FocusableContainer } from './FocusableContainer';
 import { toHtmlElement } from './helper/toHtmlElement';
 
@@ -108,6 +117,14 @@ export class NavigationGroup {
   public onAction?: ActionCallback;
 
   /**
+   * If overwritten, it is called when a directional navigation did not focus a new component.
+   * This is usefuly for implementing behaviour when the user navigations at the edge of
+   * the spatial components. e.g. pressing down while the lowest components is already focused
+   * opens an overlay.
+   */
+  public onNavigationNoTarget?: NavigationNoTargetCallback;
+
+  /**
    * Returns the active HTMLElement.
    */
   public getActiveComponent(): AnyComponent | undefined {
@@ -167,6 +184,8 @@ export class NavigationGroup {
 
     if (targetComponent) {
       this.focusComponent(targetComponent);
+    } else {
+      this.onNavigationNoTarget(direction);
     }
   }
 
