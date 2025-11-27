@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Incorrect sytnax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
 - Removed `aria-label` from `Icon` and subsequently fixed duplication of `Button`'s aria-label being duplicated into (optional) Icon
 - Incorrect CEA608 caption rendering
+- Subtitle font size preference from local storage is not restored upon UI initialization
 
 ## [4.3.0] - 2025-11-05
 
