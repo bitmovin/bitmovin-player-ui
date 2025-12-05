@@ -5,11 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [4.4.0] - 2025-11-27
 
 ### Fixed
 
 - Incorrect sytnax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
+- Removed `aria-label` from `Icon` and subsequently fixed duplication of `Button`'s aria-label being duplicated into (optional) Icon
+- Incorrect CEA608 caption rendering
+- Subtitle font size preference from local storage is not restored upon UI initialization
 
 ## [4.3.0] - 2025-11-05
 

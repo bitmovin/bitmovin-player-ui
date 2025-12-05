@@ -106,7 +106,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     });
 
     if (this.config.labelStyle !== LabelStyle.Text) {
-      const icon = new Icon({ ariaLabel: this.config.ariaLabel, altText: this.config.text });
+      const icon = new Icon();
       switch (this.config.labelStyle) {
         case LabelStyle.TextWithTrailingIcon:
           wrapperElement.append(icon.getDomElement());
