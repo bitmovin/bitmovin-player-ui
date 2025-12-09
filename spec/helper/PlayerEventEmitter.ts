@@ -30,9 +30,9 @@ export interface ViewModeAvailabilityChangedEvent extends PlayerEventBase {
 }
 
 export class PlayerEventEmitter {
-  private eventHandlers: { [eventType: string]: PlayerEventCallback[]; } = {};
+  private eventHandlers: { [eventType: string]: PlayerEventCallback<PlayerEvent>[]; } = {};
 
-  public on(eventType: PlayerEvent, callback: PlayerEventCallback) {
+  public on<T extends PlayerEvent>(eventType: T, callback: PlayerEventCallback<T>) {
     if (!this.eventHandlers[eventType]) {
       this.eventHandlers[eventType] = [];
     }
@@ -42,7 +42,7 @@ export class PlayerEventEmitter {
 
   public fireEvent<E extends PlayerEventBase>(event: E) {
     if (this.eventHandlers[event.type]) {
-      this.eventHandlers[event.type].forEach((callback: PlayerEventCallback) => callback(event));
+      this.eventHandlers[event.type].forEach(callback => callback(event));
     }
   }
 
@@ -75,6 +75,8 @@ export class PlayerEventEmitter {
       size: 1,
       duration: 1,
       isInit: false,
+      url: 'https://bitmovin.com/seg.m4s',
+      timeToFirstByte: 0.5,
     });
   }
 

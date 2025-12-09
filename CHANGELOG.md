@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Incorrect sytnax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
+- Type incompatibility warnings with Player version 8.235.0 and higher
 
 ## [3.103.1] - 2025-10-07
 
