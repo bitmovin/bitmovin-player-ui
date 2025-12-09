@@ -859,7 +859,7 @@ export class PlayerWrapper {
   private player: PlayerAPI;
   private wrapper: WrappedPlayer;
 
-  private eventHandlers: { [eventType: string]: PlayerEventCallback[]; } = {};
+  private eventHandlers: { [eventType: string]: PlayerEventCallback<PlayerEvent>[]; } = {};
 
   constructor(player: PlayerAPI) {
     this.player = player;
@@ -921,7 +921,7 @@ export class PlayerWrapper {
     }
 
     // Explicitly add a wrapper method for 'on' that adds added event handlers to the event list
-    wrapper.on = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
+    wrapper.on = <T extends PlayerEvent>(eventType: T, callback: PlayerEventCallback<T>) => {
       player.on(eventType, callback);
 
       if (!this.eventHandlers[eventType]) {
@@ -934,7 +934,7 @@ export class PlayerWrapper {
     };
 
     // Explicitly add a wrapper method for 'off' that removes removed event handlers from the event list
-    wrapper.off = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
+    wrapper.off = <T extends PlayerEvent>(eventType: T, callback: PlayerEventCallback<T>) => {
       player.off(eventType, callback);
 
       if (this.eventHandlers[eventType]) {
