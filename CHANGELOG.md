@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Button no longer calls stopPropagation on its click, focusin and focusout Events
 
+### Fixed
+
+- Type incompatibility warnings with Player version 8.235.0 and higher
+
 ## [4.4.0] - 2025-11-27
 
 ### Fixed

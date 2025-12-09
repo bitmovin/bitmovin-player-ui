@@ -1,5 +1,6 @@
 import { PlayerAPI, PlayerEvent, PlayerEventBase, PlayerEventCallback } from 'bitmovin-player';
 import { WrappedPlayer } from '../UIManager';
+import type { PlayerEventMap } from 'bitmovin-player/types/core/Events';
 
 export enum MobileV3PlayerEvent {
   SourceError = 'sourceerror',
@@ -20,7 +21,8 @@ export interface MobileV3SourceErrorEvent extends PlayerEventBase {
 export type MobileV3PlayerEventType = PlayerEvent | MobileV3PlayerEvent;
 
 export interface MobileV3PlayerAPI extends PlayerAPI {
-  on(eventType: MobileV3PlayerEventType, callback: PlayerEventCallback): void;
+  on<T extends PlayerEvent>(eventType: T, callback: PlayerEventCallback<T>): void;
+  on<T extends MobileV3PlayerEvent>(eventType: T, callback: (event: PlayerEventBase) => void): void;
   exports: PlayerAPI['exports'] & { PlayerEvent: MobileV3PlayerEventType };
 }
 
