@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Type incompatibility warnings with Player version 8.235.0 and higher
 - Ads UI variant not shown
+- Missing exports of some components and configuration types
 
 ## [4.4.0] - 2025-11-27
 
