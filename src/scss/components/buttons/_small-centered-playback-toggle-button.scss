@@ -22,13 +22,13 @@
 
   &.#{$prefix}-on {
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/pause.svg');
+      background-image: svg-load('../../assets/images/pause.svg', fill=$color-icon);
     }
   }
 
   &.#{$prefix}-off {
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/play.svg');
+      background-image: svg-load('../../assets/images/play.svg', fill=$color-icon);
     }
   }
 

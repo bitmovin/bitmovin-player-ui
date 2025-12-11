@@ -5,7 +5,7 @@
   @extend %ui-button;
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/fullscreen.svg');
+    background-image: svg-load('../../assets/images/fullscreen.svg', fill=$color-icon);
   }
 
   &:hover {
@@ -14,7 +14,7 @@
 
   &.#{$prefix}-on {
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/fullscreenX.svg');
+      background-image: svg-load('../../assets/images/fullscreenX.svg', fill=$color-icon);
     }
   }
 }

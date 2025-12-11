@@ -17,7 +17,7 @@
   .#{$prefix}-ui-icon {
     width: 0.8em;
     min-width: unset;
-    background-image: url('../../assets/images/angle-left.svg');
+    background-image: svg-load('../../assets/images/angle-left.svg', stroke=$color-icon);
   }
 
   .#{$prefix}-label {

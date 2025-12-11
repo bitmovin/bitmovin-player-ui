@@ -5,7 +5,7 @@
   @extend %ui-button;
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/cast.svg');
+    background-image: svg-load('../../assets/images/cast.svg', fill=$color-icon);
   }
 
   &:hover {

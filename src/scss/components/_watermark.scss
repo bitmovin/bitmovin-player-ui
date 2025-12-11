@@ -15,7 +15,7 @@
 
   .#{$prefix}-ui-icon {
     background-size: initial;
-    background-image: url('../../assets/images/logo.svg');
+    background-image: svg-load('../../assets/images/logo.svg', fill=$color-icon);
     height: $watermark-size;
     width: $watermark-size;
   }
