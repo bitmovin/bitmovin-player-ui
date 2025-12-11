@@ -80,6 +80,7 @@ module.exports = (env, { mode }) => {
                 postcssOptions: {
                   plugins: [
                     [
+                      require('postcss-inline-svg'),
                       'postcss-preset-env', // already includes autoprefixer
                     ],
                     mode === 'production' ? require('cssnano')({ preset: 'default' }) : null, // only minify css in production mode
