@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `$color-icon` and `$color-icon-highlight-ads` in `src/scss/_variables.scss` to define SVG icon colors at compile time
+
 ### Removed
 
 - Button no longer calls stopPropagation on its click, focusin and focusout Events
