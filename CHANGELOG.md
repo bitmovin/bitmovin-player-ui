@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `SeekBarConfig.markerUpdateIntervalMs` to customize the update interval of the TimeLine markers in a live stream
 
 ### Fixed
-- Incorrect sytnax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
-- `TimlineMarkers` no longer move unexpected during time-shifting in a live stream
+- Incorrect syntax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
+- `TimelineMarker`s no longer move unexpected during time-shifting in a live stream
 
 ## [3.103.1] - 2025-10-07
 
