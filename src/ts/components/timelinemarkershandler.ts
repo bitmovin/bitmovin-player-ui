@@ -57,17 +57,17 @@ export class TimelineMarkersHandler {
   private configureMarkers(): void {
     const onTimeShift = () => {
       this.isTimeShifting = true;
-    }
+    };
 
     const onTimeShifted = () => {
       this.isTimeShifting = false;
-    }
+    };
 
     const onSeekPreview = (_: SeekBar, args: SeekPreviewEventArgs) => {
       if (args.scrubbing) {
         onTimeShift();
       }
-    }
+    };
 
     this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => {
       this.stopLiveMarkerUpdater();
