@@ -10,8 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `SeekBarConfig.markerUpdateIntervalMs` to customize the update interval of the TimeLine markers in a live stream
 
 ### Fixed
-- Incorrect syntax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
 - `TimelineMarker`s no longer move unexpected during time-shifting in a live stream
+
+## [3.104.0] - 2025-12-09
+
+### Fixed
+- Incorrect sytnax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
+- Type incompatibility warnings with Player version 8.235.0 and higher
 
 ## [3.103.1] - 2025-10-07
 
@@ -1191,6 +1196,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.104.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.103.1...v3.104.0
 [3.103.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.102.0...v3.103.1
 [3.102.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.101.0...v3.102.0
 [3.101.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.100.0...v3.101.0
