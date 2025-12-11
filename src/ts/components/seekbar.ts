@@ -57,6 +57,12 @@ export interface SeekBarConfig extends ComponentConfig {
   snappingRange?: number;
 
   /**
+   * The interval in milliseconds in which marker positions will be updated for live streams.
+   * Default: 1000
+   */
+  markerUpdateIntervalMs?: number;
+
+  /**
    * Used to enable/disable seek preview
    */
   enableSeekPreview?: boolean;
@@ -514,6 +520,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     const timelineMarkerConfig = {
       cssPrefix: this.config.cssPrefix,
       snappingRange: this.config.snappingRange,
+      markerUpdateIntervalMs: this.config.markerUpdateIntervalMs,
     };
     this.timelineMarkersHandler = new TimelineMarkersHandler(timelineMarkerConfig, () => this.seekBar.width(), this.seekBarMarkersContainer);
     this.timelineMarkersHandler.initialize(player, uimanager);
