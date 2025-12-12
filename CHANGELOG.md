@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `$color-icon` and `$color-icon-highlight-ads` in `src/scss/_variables.scss` to define SVG icon colors at compile time
+- New possibility to easily change the color of icons.
+  - Set a custom color to `$color-icon` and `$color-icon-highlight-ads` in `src/scss/_variables.scss` to define SVG icon colors at compile time
 
 ### Removed
 
