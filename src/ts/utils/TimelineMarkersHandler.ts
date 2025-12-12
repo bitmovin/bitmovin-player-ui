@@ -74,6 +74,7 @@ export class TimelineMarkersHandler {
       this.stopLiveMarkerUpdater();
       this.clearMarkers();
       this.isTimeShifting = false;
+      this.seekableRangeSnapshot = null;
 
       this.player.off(this.player.exports.PlayerEvent.TimeShift, onTimeShift);
       this.player.off(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
