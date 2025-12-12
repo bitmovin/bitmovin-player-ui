@@ -6,6 +6,7 @@ import { TimelineMarker } from '../UIConfig';
 import { SeekBar, SeekBarMarker, SeekPreviewEventArgs } from '../components/seekbar/SeekBar';
 import { PlayerUtils } from './PlayerUtils';
 import { Timeout } from './Timeout';
+import { prefixCss } from '../components/DummyComponent';
 
 const defaultMarkerUpdateIntervalMs = 1000;
 
@@ -242,14 +243,14 @@ export class TimelineMarkersHandler {
   private createMarkerDOM(marker: SeekBarMarker): void {
     const markerClasses = ['seekbar-marker']
       .concat(marker.marker.cssClasses || [])
-      .map(cssClass => this.prefixCss(cssClass));
+      .map(cssClass => prefixCss(cssClass));
 
     const markerStartIndicator = new DOM('div', {
-      class: this.prefixCss('seekbar-marker-indicator'),
+      class: prefixCss('seekbar-marker-indicator'),
     });
 
     const markerEndIndicator = new DOM('div', {
-      class: this.prefixCss('seekbar-marker-indicator'),
+      class: prefixCss('seekbar-marker-indicator'),
     });
 
     const markerElement = new DOM('div', {
@@ -267,7 +268,7 @@ export class TimelineMarkersHandler {
       };
 
       const imageElement = new DOM('img', {
-        class: this.prefixCss('seekbar-marker-image'),
+        class: prefixCss('seekbar-marker-image'),
         src: marker.marker.imageUrl,
       }).on('error', removeImage);
 
@@ -292,10 +293,6 @@ export class TimelineMarkersHandler {
         this.createMarkerDOM(marker);
       }
     });
-  }
-
-  protected prefixCss(cssClassOrId: string): string {
-    return this.config.cssPrefix + '-' + cssClassOrId;
   }
 
   private startLiveMarkerUpdater(): void {
