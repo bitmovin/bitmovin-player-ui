@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- The `TimelineMarkers` implementation was improved to fix the following problems:
+  - Duplicate `TimlineMarkers` after resizing the window
+  - `TimelineMarker`s no longer animate to its initial position after loading a Source
+  - `TimelineMarker`s no longer move unexpected during time-shifting in a live stream
+
 ## [4.5.0] - 2025-12-10
 
 ### Added
