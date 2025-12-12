@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - The `TimelineMarkers` implementation was improved to fix the following problems:
-  - Duplicate `TimlineMarkers` after resizing the window
+  - Duplicate `TimelineMarkers` after resizing the window
   - `TimelineMarker`s no longer animate to its initial position after loading a Source
   - `TimelineMarker`s no longer move unexpected during time-shifting in a live stream
 

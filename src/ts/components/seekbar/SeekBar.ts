@@ -1214,8 +1214,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     super.onShowEvent();
 
     // Refresh the position of the playback position when the seek bar becomes visible. To correctly set the position,
-    // the DOM element must be fully initialized an have its size calculated, because the position is set as an absolute
-    // value calculated from the size. This required size is not known when it is hidden.
+    // the DOM element must be fully initialized and have its size calculated, because the position is set as an
+    // absolute value calculated from the size. This required size is not known when it is hidden.
     // For such cases, we refresh the position here in onShow because here it is guaranteed that the component knows
     // its size and can set the position correctly.
     this.refreshPlaybackPosition();
