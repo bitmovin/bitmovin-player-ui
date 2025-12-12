@@ -81,21 +81,35 @@ export class TimelineMarkersHandler {
 
     this.player.on(this.player.exports.PlayerEvent.AdBreakStarted, () => this.clearMarkers());
     this.player.on(this.player.exports.PlayerEvent.AdBreakFinished, () => this.updateMarkers());
-    // Update markers when the size of the seekbar changes
-    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkersDOM());
 
-    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, () => {
-      if (this.player.isLive()) {
-        // Update marker position as timeshift range changes
-        this.player.on(this.player.exports.PlayerEvent.TimeChanged, () => this.updateMarkers());
-        // Update marker postion when paused as timeshift range changes
-        this.configureLivePausedTimeshiftUpdater(() => this.updateMarkers());
+    const liveStreamDetector = new PlayerUtils.LiveStreamDetector(this.player, this.uimanager);
+    liveStreamDetector.onLiveChanged.subscribe((sender, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
+      if (args.live) {
+        this.player.on(this.player.exports.PlayerEvent.TimeShift, onTimeShift);
+        this.player.on(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
+        this.uimanager.onSeekPreview.subscribe(onSeekPreview);
+
+        this.startLiveMarkerUpdater();
       }
     });
+    liveStreamDetector.detect(); // Initial detection
+
     this.uimanager.getConfig().events.onUpdated.subscribe(() => this.updateMarkers());
     this.uimanager.onRelease.subscribe(() =>
       this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.updateMarkers()),
     );
+
+    // Refresh the playback position when the player resized or the UI is configured. The playback position marker
+    // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
+    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkersDOM());
+    // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
+    // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
+    this.uimanager.onConfigured.subscribe(() => {
+      this.updateMarkers();
+    });
+    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, () => {
+      this.updateMarkers();
+    });
 
     // Init markers at startup
     this.updateMarkers();
@@ -152,6 +166,13 @@ export class TimelineMarkersHandler {
   }
 
   private updateMarkers(): void {
+    const seekBarWidth = this.getSeekBarWidth();
+    if (seekBarWidth === 0) {
+      // Skip marker update when the seekBarWidth is not yet available.
+      // Will be updated by PlayerResized/onConfigured events once dimensions are available.
+      return;
+    }
+
     if (!shouldProcessMarkers(this.player, this.uimanager)) {
       this.clearMarkers();
       return;
