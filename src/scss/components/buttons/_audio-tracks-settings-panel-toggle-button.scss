@@ -3,10 +3,10 @@
 .#{$prefix}-ui-audiotracksettingstogglebutton {
   @extend %ui-settingstogglebutton;
 
-  background-image: url('../../assets/images/audio-tracks.svg');
+  background-image: svg-load('../../assets/images/audio-tracks.svg', fill=$color-icon);
 
   &.#{$prefix}-on {
     // TODO: replace with filled icon once available
-    background-image: url('../../assets/images/audio-tracks.svg');
+    background-image: svg-load('../../assets/images/audio-tracks.svg', fill=$color-icon);
   }
 }

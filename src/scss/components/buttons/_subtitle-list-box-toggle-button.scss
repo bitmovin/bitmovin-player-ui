@@ -4,12 +4,12 @@
   @extend %ui-settingstogglebutton;
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/subtitles.svg');
+    background-image: svg-load('../../assets/images/subtitles.svg', fill=$color-icon);
   }
 
   &.#{$prefix}-on {
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/subtitles.svg');
+      background-image: svg-load('../../assets/images/subtitles.svg', fill=$color-icon);
     }
   }
 }

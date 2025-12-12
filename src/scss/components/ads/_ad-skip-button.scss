@@ -9,7 +9,7 @@
   min-width: fit-content;
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/ad-skip.svg');
+    background-image: svg-load('../../assets/images/ad-skip.svg', fill=$color-icon-highlight-ads);
   }
 
   .#{$prefix}-label {

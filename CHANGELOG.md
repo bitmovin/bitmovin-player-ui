@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [4.5.0] - 2025-12-10
 
+### Added
+
+- New possibility to easily change the color of icons.
+  - Set a custom color to `$color-icon` and `$color-icon-highlight-ads` in `src/scss/_variables.scss` to define SVG icon colors at compile time
+
 ### Removed
 
 - Button no longer calls stopPropagation on its click, focusin and focusout Events

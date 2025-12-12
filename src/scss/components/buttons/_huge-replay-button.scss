@@ -9,7 +9,7 @@
   width: 5em;
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/replay-with-play.svg');
+    background-image: svg-load('../../assets/images/replay-with-play.svg', fill=$color-icon);
     background-size: $icon-size-large;
     height: 100%;
     width: 100%;

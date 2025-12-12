@@ -57,7 +57,7 @@
     }
 
     animation: #{$prefix}-fancy $buffering-animation-duration ease-in infinite;
-    background: url('../../assets/images/loader.svg') no-repeat center;
+    background: svg-load('../../assets/images/loader.svg', fill=$color-icon) no-repeat center;
     display: inline-block;
     height: 2em;
     margin: 0.2em;

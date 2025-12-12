@@ -23,7 +23,7 @@
   }
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/close.svg');
+    background-image: svg-load('../../assets/images/close.svg', stroke=$color-icon);
   }
 
   &:hover {

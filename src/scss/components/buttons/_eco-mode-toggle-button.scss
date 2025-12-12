@@ -12,7 +12,7 @@
 
   &.#{$prefix}-on {
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/toggleOn.svg');
+      background-image: svg-load('../../assets/images/toggleOn.svg', fill=$color-icon);
       background-position: 20px center;
       background-size: 45% auto;
       margin-left: 2%;
@@ -21,7 +21,7 @@
 
   &.#{$prefix}-off {
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/toggleOff.svg');
+      background-image: svg-load('../../assets/images/toggleOff.svg', stroke=$color-icon);
       background-position: 20px center;
       background-size: 45% auto;
     }
@@ -31,7 +31,7 @@
 // sass-lint:disable no-ids
 #ecomodelabel {
   &::before {
-    background-image: url('../../assets/images/leaf.svg');
+    background-image: svg-load('../../assets/images/leaf.svg', fill=$color-icon);
     background-repeat: no-repeat;
     background-size: 1.7em auto;
     content: ' ';

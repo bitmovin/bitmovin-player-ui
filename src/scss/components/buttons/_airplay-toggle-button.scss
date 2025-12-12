@@ -5,7 +5,7 @@
   @extend %ui-button;
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/airplay.svg');
+    background-image: svg-load('../../assets/images/airplay.svg', fill=$color-icon);
   }
 
   &:hover {
@@ -15,7 +15,7 @@
   &.#{$prefix}-on {
     // TODO: replace with filled cast icon once available
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/airplay.svg');
+      background-image: svg-load('../../assets/images/airplay.svg', fill=$color-icon);
     }
   }
 }

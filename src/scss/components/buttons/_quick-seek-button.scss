@@ -12,13 +12,13 @@
 
   &[data-#{$prefix}-seek-direction='forward'] {
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/quickseek-forward.svg');
+      background-image: svg-load('../../assets/images/quickseek-forward.svg', fill=$color-icon);
     }
 
     @each $duration in $seek-durations {
       &[data-#{$prefix}-seek-seconds='#{$duration}'] {
         .#{$prefix}-ui-icon {
-          background-image: url('../../assets/images/quickseek-forward-#{$duration}.svg');
+          background-image: svg-load('../../assets/images/quickseek-forward-#{$duration}.svg', fill=$color-icon);
         }
       }
     }
@@ -26,13 +26,13 @@
 
   &[data-#{$prefix}-seek-direction='rewind'] {
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/quickseek-back.svg');
+      background-image: svg-load('../../assets/images/quickseek-back.svg', fill=$color-icon);
     }
 
     @each $duration in $seek-durations {
       &[data-#{$prefix}-seek-seconds='#{$duration}'] {
         .#{$prefix}-ui-icon {
-          background-image: url('../../assets/images/quickseek-back-#{$duration}.svg');
+          background-image: svg-load('../../assets/images/quickseek-back-#{$duration}.svg', fill=$color-icon);
         }
       }
     }

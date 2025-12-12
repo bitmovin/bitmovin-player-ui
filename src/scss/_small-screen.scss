@@ -23,7 +23,7 @@
       &.#{$prefix}-on {
         .#{$prefix}-ui-icon {
           animation: none;
-          background-image: url('../../assets/images/pause.svg');
+          background-image: svg-load('../../assets/images/pause.svg', fill=$color-icon);
           visibility: visible;
         }
       }

@@ -10,14 +10,14 @@
 
   &.#{$prefix}-muted {
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/volume-mute.svg');
+      background-image: svg-load('../../assets/images/volume-mute.svg', fill=$color-icon);
     }
   }
 
   &.#{$prefix}-unmuted {
     &[data-#{$prefix}-volume-level-tens='0'] {
       .#{$prefix}-ui-icon {
-        background-image: url('../../assets/images/volume-mute.svg');
+        background-image: svg-load('../../assets/images/volume-mute.svg', fill=$color-icon);
       }
     }
 
@@ -27,7 +27,7 @@
     &[data-#{$prefix}-volume-level-tens='4'],
     &[data-#{$prefix}-volume-level-tens='5'] {
       .#{$prefix}-ui-icon {
-        background-image: url('../../assets/images/volume-low.svg');
+        background-image: svg-load('../../assets/images/volume-low.svg', fill=$color-icon);
       }
     }
 
@@ -37,7 +37,7 @@
     &[data-#{$prefix}-volume-level-tens='9'],
     &[data-#{$prefix}-volume-level-tens='10'] {
       .#{$prefix}-ui-icon {
-        background-image: url('../../assets/images/volume.svg');
+        background-image: svg-load('../../assets/images/volume.svg', fill=$color-icon);
       }
     }
   }
