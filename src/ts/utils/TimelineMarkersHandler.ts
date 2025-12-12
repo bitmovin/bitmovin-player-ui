@@ -92,6 +92,11 @@ export class TimelineMarkersHandler {
         this.uimanager.onSeekPreview.subscribe(onSeekPreview);
 
         this.startLiveMarkerUpdater();
+      } else {
+        this.stopLiveMarkerUpdater();
+        this.uimanager.onSeekPreview.unsubscribe(onSeekPreview);
+        this.player.off(this.player.exports.PlayerEvent.TimeShift, onTimeShift);
+        this.player.off(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
       }
     });
     liveStreamDetector.detect(); // Initial detection
