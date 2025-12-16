@@ -33,7 +33,7 @@ export interface HTMLElementWithComponent extends HTMLElement {
  * Built with the help of: http://youmightnotneedjquery.com/
  */
 export class DOM {
-  private document: Document;
+  private readonly documentOrShadowRoot: Document | ShadowRoot;
 
   /**
    * The list of elements that the instance wraps. Take care that not all methods can operate on the whole list,
@@ -68,13 +68,16 @@ export class DOM {
    * @param document the document to wrap
    */
   constructor(document: Document);
+  /**
+   * Wraps the ShadowRoot with a DOM instance. Useful to attach event listeners to the ShadowRoot.
+   * @param shadowRoot the ShadowRoot to wrap
+   */
+  constructor(shadowRoot: ShadowRoot);
   constructor(
-    something: string | HTMLElement | HTMLElement[] | Document,
+    something: string | HTMLElement | HTMLElement[] | Document | ShadowRoot,
     attributes?: { [name: string]: string },
     component?: Component<ComponentConfig>,
   ) {
-    this.document = document; // Set the global document to the local document field
-
     if (something instanceof Array) {
       if (something.length > 0 && something[0] instanceof HTMLElement) {
         const elements = something as HTMLElementWithComponent[];
@@ -83,10 +86,11 @@ export class DOM {
     } else if (something instanceof HTMLElement) {
       const element = something as HTMLElementWithComponent;
       this.elements = [element];
-    } else if (something instanceof Document) {
-      // When a document is passed in, we do not do anything with it, but by setting this.elements to null
-      // we give the event handling method a means to detect if the events should be registered on the document
-      // instead of elements.
+    } else if (something instanceof Document || something instanceof ShadowRoot) {
+      // When a document or the ShadowRoot is passed in, we do not do anything with it, but by setting
+      // this.elements to null we give the event handling method a means to detect if the events should be
+      // registered on the document or ShadowRoot instead of elements.
+      this.documentOrShadowRoot = something;
       this.elements = null;
     } else if (attributes) {
       const tagName = something;
@@ -154,7 +158,7 @@ export class DOM {
     });
   }
 
-  private findChildElementsOfElement(element: HTMLElement | Document, selector: string): HTMLElement[] {
+  private findChildElementsOfElement(element: HTMLElement | Document | ShadowRoot, selector: string): HTMLElement[] {
     const childElements = element.querySelectorAll(selector);
 
     // Convert NodeList to Array
@@ -343,13 +347,19 @@ export class DOM {
    * @returns {DOM}
    */
   append(...childElements: DOM[]): DOM {
-    this.forEach(element => {
+    const appendElements = (node: Node) => {
       childElements.forEach(childElement => {
         childElement.elements.forEach((_, index) => {
-          element.appendChild(childElement.elements[index]);
+          node.appendChild(childElement.elements[index]);
         });
       });
-    });
+    };
+
+    if (this.elements) {
+      this.forEach(element => appendElements(element));
+    } else {
+      appendElements(this.documentOrShadowRoot);
+    }
     return this;
   }
 
@@ -359,13 +369,19 @@ export class DOM {
    * @returns {DOM}
    */
   prepend(...childElements: DOM[]): DOM {
-    this.forEach(element => {
+    const insertElements = (node: Node) => {
       childElements.forEach(childElement => {
         childElement.elements.forEach((_, index) => {
-          element.insertBefore(childElement.elements[index], element.firstChild);
+          node.insertBefore(childElement.elements[index], node.firstChild);
         });
       });
-    });
+    };
+
+    if (this.elements) {
+      this.forEach(element => insertElements(element));
+    } else {
+      insertElements(this.documentOrShadowRoot);
+    }
     return this;
   }
 
@@ -373,12 +389,18 @@ export class DOM {
    * Removes all elements from the DOM.
    */
   remove(): void {
-    this.forEach(element => {
-      const parent = element.parentNode;
+    const removeElements = (node: Node) => {
+      const parent = node.parentNode;
       if (parent) {
-        parent.removeChild(element);
+        parent.removeChild(node);
       }
-    });
+    };
+
+    if (this.elements) {
+      this.forEach(element => removeElements(element));
+    } else {
+      removeElements(this.documentOrShadowRoot);
+    }
   }
 
   /**
@@ -451,7 +473,7 @@ export class DOM {
 
     events.forEach(event => {
       if (this.elements == null) {
-        this.document.addEventListener(event, eventHandler, options);
+        this.documentOrShadowRoot.addEventListener(event, eventHandler, options);
       } else {
         this.forEach(element => {
           element.addEventListener(event, eventHandler, options);
@@ -478,7 +500,7 @@ export class DOM {
 
     events.forEach(event => {
       if (this.elements == null) {
-        this.document.removeEventListener(event, eventHandler, options);
+        this.documentOrShadowRoot.removeEventListener(event, eventHandler, options);
       } else {
         this.forEach(element => {
           element.removeEventListener(event, eventHandler, options);
