@@ -17,6 +17,7 @@ import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
+import { ShadowDomManager } from './utils/ShadowDomManager';
 
 /**
  * @category Configs
@@ -128,6 +129,7 @@ export class UIManager {
   private managerPlayerWrapper: PlayerWrapper;
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
+  private shadowDomManager: ShadowDomManager;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -171,6 +173,7 @@ export class UIManager {
     }
 
     this.subtitleSettingsManager = new SubtitleSettingsManager();
+    this.shadowDomManager = new ShadowDomManager();
     this.player = player;
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
@@ -249,6 +252,10 @@ export class UIManager {
       this.uiContainerElement = new DOM(player.getContainer());
     }
 
+    if (this.config.shadowDomConfig && this.config.shadowDomConfig.enabled && ShadowDomManager.isShadowDomSupported()) {
+      this.shadowDomManager.initialize(this.uiContainerElement, this.config.shadowDomConfig);
+    }
+
     // Create UI instance managers for the UI variants
     // The instance managers map to the corresponding UI variants by their array index
     this.uiInstanceManagers = [];
@@ -265,6 +272,7 @@ export class UIManager {
           uiVariant.ui,
           this.config,
           this.subtitleSettingsManager,
+          this.uiWrapperElement,
           uiVariant.spatialNavigation,
         ),
       );
@@ -525,6 +533,15 @@ export class UIManager {
     });
   }
 
+  /**
+   * The node the UI renders into. When Shadow DOM is enabled, this wraps the ShadowRoot; otherwise it wraps the
+   * provided `UIConfig.container` (or the `player.container`).
+   */
+  get uiWrapperElement(): DOM {
+    const shadowRoot = this.shadowDomManager.getShadowRoot();
+    return shadowRoot != undefined ? new DOM(shadowRoot) : this.uiContainerElement;
+  }
+
   private addUi(ui: InternalUIInstanceManager): void {
     const dom = ui.getUI().getDomElement();
     const player = ui.getWrappedPlayer();
@@ -533,7 +550,7 @@ export class UIManager {
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
-    this.uiContainerElement.append(dom);
+    this.uiWrapperElement.append(dom);
 
     // When the UI is loaded after a source was loaded, we need to tell the components to initialize themselves
     if (player.getSource()) {
@@ -572,6 +589,7 @@ export class UIManager {
     }
     this.managerPlayerWrapper.clearEventHandlers();
     this.focusVisibilityTracker.release();
+    this.shadowDomManager.release();
   }
 
   /**
@@ -649,6 +667,7 @@ export class UIInstanceManager {
   private config: InternalUIConfig;
   private subtitleSettingsManager: SubtitleSettingsManager;
   protected spatialNavigation?: SpatialNavigation;
+  readonly uiWrapperElement: DOM;
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
@@ -671,12 +690,14 @@ export class UIInstanceManager {
     ui: UIContainer,
     config: InternalUIConfig,
     subtitleSettingsManager: SubtitleSettingsManager,
+    uiWrapperElement: DOM,
     spatialNavigation?: SpatialNavigation,
   ) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
     this.subtitleSettingsManager = subtitleSettingsManager;
+    this.uiWrapperElement = uiWrapperElement;
     this.spatialNavigation = spatialNavigation;
   }
 
