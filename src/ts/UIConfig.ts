@@ -169,4 +169,41 @@ export interface UIConfig {
    * Default: false
    */
   includeWatermark?: boolean;
+  /**
+   * Configure Shadow DOM rendering.
+   * Enable it with:
+   * `shadowDomConfig: { enabled: true }`
+   *
+   * Default: undefined (Shadow DOM disabled).
+   */
+  shadowDomConfig?: ShadowDomConfig;
+}
+
+export interface ShadowDomConfig {
+  /**
+   * Render the UI inside a Shadow DOM.
+   * Enable this to keep player UI styles from being affected by host-page CSS and to keep the UI’s classes from
+   * affecting the page.
+   *
+   * Default: false
+   */
+  enabled: boolean;
+  /**
+   * Filename of the UI stylesheet to inject into the Shadow DOM.
+   *
+   * When the Shadow DOM is created, the UI looks for a linked stylesheet whose `href` contains this
+   * value and reuses it inside the shadow root so the default styling is available.
+   *
+   * Default: 'bitmovinplayer-ui'
+   */
+  uiStylesheetName?: string;
+
+  /**
+   * Additional stylesheets to inject into the Shadow DOM (array of filenames/URLs).
+   *
+   * Use this to include custom UI styles when Shadow DOM is enabled.
+   *
+   * Default: undefined
+   */
+  additionalStylesheets?: string[];
 }
