@@ -65,6 +65,10 @@ export class ShadowDomManager {
     }
   }
 
+  /**
+   * Looks for existing stylesheets on the document for the given names and injects them into the ShadowRoot to include
+   * default UI styles (and custom additional styles).
+   */
   private injectStyles(shadowDomConfig: ShadowDomConfig): void {
     if (!this.shadowRoot) {
       return;
