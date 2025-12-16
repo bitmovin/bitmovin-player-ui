@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `ShadowDomConfig` via `UIConfig.shadowDomConfig` to configure Shadow DOM rendering.
+  - Set `uiConfig = { shadowDomConfig: { enabled: true } }` to enable rendering the UI in a Shadow DOM.
+
 ## [4.5.0] - 2025-12-10
 
 ### Added
