@@ -49,6 +49,7 @@ export namespace MockHelper {
       onSeeked: getEventDispatcherMock(),
       onRelease: getEventDispatcherMock(),
       onComponentViewModeChanged: getEventDispatcherMock(),
+      uiWrapperElement: generateDOMMock(),
     }));
 
     return new UiInstanceManagerMockClass();
@@ -59,6 +60,7 @@ export namespace MockHelper {
       addClass: jest.fn(),
       removeClass: jest.fn(),
       on: jest.fn(),
+      off: jest.fn(),
       html: jest.fn(),
       css: jest.fn(),
       width: jest.fn(),
