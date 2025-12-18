@@ -175,6 +175,9 @@ export interface UIConfig {
    * `shadowDom: true`
    * `shadowDom: { enabled: true }` (especially if you need to set more configuration options)
    *
+   * Enable ShadowDom rendering to prevent CSS from an enclosing website to interfere with the UI styles. Check
+   * the availability here: https://caniuse.com/shadowdomv1.
+   *
    * Default: false
    */
   shadowDom?: ShadowDomConfig | boolean;
