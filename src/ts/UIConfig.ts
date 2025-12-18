@@ -172,11 +172,12 @@ export interface UIConfig {
   /**
    * Configure Shadow DOM rendering.
    * Enable it with:
-   * `shadowDomConfig: { enabled: true }`
+   * `shadowDom: true`
+   * `shadowDom: { enabled: true }` (especially if you need to set more configuration options)
    *
-   * Default: undefined (Shadow DOM disabled).
+   * Default: false
    */
-  shadowDomConfig?: ShadowDomConfig;
+  shadowDom?: ShadowDomConfig | boolean;
 }
 
 export interface ShadowDomConfig {

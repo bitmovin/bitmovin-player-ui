@@ -185,6 +185,7 @@ export class UIManager {
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
       disableAutoHideWhenHovered: false, // Disable auto hide when UI is hovered
       enableSeekPreview: true,
+      shadowDom: false,
       ...uiconfig,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
@@ -252,8 +253,14 @@ export class UIManager {
       this.uiContainerElement = new DOM(player.getContainer());
     }
 
-    if (this.config.shadowDomConfig && this.config.shadowDomConfig.enabled && ShadowDomManager.isShadowDomSupported()) {
-      this.shadowDomManager.initialize(this.uiContainerElement, this.config.shadowDomConfig);
+    if (
+      this.config.shadowDom == true ||
+      (this.config.shadowDom && this.config.shadowDom.enabled && ShadowDomManager.isShadowDomSupported())
+    ) {
+      this.shadowDomManager.initialize(
+        this.uiContainerElement,
+        this.config.shadowDom === true ? { enabled: true } : this.config.shadowDom,
+      );
     }
 
     // Create UI instance managers for the UI variants
