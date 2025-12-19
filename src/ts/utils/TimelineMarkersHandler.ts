@@ -1,11 +1,14 @@
-import { PlayerAPI } from 'bitmovin-player';
+import { PlayerAPI, TimeRange } from 'bitmovin-player';
 import { UIInstanceManager } from '../UIManager';
 import { DOM } from '../DOM';
 import { ComponentConfig } from '../components/Component';
 import { TimelineMarker } from '../UIConfig';
-import { SeekBarMarker } from '../components/seekbar/SeekBar';
+import { SeekBar, SeekBarMarker, SeekPreviewEventArgs } from '../components/seekbar/SeekBar';
 import { PlayerUtils } from './PlayerUtils';
 import { Timeout } from './Timeout';
+import { prefixCss } from '../components/DummyComponent';
+
+const defaultMarkerUpdateIntervalMs = 1000;
 
 /**
  * @category Configs
@@ -15,6 +18,12 @@ export interface MarkersConfig extends ComponentConfig {
    * Used for seekBar marker snapping range percentage
    */
   snappingRange?: number;
+
+  /**
+   * The interval in milliseconds in which marker positions will be updated for live streams.
+   * Default: 1000
+   */
+  markerUpdateIntervalMs?: number;
 }
 
 export class TimelineMarkersHandler {
@@ -22,9 +31,16 @@ export class TimelineMarkersHandler {
   private timelineMarkers: SeekBarMarker[];
   private player: PlayerAPI;
   private uimanager: UIInstanceManager;
-  private pausedTimeshiftUpdater: Timeout;
+  private markerPositionUpdater: Timeout | null = null;
   private getSeekBarWidth: () => number;
   protected config: MarkersConfig;
+  private isTimeShifting: boolean = false;
+  // On some platforms, there are inconsistencies between the timeShift and currentTime values during time-shifting
+  // in a live stream. Those values are used to calculate a seekable-range during a live stream.
+  // To properly calculate the marker position, we rely on the seekable range of the DVR window.
+  // To work around the mentioned inconsistencies, we store the last known seekableRange and use
+  // it for marker position calculation during time-shifting/scrubbing.
+  private seekableRangeSnapshot: { start: number; end: number; timestampMs: number } | null = null;
 
   constructor(config: MarkersConfig, getSeekBarWidth: () => number, markersContainer: DOM) {
     this.config = config;
@@ -40,26 +56,67 @@ export class TimelineMarkersHandler {
   }
 
   private configureMarkers(): void {
-    this.clearMarkers();
-    // Remove markers when unloaded
-    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => this.clearMarkers());
+    const onTimeShift = () => {
+      this.isTimeShifting = true;
+    };
+
+    const onTimeShifted = () => {
+      this.isTimeShifting = false;
+    };
+
+    const onSeekPreview = (_: SeekBar, args: SeekPreviewEventArgs) => {
+      if (args.scrubbing) {
+        onTimeShift();
+      }
+    };
+
+    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => {
+      this.stopLiveMarkerUpdater();
+      this.clearMarkers();
+      this.isTimeShifting = false;
+      this.seekableRangeSnapshot = null;
+
+      this.player.off(this.player.exports.PlayerEvent.TimeShift, onTimeShift);
+      this.player.off(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
+      this.uimanager.onSeekPreview.unsubscribe(onSeekPreview);
+    });
+
     this.player.on(this.player.exports.PlayerEvent.AdBreakStarted, () => this.clearMarkers());
     this.player.on(this.player.exports.PlayerEvent.AdBreakFinished, () => this.updateMarkers());
-    // Update markers when the size of the seekbar changes
-    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkersDOM());
 
-    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, () => {
-      if (this.player.isLive()) {
-        // Update marker position as timeshift range changes
-        this.player.on(this.player.exports.PlayerEvent.TimeChanged, () => this.updateMarkers());
-        // Update marker postion when paused as timeshift range changes
-        this.configureLivePausedTimeshiftUpdater(() => this.updateMarkers());
+    const liveStreamDetector = new PlayerUtils.LiveStreamDetector(this.player, this.uimanager);
+    liveStreamDetector.onLiveChanged.subscribe((sender, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
+      if (args.live) {
+        this.player.on(this.player.exports.PlayerEvent.TimeShift, onTimeShift);
+        this.player.on(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
+        this.uimanager.onSeekPreview.subscribe(onSeekPreview);
+
+        this.startLiveMarkerUpdater();
+      } else {
+        this.stopLiveMarkerUpdater();
+        this.uimanager.onSeekPreview.unsubscribe(onSeekPreview);
+        this.player.off(this.player.exports.PlayerEvent.TimeShift, onTimeShift);
+        this.player.off(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
       }
     });
+    liveStreamDetector.detect(); // Initial detection
+
     this.uimanager.getConfig().events.onUpdated.subscribe(() => this.updateMarkers());
     this.uimanager.onRelease.subscribe(() =>
       this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.updateMarkers()),
     );
+
+    // Refresh timeline markers when the player is resized or the UI is configured. Timeline markers
+    // are positioned absolutely and must therefore be updated when the size of the seekbar changes.
+    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkersDOM());
+    // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
+    // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
+    this.uimanager.onConfigured.subscribe(() => {
+      this.updateMarkers();
+    });
+    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, () => {
+      this.updateMarkers();
+    });
 
     // Init markers at startup
     this.updateMarkers();
@@ -116,6 +173,13 @@ export class TimelineMarkersHandler {
   }
 
   private updateMarkers(): void {
+    const seekBarWidth = this.getSeekBarWidth();
+    if (seekBarWidth === 0) {
+      // Skip marker update when the seekBarWidth is not yet available.
+      // Will be updated by PlayerResized/onConfigured events once dimensions are available.
+      return;
+    }
+
     if (!shouldProcessMarkers(this.player, this.uimanager)) {
       this.clearMarkers();
       return;
@@ -124,7 +188,11 @@ export class TimelineMarkersHandler {
     this.filterRemovedMarkers();
 
     this.uimanager.getConfig().metadata.markers.forEach(marker => {
-      const { markerPosition, markerDuration } = getMarkerPositions(this.player, marker);
+      const { markerPosition, markerDuration } = getMarkerPositions(
+        this.player,
+        this.getSeekableRangeRespectingSnapshot(),
+        marker,
+      );
 
       if (shouldRemoveMarker(markerPosition, markerDuration)) {
         this.removeMarkerFromConfig(marker);
@@ -146,13 +214,23 @@ export class TimelineMarkersHandler {
     });
   }
 
-  private getMarkerCssProperties(marker: SeekBarMarker): { [propertyName: string]: string } {
+  private getMarkerCssProperties(
+    marker: SeekBarMarker,
+    includeTransition: boolean = true,
+  ): { [propertyName: string]: string } {
     const seekBarWidthPx = this.getSeekBarWidth();
 
     const positionInPx = (seekBarWidthPx / 100) * (marker.position < 0 ? 0 : marker.position);
     const cssProperties: { [propertyName: string]: string } = {
       transform: `translateX(${positionInPx}px)`,
     };
+
+    if (includeTransition) {
+      const updateIntervalMs = this.config.markerUpdateIntervalMs || defaultMarkerUpdateIntervalMs;
+      cssProperties['transition-duration'] = `${updateIntervalMs}ms`;
+    } else {
+      cssProperties['transition'] = 'none';
+    }
 
     if (marker.duration > 0) {
       const markerWidthPx = Math.round((seekBarWidthPx / 100) * marker.duration);
@@ -163,27 +241,32 @@ export class TimelineMarkersHandler {
   }
 
   private updateMarkerDOM(marker: SeekBarMarker): void {
-    marker.element.css(this.getMarkerCssProperties(marker));
+    // Removing the 'transition: none' value from the initial creation when updating the marker position.
+    marker.element.removeCss('transition');
+    marker.element.css(this.getMarkerCssProperties(marker, true));
   }
 
   private createMarkerDOM(marker: SeekBarMarker): void {
     const markerClasses = ['seekbar-marker']
       .concat(marker.marker.cssClasses || [])
-      .map(cssClass => this.prefixCss(cssClass));
+      .map(cssClass => prefixCss(cssClass));
 
     const markerStartIndicator = new DOM('div', {
-      class: this.prefixCss('seekbar-marker-indicator'),
+      class: prefixCss('seekbar-marker-indicator'),
     });
 
     const markerEndIndicator = new DOM('div', {
-      class: this.prefixCss('seekbar-marker-indicator'),
+      class: prefixCss('seekbar-marker-indicator'),
     });
 
     const markerElement = new DOM('div', {
       class: markerClasses.join(' '),
       'data-marker-time': String(marker.marker.time),
       'data-marker-title': String(marker.marker.title),
-    }).css(this.getMarkerCssProperties(marker));
+    })
+      // We do not want to animate the initial creation of a marker to prevent a 'fly in' animation.
+      // Only updating the marker position will be animated.
+      .css(this.getMarkerCssProperties(marker, false));
 
     if (marker.marker.imageUrl) {
       const removeImage = () => {
@@ -191,7 +274,7 @@ export class TimelineMarkersHandler {
       };
 
       const imageElement = new DOM('img', {
-        class: this.prefixCss('seekbar-marker-image'),
+        class: prefixCss('seekbar-marker-image'),
         src: marker.marker.imageUrl,
       }).on('error', removeImage);
 
@@ -218,30 +301,68 @@ export class TimelineMarkersHandler {
     });
   }
 
-  private configureLivePausedTimeshiftUpdater(handler: () => void): void {
-    // Regularly update the marker position while the timeout is active
-    this.pausedTimeshiftUpdater = new Timeout(1000, handler, true);
+  private startLiveMarkerUpdater(): void {
+    const updateIntervalMs = this.config.markerUpdateIntervalMs || defaultMarkerUpdateIntervalMs;
 
-    this.player.on(this.player.exports.PlayerEvent.Paused, () => {
-      if (this.player.isLive() && this.player.getMaxTimeShift() < 0) {
-        this.pausedTimeshiftUpdater.start();
-      }
-    });
+    this.stopLiveMarkerUpdater();
+    this.captureSeekableRangeSnapshot();
 
-    // Stop updater when playback continues (no matter if the updater was started before)
-    this.player.on(this.player.exports.PlayerEvent.Play, () => this.pausedTimeshiftUpdater.clear());
-    this.player.on(this.player.exports.PlayerEvent.Destroy, () => this.pausedTimeshiftUpdater.clear());
+    this.markerPositionUpdater = new Timeout(
+      updateIntervalMs,
+      () => {
+        if (!this.isTimeShifting) {
+          this.captureSeekableRangeSnapshot();
+        }
+
+        this.updateMarkers();
+      },
+      true,
+    );
+
+    this.markerPositionUpdater.start();
   }
 
-  protected prefixCss(cssClassOrId: string): string {
-    return this.config.cssPrefix + '-' + cssClassOrId;
+  private stopLiveMarkerUpdater(): void {
+    if (this.markerPositionUpdater) {
+      this.markerPositionUpdater.clear();
+      this.markerPositionUpdater = null;
+    }
+  }
+
+  private captureSeekableRangeSnapshot(): void {
+    const seekableRange = PlayerUtils.getSeekableRangeRespectingLive(this.player);
+
+    this.seekableRangeSnapshot = {
+      start: seekableRange.start,
+      end: seekableRange.end,
+      timestampMs: Date.now(),
+    };
+  }
+
+  private getSeekableRangeRespectingSnapshot(): TimeRange {
+    const seekableRange = PlayerUtils.getSeekableRangeRespectingLive(this.player);
+
+    if (!this.player.isLive()) {
+      return seekableRange;
+    }
+
+    if (this.isTimeShifting && this.seekableRangeSnapshot) {
+      // Interpolate the last snapshot so the sliding DVR window keeps moving while time-shifting.
+      const elapsedSeconds = (Date.now() - this.seekableRangeSnapshot.timestampMs) / 1000;
+      return {
+        start: this.seekableRangeSnapshot.start + elapsedSeconds,
+        end: this.seekableRangeSnapshot.end + elapsedSeconds,
+      };
+    }
+
+    return seekableRange;
   }
 }
 
-function getMarkerPositions(player: PlayerAPI, marker: TimelineMarker) {
-  const duration = getDuration(player);
+function getMarkerPositions(player: PlayerAPI, seekableRange: TimeRange, marker: TimelineMarker) {
+  const duration = getDuration(player, seekableRange);
 
-  const markerPosition = (100 / duration) * getMarkerTime(marker, player, duration); // convert absolute time to percentage
+  const markerPosition = (100 / duration) * getMarkerTime(marker, player, duration, seekableRange); // convert absolute time to percentage
   let markerDuration = (100 / duration) * marker.duration;
 
   if (markerPosition < 0 && !isNaN(markerDuration)) {
@@ -257,19 +378,19 @@ function getMarkerPositions(player: PlayerAPI, marker: TimelineMarker) {
   return { markerDuration, markerPosition };
 }
 
-function getMarkerTime(marker: TimelineMarker, player: PlayerAPI, duration: number): number {
+function getMarkerTime(marker: TimelineMarker, player: PlayerAPI, duration: number, seekableRange: TimeRange): number {
   if (!player.isLive()) {
     return marker.time;
   }
 
-  return duration - (PlayerUtils.getSeekableRangeRespectingLive(player).end - marker.time);
+  return duration - (seekableRange.end - marker.time);
 }
 
-function getDuration(player: PlayerAPI): number {
+function getDuration(player: PlayerAPI, seekableRange: TimeRange): number {
   if (!player.isLive()) {
     return player.getDuration();
   }
-  const { start, end } = PlayerUtils.getSeekableRangeRespectingLive(player);
+  const { start, end } = seekableRange;
 
   return end - start;
 }

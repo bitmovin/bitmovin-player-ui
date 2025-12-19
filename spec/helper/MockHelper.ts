@@ -15,6 +15,7 @@ export namespace MockHelper {
   export function getEventDispatcherMock() {
     return {
       subscribe: jest.fn(),
+      unsubscribe: jest.fn(),
       subscribeRateLimited: jest.fn(),
       dispatch: jest.fn(),
     };
@@ -132,6 +133,7 @@ export namespace MockHelper {
         // Event faker
         eventEmitter: eventHelper,
         on: eventHelper.on.bind(eventHelper),
+        off: jest.fn(),
       };
     });
 
