@@ -99,7 +99,12 @@ export class ShadowDomManager {
 }
 
 function resolveStylesheetHref(stylesheetName: string): string | null {
-  const isUrl = /^https?:\/\//.test(stylesheetName) || stylesheetName.startsWith('/');
+  const isUrl =
+    /^https?:\/\//.test(stylesheetName) ||
+    stylesheetName.startsWith('/') ||
+    stylesheetName.startsWith('./') ||
+    stylesheetName.startsWith('../');
+
   if (isUrl) {
     return stylesheetName;
   }
