@@ -46,7 +46,7 @@ describe('ShadowDomManager', () => {
 
     it('attaches a shadow root and injects main stylesheet by filename', () => {
       appendLink('https://cdn.example.com/bitmovinplayer-ui.css');
-      const config: ShadowDomConfig = { enabled: true, uiStylesheetName: 'bitmovinplayer-ui' };
+      const config: ShadowDomConfig = { enabled: true, uiStylesheet: 'bitmovinplayer-ui' };
 
       manager.initialize(container, config);
 
@@ -61,7 +61,7 @@ describe('ShadowDomManager', () => {
       appendLink('https://cdn.example.com/bitmovinplayer-ui.css');
       const config: ShadowDomConfig = {
         enabled: true,
-        uiStylesheetName: 'bitmovinplayer-ui',
+        uiStylesheet: 'bitmovinplayer-ui',
         additionalStylesheets: ['https://cdn.example.com/custom.css', 'other.css'],
       };
       appendLink('https://example.com/other.css');
@@ -81,7 +81,7 @@ describe('ShadowDomManager', () => {
 
     it('releases host and shadow root', () => {
       appendLink('https://cdn.example.com/bitmovinplayer-ui.css');
-      manager.initialize(container, { enabled: true, uiStylesheetName: 'bitmovinplayer-ui' });
+      manager.initialize(container, { enabled: true, uiStylesheet: 'bitmovinplayer-ui' });
 
       manager.release();
 

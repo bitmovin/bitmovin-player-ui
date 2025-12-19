@@ -69,7 +69,7 @@ export class ShadowDomManager {
       return;
     }
 
-    const stylesheetName = shadowDomConfig.uiStylesheetName || ShadowDomManager.DEFAULT_SHADOW_STYLESHEET_NAME;
+    const stylesheetName = shadowDomConfig.uiStylesheet || ShadowDomManager.DEFAULT_SHADOW_STYLESHEET_NAME;
     const mainHref = resolveStylesheetHref(stylesheetName);
 
     if (mainHref) {
@@ -77,7 +77,7 @@ export class ShadowDomManager {
     } else {
       console.warn(
         'Shadow DOM is enabled but no stylesheet was found. ' +
-          'Provide `uiStylesheetName` (URL or filename) or include {{FILENAME}} on the page.',
+          'Provide `uiStylesheet` (URL or filename) or include {{FILENAME}} on the page.',
       );
     }
 

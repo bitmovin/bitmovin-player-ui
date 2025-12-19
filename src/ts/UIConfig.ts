@@ -193,14 +193,16 @@ export interface ShadowDomConfig {
    */
   enabled: boolean;
   /**
-   * Filename of the UI stylesheet to inject into the Shadow DOM.
+   * Filename or URL of the UI stylesheet to inject into the Shadow DOM.
    *
-   * When the Shadow DOM is created, the UI looks for a linked stylesheet whose `href` contains this
+   * If a non-URL value is provided, the UI looks for a linked stylesheet whose `href` contains this
    * value and reuses it inside the shadow root so the default styling is available.
+   *
+   * If a URL is provided, the value is used as it is.
    *
    * Default: 'bitmovinplayer-ui'
    */
-  uiStylesheetName?: string;
+  uiStylesheet?: string;
 
   /**
    * Additional stylesheets to inject into the Shadow DOM (array of filenames/URLs).
