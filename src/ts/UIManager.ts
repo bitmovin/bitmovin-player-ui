@@ -253,14 +253,15 @@ export class UIManager {
       this.uiContainerElement = new DOM(player.getContainer());
     }
 
-    if (
-      this.config.shadowDom == true ||
-      (this.config.shadowDom && this.config.shadowDom.enabled && ShadowDomManager.isShadowDomSupported())
-    ) {
-      this.shadowDomManager.initialize(
-        this.uiContainerElement,
-        this.config.shadowDom === true ? { enabled: true } : this.config.shadowDom,
-      );
+    if (this.config.shadowDom == true || (this.config.shadowDom && this.config.shadowDom.enabled)) {
+      if (ShadowDomManager.isShadowDomSupported()) {
+        this.shadowDomManager.initialize(
+          this.uiContainerElement,
+          this.config.shadowDom === true ? { enabled: true } : this.config.shadowDom,
+        );
+      } else {
+        console.warn('Shadow DOM is not supported in this environment. Falling back to classic UI rendering.');
+      }
     }
 
     // Create UI instance managers for the UI variants

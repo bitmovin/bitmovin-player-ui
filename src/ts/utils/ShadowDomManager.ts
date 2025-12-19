@@ -16,16 +16,11 @@ export class ShadowDomManager {
   private shadowHost?: DOM;
 
   public static isShadowDomSupported(): boolean {
-    const shadowSupported =
+    return (
       typeof ShadowRoot !== 'undefined' &&
       typeof HTMLElement !== 'undefined' &&
-      typeof HTMLElement.prototype.attachShadow === 'function';
-
-    if (!shadowSupported) {
-      console.warn('Shadow DOM is not supported in this environment. Falling back to classic UI rendering.');
-    }
-
-    return shadowSupported;
+      typeof HTMLElement.prototype.attachShadow === 'function'
+    );
   }
 
   initialize(containerElement: DOM, shadowDomConfig: ShadowDomConfig) {
