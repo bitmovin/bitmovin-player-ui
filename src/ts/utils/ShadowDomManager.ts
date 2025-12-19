@@ -77,7 +77,7 @@ export class ShadowDomManager {
     } else {
       console.warn(
         'Shadow DOM is enabled but no stylesheet was found. ' +
-          'Provide `shadowDomCss` (URL or filename) or include bitmovinplayer-ui.css on the page.',
+          'Provide `uiStylesheetName` (URL or filename) or include {{FILENAME}} on the page.',
       );
     }
 
