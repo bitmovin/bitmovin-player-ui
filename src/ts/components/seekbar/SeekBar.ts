@@ -864,6 +864,8 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.onSeekEvent();
 
       // Add handler to track the seek operation over the whole document
+      // This enables that scrubbing doesn't require the mouse to stay inside the UI elements itself and works
+      // on the whole document.
       new DOM(document).on(isTouchEvent ? 'touchmove' : 'mousemove', mouseTouchMoveHandler);
       new DOM(document).on(isTouchEvent ? 'touchend' : 'mouseup', mouseTouchUpHandler);
     });

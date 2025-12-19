@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `ShadowDomConfig` via `UIConfig.shadowDomConfig` to configure Shadow DOM rendering.
+  - Set `uiConfig = { shadowDomConfig: true }` to enable rendering the UI in a Shadow DOM.
+
 ### Fixed
 
 - The `TimelineMarkers` implementation was improved to fix the following problems:
