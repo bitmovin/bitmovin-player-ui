@@ -29,9 +29,7 @@ describe('ShadowDomManager', () => {
 
       expect(ShadowDomManager.isShadowDomSupported()).toBe(false);
 
-      if (originalAttachShadow) {
-        (HTMLElement.prototype as any).attachShadow = originalAttachShadow;
-      }
+      (HTMLElement.prototype as any).attachShadow = originalAttachShadow;
       (global as any).ShadowRoot = originalShadowRoot;
     });
   });
