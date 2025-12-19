@@ -12,6 +12,7 @@ export { UIUtils } from './utils/UIUtils';
 export { BrowserUtils } from './utils/BrowserUtils';
 export { StorageUtils } from './utils/StorageUtils';
 export { ErrorUtils } from './utils/ErrorUtils';
+export { ShadowDomManager } from './utils/ShadowDomManager';
 // Localization
 export {
   i18n,
