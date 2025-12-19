@@ -10,7 +10,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - `ShadowDomConfig` via `UIConfig.shadowDomConfig` to configure Shadow DOM rendering.
-  - Set `uiConfig = { shadowDomConfig: { enabled: true } }` to enable rendering the UI in a Shadow DOM.
+  - Set `uiConfig = { shadowDomConfig: true }` to enable rendering the UI in a Shadow DOM.
+
+### Fixed
+
+- The `TimelineMarkers` implementation was improved to fix the following problems:
+  - Duplicate `TimelineMarkers` after resizing the window
+  - `TimelineMarker`s no longer animate to its initial position after loading a Source
+  - `TimelineMarker`s no longer move unexpected during time-shifting in a live stream
 
 ## [4.5.0] - 2025-12-10
 
