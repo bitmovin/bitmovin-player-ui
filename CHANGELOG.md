@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- Uncaught JS errors after destroying the player while a live source is loaded
+
 ## [3.105.0] - 2025-12-16
 
 ### Added
