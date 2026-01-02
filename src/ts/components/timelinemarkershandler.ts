@@ -69,7 +69,7 @@ export class TimelineMarkersHandler {
       }
     };
 
-    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, () => {
+    const reset = () => {
       this.stopLiveMarkerUpdater();
       this.clearMarkers();
       this.isTimeShifting = false;
@@ -78,7 +78,9 @@ export class TimelineMarkersHandler {
       this.player.off(this.player.exports.PlayerEvent.TimeShift, onTimeShift);
       this.player.off(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
       this.uimanager.onSeekPreview.unsubscribe(onSeekPreview);
-    });
+    };
+    this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, reset);
+    this.player.on(this.player.exports.PlayerEvent.Destroy, reset);
 
     this.player.on(this.player.exports.PlayerEvent.AdBreakStarted, () => this.clearMarkers());
     this.player.on(this.player.exports.PlayerEvent.AdBreakFinished, () => this.updateMarkers());
