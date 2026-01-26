@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [3.105.1] - 2026-01-26
 
 ### Fixed
 - Uncaught JS errors after destroying the player while a live source is loaded
@@ -1201,6 +1201,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.105.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.105.0...v3.105.1
 [3.105.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.104.0...v3.105.0
 [3.104.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.103.1...v3.104.0
 [3.103.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.102.0...v3.103.1
