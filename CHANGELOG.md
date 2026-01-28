@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Improvements to the clickable areas of the seek-bar
 
+## [4.7.0] - 2026-01-28
+
+### Added
+
+- Language localization for French
+
 ## [4.6.1] - 2026-01-08
 
 ### Fixed
