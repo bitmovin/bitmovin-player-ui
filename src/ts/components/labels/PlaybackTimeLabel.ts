@@ -173,6 +173,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       updateTimeFormatBasedOnDuration();
     };
     uimanager.getConfig().events.onUpdated.subscribe(init);
+    player.on(player.exports.PlayerEvent.DurationChanged, init);
 
     init();
   }
