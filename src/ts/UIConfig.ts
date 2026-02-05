@@ -170,6 +170,18 @@ export interface UIConfig {
    */
   includeWatermark?: boolean;
   /**
+   * Configure Shadow DOM rendering.
+   * Enable it with:
+   * `shadowDom: true`
+   * `shadowDom: { enabled: true }` (especially if you need to set more configuration options)
+   *
+   * Enable ShadowDom rendering to prevent CSS from an enclosing website to interfere with the UI styles. Check
+   * the availability here: https://caniuse.com/shadowdomv1.
+   *
+   * Default: false
+   */
+  shadowDom?: ShadowDomConfig | boolean;
+  /**
    * Specifies if the UI localization should automatically adapt to the selected subtitle language.
    * When enabled, the UI language will change to match the subtitle track's language, falling back
    * to English if the language is not available.
@@ -177,4 +189,35 @@ export interface UIConfig {
    * Default: false
    */
   adaptLocalizationToSubtitleLanguage?: boolean;
+}
+
+export interface ShadowDomConfig {
+  /**
+   * Render the UI inside a Shadow DOM.
+   * Enable this to keep player UI styles from being affected by host-page CSS and to keep the UI’s classes from
+   * affecting the page.
+   *
+   * Default: false
+   */
+  enabled: boolean;
+  /**
+   * Filename or URL of the UI stylesheet to inject into the Shadow DOM.
+   *
+   * If a non-URL value is provided, the UI looks for a linked stylesheet whose `href` contains this
+   * value and reuses it inside the shadow root so the default styling is available.
+   *
+   * If a URL is provided, the value is used as it is.
+   *
+   * Default: 'bitmovinplayer-ui'
+   */
+  uiStylesheet?: string;
+
+  /**
+   * Additional stylesheets to inject into the Shadow DOM (array of filenames/URLs).
+   *
+   * Use this to include custom UI styles when Shadow DOM is enabled.
+   *
+   * Default: undefined
+   */
+  additionalStylesheets?: string[];
 }

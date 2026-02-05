@@ -1,5 +1,7 @@
 import { JSDOM } from 'jsdom';
 import { FocusVisibilityTracker } from '../../src/ts/utils/FocusVisibilityTracker';
+import { MockHelper } from '../helper/MockHelper';
+import { DOM } from '../../src/ts/DOM';
 
 describe('FocusVisibilityTracker', () => {
   const bitmovinUIPrefix = 'bmpui';
@@ -9,13 +11,15 @@ describe('FocusVisibilityTracker', () => {
   let uiButton: HTMLElement;
   let nonUiButton: HTMLElement;
   let tracker: FocusVisibilityTracker;
+  let uiWrapperElement: DOM;
 
   beforeEach(() => {
     const { window } = new JSDOM();
     global.document = window.document;
     uiButton = createAndAddButton(document, uiButtonId);
     nonUiButton = createAndAddButton(document, nonUiButtonId);
-    tracker = new FocusVisibilityTracker(bitmovinUIPrefix);
+    uiWrapperElement = new DOM(global.document);
+    tracker = new FocusVisibilityTracker(bitmovinUIPrefix, uiWrapperElement);
   });
 
   it('adds the focus-visible class on a UI button that gets focus w/o initial interaction', () => {
@@ -65,7 +69,7 @@ describe('FocusVisibilityTracker', () => {
   });
 
   it('removes event listeners upon release', () => {
-    const spy = jest.spyOn(global.document, 'removeEventListener');
+    const spy = jest.spyOn(uiWrapperElement, 'off');
     expect(spy).toHaveBeenCalledTimes(0);
 
     tracker.release();

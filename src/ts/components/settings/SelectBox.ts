@@ -52,6 +52,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
   private removeDropdownCloseListeners = () => {};
   private uiContainer: UIContainer | undefined;
   private removeDropdownOpenedListeners = () => {};
+  private uiWrapperElement: DOM | undefined;
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
@@ -90,6 +91,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
     super.configure(player, uimanager);
     this.uiContainer = uimanager.getUI();
     this.uiContainer?.onPlayerStateChange().subscribe(this.onPlayerStateChange);
+    this.uiWrapperElement = uimanager.uiWrapperElement;
   }
 
   private readonly onChange = () => {
@@ -176,11 +178,11 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
     clearTimeout(this.dropdownCloseListenerTimeoutId);
 
-    DocumentDropdownClosedEvents.forEach(event => document.addEventListener(event, this.onDropdownClosed, true));
+    DocumentDropdownClosedEvents.forEach(event => this.uiWrapperElement.on(event, this.onDropdownClosed, true));
     SelectDropdownClosedEvents.forEach(event => this.selectElement.on(event, this.onDropdownClosed, true));
 
     this.removeDropdownCloseListeners = () => {
-      DocumentDropdownClosedEvents.forEach(event => document.removeEventListener(event, this.onDropdownClosed, true));
+      DocumentDropdownClosedEvents.forEach(event => this.uiWrapperElement.off(event, this.onDropdownClosed, true));
       SelectDropdownClosedEvents.forEach(event => this.selectElement.off(event, this.onDropdownClosed, true));
     };
   }

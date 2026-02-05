@@ -115,10 +115,28 @@
   filter: drop-shadow(0 0 0.25px $color-primary);
 }
 
+// Use this mixin in `&:after` or `:before` to increase the hit area without increasing the visible size
+@mixin invisible-hit-area($top, $right, $bottom, $left) {
+  content: '';
+  position: absolute;
+  display: block;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+
 @mixin seekbar-position-marker($marker-dimension) {
   height: $marker-dimension;
   left: -$marker-dimension * 0.5;
   width: $marker-dimension;
+  &:after {
+    $inset: calc(-1 * $font-size / 3);
+    @include invisible-hit-area($inset, $inset, $inset, $inset);
+    border-radius: 100%;
+    // Uncomment to expose hit area for debugging
+    // background-color: rgba(red, 0.5);
+  }
 }
 
 @mixin focusable($inset: false, $border-radius: 0.3em, $focus-element-box-shadow: 0 0 0 0.1em rgba($color-focus, 0.4)) {

@@ -209,6 +209,9 @@ describe('SelectBox', () => {
     beforeEach(() => {
       selectElement = { on: jest.fn(), off: jest.fn() } as unknown as DOM;
       selectBox['selectElement'] = selectElement;
+      selectBox['element'] = selectElement;
+
+      selectBox.configure(playerMock, uiManagerMock);
     });
 
     it('should remove existing close listeners', () => {
@@ -229,7 +232,7 @@ describe('SelectBox', () => {
     });
 
     it('should add close event listeners to the document', () => {
-      const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+      const addEventListenerSpy = jest.spyOn(uiManagerMock.uiWrapperElement, 'on');
 
       selectBox['addDropdownCloseListeners']();
 
@@ -259,11 +262,15 @@ describe('SelectBox', () => {
     beforeEach(() => {
       selectElement = { on: jest.fn(), off: jest.fn() } as unknown as DOM;
       selectBox['selectElement'] = selectElement;
+      selectBox['element'] = selectElement;
+
+      selectBox.configure(playerMock, uiManagerMock);
+
       selectBox['addDropdownCloseListeners']();
     });
 
     it('should remove close event listeners to the document', () => {
-      const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
+      const removeEventListenerSpy = jest.spyOn(uiManagerMock.uiWrapperElement, 'off');
 
       selectBox['removeDropdownCloseListeners']();
 

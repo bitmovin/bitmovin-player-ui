@@ -11,6 +11,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - New `UIConfig.adaptLocalizationToSubtitleLanguage` option to enable dynamically changing the UI language based on the user's selected subtitle language
 
+## [4.8.0] - 2026-01-29
+
+### Added
+
+- Improvements to the clickable areas of the seek-bar
+
+## [4.7.0] - 2026-01-28
+
+### Added
+
+- Language localization for French
+
+## [4.6.1] - 2026-01-08
+
+### Fixed
+
+- Uncaught JS errors after destroying the player while a live source is loaded
+
+## [4.6.0] - 2025-12-22
+
+### Added
+
+- `ShadowDomConfig` via `UIConfig.shadowDomConfig` to configure Shadow DOM rendering.
+  - Set `uiConfig = { shadowDomConfig: true }` to enable rendering the UI in a Shadow DOM.
+
 ### Fixed
 
 - The `TimelineMarkers` implementation was improved to fix the following problems:

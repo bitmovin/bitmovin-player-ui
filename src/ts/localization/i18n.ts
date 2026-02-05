@@ -1,15 +1,17 @@
 import * as vocabularyDe from './languages/de.json';
 import * as vocabularyEn from './languages/en.json';
 import * as vocabularyEs from './languages/es.json';
+import * as vocabularyFr from './languages/fr.json';
 import * as vocabularyNl from './languages/nl.json';
 
 import { LocalizationConfig } from '../UIManager';
 import { EventDispatcher } from '../EventDispatcher';
 
 export const defaultVocabularies: Vocabularies = {
-  en: vocabularyEn,
   de: vocabularyDe,
+  en: vocabularyEn,
   es: vocabularyEs,
+  fr: vocabularyFr,
   nl: vocabularyNl,
 };
 
