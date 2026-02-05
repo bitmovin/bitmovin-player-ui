@@ -161,7 +161,7 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
   }
 
   protected onUpdated(sender: UIManager): void {
-    if (this.label instanceof Label) {
+    if (this.label instanceof Label && typeof this.config.label === 'function') {
       this.label.setText(this.config.label);
     }
   }

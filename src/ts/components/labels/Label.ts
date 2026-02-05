@@ -195,6 +195,10 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
   }
 
   protected onUpdated(sender: UIManager): void {
-    this.setText(this.config.text);
+    // updating the text if it's not a (localization) function can lead to
+    // hardcoded default strings sometimes overwriting the actual value
+    if (typeof this.config.text === 'function') {
+      this.setText(this.config.text);
+    }
   }
 }
