@@ -3,6 +3,7 @@ import { DOM } from '../../DOM';
 import { EventDispatcher, Event, NoArgs } from '../../EventDispatcher';
 import { LocalizableText, i18n } from '../../localization/i18n';
 import { Icon } from '../Icon';
+import { UIManager } from '../../UIManager';
 
 export enum LabelStyle {
   /**
@@ -125,7 +126,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * @param text
    */
   setText(text: LocalizableText) {
-    if (text === this.text) {
+    if (text === this.text && typeof text !== 'function') {
       return;
     }
 
@@ -191,5 +192,9 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    */
   get onTextChanged(): Event<Label<LabelConfig>, string> {
     return this.labelEvents.onTextChanged.getEvent();
+  }
+
+  protected onUpdated(sender: UIManager): void {
+    this.setText(this.config.text);
   }
 }

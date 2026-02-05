@@ -3,6 +3,7 @@ import { DOM } from '../../DOM';
 import { EventDispatcher, NoArgs, Event } from '../../EventDispatcher';
 import { LocalizableText, i18n } from '../../localization/i18n';
 import { Icon } from '../Icon';
+import { UIManager } from '../../UIManager';
 
 /**
  * Configures the style of a {@link Button} component.
@@ -166,5 +167,9 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
    */
   get onClick(): Event<Button<Config>, NoArgs> {
     return this.buttonEvents.onClick.getEvent();
+  }
+
+  protected onUpdated(sender: UIManager): void {
+    this.setText(this.config.text);
   }
 }

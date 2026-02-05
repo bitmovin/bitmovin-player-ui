@@ -1,5 +1,5 @@
 import { Label, LabelConfig, LabelStyle } from '../labels/Label';
-import { UIInstanceManager } from '../../UIManager';
+import { UIInstanceManager, UIManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../../localization/i18n';
 import { ListSelector, ListSelectorConfig } from '../lists/ListSelector';
@@ -91,29 +91,30 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
       this.settingComponent.configure(this.player, this.uimanager);
     }
 
-    const handleSelectedItemChanged = () => {
-      const selectedItem = this.settingComponent.getItemForKey(this.settingComponent.getSelectedItem());
-      if (selectedItem == null) {
-        this.selectedOptionLabel.setText('-');
-        return;
-      }
+    this.settingComponent.onItemSelected.subscribe(this.handleSelectedItemChanged);
 
-      let selectedOptionLabelText = selectedItem.label;
-      if (this.settingComponent instanceof SubtitleSelectBox) {
-        const availableSettings = this.settingComponent.getItems().length;
-        selectedOptionLabelText =
-          i18n.performLocalization(selectedOptionLabelText) + ' (' + (availableSettings - 1) + ')';
-      }
-      this.selectedOptionLabel.setText(selectedOptionLabelText);
-    };
-    this.settingComponent.onItemSelected.subscribe(handleSelectedItemChanged);
-
-    handleSelectedItemChanged();
+    this.handleSelectedItemChanged();
 
     this.onClick.subscribe(() => {
       this.displayItemsSubPage();
     });
   }
+
+  private handleSelectedItemChanged = () => {
+    const selectedItem = this.settingComponent.getItemForKey(this.settingComponent.getSelectedItem());
+    if (selectedItem == null) {
+      this.selectedOptionLabel.setText('-');
+      return;
+    }
+
+    let selectedOptionLabelText = selectedItem.label;
+    if (this.settingComponent instanceof SubtitleSelectBox) {
+      const availableSettings = this.settingComponent.getItems().length;
+      selectedOptionLabelText =
+        i18n.performLocalization(selectedOptionLabelText) + ' (' + (availableSettings - 1) + ')';
+    }
+    this.selectedOptionLabel.setText(selectedOptionLabelText);
+  };
 
   private buildSubPanelPage(): SettingsPanelPage {
     const menuOptions = this.settingComponent.getItems();
@@ -167,5 +168,10 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
     const page = this.buildSubPanelPage();
     this.config.container.addPage(page);
     this.config.container.setActivePage(page);
+  }
+
+  protected onUpdated(sender: UIManager): void {
+    super.onUpdated(sender);
+    this.handleSelectedItemChanged();
   }
 }

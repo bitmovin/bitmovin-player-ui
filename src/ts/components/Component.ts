@@ -1,7 +1,7 @@
 import { Guid } from '../utils/Guid';
 import { DOM } from '../DOM';
 import { EventDispatcher, NoArgs, Event } from '../EventDispatcher';
-import { UIInstanceManager } from '../UIManager';
+import { UIInstanceManager, UIManager } from '../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../localization/i18n';
 
@@ -289,6 +289,12 @@ export class Component<Config extends ComponentConfig> {
     // Track the focused state of the element
     this.getDomElement().on('focusin', () => this.onFocusChangedEvent(true));
     this.getDomElement().on('focusout', () => this.onFocusChangedEvent(false));
+
+    uimanager.getConfig().events.onUpdated.subscribe(sender => this.onUpdated(sender));
+  }
+
+  protected onUpdated(sender: UIManager) {
+    // Allows components to easily react to relevant changes, e.g. source or UIConfig
   }
 
   /**

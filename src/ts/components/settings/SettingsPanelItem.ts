@@ -2,7 +2,7 @@ import { Container, ContainerConfig } from '../Container';
 import { Component, ComponentConfig } from '../Component';
 import { Event, EventDispatcher, NoArgs } from '../../EventDispatcher';
 import { Label, LabelConfig, LabelStyle } from '../labels/Label';
-import { UIInstanceManager } from '../../UIManager';
+import { UIInstanceManager, UIManager } from '../../UIManager';
 import { SelectBox } from './SelectBox';
 import { VideoQualitySelectBox } from './VideoQualitySelectBox';
 import { AudioQualitySelectBox } from './AudioQualitySelectBox';
@@ -158,5 +158,11 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
    */
   get onActiveChanged(): Event<SettingsPanelItem<Config>, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
+  }
+
+  protected onUpdated(sender: UIManager): void {
+    if (this.label instanceof Label) {
+      this.label.setText(this.config.label);
+    }
   }
 }
