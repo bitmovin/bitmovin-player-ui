@@ -30,9 +30,8 @@ export class PlaybackSpeedSelectBox extends SelectBox {
 
     this.addDefaultItems();
 
-    this.onItemSelected.subscribe((sender: PlaybackSpeedSelectBox, value: string) => {
+    this.onItemSelectionChanged.subscribe((sender: PlaybackSpeedSelectBox, value: string) => {
       player.setPlaybackSpeed(parseFloat(value));
-      this.selectItem(value);
     });
 
     const setDefaultValue = (): void => {

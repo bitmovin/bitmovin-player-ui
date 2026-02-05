@@ -85,7 +85,7 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
         selectItem(listItem);
 
         // Fire the event
-        this.onItemSelectedEvent(item.key, false);
+        this.dispatchItemSelectionChanged(item.key);
       });
 
       // Select default item

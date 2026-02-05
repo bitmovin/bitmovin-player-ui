@@ -43,7 +43,7 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
       }
     };
 
-    this.onItemSelected.subscribe((sender, key: string) => {
+    this.onItemSelectionChanged.subscribe((sender, key: string) => {
       this.settingsManager.characterEdge.value = key;
     });
 
