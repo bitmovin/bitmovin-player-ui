@@ -5,7 +5,7 @@ import { UIInstanceManager } from '../../UIManager';
 import { StringUtils } from '../../utils/StringUtils';
 import { ImageLoader } from '../../utils/ImageLoader';
 import { CssProperties } from '../../DOM';
-import { PlayerAPI, PlayerEvent, Thumbnail } from 'bitmovin-player';
+import { PlayerAPI, Thumbnail } from 'bitmovin-player';
 import { SeekBar, SeekPreviewEventArgs } from './SeekBar';
 import { PlayerUtils } from '../../utils/PlayerUtils';
 
@@ -84,7 +84,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     uimanager.onSeekPreview.subscribeRateLimited(this.handleSeekPreview, 100);
 
     uimanager.getConfig().events.onUpdated.subscribe(this.init);
-    player.on(PlayerEvent.DurationChanged, this.init);
+    player.on(this.player.exports.PlayerEvent.DurationChanged, this.init);
     this.init();
   }
 
@@ -256,6 +256,6 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     super.release();
 
     this.uiManager.onSeekPreview.unsubscribe(this.handleSeekPreview);
-    this.player.off(PlayerEvent.DurationChanged, this.init);
+    this.player.off(this.player.exports.PlayerEvent.DurationChanged, this.init);
   }
 }
