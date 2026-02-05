@@ -96,7 +96,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
   private readonly onChange = () => {
     const value = this.selectElement.val();
-    this.dispatchItemSelectionChanged(value);
+    this.onItemSelectedEvent(value, false);
   };
 
   private getSelectElement() {
