@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- New `UIConfig.adaptLocalizationToSubtitleLanguage` option to enable dynamically changing the UI language based on the user's selected subtitle language
+
 ### Fixed
 
 - The `TimelineMarkers` implementation was improved to fix the following problems:
