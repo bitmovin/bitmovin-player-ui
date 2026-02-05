@@ -10,7 +10,7 @@ import { BrowserUtils } from './utils/BrowserUtils';
 import { TimelineMarker, UIConfig } from './UIConfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './utils/VolumeController';
-import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
+import { i18n, CustomVocabulary, Vocabularies, I18n, LanguageChangedArgument } from './localization/i18n';
 import { FocusVisibilityTracker } from './utils/FocusVisibilityTracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './utils/MobileV3PlayerAPI';
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
@@ -32,6 +32,13 @@ export interface LocalizationConfig {
    * custom strings or additional languages.
    */
   vocabularies?: Vocabularies;
+
+  events?: {
+    /**
+     * Fires when the UI language has been changed during the lifetime of the UI.
+     */
+    onLanguageChanged: EventDispatcher<I18n, LanguageChangedArgument>;
+  };
 }
 
 /**
@@ -188,6 +195,10 @@ export class UIManager {
       },
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
     };
+
+    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
+      this.config.events.onUpdated.dispatch(this);
+    });
 
     /**
      * Gathers configuration data from the UI config and player source config and creates a merged UI config

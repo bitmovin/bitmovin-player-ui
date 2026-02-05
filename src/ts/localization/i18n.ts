@@ -4,6 +4,7 @@ import * as vocabularyEs from './languages/es.json';
 import * as vocabularyNl from './languages/nl.json';
 
 import { LocalizationConfig } from '../UIManager';
+import { EventDispatcher } from '../EventDispatcher';
 
 export const defaultVocabularies: Vocabularies = {
   en: vocabularyEn,
@@ -12,9 +13,17 @@ export const defaultVocabularies: Vocabularies = {
   nl: vocabularyNl,
 };
 
+export interface LanguageChangedArgument {
+  newLanguage: string;
+  oldLanguage: string;
+}
+
 const defaultLocalizationConfig: LocalizationConfig = {
   language: 'en',
   vocabularies: defaultVocabularies,
+  events: {
+    onLanguageChanged: new EventDispatcher<I18n, LanguageChangedArgument>(),
+  },
 };
 
 /**
@@ -121,17 +130,41 @@ export interface Vocabularies {
 export class I18n {
   private language: string;
   private vocabulary: CustomVocabulary<Record<string, string>>;
+  private vocabularies: Vocabularies;
+  private config: LocalizationConfig;
 
   constructor(config: LocalizationConfig) {
     this.setConfig(config);
   }
 
   public setConfig(config: LocalizationConfig) {
-    const mergedConfig = { ...defaultLocalizationConfig, ...config };
-    const detectBrowserLanguage = mergedConfig.language === 'auto';
-    const vocabularies = this.mergeVocabulariesWithDefaultVocabularies(mergedConfig.vocabularies);
-    this.initializeLanguage(mergedConfig.language, detectBrowserLanguage, vocabularies);
-    this.initializeVocabulary(vocabularies);
+    this.config = { ...defaultLocalizationConfig, ...config };
+    const detectBrowserLanguage = this.config.language === 'auto';
+    this.vocabularies = this.mergeVocabulariesWithDefaultVocabularies(this.config.vocabularies);
+    this.initializeLanguage(this.config.language, detectBrowserLanguage, this.vocabularies);
+    this.initializeVocabulary(this.vocabularies);
+  }
+
+  public getConfig(): LocalizationConfig {
+    return this.config;
+  }
+
+  public setLanguage(language: string): void {
+    const oldLanguage = this.language;
+
+    if (I18n.containsLanguage(this.vocabularies, language)) {
+      this.language = language;
+    } else if (I18n.containsLanguage(this.vocabularies, language.slice(0, 2))) {
+      this.language = language.slice(0, 2);
+    } else {
+      this.language = this.config.language ?? 'en';
+    }
+
+    this.initializeVocabulary(this.vocabularies);
+
+    if (this.language !== oldLanguage) {
+      this.config.events.onLanguageChanged.dispatch(this, { newLanguage: this.language, oldLanguage: oldLanguage });
+    }
   }
 
   private static containsLanguage(vocabularies: Vocabularies, language: string) {
