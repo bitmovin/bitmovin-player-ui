@@ -80,6 +80,9 @@ export interface Vocabulary {
   percent: string;
   settings: string;
   'ads.remainingTime': string;
+  'ads.skip': string;
+  'ads.skippableIn': string;
+  'ads.adNumberOfTotal': string;
   pictureInPicture: string;
   appleAirplay: string;
   googleCast: string;

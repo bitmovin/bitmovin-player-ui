@@ -1,20 +1,26 @@
+import { i18n, LocalizableText, StringUtils } from '../../main';
 import { UIInstanceManager } from '../../UIManager';
 import { LabelConfig, Label } from '../labels/Label';
 import { PlayerAPI } from 'bitmovin-player';
+
+export interface AdCounterLabelConfig extends LabelConfig {
+  adCountOutOfTotal?: LocalizableText;
+}
 
 /**
  * A label that displays the index of the currently playing ad out of the total number of ads.
  *
  * @category Labels
  */
-export class AdCounterLabel extends Label<LabelConfig> {
-  constructor(config: LabelConfig = {}) {
+export class AdCounterLabel extends Label<AdCounterLabelConfig> {
+  constructor(config: AdCounterLabelConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(
       config,
       {
         cssClass: 'ui-label-ad-counter',
+        adCountOutOfTotal: i18n.getLocalizer('ads.adNumberOfTotal'),
       },
       this.config,
     );
@@ -28,9 +34,9 @@ export class AdCounterLabel extends Label<LabelConfig> {
     };
 
     player.on(player.exports.PlayerEvent.AdStarted, () => {
-      const activeAdIndex = player.ads.getActiveAdBreak().ads.findIndex(ad => ad === player.ads.getActiveAd()) + 1;
-      const totalAdsCount = player.ads.getActiveAdBreak().ads?.length ?? activeAdIndex;
-      this.setText(`Ad ${activeAdIndex} of ${totalAdsCount}`);
+      this.setText(
+        StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.config.adCountOutOfTotal), null, player),
+      );
     });
     player.on(player.exports.PlayerEvent.AdBreakStarted, clearText);
     player.on(player.exports.PlayerEvent.AdBreakFinished, clearText);

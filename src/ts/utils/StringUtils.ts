@@ -77,9 +77,15 @@ export namespace StringUtils {
   /**
    * Fills out placeholders in an ad message.
    *
-   * Has the placeholders '{remainingTime[formatString]}', '{playedTime[formatString]}',
-   * '{adDuration[formatString]}' and {adBreakRemainingTime[formatString]}, which are replaced by the remaining time until the ad can be skipped, the current
-   * time or the ad duration. The format string is optional. If not specified, the placeholder is replaced by the time
+   * Has the placeholders following placeholders, and are replaced with:
+   *   - '{remainingTime[formatString]}': the remaining time until the ad can be skipped
+   *   - '{playedTime[formatString]}': the current time
+   *   - '{adDuration[formatString]}': the ad duration
+   *   - '{adBreakRemainingTime[formatString]}': the total remaining time of all ads in the ad break
+   *   - '{activeAdIndex[formatString]}': the number of of the currently played ad within the current ad break
+   *   - '{totalAdsCount[formatString]}:': the toal number of ads in the current ad break
+   *
+   * The format string is optional. If not specified, the placeholder is replaced by the time
    * in seconds. If specified, it must be of the following format:
    * - %d - Inserts the time as an integer.
    * - %0Nd - Inserts the time as an integer with leading zeroes, if the length of the time string is smaller than N.
@@ -105,7 +111,7 @@ export namespace StringUtils {
    */
   export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: PlayerAPI) {
     const adMessagePlaceholderRegex = new RegExp(
-      '\\{(remainingTime|playedTime|adDuration|adBreakRemainingTime)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
+      '\\{(remainingTime|playedTime|adDuration|adBreakRemainingTime|activeAdIndex|totalAdsCount)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g',
     );
 
@@ -137,6 +143,13 @@ export namespace StringUtils {
           // And remaning ads duration minus time played
           time = duration - player.getCurrentTime();
         }
+      } else if (formatString.indexOf('activeAdIndex') > -1) {
+        const activeAdIndex = player.ads.getActiveAdBreak().ads.findIndex(ad => ad === player.ads.getActiveAd()) + 1;
+        return formatNumber(activeAdIndex, formatString);
+      } else if (formatString.indexOf('totalAdsCount') > -1) {
+        const activeAdIndex = player.ads.getActiveAdBreak().ads.findIndex(ad => ad === player.ads.getActiveAd()) + 1;
+        const totalAdsCount = player.ads.getActiveAdBreak().ads?.length ?? activeAdIndex;
+        return formatNumber(totalAdsCount, formatString);
       }
 
       return formatNumber(Math.round(time), formatString);

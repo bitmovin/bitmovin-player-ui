@@ -2,6 +2,7 @@ import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
 import { UIInstanceManager } from '../../UIManager';
 import { StringUtils } from '../../utils/StringUtils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
+import { i18n, LocalizableText } from '../../main';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
@@ -13,12 +14,12 @@ export interface AdSkipButtonConfig extends ButtonConfig {
    * Message which gets displayed during the countdown is active.
    * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
    */
-  untilSkippableMessage?: string;
+  untilSkippableMessage?: LocalizableText;
   /**
    * Message displayed when the ad is skippable.
    * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
    */
-  skippableMessage?: string;
+  skippableMessage?: LocalizableText;
 }
 
 /**
@@ -34,8 +35,8 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       config,
       <AdSkipButtonConfig>{
         cssClass: 'ui-button-ad-skip',
-        untilSkippableMessage: 'Skip ad in {remainingTime} sec',
-        skippableMessage: 'Skip',
+        untilSkippableMessage: i18n.getLocalizer('ads.skippableIn'),
+        skippableMessage: i18n.getLocalizer('ads.skip'),
         acceptsTouchWithUiHidden: true,
         buttonStyle: ButtonStyle.TextWithTrailingIcon,
       },
@@ -56,10 +57,14 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
       // Update the skip message on the button
       if (player.getCurrentTime() < skipOffset) {
-        this.setText(StringUtils.replaceAdMessagePlaceholders(untilSkippableMessage, skipOffset, player));
+        this.setText(
+          StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(untilSkippableMessage), skipOffset, player),
+        );
         this.disable();
       } else {
-        this.setText(skippableMessage);
+        this.setText(
+          StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(skippableMessage), null, player),
+        );
         this.enable();
       }
     };
