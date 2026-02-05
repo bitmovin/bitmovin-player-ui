@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Time format will be updated when an `onDurationChanged` event is received
+- Time-related labels not properly updating the time format if the duration changes from below 1 hour to greater than 1 hour.
 
 ## [4.8.0] - 2026-01-29
 
