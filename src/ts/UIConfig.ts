@@ -169,4 +169,12 @@ export interface UIConfig {
    * Default: false
    */
   includeWatermark?: boolean;
+  /**
+   * Specifies if the UI localization should automatically adapt to the selected subtitle language.
+   * When enabled, the UI language will change to match the subtitle track's language, falling back
+   * to English if the language is not available.
+   *
+   * Default: false
+   */
+  adaptLocalizationToSubtitleLanguage?: boolean;
 }
