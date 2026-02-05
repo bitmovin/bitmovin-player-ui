@@ -21,6 +21,22 @@ export namespace MockHelper {
     };
   }
 
+  export function getMockCall(mockFn: jest.Mock, { call = 0 }: { call?: number } = {}): unknown[] {
+    const calls = mockFn.mock.calls;
+    if (call < 0 || call >= calls.length) {
+      throw new Error(`Expected call index ${call} but only ${calls.length} calls were recorded.`);
+    }
+    return calls[call];
+  }
+
+  export function getMockCallArg<T>(mockFn: jest.Mock, { call = 0, arg = 0 }: { call?: number; arg?: number } = {}): T {
+    const callArgs = getMockCall(mockFn, { call });
+    if (arg < 0 || arg >= callArgs.length) {
+      throw new Error(`Expected argument index ${arg} but call has ${callArgs.length} arguments.`);
+    }
+    return callArgs[arg] as T;
+  }
+
   export function getUiMock(): UIContainer {
     return {
       onPlayerStateChange: jest.fn().mockReturnValue({ subscribe: jest.fn() }),
@@ -129,6 +145,7 @@ export namespace MockHelper {
         isViewModeAvailable: jest.fn(),
         seek: jest.fn(),
         isMuted: jest.fn(),
+        setAudio: jest.fn(),
 
         // Event faker
         eventEmitter: eventHelper,

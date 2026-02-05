@@ -101,6 +101,18 @@ describe('SelectBox', () => {
     });
   });
 
+  describe('onChange', () => {
+    it('should dispatch selection change with the current value', () => {
+      const dispatchSpy = jest.spyOn(selectBox, 'dispatchItemSelectionChanged');
+      const selectElement = { val: jest.fn().mockReturnValue('item-1') } as unknown as DOM;
+      selectBox['selectElement'] = selectElement;
+
+      selectBox['onChange']();
+
+      expect(dispatchSpy).toHaveBeenCalledWith('item-1');
+    });
+  });
+
   describe('configure', () => {
     it('should subscribe to player state changes', () => {
       const uiContainer = uiManagerMock.getUI();
