@@ -61,7 +61,7 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     );
   }
 
-  private init = () => {
+  private initializeTimeFormat = () => {
     // Set time format depending on source duration
     const player = this.player;
     if (player == null) {
@@ -83,9 +83,9 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     this.uiManager = uimanager;
     uimanager.onSeekPreview.subscribeRateLimited(this.handleSeekPreview, 100);
 
-    uimanager.getConfig().events.onUpdated.subscribe(this.init);
-    player.on(this.player.exports.PlayerEvent.DurationChanged, this.init);
-    this.init();
+    uimanager.getConfig().events.onUpdated.subscribe(this.initializeTimeFormat);
+    player.on(this.player.exports.PlayerEvent.DurationChanged, this.initializeTimeFormat);
+    this.initializeTimeFormat();
   }
 
   private handleSeekPreview = (sender: SeekBar, args: SeekPreviewEventArgs) => {
@@ -256,6 +256,6 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     super.release();
 
     this.uiManager.onSeekPreview.unsubscribe(this.handleSeekPreview);
-    this.player.off(this.player.exports.PlayerEvent.DurationChanged, this.init);
+    this.player.off(this.player.exports.PlayerEvent.DurationChanged, this.initializeTimeFormat);
   }
 }
