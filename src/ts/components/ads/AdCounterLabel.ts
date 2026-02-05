@@ -4,6 +4,10 @@ import { LabelConfig, Label } from '../labels/Label';
 import { PlayerAPI } from 'bitmovin-player';
 
 export interface AdCounterLabelConfig extends LabelConfig {
+  /**
+   * Message displayed during the ad indicating which ad out of how many in the current ad break is currently playing.
+   * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
+   */
   adCountOutOfTotal?: LocalizableText;
 }
 
