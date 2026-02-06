@@ -79,10 +79,12 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     this.items = this.config.items;
   }
 
-  private getItemIndex(key: string): number {
+  private getItemIndex(key: string, label?: LocalizableText): number {
     for (let i = 0; i < this.items.length; i++) {
       if (this.items[i].key === key) {
-        return i;
+        if (label === undefined || this.items[i].label === i18n.performLocalization(label)) {
+          return i;
+        }
       }
     }
 
@@ -100,10 +102,11 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   /**
    * Checks if the specified item is part of this selector.
    * @param key the key of the item to check
+   * @param label the label of the item to check (optional)
    * @returns {boolean} true if the item is part of this selector, else false
    */
-  hasItem(key: string): boolean {
-    return this.getItemIndex(key) > -1;
+  hasItem(key: string, label?: LocalizableText): boolean {
+    return this.getItemIndex(key, label) > -1;
   }
 
   /**
@@ -207,7 +210,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    */
   synchronizeItems(newItems: ListItem[]): void {
     newItems
-      .filter(item => !this.hasItem(item.key))
+      .filter(item => !this.hasItem(item.key, item.label))
       .forEach(item => this.addItem(item.key, item.label, item.sortedInsert, item.ariaLabel));
 
     this.items
