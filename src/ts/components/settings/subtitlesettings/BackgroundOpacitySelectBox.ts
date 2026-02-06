@@ -31,7 +31,7 @@ export class BackgroundOpacitySelectBox extends SubtitleSettingSelectBox {
     this.addItem('25', i18n.getLocalizer('percent', { value: 25 }));
     this.addItem('0', i18n.getLocalizer('percent', { value: 0 }));
 
-    this.onItemSelected.subscribe((sender, key: string) => {
+    this.onItemSelectionChanged.subscribe((sender, key: string) => {
       this.settingsManager.backgroundOpacity.value = key;
 
       // Color and opacity go together, so we need to...

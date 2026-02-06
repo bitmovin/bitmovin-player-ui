@@ -62,6 +62,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     onItemAdded: new EventDispatcher<ListSelector<Config>, string>(),
     onItemRemoved: new EventDispatcher<ListSelector<Config>, string>(),
     onItemSelected: new EventDispatcher<ListSelector<Config>, string>(),
+    onItemSelectionChanged: new EventDispatcher<ListSelector<Config>, string>(),
   };
 
   constructor(config: ListSelectorConfig = {}) {
@@ -162,6 +163,11 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
 
   /**
    * Selects an item from the items in this selector.
+   *
+   * This represents an actual value change in the UI state. It should be used when the
+   * selection is updated based on the current player/component state (e.g. from a player event),
+   * not as a user-intent signal.
+   *
    * @param key the key of the item to select
    * @returns {boolean} true is the selection was successful, false if the selected item is not part of the selector
    */
@@ -253,6 +259,27 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     this.listSelectorEvents.onItemSelected.dispatch(this, key);
   }
 
+  protected onItemSelectionChangedEvent(key: string) {
+    this.listSelectorEvents.onItemSelectionChanged.dispatch(this, key);
+  }
+
+  /**
+   * Dispatches a selection-changed event and optionally updates the selected item.
+   *
+   * This is the entry point for user-driven interactions. It exists separately from {@link selectItem}
+   * so we can distinguish intent (user interaction that should call into the e.g. player or other components)
+   * from actual value changes (state updates originating from the player).
+   *
+   * @param key the key of the item to select
+   * @param updateSelectedItem when true, updates the selected item
+   */
+  dispatchItemSelectionChanged(key: string, updateSelectedItem: boolean = true): void {
+    if (updateSelectedItem) {
+      this.selectItem(key);
+    }
+    this.onItemSelectionChangedEvent(key);
+  }
+
   /**
    * Gets the event that is fired when an item is added to the list of items.
    * @returns {Event<ListSelector<Config>, string>}
@@ -270,10 +297,26 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   }
 
   /**
-   * Gets the event that is fired when an item is selected from the list of items.
+   * Gets the event that is fired when the selected item value changes.
+   *
+   * Use this to react to actual value changes (e.g. player state updates). This should not
+   * trigger new player calls to avoid feedback loops.
+   *
    * @returns {Event<ListSelector<Config>, string>}
    */
   get onItemSelected(): Event<ListSelector<Config>, string> {
     return this.listSelectorEvents.onItemSelected.getEvent();
+  }
+
+  /**
+   * Gets the event that is fired when a selection change is requested.
+   *
+   * Use this to react to user interaction and call into the player or other components.
+   * It intentionally does not represent a confirmed value change.
+   *
+   * @returns {Event<ListSelector<Config>, string>}
+   */
+  get onItemSelectionChanged(): Event<ListSelector<Config>, string> {
+    return this.listSelectorEvents.onItemSelectionChanged.getEvent();
   }
 }

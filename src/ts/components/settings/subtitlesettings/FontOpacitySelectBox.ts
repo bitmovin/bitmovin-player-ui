@@ -30,7 +30,7 @@ export class FontOpacitySelectBox extends SubtitleSettingSelectBox {
     this.addItem('50', i18n.getLocalizer('percent', { value: 50 }));
     this.addItem('25', i18n.getLocalizer('percent', { value: 25 }));
 
-    this.onItemSelected.subscribe((sender, key: string) => {
+    this.onItemSelectionChanged.subscribe((sender, key: string) => {
       this.settingsManager.fontOpacity.value = key;
 
       // Color and opacity go together, so we need to...

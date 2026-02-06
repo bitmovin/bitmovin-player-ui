@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Time-related labels not properly updating the time format if the duration changes from below 1 hour to greater than 1 hour.
+- Feedback loops by avoiding callbacks into the player when subtitle/audio selection is updated by player events.
 
 ## [4.8.0] - 2026-01-29
 

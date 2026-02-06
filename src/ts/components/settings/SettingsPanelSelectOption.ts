@@ -61,7 +61,7 @@ export class SettingsPanelSelectOption extends InteractiveSettingsPanelItem<Sett
     this.settingComponent.onItemSelected.subscribe(handleSelectedOptionChanged);
 
     this.onClick.subscribe(() => {
-      this.settingComponent.selectItem(this.settingsValue);
+      this.settingComponent.dispatchItemSelectionChanged(this.settingsValue);
     });
 
     // Initial state

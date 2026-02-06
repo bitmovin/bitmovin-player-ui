@@ -28,7 +28,7 @@ export class SubtitleSwitchHandler {
   }
 
   private bindSelectionEvent(): void {
-    this.listElement.onItemSelected.subscribe((_, value: string) => {
+    this.listElement.onItemSelectionChanged.subscribe((_, value: string) => {
       // TODO add support for multiple concurrent subtitle selections
       if (value === SubtitleSwitchHandler.SUBTITLES_OFF_KEY) {
         const currentSubtitle = this.player.subtitles

@@ -9,6 +9,7 @@ const uiManagerMock = MockHelper.getUiInstanceManagerMock();
 
 const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.fn().mockImplementation(() => ({
   onItemSelected: MockHelper.getEventDispatcherMock(),
+  onItemSelectionChanged: MockHelper.getEventDispatcherMock(),
   hasItem: jest.fn(),
   addItem: jest.fn(),
   removeItem: jest.fn(),
@@ -114,6 +115,18 @@ describe('AudioUtils', () => {
       } as AudioTrack);
       playerMock.eventEmitter.fireAudioChangedEvent();
       expect(listSelectorMock.selectItem).toHaveBeenCalledWith('a-2');
+    });
+  });
+
+  describe('selection change intent', () => {
+    it('sets audio track on selection change', () => {
+      const subscribeMock = listSelectorMock.onItemSelectionChanged.subscribe as jest.Mock;
+      const firstCall = MockHelper.getMockCall(subscribeMock, { call: 0 });
+      const handler = firstCall[0] as (sender: ListSelector<ListSelectorConfig>, value: string) => void;
+
+      handler(listSelectorMock, 'a-2');
+
+      expect(playerMock.setAudio).toHaveBeenCalledWith('a-2');
     });
   });
 });
