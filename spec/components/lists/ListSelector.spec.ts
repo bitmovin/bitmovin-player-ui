@@ -238,6 +238,32 @@ describe('ListSelector', () => {
       ]);
     });
 
+    it('match new items with same key but different label', () => {
+      const newItems: ListItem[] = [
+        {
+          key: 'I-1',
+          label: 'L-4',
+        },
+        {
+          key: 'I-2',
+          label: 'L-6',
+        },
+      ];
+
+      listSelector.synchronizeItems(newItems);
+
+      expect(listSelector.getItems()).toEqual([
+        {
+          key: 'I-1',
+          label: 'L-4',
+        },
+        {
+          key: 'I-2',
+          label: 'L-6',
+        },
+      ]);
+    });
+
     it('triggers onItemRemovedEvent only for really removed items', () => {
       const spy = jest.fn();
       listSelector.onItemRemoved.subscribe(spy);
