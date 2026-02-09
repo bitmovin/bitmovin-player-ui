@@ -77,13 +77,13 @@ export namespace StringUtils {
   /**
    * Fills out placeholders in an ad message.
    *
-   * Has the placeholders following placeholders, and are replaced with:
+   * Has the following placeholders, which are replaced with:
    *   - '{remainingTime[formatString]}': the remaining time until the ad can be skipped
    *   - '{playedTime[formatString]}': the current time
    *   - '{adDuration[formatString]}': the ad duration
    *   - '{adBreakRemainingTime[formatString]}': the total remaining time of all ads in the ad break
-   *   - '{activeAdIndex[formatString]}': the number of of the currently played ad within the current ad break
-   *   - '{totalAdsCount[formatString]}:': the toal number of ads in the current ad break
+   *   - '{activeAdIndex[formatString]}': the number of the currently played ad within the current ad break
+   *   - '{totalAdsCount[formatString]}:': the total number of ads in the current ad break
    *
    * The format string is optional. If not specified, the placeholder is replaced by the time
    * in seconds. If specified, it must be of the following format:
@@ -143,13 +143,22 @@ export namespace StringUtils {
           // And remaning ads duration minus time played
           time = duration - player.getCurrentTime();
         }
-      } else if (formatString.indexOf('activeAdIndex') > -1) {
-        const activeAdIndex = player.ads.getActiveAdBreak().ads.findIndex(ad => ad === player.ads.getActiveAd()) + 1;
-        return formatNumber(activeAdIndex, formatString);
-      } else if (formatString.indexOf('totalAdsCount') > -1) {
-        const activeAdIndex = player.ads.getActiveAdBreak().ads.findIndex(ad => ad === player.ads.getActiveAd()) + 1;
-        const totalAdsCount = player.ads.getActiveAdBreak().ads?.length ?? activeAdIndex;
-        return formatNumber(totalAdsCount, formatString);
+      } else if (formatString.indexOf('activeAdIndex') > -1 || formatString.indexOf('totalAdsCount') > -1) {
+        const activeAdBreak = player.ads?.getActiveAdBreak?.();
+        const activeAd = player.ads?.getActiveAd?.();
+        const ads = activeAdBreak?.ads;
+
+        if (!activeAdBreak || !activeAd || !Array.isArray(ads) || ads.length === 0) {
+          return formatNumber(0, formatString);
+        }
+
+        const activeAdIndex = ads.findIndex(ad => ad === activeAd) + 1;
+
+        if (formatString.indexOf('activeAdIndex') > -1) {
+          return formatNumber(activeAdIndex, formatString);
+        }
+
+        return formatNumber(ads.length, formatString);
       }
 
       return formatNumber(Math.round(time), formatString);
