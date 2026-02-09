@@ -170,6 +170,8 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
   }
 
   protected onUpdated(sender: UIManager): void {
-    this.setText(this.config.text);
+    if (typeof this.config.text === 'function') {
+      this.setText(this.config.text);
+    }
   }
 }
