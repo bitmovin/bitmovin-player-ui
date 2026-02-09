@@ -184,7 +184,7 @@ export interface UIConfig {
   /**
    * Specifies if the UI localization should automatically adapt to the selected subtitle language.
    * When enabled, the UI language will change to match the subtitle track's language, falling back
-   * to English if the language is not available.
+   * to the configured default UI language (English unless configured otherwise) if the language is not available.
    *
    * Default: false
    */
