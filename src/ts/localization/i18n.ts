@@ -134,6 +134,7 @@ export interface Vocabularies {
  */
 export class I18n {
   private language: string;
+  private defaultLanguage: string;
   private vocabulary: CustomVocabulary<Record<string, string>>;
   private vocabularies: Vocabularies;
   private config: LocalizationConfig;
@@ -147,6 +148,10 @@ export class I18n {
     const detectBrowserLanguage = this.config.language === 'auto';
     this.vocabularies = this.mergeVocabulariesWithDefaultVocabularies(this.config.vocabularies);
     this.initializeLanguage(this.config.language, detectBrowserLanguage, this.vocabularies);
+    this.defaultLanguage = this.resolveDefaultLanguage(this.language);
+    if (!I18n.containsLanguage(this.vocabularies, this.language)) {
+      this.language = this.defaultLanguage;
+    }
     this.initializeVocabulary(this.vocabularies);
   }
 
@@ -162,7 +167,7 @@ export class I18n {
     } else if (I18n.containsLanguage(this.vocabularies, language.slice(0, 2))) {
       this.language = language.slice(0, 2);
     } else {
-      this.language = this.config.language ?? 'en';
+      this.language = this.defaultLanguage;
     }
 
     this.initializeVocabulary(this.vocabularies);
@@ -174,6 +179,19 @@ export class I18n {
 
   private static containsLanguage(vocabularies: Vocabularies, language: string) {
     return vocabularies.hasOwnProperty(language);
+  }
+
+  private resolveDefaultLanguage(language: string): string {
+    if (I18n.containsLanguage(this.vocabularies, language)) {
+      return language;
+    }
+
+    if (I18n.containsLanguage(this.vocabularies, 'en')) {
+      return 'en';
+    }
+
+    const availableLanguages = Object.keys(this.vocabularies);
+    return availableLanguages.length > 0 ? availableLanguages[0] : 'en';
   }
 
   private mergeVocabulariesWithDefaultVocabularies(vocabularies: Vocabularies = {}) {
