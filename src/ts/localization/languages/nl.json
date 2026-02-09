@@ -40,7 +40,7 @@
   "settings.time.seconds": "Seconden",
   "ads.remainingTime": "Deze advertentie eindigt in {remainingTime} seconden.",
   "ads.skip": "Overslaan",
-  "ads.skippableIn": "Advertentie overslaan over {remainingTime} seconden",
+  "ads.skippableIn": "Advertentie overslaan over {remainingTime}",
   "ads.adNumberOfTotal": "Advertentie {activeAdIndex} van {totalAdsCount}",
   "settings": "Instellingen",
   "fullscreen": "Volledig scherm",

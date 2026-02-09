@@ -38,7 +38,7 @@
   "back": "Zurück",
   "reset": "Zurücksetzen",
   "replay": "Wiederholen",
-  "ads.remainingTime": "Diese Anzeige endet in {remainingTime} Sekunden",
+  "ads.remainingTime": "Diese Anzeige endet in {remainingTime} Sekunden.",
   "ads.skip": "Überspringen",
   "ads.skippableIn": "Überspringen in {remainingTime}",
   "ads.adNumberOfTotal": "Anzeige {activeAdIndex} von {totalAdsCount}",
