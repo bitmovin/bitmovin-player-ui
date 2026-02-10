@@ -200,10 +200,6 @@ export class UIManager {
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
     };
 
-    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
-      this.config.events.onUpdated.dispatch(this);
-    });
-
     /**
      * Gathers configuration data from the UI config and player source config and creates a merged UI config
      * that is used throughout the UI instance.

@@ -84,6 +84,12 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       } as Config,
       this.config,
     );
+
+    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
+      if (typeof this.config.text === 'function') {
+        this.setText(this.config.text);
+      }
+    });
   }
 
   protected toDomElement(): DOM {
@@ -167,11 +173,5 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
    */
   get onClick(): Event<Button<Config>, NoArgs> {
     return this.buttonEvents.onClick.getEvent();
-  }
-
-  protected onUpdated(sender: UIManager): void {
-    if (typeof this.config.text === 'function') {
-      this.setText(this.config.text);
-    }
   }
 }

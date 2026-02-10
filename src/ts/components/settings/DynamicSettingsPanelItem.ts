@@ -98,6 +98,10 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
     this.onClick.subscribe(() => {
       this.displayItemsSubPage();
     });
+
+    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
+      this.handleSelectedItemChanged();
+    });
   }
 
   private handleSelectedItemChanged = () => {
@@ -168,10 +172,5 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
     const page = this.buildSubPanelPage();
     this.config.container.addPage(page);
     this.config.container.setActivePage(page);
-  }
-
-  protected onUpdated(sender: UIManager): void {
-    super.onUpdated(sender);
-    this.handleSelectedItemChanged();
   }
 }

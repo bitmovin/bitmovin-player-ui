@@ -8,7 +8,7 @@ import { VideoQualitySelectBox } from './VideoQualitySelectBox';
 import { AudioQualitySelectBox } from './AudioQualitySelectBox';
 import { PlaybackSpeedSelectBox } from './PlaybackSpeedSelectBox';
 import { PlayerAPI } from 'bitmovin-player';
-import { LocalizableText } from '../../localization/i18n';
+import { i18n, LocalizableText } from '../../localization/i18n';
 import { ListSelector } from '../lists/ListSelector';
 
 /**
@@ -136,6 +136,12 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
 
       // Initialize hidden state
       handleConfigItemChanged();
+
+      i18n.getConfig().events.onLanguageChanged.subscribe(() => {
+        if (this.label instanceof Label && typeof this.config.label === 'function') {
+          this.label.setText(this.config.label);
+        }
+      });
     }
   }
 
@@ -158,11 +164,5 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
    */
   get onActiveChanged(): Event<SettingsPanelItem<Config>, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
-  }
-
-  protected onUpdated(sender: UIManager): void {
-    if (this.label instanceof Label && typeof this.config.label === 'function') {
-      this.label.setText(this.config.label);
-    }
   }
 }

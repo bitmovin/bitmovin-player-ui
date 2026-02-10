@@ -107,11 +107,11 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       // Try to skip the ad (this only works if it is skippable so we don't need to take extra care of that here)
       player.ads.skip();
     });
-  }
 
-  protected onUpdated(sender: UIManager): void {
-    if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
-      this.updateSkipMessageHandler();
-    }
+    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
+      if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
+        this.updateSkipMessageHandler();
+      }
+    });
   }
 }

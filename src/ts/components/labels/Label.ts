@@ -78,6 +78,14 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
       this.config,
     );
     this.text = this.config.text;
+
+    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
+      // updating the text if it's not a (localization) function can lead to
+      // hardcoded default strings sometimes overwriting the actual value
+      if (typeof this.config.text === 'function') {
+        this.setText(this.config.text);
+      }
+    });
   }
 
   protected toDomElement(): DOM {
@@ -192,13 +200,5 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    */
   get onTextChanged(): Event<Label<LabelConfig>, string> {
     return this.labelEvents.onTextChanged.getEvent();
-  }
-
-  protected onUpdated(sender: UIManager): void {
-    // updating the text if it's not a (localization) function can lead to
-    // hardcoded default strings sometimes overwriting the actual value
-    if (typeof this.config.text === 'function') {
-      this.setText(this.config.text);
-    }
   }
 }
