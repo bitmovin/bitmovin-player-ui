@@ -1,5 +1,6 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
 import { SourceConfig } from 'bitmovin-player';
+import { LocalizationConfig } from './UIManager';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -181,6 +182,10 @@ export interface UIConfig {
    * Default: false
    */
   shadowDom?: ShadowDomConfig | boolean;
+  /**
+   * Allows setting a {@link LocalizationConfig} to specify language details of the UI.
+   */
+  localization?: LocalizationConfig;
 }
 
 export interface ShadowDomConfig {

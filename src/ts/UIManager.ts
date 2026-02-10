@@ -240,6 +240,9 @@ export class UIManager {
     };
 
     updateConfig();
+    if (this.config.localization) {
+      i18n.setConfig(this.config.localization);
+    }
     this.subtitleSettingsManager.initialize();
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
