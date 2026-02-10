@@ -47,7 +47,7 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
   private selectedOptionLabel: Label<LabelConfig>;
   protected backNavigationRightComponent: Component<ComponentConfig>;
   protected settingComponent: ListSelector<ListSelectorConfig>;
-  private onLanguageChanged = () => {
+  protected onLanguageChanged = () => {
     this.handleSelectedItemChanged();
   };
 

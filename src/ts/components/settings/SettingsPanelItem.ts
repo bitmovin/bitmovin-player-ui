@@ -51,7 +51,7 @@ export interface SettingsPanelItemConfig extends ContainerConfig {
 export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends Container<Config> {
   private label: Component<ComponentConfig>;
   protected settingComponent: Component<ComponentConfig> | null;
-  private onLanguageChanged = () => {
+  protected onLanguageChanged = () => {
     if (this.label instanceof Label && typeof this.config.label === 'function') {
       this.label.setText(this.config.label);
     }
