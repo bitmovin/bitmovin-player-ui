@@ -60,4 +60,36 @@ describe('Localization', () => {
       expect(i18n.performLocalization(i18n.getLocalizer('variableTest', { value: 1 }))).toEqual('1');
     });
   });
+
+  describe('setLanguage', () => {
+    it('changes language when a valid language is provided', () => {
+      i18n.setLanguage('de');
+      expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successDe);
+    });
+
+    it('falls back to a two-character language code when available', () => {
+      i18n.setLanguage('it-CH');
+      expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successIt);
+    });
+
+    it('falls back to the configured default language when no match is found', () => {
+      i18n.setConfig({ ...defaultConfig, language: 'de' });
+      i18n.setLanguage('it');
+      expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successIt);
+
+      i18n.setLanguage('pt-BR');
+      expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successDe);
+    });
+
+    it('dispatches a language change event only when the language actually changes', () => {
+      const dispatchSpy = jest.spyOn(i18n.getConfig().events.onLanguageChanged, 'dispatch');
+
+      i18n.setLanguage('de');
+      expect(dispatchSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchSpy).toHaveBeenCalledWith(i18n, { newLanguage: 'de', oldLanguage: 'en' });
+
+      i18n.setLanguage('de');
+      expect(dispatchSpy).toHaveBeenCalledTimes(1);
+    });
+  });
 });

@@ -1,9 +1,9 @@
 import { SubtitleSwitchHandler } from '../../src/ts/utils/SubtitleUtils';
 import { MockHelper } from '../helper/MockHelper';
 import { ListSelector, ListSelectorConfig } from '../../src/ts/components/lists/ListSelector';
-import { PlayerSubtitlesAPI } from 'bitmovin-player';
+import { i18n } from '../../src/ts/localization/i18n';
 
-const playerMock = MockHelper.getPlayerMock();
+let playerMock = MockHelper.getPlayerMock();
 let subtitleSwitchHandler: SubtitleSwitchHandler;
 const uiManagerMock = MockHelper.getUiInstanceManagerMock();
 
@@ -22,6 +22,7 @@ let listSelectorMock: ListSelector<ListSelectorConfig>;
 
 describe('SubtitleUtils', () => {
   beforeEach(() => {
+    playerMock = MockHelper.getPlayerMock();
     listSelectorMock = new ListSelectorMockClass();
 
     playerMock.subtitles.list = jest.fn().mockReturnValue([
@@ -38,6 +39,10 @@ describe('SubtitleUtils', () => {
     ]);
 
     subtitleSwitchHandler = new SubtitleSwitchHandler(playerMock, listSelectorMock, uiManagerMock);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('adds subtitles to the listSelector', () => {
@@ -148,5 +153,38 @@ describe('SubtitleUtils', () => {
     subtitleSwitchHandler = new SubtitleSwitchHandler(playerMock, listSelectorMock, uiManagerMock);
 
     expect(listSelectorMock.synchronizeItems).not.toHaveBeenCalled();
+  });
+
+  describe('adapts localization to subtitle language', () => {
+    it('triggers language change when enabled', () => {
+      const uiConfig = uiManagerMock.getConfig() as any;
+      uiConfig.adaptLocalizationToSubtitleLanguage = true;
+
+      const setLanguageSpy = jest.spyOn(i18n, 'setLanguage');
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-1', lang: 'es' });
+
+      expect(setLanguageSpy).toHaveBeenCalledWith('es');
+    });
+
+    it('does not trigger language change when disabled', () => {
+      const uiConfig = uiManagerMock.getConfig() as any;
+      uiConfig.adaptLocalizationToSubtitleLanguage = false;
+
+      const setLanguageSpy = jest.spyOn(i18n, 'setLanguage');
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-1', lang: 'es' });
+
+      expect(setLanguageSpy).not.toHaveBeenCalled();
+    });
+
+    it('ignores missing or empty language codes', () => {
+      const uiConfig = uiManagerMock.getConfig() as any;
+      uiConfig.adaptLocalizationToSubtitleLanguage = true;
+
+      const setLanguageSpy = jest.spyOn(i18n, 'setLanguage');
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-1', lang: ' ' });
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-2' });
+
+      expect(setLanguageSpy).not.toHaveBeenCalled();
+    });
   });
 });
