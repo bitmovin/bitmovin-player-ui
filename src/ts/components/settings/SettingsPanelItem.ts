@@ -2,7 +2,7 @@ import { Container, ContainerConfig } from '../Container';
 import { Component, ComponentConfig } from '../Component';
 import { Event, EventDispatcher, NoArgs } from '../../EventDispatcher';
 import { Label, LabelConfig, LabelStyle } from '../labels/Label';
-import { UIInstanceManager, UIManager } from '../../UIManager';
+import { UIInstanceManager } from '../../UIManager';
 import { SelectBox } from './SelectBox';
 import { VideoQualitySelectBox } from './VideoQualitySelectBox';
 import { AudioQualitySelectBox } from './AudioQualitySelectBox';

@@ -3,7 +3,6 @@ import { DOM } from '../../DOM';
 import { EventDispatcher, Event, NoArgs } from '../../EventDispatcher';
 import { LocalizableText, i18n } from '../../localization/i18n';
 import { Icon } from '../Icon';
-import { UIManager } from '../../UIManager';
 
 export enum LabelStyle {
   /**

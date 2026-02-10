@@ -1,4 +1,4 @@
-import { i18n, LocalizableText, StringUtils } from '../../main';
+import { i18n, LocalizableText } from '../../localization/i18n';
 import { UIInstanceManager } from '../../UIManager';
 import { LabelConfig, Label } from '../labels/Label';
 import { PlayerAPI } from 'bitmovin-player';

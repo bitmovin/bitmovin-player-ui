@@ -1,7 +1,7 @@
 import { Guid } from '../utils/Guid';
 import { DOM } from '../DOM';
 import { EventDispatcher, NoArgs, Event } from '../EventDispatcher';
-import { UIInstanceManager, UIManager } from '../UIManager';
+import { UIInstanceManager } from '../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../localization/i18n';
 
