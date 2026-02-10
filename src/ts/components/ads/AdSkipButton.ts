@@ -1,5 +1,5 @@
 import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
-import { UIInstanceManager } from '../../UIManager';
+import { UIInstanceManager, UIManager } from '../../UIManager';
 import { StringUtils } from '../../utils/StringUtils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../../localization/i18n';
@@ -109,7 +109,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     });
   }
 
-  protected onUpdated(): void {
+  protected onUpdated(sender: UIManager): void {
     if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
       this.updateSkipMessageHandler();
     }
