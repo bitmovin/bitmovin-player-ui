@@ -83,7 +83,7 @@ export namespace StringUtils {
    *   - '{adDuration[formatString]}': the ad duration
    *   - '{adBreakRemainingTime[formatString]}': the total remaining time of all ads in the ad break
    *   - '{activeAdIndex[formatString]}': the number of the currently played ad within the current ad break
-   *   - '{totalAdsCount[formatString]}:': the total number of ads in the current ad break
+   *   - '{totalAdsCount[formatString]}': the total number of ads in the current ad break
    *
    * The format string is optional. If not specified, the placeholder is replaced by the time
    * in seconds. If specified, it must be of the following format:
