@@ -152,7 +152,8 @@ export namespace StringUtils {
           return formatNumber(0, formatString);
         }
 
-        const activeAdIndex = ads.findIndex(ad => ad === activeAd) + 1;
+        const activeAdIndex =
+          ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd)) + 1;
 
         if (formatString.indexOf('activeAdIndex') > -1) {
           return formatNumber(activeAdIndex, formatString);
