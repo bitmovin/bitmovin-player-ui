@@ -1,4 +1,5 @@
 import { StringUtils } from '../../src/ts/utils/StringUtils';
+import { i18n } from '../../src/ts/localization/i18n';
 
 describe('StringUtils.replaceAdMessagePlaceholders', () => {
   const createPlayer = (overrides: any = {}) => {
@@ -110,5 +111,70 @@ describe('StringUtils.replaceAdMessagePlaceholders', () => {
     const result = StringUtils.replaceAdMessagePlaceholders('Ad {activeAdIndex} of {totalAdsCount}', playerMock as any);
 
     expect(result).toBe('Ad 0 of 0');
+  });
+
+  it('supports mm:ss formatting for time placeholders', () => {
+    const playerMock = createPlayer({
+      getCurrentTime: jest.fn().mockReturnValue(0),
+      getDuration: jest.fn().mockReturnValue(100),
+    });
+
+    const result = StringUtils.replaceAdMessagePlaceholders('Ends in {remainingTime%mm:ss}', playerMock as any);
+
+    expect(result).toBe('Ends in 01:40');
+  });
+
+  it('supports integer and float formatting with leading zeros', () => {
+    const playerMock = createPlayer({
+      getCurrentTime: jest.fn().mockReturnValue(0),
+      getDuration: jest.fn().mockReturnValue(7.12),
+    });
+
+    const intResult = StringUtils.replaceAdMessagePlaceholders('Ends in {remainingTime%03d}', playerMock as any);
+    const floatResult = StringUtils.replaceAdMessagePlaceholders('Ends in {remainingTime%04.2f}', playerMock as any);
+
+    expect(intResult).toBe('Ends in 007');
+    expect(floatResult).toBe('Ends in 0007.00');
+  });
+});
+
+describe('StringUtils.secondsToTime', () => {
+  it('formats seconds into hh:mm:ss by default', () => {
+    expect(StringUtils.secondsToTime(3661)).toBe('01:01:01');
+  });
+
+  it('formats seconds into mm:ss when specified', () => {
+    expect(StringUtils.secondsToTime(61, StringUtils.FORMAT_MMSS)).toBe('01:01');
+  });
+
+  it('preserves negative sign', () => {
+    expect(StringUtils.secondsToTime(-61, StringUtils.FORMAT_MMSS)).toBe('-01:01');
+  });
+});
+
+describe('StringUtils.secondsToText', () => {
+  beforeEach(() => {
+    i18n.setConfig({
+      language: 'en',
+      vocabularies: {
+        en: {
+          'settings.time.hours': 'hours',
+          'settings.time.minutes': 'minutes',
+          'settings.time.seconds': 'seconds',
+        },
+      },
+    } as any);
+  });
+
+  it('formats hours, minutes, and seconds with localized labels', () => {
+    expect(StringUtils.secondsToText(3661)).toBe('1 hours 1 minutes 1 seconds');
+  });
+
+  it('omits zero hours and minutes', () => {
+    expect(StringUtils.secondsToText(5)).toBe('5 seconds');
+  });
+
+  it('preserves negative sign', () => {
+    expect(StringUtils.secondsToText(-65)).toBe('-1 minutes 5 seconds');
   });
 });
