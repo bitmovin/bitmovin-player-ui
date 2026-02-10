@@ -118,7 +118,7 @@ export namespace StringUtils {
     return adMessage.replace(adMessagePlaceholderRegex, formatString => {
       let time = 0;
       if (formatString.indexOf('remainingTime') > -1) {
-        if (skipOffset) {
+        if (typeof skipOffset === 'number') {
           time = Math.ceil(skipOffset - player.getCurrentTime());
         } else {
           time = player.getDuration() - player.getCurrentTime();
