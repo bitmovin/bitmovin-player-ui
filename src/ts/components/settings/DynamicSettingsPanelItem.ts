@@ -1,5 +1,5 @@
 import { Label, LabelConfig, LabelStyle } from '../labels/Label';
-import { UIInstanceManager, UIManager } from '../../UIManager';
+import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../../localization/i18n';
 import { ListSelector, ListSelectorConfig } from '../lists/ListSelector';
@@ -47,6 +47,9 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
   private selectedOptionLabel: Label<LabelConfig>;
   protected backNavigationRightComponent: Component<ComponentConfig>;
   protected settingComponent: ListSelector<ListSelectorConfig>;
+  private onLanguageChanged = () => {
+    this.handleSelectedItemChanged();
+  };
 
   private player: PlayerAPI;
   private uimanager: UIInstanceManager;
@@ -99,9 +102,7 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
       this.displayItemsSubPage();
     });
 
-    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
-      this.handleSelectedItemChanged();
-    });
+    i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
   }
 
   private handleSelectedItemChanged = () => {
@@ -172,5 +173,10 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
     const page = this.buildSubPanelPage();
     this.config.container.addPage(page);
     this.config.container.setActivePage(page);
+  }
+
+  release(): void {
+    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
+    super.release();
   }
 }

@@ -60,6 +60,13 @@ export interface LabelConfig extends ComponentConfig {
 export class Label<Config extends LabelConfig> extends Component<Config> {
   private text: LocalizableText;
   private textElement: DOM | null = null;
+  private onLanguageChanged = () => {
+    // updating the text if it's not a (localization) function can lead to
+    // hardcoded default strings sometimes overwriting the actual value
+    if (typeof this.config.text === 'function') {
+      this.setText(this.config.text);
+    }
+  };
 
   private labelEvents = {
     onClick: new EventDispatcher<Label<Config>, NoArgs>(),
@@ -79,13 +86,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     );
     this.text = this.config.text;
 
-    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
-      // updating the text if it's not a (localization) function can lead to
-      // hardcoded default strings sometimes overwriting the actual value
-      if (typeof this.config.text === 'function') {
-        this.setText(this.config.text);
-      }
-    });
+    i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
   }
 
   protected toDomElement(): DOM {
@@ -200,5 +201,10 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    */
   get onTextChanged(): Event<Label<LabelConfig>, string> {
     return this.labelEvents.onTextChanged.getEvent();
+  }
+
+  release(): void {
+    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
+    super.release();
   }
 }

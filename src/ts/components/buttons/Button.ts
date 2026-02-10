@@ -65,6 +65,11 @@ export interface ButtonConfig extends ComponentConfig {
  */
 export class Button<Config extends ButtonConfig> extends Component<Config> {
   private static readonly CLASS_TOUCHED = 'touched';
+  private onLanguageChanged = () => {
+    if (typeof this.config.text === 'function') {
+      this.setText(this.config.text);
+    }
+  };
 
   private buttonEvents = {
     onClick: new EventDispatcher<Button<Config>, NoArgs>(),
@@ -85,11 +90,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
       this.config,
     );
 
-    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
-      if (typeof this.config.text === 'function') {
-        this.setText(this.config.text);
-      }
-    });
+    i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
   }
 
   protected toDomElement(): DOM {
@@ -173,5 +174,10 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
    */
   get onClick(): Event<Button<Config>, NoArgs> {
     return this.buttonEvents.onClick.getEvent();
+  }
+
+  release(): void {
+    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
+    super.release();
   }
 }

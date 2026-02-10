@@ -51,6 +51,11 @@ export interface SettingsPanelItemConfig extends ContainerConfig {
 export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends Container<Config> {
   private label: Component<ComponentConfig>;
   protected settingComponent: Component<ComponentConfig> | null;
+  private onLanguageChanged = () => {
+    if (this.label instanceof Label && typeof this.config.label === 'function') {
+      this.label.setText(this.config.label);
+    }
+  };
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem<Config>, NoArgs>(),
@@ -137,11 +142,7 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
       // Initialize hidden state
       handleConfigItemChanged();
 
-      i18n.getConfig().events.onLanguageChanged.subscribe(() => {
-        if (this.label instanceof Label && typeof this.config.label === 'function') {
-          this.label.setText(this.config.label);
-        }
-      });
+      i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
     }
   }
 
@@ -164,5 +165,10 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
    */
   get onActiveChanged(): Event<SettingsPanelItem<Config>, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
+  }
+
+  release(): void {
+    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
+    super.release();
   }
 }

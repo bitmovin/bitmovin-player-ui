@@ -2,6 +2,7 @@ import { i18n, LocalizableText, StringUtils } from '../../main';
 import { UIInstanceManager } from '../../UIManager';
 import { LabelConfig, Label } from '../labels/Label';
 import { PlayerAPI } from 'bitmovin-player';
+import { StringUtils } from '../../utils/StringUtils';
 
 export interface AdCounterLabelConfig extends LabelConfig {
   /**
@@ -17,6 +18,12 @@ export interface AdCounterLabelConfig extends LabelConfig {
  * @category Labels
  */
 export class AdCounterLabel extends Label<AdCounterLabelConfig> {
+  private onLanguageChanged = () => {
+    this.setText(
+      StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.config.adCountOutOfTotal), player),
+    );
+  };
+
   constructor(config: AdCounterLabelConfig = {}) {
     super(config);
 
@@ -44,5 +51,12 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     });
     player.on(player.exports.PlayerEvent.AdBreakStarted, clearText);
     player.on(player.exports.PlayerEvent.AdBreakFinished, clearText);
+
+    i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
+  }
+
+  release(): void {
+    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
+    super.release();
   }
 }

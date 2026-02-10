@@ -32,6 +32,12 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   private untilSkippableMessage?: LocalizableText;
   private skippableMessage?: LocalizableText;
   private skipOffset: number = -1;
+  private player?: PlayerAPI;
+  private onLanguageChanged = () => {
+    if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
+      this.updateSkipMessageHandler();
+    }
+  };
 
   constructor(config: AdSkipButtonConfig = {}) {
     super(config);
@@ -51,6 +57,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+    this.player = player;
 
     const config = this.getConfig();
     this.untilSkippableMessage = config.untilSkippableMessage;
@@ -108,10 +115,14 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       player.ads.skip();
     });
 
-    i18n.getConfig().events.onLanguageChanged.subscribe(() => {
-      if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
-        this.updateSkipMessageHandler();
-      }
-    });
+    i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
+  }
+
+  release(): void {
+    if (this.player && this.updateSkipMessageHandler) {
+      this.player.off(this.player.exports.PlayerEvent.TimeChanged, this.updateSkipMessageHandler);
+    }
+    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
+    super.release();
   }
 }
