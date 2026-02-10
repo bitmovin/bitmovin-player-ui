@@ -186,5 +186,15 @@ describe('SubtitleUtils', () => {
 
       expect(setLanguageSpy).not.toHaveBeenCalled();
     });
+
+    it('trims language codes before applying', () => {
+      const uiConfig = uiManagerMock.getConfig() as any;
+      uiConfig.adaptLocalizationToSubtitleLanguage = true;
+
+      const setLanguageSpy = jest.spyOn(i18n, 'setLanguage');
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-1', lang: ' es ' });
+
+      expect(setLanguageSpy).toHaveBeenCalledWith('es');
+    });
   });
 });
