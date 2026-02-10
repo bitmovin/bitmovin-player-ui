@@ -39,7 +39,6 @@ export namespace MockHelper {
         metadata: {
           markers: [],
         },
-        adaptLocalizationToSubtitleLanguage: false,
       }),
       getUI: () => uiMock,
       onControlsShow: getEventDispatcherMock(),

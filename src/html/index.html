@@ -280,12 +280,15 @@
         },
         //    seekbarSnappingRange: 0,
         includeWatermark: true,
-        adaptLocalizationToSubtitleLanguage: false,
       };
 
       var player;
       var uiManager;
-      bitmovin.playerui.UIManager.setLocalizationConfig({ language: 'en', browserLanguageDetection: false });
+      bitmovin.playerui.UIManager.setLocalizationConfig({
+        language: 'en',
+        browserLanguageDetection: false,
+        adaptLocalizationToSubtitleLanguage: false,
+      });
 
       bitmovin.player.Player.addModule(bitmovin.player['advertising-bitmovin'].default);
 

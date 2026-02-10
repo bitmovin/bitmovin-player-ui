@@ -60,7 +60,7 @@ export class SubtitleSwitchHandler {
     this.selectCurrentSubtitle();
 
     // Update UI language to match subtitle language
-    if (this.uimanager.getConfig().adaptLocalizationToSubtitleLanguage) {
+    if (i18n.getConfig().adaptLocalizationToSubtitleLanguage) {
       const lang = typeof event.subtitle?.lang === 'string' ? event.subtitle.lang.trim() : '';
       if (lang) {
         i18n.setLanguage(lang);
