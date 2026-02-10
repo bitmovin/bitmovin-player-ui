@@ -65,15 +65,13 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
         this.setText(
           StringUtils.replaceAdMessagePlaceholders(
             i18n.performLocalization(this.untilSkippableMessage),
-            this.skipOffset,
             player,
+            this.skipOffset,
           ),
         );
         this.disable();
       } else {
-        this.setText(
-          StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.skippableMessage), null, player),
-        );
+        this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.skippableMessage), player));
         this.enable();
       }
     };

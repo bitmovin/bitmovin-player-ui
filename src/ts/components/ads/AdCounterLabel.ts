@@ -39,7 +39,7 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
 
     player.on(player.exports.PlayerEvent.AdStarted, () => {
       this.setText(
-        StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.config.adCountOutOfTotal), null, player),
+        StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.config.adCountOutOfTotal), player),
       );
     });
     player.on(player.exports.PlayerEvent.AdBreakStarted, clearText);

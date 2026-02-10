@@ -48,7 +48,7 @@ export class AdMessageLabel extends Label<LabelConfig> {
     let text = config.text || '';
 
     const updateMessageHandler = () => {
-      this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(text), null, player));
+      this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(text), player));
     };
 
     const adStartHandler = (event: AdEvent) => {

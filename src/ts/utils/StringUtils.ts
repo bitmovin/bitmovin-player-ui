@@ -105,11 +105,11 @@ export namespace StringUtils {
    * Adbreak with 2 ads each 50 seconds would be displayed as: 'Ad: 100.0 secs'
    *
    * @param adMessage an ad message with optional placeholders to fill
-   * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
    * @param player the player to get the time data from
+   * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
    * @returns {string} the ad message with filled placeholders
    */
-  export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: PlayerAPI) {
+  export function replaceAdMessagePlaceholders(adMessage: string, player: PlayerAPI, skipOffset?: number) {
     const adMessagePlaceholderRegex = new RegExp(
       '\\{(remainingTime|playedTime|adDuration|adBreakRemainingTime|activeAdIndex|totalAdsCount)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g',
