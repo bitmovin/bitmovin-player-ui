@@ -37,6 +37,17 @@ describe('StringUtils.replaceAdMessagePlaceholders', () => {
     expect(result).toBe('Ends in 6');
   });
 
+  it('treats skipOffset = 0 as a valid value', () => {
+    const playerMock = createPlayer({
+      getCurrentTime: jest.fn().mockReturnValue(0),
+      getDuration: jest.fn().mockReturnValue(10),
+    });
+
+    const result = StringUtils.replaceAdMessagePlaceholders('Skip in {remainingTime}', playerMock as any, 0);
+
+    expect(result).toBe('Skip in 0');
+  });
+
   it('replaces playedTime and adDuration placeholders', () => {
     const playerMock = createPlayer({
       getCurrentTime: jest.fn().mockReturnValue(12),
@@ -92,6 +103,20 @@ describe('StringUtils.replaceAdMessagePlaceholders', () => {
       ads: {
         getActiveAdBreak: jest.fn().mockReturnValue({ ads }),
         getActiveAd: jest.fn().mockReturnValue(ads[1]),
+      },
+    });
+
+    const result = StringUtils.replaceAdMessagePlaceholders('Ad {activeAdIndex} of {totalAdsCount}', playerMock as any);
+
+    expect(result).toBe('Ad 2 of 3');
+  });
+
+  it('uses ad id matching for activeAdIndex when ad instances differ', () => {
+    const ads = [{ id: 'a1' }, { id: 'a2' }, { id: 'a3' }];
+    const playerMock = createPlayer({
+      ads: {
+        getActiveAdBreak: jest.fn().mockReturnValue({ ads }),
+        getActiveAd: jest.fn().mockReturnValue({ id: 'a2' }),
       },
     });
 
