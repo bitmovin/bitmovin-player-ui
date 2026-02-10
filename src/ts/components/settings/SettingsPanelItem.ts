@@ -8,7 +8,7 @@ import { VideoQualitySelectBox } from './VideoQualitySelectBox';
 import { AudioQualitySelectBox } from './AudioQualitySelectBox';
 import { PlaybackSpeedSelectBox } from './PlaybackSpeedSelectBox';
 import { PlayerAPI } from 'bitmovin-player';
-import { i18n, LocalizableText } from '../../localization/i18n';
+import { LocalizableText } from '../../localization/i18n';
 import { ListSelector } from '../lists/ListSelector';
 
 /**
@@ -51,11 +51,6 @@ export interface SettingsPanelItemConfig extends ContainerConfig {
 export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends Container<Config> {
   private label: Component<ComponentConfig>;
   protected settingComponent: Component<ComponentConfig> | null;
-  protected onLanguageChanged = () => {
-    if (this.label instanceof Label && typeof this.config.label === 'function') {
-      this.label.setText(this.config.label);
-    }
-  };
 
   private settingsPanelItemEvents = {
     onActiveChanged: new EventDispatcher<SettingsPanelItem<Config>, NoArgs>(),
@@ -141,8 +136,12 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
 
       // Initialize hidden state
       handleConfigItemChanged();
+    }
+  }
 
-      i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
+  protected onLanguageChanged(): void {
+    if (this.label instanceof Label && typeof this.config.label === 'function') {
+      this.label.setText(this.config.label);
     }
   }
 
@@ -165,10 +164,5 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
    */
   get onActiveChanged(): Event<SettingsPanelItem<Config>, NoArgs> {
     return this.settingsPanelItemEvents.onActiveChanged.getEvent();
-  }
-
-  release(): void {
-    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
-    super.release();
   }
 }

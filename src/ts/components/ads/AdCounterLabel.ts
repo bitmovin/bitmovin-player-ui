@@ -28,11 +28,6 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
       StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.config.adCountOutOfTotal), this.player),
     );
   };
-  protected onLanguageChanged = () => {
-    if (this.player?.ads?.isLinearAdActive?.()) {
-      this.updateLabelText();
-    }
-  };
 
   constructor(config: AdCounterLabelConfig = {}) {
     super(config);
@@ -60,12 +55,11 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     });
     player.on(player.exports.PlayerEvent.AdBreakStarted, clearText);
     player.on(player.exports.PlayerEvent.AdBreakFinished, clearText);
-
-    i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
   }
 
-  release(): void {
-    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
-    super.release();
+  protected onLanguageChanged(): void {
+    if (this.player?.ads?.isLinearAdActive?.()) {
+      this.updateLabelText();
+    }
   }
 }

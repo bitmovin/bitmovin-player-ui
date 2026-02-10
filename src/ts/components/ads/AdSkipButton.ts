@@ -33,11 +33,6 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   private skippableMessage?: LocalizableText;
   private skipOffset: number = -1;
   private player?: PlayerAPI;
-  protected onLanguageChanged = () => {
-    if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
-      this.updateSkipMessageHandler();
-    }
-  };
 
   constructor(config: AdSkipButtonConfig = {}) {
     super(config);
@@ -114,15 +109,18 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       // Try to skip the ad (this only works if it is skippable so we don't need to take extra care of that here)
       player.ads.skip();
     });
+  }
 
-    i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
+  protected onLanguageChanged(): void {
+    if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
+      this.updateSkipMessageHandler();
+    }
   }
 
   release(): void {
     if (this.player && this.updateSkipMessageHandler) {
       this.player.off(this.player.exports.PlayerEvent.TimeChanged, this.updateSkipMessageHandler);
     }
-    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
     super.release();
   }
 }

@@ -47,10 +47,6 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
   private selectedOptionLabel: Label<LabelConfig>;
   protected backNavigationRightComponent: Component<ComponentConfig>;
   protected settingComponent: ListSelector<ListSelectorConfig>;
-  protected onLanguageChanged = () => {
-    this.handleSelectedItemChanged();
-  };
-
   private player: PlayerAPI;
   private uimanager: UIInstanceManager;
 
@@ -101,8 +97,10 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
     this.onClick.subscribe(() => {
       this.displayItemsSubPage();
     });
+  }
 
-    i18n.getConfig().events.onLanguageChanged.subscribe(this.onLanguageChanged);
+  protected onLanguageChanged(): void {
+    this.handleSelectedItemChanged();
   }
 
   private handleSelectedItemChanged = () => {
@@ -173,10 +171,5 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
     const page = this.buildSubPanelPage();
     this.config.container.addPage(page);
     this.config.container.setActivePage(page);
-  }
-
-  release(): void {
-    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.onLanguageChanged);
-    super.release();
   }
 }
