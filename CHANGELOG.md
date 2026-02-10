@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- New `UIConfig.adaptLocalizationToSubtitleLanguage` option to enable dynamically changing the UI language based on the user's selected subtitle language
+- New `LocalizationConfig.adaptLocalizationToSubtitleLanguage` option to enable dynamically changing the UI language based on the user's selected subtitle language.
+- New `UIConfig.localization` config option to pass a `LocalizationConfig` within the `UIConfig` to the UI.
 
 ### Changed
 
