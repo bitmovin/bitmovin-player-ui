@@ -59,7 +59,7 @@ export interface LabelConfig extends ComponentConfig {
 export class Label<Config extends LabelConfig> extends Component<Config> {
   private text: LocalizableText;
   private textElement: DOM | null = null;
-  private onLanguageChanged = () => {
+  protected onLanguageChanged = () => {
     // updating the text if it's not a (localization) function can lead to
     // hardcoded default strings sometimes overwriting the actual value
     if (typeof this.config.text === 'function') {

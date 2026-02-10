@@ -64,7 +64,7 @@ export interface ButtonConfig extends ComponentConfig {
  */
 export class Button<Config extends ButtonConfig> extends Component<Config> {
   private static readonly CLASS_TOUCHED = 'touched';
-  private onLanguageChanged = () => {
+  protected onLanguageChanged = () => {
     if (typeof this.config.text === 'function') {
       this.setText(this.config.text);
     }

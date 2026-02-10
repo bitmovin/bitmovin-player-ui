@@ -33,7 +33,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   private skippableMessage?: LocalizableText;
   private skipOffset: number = -1;
   private player?: PlayerAPI;
-  private onLanguageChanged = () => {
+  protected onLanguageChanged = () => {
     if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
       this.updateSkipMessageHandler();
     }

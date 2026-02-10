@@ -18,10 +18,20 @@ export interface AdCounterLabelConfig extends LabelConfig {
  * @category Labels
  */
 export class AdCounterLabel extends Label<AdCounterLabelConfig> {
-  private onLanguageChanged = () => {
+  private player?: PlayerAPI;
+  private updateLabelText = () => {
+    if (!this.player) {
+      return;
+    }
+
     this.setText(
-      StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.config.adCountOutOfTotal), player),
+      StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.config.adCountOutOfTotal), this.player),
     );
+  };
+  protected onLanguageChanged = () => {
+    if (this.player?.ads?.isLinearAdActive?.()) {
+      this.updateLabelText();
+    }
   };
 
   constructor(config: AdCounterLabelConfig = {}) {
@@ -39,15 +49,14 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+    this.player = player;
 
     const clearText = () => {
       this.setText('');
     };
 
     player.on(player.exports.PlayerEvent.AdStarted, () => {
-      this.setText(
-        StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.config.adCountOutOfTotal), player),
-      );
+      this.updateLabelText();
     });
     player.on(player.exports.PlayerEvent.AdBreakStarted, clearText);
     player.on(player.exports.PlayerEvent.AdBreakFinished, clearText);
