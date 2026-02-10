@@ -2,7 +2,7 @@ import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
 import { UIInstanceManager } from '../../UIManager';
 import { StringUtils } from '../../utils/StringUtils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
-import { i18n, LocalizableText } from '../../main';
+import { i18n, LocalizableText } from '../../localization/i18n';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
