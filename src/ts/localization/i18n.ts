@@ -47,16 +47,21 @@ export interface Vocabulary {
   'settings.audio.mute': string;
   'settings.audio.volume': string;
   'settings.subtitles': string;
+  'settings.subtitles.options': string;
   'settings.subtitles.font.color': string;
   'settings.subtitles.font.opacity': string;
   'settings.subtitles.background.color': string;
   'settings.subtitles.background.opacity': string;
   'settings.subtitles.font.size': string;
+  'settings.subtitles.font.style': string;
+  'settings.subtitles.font.style.bold': string;
+  'settings.subtitles.font.style.italic': string;
   'settings.subtitles.characterEdge': string;
   'settings.subtitles.characterEdge.raised': string;
   'settings.subtitles.characterEdge.depressed': string;
   'settings.subtitles.characterEdge.uniform': string;
   'settings.subtitles.characterEdge.dropshadowed': string;
+  'settings.subtitles.characterEdge.color': string;
   'settings.subtitles.font.family': string;
   'settings.subtitles.font.family.monospacedserif': string;
   'settings.subtitles.font.family.proportionalserif': string;
@@ -68,6 +73,7 @@ export interface Vocabulary {
   'settings.subtitles.window.color': string;
   'settings.subtitles.window.opacity': string;
   play: string;
+  pause: string;
   'settings.time.hours': string;
   'settings.time.minutes': string;
   'settings.time.seconds': string;
@@ -113,6 +119,8 @@ export interface Vocabulary {
   'seekBar.value': string;
   'seekBar.timeshift': string;
   'seekBar.durationText': string;
+  'quickseek.forward': string;
+  'quickseek.rewind': string;
   ecoMode: string;
   'ecoMode.title': string;
 }
