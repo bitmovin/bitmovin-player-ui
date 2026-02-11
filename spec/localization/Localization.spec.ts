@@ -122,16 +122,12 @@ describe('Localization', () => {
 
     it('Vocabulary interface should have every key from en.json', () => {
       const missingFromInterface = enKeys.filter(key => !interfaceKeys.includes(key));
-      if (missingFromInterface.length > 0) {
-        fail(`Vocabulary interface is missing keys from en.json: ${missingFromInterface.join(', ')}`);
-      }
+      expect(missingFromInterface).toEqual([]);
     });
 
     it('en.json should have every key from Vocabulary interface', () => {
       const missingFromJson = interfaceKeys.filter(key => !enKeys.includes(key));
-      if (missingFromJson.length > 0) {
-        fail(`en.json is missing keys from Vocabulary interface: ${missingFromJson.join(', ')}`);
-      }
+      expect(missingFromJson).toEqual([]);
     });
 
     Object.entries(defaultVocabularies)
@@ -140,10 +136,7 @@ describe('Localization', () => {
         it(`${lang}.json should have every key that en.json has`, () => {
           const langKeys = Object.keys(vocab);
           const missingKeys = enKeys.filter(key => !langKeys.includes(key));
-
-          if (missingKeys.length > 0) {
-            fail(`${lang} is missing keys: ${missingKeys.join(', ')}`);
-          }
+          expect(missingKeys).toEqual([]);
         });
       });
   });
