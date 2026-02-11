@@ -30,7 +30,7 @@
   "settings.subtitles.characterEdge.depressed": "verlaagd",
   "settings.subtitles.characterEdge.uniform": "uniform",
   "settings.subtitles.characterEdge.dropshadowed": "schaduw",
-  "settings.subtitles.characterEdge.color": "Letterrankleur",
+  "settings.subtitles.characterEdge.color": "Letterrandkleur",
   "settings.subtitles.font.family": "Standaard lettertype",
   "settings.subtitles.font.family.monospacedserif": "monospace serif",
   "settings.subtitles.font.family.proportionalserif": "proportioneel serif",
