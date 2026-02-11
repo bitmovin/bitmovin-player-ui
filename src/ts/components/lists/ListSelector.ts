@@ -1,7 +1,7 @@
 import { Component, ComponentConfig } from '../Component';
 import { EventDispatcher, Event } from '../../EventDispatcher';
 import { ArrayUtils } from '../../utils/ArrayUtils';
-import { LocalizableText, i18n } from '../../localization/i18n';
+import { LocalizableText } from '../../localization/i18n';
 
 /**
  * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.
@@ -116,7 +116,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param ariaLabel custom aria label for the listItem
    */
   addItem(key: string | null, label: LocalizableText, sortedInsert = false, ariaLabel = '') {
-    const listItem = { key: key, label: i18n.performLocalization(label), ...(ariaLabel && { ariaLabel }) };
+    const listItem: ListItem = { key: key, label: label, ...(ariaLabel && { ariaLabel }) };
 
     // Apply filter function
     if (this.config.filter && !this.config.filter(listItem)) {

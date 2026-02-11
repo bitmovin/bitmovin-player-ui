@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [4.8.1] - 2026-02-09
 
+### Added
+
+- New `LocalizationConfig.adaptLocalizationToSubtitleLanguage` option to enable dynamically changing the UI language based on the user's selected subtitle language.
+- New `UIConfig.localization` config option to pass a `LocalizationConfig` within the `UIConfig` to the UI.
+
+### Changed
+
+- `ListItem.label` is now a `LocalizableText` instead of a `string`. It is strongly recommended to check behavior for any `ListSelectorConfig.filter` and `ListSelectorConfig.translator` implementations that might be in place.
+
 ### Fixed
 
 - Time-related labels not properly updating the time format if the duration changes from below 1 hour to greater than 1 hour.

@@ -1,7 +1,6 @@
 import { SettingsPanelPage, SettingsPanelPageConfig } from '../SettingsPanelPage';
 import { SettingsPanel, SettingsPanelConfig } from '../SettingsPanel';
 import { SubtitleOverlay } from '../../overlays/SubtitleOverlay';
-import { Component, ComponentConfig } from '../../Component';
 import { FontSizeSelectBox } from './FontSizeSelectBox';
 import { FontFamilySelectBox } from './FontFamilySelectBox';
 import { FontColorSelectBox } from './FontColorSelectBox';

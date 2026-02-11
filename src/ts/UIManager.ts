@@ -10,7 +10,7 @@ import { BrowserUtils } from './utils/BrowserUtils';
 import { TimelineMarker, UIConfig } from './UIConfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './utils/VolumeController';
-import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
+import { i18n, CustomVocabulary, Vocabularies, I18n, LanguageChangedArgument } from './localization/i18n';
 import { FocusVisibilityTracker } from './utils/FocusVisibilityTracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './utils/MobileV3PlayerAPI';
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
@@ -33,6 +33,21 @@ export interface LocalizationConfig {
    * custom strings or additional languages.
    */
   vocabularies?: Vocabularies;
+
+  events?: {
+    /**
+     * Fires when the UI language has been changed during the lifetime of the UI.
+     */
+    onLanguageChanged: EventDispatcher<I18n, LanguageChangedArgument>;
+  };
+  /**
+   * Specifies if the UI localization should automatically adapt to the selected subtitle language.
+   * When enabled, the UI language will change to match the subtitle track's language, falling back
+   * to the configured default UI language (English unless configured otherwise) if the language is not available.
+   *
+   * Default: false
+   */
+  adaptLocalizationToSubtitleLanguage?: boolean;
 }
 
 /**
@@ -225,6 +240,9 @@ export class UIManager {
     };
 
     updateConfig();
+    if (this.config.localization) {
+      i18n.setConfig(this.config.localization);
+    }
     this.subtitleSettingsManager.initialize();
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated

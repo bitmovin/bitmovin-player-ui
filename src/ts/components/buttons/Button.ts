@@ -85,6 +85,12 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     );
   }
 
+  protected onLanguageChanged(): void {
+    if (typeof this.config.text === 'function') {
+      this.setText(this.config.text);
+    }
+  }
+
   protected toDomElement(): DOM {
     const buttonElementAttributes: { [name: string]: string } = {
       id: this.config.id,
