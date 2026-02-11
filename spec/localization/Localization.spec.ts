@@ -1,4 +1,6 @@
-import { i18n } from '../../src/ts/localization/i18n';
+import * as ts from 'typescript';
+import * as path from 'path';
+import { i18n, defaultVocabularies } from '../../src/ts/localization/i18n';
 
 const fallbackTest = 'fallback test';
 const successEn = 'success';
@@ -22,6 +24,26 @@ const defaultConfig = {
     },
   },
 };
+
+function getVocabularyInterfaceKeys(): string[] {
+  const filePath = path.resolve(__dirname, '../../src/ts/localization/i18n.ts');
+  const program = ts.createProgram([filePath], { resolveJsonModule: true });
+  const sourceFile = program.getSourceFile(filePath);
+  const checker = program.getTypeChecker();
+
+  if (!sourceFile) {
+    throw new Error(`Could not load source file: ${filePath}`);
+  }
+
+  let keys: string[] = [];
+  ts.forEachChild(sourceFile, node => {
+    if (ts.isInterfaceDeclaration(node) && node.name.text === 'Vocabulary') {
+      const type = checker.getTypeAtLocation(node);
+      keys = type.getProperties().map(prop => prop.name);
+    }
+  });
+  return keys.sort();
+}
 
 describe('Localization', () => {
   beforeEach(() => {
@@ -82,7 +104,8 @@ describe('Localization', () => {
     });
 
     it('dispatches a language change event only when the language actually changes', () => {
-      const dispatchSpy = jest.spyOn(i18n.getConfig().events.onLanguageChanged, 'dispatch');
+      // In the test the default config is uses, which always has the `events` set, so we can force unwrap it
+      const dispatchSpy = jest.spyOn(i18n.getConfig().events!.onLanguageChanged, 'dispatch');
 
       i18n.setLanguage('de');
       expect(dispatchSpy).toHaveBeenCalledTimes(1);
@@ -91,5 +114,37 @@ describe('Localization', () => {
       i18n.setLanguage('de');
       expect(dispatchSpy).toHaveBeenCalledTimes(1);
     });
+  });
+
+  describe('Vocabulary completeness', () => {
+    const enKeys = Object.keys(defaultVocabularies['en']).sort();
+    const interfaceKeys = getVocabularyInterfaceKeys();
+
+    it('Vocabulary interface should have every key from en.json', () => {
+      const missingFromInterface = enKeys.filter(key => !interfaceKeys.includes(key));
+      if (missingFromInterface.length > 0) {
+        fail(`Vocabulary interface is missing keys from en.json: ${missingFromInterface.join(', ')}`);
+      }
+    });
+
+    it('en.json should have every key from Vocabulary interface', () => {
+      const missingFromJson = interfaceKeys.filter(key => !enKeys.includes(key));
+      if (missingFromJson.length > 0) {
+        fail(`en.json is missing keys from Vocabulary interface: ${missingFromJson.join(', ')}`);
+      }
+    });
+
+    Object.entries(defaultVocabularies)
+      .filter(([lang]) => lang !== 'en')
+      .forEach(([lang, vocab]) => {
+        it(`${lang}.json should have every key that en.json has`, () => {
+          const langKeys = Object.keys(vocab);
+          const missingKeys = enKeys.filter(key => !langKeys.includes(key));
+
+          if (missingKeys.length > 0) {
+            fail(`${lang} is missing keys: ${missingKeys.join(', ')}`);
+          }
+        });
+      });
   });
 });
