@@ -104,7 +104,7 @@ describe('Localization', () => {
     });
 
     it('dispatches a language change event only when the language actually changes', () => {
-      // In the test the default config is uses, which always has the `events` set, so we can force unwrap it
+      // In the test the default config is used, which always has the `events` set, so we can force unwrap it
       const dispatchSpy = jest.spyOn(i18n.getConfig().events!.onLanguageChanged, 'dispatch');
 
       i18n.setLanguage('de');
