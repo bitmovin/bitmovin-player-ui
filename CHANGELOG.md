@@ -7,10 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-### Added
-
-- Added a vocabulary completeness test that verifies all language files and the `Vocabulary` interface stay in sync
-
 ### Fixed
 
 - Missing localization keys in the `Vocabulary` interface
