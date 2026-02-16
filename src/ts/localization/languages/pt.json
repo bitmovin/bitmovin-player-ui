@@ -1,6 +1,6 @@
 {
   "settings.video.quality": "Qualidade de vídeo",
-  "settings.audio.quality": "Qualidade de aúdio",
+  "settings.audio.quality": "Qualidade de áudio",
   "settings.audio.track": "Faixa de Áudio",
   "settings.audio.mute": "Silenciar",
   "settings.audio.volume": "Volume",
@@ -26,7 +26,7 @@
   "settings.subtitles.font.style.bold": "negrito",
   "settings.subtitles.font.style.italic": "itálico",
   "settings.subtitles.characterEdge": "Borda do texto",
-  "settings.subtitles.characterEdge.raised": "leventada",
+  "settings.subtitles.characterEdge.raised": "levantada",
   "settings.subtitles.characterEdge.depressed": "deprimida",
   "settings.subtitles.characterEdge.uniform": "uniforme",
   "settings.subtitles.characterEdge.dropshadowed": "com sombra",
