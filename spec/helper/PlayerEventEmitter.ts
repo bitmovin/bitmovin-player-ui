@@ -316,9 +316,10 @@ export class PlayerEventEmitter {
     } as SubtitleEvent);
   }
 
-  fireSubtitleEnabled(): void {
+  fireSubtitleEnabled(subtitle: Partial<SubtitleTrack> = null): void {
     this.fireEvent<SubtitleEvent>({
       timestamp: Date.now(),
+      subtitle: subtitle ? ({ ...subtitle } as SubtitleTrack) : undefined,
       type: PlayerEvent.SubtitleEnabled,
     } as SubtitleEvent);
   }

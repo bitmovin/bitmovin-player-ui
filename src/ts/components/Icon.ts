@@ -16,7 +16,7 @@ export class Icon extends Component<ComponentConfig> {
 
   protected toDomElement(): DOM {
     return new DOM('div', {
-      class: this.getCssClasses()
+      class: this.getCssClasses(),
     });
   }
 }

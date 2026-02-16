@@ -79,6 +79,14 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
     this.text = this.config.text;
   }
 
+  protected onLanguageChanged(): void {
+    // updating the text if it's not a (localization) function can lead to
+    // hardcoded default strings sometimes overwriting the actual value
+    if (typeof this.config.text === 'function') {
+      this.setText(this.config.text);
+    }
+  }
+
   protected toDomElement(): DOM {
     const tagName = this.config.for != null ? 'label' : 'span';
     const textElement = new DOM(
@@ -125,7 +133,7 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * @param text
    */
   setText(text: LocalizableText) {
-    if (text === this.text) {
+    if (text === this.text && typeof text !== 'function') {
       return;
     }
 

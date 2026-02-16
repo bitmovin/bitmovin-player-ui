@@ -47,7 +47,6 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
   private selectedOptionLabel: Label<LabelConfig>;
   protected backNavigationRightComponent: Component<ComponentConfig>;
   protected settingComponent: ListSelector<ListSelectorConfig>;
-
   private player: PlayerAPI;
   private uimanager: UIInstanceManager;
 
@@ -91,29 +90,34 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
       this.settingComponent.configure(this.player, this.uimanager);
     }
 
-    const handleSelectedItemChanged = () => {
-      const selectedItem = this.settingComponent.getItemForKey(this.settingComponent.getSelectedItem());
-      if (selectedItem == null) {
-        this.selectedOptionLabel.setText('-');
-        return;
-      }
+    this.settingComponent.onItemSelected.subscribe(this.handleSelectedItemChanged);
 
-      let selectedOptionLabelText = selectedItem.label;
-      if (this.settingComponent instanceof SubtitleSelectBox) {
-        const availableSettings = this.settingComponent.getItems().length;
-        selectedOptionLabelText =
-          i18n.performLocalization(selectedOptionLabelText) + ' (' + (availableSettings - 1) + ')';
-      }
-      this.selectedOptionLabel.setText(selectedOptionLabelText);
-    };
-    this.settingComponent.onItemSelected.subscribe(handleSelectedItemChanged);
-
-    handleSelectedItemChanged();
+    this.handleSelectedItemChanged();
 
     this.onClick.subscribe(() => {
       this.displayItemsSubPage();
     });
   }
+
+  protected onLanguageChanged(): void {
+    this.handleSelectedItemChanged();
+  }
+
+  private handleSelectedItemChanged = () => {
+    const selectedItem = this.settingComponent.getItemForKey(this.settingComponent.getSelectedItem());
+    if (selectedItem == null) {
+      this.selectedOptionLabel.setText('-');
+      return;
+    }
+
+    let selectedOptionLabelText = selectedItem.label;
+    if (this.settingComponent instanceof SubtitleSelectBox) {
+      const availableSettings = this.settingComponent.getItems().length;
+      selectedOptionLabelText =
+        i18n.performLocalization(selectedOptionLabelText) + ' (' + (availableSettings - 1) + ')';
+    }
+    this.selectedOptionLabel.setText(selectedOptionLabelText);
+  };
 
   private buildSubPanelPage(): SettingsPanelPage {
     const menuOptions = this.settingComponent.getItems();

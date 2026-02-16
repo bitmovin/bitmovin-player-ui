@@ -6,6 +6,7 @@ import * as vocabularyNl from './languages/nl.json';
 import * as vocabularyPt from './languages/pt.json';
 
 import { LocalizationConfig } from '../UIManager';
+import { EventDispatcher } from '../EventDispatcher';
 
 export const defaultVocabularies: Vocabularies = {
   de: vocabularyDe,
@@ -16,9 +17,17 @@ export const defaultVocabularies: Vocabularies = {
   pt: vocabularyPt,
 };
 
+export interface LanguageChangedArgument {
+  newLanguage: string;
+  oldLanguage: string;
+}
+
 const defaultLocalizationConfig: LocalizationConfig = {
   language: 'en',
   vocabularies: defaultVocabularies,
+  events: {
+    onLanguageChanged: new EventDispatcher<I18n, LanguageChangedArgument>(),
+  },
 };
 
 /**
@@ -40,16 +49,21 @@ export interface Vocabulary {
   'settings.audio.mute': string;
   'settings.audio.volume': string;
   'settings.subtitles': string;
+  'settings.subtitles.options': string;
   'settings.subtitles.font.color': string;
   'settings.subtitles.font.opacity': string;
   'settings.subtitles.background.color': string;
   'settings.subtitles.background.opacity': string;
   'settings.subtitles.font.size': string;
+  'settings.subtitles.font.style': string;
+  'settings.subtitles.font.style.bold': string;
+  'settings.subtitles.font.style.italic': string;
   'settings.subtitles.characterEdge': string;
   'settings.subtitles.characterEdge.raised': string;
   'settings.subtitles.characterEdge.depressed': string;
   'settings.subtitles.characterEdge.uniform': string;
   'settings.subtitles.characterEdge.dropshadowed': string;
+  'settings.subtitles.characterEdge.color': string;
   'settings.subtitles.font.family': string;
   'settings.subtitles.font.family.monospacedserif': string;
   'settings.subtitles.font.family.proportionalserif': string;
@@ -61,6 +75,7 @@ export interface Vocabulary {
   'settings.subtitles.window.color': string;
   'settings.subtitles.window.opacity': string;
   play: string;
+  pause: string;
   'settings.time.hours': string;
   'settings.time.minutes': string;
   'settings.time.seconds': string;
@@ -75,6 +90,9 @@ export interface Vocabulary {
   percent: string;
   settings: string;
   'ads.remainingTime': string;
+  'ads.skip': string;
+  'ads.skippableIn': string;
+  'ads.adNumberOfTotal': string;
   pictureInPicture: string;
   appleAirplay: string;
   googleCast: string;
@@ -103,6 +121,8 @@ export interface Vocabulary {
   'seekBar.value': string;
   'seekBar.timeshift': string;
   'seekBar.durationText': string;
+  'quickseek.forward': string;
+  'quickseek.rewind': string;
   ecoMode: string;
   'ecoMode.title': string;
 }
@@ -124,22 +144,64 @@ export interface Vocabularies {
  */
 export class I18n {
   private language: string;
+  private defaultLanguage: string;
   private vocabulary: CustomVocabulary<Record<string, string>>;
+  private vocabularies: Vocabularies;
+  private config: LocalizationConfig;
 
   constructor(config: LocalizationConfig) {
     this.setConfig(config);
   }
 
   public setConfig(config: LocalizationConfig) {
-    const mergedConfig = { ...defaultLocalizationConfig, ...config };
-    const detectBrowserLanguage = mergedConfig.language === 'auto';
-    const vocabularies = this.mergeVocabulariesWithDefaultVocabularies(mergedConfig.vocabularies);
-    this.initializeLanguage(mergedConfig.language, detectBrowserLanguage, vocabularies);
-    this.initializeVocabulary(vocabularies);
+    this.config = { ...defaultLocalizationConfig, ...config };
+    const detectBrowserLanguage = this.config.language === 'auto';
+    this.vocabularies = this.mergeVocabulariesWithDefaultVocabularies(this.config.vocabularies);
+    this.initializeLanguage(this.config.language, detectBrowserLanguage, this.vocabularies);
+    this.defaultLanguage = this.resolveDefaultLanguage(this.language);
+    if (!I18n.containsLanguage(this.vocabularies, this.language)) {
+      this.language = this.defaultLanguage;
+    }
+    this.initializeVocabulary(this.vocabularies);
+  }
+
+  public getConfig(): LocalizationConfig {
+    return this.config;
+  }
+
+  public setLanguage(language: string): void {
+    const oldLanguage = this.language;
+
+    if (I18n.containsLanguage(this.vocabularies, language)) {
+      this.language = language;
+    } else if (I18n.containsLanguage(this.vocabularies, language.slice(0, 2))) {
+      this.language = language.slice(0, 2);
+    } else {
+      this.language = this.defaultLanguage;
+    }
+
+    this.initializeVocabulary(this.vocabularies);
+
+    if (this.language !== oldLanguage) {
+      this.config.events.onLanguageChanged.dispatch(this, { newLanguage: this.language, oldLanguage: oldLanguage });
+    }
   }
 
   private static containsLanguage(vocabularies: Vocabularies, language: string) {
     return vocabularies.hasOwnProperty(language);
+  }
+
+  private resolveDefaultLanguage(language: string): string {
+    if (I18n.containsLanguage(this.vocabularies, language)) {
+      return language;
+    }
+
+    if (I18n.containsLanguage(this.vocabularies, 'en')) {
+      return 'en';
+    }
+
+    const availableLanguages = Object.keys(this.vocabularies);
+    return availableLanguages.length > 0 ? availableLanguages[0] : 'en';
   }
 
   private mergeVocabulariesWithDefaultVocabularies(vocabularies: Vocabularies = {}) {
