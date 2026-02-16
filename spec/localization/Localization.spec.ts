@@ -6,6 +6,7 @@ const fallbackTest = 'fallback test';
 const successEn = 'success';
 const successDe = 'erfolg';
 const successIt = 'successo';
+const successPt = 'sucesso';
 
 const defaultConfig = {
   language: 'en',
@@ -21,6 +22,9 @@ const defaultConfig = {
     },
     de: {
       test: successDe,
+    },
+    pt: {
+      test: successPt,
     },
   },
 };
@@ -94,12 +98,17 @@ describe('Localization', () => {
       expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successIt);
     });
 
+    it('falls back to a two-character portuguese language code when available', () => {
+      i18n.setLanguage('pt-BR');
+      expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successPt);
+    });
+
     it('falls back to the configured default language when no match is found', () => {
       i18n.setConfig({ ...defaultConfig, language: 'de' });
       i18n.setLanguage('it');
       expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successIt);
 
-      i18n.setLanguage('pt-BR');
+      i18n.setLanguage('unsupported-language');
       expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successDe);
     });
 

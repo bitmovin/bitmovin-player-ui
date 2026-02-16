@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Language localization for Portuguese
+
 ### Fixed
 
 - Missing localization keys in the `Vocabulary` interface

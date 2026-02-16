@@ -3,6 +3,7 @@ import * as vocabularyEn from './languages/en.json';
 import * as vocabularyEs from './languages/es.json';
 import * as vocabularyFr from './languages/fr.json';
 import * as vocabularyNl from './languages/nl.json';
+import * as vocabularyPt from './languages/pt.json';
 
 import { LocalizationConfig } from '../UIManager';
 import { EventDispatcher } from '../EventDispatcher';
@@ -13,6 +14,7 @@ export const defaultVocabularies: Vocabularies = {
   es: vocabularyEs,
   fr: vocabularyFr,
   nl: vocabularyNl,
+  pt: vocabularyPt,
 };
 
 export interface LanguageChangedArgument {
