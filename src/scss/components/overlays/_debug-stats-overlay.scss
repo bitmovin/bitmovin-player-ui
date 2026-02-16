@@ -1,0 +1,30 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-debug-stats-overlay {
+  @extend %ui-container;
+  @include layout-align-top;
+  @include hidden;
+
+  left: 0;
+  box-sizing: border-box;
+  min-height: 25%;
+  min-width: 12em;
+  padding: 0.75em;
+  pointer-events: none;
+  width: 50%;
+  height: 50%;
+  z-index: 20;
+
+  .#{$prefix}-container-wrapper {
+    background-color: transparentize($color-background-dimmed, 0.2);
+    border-radius: $border-radius;
+    padding: 0.5em;
+  }
+
+  .#{$prefix}-ui-debug-stats-overlay-label {
+    color: $color-primary;
+    line-height: 1.4;
+    white-space: normal;
+  }
+}

@@ -30,6 +30,7 @@ import { PlaybackToggleOverlay } from './components/overlays/PlaybackToggleOverl
 import { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
 import { TitleBar } from './components/TitleBar';
 import { RecommendationOverlay } from './components/overlays/RecommendationOverlay';
+import { DebugStatsOverlay } from './components/overlays/DebugStatsOverlay';
 import { Watermark } from './components/Watermark';
 import { ErrorMessageOverlay } from './components/overlays/ErrorMessageOverlay';
 import { AdClickOverlay } from './components/ads/AdClickOverlay';
@@ -292,6 +293,7 @@ function uiLayout(config: UIConfig) {
       new DismissClickOverlay({ target: settingsPanel }),
       settingsPanel,
       new ErrorMessageOverlay(),
+      new DebugStatsOverlay(),
     ],
     hidePlayerStateExceptions: [
       PlayerUtils.PlayerState.Prepared,

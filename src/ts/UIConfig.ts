@@ -171,6 +171,11 @@ export interface UIConfig {
    */
   includeWatermark?: boolean;
   /**
+   * Shows the {@link DebugStatsOverlay} permanently on top of the player.
+   * Default: false
+   */
+  showDebugStats?: boolean;
+  /**
    * Configure Shadow DOM rendering.
    * Enable it with:
    * `shadowDom: true`
