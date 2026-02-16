@@ -27,6 +27,7 @@ export class DebugStatsOverlay extends Container<ContainerConfig> {
   private title = DebugStatsOverlay.createLabel('N/A');
   private bufferVideo = DebugStatsOverlay.createLabel('N/A');
   private bufferAudio = DebugStatsOverlay.createLabel('N/A');
+  private droppedFrames = DebugStatsOverlay.createLabel('N/A');
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -46,6 +47,10 @@ export class DebugStatsOverlay extends Container<ContainerConfig> {
 
           DebugStatsOverlay.createLabel('Buffer audio seconds: '),
           this.bufferAudio,
+          DebugStatsOverlay.createNewline(),
+
+          DebugStatsOverlay.createLabel('Dropped frames: '),
+          this.droppedFrames,
           DebugStatsOverlay.createNewline(),
         ],
       },
@@ -80,5 +85,8 @@ export class DebugStatsOverlay extends Container<ContainerConfig> {
     };
     player.on(player.exports.PlayerEvent.DownloadFinished, updateBuffer);
     player.on(player.exports.PlayerEvent.TimeChanged, updateBuffer);
+    player.on(player.exports.PlayerEvent.TimeChanged, () => {
+      this.droppedFrames.setText(player.getDroppedVideoFrames().toString());
+    });
   }
 }
