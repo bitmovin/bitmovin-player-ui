@@ -99,7 +99,7 @@ describe('Localization', () => {
       i18n.setLanguage('it');
       expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successIt);
 
-      i18n.setLanguage('pt-BR');
+      i18n.setLanguage('unsupported-language');
       expect(i18n.performLocalization(i18n.getLocalizer('test'))).toEqual(successDe);
     });
 
