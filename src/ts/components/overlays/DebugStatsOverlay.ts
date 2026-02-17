@@ -74,10 +74,10 @@ export class DebugStatsOverlay extends Container<ContainerConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager) {
     super.configure(player, uimanager);
 
-    // if (!uimanager.getConfig().showDebugStats) {
-    //     this.hide();
-    //     return;
-    // }
+    if (!uimanager.getConfig().showDebugStats) {
+      this.hide();
+      return;
+    }
     this.show();
     // subscribe for events
 
