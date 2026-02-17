@@ -28,6 +28,9 @@ export class DebugStatsOverlay extends Container<ContainerConfig> {
   private bufferVideo = DebugStatsOverlay.createLabel('N/A');
   private bufferAudio = DebugStatsOverlay.createLabel('N/A');
   private droppedFrames = DebugStatsOverlay.createLabel('N/A');
+  private qualityVideo = DebugStatsOverlay.createLabel('N/A');
+  private videoCodec = DebugStatsOverlay.createLabel('N/A');
+  private audioCodec = DebugStatsOverlay.createLabel('N/A');
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -51,6 +54,16 @@ export class DebugStatsOverlay extends Container<ContainerConfig> {
 
           DebugStatsOverlay.createLabel('Dropped frames: '),
           this.droppedFrames,
+          DebugStatsOverlay.createNewline(),
+
+          DebugStatsOverlay.createLabel('Resolution: '),
+          this.qualityVideo,
+          DebugStatsOverlay.createNewline(),
+
+          DebugStatsOverlay.createLabel('Codecs: '),
+          this.videoCodec,
+          DebugStatsOverlay.createLabel(' / '),
+          this.audioCodec,
           DebugStatsOverlay.createNewline(),
         ],
       },
@@ -87,6 +100,18 @@ export class DebugStatsOverlay extends Container<ContainerConfig> {
     player.on(player.exports.PlayerEvent.TimeChanged, updateBuffer);
     player.on(player.exports.PlayerEvent.TimeChanged, () => {
       this.droppedFrames.setText(player.getDroppedVideoFrames().toString());
+    });
+
+    player.on(player.exports.PlayerEvent.VideoPlaybackQualityChanged, () => {
+      const playbackVideoQuality = player.getPlaybackVideoData();
+      this.qualityVideo.setText(
+        `${playbackVideoQuality.width}x${playbackVideoQuality.height}@${playbackVideoQuality.frameRate}`,
+      );
+      this.videoCodec.setText(`${playbackVideoQuality.codec}`);
+    });
+
+    player.on(player.exports.PlayerEvent.AudioPlaybackQualityChanged, () => {
+      this.audioCodec.setText(`${player.getPlaybackAudioData().codec}`);
     });
   }
 }
