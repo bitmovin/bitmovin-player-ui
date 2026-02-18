@@ -11,12 +11,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  gate:
+    name: Gate
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.eval.outputs.should_run }}
+    steps:
+      - id: eval
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
   test:
     name: Test
-    if: >
-      github.event_name == 'push' ||
-      (github.event_name == 'pull_request' &&
-       github.event.pull_request.head.repo.full_name != github.repository)
+    needs: gate
+    if: needs.gate.outputs.should_run == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -31,10 +45,8 @@ jobs:
 
   build:
     name: Build
-    if: >
-      github.event_name == 'push' ||
-      (github.event_name == 'pull_request' &&
-       github.event.pull_request.head.repo.full_name != github.repository)
+    needs: gate
+    if: needs.gate.outputs.should_run == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -49,10 +61,8 @@ jobs:
 
   lint:
     name: Lint
-    if: >
-      github.event_name == 'push' ||
-      (github.event_name == 'pull_request' &&
-       github.event.pull_request.head.repo.full_name != github.repository)
+    needs: gate
+    if: needs.gate.outputs.should_run == 'true'
     runs-on: ubuntu-latest
 
     steps:
