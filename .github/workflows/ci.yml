@@ -6,15 +6,17 @@ on:
       - '**'
   pull_request:
 
-  workflow_call:
-
 concurrency:
-  group: ${{ github.event_name == 'workflow_call' && format('release-ci-{0}', github.run_id) || format('ci-{0}', github.ref) }}
+  group: ${{ format('ci-{0}', github.ref) }}
   cancel-in-progress: true
 
 jobs:
   test:
     name: Test
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name != github.repository)
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +31,10 @@ jobs:
 
   build:
     name: Build
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name != github.repository)
     runs-on: ubuntu-latest
 
     steps:
@@ -43,6 +49,10 @@ jobs:
 
   lint:
     name: Lint
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name != github.repository)
     runs-on: ubuntu-latest
 
     steps:
