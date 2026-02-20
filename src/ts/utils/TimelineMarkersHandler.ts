@@ -104,9 +104,10 @@ export class TimelineMarkersHandler {
     liveStreamDetector.detect(); // Initial detection
 
     this.uimanager.getConfig().events.onUpdated.subscribe(() => this.updateMarkers());
-    this.uimanager.onRelease.subscribe(() =>
-      this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.updateMarkers()),
-    );
+    this.uimanager.onRelease.subscribe(() => {
+      this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.updateMarkers());
+      reset();
+    });
 
     // Refresh timeline markers when the player is resized or the UI is configured. Timeline markers
     // are positioned absolutely and must therefore be updated when the size of the seekbar changes.
