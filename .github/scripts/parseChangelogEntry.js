@@ -1,18 +1,15 @@
 /**
- * Extracts the changelog entry for a specific version.
+ * Extracts the first (latest) changelog entry from a changelog string.
  *
  * @param {string} changelogContent - The full changelog file content
- * @param {string} version - The version number to extract (without 'v' prefix)
  * @returns {string} The changelog entry content (without the ## heading)
- * @throws {Error} If no changelog entry is found for the given version
+ * @throws {Error} If no changelog entry is found
  */
-function parseChangelogEntry(changelogContent, version) {
-  const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const regex = new RegExp(`## \\[v?${escapedVersion}\\][\\s\\S]*?(?=\\n## |$)`, 'm');
-  const match = changelogContent.match(regex);
+function parseChangelogEntry(changelogContent) {
+  const match = changelogContent.match(/## \[[\s\S]*?(?=\n## |$)/m);
 
   if (!match) {
-    throw new Error(`No changelog entry found for version ${version}`);
+    throw new Error('No changelog entry found');
   }
 
   return match[0].replace(/^## .*\n/, '').trim();

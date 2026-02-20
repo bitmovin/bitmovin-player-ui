@@ -16,7 +16,7 @@ fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
     throw err;
   }
 
-  const changelogContent = parseChangelogEntry(fileContent, versionNumber);
+  const changelogContent = parseChangelogEntry(fileContent);
   sendSlackMessage(versionNumber, changelogContent);
 });
 
