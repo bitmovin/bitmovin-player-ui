@@ -172,6 +172,34 @@ jobs:
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
+  github_release:
+    name: Create GitHub Release
+    needs: [version_bump, release]
+    if: inputs.release_type == 'final' && inputs.dry_run != true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.version_bump.outputs.tag_name }}
+
+      - name: Extract changelog entry
+        uses: actions/github-script@v6
+        id: changelog
+        with:
+          script: |
+            const fs = require('fs');
+            const { parseChangelogEntry } = require('./.github/scripts/parseChangelogEntry.js');
+            const version = '${{ needs.version_bump.outputs.version_number }}';
+            const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+            const body = parseChangelogEntry(changelog, version);
+            fs.writeFileSync('release_notes.md', body);
+
+      - name: Create GitHub Release
+        run: gh release create "${{ needs.version_bump.outputs.tag_name }}" --title "v${{ needs.version_bump.outputs.version_number }}" --notes-file release_notes.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   upload_docs:
     name: Build and upload Documentation
     needs: [test, version_bump, release]

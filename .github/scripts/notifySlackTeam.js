@@ -1,5 +1,6 @@
 const fs = require('fs');
 const https = require('https');
+const { parseChangelogEntry } = require('./parseChangelogEntry.js');
 
 const versionNumber = process.argv[2];
 const jobStatus = process.argv[3];
@@ -15,27 +16,14 @@ fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
     throw err;
   }
 
-  const changelogContent = parseChangelogEntry(fileContent);
+  const changelogContent = parseChangelogEntry(fileContent, versionNumber);
   sendSlackMessage(versionNumber, changelogContent);
 });
-
-
-function parseChangelogEntry(fileContent) {
-  // The regex looks for the first paragraph starting with "###" until it finds
-  // a paragraph starting with "##".
-  // For some reason it also matches 2 chars at the end. With the .slice
-  // those 2 chars get removed from the string.
-  const regex = /###(.)*[\s\S]*?(?=\s##\s\[v*?)/;
-
-  let changelogContent = fileContent.match(regex);
-  changelogContent = changelogContent.slice(0, -1);
-  return changelogContent.toString();
-}
 
 function sendSlackMessage(releaseVersion, changelogContent) {
   const slackChannelId = jobStatus === 'success' ? successSlackChannelId : failureSlackChannelId;
   const generalPayload = {
-    channel: slackChannelId
+    channel: slackChannelId,
   };
 
   let payload;
@@ -63,7 +51,7 @@ function sendSlackMessage(releaseVersion, changelogContent) {
           ],
         },
       ],
-    }
+    };
   } else {
     payload = {
       ...generalPayload,
@@ -76,7 +64,7 @@ function sendSlackMessage(releaseVersion, changelogContent) {
           text: `Please check the <https://github.com/bitmovin/bitmovin-player-ui/actions/runs/${runId}|failed run>`,
         },
       ],
-    }
+    };
   }
 
   const sampleData = JSON.stringify(payload);
@@ -84,23 +72,23 @@ function sendSlackMessage(releaseVersion, changelogContent) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': "application/json",
-    }
+      Accept: 'application/json',
+    },
   };
 
-  var req = https.request(slackWebhookUrl, options, (res) => {
+  var req = https.request(slackWebhookUrl, options, res => {
     console.log('statusCode:', res.statusCode);
     console.log('headers:', res.headers);
-  
-    res.on('data', (d) => {
+
+    res.on('data', d => {
       process.stdout.write(d);
     });
   });
-  
-  req.on('error', (e) => {
+
+  req.on('error', e => {
     console.error(e);
   });
-  
+
   req.write(sampleData);
   req.end();
 }
