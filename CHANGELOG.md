@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Missing localization keys in the `Vocabulary` interface
 - Missing translations for certain localization keys in `de.json` and `nl.json` to ensure all language files are complete
+- TimelineMarkersHandler not releasing properly
 
 ## [4.8.1] - 2026-02-09
 
