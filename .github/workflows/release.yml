@@ -239,7 +239,7 @@ jobs:
 
   notify_success:
     name: Notify Success
-    needs: [test, version_bump, release, upload_docs]
+    needs: [test, version_bump, release, upload_docs, github_release]
     runs-on: ubuntu-latest
     if: inputs.dry_run != true
     steps:
