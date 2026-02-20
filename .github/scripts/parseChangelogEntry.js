@@ -8,7 +8,7 @@
  */
 function parseChangelogEntry(changelogContent, version) {
   const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const regex = new RegExp(`## \\[v?${escapedVersion}\\][\\s\\S]*?(?=\\n## )`, 'm');
+  const regex = new RegExp(`## \\[v?${escapedVersion}\\][\\s\\S]*?(?=\\n## |$)`, 'm');
   const match = changelogContent.match(regex);
 
   if (!match) {
