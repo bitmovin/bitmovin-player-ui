@@ -3,7 +3,7 @@ run-name: Weekly release train${{ github.event_name == 'workflow_dispatch' && ' 
 
 on:
   schedule:
-    - cron: '0 10 * * 5' # Every Friday at 10:00 UTC
+    - cron: '0 12 * * 4' # Every Thursday at 12:00 UTC
   workflow_dispatch:
 
 concurrency:
