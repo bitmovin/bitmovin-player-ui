@@ -148,17 +148,6 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     });
     liveStreamDetector.detect(); // Initial detection
 
-    player.on(player.exports.PlayerEvent.TimeChanged, playbackTimeHandler);
-    player.on(player.exports.PlayerEvent.Ready, updateTimeFormatBasedOnDuration);
-    player.on(player.exports.PlayerEvent.Seeked, playbackTimeHandler);
-
-    player.on(player.exports.PlayerEvent.TimeShift, updateLiveTimeshiftState);
-    player.on(player.exports.PlayerEvent.TimeShifted, updateLiveTimeshiftState);
-    player.on(player.exports.PlayerEvent.Playing, updateLiveTimeshiftState);
-    player.on(player.exports.PlayerEvent.Paused, updateLiveTimeshiftState);
-    player.on(player.exports.PlayerEvent.StallStarted, updateLiveTimeshiftState);
-    player.on(player.exports.PlayerEvent.StallEnded, updateLiveTimeshiftState);
-
     let init = () => {
       // Reset min-width when a new source is ready (especially for switching VOD/Live modes where the label content
       // changes)
@@ -169,6 +158,19 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
       updateTimeFormatBasedOnDuration();
     };
+
+    player.on(player.exports.PlayerEvent.TimeChanged, playbackTimeHandler);
+    player.on(player.exports.PlayerEvent.Ready, updateTimeFormatBasedOnDuration);
+    player.on(player.exports.PlayerEvent.Seeked, playbackTimeHandler);
+
+    player.on(player.exports.PlayerEvent.TimeShift, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.TimeShifted, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.Playing, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.Paused, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.StallStarted, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.StallEnded, updateLiveTimeshiftState);
+    player.on(player.exports.PlayerEvent.DurationChanged, init);
+
     uimanager.getConfig().events.onUpdated.subscribe(init);
 
     init();
