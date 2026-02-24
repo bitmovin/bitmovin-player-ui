@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Unhandled exceptions from player API calls after `player.destroy()`
+
 ## [4.9.0] - 2026-02-20
 
 ### Added
