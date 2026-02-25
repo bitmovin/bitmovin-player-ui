@@ -690,7 +690,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     };
 
     const onPlayerDestroy = () => {
-      this.release();
+      // this.release();
     };
 
     const stopSmoothPlaybackPositionUpdater = () => {
