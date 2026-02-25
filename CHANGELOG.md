@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [3.105.2] - 2026-02-25
 
 ### Fixed
 - Time-related labels not properly updating the time format if the duration changes from below 1 hour to greater than 1 hour.
@@ -1206,6 +1206,7 @@ Version 2.0 of the UI framework is built for player 7.1. If absolutely necessary
 ## 1.0.0 (2017-02-03)
 - First release
 
+[3.105.2]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.105.1...v3.105.2
 [3.105.1]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.105.0...v3.105.1
 [3.105.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.104.0...v3.105.0
 [3.104.0]: https://github.com/bitmovin/bitmovin-player-ui/compare/v3.103.1...v3.104.0
