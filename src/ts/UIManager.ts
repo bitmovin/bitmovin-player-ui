@@ -426,6 +426,10 @@ export class UIManager {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.ViewModeChanged, resolveUiVariant);
     }
 
+    this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Destroy, () => {
+      this.release();
+    });
+
     this.focusVisibilityTracker = new FocusVisibilityTracker('{{PREFIX}}', this.uiWrapperElement);
 
     // Initialize the UI
@@ -599,21 +603,25 @@ export class UIManager {
   }
 
   private releaseUi(ui: InternalUIInstanceManager): void {
+    // Clear event handlers FIRST to prevent any player API calls during component release
+    ui.clearEventHandlers();
+
     ui.releaseControls();
 
     const uiContainer = ui.getUI();
     if (uiContainer.hasDomElement()) {
       uiContainer.getDomElement().remove();
     }
-
-    ui.clearEventHandlers();
   }
 
   release(): void {
+    // Clear all event handlers FIRST to prevent any player API calls during release
+    this.managerPlayerWrapper.clearEventHandlers();
+
     for (const uiInstanceManager of this.uiInstanceManagers) {
       this.releaseUi(uiInstanceManager);
     }
-    this.managerPlayerWrapper.clearEventHandlers();
+
     this.focusVisibilityTracker.release();
     this.shadowDomManager.release();
   }

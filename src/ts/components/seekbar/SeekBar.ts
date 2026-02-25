@@ -689,6 +689,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     };
 
+    const onPlayerDestroy = () => {
+      this.release();
+    };
+
     const stopSmoothPlaybackPositionUpdater = () => {
       this.smoothPlaybackPositionUpdater.clear();
     };
@@ -701,6 +705,8 @@ export class SeekBar extends Component<SeekBarConfig> {
       currentTimeSeekBar = this.getRelativeCurrentTime();
     });
     player.on(player.exports.PlayerEvent.SourceUnloaded, stopSmoothPlaybackPositionUpdater);
+
+    player.on(player.exports.PlayerEvent.Destroy, onPlayerDestroy);
 
     if (player.isPlaying()) {
       startSmoothPlaybackPositionUpdater();
