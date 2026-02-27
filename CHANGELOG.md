@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- Prevent runtime errors in `SettingsPanel` when `hideDelay` is set to `-1` (e.g. in `modernSmallScreenUI`) by only tracking component `ViewMode` changes when a hide timeout is configured.
+
 ## [3.105.2] - 2026-02-25
 
 ### Fixed
