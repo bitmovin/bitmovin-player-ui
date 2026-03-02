@@ -66,15 +66,17 @@
   }
 
   // Window color + opacity
-  @each $color-name, $color-value in $colors {
-    @each $opacity-name, $opacity-value in $opacities {
-      &.#{$prefix}-windowcolor-#{$color-name}#{$opacity-name} {
-        .#{$prefix}-subtitle-region-container {
-            background-color: transparentize($color-value, 1 - $opacity-value);
+    @each $color-name,
+    $color-value in $colors {
+        @each $opacity-name,
+        $opacity-value in $opacities {
+            &.#{$prefix}-windowcolor-#{$color-name}#{$opacity-name} {
+                .#{$prefix}-subtitle-region-container {
+                    background-color: transparentize($color-value, 1 - $opacity-value) #{!important};
+                }
+            }
         }
-      }
     }
-  }
 
   // Font size
   @each $name, $value in $font-sizes {
