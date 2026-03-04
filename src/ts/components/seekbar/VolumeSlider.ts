@@ -1,7 +1,7 @@
 import { SeekBar, SeekBarConfig, SeekPreviewEventArgs } from './SeekBar';
 import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
-import { VolumeTransition } from '../../utils/VolumeController';
+import { VolumeController, VolumeTransition } from '../../utils/VolumeController';
 import { i18n } from '../../localization/i18n';
 import { BrowserUtils } from '../../utils/BrowserUtils';
 
@@ -31,6 +31,7 @@ export interface VolumeSliderConfig extends SeekBarConfig {
  */
 export class VolumeSlider extends SeekBar {
   private volumeTransition: VolumeTransition;
+  private volumeController: VolumeController;
 
   constructor(config: VolumeSliderConfig = {}) {
     super(config);
@@ -64,6 +65,7 @@ export class VolumeSlider extends SeekBar {
     const config = <VolumeSliderConfig>this.getConfig();
 
     const volumeController = uimanager.getConfig().volumeController;
+    this.volumeController = volumeController;
 
     if (
       (config.hideOnMobile && BrowserUtils.isMobile) ||
@@ -139,6 +141,14 @@ export class VolumeSlider extends SeekBar {
     // try setting the volume to 0.7 and if it's still 1 we are on a volume control restricted device
     dummyVideoElement.volume = 0.7;
     return dummyVideoElement.volume !== 1;
+  }
+
+  // Override the slider's onSliderPositionChange to unmute when volume > 0
+  protected onSeekedEvent(percentage: number): void {
+    super.onSeekedEvent(percentage);
+    if (percentage > 0 && this.volumeController?.isMuted()) {
+      this.volumeController.setMuted(false);
+    }
   }
 
   release(): void {
