@@ -3,6 +3,7 @@ import { UIInstanceManager } from '../../UIManager';
 import { LabelConfig, Label } from '../labels/Label';
 import { PlayerAPI } from 'bitmovin-player';
 import { StringUtils } from '../../utils/StringUtils';
+import { AdBreakTracker, AdBreakTrackerChangedArgs } from '../../utils/AdBreakTracker';
 
 export interface AdCounterLabelConfig extends LabelConfig {
   /**
@@ -19,15 +20,7 @@ export interface AdCounterLabelConfig extends LabelConfig {
  */
 export class AdCounterLabel extends Label<AdCounterLabelConfig> {
   private player?: PlayerAPI;
-  private updateLabelText = () => {
-    if (!this.player) {
-      return;
-    }
-
-    this.setText(
-      StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.config.adCountOutOfTotal), this.player),
-    );
-  };
+  private adBreakTracker?: AdBreakTracker;
 
   constructor(config: AdCounterLabelConfig = {}) {
     super(config);
@@ -46,20 +39,48 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     super.configure(player, uimanager);
     this.player = player;
 
-    const clearText = () => {
-      this.setText('');
-    };
+    this.adBreakTracker = new AdBreakTracker(player);
 
-    player.on(player.exports.PlayerEvent.AdStarted, () => {
-      this.updateLabelText();
+    this.adBreakTracker.onChanged.subscribe((_, adBreakTrackerEvent: AdBreakTrackerChangedArgs) => {
+      this.setText(
+        StringUtils.replaceAdMessagePlaceholders(
+          i18n.performLocalization(this.config.adCountOutOfTotal),
+          player,
+          undefined,
+          adBreakTrackerEvent.currentAdIndex,
+          adBreakTrackerEvent.totalNumberOfAds,
+        ),
+      );
     });
-    player.on(player.exports.PlayerEvent.AdBreakStarted, clearText);
-    player.on(player.exports.PlayerEvent.AdBreakFinished, clearText);
+
+    player.on(player.exports.PlayerEvent.AdBreakStarted, () => {
+      this.setText('');
+    });
+
+    player.on(player.exports.PlayerEvent.AdBreakFinished, () => {
+      this.setText('');
+    });
+  }
+
+  release(): void {
+    this.adBreakTracker?.release();
+    this.adBreakTracker = undefined;
+    super.release();
   }
 
   protected onLanguageChanged(): void {
     if (this.player?.ads?.isLinearAdActive?.()) {
-      this.updateLabelText();
+      if (this.adBreakTracker) {
+        this.setText(
+          StringUtils.replaceAdMessagePlaceholders(
+            i18n.performLocalization(this.config.adCountOutOfTotal),
+            this.player,
+            undefined,
+            this.adBreakTracker.currentAdIndex,
+            this.adBreakTracker.totalNumberOfAds,
+          ),
+        );
+      }
     }
   }
 }
