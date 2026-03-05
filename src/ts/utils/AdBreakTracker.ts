@@ -85,10 +85,13 @@ export class AdBreakTracker {
       Array.isArray(ads) && activeAd
         ? ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd))
         : -1;
-    this.currentAdIndexAcrossBreaks = withinBreakIndex + 1 + this.adIndexOffsetOfPreviousBreaks;
 
-    if (this.adIndexOffsetOfPreviousBreaks > 0 || siblings.length > 0) {
+    if (
+      (this.adIndexOffsetOfPreviousBreaks > 0 && activeBreak.scheduleTime === this.groupScheduleTime) ||
+      siblings.length > 0
+    ) {
       this.groupScheduleTime = activeBreak.scheduleTime;
+      this.currentAdIndexAcrossBreaks = withinBreakIndex + 1 + this.adIndexOffsetOfPreviousBreaks;
       // Sibling ads arrays may not be populated yet (VAST manifests load lazily), so count
       // sibling breaks and assume 1 ad each. totalAdsOverride self-corrects on each subsequent
       // AdStarted as real ad counts become known.
@@ -100,6 +103,7 @@ export class AdBreakTracker {
         this.adIndexOffsetOfPreviousBreaks + this.numberOfAdsInCurrentAdBreak + remainingSiblingAdCount;
     } else {
       this.adIndexOffsetOfPreviousBreaks = 0;
+      this.currentAdIndexAcrossBreaks = withinBreakIndex + 1;
       this.totalNumberOfAdsAcrossBreaks = this.numberOfAdsInCurrentAdBreak;
       this.groupScheduleTime = undefined;
     }
