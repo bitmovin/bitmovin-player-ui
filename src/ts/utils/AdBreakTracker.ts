@@ -115,6 +115,10 @@ export class AdBreakTracker {
     const adBreak = adBreakFinishedEvent.adBreak;
 
     if (adBreak.scheduleTime !== this.groupScheduleTime) {
+      if (this.groupScheduleTime === undefined) {
+        this.reset();
+        this.dispatchChanged();
+      }
       return;
     }
 

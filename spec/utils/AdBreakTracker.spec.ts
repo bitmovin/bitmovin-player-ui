@@ -65,7 +65,7 @@ describe('AdBreakTracker', () => {
       expect(tracker.totalNumberOfAds).toBe(3);
     });
 
-    it('does not change currentAdIndex or totalNumberOfAds when a lone break finishes', () => {
+    it('resets currentAdIndex and totalNumberOfAds to 0 when a lone break finishes', () => {
       const ad = { id: 'a1' };
       const adBreak = makeBreak('break-1', 5, [ad]);
       adsState.activeAdBreak = adBreak;
@@ -77,9 +77,8 @@ describe('AdBreakTracker', () => {
       adsState.activeAdBreak = null;
       eventEmitter.fireAdBreakFinishedEvent(adBreak);
 
-      // groupScheduleTime is undefined for a lone break, so AdBreakFinished is a no-op
-      expect(tracker.currentAdIndex).toBe(1);
-      expect(tracker.totalNumberOfAds).toBe(1);
+      expect(tracker.currentAdIndex).toBe(0);
+      expect(tracker.totalNumberOfAds).toBe(0);
     });
   });
 
