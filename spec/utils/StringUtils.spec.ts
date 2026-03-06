@@ -138,6 +138,67 @@ describe('StringUtils.replaceAdMessagePlaceholders', () => {
     expect(result).toBe('Ad 0 of 0');
   });
 
+  it('uses provided activeAdIndex directly without calling player API', () => {
+    const getActiveAdBreak = jest.fn();
+    const getActiveAd = jest.fn();
+    const playerMock = createPlayer({ ads: { getActiveAdBreak, getActiveAd } });
+
+    const result = StringUtils.replaceAdMessagePlaceholders('Ad {activeAdIndex}', playerMock as any, undefined, 3);
+
+    expect(result).toBe('Ad 3');
+    expect(getActiveAdBreak).not.toHaveBeenCalled();
+    expect(getActiveAd).not.toHaveBeenCalled();
+  });
+
+  it('uses provided totalNumberOfAds directly without calling player API', () => {
+    const getActiveAdBreak = jest.fn();
+    const playerMock = createPlayer({ ads: { getActiveAdBreak, getActiveAd: jest.fn() } });
+
+    const result = StringUtils.replaceAdMessagePlaceholders(
+      'of {totalAdsCount}',
+      playerMock as any,
+      undefined,
+      undefined,
+      5,
+    );
+
+    expect(result).toBe('of 5');
+    expect(getActiveAdBreak).not.toHaveBeenCalled();
+  });
+
+  it('falls back to ads.length for totalAdsCount when not provided but ad break is available', () => {
+    const ads = [{ id: 'a1' }, { id: 'a2' }];
+    const playerMock = createPlayer({
+      ads: {
+        getActiveAdBreak: jest.fn().mockReturnValue({ ads }),
+        getActiveAd: jest.fn().mockReturnValue(null),
+      },
+    });
+
+    const result = StringUtils.replaceAdMessagePlaceholders('of {totalAdsCount}', playerMock as any);
+
+    expect(result).toBe('of 2');
+  });
+
+  it('uses provided activeAdIndex even when player has no active ad context', () => {
+    const playerMock = createPlayer({
+      ads: {
+        getActiveAdBreak: jest.fn().mockReturnValue(null),
+        getActiveAd: jest.fn().mockReturnValue(null),
+      },
+    });
+
+    const result = StringUtils.replaceAdMessagePlaceholders(
+      'Ad {activeAdIndex} of {totalAdsCount}',
+      playerMock as any,
+      undefined,
+      2,
+      4,
+    );
+
+    expect(result).toBe('Ad 2 of 4');
+  });
+
   it('supports mm:ss formatting for time placeholders', () => {
     const playerMock = createPlayer({
       getCurrentTime: jest.fn().mockReturnValue(0),

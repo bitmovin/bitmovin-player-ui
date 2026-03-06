@@ -156,22 +156,33 @@ export namespace StringUtils {
           time = duration - player.getCurrentTime();
         }
       } else if (formatString.indexOf('activeAdIndex') > -1 || formatString.indexOf('totalAdsCount') > -1) {
+        if (formatString.includes('activeAdIndex')) {
+          if (activeAdIndex != null) {
+            return formatNumber(activeAdIndex, formatString);
+          }
+
+          const activeAdBreak = player.ads?.getActiveAdBreak?.();
+          const activeAd = player.ads?.getActiveAd?.();
+          const ads = activeAdBreak?.ads;
+
+          if (!activeAdBreak || !activeAd || !Array.isArray(ads) || ads.length === 0) {
+            return formatNumber(0, formatString);
+          }
+
+          return formatNumber(
+            ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd)) + 1,
+            formatString,
+          );
+        }
+
+        if (totalNumberOfAds != null) {
+          return formatNumber(totalNumberOfAds, formatString);
+        }
+
         const activeAdBreak = player.ads?.getActiveAdBreak?.();
-        const activeAd = player.ads?.getActiveAd?.();
         const ads = activeAdBreak?.ads;
 
-        if (!activeAdBreak || !activeAd || !Array.isArray(ads) || ads.length === 0) {
-          return formatNumber(0, formatString);
-        }
-
-        if (formatString.includes('activeAdIndex')) {
-          const adIndex =
-            activeAdIndex ??
-            ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd)) + 1;
-          return formatNumber(adIndex, formatString);
-        }
-
-        return formatNumber(totalNumberOfAds ?? ads.length, formatString);
+        return formatNumber(Array.isArray(ads) ? ads.length : 0, formatString);
       }
 
       return formatNumber(Math.round(time), formatString);
