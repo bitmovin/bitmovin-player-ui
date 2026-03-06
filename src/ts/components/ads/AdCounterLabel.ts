@@ -7,7 +7,8 @@ import { AdBreakTracker, AdBreakTrackerChangedArgs } from '../../utils/AdBreakTr
 
 export interface AdCounterLabelConfig extends LabelConfig {
   /**
-   * Message displayed during the ad indicating which ad out of how many in the current ad break is currently playing.
+   * Message displayed during the ad indicating which ad out of how many is currently playing. It takes all ad breaks
+   * with the same schedule time into account.
    * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
    */
   adCountOutOfTotal?: LocalizableText;
