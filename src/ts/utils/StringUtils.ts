@@ -110,7 +110,7 @@ export namespace StringUtils {
    * @param activeAdIndex if specified, {activeAdIndex} will be set to this value. Can be used to calculate the ad index
    *   across multiple ad breaks which are scheduled for the same time. If not provided, the value will be calculated
    *   for the current ad break only from the player API.
-   * @param totalNumberOfAds if specified, {totalAdsCount} wil be set to this value. Can be used to calculate the total
+   * @param totalNumberOfAds if specified, {totalAdsCount} will be set to this value. Can be used to calculate the total
    *   number of ads across multiple ad breaks which are scheduled for the same time. If not provided, the value will
    *   be calculated for the current ad break only from the player API.
    * @returns {string} the ad message with filled placeholders
