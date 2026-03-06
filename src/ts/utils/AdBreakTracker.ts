@@ -92,9 +92,8 @@ export class AdBreakTracker {
     ) {
       this.groupScheduleTime = activeBreak.scheduleTime;
       this.currentAdIndexAcrossBreaks = withinBreakIndex + 1 + this.adIndexOffsetOfPreviousBreaks;
-      // Sibling ads arrays may not be populated yet (VAST manifests load lazily), so count
-      // sibling breaks and assume 1 ad each. totalAdsOverride self-corrects on each subsequent
-      // AdStarted as real ad counts become known.
+      // Sibling ads arrays may not be populated yet (VAST manifests load lazily), so we use the ads count if available,
+      // or assume 1 ad per break if not available. It will update and self-correct with each AdStarted event.
       const remainingSiblingAdCount = siblings.reduce(
         (sum, adBreak) => sum + (adBreak.ads?.length > 0 ? adBreak.ads.length : 1),
         0,
