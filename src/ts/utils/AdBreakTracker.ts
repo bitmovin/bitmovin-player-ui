@@ -77,10 +77,11 @@ export class AdBreakTracker {
     // Note: `player.ads.list()` provides all ad breaks except past ad breaks or the currently active ad break
     const siblings = (this.player.ads?.list?.() ?? []).filter(b => b.scheduleTime === activeBreak.scheduleTime);
 
-    this.numberOfAdsInCurrentAdBreak = activeBreak.ads?.length ?? 0;
-
     const activeAd = this.player.ads?.getActiveAd?.();
     const ads = activeBreak.ads;
+
+    // If ads are not yet loaded, assume 1 ad in the current break.
+    this.numberOfAdsInCurrentAdBreak = Array.isArray(ads) && ads.length > 0 ? ads.length : 1;
     const withinBreakIndex =
       Array.isArray(ads) && activeAd
         ? ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd))
