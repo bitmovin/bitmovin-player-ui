@@ -139,7 +139,7 @@ describe('AdBreakTracker', () => {
       expect(tracker.totalNumberOfAds).toBe(3); // 1 offset + 2 from break-2
     });
 
-    it('retains last state after the last sibling break finishes (no full reset until next AdStarted)', () => {
+    it('resets to 0 after the last sibling break finishes', () => {
       const break1 = makeBreak('break-1', 5, [{ id: 'a1' }]);
       const break2 = makeBreak('break-2', 5, [{ id: 'a2' }]);
 
@@ -161,9 +161,9 @@ describe('AdBreakTracker', () => {
       adsState.activeAdBreak = null;
       eventEmitter.fireAdBreakFinishedEvent(break2);
 
-      // AdBreakFinished accumulates offset; currentAdIndex holds its last value until the next AdStarted
-      expect(tracker.currentAdIndex).toBe(2);
-      expect(tracker.totalNumberOfAds).toBe(2);
+      // No siblings remain: tracker resets so currentAdIndex=0 (no ad is active)
+      expect(tracker.currentAdIndex).toBe(0);
+      expect(tracker.totalNumberOfAds).toBe(0);
     });
 
     it('does not reset between breaks while siblings remain', () => {
@@ -236,9 +236,9 @@ describe('AdBreakTracker', () => {
       adsState.activeAd = null;
       adsState.activeAdBreak = null;
       eventEmitter.fireAdBreakFinishedEvent(break3);
-      // After all breaks done, currentAdIndex holds last value until next AdStarted
-      expect(tracker.currentAdIndex).toBe(3);
-      expect(tracker.totalNumberOfAds).toBe(3);
+      // No siblings remain after the last break finishes: tracker resets
+      expect(tracker.currentAdIndex).toBe(0);
+      expect(tracker.totalNumberOfAds).toBe(0);
     });
 
     it('resets correctly so a subsequent unrelated break shows 1 of 1', () => {

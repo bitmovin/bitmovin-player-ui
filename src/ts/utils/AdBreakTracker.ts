@@ -117,8 +117,14 @@ export class AdBreakTracker {
       return;
     }
 
-    this.adIndexOffsetOfPreviousBreaks += this.numberOfAdsInCurrentAdBreak;
-    this.numberOfAdsInCurrentAdBreak = 0;
+    const remainingSiblings = (this.player.ads?.list?.() ?? []).filter(b => b.scheduleTime === this.groupScheduleTime);
+
+    if (remainingSiblings.length === 0) {
+      this.reset();
+    } else {
+      this.adIndexOffsetOfPreviousBreaks += this.numberOfAdsInCurrentAdBreak;
+      this.numberOfAdsInCurrentAdBreak = 0;
+    }
 
     this.dispatchChanged();
   };
