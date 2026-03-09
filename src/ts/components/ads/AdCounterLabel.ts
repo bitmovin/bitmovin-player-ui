@@ -42,7 +42,7 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
 
     this.adBreakTracker = new AdBreakTracker(player);
 
-    this.adBreakTracker.onChanged.subscribe((_, adBreakTrackerEvent: AdBreakTrackerChangedArgs) => {
+    this.adBreakTracker.onAdCountChanged.subscribe((_, adBreakTrackerEvent: AdBreakTrackerChangedArgs) => {
       this.setText(
         StringUtils.replaceAdMessagePlaceholders(
           i18n.performLocalization(this.config.adCountOutOfTotal),

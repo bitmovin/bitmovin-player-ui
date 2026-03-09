@@ -270,11 +270,11 @@ describe('AdBreakTracker', () => {
       expect(tracker.totalNumberOfAds).toBe(1);
     });
 
-    it('dispatches onChanged with currentAdIndex and totalNumberOfAds after AdStarted', () => {
+    it('dispatches onAdCountChanged with currentAdIndex and totalNumberOfAds after AdStarted', () => {
       const break1 = makeBreak('break-1', 5, [{ id: 'a1' }]);
       const break2 = makeBreak('break-2', 5, [{ id: 'a2' }]);
       const onChange = jest.fn();
-      tracker.onChanged.subscribe(onChange);
+      tracker.onAdCountChanged.subscribe(onChange);
 
       adsState.activeAdBreak = break1;
       adsState.activeAd = { id: 'a1' };
@@ -284,7 +284,7 @@ describe('AdBreakTracker', () => {
       expect(onChange).toHaveBeenCalledWith(tracker, { currentAdIndex: 1, totalNumberOfAds: 2 });
     });
 
-    it('dispatches onChanged with currentAdIndex and totalNumberOfAds after AdBreakFinished', () => {
+    it('dispatches onAdCountChanged with currentAdIndex and totalNumberOfAds after AdBreakFinished', () => {
       const break1 = makeBreak('break-1', 5, [{ id: 'a1' }]);
       const break2 = makeBreak('break-2', 5, [{ id: 'a2' }]);
       const onChange = jest.fn();
@@ -294,7 +294,7 @@ describe('AdBreakTracker', () => {
       adsState.list = [break2];
       eventEmitter.fireAdStartedEvent();
 
-      tracker.onChanged.subscribe(onChange);
+      tracker.onAdCountChanged.subscribe(onChange);
       adsState.activeAd = null;
       adsState.activeAdBreak = null;
       eventEmitter.fireAdBreakFinishedEvent(break1);

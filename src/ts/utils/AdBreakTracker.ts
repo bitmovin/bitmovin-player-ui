@@ -12,7 +12,7 @@ export interface AdBreakTrackerChangedArgs {
  *
  * When multiple ad breaks are scheduled at the same position, the player fires separate
  * `AdBreakStarted`/`AdBreakFinished` events for each. This tracker accumulates state across those
- * events and dispatches {@link onChanged} after each update so callers can derive a group-wide
+ * events and dispatches {@link onAdCountChanged} after each update so callers can derive a group-wide
  * `currentAdIndex` and `totalNumberOfAds` to pass to
  * {@link StringUtils.replaceAdMessagePlaceholders}.
  *
@@ -31,7 +31,7 @@ export class AdBreakTracker {
   private numberOfAdsInCurrentAdBreak: number = 0;
 
   private readonly events = {
-    onChanged: new EventDispatcher<AdBreakTracker, AdBreakTrackerChangedArgs>(),
+    onAdCountChanged: new EventDispatcher<AdBreakTracker, AdBreakTrackerChangedArgs>(),
   };
 
   constructor(private readonly player: PlayerAPI) {
@@ -41,8 +41,8 @@ export class AdBreakTracker {
     player.on(player.exports.PlayerEvent.AdBreakFinished, this.handleAdBreakFinished);
   }
 
-  get onChanged(): Event<AdBreakTracker, AdBreakTrackerChangedArgs> {
-    return this.events.onChanged.getEvent();
+  get onAdCountChanged(): Event<AdBreakTracker, AdBreakTrackerChangedArgs> {
+    return this.events.onAdCountChanged.getEvent();
   }
 
   /**
@@ -63,7 +63,7 @@ export class AdBreakTracker {
     this.player.off(this.player.exports.PlayerEvent.AdStarted, this.handleAdStarted);
     this.player.off(this.player.exports.PlayerEvent.AdBreakFinished, this.handleAdBreakFinished);
     this.reset();
-    this.events.onChanged.unsubscribeAll();
+    this.events.onAdCountChanged.unsubscribeAll();
   }
 
   private readonly handleAdStarted = (): void => {
@@ -135,7 +135,7 @@ export class AdBreakTracker {
   };
 
   private dispatchChanged(): void {
-    this.events.onChanged.dispatch(this, {
+    this.events.onAdCountChanged.dispatch(this, {
       currentAdIndex: this.currentAdIndex,
       totalNumberOfAds: this.totalNumberOfAdsAcrossBreaks,
     });
