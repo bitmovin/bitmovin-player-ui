@@ -128,7 +128,13 @@ export class AdBreakTracker {
       b => b.scheduleTime === this.groupScheduleTime,
     );
 
-    if (remainingSubsequentAdBreaks.length === 0) {
+    // The next break in the group may already be active (and thus removed from `list()`),
+    // so also check whether the currently active break shares the same scheduleTime.
+    const activeBreak = this.player.ads?.getActiveAdBreak?.();
+    const activeBreakInGroup =
+      activeBreak?.scheduleTime === this.groupScheduleTime && this.groupScheduleTime !== undefined;
+
+    if (remainingSubsequentAdBreaks.length === 0 && !activeBreakInGroup) {
       this.reset();
     } else {
       this.adIndexOffsetOfPreviousBreaks += this.numberOfAdsInCurrentAdBreak;

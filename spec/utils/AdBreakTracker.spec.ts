@@ -271,6 +271,36 @@ describe('AdBreakTracker', () => {
       expect(tracker.totalNumberOfAds).toBe(1);
     });
 
+    it('carries offset when the next break is already active before AdBreakFinished fires', () => {
+      const break1 = makeBreak('break-1', 5, [{ id: 'a1' }]);
+      const break2 = makeBreak('break-2', 5, [{ id: 'a2' }]);
+
+      // Break 1 starts
+      adsState.activeAdBreak = break1;
+      adsState.activeAd = { id: 'a1' };
+      adsState.list = [break2];
+      eventEmitter.fireAdStartedEvent();
+
+      expect(tracker.currentAdIndex).toBe(1);
+      expect(tracker.totalNumberOfAds).toBe(2);
+
+      // Break 2 becomes active before break 1's AdBreakFinished fires
+      adsState.activeAdBreak = break2;
+      adsState.activeAd = { id: 'a2' };
+      adsState.list = [];
+      eventEmitter.fireAdBreakFinishedEvent(break1);
+
+      // Offset should be preserved, not reset
+      expect(tracker.currentAdIndex).toBe(1);
+      expect(tracker.totalNumberOfAds).toBe(2);
+
+      // Break 2's AdStarted fires
+      eventEmitter.fireAdStartedEvent();
+
+      expect(tracker.currentAdIndex).toBe(2);
+      expect(tracker.totalNumberOfAds).toBe(2);
+    });
+
     it('handles subsequent ad breaks where each break contains multiple ads', () => {
       const ads1 = [{ id: 'a1' }, { id: 'a2' }];
       const ads2 = [{ id: 'a3' }, { id: 'a4' }];
