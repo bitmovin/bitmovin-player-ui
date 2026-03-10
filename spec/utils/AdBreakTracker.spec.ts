@@ -270,6 +270,36 @@ describe('AdBreakTracker', () => {
       expect(tracker.totalNumberOfAds).toBe(1);
     });
 
+    it('handles co-scheduled breaks where each break contains multiple ads', () => {
+      const ads1 = [{ id: 'a1' }, { id: 'a2' }];
+      const ads2 = [{ id: 'a3' }, { id: 'a4' }];
+      const break1 = makeBreak('break-1', 5, ads1);
+      const break2 = makeBreak('break-2', 5, ads2);
+
+      // Break 1, second ad playing
+      adsState.activeAdBreak = break1;
+      adsState.activeAd = ads1[1];
+      adsState.list = [break2];
+      eventEmitter.fireAdStartedEvent();
+
+      expect(tracker.currentAdIndex).toBe(2);
+      expect(tracker.totalNumberOfAds).toBe(4); // 2 from break1 + 2 from break2
+
+      // Break 1 finishes
+      adsState.activeAd = null;
+      adsState.activeAdBreak = null;
+      eventEmitter.fireAdBreakFinishedEvent(break1);
+
+      // Break 2 starts, first ad
+      adsState.activeAdBreak = break2;
+      adsState.activeAd = ads2[0];
+      adsState.list = [];
+      eventEmitter.fireAdStartedEvent();
+
+      expect(tracker.currentAdIndex).toBe(3); // 2 offset + position 1 in break2
+      expect(tracker.totalNumberOfAds).toBe(4); // 2 offset + 2 from break2
+    });
+
     it('dispatches onAdCountChanged with currentAdIndex and totalNumberOfAds after AdStarted', () => {
       const break1 = makeBreak('break-1', 5, [{ id: 'a1' }]);
       const break2 = makeBreak('break-2', 5, [{ id: 'a2' }]);
