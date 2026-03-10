@@ -7,25 +7,25 @@ export interface AdBreakTrackerChangedArgs {
 }
 
 /**
- * Tracks a group of ad breaks that share the same `scheduleTime`, enabling a unified ad counter
+ * Tracks subsequent ad breaks that share the same `scheduleTime`, enabling a unified ad counter
  * across what the player models as separate ad breaks.
  *
  * When multiple ad breaks are scheduled at the same position, the player fires separate
  * `AdBreakStarted`/`AdBreakFinished` events for each. This tracker accumulates state across those
- * events and dispatches {@link onAdCountChanged} after each update so callers can derive a group-wide
+ * events and dispatches {@link onAdCountChanged} after each update so callers can derive a combined
  * `currentAdIndex` and `totalNumberOfAds` to pass to
  * {@link StringUtils.replaceAdMessagePlaceholders}.
  *
  * @category Utils
  */
 export class AdBreakTracker {
-  // Number of ads from co-scheduled ad breaks that have already finished.
+  // Number of ads from subsequent ad breaks that have already finished.
   private adIndexOffsetOfPreviousBreaks: number = 0;
-  // Index of the currently playing ad across all co-scheduled ad breaks (1-based)
+  // Index of the currently playing ad across all subsequent ad breaks (1-based)
   private currentAdIndexAcrossBreaks: number = 0;
-  // Total ad count across the group of co-scheduled ad breaks
+  // Total ad count across all subsequent ad breaks
   private totalNumberOfAdsAcrossBreaks: number = 0;
-  // scheduleTime shared by the current group of co-scheduled ad breaks, or undefined when not in a group.
+  // scheduleTime shared by the current subsequent ad breaks, or undefined when not in a group.
   private groupScheduleTime: number | undefined = undefined;
   // Ad count of the currently active break
   private numberOfAdsInCurrentAdBreak: number = 0;
@@ -35,7 +35,7 @@ export class AdBreakTracker {
   };
 
   constructor(private readonly player: PlayerAPI) {
-    // Sibling ad break detection is done in `AdStarted` because the ad UI variant is not yet configured when
+    // Subsequent ad break detection is done in `AdStarted` because the ad UI variant is not yet configured when
     // the `AdBreakStarted` event fires
     player.on(player.exports.PlayerEvent.AdStarted, this.handleAdStarted);
     player.on(player.exports.PlayerEvent.AdBreakFinished, this.handleAdBreakFinished);
@@ -46,14 +46,14 @@ export class AdBreakTracker {
   }
 
   /**
-   * Index of the currently playing ad across all co-scheduled breaks (1-based), or 0 when no ad
+   * Index of the currently playing ad across all subsequent ad breaks (1-based), or 0 when no ad
    * is active.
    */
   get currentAdIndex(): number {
     return this.currentAdIndexAcrossBreaks;
   }
 
-  /** Total ad count across all co-scheduled breaks in the current group. */
+  /** Total ad count across all subsequent ad breaks. */
   get totalNumberOfAds(): number {
     return this.totalNumberOfAdsAcrossBreaks;
   }
@@ -75,7 +75,9 @@ export class AdBreakTracker {
     }
 
     // Note: `player.ads.list()` provides all ad breaks except past ad breaks or the currently active ad break
-    const siblings = (this.player.ads?.list?.() ?? []).filter(b => b.scheduleTime === activeBreak.scheduleTime);
+    const subsequentAdBreaks = (this.player.ads?.list?.() ?? []).filter(
+      b => b.scheduleTime === activeBreak.scheduleTime,
+    );
 
     const activeAd = this.player.ads?.getActiveAd?.();
     const ads = activeBreak.ads;
@@ -89,18 +91,18 @@ export class AdBreakTracker {
 
     if (
       (this.adIndexOffsetOfPreviousBreaks > 0 && activeBreak.scheduleTime === this.groupScheduleTime) ||
-      siblings.length > 0
+      subsequentAdBreaks.length > 0
     ) {
       this.groupScheduleTime = activeBreak.scheduleTime;
       this.currentAdIndexAcrossBreaks = withinBreakIndex + 1 + this.adIndexOffsetOfPreviousBreaks;
-      // Sibling ads arrays may not be populated yet (VAST manifests load lazily), so we use the ads count if available,
-      // or assume 1 ad per break if not available. It will update and self-correct with each AdStarted event.
-      const remainingSiblingAdCount = siblings.reduce(
+      // Subsequent ad break ads arrays may not be populated yet (VAST manifests load lazily), so we use the ads count
+      // if available, or assume 1 ad per break if not available. It will update and self-correct with each AdStarted event.
+      const remainingSubsequentAdCount = subsequentAdBreaks.reduce(
         (sum, adBreak) => sum + (adBreak.ads?.length > 0 ? adBreak.ads.length : 1),
         0,
       );
       this.totalNumberOfAdsAcrossBreaks =
-        this.adIndexOffsetOfPreviousBreaks + this.numberOfAdsInCurrentAdBreak + remainingSiblingAdCount;
+        this.adIndexOffsetOfPreviousBreaks + this.numberOfAdsInCurrentAdBreak + remainingSubsequentAdCount;
     } else {
       this.adIndexOffsetOfPreviousBreaks = 0;
       this.currentAdIndexAcrossBreaks = withinBreakIndex + 1;
@@ -122,9 +124,11 @@ export class AdBreakTracker {
       return;
     }
 
-    const remainingSiblings = (this.player.ads?.list?.() ?? []).filter(b => b.scheduleTime === this.groupScheduleTime);
+    const remainingSubsequentAdBreaks = (this.player.ads?.list?.() ?? []).filter(
+      b => b.scheduleTime === this.groupScheduleTime,
+    );
 
-    if (remainingSiblings.length === 0) {
+    if (remainingSubsequentAdBreaks.length === 0) {
       this.reset();
     } else {
       this.adIndexOffsetOfPreviousBreaks += this.numberOfAdsInCurrentAdBreak;

@@ -82,8 +82,8 @@ export namespace StringUtils {
    *   - '{playedTime[formatString]}': the current time
    *   - '{adDuration[formatString]}': the ad duration
    *   - '{adBreakRemainingTime[formatString]}': the total remaining time of all ads in the ad break
-   *   - '{activeAdIndex[formatString]}': the number of the currently played ad within the current ad break by default, or within the current group of ad breaks with the same schedule time when an `activeAdIndex` override is provided
-   *   - '{totalAdsCount[formatString]}': the total number of ads in the current ad break by default, or across the current group of ad breaks with the same schedule time when a `totalNumberOfAds` override is provided
+   *   - '{activeAdIndex[formatString]}': the number of the currently played ad within the current ad break by default, or `activeAdIndex` if provided. `activeAdIndex` can be used to show the index of the current ad across multiple ad breaks with the same schedule time.
+   *   - '{totalAdsCount[formatString]}': the total number of ads in the current ad break by default, or `totalNumberOfAds` if provided. `totalNumberOfAds` can be used to show the number of ads across multiple ad breaks with the same schedule time.
    *
    * The format string is optional. If not specified, the placeholder is replaced by the time
    * in seconds. If specified, it must be of the following format:
