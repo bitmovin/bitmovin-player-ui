@@ -54,34 +54,37 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
       );
     });
 
-    player.on(player.exports.PlayerEvent.AdBreakStarted, () => {
-      this.setText('');
-    });
-
-    player.on(player.exports.PlayerEvent.AdBreakFinished, () => {
-      this.setText('');
-    });
+    player.on(player.exports.PlayerEvent.AdBreakStarted, this.clearText);
+    player.on(player.exports.PlayerEvent.AdBreakFinished, this.clearText);
   }
 
+  clearText = () => {
+    super.clearText();
+  };
+
   release(): void {
+    this.player?.on(this.player.exports.PlayerEvent.AdBreakStarted, this.clearText);
+    this.player?.on(this.player.exports.PlayerEvent.AdBreakFinished, this.clearText);
+
     this.adBreakTracker?.release();
+
     this.adBreakTracker = undefined;
+    this.player = undefined;
+
     super.release();
   }
 
   protected onLanguageChanged(): void {
-    if (this.player?.ads?.isLinearAdActive?.()) {
-      if (this.adBreakTracker) {
-        this.setText(
-          StringUtils.replaceAdMessagePlaceholders(
-            i18n.performLocalization(this.config.adCountOutOfTotal),
-            this.player,
-            undefined,
-            this.adBreakTracker.currentAdIndex,
-            this.adBreakTracker.totalNumberOfAds,
-          ),
-        );
-      }
+    if (this.adBreakTracker?.currentAdIndex > 0 || this.player?.ads?.isLinearAdActive?.()) {
+      this.setText(
+        StringUtils.replaceAdMessagePlaceholders(
+          i18n.performLocalization(this.config.adCountOutOfTotal),
+          this.player,
+          undefined,
+          this.adBreakTracker?.currentAdIndex,
+          this.adBreakTracker?.totalNumberOfAds,
+        ),
+      );
     }
   }
 }
