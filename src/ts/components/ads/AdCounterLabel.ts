@@ -43,16 +43,14 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     this.adBreakTracker = uimanager.getConfig().adBreakTracker;
 
     this.adBreakTracker.onAdCountChanged.subscribe((_, adBreakTrackerEvent: AdBreakTrackerAdCountChangedArgs) => {
-      this.setText(
-        StringUtils.replaceAdMessagePlaceholders(
-          i18n.performLocalization(this.config.adCountOutOfTotal),
-          player,
-          undefined,
-          adBreakTrackerEvent.currentAdIndex,
-          adBreakTrackerEvent.totalNumberOfAds,
-        ),
-      );
+      this.setAdCounterFromAdBreakTracker(adBreakTrackerEvent.currentAdIndex, adBreakTrackerEvent.totalNumberOfAds);
     });
+
+    // An ad break may already be ongoing when configure is called, in this case the onAdCountChanged event was missed
+    // and the label is set here
+    if (this.adBreakTracker.currentAdIndex > 0 && this.adBreakTracker.totalNumberOfAds > 0) {
+      this.setAdCounterFromAdBreakTracker(this.adBreakTracker.currentAdIndex, this.adBreakTracker.totalNumberOfAds);
+    }
 
     player.on(player.exports.PlayerEvent.AdBreakStarted, this.clearText);
     player.on(player.exports.PlayerEvent.AdBreakFinished, this.clearText);
@@ -76,15 +74,19 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
 
   protected onLanguageChanged(): void {
     if (this.adBreakTracker?.currentAdIndex > 0 || this.player?.ads?.isLinearAdActive?.()) {
-      this.setText(
-        StringUtils.replaceAdMessagePlaceholders(
-          i18n.performLocalization(this.config.adCountOutOfTotal),
-          this.player,
-          undefined,
-          this.adBreakTracker?.currentAdIndex,
-          this.adBreakTracker?.totalNumberOfAds,
-        ),
-      );
+      this.setAdCounterFromAdBreakTracker(this.adBreakTracker?.currentAdIndex, this.adBreakTracker?.totalNumberOfAds);
     }
+  }
+
+  private setAdCounterFromAdBreakTracker(currentAdIndex: number, totalNumberOfAds: number) {
+    this.setText(
+      StringUtils.replaceAdMessagePlaceholders(
+        i18n.performLocalization(this.config.adCountOutOfTotal),
+        this.player,
+        undefined,
+        currentAdIndex,
+        totalNumberOfAds,
+      ),
+    );
   }
 }
