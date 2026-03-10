@@ -3,7 +3,7 @@ import { UIInstanceManager } from '../../UIManager';
 import { LabelConfig, Label } from '../labels/Label';
 import { PlayerAPI } from 'bitmovin-player';
 import { StringUtils } from '../../utils/StringUtils';
-import { AdBreakTracker, AdBreakTrackerChangedArgs } from '../../utils/AdBreakTracker';
+import { AdBreakTracker, AdBreakTrackerAdCountChangedArgs } from '../../utils/AdBreakTracker';
 
 export interface AdCounterLabelConfig extends LabelConfig {
   /**
@@ -42,7 +42,7 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
 
     this.adBreakTracker = uimanager.getConfig().adBreakTracker;
 
-    this.adBreakTracker.onAdCountChanged.subscribe((_, adBreakTrackerEvent: AdBreakTrackerChangedArgs) => {
+    this.adBreakTracker.onAdCountChanged.subscribe((_, adBreakTrackerEvent: AdBreakTrackerAdCountChangedArgs) => {
       this.setText(
         StringUtils.replaceAdMessagePlaceholders(
           i18n.performLocalization(this.config.adCountOutOfTotal),

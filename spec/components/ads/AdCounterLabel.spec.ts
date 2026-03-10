@@ -1,20 +1,20 @@
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { AdCounterLabel } from '../../../src/ts/components/ads/AdCounterLabel';
-import { AdBreakTrackerChangedArgs } from '../../../src/ts/utils/AdBreakTracker';
+import { AdBreakTrackerAdCountChangedArgs } from '../../../src/ts/utils/AdBreakTracker';
 import { EventDispatcher } from '../../../src/ts/EventDispatcher';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
 let adCounterLabel: AdCounterLabel;
-let adCountChangedDispatcher: EventDispatcher<any, AdBreakTrackerChangedArgs>;
+let adCountChangedDispatcher: EventDispatcher<any, AdBreakTrackerAdCountChangedArgs>;
 
 describe('AdCounterLabel', () => {
   beforeEach(() => {
     playerMock = MockHelper.getPlayerMock();
     uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
 
-    adCountChangedDispatcher = new EventDispatcher<any, AdBreakTrackerChangedArgs>();
+    adCountChangedDispatcher = new EventDispatcher<any, AdBreakTrackerAdCountChangedArgs>();
 
     const adBreakTrackerMock = {
       onAdCountChanged: adCountChangedDispatcher.getEvent(),

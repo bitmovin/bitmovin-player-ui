@@ -1,7 +1,7 @@
 import { AdBreakEvent, PlayerAPI } from 'bitmovin-player';
 import { Event, EventDispatcher } from '../EventDispatcher';
 
-export interface AdBreakTrackerChangedArgs {
+export interface AdBreakTrackerAdCountChangedArgs {
   currentAdIndex: number;
   totalNumberOfAds: number;
 }
@@ -31,7 +31,7 @@ export class AdBreakTracker {
   private numberOfAdsInCurrentAdBreak: number = 0;
 
   private readonly events = {
-    onAdCountChanged: new EventDispatcher<AdBreakTracker, AdBreakTrackerChangedArgs>(),
+    onAdCountChanged: new EventDispatcher<AdBreakTracker, AdBreakTrackerAdCountChangedArgs>(),
   };
 
   constructor(private readonly player: PlayerAPI) {
@@ -41,7 +41,7 @@ export class AdBreakTracker {
     player.on(player.exports.PlayerEvent.AdBreakFinished, this.handleAdBreakFinished);
   }
 
-  get onAdCountChanged(): Event<AdBreakTracker, AdBreakTrackerChangedArgs> {
+  get onAdCountChanged(): Event<AdBreakTracker, AdBreakTrackerAdCountChangedArgs> {
     return this.events.onAdCountChanged.getEvent();
   }
 
