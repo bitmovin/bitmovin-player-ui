@@ -18,6 +18,7 @@ import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
+import { AdBreakTracker } from './utils/AdBreakTracker';
 
 /**
  * @category Configs
@@ -61,6 +62,7 @@ export interface InternalUIConfig extends UIConfig {
     onUpdated: EventDispatcher<UIManager, void>;
   };
   volumeController: VolumeController;
+  adBreakTracker: AdBreakTracker;
 }
 
 /**
@@ -206,6 +208,7 @@ export class UIManager {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
+      adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer()),
     };
 
     /**
@@ -610,6 +613,8 @@ export class UIManager {
   }
 
   release(): void {
+    this.config.adBreakTracker.release();
+
     for (const uiInstanceManager of this.uiInstanceManagers) {
       this.releaseUi(uiInstanceManager);
     }

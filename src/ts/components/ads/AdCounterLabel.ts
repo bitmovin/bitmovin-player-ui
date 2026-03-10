@@ -40,7 +40,7 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     super.configure(player, uimanager);
     this.player = player;
 
-    this.adBreakTracker = new AdBreakTracker(player);
+    this.adBreakTracker = uimanager.getConfig().adBreakTracker;
 
     this.adBreakTracker.onAdCountChanged.subscribe((_, adBreakTrackerEvent: AdBreakTrackerChangedArgs) => {
       this.setText(
