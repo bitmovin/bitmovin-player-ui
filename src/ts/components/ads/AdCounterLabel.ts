@@ -61,8 +61,8 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
   };
 
   release(): void {
-    this.player?.on(this.player.exports.PlayerEvent.AdBreakStarted, this.clearText);
-    this.player?.on(this.player.exports.PlayerEvent.AdBreakFinished, this.clearText);
+    this.player?.off(this.player.exports.PlayerEvent.AdBreakStarted, this.clearText);
+    this.player?.off(this.player.exports.PlayerEvent.AdBreakFinished, this.clearText);
 
     this.adBreakTracker?.release();
 
