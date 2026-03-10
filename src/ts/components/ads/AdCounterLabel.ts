@@ -51,19 +51,9 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     if (this.adBreakTracker.currentAdIndex > 0 && this.adBreakTracker.totalNumberOfAds > 0) {
       this.setAdCounterFromAdBreakTracker(this.adBreakTracker.currentAdIndex, this.adBreakTracker.totalNumberOfAds);
     }
-
-    player.on(player.exports.PlayerEvent.AdBreakStarted, this.clearText);
-    player.on(player.exports.PlayerEvent.AdBreakFinished, this.clearText);
   }
 
-  clearText = () => {
-    super.clearText();
-  };
-
   release(): void {
-    this.player?.off(this.player.exports.PlayerEvent.AdBreakStarted, this.clearText);
-    this.player?.off(this.player.exports.PlayerEvent.AdBreakFinished, this.clearText);
-
     this.adBreakTracker?.release();
 
     this.adBreakTracker = undefined;
@@ -78,7 +68,13 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     }
   }
 
-  private setAdCounterFromAdBreakTracker(currentAdIndex: number, totalNumberOfAds: number) {
+  private setAdCounterFromAdBreakTracker(currentAdIndex?: number, totalNumberOfAds?: number) {
+    if (currentAdIndex === 0 && totalNumberOfAds === 0) {
+      // No ad break active and no subsequent ad breaks
+      this.setText('');
+      return;
+    }
+
     this.setText(
       StringUtils.replaceAdMessagePlaceholders(
         i18n.performLocalization(this.config.adCountOutOfTotal),

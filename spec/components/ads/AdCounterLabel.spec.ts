@@ -43,24 +43,8 @@ describe('AdCounterLabel', () => {
     expect(adCounterLabel.getText()).toBe('Ad 2 of 3');
   });
 
-  it('clears text on AdBreakStarted', () => {
-    adCountChangedDispatcher.dispatch(null, { currentAdIndex: 1, totalNumberOfAds: 2 });
-    expect(adCounterLabel.getText()).toBe('Ad 1 of 2');
-
-    playerMock.eventEmitter.fireAdBreakStartedEvent(5, []);
-    expect(adCounterLabel.getText()).toBe('');
-  });
-
-  it('clears text on AdBreakFinished', () => {
-    adCountChangedDispatcher.dispatch(null, { currentAdIndex: 1, totalNumberOfAds: 1 });
-    expect(adCounterLabel.getText()).toBe('Ad 1 of 1');
-
-    playerMock.eventEmitter.fireAdBreakFinishedEvent({ id: 'break-1', scheduleTime: 5, ads: [] } as any);
-    expect(adCounterLabel.getText()).toBe('');
-  });
-
-  it('shows 0 of 0 when tracker reports reset values', () => {
+  it('shows empty text when tracker reports reset values', () => {
     adCountChangedDispatcher.dispatch(null, { currentAdIndex: 0, totalNumberOfAds: 0 });
-    expect(adCounterLabel.getText()).toBe('Ad 0 of 0');
+    expect(adCounterLabel.getText()).toBe('');
   });
 });
