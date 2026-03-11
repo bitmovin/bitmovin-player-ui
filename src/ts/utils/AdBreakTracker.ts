@@ -115,6 +115,11 @@ export class AdBreakTracker {
     const isPartOfExistingGroup = this.groupBreaks.length > 0 && activeBreak.scheduleTime === this.groupScheduleTime;
 
     if (isPartOfExistingGroup || hasSubsequentBreaks) {
+      if (!isPartOfExistingGroup && this.groupBreaks.length > 0) {
+        // New group at a different scheduleTime — clear stale state from a previous group
+        this.groupBreaks = [];
+      }
+
       this.groupScheduleTime = activeBreak.scheduleTime;
 
       // Add the active break if it's not already retained (new break in the group)
