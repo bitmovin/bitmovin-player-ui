@@ -54,8 +54,6 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
   }
 
   release(): void {
-    this.adBreakTracker?.release();
-
     this.adBreakTracker = undefined;
     this.player = undefined;
 
