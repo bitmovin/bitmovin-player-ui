@@ -41,10 +41,7 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     this.player = player;
 
     this.adBreakTracker = uimanager.getConfig().adBreakTracker;
-
-    this.adBreakTracker.onAdCountChanged.subscribe((_, adBreakTrackerEvent: AdBreakTrackerAdCountChangedArgs) => {
-      this.setAdCounterFromAdBreakTracker(adBreakTrackerEvent.currentAdIndex, adBreakTrackerEvent.totalNumberOfAds);
-    });
+    this.adBreakTracker.onAdCountChanged.subscribe(this.adBreakTrackerAdCountChangedHandler);
 
     // An ad break may already be ongoing when configure is called, in this case the onAdCountChanged event was missed
     // and the label is set here
@@ -54,6 +51,8 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
   }
 
   release(): void {
+    this.adBreakTracker?.onAdCountChanged.unsubscribe(this.adBreakTrackerAdCountChangedHandler);
+
     this.adBreakTracker = undefined;
     this.player = undefined;
 
@@ -65,6 +64,13 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
       this.setAdCounterFromAdBreakTracker(this.adBreakTracker?.currentAdIndex, this.adBreakTracker?.totalNumberOfAds);
     }
   }
+
+  private readonly adBreakTrackerAdCountChangedHandler = (
+    _: AdBreakTracker,
+    adBreakTrackerEvent: AdBreakTrackerAdCountChangedArgs,
+  ) => {
+    this.setAdCounterFromAdBreakTracker(adBreakTrackerEvent.currentAdIndex, adBreakTrackerEvent.totalNumberOfAds);
+  };
 
   private setAdCounterFromAdBreakTracker(currentAdIndex?: number, totalNumberOfAds?: number) {
     if (currentAdIndex === 0 && totalNumberOfAds === 0) {
