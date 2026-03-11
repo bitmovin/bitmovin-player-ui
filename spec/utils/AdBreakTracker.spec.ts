@@ -110,8 +110,9 @@ describe('AdBreakTracker', () => {
       adsState.activeAdBreak = null;
       eventEmitter.fireAdBreakFinishedEvent(break1);
 
-      // Between breaks: currentAdIndex is unchanged (still 1), totalNumberOfAds carries last known value
-      expect(tracker.currentAdIndex).toBe(1);
+      // Between breaks no ad is active, so currentAdIndex is 0.
+      // totalNumberOfAds is still derived from the retained group breaks + list.
+      expect(tracker.currentAdIndex).toBe(0);
       expect(tracker.totalNumberOfAds).toBe(2);
     });
 
@@ -179,8 +180,9 @@ describe('AdBreakTracker', () => {
       adsState.activeAdBreak = null;
       eventEmitter.fireAdBreakFinishedEvent(break1);
 
-      // currentAdIndex unchanged between breaks; totalNumberOfAds carries group total
-      expect(tracker.currentAdIndex).toBe(1);
+      // Between breaks no ad is active, so currentAdIndex is 0.
+      // Group is not reset: totalNumberOfAds still includes all breaks.
+      expect(tracker.currentAdIndex).toBe(0);
       expect(tracker.totalNumberOfAds).toBe(3);
     });
 
@@ -284,15 +286,12 @@ describe('AdBreakTracker', () => {
       expect(tracker.currentAdIndex).toBe(1);
       expect(tracker.totalNumberOfAds).toBe(2);
 
-      // Break 2 becomes active before break 1's AdBreakFinished fires
+      // Break 2 becomes active before break 1's AdBreakFinished fires.
+      // No dispatch happens between breaks (the next AdStarted will update the UI).
       adsState.activeAdBreak = break2;
       adsState.activeAd = { id: 'a2' };
       adsState.list = [];
       eventEmitter.fireAdBreakFinishedEvent(break1);
-
-      // Offset should be preserved, not reset
-      expect(tracker.currentAdIndex).toBe(1);
-      expect(tracker.totalNumberOfAds).toBe(2);
 
       // Break 2's AdStarted fires
       eventEmitter.fireAdStartedEvent();
@@ -345,7 +344,7 @@ describe('AdBreakTracker', () => {
       expect(onChange).toHaveBeenCalledWith(tracker, { currentAdIndex: 1, totalNumberOfAds: 2 });
     });
 
-    it('dispatches onAdCountChanged with currentAdIndex and totalNumberOfAds after AdBreakFinished', () => {
+    it('does not dispatch onAdCountChanged on AdBreakFinished when more breaks remain in the group', () => {
       const break1 = makeBreak('break-1', 5, [{ id: 'a1' }]);
       const break2 = makeBreak('break-2', 5, [{ id: 'a2' }]);
       const onChange = jest.fn();
@@ -360,8 +359,8 @@ describe('AdBreakTracker', () => {
       adsState.activeAdBreak = null;
       eventEmitter.fireAdBreakFinishedEvent(break1);
 
-      // currentAdIndex retains the last playing ad's index between breaks; only the offset has changed
-      expect(onChange).toHaveBeenCalledWith(tracker, { currentAdIndex: 1, totalNumberOfAds: 2 });
+      // No dispatch between breaks — the next AdStarted will provide up-to-date values
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 });

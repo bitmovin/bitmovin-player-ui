@@ -1,4 +1,4 @@
-import { AdBreakEvent, PlayerAPI } from 'bitmovin-player';
+import { AdBreak, AdBreakEvent, PlayerAPI } from 'bitmovin-player';
 import { Event, EventDispatcher } from '../EventDispatcher';
 
 export interface AdBreakTrackerAdCountChangedArgs {
@@ -11,24 +11,19 @@ export interface AdBreakTrackerAdCountChangedArgs {
  * across what the player models as separate ad breaks.
  *
  * When multiple ad breaks are scheduled at the same position, the player fires separate
- * `AdBreakStarted`/`AdBreakFinished` events for each. This tracker accumulates state across those
- * events and dispatches {@link onAdCountChanged} after each update so callers can derive a combined
- * `currentAdIndex` and `totalNumberOfAds` to pass to
- * {@link StringUtils.replaceAdMessagePlaceholders}.
+ * `AdBreakStarted`/`AdBreakFinished` events for each. This tracker retains the ad break objects
+ * that the player removes from `player.ads.list()` after they finish, so that
+ * {@link currentAdIndex} and {@link totalNumberOfAds} can be derived lazily from the retained
+ * breaks plus the player's current state.
  *
  * @category Utils
  */
 export class AdBreakTracker {
-  // Number of ads from subsequent ad breaks that have already finished.
-  private adIndexOffsetOfPreviousBreaks: number = 0;
-  // Index of the currently playing ad across all subsequent ad breaks (1-based)
-  private currentAdIndexAcrossBreaks: number = 0;
-  // Total ad count across all subsequent ad breaks
-  private totalNumberOfAdsAcrossBreaks: number = 0;
-  // scheduleTime shared by the current subsequent ad breaks, or undefined when not in a group.
+  // Ad breaks belonging to the current group, captured as each break starts.
+  // The player removes finished breaks from `list()`, so we retain them here.
+  private groupBreaks: AdBreak[] = [];
+  // scheduleTime shared by the current group, or undefined when not in a group.
   private groupScheduleTime: number | undefined = undefined;
-  // Ad count of the currently active break
-  private numberOfAdsInCurrentAdBreak: number = 0;
 
   private readonly events = {
     onAdCountChanged: new EventDispatcher<AdBreakTracker, AdBreakTrackerAdCountChangedArgs>(),
@@ -50,12 +45,52 @@ export class AdBreakTracker {
    * is active.
    */
   get currentAdIndex(): number {
-    return this.currentAdIndexAcrossBreaks;
+    const activeAd = this.player.ads?.getActiveAd?.();
+    if (!activeAd || this.groupBreaks.length === 0) {
+      return 0;
+    }
+
+    let offset = 0;
+    for (const adBreak of this.groupBreaks) {
+      const ads = adBreak.ads ?? [];
+      const adCount = ads.length > 0 ? ads.length : 1;
+
+      if (ads.length > 0) {
+        // ad.id/activeAd.id may be null/undefined, in which case we fall back to object reference comparison
+        const activeAdIndex = ads.findIndex(ad =>
+          activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd,
+        );
+
+        if (activeAdIndex >= 0) {
+          return offset + activeAdIndex + 1;
+        }
+      }
+
+      offset += adCount;
+    }
+
+    // Active ad not found in any retained break — fall back to offset + 1
+    return offset + 1;
   }
 
   /** Total ad count across all subsequent ad breaks. */
   get totalNumberOfAds(): number {
-    return this.totalNumberOfAdsAcrossBreaks;
+    if (this.groupBreaks.length === 0) {
+      return 0;
+    }
+
+    // Subsequent ad break ads arrays may not be populated yet (VAST manifests may load lazily), so we use the ads count
+    // if available, or assume 1 ad per break if not available. It will update and self-correct with each AdStarted event.
+    const retainedCount = this.groupBreaks.reduce(
+      (sum, adBreak) => sum + (adBreak.ads?.length > 0 ? adBreak.ads.length : 1),
+      0,
+    );
+
+    const remainingScheduledCount = (this.player.ads?.list?.() ?? [])
+      .filter(b => b.scheduleTime === this.groupScheduleTime)
+      .reduce((sum, adBreak) => sum + (adBreak.ads?.length > 0 ? adBreak.ads.length : 1), 0);
+
+    return retainedCount + remainingScheduledCount;
   }
 
   /** Unsubscribes all player events and resets state. Call when the tracker is no longer needed. */
@@ -74,39 +109,21 @@ export class AdBreakTracker {
       return;
     }
 
-    // Note: `player.ads.list()` provides all ad breaks except past ad breaks or the currently active ad break
-    const subsequentAdBreaks = (this.player.ads?.list?.() ?? []).filter(
+    const hasSubsequentBreaks = (this.player.ads?.list?.() ?? []).some(
       b => b.scheduleTime === activeBreak.scheduleTime,
     );
+    const isPartOfExistingGroup = this.groupBreaks.length > 0 && activeBreak.scheduleTime === this.groupScheduleTime;
 
-    const activeAd = this.player.ads?.getActiveAd?.();
-    const ads = activeBreak.ads;
-
-    // If ads are not yet loaded, assume 1 ad in the current break.
-    this.numberOfAdsInCurrentAdBreak = Array.isArray(ads) && ads.length > 0 ? ads.length : 1;
-    const withinBreakIndex =
-      Array.isArray(ads) && activeAd
-        ? ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd))
-        : -1;
-
-    if (
-      (this.adIndexOffsetOfPreviousBreaks > 0 && activeBreak.scheduleTime === this.groupScheduleTime) ||
-      subsequentAdBreaks.length > 0
-    ) {
+    if (isPartOfExistingGroup || hasSubsequentBreaks) {
       this.groupScheduleTime = activeBreak.scheduleTime;
-      this.currentAdIndexAcrossBreaks = withinBreakIndex + 1 + this.adIndexOffsetOfPreviousBreaks;
-      // Subsequent ad break ads arrays may not be populated yet (VAST manifests load lazily), so we use the ads count
-      // if available, or assume 1 ad per break if not available. It will update and self-correct with each AdStarted event.
-      const remainingSubsequentAdCount = subsequentAdBreaks.reduce(
-        (sum, adBreak) => sum + (adBreak.ads?.length > 0 ? adBreak.ads.length : 1),
-        0,
-      );
-      this.totalNumberOfAdsAcrossBreaks =
-        this.adIndexOffsetOfPreviousBreaks + this.numberOfAdsInCurrentAdBreak + remainingSubsequentAdCount;
+
+      // Add the active break if it's not already retained (new break in the group)
+      if (!this.groupBreaks.includes(activeBreak)) {
+        this.groupBreaks.push(activeBreak);
+      }
     } else {
-      this.adIndexOffsetOfPreviousBreaks = 0;
-      this.currentAdIndexAcrossBreaks = withinBreakIndex + 1;
-      this.totalNumberOfAdsAcrossBreaks = this.numberOfAdsInCurrentAdBreak;
+      // Single ad break, not part of a group
+      this.groupBreaks = [activeBreak];
       this.groupScheduleTime = undefined;
     }
 
@@ -124,9 +141,7 @@ export class AdBreakTracker {
       return;
     }
 
-    const remainingSubsequentAdBreaks = (this.player.ads?.list?.() ?? []).filter(
-      b => b.scheduleTime === this.groupScheduleTime,
-    );
+    const subsequentAdBreaks = (this.player.ads?.list?.() ?? []).filter(b => b.scheduleTime === this.groupScheduleTime);
 
     // The next break in the group may already be active (and thus removed from `list()`),
     // so also check whether the currently active break shares the same scheduleTime.
@@ -134,28 +149,24 @@ export class AdBreakTracker {
     const activeBreakInGroup =
       activeBreak?.scheduleTime === this.groupScheduleTime && this.groupScheduleTime !== undefined;
 
-    if (remainingSubsequentAdBreaks.length === 0 && !activeBreakInGroup) {
+    if (subsequentAdBreaks.length === 0 && !activeBreakInGroup) {
       this.reset();
-    } else {
-      this.adIndexOffsetOfPreviousBreaks += this.numberOfAdsInCurrentAdBreak;
-      this.numberOfAdsInCurrentAdBreak = 0;
+      this.dispatchChanged();
     }
-
-    this.dispatchChanged();
+    // When more breaks remain in the group, skip dispatching — the next AdStarted will
+    // dispatch up-to-date values. Between breaks there is no active ad, so the lazy
+    // getters cannot produce meaningful values.
   };
 
   private dispatchChanged(): void {
     this.events.onAdCountChanged.dispatch(this, {
       currentAdIndex: this.currentAdIndex,
-      totalNumberOfAds: this.totalNumberOfAdsAcrossBreaks,
+      totalNumberOfAds: this.totalNumberOfAds,
     });
   }
 
   private reset(): void {
-    this.adIndexOffsetOfPreviousBreaks = 0;
-    this.currentAdIndexAcrossBreaks = 0;
-    this.totalNumberOfAdsAcrossBreaks = 0;
+    this.groupBreaks = [];
     this.groupScheduleTime = undefined;
-    this.numberOfAdsInCurrentAdBreak = 0;
   }
 }
