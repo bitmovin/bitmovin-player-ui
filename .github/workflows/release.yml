@@ -190,8 +190,17 @@ jobs:
           script: |
             const fs = require('fs');
             const { parseChangelogEntry } = require('./.github/scripts/parseChangelogEntry.js');
+            const version = '${{ needs.version_bump.outputs.version_number }}';
             const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
-            const body = parseChangelogEntry(changelog);
+            let body;
+
+            try {
+              body = parseChangelogEntry(changelog);
+            } catch (error) {
+              core.warning(`Failed to extract release notes for v${version}: ${error.message}`);
+              body = `Release notes are not available for v${version}. Please check CHANGELOG.md in this tag.`;
+            }
+
             fs.writeFileSync('release_notes.md', body);
 
       - name: Create GitHub Release
