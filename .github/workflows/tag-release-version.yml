@@ -1,5 +1,5 @@
 name: Weekly Release Train
-run-name: Weekly release train${{ github.event_name == 'workflow_dispatch' && ' (manual)' || '' }}
+run-name: Weekly release train ${{ github.event_name == 'workflow_dispatch' && ' (manual)' || '' }}
 
 on:
   schedule:
