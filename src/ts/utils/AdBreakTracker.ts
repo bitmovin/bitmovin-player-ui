@@ -53,7 +53,6 @@ export class AdBreakTracker {
     let offset = 0;
     for (const adBreak of this.groupBreaks) {
       const ads = adBreak.ads ?? [];
-      const adCount = ads.length > 0 ? ads.length : 1;
 
       if (ads.length > 0) {
         // ad.id/activeAd.id may be null/undefined, in which case we fall back to object reference comparison
@@ -64,9 +63,17 @@ export class AdBreakTracker {
         if (activeAdIndex >= 0) {
           return offset + activeAdIndex + 1;
         }
-      }
 
-      offset += adCount;
+        offset += ads.length;
+      } else {
+        // ads not yet populated — if this is the active break, the active ad is its first ad
+        const activeBreak = this.player.ads?.getActiveAdBreak?.();
+        if (activeBreak === adBreak || (activeBreak?.id != null && activeBreak.id === adBreak.id)) {
+          return offset + 1;
+        }
+
+        offset += 1;
+      }
     }
 
     // Active ad not found in any retained break — fall back to offset + 1
