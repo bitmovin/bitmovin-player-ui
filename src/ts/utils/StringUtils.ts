@@ -82,8 +82,8 @@ export namespace StringUtils {
    *   - '{playedTime[formatString]}': the current time
    *   - '{adDuration[formatString]}': the ad duration
    *   - '{adBreakRemainingTime[formatString]}': the total remaining time of all ads in the ad break
-   *   - '{activeAdIndex[formatString]}': the number of the currently played ad within the current ad break
-   *   - '{totalAdsCount[formatString]}': the total number of ads in the current ad break
+   *   - '{activeAdIndex[formatString]}': the number of the currently played ad within the current ad break by default, or `activeAdIndex` if provided. `activeAdIndex` can be used to show the index of the current ad across multiple ad breaks with the same schedule time.
+   *   - '{totalAdsCount[formatString]}': the total number of ads in the current ad break by default, or `totalNumberOfAds` if provided. `totalNumberOfAds` can be used to show the number of ads across multiple ad breaks with the same schedule time.
    *
    * The format string is optional. If not specified, the placeholder is replaced by the time
    * in seconds. If specified, it must be of the following format:
@@ -107,9 +107,21 @@ export namespace StringUtils {
    * @param adMessage an ad message with optional placeholders to fill
    * @param player the player to get the time data from
    * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
+   * @param activeAdIndex if specified, {activeAdIndex} will be set to this value. Can be used to calculate the ad index
+   *   across multiple ad breaks which are scheduled for the same time. If not provided, the value will be calculated
+   *   for the current ad break only from the player API.
+   * @param totalNumberOfAds if specified, {totalAdsCount} will be set to this value. Can be used to calculate the total
+   *   number of ads across multiple ad breaks which are scheduled for the same time. If not provided, the value will
+   *   be calculated for the current ad break only from the player API.
    * @returns {string} the ad message with filled placeholders
    */
-  export function replaceAdMessagePlaceholders(adMessage: string, player: PlayerAPI, skipOffset?: number) {
+  export function replaceAdMessagePlaceholders(
+    adMessage: string,
+    player: PlayerAPI,
+    skipOffset?: number,
+    activeAdIndex?: number,
+    totalNumberOfAds?: number,
+  ) {
     const adMessagePlaceholderRegex = new RegExp(
       '\\{(remainingTime|playedTime|adDuration|adBreakRemainingTime|activeAdIndex|totalAdsCount)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g',
@@ -144,22 +156,33 @@ export namespace StringUtils {
           time = duration - player.getCurrentTime();
         }
       } else if (formatString.indexOf('activeAdIndex') > -1 || formatString.indexOf('totalAdsCount') > -1) {
+        if (formatString.includes('activeAdIndex')) {
+          if (activeAdIndex != null) {
+            return formatNumber(activeAdIndex, formatString);
+          }
+
+          const activeAdBreak = player.ads?.getActiveAdBreak?.();
+          const activeAd = player.ads?.getActiveAd?.();
+          const ads = activeAdBreak?.ads;
+
+          if (!activeAdBreak || !activeAd || !Array.isArray(ads) || ads.length === 0) {
+            return formatNumber(0, formatString);
+          }
+
+          return formatNumber(
+            ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd)) + 1,
+            formatString,
+          );
+        }
+
+        if (totalNumberOfAds != null) {
+          return formatNumber(totalNumberOfAds, formatString);
+        }
+
         const activeAdBreak = player.ads?.getActiveAdBreak?.();
-        const activeAd = player.ads?.getActiveAd?.();
         const ads = activeAdBreak?.ads;
 
-        if (!activeAdBreak || !activeAd || !Array.isArray(ads) || ads.length === 0) {
-          return formatNumber(0, formatString);
-        }
-
-        const activeAdIndex =
-          ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd)) + 1;
-
-        if (formatString.indexOf('activeAdIndex') > -1) {
-          return formatNumber(activeAdIndex, formatString);
-        }
-
-        return formatNumber(ads.length, formatString);
+        return formatNumber(Array.isArray(ads) ? ads.length : 0, formatString);
       }
 
       return formatNumber(Math.round(time), formatString);

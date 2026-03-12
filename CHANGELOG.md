@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `AdCounterLabel` now shows the ad position across multiple ad breaks scheduled at the same time (e.g. `Ad 2 of 3` instead of `Ad 1 of 1` for each)
+
 ## [4.9.1] - 2026-02-24
 
 ### Fixed
