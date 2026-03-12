@@ -240,7 +240,7 @@ jobs:
     name: Notify Success
     needs: [test, version_bump, release, upload_docs, github_release]
     runs-on: ubuntu-latest
-    if: inputs.dry_run != true
+    if: ${{ always() && inputs.dry_run != true && needs.test.result == 'success' && needs.version_bump.result == 'success' && needs.release.result == 'success' && needs.upload_docs.result == 'success' && (inputs.release_type != 'final' || needs.github_release.result == 'success') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
