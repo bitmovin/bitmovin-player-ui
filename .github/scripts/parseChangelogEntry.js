@@ -6,7 +6,7 @@
  * @throws {Error} If no changelog entry is found
  */
 function parseChangelogEntry(changelogContent) {
-  const match = changelogContent.match(/## \[[\s\S]*?(?=\n## |$)/m);
+  const match = changelogContent.match(/## \[[\s\S]*?(?=\n## |$)/);
 
   if (!match) {
     throw new Error('No changelog entry found');
