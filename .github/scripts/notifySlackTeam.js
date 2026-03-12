@@ -11,14 +11,27 @@ const runId = process.argv[6];
 const failureSlackChannelId = 'CGRK9DV7H';
 const successSlackChannelId = 'C0LJ16JBS';
 
-fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
-  if (err) {
-    throw err;
-  }
+if (jobStatus !== 'success') {
+  sendSlackMessage(versionNumber, '');
+} else {
+  fs.readFile(changelogPath, 'utf8', (err, fileContent) => {
+    if (err) {
+      throw err;
+    }
 
-  const changelogContent = parseChangelogEntry(fileContent);
-  sendSlackMessage(versionNumber, changelogContent);
-});
+    let changelogContent;
+    try {
+      changelogContent = parseChangelogEntry(fileContent);
+    } catch (parseError) {
+      console.error(`Failed to parse the latest changelog entry for v${versionNumber}.`, parseError);
+      changelogContent =
+        `Changelog details could not be extracted automatically for v${versionNumber}. ` +
+        'Please check CHANGELOG.md in the release tag.';
+    }
+
+    sendSlackMessage(versionNumber, changelogContent);
+  });
+}
 
 function sendSlackMessage(releaseVersion, changelogContent) {
   const slackChannelId = jobStatus === 'success' ? successSlackChannelId : failureSlackChannelId;
