@@ -11,6 +11,7 @@ export interface VolumeSettingChangedArgs {
  */
 export class VolumeController {
   private static readonly issuerName = 'ui-volumecontroller';
+  private static readonly defaultVolume = 100;
 
   private readonly events = {
     onChanged: new EventDispatcher<VolumeController, VolumeSettingChangedArgs>(),
@@ -72,8 +73,9 @@ export class VolumeController {
    * Recalls (sets) the volume previously stored with {@link storeVolume}.
    */
   recallVolume(): void {
-    this.setMuted(this.storedVolume === 0);
-    this.setVolume(this.storedVolume);
+    const volume = this.storedVolume > 0 ? this.storedVolume : VolumeController.defaultVolume;
+    this.setMuted(false);
+    this.setVolume(volume);
   }
 
   startTransition(): VolumeTransition {
