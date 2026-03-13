@@ -13,14 +13,12 @@ describe('VolumeController', () => {
 
   describe('onChangedEvent', () => {
     it('should update the stored volume on VolumeChanged event', () => {
-      (playerMock.isMuted as jest.Mock).mockReturnValue(false);
-      (playerMock.getVolume as jest.Mock).mockReturnValue(70);
       volumeController.storeVolume = jest.fn();
 
       playerMock.eventEmitter.fireEvent<VolumeChangedEvent>({
         type: PlayerEvent.VolumeChanged,
-        sourceVolume: 0.2,
-        targetVolume: 0.7,
+        sourceVolume: 20,
+        targetVolume: 70,
         timestamp: Date.now(),
       });
 
@@ -28,33 +26,56 @@ describe('VolumeController', () => {
     });
 
     it('should not update the stored volume when player is muted with zero volume', () => {
+      (playerMock.getVolume as jest.Mock).mockReturnValue(50);
+      volumeController = new VolumeController(playerMock);
+
       (playerMock.isMuted as jest.Mock).mockReturnValue(true);
       (playerMock.getVolume as jest.Mock).mockReturnValue(0);
 
       playerMock.eventEmitter.fireEvent<VolumeChangedEvent>({
         type: PlayerEvent.VolumeChanged,
-        sourceVolume: 0.7,
+        sourceVolume: 50,
         targetVolume: 0,
         timestamp: Date.now(),
       });
 
-      // storeVolume should not persist zero — verify via the private field
-      expect((volumeController as any).storedVolume).not.toBe(0);
+      // Zero volume should not overwrite the previously stored volume
+      volumeController.recallVolume();
+      expect(playerMock.setVolume).toHaveBeenCalledWith(50, expect.any(String));
     });
 
     it('should not update the stored volume when volume is zero', () => {
+      (playerMock.getVolume as jest.Mock).mockReturnValue(50);
+      volumeController = new VolumeController(playerMock);
+
       (playerMock.isMuted as jest.Mock).mockReturnValue(false);
       (playerMock.getVolume as jest.Mock).mockReturnValue(0);
 
       playerMock.eventEmitter.fireEvent<VolumeChangedEvent>({
         type: PlayerEvent.VolumeChanged,
-        sourceVolume: 0.7,
+        sourceVolume: 50,
         targetVolume: 0,
         timestamp: Date.now(),
       });
 
-      // storeVolume should not persist zero — verify via the private field
-      expect((volumeController as any).storedVolume).not.toBe(0);
+      // Zero volume should not overwrite the previously stored volume
+      volumeController.recallVolume();
+      expect(playerMock.setVolume).toHaveBeenCalledWith(50, expect.any(String));
+    });
+
+    it('should store volume when muted at non-zero volume', () => {
+      (playerMock.isMuted as jest.Mock).mockReturnValue(true);
+      (playerMock.getVolume as jest.Mock).mockReturnValue(50);
+
+      playerMock.eventEmitter.fireEvent<VolumeChangedEvent>({
+        type: PlayerEvent.VolumeChanged,
+        sourceVolume: 70,
+        targetVolume: 50,
+        timestamp: Date.now(),
+      });
+
+      volumeController.recallVolume();
+      expect(playerMock.setVolume).toHaveBeenCalledWith(50, expect.any(String));
     });
   });
 
