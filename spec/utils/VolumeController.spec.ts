@@ -80,10 +80,19 @@ describe('VolumeController', () => {
   });
 
   describe('recallVolume', () => {
-    it('should default to volume 100 when stored volume is 0', () => {
-      // Constructor calls storeVolume() which gets 0 — should not persist it
+    it('should default to volume 100 when no volume was ever stored', () => {
       (playerMock.getVolume as jest.Mock).mockReturnValue(0);
       volumeController = new VolumeController(playerMock);
+
+      volumeController.recallVolume();
+
+      expect(playerMock.unmute).toHaveBeenCalled();
+      expect(playerMock.setVolume).toHaveBeenCalledWith(100, expect.any(String));
+    });
+
+    it('should default to volume 100 when stored volume is explicitly 0', () => {
+      volumeController = new VolumeController(playerMock);
+      (volumeController as any).storedVolume = 0;
 
       volumeController.recallVolume();
 
