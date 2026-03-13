@@ -66,7 +66,10 @@ export class VolumeController {
    * Stores (saves) the current volume so it can later be restored with {@link recallVolume}.
    */
   storeVolume(): void {
-    this.storedVolume = this.getVolume();
+    const volume = this.getVolume();
+    if (volume > 0) {
+      this.storedVolume = volume;
+    }
   }
 
   /**
@@ -89,9 +92,7 @@ export class VolumeController {
     const uiMuted = playerMuted || playerVolume === 0;
     const uiVolume = playerMuted ? 0 : playerVolume;
 
-    if (!playerMuted && playerVolume > 0) {
-      this.storeVolume();
-    }
+    this.storeVolume();
 
     this.events.onChanged.dispatch(this, { volume: uiVolume, muted: uiMuted });
   }
