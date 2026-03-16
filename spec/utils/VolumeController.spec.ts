@@ -79,6 +79,53 @@ describe('VolumeController', () => {
     });
   });
 
+  describe('volume transition (scrubbing)', () => {
+    it('should not store intermediate volume values during scrubbing', () => {
+      // Start with volume at 80
+      (playerMock.getVolume as jest.Mock).mockReturnValue(80);
+      volumeController = new VolumeController(playerMock);
+
+      // Start a transition (user starts scrubbing)
+      const transition = volumeController.startTransition();
+
+      // Simulate intermediate volume changes during scrubbing (e.g. slowly dragging to low values)
+      (playerMock.getVolume as jest.Mock).mockReturnValue(1);
+      playerMock.eventEmitter.fireEvent<VolumeChangedEvent>({
+        type: PlayerEvent.VolumeChanged,
+        sourceVolume: 80,
+        targetVolume: 1,
+        timestamp: Date.now(),
+      });
+
+      // Finish the transition at 0 (user dragged to mute)
+      transition.finish(0);
+
+      // Recalling should restore the original volume (80), not the intermediate value (1)
+      volumeController.recallVolume();
+      expect(playerMock.setVolume).toHaveBeenCalledWith(80, expect.any(String));
+    });
+
+    it('should resume storing volume after transition finishes', () => {
+      (playerMock.getVolume as jest.Mock).mockReturnValue(50);
+      volumeController = new VolumeController(playerMock);
+
+      const transition = volumeController.startTransition();
+      transition.finish(50);
+
+      // After transition ends, volume changes should be stored again
+      (playerMock.getVolume as jest.Mock).mockReturnValue(30);
+      playerMock.eventEmitter.fireEvent<VolumeChangedEvent>({
+        type: PlayerEvent.VolumeChanged,
+        sourceVolume: 50,
+        targetVolume: 30,
+        timestamp: Date.now(),
+      });
+
+      volumeController.recallVolume();
+      expect(playerMock.setVolume).toHaveBeenCalledWith(30, expect.any(String));
+    });
+  });
+
   describe('recallVolume', () => {
     it('should default to volume 100 when no volume was ever stored', () => {
       (playerMock.getVolume as jest.Mock).mockReturnValue(0);

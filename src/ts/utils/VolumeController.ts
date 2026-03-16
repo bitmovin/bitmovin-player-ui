@@ -18,8 +18,12 @@ export class VolumeController {
   };
 
   private storedVolume: number;
+  private transitionActive = false;
 
   constructor(private readonly player: PlayerAPI) {
+    // If player's volume is `0`, `storeVolume` will not store that, therefore assigning the `defaultVolume` to ensure
+    // `storedVolume` is properly initialized.
+    this.storedVolume = VolumeController.defaultVolume;
     this.storeVolume();
 
     const handler = () => {
@@ -82,7 +86,12 @@ export class VolumeController {
   }
 
   startTransition(): VolumeTransition {
+    this.transitionActive = true;
     return new VolumeTransition(this);
+  }
+
+  endTransition(): void {
+    this.transitionActive = false;
   }
 
   onChangedEvent() {
@@ -92,7 +101,11 @@ export class VolumeController {
     const uiMuted = playerMuted || playerVolume === 0;
     const uiVolume = playerMuted ? 0 : playerVolume;
 
-    this.storeVolume();
+    // Don't store intermediate volume values while the user is scrubbing the volume slider.
+    // The VolumeTransition will store the final value when scrubbing finishes.
+    if (!this.transitionActive) {
+      this.storeVolume();
+    }
 
     this.events.onChanged.dispatch(this, { volume: uiVolume, muted: uiMuted });
   }
@@ -119,6 +132,8 @@ export class VolumeTransition {
   }
 
   finish(volume: number): void {
+    this.controller.endTransition();
+
     if (volume === 0) {
       // When the volume is zero we essentially mute the volume so we recall the volume from the beginning of the
       // transition and mute the player instead. Recalling is necessary to return to the actual audio volume
