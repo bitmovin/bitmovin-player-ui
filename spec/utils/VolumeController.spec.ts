@@ -8,11 +8,11 @@ describe('VolumeController', () => {
 
   beforeEach(() => {
     playerMock = MockHelper.getPlayerMock();
-    volumeController = new VolumeController(playerMock);
   });
 
   describe('onChangedEvent', () => {
     it('should update the stored volume on VolumeChanged event', () => {
+      volumeController = new VolumeController(playerMock);
       volumeController.storeVolume = jest.fn();
 
       playerMock.eventEmitter.fireEvent<VolumeChangedEvent>({
@@ -66,6 +66,7 @@ describe('VolumeController', () => {
     it('should store volume when muted at non-zero volume', () => {
       (playerMock.isMuted as jest.Mock).mockReturnValue(true);
       (playerMock.getVolume as jest.Mock).mockReturnValue(50);
+      volumeController = new VolumeController(playerMock);
 
       playerMock.eventEmitter.fireEvent<VolumeChangedEvent>({
         type: PlayerEvent.VolumeChanged,
