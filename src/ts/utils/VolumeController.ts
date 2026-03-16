@@ -132,8 +132,6 @@ export class VolumeTransition {
   }
 
   finish(volume: number): void {
-    this.controller.endTransition();
-
     if (volume === 0) {
       // When the volume is zero we essentially mute the volume so we recall the volume from the beginning of the
       // transition and mute the player instead. Recalling is necessary to return to the actual audio volume
@@ -147,5 +145,9 @@ export class VolumeTransition {
       this.controller.setVolume(volume);
       this.controller.storeVolume();
     }
+
+    // End the transition after all volume/mute operations are complete, so that events emitted
+    // during finish() don't trigger storeVolume() with intermediate values.
+    this.controller.endTransition();
   }
 }
