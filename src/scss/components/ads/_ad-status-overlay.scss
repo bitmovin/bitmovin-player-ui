@@ -14,6 +14,10 @@
     pointer-events: none;
   }
 
+  .#{$prefix}-ui-button-ad-skip {
+    pointer-events: auto;
+  }
+
   .#{$prefix}-bar {
     > .#{$prefix}-container-wrapper {
       display: flex;
