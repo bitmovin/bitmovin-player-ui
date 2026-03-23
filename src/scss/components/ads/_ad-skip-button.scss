@@ -23,7 +23,7 @@
     }
   }
 
-  &:hover {
+  &:not(.#{$prefix}-disabled):hover {
     background-color: $color-black;
   }
 }
