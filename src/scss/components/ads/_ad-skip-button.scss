@@ -3,6 +3,7 @@
 %ui-button-ad-skip {
   @extend %ui-button;
 
+  pointer-events: auto;
   background-color: transparentize($color-black, 0.25);
   border-radius: 20px;
   padding: 0.5em 1em;
