@@ -11,8 +11,8 @@
   box-sizing: border-box;
 
   $titlebar-padding: 1.5em;
-  padding: max($titlebar-padding, env(safe-area-inset-top, 0)) max($titlebar-padding, env(safe-area-inset-right, 0))
-    $titlebar-padding max($titlebar-padding, env(safe-area-inset-left, 0));
+  padding: safe-area-max($titlebar-padding, top) safe-area-max($titlebar-padding, right) $titlebar-padding
+    safe-area-max($titlebar-padding, left);
 
   pointer-events: none;
 

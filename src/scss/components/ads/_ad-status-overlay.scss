@@ -5,9 +5,10 @@
   @extend %ui-container;
   @include layout-align-bottom;
 
+  $ad-status-overlay-bottom-offset: 5em;
   box-sizing: border-box;
-  padding: 1em 1em 0.5em;
-  bottom: 5em;
+  padding: 1em safe-area-max(1em, right) 0.5em safe-area-max(1em, left);
+  bottom: calc(#{$ad-status-overlay-bottom-offset} + #{safe-area-inset(bottom)});
 
   .#{$prefix}-bar {
     > .#{$prefix}-container-wrapper {
