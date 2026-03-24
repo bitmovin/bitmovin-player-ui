@@ -111,7 +111,7 @@ export class TimelineMarkersHandler {
 
     // Refresh timeline markers when the player is resized or the UI is configured. Timeline markers
     // are positioned absolutely and must therefore be updated when the size of the seekbar changes.
-    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkersDOM());
+    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkers());
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
     // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
     this.uimanager.onConfigured.subscribe(() => {

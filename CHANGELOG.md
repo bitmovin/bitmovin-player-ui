@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - `AdStatusOverlay` blocking clicks on `HugePlaybackToggleButton` at small player sizes
+- Missing `TimelineMarker`s when the position calculation happens before the UI finished rendering
 
 ## [4.10.0] - 2026-03-16
 
