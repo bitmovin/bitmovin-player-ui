@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `AdStatusOverlay` blocking clicks on `HugePlaybackToggleButton` at small player sizes
 - Missing `TimelineMarker`s when the position calculation happens before the UI finished rendering
+- Unexpected `TimelineMarker`s animation when the Player size changes
 
 ## [4.10.0] - 2026-03-16
 
