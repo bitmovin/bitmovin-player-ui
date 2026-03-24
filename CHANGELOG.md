@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- `AdStatusOverlay` blocking clicks on `HugePlaybackToggleButton` at small player sizes
+
 ## [4.10.0] - 2026-03-16
 
 ### Added

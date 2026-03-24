@@ -8,10 +8,18 @@
   box-sizing: border-box;
   padding: 1em 1em 0.5em;
   bottom: 5em;
+  pointer-events: none;
+
+  * {
+    pointer-events: none;
+  }
+
+  .#{$prefix}-ui-button-ad-skip {
+    pointer-events: auto;
+  }
 
   .#{$prefix}-bar {
     > .#{$prefix}-container-wrapper {
-      pointer-events: none;
       display: flex;
       margin: 0.5em 0;
     }
