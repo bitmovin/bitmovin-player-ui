@@ -366,9 +366,13 @@ export class UIManager {
             // TODO introduce an event that is fired when the playback content is updated, a switch to/from ads
             this.config.events.onUpdated.dispatch(this);
             break;
-          // When a new source is loaded during ad playback, there will be no Ad(Break)Finished event
           case player.exports.PlayerEvent.SourceLoaded:
+            // No need to take care of SourceLoaded. As when the source changes, SourceUnload gets called.
+            // When the source gets loaded during ad playback, we don't want to change the UI.
+            break;
           case player.exports.PlayerEvent.SourceUnloaded:
+            // When the source gets unloaded during ad playback, there will be no Ad(Break)Finished event.
+            // This also covers changing a source
             adStartedEvent = null;
             break;
         }
