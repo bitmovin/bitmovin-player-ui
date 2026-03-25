@@ -56,6 +56,9 @@ export class TimelineMarkersHandler {
   }
 
   private configureMarkers(): void {
+    const refreshMarkers = () => this.updateMarkers(false);
+    const clearMarkers = () => this.clearMarkers();
+
     const onTimeShift = () => {
       this.isTimeShifting = true;
     };
@@ -70,9 +73,8 @@ export class TimelineMarkersHandler {
       }
     };
 
-    const reset = () => {
+    const resetLiveState = () => {
       this.stopLiveMarkerUpdater();
-      this.clearMarkers();
       this.isTimeShifting = false;
       this.seekableRangeSnapshot = null;
 
@@ -80,14 +82,20 @@ export class TimelineMarkersHandler {
       this.player.off(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
       this.uimanager.onSeekPreview.unsubscribe(onSeekPreview);
     };
+
+    const reset = () => {
+      resetLiveState();
+      this.clearMarkers();
+    };
+
     this.player.on(this.player.exports.PlayerEvent.SourceUnloaded, reset);
     this.player.on(this.player.exports.PlayerEvent.Destroy, reset);
 
-    this.player.on(this.player.exports.PlayerEvent.AdBreakStarted, () => this.clearMarkers());
-    this.player.on(this.player.exports.PlayerEvent.AdBreakFinished, () => this.updateMarkers(false));
+    this.player.on(this.player.exports.PlayerEvent.AdBreakStarted, clearMarkers);
+    this.player.on(this.player.exports.PlayerEvent.AdBreakFinished, refreshMarkers);
 
     const liveStreamDetector = new PlayerUtils.LiveStreamDetector(this.player, this.uimanager);
-    liveStreamDetector.onLiveChanged.subscribe((sender, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
+    const onLiveChanged = (_sender: PlayerAPI, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
       if (args.live) {
         this.player.on(this.player.exports.PlayerEvent.TimeShift, onTimeShift);
         this.player.on(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
@@ -95,31 +103,34 @@ export class TimelineMarkersHandler {
 
         this.startLiveMarkerUpdater();
       } else {
-        this.stopLiveMarkerUpdater();
-        this.uimanager.onSeekPreview.unsubscribe(onSeekPreview);
-        this.player.off(this.player.exports.PlayerEvent.TimeShift, onTimeShift);
-        this.player.off(this.player.exports.PlayerEvent.TimeShifted, onTimeShifted);
+        resetLiveState();
       }
-    });
+    };
+    liveStreamDetector.onLiveChanged.subscribe(onLiveChanged);
     liveStreamDetector.detect(); // Initial detection
 
-    const onUpdated = () => this.updateMarkers(false);
-    this.uimanager.getConfig().events.onUpdated.subscribe(onUpdated);
-    this.uimanager.onRelease.subscribe(() => {
-      this.uimanager.getConfig().events.onUpdated.unsubscribe(onUpdated);
-      reset();
-    });
+    this.uimanager.getConfig().events.onUpdated.subscribe(refreshMarkers);
 
     // Refresh timeline markers when the player is resized or the UI is configured. Timeline markers
     // are positioned absolutely and must therefore be updated when the size of the seekbar changes.
-    this.player.on(this.player.exports.PlayerEvent.PlayerResized, () => this.updateMarkers(false));
+    this.player.on(this.player.exports.PlayerEvent.PlayerResized, refreshMarkers);
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
     // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
-    this.uimanager.onConfigured.subscribe(() => {
-      this.updateMarkers(false);
-    });
-    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, () => {
-      this.updateMarkers(false);
+    this.uimanager.onConfigured.subscribe(refreshMarkers);
+    this.player.on(this.player.exports.PlayerEvent.SourceLoaded, refreshMarkers);
+
+    this.uimanager.onRelease.subscribe(() => {
+      this.uimanager.getConfig().events.onUpdated.unsubscribe(refreshMarkers);
+      this.uimanager.onConfigured.unsubscribe(refreshMarkers);
+      liveStreamDetector.onLiveChanged.unsubscribe(onLiveChanged);
+      reset();
+
+      this.player.off(this.player.exports.PlayerEvent.SourceUnloaded, reset);
+      this.player.off(this.player.exports.PlayerEvent.Destroy, reset);
+      this.player.off(this.player.exports.PlayerEvent.AdBreakStarted, clearMarkers);
+      this.player.off(this.player.exports.PlayerEvent.AdBreakFinished, refreshMarkers);
+      this.player.off(this.player.exports.PlayerEvent.PlayerResized, refreshMarkers);
+      this.player.off(this.player.exports.PlayerEvent.SourceLoaded, refreshMarkers);
     });
 
     // Init markers at startup
