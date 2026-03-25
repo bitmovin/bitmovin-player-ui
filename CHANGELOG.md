@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - The control bar was not respecting the safe-area, e.g. on iOS, within the Ads UI variant.
 
+## [4.10.1] - 2026-03-24
+
+### Fixed
+
+- `AdStatusOverlay` blocking clicks on `HugePlaybackToggleButton` at small player sizes
+
 ## [4.10.0] - 2026-03-16
 
 ### Added
