@@ -9,9 +9,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- `AdStatusOverlay` blocking clicks on `HugePlaybackToggleButton` at small player sizes
+- The control bar was not respecting the safe-area, e.g. on iOS, within the Ads UI variant.
+- Ad-UI switches to main content UI when a `SourceLoaded` event is received during active ad playback
 - Missing `TimelineMarker`s when the position calculation happens before the UI finished rendering
 - Unexpected `TimelineMarker`s animation when the Player size changes
+
+## [4.10.1] - 2026-03-24
+
+### Fixed
+
+- `AdStatusOverlay` blocking clicks on `HugePlaybackToggleButton` at small player sizes
 
 ## [4.10.0] - 2026-03-16
 

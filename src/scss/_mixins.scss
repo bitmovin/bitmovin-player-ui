@@ -83,6 +83,14 @@
   width: 100%;
 }
 
+@function safe-area-inset($edge) {
+  @return env(safe-area-inset-#{$edge}, 0);
+}
+
+@function safe-area-max($value, $edge) {
+  @return max($value, safe-area-inset($edge));
+}
+
 @mixin animate-slide-in-from-bottom($max-height, $duration: $animation-duration, $inner-selector: '') {
   // Animate show
   & #{$inner-selector} {
