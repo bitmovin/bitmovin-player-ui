@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - The control bar was not respecting the safe-area, e.g. on iOS, within the Ads UI variant.
+- Ad-UI switches to main content UI when a `SourceLoaded` event is received during active ad playback
 
 ## [4.10.1] - 2026-03-24
 
