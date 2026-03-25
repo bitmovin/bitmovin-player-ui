@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- The control bar was not respecting the safe-area, e.g. on iOS, within the Ads UI variant.
+
 ## [4.10.1] - 2026-03-24
 
 ### Fixed
