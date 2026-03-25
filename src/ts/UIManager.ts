@@ -367,7 +367,7 @@ export class UIManager {
             this.config.events.onUpdated.dispatch(this);
             break;
           case player.exports.PlayerEvent.SourceLoaded:
-            // No need to take care of SourceLoaded. As when the source changes, SourceUnload gets called.
+            // No need to take care of SourceLoaded. As when the source changes, a SourceUnloaded event is received.
             // When the source gets loaded during ad playback, we don't want to change the UI.
             break;
           case player.exports.PlayerEvent.SourceUnloaded:
