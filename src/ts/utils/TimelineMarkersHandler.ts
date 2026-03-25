@@ -103,9 +103,10 @@ export class TimelineMarkersHandler {
     });
     liveStreamDetector.detect(); // Initial detection
 
-    this.uimanager.getConfig().events.onUpdated.subscribe(() => this.updateMarkers(false));
+    const onUpdated = () => this.updateMarkers(false);
+    this.uimanager.getConfig().events.onUpdated.subscribe(onUpdated);
     this.uimanager.onRelease.subscribe(() => {
-      this.uimanager.getConfig().events.onUpdated.unsubscribe(() => this.updateMarkers(false));
+      this.uimanager.getConfig().events.onUpdated.unsubscribe(onUpdated);
       reset();
     });
 
