@@ -212,7 +212,7 @@ export class TimelineMarkersHandler {
           const newMarker: SeekBarMarker = { marker, position: markerPosition, duration: markerDuration };
           this.timelineMarkers.push(newMarker);
 
-          this.createMarkerDOM(newMarker, animated);
+          this.createMarkerDOM(newMarker);
         }
       }
     });
@@ -251,7 +251,7 @@ export class TimelineMarkersHandler {
     marker.element.css(this.getMarkerCssProperties(marker, animated));
   }
 
-  private createMarkerDOM(marker: SeekBarMarker, animated: boolean): void {
+  private createMarkerDOM(marker: SeekBarMarker): void {
     const markerClasses = ['seekbar-marker']
       .concat(marker.marker.cssClasses || [])
       .map(cssClass => prefixCss(cssClass));
@@ -271,7 +271,7 @@ export class TimelineMarkersHandler {
     })
       // We do not want to animate the initial creation of a marker to prevent a 'fly in' animation.
       // Only updating the marker position will be animated.
-      .css(this.getMarkerCssProperties(marker, animated));
+      .css(this.getMarkerCssProperties(marker, false));
 
     if (marker.marker.imageUrl) {
       const removeImage = () => {
