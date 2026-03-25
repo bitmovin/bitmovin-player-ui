@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Ad-UI switches to main content UI when a `SourceLoaded` event is received during active ad playback
+
 ## [4.10.1] - 2026-03-24
 
 ### Fixed
