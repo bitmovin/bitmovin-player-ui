@@ -55,6 +55,9 @@ on:
       RELEASE_DEPLOY_KEY:
         description: 'SSH deploy key with write access to the repository'
         required: true
+      GCS_BUCKET:
+        description: 'Google Cloud Storage bucket name for uploading docs'
+        required: true
 
 concurrency:
   group: release-${{ inputs.version_number }}-${{ inputs.release_type }}
