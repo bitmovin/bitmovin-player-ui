@@ -59,9 +59,10 @@ describe('SeekBarHandler', () => {
     `("should not prevent default if the event target isn't the seekbar with direction=$direction", ({ direction }) => {
       jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockReturnValue(document.createElement('div'));
 
-      rootNavigationGroupMock.onNavigation!(direction, targetComponentMock, preventDefaultSpy);
+      const handled = rootNavigationGroupMock.onNavigation!(direction, targetComponentMock, preventDefaultSpy);
 
       expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(handled).toBe(false);
     });
 
     test.each`
@@ -69,11 +70,12 @@ describe('SeekBarHandler', () => {
       ${Direction.DOWN}
       ${Direction.UP}
     `('should stop scrubbing when onDirection is called with direction=$direction', ({ direction }) => {
-      rootNavigationGroupMock.onNavigation!(direction, targetComponentMock, preventDefaultSpy);
+      const handled = rootNavigationGroupMock.onNavigation!(direction, targetComponentMock, preventDefaultSpy);
 
       expect(preventDefaultSpy).not.toHaveBeenCalled();
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mouseleave'));
       expect(eventSubscriberOnSpy).not.toHaveBeenCalled();
+      expect(handled).toBe(true);
     });
 
     it('should increase scrubSpeedPercentage', () => {
@@ -128,22 +130,24 @@ describe('SeekBarHandler', () => {
       ${Action.BACK}
     `('should not prevent default if the event target is not the seek bar with action=$action', ({ action }) => {
       jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockReturnValue(document.createElement('div'));
-      rootNavigationGroupMock.onAction!(action, targetComponentMock, preventDefaultSpy);
+      const handled = rootNavigationGroupMock.onAction!(action, targetComponentMock, preventDefaultSpy);
 
       expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(handled).toBe(false);
     });
 
     it('should ignore SELECT actions when not actively scrubbing', () => {
-      rootNavigationGroupMock.onAction!(Action.SELECT, targetComponentMock, preventDefaultSpy);
+      const handled = rootNavigationGroupMock.onAction!(Action.SELECT, targetComponentMock, preventDefaultSpy);
 
       expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(handled).toBe(false);
     });
 
     it('should dispatch a mouse click event when the SELECT action is triggered while scrubbing', () => {
       eventSubscriberOnSpy.mockImplementation((_, __, handler: EventListener) => handler(null as any));
       rootNavigationGroupMock.onNavigation!(Direction.RIGHT, targetComponentMock, preventDefaultSpy);
       preventDefaultSpy.mockReset();
-      rootNavigationGroupMock.onAction!(Action.SELECT, targetComponentMock, preventDefaultSpy);
+      const handled = rootNavigationGroupMock.onAction!(Action.SELECT, targetComponentMock, preventDefaultSpy);
 
       expect(preventDefaultSpy).toHaveBeenCalled();
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mousedown'));
@@ -153,14 +157,25 @@ describe('SeekBarHandler', () => {
       expect(documentDispatchEventSpy).toHaveBeenCalledWith(
         new MouseEvent('mouseup', expect.anything() as MouseEventInit),
       );
+      expect(handled).toBe(true);
     });
 
-    it('should stop seeking when the BACK action is triggered', () => {
-      rootNavigationGroupMock.onAction!(Action.BACK, targetComponentMock, preventDefaultSpy);
+    it('should stop seeking when the BACK action is triggered while scrubbing', () => {
+      rootNavigationGroupMock.onNavigation!(Direction.RIGHT, targetComponentMock, preventDefaultSpy);
+      preventDefaultSpy.mockReset();
+      const handled = rootNavigationGroupMock.onAction!(Action.BACK, targetComponentMock, preventDefaultSpy);
 
       expect(preventDefaultSpy).toHaveBeenCalled();
       expect(seekBarMock.dispatchEvent).toHaveBeenCalledWith(new MouseEvent('mouseleave'));
       expect(eventSubscriberOnSpy).not.toHaveBeenCalled();
+      expect(handled).toBe(true);
+    });
+
+    it('should ignore BACK actions when not actively scrubbing', () => {
+      const handled = rootNavigationGroupMock.onAction!(Action.BACK, targetComponentMock, preventDefaultSpy);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(handled).toBe(false);
     });
   });
 

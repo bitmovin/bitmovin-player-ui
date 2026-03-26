@@ -15,24 +15,42 @@ export class RootNavigationGroup extends NavigationGroup {
     super(container, ...elements);
   }
 
-  public handleAction(action: Action) {
-    this.container.showUi();
-
-    super.handleAction(action);
-  }
-
-  public handleNavigation(direction: Direction) {
-    this.container.showUi();
-
-    super.handleNavigation(direction);
-  }
-
-  protected defaultActionHandler(action: Action): void {
-    if (action === Action.BACK) {
-      this.container.hideUi();
-    } else {
-      super.defaultActionHandler(action);
+  public handleAction(action: Action): boolean {
+    if (action !== Action.BACK) {
+      this.container.showUi();
     }
+
+    return super.handleAction(action);
+  }
+
+  public handleNavigation(direction: Direction): boolean {
+    this.container.showUi();
+
+    return super.handleNavigation(direction);
+  }
+
+  protected defaultActionHandler(action: Action): boolean {
+    if (action !== Action.BACK) {
+      return super.defaultActionHandler(action);
+    }
+
+    if (!this.isUiShown()) {
+      return false;
+    }
+
+    this.container.hideUi();
+
+    return true;
+  }
+
+  private isUiShown(): boolean {
+    const classList = this.container.getDomElement().get(0)?.classList;
+
+    if (!classList) {
+      return false;
+    }
+
+    return Array.from(classList).some(className => /-controls-shown$/.test(className));
   }
 
   public release(): void {

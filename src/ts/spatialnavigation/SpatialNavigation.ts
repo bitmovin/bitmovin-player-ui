@@ -126,15 +126,10 @@ export class SpatialNavigation {
       return;
     }
 
-    if (isDirection(event)) {
-      active.handleNavigation(event);
-
+    if (isDirection(event) && active.handleNavigation(event)) {
       e.preventDefault();
       e.stopPropagation();
-    }
-    if (isAction(event)) {
-      active.handleAction(event);
-
+    } else if (isAction(event) && active.handleAction(event)) {
       e.preventDefault();
       e.stopPropagation();
     }

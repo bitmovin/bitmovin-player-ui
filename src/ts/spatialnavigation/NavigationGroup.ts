@@ -143,9 +143,9 @@ export class NavigationGroup {
     }
   }
 
-  protected defaultNavigationHandler(direction: Direction): void {
+  protected defaultNavigationHandler(direction: Direction): boolean {
     if (!this.activeComponent) {
-      return;
+      return false;
     }
 
     const containerContainingActiveComponent = this.getActiveFocusableContainer();
@@ -158,7 +158,7 @@ export class NavigationGroup {
 
       if (targetComponent) {
         this.focusComponent(targetComponent);
-        return;
+        return true;
       }
     }
 
@@ -167,31 +167,39 @@ export class NavigationGroup {
 
     if (targetComponent) {
       this.focusComponent(targetComponent);
+      return true;
     }
+
+    return false;
   }
 
-  protected defaultActionHandler(action: Action): void {
+  protected defaultActionHandler(action: Action): boolean {
     switch (action) {
       case Action.SELECT:
         if (this.activeComponent) {
           toHtmlElement(this.activeComponent).click();
         }
-        break;
+        return Boolean(this.activeComponent);
       case Action.BACK:
         this.container.hide();
-        break;
+        return true;
     }
   }
 
-  private handleInput<T>(data: T, defaultHandler: (data: T) => void, userHandler?: Callback<T>): void {
+  private handleInput<T>(data: T, defaultHandler: (data: T) => boolean, userHandler?: Callback<T>): boolean {
     let handleDefault = true;
     const preventDefault = () => (handleDefault = false);
+    let handled = false;
 
-    userHandler?.(data, this.activeComponent, preventDefault);
+    if (userHandler && this.activeComponent) {
+      handled = userHandler(data, this.activeComponent, preventDefault);
+    }
 
     if (handleDefault) {
-      defaultHandler.call(this, data);
+      handled = defaultHandler.call(this, data) || handled;
     }
+
+    return handled;
   }
 
   /**
@@ -200,7 +208,7 @@ export class NavigationGroup {
    * @param direction The direction of the navigation event
    * @returns true if navigation was successful, false otherwise
    */
-  public handleNavigation(direction: Direction): void {
+  public handleNavigation(direction: Direction): boolean {
     if (!this.activeComponent) {
       // If we do not have an active element, the active element has been disabled by a mouseleave
       // event. We should continue the navigation at the exact place where we left off.
@@ -209,11 +217,11 @@ export class NavigationGroup {
       } else {
         this.focusFirstComponent();
       }
-      return;
+      return true;
     }
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    this.handleInput(direction, this.defaultNavigationHandler, this.onNavigation);
+    return this.handleInput(direction, this.defaultNavigationHandler, this.onNavigation);
   }
 
   /**
@@ -221,9 +229,9 @@ export class NavigationGroup {
    *
    * @param action The action of the event
    */
-  public handleAction(action: Action): void {
+  public handleAction(action: Action): boolean {
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    this.handleInput(action, this.defaultActionHandler, this.onAction);
+    return this.handleInput(action, this.defaultActionHandler, this.onAction);
   }
 
   /**

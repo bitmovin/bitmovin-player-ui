@@ -13,6 +13,15 @@ describe('RootNavigationGroup', () => {
     containerUiMock = mockClass(UIContainer);
     containerUiMock.showUi = jest.fn();
     containerUiMock.hideUi = jest.fn();
+    containerUiMock.getDomElement = jest.fn().mockReturnValue({
+      get: jest.fn().mockReturnValue({
+        classList: {
+          [Symbol.iterator]: function* () {
+            yield 'bmpui-controls-hidden';
+          },
+        },
+      }),
+    } as any);
 
     rootNavigationGroup = new RootNavigationGroup(containerUiMock);
   });
@@ -25,15 +34,32 @@ describe('RootNavigationGroup', () => {
     });
 
     it('should call hideUi on UIContainer on Action.BACK', () => {
-      rootNavigationGroup['defaultActionHandler'](Action.BACK);
+      containerUiMock.getDomElement = jest.fn().mockReturnValue({
+        get: jest.fn().mockReturnValue({
+          classList: {
+            [Symbol.iterator]: function* () {
+              yield 'bmpui-controls-shown';
+            },
+          },
+        }),
+      } as any);
+      const handled = rootNavigationGroup['defaultActionHandler'](Action.BACK);
 
       expect(containerUiMock.hideUi).toHaveBeenCalled();
+      expect(handled).toBe(true);
     });
 
     it('should not call hideUi on UIContainer on Action.SELECT', () => {
       rootNavigationGroup['defaultActionHandler'](Action.SELECT);
 
       expect(containerUiMock.hideUi).not.toHaveBeenCalled();
+    });
+
+    it('should not handle Action.BACK when the UI is already hidden', () => {
+      const handled = rootNavigationGroup['defaultActionHandler'](Action.BACK);
+
+      expect(containerUiMock.hideUi).not.toHaveBeenCalled();
+      expect(handled).toBe(false);
     });
   });
 
