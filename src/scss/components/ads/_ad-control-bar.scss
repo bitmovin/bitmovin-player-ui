@@ -27,7 +27,9 @@
   @include background-gradient(to bottom);
 
   box-sizing: border-box;
-  padding: 1em;
+  $controlbar-padding: 1em;
+  padding: $controlbar-padding safe-area-max($controlbar-padding, right) safe-area-max($controlbar-padding, bottom)
+    safe-area-max($controlbar-padding, left);
 
   .#{$prefix}-container-wrapper {
     display: flex;

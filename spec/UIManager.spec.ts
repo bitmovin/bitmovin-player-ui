@@ -1,4 +1,11 @@
-import { InternalUIConfig, PlayerWrapper, UIInstanceManager, UIManager, UIVariant } from '../src/ts/UIManager';
+import {
+  InternalUIConfig,
+  PlayerWrapper,
+  UIConditionContext,
+  UIInstanceManager,
+  UIManager,
+  UIVariant,
+} from '../src/ts/UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
@@ -141,6 +148,35 @@ describe('UIManager', () => {
       uiManager.switchToUiVariant(secondUI);
 
       expect(onUiChanged).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('ui variant resolution', () => {
+    it('keeps the ad UI active when SourceLoaded fires during an active ad', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      const adUi = {
+        ui: new UIContainer({ components: [new Container({})] }),
+        condition: (context: UIConditionContext) => context.isAd,
+      };
+      const contentUi = {
+        ui: new UIContainer({ components: [new Container({})] }),
+        condition: (context: UIConditionContext) => context.isSourceLoaded,
+      };
+      const defaultUi = { ui: new UIContainer({ components: [new Container({})] }) };
+
+      new UIManager(playerMock, [adUi, contentUi, defaultUi]);
+
+      playerMock.eventEmitter.fireAdStartedEvent();
+      expect(adUi.ui.isHidden()).toBeFalsy();
+      expect(contentUi.ui.isHidden()).toBeTruthy();
+
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+      expect(adUi.ui.isHidden()).toBeFalsy();
+      expect(contentUi.ui.isHidden()).toBeTruthy();
+
+      playerMock.eventEmitter.fireAdBreakFinishedEvent();
+      expect(adUi.ui.isHidden()).toBeTruthy();
+      expect(contentUi.ui.isHidden()).toBeFalsy();
     });
   });
 

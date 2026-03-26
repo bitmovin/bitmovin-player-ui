@@ -100,3 +100,4 @@ jobs:
       GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       RELEASE_DEPLOY_KEY: ${{ secrets.RELEASE_DEPLOY_KEY }}
+      GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
