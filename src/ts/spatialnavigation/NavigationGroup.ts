@@ -186,6 +186,8 @@ export class NavigationGroup {
         this.container.hide();
         return true;
     }
+
+    return false;
   }
 
   private handleInput<T>(data: T, defaultHandler: (data: T) => boolean, userHandler?: Callback<T>): boolean {
