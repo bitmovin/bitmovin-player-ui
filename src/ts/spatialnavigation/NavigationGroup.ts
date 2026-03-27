@@ -94,6 +94,7 @@ export class NavigationGroup {
    * @param direction {Direction} The direction to move along
    * @param target {HTMLElement} The target element for the event
    * @param preventDefault {() => void} A function that, when called, will prevent the execution of the default handler
+   * @returns `true` if the event was handled, `false` or `undefined` otherwise
    */
   public onNavigation?: NavigationCallback;
 
@@ -104,6 +105,7 @@ export class NavigationGroup {
    * @param action {Action} The action that was called
    * @param target {HTMLElement} The target element that action was called on
    * @param preventDefault {() => void} A function that, when called, will prevent the execution of the default handler
+   * @returns `true` if the event was handled, `false` or `undefined` otherwise
    */
   public onAction?: ActionCallback;
 
@@ -192,7 +194,7 @@ export class NavigationGroup {
     let handled = false;
 
     if (userHandler && this.activeComponent) {
-      handled = userHandler(data, this.activeComponent, preventDefault);
+      handled = Boolean(userHandler(data, this.activeComponent, preventDefault));
     }
 
     if (handleDefault) {

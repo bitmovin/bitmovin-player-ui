@@ -4,7 +4,7 @@ import { FocusableContainer } from './FocusableContainer';
 
 export type AnyComponent = Component<ComponentConfig>;
 export type AnyContainer = Container<ContainerConfig>;
-export type Callback<T> = (data: T, target: AnyComponent, preventDefault: () => void) => boolean;
+export type Callback<T> = (data: T, target: AnyComponent, preventDefault: () => void) => boolean | void;
 export type NavigationCallback = Callback<Direction>;
 export type ActionCallback = Callback<Action>;
 export type KeyMap = {
