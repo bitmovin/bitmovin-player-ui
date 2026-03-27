@@ -221,7 +221,7 @@ export class NavigationGroup {
       } else {
         this.focusFirstComponent();
       }
-      return true;
+      return Boolean(this.activeComponent);
     }
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
