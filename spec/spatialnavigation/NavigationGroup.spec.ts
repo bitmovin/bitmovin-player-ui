@@ -106,6 +106,12 @@ describe('NavigationGroup', () => {
       expect(subtitleToggleButtonHTML.focus).toHaveBeenCalled();
     });
 
+    it('should return false when there is no active or focusable component', () => {
+      const emptyNavigationGroup = new NavigationGroup(rootContainerMock);
+
+      expect(emptyNavigationGroup.handleNavigation(Direction.LEFT)).toBe(false);
+    });
+
     describe('onNavigation', () => {
       it('should not call default navigation handler if propagation was stopped from the outside', () => {
         rootNavigationGroup.onNavigation = (_direction, _element, preventDefault) => {
