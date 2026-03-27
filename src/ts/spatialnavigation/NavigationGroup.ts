@@ -89,7 +89,9 @@ export class NavigationGroup {
 
   /**
    * If overwritten, allows to implement custom navigation behavior. Per default, the internal handler will still be
-   * executed. To prevent execution of the default navigation handler, call `preventDefault()`;
+   * executed. To prevent execution of the default navigation handler, call `preventDefault()`. Return `true` if your
+   * handler consumed the navigation event. Return `false` or `undefined` if it did not. Consumed events will not be
+   * handled any further by spatial navigation.
    *
    * @param direction {Direction} The direction to move along
    * @param target {HTMLElement} The target element for the event
@@ -100,7 +102,9 @@ export class NavigationGroup {
 
   /**
    * If overwritten, allows to implement custom action behavior. Per default, the internal handler will still be
-   * executed. To prevent execution of the default action handler, call `preventDefault()`;
+   * executed. To prevent execution of the default action handler, call `preventDefault()`. Return `true` if your
+   * handler consumed the action event. Return `false` or `undefined` if it did not. Consumed events will not be
+   * handled any further by spatial navigation.
    *
    * @param action {Action} The action that was called
    * @param target {HTMLElement} The target element that action was called on
