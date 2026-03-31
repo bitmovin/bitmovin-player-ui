@@ -123,6 +123,16 @@ describe('NavigationGroup', () => {
 
         expect(subtitleToggleButtonHTML.focus).not.toHaveBeenCalled();
       });
+
+      it('should return handled when the custom navigation handler consumes the event without preventing the default handler', () => {
+        const getComponentInDirectionMock = navigationAlgorithm.getComponentInDirection as jest.Mock;
+        getComponentInDirectionMock.mockReset();
+        getComponentInDirectionMock.mockReturnValue(undefined);
+        rootNavigationGroup['activeComponent'] = playbackToggleButtonMock;
+        rootNavigationGroup.onNavigation = () => true;
+
+        expect(rootNavigationGroup.handleNavigation(Direction.DOWN)).toBe(true);
+      });
     });
   });
 

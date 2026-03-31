@@ -204,7 +204,8 @@ export class NavigationGroup {
     }
 
     if (handleDefault) {
-      handled = defaultHandler.call(this, data) || handled;
+      const defaultHandled = defaultHandler.call(this, data);
+      handled = handled || defaultHandled;
     }
 
     return handled;
