@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- In TV spatial navigation, the BACK button could be swallowed by the UI and not reach the player when the controls were already hidden
+- In TV spatial navigation, the BACK button could be swallowed by the UI and not reach the application when the controls were already hidden
 
 ## [4.10.2] - 2026-03-26
 
