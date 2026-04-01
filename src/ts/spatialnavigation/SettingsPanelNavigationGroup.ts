@@ -69,10 +69,10 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
     return componentsToConsider;
   }
 
-  protected defaultActionHandler(action: Action) {
+  protected defaultActionHandler(action: Action): boolean {
     if (action === Action.BACK) {
       this.settingsPanel.popSettingsPanelPage();
-      return;
+      return true;
     }
 
     if (action === Action.SELECT) {
@@ -83,9 +83,9 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
         this.settingsPanel.hide();
         super.defaultActionHandler(Action.BACK);
       }
-      return;
+      return true;
     }
 
-    super.defaultActionHandler(action);
+    return super.defaultActionHandler(action);
   }
 }

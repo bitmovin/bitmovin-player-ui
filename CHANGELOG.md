@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- In TV spatial navigation, the BACK button could be swallowed by the UI and not reach the application when the controls were already hidden
+
 ## [4.10.2] - 2026-03-26
 
 ### Fixed

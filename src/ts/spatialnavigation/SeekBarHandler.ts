@@ -84,22 +84,24 @@ export class SeekBarHandler {
     seekBar.dispatchEvent(new MouseEvent('mousemove', this.getCursorPositionMouseEventInit()));
   }
 
-  private readonly onNavigation = (direction: Direction, target: AnyComponent, preventDefault: () => void): void => {
+  private readonly onNavigation = (direction: Direction, target: AnyComponent, preventDefault: () => void): boolean => {
     const element = toHtmlElement(target);
     if (!isSeekBarWrapper(element)) {
-      return;
+      return false;
     }
 
     if (direction === Direction.UP || direction === Direction.DOWN) {
       this.stopSeeking(getSeekBar(element));
 
-      return;
+      return true;
     }
 
     this.initializeOrUpdateCursorPosition(element, direction);
     this.dispatchMouseMoveEvent(getSeekBar(element));
 
     preventDefault();
+
+    return true;
   };
 
   private dispatchMouseClickEvent(seekBar: Element): void {
@@ -125,10 +127,10 @@ export class SeekBarHandler {
     seekBar.dispatchEvent(new MouseEvent('mouseleave'));
   }
 
-  private readonly onAction = (action: Action, target: AnyComponent, preventDefault: () => void): void => {
+  private readonly onAction = (action: Action, target: AnyComponent, preventDefault: () => void): boolean => {
     const element = toHtmlElement(target);
     if (!isSeekBarWrapper(element)) {
-      return;
+      return false;
     }
 
     const seekBar = getSeekBar(element);
@@ -136,10 +138,14 @@ export class SeekBarHandler {
     if (action === Action.SELECT && this.isScrubbing) {
       this.dispatchMouseClickEvent(seekBar);
       preventDefault();
-    } else if (action === Action.BACK) {
+      return true;
+    } else if (action === Action.BACK && this.isScrubbing) {
       this.stopSeeking(seekBar);
       preventDefault();
+      return true;
     }
+
+    return false;
   };
 
   /**

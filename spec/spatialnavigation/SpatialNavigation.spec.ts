@@ -68,7 +68,7 @@ describe('SpatialNavigation', () => {
   describe('handleKeyEvent', () => {
     it('should call handle navigation on active group on key event', () => {
       rootNavigationContainer.show();
-      const rootHandleNavigationSpy = jest.spyOn(rootNavigationGroup, 'handleNavigation');
+      const rootHandleNavigationSpy = jest.spyOn(rootNavigationGroup, 'handleNavigation').mockReturnValue(true);
       spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key: 'Up', keyCode: 38 } as any));
 
       expect(rootHandleNavigationSpy).toHaveBeenCalledWith(Direction.UP);
@@ -76,10 +76,36 @@ describe('SpatialNavigation', () => {
 
     it('should call handle action on active group on key event', () => {
       rootNavigationContainer.show();
-      const rootHandleActionSpy = jest.spyOn(rootNavigationGroup, 'handleAction');
+      const rootHandleActionSpy = jest.spyOn(rootNavigationGroup, 'handleAction').mockReturnValue(true);
       spatialNavigation['handleKeyEvent'](new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27 } as any));
 
       expect(rootHandleActionSpy).toHaveBeenCalledWith(Action.BACK);
+    });
+
+    it('should prevent default when action is handled', () => {
+      rootNavigationContainer.show();
+      jest.spyOn(rootNavigationGroup, 'handleAction').mockReturnValue(true);
+      const event = new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27 } as any);
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+      const stopPropagationSpy = jest.spyOn(event, 'stopPropagation');
+
+      spatialNavigation['handleKeyEvent'](event);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+      expect(stopPropagationSpy).toHaveBeenCalled();
+    });
+
+    it('should not prevent default when action is not handled', () => {
+      rootNavigationContainer.show();
+      jest.spyOn(rootNavigationGroup, 'handleAction').mockReturnValue(false);
+      const event = new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27 } as any);
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+      const stopPropagationSpy = jest.spyOn(event, 'stopPropagation');
+
+      spatialNavigation['handleKeyEvent'](event);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(stopPropagationSpy).not.toHaveBeenCalled();
     });
   });
 
