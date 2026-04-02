@@ -240,7 +240,7 @@ export namespace UILayoutFactory {
     });
   }
 
-  export function uiLayout(config: UIConfig): UIContainer {
+  export function uiLayout(config: UIConfig = {}): UIContainer {
     const subtitleOverlay = new SubtitleOverlay();
 
     const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode != undefined);
@@ -480,7 +480,7 @@ export namespace UILayoutFactory {
     });
   }
 
-  export function castReceiverUILayout(config: UIConfig): UIContainer {
+  export function castReceiverUILayout(config: UIConfig = {}): UIContainer {
     const controlBar = new ControlBar({
       components: [
         new Container({
