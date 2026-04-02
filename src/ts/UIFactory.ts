@@ -218,7 +218,10 @@ export namespace UIFactory {
   }
 
   /**
+   * Default layout functions which are used to build the default UI.
    *
+   * Using these methods enable UI customizations of certains aspects of the default UI, without recreating all UI variants.
+   * It can be used to recreate the default UI but change the coniditions based on which the variant switching happens.
    */
   export namespace defaultLayouts {
     export function subtitleUiLayout(): UIContainer {
