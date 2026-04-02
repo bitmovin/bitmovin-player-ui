@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Export of UI Layout functions to make it easier to customize only some UI variants or change the conditions when which UI variant should be displayed
+- Export default layout functions in `UIFactory.defaultLayouts` for easier customization of individual UI variants and their display conditions
 
 ### Fixed
 
