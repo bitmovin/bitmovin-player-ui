@@ -37,7 +37,7 @@ import { AdControlBar } from './components/ads/AdControlBar';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
-import { UIConditionContext, UIManager } from './UIManager';
+import { UIConditionContext, UIManager, UIVariant } from './UIManager';
 import { UIConfig } from './UIConfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
@@ -240,7 +240,7 @@ export namespace UILayoutFactory {
     });
   }
 
-  export function uiLayout(config: UIConfig) {
+  export function uiLayout(config: UIConfig): UIContainer {
     const subtitleOverlay = new SubtitleOverlay();
 
     const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode != undefined);
@@ -302,7 +302,7 @@ export namespace UILayoutFactory {
     });
   }
 
-  export function adsUILayout() {
+  export function adsUILayout(): UIContainer {
     const controlBar = new AdControlBar({
       components: [
         new Container({
@@ -355,7 +355,7 @@ export namespace UILayoutFactory {
     });
   }
 
-  export function smallScreenUILayout() {
+  export function smallScreenUILayout(): UIContainer {
     const subtitleOverlay = new SubtitleOverlay();
 
     const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
@@ -427,7 +427,7 @@ export namespace UILayoutFactory {
     });
   }
 
-  export function smallScreenAdsUILayout() {
+  export function smallScreenAdsUILayout(): UIContainer {
     const controlBar = new AdControlBar({
       components: [
         new Container({
@@ -480,7 +480,7 @@ export namespace UILayoutFactory {
     });
   }
 
-  export function castReceiverUILayout(config: UIConfig) {
+  export function castReceiverUILayout(config: UIConfig): UIContainer {
     const controlBar = new ControlBar({
       components: [
         new Container({
@@ -521,7 +521,7 @@ export namespace UILayoutFactory {
     });
   }
 
-  export function tvUILayout() {
+  export function tvUILayout(): Pick<UIVariant, 'ui' | 'spatialNavigation'> {
     const seekBar = new SeekBar({ label: new SeekBarLabel() });
     const subtitleOverlay = new SubtitleOverlay();
     const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, 5000);
@@ -628,7 +628,7 @@ export namespace UILayoutFactory {
     };
   }
 
-  export function tvAdsUILayout() {
+  export function tvAdsUILayout(): Pick<UIVariant, 'ui' | 'spatialNavigation'> {
     const playbackToggleOverlay = new PlaybackToggleOverlay();
     const adStatusOverlay = new AdStatusOverlay();
     const uiContainer = new UIContainer({
@@ -684,7 +684,7 @@ export namespace UILayoutFactory {
   /**
    * Used for the initial startup phase of the UI. Only contains basic components.
    */
-  export function emptyStateUILayout() {
+  export function emptyStateUILayout(): UIContainer {
     return new UIContainer({
       components: [new BufferingOverlay(), new PlaybackToggleOverlay(), new ErrorMessageOverlay()],
       cssClasses: ['ui', 'ui-empty-state'],
