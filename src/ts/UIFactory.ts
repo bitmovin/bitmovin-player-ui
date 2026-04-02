@@ -70,7 +70,6 @@ export namespace UIFactory {
    * - Small Screens (e.g. mobile devices)
    * - Small Screen Ads
    * - TVs
-   * - Cast Receivers
    *
    * @param player The player instance used to build the UI
    * @param config The UIConfig object
