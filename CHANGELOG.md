@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Export of UI Layout functions to make it easier to customize only some UI variants or change the conditions when which UI variant should be displayed
+
 ### Fixed
 
 - In TV spatial navigation, the BACK button could be swallowed by the UI and not reach the application when the controls were already hidden
