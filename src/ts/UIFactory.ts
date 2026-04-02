@@ -247,7 +247,7 @@ export namespace UIFactory {
     export function ui(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
 
-      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode != undefined);
+      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
       const controlBar = new ControlBar({
         components: [
           new Container({
