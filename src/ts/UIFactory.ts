@@ -81,43 +81,43 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: UIFactory.defaultLayouts.emptyStateUi(),
+          ui: UIFactory.defaultLayouts.emptyState(),
           condition: context => {
             return !context.isSourceLoaded;
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreenAdsUi(),
+          ui: UIFactory.defaultLayouts.smallScreenAds(),
           condition: (context: UIConditionContext) => {
             return context.documentWidth < smallScreenSwitchWidth && context.isAd && context.adRequiresUi;
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreenUi(),
+          ui: UIFactory.defaultLayouts.smallScreen(),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
         },
         {
-          ...UIFactory.defaultLayouts.tvAdsUi(),
+          ...UIFactory.defaultLayouts.tvAds(),
           condition: (context: UIConditionContext) => {
             return context.isTv && context.isAd && context.adRequiresUi;
           },
         },
         {
-          ...UIFactory.defaultLayouts.tvUi(),
+          ...UIFactory.defaultLayouts.tv(),
           condition: (context: UIConditionContext) => {
             return context.isTv && !context.isAd && !context.adRequiresUi;
           },
         },
         {
-          ui: UIFactory.defaultLayouts.adsUi(),
+          ui: UIFactory.defaultLayouts.ads(),
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
         },
         {
-          ui: UIFactory.defaultLayouts.ui(config),
+          ui: UIFactory.defaultLayouts.main(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -143,13 +143,13 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: UIFactory.defaultLayouts.smallScreenAdsUi(),
+          ui: UIFactory.defaultLayouts.smallScreenAds(),
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreenUi(),
+          ui: UIFactory.defaultLayouts.smallScreen(),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -169,7 +169,7 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, UIFactory.defaultLayouts.castReceiverUi(config), config);
+    return new UIManager(player, UIFactory.defaultLayouts.castReceiver(config), config);
   }
 
   /**
@@ -186,13 +186,13 @@ export namespace UIFactory {
       player,
       [
         {
-          ...UIFactory.defaultLayouts.tvAdsUi(),
+          ...UIFactory.defaultLayouts.tvAds(),
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
         },
         {
-          ...UIFactory.defaultLayouts.tvUi(),
+          ...UIFactory.defaultLayouts.tv(),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -213,7 +213,7 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildSubtitleUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, UIFactory.defaultLayouts.subtitleUi(), config);
+    return new UIManager(player, UIFactory.defaultLayouts.subtitle(), config);
   }
 
   /**
@@ -223,7 +223,7 @@ export namespace UIFactory {
    * They can be used to recreate the default UI while changing the conditions based on which variant switching happens.
    */
   export namespace defaultLayouts {
-    export function subtitleUi(): UIContainer {
+    export function subtitle(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
 
       // Subtitle styling only works if a `SubtitleSettingsPanelPage` (with the corresponding Subtitle Settings elements)
@@ -244,7 +244,7 @@ export namespace UIFactory {
       });
     }
 
-    export function ui(config: UIConfig = {}): UIContainer {
+    export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
@@ -306,7 +306,7 @@ export namespace UIFactory {
       });
     }
 
-    export function adsUi(): UIContainer {
+    export function ads(): UIContainer {
       const controlBar = new AdControlBar({
         components: [
           new Container({
@@ -359,7 +359,7 @@ export namespace UIFactory {
       });
     }
 
-    export function smallScreenUi(): UIContainer {
+    export function smallScreen(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
@@ -431,7 +431,7 @@ export namespace UIFactory {
       });
     }
 
-    export function smallScreenAdsUi(): UIContainer {
+    export function smallScreenAds(): UIContainer {
       const controlBar = new AdControlBar({
         components: [
           new Container({
@@ -484,7 +484,7 @@ export namespace UIFactory {
       });
     }
 
-    export function castReceiverUi(config: UIConfig = {}): UIContainer {
+    export function castReceiver(config: UIConfig = {}): UIContainer {
       const controlBar = new ControlBar({
         components: [
           new Container({
@@ -525,7 +525,7 @@ export namespace UIFactory {
       });
     }
 
-    export function tvUi(): Pick<UIVariant, 'ui' | 'spatialNavigation'> {
+    export function tv(): Pick<UIVariant, 'ui' | 'spatialNavigation'> {
       const seekBar = new SeekBar({ label: new SeekBarLabel() });
       const subtitleOverlay = new SubtitleOverlay();
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, 5000);
@@ -632,7 +632,7 @@ export namespace UIFactory {
       };
     }
 
-    export function tvAdsUi(): Pick<UIVariant, 'ui' | 'spatialNavigation'> {
+    export function tvAds(): Pick<UIVariant, 'ui' | 'spatialNavigation'> {
       const playbackToggleOverlay = new PlaybackToggleOverlay();
       const adStatusOverlay = new AdStatusOverlay();
       const uiContainer = new UIContainer({
@@ -688,7 +688,7 @@ export namespace UIFactory {
     /**
      * Used for the initial startup phase of the UI. Only contains basic components.
      */
-    export function emptyStateUi(): UIContainer {
+    export function emptyState(): UIContainer {
       return new UIContainer({
         components: [new BufferingOverlay(), new PlaybackToggleOverlay(), new ErrorMessageOverlay()],
         cssClasses: ['ui', 'ui-empty-state'],
