@@ -3,7 +3,7 @@ export const version: string = '{{VERSION}}';
 export * from './UIManager';
 export * from './UIConfig';
 // Factories
-export { UIFactory, UILayoutFactory } from './UIFactory';
+export { UIFactory } from './UIFactory';
 // Utils
 export { ArrayUtils } from './utils/ArrayUtils';
 export { StringUtils } from './utils/StringUtils';
