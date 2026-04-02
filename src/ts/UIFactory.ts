@@ -214,11 +214,11 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildSubtitleUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, subtitleUi(), config);
+    return new UIManager(player, subtitleUiLayout(), config);
   }
 }
 
-function subtitleUi(): UIContainer {
+function subtitleUiLayout(): UIContainer {
   const subtitleOverlay = new SubtitleOverlay();
 
   // Subtitle styling only works if a `SubtitleSettingsPanelPage` (with the corresponding Subtitle Settings elements)
