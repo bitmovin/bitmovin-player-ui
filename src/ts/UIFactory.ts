@@ -214,7 +214,7 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildSubtitleUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, UIFactory.defaultLayouts.subtitleUiLayout(), config);
+    return new UIManager(player, UIFactory.defaultLayouts.subtitleUi(), config);
   }
 
   /**
@@ -224,7 +224,7 @@ export namespace UIFactory {
    * It can be used to recreate the default UI but change the coniditions based on which the variant switching happens.
    */
   export namespace defaultLayouts {
-    export function subtitleUiLayout(): UIContainer {
+    export function subtitleUi(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
 
       // Subtitle styling only works if a `SubtitleSettingsPanelPage` (with the corresponding Subtitle Settings elements)
