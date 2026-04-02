@@ -82,43 +82,43 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: emptyStateUILayout(),
+          ui: UILayoutFactory.emptyStateUILayout(),
           condition: context => {
             return !context.isSourceLoaded;
           },
         },
         {
-          ui: smallScreenAdsUILayout(),
+          ui: UILayoutFactory.smallScreenAdsUILayout(),
           condition: (context: UIConditionContext) => {
             return context.documentWidth < smallScreenSwitchWidth && context.isAd && context.adRequiresUi;
           },
         },
         {
-          ui: smallScreenUILayout(),
+          ui: UILayoutFactory.smallScreenUILayout(),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
         },
         {
-          ...tvAdsUILayout(),
+          ...UILayoutFactory.tvAdsUILayout(),
           condition: (context: UIConditionContext) => {
             return context.isTv && context.isAd && context.adRequiresUi;
           },
         },
         {
-          ...tvUILayout(),
+          ...UILayoutFactory.tvUILayout(),
           condition: (context: UIConditionContext) => {
             return context.isTv && !context.isAd && !context.adRequiresUi;
           },
         },
         {
-          ui: adsUILayout(),
+          ui: UILayoutFactory.adsUILayout(),
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
         },
         {
-          ui: uiLayout(config),
+          ui: UILayoutFactory.uiLayout(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -144,13 +144,13 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: smallScreenAdsUILayout(),
+          ui: UILayoutFactory.smallScreenAdsUILayout(),
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
         },
         {
-          ui: smallScreenUILayout(),
+          ui: UILayoutFactory.smallScreenUILayout(),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -170,7 +170,7 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, castReceiverUILayout(config), config);
+    return new UIManager(player, UILayoutFactory.castReceiverUILayout(config), config);
   }
 
   /**
@@ -187,13 +187,13 @@ export namespace UIFactory {
       player,
       [
         {
-          ...tvAdsUILayout(),
+          ...UILayoutFactory.tvAdsUILayout(),
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
         },
         {
-          ...tvUILayout(),
+          ...UILayoutFactory.tvUILayout(),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -214,470 +214,482 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildSubtitleUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, subtitleUiLayout(), config);
+    return new UIManager(player, UILayoutFactory.subtitleUiLayout(), config);
   }
 }
 
-function subtitleUiLayout(): UIContainer {
-  const subtitleOverlay = new SubtitleOverlay();
+export namespace UILayoutFactory {
+  export function subtitleUiLayout(): UIContainer {
+    const subtitleOverlay = new SubtitleOverlay();
 
-  // Subtitle styling only works if a `SubtitleSettingsPanelPage` (with the corresponding Subtitle Settings elements)
-  // are in the UI tree.
-  const settingsPanel = new SettingsPanel({
-    components: [],
-    hidden: true,
-  });
-  const subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
-    settingsPanel: settingsPanel,
-    overlay: subtitleOverlay,
-  });
-  settingsPanel.addComponent(subtitleSettingsPanelPage);
+    // Subtitle styling only works if a `SubtitleSettingsPanelPage` (with the corresponding Subtitle Settings elements)
+    // are in the UI tree.
+    const settingsPanel = new SettingsPanel({
+      components: [],
+      hidden: true,
+    });
+    const subtitleSettingsPanelPage = new SubtitleSettingsPanelPage({
+      settingsPanel: settingsPanel,
+      overlay: subtitleOverlay,
+    });
+    settingsPanel.addComponent(subtitleSettingsPanelPage);
 
-  // Create a custom UI structure with only the SubtitleOverlay (and the hidden SettingsPanel to enable UI customizations)
-  return new UIContainer({
-    components: [subtitleOverlay, settingsPanel],
-  });
-}
+    // Create a custom UI structure with only the SubtitleOverlay (and the hidden SettingsPanel to enable UI customizations)
+    return new UIContainer({
+      components: [subtitleOverlay, settingsPanel],
+    });
+  }
 
-function uiLayout(config: UIConfig) {
-  const subtitleOverlay = new SubtitleOverlay();
+  export function uiLayout(config: UIConfig) {
+    const subtitleOverlay = new SubtitleOverlay();
 
-  const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode != undefined);
-  const controlBar = new ControlBar({
-    components: [
-      new Container({
-        components: [
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
-            hideInLivePlayback: true,
-          }),
-          new SeekBar({ label: new SeekBarLabel() }),
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
-            cssClasses: ['text-right'],
-          }),
-        ],
-        cssClasses: ['controlbar-top'],
-      }),
-      new Container({
-        components: [
-          new PlaybackToggleButton(),
-          new VolumeToggleButton(),
-          new VolumeSlider(),
-          new Spacer(),
-          new PictureInPictureToggleButton(),
-          new AirPlayToggleButton(),
-          new CastToggleButton(),
-          new VRToggleButton(),
-          new SettingsToggleButton({ settingsPanel: settingsPanel }),
-          new FullscreenToggleButton(),
-        ],
-        cssClasses: ['controlbar-bottom'],
-      }),
-    ],
-  });
+    const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode != undefined);
+    const controlBar = new ControlBar({
+      components: [
+        new Container({
+          components: [
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+              hideInLivePlayback: true,
+            }),
+            new SeekBar({ label: new SeekBarLabel() }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+              cssClasses: ['text-right'],
+            }),
+          ],
+          cssClasses: ['controlbar-top'],
+        }),
+        new Container({
+          components: [
+            new PlaybackToggleButton(),
+            new VolumeToggleButton(),
+            new VolumeSlider(),
+            new Spacer(),
+            new PictureInPictureToggleButton(),
+            new AirPlayToggleButton(),
+            new CastToggleButton(),
+            new VRToggleButton(),
+            new SettingsToggleButton({ settingsPanel: settingsPanel }),
+            new FullscreenToggleButton(),
+          ],
+          cssClasses: ['controlbar-bottom'],
+        }),
+      ],
+    });
 
-  const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
+    const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
-  return new UIContainer({
-    components: [
-      subtitleOverlay,
-      new BufferingOverlay(),
-      new PlaybackToggleOverlay(),
-      new CastStatusOverlay(),
-      controlBar,
-      new TitleBar(),
-      new RecommendationOverlay(),
-      ...conditionalComponents,
-      new DismissClickOverlay({ target: settingsPanel }),
-      settingsPanel,
-      new ErrorMessageOverlay(),
-    ],
-    hidePlayerStateExceptions: [
-      PlayerUtils.PlayerState.Prepared,
-      PlayerUtils.PlayerState.Paused,
-      PlayerUtils.PlayerState.Finished,
-    ],
-  });
-}
+    return new UIContainer({
+      components: [
+        subtitleOverlay,
+        new BufferingOverlay(),
+        new PlaybackToggleOverlay(),
+        new CastStatusOverlay(),
+        controlBar,
+        new TitleBar(),
+        new RecommendationOverlay(),
+        ...conditionalComponents,
+        new DismissClickOverlay({ target: settingsPanel }),
+        settingsPanel,
+        new ErrorMessageOverlay(),
+      ],
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+    });
+  }
 
-function adsUILayout() {
-  const controlBar = new AdControlBar({
-    components: [
-      new Container({
-        components: [
-          new AdCounterLabel(),
-          new SeekBar({ label: new SeekBarLabel() }),
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
-            cssClasses: ['text-right'],
-          }),
-        ],
-        cssClasses: ['ad-controlbar-top'],
-      }),
-      new Container({
-        components: [new PlaybackToggleButton(), new VolumeToggleButton(), new Spacer(), new FullscreenToggleButton()],
-        cssClasses: ['ad-controlbar-bottom'],
-      }),
-    ],
-  });
+  export function adsUILayout() {
+    const controlBar = new AdControlBar({
+      components: [
+        new Container({
+          components: [
+            new AdCounterLabel(),
+            new SeekBar({ label: new SeekBarLabel() }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+              cssClasses: ['text-right'],
+            }),
+          ],
+          cssClasses: ['ad-controlbar-top'],
+        }),
+        new Container({
+          components: [
+            new PlaybackToggleButton(),
+            new VolumeToggleButton(),
+            new Spacer(),
+            new FullscreenToggleButton(),
+          ],
+          cssClasses: ['ad-controlbar-bottom'],
+        }),
+      ],
+    });
 
-  return new UIContainer({
-    components: [
-      new BufferingOverlay(),
-      new AdClickOverlay(),
-      new PlaybackToggleOverlay(),
-      new AdStatusOverlay(),
-      controlBar,
-      new TitleBar({
-        components: [
-          new Container({
-            components: [new AdMessageLabel()],
-            cssClasses: ['ui-titlebar-top'],
-          }),
-        ],
-        keepHiddenWithoutMetadata: true,
-      }),
-      new ErrorMessageOverlay(),
-    ],
-    hidePlayerStateExceptions: [
-      PlayerUtils.PlayerState.Prepared,
-      PlayerUtils.PlayerState.Paused,
-      PlayerUtils.PlayerState.Finished,
-    ],
-    cssClasses: ['ui-ads'],
-  });
-}
+    return new UIContainer({
+      components: [
+        new BufferingOverlay(),
+        new AdClickOverlay(),
+        new PlaybackToggleOverlay(),
+        new AdStatusOverlay(),
+        controlBar,
+        new TitleBar({
+          components: [
+            new Container({
+              components: [new AdMessageLabel()],
+              cssClasses: ['ui-titlebar-top'],
+            }),
+          ],
+          keepHiddenWithoutMetadata: true,
+        }),
+        new ErrorMessageOverlay(),
+      ],
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+      cssClasses: ['ui-ads'],
+    });
+  }
 
-function smallScreenUILayout() {
-  const subtitleOverlay = new SubtitleOverlay();
+  export function smallScreenUILayout() {
+    const subtitleOverlay = new SubtitleOverlay();
 
-  const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
+    const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
 
-  const controlBar = new ControlBar({
-    components: [
-      new Container({
-        components: [
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
-            hideInLivePlayback: true,
-          }),
-          new SeekBar({ label: new SeekBarLabel() }),
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
-            cssClasses: ['text-right'],
-          }),
-        ],
-        cssClasses: ['controlbar-top'],
-      }),
-      new Container({
-        components: [
-          new PlaybackToggleButton(),
-          new VolumeToggleButton(),
-          new VolumeSlider(),
-          new Spacer(),
-          new PictureInPictureToggleButton(),
-          new SettingsToggleButton({ settingsPanel: settingsPanel }),
-          new FullscreenToggleButton(),
-        ],
-        cssClasses: ['controlbar-bottom'],
-      }),
-    ],
-  });
+    const controlBar = new ControlBar({
+      components: [
+        new Container({
+          components: [
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+              hideInLivePlayback: true,
+            }),
+            new SeekBar({ label: new SeekBarLabel() }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+              cssClasses: ['text-right'],
+            }),
+          ],
+          cssClasses: ['controlbar-top'],
+        }),
+        new Container({
+          components: [
+            new PlaybackToggleButton(),
+            new VolumeToggleButton(),
+            new VolumeSlider(),
+            new Spacer(),
+            new PictureInPictureToggleButton(),
+            new SettingsToggleButton({ settingsPanel: settingsPanel }),
+            new FullscreenToggleButton(),
+          ],
+          cssClasses: ['controlbar-bottom'],
+        }),
+      ],
+    });
 
-  return new UIContainer({
-    components: [
-      subtitleOverlay,
-      new BufferingOverlay(),
-      new CastStatusOverlay(),
-      // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
-      BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
-      new RecommendationOverlay(),
-      controlBar,
-      new TitleBar({
-        components: [
-          new Container({
-            components: [
-              new MetadataLabel({ content: MetadataLabelContent.Title }),
-              new Spacer(),
-              new CastToggleButton(),
-              new AirPlayToggleButton(),
-              new VRToggleButton(),
-            ],
-            cssClasses: ['titlebar-row'],
-          }),
-        ],
-      }),
-      new DismissClickOverlay({ target: settingsPanel }),
-      settingsPanel,
-      new ErrorMessageOverlay(),
-    ],
-    cssClasses: ['ui-smallscreen'],
-    hidePlayerStateExceptions: [
-      PlayerUtils.PlayerState.Prepared,
-      PlayerUtils.PlayerState.Paused,
-      PlayerUtils.PlayerState.Finished,
-    ],
-  });
-}
+    return new UIContainer({
+      components: [
+        subtitleOverlay,
+        new BufferingOverlay(),
+        new CastStatusOverlay(),
+        // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
+        BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
+        new RecommendationOverlay(),
+        controlBar,
+        new TitleBar({
+          components: [
+            new Container({
+              components: [
+                new MetadataLabel({ content: MetadataLabelContent.Title }),
+                new Spacer(),
+                new CastToggleButton(),
+                new AirPlayToggleButton(),
+                new VRToggleButton(),
+              ],
+              cssClasses: ['titlebar-row'],
+            }),
+          ],
+        }),
+        new DismissClickOverlay({ target: settingsPanel }),
+        settingsPanel,
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-smallscreen'],
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+    });
+  }
 
-function smallScreenAdsUILayout() {
-  const controlBar = new AdControlBar({
-    components: [
-      new Container({
-        components: [
-          new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
-          new SeekBar({ label: new SeekBarLabel() }),
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
-            cssClasses: ['text-right'],
-          }),
-        ],
-        cssClasses: ['ad-controlbar-top'],
-      }),
-      new Container({
-        components: [new PlaybackToggleButton(), new VolumeToggleButton(), new Spacer(), new FullscreenToggleButton()],
-        cssClasses: ['ad-controlbar-bottom'],
-      }),
-    ],
-  });
+  export function smallScreenAdsUILayout() {
+    const controlBar = new AdControlBar({
+      components: [
+        new Container({
+          components: [
+            new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
+            new SeekBar({ label: new SeekBarLabel() }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+              cssClasses: ['text-right'],
+            }),
+          ],
+          cssClasses: ['ad-controlbar-top'],
+        }),
+        new Container({
+          components: [
+            new PlaybackToggleButton(),
+            new VolumeToggleButton(),
+            new Spacer(),
+            new FullscreenToggleButton(),
+          ],
+          cssClasses: ['ad-controlbar-bottom'],
+        }),
+      ],
+    });
 
-  return new UIContainer({
-    components: [
-      new BufferingOverlay(),
-      new AdClickOverlay(),
-      new PlaybackToggleOverlay(),
-      controlBar,
-      new TitleBar({
-        components: [
-          new Container({
-            components: [new AdMessageLabel()],
-            cssClasses: ['ui-titlebar-top'],
-          }),
-        ],
-        keepHiddenWithoutMetadata: true,
-      }),
-      new AdStatusOverlay(),
-      new ErrorMessageOverlay(),
-    ],
-    hidePlayerStateExceptions: [
-      PlayerUtils.PlayerState.Prepared,
-      PlayerUtils.PlayerState.Paused,
-      PlayerUtils.PlayerState.Finished,
-    ],
-    cssClasses: ['ui-smallscreen', 'ui-ads'],
-  });
-}
+    return new UIContainer({
+      components: [
+        new BufferingOverlay(),
+        new AdClickOverlay(),
+        new PlaybackToggleOverlay(),
+        controlBar,
+        new TitleBar({
+          components: [
+            new Container({
+              components: [new AdMessageLabel()],
+              cssClasses: ['ui-titlebar-top'],
+            }),
+          ],
+          keepHiddenWithoutMetadata: true,
+        }),
+        new AdStatusOverlay(),
+        new ErrorMessageOverlay(),
+      ],
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+      cssClasses: ['ui-smallscreen', 'ui-ads'],
+    });
+  }
 
-function castReceiverUILayout(config: UIConfig) {
-  const controlBar = new ControlBar({
-    components: [
-      new Container({
-        components: [
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
-            hideInLivePlayback: true,
-          }),
-          new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 }),
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
-            cssClasses: ['text-right'],
-          }),
-        ],
-        cssClasses: ['controlbar-top'],
-      }),
-    ],
-  });
+  export function castReceiverUILayout(config: UIConfig) {
+    const controlBar = new ControlBar({
+      components: [
+        new Container({
+          components: [
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+              hideInLivePlayback: true,
+            }),
+            new SeekBar({ smoothPlaybackPositionUpdateIntervalMs: -1 }),
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+              cssClasses: ['text-right'],
+            }),
+          ],
+          cssClasses: ['controlbar-top'],
+        }),
+      ],
+    });
 
-  const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
+    const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
-  return new CastUIContainer({
-    components: [
-      new SubtitleOverlay(),
-      new BufferingOverlay(),
-      new PlaybackToggleOverlay(),
-      controlBar,
-      new TitleBar({ keepHiddenWithoutMetadata: true }),
-      ...conditionalComponents,
-      new ErrorMessageOverlay(),
-    ],
-    cssClasses: ['ui-cast-receiver'],
-    hidePlayerStateExceptions: [
-      PlayerUtils.PlayerState.Prepared,
-      PlayerUtils.PlayerState.Paused,
-      PlayerUtils.PlayerState.Finished,
-    ],
-  });
-}
+    return new CastUIContainer({
+      components: [
+        new SubtitleOverlay(),
+        new BufferingOverlay(),
+        new PlaybackToggleOverlay(),
+        controlBar,
+        new TitleBar({ keepHiddenWithoutMetadata: true }),
+        ...conditionalComponents,
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-cast-receiver'],
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+    });
+  }
 
-function tvUILayout() {
-  const seekBar = new SeekBar({ label: new SeekBarLabel() });
-  const subtitleOverlay = new SubtitleOverlay();
-  const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, 5000);
+  export function tvUILayout() {
+    const seekBar = new SeekBar({ label: new SeekBarLabel() });
+    const subtitleOverlay = new SubtitleOverlay();
+    const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, 5000);
 
-  const subtitleListBox = new SubtitleListBox(i18n.getLocalizer('settings.subtitles'));
-  const subtitleListBoxOpenButton = new SettingsToggleButton({
-    settingsPanel: subtitleListBox,
-    autoHideWhenNoActiveSettings: true,
-    cssClass: 'ui-subtitle-list-box-toggle-button',
-    text: i18n.getLocalizer('settings.subtitles'),
-  });
+    const subtitleListBox = new SubtitleListBox(i18n.getLocalizer('settings.subtitles'));
+    const subtitleListBoxOpenButton = new SettingsToggleButton({
+      settingsPanel: subtitleListBox,
+      autoHideWhenNoActiveSettings: true,
+      cssClass: 'ui-subtitle-list-box-toggle-button',
+      text: i18n.getLocalizer('settings.subtitles'),
+    });
 
-  const audioListBox = new AudioTrackListBox(i18n.getLocalizer('settings.audio.track'));
-  const audioListBoxToggleButton = new SettingsToggleButton({
-    settingsPanel: audioListBox,
-    autoHideWhenNoActiveSettings: true,
-    cssClass: 'ui-audio-track-list-box-toggle-button',
-    text: i18n.getLocalizer('settings.audio.track'),
-  });
+    const audioListBox = new AudioTrackListBox(i18n.getLocalizer('settings.audio.track'));
+    const audioListBoxToggleButton = new SettingsToggleButton({
+      settingsPanel: audioListBox,
+      autoHideWhenNoActiveSettings: true,
+      cssClass: 'ui-audio-track-list-box-toggle-button',
+      text: i18n.getLocalizer('settings.audio.track'),
+    });
 
-  const titleBar = new TitleBar({
-    components: [
-      new Container({
-        components: [new MetadataLabel({ content: MetadataLabelContent.Title })],
-        cssClasses: ['ui-titlebar-top'],
-      }),
-      new Container({
-        components: [new MetadataLabel({ content: MetadataLabelContent.Description })],
-        cssClasses: ['ui-titlebar-bottom'],
-      }),
-    ],
-  });
+    const titleBar = new TitleBar({
+      components: [
+        new Container({
+          components: [new MetadataLabel({ content: MetadataLabelContent.Title })],
+          cssClasses: ['ui-titlebar-top'],
+        }),
+        new Container({
+          components: [new MetadataLabel({ content: MetadataLabelContent.Description })],
+          cssClasses: ['ui-titlebar-bottom'],
+        }),
+      ],
+    });
 
-  const playbackToggleButton = new PlaybackToggleButton();
-  const bottomControlBar = new Container({
-    components: [
-      playbackToggleButton,
-      new Spacer(),
-      subtitleListBoxOpenButton,
-      audioListBoxToggleButton,
-      new SettingsToggleButton({ settingsPanel: settingsPanel }),
-    ],
-    cssClasses: ['controlbar-bottom'],
-  });
-  const controlBar = new ControlBar({
-    components: [
-      new Container({
-        components: [
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
-            hideInLivePlayback: true,
-          }),
-          seekBar,
-          new PlaybackTimeLabel({
-            timeLabelMode: PlaybackTimeLabelMode.TotalTime,
-            cssClasses: ['text-right'],
-          }),
-        ],
-        cssClasses: ['controlbar-top'],
-      }),
-      bottomControlBar,
-    ],
-  });
+    const playbackToggleButton = new PlaybackToggleButton();
+    const bottomControlBar = new Container({
+      components: [
+        playbackToggleButton,
+        new Spacer(),
+        subtitleListBoxOpenButton,
+        audioListBoxToggleButton,
+        new SettingsToggleButton({ settingsPanel: settingsPanel }),
+      ],
+      cssClasses: ['controlbar-bottom'],
+    });
+    const controlBar = new ControlBar({
+      components: [
+        new Container({
+          components: [
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.CurrentTime,
+              hideInLivePlayback: true,
+            }),
+            seekBar,
+            new PlaybackTimeLabel({
+              timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+              cssClasses: ['text-right'],
+            }),
+          ],
+          cssClasses: ['controlbar-top'],
+        }),
+        bottomControlBar,
+      ],
+    });
 
-  const playbackToggleOverlay = new PlaybackToggleOverlay();
-  const recommendationOverlay = new RecommendationOverlay();
-  const uiContainer = new UIContainer({
-    components: [
-      subtitleOverlay,
-      new BufferingOverlay(),
-      playbackToggleOverlay,
-      controlBar,
-      titleBar,
-      settingsPanel,
-      subtitleListBox,
-      audioListBox,
-      recommendationOverlay,
-      new ErrorMessageOverlay(),
-    ],
-    cssClasses: ['ui-tv'],
-    hidePlayerStateExceptions: [
-      PlayerUtils.PlayerState.Prepared,
-      PlayerUtils.PlayerState.Paused,
-      PlayerUtils.PlayerState.Finished,
-    ],
-  });
+    const playbackToggleOverlay = new PlaybackToggleOverlay();
+    const recommendationOverlay = new RecommendationOverlay();
+    const uiContainer = new UIContainer({
+      components: [
+        subtitleOverlay,
+        new BufferingOverlay(),
+        playbackToggleOverlay,
+        controlBar,
+        titleBar,
+        settingsPanel,
+        subtitleListBox,
+        audioListBox,
+        recommendationOverlay,
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-tv'],
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+    });
 
-  const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(
-      uiContainer,
-      playbackToggleOverlay,
-      seekBar,
-      new FocusableContainer(bottomControlBar, playbackToggleButton),
-    ),
-    new SettingsPanelNavigationGroup(settingsPanel, { closeOnSelect: false }),
-    new SettingsPanelNavigationGroup(subtitleListBox),
-    new SettingsPanelNavigationGroup(audioListBox),
-    new RecommendationOverlayNavigationGroup(recommendationOverlay),
-  );
+    const spatialNavigation = new SpatialNavigation(
+      new RootNavigationGroup(
+        uiContainer,
+        playbackToggleOverlay,
+        seekBar,
+        new FocusableContainer(bottomControlBar, playbackToggleButton),
+      ),
+      new SettingsPanelNavigationGroup(settingsPanel, { closeOnSelect: false }),
+      new SettingsPanelNavigationGroup(subtitleListBox),
+      new SettingsPanelNavigationGroup(audioListBox),
+      new RecommendationOverlayNavigationGroup(recommendationOverlay),
+    );
 
-  return {
-    ui: uiContainer,
-    spatialNavigation: spatialNavigation,
-  };
-}
+    return {
+      ui: uiContainer,
+      spatialNavigation: spatialNavigation,
+    };
+  }
 
-function tvAdsUILayout() {
-  const playbackToggleOverlay = new PlaybackToggleOverlay();
-  const adStatusOverlay = new AdStatusOverlay();
-  const uiContainer = new UIContainer({
-    components: [
-      new BufferingOverlay(),
-      new AdClickOverlay(),
-      playbackToggleOverlay,
-      adStatusOverlay,
-      new AdControlBar({
-        components: [
-          new Container({
-            components: [
-              new AdCounterLabel(),
-              new SeekBar({ label: new SeekBarLabel() }),
-              new PlaybackTimeLabel({
-                timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
-                cssClasses: ['text-right'],
-              }),
-            ],
-            cssClasses: ['ad-controlbar-top'],
-          }),
-        ],
-      }),
-      new TitleBar({
-        components: [
-          new Container({
-            components: [new AdMessageLabel()],
-            cssClasses: ['ui-titlebar-top'],
-          }),
-        ],
-        keepHiddenWithoutMetadata: true,
-      }),
-      new ErrorMessageOverlay(),
-    ],
-    cssClasses: ['ui-tv', 'ui-ads'],
-    hidePlayerStateExceptions: [
-      PlayerUtils.PlayerState.Prepared,
-      PlayerUtils.PlayerState.Paused,
-      PlayerUtils.PlayerState.Finished,
-    ],
-  });
+  export function tvAdsUILayout() {
+    const playbackToggleOverlay = new PlaybackToggleOverlay();
+    const adStatusOverlay = new AdStatusOverlay();
+    const uiContainer = new UIContainer({
+      components: [
+        new BufferingOverlay(),
+        new AdClickOverlay(),
+        playbackToggleOverlay,
+        adStatusOverlay,
+        new AdControlBar({
+          components: [
+            new Container({
+              components: [
+                new AdCounterLabel(),
+                new SeekBar({ label: new SeekBarLabel() }),
+                new PlaybackTimeLabel({
+                  timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
+                  cssClasses: ['text-right'],
+                }),
+              ],
+              cssClasses: ['ad-controlbar-top'],
+            }),
+          ],
+        }),
+        new TitleBar({
+          components: [
+            new Container({
+              components: [new AdMessageLabel()],
+              cssClasses: ['ui-titlebar-top'],
+            }),
+          ],
+          keepHiddenWithoutMetadata: true,
+        }),
+        new ErrorMessageOverlay(),
+      ],
+      cssClasses: ['ui-tv', 'ui-ads'],
+      hidePlayerStateExceptions: [
+        PlayerUtils.PlayerState.Prepared,
+        PlayerUtils.PlayerState.Paused,
+        PlayerUtils.PlayerState.Finished,
+      ],
+    });
 
-  const spatialNavigation = new SpatialNavigation(
-    new RootNavigationGroup(uiContainer, playbackToggleOverlay, adStatusOverlay.adSkipButton),
-  );
+    const spatialNavigation = new SpatialNavigation(
+      new RootNavigationGroup(uiContainer, playbackToggleOverlay, adStatusOverlay.adSkipButton),
+    );
 
-  return {
-    ui: uiContainer,
-    spatialNavigation: spatialNavigation,
-  };
-}
+    return {
+      ui: uiContainer,
+      spatialNavigation: spatialNavigation,
+    };
+  }
 
-/**
- * Used for the initial startup phase of the UI. Only contains basic components.
- */
-function emptyStateUILayout() {
-  return new UIContainer({
-    components: [new BufferingOverlay(), new PlaybackToggleOverlay(), new ErrorMessageOverlay()],
-    cssClasses: ['ui', 'ui-empty-state'],
-  });
+  /**
+   * Used for the initial startup phase of the UI. Only contains basic components.
+   */
+  export function emptyStateUILayout() {
+    return new UIContainer({
+      components: [new BufferingOverlay(), new PlaybackToggleOverlay(), new ErrorMessageOverlay()],
+      cssClasses: ['ui', 'ui-empty-state'],
+    });
+  }
 }
 
 function buildDefaultSettingsPanel(
