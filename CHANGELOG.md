@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-### Fixed
+### Changed
 
-- CEA captions not legible on very small player sizes
+- Improve CEA captions legibility when the rendered player size has a small height
 
 ## [4.11.0] - 2026-04-03
 
