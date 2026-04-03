@@ -387,11 +387,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // remain visible while top rows clip above the overlay.
       const playerHeight = new DOM(player.getContainer()).height();
       const minFontSize = playerHeight * SubtitleOverlay.CEA608_MIN_FONT_SIZE_RATIO;
-      const minRowHeight = minFontSize / (fontSize100PercentRatio * (1 - windowMarginRatio) * this.cea608FontSizeFactor);
+      const minRowHeight =
+        minFontSize / (fontSize100PercentRatio * (1 - windowMarginRatio) * this.cea608FontSizeFactor);
       if (minRowHeight > rowHeight) {
         rowHeight = minRowHeight;
         fontSize = minFontSize;
-        // Recalculate letter spacing for the updated font size
         const gridSlotWidth = subtitleOverlayWidth / SubtitleOverlay.CEA608_NUM_COLUMNS;
         fontLetterSpacing = Math.max(gridSlotWidth - fontSize * fontSizeRatio, 0);
       }
@@ -401,7 +401,6 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // Shift the grid upward when it exceeds the overlay height, keeping bottom rows in view
       const gridOffset = Math.max(0, rowHeight * SubtitleOverlay.CEA608_NUM_ROWS - subtitleOverlayHeight);
 
-      // Update the CSS custom properties on the overlay DOM element
       overlayElement.get().forEach(el => {
         el.style.setProperty('--cea608-row-height', `${rowHeight}px`);
         el.style.setProperty('--cea608-grid-offset', `${gridOffset}px`);
@@ -471,14 +470,18 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     const reset = () => {
       this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
+      if (this.cea608Enabled) {
+        // Reset the cache so the next CEA-608 session always runs a fresh recalculation.
+        // Without this, ensureCea608GridSizeUpdated returns early on unchanged dimensions
+        // and --cea608-grid-offset never gets re-applied after a reset.
+        lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0, fontSizeFactor: 0 };
+        this.getDomElement()
+          .get()
+          .forEach(el => {
+            el.style.removeProperty('--cea608-grid-offset');
+          });
+      }
       this.cea608Enabled = false;
-      // Reset the cache so the next CEA-608 session always runs a fresh recalculation.
-      // Without this, ensureCea608GridSizeUpdated returns early on unchanged dimensions
-      // and --cea608-grid-offset never gets re-applied after a reset.
-      lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0, fontSizeFactor: 0 };
-      this.getDomElement().get().forEach(el => {
-        el.style.removeProperty('--cea608-grid-offset');
-      });
     };
 
     player.on(player.exports.PlayerEvent.CueExit, () => {
