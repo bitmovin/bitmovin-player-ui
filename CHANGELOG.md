@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [4.10.3] - 2026-04-02
 
+### Added
+
+- Export default layout functions in `UIFactory.defaultLayouts` for easier customization of individual UI variants and their display conditions
+
 ### Fixed
 
 - In TV spatial navigation, the BACK button could be swallowed by the UI and not reach the application when the controls were already hidden
