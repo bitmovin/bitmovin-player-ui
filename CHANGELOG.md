@@ -5,11 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.10.3] - 2026-04-02
+## [Unreleased]
 
 ### Added
 
 - Export default layout functions in `UIFactory.defaultLayouts` for easier customization of individual UI variants and their display conditions
+
+## [4.10.3] - 2026-04-02
 
 ### Fixed
 
