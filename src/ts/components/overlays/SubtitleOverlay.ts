@@ -472,6 +472,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     const reset = () => {
       this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
       this.cea608Enabled = false;
+      // Reset the cache so the next CEA-608 session always runs a fresh recalculation.
+      // Without this, ensureCea608GridSizeUpdated returns early on unchanged dimensions
+      // and --cea608-grid-offset never gets re-applied after a reset.
+      lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0, fontSizeFactor: 0 };
       this.getDomElement().get().forEach(el => {
         el.style.removeProperty('--cea608-grid-offset');
       });
