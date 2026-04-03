@@ -16,10 +16,12 @@
       right: 0;
       text-align: left;
 
-      // Define positions for all 15 rows
+      // Define positions for all 15 rows.
+      // --cea608-grid-offset shifts the grid upward when a minimum font size causes the full
+      // 15-row grid to exceed the overlay height, keeping bottom rows in view.
       @for $i from 0 through 14 {
         &.#{$prefix}-subtitle-position-cea608-row-#{$i} {
-          top: calc(var(--cea608-row-height) * #{$i});
+          top: calc(var(--cea608-row-height) * #{$i} - var(--cea608-grid-offset, 0px));
         }
       }
     }
