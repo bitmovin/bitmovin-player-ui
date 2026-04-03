@@ -38,6 +38,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CEA608_COLUMN_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_COLUMNS;
   private static readonly DEFAULT_CAPTION_LEFT_OFFSET = '0.5%';
   private static readonly CEA608_MIN_FONT_SIZE_RATIO = 0.07;
+  /** Players at or below this height (px) are considered small and get the minimum font size floor */
+  private static readonly CEA608_SMALL_PLAYER_HEIGHT_THRESHOLD = 240;
 
   private cea608Enabled = false;
   private cea608FontSizeFactor = 1;
@@ -386,14 +388,16 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // via --cea608-grid-offset so that bottom rows (where CEA-608 content typically appears)
       // remain visible while top rows clip above the overlay.
       const playerHeight = new DOM(player.getContainer()).height();
-      const minFontSize = playerHeight * SubtitleOverlay.CEA608_MIN_FONT_SIZE_RATIO;
-      const minRowHeight =
-        minFontSize / (fontSize100PercentRatio * (1 - windowMarginRatio) * this.cea608FontSizeFactor);
-      if (minRowHeight > rowHeight) {
-        rowHeight = minRowHeight;
-        fontSize = minFontSize;
-        const gridSlotWidth = subtitleOverlayWidth / SubtitleOverlay.CEA608_NUM_COLUMNS;
-        fontLetterSpacing = Math.max(gridSlotWidth - fontSize * fontSizeRatio, 0);
+      if (playerHeight <= SubtitleOverlay.CEA608_SMALL_PLAYER_HEIGHT_THRESHOLD) {
+        const minFontSize = playerHeight * SubtitleOverlay.CEA608_MIN_FONT_SIZE_RATIO;
+        const minRowHeight =
+          minFontSize / (fontSize100PercentRatio * (1 - windowMarginRatio) * this.cea608FontSizeFactor);
+        if (minRowHeight > rowHeight) {
+          rowHeight = minRowHeight;
+          fontSize = minFontSize;
+          const gridSlotWidth = subtitleOverlayWidth / SubtitleOverlay.CEA608_NUM_COLUMNS;
+          fontLetterSpacing = Math.max(gridSlotWidth - fontSize * fontSizeRatio, 0);
+        }
       }
 
       windowMargin = rowHeight * windowMarginRatio;
