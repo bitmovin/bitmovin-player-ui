@@ -37,6 +37,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private static readonly CEA608_NUM_COLUMNS = 32;
   private static readonly CEA608_COLUMN_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_COLUMNS;
   private static readonly DEFAULT_CAPTION_LEFT_OFFSET = '0.5%';
+  private static readonly CEA608_MIN_FONT_SIZE_RATIO = 0.07;
 
   private cea608Enabled = false;
   private cea608FontSizeFactor = 1;
@@ -377,6 +378,14 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
         fontSize = fontSize100Percent * this.cea608FontSizeFactor;
         fontLetterSpacing = 0;
       }
+
+      // Ensure a minimum font size for legibility on small players.
+      // Use the player container's full height rather than the overlay height, which may be reduced
+      // when the controlbar is visible (overlay shifts up via bottom offset).
+      // Note: rowHeight is intentionally not recalculated here — adjusting it would shift row positions
+      // and cause the 15-row grid to exceed the player bounds on small players.
+      const playerHeight = new DOM(player.getContainer()).height();
+      fontSize = Math.max(fontSize, playerHeight * SubtitleOverlay.CEA608_MIN_FONT_SIZE_RATIO);
 
       windowMargin = rowHeight * windowMarginRatio;
 
