@@ -1,5 +1,5 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
-import { SourceConfig } from 'bitmovin-player';
+import { AudioTrack, SourceConfig, SubtitleTrack } from 'bitmovin-player';
 import { LocalizationConfig } from './UIManager';
 
 /**
@@ -186,6 +186,28 @@ export interface UIConfig {
    * Allows setting a {@link LocalizationConfig} to specify language details of the UI.
    */
   localization?: LocalizationConfig;
+  /**
+   * Comparator function to define a custom display order for audio tracks in the audio track selection UI.
+   *
+   * When set, audio tracks returned by the player will be sorted using this comparator before being displayed.
+   * The function follows the same contract as {@link Array.prototype.sort}.
+   *
+   * @example
+   * // Sort audio tracks alphabetically by label
+   * audioTrackComparator: (a, b) => a.label.localeCompare(b.label)
+   */
+  audioTrackComparator?: (a: AudioTrack, b: AudioTrack) => number;
+  /**
+   * Comparator function to define a custom display order for subtitle tracks in the subtitle selection UI.
+   *
+   * When set, subtitle tracks returned by the player will be sorted using this comparator before being displayed.
+   * The function follows the same contract as {@link Array.prototype.sort}.
+   *
+   * @example
+   * // Sort subtitle tracks alphabetically by label
+   * subtitleComparator: (a, b) => a.label.localeCompare(b.label)
+   */
+  subtitleComparator?: (a: SubtitleTrack, b: SubtitleTrack) => number;
 }
 
 export interface ShadowDomConfig {

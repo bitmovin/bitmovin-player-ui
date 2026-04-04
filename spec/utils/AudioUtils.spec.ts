@@ -16,6 +16,7 @@ const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.
   getItems: jest.fn().mockReturnValue([]),
   synchronizeItems: jest.fn(),
   selectItem: jest.fn(),
+  clearItems: jest.fn(),
 }));
 
 let listSelectorMock: ListSelector<ListSelectorConfig>;
@@ -51,9 +52,9 @@ describe('AudioUtils', () => {
       expect(listSelectorMock.synchronizeItems).toHaveBeenCalled();
     });
 
-    it('on audioAdded event', () => {
+    it('on audioAdded event via synchronizeItems', () => {
       playerMock.eventEmitter.fireAudioAddedEvent('a-3', 'A3');
-      expect(listSelectorMock.addItem).toHaveBeenCalledWith('a-3', expect.any(Function), true);
+      expect(listSelectorMock.synchronizeItems).toHaveBeenCalledTimes(2);
     });
   });
 

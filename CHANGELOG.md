@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `UIConfig.audioTrackComparator` and `UIConfig.subtitleComparator` to control the display order of audio and subtitle tracks in the selection UI
+
 ## [4.11.0] - 2026-04-03
 
 ### Added
