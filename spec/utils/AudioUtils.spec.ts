@@ -14,6 +14,7 @@ const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.
   addItem: jest.fn(),
   removeItem: jest.fn(),
   getItems: jest.fn().mockReturnValue([]),
+  getSelectedItem: jest.fn().mockReturnValue(null),
   synchronizeItems: jest.fn(),
   selectItem: jest.fn(),
   clearItems: jest.fn(),

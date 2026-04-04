@@ -65,6 +65,7 @@ export class AudioTrackSwitchHandler {
   };
 
   private refreshAudioTracks = () => {
+    const previouslySelectedAudioTrack = this.listElement.getSelectedItem();
     const comparator = this.uimanager.getConfig().audioTrackComparator;
     const audioTracks = comparator
       ? this.player.getAvailableAudio().slice().sort(comparator)
@@ -75,6 +76,10 @@ export class AudioTrackSwitchHandler {
 
     this.listElement.clearItems();
     this.listElement.synchronizeItems(audioTracks.map(audioTrackToListItem));
-    this.selectCurrentAudioTrack();
+    if (this.player.getAudio()) {
+      this.selectCurrentAudioTrack();
+    } else if (previouslySelectedAudioTrack && this.listElement.hasItem(previouslySelectedAudioTrack)) {
+      this.listElement.selectItem(previouslySelectedAudioTrack);
+    }
   };
 }

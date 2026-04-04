@@ -12,6 +12,7 @@ const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.
   addItem: jest.fn(),
   removeItem: jest.fn(),
   getItems: jest.fn().mockReturnValue([]),
+  getSelectedItem: jest.fn().mockReturnValue(null),
   synchronizeItems: jest.fn(),
   selectItem: jest.fn(),
   clearItems: jest.fn(),
@@ -184,6 +185,39 @@ describe('AudioTrackUtils', () => {
       new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithComparator);
 
       expect(localListSelector.selectItem).toHaveBeenCalledWith('a-3');
+    });
+
+    it('preserves the previous selection on refresh when the player does not expose a current audio track', () => {
+      const onUpdated = MockHelper.getEventDispatcherMock();
+      const uiManagerWithComparator = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithComparator, 'getConfig').mockReturnValue({
+        events: { onUpdated },
+        audioTrackComparator: (a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label),
+      } as any);
+
+      playerMock.getAvailableAudio = jest.fn().mockReturnValue([
+        { id: 'a-2', label: 'Taiwanese' },
+        { id: 'a-1', label: 'English' },
+      ]);
+      playerMock.getAudio = jest.fn().mockReturnValue({ id: 'a-2', label: 'Taiwanese' });
+
+      const localListSelector = new ListSelectorTestClass();
+      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithComparator);
+
+      expect(localListSelector.getSelectedItem()).toBe('a-2');
+
+      playerMock.getAvailableAudio = jest.fn().mockReturnValue([
+        { id: 'a-3', label: 'French' },
+        { id: 'a-2', label: 'Taiwanese' },
+        { id: 'a-1', label: 'English' },
+      ]);
+      playerMock.getAudio = jest.fn().mockReturnValue(undefined);
+
+      const refreshAudioTracks = MockHelper.getMockCallArg<(sender: unknown) => void>(onUpdated.subscribe);
+      refreshAudioTracks(uiManagerWithComparator);
+
+      expect(localListSelector.getItems().map(i => i.key)).toEqual(['a-1', 'a-3', 'a-2']);
+      expect(localListSelector.getSelectedItem()).toBe('a-2');
     });
   });
 });
