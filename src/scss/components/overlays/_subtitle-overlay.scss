@@ -33,10 +33,12 @@
       position: absolute;
 
       &.#{$prefix}-subtitle-position-default {
+        align-items: center;
         bottom: 2em;
+        display: flex;
+        flex-direction: column;
         left: 3em;
         right: 3em;
-        top: initial;
       }
 
       &.#{$prefix}-subtitle-position-bottom > div {
