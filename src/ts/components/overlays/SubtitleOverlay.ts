@@ -739,10 +739,6 @@ export class SubtitleRegionContainerManager {
         regionContainer.getDomElement().attr('style', label.regionStyle);
       }
 
-      if (label.vtt) {
-        regionContainer.getDomElement().css('position', 'static');
-      }
-
       // getDomElement needs to be called at least once to ensure the component exists
       regionContainer.getDomElement();
 
@@ -818,6 +814,34 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
       }
 
       VttUtils.setVttCueBoxStyles(labelToAdd, overlaySize);
+
+      if (!labelToAdd.vtt.region) {
+        const labelEl = labelToAdd.getDomElement().get(0);
+        const containerDom = this.getDomElement();
+        const propsToMove = [
+          'position',
+          'bottom',
+          'top',
+          'left',
+          'right',
+          'width',
+          'height',
+          'writing-mode',
+          'transform',
+          'overflow',
+          'overflow-wrap',
+          'flex-flow',
+          'justify-content',
+        ];
+        for (const prop of propsToMove) {
+          const val = labelEl.style.getPropertyValue(prop);
+          if (val) {
+            containerDom.css(prop, val);
+            labelEl.style.removeProperty(prop);
+          }
+        }
+        containerDom.css('display', 'flex');
+      }
     }
 
     this.addComponent(labelToAdd);
