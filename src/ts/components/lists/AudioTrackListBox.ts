@@ -4,11 +4,8 @@ import { AudioTrackSwitchHandler } from '../../utils/AudioTrackUtils';
 import { PlayerAPI } from 'bitmovin-player';
 import { AudioTrackSelectBox } from '../settings/AudioTrackSelectBox';
 import { LocalizableText } from '../../localization/i18n';
-import { ListSelectorConfig } from './ListSelector';
 
-export interface AudioTrackListBoxConfig extends ListSelectorConfig {
-  title?: LocalizableText;
-}
+export interface AudioTrackListBoxConfig extends Omit<ListBoxConfig, 'listSelector'> {}
 
 /**
  * A element that is similar to a select box where the user can select a subtitle
@@ -16,7 +13,14 @@ export interface AudioTrackListBoxConfig extends ListSelectorConfig {
  * @category Components
  */
 export class AudioTrackListBox extends ListBox {
-  constructor(config: AudioTrackListBoxConfig = {}) {
+  constructor(title?: LocalizableText);
+  constructor(config?: AudioTrackListBoxConfig);
+  constructor(configOrTitle: LocalizableText | AudioTrackListBoxConfig = {}) {
+    const config =
+      typeof configOrTitle === 'string' || typeof configOrTitle === 'function'
+        ? { title: configOrTitle }
+        : configOrTitle;
+
     super({
       ...config,
       listSelector: new AudioTrackSelectBox(config),

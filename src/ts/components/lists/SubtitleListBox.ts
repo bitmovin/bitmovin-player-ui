@@ -4,11 +4,8 @@ import { SubtitleSwitchHandler } from '../../utils/SubtitleUtils';
 import { PlayerAPI } from 'bitmovin-player';
 import { SubtitleSelectBox } from '../settings/SubtitleSelectBox';
 import { LocalizableText } from '../../localization/i18n';
-import { ListSelectorConfig } from './ListSelector';
 
-export interface SubtitleListBoxConfig extends ListSelectorConfig {
-  title?: LocalizableText;
-}
+export interface SubtitleListBoxConfig extends Omit<ListBoxConfig, 'listSelector'> {}
 
 /**
  * A element that is similar to a select box where the user can select a subtitle
@@ -19,7 +16,14 @@ export interface SubtitleListBoxConfig extends ListSelectorConfig {
  * @category Components
  */
 export class SubtitleListBox extends ListBox {
-  constructor(config: SubtitleListBoxConfig = {}) {
+  constructor(title?: LocalizableText);
+  constructor(config?: SubtitleListBoxConfig);
+  constructor(configOrTitle: LocalizableText | SubtitleListBoxConfig = {}) {
+    const config =
+      typeof configOrTitle === 'string' || typeof configOrTitle === 'function'
+        ? { title: configOrTitle }
+        : configOrTitle;
+
     super({
       ...config,
       listSelector: new SubtitleSelectBox(config),

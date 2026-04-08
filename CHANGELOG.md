@@ -9,13 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `ListSelectorConfig.comparator` to customize the display order of list-backed selection UIs such as `AudioTrackSelectBox`, `SubtitleSelectBox`, `AudioTrackListBox`, and `SubtitleListBox`.
+- `AudioTrackListBox` and `SubtitleListBox` now accept config objects that extend `ListBoxConfig` without `listSelector`
+- `ListSelectorConfig.comparator` to customize the display order of list-backed selection UIs such as `AudioTrackSelectBox`, `SubtitleSelectBox`, `AudioTrackListBox`, and `SubtitleListBox`. For subtitle selection UIs, the built-in `Off` option remains fixed at the top.
   Example:
   ```ts
-    const subtitleListBox = new SubtitleListBox({
-      title: i18n.getLocalizer('settings.subtitles'),
-      comparator: (a, b) => String(a.label).localeCompare(String(b.label)), // A-Z
-    });
+  const subtitleListBox = new SubtitleListBox({
+    title: i18n.getLocalizer('settings.subtitles'),
+    comparator: (a, b) => String(a.label).localeCompare(String(b.label)), // A-Z
+  });
   ```
 
 ## [4.11.0] - 2026-04-03
