@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `ListSelectorConfig.comparator` to control the display order of list-backed selection UIs such as audio and subtitle track lists
+- `ListSelectorConfig.comparator` to customize the display order of list-backed selection UIs such as `AudioTrackSelectBox`, `SubtitleSelectBox`, `AudioTrackListBox`, and `SubtitleListBox`.
+  Example:
+  ```ts
+    const subtitleListBox = new SubtitleListBox({
+      title: i18n.getLocalizer('settings.subtitles'),
+      comparator: (a, b) => String(a.label).localeCompare(String(b.label)), // A-Z
+    });
+  ```
 
 ## [4.11.0] - 2026-04-03
 

@@ -13,6 +13,9 @@ export interface SubtitleListBoxConfig extends ListSelectorConfig {
 /**
  * A element that is similar to a select box where the user can select a subtitle
  *
+ * When a comparator is configured, the built-in "Off" option remains fixed at the top
+ * and is not reordered together with the subtitle tracks.
+ *
  * @category Components
  */
 export class SubtitleListBox extends ListBox {

@@ -45,17 +45,14 @@ export interface ListItemLabelTranslator {
 
 /**
  * Comparator function to define a custom display order for list items.
+ *
+ * Follows the same contract as {@link Array.prototype.sort}.
+ *
+ * @param listItemA the first item to compare
+ * @param listItemB the second item to compare
+ * @returns negative when A should come first, positive when B should come first, `0` if equal
  */
-export interface ListItemComparator {
-  /**
-   * Compares two list items and returns their relative order.
-   * Follows the same contract as {@link Array.prototype.sort}.
-   * @param {ListItem} listItemA the first item to compare
-   * @param {ListItem} listItemB the second item to compare
-   * @returns {number} negative when A should come first, positive when B should come first, 0 if equal
-   */
-  (listItemA: ListItem, listItemB: ListItem): number;
-}
+export type ListItemComparator = (listItemA: ListItem, listItemB: ListItem) => number;
 
 /**
  * Configuration interface for a {@link ListSelector}.
