@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `AudioTrackListBox` and `SubtitleListBox` now accept config objects that extend `ListBoxConfig` without `listSelector`
 - `ListSelectorConfig.comparator` to customize the display order of list-backed selection UIs such as `AudioTrackSelectBox`, `SubtitleSelectBox`, `AudioTrackListBox`, and `SubtitleListBox`. For subtitle selection UIs, the built-in `Off` option remains fixed at the top.
   Example:
   ```ts
@@ -18,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     comparator: (a, b) => String(a.label).localeCompare(String(b.label)), // A-Z
   });
   ```
+- `AudioTrackListBox` and `SubtitleListBox` now can accept config objects that extend `ListBoxConfig` without `listSelector`.
+  This enables configuring list-selector behavior such as `comparator`, `filter`, and `translator`, as well as list-box/settings-panel options like `title`, `hideDelay`, and related panel settings.
 
 ## [4.11.0] - 2026-04-03
 
