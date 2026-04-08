@@ -4,6 +4,11 @@ import { SubtitleSwitchHandler } from '../../utils/SubtitleUtils';
 import { PlayerAPI } from 'bitmovin-player';
 import { SubtitleSelectBox } from '../settings/SubtitleSelectBox';
 import { LocalizableText } from '../../localization/i18n';
+import { ListSelectorConfig } from './ListSelector';
+
+export interface SubtitleListBoxConfig extends ListSelectorConfig {
+  title?: LocalizableText;
+}
 
 /**
  * A element that is similar to a select box where the user can select a subtitle
@@ -11,11 +16,12 @@ import { LocalizableText } from '../../localization/i18n';
  * @category Components
  */
 export class SubtitleListBox extends ListBox {
-  constructor(title?: LocalizableText) {
+  constructor(config: SubtitleListBoxConfig = {}) {
     super({
-      listSelector: new SubtitleSelectBox(),
-      title: title,
-    });
+      ...config,
+      listSelector: new SubtitleSelectBox(config),
+      title: config.title,
+    } as ListBoxConfig);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

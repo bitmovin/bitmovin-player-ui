@@ -109,16 +109,12 @@ export class SubtitleSwitchHandler {
       label: i18n.getLocalizer('off'),
     };
 
-    const comparator = this.uimanager.getConfig().subtitleComparator;
-    const subtitles = comparator
-      ? this.player.subtitles.list().slice().sort(comparator)
-      : this.player.subtitles.list();
     const subtitleToListItem = (subtitle: SubtitleTrack): ListItem => {
       return { key: subtitle.id, label: subtitle.label };
     };
 
     this.listElement.clearItems();
-    this.listElement.synchronizeItems([offListItem, ...subtitles.map(subtitleToListItem)]);
+    this.listElement.synchronizeItems([offListItem, ...this.player.subtitles.list().map(subtitleToListItem)]);
     this.selectCurrentSubtitle();
   };
 }

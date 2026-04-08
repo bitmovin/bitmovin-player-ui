@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `UIConfig.audioTrackComparator` and `UIConfig.subtitleComparator` to control the display order of audio and subtitle tracks in the selection UI
+- `ListSelectorConfig.comparator` to control the display order of list-backed selection UIs such as audio and subtitle track lists
 
 ## [4.11.0] - 2026-04-03
 

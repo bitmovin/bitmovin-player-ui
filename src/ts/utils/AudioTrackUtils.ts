@@ -66,16 +66,12 @@ export class AudioTrackSwitchHandler {
 
   private refreshAudioTracks = () => {
     const previouslySelectedAudioTrack = this.listElement.getSelectedItem();
-    const comparator = this.uimanager.getConfig().audioTrackComparator;
-    const audioTracks = comparator
-      ? this.player.getAvailableAudio().slice().sort(comparator)
-      : this.player.getAvailableAudio();
     const audioTrackToListItem = (audioTrack: AudioTrack): ListItem => {
       return { key: audioTrack.id, label: audioTrack.label };
     };
 
     this.listElement.clearItems();
-    this.listElement.synchronizeItems(audioTracks.map(audioTrackToListItem));
+    this.listElement.synchronizeItems(this.player.getAvailableAudio().map(audioTrackToListItem));
     if (this.player.getAudio()) {
       this.selectCurrentAudioTrack();
     } else if (previouslySelectedAudioTrack && this.listElement.hasItem(previouslySelectedAudioTrack)) {

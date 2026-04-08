@@ -68,13 +68,12 @@ describe('AudioTrackUtils', () => {
     });
   });
 
-  describe('audioTrackComparator', () => {
+  describe('list selector comparator', () => {
     it('re-sorts visible items on UI config updates and keeps the current selection', () => {
       const onUpdated = MockHelper.getEventDispatcherMock();
-      const uiManagerWithComparator = MockHelper.getUiInstanceManagerMock();
-      jest.spyOn(uiManagerWithComparator, 'getConfig').mockReturnValue({
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
         events: { onUpdated },
-        audioTrackComparator: (a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label),
       } as any);
 
       playerMock.getAvailableAudio = jest.fn().mockReturnValue([
@@ -83,8 +82,10 @@ describe('AudioTrackUtils', () => {
       ]);
       playerMock.getAudio = jest.fn().mockReturnValue({ id: 'a-3', label: 'Vietnamese' });
 
-      const localListSelector = new ListSelectorTestClass();
-      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithComparator);
+      const localListSelector = new ListSelectorTestClass({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
 
       expect(localListSelector.getItems().map(i => i.key)).toEqual(['a-1', 'a-3']);
       expect(localListSelector.getSelectedItem()).toBe('a-3');
@@ -97,17 +98,16 @@ describe('AudioTrackUtils', () => {
       playerMock.getAudio = jest.fn().mockReturnValue({ id: 'a-2', label: 'French' });
 
       const refreshAudioTracks = MockHelper.getMockCallArg<(sender: unknown) => void>(onUpdated.subscribe);
-      refreshAudioTracks(uiManagerWithComparator);
+      refreshAudioTracks(uiManagerWithEvents);
 
       expect(localListSelector.getItems().map(i => i.key)).toEqual(['a-1', 'a-2', 'a-3']);
       expect(localListSelector.getSelectedItem()).toBe('a-2');
     });
 
-    it('sorts audio tracks by the comparator defined in UIConfig', () => {
-      const uiManagerWithComparator = MockHelper.getUiInstanceManagerMock();
-      jest.spyOn(uiManagerWithComparator, 'getConfig').mockReturnValue({
+    it('sorts audio tracks by the comparator defined in the list selector config', () => {
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
         events: { onUpdated: MockHelper.getEventDispatcherMock() },
-        audioTrackComparator: (a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label),
       } as any);
 
       playerMock.getAvailableAudio = jest.fn().mockReturnValue([
@@ -116,18 +116,18 @@ describe('AudioTrackUtils', () => {
         { id: 'a-3', label: 'Vietnamese' },
       ]);
 
-      const localListSelector = new ListSelectorMockClass();
-      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithComparator);
+      const localListSelector = new ListSelectorTestClass({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
 
-      const items: { key: string }[] = (localListSelector.synchronizeItems as jest.Mock).mock.calls[0][0];
-      expect(items.map(i => i.key)).toEqual(['a-1', 'a-2', 'a-3']);
+      expect(localListSelector.getItems().map(i => i.key)).toEqual(['a-1', 'a-2', 'a-3']);
     });
 
     it('does not mutate the original array returned by the player', () => {
-      const uiManagerWithComparator = MockHelper.getUiInstanceManagerMock();
-      jest.spyOn(uiManagerWithComparator, 'getConfig').mockReturnValue({
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
         events: { onUpdated: MockHelper.getEventDispatcherMock() },
-        audioTrackComparator: (a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label),
       } as any);
 
       const originalTracks = [
@@ -136,8 +136,10 @@ describe('AudioTrackUtils', () => {
       ];
       playerMock.getAvailableAudio = jest.fn().mockReturnValue(originalTracks);
 
-      const localListSelector = new ListSelectorMockClass();
-      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithComparator);
+      const localListSelector = new ListSelectorTestClass({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
 
       expect(originalTracks[0].id).toBe('a-2');
     });
@@ -148,15 +150,16 @@ describe('AudioTrackUtils', () => {
     });
 
     it('sorts correctly when AudioAdded events fire incrementally', () => {
-      const uiManagerWithComparator = MockHelper.getUiInstanceManagerMock();
-      jest.spyOn(uiManagerWithComparator, 'getConfig').mockReturnValue({
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
         events: { onUpdated: MockHelper.getEventDispatcherMock() },
-        audioTrackComparator: (a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label),
       } as any);
 
       playerMock.getAvailableAudio = jest.fn().mockReturnValue([]);
-      const localListSelector = new ListSelectorMockClass();
-      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithComparator);
+      const localListSelector = new ListSelectorTestClass({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
 
       // First AudioAdded: only Vietnamese available
       playerMock.getAvailableAudio = jest.fn().mockReturnValue([{ id: 'a-3', label: 'Vietnamese' }]);
@@ -169,30 +172,27 @@ describe('AudioTrackUtils', () => {
       ]);
       playerMock.eventEmitter.fireAudioAddedEvent('a-1', 'English');
 
-      const lastCall: { key: string }[] = (localListSelector.synchronizeItems as jest.Mock).mock.calls.slice(-1)[0][0];
-      expect(lastCall.map(i => i.key)).toEqual(['a-1', 'a-3']);
+      expect(localListSelector.getItems().map(i => i.key)).toEqual(['a-1', 'a-3']);
     });
 
     it('reselects the current audio track after applying the comparator', () => {
-      const uiManagerWithComparator = MockHelper.getUiInstanceManagerMock();
-      jest.spyOn(uiManagerWithComparator, 'getConfig').mockReturnValue({
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
         events: { onUpdated: MockHelper.getEventDispatcherMock() },
-        audioTrackComparator: (a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label),
       } as any);
       playerMock.getAudio = jest.fn().mockReturnValue({ id: 'a-3', label: 'Vietnamese' });
 
       const localListSelector = new ListSelectorMockClass();
-      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithComparator);
+      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
 
       expect(localListSelector.selectItem).toHaveBeenCalledWith('a-3');
     });
 
     it('preserves the previous selection on refresh when the player does not expose a current audio track', () => {
       const onUpdated = MockHelper.getEventDispatcherMock();
-      const uiManagerWithComparator = MockHelper.getUiInstanceManagerMock();
-      jest.spyOn(uiManagerWithComparator, 'getConfig').mockReturnValue({
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
         events: { onUpdated },
-        audioTrackComparator: (a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label),
       } as any);
 
       playerMock.getAvailableAudio = jest.fn().mockReturnValue([
@@ -201,8 +201,10 @@ describe('AudioTrackUtils', () => {
       ]);
       playerMock.getAudio = jest.fn().mockReturnValue({ id: 'a-2', label: 'Taiwanese' });
 
-      const localListSelector = new ListSelectorTestClass();
-      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithComparator);
+      const localListSelector = new ListSelectorTestClass({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      new AudioTrackSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
 
       expect(localListSelector.getSelectedItem()).toBe('a-2');
 
@@ -214,7 +216,7 @@ describe('AudioTrackUtils', () => {
       playerMock.getAudio = jest.fn().mockReturnValue(undefined);
 
       const refreshAudioTracks = MockHelper.getMockCallArg<(sender: unknown) => void>(onUpdated.subscribe);
-      refreshAudioTracks(uiManagerWithComparator);
+      refreshAudioTracks(uiManagerWithEvents);
 
       expect(localListSelector.getItems().map(i => i.key)).toEqual(['a-1', 'a-3', 'a-2']);
       expect(localListSelector.getSelectedItem()).toBe('a-2');

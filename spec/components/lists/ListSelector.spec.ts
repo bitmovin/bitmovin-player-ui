@@ -292,5 +292,44 @@ describe('ListSelector', () => {
       expect(spy).not.toHaveBeenCalledWith(expect.anything(), 'I-2');
       expect(spy).not.toHaveBeenCalledWith(expect.anything(), 'I-3');
     });
+
+    it('reorders synchronized items when a comparator is configured', () => {
+      listSelector = new ListSelectorTestClass({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      listSelector.addItem('I-3', 'L-3');
+      listSelector.addItem('I-1', 'L-1');
+      listSelector.addItem('I-2', 'L-2');
+
+      listSelector.synchronizeItems([
+        {
+          key: 'I-3',
+          label: 'L-3',
+        },
+        {
+          key: 'I-1',
+          label: 'L-1',
+        },
+        {
+          key: 'I-2',
+          label: 'L-2',
+        },
+      ]);
+
+      expect(listSelector.getItems()).toEqual([
+        {
+          key: 'I-1',
+          label: 'L-1',
+        },
+        {
+          key: 'I-2',
+          label: 'L-2',
+        },
+        {
+          key: 'I-3',
+          label: 'L-3',
+        },
+      ]);
+    });
   });
 });

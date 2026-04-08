@@ -137,6 +137,7 @@ export {
   ListSelector,
   ListSelectorConfig,
   ListItem,
+  ListItemComparator,
   ListItemFilter,
   ListItemLabelTranslator,
 } from './components/lists/ListSelector';

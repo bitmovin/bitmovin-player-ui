@@ -44,6 +44,20 @@ export interface ListItemLabelTranslator {
 }
 
 /**
+ * Comparator function to define a custom display order for list items.
+ */
+export interface ListItemComparator {
+  /**
+   * Compares two list items and returns their relative order.
+   * Follows the same contract as {@link Array.prototype.sort}.
+   * @param {ListItem} listItemA the first item to compare
+   * @param {ListItem} listItemB the second item to compare
+   * @returns {number} negative when A should come first, positive when B should come first, 0 if equal
+   */
+  (listItemA: ListItem, listItemB: ListItem): number;
+}
+
+/**
  * Configuration interface for a {@link ListSelector}.
  *
  * @category Configs
@@ -52,6 +66,7 @@ export interface ListSelectorConfig extends ComponentConfig {
   items?: ListItem[];
   filter?: ListItemFilter;
   translator?: ListItemLabelTranslator;
+  comparator?: ListItemComparator;
 }
 
 export abstract class ListSelector<Config extends ListSelectorConfig> extends Component<ListSelectorConfig> {
@@ -78,6 +93,20 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     );
 
     this.items = this.config.items;
+  }
+
+  private normalizeItem(listItem: ListItem): ListItem | null {
+    const normalizedItem: ListItem = { ...listItem };
+
+    if (this.config.filter && !this.config.filter(normalizedItem)) {
+      return null;
+    }
+
+    if (this.config.translator) {
+      normalizedItem.label = this.config.translator(normalizedItem);
+    }
+
+    return normalizedItem;
   }
 
   private getItemIndex(key: string): number {
@@ -116,16 +145,9 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param ariaLabel custom aria label for the listItem
    */
   addItem(key: string | null, label: LocalizableText, sortedInsert = false, ariaLabel = '') {
-    const listItem: ListItem = { key: key, label: label, ...(ariaLabel && { ariaLabel }) };
-
-    // Apply filter function
-    if (this.config.filter && !this.config.filter(listItem)) {
+    const normalizedItem = this.normalizeItem({ key: key, label: label, ...(ariaLabel && { ariaLabel }) });
+    if (!normalizedItem) {
       return;
-    }
-
-    // Apply translator function
-    if (this.config.translator) {
-      listItem.label = this.config.translator(listItem);
     }
 
     // Try to remove key first to get overwrite behavior and avoid duplicate keys
@@ -135,12 +157,12 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     if (sortedInsert) {
       const index = this.items.findIndex(entry => entry.key > key);
       if (index < 0) {
-        this.items.push(listItem);
+        this.items.push(normalizedItem);
       } else {
-        this.items.splice(index, 0, listItem);
+        this.items.splice(index, 0, normalizedItem);
       }
     } else {
-      this.items.push(listItem);
+      this.items.push(normalizedItem);
     }
     this.onItemAddedEvent(key);
   }
@@ -212,13 +234,30 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param newItems
    */
   synchronizeItems(newItems: ListItem[]): void {
-    newItems
-      .filter(item => !this.hasItem(item.key))
-      .forEach(item => this.addItem(item.key, item.label, item.sortedInsert, item.ariaLabel));
+    const normalizedItems = newItems
+      .map(item => this.normalizeItem(item))
+      .filter((item): item is ListItem => item !== null);
+
+    if (this.config.comparator) {
+      normalizedItems.sort(this.config.comparator);
+    }
+
+    const currentKeys = new Set(this.items.map(item => item.key));
+    const nextKeys = new Set(normalizedItems.map(item => item.key));
 
     this.items
-      .filter(item => newItems.filter(i => i.key === item.key).length === 0)
-      .forEach(item => this.removeItem(item.key));
+      .filter(item => !nextKeys.has(item.key))
+      .forEach(item => this.onItemRemovedEvent(item.key));
+
+    this.items = normalizedItems;
+
+    normalizedItems
+      .filter(item => !currentKeys.has(item.key))
+      .forEach(item => this.onItemAddedEvent(item.key));
+
+    if (this.selectedItem !== null && !nextKeys.has(this.selectedItem)) {
+      this.selectedItem = null;
+    }
   }
 
   /**

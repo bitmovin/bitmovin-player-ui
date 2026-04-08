@@ -1,5 +1,5 @@
 import { SelectBox } from './SelectBox';
-import { ListSelectorConfig } from '../lists/ListSelector';
+import { ListItem, ListSelectorConfig } from '../lists/ListSelector';
 import { UIInstanceManager } from '../../UIManager';
 import { SubtitleSwitchHandler } from '../../utils/SubtitleUtils';
 import { PlayerAPI } from 'bitmovin-player';
@@ -12,10 +12,28 @@ import { i18n } from '../../localization/i18n';
  */
 export class SubtitleSelectBox extends SelectBox {
   constructor(config: ListSelectorConfig = {}) {
-    super(config);
+    const comparator = config.comparator
+      ? (itemA: ListItem, itemB: ListItem) => {
+          if (itemA.key === 'null') {
+            return -1;
+          }
+          if (itemB.key === 'null') {
+            return 1;
+          }
+          return config.comparator(itemA, itemB);
+        }
+      : undefined;
+
+    super({
+      ...config,
+      comparator,
+    });
 
     this.config = this.mergeConfig(
-      config,
+      {
+        ...config,
+        comparator,
+      },
       {
         cssClasses: ['ui-subtitleselectbox'],
         ariaLabel: i18n.getLocalizer('subtitle.select'),
