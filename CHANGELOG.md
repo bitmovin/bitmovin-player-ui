@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Improve CEA captions legibility when the rendered player size has a small height
+- CEA-608 captions now render within a centered 80% safe area and keep their row-based placement when the control bar is shown
+
+### Fixed
+
+- Reset cached CEA-608 grid sizing when CEA subtitle rendering is disabled so the next CEA session recalculates its layout correctly
 
 ## [4.11.0] - 2026-04-03
 
