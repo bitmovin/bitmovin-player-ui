@@ -843,19 +843,54 @@ function isCea608SubtitleCue(cue: SubtitleCueEvent): boolean {
 }
 
 function awaitTransitionEnd(domElement: DOM) {
-  const hasTransition = getComputedStyle(domElement.get(0)).transitionProperty !== 'none';
+  const computedStyle = getComputedStyle(domElement.get(0));
+  const hasTransition = computedStyle.transitionProperty !== 'none';
 
   if (!hasTransition) {
     return Promise.resolve();
   }
 
   return new Promise<void>(resolve => {
+    let transitionTimeout = 0;
+
     const transitionHandler = () => {
+      window.clearTimeout(transitionTimeout);
       domElement.off('transitionend', transitionHandler);
       domElement.off('transitioncancel', transitionHandler);
       resolve();
     };
+
+    transitionTimeout = window.setTimeout(transitionHandler, getMaximumTransitionTimeoutMs(computedStyle) + 50);
     domElement.on('transitionend', transitionHandler);
     domElement.on('transitioncancel', transitionHandler);
   });
+}
+
+function getMaximumTransitionTimeoutMs(computedStyle: CSSStyleDeclaration): number {
+  const durations = computedStyle.transitionDuration.split(',').map(parseCssTimeToMs);
+  const delays = computedStyle.transitionDelay.split(',').map(parseCssTimeToMs);
+  const transitionCount = Math.max(durations.length, delays.length);
+  let maximumTransitionTimeoutMs = 0;
+
+  for (let index = 0; index < transitionCount; index++) {
+    const duration = durations[Math.min(index, durations.length - 1)] || 0;
+    const delay = delays[Math.min(index, delays.length - 1)] || 0;
+    maximumTransitionTimeoutMs = Math.max(maximumTransitionTimeoutMs, duration + delay);
+  }
+
+  return maximumTransitionTimeoutMs;
+}
+
+function parseCssTimeToMs(value: string): number {
+  const trimmedValue = value.trim();
+
+  if (trimmedValue.endsWith('ms')) {
+    return parseFloat(trimmedValue);
+  }
+
+  if (trimmedValue.endsWith('s')) {
+    return parseFloat(trimmedValue) * 1000;
+  }
+
+  return 0;
 }

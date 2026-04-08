@@ -8,6 +8,7 @@ import {
 } from '../../../src/ts/components/overlays/SubtitleOverlay';
 import { DOM } from '../../../src/ts/DOM';
 import { PlayerEvent, SubtitleCueEvent } from 'bitmovin-player';
+import { ControlBar } from '../../../src/ts/components/ControlBar';
 
 let playerMock: jest.Mocked<TestingPlayerAPI>;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -171,6 +172,34 @@ describe('SubtitleOverlay', () => {
       });
 
       expect((subtitleOverlay as any).cea608Enabled).toBe(false);
+    });
+
+    it('recalculates the CEA grid after controlbar show even when no transition event fires', async () => {
+      jest.useFakeTimers();
+
+      const getComputedStyleSpy = jest.spyOn(window, 'getComputedStyle').mockReturnValue({
+        transitionProperty: 'bottom',
+        transitionDuration: '150ms',
+        transitionDelay: '0s',
+      } as CSSStyleDeclaration);
+
+      try {
+        (subtitleOverlay as any).cea608Enabled = true;
+        (subtitleOverlay as any).ensureCea608GridSizeUpdated = jest.fn();
+
+        const onComponentShowHandler = MockHelper.getMockCallArg<(component: unknown) => void>(
+          uiInstanceManagerMock.onComponentShow.subscribe as jest.Mock,
+        );
+
+        onComponentShowHandler(new ControlBar({}));
+        jest.advanceTimersByTime(200);
+        await Promise.resolve();
+
+        expect((subtitleOverlay as any).ensureCea608GridSizeUpdated).toHaveBeenCalled();
+      } finally {
+        getComputedStyleSpy.mockRestore();
+        jest.useRealTimers();
+      }
     });
   });
 });
