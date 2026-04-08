@@ -2,10 +2,12 @@ import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import {
   SubtitleOverlay,
+  SubtitleLabel,
   SubtitleRegionContainer,
   SubtitleRegionContainerManager,
 } from '../../../src/ts/components/overlays/SubtitleOverlay';
 import { DOM } from '../../../src/ts/DOM';
+import { PlayerEvent, SubtitleCueEvent } from 'bitmovin-player';
 
 let playerMock: jest.Mocked<TestingPlayerAPI>;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -106,6 +108,69 @@ describe('SubtitleOverlay', () => {
     ])('setFontSizeFactor(%f) results in cea608FontSizeFactor = %f', (inputFactor, expectedFactor) => {
       subtitleOverlay.setFontSizeFactor(inputFactor);
       expect(subtitleOverlay['cea608FontSizeFactor']).toBe(expectedFactor);
+    });
+  });
+
+  describe('CEA 608 behavior', () => {
+    let mockDomElement: DOM;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
+      uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+      subtitleOverlay = new SubtitleOverlay();
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+
+      mockDomElement = MockHelper.generateDOMMock();
+      jest.spyOn(mockDomElement, 'width').mockReturnValue(320);
+      jest.spyOn(mockDomElement, 'height').mockReturnValue(180);
+      jest.spyOn(mockDomElement, 'get').mockReturnValue([document.createElement('div')] as any);
+      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
+    });
+
+    it('normalizes positioned cues into CEA row regions', () => {
+      const cue = {
+        subtitleId: 'subtitleId',
+        start: 0,
+        end: 10,
+        text: 'CEA cue',
+        type: PlayerEvent.CueEnter,
+        position: {
+          row: 4,
+        },
+      } as SubtitleCueEvent;
+
+      const label = subtitleOverlay.generateLabel(cue) as SubtitleLabel;
+
+      expect(cue.position.column).toBe(0);
+      expect(label.region).toBe('cea608-row-4');
+      expect(label.originalRowPosition).toBe(4);
+    });
+
+    it('toggles CEA mode on positioned cue enter and last cue exit', () => {
+      jest.spyOn((subtitleOverlay as any).subtitleContainerManager, 'addLabel').mockImplementation(() => undefined);
+      jest.spyOn((subtitleOverlay as any).subtitleContainerManager, 'removeLabel').mockImplementation(() => undefined);
+      const cue = {
+        subtitleId: 'subtitleId',
+        start: 0,
+        end: 10,
+        text: 'CEA cue',
+        type: PlayerEvent.CueEnter,
+        position: {
+          row: 2,
+          column: 6,
+        },
+      } as SubtitleCueEvent;
+
+      playerMock.eventEmitter.fireEvent<SubtitleCueEvent>(cue);
+
+      expect((subtitleOverlay as any).cea608Enabled).toBe(true);
+
+      playerMock.eventEmitter.fireEvent<SubtitleCueEvent>({
+        ...cue,
+        type: PlayerEvent.CueExit,
+      });
+
+      expect((subtitleOverlay as any).cea608Enabled).toBe(false);
     });
   });
 });

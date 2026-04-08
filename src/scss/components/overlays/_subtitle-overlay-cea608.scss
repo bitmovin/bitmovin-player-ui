@@ -4,10 +4,15 @@
   --cea608-row-height: math.div(100%, 15);
 
   &.#{$prefix}-cea608 {
-    bottom: 2em;
-    left: 3em;
-    right: 3em;
-    top: 2em;
+    // CEA-608 is rendered inside its centered 80% safe area.
+    bottom: math.percentage(math.div(1 - 0.8, 2));
+    left: math.percentage(math.div(1 - 0.8, 2));
+    right: math.percentage(math.div(1 - 0.8, 2));
+    top: math.percentage(math.div(1 - 0.8, 2));
+
+    &.#{$prefix}-controlbar-visible {
+      bottom: math.percentage(math.div(1 - 0.8, 2));
+    }
 
     .#{$prefix}-subtitle-region-container {
       height: var(--cea608-row-height);
@@ -17,11 +22,9 @@
       text-align: left;
 
       // Define positions for all 15 rows.
-      // --cea608-grid-offset shifts the grid upward when a minimum font size causes the full
-      // 15-row grid to exceed the overlay height, keeping bottom rows in view.
       @for $i from 0 through 14 {
         &.#{$prefix}-subtitle-position-cea608-row-#{$i} {
-          top: calc(var(--cea608-row-height) * #{$i} - var(--cea608-grid-offset, 0px));
+          top: calc(var(--cea608-row-height) * #{$i});
         }
       }
     }
