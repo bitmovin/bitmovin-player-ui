@@ -833,6 +833,10 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
           'flex-flow',
           'justify-content',
         ];
+
+        for (const prop of propsToMove) {
+          (containerDom.get(0) as HTMLElement).style.removeProperty(prop);
+        }
         for (const prop of propsToMove) {
           const val = labelEl.style.getPropertyValue(prop);
           if (val) {
