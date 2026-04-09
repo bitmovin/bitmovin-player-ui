@@ -230,6 +230,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
       // else use the plain text
       text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
+      cssClasses: event.vtt && !event.vtt.region ? ['subtitle-vtt-cue'] : [],
       vtt: event.vtt,
       region: region,
       regionStyle: event.regionStyle,
@@ -725,7 +726,10 @@ export class SubtitleRegionContainerManager {
     const cssClasses = [`subtitle-position-${regionName}`];
 
     if (label.vtt && label.vtt.region) {
+      cssClasses.push('subtitle-vtt-region-container');
       cssClasses.push(`vtt-region-${label.vtt.region.id}`);
+    } else if (label.vtt) {
+      cssClasses.push('subtitle-vtt-cue-container');
     }
 
     if (!this.subtitleRegionContainers[regionContainerId]) {
@@ -737,6 +741,10 @@ export class SubtitleRegionContainerManager {
 
       if (label.regionStyle) {
         regionContainer.getDomElement().attr('style', label.regionStyle);
+      }
+
+      if (label.vtt) {
+        regionContainer.getDomElement().css('position', 'static');
       }
 
       // getDomElement needs to be called at least once to ensure the component exists
@@ -814,38 +822,6 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
       }
 
       VttUtils.setVttCueBoxStyles(labelToAdd, overlaySize);
-
-      if (!labelToAdd.vtt.region) {
-        const labelEl = labelToAdd.getDomElement().get(0);
-        const containerDom = this.getDomElement();
-        const propsToMove = [
-          'position',
-          'bottom',
-          'top',
-          'left',
-          'right',
-          'width',
-          'height',
-          'writing-mode',
-          'transform',
-          'overflow',
-          'overflow-wrap',
-          'flex-flow',
-          'justify-content',
-        ];
-
-        for (const prop of propsToMove) {
-          (containerDom.get(0) as HTMLElement).style.removeProperty(prop);
-        }
-        for (const prop of propsToMove) {
-          const val = labelEl.style.getPropertyValue(prop);
-          if (val) {
-            containerDom.css(prop, val);
-            labelEl.style.removeProperty(prop);
-          }
-        }
-        containerDom.css('display', 'flex');
-      }
     }
 
     this.addComponent(labelToAdd);

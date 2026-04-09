@@ -58,7 +58,9 @@
       &.#{$prefix}-bgcolor-#{$color-name}#{$opacity-name} {
         .#{$prefix}-subtitle-region-container {
           .#{$prefix}-ui-subtitle-label {
-            background-color: transparentize($color-value, 1 - $opacity-value);
+            .#{$prefix}-ui-label-text {
+              background-color: transparentize($color-value, 1 - $opacity-value);
+            }
           }
         }
       }
@@ -69,8 +71,14 @@
   @each $color-name, $color-value in $colors {
     @each $opacity-name, $opacity-value in $opacities {
       &.#{$prefix}-windowcolor-#{$color-name}#{$opacity-name} {
-        .#{$prefix}-subtitle-region-container {
+        .#{$prefix}-subtitle-region-container:not(.#{$prefix}-subtitle-vtt-cue-container) {
           background-color: transparentize($color-value, 1 - $opacity-value);
+        }
+
+        .#{$prefix}-subtitle-region-container.#{$prefix}-subtitle-vtt-cue-container {
+          .#{$prefix}-ui-subtitle-label.#{$prefix}-subtitle-vtt-cue {
+            background-color: transparentize($color-value, 1 - $opacity-value);
+          }
         }
       }
     }

@@ -2,6 +2,7 @@ import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import {
   SubtitleOverlay,
+  SubtitleLabel,
   SubtitleRegionContainer,
   SubtitleRegionContainerManager,
 } from '../../../src/ts/components/overlays/SubtitleOverlay';
@@ -108,4 +109,80 @@ describe('SubtitleOverlay', () => {
       expect(subtitleOverlay['cea608FontSizeFactor']).toBe(expectedFactor);
     });
   });
+
+  describe('WebVTT container behavior', () => {
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
+      uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+
+      subtitleOverlay = new SubtitleOverlay();
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+      subtitleRegionContainerManagerMock = (subtitleOverlay as any).subtitleContainerManager;
+    });
+
+    it('marks non-region VTT labels as cue boxes', () => {
+      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent({ vtt: createVttProps() }));
+
+      expect((label as any).config.cssClasses).toEqual(['subtitle-vtt-cue']);
+    });
+
+    it('does not mark VTT region labels as cue boxes', () => {
+      const label = subtitleOverlay.generateLabel(
+        createSubtitleCueEvent({ vtt: createVttProps({ region: { id: 'region-1' } }) }),
+      );
+
+      expect((label as any).config.cssClasses).toEqual([]);
+    });
+
+    it('creates a non-region VTT container that stays in normal flow and marks it as a cue container', () => {
+      const regionContainerDom = MockHelper.generateDOMMock();
+      jest.spyOn(SubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(regionContainerDom);
+      const addComponentSpy = jest.spyOn(subtitleOverlay, 'addComponent');
+
+      const label = new SubtitleLabel({
+        text: 'Test Subtitle',
+        vtt: createVttProps(),
+      });
+
+      subtitleRegionContainerManagerMock.addLabel(label);
+
+      expect(Object.keys((subtitleRegionContainerManagerMock as any).subtitleRegionContainers)).toContain('vtt');
+      expect(addComponentSpy).toHaveBeenCalledTimes(1);
+      expect(regionContainerDom.css).toHaveBeenCalledWith('position', 'static');
+    });
+
+    it('creates a VTT region container with region-specific classes', () => {
+      const regionContainerDom = MockHelper.generateDOMMock();
+      jest.spyOn(SubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(regionContainerDom);
+      const addComponentSpy = jest.spyOn(subtitleOverlay, 'addComponent');
+
+      const label = new SubtitleLabel({
+        text: 'Test Subtitle',
+        vtt: createVttProps({ region: { id: 'region-1' } }),
+      });
+
+      subtitleRegionContainerManagerMock.addLabel(label);
+
+      expect(Object.keys((subtitleRegionContainerManagerMock as any).subtitleRegionContainers)).toContain('region-1');
+      expect(addComponentSpy).toHaveBeenCalledTimes(1);
+      expect(regionContainerDom.css).toHaveBeenCalledWith('position', 'static');
+    });
+  });
 });
+
+function createSubtitleCueEvent(overrides: Record<string, unknown> = {}) {
+  return {
+    subtitleId: 'subtitleId',
+    start: 0,
+    end: 10,
+    text: 'Test Subtitle',
+    ...overrides,
+  } as any;
+}
+
+function createVttProps(overrides: Record<string, unknown> = {}) {
+  return {
+    region: null,
+    ...overrides,
+  } as any;
+}
