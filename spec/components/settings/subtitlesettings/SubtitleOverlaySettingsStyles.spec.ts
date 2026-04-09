@@ -3,8 +3,8 @@ import path = require('path');
 
 describe('Subtitle overlay settings styles', () => {
   const stylesPath = path.resolve(
-    __dirname,
-    '../../../../src/scss/components/settings/subtitlesettings/_subtitle-overlay-settings.scss',
+    process.cwd(),
+    'src/scss/components/settings/subtitlesettings/_subtitle-overlay-settings.scss',
   );
   const styles = fs.readFileSync(stylesPath, 'utf8');
 
