@@ -186,6 +186,21 @@ export interface UIConfig {
    * Allows setting a {@link LocalizationConfig} to specify language details of the UI.
    */
   localization?: LocalizationConfig;
+
+  /**
+   * The rendered player height threshold in pixels below which the controlbar pushup is disabled for CEA-608
+   * captions. "Rendered height" refers to the actual on-screen height of the player DOM element, not the video
+   * resolution.
+   *
+   * At small player sizes, CEA-608 captions are already constrained to an 80% safe area, so pushing them further
+   * up when the controlbar appears yields little benefit and can make them illegible. Disabling the pushup below
+   * this threshold keeps captions in the safe area regardless of controlbar state.
+   *
+   * Set to `0` to always enable the pushup (restoring the default behaviour for all sizes).
+   *
+   * Default: `360`
+   */
+  ceaCaptionPushupMinHeight?: number;
 }
 
 export interface ShadowDomConfig {

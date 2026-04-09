@@ -10,7 +10,9 @@
     right: math.percentage(math.div(1 - 0.8, 2));
     top: math.percentage(math.div(1 - 0.8, 2));
 
-    &.#{$prefix}-controlbar-visible {
+    // Below the small-player height threshold the controlbar pushup is disabled: captions stay anchored to the safe
+    // area regardless of controlbar state, since pushing them further up at small sizes reduces legibility.
+    &.#{$prefix}-cea-pushup-disabled.#{$prefix}-controlbar-visible {
       bottom: math.percentage(math.div(1 - 0.8, 2));
     }
 

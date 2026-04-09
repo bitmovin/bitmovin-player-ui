@@ -5,7 +5,7 @@ import { ComponentConfig, Component } from '../Component';
 import { ControlBar } from '../ControlBar';
 import { EventDispatcher } from '../../EventDispatcher';
 import { DOM, Size } from '../../DOM';
-import { PlayerAPI, SubtitleCueEvent } from 'bitmovin-player';
+import { PlayerAPI, PlayerResizedEvent, SubtitleCueEvent } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 import { VttUtils } from '../../utils/VttUtils';
 import { VTTProperties } from 'bitmovin-player/types/subtitles/vtt/API';
@@ -33,6 +33,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
+  private static readonly CLASS_CEA_PUSHUP_DISABLED = 'cea-pushup-disabled';
+  private static readonly DEFAULT_CEA_CAPTION_PUSHUP_MIN_HEIGHT = 360;
   private static readonly CEA608_NUM_ROWS = 15;
   private static readonly CEA608_NUM_COLUMNS = 32;
   private static readonly CEA608_COLUMN_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_COLUMNS;
@@ -41,6 +43,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private cea608Enabled = false;
   private cea608FontSizeFactor = 1;
   private ensureCea608GridSizeUpdated: () => void;
+  private ceaCaptionPushupMinHeight = SubtitleOverlay.DEFAULT_CEA_CAPTION_PUSHUP_MIN_HEIGHT;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -59,6 +62,12 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    const uiConfig = uimanager.getConfig();
+
+    if (uiConfig.ceaCaptionPushupMinHeight !== undefined) {
+      this.ceaCaptionPushupMinHeight = uiConfig.ceaCaptionPushupMinHeight;
+    }
 
     const subtitleManager = new ActiveSubtitleManager();
     this.subtitleManager = subtitleManager;
@@ -164,6 +173,15 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.configureCea608Captions(player, uimanager);
     // Init
     subtitleClearHandler();
+    this.updateCeaPushupClass(new DOM(player.getContainer()).height());
+  }
+
+  private updateCeaPushupClass(playerHeight: number): void {
+    if (playerHeight < this.ceaCaptionPushupMinHeight) {
+      this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_PUSHUP_DISABLED));
+    } else {
+      this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_PUSHUP_DISABLED));
+    }
   }
 
   setFontSizeFactor(factor: number): void {
@@ -413,7 +431,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       }
     };
 
-    player.on(player.exports.PlayerEvent.PlayerResized, () => {
+    player.on(player.exports.PlayerEvent.PlayerResized, (e: PlayerResizedEvent) => {
+      const playerHeight = Math.round(Number(e.height.substring(0, e.height.length - 2)));
+      this.updateCeaPushupClass(playerHeight);
+
       if (this.cea608Enabled) {
         this.ensureCea608GridSizeUpdated();
       }
