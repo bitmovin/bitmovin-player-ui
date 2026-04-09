@@ -63,6 +63,24 @@
       }
     }
 
+    .#{$prefix}-ui-subtitle-label.#{$prefix}-subtitle-vtt-cue,
+    .#{$prefix}-subtitle-vtt-region-container .#{$prefix}-ui-subtitle-label {
+      .#{$prefix}-ui-label-text {
+        max-width: 100%;
+        width: fit-content;
+      }
+
+      &[style*='text-align: center'] .#{$prefix}-ui-label-text {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      &[style*='text-align: right'] .#{$prefix}-ui-label-text,
+      &[style*='text-align: end'] .#{$prefix}-ui-label-text {
+        margin-left: auto;
+      }
+    }
+
     // Move the subtitle up above the controlbar when it appears to avoid them overlapping
     &.#{$prefix}-controlbar-visible {
       bottom: 5em;
