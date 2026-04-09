@@ -58,9 +58,7 @@
       &.#{$prefix}-bgcolor-#{$color-name}#{$opacity-name} {
         .#{$prefix}-subtitle-region-container {
           .#{$prefix}-ui-subtitle-label {
-            .#{$prefix}-ui-label-text {
-              background-color: transparentize($color-value, 1 - $opacity-value);
-            }
+            background-color: transparentize($color-value, 1 - $opacity-value);
           }
         }
       }
