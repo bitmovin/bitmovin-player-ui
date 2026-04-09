@@ -92,7 +92,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.preprocessLabelEventCallback.dispatch(event, label);
 
       if (labelToReplace) {
-        this.subtitleContainerManager.replaceLabel(labelToReplace, label);
+        this.subtitleContainerManager.replaceLabel(labelToReplace, label, this.getDomElement().size());
       }
 
       if (uimanager.getConfig().forceSubtitlesIntoViewContainer) {
@@ -758,11 +758,9 @@ export class SubtitleRegionContainerManager {
     this.subtitleRegionContainers[regionContainerId].addLabel(label, overlaySize);
   }
 
-  replaceLabel(previousLabel: SubtitleLabel, newLabel: SubtitleLabel): void {
-    const { regionContainerId } = this.getRegion(previousLabel);
-
-    this.subtitleRegionContainers[regionContainerId].removeLabel(previousLabel);
-    this.subtitleRegionContainers[regionContainerId].addLabel(newLabel);
+  replaceLabel(previousLabel: SubtitleLabel, newLabel: SubtitleLabel, overlaySize?: Size): void {
+    this.removeLabel(previousLabel);
+    this.addLabel(newLabel, overlaySize);
   }
 
   /**

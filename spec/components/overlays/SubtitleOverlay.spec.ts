@@ -7,6 +7,7 @@ import {
   SubtitleRegionContainerManager,
 } from '../../../src/ts/components/overlays/SubtitleOverlay';
 import { DOM } from '../../../src/ts/DOM';
+import { VttUtils } from '../../../src/ts/utils/VttUtils';
 
 let playerMock: jest.Mocked<TestingPlayerAPI>;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -216,7 +217,27 @@ describe('SubtitleOverlay', () => {
       expect(getLabelCssClasses(removeLabelSpy, 0, 0)).toEqual(['subtitle-vtt-cue']);
     });
 
-    it.todo('moves updated VTT cues into a different container when the region assignment changes');
+    it('moves updated VTT cues into the correct container when the region assignment changes', () => {
+      const overlaySize = { width: 640, height: 360 };
+      const setVttRegionStylesSpy = jest.spyOn(VttUtils, 'setVttRegionStyles');
+      jest.spyOn(subtitleOverlay, 'removeComponent');
+      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue({
+        ...MockHelper.generateDOMMock(),
+        size: jest.fn().mockReturnValue(overlaySize),
+      } as any);
+
+      const previousCueEvent = createSubtitleCueEvent({ vtt: createVttProps() });
+      const updatedCueEvent = createSubtitleCueEvent({
+        vtt: createVttProps({ region: { id: 'region-1' } }),
+      });
+
+      playerMock.eventEmitter.fireEvent({ ...previousCueEvent, type: playerMock.exports.PlayerEvent.CueEnter } as any);
+      playerMock.eventEmitter.fireEvent({ ...updatedCueEvent, type: playerMock.exports.PlayerEvent.CueUpdate } as any);
+
+      expect(Object.keys((subtitleRegionContainerManagerMock as any).subtitleRegionContainers)).toEqual(['region-1']);
+      expect(setVttRegionStylesSpy).toHaveBeenCalledWith(expect.anything(), updatedCueEvent.vtt.region, overlaySize);
+      expect(subtitleOverlay.removeComponent).toHaveBeenCalledTimes(1);
+    });
   });
 });
 
