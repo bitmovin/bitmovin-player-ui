@@ -11,7 +11,7 @@ import { i18n } from '../localization/i18n';
  * @category Utils
  */
 export class SubtitleSwitchHandler {
-  private static SUBTITLES_OFF_KEY: string = 'null';
+  static readonly SUBTITLES_OFF_KEY: string = 'null';
 
   private player: PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
@@ -113,7 +113,6 @@ export class SubtitleSwitchHandler {
       return { key: subtitle.id, label: subtitle.label };
     };
 
-    this.listElement.clearItems();
     this.listElement.synchronizeItems([offListItem, ...this.player.subtitles.list().map(subtitleToListItem)]);
     this.selectCurrentSubtitle();
   };

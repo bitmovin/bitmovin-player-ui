@@ -16,7 +16,7 @@ export class AudioTrackListBox extends ListBox {
   constructor(title?: LocalizableText);
   constructor(config?: AudioTrackListBoxConfig);
   constructor(configOrTitle: LocalizableText | AudioTrackListBoxConfig = {}) {
-    const config =
+    const config: AudioTrackListBoxConfig =
       typeof configOrTitle === 'string' || typeof configOrTitle === 'function'
         ? { title: configOrTitle }
         : configOrTitle;
@@ -24,8 +24,7 @@ export class AudioTrackListBox extends ListBox {
     super({
       ...config,
       listSelector: new AudioTrackSelectBox(config),
-      title: config.title,
-    } as ListBoxConfig);
+    });
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

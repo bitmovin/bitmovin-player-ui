@@ -48,6 +48,23 @@ describe('TrackListBox constructors', () => {
     expect((subtitleListBox as any).config.listSelector.getConfig().comparator).not.toBe(comparator);
   });
 
+  it('keeps the Off item (key "null") pinned first even when the comparator would sort it last', () => {
+    // Z→A comparator would place 'null' last alphabetically if not wrapped
+    const comparator = (a: any, b: any) => String(b.label).localeCompare(String(a.label));
+    const subtitleListBox = new SubtitleListBox({ title: 'Subtitles', comparator });
+    const innerComparator = (subtitleListBox as any).config.listSelector.getConfig().comparator;
+
+    const offItem = { key: 'null', label: 'Off' };
+    const englishItem = { key: 's-1', label: 'English' };
+    const vietnameseItem = { key: 's-2', label: 'Vietnamese' };
+
+    expect(innerComparator(offItem, englishItem)).toBeLessThan(0);
+    expect(innerComparator(offItem, vietnameseItem)).toBeLessThan(0);
+    expect(innerComparator(englishItem, offItem)).toBeGreaterThan(0);
+    // Non-null items are still sorted by the user comparator (Z→A: Vietnamese before English)
+    expect(innerComparator(vietnameseItem, englishItem)).toBeLessThan(0);
+  });
+
   it('passes list selector config through SubtitleListBox config objects', () => {
     const translator = jest.fn().mockImplementation(item => item.label);
     const filter = jest.fn().mockReturnValue(true);

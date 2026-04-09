@@ -242,18 +242,25 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     const currentKeys = new Set(this.items.map(item => item.key));
     const nextKeys = new Set(normalizedItems.map(item => item.key));
 
-    this.items
+    const removedKeys = this.items
       .filter(item => !nextKeys.has(item.key))
-      .forEach(item => this.onItemRemovedEvent(item.key));
+      .map(item => item.key);
+
+    const addedKeys = normalizedItems
+      .filter(item => !currentKeys.has(item.key))
+      .map(item => item.key);
 
     this.items = normalizedItems;
 
-    normalizedItems
-      .filter(item => !currentKeys.has(item.key))
-      .forEach(item => this.onItemAddedEvent(item.key));
-
     if (this.selectedItem !== null && !nextKeys.has(this.selectedItem)) {
       this.selectedItem = null;
+    }
+
+    for (const key of removedKeys) {
+      this.onItemRemovedEvent(key);
+    }
+    for (const key of addedKeys) {
+      this.onItemAddedEvent(key);
     }
   }
 

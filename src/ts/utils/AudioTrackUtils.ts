@@ -70,11 +70,12 @@ export class AudioTrackSwitchHandler {
       return { key: audioTrack.id, label: audioTrack.label };
     };
 
-    this.listElement.clearItems();
     this.listElement.synchronizeItems(this.player.getAvailableAudio().map(audioTrackToListItem));
     if (this.player.getAudio()) {
       this.selectCurrentAudioTrack();
     } else if (previouslySelectedAudioTrack && this.listElement.hasItem(previouslySelectedAudioTrack)) {
+      // HLS streams don't always report the selected audio track via getAudio() after a refresh.
+      // If getAudio() is unavailable, restore the previously selected track if it still exists.
       this.listElement.selectItem(previouslySelectedAudioTrack);
     }
   };

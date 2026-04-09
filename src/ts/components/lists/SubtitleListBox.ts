@@ -19,7 +19,7 @@ export class SubtitleListBox extends ListBox {
   constructor(title?: LocalizableText);
   constructor(config?: SubtitleListBoxConfig);
   constructor(configOrTitle: LocalizableText | SubtitleListBoxConfig = {}) {
-    const config =
+    const config: SubtitleListBoxConfig =
       typeof configOrTitle === 'string' || typeof configOrTitle === 'function'
         ? { title: configOrTitle }
         : configOrTitle;
@@ -27,8 +27,7 @@ export class SubtitleListBox extends ListBox {
     super({
       ...config,
       listSelector: new SubtitleSelectBox(config),
-      title: config.title,
-    } as ListBoxConfig);
+    });
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

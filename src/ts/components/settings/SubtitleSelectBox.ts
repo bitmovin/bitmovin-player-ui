@@ -17,10 +17,10 @@ export class SubtitleSelectBox extends SelectBox {
   constructor(config: ListSelectorConfig = {}) {
     const comparator = config.comparator
       ? (itemA: ListItem, itemB: ListItem) => {
-          if (itemA.key === 'null') {
+          if (itemA.key === SubtitleSwitchHandler.SUBTITLES_OFF_KEY) {
             return -1;
           }
-          if (itemB.key === 'null') {
+          if (itemB.key === SubtitleSwitchHandler.SUBTITLES_OFF_KEY) {
             return 1;
           }
           return config.comparator(itemA, itemB);
