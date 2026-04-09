@@ -120,10 +120,16 @@ describe('SubtitleOverlay', () => {
       subtitleRegionContainerManagerMock = (subtitleOverlay as any).subtitleContainerManager;
     });
 
+    it('does not mark non-VTT labels as cue boxes', () => {
+      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent());
+
+      expect(label.getConfig().cssClasses).toEqual([]);
+    });
+
     it('marks non-region VTT labels as cue boxes', () => {
       const label = subtitleOverlay.generateLabel(createSubtitleCueEvent({ vtt: createVttProps() }));
 
-      expect((label as any).config.cssClasses).toEqual(['subtitle-vtt-cue']);
+      expect(label.getConfig().cssClasses).toEqual(['subtitle-vtt-cue']);
     });
 
     it('does not mark VTT region labels as cue boxes', () => {
@@ -131,13 +137,15 @@ describe('SubtitleOverlay', () => {
         createSubtitleCueEvent({ vtt: createVttProps({ region: { id: 'region-1' } }) }),
       );
 
-      expect((label as any).config.cssClasses).toEqual([]);
+      expect(label.getConfig().cssClasses).toEqual([]);
     });
 
     it('creates a non-region VTT container that stays in normal flow and marks it as a cue container', () => {
       const regionContainerDom = MockHelper.generateDOMMock();
       jest.spyOn(SubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(regionContainerDom);
       const addComponentSpy = jest.spyOn(subtitleOverlay, 'addComponent');
+      const mergeConfigMock = (SubtitleRegionContainer.prototype as any).mergeConfig as jest.Mock;
+      mergeConfigMock.mockClear();
 
       const label = new SubtitleLabel({
         text: 'Test Subtitle',
@@ -148,6 +156,7 @@ describe('SubtitleOverlay', () => {
 
       expect(Object.keys((subtitleRegionContainerManagerMock as any).subtitleRegionContainers)).toContain('vtt');
       expect(addComponentSpy).toHaveBeenCalledTimes(1);
+      expect(getMergedCssClasses(mergeConfigMock)).toEqual(['subtitle-position-vtt', 'subtitle-vtt-cue-container']);
       expect(regionContainerDom.css).toHaveBeenCalledWith('position', 'static');
     });
 
@@ -155,6 +164,8 @@ describe('SubtitleOverlay', () => {
       const regionContainerDom = MockHelper.generateDOMMock();
       jest.spyOn(SubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(regionContainerDom);
       const addComponentSpy = jest.spyOn(subtitleOverlay, 'addComponent');
+      const mergeConfigMock = (SubtitleRegionContainer.prototype as any).mergeConfig as jest.Mock;
+      mergeConfigMock.mockClear();
 
       const label = new SubtitleLabel({
         text: 'Test Subtitle',
@@ -165,10 +176,58 @@ describe('SubtitleOverlay', () => {
 
       expect(Object.keys((subtitleRegionContainerManagerMock as any).subtitleRegionContainers)).toContain('region-1');
       expect(addComponentSpy).toHaveBeenCalledTimes(1);
+      expect(getMergedCssClasses(mergeConfigMock)).toEqual([
+        'subtitle-position-vtt',
+        'subtitle-vtt-region-container',
+        'vtt-region-region-1',
+      ]);
       expect(regionContainerDom.css).toHaveBeenCalledWith('position', 'static');
     });
+
+    it('keeps non-VTT containers free of VTT-specific classes', () => {
+      const mergeConfigMock = (SubtitleRegionContainer.prototype as any).mergeConfig as jest.Mock;
+      mergeConfigMock.mockClear();
+
+      subtitleRegionContainerManagerMock.addLabel(new SubtitleLabel({ text: 'Test Subtitle', region: 'default' }));
+
+      expect(getMergedCssClasses(mergeConfigMock)).toEqual(['subtitle-position-default']);
+    });
+
+    it('preserves non-region VTT cue-box semantics on cue updates', () => {
+      const replaceLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'replaceLabel');
+      const cueEvent = createSubtitleCueEvent({ vtt: createVttProps() });
+
+      playerMock.eventEmitter.fireEvent({ ...cueEvent, type: playerMock.exports.PlayerEvent.CueEnter } as any);
+      playerMock.eventEmitter.fireEvent({ ...cueEvent, type: playerMock.exports.PlayerEvent.CueUpdate } as any);
+
+      expect(replaceLabelSpy).toHaveBeenCalledTimes(1);
+      expect(getLabelCssClasses(replaceLabelSpy, 0, 0)).toEqual(['subtitle-vtt-cue']);
+      expect(getLabelCssClasses(replaceLabelSpy, 0, 1)).toEqual(['subtitle-vtt-cue']);
+    });
+
+    it('removes non-region VTT labels from the cue container on cue exit', () => {
+      const removeLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'removeLabel');
+      const cueEvent = createSubtitleCueEvent({ vtt: createVttProps() });
+
+      playerMock.eventEmitter.fireEvent({ ...cueEvent, type: playerMock.exports.PlayerEvent.CueEnter } as any);
+      playerMock.eventEmitter.fireEvent({ ...cueEvent, type: playerMock.exports.PlayerEvent.CueExit } as any);
+
+      expect(removeLabelSpy).toHaveBeenCalledTimes(1);
+      expect(getLabelCssClasses(removeLabelSpy, 0, 0)).toEqual(['subtitle-vtt-cue']);
+    });
+
+    it.todo('moves updated VTT cues into a different container when the region assignment changes');
   });
 });
+
+function getMergedCssClasses(mergeConfigMock: jest.Mock): string[] {
+  return mergeConfigMock.mock.calls[0][0].cssClasses;
+}
+
+function getLabelCssClasses(spy: jest.SpyInstance, callIndex: number, argIndex: number): string[] {
+  const label = spy.mock.calls[callIndex][argIndex] as SubtitleLabel;
+  return label.getConfig().cssClasses;
+}
 
 function createSubtitleCueEvent(overrides: Record<string, unknown> = {}) {
   return {
