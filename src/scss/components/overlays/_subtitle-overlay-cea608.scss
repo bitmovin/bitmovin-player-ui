@@ -4,16 +4,23 @@
   --cea608-row-height: math.div(100%, 15);
 
   &.#{$prefix}-cea608 {
-    // CEA-608 is rendered inside its centered 80% safe area.
-    bottom: math.percentage(math.div(1 - 0.8, 2));
-    left: math.percentage(math.div(1 - 0.8, 2));
-    right: math.percentage(math.div(1 - 0.8, 2));
-    top: math.percentage(math.div(1 - 0.8, 2));
+    bottom: 2em;
+    left: 3em;
+    right: 3em;
+    top: 2em;
 
-    // Below the small-player height threshold the controlbar pushup is disabled: captions stay anchored to the safe
-    // area regardless of controlbar state, since pushing them further up at small sizes reduces legibility.
-    &.#{$prefix}-cea-pushup-disabled.#{$prefix}-controlbar-visible {
+    // Below the rendered-height threshold the overlay is constrained to an 80% safe area and the controlbar pushup
+    // is disabled. Pushing captions further up at small player sizes reduces legibility, and the safe area keeps
+    // them away from the edges without relying on fixed em values that do not scale with player size.
+    &.#{$prefix}-cea-pushup-disabled {
       bottom: math.percentage(math.div(1 - 0.8, 2));
+      left: math.percentage(math.div(1 - 0.8, 2));
+      right: math.percentage(math.div(1 - 0.8, 2));
+      top: math.percentage(math.div(1 - 0.8, 2));
+
+      &.#{$prefix}-controlbar-visible {
+        bottom: math.percentage(math.div(1 - 0.8, 2));
+      }
     }
 
     .#{$prefix}-subtitle-region-container {

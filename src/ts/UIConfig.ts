@@ -188,15 +188,22 @@ export interface UIConfig {
   localization?: LocalizationConfig;
 
   /**
-   * The rendered player height threshold in pixels below which the controlbar pushup is disabled for CEA-608
-   * captions. "Rendered height" refers to the actual on-screen height of the player DOM element, not the video
-   * resolution.
+   * The rendered player height threshold in pixels below which small-player adjustments are applied to
+   * CEA-608 captions:
    *
-   * At small player sizes, CEA-608 captions are already constrained to an 80% safe area, so pushing them further
-   * up when the controlbar appears yields little benefit and can make them illegible. Disabling the pushup below
-   * this threshold keeps captions in the safe area regardless of controlbar state.
+   * 1. The caption overlay is constrained to a centered 80% safe area (proportional margins on all four sides),
+   *    replacing the fixed `em`-based margins used at larger sizes.
+   * 2. The controlbar pushup is disabled, keeping captions anchored to the safe area regardless of controlbar state.
    *
-   * Set to `0` to always enable the pushup (restoring the default behaviour for all sizes).
+   * "Rendered height" refers to the actual on-screen height of the player DOM element in CSS pixels, not the
+   * video resolution.
+   *
+   * At small player sizes fixed `em` margins take up a disproportionate share of the available space, and pushing
+   * captions up when the controlbar appears can make them illegible. The 80% safe area and the suppressed pushup
+   * together keep CEA-608 captions legible and correctly positioned at these sizes.
+   *
+   * Set to `0` to disable both adjustments for all player sizes (restoring the default large-player behaviour
+   * everywhere).
    *
    * Default: `360`
    */
