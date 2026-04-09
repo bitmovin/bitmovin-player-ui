@@ -93,6 +93,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
       if (labelToReplace) {
         this.subtitleContainerManager.replaceLabel(labelToReplace, label, this.getDomElement().size());
+        this.updateComponents();
       }
 
       if (uimanager.getConfig().forceSubtitlesIntoViewContainer) {

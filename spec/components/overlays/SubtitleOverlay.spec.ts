@@ -220,6 +220,7 @@ describe('SubtitleOverlay', () => {
     it('moves updated VTT cues into the correct container when the region assignment changes', () => {
       const overlaySize = { width: 640, height: 360 };
       const setVttRegionStylesSpy = jest.spyOn(VttUtils, 'setVttRegionStyles');
+      const updateComponentsSpy = jest.spyOn(subtitleOverlay, 'updateComponents');
       jest.spyOn(subtitleOverlay, 'removeComponent');
       jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue({
         ...MockHelper.generateDOMMock(),
@@ -237,6 +238,7 @@ describe('SubtitleOverlay', () => {
       expect(Object.keys((subtitleRegionContainerManagerMock as any).subtitleRegionContainers)).toEqual(['region-1']);
       expect(setVttRegionStylesSpy).toHaveBeenCalledWith(expect.anything(), updatedCueEvent.vtt.region, overlaySize);
       expect(subtitleOverlay.removeComponent).toHaveBeenCalledTimes(1);
+      expect(updateComponentsSpy).toHaveBeenCalled();
     });
   });
 });
