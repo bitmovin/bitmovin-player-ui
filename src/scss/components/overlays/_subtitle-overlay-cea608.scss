@@ -1,5 +1,9 @@
 @use 'sass:math';
 
+// Inset applied on all four sides when the player is below the height threshold.
+// Keeps captions within the broadcast-standard 80% safe area at small sizes.
+$cea-safe-area-inset: math.percentage(math.div(1 - 0.8, 2));
+
 .#{$prefix}-ui-subtitle-overlay {
   --cea608-row-height: math.div(100%, 15);
 
@@ -13,13 +17,16 @@
     // is disabled. Pushing captions further up at small player sizes reduces legibility, and the safe area keeps
     // them away from the edges without relying on fixed em values that do not scale with player size.
     &.#{$prefix}-cea-pushup-disabled {
-      bottom: math.percentage(math.div(1 - 0.8, 2));
-      left: math.percentage(math.div(1 - 0.8, 2));
-      right: math.percentage(math.div(1 - 0.8, 2));
-      top: math.percentage(math.div(1 - 0.8, 2));
+      bottom: $cea-safe-area-inset;
+      left: $cea-safe-area-inset;
+      right: $cea-safe-area-inset;
+      top: $cea-safe-area-inset;
 
+      // Suppresses the controlbar pushup from _subtitle-overlay.scss. Both selectors compile to 0,3,0 specificity;
+      // this rule wins via source order (this file is imported after _subtitle-overlay.scss). Kept explicit for
+      // clarity and resilience against import-order changes.
       &.#{$prefix}-controlbar-visible {
-        bottom: math.percentage(math.div(1 - 0.8, 2));
+        bottom: $cea-safe-area-inset;
       }
     }
 

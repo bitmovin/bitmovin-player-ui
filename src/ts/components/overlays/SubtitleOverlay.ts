@@ -432,8 +432,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     };
 
     player.on(player.exports.PlayerEvent.PlayerResized, (e: PlayerResizedEvent) => {
-      const playerHeight = Math.round(Number(e.height.substring(0, e.height.length - 2)));
-      this.updateCeaPushupClass(playerHeight);
+      this.updateCeaPushupClass(parseFloat(e.height));
 
       if (this.cea608Enabled) {
         this.ensureCea608GridSizeUpdated();

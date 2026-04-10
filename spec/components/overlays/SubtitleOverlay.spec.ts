@@ -7,7 +7,7 @@ import {
   SubtitleRegionContainerManager,
 } from '../../../src/ts/components/overlays/SubtitleOverlay';
 import { DOM } from '../../../src/ts/DOM';
-import { PlayerEvent, SubtitleCueEvent } from 'bitmovin-player';
+import { PlayerEvent, PlayerResizedEvent, SubtitleCueEvent } from 'bitmovin-player';
 import { ControlBar } from '../../../src/ts/components/ControlBar';
 
 let playerMock: jest.Mocked<TestingPlayerAPI>;
@@ -26,11 +26,10 @@ describe('SubtitleOverlay', () => {
       uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
 
       subtitleOverlay = new SubtitleOverlay();
-      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
-      subtitleRegionContainerManagerMock = (subtitleOverlay as any).subtitleContainerManager;
-
       mockDomElement = MockHelper.generateDOMMock();
       jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+      subtitleRegionContainerManagerMock = (subtitleOverlay as any).subtitleContainerManager;
     });
 
     it('adds a subtitle label on cueEnter', () => {
@@ -91,6 +90,7 @@ describe('SubtitleOverlay', () => {
       playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
       uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
       subtitleOverlay = new SubtitleOverlay();
+      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
       subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
     });
 
@@ -119,13 +119,14 @@ describe('SubtitleOverlay', () => {
       playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
       uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
       subtitleOverlay = new SubtitleOverlay();
-      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
 
       mockDomElement = MockHelper.generateDOMMock();
       jest.spyOn(mockDomElement, 'width').mockReturnValue(320);
       jest.spyOn(mockDomElement, 'height').mockReturnValue(180);
       jest.spyOn(mockDomElement, 'get').mockReturnValue([document.createElement('div')] as any);
       jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
+
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
     });
 
     it('normalizes positioned cues into CEA row regions', () => {
@@ -200,6 +201,84 @@ describe('SubtitleOverlay', () => {
         getComputedStyleSpy.mockRestore();
         jest.useRealTimers();
       }
+    });
+  });
+
+  describe('CEA 608 pushup class', () => {
+    let mockDomElement: DOM;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
+      uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+      subtitleOverlay = new SubtitleOverlay();
+      mockDomElement = MockHelper.generateDOMMock();
+      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(mockDomElement);
+      // Container is mocked, so prefixCss() returns undefined by default — provide a real implementation.
+      jest.spyOn(subtitleOverlay as any, 'prefixCss').mockImplementation((cls: string) => `bmpui-${cls}`);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    const pushupDisabledClass = expect.stringContaining('cea-pushup-disabled');
+
+    it('adds the pushup-disabled class on configure when player height is below the default threshold', () => {
+      jest.spyOn(DOM.prototype, 'height').mockReturnValue(180);
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+
+      expect(mockDomElement.addClass).toHaveBeenCalledWith(pushupDisabledClass);
+    });
+
+    it('does not add the pushup-disabled class on configure when player height meets the default threshold', () => {
+      jest.spyOn(DOM.prototype, 'height').mockReturnValue(360);
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+
+      expect(mockDomElement.addClass).not.toHaveBeenCalledWith(pushupDisabledClass);
+    });
+
+    it('adds the pushup-disabled class when PlayerResized fires below the threshold', () => {
+      jest.spyOn(DOM.prototype, 'height').mockReturnValue(400);
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+      (mockDomElement.addClass as jest.Mock).mockClear();
+
+      playerMock.eventEmitter.fireEvent({ type: PlayerEvent.PlayerResized, height: '180px', width: '320px', timestamp: Date.now() } as PlayerResizedEvent);
+
+      expect(mockDomElement.addClass).toHaveBeenCalledWith(pushupDisabledClass);
+    });
+
+    it('removes the pushup-disabled class when PlayerResized fires at or above the threshold', () => {
+      jest.spyOn(DOM.prototype, 'height').mockReturnValue(180);
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+      (mockDomElement.removeClass as jest.Mock).mockClear();
+
+      playerMock.eventEmitter.fireEvent({ type: PlayerEvent.PlayerResized, height: '400px', width: '640px', timestamp: Date.now() } as PlayerResizedEvent);
+
+      expect(mockDomElement.removeClass).toHaveBeenCalledWith(pushupDisabledClass);
+    });
+
+    it('respects a custom ceaCaptionPushupMinHeight config value', () => {
+      (uiInstanceManagerMock.getConfig as jest.Mock).mockReturnValue({
+        ceaCaptionPushupMinHeight: 500,
+        events: { onUpdated: MockHelper.getEventDispatcherMock() },
+        metadata: { markers: [] },
+      });
+      jest.spyOn(DOM.prototype, 'height').mockReturnValue(400);
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+
+      expect(mockDomElement.addClass).toHaveBeenCalledWith(pushupDisabledClass);
+    });
+
+    it('never adds the pushup-disabled class when ceaCaptionPushupMinHeight is 0', () => {
+      (uiInstanceManagerMock.getConfig as jest.Mock).mockReturnValue({
+        ceaCaptionPushupMinHeight: 0,
+        events: { onUpdated: MockHelper.getEventDispatcherMock() },
+        metadata: { markers: [] },
+      });
+      jest.spyOn(DOM.prototype, 'height').mockReturnValue(180);
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+
+      expect(mockDomElement.addClass).not.toHaveBeenCalledWith(pushupDisabledClass);
     });
   });
 });

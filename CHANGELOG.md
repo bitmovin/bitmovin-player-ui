@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- CEA-608 captions on players shorter than `ceaCaptionPushupMinHeight` now render within a centered 80% safe area and keep their row-based placement when the control bar is shown
+- CEA-608 captions on players with a rendered height below 360 CSS pixels (configurable via `ceaCaptionPushupMinHeight`) now render within a centered 80% safe area and keep their row-based placement when the control bar is shown
 
 ### Fixed
 
