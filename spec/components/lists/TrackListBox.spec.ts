@@ -61,6 +61,7 @@ describe('TrackListBox constructors', () => {
     expect(innerComparator(offItem, englishItem)).toBeLessThan(0);
     expect(innerComparator(offItem, vietnameseItem)).toBeLessThan(0);
     expect(innerComparator(englishItem, offItem)).toBeGreaterThan(0);
+    expect(innerComparator(offItem, offItem)).toBe(0);
     // Non-null items are still sorted by the user comparator (Z→A: Vietnamese before English)
     expect(innerComparator(vietnameseItem, englishItem)).toBeLessThan(0);
   });
