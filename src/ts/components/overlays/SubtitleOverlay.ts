@@ -760,6 +760,15 @@ export class SubtitleRegionContainerManager {
   }
 
   replaceLabel(previousLabel: SubtitleLabel, newLabel: SubtitleLabel, overlaySize?: Size): void {
+    const previousRegion = this.getRegion(previousLabel);
+    const newRegion = this.getRegion(newLabel);
+
+    if (previousRegion.regionContainerId === newRegion.regionContainerId) {
+      const regionContainer = this.subtitleRegionContainers[previousRegion.regionContainerId];
+      regionContainer.removeLabel(previousLabel);
+      regionContainer.addLabel(newLabel, overlaySize);
+      return;
+    }
     this.removeLabel(previousLabel);
     this.addLabel(newLabel, overlaySize);
   }
