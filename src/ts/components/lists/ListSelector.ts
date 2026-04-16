@@ -274,6 +274,11 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * Synchronize the current items of this selector with the given ones. This will remove and add items selectively.
    * For each removed item the ItemRemovedEvent and for each added item the ItemAddedEvent will be triggered. Favour
    * this method over using clearItems and adding all items again afterwards.
+   *
+   * If the currently selected item is not present in `newItems`, the selection is cleared silently:
+   * no selection event is fired. Callers that need to preserve or restore selection should call
+   * {@link selectItem} after synchronizing.
+   *
    * @param newItems
    */
   synchronizeItems(newItems: ListItem[]): void {
