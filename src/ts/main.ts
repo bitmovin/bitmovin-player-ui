@@ -117,8 +117,8 @@ export { WindowColorSelectBox } from './components/settings/subtitlesettings/Win
 export { WindowOpacitySelectBox } from './components/settings/subtitlesettings/WindowOpacitySelectBox';
 export { SubtitleSettingsResetButton } from './components/settings/subtitlesettings/SubtitleSettingsResetButton';
 export { ListBox, ListBoxConfig } from './components/lists/ListBox';
-export { SubtitleListBox } from './components/lists/SubtitleListBox';
-export { AudioTrackListBox } from './components/lists/AudioTrackListBox';
+export { SubtitleListBox, SubtitleListBoxConfig } from './components/lists/SubtitleListBox';
+export { AudioTrackListBox, AudioTrackListBoxConfig } from './components/lists/AudioTrackListBox';
 export { SettingsPanelPage, SettingsPanelPageConfig } from './components/settings/SettingsPanelPage';
 export { SettingsPanelPageBackButton } from './components/settings/SettingsPanelPageBackButton';
 export { SettingsPanelPageOpenButton } from './components/settings/SettingsPanelPageOpenButton';
