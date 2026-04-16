@@ -67,6 +67,23 @@ describe('ListSelector', () => {
       ]);
     });
 
+    it('produces the same order via addItem as synchronizeItems when a comparator is configured', () => {
+      const comparator = (itemA: ListItem, itemB: ListItem) => String(itemA.label).localeCompare(String(itemB.label));
+      const items = [
+        { key: 'I-3', label: 'L-3' },
+        { key: 'I-1', label: 'L-1' },
+        { key: 'I-2', label: 'L-2' },
+      ];
+
+      const byAddItem = new ListSelectorTestClass({ comparator });
+      items.forEach(item => byAddItem.addItem(item.key, item.label));
+
+      const bySynchronize = new ListSelectorTestClass({ comparator });
+      bySynchronize.synchronizeItems(items);
+
+      expect(byAddItem.getItems()).toEqual(bySynchronize.getItems());
+    });
+
     it('triggers onItemAddedEvent', () => {
       const spy = jest.fn();
       listSelector.onItemAdded.subscribe(spy);
