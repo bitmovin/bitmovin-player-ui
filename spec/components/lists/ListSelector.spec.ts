@@ -1,4 +1,5 @@
 import { ListItem, ListSelector, ListSelectorConfig } from '../../../src/ts/components/lists/ListSelector';
+import { i18n } from '../../../src/ts/localization/i18n';
 
 class ListSelectorTestClass extends ListSelector<ListSelectorConfig> {}
 
@@ -345,6 +346,23 @@ describe('ListSelector', () => {
         {
           key: 'I-3',
           label: 'L-3',
+        },
+      ]);
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('does not trigger onItemsChangedEvent when localized labels are recreated but unchanged', () => {
+      listSelector = new ListSelectorTestClass();
+      listSelector.addItem('null', i18n.getLocalizer('off'));
+
+      const spy = jest.fn();
+      listSelector.onItemsChanged.subscribe(spy);
+
+      listSelector.synchronizeItems([
+        {
+          key: 'null',
+          label: i18n.getLocalizer('off'),
         },
       ]);
 

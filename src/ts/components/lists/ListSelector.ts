@@ -2,7 +2,7 @@ import { Component, ComponentConfig } from '../Component';
 import { EventDispatcher, Event } from '../../EventDispatcher';
 import { NoArgs } from '../../EventDispatcher';
 import { ArrayUtils } from '../../utils/ArrayUtils';
-import { LocalizableText } from '../../localization/i18n';
+import { i18n, LocalizableText } from '../../localization/i18n';
 
 /**
  * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.
@@ -129,7 +129,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
 
       if (
         previousItem.key !== nextItem.key ||
-        previousItem.label !== nextItem.label ||
+        i18n.performLocalization(previousItem.label) !== i18n.performLocalization(nextItem.label) ||
         previousItem.sortedInsert !== nextItem.sortedInsert ||
         previousItem.ariaLabel !== nextItem.ariaLabel
       ) {
