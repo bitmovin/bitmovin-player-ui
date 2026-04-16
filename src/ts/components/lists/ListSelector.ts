@@ -140,6 +140,32 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     return false;
   }
 
+  private insertItem(normalizedItem: ListItem, sortedInsert: boolean): void {
+    if (this.config.comparator) {
+      const index = this.items.findIndex(existingItem => this.config.comparator(normalizedItem, existingItem) < 0);
+
+      if (index < 0) {
+        this.items.push(normalizedItem);
+      } else {
+        this.items.splice(index, 0, normalizedItem);
+      }
+
+      return;
+    }
+
+    if (sortedInsert) {
+      const index = this.items.findIndex(entry => entry.key > normalizedItem.key);
+      if (index < 0) {
+        this.items.push(normalizedItem);
+      } else {
+        this.items.splice(index, 0, normalizedItem);
+      }
+      return;
+    }
+
+    this.items.push(normalizedItem);
+  }
+
   /**
    * Returns all current items of this selector.
    * * @returns {ListItem[]}
@@ -177,17 +203,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       this.onItemRemovedEvent(key);
     }
 
-    // Add the item to the list
-    if (sortedInsert) {
-      const index = this.items.findIndex(entry => entry.key > key);
-      if (index < 0) {
-        this.items.push(normalizedItem);
-      } else {
-        this.items.splice(index, 0, normalizedItem);
-      }
-    } else {
-      this.items.push(normalizedItem);
-    }
+    this.insertItem(normalizedItem, sortedInsert);
     this.onItemAddedEvent(key);
     this.onItemsChangedEvent();
   }

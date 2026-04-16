@@ -51,6 +51,22 @@ describe('ListSelector', () => {
       expect(listSelector.getItems()).toEqual([{ key: 'itemKey', label: 'itemLabelNew' }]);
     });
 
+    it('adds items respecting comparator order when a comparator is configured', () => {
+      listSelector = new ListSelectorTestClass({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+
+      listSelector.addItem('I-3', 'L-3');
+      listSelector.addItem('I-1', 'L-1');
+      listSelector.addItem('I-2', 'L-2');
+
+      expect(listSelector.getItems()).toEqual([
+        { key: 'I-1', label: 'L-1' },
+        { key: 'I-2', label: 'L-2' },
+        { key: 'I-3', label: 'L-3' },
+      ]);
+    });
+
     it('triggers onItemAddedEvent', () => {
       const spy = jest.fn();
       listSelector.onItemAdded.subscribe(spy);
@@ -410,11 +426,22 @@ describe('ListSelector', () => {
 
     it('triggers onItemsChangedEvent when only the order changes', () => {
       listSelector = new ListSelectorTestClass({
+        items: [
+          {
+            key: 'I-3',
+            label: 'L-3',
+          },
+          {
+            key: 'I-1',
+            label: 'L-1',
+          },
+          {
+            key: 'I-2',
+            label: 'L-2',
+          },
+        ],
         comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
       });
-      listSelector.addItem('I-3', 'L-3');
-      listSelector.addItem('I-1', 'L-1');
-      listSelector.addItem('I-2', 'L-2');
 
       const itemsChangedSpy = jest.fn();
       const itemAddedSpy = jest.fn();

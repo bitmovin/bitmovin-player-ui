@@ -102,14 +102,15 @@ describe('SelectBox', () => {
 
     it('rebuilds the DOM options when synchronizeItems only changes order', () => {
       selectBox = new SelectBox({
+        items: [
+          { key: 'I-3', label: 'L-3' },
+          { key: 'I-1', label: 'L-1' },
+          { key: 'I-2', label: 'L-2' },
+        ],
         comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
       });
       selectBox.getDomElement();
       const updateDomItemsSpy = jest.spyOn(selectBox as any, 'updateDomItems');
-
-      selectBox.addItem('I-3', 'L-3');
-      selectBox.addItem('I-1', 'L-1');
-      selectBox.addItem('I-2', 'L-2');
       updateDomItemsSpy.mockClear();
 
       selectBox.synchronizeItems([
