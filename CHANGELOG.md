@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     comparator: (a, b) => String(a.label).localeCompare(String(b.label)), // A-Z
   });
   ```
+  > **Note**: Requires building a custom UI. The default `UIFactory` presets do not expose this option.
 - `AudioTrackListBox` and `SubtitleListBox` now can accept config objects that extend `ListBoxConfig` without `listSelector`.
   This enables configuring list-selector behavior such as `comparator`, `filter`, and `translator`, as well as list-box/settings-panel options like `title`, `hideDelay`, and related panel settings.
 - `ListSelector.onItemsChanged` event that fires whenever the effective item collection changes, including item additions, removals, reordering, or updates to rendered item data such as `label` and `ariaLabel`.
