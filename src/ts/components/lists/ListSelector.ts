@@ -1,5 +1,6 @@
 import { Component, ComponentConfig } from '../Component';
 import { EventDispatcher, Event } from '../../EventDispatcher';
+import { NoArgs } from '../../EventDispatcher';
 import { ArrayUtils } from '../../utils/ArrayUtils';
 import { LocalizableText } from '../../localization/i18n';
 
@@ -73,6 +74,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   private listSelectorEvents = {
     onItemAdded: new EventDispatcher<ListSelector<Config>, string>(),
     onItemRemoved: new EventDispatcher<ListSelector<Config>, string>(),
+    onItemsChanged: new EventDispatcher<ListSelector<Config>, NoArgs>(),
     onItemSelected: new EventDispatcher<ListSelector<Config>, string>(),
     onItemSelectionChanged: new EventDispatcher<ListSelector<Config>, string>(),
   };
@@ -116,6 +118,28 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     return -1;
   }
 
+  private haveItemsChanged(previousItems: ListItem[], nextItems: ListItem[]): boolean {
+    if (previousItems.length !== nextItems.length) {
+      return true;
+    }
+
+    for (let i = 0; i < previousItems.length; i++) {
+      const previousItem = previousItems[i];
+      const nextItem = nextItems[i];
+
+      if (
+        previousItem.key !== nextItem.key ||
+        previousItem.label !== nextItem.label ||
+        previousItem.sortedInsert !== nextItem.sortedInsert ||
+        previousItem.ariaLabel !== nextItem.ariaLabel
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   /**
    * Returns all current items of this selector.
    * * @returns {ListItem[]}
@@ -147,8 +171,11 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       return;
     }
 
-    // Try to remove key first to get overwrite behavior and avoid duplicate keys
-    this.removeItem(key); // This will trigger an ItemRemoved and an ItemAdded event
+    const existingIndex = this.getItemIndex(key);
+    if (existingIndex > -1) {
+      ArrayUtils.remove(this.items, this.items[existingIndex]);
+      this.onItemRemovedEvent(key);
+    }
 
     // Add the item to the list
     if (sortedInsert) {
@@ -162,6 +189,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       this.items.push(normalizedItem);
     }
     this.onItemAddedEvent(key);
+    this.onItemsChangedEvent();
   }
 
   /**
@@ -174,6 +202,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     if (index > -1) {
       ArrayUtils.remove(this.items, this.items[index]);
       this.onItemRemovedEvent(key);
+      this.onItemsChangedEvent();
       return true;
     }
 
@@ -239,18 +268,16 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       normalizedItems.sort(this.config.comparator);
     }
 
+    const itemsChanged = this.haveItemsChanged(this.items, normalizedItems);
     const currentKeys = new Set(this.items.map(item => item.key));
     const nextKeys = new Set(normalizedItems.map(item => item.key));
 
-    // When a comparator is configured, items may be reordered on every sync. Treat the sync
-    // as a full rebuild so subscribers (e.g. DOM renderers) can reflect the new sorted order.
-    // Without a comparator, use a minimal diff (only add/remove changed items).
     const removedKeys = this.items
-      .filter(item => this.config.comparator || !nextKeys.has(item.key))
+      .filter(item => !nextKeys.has(item.key))
       .map(item => item.key);
 
     const addedKeys = normalizedItems
-      .filter(item => this.config.comparator || !currentKeys.has(item.key))
+      .filter(item => !currentKeys.has(item.key))
       .map(item => item.key);
 
     this.items = normalizedItems;
@@ -265,12 +292,19 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     for (const key of addedKeys) {
       this.onItemAddedEvent(key);
     }
+    if (itemsChanged) {
+      this.onItemsChangedEvent();
+    }
   }
 
   /**
    * Removes all items from this selector.
    */
   clearItems() {
+    if (this.items.length === 0) {
+      return;
+    }
+
     // local copy for iteration after clear
     const items = this.items;
     // clear items
@@ -283,6 +317,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     for (const item of items) {
       this.onItemRemovedEvent(item.key);
     }
+    this.onItemsChangedEvent();
   }
 
   /**
@@ -299,6 +334,10 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
 
   protected onItemRemovedEvent(key: string) {
     this.listSelectorEvents.onItemRemoved.dispatch(this, key);
+  }
+
+  protected onItemsChangedEvent() {
+    this.listSelectorEvents.onItemsChanged.dispatch(this);
   }
 
   protected onItemSelectedEvent(key: string) {
@@ -340,6 +379,18 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    */
   get onItemRemoved(): Event<ListSelector<Config>, string> {
     return this.listSelectorEvents.onItemRemoved.getEvent();
+  }
+
+  /**
+   * Gets the event that is fired when the effective items collection changes.
+   *
+   * Use this to react to list-wide changes such as additions, removals, reordering, or
+   * item property updates that should trigger a rebuild from {@link getItems()}.
+   *
+   * @returns {Event<ListSelector<Config>, NoArgs>}
+   */
+  get onItemsChanged(): Event<ListSelector<Config>, NoArgs> {
+    return this.listSelectorEvents.onItemsChanged.getEvent();
   }
 
   /**

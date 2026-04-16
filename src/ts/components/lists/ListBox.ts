@@ -55,8 +55,13 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
   public configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    const onItemAdded = (_: any, itemKey: string) => {
+    const createSelectOption = (itemKey: string) => {
       const item = this.listSelector.getItemForKey(itemKey);
+
+      if (!item) {
+        return null;
+      }
+
       const selectOption = new SettingsPanelSelectOption({
         label: item.label,
         labelStyle: LabelStyle.TextWithLeadingIcon,
@@ -66,31 +71,33 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
       });
 
       selectOption.configure(player, uimanager);
-      this.settingsPanelPage.addSettingsPanelItem(selectOption);
-      this.onSettingsStateChangedEvent();
+
+      return selectOption;
     };
 
-    const onItemRemoved = (_: any, itemKey: string) => {
-      const settingsPanelItem = this.settingsPanelPage.getComponents().find(item => {
-        if (!(item instanceof SettingsPanelSelectOption)) {
-          return false;
-        }
+    const rebuildItems = () => {
+      const settingsPanelItems = this.settingsPanelPage.getComponents()
+        .filter(component => component instanceof SettingsPanelSelectOption) as SettingsPanelItem<any>[];
 
-        return item.getConfig().settingsValue === itemKey;
-      });
-
-      if (!settingsPanelItem || !(settingsPanelItem instanceof SettingsPanelItem)) {
-        return;
+      for (const settingsPanelItem of settingsPanelItems) {
+        this.settingsPanelPage.removeSettingsPanelItem(settingsPanelItem);
       }
 
-      this.settingsPanelPage.removeSettingsPanelItem(settingsPanelItem);
+      for (const item of this.listSelector.getItems()) {
+        const selectOption = createSelectOption(item.key);
+
+        if (selectOption) {
+          this.settingsPanelPage.addSettingsPanelItem(selectOption);
+        }
+      }
+
       this.onSettingsStateChangedEvent();
     };
 
-    this.listSelector.onItemAdded.subscribe(onItemAdded);
-    this.listSelector.onItemRemoved.subscribe(onItemRemoved);
+    this.listSelector.onItemsChanged.subscribe(rebuildItems);
 
     this.settingsPanelPage.configure(player, uimanager);
     this.listSelector.configure(player, uimanager);
+    rebuildItems();
   }
 }

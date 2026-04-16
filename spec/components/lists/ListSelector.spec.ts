@@ -57,6 +57,15 @@ describe('ListSelector', () => {
 
       expect(spy).toHaveBeenCalled();
     });
+
+    it('triggers onItemsChangedEvent', () => {
+      const spy = jest.fn();
+      listSelector.onItemsChanged.subscribe(spy);
+
+      listSelector.addItem('itemKeyNew', 'itemLabelNew');
+
+      expect(spy).toHaveBeenCalledWith(listSelector, null);
+    });
   });
 
   describe('addItem with custom aria label', () => {
@@ -125,6 +134,15 @@ describe('ListSelector', () => {
 
       expect(spy).toHaveBeenCalled();
     });
+
+    it('triggers onItemsChangedEvent when removal succeeds', () => {
+      const spy = jest.fn();
+      listSelector.onItemsChanged.subscribe(spy);
+
+      listSelector.removeItem('itemKey');
+
+      expect(spy).toHaveBeenCalledWith(listSelector, null);
+    });
   });
 
   describe('clearItems', () => {
@@ -150,6 +168,15 @@ describe('ListSelector', () => {
 
       listSelector.clearItems();
       expect(spy).toHaveBeenCalledTimes(3);
+    });
+
+    it('triggers onItemsChangedEvent', () => {
+      const spy = jest.fn();
+      listSelector.onItemsChanged.subscribe(spy);
+
+      listSelector.clearItems();
+
+      expect(spy).toHaveBeenCalledWith(listSelector, null);
     });
   });
 
@@ -293,6 +320,37 @@ describe('ListSelector', () => {
       expect(spy).not.toHaveBeenCalledWith(expect.anything(), 'I-3');
     });
 
+    it('triggers onItemsChangedEvent when the effective list changes', () => {
+      const spy = jest.fn();
+      listSelector.onItemsChanged.subscribe(spy);
+
+      listSelector.synchronizeItems(newItems);
+
+      expect(spy).toHaveBeenCalledWith(listSelector, null);
+    });
+
+    it('does not trigger onItemsChangedEvent when the effective list stays the same', () => {
+      const spy = jest.fn();
+      listSelector.onItemsChanged.subscribe(spy);
+
+      listSelector.synchronizeItems([
+        {
+          key: 'I-1',
+          label: 'L-1',
+        },
+        {
+          key: 'I-2',
+          label: 'L-2',
+        },
+        {
+          key: 'I-3',
+          label: 'L-3',
+        },
+      ]);
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
     it('reorders synchronized items when a comparator is configured', () => {
       listSelector = new ListSelectorTestClass({
         comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
@@ -330,6 +388,41 @@ describe('ListSelector', () => {
           label: 'L-3',
         },
       ]);
+    });
+
+    it('triggers onItemsChangedEvent when only the order changes', () => {
+      listSelector = new ListSelectorTestClass({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      listSelector.addItem('I-3', 'L-3');
+      listSelector.addItem('I-1', 'L-1');
+      listSelector.addItem('I-2', 'L-2');
+
+      const itemsChangedSpy = jest.fn();
+      const itemAddedSpy = jest.fn();
+      const itemRemovedSpy = jest.fn();
+      listSelector.onItemsChanged.subscribe(itemsChangedSpy);
+      listSelector.onItemAdded.subscribe(itemAddedSpy);
+      listSelector.onItemRemoved.subscribe(itemRemovedSpy);
+
+      listSelector.synchronizeItems([
+        {
+          key: 'I-3',
+          label: 'L-3',
+        },
+        {
+          key: 'I-1',
+          label: 'L-1',
+        },
+        {
+          key: 'I-2',
+          label: 'L-2',
+        },
+      ]);
+
+      expect(itemsChangedSpy).toHaveBeenCalledWith(listSelector, null);
+      expect(itemAddedSpy).not.toHaveBeenCalled();
+      expect(itemRemovedSpy).not.toHaveBeenCalled();
     });
   });
 });

@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   ```
 - `AudioTrackListBox` and `SubtitleListBox` now can accept config objects that extend `ListBoxConfig` without `listSelector`.
   This enables configuring list-selector behavior such as `comparator`, `filter`, and `translator`, as well as list-box/settings-panel options like `title`, `hideDelay`, and related panel settings.
+- `ListSelector.onItemsChanged` event that fires whenever the effective item collection changes, including item additions, removals, reordering, and item property updates that affect rendering
 
 ## [4.11.0] - 2026-04-03
 
