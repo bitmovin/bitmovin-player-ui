@@ -94,10 +94,19 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
       this.onSettingsStateChangedEvent();
     };
 
-    this.listSelector.onItemsChanged.subscribe(rebuildItems);
+    let initialBuildDone = false;
+    const onItemsChanged = () => {
+      initialBuildDone = true;
+      rebuildItems();
+    };
+
+    this.listSelector.onItemsChanged.subscribe(onItemsChanged);
 
     this.settingsPanelPage.configure(player, uimanager);
     this.listSelector.configure(player, uimanager);
-    rebuildItems();
+
+    if (!initialBuildDone) {
+      rebuildItems();
+    }
   }
 }
