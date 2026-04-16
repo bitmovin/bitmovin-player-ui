@@ -242,12 +242,15 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     const currentKeys = new Set(this.items.map(item => item.key));
     const nextKeys = new Set(normalizedItems.map(item => item.key));
 
+    // When a comparator is configured, items may be reordered on every sync. Treat the sync
+    // as a full rebuild so subscribers (e.g. DOM renderers) can reflect the new sorted order.
+    // Without a comparator, use a minimal diff (only add/remove changed items).
     const removedKeys = this.items
-      .filter(item => !nextKeys.has(item.key))
+      .filter(item => this.config.comparator || !nextKeys.has(item.key))
       .map(item => item.key);
 
     const addedKeys = normalizedItems
-      .filter(item => !currentKeys.has(item.key))
+      .filter(item => this.config.comparator || !currentKeys.has(item.key))
       .map(item => item.key);
 
     this.items = normalizedItems;
