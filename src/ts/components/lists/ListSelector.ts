@@ -149,14 +149,8 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
 
   private insertItem(normalizedItem: ListItem, sortedInsert: boolean): void {
     if (this.config.comparator) {
-      const index = this.items.findIndex(existingItem => this.config.comparator(normalizedItem, existingItem) < 0);
-
-      if (index < 0) {
-        this.items.push(normalizedItem);
-      } else {
-        this.items.splice(index, 0, normalizedItem);
-      }
-
+      this.items.push(normalizedItem);
+      this.items.sort(this.config.comparator);
       return;
     }
 
