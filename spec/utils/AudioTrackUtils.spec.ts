@@ -13,6 +13,7 @@ const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.
   removeItem: jest.fn(),
   getItems: jest.fn().mockReturnValue([]),
   getSelectedItem: jest.fn().mockReturnValue(null),
+  getConfig: jest.fn().mockReturnValue({}),
   synchronizeItems: jest.fn(),
   selectItem: jest.fn(),
   clearItems: jest.fn(),
@@ -44,13 +45,23 @@ describe('AudioTrackUtils', () => {
       expect(listSelectorMock.synchronizeItems).toHaveBeenCalled();
     });
 
-    it('on audioAdded event via synchronizeItems', () => {
+    it('on audioAdded event via addItem when no comparator is configured', () => {
       playerMock.getAvailableAudio = jest.fn().mockReturnValue([
         { id: 'a-1', label: 'English' },
         { id: 'a-4', label: 'French' },
       ]);
       playerMock.eventEmitter.fireAudioAddedEvent('a-4', 'French');
-      expect(listSelectorMock.synchronizeItems).toHaveBeenCalledTimes(2);
+      expect(listSelectorMock.addItem).toHaveBeenCalledWith('a-4', expect.any(Function), true);
+      expect(listSelectorMock.synchronizeItems).toHaveBeenCalledTimes(1);
+    });
+
+    it('uses the event payload when the getter is stale and no comparator is configured', () => {
+      playerMock.getAvailableAudio = jest.fn().mockReturnValue([{ id: 'a-1', label: 'English' }]);
+
+      playerMock.eventEmitter.fireAudioAddedEvent('a-4', 'French');
+
+      expect(listSelectorMock.addItem).toHaveBeenCalledWith('a-4', expect.any(Function), true);
+      expect(listSelectorMock.synchronizeItems).toHaveBeenCalledTimes(1);
     });
   });
 

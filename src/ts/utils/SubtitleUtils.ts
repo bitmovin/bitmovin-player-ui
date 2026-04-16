@@ -56,6 +56,10 @@ export class SubtitleSwitchHandler {
     this.uimanager.getConfig().events.onUpdated.subscribe(this.refreshSubtitles);
   }
 
+  private hasComparator(): boolean {
+    return typeof this.listElement.getConfig === 'function' && this.listElement.getConfig().comparator != null;
+  }
+
   private onSubtitleEnabled = (event: SubtitleEvent) => {
     this.selectCurrentSubtitle();
 
@@ -68,8 +72,28 @@ export class SubtitleSwitchHandler {
     }
   };
 
-  private addSubtitle = (_event: SubtitleEvent) => {
-    this.refreshSubtitles();
+  private addSubtitle = (event: SubtitleEvent) => {
+    const subtitle = event.subtitle;
+
+    if (!this.hasComparator()) {
+      if (!this.listElement.hasItem(subtitle.id)) {
+        this.listElement.addItem(subtitle.id, subtitle.label);
+      }
+      return;
+    }
+
+    const subtitles = this.player.subtitles.list();
+    const mergedSubtitles = subtitles.some(track => track.id === subtitle.id) ? subtitles : [...subtitles, subtitle];
+    const offListItem: ListItem = {
+      key: SubtitleSwitchHandler.SUBTITLES_OFF_KEY,
+      label: i18n.getLocalizer('off'),
+    };
+
+    this.listElement.synchronizeItems([
+      offListItem,
+      ...mergedSubtitles.map(track => ({ key: track.id, label: track.label })),
+    ]);
+    this.selectCurrentSubtitle();
   };
 
   private removeSubtitle = (event: SubtitleEvent) => {

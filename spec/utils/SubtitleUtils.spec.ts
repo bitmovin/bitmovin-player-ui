@@ -15,6 +15,7 @@ const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.
   addItem: jest.fn(),
   removeItem: jest.fn(),
   getItems: jest.fn().mockReturnValue([]),
+  getConfig: jest.fn().mockReturnValue({}),
   synchronizeItems: jest.fn(),
   selectItem: jest.fn(),
   clearItems: jest.fn(),
@@ -53,13 +54,23 @@ describe('SubtitleUtils', () => {
       expect(listSelectorMock.synchronizeItems).toHaveBeenCalled();
     });
 
-    it('on subtitleAdded event via synchronizeItems', () => {
+    it('on subtitleAdded event via addItem when no comparator is configured', () => {
       playerMock.subtitles.list = jest.fn().mockReturnValue([
         { id: 's-1', label: 'S1', enabled: true },
         { id: 's-3', label: 'S3', enabled: false },
       ]);
       playerMock.eventEmitter.fireSubtitleAddedEvent('s-3', 'S3');
-      expect(listSelectorMock.synchronizeItems).toHaveBeenCalledTimes(2);
+      expect(listSelectorMock.addItem).toHaveBeenCalledWith('s-3', 'S3');
+      expect(listSelectorMock.synchronizeItems).toHaveBeenCalledTimes(1);
+    });
+
+    it('uses the event payload when the getter is stale and no comparator is configured', () => {
+      playerMock.subtitles.list = jest.fn().mockReturnValue([{ id: 's-1', label: 'S1', enabled: true }]);
+
+      playerMock.eventEmitter.fireSubtitleAddedEvent('s-3', 'S3');
+
+      expect(listSelectorMock.addItem).toHaveBeenCalledWith('s-3', 'S3');
+      expect(listSelectorMock.synchronizeItems).toHaveBeenCalledTimes(1);
     });
   });
 

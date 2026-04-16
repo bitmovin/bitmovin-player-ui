@@ -44,8 +44,25 @@ export class AudioTrackSwitchHandler {
     this.uimanager.getConfig().events.onUpdated.subscribe(this.refreshAudioTracks);
   }
 
-  private addAudioTrack = (_event: AudioTrackEvent) => {
-    this.refreshAudioTracks();
+  private hasComparator(): boolean {
+    return typeof this.listElement.getConfig === 'function' && this.listElement.getConfig().comparator != null;
+  }
+
+  private addAudioTrack = (event: AudioTrackEvent) => {
+    const audioTrack = event.track;
+
+    if (!this.hasComparator()) {
+      if (!this.listElement.hasItem(audioTrack.id)) {
+        this.listElement.addItem(audioTrack.id, i18n.getLocalizer(audioTrack.label), true);
+      }
+      return;
+    }
+
+    const audioTracks = this.player.getAvailableAudio();
+    const mergedTracks = audioTracks.some(track => track.id === audioTrack.id) ? audioTracks : [...audioTracks, audioTrack];
+
+    this.listElement.synchronizeItems(mergedTracks.map(track => ({ key: track.id, label: track.label })));
+    this.selectCurrentAudioTrack();
   };
 
   private removeAudioTrack = (event: AudioTrackEvent) => {
