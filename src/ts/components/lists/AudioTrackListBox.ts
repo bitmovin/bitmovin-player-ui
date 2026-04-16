@@ -8,7 +8,7 @@ import { LocalizableText } from '../../localization/i18n';
 export interface AudioTrackListBoxConfig extends Omit<ListBoxConfig, 'listSelector'> {}
 
 /**
- * A element that is similar to a select box where the user can select a subtitle
+ * An element that is similar to a select box where the user can select an audio track
  *
  * @category Components
  */
