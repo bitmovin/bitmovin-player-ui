@@ -64,6 +64,14 @@ export interface ListSelectorConfig extends ComponentConfig {
   items?: ListItem[];
   filter?: ListItemFilter;
   translator?: ListItemLabelTranslator;
+  /**
+   * Optional comparator to control the display order of list items.
+   *
+   * Requires a custom UI. The default {@link UIFactory} presets do not expose this option.
+   * 
+   * Note: For subtitle UIs, the built-in `Off` option is pinned at the top regardless of the
+   * comparator result.
+   */
   comparator?: ListItemComparator;
 }
 
@@ -130,7 +138,6 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
       if (
         previousItem.key !== nextItem.key ||
         i18n.performLocalization(previousItem.label) !== i18n.performLocalization(nextItem.label) ||
-        previousItem.sortedInsert !== nextItem.sortedInsert ||
         previousItem.ariaLabel !== nextItem.ariaLabel
       ) {
         return true;

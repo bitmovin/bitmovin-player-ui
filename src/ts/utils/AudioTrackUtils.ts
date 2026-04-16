@@ -45,7 +45,7 @@ export class AudioTrackSwitchHandler {
   }
 
   private hasComparator(): boolean {
-    return typeof this.listElement.getConfig === 'function' && this.listElement.getConfig().comparator != null;
+    return this.listElement.getConfig().comparator != null;
   }
 
   private addAudioTrack = (event: AudioTrackEvent) => {
