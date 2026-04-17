@@ -121,6 +121,8 @@ describe('SubtitleOverlay', () => {
       subtitleRegionContainerManagerMock = (subtitleOverlay as any).subtitleContainerManager;
     });
 
+    afterEach(() => jest.restoreAllMocks());
+
     it('does not mark non-VTT labels as cue boxes', () => {
       const label = subtitleOverlay.generateLabel(createSubtitleCueEvent());
 
@@ -195,6 +197,11 @@ describe('SubtitleOverlay', () => {
     });
 
     it('preserves non-region VTT cue-box semantics on cue updates', () => {
+      jest.spyOn(SubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue({
+        ...MockHelper.generateDOMMock(),
+        size: jest.fn().mockReturnValue({ width: 0, height: 0 }),
+      } as any);
       const replaceLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'replaceLabel');
       const cueEvent = createSubtitleCueEvent({ vtt: createVttProps() });
 
@@ -207,6 +214,11 @@ describe('SubtitleOverlay', () => {
     });
 
     it('removes non-region VTT labels from the cue container on cue exit', () => {
+      jest.spyOn(SubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue({
+        ...MockHelper.generateDOMMock(),
+        size: jest.fn().mockReturnValue({ width: 0, height: 0 }),
+      } as any);
       const removeLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'removeLabel');
       const cueEvent = createSubtitleCueEvent({ vtt: createVttProps() });
 
@@ -218,6 +230,7 @@ describe('SubtitleOverlay', () => {
     });
 
     it('moves updated VTT cues into the correct container when the region assignment changes', () => {
+      jest.spyOn(SubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
       const overlaySize = { width: 640, height: 360 };
       const setVttRegionStylesSpy = jest.spyOn(VttUtils, 'setVttRegionStyles');
       jest.spyOn(subtitleOverlay, 'removeComponent');
