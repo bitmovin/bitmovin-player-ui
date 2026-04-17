@@ -75,9 +75,16 @@
         margin-right: auto;
       }
 
-      &[style*='text-align: right'] .#{$prefix}-ui-label-text,
-      &[style*='text-align: end'] .#{$prefix}-ui-label-text {
-        margin-left: auto;
+      &[style*='text-align: right'] .#{$prefix}-ui-label-text {  
+        margin-left: auto;  
+      }
+
+      &[style*='text-align: end'] .#{$prefix}-ui-label-text {  
+        margin-inline-start: auto;
+      }
+
+      &[style*='text-align: start'] .#{$prefix}-ui-label-text {  
+        margin-inline-end: auto;  
       }
     }
 
