@@ -92,7 +92,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       this.preprocessLabelEventCallback.dispatch(event, label);
 
       if (labelToReplace) {
-        this.subtitleContainerManager.replaceLabel(labelToReplace, label);
+        this.subtitleContainerManager.replaceLabel(labelToReplace, label, this.getDomElement().size());
+        this.updateComponents();
       }
 
       if (uimanager.getConfig().forceSubtitlesIntoViewContainer) {
@@ -230,6 +231,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
       // else use the plain text
       text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
+      cssClasses: event.vtt && !event.vtt.region ? ['subtitle-vtt-cue'] : [],
       vtt: event.vtt,
       region: region,
       regionStyle: event.regionStyle,
@@ -725,7 +727,10 @@ export class SubtitleRegionContainerManager {
     const cssClasses = [`subtitle-position-${regionName}`];
 
     if (label.vtt && label.vtt.region) {
+      cssClasses.push('subtitle-vtt-region-container');
       cssClasses.push(`vtt-region-${label.vtt.region.id}`);
+    } else if (label.vtt) {
+      cssClasses.push('subtitle-vtt-cue-container');
     }
 
     if (!this.subtitleRegionContainers[regionContainerId]) {
@@ -754,11 +759,18 @@ export class SubtitleRegionContainerManager {
     this.subtitleRegionContainers[regionContainerId].addLabel(label, overlaySize);
   }
 
-  replaceLabel(previousLabel: SubtitleLabel, newLabel: SubtitleLabel): void {
-    const { regionContainerId } = this.getRegion(previousLabel);
+  replaceLabel(previousLabel: SubtitleLabel, newLabel: SubtitleLabel, overlaySize?: Size): void {
+    const previousRegion = this.getRegion(previousLabel);
+    const newRegion = this.getRegion(newLabel);
 
-    this.subtitleRegionContainers[regionContainerId].removeLabel(previousLabel);
-    this.subtitleRegionContainers[regionContainerId].addLabel(newLabel);
+    if (previousRegion.regionContainerId === newRegion.regionContainerId) {
+      const regionContainer = this.subtitleRegionContainers[previousRegion.regionContainerId];
+      regionContainer.removeLabel(previousLabel);
+      regionContainer.addLabel(newLabel, overlaySize);
+      return;
+    }
+    this.removeLabel(previousLabel);
+    this.addLabel(newLabel, overlaySize);
   }
 
   /**
