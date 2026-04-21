@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Subtitle window coloring was not applied for non-region WebVTT cues
+- WebVTT subtitle background color is applied to the window instead of the text background
 
 ## [4.11.0] - 2026-04-03
 
