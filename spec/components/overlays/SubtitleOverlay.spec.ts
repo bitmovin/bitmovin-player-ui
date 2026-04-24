@@ -111,6 +111,89 @@ describe('SubtitleOverlay', () => {
     });
   });
 
+  describe('CEA 608 caption formatting config', () => {
+    let overlayDomMock: DOM;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
+      uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+      overlayDomMock = MockHelper.generateDOMMock();
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    function fireCea608CueEnter() {
+      playerMock.eventEmitter.fireEvent({
+        subtitleId: 'subtitleId',
+        start: 0,
+        end: 10,
+        text: 'Test Subtitle',
+        position: { row: 5, column: 10 },
+        type: playerMock.exports.PlayerEvent.CueEnter,
+      } as any);
+    }
+
+    function setupOverlay(config: { enableCea608CaptionFormatting?: boolean } = {}): SubtitleOverlay {
+      const overlay = new SubtitleOverlay(config);
+      // Container is auto-mocked, so mergeConfig does nothing and this.config ends up undefined.
+      // Assign it explicitly (defaulting enableCea608CaptionFormatting to true to mirror the real mergeConfig default).
+      (overlay as any).config = { enableCea608CaptionFormatting: true, ...config };
+      // prefixCss is auto-mocked to return undefined; make it return the raw class name
+      // so addClass/removeClass assertions can match on the suffix.
+      jest.spyOn(overlay as any, 'prefixCss').mockImplementation((cls: any) => cls);
+      overlay.configure(playerMock, uiInstanceManagerMock);
+      jest.spyOn(overlay, 'getDomElement').mockReturnValue(overlayDomMock);
+      jest.spyOn(SubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+      return overlay;
+    }
+
+    it('applies CEA-608 positioning and formatting classes when the config is not set (default behavior)', () => {
+      subtitleOverlay = setupOverlay();
+
+      fireCea608CueEnter();
+
+      expect(overlayDomMock.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+      expect(overlayDomMock.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+    });
+
+    it('applies CEA-608 positioning but not the formatting class when enableCea608CaptionFormatting is false', () => {
+      subtitleOverlay = setupOverlay({ enableCea608CaptionFormatting: false });
+
+      fireCea608CueEnter();
+
+      expect(overlayDomMock.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+      expect(overlayDomMock.addClass).not.toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+    });
+
+    it('does not set inline letter-spacing on the label when enableCea608CaptionFormatting is false', () => {
+      subtitleOverlay = setupOverlay({ enableCea608CaptionFormatting: false });
+      subtitleRegionContainerManagerMock = (subtitleOverlay as any).subtitleContainerManager;
+      const addLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'addLabel');
+
+      fireCea608CueEnter();
+
+      const label = addLabelSpy.mock.calls[0][0] as SubtitleLabel;
+      const labelCssCalls = (label.getDomElement().css as jest.Mock).mock.calls;
+      const styleArgs = labelCssCalls.map(call => call[0]).filter(arg => typeof arg === 'object');
+      const styleWithLetterSpacing = styleArgs.find(style => 'letter-spacing' in style);
+      expect(styleWithLetterSpacing).toBeUndefined();
+    });
+
+    it('sets inline letter-spacing on the label when the config is not set (default behavior)', () => {
+      subtitleOverlay = setupOverlay();
+      subtitleRegionContainerManagerMock = (subtitleOverlay as any).subtitleContainerManager;
+      const addLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'addLabel');
+
+      fireCea608CueEnter();
+
+      const label = addLabelSpy.mock.calls[0][0] as SubtitleLabel;
+      const labelCssCalls = (label.getDomElement().css as jest.Mock).mock.calls;
+      const styleArgs = labelCssCalls.map(call => call[0]).filter(arg => typeof arg === 'object');
+      const styleWithLetterSpacing = styleArgs.find(style => 'letter-spacing' in style);
+      expect(styleWithLetterSpacing).toBeDefined();
+    });
+  });
+
   describe('WebVTT container behavior', () => {
     beforeEach(() => {
       playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
