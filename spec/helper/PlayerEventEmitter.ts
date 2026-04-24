@@ -326,14 +326,14 @@ export class PlayerEventEmitter {
     } as SubtitleEvent);
   }
 
-  fireSubtitleCueEnterEvent(overrides: Partial<SubtitleCueEvent> = {}): void {
+  fireSubtitleCueEnterEvent(overrides: Omit<Partial<SubtitleCueEvent>, 'type'> = {}): void {
     this.fireEvent<SubtitleCueEvent>({
       subtitleId: 'subtitleId',
       start: 0,
       end: 10,
       text: 'Test Subtitle',
-      type: PlayerEvent.CueEnter,
       ...overrides,
+      type: PlayerEvent.CueEnter,
     } as SubtitleCueEvent);
   }
 
