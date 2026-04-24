@@ -48,20 +48,26 @@ export class AudioTrackSwitchHandler {
     return this.listElement.getConfig().comparator != null;
   }
 
+  private audioTrackToListItem(audioTrack: AudioTrack): ListItem {
+    return { key: audioTrack.id, label: audioTrack.label };
+  }
+
   private addAudioTrack = (event: AudioTrackEvent) => {
-    const audioTrack = event.track;
+    const addedAudioTrack = event.track;
 
     if (!this.hasComparator()) {
-      if (!this.listElement.hasItem(audioTrack.id)) {
-        this.listElement.addItem(audioTrack.id, i18n.getLocalizer(audioTrack.label), true);
+      if (!this.listElement.hasItem(addedAudioTrack.id)) {
+        this.listElement.addItem(addedAudioTrack.id, i18n.getLocalizer(addedAudioTrack.label), true);
       }
       return;
     }
 
-    const audioTracks = this.player.getAvailableAudio();
-    const mergedTracks = audioTracks.some(track => track.id === audioTrack.id) ? audioTracks : [...audioTracks, audioTrack];
+    const availableAudioTracks = this.player.getAvailableAudio();
+    const mergedTracks = availableAudioTracks.some(track => track.id === addedAudioTrack.id)
+      ? availableAudioTracks
+      : [...availableAudioTracks, addedAudioTrack];
 
-    this.listElement.synchronizeItems(mergedTracks.map(track => ({ key: track.id, label: track.label })));
+    this.listElement.synchronizeItems(mergedTracks.map(audioTrack => this.audioTrackToListItem(audioTrack)));
     this.selectCurrentAudioTrack();
   };
 
@@ -83,11 +89,10 @@ export class AudioTrackSwitchHandler {
 
   private refreshAudioTracks = () => {
     const previouslySelectedAudioTrack = this.listElement.getSelectedItem();
-    const audioTrackToListItem = (audioTrack: AudioTrack): ListItem => {
-      return { key: audioTrack.id, label: audioTrack.label };
-    };
 
-    this.listElement.synchronizeItems(this.player.getAvailableAudio().map(audioTrackToListItem));
+    this.listElement.synchronizeItems(
+      this.player.getAvailableAudio().map(audioTrack => this.audioTrackToListItem(audioTrack)),
+    );
     if (this.player.getAudio()) {
       this.selectCurrentAudioTrack();
     } else if (previouslySelectedAudioTrack && this.listElement.hasItem(previouslySelectedAudioTrack)) {

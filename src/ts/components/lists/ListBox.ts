@@ -76,7 +76,8 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
     };
 
     const rebuildItems = () => {
-      const settingsPanelItems = this.settingsPanelPage.getComponents()
+      const settingsPanelItems = this.settingsPanelPage
+        .getComponents()
         .filter(component => component instanceof SettingsPanelSelectOption) as SettingsPanelItem<any>[];
 
       for (const settingsPanelItem of settingsPanelItems) {
@@ -94,9 +95,9 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
       this.onSettingsStateChangedEvent();
     };
 
-    let initialBuildDone = false;
+    let rebuiltDuringListSelectorConfigure = false;
     const onItemsChanged = () => {
-      initialBuildDone = true;
+      rebuiltDuringListSelectorConfigure = true;
       rebuildItems();
     };
 
@@ -105,7 +106,9 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
     this.settingsPanelPage.configure(player, uimanager);
     this.listSelector.configure(player, uimanager);
 
-    if (!initialBuildDone) {
+    // `listSelector.configure()` may synchronously emit `onItemsChanged`, so only run the fallback rebuild
+    // when configuration did not already trigger one.
+    if (!rebuiltDuringListSelectorConfigure) {
       rebuildItems();
     }
   }
