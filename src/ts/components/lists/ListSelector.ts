@@ -301,7 +301,6 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     const nextKeys = new Set(normalizedItems.map(item => item.key));
 
     const removedKeys = this.items.filter(item => !nextKeys.has(item.key)).map(item => item.key);
-
     const addedKeys = normalizedItems.filter(item => !currentKeys.has(item.key)).map(item => item.key);
 
     this.items = normalizedItems;
@@ -360,6 +359,14 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     this.listSelectorEvents.onItemRemoved.dispatch(this, key);
   }
 
+  /**
+   * Fired after the selector's effective item state has changed.
+   *
+   * This includes item additions/removals, order changes, localized label changes,
+   * and aria-label changes. The event is dispatched only after `items` and
+   * `selectedItem` have been fully synchronized, so listeners always observe
+   * the final state.
+   */
   protected onItemsChangedEvent() {
     this.listSelectorEvents.onItemsChanged.dispatch(this);
   }
@@ -406,11 +413,13 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   }
 
   /**
-   * Gets the event that is fired when the effective items collection changes.
+   * Gets the event that is fired after the selector's effective item state has changed.
    *
-   * Use this to react to list-wide changes such as additions, removals, reordering, or
-   * item property updates that should trigger a rebuild from {@link getItems()}.
-   *
+   * Includes additions/removals, order changes, localized label changes, and
+   * aria-label changes. Dispatched after internal state has been fully synchronized.
+   * 
+   * Use this to rebuild from {@link getItems()} when the effective list changes.
+   * 
    * @returns {Event<ListSelector<Config>, NoArgs>}
    */
   get onItemsChanged(): Event<ListSelector<Config>, NoArgs> {
