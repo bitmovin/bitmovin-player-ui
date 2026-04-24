@@ -137,14 +137,8 @@ describe('SubtitleOverlay', () => {
     afterEach(() => jest.restoreAllMocks());
 
     function fireCea608CueEnter() {
-      playerMock.eventEmitter.fireEvent({
-        subtitleId: 'subtitleId',
-        start: 0,
-        end: 10,
-        text: 'Test Subtitle',
-        position: { row: 5, column: 10 },
-        type: playerMock.exports.PlayerEvent.CueEnter,
-      } as any);
+      // position triggers the CEA-608 code path in SubtitleOverlay (see isCea608SubtitleCue)
+      playerMock.eventEmitter.fireSubtitleCueEnterEvent({ position: { row: 5, column: 10 } });
     }
 
     function setupOverlay(config: { enableCea608CaptionFormatting?: boolean } = {}): {
@@ -160,16 +154,22 @@ describe('SubtitleOverlay', () => {
       const overlayDom = MockHelper.generateDOMMock();
       jest.spyOn(overlay, 'getDomElement').mockReturnValue(overlayDom);
       jest.spyOn(RealSubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
-      // updateComponents touches innerContainerElement which isn't set up under the mocked DOM.
+      // updateComponents on both the overlay and its region containers touches DOM plumbing
+      // (innerContainerElement, child .remove()) that isn't set up under the mocked DOM.
+      jest.spyOn(overlay, 'updateComponents').mockImplementation(() => undefined);
       jest.spyOn(RealSubtitleRegionContainer.prototype, 'updateComponents').mockImplementation(() => undefined);
       return { overlay, overlayDom };
     }
 
-    function getLetterSpacingStyle(addLabelSpy: jest.SpyInstance) {
+    function getLetterSpacingStyle(addLabelSpy: jest.SpyInstance): unknown {
       const label = addLabelSpy.mock.calls[0][0] as SubtitleLabel;
       const labelCssCalls = (label.getDomElement().css as jest.Mock).mock.calls;
-      const styleArgs = labelCssCalls.map(call => call[0]).filter(arg => typeof arg === 'object');
-      return styleArgs.find(style => 'letter-spacing' in style);
+      // The CEA-608 cue path calls css() exactly once with a style object. If a future
+      // change adds another call (or switches to the css(name, value) form), fail loudly
+      // here rather than silently filtering it out.
+      expect(labelCssCalls).toHaveLength(1);
+      const style = labelCssCalls[0][0] as Record<string, string>;
+      return style['letter-spacing'];
     }
 
     it('applies CEA-608 positioning and formatting classes when the config is not set (default behavior)', () => {
@@ -206,6 +206,19 @@ describe('SubtitleOverlay', () => {
       fireCea608CueEnter();
 
       expect(getLetterSpacingStyle(addLabelSpy)).toBeDefined();
+    });
+
+    it('removes both CEA-608 classes on reset, even when the formatting class was never added', () => {
+      // When the formatting class is disabled it's never added, but the reset path still
+      // calls removeClass on it. Guard against a future refactor that makes the removal
+      // conditional and accidentally leaves stale classes on the overlay.
+      const { overlayDom } = setupOverlay({ enableCea608CaptionFormatting: false });
+
+      fireCea608CueEnter();
+      playerMock.eventEmitter.fireSourceUnloadedEvent();
+
+      expect(overlayDom.removeClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+      expect(overlayDom.removeClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
     });
   });
 
