@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Fixed
+
+- Inline `<i>`/`<em>`, `<b>`/`<strong>`, and `<u>` tags in subtitle cue text (e.g. CEA-608 italics) were rendered without their semantic styling
+
 ## [4.11.1] - 2026-04-23
 
 ### Fixed
