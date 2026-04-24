@@ -486,7 +486,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     });
 
     player.on(player.exports.PlayerEvent.SourceUnloaded, reset);
-    player.on(player.exports.PlayerEvent.SubtitleEnable, reset);
+    player.on(player.exports.PlayerEvent.SubtitleEnabled, reset);
     player.on(player.exports.PlayerEvent.SubtitleDisabled, reset);
   }
 
