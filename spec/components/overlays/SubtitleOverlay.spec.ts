@@ -112,12 +112,26 @@ describe('SubtitleOverlay', () => {
   });
 
   describe('CEA 608 caption formatting config', () => {
-    let overlayDomMock: DOM;
+    // This block uses the real Container implementation (via jest.isolateModules + jest.unmock)
+    // so that the SubtitleOverlay constructor's mergeConfig call actually runs. That means the
+    // "default is true" contract is exercised end-to-end — if the mergeConfig defaults object
+    // ever loses this field, these tests will fail.
+    let RealSubtitleOverlay: typeof SubtitleOverlay;
+    let RealSubtitleRegionContainer: typeof SubtitleRegionContainer;
+
+    beforeAll(() => {
+      jest.isolateModules(() => {
+        jest.unmock('../../../src/ts/components/Container');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const module = require('../../../src/ts/components/overlays/SubtitleOverlay');
+        RealSubtitleOverlay = module.SubtitleOverlay;
+        RealSubtitleRegionContainer = module.SubtitleRegionContainer;
+      });
+    });
 
     beforeEach(() => {
       playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
       uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
-      overlayDomMock = MockHelper.generateDOMMock();
     });
 
     afterEach(() => jest.restoreAllMocks());
@@ -133,64 +147,65 @@ describe('SubtitleOverlay', () => {
       } as any);
     }
 
-    function setupOverlay(config: { enableCea608CaptionFormatting?: boolean } = {}): SubtitleOverlay {
-      const overlay = new SubtitleOverlay(config);
-      // Container is auto-mocked, so mergeConfig does nothing and this.config ends up undefined.
-      // Assign it explicitly (defaulting enableCea608CaptionFormatting to true to mirror the real mergeConfig default).
-      (overlay as any).config = { enableCea608CaptionFormatting: true, ...config };
-      // prefixCss is auto-mocked to return undefined; make it return the raw class name
-      // so addClass/removeClass assertions can match on the suffix.
-      jest.spyOn(overlay as any, 'prefixCss').mockImplementation((cls: any) => cls);
+    function setupOverlay(config: { enableCea608CaptionFormatting?: boolean } = {}): {
+      overlay: SubtitleOverlay;
+      overlayDom: jest.Mocked<DOM>;
+    } {
+      const overlay = new RealSubtitleOverlay(config);
       overlay.configure(playerMock, uiInstanceManagerMock);
-      jest.spyOn(overlay, 'getDomElement').mockReturnValue(overlayDomMock);
-      jest.spyOn(SubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
-      return overlay;
+      // The real CEA-608 grid-size calculation reads pixel dimensions off the DOM, which are
+      // unavailable under jsdom without a real layout. Stub it out: the tests only care about
+      // the class-toggling and letter-spacing decisions, not the computed grid values.
+      (overlay as any).ensureCea608GridSizeUpdated = (): void => undefined;
+      const overlayDom = MockHelper.generateDOMMock();
+      jest.spyOn(overlay, 'getDomElement').mockReturnValue(overlayDom);
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+      // updateComponents touches innerContainerElement which isn't set up under the mocked DOM.
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'updateComponents').mockImplementation(() => undefined);
+      return { overlay, overlayDom };
+    }
+
+    function getLetterSpacingStyle(addLabelSpy: jest.SpyInstance) {
+      const label = addLabelSpy.mock.calls[0][0] as SubtitleLabel;
+      const labelCssCalls = (label.getDomElement().css as jest.Mock).mock.calls;
+      const styleArgs = labelCssCalls.map(call => call[0]).filter(arg => typeof arg === 'object');
+      return styleArgs.find(style => 'letter-spacing' in style);
     }
 
     it('applies CEA-608 positioning and formatting classes when the config is not set (default behavior)', () => {
-      subtitleOverlay = setupOverlay();
+      const { overlayDom } = setupOverlay();
 
       fireCea608CueEnter();
 
-      expect(overlayDomMock.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
-      expect(overlayDomMock.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+      expect(overlayDom.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+      expect(overlayDom.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
     });
 
     it('applies CEA-608 positioning but not the formatting class when enableCea608CaptionFormatting is false', () => {
-      subtitleOverlay = setupOverlay({ enableCea608CaptionFormatting: false });
+      const { overlayDom } = setupOverlay({ enableCea608CaptionFormatting: false });
 
       fireCea608CueEnter();
 
-      expect(overlayDomMock.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
-      expect(overlayDomMock.addClass).not.toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+      expect(overlayDom.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+      expect(overlayDom.addClass).not.toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
     });
 
     it('does not set inline letter-spacing on the label when enableCea608CaptionFormatting is false', () => {
-      subtitleOverlay = setupOverlay({ enableCea608CaptionFormatting: false });
-      subtitleRegionContainerManagerMock = (subtitleOverlay as any).subtitleContainerManager;
-      const addLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'addLabel');
+      const { overlay } = setupOverlay({ enableCea608CaptionFormatting: false });
+      const addLabelSpy = jest.spyOn((overlay as any).subtitleContainerManager, 'addLabel');
 
       fireCea608CueEnter();
 
-      const label = addLabelSpy.mock.calls[0][0] as SubtitleLabel;
-      const labelCssCalls = (label.getDomElement().css as jest.Mock).mock.calls;
-      const styleArgs = labelCssCalls.map(call => call[0]).filter(arg => typeof arg === 'object');
-      const styleWithLetterSpacing = styleArgs.find(style => 'letter-spacing' in style);
-      expect(styleWithLetterSpacing).toBeUndefined();
+      expect(getLetterSpacingStyle(addLabelSpy)).toBeUndefined();
     });
 
     it('sets inline letter-spacing on the label when the config is not set (default behavior)', () => {
-      subtitleOverlay = setupOverlay();
-      subtitleRegionContainerManagerMock = (subtitleOverlay as any).subtitleContainerManager;
-      const addLabelSpy = jest.spyOn(subtitleRegionContainerManagerMock, 'addLabel');
+      const { overlay } = setupOverlay();
+      const addLabelSpy = jest.spyOn((overlay as any).subtitleContainerManager, 'addLabel');
 
       fireCea608CueEnter();
 
-      const label = addLabelSpy.mock.calls[0][0] as SubtitleLabel;
-      const labelCssCalls = (label.getDomElement().css as jest.Mock).mock.calls;
-      const styleArgs = labelCssCalls.map(call => call[0]).filter(arg => typeof arg === 'object');
-      const styleWithLetterSpacing = styleArgs.find(style => 'letter-spacing' in style);
-      expect(styleWithLetterSpacing).toBeDefined();
+      expect(getLetterSpacingStyle(addLabelSpy)).toBeDefined();
     });
   });
 
