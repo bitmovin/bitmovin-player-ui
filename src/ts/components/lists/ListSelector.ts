@@ -68,7 +68,7 @@ export interface ListSelectorConfig extends ComponentConfig {
    * Optional comparator to control the display order of list items.
    *
    * Requires a custom UI. The default {@link UIFactory} presets do not expose this option.
-   * 
+   *
    * Note: For subtitle UIs, the built-in `Off` option is pinned at the top regardless of the
    * comparator result.
    */
@@ -102,6 +102,9 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     this.items = this.config.items;
   }
 
+  /**
+   * Applies list-item filtering and label translation before the item enters the effective selector state.
+   */
   private normalizeItem(listItem: ListItem): ListItem | null {
     const normalizedItem: ListItem = { ...listItem };
 
@@ -126,6 +129,9 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     return -1;
   }
 
+  /**
+   * Detects whether the effective UI items changed, including localized labels and aria labels.
+   */
   private haveItemsChanged(previousItems: ListItem[], nextItems: ListItem[]): boolean {
     if (previousItems.length !== nextItems.length) {
       return true;
@@ -294,13 +300,9 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     const currentKeys = new Set(this.items.map(item => item.key));
     const nextKeys = new Set(normalizedItems.map(item => item.key));
 
-    const removedKeys = this.items
-      .filter(item => !nextKeys.has(item.key))
-      .map(item => item.key);
+    const removedKeys = this.items.filter(item => !nextKeys.has(item.key)).map(item => item.key);
 
-    const addedKeys = normalizedItems
-      .filter(item => !currentKeys.has(item.key))
-      .map(item => item.key);
+    const addedKeys = normalizedItems.filter(item => !currentKeys.has(item.key)).map(item => item.key);
 
     this.items = normalizedItems;
 
