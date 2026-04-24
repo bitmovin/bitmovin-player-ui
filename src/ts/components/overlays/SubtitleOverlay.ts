@@ -402,11 +402,14 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
       // Update font-size of all active subtitle labels
       const updateLabel = (label: SubtitleLabel) => {
-        label.getDomElement().css({
+        const labelCss: Record<string, string> = {
           'font-size': `${fontSize}px`,
           'line-height': `${rowHeight - windowMargin}px`,
-          'letter-spacing': `${fontLetterSpacing}px`,
-        });
+        };
+        if (this.isCea608FormattingEnabled()) {
+          labelCss['letter-spacing'] = `${fontLetterSpacing}px`;
+        }
+        label.getDomElement().css(labelCss);
 
         label.regionStyle = `margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
       };
@@ -441,12 +444,10 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         return;
       }
 
-      const applyFormatting = this.config.enableCea608CaptionFormatting !== false;
-
       if (!this.cea608Enabled) {
         this.cea608Enabled = true;
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-        if (applyFormatting) {
+        if (this.isCea608FormattingEnabled()) {
           this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608_FORMATTING));
         }
       }
@@ -462,7 +463,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         'font-size': `${fontSize}px`,
         'line-height': `${rowHeight - windowMargin}px`,
       };
-      if (applyFormatting) {
+      if (this.isCea608FormattingEnabled()) {
         labelCss['letter-spacing'] = `${fontLetterSpacing}px`;
       }
       label.getDomElement().css(labelCss);
@@ -504,6 +505,10 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       this.subtitleContainerManager.removeLabel(this.previewSubtitle);
       this.updateComponents();
     }
+  }
+
+  private isCea608FormattingEnabled(): boolean {
+    return this.config.enableCea608CaptionFormatting !== false;
   }
 }
 

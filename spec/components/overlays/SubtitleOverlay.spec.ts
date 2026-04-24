@@ -118,6 +118,7 @@ describe('SubtitleOverlay', () => {
     // ever loses this field, these tests will fail.
     let RealSubtitleOverlay: typeof SubtitleOverlay;
     let RealSubtitleRegionContainer: typeof SubtitleRegionContainer;
+    let RealSubtitleLabel: typeof SubtitleLabel;
 
     beforeAll(() => {
       jest.isolateModules(() => {
@@ -126,6 +127,7 @@ describe('SubtitleOverlay', () => {
         const module = require('../../../src/ts/components/overlays/SubtitleOverlay');
         RealSubtitleOverlay = module.SubtitleOverlay;
         RealSubtitleRegionContainer = module.SubtitleRegionContainer;
+        RealSubtitleLabel = module.SubtitleLabel;
       });
     });
 
@@ -219,6 +221,54 @@ describe('SubtitleOverlay', () => {
 
       expect(overlayDom.removeClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
       expect(overlayDom.removeClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+    });
+
+    it.each([
+      {
+        label: 'does not re-apply letter-spacing on grid recalculation when formatting is disabled',
+        config: { enableCea608CaptionFormatting: false },
+        letterSpacingExpected: false,
+      },
+      {
+        label: 'does re-apply letter-spacing on grid recalculation when formatting is enabled (default)',
+        config: {},
+        letterSpacingExpected: true,
+      },
+    ])('$label', ({ config, letterSpacingExpected }) => {
+      // Regression: ensureCea608GridSizeUpdated runs on onShow/PlayerResized/ControlBar toggles
+      // and used to unconditionally write letter-spacing onto every active label, undoing the
+      // formatting opt-out for already-rendered cues. Root cause of the f1-stream bug.
+      const overlay = new RealSubtitleOverlay(config);
+      const overlayDom = MockHelper.generateDOMMock();
+      (overlayDom.width as jest.Mock).mockReturnValue(1280);
+      (overlayDom.height as jest.Mock).mockReturnValue(720);
+      (overlayDom.get as jest.Mock).mockReturnValue([{ style: { setProperty: jest.fn() } }]);
+      jest.spyOn(overlay, 'getDomElement').mockReturnValue(overlayDom);
+      jest.spyOn(overlay, 'updateComponents').mockImplementation(() => undefined);
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'updateComponents').mockImplementation(() => undefined);
+      // Labels use their DOM for measurements inside the grid calc (dummy label) and for
+      // style writes (the actual cue label). Non-zero width/height avoids NaN in the calc.
+      // Spy on the isolated-module's SubtitleLabel, not the outer import — otherwise the
+      // real code's `new SubtitleLabel()` creates instances whose prototype isn't the one
+      // we spied on.
+      const labelDom = MockHelper.generateDOMMock();
+      (labelDom.width as jest.Mock).mockReturnValue(10);
+      (labelDom.height as jest.Mock).mockReturnValue(20);
+      jest.spyOn(RealSubtitleLabel.prototype, 'getDomElement').mockReturnValue(labelDom);
+
+      overlay.configure(playerMock, uiInstanceManagerMock);
+      fireCea608CueEnter();
+      // Change overlay dimensions so the grid recalc doesn't bail on the unchanged-size check.
+      (overlayDom.width as jest.Mock).mockReturnValue(1920);
+      (overlayDom.height as jest.Mock).mockReturnValue(1080);
+      (labelDom.css as jest.Mock).mockClear();
+      (overlay as any).ensureCea608GridSizeUpdated();
+
+      const cssCalls = (labelDom.css as jest.Mock).mock.calls;
+      const writtenStyles = cssCalls.map((call: unknown[]) => call[0]).filter(arg => arg && typeof arg === 'object');
+      const hasLetterSpacingWrite = writtenStyles.some(style => 'letter-spacing' in (style as object));
+      expect(hasLetterSpacingWrite).toBe(letterSpacingExpected);
     });
   });
 
