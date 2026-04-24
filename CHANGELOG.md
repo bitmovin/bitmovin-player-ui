@@ -23,6 +23,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `ListSelector.onItemsChanged` event that fires whenever the effective item collection changes, including item additions, removals, reordering, or updates to rendered item data such as `label` and `ariaLabel`.
   This event should be used by consumers that rebuild the full list UI from `getItems()`, while `onItemAdded` and `onItemRemoved` remain strict membership-change events.
 
+## [4.11.1] - 2026-04-23
+
+### Fixed
+
+- Subtitle window coloring was not applied for non-region WebVTT cues
+- WebVTT subtitle background color is applied to the window instead of the text background
+
 ## [4.11.0] - 2026-04-03
 
 ### Added
