@@ -58,7 +58,7 @@
     // We also display a pause image while playback is paused, instead of a play action button
     .#{$prefix}-ui-hugeplaybacktogglebutton {
       .#{$prefix}-ui-icon {
-        background-image: url('../../assets/images/pause.svg');
+        background-image: svg-load('../../assets/images/pause.svg', fill=$color-icon);
         opacity: 0.7;
       }
 

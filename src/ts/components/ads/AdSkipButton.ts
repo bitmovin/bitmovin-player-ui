@@ -2,6 +2,7 @@ import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
 import { UIInstanceManager } from '../../UIManager';
 import { StringUtils } from '../../utils/StringUtils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
+import { i18n, LocalizableText } from '../../localization/i18n';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
@@ -13,12 +14,12 @@ export interface AdSkipButtonConfig extends ButtonConfig {
    * Message which gets displayed during the countdown is active.
    * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
    */
-  untilSkippableMessage?: string;
+  untilSkippableMessage?: LocalizableText;
   /**
    * Message displayed when the ad is skippable.
    * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
    */
-  skippableMessage?: string;
+  skippableMessage?: LocalizableText;
 }
 
 /**
@@ -27,6 +28,12 @@ export interface AdSkipButtonConfig extends ButtonConfig {
  * @category Buttons
  */
 export class AdSkipButton extends Button<AdSkipButtonConfig> {
+  private updateSkipMessageHandler?: () => void;
+  private untilSkippableMessage?: LocalizableText;
+  private skippableMessage?: LocalizableText;
+  private skipOffset: number = -1;
+  private player?: PlayerAPI;
+
   constructor(config: AdSkipButtonConfig = {}) {
     super(config);
 
@@ -34,8 +41,8 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       config,
       <AdSkipButtonConfig>{
         cssClass: 'ui-button-ad-skip',
-        untilSkippableMessage: 'Skip ad in {remainingTime} sec',
-        skippableMessage: 'Skip',
+        untilSkippableMessage: i18n.getLocalizer('ads.skippableIn'),
+        skippableMessage: i18n.getLocalizer('ads.skip'),
         acceptsTouchWithUiHidden: true,
         buttonStyle: ButtonStyle.TextWithTrailingIcon,
       },
@@ -45,43 +52,52 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+    this.player = player;
 
     const config = this.getConfig();
-    let untilSkippableMessage = config.untilSkippableMessage;
-    let skippableMessage = config.skippableMessage;
-    let skipOffset = -1;
+    this.untilSkippableMessage = config.untilSkippableMessage;
+    this.skippableMessage = config.skippableMessage;
+    this.skipOffset = -1;
 
-    const updateSkipMessageHandler = () => {
+    this.updateSkipMessageHandler = () => {
       this.show();
 
       // Update the skip message on the button
-      if (player.getCurrentTime() < skipOffset) {
-        this.setText(StringUtils.replaceAdMessagePlaceholders(untilSkippableMessage, skipOffset, player));
+      if (player.getCurrentTime() < this.skipOffset) {
+        this.setText(
+          StringUtils.replaceAdMessagePlaceholders(
+            i18n.performLocalization(this.untilSkippableMessage),
+            player,
+            this.skipOffset,
+          ),
+        );
         this.disable();
       } else {
-        this.setText(skippableMessage);
+        this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.skippableMessage), player));
         this.enable();
       }
     };
 
     const adStartHandler = (event: AdEvent) => {
       const ad = event.ad as LinearAd;
-      skipOffset = ad.skippableAfter;
-      untilSkippableMessage = (ad.uiConfig && ad.uiConfig.untilSkippableMessage) || config.untilSkippableMessage;
-      skippableMessage = (ad.uiConfig && ad.uiConfig.skippableMessage) || config.skippableMessage;
+      this.skipOffset = ad.skippableAfter;
+      this.untilSkippableMessage = (ad.uiConfig && ad.uiConfig.untilSkippableMessage) || config.untilSkippableMessage;
+      this.skippableMessage = (ad.uiConfig && ad.uiConfig.skippableMessage) || config.skippableMessage;
 
       // Display this button only if ad is skippable.
       // Non-skippable ads will return -1 for skippableAfter for player version < v8.3.0.
-      if (typeof skipOffset === 'number' && skipOffset >= 0) {
-        updateSkipMessageHandler();
-        player.on(player.exports.PlayerEvent.TimeChanged, updateSkipMessageHandler);
+      if (typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
+        this.updateSkipMessageHandler();
+        player.on(player.exports.PlayerEvent.TimeChanged, this.updateSkipMessageHandler);
       } else {
         this.hide();
       }
     };
 
     const adEndHandler = () => {
-      player.off(player.exports.PlayerEvent.TimeChanged, updateSkipMessageHandler);
+      if (this.updateSkipMessageHandler) {
+        player.off(player.exports.PlayerEvent.TimeChanged, this.updateSkipMessageHandler);
+      }
     };
 
     player.on(player.exports.PlayerEvent.AdStarted, adStartHandler);
@@ -93,5 +109,18 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       // Try to skip the ad (this only works if it is skippable so we don't need to take extra care of that here)
       player.ads.skip();
     });
+  }
+
+  protected onLanguageChanged(): void {
+    if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
+      this.updateSkipMessageHandler();
+    }
+  }
+
+  release(): void {
+    if (this.player && this.updateSkipMessageHandler) {
+      this.player.off(this.player.exports.PlayerEvent.TimeChanged, this.updateSkipMessageHandler);
+    }
+    super.release();
   }
 }

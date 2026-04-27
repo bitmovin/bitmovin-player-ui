@@ -139,6 +139,12 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
     }
   }
 
+  protected onLanguageChanged(): void {
+    if (this.label instanceof Label && typeof this.config.label === 'function') {
+      this.label.setText(this.config.label);
+    }
+  }
+
   /**
    * Checks if this settings panel item is active, i.e. visible and enabled and a user can interact with it.
    * @returns {boolean} true if the panel is active, else false

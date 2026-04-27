@@ -46,7 +46,7 @@
     width: fit-content;
 
     .#{$prefix}-ui-icon {
-      background-image: url('../../assets/images/angle-right.svg');
+      background-image: svg-load('../../assets/images/angle-right.svg', stroke=$color-icon);
       width: 0.8em;
       min-width: unset;
     }
@@ -60,7 +60,7 @@
     &.#{$prefix}-selected {
       .#{$prefix}-ui-icon {
         display: inline-block;
-        background-image: url('../../assets/images/check.svg');
+        background-image: svg-load('../../assets/images/check.svg', stroke=$color-icon);
       }
     }
   }

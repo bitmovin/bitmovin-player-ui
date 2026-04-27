@@ -61,6 +61,21 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     );
   }
 
+  private initializeTimeFormat = () => {
+    // Set time format depending on source duration
+    const player = this.player;
+    if (player == null) {
+      return;
+    }
+    this.timeFormat =
+      Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600
+        ? StringUtils.FORMAT_HHMMSS
+        : StringUtils.FORMAT_MMSS;
+    // Set initial state of title and thumbnail to handle sourceLoaded when switching to a live-stream
+    this.setTitleText(null);
+    this.setThumbnail(null);
+  };
+
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
@@ -68,19 +83,9 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     this.uiManager = uimanager;
     uimanager.onSeekPreview.subscribeRateLimited(this.handleSeekPreview, 100);
 
-    const init = () => {
-      // Set time format depending on source duration
-      this.timeFormat =
-        Math.abs(player.isLive() ? player.getMaxTimeShift() : player.getDuration()) >= 3600
-          ? StringUtils.FORMAT_HHMMSS
-          : StringUtils.FORMAT_MMSS;
-      // Set initial state of title and thumbnail to handle sourceLoaded when switching to a live-stream
-      this.setTitleText(null);
-      this.setThumbnail(null);
-    };
-
-    uimanager.getConfig().events.onUpdated.subscribe(init);
-    init();
+    uimanager.getConfig().events.onUpdated.subscribe(this.initializeTimeFormat);
+    player.on(this.player.exports.PlayerEvent.DurationChanged, this.initializeTimeFormat);
+    this.initializeTimeFormat();
   }
 
   private handleSeekPreview = (sender: SeekBar, args: SeekPreviewEventArgs) => {
@@ -251,5 +256,6 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
     super.release();
 
     this.uiManager.onSeekPreview.unsubscribe(this.handleSeekPreview);
+    this.player.off(this.player.exports.PlayerEvent.DurationChanged, this.initializeTimeFormat);
   }
 }

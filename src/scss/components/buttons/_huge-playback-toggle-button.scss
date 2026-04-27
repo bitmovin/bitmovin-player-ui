@@ -45,7 +45,7 @@
   width: 8em;
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/play.svg');
+    background-image: svg-load('../../assets/images/play.svg', fill=$color-icon);
     background-size: $icon-size-large;
     height: 100%;
     width: 100%;

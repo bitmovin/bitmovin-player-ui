@@ -53,7 +53,7 @@ export class VideoQualitySelectBox extends SelectBox {
       selectCurrentVideoQuality();
     };
 
-    this.onItemSelected.subscribe((sender: VideoQualitySelectBox, value: string) => {
+    this.onItemSelectionChanged.subscribe((sender: VideoQualitySelectBox, value: string) => {
       player.setVideoQuality(value);
     });
 

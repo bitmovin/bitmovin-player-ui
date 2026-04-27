@@ -11,14 +11,19 @@ export interface VolumeSettingChangedArgs {
  */
 export class VolumeController {
   private static readonly issuerName = 'ui-volumecontroller';
+  private static readonly defaultVolume = 100;
 
   private readonly events = {
     onChanged: new EventDispatcher<VolumeController, VolumeSettingChangedArgs>(),
   };
 
   private storedVolume: number;
+  private transitionActive = false;
 
   constructor(private readonly player: PlayerAPI) {
+    // If player's volume is `0`, `storeVolume` will not store that, therefore assigning the `defaultVolume` to ensure
+    // `storedVolume` is properly initialized.
+    this.storedVolume = VolumeController.defaultVolume;
     this.storeVolume();
 
     const handler = () => {
@@ -65,19 +70,28 @@ export class VolumeController {
    * Stores (saves) the current volume so it can later be restored with {@link recallVolume}.
    */
   storeVolume(): void {
-    this.storedVolume = this.getVolume();
+    const volume = this.getVolume();
+    if (volume > 0) {
+      this.storedVolume = volume;
+    }
   }
 
   /**
    * Recalls (sets) the volume previously stored with {@link storeVolume}.
    */
   recallVolume(): void {
-    this.setMuted(this.storedVolume === 0);
-    this.setVolume(this.storedVolume);
+    const volume = this.storedVolume > 0 ? this.storedVolume : VolumeController.defaultVolume;
+    this.setMuted(false);
+    this.setVolume(volume);
   }
 
   startTransition(): VolumeTransition {
+    this.transitionActive = true;
     return new VolumeTransition(this);
+  }
+
+  endTransition(): void {
+    this.transitionActive = false;
   }
 
   onChangedEvent() {
@@ -87,7 +101,11 @@ export class VolumeController {
     const uiMuted = playerMuted || playerVolume === 0;
     const uiVolume = playerMuted ? 0 : playerVolume;
 
-    this.storeVolume();
+    // Don't store intermediate volume values while the user is scrubbing the volume slider.
+    // The VolumeTransition will store the final value when scrubbing finishes.
+    if (!this.transitionActive) {
+      this.storeVolume();
+    }
 
     this.events.onChanged.dispatch(this, { volume: uiVolume, muted: uiMuted });
   }
@@ -127,5 +145,9 @@ export class VolumeTransition {
       this.controller.setVolume(volume);
       this.controller.storeVolume();
     }
+
+    // End the transition after all volume/mute operations are complete, so that events emitted
+    // during finish() don't trigger storeVolume() with intermediate values.
+    this.controller.endTransition();
   }
 }

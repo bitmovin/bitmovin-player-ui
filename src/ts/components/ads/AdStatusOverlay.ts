@@ -4,6 +4,11 @@ import { Spacer } from '../Spacer';
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../../UIManager';
 
+/**
+ * An overlay holding the AdSkipButton which is always visible during Ad playback.
+ *
+ * @category Components
+ */
 export class AdStatusOverlay extends Container<ContainerConfig> {
   public readonly adSkipButton: AdSkipButton;
 

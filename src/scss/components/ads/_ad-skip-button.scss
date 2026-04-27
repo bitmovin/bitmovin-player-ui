@@ -3,13 +3,14 @@
 %ui-button-ad-skip {
   @extend %ui-button;
 
+  pointer-events: auto;
   background-color: transparentize($color-black, 0.25);
   border-radius: 20px;
   padding: 0.5em 1em;
   min-width: fit-content;
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/ad-skip.svg');
+    background-image: svg-load('../../assets/images/ad-skip.svg', fill=$color-icon-highlight-ads);
   }
 
   .#{$prefix}-label {
@@ -22,7 +23,7 @@
     }
   }
 
-  &:hover {
+  &:not(.#{$prefix}-disabled):hover {
     background-color: $color-black;
   }
 }

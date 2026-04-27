@@ -1,10 +1,17 @@
+import { DOM } from '../DOM';
+
 const FocusVisibleCssClassName = '{{PREFIX}}-focus-visible';
 
 export class FocusVisibilityTracker {
   private readonly eventHandlerMap: { [eventName: string]: EventListenerOrEventListenerObject };
   private lastInteractionWasKeyboard: boolean = true;
+  private uiWrapperElement: DOM;
 
-  constructor(private bitmovinUiPrefix: string) {
+  constructor(
+    private bitmovinUiPrefix: string,
+    uiWrapperElement: DOM,
+  ) {
+    this.uiWrapperElement = uiWrapperElement;
     this.eventHandlerMap = {
       mousedown: this.onMouseOrPointerOrTouch,
       pointerdown: this.onMouseOrPointerOrTouch,
@@ -45,13 +52,13 @@ export class FocusVisibilityTracker {
 
   private registerEventListeners(): void {
     for (const event in this.eventHandlerMap) {
-      document.addEventListener(event, this.eventHandlerMap[event], true);
+      this.uiWrapperElement.on(event, this.eventHandlerMap[event], true);
     }
   }
 
   private unregisterEventListeners(): void {
     for (const event in this.eventHandlerMap) {
-      document.removeEventListener(event, this.eventHandlerMap[event], true);
+      this.uiWrapperElement.off(event, this.eventHandlerMap[event], true);
     }
   }
 

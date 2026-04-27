@@ -15,9 +15,26 @@ export namespace MockHelper {
   export function getEventDispatcherMock() {
     return {
       subscribe: jest.fn(),
+      unsubscribe: jest.fn(),
       subscribeRateLimited: jest.fn(),
       dispatch: jest.fn(),
     };
+  }
+
+  export function getMockCall(mockFn: jest.Mock, { call = 0 }: { call?: number } = {}): unknown[] {
+    const calls = mockFn.mock.calls;
+    if (call < 0 || call >= calls.length) {
+      throw new Error(`Expected call index ${call} but only ${calls.length} calls were recorded.`);
+    }
+    return calls[call];
+  }
+
+  export function getMockCallArg<T>(mockFn: jest.Mock, { call = 0, arg = 0 }: { call?: number; arg?: number } = {}): T {
+    const callArgs = getMockCall(mockFn, { call });
+    if (arg < 0 || arg >= callArgs.length) {
+      throw new Error(`Expected argument index ${arg} but call has ${callArgs.length} arguments.`);
+    }
+    return callArgs[arg] as T;
   }
 
   export function getUiMock(): UIContainer {
@@ -49,6 +66,7 @@ export namespace MockHelper {
       onSeeked: getEventDispatcherMock(),
       onRelease: getEventDispatcherMock(),
       onComponentViewModeChanged: getEventDispatcherMock(),
+      uiWrapperElement: generateDOMMock(),
     }));
 
     return new UiInstanceManagerMockClass();
@@ -59,6 +77,7 @@ export namespace MockHelper {
       addClass: jest.fn(),
       removeClass: jest.fn(),
       on: jest.fn(),
+      off: jest.fn(),
       html: jest.fn(),
       css: jest.fn(),
       width: jest.fn(),
@@ -126,10 +145,15 @@ export namespace MockHelper {
         isViewModeAvailable: jest.fn(),
         seek: jest.fn(),
         isMuted: jest.fn(),
+        mute: jest.fn(),
+        unmute: jest.fn(),
+        setVolume: jest.fn(),
+        setAudio: jest.fn(),
 
         // Event faker
         eventEmitter: eventHelper,
         on: eventHelper.on.bind(eventHelper),
+        off: jest.fn(),
       };
     });
 

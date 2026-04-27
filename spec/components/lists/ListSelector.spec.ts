@@ -186,6 +186,40 @@ describe('ListSelector', () => {
     });
   });
 
+  describe('dispatchItemSelectionChanged', () => {
+    beforeEach(() => {
+      listSelector.addItem('itemKey', 'itemLabel');
+      listSelector.addItem('itemKey2', 'itemLabel2');
+    });
+
+    it('updates selected item by default and dispatches selection change event', () => {
+      const selectionChangedSpy = jest.fn();
+      const itemSelectedSpy = jest.fn();
+      listSelector.onItemSelectionChanged.subscribe(selectionChangedSpy);
+      listSelector.onItemSelected.subscribe(itemSelectedSpy);
+
+      listSelector.dispatchItemSelectionChanged('itemKey');
+
+      expect(listSelector.getSelectedItem()).toEqual('itemKey');
+      expect(selectionChangedSpy).toHaveBeenCalledWith(listSelector, 'itemKey');
+      expect(itemSelectedSpy).toHaveBeenCalledWith(listSelector, 'itemKey');
+    });
+
+    it('does not update selected item when updateSelectedItem is false but still dispatches event', () => {
+      const selectionChangedSpy = jest.fn();
+      const itemSelectedSpy = jest.fn();
+      listSelector.onItemSelectionChanged.subscribe(selectionChangedSpy);
+      listSelector.onItemSelected.subscribe(itemSelectedSpy);
+
+      listSelector.selectItem('itemKey');
+      listSelector.dispatchItemSelectionChanged('itemKey2', false);
+
+      expect(listSelector.getSelectedItem()).toEqual('itemKey');
+      expect(selectionChangedSpy).toHaveBeenCalledWith(listSelector, 'itemKey2');
+      expect(itemSelectedSpy).not.toHaveBeenCalledWith(listSelector, 'itemKey2');
+    });
+  });
+
   describe('getItemForKey', () => {
     it('returns requested item', () => {
       listSelector.addItem('I-1', 'L-1');

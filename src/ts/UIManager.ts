@@ -10,13 +10,15 @@ import { BrowserUtils } from './utils/BrowserUtils';
 import { TimelineMarker, UIConfig } from './UIConfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './utils/VolumeController';
-import { i18n, CustomVocabulary, Vocabularies } from './localization/i18n';
+import { i18n, CustomVocabulary, Vocabularies, I18n, LanguageChangedArgument } from './localization/i18n';
 import { FocusVisibilityTracker } from './utils/FocusVisibilityTracker';
 import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './utils/MobileV3PlayerAPI';
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
+import { ShadowDomManager } from './utils/ShadowDomManager';
+import { AdBreakTracker } from './utils/AdBreakTracker';
 
 /**
  * @category Configs
@@ -32,6 +34,21 @@ export interface LocalizationConfig {
    * custom strings or additional languages.
    */
   vocabularies?: Vocabularies;
+
+  events?: {
+    /**
+     * Fires when the UI language has been changed during the lifetime of the UI.
+     */
+    onLanguageChanged: EventDispatcher<I18n, LanguageChangedArgument>;
+  };
+  /**
+   * Specifies if the UI localization should automatically adapt to the selected subtitle language.
+   * When enabled, the UI language will change to match the subtitle track's language, falling back
+   * to the configured default UI language (English unless configured otherwise) if the language is not available.
+   *
+   * Default: false
+   */
+  adaptLocalizationToSubtitleLanguage?: boolean;
 }
 
 /**
@@ -45,6 +62,7 @@ export interface InternalUIConfig extends UIConfig {
     onUpdated: EventDispatcher<UIManager, void>;
   };
   volumeController: VolumeController;
+  adBreakTracker: AdBreakTracker;
 }
 
 /**
@@ -128,6 +146,7 @@ export class UIManager {
   private managerPlayerWrapper: PlayerWrapper;
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
+  private shadowDomManager: ShadowDomManager;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -171,6 +190,7 @@ export class UIManager {
     }
 
     this.subtitleSettingsManager = new SubtitleSettingsManager();
+    this.shadowDomManager = new ShadowDomManager();
     this.player = player;
     this.managerPlayerWrapper = new PlayerWrapper(player);
 
@@ -182,11 +202,13 @@ export class UIManager {
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
       disableAutoHideWhenHovered: false, // Disable auto hide when UI is hovered
       enableSeekPreview: true,
+      shadowDom: false,
       ...uiconfig,
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
+      adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer()),
     };
 
     /**
@@ -221,6 +243,9 @@ export class UIManager {
     };
 
     updateConfig();
+    if (this.config.localization) {
+      i18n.setConfig(this.config.localization);
+    }
     this.subtitleSettingsManager.initialize();
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
@@ -249,6 +274,17 @@ export class UIManager {
       this.uiContainerElement = new DOM(player.getContainer());
     }
 
+    if (this.config.shadowDom == true || (this.config.shadowDom && this.config.shadowDom.enabled)) {
+      if (ShadowDomManager.isShadowDomSupported()) {
+        this.shadowDomManager.initialize(
+          this.uiContainerElement,
+          this.config.shadowDom === true ? { enabled: true } : this.config.shadowDom,
+        );
+      } else {
+        console.warn('Shadow DOM is not supported in this environment. Falling back to classic UI rendering.');
+      }
+    }
+
     // Create UI instance managers for the UI variants
     // The instance managers map to the corresponding UI variants by their array index
     this.uiInstanceManagers = [];
@@ -265,6 +301,7 @@ export class UIManager {
           uiVariant.ui,
           this.config,
           this.subtitleSettingsManager,
+          this.uiWrapperElement,
           uiVariant.spatialNavigation,
         ),
       );
@@ -329,9 +366,13 @@ export class UIManager {
             // TODO introduce an event that is fired when the playback content is updated, a switch to/from ads
             this.config.events.onUpdated.dispatch(this);
             break;
-          // When a new source is loaded during ad playback, there will be no Ad(Break)Finished event
           case player.exports.PlayerEvent.SourceLoaded:
+            // No need to take care of SourceLoaded. As when the source changes, a SourceUnloaded event is received.
+            // When the source gets loaded during ad playback, we don't want to change the UI.
+            break;
           case player.exports.PlayerEvent.SourceUnloaded:
+            // When the source gets unloaded during ad playback, there will be no Ad(Break)Finished event.
+            // This also covers changing a source
             adStartedEvent = null;
             break;
         }
@@ -392,7 +433,7 @@ export class UIManager {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.ViewModeChanged, resolveUiVariant);
     }
 
-    this.focusVisibilityTracker = new FocusVisibilityTracker('{{PREFIX}}');
+    this.focusVisibilityTracker = new FocusVisibilityTracker('{{PREFIX}}', this.uiWrapperElement);
 
     // Initialize the UI
     resolveUiVariant(null);
@@ -525,6 +566,15 @@ export class UIManager {
     });
   }
 
+  /**
+   * The node the UI renders into. When Shadow DOM is enabled, this wraps the ShadowRoot; otherwise it wraps the
+   * provided `UIConfig.container` (or the `player.container`).
+   */
+  get uiWrapperElement(): DOM {
+    const shadowRoot = this.shadowDomManager.getShadowRoot();
+    return shadowRoot != undefined ? new DOM(shadowRoot) : this.uiContainerElement;
+  }
+
   private addUi(ui: InternalUIInstanceManager): void {
     const dom = ui.getUI().getDomElement();
     const player = ui.getWrappedPlayer();
@@ -533,7 +583,7 @@ export class UIManager {
     /* Append the UI DOM after configuration to avoid CSS transitions at initialization
      * Example: Components are hidden during configuration and these hides may trigger CSS transitions that are
      * undesirable at this time. */
-    this.uiContainerElement.append(dom);
+    this.uiWrapperElement.append(dom);
 
     // When the UI is loaded after a source was loaded, we need to tell the components to initialize themselves
     if (player.getSource()) {
@@ -567,11 +617,14 @@ export class UIManager {
   }
 
   release(): void {
+    this.config.adBreakTracker.release();
+
     for (const uiInstanceManager of this.uiInstanceManagers) {
       this.releaseUi(uiInstanceManager);
     }
     this.managerPlayerWrapper.clearEventHandlers();
     this.focusVisibilityTracker.release();
+    this.shadowDomManager.release();
   }
 
   /**
@@ -649,6 +702,7 @@ export class UIInstanceManager {
   private config: InternalUIConfig;
   private subtitleSettingsManager: SubtitleSettingsManager;
   protected spatialNavigation?: SpatialNavigation;
+  readonly uiWrapperElement: DOM;
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
@@ -671,12 +725,14 @@ export class UIInstanceManager {
     ui: UIContainer,
     config: InternalUIConfig,
     subtitleSettingsManager: SubtitleSettingsManager,
+    uiWrapperElement: DOM,
     spatialNavigation?: SpatialNavigation,
   ) {
     this.playerWrapper = new PlayerWrapper(player);
     this.ui = ui;
     this.config = config;
     this.subtitleSettingsManager = subtitleSettingsManager;
+    this.uiWrapperElement = uiWrapperElement;
     this.spatialNavigation = spatialNavigation;
   }
 
@@ -911,7 +967,7 @@ export class PlayerWrapper {
   private player: PlayerAPI;
   private wrapper: WrappedPlayer;
 
-  private eventHandlers: { [eventType: string]: PlayerEventCallback[] } = {};
+  private eventHandlers: { [eventType: string]: PlayerEventCallback<PlayerEvent>[] } = {};
 
   constructor(player: PlayerAPI) {
     this.player = player;
@@ -973,7 +1029,7 @@ export class PlayerWrapper {
     }
 
     // Explicitly add a wrapper method for 'on' that adds added event handlers to the event list
-    wrapper.on = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
+    wrapper.on = <T extends PlayerEvent>(eventType: T, callback: PlayerEventCallback<T>) => {
       player.on(eventType, callback);
 
       if (!this.eventHandlers[eventType]) {
@@ -986,7 +1042,7 @@ export class PlayerWrapper {
     };
 
     // Explicitly add a wrapper method for 'off' that removes removed event handlers from the event list
-    wrapper.off = (eventType: PlayerEvent, callback: PlayerEventCallback) => {
+    wrapper.off = <T extends PlayerEvent>(eventType: T, callback: PlayerEventCallback<T>) => {
       player.off(eventType, callback);
 
       if (this.eventHandlers[eventType]) {

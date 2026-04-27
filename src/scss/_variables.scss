@@ -62,6 +62,14 @@ $color-background-dimmed: rgba(0, 0, 0, 0.5) !default;
  * Color for ad-related UI elements
  */
 $color-highlight-ads: #ffc737 !default;
+/**
+ * Color for specific ad-related icons such as the skip button icon
+ */
+$color-icon-highlight-ads: $color-highlight-ads !default;
+/**
+ * Color for icons
+ */
+$color-icon: $color-primary !default;
 
 /**
  * Base font family for all text elements

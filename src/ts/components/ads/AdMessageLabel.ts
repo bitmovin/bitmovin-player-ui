@@ -45,15 +45,15 @@ export class AdMessageLabel extends Label<LabelConfig> {
     super.configure(player, uimanager);
 
     const config = this.getConfig();
-    let text = config.text;
+    let text = config.text || '';
 
     const updateMessageHandler = () => {
-      this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(text), null, player));
+      this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(text), player));
     };
 
     const adStartHandler = (event: AdEvent) => {
       const uiConfig = (event.ad as LinearAd).uiConfig;
-      text = uiConfig?.message || config.text;
+      text = uiConfig?.message || config.text || '';
 
       updateMessageHandler();
 

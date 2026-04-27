@@ -55,6 +55,9 @@ on:
       RELEASE_DEPLOY_KEY:
         description: 'SSH deploy key with write access to the repository'
         required: true
+      GCS_BUCKET:
+        description: 'Google Cloud Storage bucket name for uploading docs'
+        required: true
 
 concurrency:
   group: release-${{ inputs.version_number }}-${{ inputs.release_type }}
@@ -143,7 +146,7 @@ jobs:
         run: |
           git config --global user.name 'Automated Release'
           git config --global user.email 'release-automation@bitmovin.com'
-          git add package.json CHANGELOG.md
+          git add package.json package-lock.json CHANGELOG.md
           git commit -m "[skip ci] Bump version to ${{ steps.version_number.outputs.version_number }}"
           git tag "${{ steps.version_number.outputs.tag_name }}"
           git push origin ${{ inputs.branch_name || github.ref_name }}
@@ -171,6 +174,42 @@ jobs:
         shell: bash
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+  github_release:
+    name: Create GitHub Release
+    needs: [version_bump, release]
+    if: inputs.release_type == 'final' && inputs.dry_run != true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.version_bump.outputs.tag_name }}
+
+      - name: Extract changelog entry
+        uses: actions/github-script@v6
+        id: changelog
+        with:
+          script: |
+            const fs = require('fs');
+            const { parseChangelogEntry } = require('./.github/scripts/parseChangelogEntry.js');
+            const version = '${{ needs.version_bump.outputs.version_number }}';
+            const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+            let body;
+
+            try {
+              body = parseChangelogEntry(changelog);
+            } catch (error) {
+              core.warning(`Failed to extract release notes for v${version}: ${error.message}`);
+              body = `Release notes are not available for v${version}. Please check CHANGELOG.md in this tag.`;
+            }
+
+            fs.writeFileSync('release_notes.md', body);
+
+      - name: Create GitHub Release
+        run: gh release create "${{ needs.version_bump.outputs.tag_name }}" --title "v${{ needs.version_bump.outputs.version_number }}" --notes-file release_notes.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   upload_docs:
     name: Build and upload Documentation
@@ -211,9 +250,9 @@ jobs:
 
   notify_success:
     name: Notify Success
-    needs: [test, version_bump, release, upload_docs]
+    needs: [test, version_bump, release, upload_docs, github_release]
     runs-on: ubuntu-latest
-    if: inputs.dry_run != true
+    if: ${{ always() && inputs.dry_run != true && needs.test.result == 'success' && needs.version_bump.result == 'success' && needs.release.result == 'success' && needs.upload_docs.result == 'success' && (inputs.release_type != 'final' || needs.github_release.result == 'success') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -226,8 +265,8 @@ jobs:
   handle_failure:
     name: Handle Failure
     runs-on: ubuntu-latest
-    needs: [test, version_bump, release, upload_docs, notify_success]
-    if: ${{ always() && inputs.dry_run != true && (needs.test.result == 'failure' || needs.version_bump.result == 'failure' || needs.release.result == 'failure' || needs.upload_docs.result == 'failure' || needs.notify_success.result == 'failure') }}
+    needs: [test, version_bump, release, upload_docs, github_release, notify_success]
+    if: ${{ always() && inputs.dry_run != true && (needs.test.result == 'failure' || needs.version_bump.result == 'failure' || needs.release.result == 'failure' || needs.upload_docs.result == 'failure' || needs.github_release.result == 'failure' || needs.notify_success.result == 'failure') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

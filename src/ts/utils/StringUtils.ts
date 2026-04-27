@@ -77,9 +77,15 @@ export namespace StringUtils {
   /**
    * Fills out placeholders in an ad message.
    *
-   * Has the placeholders '{remainingTime[formatString]}', '{playedTime[formatString]}',
-   * '{adDuration[formatString]}' and {adBreakRemainingTime[formatString]}, which are replaced by the remaining time until the ad can be skipped, the current
-   * time or the ad duration. The format string is optional. If not specified, the placeholder is replaced by the time
+   * Has the following placeholders, which are replaced with:
+   *   - '{remainingTime[formatString]}': the remaining time until the ad can be skipped
+   *   - '{playedTime[formatString]}': the current time
+   *   - '{adDuration[formatString]}': the ad duration
+   *   - '{adBreakRemainingTime[formatString]}': the total remaining time of all ads in the ad break
+   *   - '{activeAdIndex[formatString]}': the number of the currently played ad within the current ad break by default, or `activeAdIndex` if provided. `activeAdIndex` can be used to show the index of the current ad across multiple ad breaks with the same schedule time.
+   *   - '{totalAdsCount[formatString]}': the total number of ads in the current ad break by default, or `totalNumberOfAds` if provided. `totalNumberOfAds` can be used to show the number of ads across multiple ad breaks with the same schedule time.
+   *
+   * The format string is optional. If not specified, the placeholder is replaced by the time
    * in seconds. If specified, it must be of the following format:
    * - %d - Inserts the time as an integer.
    * - %0Nd - Inserts the time as an integer with leading zeroes, if the length of the time string is smaller than N.
@@ -99,20 +105,32 @@ export namespace StringUtils {
    * Adbreak with 2 ads each 50 seconds would be displayed as: 'Ad: 100.0 secs'
    *
    * @param adMessage an ad message with optional placeholders to fill
-   * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
    * @param player the player to get the time data from
+   * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
+   * @param activeAdIndex if specified, {activeAdIndex} will be set to this value. Can be used to calculate the ad index
+   *   across multiple ad breaks which are scheduled for the same time. If not provided, the value will be calculated
+   *   for the current ad break only from the player API.
+   * @param totalNumberOfAds if specified, {totalAdsCount} will be set to this value. Can be used to calculate the total
+   *   number of ads across multiple ad breaks which are scheduled for the same time. If not provided, the value will
+   *   be calculated for the current ad break only from the player API.
    * @returns {string} the ad message with filled placeholders
    */
-  export function replaceAdMessagePlaceholders(adMessage: string, skipOffset: number, player: PlayerAPI) {
+  export function replaceAdMessagePlaceholders(
+    adMessage: string,
+    player: PlayerAPI,
+    skipOffset?: number,
+    activeAdIndex?: number,
+    totalNumberOfAds?: number,
+  ) {
     const adMessagePlaceholderRegex = new RegExp(
-      '\\{(remainingTime|playedTime|adDuration|adBreakRemainingTime)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
+      '\\{(remainingTime|playedTime|adDuration|adBreakRemainingTime|activeAdIndex|totalAdsCount)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g',
     );
 
     return adMessage.replace(adMessagePlaceholderRegex, formatString => {
       let time = 0;
       if (formatString.indexOf('remainingTime') > -1) {
-        if (skipOffset) {
+        if (typeof skipOffset === 'number') {
           time = Math.ceil(skipOffset - player.getCurrentTime());
         } else {
           time = player.getDuration() - player.getCurrentTime();
@@ -137,6 +155,34 @@ export namespace StringUtils {
           // And remaning ads duration minus time played
           time = duration - player.getCurrentTime();
         }
+      } else if (formatString.indexOf('activeAdIndex') > -1 || formatString.indexOf('totalAdsCount') > -1) {
+        if (formatString.includes('activeAdIndex')) {
+          if (activeAdIndex != null) {
+            return formatNumber(activeAdIndex, formatString);
+          }
+
+          const activeAdBreak = player.ads?.getActiveAdBreak?.();
+          const activeAd = player.ads?.getActiveAd?.();
+          const ads = activeAdBreak?.ads;
+
+          if (!activeAdBreak || !activeAd || !Array.isArray(ads) || ads.length === 0) {
+            return formatNumber(0, formatString);
+          }
+
+          return formatNumber(
+            ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd)) + 1,
+            formatString,
+          );
+        }
+
+        if (totalNumberOfAds != null) {
+          return formatNumber(totalNumberOfAds, formatString);
+        }
+
+        const activeAdBreak = player.ads?.getActiveAdBreak?.();
+        const ads = activeAdBreak?.ads;
+
+        return formatNumber(Array.isArray(ads) ? ads.length : 0, formatString);
       }
 
       return formatNumber(Math.round(time), formatString);

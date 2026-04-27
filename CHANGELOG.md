@@ -5,12 +5,141 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [4.11.1] - 2026-04-23
+
+### Fixed
+
+- Subtitle window coloring was not applied for non-region WebVTT cues
+- WebVTT subtitle background color is applied to the window instead of the text background
+
+## [4.11.0] - 2026-04-03
+
+### Added
+
+- Export default layout functions in `UIFactory.defaultLayouts` for easier customization of individual UI variants and their display conditions
+
+## [4.10.3] - 2026-04-02
+
+### Fixed
+
+- In TV spatial navigation, the BACK button could be swallowed by the UI and not reach the application when the controls were already hidden
+
+## [4.10.2] - 2026-03-26
+
+### Fixed
+
+- The control bar was not respecting the safe-area, e.g. on iOS, within the Ads UI variant.
+- Ad-UI switches to main content UI when a `SourceLoaded` event is received during active ad playback
+- Missing `TimelineMarker`s when the position calculation happens before the UI finished rendering
+- Unexpected `TimelineMarker`s animation when the Player size changes
+
+## [4.10.1] - 2026-03-24
+
+### Fixed
+
+- `AdStatusOverlay` blocking clicks on `HugePlaybackToggleButton` at small player sizes
+
+## [4.10.0] - 2026-03-16
+
+### Added
+
+- `AdCounterLabel` now shows the ad position across multiple ad breaks scheduled at the same time (e.g. `Ad 2 of 3` instead of `Ad 1 of 1` for each)
+
+### Fixed
+
+- `VolumeController` can store a volume to restore of `0` in some cases, causing unmute to not restore an audible volume level
+
+## [4.9.1] - 2026-02-24
+
+### Fixed
+
+- Unhandled exceptions from player API calls after `player.destroy()`
+
+## [4.9.0] - 2026-02-20
+
+### Added
+
+- Language localization for Portuguese
+
+### Fixed
+
+- Missing localization keys in the `Vocabulary` interface
+- Missing translations for certain localization keys in `de.json` and `nl.json` to ensure all language files are complete
+- TimelineMarkersHandler not releasing properly
+
+## [4.8.1] - 2026-02-09
+
+### Added
+
+- New `LocalizationConfig.adaptLocalizationToSubtitleLanguage` option to enable dynamically changing the UI language based on the user's selected subtitle language.
+- New `UIConfig.localization` config option to pass a `LocalizationConfig` within the `UIConfig` to the UI.
+
+### Changed
+
+- `ListItem.label` is now a `LocalizableText` instead of a `string`. It is strongly recommended to check behavior for any `ListSelectorConfig.filter` and `ListSelectorConfig.translator` implementations that might be in place.
+
+### Fixed
+
+- Time-related labels not properly updating the time format if the duration changes from below 1 hour to greater than 1 hour.
+- Feedback loops by avoiding callbacks into the player when subtitle/audio selection is updated by player events.
+
+## [4.8.0] - 2026-01-29
+
+### Added
+
+- Improvements to the clickable areas of the seek-bar
+
+## [4.7.0] - 2026-01-28
+
+### Added
+
+- Language localization for French
+
+## [4.6.1] - 2026-01-08
+
+### Fixed
+
+- Uncaught JS errors after destroying the player while a live source is loaded
+
+## [4.6.0] - 2025-12-22
+
+### Added
+
+- `ShadowDomConfig` via `UIConfig.shadowDomConfig` to configure Shadow DOM rendering.
+  - Set `uiConfig = { shadowDomConfig: true }` to enable rendering the UI in a Shadow DOM.
+
+### Fixed
+
+- The `TimelineMarkers` implementation was improved to fix the following problems:
+  - Duplicate `TimelineMarkers` after resizing the window
+  - `TimelineMarker`s no longer animate to its initial position after loading a Source
+  - `TimelineMarker`s no longer move unexpected during time-shifting in a live stream
+
+## [4.5.0] - 2025-12-10
+
+### Added
+
+- New possibility to easily change the color of icons.
+  - Set a custom color to `$color-icon` and `$color-icon-highlight-ads` in `src/scss/_variables.scss` to define SVG icon colors at compile time
+
+### Removed
+
+- Button no longer calls stopPropagation on its click, focusin and focusout Events
+
+### Fixed
+
+- Type incompatibility warnings with Player version 8.235.0 and higher
+- Ads UI variant not shown
+- Missing exports of some components and configuration types
+
+## [4.4.0] - 2025-11-27
 
 ### Fixed
 
 - Incorrect sytnax of CSS `URL` functions, leading to problems with URLs containing special characters like `(` or `)`
 - Removed `aria-label` from `Icon` and subsequently fixed duplication of `Button`'s aria-label being duplicated into (optional) Icon
+- Incorrect CEA608 caption rendering
+- Subtitle font size preference from local storage is not restored upon UI initialization
 
 ## [4.3.0] - 2025-11-05
 

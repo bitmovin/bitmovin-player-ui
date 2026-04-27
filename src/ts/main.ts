@@ -12,6 +12,7 @@ export { UIUtils } from './utils/UIUtils';
 export { BrowserUtils } from './utils/BrowserUtils';
 export { StorageUtils } from './utils/StorageUtils';
 export { ErrorUtils } from './utils/ErrorUtils';
+export { ShadowDomManager } from './utils/ShadowDomManager';
 // Localization
 export {
   i18n,
@@ -44,7 +45,12 @@ export { PlaybackToggleButton, PlaybackToggleButtonConfig } from './components/b
 export { SeekBar, SeekBarConfig, SeekPreviewEventArgs, SeekBarMarker } from './components/seekbar/SeekBar';
 export { SelectBox } from './components/settings/SelectBox';
 export { ItemSelectionList } from './components/lists/ItemSelectionList';
-export { SettingsPanel, SettingsPanelConfig, NavigationDirection } from './components/settings/SettingsPanel';
+export {
+  SettingsPanel,
+  SettingsPanelConfig,
+  NavigationDirection,
+  SettingsPanelState,
+} from './components/settings/SettingsPanel';
 export { SettingsToggleButton, SettingsToggleButtonConfig } from './components/settings/SettingsToggleButton';
 export { ToggleButton, ToggleButtonConfig } from './components/buttons/ToggleButton';
 export { VideoQualitySelectBox } from './components/settings/VideoQualitySelectBox';
@@ -136,6 +142,23 @@ export {
 } from './components/lists/ListSelector';
 export { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 export { Icon } from './components/Icon';
+export { DismissClickOverlay, DismissClickOverlayConfig } from './components/overlays/DismissClickOverlay';
+export { EcoModeContainer } from './components/EcoModeContainer';
+export { EcoModeToggleButton } from './components/buttons/EcoModeToggleButton';
+export { TvNoiseCanvas } from './components/TvNoiseCanvas';
+export { SmallCenteredPlaybackToggleButton } from './components/buttons/SmallCenteredPlaybackToggleButton';
+export {
+  SettingsPanelSelectOption,
+  SettingsPanelSelectOptionConfig,
+} from './components/settings/SettingsPanelSelectOption';
+export {
+  SettingsPanelPageNavigatorButton,
+  SettingsPanelPageNavigatorConfig,
+} from './components/settings/SettingsPanelPageNavigatorButton';
+export { InteractiveSettingsPanelItem } from './components/settings/InteractiveSettingsPanelItem';
+export { TouchControlOverlay, TouchControlOverlayConfig } from './components/overlays/TouchControlOverlay';
+export { CharacterEdgeColorSelectBox } from './components/settings/subtitlesettings/CharacterEdgeColorSelectBox';
+export { FontStyleSelectBox } from './components/settings/subtitlesettings/FontStyleSelectBox';
 
 // Object.assign polyfill for ES5/IE9
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign

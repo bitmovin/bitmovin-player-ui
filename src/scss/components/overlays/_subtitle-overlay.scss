@@ -7,13 +7,13 @@
 
     @include hidden;
 
-    bottom: 0;
-    left: 0;
+    bottom: env(safe-area-inset-bottom, 0);
+    left: env(safe-area-inset-left, 0);
     pointer-events: none;
     position: absolute;
-    right: 0;
+    right: env(safe-area-inset-right, 0);
     text-align: center;
-    top: 0;
+    top: env(safe-area-inset-top, 0);
     transition: bottom $animation-duration-short ease-out;
 
     * {
@@ -63,15 +63,35 @@
       }
     }
 
+    .#{$prefix}-ui-subtitle-label.#{$prefix}-subtitle-vtt-cue,
+    .#{$prefix}-subtitle-vtt-region-container .#{$prefix}-ui-subtitle-label {
+      .#{$prefix}-ui-label-text {
+        max-width: 100%;
+        width: fit-content;
+      }
+
+      &[style*='text-align: center'] .#{$prefix}-ui-label-text {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      &[style*='text-align: right'] .#{$prefix}-ui-label-text {
+        margin-left: auto;
+      }
+
+      &[style*='text-align: end'] .#{$prefix}-ui-label-text {
+        margin-inline-start: auto;
+      }
+
+      &[style*='text-align: start'] .#{$prefix}-ui-label-text {
+        margin-inline-end: auto;
+      }
+    }
+
     // Move the subtitle up above the controlbar when it appears to avoid them overlapping
     &.#{$prefix}-controlbar-visible {
       bottom: 5em;
       transition: bottom $animation-duration-short ease-in;
-    }
-
-    &:not(.#{$prefix}-controlbar-visible) {
-      top: env(safe-area-inset-top, 0);
-      bottom: env(safe-area-inset-bottom, 0);
     }
   }
 }

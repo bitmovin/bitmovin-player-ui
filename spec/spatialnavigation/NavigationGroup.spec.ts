@@ -106,13 +106,32 @@ describe('NavigationGroup', () => {
       expect(subtitleToggleButtonHTML.focus).toHaveBeenCalled();
     });
 
+    it('should return false when there is no active or focusable component', () => {
+      const emptyNavigationGroup = new NavigationGroup(rootContainerMock);
+
+      expect(emptyNavigationGroup.handleNavigation(Direction.LEFT)).toBe(false);
+    });
+
     describe('onNavigation', () => {
       it('should not call default navigation handler if propagation was stopped from the outside', () => {
-        rootNavigationGroup.onNavigation = (_direction, _element, preventDefault) => preventDefault();
+        rootNavigationGroup.onNavigation = (_direction, _element, preventDefault) => {
+          preventDefault();
+          return true;
+        };
 
         rootNavigationGroup.handleNavigation(Direction.DOWN);
 
         expect(subtitleToggleButtonHTML.focus).not.toHaveBeenCalled();
+      });
+
+      it('should return handled when the custom navigation handler consumes the event without preventing the default handler', () => {
+        const getComponentInDirectionMock = navigationAlgorithm.getComponentInDirection as jest.Mock;
+        getComponentInDirectionMock.mockReset();
+        getComponentInDirectionMock.mockReturnValue(undefined);
+        rootNavigationGroup['activeComponent'] = playbackToggleButtonMock;
+        rootNavigationGroup.onNavigation = () => true;
+
+        expect(rootNavigationGroup.handleNavigation(Direction.DOWN)).toBe(true);
       });
     });
   });
@@ -148,7 +167,10 @@ describe('NavigationGroup', () => {
 
     describe('onAction', () => {
       it('should not call default action handler if propagation was stopped from the outside', () => {
-        rootNavigationGroup.onAction = (_action, _element, preventDefault) => preventDefault();
+        rootNavigationGroup.onAction = (_action, _element, preventDefault) => {
+          preventDefault();
+          return true;
+        };
         rootNavigationGroup.handleAction(Action.SELECT);
 
         expect(playButtonHTML.click).not.toHaveBeenCalled();

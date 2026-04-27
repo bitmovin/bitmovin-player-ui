@@ -120,6 +120,14 @@ export class Component<Config extends ComponentConfig> {
   private static readonly CLASS_DISABLED = 'disabled';
 
   /**
+   * Stable handler reference for language change events, delegates to the overridable
+   * {@link #onLanguageChanged} method. Using a private arrow field ensures that
+   * subscribe/unsubscribe always use the same reference, even when subclasses override
+   * {@link #onLanguageChanged}.
+   */
+  private readonly languageChangedHandler = () => this.onLanguageChanged();
+
+  /**
    * Configuration object of this component.
    */
   protected config: Config;
@@ -239,6 +247,8 @@ export class Component<Config extends ComponentConfig> {
       {},
     );
     this.viewMode = ViewMode.Temporary;
+
+    i18n.getConfig().events.onLanguageChanged.subscribe(this.languageChangedHandler);
   }
 
   /**
@@ -299,7 +309,17 @@ export class Component<Config extends ComponentConfig> {
    * Subclasses that need to release resources should override this method and call super.release().
    */
   release(): void {
-    // Nothing to do here, override where necessary
+    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.languageChangedHandler);
+  }
+
+  /**
+   * Called when the UI language changes. Subclasses can override this method to update
+   * their localized content (e.g. labels, button text).
+   *
+   * The base implementation is a no-op.
+   */
+  protected onLanguageChanged(): void {
+    // Override in subclasses to react to language changes
   }
 
   /**

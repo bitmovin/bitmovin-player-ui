@@ -26,7 +26,7 @@ export class AudioTrackSwitchHandler {
   }
 
   private bindSelectionEvent(): void {
-    this.listElement.onItemSelected.subscribe((_, value: string) => {
+    this.listElement.onItemSelectionChanged.subscribe((_, value: string) => {
       this.player.setAudio(value);
     });
   }

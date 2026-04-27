@@ -1,14 +1,15 @@
 import { SubtitleSwitchHandler } from '../../src/ts/utils/SubtitleUtils';
 import { MockHelper } from '../helper/MockHelper';
 import { ListSelector, ListSelectorConfig } from '../../src/ts/components/lists/ListSelector';
-import { PlayerSubtitlesAPI } from 'bitmovin-player';
+import { i18n } from '../../src/ts/localization/i18n';
 
-const playerMock = MockHelper.getPlayerMock();
+let playerMock = MockHelper.getPlayerMock();
 let subtitleSwitchHandler: SubtitleSwitchHandler;
 const uiManagerMock = MockHelper.getUiInstanceManagerMock();
 
 const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.fn().mockImplementation(() => ({
   onItemSelected: MockHelper.getEventDispatcherMock(),
+  onItemSelectionChanged: MockHelper.getEventDispatcherMock(),
   hasItem: jest.fn(),
   addItem: jest.fn(),
   removeItem: jest.fn(),
@@ -19,9 +20,11 @@ const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.
 }));
 
 let listSelectorMock: ListSelector<ListSelectorConfig>;
+class ListSelectorTestClass extends ListSelector<ListSelectorConfig> {}
 
 describe('SubtitleUtils', () => {
   beforeEach(() => {
+    playerMock = MockHelper.getPlayerMock();
     listSelectorMock = new ListSelectorMockClass();
 
     playerMock.subtitles.list = jest.fn().mockReturnValue([
@@ -38,6 +41,10 @@ describe('SubtitleUtils', () => {
     ]);
 
     subtitleSwitchHandler = new SubtitleSwitchHandler(playerMock, listSelectorMock, uiManagerMock);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('adds subtitles to the listSelector', () => {
@@ -134,6 +141,37 @@ describe('SubtitleUtils', () => {
     });
   });
 
+  describe('selection change intent', () => {
+    it('enables subtitle on selection change', () => {
+      playerMock.subtitles.enable = jest.fn();
+      const subscribeMock = listSelectorMock.onItemSelectionChanged.subscribe as jest.Mock;
+      const firstCall = MockHelper.getMockCall(subscribeMock, { call: 0 });
+      const handler = firstCall[0] as (sender: ListSelector<ListSelectorConfig>, value: string) => void;
+
+      handler(listSelectorMock, 's-2');
+
+      expect(playerMock.subtitles.enable).toHaveBeenCalledWith('s-2', true);
+    });
+
+    it('disables current subtitle on selection change to off', () => {
+      playerMock.subtitles.disable = jest.fn();
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        {
+          id: 's-1',
+          label: 'S1',
+          enabled: true,
+        },
+      ]);
+      const subscribeMock = listSelectorMock.onItemSelectionChanged.subscribe as jest.Mock;
+      const firstCall = MockHelper.getMockCall(subscribeMock, { call: 0 });
+      const handler = firstCall[0] as (sender: ListSelector<ListSelectorConfig>, value: string) => void;
+
+      handler(listSelectorMock, 'null');
+
+      expect(playerMock.subtitles.disable).toHaveBeenCalledWith('s-1');
+    });
+  });
+
   describe('clears subtitle list', () => {
     it('on sourceUnloaded event', () => {
       playerMock.eventEmitter.fireSourceUnloadedEvent();
@@ -143,10 +181,101 @@ describe('SubtitleUtils', () => {
   });
 
   it('checks if the subtitle API is available on initialization', () => {
+    const originalSubtitles = (playerMock as any).subtitles;
     (playerMock as any).subtitles = undefined;
     listSelectorMock = new ListSelectorMockClass();
     subtitleSwitchHandler = new SubtitleSwitchHandler(playerMock, listSelectorMock, uiManagerMock);
 
     expect(listSelectorMock.synchronizeItems).not.toHaveBeenCalled();
+
+    (playerMock as any).subtitles = originalSubtitles;
+  });
+
+  describe('player-driven subtitle changes', () => {
+    it('does not call back into the player when subtitles are changed by player events', () => {
+      const player = MockHelper.getPlayerMock();
+      const uiManager = MockHelper.getUiInstanceManagerMock();
+      const listSelector = new ListSelectorTestClass();
+
+      player.subtitles.list = jest.fn().mockReturnValue([
+        {
+          id: 's-1',
+          label: 'S1',
+          enabled: true,
+        },
+      ]);
+      player.subtitles.enable = jest.fn();
+      player.subtitles.disable = jest.fn();
+
+      new SubtitleSwitchHandler(player, listSelector, uiManager);
+
+      (player.subtitles.enable as jest.Mock).mockClear();
+      (player.subtitles.disable as jest.Mock).mockClear();
+
+      player.subtitles.list = jest.fn().mockReturnValue([
+        {
+          id: 's-2',
+          label: 'S2',
+          enabled: true,
+        },
+      ]);
+      player.eventEmitter.fireSubtitleEnabled();
+
+      expect(player.subtitles.enable).not.toHaveBeenCalled();
+      expect(player.subtitles.disable).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('adapts localization to subtitle language', () => {
+    let getConfigSpy: jest.SpyInstance;
+
+    afterEach(() => {
+      getConfigSpy?.mockRestore();
+    });
+
+    it('triggers language change when enabled', () => {
+      getConfigSpy = jest.spyOn(i18n, 'getConfig').mockReturnValue({
+        adaptLocalizationToSubtitleLanguage: true,
+      });
+
+      const setLanguageSpy = jest.spyOn(i18n, 'setLanguage');
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-1', lang: 'es' });
+
+      expect(setLanguageSpy).toHaveBeenCalledWith('es');
+    });
+
+    it('does not trigger language change when disabled', () => {
+      getConfigSpy = jest.spyOn(i18n, 'getConfig').mockReturnValue({
+        adaptLocalizationToSubtitleLanguage: false,
+      });
+
+      const setLanguageSpy = jest.spyOn(i18n, 'setLanguage');
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-1', lang: 'es' });
+
+      expect(setLanguageSpy).not.toHaveBeenCalled();
+    });
+
+    it('ignores missing or empty language codes', () => {
+      getConfigSpy = jest.spyOn(i18n, 'getConfig').mockReturnValue({
+        adaptLocalizationToSubtitleLanguage: true,
+      });
+
+      const setLanguageSpy = jest.spyOn(i18n, 'setLanguage');
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-1', lang: ' ' });
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-2' });
+
+      expect(setLanguageSpy).not.toHaveBeenCalled();
+    });
+
+    it('trims language codes before applying', () => {
+      getConfigSpy = jest.spyOn(i18n, 'getConfig').mockReturnValue({
+        adaptLocalizationToSubtitleLanguage: true,
+      });
+
+      const setLanguageSpy = jest.spyOn(i18n, 'setLanguage');
+      playerMock.eventEmitter.fireSubtitleEnabled({ id: 's-1', lang: ' es ' });
+
+      expect(setLanguageSpy).toHaveBeenCalledWith('es');
+    });
   });
 });

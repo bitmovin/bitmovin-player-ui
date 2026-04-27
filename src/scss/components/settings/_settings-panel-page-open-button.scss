@@ -5,7 +5,7 @@
   @extend %ui-button;
 
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/settings.svg');
+    background-image: svg-load('../../assets/images/settings.svg', fill=$color-icon);
     max-height: 0.8em;
   }
 

@@ -85,6 +85,12 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     );
   }
 
+  protected onLanguageChanged(): void {
+    if (typeof this.config.text === 'function') {
+      this.setText(this.config.text);
+    }
+  }
+
   protected toDomElement(): DOM {
     const buttonElementAttributes: { [name: string]: string } = {
       id: this.config.id,
@@ -132,12 +138,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', e => {
       e.preventDefault();
-      e.stopPropagation();
       this.onClickEvent();
-    });
-
-    buttonElement.on('focusin focusout', e => {
-      e.stopPropagation();
     });
 
     buttonElement.on('touchstart', e => {

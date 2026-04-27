@@ -56,12 +56,6 @@ export class FontSizeSelectBox extends SubtitleSettingSelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.populateItemsWithFilter();
-
-    this.onShow.subscribe(() => {
-      this.populateItemsWithFilter();
-    });
-
     this.settingsManager.fontSize.onChanged.subscribe((sender, property) => {
       if (property.isSet()) {
         this.toggleOverlayClass('fontsize-' + property.value);
@@ -72,8 +66,15 @@ export class FontSizeSelectBox extends SubtitleSettingSelectBox {
       this.selectItem(property.value);
     });
 
-    this.onItemSelected.subscribe((sender, key: string) => {
+    this.onItemSelectionChanged.subscribe((sender, key: string) => {
       this.settingsManager.fontSize.value = key;
     });
+
+    this.onShow.subscribe(() => {
+      this.populateItemsWithFilter();
+    });
+
+    // init
+    this.populateItemsWithFilter();
   }
 }

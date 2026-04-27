@@ -28,7 +28,7 @@ export class SubtitleSwitchHandler {
   }
 
   private bindSelectionEvent(): void {
-    this.listElement.onItemSelected.subscribe((_, value: string) => {
+    this.listElement.onItemSelectionChanged.subscribe((_, value: string) => {
       // TODO add support for multiple concurrent subtitle selections
       if (value === SubtitleSwitchHandler.SUBTITLES_OFF_KEY) {
         const currentSubtitle = this.player.subtitles
@@ -46,7 +46,7 @@ export class SubtitleSwitchHandler {
 
   private bindPlayerEvents(): void {
     this.player.on(this.player.exports.PlayerEvent.SubtitleAdded, this.addSubtitle);
-    this.player.on(this.player.exports.PlayerEvent.SubtitleEnabled, this.selectCurrentSubtitle);
+    this.player.on(this.player.exports.PlayerEvent.SubtitleEnabled, this.onSubtitleEnabled);
     this.player.on(this.player.exports.PlayerEvent.SubtitleDisabled, this.selectCurrentSubtitle);
     this.player.on(this.player.exports.PlayerEvent.SubtitleRemoved, this.removeSubtitle);
     // Update subtitles when source goes away
@@ -55,6 +55,18 @@ export class SubtitleSwitchHandler {
     this.player.on(this.player.exports.PlayerEvent.PeriodSwitched, this.refreshSubtitles);
     this.uimanager.getConfig().events.onUpdated.subscribe(this.refreshSubtitles);
   }
+
+  private onSubtitleEnabled = (event: SubtitleEvent) => {
+    this.selectCurrentSubtitle();
+
+    // Update UI language to match subtitle language
+    if (i18n.getConfig().adaptLocalizationToSubtitleLanguage) {
+      const lang = typeof event.subtitle?.lang === 'string' ? event.subtitle.lang.trim() : '';
+      if (lang) {
+        i18n.setLanguage(lang);
+      }
+    }
+  };
 
   private addSubtitle = (event: SubtitleEvent) => {
     const subtitle = event.subtitle;

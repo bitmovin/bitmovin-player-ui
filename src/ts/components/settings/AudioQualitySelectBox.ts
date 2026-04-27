@@ -46,7 +46,7 @@ export class AudioQualitySelectBox extends SelectBox {
       selectCurrentAudioQuality();
     };
 
-    this.onItemSelected.subscribe((sender: AudioQualitySelectBox, value: string) => {
+    this.onItemSelectionChanged.subscribe((sender: AudioQualitySelectBox, value: string) => {
       player.setAudioQuality(value);
     });
 

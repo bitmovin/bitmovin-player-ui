@@ -44,7 +44,7 @@ export class FontFamilySelectBox extends SubtitleSettingSelectBox {
       this.selectItem(property.value);
     });
 
-    this.onItemSelected.subscribe((sender, key: string) => {
+    this.onItemSelectionChanged.subscribe((sender, key: string) => {
       this.settingsManager.fontFamily.value = key;
     });
 

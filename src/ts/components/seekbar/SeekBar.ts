@@ -488,7 +488,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         this.show();
       }
       playbackPositionHandler(null, true);
-      this.refreshLayout();
+      this.refreshPlaybackPosition();
     };
     const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
@@ -513,17 +513,17 @@ export class SeekBar extends Component<SeekBarConfig> {
     // Refresh the playback position when the player resized or the UI is configured. The playback position marker
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
-      this.refreshLayout();
+      this.refreshPlaybackPosition();
       this.uiBoundingRect = this.uiManager.getUI().getDomElement().get(0).getBoundingClientRect();
     });
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
     // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
     uimanager.onConfigured.subscribe(() => {
-      this.refreshLayout();
+      this.refreshPlaybackPosition();
     });
     // It can also happen when a new source is loaded
     player.on(player.exports.PlayerEvent.SourceLoaded, () => {
-      this.refreshLayout();
+      this.refreshPlaybackPosition();
     });
     // Add markers when a source is loaded or update when a marker is added or removed
     uimanager.getConfig().events.onUpdated.subscribe(() => {
@@ -637,16 +637,16 @@ export class SeekBar extends Component<SeekBarConfig> {
           return;
         }
 
-        // Reset the currentTimeSeekBar and set the position to 0 if the player has no duration
-        if (this.player.getDuration() === 0) {
-          this.setPlaybackPosition(0);
-          currentTimeSeekBar = 0;
-          return;
-        }
-
-        currentTimeSeekBar += currentTimeUpdateDeltaSecs;
-
         try {
+          // Reset the currentTimeSeekBar and set the position to 0 if the player has no duration
+          if (this.player.getDuration() === 0) {
+            this.setPlaybackPosition(0);
+            currentTimeSeekBar = 0;
+            return;
+          }
+
+          currentTimeSeekBar += currentTimeUpdateDeltaSecs;
+
           currentTimePlayer = this.getRelativeCurrentTime();
         } catch (error) {
           // Detect if the player has been destroyed and stop updating if so
@@ -864,6 +864,8 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.onSeekEvent();
 
       // Add handler to track the seek operation over the whole document
+      // This enables that scrubbing doesn't require the mouse to stay inside the UI elements itself and works
+      // on the whole document.
       new DOM(document).on(isTouchEvent ? 'touchmove' : 'mousemove', mouseTouchMoveHandler);
       new DOM(document).on(isTouchEvent ? 'touchend' : 'mouseup', mouseTouchUpHandler);
     });
@@ -1027,24 +1029,6 @@ export class SeekBar extends Component<SeekBarConfig> {
    */
   protected refreshPlaybackPosition() {
     this.setPlaybackPosition(this.playbackPositionPercentage);
-  }
-
-  /**
-   * Refreshes the layout of the seek bar.
-   *
-   * This includes:
-   * - Re-positioning the playback marker
-   * - Reinitializing timeline markers
-   *
-   * Should be called after UI resizes or layout-affecting events like showing the component.
-   * Subclasses may override this if they introduce custom layout logic.
-   */
-  protected refreshLayout(): void {
-    this.refreshPlaybackPosition();
-
-    if (this.player && this.uiManager) {
-      this.initializeTimelineMarkers(this.player, this.uiManager);
-    }
   }
 
   /**
@@ -1231,14 +1215,12 @@ export class SeekBar extends Component<SeekBarConfig> {
   protected onShowEvent(): void {
     super.onShowEvent();
 
-    // Refresh the layout when the seek bar becomes visible.
-    // To correctly position the playback marker and timeline markers,
-    // the DOM element must be fully initialized and have its size calculated,
-    // as their positions are based on absolute values derived from the element's dimensions.
-    // When hidden (e.g., via `display: none`), these dimensions are not available.
-    // By refreshing the layout here in `onShow`, we ensure the component knows its size
-    // and can place the playback and timeline markers accurately.
-    this.refreshLayout();
+    // Refresh the position of the playback position when the seek bar becomes visible. To correctly set the position,
+    // the DOM element must be fully initialized and have its size calculated, because the position is set as an
+    // absolute value calculated from the size. This required size is not known when it is hidden.
+    // For such cases, we refresh the position here in onShow because here it is guaranteed that the component knows
+    // its size and can set the position correctly.
+    this.refreshPlaybackPosition();
   }
 
   /**

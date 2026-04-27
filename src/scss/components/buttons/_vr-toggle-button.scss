@@ -6,7 +6,7 @@
 
   // svg() usage: http://pavliko.github.io/postcss-svg/
   .#{$prefix}-ui-icon {
-    background-image: url('../../assets/images/glasses.svg');
+    background-image: svg-load('../../assets/images/glasses.svg', fill=$color-icon);
   }
 
   &:hover {

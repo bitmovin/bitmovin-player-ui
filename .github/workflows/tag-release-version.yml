@@ -1,46 +1,47 @@
-name: Trigger release on merge
-run-name: Starting release for ${{ github.actor }} PR merge
+name: Weekly Release Train
+run-name: Weekly release train ${{ github.event_name == 'workflow_dispatch' && ' (manual)' || '' }}
+
 on:
-  pull_request_target:
-    types:
-      - closed
-    branches:
-      - develop
-      - support/*
+  schedule:
+    - cron: '0 12 * * 4' # Every Thursday at 12:00 UTC
+  workflow_dispatch:
 
 concurrency:
-  group: continuous-deployment-${{ github.event.pull_request.base.ref }}
+  group: weekly-release-train
   cancel-in-progress: true
 
 jobs:
-  verify-changelog:
-    name: Verify that CHANGELOG.md has been updated
-    if: github.event.pull_request.merged == true
-    outputs:
-      HAS_CHANGELOG: ${{ steps.ensure-changelog.outputs.HAS_CHANGELOG }}
+  check-unreleased:
+    name: Check for unreleased changes
     runs-on: ubuntu-latest
+    outputs:
+      has_unreleased: ${{ steps.check.outputs.has_unreleased }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Ensure Changelog
-      id: ensure-changelog
-      shell: bash
-      run: |
-        changes=$(gh pr view ${{github.event.pull_request.number}} --json files -q '.files[].path')
-        if echo $changes | grep -q CHANGELOG.md; then
-          echo "CHANGELOG.md has been updated"
-          echo "HAS_CHANGELOG=true" >> $GITHUB_OUTPUT
-        else
-          echo "CHANGELOG.md has not been updated, skipping release"
-        fi
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
+
+      - name: Check for unreleased changelog entries
+        uses: actions/github-script@v6
+        id: check
+        with:
+          script: |
+            const { detectReleaseLevel } = require('./.github/scripts/detectReleaseLevel.js');
+
+            try {
+              detectReleaseLevel(core);
+              core.setOutput('has_unreleased', 'true');
+            } catch (error) {
+              core.info(`No unreleased changes found, skipping release: ${error.message}`);
+              core.setOutput('has_unreleased', 'false');
+            }
 
   prepare-version:
     name: Detect and build the version number for the release
-    needs: verify-changelog
-    if: ${{ needs.verify-changelog.outputs.HAS_CHANGELOG }}
+    needs: check-unreleased
+    if: needs.check-unreleased.outputs.has_unreleased == 'true'
     outputs:
       version_number: ${{ steps.define-release-version.outputs.version_number }}
     runs-on: ubuntu-latest
@@ -65,7 +66,7 @@ jobs:
         with:
           script: |
             const { detectReleaseLevel } = require('./.github/scripts/detectReleaseLevel.js');
-            
+
             try {
               const releaseLevel = detectReleaseLevel(core);
               core.setOutput('release_level', releaseLevel);
@@ -82,7 +83,7 @@ jobs:
             const { defineReleaseVersion } = require('./.github/scripts/defineVersion.js');
             const releaseLevel = '${{ steps.detect-release-level.outputs.release_level }}';
             const currentVersion = '${{ steps.define-package-json-version.outputs.packageJsonVersion }}';
-            
+
             const result = defineReleaseVersion({core}, releaseLevel, currentVersion);
             core.setOutput('version_number', result.full);
 
@@ -93,8 +94,10 @@ jobs:
     with:
       version_number: ${{ needs.prepare-version.outputs.version_number }}
       release_type: final
-      branch_name: ${{ github.event.pull_request.base.ref }}
+      branch_name: develop
     secrets:
       NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      RELEASE_DEPLOY_KEY: ${{ secrets.RELEASE_DEPLOY_KEY }}
+      GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
