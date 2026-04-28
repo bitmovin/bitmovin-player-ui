@@ -33,8 +33,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
   private static readonly CLASS_CONTROLBAR_VISIBLE = 'controlbar-visible';
   private static readonly CLASS_CEA_608 = 'cea608';
-  private static readonly CLASS_CEA_PUSHUP_DISABLED = 'cea-pushup-disabled';
-  private static readonly DEFAULT_CEA_CAPTION_PUSHUP_MIN_HEIGHT = 360;
+  private static readonly CLASS_CEA608_PUSHUP_DISABLED = 'cea608-pushup-disabled';
+  private static readonly DEFAULT_CEA608_SMALL_PLAYER_HEIGHT_THRESHOLD = 360;
   private static readonly CEA608_NUM_ROWS = 15;
   private static readonly CEA608_NUM_COLUMNS = 32;
   private static readonly CEA608_COLUMN_OFFSET = 100 / SubtitleOverlay.CEA608_NUM_COLUMNS;
@@ -43,7 +43,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   private cea608Enabled = false;
   private cea608FontSizeFactor = 1;
   private ensureCea608GridSizeUpdated: () => void;
-  private ceaCaptionPushupMinHeight = SubtitleOverlay.DEFAULT_CEA_CAPTION_PUSHUP_MIN_HEIGHT;
+  private cea608SmallPlayerHeightThreshold = SubtitleOverlay.DEFAULT_CEA608_SMALL_PLAYER_HEIGHT_THRESHOLD;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -65,8 +65,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
 
     const uiConfig = uimanager.getConfig();
 
-    if (uiConfig.ceaCaptionPushupMinHeight !== undefined) {
-      this.ceaCaptionPushupMinHeight = uiConfig.ceaCaptionPushupMinHeight;
+    if (uiConfig.cea608SmallPlayerHeightThreshold !== undefined) {
+      this.cea608SmallPlayerHeightThreshold = uiConfig.cea608SmallPlayerHeightThreshold;
     }
 
     const subtitleManager = new ActiveSubtitleManager();
@@ -154,7 +154,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       if (component instanceof ControlBar) {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
 
-        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated) {
+        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated &&
+            !this.getDomElement().hasClass(this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED))) {
           awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
         }
       }
@@ -164,7 +165,8 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
       if (component instanceof ControlBar) {
         this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
 
-        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated) {
+        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated &&
+            !this.getDomElement().hasClass(this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED))) {
           awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
         }
       }
@@ -177,10 +179,10 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
   }
 
   private updateCeaPushupClass(playerHeight: number): void {
-    if (playerHeight < this.ceaCaptionPushupMinHeight) {
-      this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_PUSHUP_DISABLED));
+    if (playerHeight < this.cea608SmallPlayerHeightThreshold) {
+      this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED));
     } else {
-      this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_PUSHUP_DISABLED));
+      this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED));
     }
   }
 
@@ -863,54 +865,19 @@ function isCea608SubtitleCue(cue: SubtitleCueEvent): boolean {
 }
 
 function awaitTransitionEnd(domElement: DOM) {
-  const computedStyle = getComputedStyle(domElement.get(0));
-  const hasTransition = computedStyle.transitionProperty !== 'none';
+  const hasTransition = getComputedStyle(domElement.get(0)).transitionProperty !== 'none';
 
   if (!hasTransition) {
     return Promise.resolve();
   }
 
   return new Promise<void>(resolve => {
-    let transitionTimeout = 0;
-
     const transitionHandler = () => {
-      window.clearTimeout(transitionTimeout);
       domElement.off('transitionend', transitionHandler);
       domElement.off('transitioncancel', transitionHandler);
       resolve();
     };
-
-    transitionTimeout = window.setTimeout(transitionHandler, getMaximumTransitionTimeoutMs(computedStyle) + 50);
     domElement.on('transitionend', transitionHandler);
     domElement.on('transitioncancel', transitionHandler);
   });
-}
-
-function getMaximumTransitionTimeoutMs(computedStyle: CSSStyleDeclaration): number {
-  const durations = computedStyle.transitionDuration.split(',').map(parseCssTimeToMs);
-  const delays = computedStyle.transitionDelay.split(',').map(parseCssTimeToMs);
-  const transitionCount = Math.max(durations.length, delays.length);
-  let maximumTransitionTimeoutMs = 0;
-
-  for (let index = 0; index < transitionCount; index++) {
-    const duration = durations[Math.min(index, durations.length - 1)] || 0;
-    const delay = delays[Math.min(index, delays.length - 1)] || 0;
-    maximumTransitionTimeoutMs = Math.max(maximumTransitionTimeoutMs, duration + delay);
-  }
-
-  return maximumTransitionTimeoutMs;
-}
-
-function parseCssTimeToMs(value: string): number {
-  const trimmedValue = value.trim();
-
-  if (trimmedValue.endsWith('ms')) {
-    return parseFloat(trimmedValue);
-  }
-
-  if (trimmedValue.endsWith('s')) {
-    return parseFloat(trimmedValue) * 1000;
-  }
-
-  return 0;
 }

@@ -175,32 +175,18 @@ describe('SubtitleOverlay', () => {
       expect((subtitleOverlay as any).cea608Enabled).toBe(false);
     });
 
-    it('recalculates the CEA grid after controlbar show even when no transition event fires', async () => {
-      jest.useFakeTimers();
+    it('skips CEA grid recalculation after controlbar show when pushup is disabled', () => {
+      (subtitleOverlay as any).cea608Enabled = true;
+      (subtitleOverlay as any).ensureCea608GridSizeUpdated = jest.fn();
+      jest.spyOn(mockDomElement, 'hasClass').mockReturnValue(true);
 
-      const getComputedStyleSpy = jest.spyOn(window, 'getComputedStyle').mockReturnValue({
-        transitionProperty: 'bottom',
-        transitionDuration: '150ms',
-        transitionDelay: '0s',
-      } as CSSStyleDeclaration);
+      const onComponentShowHandler = MockHelper.getMockCallArg<(component: unknown) => void>(
+        uiInstanceManagerMock.onComponentShow.subscribe as jest.Mock,
+      );
 
-      try {
-        (subtitleOverlay as any).cea608Enabled = true;
-        (subtitleOverlay as any).ensureCea608GridSizeUpdated = jest.fn();
+      onComponentShowHandler(new ControlBar({}));
 
-        const onComponentShowHandler = MockHelper.getMockCallArg<(component: unknown) => void>(
-          uiInstanceManagerMock.onComponentShow.subscribe as jest.Mock,
-        );
-
-        onComponentShowHandler(new ControlBar({}));
-        jest.advanceTimersByTime(200);
-        await Promise.resolve();
-
-        expect((subtitleOverlay as any).ensureCea608GridSizeUpdated).toHaveBeenCalled();
-      } finally {
-        getComputedStyleSpy.mockRestore();
-        jest.useRealTimers();
-      }
+      expect((subtitleOverlay as any).ensureCea608GridSizeUpdated).not.toHaveBeenCalled();
     });
   });
 
