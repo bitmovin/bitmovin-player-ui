@@ -221,7 +221,7 @@ describe('SubtitleOverlay', () => {
       jest.restoreAllMocks();
     });
 
-    const pushupDisabledClass = expect.stringContaining('cea-pushup-disabled');
+    const pushupDisabledClass = expect.stringContaining('cea608-pushup-disabled');
 
     it('adds the pushup-disabled class on configure when player height is below the default threshold', () => {
       jest.spyOn(DOM.prototype, 'height').mockReturnValue(180);
@@ -257,9 +257,9 @@ describe('SubtitleOverlay', () => {
       expect(mockDomElement.removeClass).toHaveBeenCalledWith(pushupDisabledClass);
     });
 
-    it('respects a custom ceaCaptionPushupMinHeight config value', () => {
+    it('respects a custom cea608SmallPlayerHeightThreshold config value', () => {
       (uiInstanceManagerMock.getConfig as jest.Mock).mockReturnValue({
-        ceaCaptionPushupMinHeight: 500,
+        cea608SmallPlayerHeightThreshold: 500,
         events: { onUpdated: MockHelper.getEventDispatcherMock() },
         metadata: { markers: [] },
       });
@@ -269,9 +269,9 @@ describe('SubtitleOverlay', () => {
       expect(mockDomElement.addClass).toHaveBeenCalledWith(pushupDisabledClass);
     });
 
-    it('never adds the pushup-disabled class when ceaCaptionPushupMinHeight is 0', () => {
+    it('never adds the pushup-disabled class when cea608SmallPlayerHeightThreshold is 0', () => {
       (uiInstanceManagerMock.getConfig as jest.Mock).mockReturnValue({
-        ceaCaptionPushupMinHeight: 0,
+        cea608SmallPlayerHeightThreshold: 0,
         events: { onUpdated: MockHelper.getEventDispatcherMock() },
         metadata: { markers: [] },
       });

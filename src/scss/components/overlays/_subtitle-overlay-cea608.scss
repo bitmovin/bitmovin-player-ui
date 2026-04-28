@@ -2,7 +2,7 @@
 
 // Inset applied on all four sides when the player is below the height threshold.
 // Keeps captions within the broadcast-standard 80% safe area at small sizes.
-$cea-safe-area-inset: math.percentage(math.div(1 - 0.8, 2));
+$cea608-safe-area-inset: math.percentage(math.div(1 - 0.8, 2));
 
 .#{$prefix}-ui-subtitle-overlay {
   --cea608-row-height: math.div(100%, 15);
@@ -13,20 +13,16 @@ $cea-safe-area-inset: math.percentage(math.div(1 - 0.8, 2));
     right: 3em;
     top: 2em;
 
-    // Below the rendered-height threshold the overlay is constrained to an 80% safe area and the controlbar pushup
-    // is disabled. Pushing captions further up at small player sizes reduces legibility, and the safe area keeps
-    // them away from the edges without relying on fixed em values that do not scale with player size.
-    &.#{$prefix}-cea-pushup-disabled {
-      bottom: $cea-safe-area-inset;
-      left: $cea-safe-area-inset;
-      right: $cea-safe-area-inset;
-      top: $cea-safe-area-inset;
+    // Constrains the overlay to the 80% safe area and suppresses the controlbar pushup at small player sizes.
+    &.#{$prefix}-cea608-pushup-disabled {
+      bottom: $cea608-safe-area-inset;
+      left: $cea608-safe-area-inset;
+      right: $cea608-safe-area-inset;
+      top: $cea608-safe-area-inset;
 
-      // Suppresses the controlbar pushup from _subtitle-overlay.scss. Both selectors compile to 0,3,0 specificity;
-      // this rule wins via source order (this file is imported after _subtitle-overlay.scss). Kept explicit for
-      // clarity and resilience against import-order changes.
+      // Higher-specificity override of the controlbar pushup from _subtitle-overlay.scss.
       &.#{$prefix}-controlbar-visible {
-        bottom: $cea-safe-area-inset;
+        bottom: $cea608-safe-area-inset;
       }
     }
 

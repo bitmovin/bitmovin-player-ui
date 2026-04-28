@@ -207,7 +207,7 @@ export interface UIConfig {
    *
    * Default: `360`
    */
-  ceaCaptionPushupMinHeight?: number;
+  cea608SmallPlayerHeightThreshold?: number;
 }
 
 export interface ShadowDomConfig {
