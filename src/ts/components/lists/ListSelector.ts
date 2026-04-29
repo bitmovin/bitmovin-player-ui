@@ -1,7 +1,8 @@
 import { Component, ComponentConfig } from '../Component';
 import { EventDispatcher, Event } from '../../EventDispatcher';
+import { NoArgs } from '../../EventDispatcher';
 import { ArrayUtils } from '../../utils/ArrayUtils';
-import { LocalizableText } from '../../localization/i18n';
+import { i18n, LocalizableText } from '../../localization/i18n';
 
 /**
  * A map of items (key/value -> label} for a {@link ListSelector} in a {@link ListSelectorConfig}.
@@ -44,6 +45,17 @@ export interface ListItemLabelTranslator {
 }
 
 /**
+ * Comparator function to define a custom display order for list items.
+ *
+ * Follows the same contract as {@link Array.prototype.sort}.
+ *
+ * @param listItemA the first item to compare
+ * @param listItemB the second item to compare
+ * @returns negative when A should come first, positive when B should come first, `0` if equal
+ */
+export type ListItemComparator = (listItemA: ListItem, listItemB: ListItem) => number;
+
+/**
  * Configuration interface for a {@link ListSelector}.
  *
  * @category Configs
@@ -52,6 +64,15 @@ export interface ListSelectorConfig extends ComponentConfig {
   items?: ListItem[];
   filter?: ListItemFilter;
   translator?: ListItemLabelTranslator;
+  /**
+   * Optional comparator to control the display order of list items.
+   *
+   * Requires a custom UI. The default {@link UIFactory} presets do not expose this option.
+   *
+   * Note: For subtitle UIs, the built-in `Off` option is pinned at the top regardless of the
+   * comparator result.
+   */
+  comparator?: ListItemComparator;
 }
 
 export abstract class ListSelector<Config extends ListSelectorConfig> extends Component<ListSelectorConfig> {
@@ -61,6 +82,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
   private listSelectorEvents = {
     onItemAdded: new EventDispatcher<ListSelector<Config>, string>(),
     onItemRemoved: new EventDispatcher<ListSelector<Config>, string>(),
+    onItemsChanged: new EventDispatcher<ListSelector<Config>, NoArgs>(),
     onItemSelected: new EventDispatcher<ListSelector<Config>, string>(),
     onItemSelectionChanged: new EventDispatcher<ListSelector<Config>, string>(),
   };
@@ -80,6 +102,23 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     this.items = this.config.items;
   }
 
+  /**
+   * Applies list-item filtering and label translation before the item enters the effective selector state.
+   */
+  private normalizeItem(listItem: ListItem): ListItem | null {
+    const normalizedItem: ListItem = { ...listItem };
+
+    if (this.config.filter && !this.config.filter(normalizedItem)) {
+      return null;
+    }
+
+    if (this.config.translator) {
+      normalizedItem.label = this.config.translator(normalizedItem);
+    }
+
+    return normalizedItem;
+  }
+
   private getItemIndex(key: string): number {
     for (let i = 0; i < this.items.length; i++) {
       if (this.items[i].key === key) {
@@ -88,6 +127,50 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     }
 
     return -1;
+  }
+
+  /**
+   * Detects whether the effective UI items changed, including localized labels and aria labels.
+   */
+  private haveItemsChanged(previousItems: ListItem[], nextItems: ListItem[]): boolean {
+    if (previousItems.length !== nextItems.length) {
+      return true;
+    }
+
+    for (let i = 0; i < previousItems.length; i++) {
+      const previousItem = previousItems[i];
+      const nextItem = nextItems[i];
+
+      if (
+        previousItem.key !== nextItem.key ||
+        i18n.performLocalization(previousItem.label) !== i18n.performLocalization(nextItem.label) ||
+        previousItem.ariaLabel !== nextItem.ariaLabel
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private insertItem(normalizedItem: ListItem, sortedInsert: boolean): void {
+    if (this.config.comparator) {
+      this.items.push(normalizedItem);
+      this.items.sort(this.config.comparator);
+      return;
+    }
+
+    if (sortedInsert) {
+      const index = this.items.findIndex(entry => entry.key > normalizedItem.key);
+      if (index < 0) {
+        this.items.push(normalizedItem);
+      } else {
+        this.items.splice(index, 0, normalizedItem);
+      }
+      return;
+    }
+
+    this.items.push(normalizedItem);
   }
 
   /**
@@ -116,33 +199,20 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * @param ariaLabel custom aria label for the listItem
    */
   addItem(key: string | null, label: LocalizableText, sortedInsert = false, ariaLabel = '') {
-    const listItem: ListItem = { key: key, label: label, ...(ariaLabel && { ariaLabel }) };
-
-    // Apply filter function
-    if (this.config.filter && !this.config.filter(listItem)) {
+    const normalizedItem = this.normalizeItem({ key: key, label: label, ...(ariaLabel && { ariaLabel }) });
+    if (!normalizedItem) {
       return;
     }
 
-    // Apply translator function
-    if (this.config.translator) {
-      listItem.label = this.config.translator(listItem);
+    const existingIndex = this.getItemIndex(key);
+    if (existingIndex > -1) {
+      ArrayUtils.remove(this.items, this.items[existingIndex]);
+      this.onItemRemovedEvent(key);
     }
 
-    // Try to remove key first to get overwrite behavior and avoid duplicate keys
-    this.removeItem(key); // This will trigger an ItemRemoved and an ItemAdded event
-
-    // Add the item to the list
-    if (sortedInsert) {
-      const index = this.items.findIndex(entry => entry.key > key);
-      if (index < 0) {
-        this.items.push(listItem);
-      } else {
-        this.items.splice(index, 0, listItem);
-      }
-    } else {
-      this.items.push(listItem);
-    }
+    this.insertItem(normalizedItem, sortedInsert);
     this.onItemAddedEvent(key);
+    this.onItemsChangedEvent();
   }
 
   /**
@@ -155,6 +225,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     if (index > -1) {
       ArrayUtils.remove(this.items, this.items[index]);
       this.onItemRemovedEvent(key);
+      this.onItemsChangedEvent();
       return true;
     }
 
@@ -209,22 +280,54 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    * Synchronize the current items of this selector with the given ones. This will remove and add items selectively.
    * For each removed item the ItemRemovedEvent and for each added item the ItemAddedEvent will be triggered. Favour
    * this method over using clearItems and adding all items again afterwards.
+   *
+   * If the currently selected item is not present in `newItems`, the selection is cleared silently:
+   * no selection event is fired. Callers that need to preserve or restore selection should call
+   * {@link selectItem} after synchronizing.
+   *
    * @param newItems
    */
   synchronizeItems(newItems: ListItem[]): void {
-    newItems
-      .filter(item => !this.hasItem(item.key))
-      .forEach(item => this.addItem(item.key, item.label, item.sortedInsert, item.ariaLabel));
+    const normalizedItems = newItems
+      .map(item => this.normalizeItem(item))
+      .filter((item): item is ListItem => item !== null);
 
-    this.items
-      .filter(item => newItems.filter(i => i.key === item.key).length === 0)
-      .forEach(item => this.removeItem(item.key));
+    if (this.config.comparator) {
+      normalizedItems.sort(this.config.comparator);
+    }
+
+    const itemsChanged = this.haveItemsChanged(this.items, normalizedItems);
+    const currentKeys = new Set(this.items.map(item => item.key));
+    const nextKeys = new Set(normalizedItems.map(item => item.key));
+
+    const removedKeys = this.items.filter(item => !nextKeys.has(item.key)).map(item => item.key);
+    const addedKeys = normalizedItems.filter(item => !currentKeys.has(item.key)).map(item => item.key);
+
+    this.items = normalizedItems;
+
+    if (this.selectedItem !== null && !nextKeys.has(this.selectedItem)) {
+      this.selectedItem = null;
+    }
+
+    for (const key of removedKeys) {
+      this.onItemRemovedEvent(key);
+    }
+    for (const key of addedKeys) {
+      this.onItemAddedEvent(key);
+    }
+    if (itemsChanged) {
+      this.onItemsChangedEvent();
+    }
   }
 
   /**
    * Removes all items from this selector.
    */
   clearItems() {
+    if (this.items.length === 0) {
+      return;
+    }
+
     // local copy for iteration after clear
     const items = this.items;
     // clear items
@@ -237,6 +340,7 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
     for (const item of items) {
       this.onItemRemovedEvent(item.key);
     }
+    this.onItemsChangedEvent();
   }
 
   /**
@@ -253,6 +357,18 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
 
   protected onItemRemovedEvent(key: string) {
     this.listSelectorEvents.onItemRemoved.dispatch(this, key);
+  }
+
+  /**
+   * Fired after the selector's effective item state has changed.
+   *
+   * This includes item additions/removals, order changes, localized label changes,
+   * and aria-label changes. The event is dispatched only after `items` and
+   * `selectedItem` have been fully synchronized, so listeners always observe
+   * the final state.
+   */
+  protected onItemsChangedEvent() {
+    this.listSelectorEvents.onItemsChanged.dispatch(this);
   }
 
   protected onItemSelectedEvent(key: string) {
@@ -294,6 +410,20 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    */
   get onItemRemoved(): Event<ListSelector<Config>, string> {
     return this.listSelectorEvents.onItemRemoved.getEvent();
+  }
+
+  /**
+   * Gets the event that is fired after the selector's effective item state has changed.
+   *
+   * Includes additions/removals, order changes, localized label changes, and
+   * aria-label changes. Dispatched after internal state has been fully synchronized.
+   * 
+   * Use this to rebuild from {@link getItems()} when the effective list changes.
+   * 
+   * @returns {Event<ListSelector<Config>, NoArgs>}
+   */
+  get onItemsChanged(): Event<ListSelector<Config>, NoArgs> {
+    return this.listSelectorEvents.onItemsChanged.getEvent();
   }
 
   /**

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `ListSelectorConfig.comparator` to customize the display order of list-backed selection UIs such as `AudioTrackSelectBox`, `SubtitleSelectBox`, `AudioTrackListBox`, and `SubtitleListBox`. For subtitle selection UIs, the built-in `Off` option remains fixed at the top.
+  Example:
+  ```ts
+  const subtitleListBox = new SubtitleListBox({
+    title: i18n.getLocalizer('settings.subtitles'),
+    comparator: (a, b) => String(a.label).localeCompare(String(b.label)), // A-Z
+  });
+  ```
+  > **Note**: Requires building a custom UI. The default `UIFactory` presets do not expose this option.
+- `AudioTrackListBox` and `SubtitleListBox` now can accept config objects that extend `ListBoxConfig` without `listSelector`.
+  This enables configuring list-selector behavior such as `comparator`, `filter`, and `translator`, as well as list-box/settings-panel options like `title`, `hideDelay`, and related panel settings.
+- `ListSelector.onItemsChanged` event that fires whenever the effective item collection changes, including item additions, removals, reordering, or updates to rendered item data such as `label` and `ariaLabel`.
+  This event should be used by consumers that rebuild the full list UI from `getItems()`, while `onItemAdded` and `onItemRemoved` remain strict membership-change events.
+
 ## [4.11.1] - 2026-04-23
 
 ### Fixed

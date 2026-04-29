@@ -97,13 +97,8 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
     }
   }
 
-  protected onItemAddedEvent(value: string) {
-    super.onItemAddedEvent(value);
-    this.updateDomItems(this.selectedItem);
-  }
-
-  protected onItemRemovedEvent(value: string) {
-    super.onItemRemovedEvent(value);
+  protected onItemsChangedEvent() {
+    super.onItemsChangedEvent();
     this.updateDomItems(this.selectedItem);
   }
 
