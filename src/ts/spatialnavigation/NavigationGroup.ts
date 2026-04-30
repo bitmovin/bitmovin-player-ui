@@ -192,7 +192,9 @@ export class NavigationGroup {
       this.focusComponent(targetComponent);
       return true;
     }
-    this.onNavigationNoTarget(direction);
+    if (this.onNavigationNoTarget) {
+      this.onNavigationNoTarget(direction);
+    }
     return false;
   }
 
