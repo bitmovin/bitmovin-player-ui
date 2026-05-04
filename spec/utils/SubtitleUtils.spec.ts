@@ -1,6 +1,7 @@
 import { SubtitleSwitchHandler } from '../../src/ts/utils/SubtitleUtils';
 import { MockHelper } from '../helper/MockHelper';
 import { ListSelector, ListSelectorConfig } from '../../src/ts/components/lists/ListSelector';
+import { SubtitleSelectBox } from '../../src/ts/components/settings/SubtitleSelectBox';
 import { i18n } from '../../src/ts/localization/i18n';
 
 let playerMock = MockHelper.getPlayerMock();
@@ -14,6 +15,7 @@ const ListSelectorMockClass: jest.Mock<ListSelector<ListSelectorConfig>> = jest.
   addItem: jest.fn(),
   removeItem: jest.fn(),
   getItems: jest.fn().mockReturnValue([]),
+  getConfig: jest.fn().mockReturnValue({}),
   synchronizeItems: jest.fn(),
   selectItem: jest.fn(),
   clearItems: jest.fn(),
@@ -52,9 +54,23 @@ describe('SubtitleUtils', () => {
       expect(listSelectorMock.synchronizeItems).toHaveBeenCalled();
     });
 
-    it('on subtitleAdded event', () => {
+    it('on subtitleAdded event via addItem when no comparator is configured', () => {
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        { id: 's-1', label: 'S1', enabled: true },
+        { id: 's-3', label: 'S3', enabled: false },
+      ]);
       playerMock.eventEmitter.fireSubtitleAddedEvent('s-3', 'S3');
       expect(listSelectorMock.addItem).toHaveBeenCalledWith('s-3', 'S3');
+      expect(listSelectorMock.synchronizeItems).toHaveBeenCalledTimes(1);
+    });
+
+    it('uses the event payload when the getter is stale and no comparator is configured', () => {
+      playerMock.subtitles.list = jest.fn().mockReturnValue([{ id: 's-1', label: 'S1', enabled: true }]);
+
+      playerMock.eventEmitter.fireSubtitleAddedEvent('s-3', 'S3');
+
+      expect(listSelectorMock.addItem).toHaveBeenCalledWith('s-3', 'S3');
+      expect(listSelectorMock.synchronizeItems).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -223,6 +239,129 @@ describe('SubtitleUtils', () => {
 
       expect(player.subtitles.enable).not.toHaveBeenCalled();
       expect(player.subtitles.disable).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('list selector comparator', () => {
+    it('re-sorts visible subtitles on UI config updates, keeps off first, and preserves selection', () => {
+      const onUpdated = MockHelper.getEventDispatcherMock();
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
+        events: { onUpdated },
+      } as any);
+
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        { id: 's-3', label: 'Vietnamese', enabled: true },
+        { id: 's-1', label: 'English', enabled: false },
+      ]);
+
+      const localListSelector = new SubtitleSelectBox({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      new SubtitleSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
+
+      expect(localListSelector.getItems().map(i => i.key)).toEqual(['null', 's-1', 's-3']);
+      expect(localListSelector.getSelectedItem()).toBe('s-3');
+
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        { id: 's-3', label: 'Vietnamese', enabled: false },
+        { id: 's-2', label: 'French', enabled: true },
+        { id: 's-1', label: 'English', enabled: false },
+      ]);
+
+      const refreshSubtitles = MockHelper.getMockCallArg<(sender: unknown) => void>(onUpdated.subscribe);
+      refreshSubtitles(uiManagerWithEvents);
+
+      expect(localListSelector.getItems().map(i => i.key)).toEqual(['null', 's-1', 's-2', 's-3']);
+      expect(localListSelector.getSelectedItem()).toBe('s-2');
+    });
+
+    it('sorts subtitles by the comparator defined in the list selector config', () => {
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
+        events: { onUpdated: MockHelper.getEventDispatcherMock() },
+      } as any);
+
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        { id: 's-1', label: 'English', enabled: false },
+        { id: 's-2', label: 'Vietnamese', enabled: false },
+        { id: 's-3', label: 'Taiwanese', enabled: false },
+      ]);
+
+      const localListSelector = new SubtitleSelectBox({
+        comparator: (itemA, itemB) => String(itemB.label).localeCompare(String(itemA.label)),
+      });
+      new SubtitleSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
+
+      expect(localListSelector.getItems().map(i => i.key)).toEqual(['null', 's-2', 's-3', 's-1']);
+    });
+
+    it('does not mutate the original array returned by the player', () => {
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
+        events: { onUpdated: MockHelper.getEventDispatcherMock() },
+      } as any);
+
+      const originalSubtitles = [
+        { id: 's-3', label: 'Vietnamese', enabled: false },
+        { id: 's-1', label: 'English', enabled: false },
+      ];
+      playerMock.subtitles.list = jest.fn().mockReturnValue(originalSubtitles);
+
+      const localListSelector = new SubtitleSelectBox({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      new SubtitleSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
+
+      expect(originalSubtitles[0].id).toBe('s-3');
+    });
+
+    it('preserves original order when no comparator is set', () => {
+      const items: { key: string }[] = (listSelectorMock.synchronizeItems as jest.Mock).mock.calls[0][0];
+      expect(items.map(i => i.key)).toEqual(['null', 's-1', 's-2']);
+    });
+
+    it('sorts correctly when SubtitleAdded events fire incrementally', () => {
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
+        events: { onUpdated: MockHelper.getEventDispatcherMock() },
+      } as any);
+
+      playerMock.subtitles.list = jest.fn().mockReturnValue([]);
+      const localListSelector = new SubtitleSelectBox({
+        comparator: (itemA, itemB) => String(itemA.label).localeCompare(String(itemB.label)),
+      });
+      new SubtitleSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
+
+      // First SubtitleAdded: only Vietnamese available
+      playerMock.subtitles.list = jest.fn().mockReturnValue([{ id: 's-3', label: 'Vietnamese', enabled: false }]);
+      playerMock.eventEmitter.fireSubtitleAddedEvent('s-3', 'Vietnamese');
+
+      // Second SubtitleAdded: English now also available
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        { id: 's-3', label: 'Vietnamese', enabled: false },
+        { id: 's-1', label: 'English', enabled: false },
+      ]);
+      playerMock.eventEmitter.fireSubtitleAddedEvent('s-1', 'English');
+
+      expect(localListSelector.getItems().map(i => i.key)).toEqual(['null', 's-1', 's-3']);
+    });
+
+    it('reselects the current subtitle after applying the comparator', () => {
+      const uiManagerWithEvents = MockHelper.getUiInstanceManagerMock();
+      jest.spyOn(uiManagerWithEvents, 'getConfig').mockReturnValue({
+        events: { onUpdated: MockHelper.getEventDispatcherMock() },
+      } as any);
+
+      playerMock.subtitles.list = jest.fn().mockReturnValue([
+        { id: 's-2', label: 'Vietnamese', enabled: false },
+        { id: 's-1', label: 'English', enabled: true },
+      ]);
+
+      const localListSelector = new ListSelectorMockClass();
+      new SubtitleSwitchHandler(playerMock, localListSelector, uiManagerWithEvents);
+
+      expect(localListSelector.selectItem).toHaveBeenCalledWith('s-1');
     });
   });
 
