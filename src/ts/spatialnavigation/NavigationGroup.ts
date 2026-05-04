@@ -7,12 +7,12 @@ import { isFocusable, isSettingsPanel } from './TypeGuards';
 import {
   Action,
   ActionCallback,
+  AfterNavigationCallback,
   AnyComponent,
   Callback,
   Direction,
   Focusable,
   NavigationCallback,
-  NavigationNoTargetCallback,
 } from './types';
 import { FocusableContainer } from './FocusableContainer';
 import { toHtmlElement } from './helper/toHtmlElement';
@@ -123,12 +123,17 @@ export class NavigationGroup {
   public onAction?: ActionCallback;
 
   /**
-   * If overwritten, it is called when a directional navigation did not focus a new component.
-   * This is usefuly for implementing behaviour when the user navigations at the edge of
-   * the spatial components. e.g. pressing down while the lowest components is already focused
-   * opens an overlay.
+   * If overwritten, it is called when a directional navigation finished.
+   *
+   * Will be called after the navigation finished regardless if the navigation was successful or not.
+   * If navigation was not successful, the target element will be `null`. This can be used for implementing a custom
+   * behavior when the user navigations at the edge of the spatial components. E.g., presenting an additional overlay
+   * when pressing a direction while the last component is already focused.
+   *
+   * @param direction {Direction} The direction to move along
+   * @param target {HTMLElement} The focused target element for the event or `null` if no target was found
    */
-  public onNavigationNoTarget?: NavigationNoTargetCallback;
+  public afterNavigation?: AfterNavigationCallback;
 
   /**
    * Returns the active HTMLElement.
@@ -171,6 +176,14 @@ export class NavigationGroup {
       return false;
     }
 
+    const notifyAfterNavigation = (target?: Focusable) => {
+      const selectedComponent = target instanceof FocusableContainer ? target.primaryComponent : target;
+
+      if (this.afterNavigation) {
+        this.afterNavigation(direction, selectedComponent);
+      }
+    };
+
     const containerContainingActiveComponent = this.getActiveFocusableContainer();
     if (containerContainingActiveComponent) {
       const targetComponent = getComponentInDirection(
@@ -181,6 +194,7 @@ export class NavigationGroup {
 
       if (targetComponent) {
         this.focusComponent(targetComponent);
+        notifyAfterNavigation(targetComponent);
         return true;
       }
     }
@@ -190,11 +204,11 @@ export class NavigationGroup {
 
     if (targetComponent) {
       this.focusComponent(targetComponent);
+      notifyAfterNavigation(targetComponent);
       return true;
     }
-    if (this.onNavigationNoTarget) {
-      this.onNavigationNoTarget(direction);
-    }
+
+    notifyAfterNavigation(targetComponent);
     return false;
   }
 
