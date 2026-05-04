@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - New `SubtitleOverlayConfig.enableCea608CaptionFormatting` option (defaults to `true`) to opt out of CEA-608-specific text formatting (monospaced font, uppercase transform, character letter-spacing). CEA-608 row/column positioning is still applied.
-- `NavigationGroup.afterNavigation` to detect after the directional navgiation finished
+- `NavigationGroup.afterNavigation` which is called after a directional navigation finishes, regardless of whether a target was found
 
 ### Fixed
 
