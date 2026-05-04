@@ -44,11 +44,31 @@ export class AudioTrackSwitchHandler {
     this.uimanager.getConfig().events.onUpdated.subscribe(this.refreshAudioTracks);
   }
 
+  private hasComparator(): boolean {
+    return this.listElement.getConfig().comparator != null;
+  }
+
+  private audioTrackToListItem(audioTrack: AudioTrack): ListItem {
+    return { key: audioTrack.id, label: audioTrack.label };
+  }
+
   private addAudioTrack = (event: AudioTrackEvent) => {
-    const audioTrack = event.track;
-    if (!this.listElement.hasItem(audioTrack.id)) {
-      this.listElement.addItem(audioTrack.id, i18n.getLocalizer(audioTrack.label), true);
+    const addedAudioTrack = event.track;
+
+    if (!this.hasComparator()) {
+      if (!this.listElement.hasItem(addedAudioTrack.id)) {
+        this.listElement.addItem(addedAudioTrack.id, i18n.getLocalizer(addedAudioTrack.label), true);
+      }
+      return;
     }
+
+    const availableAudioTracks = this.player.getAvailableAudio();
+    const mergedTracks = availableAudioTracks.some(track => track.id === addedAudioTrack.id)
+      ? availableAudioTracks
+      : [...availableAudioTracks, addedAudioTrack];
+
+    this.listElement.synchronizeItems(mergedTracks.map(audioTrack => this.audioTrackToListItem(audioTrack)));
+    this.selectCurrentAudioTrack();
   };
 
   private removeAudioTrack = (event: AudioTrackEvent) => {
@@ -68,12 +88,17 @@ export class AudioTrackSwitchHandler {
   };
 
   private refreshAudioTracks = () => {
-    const audioTracks = this.player.getAvailableAudio();
-    const audioTrackToListItem = (audioTrack: AudioTrack): ListItem => {
-      return { key: audioTrack.id, label: audioTrack.label };
-    };
+    const previouslySelectedAudioTrack = this.listElement.getSelectedItem();
 
-    this.listElement.synchronizeItems(audioTracks.map(audioTrackToListItem));
-    this.selectCurrentAudioTrack();
+    this.listElement.synchronizeItems(
+      this.player.getAvailableAudio().map(audioTrack => this.audioTrackToListItem(audioTrack)),
+    );
+    if (this.player.getAudio()) {
+      this.selectCurrentAudioTrack();
+    } else if (previouslySelectedAudioTrack && this.listElement.hasItem(previouslySelectedAudioTrack)) {
+      // HLS streams don't always report the selected audio track via getAudio() after a refresh.
+      // If getAudio() is unavailable, restore the previously selected track if it still exists.
+      this.listElement.selectItem(previouslySelectedAudioTrack);
+    }
   };
 }

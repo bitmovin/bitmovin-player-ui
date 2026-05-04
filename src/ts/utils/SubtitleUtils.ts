@@ -11,7 +11,7 @@ import { i18n } from '../localization/i18n';
  * @category Utils
  */
 export class SubtitleSwitchHandler {
-  private static SUBTITLES_OFF_KEY: string = 'null';
+  static readonly SUBTITLES_OFF_KEY: string = 'null';
 
   private player: PlayerAPI;
   private listElement: ListSelector<ListSelectorConfig>;
@@ -56,6 +56,14 @@ export class SubtitleSwitchHandler {
     this.uimanager.getConfig().events.onUpdated.subscribe(this.refreshSubtitles);
   }
 
+  private hasComparator(): boolean {
+    return this.listElement.getConfig().comparator != null;
+  }
+
+  private subtitleToListItem(subtitle: SubtitleTrack): ListItem {
+    return { key: subtitle.id, label: subtitle.label };
+  }
+
   private onSubtitleEnabled = (event: SubtitleEvent) => {
     this.selectCurrentSubtitle();
 
@@ -69,10 +77,29 @@ export class SubtitleSwitchHandler {
   };
 
   private addSubtitle = (event: SubtitleEvent) => {
-    const subtitle = event.subtitle;
-    if (!this.listElement.hasItem(subtitle.id)) {
-      this.listElement.addItem(subtitle.id, subtitle.label);
+    const addedSubtitle = event.subtitle;
+
+    if (!this.hasComparator()) {
+      if (!this.listElement.hasItem(addedSubtitle.id)) {
+        this.listElement.addItem(addedSubtitle.id, addedSubtitle.label);
+      }
+      return;
     }
+
+    const availableSubtitles = this.player.subtitles.list();
+    const mergedSubtitles = availableSubtitles.some(track => track.id === addedSubtitle.id)
+      ? availableSubtitles
+      : [...availableSubtitles, addedSubtitle];
+    const offListItem: ListItem = {
+      key: SubtitleSwitchHandler.SUBTITLES_OFF_KEY,
+      label: i18n.getLocalizer('off'),
+    };
+
+    this.listElement.synchronizeItems([
+      offListItem,
+      ...mergedSubtitles.map(subtitle => this.subtitleToListItem(subtitle)),
+    ]);
+    this.selectCurrentSubtitle();
   };
 
   private removeSubtitle = (event: SubtitleEvent) => {
@@ -112,12 +139,10 @@ export class SubtitleSwitchHandler {
       label: i18n.getLocalizer('off'),
     };
 
-    const subtitles = this.player.subtitles.list();
-    const subtitleToListItem = (subtitle: SubtitleTrack): ListItem => {
-      return { key: subtitle.id, label: subtitle.label };
-    };
-
-    this.listElement.synchronizeItems([offListItem, ...subtitles.map(subtitleToListItem)]);
+    this.listElement.synchronizeItems([
+      offListItem,
+      ...this.player.subtitles.list().map(subtitle => this.subtitleToListItem(subtitle)),
+    ]);
     this.selectCurrentSubtitle();
   };
 }
