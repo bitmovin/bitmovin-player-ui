@@ -81,7 +81,7 @@ export {
 export { RecommendationOverlay } from './components/overlays/RecommendationOverlay';
 export { RecommendationItem, RecommendationItemConfig } from './components/RecommendationItem';
 export { SeekBarLabel, SeekBarLabelConfig } from './components/seekbar/SeekBarLabel';
-export { SubtitleOverlay } from './components/overlays/SubtitleOverlay';
+export { SubtitleOverlay, SubtitleOverlayConfig } from './components/overlays/SubtitleOverlay';
 export { SubtitleSelectBox } from './components/settings/SubtitleSelectBox';
 export { TitleBar, TitleBarConfig } from './components/TitleBar';
 export { VolumeControlButton, VolumeControlButtonConfig } from './components/buttons/VolumeControlButton';

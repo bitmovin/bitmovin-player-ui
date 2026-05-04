@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Added
+
+- New `SubtitleOverlayConfig.enableCea608CaptionFormatting` option (defaults to `true`) to opt out of CEA-608-specific text formatting (monospaced font, uppercase transform, character letter-spacing). CEA-608 row/column positioning is still applied.
+
 ## [4.12.0] - 2026-04-30
 
 ### Added

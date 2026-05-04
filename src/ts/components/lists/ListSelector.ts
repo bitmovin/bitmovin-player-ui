@@ -417,9 +417,9 @@ export abstract class ListSelector<Config extends ListSelectorConfig> extends Co
    *
    * Includes additions/removals, order changes, localized label changes, and
    * aria-label changes. Dispatched after internal state has been fully synchronized.
-   * 
+   *
    * Use this to rebuild from {@link getItems()} when the effective list changes.
-   * 
+   *
    * @returns {Event<ListSelector<Config>, NoArgs>}
    */
   get onItemsChanged(): Event<ListSelector<Config>, NoArgs> {
