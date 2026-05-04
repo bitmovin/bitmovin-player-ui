@@ -29,6 +29,22 @@
       display: block;
     }
 
+    // Restore semantic inline formatting that `all: unset` above strips. Subtitle cues
+    // (CEA-608, WebVTT) use these tags to convey italic/bold/underlined text.
+    i,
+    em {
+      font-style: italic;
+    }
+
+    b,
+    strong {
+      font-weight: bolder;
+    }
+
+    u {
+      text-decoration: underline;
+    }
+
     .#{$prefix}-subtitle-region-container {
       position: absolute;
 

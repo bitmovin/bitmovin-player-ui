@@ -111,6 +111,167 @@ describe('SubtitleOverlay', () => {
     });
   });
 
+  describe('CEA 608 caption formatting config', () => {
+    // This block uses the real Container implementation (via jest.isolateModules + jest.unmock)
+    // so that the SubtitleOverlay constructor's mergeConfig call actually runs. That means the
+    // "default is true" contract is exercised end-to-end — if the mergeConfig defaults object
+    // ever loses this field, these tests will fail.
+    let RealSubtitleOverlay: typeof SubtitleOverlay;
+    let RealSubtitleRegionContainer: typeof SubtitleRegionContainer;
+    let RealSubtitleLabel: typeof SubtitleLabel;
+
+    beforeAll(() => {
+      jest.isolateModules(() => {
+        jest.unmock('../../../src/ts/components/Container');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const module = require('../../../src/ts/components/overlays/SubtitleOverlay');
+        RealSubtitleOverlay = module.SubtitleOverlay;
+        RealSubtitleRegionContainer = module.SubtitleRegionContainer;
+        RealSubtitleLabel = module.SubtitleLabel;
+      });
+    });
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
+      uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    function fireCea608CueEnter() {
+      // position triggers the CEA-608 code path in SubtitleOverlay (see isCea608SubtitleCue)
+      playerMock.eventEmitter.fireSubtitleCueEnterEvent({ position: { row: 5, column: 10 } });
+    }
+
+    function setupOverlay(config: { enableCea608CaptionFormatting?: boolean } = {}): {
+      overlay: SubtitleOverlay;
+      overlayDom: jest.Mocked<DOM>;
+    } {
+      const overlay = new RealSubtitleOverlay(config);
+      overlay.configure(playerMock, uiInstanceManagerMock);
+      // The real CEA-608 grid-size calculation reads pixel dimensions off the DOM, which are
+      // unavailable under jsdom without a real layout. Stub it out: the tests only care about
+      // the class-toggling and letter-spacing decisions, not the computed grid values.
+      (overlay as any).ensureCea608GridSizeUpdated = (): void => undefined;
+      const overlayDom = MockHelper.generateDOMMock();
+      jest.spyOn(overlay, 'getDomElement').mockReturnValue(overlayDom);
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+      // updateComponents on both the overlay and its region containers touches DOM plumbing
+      // (innerContainerElement, child .remove()) that isn't set up under the mocked DOM.
+      jest.spyOn(overlay, 'updateComponents').mockImplementation(() => undefined);
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'updateComponents').mockImplementation(() => undefined);
+      return { overlay, overlayDom };
+    }
+
+    function getLetterSpacingStyle(addLabelSpy: jest.SpyInstance): unknown {
+      const label = addLabelSpy.mock.calls[0][0] as SubtitleLabel;
+      const labelCssCalls = (label.getDomElement().css as jest.Mock).mock.calls;
+      // The CEA-608 cue path calls css() exactly once with a style object. If a future
+      // change adds another call (or switches to the css(name, value) form), fail loudly
+      // here rather than silently filtering it out.
+      expect(labelCssCalls).toHaveLength(1);
+      const style = labelCssCalls[0][0] as Record<string, string>;
+      return style['letter-spacing'];
+    }
+
+    it('applies CEA-608 positioning and formatting classes when the config is not set (default behavior)', () => {
+      const { overlayDom } = setupOverlay();
+
+      fireCea608CueEnter();
+
+      expect(overlayDom.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+      expect(overlayDom.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+    });
+
+    it('applies CEA-608 positioning but not the formatting class when enableCea608CaptionFormatting is false', () => {
+      const { overlayDom } = setupOverlay({ enableCea608CaptionFormatting: false });
+
+      fireCea608CueEnter();
+
+      expect(overlayDom.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+      expect(overlayDom.addClass).not.toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+    });
+
+    it('does not set inline letter-spacing on the label when enableCea608CaptionFormatting is false', () => {
+      const { overlay } = setupOverlay({ enableCea608CaptionFormatting: false });
+      const addLabelSpy = jest.spyOn((overlay as any).subtitleContainerManager, 'addLabel');
+
+      fireCea608CueEnter();
+
+      expect(getLetterSpacingStyle(addLabelSpy)).toBeUndefined();
+    });
+
+    it('sets inline letter-spacing on the label when the config is not set (default behavior)', () => {
+      const { overlay } = setupOverlay();
+      const addLabelSpy = jest.spyOn((overlay as any).subtitleContainerManager, 'addLabel');
+
+      fireCea608CueEnter();
+
+      expect(getLetterSpacingStyle(addLabelSpy)).toBeDefined();
+    });
+
+    it('removes both CEA-608 classes on reset, even when the formatting class was never added', () => {
+      // When the formatting class is disabled it's never added, but the reset path still
+      // calls removeClass on it. Guard against a future refactor that makes the removal
+      // conditional and accidentally leaves stale classes on the overlay.
+      const { overlayDom } = setupOverlay({ enableCea608CaptionFormatting: false });
+
+      fireCea608CueEnter();
+      playerMock.eventEmitter.fireSourceUnloadedEvent();
+
+      expect(overlayDom.removeClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+      expect(overlayDom.removeClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+    });
+
+    it.each([
+      {
+        label: 'does not re-apply letter-spacing on grid recalculation when formatting is disabled',
+        config: { enableCea608CaptionFormatting: false },
+        letterSpacingExpected: false,
+      },
+      {
+        label: 'does re-apply letter-spacing on grid recalculation when formatting is enabled (default)',
+        config: {},
+        letterSpacingExpected: true,
+      },
+    ])('$label', ({ config, letterSpacingExpected }) => {
+      // Regression: ensureCea608GridSizeUpdated runs on onShow/PlayerResized/ControlBar toggles
+      // and used to unconditionally write letter-spacing onto every active label, undoing the
+      // formatting opt-out for already-rendered cues. Root cause of the f1-stream bug.
+      const overlay = new RealSubtitleOverlay(config);
+      const overlayDom = MockHelper.generateDOMMock();
+      (overlayDom.width as jest.Mock).mockReturnValue(1280);
+      (overlayDom.height as jest.Mock).mockReturnValue(720);
+      (overlayDom.get as jest.Mock).mockReturnValue([{ style: { setProperty: jest.fn() } }]);
+      jest.spyOn(overlay, 'getDomElement').mockReturnValue(overlayDom);
+      jest.spyOn(overlay, 'updateComponents').mockImplementation(() => undefined);
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'updateComponents').mockImplementation(() => undefined);
+      // Labels use their DOM for measurements inside the grid calc (dummy label) and for
+      // style writes (the actual cue label). Non-zero width/height avoids NaN in the calc.
+      // Spy on the isolated-module's SubtitleLabel, not the outer import — otherwise the
+      // real code's `new SubtitleLabel()` creates instances whose prototype isn't the one
+      // we spied on.
+      const labelDom = MockHelper.generateDOMMock();
+      (labelDom.width as jest.Mock).mockReturnValue(10);
+      (labelDom.height as jest.Mock).mockReturnValue(20);
+      jest.spyOn(RealSubtitleLabel.prototype, 'getDomElement').mockReturnValue(labelDom);
+
+      overlay.configure(playerMock, uiInstanceManagerMock);
+      fireCea608CueEnter();
+      // Change overlay dimensions so the grid recalc doesn't bail on the unchanged-size check.
+      (overlayDom.width as jest.Mock).mockReturnValue(1920);
+      (overlayDom.height as jest.Mock).mockReturnValue(1080);
+      (labelDom.css as jest.Mock).mockClear();
+      (overlay as any).ensureCea608GridSizeUpdated();
+
+      const cssCalls = (labelDom.css as jest.Mock).mock.calls;
+      const writtenStyles = cssCalls.map((call: unknown[]) => call[0]).filter(arg => arg && typeof arg === 'object');
+      const hasLetterSpacingWrite = writtenStyles.some(style => 'letter-spacing' in (style as object));
+      expect(hasLetterSpacingWrite).toBe(letterSpacingExpected);
+    });
+  });
+
   describe('WebVTT container behavior', () => {
     beforeEach(() => {
       playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;

@@ -530,7 +530,7 @@ export namespace UIFactory {
       const subtitleOverlay = new SubtitleOverlay();
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, 5000);
 
-      const subtitleListBox = new SubtitleListBox(i18n.getLocalizer('settings.subtitles'));
+      const subtitleListBox = new SubtitleListBox({ title: i18n.getLocalizer('settings.subtitles') });
       const subtitleListBoxOpenButton = new SettingsToggleButton({
         settingsPanel: subtitleListBox,
         autoHideWhenNoActiveSettings: true,
@@ -538,7 +538,7 @@ export namespace UIFactory {
         text: i18n.getLocalizer('settings.subtitles'),
       });
 
-      const audioListBox = new AudioTrackListBox(i18n.getLocalizer('settings.audio.track'));
+      const audioListBox = new AudioTrackListBox({ title: i18n.getLocalizer('settings.audio.track') });
       const audioListBoxToggleButton = new SettingsToggleButton({
         settingsPanel: audioListBox,
         autoHideWhenNoActiveSettings: true,
