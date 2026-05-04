@@ -126,12 +126,13 @@ export class NavigationGroup {
    * If overwritten, it is called when a directional navigation finished.
    *
    * Will be called after the navigation finished regardless if the navigation was successful or not.
-   * If navigation was not successful, the target element will be `null`. This can be used for implementing a custom
-   * behavior when the user navigations at the edge of the spatial components. E.g., presenting an additional overlay
-   * when pressing a direction while the last component is already focused.
+   * If navigation was not successful, the target element will be `undefined`. This can be used for implementing a
+   * custom behavior when the user navigations at the edge of the spatial components. E.g., presenting an additional
+   * overlay when pressing a direction while the last component is already focused.
    *
    * @param direction {Direction} The direction to move along
-   * @param target {HTMLElement} The focused target element for the event or `null` if no target was found
+   * @param target {AnyComponent | undefined} The focused target element for the event or `undefined` if no target
+   *    was found
    */
   public afterNavigation?: AfterNavigationCallback;
 
