@@ -7,7 +7,7 @@ import { CancelEventArgs, Event as UiEvent, EventDispatcher } from '../EventDisp
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Button, ButtonConfig } from './buttons/Button';
-import { TouchControlOverlay, TouchControlOverlayConfig } from './overlays/TouchControlOverlay';
+import { TouchControlOverlay } from './overlays/TouchControlOverlay';
 import { Component, ComponentConfig } from './Component';
 import { SettingsPanel } from './settings/SettingsPanel';
 
@@ -65,6 +65,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   private static readonly CONTROLS_HIDDEN = 'controls-hidden';
 
   private uiHideTimeout: Timeout;
+  private isReleased: boolean = false;
   private playerStateChange: EventDispatcher<UIContainer, PlayerUtils.PlayerState>;
 
   private userInteractionEventSource: DOM;
@@ -156,6 +157,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     this.showUi = () => {
+      if (this.isReleased) {
+        return;
+      }
       isHideUiPending = false;
 
       if (!isUiShown) {
@@ -170,6 +174,9 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     this.hideUi = (force: boolean = false) => {
+      if (this.isReleased) {
+        return;
+      }
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
         if (force) {
@@ -498,6 +505,8 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   release(): void {
+    this.isReleased = true;
+
     // Explicitly unsubscribe user interaction event handlers because they could be attached to an external element
     // that isn't owned by the UI and therefore not removed on release.
     if (this.userInteractionEvents) {
