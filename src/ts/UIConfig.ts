@@ -208,10 +208,20 @@ export type WithEnable<T> = T & {
 export interface ComponentConfigs {
   /**
    * Enable and configure the quick seek back button in the default layout.
+   *
+   * The configured `seekSeconds` value is automatically applied as a backward seek for this button, i.e. it will be a
+   * negative number.
+   *
+   * Omitting `seekSeconds` or setting it to `0` while enabling it will use the default `seekSeconds` value.
    */
   quickSeekBackwardButton?: WithEnable<QuickSeekButtonConfig>;
   /**
    * Enable and configure the quick seek forward button in the default layout.
+   *
+   * The configured `seekSeconds` value is automatically applied as a forward seek for this button, i.e. it will be an
+   * absolute, positive number.
+   *
+   * Omitting `seekSeconds` or setting it to `0` while enabling it will use the default `seekSeconds` value.
    */
   quickSeekForwardButton?: WithEnable<QuickSeekButtonConfig>;
   /**
