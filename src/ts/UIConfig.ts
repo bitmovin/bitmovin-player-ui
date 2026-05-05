@@ -217,7 +217,7 @@ export interface ComponentConfigs {
   /**
    * Enable the watermark in the default layout.
    */
-  watermark: WithEnable<WatermarkConfig>;
+  watermark?: WithEnable<WatermarkConfig>;
 }
 
 export interface ShadowDomConfig {
