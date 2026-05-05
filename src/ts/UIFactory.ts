@@ -791,10 +791,9 @@ export namespace UIFactory {
   }
 
   function configureConditionalComponents(config: UIConfig) {
+    const watermarkEnabled = config.defaultUiComponentConfigs?.watermark?.enable ?? config.includeWatermark;
     const watermark = [
-      config.includeWatermark || config.defaultUiComponentConfigs?.watermark?.enable
-        ? new Watermark(config.defaultUiComponentConfigs?.watermark || {})
-        : null,
+      watermarkEnabled ? new Watermark(config.defaultUiComponentConfigs?.watermark || {}) : null,
     ].filter(e => e);
 
     const quickseekBack = [];
