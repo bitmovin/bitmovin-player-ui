@@ -165,7 +165,7 @@ export interface UIConfig {
    */
   ecoMode?: boolean;
   /**
-   * @deprecated Use {@link UIConfig.defaultUiComponentConfigs} instead.
+   * @deprecated Use {@link UIConfig.defaultUiComponentConfigs}.watermark.enable instead.
    *
    * Specifies if the Watermark element should be included in the UI.
    * Per default, the Watermark shows the Bitmovin Logo.
