@@ -4,7 +4,16 @@ import { getComponentInDirection } from './NavigationAlgorithm';
 import { resolveAllComponents } from './helper/resolveAllComponents';
 import { NodeEventSubscriber } from './NodeEventSubscriber';
 import { isFocusable, isSettingsPanel } from './TypeGuards';
-import { Action, ActionCallback, AnyComponent, Callback, Direction, Focusable, NavigationCallback } from './types';
+import {
+  Action,
+  ActionCallback,
+  AfterNavigationCallback,
+  AnyComponent,
+  Callback,
+  Direction,
+  Focusable,
+  NavigationCallback,
+} from './types';
 import { FocusableContainer } from './FocusableContainer';
 import { toHtmlElement } from './helper/toHtmlElement';
 
@@ -94,7 +103,7 @@ export class NavigationGroup {
    * handled any further by spatial navigation.
    *
    * @param direction {Direction} The direction to move along
-   * @param target {HTMLElement} The target element for the event
+   * @param target {AnyComponent} The target component for the event
    * @param preventDefault {() => void} A function that, when called, will prevent the execution of the default handler
    * @returns `true` if the event was handled, `false` or `undefined` otherwise
    */
@@ -107,11 +116,25 @@ export class NavigationGroup {
    * handled any further by spatial navigation.
    *
    * @param action {Action} The action that was called
-   * @param target {HTMLElement} The target element that action was called on
+   * @param target {AnyComponent} The target component that action was called on
    * @param preventDefault {() => void} A function that, when called, will prevent the execution of the default handler
    * @returns `true` if the event was handled, `false` or `undefined` otherwise
    */
   public onAction?: ActionCallback;
+
+  /**
+   * If overwritten, it is called when a directional navigation finished.
+   *
+   * Will be called after the navigation finished regardless if the navigation was successful or not.
+   * If navigation was not successful, the target element will be `undefined`. This can be used for implementing a
+   * custom behavior when the user navigations at the edge of the spatial components. E.g., presenting an additional
+   * overlay when pressing a direction while the last component is already focused.
+   *
+   * @param direction {Direction} The direction to move along
+   * @param target {AnyComponent | undefined} The focused target element for the event or `undefined` if no target
+   *    was found
+   */
+  public afterNavigation?: AfterNavigationCallback;
 
   /**
    * Returns the active HTMLElement.
@@ -154,6 +177,14 @@ export class NavigationGroup {
       return false;
     }
 
+    const notifyAfterNavigation = (target?: Focusable) => {
+      const selectedComponent = target instanceof FocusableContainer ? target.primaryComponent : target;
+
+      if (this.afterNavigation) {
+        this.afterNavigation(direction, selectedComponent);
+      }
+    };
+
     const containerContainingActiveComponent = this.getActiveFocusableContainer();
     if (containerContainingActiveComponent) {
       const targetComponent = getComponentInDirection(
@@ -164,6 +195,7 @@ export class NavigationGroup {
 
       if (targetComponent) {
         this.focusComponent(targetComponent);
+        notifyAfterNavigation(targetComponent);
         return true;
       }
     }
@@ -173,9 +205,11 @@ export class NavigationGroup {
 
     if (targetComponent) {
       this.focusComponent(targetComponent);
+      notifyAfterNavigation(targetComponent);
       return true;
     }
 
+    notifyAfterNavigation(targetComponent);
     return false;
   }
 
