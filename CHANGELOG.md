@@ -5,11 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [Unreleased]
 
 ### Added
 
 - New `SubtitleOverlayConfig.enableCea608CaptionFormatting` option (defaults to `true`) to opt out of CEA-608-specific text formatting (monospaced font, uppercase transform, character letter-spacing). CEA-608 row/column positioning is still applied.
+- `NavigationGroup.afterNavigation` which is called after a directional navigation finishes, regardless of whether a target was found
 
 ### Fixed
 

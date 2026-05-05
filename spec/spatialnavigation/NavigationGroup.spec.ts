@@ -1,5 +1,6 @@
 import { NavigationGroup } from '../../src/ts/spatialnavigation/NavigationGroup';
 import { UIContainer } from '../../src/ts/components/UIContainer';
+import { Container } from '../../src/ts/components/Container';
 import { PlaybackToggleButton } from '../../src/ts/components/buttons/PlaybackToggleButton';
 import { SettingsToggleButton } from '../../src/ts/components/settings/SettingsToggleButton';
 import { getFirstDomElement, mockComponent } from '../helper/mockComponent';
@@ -8,6 +9,7 @@ import { NodeEventSubscriber } from '../../src/ts/spatialnavigation/NodeEventSub
 import { Action, Direction } from '../../src/ts/spatialnavigation/types';
 import * as toHtmlElementModule from '../../src/ts/spatialnavigation/helper/toHtmlElement';
 import * as TypeGuards from '../../src/ts/spatialnavigation/TypeGuards';
+import { FocusableContainer } from '../../src/ts/spatialnavigation/FocusableContainer';
 
 jest.mock('../../src/ts/spatialnavigation/NavigationAlgorithm.ts');
 jest.mock('../../src/ts/spatialnavigation/NodeEventSubscriber.ts');
@@ -23,6 +25,8 @@ describe('NavigationGroup', () => {
 
   beforeEach(() => {
     jest.spyOn(TypeGuards, 'isFocusable').mockReturnValue(true);
+    jest.spyOn(TypeGuards, 'isComponent').mockReturnValue(true);
+    jest.spyOn(TypeGuards, 'isContainer').mockReturnValue(false);
 
     rootContainerMock = mockComponent(UIContainer);
     playbackToggleButtonMock = mockComponent(PlaybackToggleButton);
@@ -110,6 +114,59 @@ describe('NavigationGroup', () => {
       const emptyNavigationGroup = new NavigationGroup(rootContainerMock);
 
       expect(emptyNavigationGroup.handleNavigation(Direction.LEFT)).toBe(false);
+    });
+
+    it('should call afterNavigation with undefined and return false when no target is found', () => {
+      const getComponentInDirectionMock = navigationAlgorithm.getComponentInDirection as jest.Mock;
+      const afterNavigationMock = jest.fn();
+      getComponentInDirectionMock.mockReset();
+      getComponentInDirectionMock.mockReturnValue(undefined);
+      rootNavigationGroup['activeComponent'] = playbackToggleButtonMock;
+      rootNavigationGroup.afterNavigation = afterNavigationMock;
+
+      expect(rootNavigationGroup.handleNavigation(Direction.DOWN)).toBe(false);
+      expect(afterNavigationMock).toHaveBeenCalledTimes(1);
+      expect(afterNavigationMock).toHaveBeenCalledWith(Direction.DOWN, undefined);
+    });
+
+    it('should call afterNavigation with the component found within the active focusable container', () => {
+      const getComponentInDirectionMock = navigationAlgorithm.getComponentInDirection as jest.Mock;
+      const bottomControlBarMock = mockComponent(Container);
+      const afterNavigationMock = jest.fn();
+
+      getComponentInDirectionMock.mockReset();
+      getComponentInDirectionMock.mockReturnValueOnce(subtitleToggleButtonMock);
+      bottomControlBarMock.getComponents.mockReturnValue([playbackToggleButtonMock, subtitleToggleButtonMock]);
+
+      rootNavigationGroup = new NavigationGroup(
+        rootContainerMock,
+        new FocusableContainer(bottomControlBarMock, playbackToggleButtonMock),
+      );
+      rootNavigationGroup['activeComponent'] = playbackToggleButtonMock;
+      rootNavigationGroup.afterNavigation = afterNavigationMock;
+
+      expect(rootNavigationGroup.handleNavigation(Direction.RIGHT)).toBe(true);
+      expect(afterNavigationMock).toHaveBeenCalledTimes(1);
+      expect(afterNavigationMock).toHaveBeenCalledWith(Direction.RIGHT, subtitleToggleButtonMock);
+    });
+
+    it('should call afterNavigation with the primary component if the navigation target is a focusable container', () => {
+      const getComponentInDirectionMock = navigationAlgorithm.getComponentInDirection as jest.Mock;
+      const bottomControlBarMock = mockComponent(Container);
+      const afterNavigationMock = jest.fn();
+
+      bottomControlBarMock.getComponents.mockReturnValue([subtitleToggleButtonMock]);
+      const focusableContainer = new FocusableContainer(bottomControlBarMock, subtitleToggleButtonMock);
+      getComponentInDirectionMock.mockReset();
+      getComponentInDirectionMock.mockReturnValueOnce(focusableContainer);
+
+      rootNavigationGroup = new NavigationGroup(rootContainerMock, playbackToggleButtonMock, focusableContainer);
+      rootNavigationGroup['activeComponent'] = playbackToggleButtonMock;
+      rootNavigationGroup.afterNavigation = afterNavigationMock;
+
+      expect(rootNavigationGroup.handleNavigation(Direction.DOWN)).toBe(true);
+      expect(afterNavigationMock).toHaveBeenCalledTimes(1);
+      expect(afterNavigationMock).toHaveBeenCalledWith(Direction.DOWN, subtitleToggleButtonMock);
     });
 
     describe('onNavigation', () => {
