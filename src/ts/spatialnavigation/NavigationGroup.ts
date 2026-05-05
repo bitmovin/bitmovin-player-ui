@@ -103,7 +103,7 @@ export class NavigationGroup {
    * handled any further by spatial navigation.
    *
    * @param direction {Direction} The direction to move along
-   * @param target {HTMLElement} The target element for the event
+   * @param target {AnyComponent} The target component for the event
    * @param preventDefault {() => void} A function that, when called, will prevent the execution of the default handler
    * @returns `true` if the event was handled, `false` or `undefined` otherwise
    */
@@ -116,7 +116,7 @@ export class NavigationGroup {
    * handled any further by spatial navigation.
    *
    * @param action {Action} The action that was called
-   * @param target {HTMLElement} The target element that action was called on
+   * @param target {AnyComponent} The target component that action was called on
    * @param preventDefault {() => void} A function that, when called, will prevent the execution of the default handler
    * @returns `true` if the event was handled, `false` or `undefined` otherwise
    */
