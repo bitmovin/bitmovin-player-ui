@@ -55,6 +55,7 @@ import { AdMessageLabel } from './components/ads/AdMessageLabel';
 import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationOverlayNavigationGroup } from './spatialnavigation/RecommendationOverlayNavigationGroup';
+import { QuickSeekButton } from './components/buttons/QuickSeekButton';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -93,7 +94,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
@@ -105,7 +106,7 @@ export namespace UIFactory {
           },
         },
         {
-          ...UIFactory.defaultLayouts.tv(),
+          ...UIFactory.defaultLayouts.tv(config),
           condition: (context: UIConditionContext) => {
             return context.isTv && !context.isAd && !context.adRequiresUi;
           },
@@ -149,7 +150,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -192,7 +193,7 @@ export namespace UIFactory {
           },
         },
         {
-          ...UIFactory.defaultLayouts.tv(),
+          ...UIFactory.defaultLayouts.tv(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -248,6 +249,9 @@ export namespace UIFactory {
       const subtitleOverlay = new SubtitleOverlay();
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
+
+      const conditionalComponents = configureConditionalComponents(config);
+
       const controlBar = new ControlBar({
         components: [
           new Container({
@@ -267,6 +271,8 @@ export namespace UIFactory {
           new Container({
             components: [
               new PlaybackToggleButton(),
+              ...conditionalComponents.quickSeekBackwardButtons,
+              ...conditionalComponents.quickSeekForwardButtons,
               new VolumeToggleButton(),
               new VolumeSlider(),
               new Spacer(),
@@ -282,8 +288,6 @@ export namespace UIFactory {
         ],
       });
 
-      const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
-
       return new UIContainer({
         components: [
           subtitleOverlay,
@@ -293,7 +297,7 @@ export namespace UIFactory {
           controlBar,
           new TitleBar(),
           new RecommendationOverlay(),
-          ...conditionalComponents,
+          ...conditionalComponents.watermark,
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
           new ErrorMessageOverlay(),
@@ -359,10 +363,12 @@ export namespace UIFactory {
       });
     }
 
-    export function smallScreen(): UIContainer {
+    export function smallScreen(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
+
+      const conditionalComponents = configureConditionalComponents(config);
 
       const controlBar = new ControlBar({
         components: [
@@ -383,6 +389,8 @@ export namespace UIFactory {
           new Container({
             components: [
               new PlaybackToggleButton(),
+              ...conditionalComponents.quickSeekBackwardButtons,
+              ...conditionalComponents.quickSeekForwardButtons,
               new VolumeToggleButton(),
               new VolumeSlider(),
               new Spacer(),
@@ -485,6 +493,8 @@ export namespace UIFactory {
     }
 
     export function castReceiver(config: UIConfig = {}): UIContainer {
+      const conditionalComponents = configureConditionalComponents(config);
+
       const controlBar = new ControlBar({
         components: [
           new Container({
@@ -504,8 +514,6 @@ export namespace UIFactory {
         ],
       });
 
-      const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
-
       return new CastUIContainer({
         components: [
           new SubtitleOverlay(),
@@ -513,7 +521,7 @@ export namespace UIFactory {
           new PlaybackToggleOverlay(),
           controlBar,
           new TitleBar({ keepHiddenWithoutMetadata: true }),
-          ...conditionalComponents,
+          ...conditionalComponents.watermark,
           new ErrorMessageOverlay(),
         ],
         cssClasses: ['ui-cast-receiver'],
@@ -525,10 +533,12 @@ export namespace UIFactory {
       });
     }
 
-    export function tv(): Pick<UIVariant, 'ui' | 'spatialNavigation'> {
+    export function tv(config: UIConfig = {}): Pick<UIVariant, 'ui' | 'spatialNavigation'> {
       const seekBar = new SeekBar({ label: new SeekBarLabel() });
       const subtitleOverlay = new SubtitleOverlay();
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, 5000);
+
+      const conditionalComponents = configureConditionalComponents(config);
 
       const subtitleListBox = new SubtitleListBox({ title: i18n.getLocalizer('settings.subtitles') });
       const subtitleListBoxOpenButton = new SettingsToggleButton({
@@ -563,6 +573,8 @@ export namespace UIFactory {
       const bottomControlBar = new Container({
         components: [
           playbackToggleButton,
+          ...conditionalComponents.quickSeekBackwardButtons,
+          ...conditionalComponents.quickSeekForwardButtons,
           new Spacer(),
           subtitleListBoxOpenButton,
           audioListBoxToggleButton,
@@ -776,5 +788,35 @@ export namespace UIFactory {
     settingsPanel.addComponent(subtitleSettingsPanelPage);
 
     return settingsPanel;
+  }
+
+  function configureConditionalComponents(config: UIConfig) {
+    const watermark = [
+      config.includeWatermark || config.defaultUiComponentConfigs?.watermark?.enable
+        ? new Watermark(config.defaultUiComponentConfigs?.watermark || {})
+        : null,
+    ].filter(e => e);
+
+    const quickseekBack = [];
+    if (config.defaultUiComponentConfigs?.quickSeekBackwardButton?.enable) {
+      config.defaultUiComponentConfigs.quickSeekBackwardButton.seekSeconds = -Math.abs(
+        config.defaultUiComponentConfigs.quickSeekBackwardButton.seekSeconds || 10,
+      );
+      quickseekBack.push(new QuickSeekButton(config.defaultUiComponentConfigs?.quickSeekBackwardButton));
+    }
+
+    const quickseekForward = [];
+    if (config.defaultUiComponentConfigs?.quickSeekForwardButton?.enable) {
+      config.defaultUiComponentConfigs.quickSeekForwardButton.seekSeconds = Math.abs(
+        config.defaultUiComponentConfigs.quickSeekForwardButton.seekSeconds || 10,
+      );
+      quickseekForward.push(new QuickSeekButton(config.defaultUiComponentConfigs?.quickSeekForwardButton));
+    }
+
+    return {
+      quickSeekBackwardButtons: quickseekBack,
+      quickSeekForwardButtons: quickseekForward,
+      watermark: watermark,
+    };
   }
 }

@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - New `SubtitleOverlayConfig.enableCea608CaptionFormatting` option (defaults to `true`) to opt out of CEA-608-specific text formatting (monospaced font, uppercase transform, character letter-spacing). CEA-608 row/column positioning is still applied.
+- `UIConfig.defaultUiComponentConfigs` to enable and configure individual components in the default UI layouts without building a custom UI. Initial support covers `quickSeekBackwardButton`, `quickSeekForwardButton`, and `watermark`. Each entry accepts an `enable` flag plus the underlying component config (e.g. `seekSeconds` for the quick-seek buttons).
+
+### Deprecated
+
+- `UIConfig.includeWatermark` in favor of `UIConfig.defaultUiComponentConfigs.watermark.enable`.
 
 ### Fixed
 

@@ -1,6 +1,7 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
 import { SourceConfig } from 'bitmovin-player';
 import { LocalizationConfig } from './UIManager';
+import { QuickSeekButtonConfig, WatermarkConfig } from './main';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -164,6 +165,8 @@ export interface UIConfig {
    */
   ecoMode?: boolean;
   /**
+   * @deprecated Use {@link UIConfig.defaultUiComponentConfigs} instead.
+   *
    * Specifies if the Watermark element should be included in the UI.
    * Per default, the Watermark shows the Bitmovin Logo.
    *
@@ -186,6 +189,35 @@ export interface UIConfig {
    * Allows setting a {@link LocalizationConfig} to specify language details of the UI.
    */
   localization?: LocalizationConfig;
+  /**
+   * Allows configuring and/or enabling different components in the default layouts without creating a custom UI.
+   */
+  defaultUiComponentConfigs?: ComponentConfigs;
+}
+
+/**
+ * Extends specific ComponentConfig interfaces with a property to enable the config in the default layout.
+ */
+export type WithEnable<T> = T & {
+  /**
+   * Enable the component in the default UI layout, if the UI variant layout contains that component.
+   */
+  enable?: boolean;
+};
+
+export interface ComponentConfigs {
+  /**
+   * Enable and configure the quick seek back button in the default layout.
+   */
+  quickSeekBackwardButton?: WithEnable<QuickSeekButtonConfig>;
+  /**
+   * Enable and configure the quick seek forward button in the default layout.
+   */
+  quickSeekForwardButton?: WithEnable<QuickSeekButtonConfig>;
+  /**
+   * Enable the watermark in the default layout.
+   */
+  watermark: WithEnable<WatermarkConfig>;
 }
 
 export interface ShadowDomConfig {

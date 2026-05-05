@@ -279,7 +279,20 @@
           //       ],
         },
         //    seekbarSnappingRange: 0,
-        includeWatermark: true,
+
+        defaultUiComponentConfigs: {
+          quickSeekBackwardButton: {
+            enable: true,
+            seekSeconds: -10,
+          },
+          quickSeekForwardButton: {
+            enable: true,
+            seekSeconds: 10,
+          },
+          watermark: {
+            enable: false,
+          },
+        },
       };
 
       var player;
