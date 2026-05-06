@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Inline `<i>`/`<em>`, `<b>`/`<strong>`, and `<u>` tags in subtitle cue text (e.g. CEA-608 italics) were rendered without their semantic styling
+- Player APIs called after the player was already destroyed
 
 ## [4.12.0] - 2026-04-30
 
