@@ -65,7 +65,6 @@ export class UIContainer extends Container<UIContainerConfig> {
   private static readonly CONTROLS_HIDDEN = 'controls-hidden';
 
   private uiHideTimeout: Timeout;
-  private isReleased: boolean = false;
   private playerStateChange: EventDispatcher<UIContainer, PlayerUtils.PlayerState>;
 
   private userInteractionEventSource: DOM;
@@ -157,9 +156,6 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     this.showUi = () => {
-      if (this.isReleased) {
-        return;
-      }
       isHideUiPending = false;
 
       if (!isUiShown) {
@@ -174,9 +170,6 @@ export class UIContainer extends Container<UIContainerConfig> {
     };
 
     this.hideUi = (force: boolean = false) => {
-      if (this.isReleased) {
-        return;
-      }
       // Hide the UI only if it is shown, and if not casting
       if (isUiShown && !player.isCasting()) {
         if (force) {
@@ -505,7 +498,8 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   release(): void {
-    this.isReleased = true;
+    // Hide the UI to make sure hideUi becomes a no-op and avoid race conditions with the hide timeout while releasing
+    this.hideUi(true);
 
     // Explicitly unsubscribe user interaction event handlers because they could be attached to an external element
     // that isn't owned by the UI and therefore not removed on release.
