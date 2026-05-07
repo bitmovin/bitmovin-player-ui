@@ -188,7 +188,7 @@ export interface UIConfig {
   localization?: LocalizationConfig;
 
   /**
-   * The rendered player height threshold in pixels below which small-player adjustments are applied to
+   * The rendered player height threshold in pixels at or below which small-player adjustments are applied to
    * CEA-608 captions:
    *
    * 1. The caption overlay is constrained to a centered 80% safe area (proportional margins on all four sides),

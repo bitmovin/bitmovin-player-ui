@@ -216,11 +216,11 @@ describe('SubtitleOverlay', () => {
       expect(mockDomElement.addClass).toHaveBeenCalledWith(pushupDisabledClass);
     });
 
-    it('does not add the pushup-disabled class on configure when player height meets the default threshold', () => {
+    it('adds the pushup-disabled class on configure when player height meets the default threshold', () => {
       jest.spyOn(DOM.prototype, 'height').mockReturnValue(360);
       subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
 
-      expect(mockDomElement.addClass).not.toHaveBeenCalledWith(pushupDisabledClass);
+      expect(mockDomElement.addClass).toHaveBeenCalledWith(pushupDisabledClass);
     });
 
     it('adds the pushup-disabled class when PlayerResized fires below the threshold', () => {
@@ -228,17 +228,42 @@ describe('SubtitleOverlay', () => {
       subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
       (mockDomElement.addClass as jest.Mock).mockClear();
 
-      playerMock.eventEmitter.fireEvent({ type: PlayerEvent.PlayerResized, height: '180px', width: '320px', timestamp: Date.now() } as PlayerResizedEvent);
+      playerMock.eventEmitter.fireEvent({
+        type: PlayerEvent.PlayerResized,
+        height: '180px',
+        width: '320px',
+        timestamp: Date.now(),
+      } as PlayerResizedEvent);
 
       expect(mockDomElement.addClass).toHaveBeenCalledWith(pushupDisabledClass);
     });
 
-    it('removes the pushup-disabled class when PlayerResized fires at or above the threshold', () => {
+    it('adds the pushup-disabled class when PlayerResized fires at the threshold', () => {
+      jest.spyOn(DOM.prototype, 'height').mockReturnValue(400);
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+      (mockDomElement.addClass as jest.Mock).mockClear();
+
+      playerMock.eventEmitter.fireEvent({
+        type: PlayerEvent.PlayerResized,
+        height: '360px',
+        width: '640px',
+        timestamp: Date.now(),
+      } as PlayerResizedEvent);
+
+      expect(mockDomElement.addClass).toHaveBeenCalledWith(pushupDisabledClass);
+    });
+
+    it('removes the pushup-disabled class when PlayerResized fires above the threshold', () => {
       jest.spyOn(DOM.prototype, 'height').mockReturnValue(180);
       subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
       (mockDomElement.removeClass as jest.Mock).mockClear();
 
-      playerMock.eventEmitter.fireEvent({ type: PlayerEvent.PlayerResized, height: '400px', width: '640px', timestamp: Date.now() } as PlayerResizedEvent);
+      playerMock.eventEmitter.fireEvent({
+        type: PlayerEvent.PlayerResized,
+        height: '400px',
+        width: '640px',
+        timestamp: Date.now(),
+      } as PlayerResizedEvent);
 
       expect(mockDomElement.removeClass).toHaveBeenCalledWith(pushupDisabledClass);
     });

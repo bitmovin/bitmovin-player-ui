@@ -153,9 +153,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     uimanager.onComponentShow.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
         this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
+        const isCea608PushupTransitionEnabled = !this.getDomElement().hasClass(
+          this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED),
+        );
 
-        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated &&
-            !this.getDomElement().hasClass(this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED))) {
+        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated && isCea608PushupTransitionEnabled) {
           awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
         }
       }
@@ -164,9 +166,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     uimanager.onComponentHide.subscribe((component: Component<ComponentConfig>) => {
       if (component instanceof ControlBar) {
         this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CONTROLBAR_VISIBLE));
+        const isCea608PushupTransitionEnabled = !this.getDomElement().hasClass(
+          this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED),
+        );
 
-        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated &&
-            !this.getDomElement().hasClass(this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED))) {
+        if (this.cea608Enabled && this.ensureCea608GridSizeUpdated && isCea608PushupTransitionEnabled) {
           awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
         }
       }
@@ -175,11 +179,11 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     this.configureCea608Captions(player, uimanager);
     // Init
     subtitleClearHandler();
-    this.updateCeaPushupClass(new DOM(player.getContainer()).height());
+    this.updateCea608PushupFromPlayerHeight(new DOM(player.getContainer()).height());
   }
 
-  private updateCeaPushupClass(playerHeight: number): void {
-    if (playerHeight < this.cea608SmallPlayerHeightThreshold) {
+  private updateCea608PushupFromPlayerHeight(playerHeight: number): void {
+    if (this.cea608SmallPlayerHeightThreshold > 0 && playerHeight <= this.cea608SmallPlayerHeightThreshold) {
       this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED));
     } else {
       this.getDomElement().removeClass(this.prefixCss(SubtitleOverlay.CLASS_CEA608_PUSHUP_DISABLED));
@@ -434,7 +438,7 @@ export class SubtitleOverlay extends Container<ContainerConfig> {
     };
 
     player.on(player.exports.PlayerEvent.PlayerResized, (e: PlayerResizedEvent) => {
-      this.updateCeaPushupClass(parseFloat(e.height));
+      this.updateCea608PushupFromPlayerHeight(parseFloat(e.height));
 
       if (this.cea608Enabled) {
         this.ensureCea608GridSizeUpdated();

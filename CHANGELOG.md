@@ -9,15 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- New `UIConfig.ceaCaptionPushupMinHeight` option (default `360`) to configure the rendered player height threshold below which small-player CEA-608 caption adjustments are applied
+- New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
 
 ### Changed
 
-- CEA-608 captions on players with a rendered height below 360 CSS pixels (configurable via `ceaCaptionPushupMinHeight`) now render within a centered 80% safe area and keep their row-based placement when the control bar is shown
+- CEA-608 captions on players with a rendered height at or below 360 CSS pixels (configurable via `cea608SmallPlayerHeightThreshold`) now stay readable by using a centered 80% safe area and avoiding control-bar pushup that can crowd caption rows on small players
 
 ### Fixed
 
-- Reset cached CEA-608 grid sizing when CEA subtitle rendering is disabled so the next CEA session recalculates its layout correctly
+- CEA-608 captions could keep stale sizing after CEA subtitle rendering was disabled and re-enabled, causing captions to appear incorrectly scaled or positioned
 
 ## [4.11.0] - 2026-04-03
 
