@@ -19,6 +19,43 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - CEA-608 captions could keep stale sizing after CEA subtitle rendering was disabled and re-enabled, causing captions to appear incorrectly scaled or positioned
 
+## [4.13.0] - 2026-05-07
+
+### Added
+
+- New `SubtitleOverlayConfig.enableCea608CaptionFormatting` option (defaults to `true`) to opt out of CEA-608-specific text formatting (monospaced font, uppercase transform, character letter-spacing). CEA-608 row/column positioning is still applied.
+- `NavigationGroup.afterNavigation` which is called after a directional navigation finishes, regardless of whether a target was found
+
+### Fixed
+
+- Inline `<i>`/`<em>`, `<b>`/`<strong>`, and `<u>` tags in subtitle cue text (e.g. CEA-608 italics) were rendered without their semantic styling
+- Player APIs called after the player was already destroyed
+
+## [4.12.0] - 2026-04-30
+
+### Added
+
+- `ListSelectorConfig.comparator` to customize the display order of list-backed selection UIs such as `AudioTrackSelectBox`, `SubtitleSelectBox`, `AudioTrackListBox`, and `SubtitleListBox`. For subtitle selection UIs, the built-in `Off` option remains fixed at the top.
+  Example:
+  ```ts
+  const subtitleListBox = new SubtitleListBox({
+    title: i18n.getLocalizer('settings.subtitles'),
+    comparator: (a, b) => String(a.label).localeCompare(String(b.label)), // A-Z
+  });
+  ```
+  > **Note**: Requires building a custom UI. The default `UIFactory` presets do not expose this option.
+- `AudioTrackListBox` and `SubtitleListBox` now can accept config objects that extend `ListBoxConfig` without `listSelector`.
+  This enables configuring list-selector behavior such as `comparator`, `filter`, and `translator`, as well as list-box/settings-panel options like `title`, `hideDelay`, and related panel settings.
+- `ListSelector.onItemsChanged` event that fires whenever the effective item collection changes, including item additions, removals, reordering, or updates to rendered item data such as `label` and `ariaLabel`.
+  This event should be used by consumers that rebuild the full list UI from `getItems()`, while `onItemAdded` and `onItemRemoved` remain strict membership-change events.
+
+## [4.11.1] - 2026-04-23
+
+### Fixed
+
+- Subtitle window coloring was not applied for non-region WebVTT cues
+- WebVTT subtitle background color is applied to the window instead of the text background
+
 ## [4.11.0] - 2026-04-03
 
 ### Added

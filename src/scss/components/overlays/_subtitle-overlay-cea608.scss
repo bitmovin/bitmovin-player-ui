@@ -43,9 +43,7 @@
 
     .#{$prefix}-ui-subtitle-label {
       display: inline-block;
-      font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
       position: absolute;
-      text-transform: uppercase;
       white-space: nowrap;
 
       // center vertically
@@ -57,6 +55,13 @@
         content: normal;
         white-space: normal;
       }
+    }
+  }
+
+  &.#{$prefix}-cea608-formatting {
+    .#{$prefix}-ui-subtitle-label {
+      font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
+      text-transform: uppercase;
     }
   }
 }

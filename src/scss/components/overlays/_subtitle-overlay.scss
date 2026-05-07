@@ -29,6 +29,22 @@
       display: block;
     }
 
+    // Restore semantic inline formatting that `all: unset` above strips. Subtitle cues
+    // (CEA-608, WebVTT) use these tags to convey italic/bold/underlined text.
+    i,
+    em {
+      font-style: italic;
+    }
+
+    b,
+    strong {
+      font-weight: bolder;
+    }
+
+    u {
+      text-decoration: underline;
+    }
+
     .#{$prefix}-subtitle-region-container {
       position: absolute;
 
@@ -60,6 +76,31 @@
         height: 0;
         white-space: pre-line;
         width: 0;
+      }
+    }
+
+    .#{$prefix}-ui-subtitle-label.#{$prefix}-subtitle-vtt-cue,
+    .#{$prefix}-subtitle-vtt-region-container .#{$prefix}-ui-subtitle-label {
+      .#{$prefix}-ui-label-text {
+        max-width: 100%;
+        width: fit-content;
+      }
+
+      &[style*='text-align: center'] .#{$prefix}-ui-label-text {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      &[style*='text-align: right'] .#{$prefix}-ui-label-text {
+        margin-left: auto;
+      }
+
+      &[style*='text-align: end'] .#{$prefix}-ui-label-text {
+        margin-inline-start: auto;
+      }
+
+      &[style*='text-align: start'] .#{$prefix}-ui-label-text {
+        margin-inline-end: auto;
       }
     }
 

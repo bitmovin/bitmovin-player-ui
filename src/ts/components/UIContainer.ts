@@ -7,7 +7,7 @@ import { CancelEventArgs, Event as UiEvent, EventDispatcher } from '../EventDisp
 import { PlayerAPI, PlayerResizedEvent } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
 import { Button, ButtonConfig } from './buttons/Button';
-import { TouchControlOverlay, TouchControlOverlayConfig } from './overlays/TouchControlOverlay';
+import { TouchControlOverlay } from './overlays/TouchControlOverlay';
 import { Component, ComponentConfig } from './Component';
 import { SettingsPanel } from './settings/SettingsPanel';
 
@@ -498,6 +498,9 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   release(): void {
+    // Hide the UI to make sure hideUi becomes a no-op and avoid race conditions with the hide timeout while releasing
+    this.hideUi(true);
+
     // Explicitly unsubscribe user interaction event handlers because they could be attached to an external element
     // that isn't owned by the UI and therefore not removed on release.
     if (this.userInteractionEvents) {
