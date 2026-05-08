@@ -5,13 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [Unreleased]
 
 ### Added
 
 - `DebugInfoOverlay`: a small "stats for nerds"-style overlay that shows live playback diagnostics (resolution, codec, bitrate, buffer levels, dropped frames, time / duration / speed, available qualities, DRM systems, manifest URL, live latency, stream + player versions). Hidden by default; can be closed via its `×` button and dragged anywhere on the page (also outside the player). Wired into the default and small-screen layouts.
 - `PlayerContextMenu`: a right-click context menu with Bitmovin info, Player + UI versions, "About Bitmovin" link, a toggle for the `DebugInfoOverlay`, and "Copy source" / "Copy player config" buttons that copy `player.getSource()` / `player.getConfig()` as JSON to the clipboard. Wired into the default and small-screen layouts. Right-clicking on the `<video>` element still opens the browser's native video context menu.
 - New localization keys: `videoStats.title`, `videoStats.show`, `videoStats.hide`, `contextMenu.title`, `contextMenu.subtitle`, `contextMenu.about`, `contextMenu.copySource`, `contextMenu.copyConfig`, `contextMenu.copied`.
+- New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
+
+### Changed
+
+- CEA-608 captions on players with a rendered height at or below 360 CSS pixels (configurable via `cea608SmallPlayerHeightThreshold`) now stay readable by using a centered 80% safe area and avoiding control-bar pushup that can crowd caption rows on small players
+
+### Fixed
+
+- CEA-608 captions could keep stale sizing after CEA subtitle rendering was disabled and re-enabled, causing captions to appear incorrectly scaled or positioned
 
 ## [4.13.0] - 2026-05-07
 

@@ -186,6 +186,28 @@ export interface UIConfig {
    * Allows setting a {@link LocalizationConfig} to specify language details of the UI.
    */
   localization?: LocalizationConfig;
+
+  /**
+   * The rendered player height threshold in pixels at or below which small-player adjustments are applied to
+   * CEA-608 captions:
+   *
+   * 1. The caption overlay is constrained to a centered 80% safe area (proportional margins on all four sides),
+   *    replacing the fixed `em`-based margins used at larger sizes.
+   * 2. The controlbar pushup is disabled, keeping captions anchored to the safe area regardless of controlbar state.
+   *
+   * "Rendered height" refers to the actual on-screen height of the player DOM element in CSS pixels, not the
+   * video resolution.
+   *
+   * At small player sizes fixed `em` margins take up a disproportionate share of the available space, and pushing
+   * captions up when the controlbar appears can make them illegible. The 80% safe area and the suppressed pushup
+   * together keep CEA-608 captions legible and correctly positioned at these sizes.
+   *
+   * Set to `0` to disable both adjustments for all player sizes (restoring the default large-player behaviour
+   * everywhere).
+   *
+   * Default: `360`
+   */
+  cea608SmallPlayerHeightThreshold?: number;
 }
 
 export interface ShadowDomConfig {
