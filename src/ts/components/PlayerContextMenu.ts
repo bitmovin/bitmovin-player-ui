@@ -30,6 +30,8 @@ export interface PlayerContextMenuConfig extends ContainerConfig {
 export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   private playerVersionElement: DOM;
   private toggleButtonElement: DOM;
+  private copySourceButtonElement: DOM;
+  private copyConfigButtonElement: DOM;
 
   private uiContextMenuHandler: ((e: MouseEvent) => void) | null = null;
   private documentMouseDownHandler: ((e: MouseEvent) => void) | null = null;
@@ -86,6 +88,16 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
       class: this.prefixCss('ui-player-context-menu-button'),
     }).html(i18n.performLocalization(i18n.getLocalizer('videoStats.show')));
 
+    this.copySourceButtonElement = new DOM('button', {
+      type: 'button',
+      class: this.prefixCss('ui-player-context-menu-button'),
+    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copySource')));
+
+    this.copyConfigButtonElement = new DOM('button', {
+      type: 'button',
+      class: this.prefixCss('ui-player-context-menu-button'),
+    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copyConfig')));
+
     element.append(header);
     element.append(subtitle);
     element.append(this.playerVersionElement);
@@ -93,6 +105,8 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     element.append(link);
     element.append(separator);
     element.append(this.toggleButtonElement);
+    element.append(this.copySourceButtonElement);
+    element.append(this.copyConfigButtonElement);
 
     return element;
   }
@@ -128,6 +142,20 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     document.addEventListener('mousedown', this.documentMouseDownHandler, true);
     document.addEventListener('contextmenu', this.documentContextMenuHandler, true);
     document.addEventListener('keydown', this.documentKeyDownHandler);
+
+    const copiedLabel = i18n.getLocalizer('contextMenu.copied');
+    const sourceLabel = i18n.getLocalizer('contextMenu.copySource');
+    const configLabel = i18n.getLocalizer('contextMenu.copyConfig');
+    const wireCopyButton = (button: DOM, label: ReturnType<typeof i18n.getLocalizer>, getValue: () => unknown) => {
+      button.on('click', (e: MouseEvent) => {
+        e.stopPropagation();
+        copyToClipboard(JSON.stringify(getValue() ?? null, jsonReplacer, 2));
+        button.html(i18n.performLocalization(copiedLabel));
+        window.setTimeout(() => button.html(i18n.performLocalization(label)), 1200);
+      });
+    };
+    wireCopyButton(this.copySourceButtonElement, sourceLabel, () => player.getSource());
+    wireCopyButton(this.copyConfigButtonElement, configLabel, () => player.getConfig());
 
     const debugOverlay = this.config.debugInfoOverlay;
     if (debugOverlay) {
@@ -195,4 +223,30 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
 
     this.show();
   }
+}
+
+function copyToClipboard(text: string): void {
+  if (navigator.clipboard?.writeText) {
+    void navigator.clipboard.writeText(text);
+    return;
+  }
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
+
+// Strip non-serializable values (DOM nodes, functions) so JSON.stringify doesn't throw on
+// player config objects that may hold element references.
+function jsonReplacer(_key: string, value: unknown): unknown {
+  if (typeof value === 'function') return undefined;
+  if (value instanceof Node) return `[${(value as Node).nodeName}]`;
+  return value;
 }
