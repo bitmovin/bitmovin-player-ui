@@ -129,6 +129,12 @@ export interface Vocabulary {
   'contextMenu.subtitle': string;
   ecoMode: string;
   'ecoMode.title': string;
+  'videoStats.title': string;
+  'videoStats.show': string;
+  'videoStats.hide': string;
+  'contextMenu.title': string;
+  'contextMenu.subtitle': string;
+  'contextMenu.about': string;
 }
 
 /**

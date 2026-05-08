@@ -2,6 +2,7 @@ import { Container, ContainerConfig } from '../Container';
 import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../../localization/i18n';
 
 /**
  * Configuration interface for the {@link DebugInfoOverlay}.
@@ -30,6 +31,12 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
   private headerElement: DOM;
   private refreshTimer: number | null = null;
   private detachedFromPlayer = false;
+  private originalParent: HTMLElement | null = null;
+  private update: () => void = () => undefined;
+  private onUpdatedHandler: () => void = () => undefined;
+  private uiManagerRef: UIInstanceManager | null = null;
+  private onPointerMoveDocument: ((e: PointerEvent) => void) | null = null;
+  private onPointerUpDocument: ((e: PointerEvent) => void) | null = null;
 
   constructor(config: DebugInfoOverlayConfig = {}) {
     super(config);
@@ -49,12 +56,12 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
 
     const title = new DOM('span', {
       class: this.prefixCss('ui-debug-info-overlay-title'),
-    }).html('video stats');
+    }).html(i18n.performLocalization(i18n.getLocalizer('videoStats.title')));
 
     const closeButton = new DOM('button', {
       type: 'button',
       class: this.prefixCss('ui-debug-info-overlay-close'),
-      'aria-label': 'Hide video stats',
+      'aria-label': i18n.performLocalization(i18n.getLocalizer('videoStats.hide')),
     }).html('×');
 
     const stop = (e: Event) => e.stopPropagation();
@@ -86,46 +93,75 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    // Detach the overlay from the UI container so it isn't hidden together with the
-    // auto-hiding player controls. We reparent it to the player container (sibling of
-    // the UI container), which still follows fullscreen mode but stays visible when
-    // the controls fade out.
-    const playerContainer = player.getContainer?.();
+    // Reparent the overlay to the player container so it stays visible when the
+    // surrounding UI auto-hides (which sets `display: none` on the UI container).
+    const playerContainer = player.getContainer();
     const overlayEl = this.getDomElement().get(0) as HTMLElement;
-    if (playerContainer && overlayEl.parentElement !== playerContainer) {
+    this.originalParent = overlayEl.parentElement;
+    if (overlayEl.parentElement !== playerContainer) {
       playerContainer.appendChild(overlayEl);
     }
 
-    const update = () => this.updateContent(player);
+    this.update = () => this.updateContent(player);
+    this.onUpdatedHandler = this.update;
+    this.uiManagerRef = uimanager;
 
     const startTimer = () => {
-      stopTimer();
-      this.refreshTimer = window.setInterval(update, this.config.refreshIntervalMs);
-    };
-
-    const stopTimer = () => {
-      if (this.refreshTimer !== null) {
-        window.clearInterval(this.refreshTimer);
-        this.refreshTimer = null;
-      }
+      this.stopTimer();
+      if (!this.isShown()) return;
+      this.refreshTimer = window.setInterval(this.update, this.config.refreshIntervalMs);
     };
 
     player.on(player.exports.PlayerEvent.Play, startTimer);
     player.on(player.exports.PlayerEvent.Playing, startTimer);
-    player.on(player.exports.PlayerEvent.Paused, update);
-    player.on(player.exports.PlayerEvent.Seeked, update);
-    player.on(player.exports.PlayerEvent.SourceLoaded, update);
-    player.on(player.exports.PlayerEvent.SourceUnloaded, update);
-    player.on(player.exports.PlayerEvent.VideoQualityChanged, update);
-    player.on(player.exports.PlayerEvent.AudioQualityChanged, update);
-    player.on(player.exports.PlayerEvent.StallStarted, update);
-    player.on(player.exports.PlayerEvent.StallEnded, update);
-    player.on(player.exports.PlayerEvent.PlaybackFinished, stopTimer);
-    player.on(player.exports.PlayerEvent.Destroy, stopTimer);
+    player.on(player.exports.PlayerEvent.Paused, this.update);
+    player.on(player.exports.PlayerEvent.Seeked, this.update);
+    player.on(player.exports.PlayerEvent.SourceLoaded, this.update);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, this.update);
+    player.on(player.exports.PlayerEvent.VideoQualityChanged, this.update);
+    player.on(player.exports.PlayerEvent.AudioQualityChanged, this.update);
+    player.on(player.exports.PlayerEvent.StallStarted, this.update);
+    player.on(player.exports.PlayerEvent.StallEnded, this.update);
+    player.on(player.exports.PlayerEvent.PlaybackFinished, () => this.stopTimer());
+    player.on(player.exports.PlayerEvent.Destroy, () => this.stopTimer());
 
-    uimanager.getConfig().events.onUpdated.subscribe(update);
+    this.onShow.subscribe(() => {
+      this.update();
+      if (!player.isPaused()) startTimer();
+    });
+    this.onHide.subscribe(() => this.stopTimer());
 
-    update();
+    uimanager.getConfig().events.onUpdated.subscribe(this.onUpdatedHandler);
+
+    this.update();
+  }
+
+  release(): void {
+    this.stopTimer();
+    if (this.onPointerMoveDocument) {
+      document.removeEventListener('pointermove', this.onPointerMoveDocument);
+      document.removeEventListener('pointerup', this.onPointerUpDocument!);
+      document.removeEventListener('pointercancel', this.onPointerUpDocument!);
+      this.onPointerMoveDocument = null;
+      this.onPointerUpDocument = null;
+    }
+    if (this.uiManagerRef) {
+      this.uiManagerRef.getConfig().events.onUpdated.unsubscribe(this.onUpdatedHandler);
+      this.uiManagerRef = null;
+    }
+    // Restore the overlay to the UI container so the next UI re-init owns the DOM node.
+    const overlayEl = this.getDomElement().get(0) as HTMLElement;
+    if (this.originalParent && overlayEl.parentElement !== this.originalParent) {
+      this.originalParent.appendChild(overlayEl);
+    }
+    super.release();
+  }
+
+  private stopTimer(): void {
+    if (this.refreshTimer !== null) {
+      window.clearInterval(this.refreshTimer);
+      this.refreshTimer = null;
+    }
   }
 
   private installDragHandlers(rootElement: DOM): void {
@@ -136,22 +172,16 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
     const draggableClass = this.prefixCss('ui-debug-info-overlay-draggable');
     const rootEl = rootElement.get(0) as HTMLElement;
 
-    const onMove = (clientX: number, clientY: number) => {
-      const x = clientX - dragOffsetX;
-      const y = clientY - dragOffsetY;
-      rootElement.css({
-        position: 'fixed',
-        left: `${x}px`,
-        top: `${y}px`,
-        right: 'auto',
-        bottom: 'auto',
-      });
-    };
-
     const onPointerMove = (e: PointerEvent) => {
       if (pointerId !== e.pointerId) return;
       e.preventDefault();
-      onMove(e.clientX, e.clientY);
+      rootElement.css({
+        position: 'fixed',
+        left: `${e.clientX - dragOffsetX}px`,
+        top: `${e.clientY - dragOffsetY}px`,
+        right: 'auto',
+        bottom: 'auto',
+      });
     };
 
     const onPointerUp = (e: PointerEvent) => {
@@ -160,7 +190,7 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       try {
         rootEl.releasePointerCapture(e.pointerId);
       } catch {
-        // ignore — pointer might already be released
+        // pointer capture may already have been released by the browser
       }
       rootElement.removeClass(draggingClass);
       document.removeEventListener('pointermove', onPointerMove);
@@ -168,17 +198,17 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       document.removeEventListener('pointercancel', onPointerUp);
     };
 
+    this.onPointerMoveDocument = onPointerMove;
+    this.onPointerUpDocument = onPointerUp;
+
     this.headerElement.on('pointerdown', (e: PointerEvent) => {
-      // Only react to primary button (left click / single touch)
       if (e.button !== 0) return;
       e.preventDefault();
 
-      // On first drag, detach from the player container so the overlay can be moved
-      // outside the player area without being clipped.
+      // First drag detaches the overlay to <body> so it can move past any clipping ancestor.
       if (!this.detachedFromPlayer) {
         const currentRect = rootEl.getBoundingClientRect();
-        const parent = rootEl.parentElement;
-        if (parent && parent !== document.body) {
+        if (rootEl.parentElement && rootEl.parentElement !== document.body) {
           document.body.appendChild(rootEl);
         }
         rootElement.css({
@@ -200,7 +230,7 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       try {
         rootEl.setPointerCapture(e.pointerId);
       } catch {
-        // ignore — capture is best-effort
+        // pointer capture is best-effort
       }
       rootElement.addClass(draggingClass);
 
@@ -213,48 +243,41 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
   private updateContent(player: PlayerAPI): void {
     const lines: string[] = [];
 
-    const safeCall = <T>(fn: () => T): T | undefined => {
-      try {
-        return fn();
-      } catch {
-        return undefined;
-      }
-    };
-
-    const videoQuality = safeCall(() => player.getPlaybackVideoData?.());
-    const audioQuality = safeCall(() => player.getPlaybackAudioData?.());
-    const downloadedVideo = safeCall(() => player.getDownloadedVideoData?.());
-    const downloadedAudio = safeCall(() => player.getDownloadedAudioData?.());
-    const dropped = safeCall(() => player.getDroppedVideoFrames?.());
-    const videoBuffer = safeCall(() => player.getVideoBufferLength?.());
-    const audioBuffer = safeCall(() => player.getAudioBufferLength?.());
-    const streamType = safeCall(() => player.getStreamType?.());
-    const playerType = safeCall(() => player.getPlayerType?.());
-    const playerVersion = safeCall(() => (player as unknown as { version?: string }).version);
-    const isLive = safeCall(() => player.isLive?.());
-    const currentTime = safeCall(() => player.getCurrentTime?.());
-    const duration = safeCall(() => player.getDuration?.());
-    const speed = safeCall(() => player.getPlaybackSpeed?.());
-    const timeShift = safeCall(() => player.getTimeShift?.());
-    const videoQualities = safeCall(() => player.getAvailableVideoQualities?.());
-    const audioTracks = safeCall(() => player.getAvailableAudio?.());
-    const source = safeCall(() => player.getSource?.());
-    const videoElement = safeCall(() => player.getContainer?.()?.querySelector('video') as HTMLVideoElement | null);
+    const videoQuality = player.getPlaybackVideoData();
+    const audioQuality = player.getPlaybackAudioData();
+    const downloadedVideo = player.getDownloadedVideoData();
+    const downloadedAudio = player.getDownloadedAudioData();
+    const dropped = player.getDroppedVideoFrames();
+    const videoBuffer = player.getVideoBufferLength();
+    const audioBuffer = player.getAudioBufferLength();
+    const streamType = player.getStreamType();
+    const playerType = player.getPlayerType();
+    const playerVersion = player.version;
+    const isLive = player.isLive();
+    const currentTime = player.getCurrentTime();
+    const duration = player.getDuration();
+    const speed = player.getPlaybackSpeed();
+    const timeShift = player.getTimeShift();
+    const videoQualities = player.getAvailableVideoQualities();
+    const audioTracks = player.getAvailableAudio();
+    const source = player.getSource();
+    const videoElement = player.getContainer().querySelector('video') as HTMLVideoElement | null;
 
     if (videoQuality) {
-      const w = videoQuality.width;
-      const h = videoQuality.height;
       const fps = (videoQuality as { frameRate?: number }).frameRate;
-      const res = w && h ? `${w}×${h}${fps ? `@${fps}` : ''}` : '–';
+      const res =
+        videoQuality.width && videoQuality.height
+          ? `${videoQuality.width}×${videoQuality.height}${fps ? `@${fps}` : ''}`
+          : '–';
       lines.push(`Video: ${res} ${formatBitrate(videoQuality.bitrate)} (${videoQuality.codec || '?'})`);
     }
-    if (downloadedVideo && downloadedVideo !== videoQuality) {
+    if (downloadedVideo && !sameQuality(videoQuality, downloadedVideo)) {
       lines.push(`  ↓ ${formatBitrate(downloadedVideo.bitrate)}`);
     }
     if (audioQuality) {
       lines.push(`Audio: ${formatBitrate(audioQuality.bitrate)} (${audioQuality.codec || '?'})`);
     }
-    if (downloadedAudio && downloadedAudio !== audioQuality) {
+    if (downloadedAudio && !sameQuality(audioQuality, downloadedAudio)) {
       lines.push(`  ↓ ${formatBitrate(downloadedAudio.bitrate)}`);
     }
     if (videoElement && videoElement.videoWidth > 0) {
@@ -262,57 +285,54 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       const rendered = `${videoElement.clientWidth}×${videoElement.clientHeight}`;
       lines.push(`Resolution: ${decoded} → ${rendered}`);
     }
-    if (videoBuffer != null || audioBuffer != null) {
-      const v = videoBuffer != null ? `${videoBuffer.toFixed(2)}s` : '–';
-      const a = audioBuffer != null ? `${audioBuffer.toFixed(2)}s` : '–';
-      lines.push(`Buffer: v ${v} / a ${a}`);
-    }
-    if (dropped != null) {
-      lines.push(`Dropped frames: ${dropped}`);
-    }
-    if (currentTime != null) {
-      const speedStr = speed != null && speed !== 1 ? ` @ ${speed.toFixed(2)}×` : '';
-      if (isLive) {
-        lines.push(`Time: ${formatSeconds(currentTime)}${speedStr}`);
-      } else if (duration != null && isFinite(duration)) {
-        lines.push(`Time: ${formatSeconds(currentTime)} / ${formatSeconds(duration)}${speedStr}`);
-      } else {
-        lines.push(`Time: ${formatSeconds(currentTime)}${speedStr}`);
-      }
-    }
-    if (isLive && timeShift != null) {
-      // timeShift is 0 at the live edge and negative when behind
+    lines.push(`Buffer: v ${videoBuffer.toFixed(2)}s / a ${audioBuffer.toFixed(2)}s`);
+    lines.push(`Dropped frames: ${dropped}`);
+    const speedStr = speed !== 1 ? ` @ ${speed.toFixed(2)}×` : '';
+    if (isLive) {
+      lines.push(`Time: ${formatSeconds(currentTime)}${speedStr}`);
+      // timeShift: 0 at the live edge, negative when behind.
       lines.push(`Live latency: ${(-timeShift).toFixed(2)}s behind edge`);
+    } else if (isFinite(duration)) {
+      lines.push(`Time: ${formatSeconds(currentTime)} / ${formatSeconds(duration)}${speedStr}`);
+    } else {
+      lines.push(`Time: ${formatSeconds(currentTime)}${speedStr}`);
     }
-    if (videoQualities || audioTracks) {
-      const v = videoQualities ? videoQualities.length : '–';
-      const a = audioTracks ? audioTracks.length : '–';
-      lines.push(`Available: ${v} video / ${a} audio`);
-    }
+    lines.push(`Available: ${videoQualities.length} video / ${audioTracks.length} audio`);
     const network = formatNetwork();
-    if (network) {
-      lines.push(`Network: ${network}`);
-    }
+    if (network) lines.push(`Network: ${network}`);
     const drm = formatDrm(source);
-    if (drm) {
-      lines.push(`DRM: ${drm}`);
-    }
+    if (drm) lines.push(`DRM: ${drm}`);
     const manifest = pickManifestUrl(source);
-    if (manifest) {
-      lines.push(`Manifest: ${truncateMiddle(manifest, 60)}`);
-    }
-    if (streamType || playerType) {
-      lines.push(`Stream: ${streamType || '?'} (${playerType || '?'})`);
-    }
-    if (playerVersion) {
-      lines.push(`Player: ${playerVersion}`);
-    }
+    if (manifest) lines.push(`Manifest: ${truncateMiddle(manifest, 60)}`);
+    lines.push(`Stream: ${streamType} (${playerType})`);
+    lines.push(`Player: ${playerVersion}`);
 
-    this.contentElement.html(lines.length > 0 ? escapeHtml(lines.join('\n')) : '');
+    this.contentElement.html(escapeHtml(lines.join('\n')));
   }
 }
 
-function formatSeconds(seconds: number): string {
+interface QualityIdentity {
+  id?: string;
+  bitrate?: number;
+}
+
+function sameQuality(a: QualityIdentity | undefined, b: QualityIdentity): boolean {
+  if (!a) return false;
+  if (a.id && b.id) return a.id === b.id;
+  return a.bitrate === b.bitrate;
+}
+
+export function formatBitrate(bitrate: number | undefined): string {
+  if (!bitrate || !isFinite(bitrate)) {
+    return '? kbps';
+  }
+  if (bitrate >= 1_000_000) {
+    return `${(bitrate / 1_000_000).toFixed(2)} Mbps`;
+  }
+  return `${Math.round(bitrate / 1000)} kbps`;
+}
+
+export function formatSeconds(seconds: number): string {
   if (!isFinite(seconds)) return '∞';
   const sign = seconds < 0 ? '-' : '';
   const total = Math.floor(Math.abs(seconds));
@@ -321,6 +341,12 @@ function formatSeconds(seconds: number): string {
   const s = total % 60;
   const pad = (n: number) => n.toString().padStart(2, '0');
   return h > 0 ? `${sign}${h}:${pad(m)}:${pad(s)}` : `${sign}${m}:${pad(s)}`;
+}
+
+export function truncateMiddle(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  const half = Math.floor((maxLength - 1) / 2);
+  return `${text.slice(0, half)}…${text.slice(text.length - half)}`;
 }
 
 function formatNetwork(): string | null {
@@ -352,22 +378,6 @@ function pickManifestUrl(source: unknown): string | null {
   if (typeof s.progressive === 'string') return s.progressive;
   if (Array.isArray(s.progressive) && s.progressive[0]?.url) return s.progressive[0].url;
   return null;
-}
-
-function truncateMiddle(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text;
-  const half = Math.floor((maxLength - 1) / 2);
-  return `${text.slice(0, half)}…${text.slice(text.length - half)}`;
-}
-
-function formatBitrate(bitrate: number | undefined): string {
-  if (!bitrate || !isFinite(bitrate)) {
-    return '? kbps';
-  }
-  if (bitrate >= 1_000_000) {
-    return `${(bitrate / 1_000_000).toFixed(2)} Mbps`;
-  }
-  return `${Math.round(bitrate / 1000)} kbps`;
 }
 
 function escapeHtml(text: string): string {

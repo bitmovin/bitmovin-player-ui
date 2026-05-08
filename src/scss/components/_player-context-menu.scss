@@ -16,7 +16,7 @@
   min-width: 14em;
   padding: 0.75em 1em;
   position: fixed;
-  z-index: 2147483001;
+  z-index: 101;
 
   &.#{$prefix}-hidden {
     pointer-events: none;
