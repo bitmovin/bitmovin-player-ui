@@ -3,6 +3,7 @@ import { DOM } from '../DOM';
 import { UIInstanceManager } from '../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { DebugInfoOverlay } from './overlays/DebugInfoOverlay';
+import { i18n } from '../localization/i18n';
 
 const UI_VERSION: string = '{{VERSION}}';
 
@@ -30,6 +31,12 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   private playerVersionElement: DOM;
   private toggleButtonElement: DOM;
 
+  private uiContextMenuHandler: ((e: MouseEvent) => void) | null = null;
+  private documentMouseDownHandler: ((e: MouseEvent) => void) | null = null;
+  private documentContextMenuHandler: ((e: MouseEvent) => void) | null = null;
+  private documentKeyDownHandler: ((e: KeyboardEvent) => void) | null = null;
+  private uiContainerElement: HTMLElement | null = null;
+
   constructor(config: PlayerContextMenuConfig = {}) {
     super(config);
 
@@ -48,11 +55,11 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
 
     const header = new DOM('div', {
       class: this.prefixCss('ui-player-context-menu-header'),
-    }).html('Bitmovin Player');
+    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.title')));
 
     const subtitle = new DOM('div', {
       class: this.prefixCss('ui-player-context-menu-subtitle'),
-    }).html('Adaptive Streaming for the Web');
+    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.subtitle')));
 
     this.playerVersionElement = new DOM('div', {
       class: this.prefixCss('ui-player-context-menu-info'),
@@ -67,7 +74,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
       href: 'https://bitmovin.com',
       target: '_blank',
       rel: 'noopener noreferrer',
-    }).html('About Bitmovin →');
+    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.about')));
     link.on('click', (e: MouseEvent) => e.stopPropagation());
 
     const separator = new DOM('div', {
@@ -77,7 +84,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     this.toggleButtonElement = new DOM('button', {
       type: 'button',
       class: this.prefixCss('ui-player-context-menu-button'),
-    }).html('Show video stats');
+    }).html(i18n.performLocalization(i18n.getLocalizer('videoStats.show')));
 
     element.append(header);
     element.append(subtitle);
@@ -93,35 +100,42 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    const playerVersion = (player as unknown as { version?: string }).version || '?';
-    this.playerVersionElement.html(`Player: ${playerVersion}`);
+    this.playerVersionElement.html(`Player: ${player.version}`);
 
-    const uiContainerDom = uimanager.getUI().getDomElement();
+    const uiContainerEl = uimanager.getUI().getDomElement().get(0) as HTMLElement;
+    this.uiContainerElement = uiContainerEl;
     const rootEl = this.getDomElement().get(0) as HTMLElement;
 
-    uiContainerDom.on('contextmenu', (e: MouseEvent) => {
+    this.uiContextMenuHandler = (e: MouseEvent) => {
+      // Skip the <video> element so the browser's native video context menu
+      // (Save video as, Picture-in-Picture, …) keeps working.
+      if ((e.target as HTMLElement).tagName === 'VIDEO') return;
       e.preventDefault();
       this.showAt(e.clientX, e.clientY);
-    });
+    };
+    uiContainerEl.addEventListener('contextmenu', this.uiContextMenuHandler);
 
-    const handleOutsideClick = (e: MouseEvent) => {
+    const dismissIfOutside = (e: MouseEvent) => {
       if (!this.isShown()) return;
       if (rootEl.contains(e.target as Node)) return;
       this.hide();
     };
-
-    document.addEventListener('mousedown', handleOutsideClick, true);
-    document.addEventListener('contextmenu', handleOutsideClick, true);
-    document.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && this.isShown()) {
-        this.hide();
-      }
-    });
+    this.documentMouseDownHandler = dismissIfOutside;
+    this.documentContextMenuHandler = dismissIfOutside;
+    this.documentKeyDownHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && this.isShown()) this.hide();
+    };
+    document.addEventListener('mousedown', this.documentMouseDownHandler, true);
+    document.addEventListener('contextmenu', this.documentContextMenuHandler, true);
+    document.addEventListener('keydown', this.documentKeyDownHandler);
 
     const debugOverlay = this.config.debugInfoOverlay;
     if (debugOverlay) {
+      const showLabel = i18n.getLocalizer('videoStats.show');
+      const hideLabel = i18n.getLocalizer('videoStats.hide');
       const updateLabel = () => {
-        this.toggleButtonElement.html(debugOverlay.isShown() ? 'Hide video stats' : 'Show video stats');
+        const localizer = debugOverlay.isShown() ? hideLabel : showLabel;
+        this.toggleButtonElement.html(i18n.performLocalization(localizer));
       };
       this.toggleButtonElement.on('click', (e: MouseEvent) => {
         e.stopPropagation();
@@ -135,13 +149,35 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     } else {
       this.toggleButtonElement.css('display', 'none');
     }
+
+    uimanager.onRelease.subscribe(() => this.release());
+  }
+
+  release(): void {
+    if (this.uiContainerElement && this.uiContextMenuHandler) {
+      this.uiContainerElement.removeEventListener('contextmenu', this.uiContextMenuHandler);
+    }
+    if (this.documentMouseDownHandler) {
+      document.removeEventListener('mousedown', this.documentMouseDownHandler, true);
+    }
+    if (this.documentContextMenuHandler) {
+      document.removeEventListener('contextmenu', this.documentContextMenuHandler, true);
+    }
+    if (this.documentKeyDownHandler) {
+      document.removeEventListener('keydown', this.documentKeyDownHandler);
+    }
+    this.uiContextMenuHandler = null;
+    this.documentMouseDownHandler = null;
+    this.documentContextMenuHandler = null;
+    this.documentKeyDownHandler = null;
+    this.uiContainerElement = null;
+    super.release();
   }
 
   private showAt(clientX: number, clientY: number): void {
     const el = this.getDomElement();
     const rootEl = el.get(0) as HTMLElement;
 
-    // Reparent to body so the menu can extend past any clipping ancestor
     if (rootEl.parentElement && rootEl.parentElement !== document.body) {
       document.body.appendChild(rootEl);
     }

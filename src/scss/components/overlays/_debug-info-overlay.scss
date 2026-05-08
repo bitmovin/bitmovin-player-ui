@@ -19,7 +19,7 @@
   overflow: hidden;
   position: absolute;
   top: 0.5em;
-  z-index: 2147483000;
+  z-index: 100;
 
   .#{$prefix}-ui-debug-info-overlay-header {
     align-items: center;
