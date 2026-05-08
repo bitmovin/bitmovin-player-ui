@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `DebugInfoOverlay`: a small "stats for nerds"-style overlay that shows live playback diagnostics (resolution, codec, bitrate, buffer levels, dropped frames, time / duration / speed, available qualities, network conditions, DRM systems, manifest URL, live latency, stream + player versions). Hidden by default; can be closed via its `×` button and dragged anywhere on the page (also outside the player). Wired into the default and small-screen layouts.
+- `DebugInfoOverlay`: a small "stats for nerds"-style overlay that shows live playback diagnostics (resolution, codec, bitrate, buffer levels, dropped frames, time / duration / speed, available qualities, DRM systems, manifest URL, live latency, stream + player versions). Hidden by default; can be closed via its `×` button and dragged anywhere on the page (also outside the player). Wired into the default and small-screen layouts.
 - `PlayerContextMenu`: a right-click context menu with Bitmovin info, Player + UI versions, "About Bitmovin" link, a toggle for the `DebugInfoOverlay`, and "Copy source" / "Copy player config" buttons that copy `player.getSource()` / `player.getConfig()` as JSON to the clipboard. Wired into the default and small-screen layouts. Right-clicking on the `<video>` element still opens the browser's native video context menu.
 - New localization keys: `videoStats.title`, `videoStats.show`, `videoStats.hide`, `contextMenu.title`, `contextMenu.subtitle`, `contextMenu.about`, `contextMenu.copySource`, `contextMenu.copyConfig`, `contextMenu.copied`.
 
