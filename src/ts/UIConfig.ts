@@ -187,6 +187,15 @@ export interface UIConfig {
    */
   enableFrameStepping?: boolean;
   /**
+   * If set to true, the UI parses a `t=<seconds>[s]` parameter from the page URL (either
+   * the query string or the URL fragment) and seeks to that time on the first
+   * `SourceLoaded` event. This is the consumer side of the "Copy link at current time"
+   * context-menu action. Has no effect on live streams.
+   *
+   * Default: true
+   */
+  enableTimestampDeepLink?: boolean;
+  /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    */
   ecoMode?: boolean;

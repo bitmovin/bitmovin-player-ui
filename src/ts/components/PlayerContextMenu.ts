@@ -246,6 +246,19 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
  * Plain string manipulation rather than the `URL` constructor for compatibility with
  * older smart-TV / set-top-box browsers.
  */
+/**
+ * Parses a `t=<seconds>[s]` parameter out of a URL (query string or fragment).
+ * Accepts plain numbers and the YouTube-style trailing-`s` form. Returns null when no
+ * valid value is present. Plain string parsing for compatibility with the oldest TV /
+ * STB / console browsers.
+ */
+export function parseTimestampFromUrl(href: string = window.location.href): number | null {
+  const m = href.match(/[?#&]t=([0-9]+(?:\.[0-9]+)?)s?(?:&|$|#)/);
+  if (!m) return null;
+  const value = parseFloat(m[1]);
+  return isFinite(value) && value >= 0 ? value : null;
+}
+
 export function buildTimestampLink(currentTime: number, href: string = window.location.href): string {
   const t = Math.max(0, Math.floor(currentTime || 0));
   const hashIndex = href.indexOf('#');

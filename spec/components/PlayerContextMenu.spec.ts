@@ -1,4 +1,4 @@
-import { buildTimestampLink } from '../../src/ts/components/PlayerContextMenu';
+import { buildTimestampLink, parseTimestampFromUrl } from '../../src/ts/components/PlayerContextMenu';
 
 describe('PlayerContextMenu', () => {
   describe('buildTimestampLink', () => {
@@ -33,6 +33,38 @@ describe('PlayerContextMenu', () => {
     it('floors fractional seconds and clamps negatives to zero', () => {
       expect(buildTimestampLink(12.7, 'https://example.com/watch')).toBe('https://example.com/watch?t=12s');
       expect(buildTimestampLink(-3, 'https://example.com/watch')).toBe('https://example.com/watch?t=0s');
+    });
+  });
+
+  describe('parseTimestampFromUrl', () => {
+    it('parses ?t=Ns', () => {
+      expect(parseTimestampFromUrl('https://example.com/watch?t=261s')).toBe(261);
+    });
+
+    it('parses ?t=N (no s suffix)', () => {
+      expect(parseTimestampFromUrl('https://example.com/watch?t=42')).toBe(42);
+    });
+
+    it('parses fractional seconds', () => {
+      expect(parseTimestampFromUrl('https://example.com/watch?t=12.5s')).toBe(12.5);
+    });
+
+    it('parses t when it is not the first query param', () => {
+      expect(parseTimestampFromUrl('https://example.com/watch?foo=bar&t=90s')).toBe(90);
+    });
+
+    it('parses t from the URL fragment', () => {
+      expect(parseTimestampFromUrl('https://example.com/watch#t=90s')).toBe(90);
+    });
+
+    it('returns null when there is no t parameter', () => {
+      expect(parseTimestampFromUrl('https://example.com/watch')).toBeNull();
+      expect(parseTimestampFromUrl('https://example.com/watch?foo=bar')).toBeNull();
+    });
+
+    it('returns null for malformed t values', () => {
+      expect(parseTimestampFromUrl('https://example.com/watch?t=abc')).toBeNull();
+      expect(parseTimestampFromUrl('https://example.com/watch?t=-5s')).toBeNull();
     });
   });
 });

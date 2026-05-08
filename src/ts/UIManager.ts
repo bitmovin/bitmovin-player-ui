@@ -17,6 +17,7 @@ import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
 import { UIPreferences } from './utils/UIPreferences';
+import { parseTimestampFromUrl } from './components/PlayerContextMenu';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
@@ -255,6 +256,27 @@ export class UIManager {
       const applyPrefs = () => UIPreferences.apply(this.player);
       this.player.on(this.player.exports.PlayerEvent.Ready, applyPrefs);
       applyPrefs();
+    }
+
+    if (uiconfig.enableTimestampDeepLink !== false) {
+      const seekFromUrl = (timestamp: number) => {
+        try {
+          this.player.seek(timestamp);
+        } catch {
+          // seek() can fail if the source isn't fully ready yet — best-effort.
+        }
+      };
+      let consumed = false;
+      const handler = () => {
+        if (consumed) return;
+        consumed = true;
+        if (this.player.isLive()) return;
+        const t = parseTimestampFromUrl();
+        if (t !== null && t > 0) seekFromUrl(t);
+      };
+      this.player.on(this.player.exports.PlayerEvent.SourceLoaded, handler);
+      // Source may already be loaded by the time the UI is built (e.g. variant switch).
+      if (this.player.getSource() != null) handler();
     }
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
