@@ -94,6 +94,8 @@ export { AdCounterLabel } from './components/ads/AdCounterLabel';
 export { PlaybackSpeedSelectBox } from './components/settings/PlaybackSpeedSelectBox';
 export { HugeReplayButton } from './components/buttons/HugeReplayButton';
 export { BufferingOverlay, BufferingOverlayConfig } from './components/overlays/BufferingOverlay';
+export { DebugInfoOverlay, DebugInfoOverlayConfig } from './components/overlays/DebugInfoOverlay';
+export { PlayerContextMenu, PlayerContextMenuConfig } from './components/PlayerContextMenu';
 export { CastUIContainer } from './components/CastUIContainer';
 export { PlaybackToggleOverlay, PlaybackToggleOverlayConfig } from './components/overlays/PlaybackToggleOverlay';
 export { CloseButton, CloseButtonConfig } from './components/buttons/CloseButton';

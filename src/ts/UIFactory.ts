@@ -26,6 +26,8 @@ import { SettingsToggleButton } from './components/settings/SettingsToggleButton
 import { FullscreenToggleButton } from './components/buttons/FullscreenToggleButton';
 import { UIContainer } from './components/UIContainer';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
+import { DebugInfoOverlay } from './components/overlays/DebugInfoOverlay';
+import { PlayerContextMenu } from './components/PlayerContextMenu';
 import { PlaybackToggleOverlay } from './components/overlays/PlaybackToggleOverlay';
 import { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
 import { TitleBar } from './components/TitleBar';
@@ -284,6 +286,9 @@ export namespace UIFactory {
 
       const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
+      const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
+      const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
+
       return new UIContainer({
         components: [
           subtitleOverlay,
@@ -294,6 +299,8 @@ export namespace UIFactory {
           new TitleBar(),
           new RecommendationOverlay(),
           ...conditionalComponents,
+          debugInfoOverlay,
+          playerContextMenu,
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
           new ErrorMessageOverlay(),
@@ -395,6 +402,9 @@ export namespace UIFactory {
         ],
       });
 
+      const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
+      const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
+
       return new UIContainer({
         components: [
           subtitleOverlay,
@@ -403,6 +413,8 @@ export namespace UIFactory {
           // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
           BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
           new RecommendationOverlay(),
+          debugInfoOverlay,
+          playerContextMenu,
           controlBar,
           new TitleBar({
             components: [
