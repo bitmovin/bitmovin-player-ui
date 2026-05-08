@@ -54,6 +54,20 @@
 @import 'small-screen';
 @import 'tv';
 
+// Honor the user's OS-level "reduce motion" preference. We collapse
+// transitions and animations to ~0 ms (rather than removing them) so
+// `transitionend` / `animationend` listeners that the UI depends on
+// still fire.
+@media (prefers-reduced-motion: reduce) {
+  .#{$prefix}-ui-uicontainer,
+  .#{$prefix}-ui-uicontainer * {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 // sass-lint:disable nesting-depth
 .#{$prefix}-ui-uicontainer {
   color: $color-primary;

@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - CEA-608 captions on players with a rendered height at or below 360 CSS pixels (configurable via `cea608SmallPlayerHeightThreshold`) now stay readable by using a centered 80% safe area and avoiding control-bar pushup that can crowd caption rows on small players
+- The settings toggle button now exposes valid ARIA semantics for assistive technologies: it relies on the implicit `<button>` role (the previous custom `role="pop-up button"` is not a valid ARIA role), advertises the popup via `aria-haspopup="menu"`, links the panel via `aria-controls`, and reflects open / closed state in `aria-expanded`
+- All UI animations and transitions are collapsed to ~1 ms when the user has set the OS-level `prefers-reduced-motion: reduce` preference (animation / transition end events still fire so dependent UI logic continues to work)
 
 ### Fixed
 

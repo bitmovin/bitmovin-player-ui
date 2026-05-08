@@ -46,20 +46,18 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
         text: i18n.getLocalizer('settings'),
         settingsPanel: null,
         autoHideWhenNoActiveSettings: true,
-        role: 'pop-up button',
       },
       <SettingsToggleButtonConfig>this.config,
     );
 
-    /**
-     * WCAG20 standard defines which popup menu (element id) is owned by the button
-     */
-    this.getDomElement().attr('aria-owns', config.settingsPanel.getActivePage().getConfig().id);
-
-    /**
-     * WCAG20 standard defines that a button has a popup menu bound to it
-     */
-    this.getDomElement().attr('aria-haspopup', 'true');
+    // The element is a native <button>; inherits role=button implicitly.
+    // aria-haspopup="menu" advertises that activation reveals a menu, and aria-controls /
+    // aria-owns points consumers (screen readers) at the controlled panel id.
+    const settingsPanelId = config.settingsPanel.getActivePage().getConfig().id;
+    this.getDomElement().attr('aria-haspopup', 'menu');
+    this.getDomElement().attr('aria-controls', settingsPanelId);
+    this.getDomElement().attr('aria-owns', settingsPanelId);
+    this.getDomElement().attr('aria-expanded', 'false');
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -81,10 +79,12 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     settingsPanel.onShow.subscribe(() => {
       // Set toggle status to on when the settings panel shows
       this.on();
+      this.getDomElement().attr('aria-expanded', 'true');
     });
     settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides
       this.off();
+      this.getDomElement().attr('aria-expanded', 'false');
     });
 
     // Ensure that only one `SettingPanel` is visible at once
