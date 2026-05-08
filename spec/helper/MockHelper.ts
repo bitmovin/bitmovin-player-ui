@@ -76,6 +76,7 @@ export namespace MockHelper {
     const mockedDomElement = {
       addClass: jest.fn(),
       removeClass: jest.fn(),
+      hasClass: jest.fn(),
       on: jest.fn(),
       off: jest.fn(),
       html: jest.fn(),
