@@ -160,6 +160,33 @@ export interface UIConfig {
    */
   disableStorageApi?: boolean;
   /**
+   * If set to true, the UI persists volume, mute state, and playback speed across sessions
+   * and reapplies them when a player using this UI is initialized. Has no effect when
+   * `disableStorageApi` is true or `localStorage` is unavailable.
+   *
+   * Default: true
+   */
+  enablePersistentPreferences?: boolean;
+  /**
+   * If set to true, the UI offers to resume playback from the last saved position via a
+   * small overlay shown when a known source is reloaded. Source identity is derived from
+   * `metadata.title` (preferred) or the manifest URL; sources with no stable identifier
+   * are not tracked. Has no effect when `disableStorageApi` is true or `localStorage` is
+   * unavailable.
+   *
+   * Default: true
+   */
+  enableResumeFromLastPosition?: boolean;
+  /**
+   * If set to true, keyboard frame-by-frame stepping is enabled. Pressing `,` steps one
+   * frame back, `.` steps one frame forward. Pauses playback first if needed.
+   * Frame duration is derived from the active video quality's frame rate, falling back
+   * to 30 fps when not exposed by the player.
+   *
+   * Default: true
+   */
+  enableFrameStepping?: boolean;
+  /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    */
   ecoMode?: boolean;

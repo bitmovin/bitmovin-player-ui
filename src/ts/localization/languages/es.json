@@ -89,5 +89,9 @@
   "contextMenu.about": "About Bitmovin →",
   "contextMenu.copySource": "Copy source",
   "contextMenu.copyConfig": "Copy player config",
-  "contextMenu.copied": "Copied!"
+  "contextMenu.copied": "Copied!",
+  "contextMenu.copyTimestampLink": "Copy link at current time",
+  "resume.prompt": "Resume at",
+  "resume.continue": "Resume",
+  "resume.startOver": "Start over"
 }

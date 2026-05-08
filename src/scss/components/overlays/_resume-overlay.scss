@@ -1,0 +1,52 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-resume-overlay {
+  @extend %ui-container;
+  @include hidden-animated($animation-duration-short);
+
+  background-color: rgba(20, 20, 20, 0.92);
+  border-radius: $border-radius;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  color: $color-primary;
+  font-family: $font-family;
+  font-size: $font-size-small;
+  font-weight: $font-weight-medium;
+  left: 50%;
+  padding: 0.75em 1em;
+  position: absolute;
+  top: 1em;
+  transform: translateX(-50%);
+  z-index: 50;
+
+  .#{$prefix}-ui-resume-overlay-label {
+    margin-bottom: 0.5em;
+    text-align: center;
+  }
+
+  .#{$prefix}-ui-resume-overlay-buttons {
+    display: flex;
+    gap: 0.5em;
+    justify-content: center;
+  }
+
+  .#{$prefix}-ui-resume-overlay-resume,
+  .#{$prefix}-ui-resume-overlay-start-over {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.3em;
+    color: $color-primary;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0.4em 0.8em;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .#{$prefix}-ui-resume-overlay-resume {
+    background-color: rgba(255, 255, 255, 0.18);
+  }
+}

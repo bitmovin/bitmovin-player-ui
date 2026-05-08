@@ -16,6 +16,7 @@ import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './u
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
+import { UIPreferences } from './utils/UIPreferences';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
@@ -247,6 +248,14 @@ export class UIManager {
       i18n.setConfig(this.config.localization);
     }
     this.subtitleSettingsManager.initialize();
+
+    if (uiconfig.enablePersistentPreferences !== false) {
+      UIPreferences.attach(this.player);
+      // Apply now if the player is already past `Ready`; otherwise wait.
+      const applyPrefs = () => UIPreferences.apply(this.player);
+      this.player.on(this.player.exports.PlayerEvent.Ready, applyPrefs);
+      applyPrefs();
+    }
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
     const updateSource = () => {

@@ -133,7 +133,11 @@ export interface Vocabulary {
   'contextMenu.about': string;
   'contextMenu.copySource': string;
   'contextMenu.copyConfig': string;
+  'contextMenu.copyTimestampLink': string;
   'contextMenu.copied': string;
+  'resume.prompt': string;
+  'resume.continue': string;
+  'resume.startOver': string;
 }
 
 /**

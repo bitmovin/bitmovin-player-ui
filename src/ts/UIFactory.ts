@@ -28,6 +28,8 @@ import { UIContainer } from './components/UIContainer';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { DebugInfoOverlay } from './components/overlays/DebugInfoOverlay';
 import { PlayerContextMenu } from './components/PlayerContextMenu';
+import { ResumeOverlay } from './components/overlays/ResumeOverlay';
+import { FrameStepHandler } from './components/FrameStepHandler';
 import { PlaybackToggleOverlay } from './components/overlays/PlaybackToggleOverlay';
 import { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
 import { TitleBar } from './components/TitleBar';
@@ -95,7 +97,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
@@ -151,7 +153,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -289,6 +291,9 @@ export namespace UIFactory {
       const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
       const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
 
+      const resumeComponents = config.enableResumeFromLastPosition !== false ? [new ResumeOverlay()] : [];
+      const frameStepComponents = config.enableFrameStepping !== false ? [new FrameStepHandler()] : [];
+
       return new UIContainer({
         components: [
           subtitleOverlay,
@@ -299,6 +304,8 @@ export namespace UIFactory {
           new TitleBar(),
           new RecommendationOverlay(),
           ...conditionalComponents,
+          ...resumeComponents,
+          ...frameStepComponents,
           debugInfoOverlay,
           playerContextMenu,
           new DismissClickOverlay({ target: settingsPanel }),
@@ -366,7 +373,7 @@ export namespace UIFactory {
       });
     }
 
-    export function smallScreen(): UIContainer {
+    export function smallScreen(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
@@ -404,6 +411,8 @@ export namespace UIFactory {
 
       const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
       const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
+      const resumeComponents = config.enableResumeFromLastPosition !== false ? [new ResumeOverlay()] : [];
+      const frameStepComponents = config.enableFrameStepping !== false ? [new FrameStepHandler()] : [];
 
       return new UIContainer({
         components: [
@@ -413,6 +422,8 @@ export namespace UIFactory {
           // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
           BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
           new RecommendationOverlay(),
+          ...resumeComponents,
+          ...frameStepComponents,
           debugInfoOverlay,
           playerContextMenu,
           controlBar,

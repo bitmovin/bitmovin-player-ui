@@ -30,6 +30,7 @@ export interface PlayerContextMenuConfig extends ContainerConfig {
 export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   private playerVersionElement: DOM;
   private toggleButtonElement: DOM;
+  private copyTimestampButtonElement: DOM;
   private copySourceButtonElement: DOM;
   private copyConfigButtonElement: DOM;
 
@@ -88,6 +89,11 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
       class: this.prefixCss('ui-player-context-menu-button'),
     }).html(i18n.performLocalization(i18n.getLocalizer('videoStats.show')));
 
+    this.copyTimestampButtonElement = new DOM('button', {
+      type: 'button',
+      class: this.prefixCss('ui-player-context-menu-button'),
+    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copyTimestampLink')));
+
     this.copySourceButtonElement = new DOM('button', {
       type: 'button',
       class: this.prefixCss('ui-player-context-menu-button'),
@@ -105,6 +111,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     element.append(link);
     element.append(separator);
     element.append(this.toggleButtonElement);
+    element.append(this.copyTimestampButtonElement);
     element.append(this.copySourceButtonElement);
     element.append(this.copyConfigButtonElement);
 
@@ -156,6 +163,14 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     };
     wireCopyButton(this.copySourceButtonElement, sourceLabel, () => player.getSource());
     wireCopyButton(this.copyConfigButtonElement, configLabel, () => player.getConfig());
+
+    const timestampLabel = i18n.getLocalizer('contextMenu.copyTimestampLink');
+    this.copyTimestampButtonElement.on('click', (e: MouseEvent) => {
+      e.stopPropagation();
+      copyToClipboard(buildTimestampLink(player.getCurrentTime()));
+      this.copyTimestampButtonElement.html(i18n.performLocalization(copiedLabel));
+      window.setTimeout(() => this.copyTimestampButtonElement.html(i18n.performLocalization(timestampLabel)), 1200);
+    });
 
     const debugOverlay = this.config.debugInfoOverlay;
     if (debugOverlay) {
@@ -223,6 +238,26 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
 
     this.show();
   }
+}
+
+/**
+ * Builds a deep-link to the current page with `?t=<seconds>s` appended (or replacing an
+ * existing `t=` value), preserving any other existing query params and the URL fragment.
+ * Plain string manipulation rather than the `URL` constructor for compatibility with
+ * older smart-TV / set-top-box browsers.
+ */
+export function buildTimestampLink(currentTime: number, href: string = window.location.href): string {
+  const t = Math.max(0, Math.floor(currentTime || 0));
+  const hashIndex = href.indexOf('#');
+  const fragment = hashIndex >= 0 ? href.substring(hashIndex) : '';
+  const beforeFragment = hashIndex >= 0 ? href.substring(0, hashIndex) : href;
+  const stripped = beforeFragment.replace(/([?&])t=[^&]*(&|$)/, (_, before: string, after: string) => {
+    if (before === '?' && after === '') return '';
+    if (before === '?' && after === '&') return '?';
+    return after === '&' ? before : '';
+  });
+  const sep = stripped.indexOf('?') === -1 ? '?' : '&';
+  return stripped + sep + 't=' + t + 's' + fragment;
 }
 
 function copyToClipboard(text: string): void {
