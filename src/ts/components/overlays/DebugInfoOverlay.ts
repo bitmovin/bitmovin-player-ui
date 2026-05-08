@@ -298,8 +298,6 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       lines.push(`Time: ${formatSeconds(currentTime)}${speedStr}`);
     }
     lines.push(`Available: ${videoQualities.length} video / ${audioTracks.length} audio`);
-    const network = formatNetwork();
-    if (network) lines.push(`Network: ${network}`);
     const drm = formatDrm(source);
     if (drm) lines.push(`DRM: ${drm}`);
     const manifest = pickManifestUrl(source);
@@ -347,17 +345,6 @@ export function truncateMiddle(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   const half = Math.floor((maxLength - 1) / 2);
   return `${text.slice(0, half)}…${text.slice(text.length - half)}`;
-}
-
-function formatNetwork(): string | null {
-  const conn = (navigator as unknown as { connection?: { effectiveType?: string; downlink?: number; rtt?: number } })
-    .connection;
-  if (!conn) return null;
-  const parts: string[] = [];
-  if (conn.effectiveType) parts.push(conn.effectiveType);
-  if (typeof conn.downlink === 'number') parts.push(`~${conn.downlink} Mbps`);
-  if (typeof conn.rtt === 'number') parts.push(`${conn.rtt}ms rtt`);
-  return parts.length > 0 ? parts.join(', ') : null;
 }
 
 function formatDrm(source: unknown): string | null {
