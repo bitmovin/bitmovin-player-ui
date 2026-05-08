@@ -318,6 +318,8 @@ export namespace UIFactory {
           new TitleBar(),
           new RecommendationOverlay(),
           ...conditionalComponents,
+          debugInfoOverlay,
+          playerContextMenu,
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
           new ErrorMessageOverlay(),
@@ -421,6 +423,9 @@ export namespace UIFactory {
         ],
       });
 
+      const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
+      const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
+
       return new UIContainer({
         components: [
           subtitleOverlay,
@@ -429,6 +434,8 @@ export namespace UIFactory {
           // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
           BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
           new RecommendationOverlay(),
+          debugInfoOverlay,
+          playerContextMenu,
           controlBar,
           new TitleBar({
             components: [
