@@ -135,6 +135,9 @@ export interface Vocabulary {
   'contextMenu.title': string;
   'contextMenu.subtitle': string;
   'contextMenu.about': string;
+  'contextMenu.copySource': string;
+  'contextMenu.copyConfig': string;
+  'contextMenu.copied': string;
 }
 
 /**
