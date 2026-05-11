@@ -141,19 +141,25 @@ describe('Localization', () => {
 
     Object.entries(defaultVocabularies)
       .filter(([lang]) => lang !== 'en')
-      .forEach(([lang]) => {
+      .forEach(([lang, vocab]) => {
         it(`${lang}: missing keys fall back to the English value (not the key literal)`, () => {
           // The i18n implementation merges English under every target vocabulary
           // (see I18n#initializeVocabulary), so untranslated keys yield the English
           // value rather than the raw key. We assert that behaviour rather than
           // enforce strict parity — letting non-English vocabularies omit keys that
           // haven't been translated yet without shipping English text masquerading
-          // as a translation.
-          i18n.setConfig({ language: lang, vocabularies: defaultVocabularies });
-          const enValue = defaultVocabularies['en']['settings'];
-          expect(i18n.performLocalization(i18n.getLocalizer('settings'))).toBe(
-            defaultVocabularies[lang]['settings'] ?? enValue,
+          // as a translation. We pick a key that genuinely doesn't exist in the target
+          // vocabulary (not one defined in every language) so this actually exercises
+          // the fallback path.
+          const missingKey = Object.keys(defaultVocabularies['en']).find(
+            k => !Object.prototype.hasOwnProperty.call(vocab, k),
           );
+          if (!missingKey) {
+            // All English keys are translated in this language — nothing to assert.
+            return;
+          }
+          i18n.setConfig({ language: lang, vocabularies: defaultVocabularies });
+          expect(i18n.performLocalization(i18n.getLocalizer(missingKey))).toBe(defaultVocabularies['en'][missingKey]);
         });
       });
   });

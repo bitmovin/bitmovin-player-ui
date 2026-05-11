@@ -29,6 +29,8 @@ export interface DebugInfoOverlayConfig extends ContainerConfig {
 export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
   private contentElement: DOM;
   private headerElement: DOM;
+  private titleElement: DOM;
+  private closeButtonElement: DOM;
   private refreshTimer: number | null = null;
   private detachedFromPlayer = false;
   private originalParent: HTMLElement | null = null;
@@ -54,29 +56,30 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
   protected toDomElement(): DOM {
     const element = super.toDomElement();
 
-    const title = new DOM('span', {
+    this.titleElement = new DOM('span', {
       class: this.prefixCss('ui-debug-info-overlay-title'),
-    }).html(i18n.performLocalization(i18n.getLocalizer('videoStats.title')));
+    });
 
-    const closeButton = new DOM('button', {
+    this.closeButtonElement = new DOM('button', {
       type: 'button',
       class: this.prefixCss('ui-debug-info-overlay-close'),
-      'aria-label': i18n.performLocalization(i18n.getLocalizer('videoStats.hide')),
     }).html('×');
 
     const stop = (e: Event) => e.stopPropagation();
-    closeButton.on('pointerdown', stop);
-    closeButton.on('mousedown', stop);
-    closeButton.on('click', (e: MouseEvent) => {
+    this.closeButtonElement.on('pointerdown', stop);
+    this.closeButtonElement.on('mousedown', stop);
+    this.closeButtonElement.on('click', (e: MouseEvent) => {
       e.stopPropagation();
       this.hide();
     });
 
+    this.refreshLocalizedText();
+
     this.headerElement = new DOM('div', {
       class: this.prefixCss('ui-debug-info-overlay-header'),
     });
-    this.headerElement.append(title);
-    this.headerElement.append(closeButton);
+    this.headerElement.append(this.titleElement);
+    this.headerElement.append(this.closeButtonElement);
 
     this.contentElement = new DOM('pre', {
       class: this.prefixCss('ui-debug-info-overlay-content'),
@@ -136,6 +139,16 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
     this.update();
   }
 
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+    this.refreshLocalizedText();
+  }
+
+  private refreshLocalizedText(): void {
+    this.titleElement?.html(i18n.performLocalization(i18n.getLocalizer('videoStats.title')));
+    this.closeButtonElement?.attr('aria-label', i18n.performLocalization(i18n.getLocalizer('videoStats.hide')));
+  }
+
   release(): void {
     this.stopTimer();
     if (this.onPointerMoveDocument) {
@@ -169,7 +182,6 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
     let dragOffsetY = 0;
     let pointerId: number | null = null;
     const draggingClass = this.prefixCss('ui-debug-info-overlay-dragging');
-    const draggableClass = this.prefixCss('ui-debug-info-overlay-draggable');
     const rootEl = rootElement.get(0) as HTMLElement;
 
     const onPointerMove = (e: PointerEvent) => {
@@ -205,11 +217,18 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       if (e.button !== 0) return;
       e.preventDefault();
 
-      // First drag detaches the overlay to <body> so it can move past any clipping ancestor.
+      // First drag detaches the overlay so it can move past any clipping ancestor. Prefer
+      // the native-fullscreen element (otherwise the overlay would vanish in fullscreen,
+      // since only that element's subtree is painted), falling back to <body>.
       if (!this.detachedFromPlayer) {
         const currentRect = rootEl.getBoundingClientRect();
-        if (rootEl.parentElement && rootEl.parentElement !== document.body) {
-          document.body.appendChild(rootEl);
+        const host =
+          (document as Document & { fullscreenElement?: Element; webkitFullscreenElement?: Element })
+            .fullscreenElement ||
+          (document as Document & { webkitFullscreenElement?: Element }).webkitFullscreenElement ||
+          document.body;
+        if (rootEl.parentElement && rootEl.parentElement !== host) {
+          host.appendChild(rootEl);
         }
         rootElement.css({
           position: 'fixed',
@@ -218,7 +237,6 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
           right: 'auto',
           bottom: 'auto',
         });
-        rootElement.addClass(draggableClass);
         this.detachedFromPlayer = true;
       }
 

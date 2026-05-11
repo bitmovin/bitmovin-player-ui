@@ -5,7 +5,9 @@ import { PlayerAPI } from 'bitmovin-player';
 import { DebugInfoOverlay, parseCodecColor } from './overlays/DebugInfoOverlay';
 import { i18n } from '../localization/i18n';
 
-const UI_VERSION: string = '{{VERSION}}';
+// Webpack's `string-replace-loader` substitutes {{VERSION}} with a JSON-stringified
+// value (i.e. surrounded by quotes), so peel the outer quotes back off for display.
+const UI_VERSION: string = '{{VERSION}}'.replace(/^"|"$/g, '');
 
 /**
  * Configuration interface for the {@link PlayerContextMenu}.
@@ -28,6 +30,9 @@ export interface PlayerContextMenuConfig extends ContainerConfig {
  * @category Components
  */
 export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
+  private headerElement: DOM;
+  private subtitleElement: DOM;
+  private aboutLinkElement: DOM;
   private playerVersionElement: DOM;
   private toggleButtonElement: DOM;
   private copyDebugInfoButtonElement: DOM;
@@ -50,6 +55,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
       {
         cssClass: 'ui-player-context-menu',
         hidden: true,
+        role: 'menu',
       } as PlayerContextMenuConfig,
       this.config,
     );
@@ -58,13 +64,13 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   protected toDomElement(): DOM {
     const element = super.toDomElement();
 
-    const header = new DOM('div', {
+    this.headerElement = new DOM('div', {
       class: this.prefixCss('ui-player-context-menu-header'),
-    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.title')));
+    });
 
-    const subtitle = new DOM('div', {
+    this.subtitleElement = new DOM('div', {
       class: this.prefixCss('ui-player-context-menu-subtitle'),
-    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.subtitle')));
+    });
 
     this.playerVersionElement = new DOM('div', {
       class: this.prefixCss('ui-player-context-menu-info'),
@@ -74,43 +80,37 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
       class: this.prefixCss('ui-player-context-menu-info'),
     }).html(`UI: ${UI_VERSION}`);
 
-    const link = new DOM('a', {
+    this.aboutLinkElement = new DOM('a', {
       class: this.prefixCss('ui-player-context-menu-link'),
       href: 'https://bitmovin.com',
       target: '_blank',
       rel: 'noopener noreferrer',
-    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.about')));
-    link.on('click', (e: MouseEvent) => e.stopPropagation());
+    });
+    this.aboutLinkElement.on('click', (e: MouseEvent) => e.stopPropagation());
 
     const separator = new DOM('div', {
       class: this.prefixCss('ui-player-context-menu-separator'),
     });
 
-    this.toggleButtonElement = new DOM('button', {
-      type: 'button',
-      class: this.prefixCss('ui-player-context-menu-button'),
-    }).html(i18n.performLocalization(i18n.getLocalizer('videoStats.show')));
+    const actionButton = () =>
+      new DOM('button', {
+        type: 'button',
+        class: this.prefixCss('ui-player-context-menu-button'),
+        role: 'menuitem',
+      });
 
-    this.copyDebugInfoButtonElement = new DOM('button', {
-      type: 'button',
-      class: this.prefixCss('ui-player-context-menu-button'),
-    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copyDebugInfo')));
+    this.toggleButtonElement = actionButton();
+    this.copyDebugInfoButtonElement = actionButton();
+    this.copySourceButtonElement = actionButton();
+    this.copyConfigButtonElement = actionButton();
 
-    this.copySourceButtonElement = new DOM('button', {
-      type: 'button',
-      class: this.prefixCss('ui-player-context-menu-button'),
-    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copySource')));
+    this.refreshLocalizedText();
 
-    this.copyConfigButtonElement = new DOM('button', {
-      type: 'button',
-      class: this.prefixCss('ui-player-context-menu-button'),
-    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copyConfig')));
-
-    element.append(header);
-    element.append(subtitle);
+    element.append(this.headerElement);
+    element.append(this.subtitleElement);
     element.append(this.playerVersionElement);
     element.append(uiVersionElement);
-    element.append(link);
+    element.append(this.aboutLinkElement);
     element.append(separator);
     element.append(this.toggleButtonElement);
     element.append(this.copyDebugInfoButtonElement);
@@ -118,6 +118,29 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     element.append(this.copyConfigButtonElement);
 
     return element;
+  }
+
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+    this.refreshLocalizedText();
+  }
+
+  private refreshLocalizedText(): void {
+    this.headerElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.title')));
+    this.subtitleElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.subtitle')));
+    this.aboutLinkElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.about')));
+    this.copyDebugInfoButtonElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copyDebugInfo')));
+    this.copySourceButtonElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copySource')));
+    this.copyConfigButtonElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copyConfig')));
+    // The toggle button label reflects the current `DebugInfoOverlay` state and is kept
+    // in sync by the `updateLabel` handler in `configure()`; nothing to do here.
+    const debugOverlay = this.config.debugInfoOverlay;
+    if (this.toggleButtonElement) {
+      const showLabel = i18n.getLocalizer('videoStats.show');
+      const hideLabel = i18n.getLocalizer('videoStats.hide');
+      const localizer = debugOverlay?.isShown() ? hideLabel : showLabel;
+      this.toggleButtonElement.html(i18n.performLocalization(localizer));
+    }
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -240,9 +263,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     const rootEl = this.getDomElement().get(0) as HTMLElement;
     // Pre-measure the menu so we can center it on the player rather than have its
     // top-left at the player center.
-    if (rootEl.parentElement && rootEl.parentElement !== document.body) {
-      document.body.appendChild(rootEl);
-    }
+    this.reparentToOverlayHost(rootEl);
     const x = rect.left + rect.width / 2 - rootEl.offsetWidth / 2;
     const y = rect.top + rect.height / 2 - rootEl.offsetHeight / 2;
     this.showAt(x, y);
@@ -252,9 +273,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     const el = this.getDomElement();
     const rootEl = el.get(0) as HTMLElement;
 
-    if (rootEl.parentElement && rootEl.parentElement !== document.body) {
-      document.body.appendChild(rootEl);
-    }
+    this.reparentToOverlayHost(rootEl);
 
     // The element is still laid out while hidden (visibility: hidden, not display: none),
     // so offsetWidth/Height return the real dimensions.
@@ -268,6 +287,22 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     });
 
     this.show();
+  }
+
+  /**
+   * Moves the menu into the topmost rendering context so it remains visible. Prefers the
+   * current native-fullscreen element (otherwise the menu would be invisible while the
+   * page is in fullscreen, since only the fullscreen element's subtree is painted),
+   * otherwise falls back to `<body>`.
+   */
+  private reparentToOverlayHost(rootEl: HTMLElement): void {
+    const host =
+      (document as Document & { fullscreenElement?: Element; webkitFullscreenElement?: Element }).fullscreenElement ||
+      (document as Document & { webkitFullscreenElement?: Element }).webkitFullscreenElement ||
+      document.body;
+    if (rootEl.parentElement !== host) {
+      host.appendChild(rootEl);
+    }
   }
 }
 
