@@ -125,6 +125,9 @@ export interface Vocabulary {
   'quickseek.rewind': string;
   ecoMode: string;
   'ecoMode.title': string;
+  'resume.prompt': string;
+  'resume.continue': string;
+  'resume.startOver': string;
 }
 
 /**

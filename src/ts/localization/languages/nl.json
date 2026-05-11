@@ -80,5 +80,8 @@
   "seekBar.timeshift": "Tijdverschuiving",
   "seekBar.durationText": "van",
   "quickseek.forward": "{seekSeconds} seconden vooruitspoelen",
-  "quickseek.rewind": "{seekSeconds} seconden terugspoelen"
+  "quickseek.rewind": "{seekSeconds} seconden terugspoelen",
+  "resume.prompt": "Resume at",
+  "resume.continue": "Resume",
+  "resume.startOver": "Start over"
 }

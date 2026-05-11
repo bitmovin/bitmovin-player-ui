@@ -80,5 +80,8 @@
   "quickseek.forward": "{seekSeconds} Sekunden Vor",
   "quickseek.rewind": "{seekSeconds} Sekunden Zurück",
   "ecoMode": "ecoMode",
-  "ecoMode.title": "Eco Mode"
+  "ecoMode.title": "Eco Mode",
+  "resume.prompt": "Resume at",
+  "resume.continue": "Resume",
+  "resume.startOver": "Start over"
 }

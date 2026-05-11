@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- `ResumeOverlay`: a small banner that offers to resume playback at the last saved position when a known source is reloaded. Hidden by default and only shown when a saved position exists. Source identity is derived from `metadata.title` (preferred) or the manifest URL; sources with no stable identifier are not tracked. Storage entries expire after 90 days and skip writes near the start (< 5 s) or end (within 30 s of duration). Configurable via `UIConfig.enableResumeFromLastPosition` (default `true`). All persistent storage routes through the existing `disableStorageApi` flag and degrades to a no-op when `localStorage` is unavailable (private browsing, restricted WebViews, RDK / set-top boxes).
+- New localization keys: `resume.prompt`, `resume.continue`, `resume.startOver`.
 - New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
 
 ### Changed
