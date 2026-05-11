@@ -133,6 +133,7 @@ export interface Vocabulary {
   'contextMenu.about': string;
   'contextMenu.copySource': string;
   'contextMenu.copyConfig': string;
+  'contextMenu.copyDebugInfo': string;
   'contextMenu.copied': string;
   'settings.playerInfo': string;
 }

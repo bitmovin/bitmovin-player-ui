@@ -59,9 +59,11 @@
 
   .#{$prefix}-ui-debug-info-overlay-content {
     color: #fff;
+    cursor: text;
     margin: 0;
     padding: 0.6em 0.8em;
     text-shadow: none;
+    user-select: text; // the surrounding UIContainer disables selection; opt back in here
     white-space: pre;
   }
 

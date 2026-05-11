@@ -81,3 +81,11 @@
     }
   }
 }
+
+// The settings-panel "Player info" row reuses the navigation-text-button class
+// for its right-aligned layout. That class underlines the label (because it
+// usually points to a sub-page); the row here is an action button, so suppress
+// the underline.
+.#{$prefix}-player-info-item .#{$prefix}-ui-settings-panel-navigation-text-button .#{$prefix}-label {
+  text-decoration: none;
+}

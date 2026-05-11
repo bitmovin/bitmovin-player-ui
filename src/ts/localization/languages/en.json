@@ -90,5 +90,6 @@
   "contextMenu.about": "About Bitmovin →",
   "contextMenu.copySource": "Copy source",
   "contextMenu.copyConfig": "Copy player config",
+  "contextMenu.copyDebugInfo": "Copy debug info",
   "contextMenu.copied": "Copied!"
 }

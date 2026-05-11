@@ -2,7 +2,7 @@ import { Container, ContainerConfig } from './Container';
 import { DOM } from '../DOM';
 import { UIInstanceManager } from '../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
-import { DebugInfoOverlay } from './overlays/DebugInfoOverlay';
+import { DebugInfoOverlay, parseCodecColor } from './overlays/DebugInfoOverlay';
 import { i18n } from '../localization/i18n';
 
 const UI_VERSION: string = '{{VERSION}}';
@@ -30,6 +30,7 @@ export interface PlayerContextMenuConfig extends ContainerConfig {
 export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   private playerVersionElement: DOM;
   private toggleButtonElement: DOM;
+  private copyDebugInfoButtonElement: DOM;
   private copySourceButtonElement: DOM;
   private copyConfigButtonElement: DOM;
 
@@ -90,6 +91,11 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
       class: this.prefixCss('ui-player-context-menu-button'),
     }).html(i18n.performLocalization(i18n.getLocalizer('videoStats.show')));
 
+    this.copyDebugInfoButtonElement = new DOM('button', {
+      type: 'button',
+      class: this.prefixCss('ui-player-context-menu-button'),
+    }).html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copyDebugInfo')));
+
     this.copySourceButtonElement = new DOM('button', {
       type: 'button',
       class: this.prefixCss('ui-player-context-menu-button'),
@@ -107,6 +113,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     element.append(link);
     element.append(separator);
     element.append(this.toggleButtonElement);
+    element.append(this.copyDebugInfoButtonElement);
     element.append(this.copySourceButtonElement);
     element.append(this.copyConfigButtonElement);
 
@@ -149,6 +156,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     const copiedLabel = i18n.getLocalizer('contextMenu.copied');
     const sourceLabel = i18n.getLocalizer('contextMenu.copySource');
     const configLabel = i18n.getLocalizer('contextMenu.copyConfig');
+    const debugInfoLabel = i18n.getLocalizer('contextMenu.copyDebugInfo');
     const wireCopyButton = (button: DOM, label: ReturnType<typeof i18n.getLocalizer>, getValue: () => unknown) => {
       button.on('click', (e: MouseEvent) => {
         e.stopPropagation();
@@ -157,6 +165,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
         window.setTimeout(() => button.html(i18n.performLocalization(label)), 1200);
       });
     };
+    wireCopyButton(this.copyDebugInfoButtonElement, debugInfoLabel, () => buildDebugInfo(player));
     wireCopyButton(this.copySourceButtonElement, sourceLabel, () => player.getSource());
     wireCopyButton(this.copyConfigButtonElement, configLabel, () => player.getConfig());
 
@@ -260,6 +269,86 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
 
     this.show();
   }
+}
+
+/**
+ * Builds a structured snapshot of the current playback state for the "Copy debug info"
+ * action. Captures everything a Bitmovin support engineer would normally have to ask the
+ * user to gather manually — player + UI version, source URL, current quality, buffer
+ * levels, dropped frames, parsed color space, current time, page URL, user agent.
+ */
+function buildDebugInfo(player: PlayerAPI): Record<string, unknown> {
+  const safe = <T>(fn: () => T): T | undefined => {
+    try {
+      return fn();
+    } catch {
+      return undefined;
+    }
+  };
+  const videoQuality = safe(() => player.getPlaybackVideoData());
+  const audioQuality = safe(() => player.getPlaybackAudioData());
+  const downloadedVideo = safe(() => player.getDownloadedVideoData());
+  const downloadedAudio = safe(() => player.getDownloadedAudioData());
+  const source = safe(() => player.getSource()) as
+    | {
+        dash?: string;
+        hls?: string;
+        smooth?: string;
+        progressive?: string | { url: string }[];
+        drm?: Record<string, unknown>;
+      }
+    | undefined;
+  const color = videoQuality?.codec ? parseCodecColor(videoQuality.codec) : null;
+  return {
+    timestamp: new Date().toISOString(),
+    pageUrl: window.location.href,
+    userAgent: navigator.userAgent,
+    player: {
+      version: player.version,
+      type: safe(() => player.getPlayerType()),
+      streamType: safe(() => player.getStreamType()),
+      isLive: safe(() => player.isLive()),
+    },
+    ui: { version: UI_VERSION },
+    source: source
+      ? {
+          dash: source.dash,
+          hls: source.hls,
+          smooth: source.smooth,
+          progressive: source.progressive,
+          drm: source.drm ? Object.keys(source.drm) : undefined,
+        }
+      : null,
+    playback: {
+      currentTime: safe(() => player.getCurrentTime()),
+      duration: safe(() => player.getDuration()),
+      timeShift: safe(() => player.getTimeShift()),
+      maxTimeShift: safe(() => player.getMaxTimeShift()),
+      speed: safe(() => player.getPlaybackSpeed()),
+      videoBuffer: safe(() => player.getVideoBufferLength()),
+      audioBuffer: safe(() => player.getAudioBufferLength()),
+      droppedFrames: safe(() => player.getDroppedVideoFrames()),
+    },
+    quality: videoQuality
+      ? {
+          id: videoQuality.id,
+          width: videoQuality.width,
+          height: videoQuality.height,
+          frameRate: (videoQuality as { frameRate?: number }).frameRate,
+          bitrate: videoQuality.bitrate,
+          codec: videoQuality.codec,
+          color,
+          downloadedBitrate: downloadedVideo?.bitrate,
+        }
+      : null,
+    audio: audioQuality
+      ? { bitrate: audioQuality.bitrate, codec: audioQuality.codec, downloadedBitrate: downloadedAudio?.bitrate }
+      : null,
+    counts: {
+      videoQualities: safe(() => player.getAvailableVideoQualities()?.length),
+      audioTracks: safe(() => player.getAvailableAudio()?.length),
+    },
+  };
 }
 
 export function copyToClipboard(text: string): void {
