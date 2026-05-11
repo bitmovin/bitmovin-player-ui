@@ -51,11 +51,35 @@ describe('SettingsToggleButton', () => {
 
       attrSpy.mockClear();
 
-      (panel['componentEvents'].onShow as { dispatch: (s: unknown) => void }).dispatch(panel);
-      expect(attrSpy).toHaveBeenCalledWith('aria-expanded', 'true');
-
-      (panel['componentEvents'].onHide as { dispatch: (s: unknown) => void }).dispatch(panel);
+      // Drive the show/hide events via the public Container API rather than reaching
+      // into the private `componentEvents` field. Component.hidden starts unset, so the
+      // first `hide()` flips it from falsy → true (firing onHide), and `show()` then
+      // flips it back to false (firing onShow).
+      panel.hide();
       expect(attrSpy).toHaveBeenCalledWith('aria-expanded', 'false');
+
+      panel.show();
+      expect(attrSpy).toHaveBeenCalledWith('aria-expanded', 'true');
+    });
+
+    it('refreshes aria-controls / aria-owns when the panel active page changes', () => {
+      const secondPage = new SettingsPanelPage({});
+      panel = new SettingsPanel({
+        components: [new SettingsPanelPage({}), secondPage],
+        hidden: true,
+      });
+      const button = new SettingsToggleButton({ settingsPanel: panel });
+      const playerMock = MockHelper.getPlayerMock();
+      const uiManagerMock = MockHelper.getUiInstanceManagerMock();
+      panel.configure(playerMock, uiManagerMock);
+      button.configure(playerMock, uiManagerMock);
+
+      attrSpy.mockClear();
+
+      panel.setActivePage(secondPage);
+      const newId = secondPage.getConfig().id;
+      expect(attrSpy).toHaveBeenCalledWith('aria-controls', newId);
+      expect(attrSpy).toHaveBeenCalledWith('aria-owns', newId);
     });
   });
 });

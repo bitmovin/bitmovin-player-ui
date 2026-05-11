@@ -62,8 +62,10 @@
   .#{$prefix}-ui-uicontainer,
   .#{$prefix}-ui-uicontainer * {
     animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
     scroll-behavior: auto !important;
   }
 }

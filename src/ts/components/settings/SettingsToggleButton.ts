@@ -39,25 +39,39 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       throw new Error('Required SettingsPanel is missing');
     }
 
+    // Setting both ariaLabels on the parent ToggleButton suppresses its default
+    // `aria-pressed` attribute (see the ToggleButtonConfig.ariaLabel doc) so we don't end
+    // up announcing both pressed/unpressed *and* expanded/collapsed for the same widget.
+    // Using the same localizer for both states keeps the announced name stable.
+    const settingsLabel = i18n.getLocalizer('settings');
     this.config = this.mergeConfig(
       config,
       {
         cssClass: 'ui-settingstogglebutton',
-        text: i18n.getLocalizer('settings'),
+        text: settingsLabel,
+        onAriaLabel: settingsLabel,
+        offAriaLabel: settingsLabel,
         settingsPanel: null,
         autoHideWhenNoActiveSettings: true,
       },
       <SettingsToggleButtonConfig>this.config,
     );
 
-    // The element is a native <button>; inherits role=button implicitly.
-    // aria-haspopup="menu" advertises that activation reveals a menu, and aria-controls /
-    // aria-owns points consumers (screen readers) at the controlled panel id.
-    const settingsPanelId = config.settingsPanel.getActivePage().getConfig().id;
+    // The element renders as a native `<button>` (with the explicit `role="button"`
+    // inherited from the Button base). aria-haspopup="menu" advertises that activation
+    // reveals a menu, and aria-controls / aria-owns point assistive tech at the panel id.
+    // Both are updated whenever the panel's active page changes (see `configure`).
     this.getDomElement().attr('aria-haspopup', 'menu');
+    this.updateAriaPanelIdRefs();
+    this.getDomElement().attr('aria-expanded', 'false');
+  }
+
+  private updateAriaPanelIdRefs(): void {
+    const settingsPanel = this.getConfig().settingsPanel;
+    if (!settingsPanel) return;
+    const settingsPanelId = settingsPanel.getActivePage().getConfig().id;
     this.getDomElement().attr('aria-controls', settingsPanelId);
     this.getDomElement().attr('aria-owns', settingsPanelId);
-    this.getDomElement().attr('aria-expanded', 'false');
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -86,6 +100,14 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       this.off();
       this.getDomElement().attr('aria-expanded', 'false');
     });
+
+    // Keep aria-controls / aria-owns pointing at the *currently* active page id —
+    // the user may navigate into sub-pages while the panel is open.
+    settingsPanel.onActivePageChanged.subscribe(() => this.updateAriaPanelIdRefs());
+
+    // Sync aria-expanded with the panel's current visibility in case the panel was
+    // already shown before `configure()` ran (`hidden: false`, manual `show()`, etc.).
+    this.getDomElement().attr('aria-expanded', settingsPanel.isShown() ? 'true' : 'false');
 
     // Ensure that only one `SettingPanel` is visible at once
     // Keep track of shown SettingsPanels
