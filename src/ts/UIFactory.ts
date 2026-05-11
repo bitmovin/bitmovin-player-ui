@@ -51,7 +51,7 @@ import { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelN
 import { EcoModeContainer } from './components/EcoModeContainer';
 import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsPanelItem';
 import { SettingsPanelItem } from './components/settings/SettingsPanelItem';
-import { Button, ButtonStyle } from './components/buttons/Button';
+import { Label, LabelConfig } from './components/labels/Label';
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
@@ -797,23 +797,33 @@ export namespace UIFactory {
     // `PlayerContextMenu` centered over the player. The desktop `main` layout omits this
     // row because right-click already works there.
     if (playerContextMenu) {
-      const playerInfoButton = new Button({
-        cssClass: 'ui-settings-panel-navigation-text-button',
-        buttonStyle: ButtonStyle.Text,
+      const playerInfoLabel = new Label<LabelConfig>({
         text: i18n.getLocalizer('settings.playerInfo'),
-        ariaLabel: i18n.getLocalizer('settings.playerInfo'),
       });
-      playerInfoButton.onClick.subscribe(() => {
+      const playerInfoItem = new SettingsPanelItem({
+        label: playerInfoLabel,
+        isSetting: false,
+        cssClasses: ['player-info-item'],
+        ariaLabel: i18n.getLocalizer('settings.playerInfo'),
+        role: 'menuitem',
+        tabIndex: 0,
+      });
+      // Make the whole row tappable rather than just the inner label. Mirrors the
+      // settings-panel-page-open-button behaviour but in a single hit area.
+      const openMenu = () => {
         settingsPanel.hide();
         playerContextMenu.showCentered();
+      };
+      const itemEl = playerInfoItem.getDomElement();
+      itemEl.css('cursor', 'pointer');
+      itemEl.on('click', openMenu);
+      itemEl.on('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openMenu();
+        }
       });
-      mainSettingsPanelPage.addComponent(
-        new SettingsPanelItem({
-          label: playerInfoButton,
-          isSetting: false,
-          cssClasses: ['player-info-item'],
-        }),
-      );
+      mainSettingsPanelPage.addComponent(playerInfoItem);
     }
 
     return settingsPanel;

@@ -82,10 +82,14 @@
   }
 }
 
-// The settings-panel "Player info" row reuses the navigation-text-button class
-// for its right-aligned layout. That class underlines the label (because it
-// usually points to a sub-page); the row here is an action button, so suppress
-// the underline.
-.#{$prefix}-player-info-item .#{$prefix}-ui-settings-panel-navigation-text-button .#{$prefix}-label {
-  text-decoration: none;
+// The whole "Player Info & Video Stats" row is clickable, so give it a hover /
+// focus affordance equivalent to the other settings items.
+.#{$prefix}-player-info-item {
+  cursor: pointer;
+
+  &:hover,
+  &:focus,
+  &.#{$prefix}-focus-visible {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
 }
