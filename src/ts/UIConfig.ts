@@ -160,6 +160,20 @@ export interface UIConfig {
    */
   disableStorageApi?: boolean;
   /**
+   * If set to true, omits the debug UI from the default UI layouts:
+   *  - the right-click {@link PlayerContextMenu} (Bitmovin info, "Copy source / config /
+   *    debug info / link at current time" actions, "Show / Hide video stats" toggle),
+   *  - the {@link DebugInfoOverlay} ("stats for nerds" overlay),
+   *  - the "Player Info & Video Stats" row that opens the context menu from the settings
+   *    panel on touch / mobile layouts.
+   *
+   * Use this in production deployments where the debug surface should not be exposed to
+   * end users. Defaults to `false` (debug UI is shown).
+   *
+   * Default: false
+   */
+  disableDebugUi?: boolean;
+  /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    */
   ecoMode?: boolean;

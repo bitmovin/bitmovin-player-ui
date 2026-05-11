@@ -97,7 +97,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
@@ -153,7 +153,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -250,7 +250,8 @@ export namespace UIFactory {
 
     export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
-      const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
+      const debugUiEnabled = !config.disableDebugUi;
+      const debugInfoOverlay = debugUiEnabled ? new DebugInfoOverlay({ hidden: true }) : null;
 
       // Desktop layout — right-click already exposes the context menu, so no settings entry.
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
@@ -290,7 +291,8 @@ export namespace UIFactory {
 
       const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
-      const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
+      const debugComponents =
+        debugUiEnabled && debugInfoOverlay ? [debugInfoOverlay, new PlayerContextMenu({ debugInfoOverlay })] : [];
 
       return new UIContainer({
         components: [
@@ -302,8 +304,7 @@ export namespace UIFactory {
           new TitleBar(),
           new RecommendationOverlay(),
           ...conditionalComponents,
-          debugInfoOverlay,
-          playerContextMenu,
+          ...debugComponents,
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
           new ErrorMessageOverlay(),
@@ -369,14 +370,15 @@ export namespace UIFactory {
       });
     }
 
-    export function smallScreen(): UIContainer {
+    export function smallScreen(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
-      const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
-      const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
+      const debugUiEnabled = !config.disableDebugUi;
+      const debugInfoOverlay = debugUiEnabled ? new DebugInfoOverlay({ hidden: true }) : null;
+      const playerContextMenu = debugUiEnabled && debugInfoOverlay ? new PlayerContextMenu({ debugInfoOverlay }) : null;
 
       // Touch / mobile / WebView — expose the context menu through a settings-panel row
-      // since there is no right-click.
-      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1, false, playerContextMenu);
+      // since there is no right-click. Omitted when the debug UI is disabled.
+      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1, false, playerContextMenu ?? undefined);
 
       const controlBar = new ControlBar({
         components: [
@@ -409,6 +411,9 @@ export namespace UIFactory {
         ],
       });
 
+      const debugComponents =
+        debugUiEnabled && debugInfoOverlay && playerContextMenu ? [debugInfoOverlay, playerContextMenu] : [];
+
       return new UIContainer({
         components: [
           subtitleOverlay,
@@ -417,8 +422,7 @@ export namespace UIFactory {
           // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
           BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
           new RecommendationOverlay(),
-          debugInfoOverlay,
-          playerContextMenu,
+          ...debugComponents,
           controlBar,
           new TitleBar({
             components: [
