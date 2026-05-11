@@ -38,6 +38,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   private documentContextMenuHandler: ((e: MouseEvent) => void) | null = null;
   private documentKeyDownHandler: ((e: KeyboardEvent) => void) | null = null;
   private uiContainerElement: HTMLElement | null = null;
+  private debugOverlayLabelHandler: (() => void) | null = null;
 
   constructor(config: PlayerContextMenuConfig = {}) {
     super(config);
@@ -165,6 +166,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
         const localizer = debugOverlay.isShown() ? hideLabel : showLabel;
         this.toggleButtonElement.html(i18n.performLocalization(localizer));
       };
+      this.debugOverlayLabelHandler = updateLabel;
       this.toggleButtonElement.on('click', (e: MouseEvent) => {
         e.stopPropagation();
         debugOverlay.toggleHidden();
@@ -177,8 +179,6 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     } else {
       this.toggleButtonElement.css('display', 'none');
     }
-
-    uimanager.onRelease.subscribe(() => this.release());
   }
 
   release(): void {
@@ -194,10 +194,22 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     if (this.documentKeyDownHandler) {
       document.removeEventListener('keydown', this.documentKeyDownHandler);
     }
+    const debugOverlay = this.config.debugInfoOverlay;
+    if (debugOverlay && this.debugOverlayLabelHandler) {
+      debugOverlay.onShow.unsubscribe(this.debugOverlayLabelHandler);
+      debugOverlay.onHide.unsubscribe(this.debugOverlayLabelHandler);
+    }
+    // If the menu was ever shown it lives on <body> now (not in the UI tree the
+    // UIManager owns), so the framework's tree teardown won't clean it up.
+    const rootEl = this.hasDomElement() ? (this.getDomElement().get(0) as HTMLElement) : null;
+    if (rootEl && rootEl.parentElement === document.body) {
+      document.body.removeChild(rootEl);
+    }
     this.uiContextMenuHandler = null;
     this.documentMouseDownHandler = null;
     this.documentContextMenuHandler = null;
     this.documentKeyDownHandler = null;
+    this.debugOverlayLabelHandler = null;
     this.uiContainerElement = null;
     super.release();
   }
@@ -226,10 +238,18 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
 }
 
 function copyToClipboard(text: string): void {
+  // The Clipboard API rejects in insecure contexts, when the document isn't focused, or
+  // when permission is denied. Catch the rejection and fall back to the textarea path so
+  // copy still works on http://, in iframes that lose focus, and on older WebKit / TV
+  // browsers that don't expose the API.
   if (navigator.clipboard?.writeText) {
-    void navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(text).catch(() => copyViaTextarea(text));
     return;
   }
+  copyViaTextarea(text);
+}
+
+function copyViaTextarea(text: string): void {
   const textarea = document.createElement('textarea');
   textarea.value = text;
   textarea.style.position = 'fixed';
