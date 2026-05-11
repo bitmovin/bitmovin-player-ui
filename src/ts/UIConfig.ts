@@ -160,6 +160,14 @@ export interface UIConfig {
    */
   disableStorageApi?: boolean;
   /**
+   * If set to true, the UI persists volume, mute state, and playback speed across sessions
+   * and reapplies them when a player using this UI is initialized. Has no effect when
+   * `disableStorageApi` is true or `localStorage` is unavailable.
+   *
+   * Default: true
+   */
+  enablePersistentPreferences?: boolean;
+  /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    */
   ecoMode?: boolean;
