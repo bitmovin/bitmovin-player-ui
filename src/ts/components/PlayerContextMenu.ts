@@ -383,6 +383,29 @@ function buildDebugInfo(player: PlayerAPI): Record<string, unknown> {
       videoQualities: safe(() => player.getAvailableVideoQualities()?.length),
       audioTracks: safe(() => player.getAvailableAudio()?.length),
     },
+    availableCodecs: {
+      video: safe(() =>
+        Array.from(
+          new Set(
+            player
+              .getAvailableVideoQualities()
+              .map(q => q.codec)
+              .filter(Boolean),
+          ),
+        ),
+      ),
+      audio: safe(() => {
+        const getAudioQualities = (
+          player as PlayerAPI & {
+            getAvailableAudioQualities?: () => Array<{ codec?: string }>;
+          }
+        ).getAvailableAudioQualities;
+        if (!getAudioQualities) return [];
+        const qualities: Array<{ codec?: string }> = getAudioQualities.call(player) ?? [];
+        const codecs = qualities.map(q => q.codec).filter((c): c is string => Boolean(c));
+        return Array.from(new Set(codecs));
+      }),
+    },
   };
 }
 

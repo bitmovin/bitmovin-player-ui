@@ -320,6 +320,14 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       lines.push(`Time: ${formatSeconds(currentTime)}${speedStr}`);
     }
     lines.push(`Available: ${videoQualities.length} video / ${audioTracks.length} audio`);
+    const videoCodecFamilies = collectCodecFamilies(videoQualities.map(q => q.codec));
+    if (videoCodecFamilies.length > 0) {
+      lines.push(`Video codecs: ${videoCodecFamilies.join(', ')}`);
+    }
+    const audioCodecFamilies = collectAudioCodecs(player);
+    if (audioCodecFamilies.length > 0) {
+      lines.push(`Audio codecs: ${audioCodecFamilies.join(', ')}`);
+    }
     const drm = formatDrm(source);
     if (drm) lines.push(`DRM: ${drm}`);
     const manifest = pickManifestUrl(source);
@@ -444,6 +452,44 @@ function namedColor(code: number): string {
       return 'arib-std-b67';
     default:
       return String(code);
+  }
+}
+
+/**
+ * Returns the distinct codec families across the supplied codec strings, preserving the
+ * order in which each family is first seen. The "family" is the prefix before the first
+ * `.` (e.g. `avc1`, `hevc`, `av01`, `vp09`, `mp4a`), which gives a compact, scannable
+ * summary instead of a long list of profile/level variants.
+ */
+export function collectCodecFamilies(codecs: (string | undefined)[]): string[] {
+  const families: string[] = [];
+  for (const c of codecs) {
+    if (!c) continue;
+    const family = c.split('.')[0] || c;
+    if (!families.includes(family)) families.push(family);
+  }
+  return families;
+}
+
+/**
+ * Gathers the codec strings of all available audio variants across all audio tracks. The
+ * Bitmovin API exposes audio qualities indirectly via the active audio track; iterating
+ * `getAvailableAudio()` and merging `getAvailableAudioQualities()` per track gives the
+ * full set the source advertises.
+ */
+function collectAudioCodecs(player: PlayerAPI): string[] {
+  const getQualities = (
+    player as PlayerAPI & {
+      getAvailableAudioQualities?: () => Array<{ codec?: string }>;
+    }
+  ).getAvailableAudioQualities;
+  if (!getQualities) return [];
+  try {
+    const qualities: Array<{ codec?: string }> = getQualities.call(player) ?? [];
+    return collectCodecFamilies(qualities.map(q => q.codec));
+  } catch {
+    // Some player versions throw before a source is loaded.
+    return [];
   }
 }
 

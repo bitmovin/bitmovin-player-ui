@@ -1,4 +1,9 @@
-import { formatBitrate, formatSeconds, truncateMiddle } from '../../../src/ts/components/overlays/DebugInfoOverlay';
+import {
+  collectCodecFamilies,
+  formatBitrate,
+  formatSeconds,
+  truncateMiddle,
+} from '../../../src/ts/components/overlays/DebugInfoOverlay';
 
 describe('DebugInfoOverlay helpers', () => {
   describe('formatBitrate', () => {
@@ -53,6 +58,28 @@ describe('DebugInfoOverlay helpers', () => {
       expect(result).toContain('…');
       expect(result.startsWith('https://')).toBe(true);
       expect(result.endsWith('.mpd')).toBe(true);
+    });
+  });
+
+  describe('collectCodecFamilies', () => {
+    it('returns the codec family (prefix before the first dot)', () => {
+      expect(collectCodecFamilies(['avc1.4d4028'])).toEqual(['avc1']);
+      expect(collectCodecFamilies(['av01.0.13M.08.0.111.09.16.09.0'])).toEqual(['av01']);
+    });
+
+    it('deduplicates while preserving first-seen order', () => {
+      expect(collectCodecFamilies(['avc1.4d4028', 'avc1.640028', 'hvc1.2.4.L153.B0', 'avc1.4d401f'])).toEqual([
+        'avc1',
+        'hvc1',
+      ]);
+    });
+
+    it('falls back to the full string when there is no dot', () => {
+      expect(collectCodecFamilies(['opus'])).toEqual(['opus']);
+    });
+
+    it('ignores undefined / empty entries', () => {
+      expect(collectCodecFamilies([undefined, 'avc1.42E01E', '', 'mp4a.40.2'])).toEqual(['avc1', 'mp4a']);
     });
   });
 });
