@@ -50,6 +50,8 @@ import { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
 import { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelNavigationGroup';
 import { EcoModeContainer } from './components/EcoModeContainer';
 import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsPanelItem';
+import { SettingsPanelItem } from './components/settings/SettingsPanelItem';
+import { Button, ButtonStyle } from './components/buttons/Button';
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
@@ -248,7 +250,9 @@ export namespace UIFactory {
 
     export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
+      const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
 
+      // Desktop layout — right-click already exposes the context menu, so no settings entry.
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
       const controlBar = new ControlBar({
         components: [
@@ -286,7 +290,6 @@ export namespace UIFactory {
 
       const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
-      const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
       const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
 
       return new UIContainer({
@@ -368,8 +371,12 @@ export namespace UIFactory {
 
     export function smallScreen(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
+      const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
+      const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
 
-      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
+      // Touch / mobile / WebView — expose the context menu through a settings-panel row
+      // since there is no right-click.
+      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1, false, playerContextMenu);
 
       const controlBar = new ControlBar({
         components: [
@@ -401,9 +408,6 @@ export namespace UIFactory {
           }),
         ],
       });
-
-      const debugInfoOverlay = new DebugInfoOverlay({ hidden: true });
-      const playerContextMenu = new PlayerContextMenu({ debugInfoOverlay });
 
       return new UIContainer({
         components: [
@@ -712,6 +716,7 @@ export namespace UIFactory {
     subtitleOverlay: SubtitleOverlay,
     hideDelay: number | undefined = undefined,
     enableEcoMode: boolean = false,
+    playerContextMenu?: PlayerContextMenu,
   ): SettingsPanel<SettingsPanelConfig> {
     const settingsPanelConfig: SettingsPanelConfig = {
       components: [],
@@ -786,6 +791,30 @@ export namespace UIFactory {
     });
     mainSettingsPanelPage.addComponent(subtitleSelectItem);
     settingsPanel.addComponent(subtitleSettingsPanelPage);
+
+    // On platforms without a native context menu (touch / TV / WebView / set-top boxes /
+    // game consoles), expose the same actions through a settings-panel row that opens the
+    // `PlayerContextMenu` centered over the player. The desktop `main` layout omits this
+    // row because right-click already works there.
+    if (playerContextMenu) {
+      const playerInfoButton = new Button({
+        cssClass: 'ui-settings-panel-navigation-text-button',
+        buttonStyle: ButtonStyle.Text,
+        text: i18n.getLocalizer('settings.playerInfo'),
+        ariaLabel: i18n.getLocalizer('settings.playerInfo'),
+      });
+      playerInfoButton.onClick.subscribe(() => {
+        settingsPanel.hide();
+        playerContextMenu.showCentered();
+      });
+      mainSettingsPanelPage.addComponent(
+        new SettingsPanelItem({
+          label: playerInfoButton,
+          isSetting: false,
+          cssClasses: ['player-info-item'],
+        }),
+      );
+    }
 
     return settingsPanel;
   }

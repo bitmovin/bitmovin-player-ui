@@ -134,6 +134,7 @@ export interface Vocabulary {
   'contextMenu.copySource': string;
   'contextMenu.copyConfig': string;
   'contextMenu.copied': string;
+  'settings.playerInfo': string;
 }
 
 /**

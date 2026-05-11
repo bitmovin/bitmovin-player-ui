@@ -38,6 +38,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   private documentContextMenuHandler: ((e: MouseEvent) => void) | null = null;
   private documentKeyDownHandler: ((e: KeyboardEvent) => void) | null = null;
   private uiContainerElement: HTMLElement | null = null;
+  private playerContainerElement: HTMLElement | null = null;
   private debugOverlayLabelHandler: (() => void) | null = null;
 
   constructor(config: PlayerContextMenuConfig = {}) {
@@ -119,6 +120,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
 
     const uiContainerEl = uimanager.getUI().getDomElement().get(0) as HTMLElement;
     this.uiContainerElement = uiContainerEl;
+    this.playerContainerElement = player.getContainer();
     const rootEl = this.getDomElement().get(0) as HTMLElement;
 
     this.uiContextMenuHandler = (e: MouseEvent) => {
@@ -211,7 +213,30 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     this.documentKeyDownHandler = null;
     this.debugOverlayLabelHandler = null;
     this.uiContainerElement = null;
+    this.playerContainerElement = null;
     super.release();
+  }
+
+  /**
+   * Opens the context menu centered over the player. Provided so platforms without a
+   * `contextmenu` event (touch devices, TV remotes, set-top boxes, game consoles) can
+   * reach the same actions via an alternative trigger (e.g. a settings-panel button).
+   */
+  public showCentered(): void {
+    // Use the player container (always laid out) rather than the UI container (which can
+    // be hidden by the auto-hide controls timer, returning a 0×0 rect when measured).
+    const anchor = this.playerContainerElement ?? this.uiContainerElement;
+    if (!anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    const rootEl = this.getDomElement().get(0) as HTMLElement;
+    // Pre-measure the menu so we can center it on the player rather than have its
+    // top-left at the player center.
+    if (rootEl.parentElement && rootEl.parentElement !== document.body) {
+      document.body.appendChild(rootEl);
+    }
+    const x = rect.left + rect.width / 2 - rootEl.offsetWidth / 2;
+    const y = rect.top + rect.height / 2 - rootEl.offsetHeight / 2;
+    this.showAt(x, y);
   }
 
   private showAt(clientX: number, clientY: number): void {
@@ -229,15 +254,15 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     const maxY = Math.max(0, window.innerHeight - offsetHeight - 4);
 
     el.css({
-      left: `${Math.min(clientX, maxX)}px`,
-      top: `${Math.min(clientY, maxY)}px`,
+      left: `${Math.max(0, Math.min(clientX, maxX))}px`,
+      top: `${Math.max(0, Math.min(clientY, maxY))}px`,
     });
 
     this.show();
   }
 }
 
-function copyToClipboard(text: string): void {
+export function copyToClipboard(text: string): void {
   // The Clipboard API rejects in insecure contexts, when the document isn't focused, or
   // when permission is denied. Catch the rejection and fall back to the textarea path so
   // copy still works on http://, in iframes that lose focus, and on older WebKit / TV
@@ -265,7 +290,7 @@ function copyViaTextarea(text: string): void {
 
 // Strip non-serializable values (DOM nodes, functions) so JSON.stringify doesn't throw on
 // player config objects that may hold element references.
-function jsonReplacer(_key: string, value: unknown): unknown {
+export function jsonReplacer(_key: string, value: unknown): unknown {
   if (typeof value === 'function') return undefined;
   if (value instanceof Node) return `[${(value as Node).nodeName}]`;
   return value;
