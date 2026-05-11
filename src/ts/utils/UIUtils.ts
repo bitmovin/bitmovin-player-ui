@@ -34,5 +34,7 @@ export namespace UIUtils {
     Space = 32,
     End = 35,
     Home = 36,
+    Comma = 188,
+    Period = 190,
   }
 }

@@ -81,7 +81,8 @@ export class SeekBarController {
 
   public setSeekBarControls(domElement: DOM, type: () => SeekBarType) {
     domElement.on('keydown', (e: KeyboardEvent) => {
-      const controls = this.seekBarControls(type());
+      const seekBarType = type();
+      const controls = this.seekBarControls(seekBarType);
       switch (e.keyCode) {
         case UIUtils.KeyCode.LeftArrow: {
           controls.left();
@@ -118,7 +119,38 @@ export class SeekBarController {
           e.preventDefault();
           break;
         }
+        case UIUtils.KeyCode.Comma: {
+          if (seekBarType === SeekBarType.Vod) {
+            this.stepFrame(-1);
+            e.preventDefault();
+          }
+          break;
+        }
+        case UIUtils.KeyCode.Period: {
+          if (seekBarType === SeekBarType.Vod) {
+            this.stepFrame(1);
+            e.preventDefault();
+          }
+          break;
+        }
       }
     });
+  }
+
+  /**
+   * Steps the playback position by one frame in the given direction (-1 = back, 1 = forward).
+   * Pauses the player first if necessary so the step lands on a stable frame. The frame
+   * duration is derived from the active video quality's `frameRate` and falls back to
+   * 30 fps when the player doesn't expose one (e.g. progressive sources).
+   */
+  protected stepFrame(direction: number): void {
+    if (!this.player.isPaused()) {
+      this.player.pause('ui');
+    }
+    const videoData = this.player.getPlaybackVideoData() as { frameRate?: number } | null | undefined;
+    const fps =
+      videoData && typeof videoData.frameRate === 'number' && videoData.frameRate > 0 ? videoData.frameRate : 30;
+    const target = Math.max(0, this.player.getCurrentTime() + direction * (1 / fps));
+    this.player.seek(target);
   }
 }

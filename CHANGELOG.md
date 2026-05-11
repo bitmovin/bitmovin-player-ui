@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Keyboard frame-by-frame stepping on the seekbar: when the seekbar is focused, `,` steps one frame back and `.` steps one frame forward (matching the YouTube convention). Playback is paused first if needed; frame duration is derived from the active video quality's `frameRate` with a 30 fps fallback. Live streams ignore the keys.
 - New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
 
 ### Changed
