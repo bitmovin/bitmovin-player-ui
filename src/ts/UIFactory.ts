@@ -297,9 +297,11 @@ export namespace UIFactory {
 
       const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
+      // DismissClickOverlay must come BEFORE its target so it subscribes to onShow/onHide
+      // before the target's initial hide event fires during initialize().
       const debugComponents =
         debugInfoOverlay && playerContextMenu
-          ? [debugInfoOverlay, playerContextMenu, new DismissClickOverlay({ target: playerContextMenu })]
+          ? [debugInfoOverlay, new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu]
           : [];
 
       return new UIContainer({
@@ -425,9 +427,11 @@ export namespace UIFactory {
         ],
       });
 
+      // DismissClickOverlay must come BEFORE its target so it subscribes to onShow/onHide
+      // before the target's initial hide event fires during initialize().
       const debugComponents =
         debugUiEnabled && debugInfoOverlay && playerContextMenu
-          ? [debugInfoOverlay, playerContextMenu, new DismissClickOverlay({ target: playerContextMenu })]
+          ? [debugInfoOverlay, new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu]
           : [];
 
       return new UIContainer({
