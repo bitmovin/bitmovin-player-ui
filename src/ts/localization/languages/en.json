@@ -87,7 +87,6 @@
   "videoStats.hide": "Hide video stats",
   "contextMenu.title": "Bitmovin Player",
   "contextMenu.subtitle": "Adaptive Streaming for the Web",
-  "contextMenu.about": "About Bitmovin →",
   "contextMenu.copySource": "Copy source",
   "contextMenu.copyConfig": "Copy player config",
   "contextMenu.copyDebugInfo": "Copy debug info",

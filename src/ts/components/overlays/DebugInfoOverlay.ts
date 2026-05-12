@@ -3,6 +3,7 @@ import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
+import { Timeout } from '../../utils/Timeout';
 
 /**
  * Configuration interface for the {@link DebugInfoOverlay}.
@@ -21,8 +22,7 @@ export interface DebugInfoOverlayConfig extends ContainerConfig {
  * A small "stats for nerds"-style overlay that displays live playback diagnostics
  * (resolution, codec, bitrate, buffer level, dropped frames, …) in the corner of the player.
  *
- * The overlay can be hidden via its close button and dragged anywhere on the page,
- * including outside the player bounds.
+ * Toggled from the {@link PlayerContextMenu}. Draggable by its header.
  *
  * @category Components
  */
@@ -30,10 +30,7 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
   private contentElement: DOM;
   private headerElement: DOM;
   private titleElement: DOM;
-  private closeButtonElement: DOM;
-  private refreshTimer: number | null = null;
-  private detachedFromPlayer = false;
-  private originalParent: HTMLElement | null = null;
+  private refreshTimer: Timeout | null = null;
   private update: () => void = () => undefined;
   private onUpdatedHandler: () => void = () => undefined;
   private uiManagerRef: UIInstanceManager | null = null;
@@ -60,26 +57,12 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       class: this.prefixCss('ui-debug-info-overlay-title'),
     });
 
-    this.closeButtonElement = new DOM('button', {
-      type: 'button',
-      class: this.prefixCss('ui-debug-info-overlay-close'),
-    }).html('×');
-
-    const stop = (e: Event) => e.stopPropagation();
-    this.closeButtonElement.on('pointerdown', stop);
-    this.closeButtonElement.on('mousedown', stop);
-    this.closeButtonElement.on('click', (e: MouseEvent) => {
-      e.stopPropagation();
-      this.hide();
-    });
-
     this.refreshLocalizedText();
 
     this.headerElement = new DOM('div', {
       class: this.prefixCss('ui-debug-info-overlay-header'),
     });
     this.headerElement.append(this.titleElement);
-    this.headerElement.append(this.closeButtonElement);
 
     this.contentElement = new DOM('pre', {
       class: this.prefixCss('ui-debug-info-overlay-content'),
@@ -96,15 +79,6 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    // Reparent the overlay to the player container so it stays visible when the
-    // surrounding UI auto-hides (which sets `display: none` on the UI container).
-    const playerContainer = player.getContainer();
-    const overlayEl = this.getDomElement().get(0) as HTMLElement;
-    this.originalParent = overlayEl.parentElement;
-    if (overlayEl.parentElement !== playerContainer) {
-      playerContainer.appendChild(overlayEl);
-    }
-
     this.update = () => this.updateContent(player);
     this.onUpdatedHandler = this.update;
     this.uiManagerRef = uimanager;
@@ -112,7 +86,7 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
     const startTimer = () => {
       this.stopTimer();
       if (!this.isShown()) return;
-      this.refreshTimer = window.setInterval(this.update, this.config.refreshIntervalMs);
+      this.refreshTimer = new Timeout(this.config.refreshIntervalMs, this.update, true).start();
     };
 
     player.on(player.exports.PlayerEvent.Play, startTimer);
@@ -146,7 +120,6 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
 
   private refreshLocalizedText(): void {
     this.titleElement?.html(i18n.performLocalization(i18n.getLocalizer('videoStats.title')));
-    this.closeButtonElement?.attr('aria-label', i18n.performLocalization(i18n.getLocalizer('videoStats.hide')));
   }
 
   release(): void {
@@ -162,17 +135,12 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       this.uiManagerRef.getConfig().events.onUpdated.unsubscribe(this.onUpdatedHandler);
       this.uiManagerRef = null;
     }
-    // Restore the overlay to the UI container so the next UI re-init owns the DOM node.
-    const overlayEl = this.getDomElement().get(0) as HTMLElement;
-    if (this.originalParent && overlayEl.parentElement !== this.originalParent) {
-      this.originalParent.appendChild(overlayEl);
-    }
     super.release();
   }
 
   private stopTimer(): void {
     if (this.refreshTimer !== null) {
-      window.clearInterval(this.refreshTimer);
+      this.refreshTimer.clear();
       this.refreshTimer = null;
     }
   }
@@ -217,29 +185,6 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       if (e.button !== 0) return;
       e.preventDefault();
 
-      // First drag detaches the overlay so it can move past any clipping ancestor. Prefer
-      // the native-fullscreen element (otherwise the overlay would vanish in fullscreen,
-      // since only that element's subtree is painted), falling back to <body>.
-      if (!this.detachedFromPlayer) {
-        const currentRect = rootEl.getBoundingClientRect();
-        const host =
-          (document as Document & { fullscreenElement?: Element; webkitFullscreenElement?: Element })
-            .fullscreenElement ||
-          (document as Document & { webkitFullscreenElement?: Element }).webkitFullscreenElement ||
-          document.body;
-        if (rootEl.parentElement && rootEl.parentElement !== host) {
-          host.appendChild(rootEl);
-        }
-        rootElement.css({
-          position: 'fixed',
-          left: `${currentRect.left}px`,
-          top: `${currentRect.top}px`,
-          right: 'auto',
-          bottom: 'auto',
-        });
-        this.detachedFromPlayer = true;
-      }
-
       const rect = rootEl.getBoundingClientRect();
       dragOffsetX = e.clientX - rect.left;
       dragOffsetY = e.clientY - rect.top;
@@ -261,24 +206,26 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
   private updateContent(player: PlayerAPI): void {
     const lines: string[] = [];
 
-    const videoQuality = player.getPlaybackVideoData();
-    const audioQuality = player.getPlaybackAudioData();
-    const downloadedVideo = player.getDownloadedVideoData();
-    const downloadedAudio = player.getDownloadedAudioData();
-    const dropped = player.getDroppedVideoFrames();
-    const videoBuffer = player.getVideoBufferLength();
-    const audioBuffer = player.getAudioBufferLength();
-    const streamType = player.getStreamType();
-    const playerType = player.getPlayerType();
+    // Some player calls throw on iOS native HLS or muxed HLS where the underlying API
+    // can't separate audio/video data. Skip lines we couldn't fetch rather than failing.
+    const videoQuality = safe(() => player.getPlaybackVideoData());
+    const audioQuality = safe(() => player.getPlaybackAudioData());
+    const downloadedVideo = safe(() => player.getDownloadedVideoData());
+    const downloadedAudio = safe(() => player.getDownloadedAudioData());
+    const dropped = safe(() => player.getDroppedVideoFrames());
+    const videoBuffer = safe(() => player.getVideoBufferLength());
+    const audioBuffer = safe(() => player.getAudioBufferLength());
+    const streamType = safe(() => player.getStreamType());
+    const playerType = safe(() => player.getPlayerType());
     const playerVersion = player.version;
-    const isLive = player.isLive();
-    const currentTime = player.getCurrentTime();
-    const duration = player.getDuration();
-    const speed = player.getPlaybackSpeed();
-    const timeShift = player.getTimeShift();
-    const videoQualities = player.getAvailableVideoQualities();
-    const audioTracks = player.getAvailableAudio();
-    const source = player.getSource();
+    const isLive = safe(() => player.isLive()) === true;
+    const currentTime = safe(() => player.getCurrentTime()) ?? 0;
+    const duration = safe(() => player.getDuration()) ?? NaN;
+    const speed = safe(() => player.getPlaybackSpeed()) ?? 1;
+    const timeShift = safe(() => player.getTimeShift()) ?? 0;
+    const videoQualities = safe(() => player.getAvailableVideoQualities()) ?? [];
+    const audioTracks = safe(() => player.getAvailableAudio()) ?? [];
+    const source = safe(() => player.getSource());
     const videoElement = player.getContainer().querySelector('video') as HTMLVideoElement | null;
 
     if (videoQuality) {
@@ -299,16 +246,15 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       lines.push(`  ↓ ${formatBitrate(downloadedAudio.bitrate)}`);
     }
     if (videoElement && videoElement.videoWidth > 0) {
-      const decoded = `${videoElement.videoWidth}×${videoElement.videoHeight}`;
-      const rendered = `${videoElement.clientWidth}×${videoElement.clientHeight}`;
-      lines.push(`Resolution: ${decoded} → ${rendered}`);
+      lines.push(`Decoded: ${videoElement.videoWidth}×${videoElement.videoHeight}`);
+      lines.push(`Rendered: ${videoElement.clientWidth}×${videoElement.clientHeight}`);
     }
-    if (videoQuality?.codec) {
-      const color = parseCodecColor(videoQuality.codec);
-      if (color) lines.push(`Color: ${color.primaries} / ${color.transfer}`);
+    if (typeof videoBuffer === 'number' && typeof audioBuffer === 'number') {
+      lines.push(`Buffer: v ${videoBuffer.toFixed(2)}s / a ${audioBuffer.toFixed(2)}s`);
     }
-    lines.push(`Buffer: v ${videoBuffer.toFixed(2)}s / a ${audioBuffer.toFixed(2)}s`);
-    lines.push(`Dropped frames: ${dropped}`);
+    if (typeof dropped === 'number' && dropped > 0) {
+      lines.push(`Dropped frames: ${dropped}`);
+    }
     const speedStr = speed !== 1 ? ` @ ${speed.toFixed(2)}×` : '';
     if (isLive) {
       lines.push(`Time: ${formatSeconds(currentTime)}${speedStr}`);
@@ -319,7 +265,9 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
     } else {
       lines.push(`Time: ${formatSeconds(currentTime)}${speedStr}`);
     }
-    lines.push(`Available: ${videoQualities.length} video / ${audioTracks.length} audio`);
+    if (videoQualities.length > 0 || audioTracks.length > 0) {
+      lines.push(`Available: ${videoQualities.length} video / ${audioTracks.length} audio`);
+    }
     const videoCodecFamilies = collectCodecFamilies(videoQualities.map(q => q.codec));
     if (videoCodecFamilies.length > 0) {
       lines.push(`Video codecs: ${videoCodecFamilies.join(', ')}`);
@@ -332,7 +280,9 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
     if (drm) lines.push(`DRM: ${drm}`);
     const manifest = pickManifestUrl(source);
     if (manifest) lines.push(`Manifest: ${truncateMiddle(manifest, 60)}`);
-    lines.push(`Stream: ${streamType} (${playerType})`);
+    if (streamType && playerType) {
+      lines.push(`Stream: ${streamType} (${playerType})`);
+    }
     lines.push(`Player: ${playerVersion}`);
 
     // Don't clobber a user's text selection inside the overlay. Reassigning innerHTML
@@ -340,12 +290,12 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
     // while the user is mid-copy.
     if (this.hasSelectionInside()) return;
 
-    const next = escapeHtml(lines.join('\n'));
+    const playerStatsHtml = escapeHtml(lines.join('\n'));
     // Only update when the rendered text actually changed — avoids unnecessary innerHTML
     // writes that would still nuke a selection that re-establishes on the next tick.
-    if (this.contentElement.html() === next) return;
+    if (this.contentElement.html() === playerStatsHtml) return;
 
-    this.contentElement.html(next);
+    this.contentElement.html(playerStatsHtml);
   }
 
   private hasSelectionInside(): boolean {
@@ -367,6 +317,16 @@ function sameQuality(a: QualityIdentity | undefined, b: QualityIdentity): boolea
   if (!a) return false;
   if (a.id && b.id) return a.id === b.id;
   return a.bitrate === b.bitrate;
+}
+
+// Wrap player calls that can throw on platforms with partial API support
+// (iOS native HLS, muxed HLS where audio data isn't separately retrievable).
+function safe<T>(fn: () => T): T | undefined {
+  try {
+    return fn();
+  } catch {
+    return undefined;
+  }
 }
 
 export function formatBitrate(bitrate: number | undefined): string {
@@ -394,65 +354,6 @@ export function truncateMiddle(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   const half = Math.floor((maxLength - 1) / 2);
   return `${text.slice(0, half)}…${text.slice(text.length - half)}`;
-}
-
-/**
- * Parses ITU-T H.273 color primaries / transfer characteristics out of an AV1 or VP9
- * codec string (e.g. `av01.0.13M.08.0.111.09.16.09.0` or `vp09.00.10.08.01.01.01.01.00`).
- * Returns `null` for codecs that don't encode color info (AVC, HEVC, MP4A, …).
- *
- * Common values:
- *  - 1: bt709
- *  - 5: bt470bg
- *  - 6: smpte170m
- *  - 9: bt2020
- *  - 16: smpte2084 (PQ, HDR10)
- *  - 18: arib-std-b67 (HLG)
- */
-export function parseCodecColor(codec: string): { primaries: string; transfer: string } | null {
-  if (!codec) return null;
-  // AV1 full ISOBMFF string: av01.<p>.<l><t>.<bd>.<m>.<sub>.<cp>.<tc>.<mc>.<vfr>
-  const av1 = /^av01\.\d+\.\d+[A-Z]\.\d+\.\d+\.\d+\.(\d+)\.(\d+)\./.exec(codec);
-  if (av1) return { primaries: namedColor(parseInt(av1[1], 10)), transfer: namedColor(parseInt(av1[2], 10)) };
-  // VP9 full string: vp09.<p>.<l>.<bd>.<sub>.<cp>.<tc>.<mc>.<vfr>
-  const vp9 = /^vp09\.\d+\.\d+\.\d+\.\d+\.(\d+)\.(\d+)\./.exec(codec);
-  if (vp9) return { primaries: namedColor(parseInt(vp9[1], 10)), transfer: namedColor(parseInt(vp9[2], 10)) };
-  return null;
-}
-
-function namedColor(code: number): string {
-  switch (code) {
-    case 1:
-      return 'bt709';
-    case 4:
-      return 'bt470m';
-    case 5:
-      return 'bt470bg';
-    case 6:
-      return 'smpte170m';
-    case 7:
-      return 'smpte240m';
-    case 8:
-      return 'linear';
-    case 9:
-      return 'bt2020';
-    case 10:
-      return 'bt2020c';
-    case 11:
-      return 'smpte428';
-    case 12:
-      return 'smpte431';
-    case 13:
-      return 'smpte432';
-    case 14:
-      return 'bt2100';
-    case 16:
-      return 'smpte2084';
-    case 18:
-      return 'arib-std-b67';
-    default:
-      return String(code);
-  }
 }
 
 /**

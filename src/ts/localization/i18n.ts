@@ -130,7 +130,6 @@ export interface Vocabulary {
   'videoStats.hide': string;
   'contextMenu.title': string;
   'contextMenu.subtitle': string;
-  'contextMenu.about': string;
   'contextMenu.copySource': string;
   'contextMenu.copyConfig': string;
   'contextMenu.copyDebugInfo': string;

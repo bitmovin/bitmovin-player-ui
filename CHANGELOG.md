@@ -9,34 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `DebugInfoOverlay`: a small "stats for nerds"-style overlay that shows live playback diagnostics. Hidden by default; opens via the new context menu. Lines rendered (when the source exposes them):
-  - Playback / downloaded video and audio bitrate + codec (e.g. `Video: 1920×818@24 6.21 Mbps (avc1.4d4028)` with a `↓` line for the downloaded variant when ABR has switched)
-  - Decoded resolution → rendered element size (catches up/down-scaling)
-  - Color primaries / transfer characteristics parsed from AV1 / VP9 codec strings per ITU-T H.273 (omitted on AVC / HEVC, which don't encode color)
-  - Video and audio buffer length in seconds
-  - Dropped frames
-  - Current time, duration, playback speed
-  - Live latency (`X.XXs behind edge`) on live sources
-  - Available quality counts and codec families (e.g. `Video codecs: avc1, hevc, av01`)
-  - DRM systems, manifest URL (truncated), stream type + player type, player version
-  - Refreshes every 1 s while playing plus on quality / seek / source events; the timer pauses while the overlay is hidden.
-  - Survives the controls auto-hide (reparented to the player container, not the UI container, so it stays visible when the rest of the UI fades out).
-  - Text is selectable and selections survive refresh ticks (writes are skipped while a selection is active inside the overlay).
-  - Draggable by its header anywhere on the page including outside the player bounds. Reparenting prefers `document.fullscreenElement` over `<body>` so the overlay remains visible in native fullscreen.
-- `PlayerContextMenu`: a right-click context menu shown over the player with:
-  - Bitmovin Player heading + subtitle, Player and UI versions, "About Bitmovin" link.
-  - "Show / Hide video stats" toggle (label flips with the overlay state).
-  - "Copy source" — current `player.getSource()` as JSON.
-  - "Copy player config" — current `player.getConfig()` as JSON.
-  - "Copy debug info" — a single JSON snapshot (timestamp, page URL, user agent, player + UI version, source URLs + DRM systems, full playback state, current quality with parsed color, audio, available codecs, track / quality counts) for sharing in support tickets.
-  - Clipboard writes use `navigator.clipboard.writeText` with a textarea + `execCommand('copy')` fallback for insecure-context / unfocused-document cases.
-  - `role="menu"` on the container, `role="menuitem"` on each action button.
-  - Reparented into `document.fullscreenElement` when present, otherwise `<body>`, so the menu stays visible in native fullscreen.
-  - Right-clicking on the `<video>` element itself is skipped so the browser's native video context menu (Save video as, Picture-in-Picture, …) keeps working.
-  - Localized strings refresh when the UI language changes.
-- "Player Info & Video Stats" settings-panel row added to the small-screen layout (touch / mobile / WebView) — opens the same context menu centered over the player, since right-click isn't reachable without a mouse. Full-width tappable row with hover / focus styling, `role="menuitem"`, `tabindex=0`, and keyboard `Enter` / `Space` activation.
-- `UIConfig.disableDebugUi`: opt-out flag that removes the entire debug surface (right-click `PlayerContextMenu`, `DebugInfoOverlay`, and the "Player Info & Video Stats" settings-panel row) from the default and small-screen layouts. Use this in production deployments where the debug surface should not be exposed to end users. Default `false`.
-- New localization keys (added to `en.json`; non-English vocabularies fall back to English via the existing `I18n#initializeVocabulary` merge): `videoStats.title`, `videoStats.show`, `videoStats.hide`, `contextMenu.title`, `contextMenu.subtitle`, `contextMenu.about`, `contextMenu.copySource`, `contextMenu.copyConfig`, `contextMenu.copyDebugInfo`, `contextMenu.copied`, `settings.playerInfo`.
+- `DebugInfoOverlay`: a "stats for nerds"-style overlay that shows live playback diagnostics (resolution, bitrate, codec, buffer levels, dropped frames, available qualities, DRM, manifest URL, stream type, …). Hidden by default; opens via the new context menu.
+- `PlayerContextMenu`: a right-click context menu shown over the player. Exposes Player + UI versions and actions to toggle the debug overlay, copy the current source, copy the player config, and copy a JSON debug snapshot for sharing in support tickets.
+- A settings-panel row that opens the context menu centered over the player, surfaced on touch devices where right-click isn't reachable.
+- `UIConfig.disableDebugUi`: opt-out flag that removes the entire debug surface from the default and small-screen layouts.
 - New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied.
 
 ### Changed

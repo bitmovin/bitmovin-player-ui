@@ -3,12 +3,12 @@
 
 .#{$prefix}-ui-debug-info-overlay {
   @extend %ui-container;
-  @include hidden-animated;
+  @include hidden;
 
-  background-color: #000;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  background-color: transparentize($color-background-menu, 0.15);
   border-radius: $border-radius;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 3px 0 transparentize(#000, 0.75);
   color: #fff;
   font-family: monospace;
   font-size: $font-size-small;
@@ -23,12 +23,13 @@
 
   .#{$prefix}-ui-debug-info-overlay-header {
     align-items: center;
-    background-color: #1a1a1a;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     cursor: grab;
     display: flex;
     justify-content: space-between;
     padding: 0.3em 0.5em;
+    // Prevent iOS Safari from claiming horizontal drags as a swipe-back gesture.
+    touch-action: none;
     user-select: none;
   }
 
@@ -38,23 +39,6 @@
     font-weight: $font-weight-semi-bold;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-  }
-
-  .#{$prefix}-ui-debug-info-overlay-close {
-    background: transparent;
-    border: 0;
-    color: #fff;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 1.4em;
-    line-height: 1;
-    margin-left: 0.5em;
-    padding: 0 0.4em;
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.15);
-      border-radius: 0.2em;
-    }
   }
 
   .#{$prefix}-ui-debug-info-overlay-content {

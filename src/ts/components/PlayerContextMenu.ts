@@ -2,12 +2,16 @@ import { Container, ContainerConfig } from './Container';
 import { DOM } from '../DOM';
 import { UIInstanceManager } from '../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
-import { DebugInfoOverlay, parseCodecColor } from './overlays/DebugInfoOverlay';
+import { DebugInfoOverlay } from './overlays/DebugInfoOverlay';
 import { i18n } from '../localization/i18n';
+import { version as UI_VERSION_RAW } from '../main';
+import { SettingsPanelItem, SettingsPanelItemConfig } from './settings/SettingsPanelItem';
+import { SettingsPanel, SettingsPanelConfig } from './settings/SettingsPanel';
+import { Label, LabelConfig } from './labels/Label';
 
-// Webpack's `string-replace-loader` substitutes {{VERSION}} with a JSON-stringified
-// value (i.e. surrounded by quotes), so peel the outer quotes back off for display.
-const UI_VERSION: string = '{{VERSION}}'.replace(/^"|"$/g, '');
+// `version` in `main.ts` carries the JSON-stringified package version (i.e. surrounded
+// by quotes from the build-time replacement). Peel them off for display.
+const UI_VERSION: string = UI_VERSION_RAW.replace(/^"|"$/g, '');
 
 /**
  * Configuration interface for the {@link PlayerContextMenu}.
@@ -32,7 +36,6 @@ export interface PlayerContextMenuConfig extends ContainerConfig {
 export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   private headerElement: DOM;
   private subtitleElement: DOM;
-  private aboutLinkElement: DOM;
   private playerVersionElement: DOM;
   private toggleButtonElement: DOM;
   private copyDebugInfoButtonElement: DOM;
@@ -43,6 +46,7 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   private documentMouseDownHandler: ((e: MouseEvent) => void) | null = null;
   private documentContextMenuHandler: ((e: MouseEvent) => void) | null = null;
   private documentKeyDownHandler: ((e: KeyboardEvent) => void) | null = null;
+  private windowScrollHandler: (() => void) | null = null;
   private uiContainerElement: HTMLElement | null = null;
   private playerContainerElement: HTMLElement | null = null;
   private debugOverlayLabelHandler: (() => void) | null = null;
@@ -80,14 +84,6 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
       class: this.prefixCss('ui-player-context-menu-info'),
     }).html(`UI: ${UI_VERSION}`);
 
-    this.aboutLinkElement = new DOM('a', {
-      class: this.prefixCss('ui-player-context-menu-link'),
-      href: 'https://bitmovin.com',
-      target: '_blank',
-      rel: 'noopener noreferrer',
-    });
-    this.aboutLinkElement.on('click', (e: MouseEvent) => e.stopPropagation());
-
     const separator = new DOM('div', {
       class: this.prefixCss('ui-player-context-menu-separator'),
     });
@@ -110,7 +106,6 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     element.append(this.subtitleElement);
     element.append(this.playerVersionElement);
     element.append(uiVersionElement);
-    element.append(this.aboutLinkElement);
     element.append(separator);
     element.append(this.toggleButtonElement);
     element.append(this.copyDebugInfoButtonElement);
@@ -128,7 +123,6 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
   private refreshLocalizedText(): void {
     this.headerElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.title')));
     this.subtitleElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.subtitle')));
-    this.aboutLinkElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.about')));
     this.copyDebugInfoButtonElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copyDebugInfo')));
     this.copySourceButtonElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copySource')));
     this.copyConfigButtonElement?.html(i18n.performLocalization(i18n.getLocalizer('contextMenu.copyConfig')));
@@ -172,9 +166,15 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     this.documentKeyDownHandler = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && this.isShown()) this.hide();
     };
+    // Hide on scroll — `position: fixed` keeps the menu glued to the viewport while the
+    // page scrolls underneath it, which looks broken. Matches native context menu behavior.
+    this.windowScrollHandler = () => {
+      if (this.isShown()) this.hide();
+    };
     document.addEventListener('mousedown', this.documentMouseDownHandler, true);
     document.addEventListener('contextmenu', this.documentContextMenuHandler, true);
     document.addEventListener('keydown', this.documentKeyDownHandler);
+    window.addEventListener('scroll', this.windowScrollHandler, true);
 
     const copiedLabel = i18n.getLocalizer('contextMenu.copied');
     const sourceLabel = i18n.getLocalizer('contextMenu.copySource');
@@ -228,6 +228,9 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     if (this.documentKeyDownHandler) {
       document.removeEventListener('keydown', this.documentKeyDownHandler);
     }
+    if (this.windowScrollHandler) {
+      window.removeEventListener('scroll', this.windowScrollHandler, true);
+    }
     const debugOverlay = this.config.debugInfoOverlay;
     if (debugOverlay && this.debugOverlayLabelHandler) {
       debugOverlay.onShow.unsubscribe(this.debugOverlayLabelHandler);
@@ -243,10 +246,46 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     this.documentMouseDownHandler = null;
     this.documentContextMenuHandler = null;
     this.documentKeyDownHandler = null;
+    this.windowScrollHandler = null;
     this.debugOverlayLabelHandler = null;
     this.uiContainerElement = null;
     this.playerContainerElement = null;
     super.release();
+  }
+
+  /**
+   * Returns a `SettingsPanelItem` that opens this context menu centered over the player.
+   * Use this on layouts where right-click isn't available (touch / TV remote / set-top
+   * box / game console) so the same actions can be reached via the settings panel.
+   *
+   * The item closes `parentSettingsPanel` before showing the menu.
+   */
+  public createSettingsPanelOpenerItem(
+    parentSettingsPanel: SettingsPanel<SettingsPanelConfig>,
+  ): SettingsPanelItem<SettingsPanelItemConfig> {
+    const label = new Label<LabelConfig>({ text: i18n.getLocalizer('settings.playerInfo') });
+    const item = new SettingsPanelItem({
+      label,
+      isSetting: false,
+      cssClasses: ['player-info-item'],
+      ariaLabel: i18n.getLocalizer('settings.playerInfo'),
+      role: 'menuitem',
+      tabIndex: 0,
+    });
+    const openMenu = () => {
+      parentSettingsPanel.hide();
+      this.showCentered();
+    };
+    const itemEl = item.getDomElement();
+    itemEl.css('cursor', 'pointer');
+    itemEl.on('click', openMenu);
+    itemEl.on('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openMenu();
+      }
+    });
+    return item;
   }
 
   /**
@@ -333,7 +372,6 @@ function buildDebugInfo(player: PlayerAPI): Record<string, unknown> {
         drm?: Record<string, unknown>;
       }
     | undefined;
-  const color = videoQuality?.codec ? parseCodecColor(videoQuality.codec) : null;
   return {
     timestamp: new Date().toISOString(),
     pageUrl: window.location.href,
@@ -372,7 +410,6 @@ function buildDebugInfo(player: PlayerAPI): Record<string, unknown> {
           frameRate: (videoQuality as { frameRate?: number }).frameRate,
           bitrate: videoQuality.bitrate,
           codec: videoQuality.codec,
-          color,
           downloadedBitrate: downloadedVideo?.bitrate,
         }
       : null,

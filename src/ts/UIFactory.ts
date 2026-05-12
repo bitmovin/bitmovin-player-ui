@@ -50,8 +50,6 @@ import { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
 import { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelNavigationGroup';
 import { EcoModeContainer } from './components/EcoModeContainer';
 import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsPanelItem';
-import { SettingsPanelItem } from './components/settings/SettingsPanelItem';
-import { Label, LabelConfig } from './components/labels/Label';
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
@@ -252,9 +250,17 @@ export namespace UIFactory {
       const subtitleOverlay = new SubtitleOverlay();
       const debugUiEnabled = !config.disableDebugUi;
       const debugInfoOverlay = debugUiEnabled ? new DebugInfoOverlay({ hidden: true }) : null;
+      const playerContextMenu = debugUiEnabled && debugInfoOverlay ? new PlayerContextMenu({ debugInfoOverlay }) : null;
 
-      // Desktop layout — right-click already exposes the context menu, so no settings entry.
-      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
+      // Surface the context-menu opener through the settings panel on touch devices where
+      // right-click isn't reachable. The layout choice (main vs smallScreen) doesn't tell
+      // us this — a touch device with a wide player still uses `main`.
+      const settingsPanel = buildDefaultSettingsPanel(
+        subtitleOverlay,
+        undefined,
+        config.ecoMode === true,
+        BrowserUtils.isMobile ? (playerContextMenu ?? undefined) : undefined,
+      );
       const controlBar = new ControlBar({
         components: [
           new Container({
@@ -291,8 +297,7 @@ export namespace UIFactory {
 
       const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
-      const debugComponents =
-        debugUiEnabled && debugInfoOverlay ? [debugInfoOverlay, new PlayerContextMenu({ debugInfoOverlay })] : [];
+      const debugComponents = debugInfoOverlay && playerContextMenu ? [debugInfoOverlay, playerContextMenu] : [];
 
       return new UIContainer({
         components: [
@@ -376,9 +381,15 @@ export namespace UIFactory {
       const debugInfoOverlay = debugUiEnabled ? new DebugInfoOverlay({ hidden: true }) : null;
       const playerContextMenu = debugUiEnabled && debugInfoOverlay ? new PlayerContextMenu({ debugInfoOverlay }) : null;
 
-      // Touch / mobile / WebView — expose the context menu through a settings-panel row
-      // since there is no right-click. Omitted when the debug UI is disabled.
-      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1, false, playerContextMenu ?? undefined);
+      // Surface the context-menu opener through the settings panel on touch devices where
+      // right-click isn't reachable. The smallScreen layout can also run on a desktop
+      // browser at a narrow width, so don't assume it here.
+      const settingsPanel = buildDefaultSettingsPanel(
+        subtitleOverlay,
+        -1,
+        false,
+        BrowserUtils.isMobile ? (playerContextMenu ?? undefined) : undefined,
+      );
 
       const controlBar = new ControlBar({
         components: [
@@ -798,36 +809,11 @@ export namespace UIFactory {
 
     // On platforms without a native context menu (touch / TV / WebView / set-top boxes /
     // game consoles), expose the same actions through a settings-panel row that opens the
-    // `PlayerContextMenu` centered over the player. The desktop `main` layout omits this
-    // row because right-click already works there.
+    // `PlayerContextMenu` centered over the player. Separator first to visually break up
+    // playback settings (subtitles / quality / …) from the UI-related entry below.
     if (playerContextMenu) {
-      const playerInfoLabel = new Label<LabelConfig>({
-        text: i18n.getLocalizer('settings.playerInfo'),
-      });
-      const playerInfoItem = new SettingsPanelItem({
-        label: playerInfoLabel,
-        isSetting: false,
-        cssClasses: ['player-info-item'],
-        ariaLabel: i18n.getLocalizer('settings.playerInfo'),
-        role: 'menuitem',
-        tabIndex: 0,
-      });
-      // Make the whole row tappable rather than just the inner label. Mirrors the
-      // settings-panel-page-open-button behaviour but in a single hit area.
-      const openMenu = () => {
-        settingsPanel.hide();
-        playerContextMenu.showCentered();
-      };
-      const itemEl = playerInfoItem.getDomElement();
-      itemEl.css('cursor', 'pointer');
-      itemEl.on('click', openMenu);
-      itemEl.on('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openMenu();
-        }
-      });
-      mainSettingsPanelPage.addComponent(playerInfoItem);
+      mainSettingsPanelPage.addComponent(new Container({ cssClasses: ['settings-panel-separator'] }));
+      mainSettingsPanelPage.addComponent(playerContextMenu.createSettingsPanelOpenerItem(settingsPanel));
     }
 
     return settingsPanel;

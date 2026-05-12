@@ -5,10 +5,10 @@
   @extend %ui-container;
   @include hidden-animated($animation-duration-short);
 
-  background-color: rgba(20, 20, 20, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  background-color: transparentize($color-background-menu, 0.15);
   border-radius: $border-radius;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 3px 0 transparentize(#000, 0.75);
   color: #fff;
   font-family: $font-family;
   font-size: $font-size-small;
@@ -41,18 +41,6 @@
     margin: 0.15em 0;
   }
 
-  .#{$prefix}-ui-player-context-menu-link {
-    color: #4aa3ff;
-    display: inline-block;
-    margin-top: 0.5em;
-    text-decoration: none;
-
-    &:hover {
-      color: #6cb6ff;
-      text-decoration: underline;
-    }
-  }
-
   .#{$prefix}-ui-player-context-menu-separator {
     background-color: rgba(255, 255, 255, 0.15);
     height: 1px;
@@ -80,6 +68,14 @@
       background-color: rgba(255, 255, 255, 0.25);
     }
   }
+}
+
+// Thin horizontal divider used to separate playback-related settings rows from the
+// UI-level entries (e.g. the Player Info opener).
+.#{$prefix}-settings-panel-separator {
+  background-color: rgba(255, 255, 255, 0.15);
+  height: 1px;
+  margin: 0.4em 0;
 }
 
 // The whole "Player Info & Video Stats" row is clickable, so give it a hover /
