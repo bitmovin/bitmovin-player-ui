@@ -12,11 +12,14 @@
   font-family: $font-family;
   font-size: $font-size-small;
   font-weight: $font-weight-medium;
+  // Sit directly on top of the central HugePlaybackToggleButton (8em tall) with a
+  // small gap. The button is shifted down via a sibling rule below so the
+  // banner+button stack is centered vertically as a unit.
   left: 50%;
   padding: 0.75em 1em;
   position: absolute;
-  top: 1em;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, calc(-100% - 4.5em));
   z-index: 50;
 
   .#{$prefix}-ui-resume-overlay-label {
@@ -48,5 +51,14 @@
 
   .#{$prefix}-ui-resume-overlay-resume {
     background-color: rgba(255, 255, 255, 0.18);
+  }
+}
+
+// While the resume overlay is visible, shift the central play button down so
+// the banner (above) + play button (below) read as one centered stack.
+.#{$prefix}-ui-uicontainer:has(.#{$prefix}-ui-resume-overlay:not(.#{$prefix}-hidden)) {
+  .#{$prefix}-ui-hugeplaybacktogglebutton {
+    transform: translateY(1.75em);
+    transition: transform $animation-duration-short ease;
   }
 }
