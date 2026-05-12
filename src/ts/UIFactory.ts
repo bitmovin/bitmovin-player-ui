@@ -297,7 +297,10 @@ export namespace UIFactory {
 
       const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
-      const debugComponents = debugInfoOverlay && playerContextMenu ? [debugInfoOverlay, playerContextMenu] : [];
+      const debugComponents =
+        debugInfoOverlay && playerContextMenu
+          ? [debugInfoOverlay, playerContextMenu, new DismissClickOverlay({ target: playerContextMenu })]
+          : [];
 
       return new UIContainer({
         components: [
@@ -423,7 +426,9 @@ export namespace UIFactory {
       });
 
       const debugComponents =
-        debugUiEnabled && debugInfoOverlay && playerContextMenu ? [debugInfoOverlay, playerContextMenu] : [];
+        debugUiEnabled && debugInfoOverlay && playerContextMenu
+          ? [debugInfoOverlay, playerContextMenu, new DismissClickOverlay({ target: playerContextMenu })]
+          : [];
 
       return new UIContainer({
         components: [
