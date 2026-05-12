@@ -41,6 +41,23 @@
     text-transform: uppercase;
   }
 
+  .#{$prefix}-ui-debug-info-overlay-close {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.4em;
+    line-height: 1;
+    margin-left: 0.5em;
+    padding: 0 0.4em;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 0.2em;
+    }
+  }
+
   .#{$prefix}-ui-debug-info-overlay-content {
     color: #fff;
     cursor: text;

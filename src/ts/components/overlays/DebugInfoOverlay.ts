@@ -30,12 +30,14 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
   private contentElement: DOM;
   private headerElement: DOM;
   private titleElement: DOM;
+  private closeButtonElement: DOM;
   private refreshTimer: Timeout | null = null;
   private update: () => void = () => undefined;
   private onUpdatedHandler: () => void = () => undefined;
   private uiManagerRef: UIInstanceManager | null = null;
   private onPointerMoveDocument: ((e: PointerEvent) => void) | null = null;
   private onPointerUpDocument: ((e: PointerEvent) => void) | null = null;
+  private documentKeyDownHandler: ((e: KeyboardEvent) => void) | null = null;
 
   constructor(config: DebugInfoOverlayConfig = {}) {
     super(config);
@@ -57,12 +59,26 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       class: this.prefixCss('ui-debug-info-overlay-title'),
     });
 
+    this.closeButtonElement = new DOM('button', {
+      type: 'button',
+      class: this.prefixCss('ui-debug-info-overlay-close'),
+    }).html('×');
+    // Stop drag from starting when interacting with the close button.
+    const stop = (e: Event) => e.stopPropagation();
+    this.closeButtonElement.on('pointerdown', stop);
+    this.closeButtonElement.on('mousedown', stop);
+    this.closeButtonElement.on('click', (e: MouseEvent) => {
+      e.stopPropagation();
+      this.hide();
+    });
+
     this.refreshLocalizedText();
 
     this.headerElement = new DOM('div', {
       class: this.prefixCss('ui-debug-info-overlay-header'),
     });
     this.headerElement.append(this.titleElement);
+    this.headerElement.append(this.closeButtonElement);
 
     this.contentElement = new DOM('pre', {
       class: this.prefixCss('ui-debug-info-overlay-content'),
@@ -108,6 +124,11 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
     });
     this.onHide.subscribe(() => this.stopTimer());
 
+    this.documentKeyDownHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && this.isShown()) this.hide();
+    };
+    document.addEventListener('keydown', this.documentKeyDownHandler);
+
     uimanager.getConfig().events.onUpdated.subscribe(this.onUpdatedHandler);
 
     this.update();
@@ -120,6 +141,7 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
 
   private refreshLocalizedText(): void {
     this.titleElement?.html(i18n.performLocalization(i18n.getLocalizer('videoStats.title')));
+    this.closeButtonElement?.attr('aria-label', i18n.performLocalization(i18n.getLocalizer('videoStats.hide')));
   }
 
   release(): void {
@@ -130,6 +152,10 @@ export class DebugInfoOverlay extends Container<DebugInfoOverlayConfig> {
       document.removeEventListener('pointercancel', this.onPointerUpDocument!);
       this.onPointerMoveDocument = null;
       this.onPointerUpDocument = null;
+    }
+    if (this.documentKeyDownHandler) {
+      document.removeEventListener('keydown', this.documentKeyDownHandler);
+      this.documentKeyDownHandler = null;
     }
     if (this.uiManagerRef) {
       this.uiManagerRef.getConfig().events.onUpdated.unsubscribe(this.onUpdatedHandler);
