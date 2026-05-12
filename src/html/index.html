@@ -15,6 +15,17 @@
   </head>
   <body>
     <div class="container">
+      <div class="alert alert-info" style="margin-top: 1em; margin-bottom: 1em; padding: 0.5em 0.75em">
+        <label style="margin: 0; cursor: pointer; display: block">
+          <input type="checkbox" id="config-clear-localstorage" style="vertical-align: middle; margin-right: 0.5em" />
+          Clear <code>localStorage</code> on each page load
+          <small class="text-muted"
+            >— disable to test features that rely on persisted storage (e.g. resume-from-last-position). Takes effect on
+            next reload.</small
+          >
+        </label>
+      </div>
+
       <div class="player-wrapper">
         <div class="player" id="player"></div>
       </div>
@@ -284,6 +295,21 @@
 
       var player;
       var uiManager;
+
+      var CLEAR_LOCALSTORAGE_TOGGLE_KEY = 'bmpui-clear-localstorage';
+      function shouldClearLocalStorageOnLoad() {
+        // Default on; only off when explicitly disabled via the toggle.
+        return localStorage.getItem(CLEAR_LOCALSTORAGE_TOGGLE_KEY) !== 'false';
+      }
+      (function initClearLocalStorageToggle() {
+        var cb = document.getElementById('config-clear-localstorage');
+        if (!cb) return;
+        cb.checked = shouldClearLocalStorageOnLoad();
+        cb.addEventListener('change', function () {
+          localStorage.setItem(CLEAR_LOCALSTORAGE_TOGGLE_KEY, cb.checked ? 'true' : 'false');
+        });
+      })();
+
       bitmovin.playerui.UIManager.setLocalizationConfig({
         language: 'en',
         browserLanguageDetection: false,
@@ -306,7 +332,9 @@
         if (playgroundConfig.uiOption != null && bitmovin.playerui.UIFactory[playgroundConfig.uiOption] != null) {
           uiManager = bitmovin.playerui.UIFactory[playgroundConfig.uiOption](player, uiConfig);
         } else {
-          localStorage.clear();
+          if (shouldClearLocalStorageOnLoad()) {
+            localStorage.clear();
+          }
           uiManager = bitmovin.playerui.UIFactory.buildUI(player, uiConfig);
         }
 
