@@ -45,7 +45,6 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
 
   private uiContextMenuHandler: ((e: MouseEvent) => void) | null = null;
   private documentKeyDownHandler: ((e: KeyboardEvent) => void) | null = null;
-  private documentScrollDismissHandler: ((e: Event) => void) | null = null;
   private uiContainerElement: HTMLElement | null = null;
   private playerContainerElement: HTMLElement | null = null;
   private debugOverlayLabelHandler: (() => void) | null = null;
@@ -156,20 +155,11 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     uiContainerEl.addEventListener('contextmenu', this.uiContextMenuHandler);
 
     // Outside-click dismissal is handled by the sibling `DismissClickOverlay` that the
-    // UIFactory wires up against this menu; only Escape + scroll need direct hookup.
+    // UIFactory wires up against this menu; only Escape needs a direct hookup.
     this.documentKeyDownHandler = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && this.isShown()) this.hide();
     };
-    // Hide as soon as the user starts scrolling — `position: fixed` keeps the menu glued
-    // to the viewport, which looks broken once the page moves underneath it. Use `wheel`
-    // and `touchmove` (both bubble) rather than `scroll` (doesn't bubble; a window-level
-    // capture listener misses scrolls that happen inside nested scroll containers).
-    this.documentScrollDismissHandler = () => {
-      if (this.isShown()) this.hide();
-    };
     document.addEventListener('keydown', this.documentKeyDownHandler);
-    document.addEventListener('wheel', this.documentScrollDismissHandler, { capture: true, passive: true });
-    document.addEventListener('touchmove', this.documentScrollDismissHandler, { capture: true, passive: true });
 
     const copiedLabel = i18n.getLocalizer('contextMenu.copied');
     const sourceLabel = i18n.getLocalizer('contextMenu.copySource');
@@ -218,14 +208,6 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     if (this.documentKeyDownHandler) {
       document.removeEventListener('keydown', this.documentKeyDownHandler);
     }
-    if (this.documentScrollDismissHandler) {
-      document.removeEventListener('wheel', this.documentScrollDismissHandler, {
-        capture: true,
-      } as EventListenerOptions);
-      document.removeEventListener('touchmove', this.documentScrollDismissHandler, {
-        capture: true,
-      } as EventListenerOptions);
-    }
     const debugOverlay = this.config.debugInfoOverlay;
     if (debugOverlay && this.debugOverlayLabelHandler) {
       debugOverlay.onShow.unsubscribe(this.debugOverlayLabelHandler);
@@ -233,7 +215,6 @@ export class PlayerContextMenu extends Container<PlayerContextMenuConfig> {
     }
     this.uiContextMenuHandler = null;
     this.documentKeyDownHandler = null;
-    this.documentScrollDismissHandler = null;
     this.debugOverlayLabelHandler = null;
     this.uiContainerElement = null;
     this.playerContainerElement = null;
