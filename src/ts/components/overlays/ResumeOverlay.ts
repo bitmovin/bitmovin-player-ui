@@ -169,8 +169,9 @@ export class ResumeOverlay extends Container<ResumeOverlayConfig> {
       if (entry) {
         try {
           player.seek(entry.t);
+          player.play();
         } catch {
-          // Seek can fail before the source is fully ready; nothing useful to do.
+          // Seek/play can fail before the source is fully ready; nothing useful to do.
         }
       }
       this.hide();
