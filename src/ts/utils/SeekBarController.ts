@@ -120,14 +120,14 @@ export class SeekBarController {
           break;
         }
         case UIUtils.KeyCode.Comma: {
-          if (seekBarType === SeekBarType.Vod) {
+          if (seekBarType !== SeekBarType.Volume) {
             this.stepFrame(-1);
             e.preventDefault();
           }
           break;
         }
         case UIUtils.KeyCode.Period: {
-          if (seekBarType === SeekBarType.Vod) {
+          if (seekBarType !== SeekBarType.Volume) {
             this.stepFrame(1);
             e.preventDefault();
           }
@@ -150,7 +150,14 @@ export class SeekBarController {
     const videoData = this.player.getPlaybackVideoData() as { frameRate?: number } | null | undefined;
     const fps =
       videoData && typeof videoData.frameRate === 'number' && videoData.frameRate > 0 ? videoData.frameRate : 30;
-    const target = Math.max(0, this.player.getCurrentTime() + direction * (1 / fps));
-    this.player.seek(target);
+    const delta = direction * (1 / fps);
+    if (this.player.isLive()) {
+      const target = this.player.getTimeShift() + delta;
+      const clamped = Math.max(this.player.getMaxTimeShift(), Math.min(0, target));
+      this.player.timeShift(clamped);
+    } else {
+      const target = Math.max(0, this.player.getCurrentTime() + delta);
+      this.player.seek(target);
+    }
   }
 }
