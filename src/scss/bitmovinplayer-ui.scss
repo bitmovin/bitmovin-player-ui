@@ -54,18 +54,18 @@
 @import 'small-screen';
 @import 'tv';
 
-// Honor the user's OS-level "reduce motion" preference. We collapse
-// transitions and animations to ~0 ms (rather than removing them) so
-// `transitionend` / `animationend` listeners that the UI depends on
-// still fire.
+// Honor the user's OS-level "reduce motion" preference. Disable transitions
+// and animations outright — overriding only durations breaks our show/hide
+// transitions, which depend on `visibility 0s` to flip instantly when a
+// component becomes visible (with a non-zero duration, visibility uses
+// discrete interpolation and stays hidden for one frame, causing a visible
+// pop). `SubtitleOverlay.awaitTransitionEnd` already short-circuits when
+// `transition-property` is `none`, so no listeners are stranded.
 @media (prefers-reduced-motion: reduce) {
   .#{$prefix}-ui-uicontainer,
   .#{$prefix}-ui-uicontainer * {
-    animation-duration: 1ms !important;
-    animation-delay: 0ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 1ms !important;
-    transition-delay: 0ms !important;
+    animation: none !important;
+    transition: none !important;
     scroll-behavior: auto !important;
   }
 }

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Support for the `prefers-reduced-motion` accessibility setting: all UI animations and transitions are collapsed to ~1 ms when the user has set the OS-level `prefers-reduced-motion: reduce` preference (animation / transition end events still fire so dependent UI logic continues to work)
+- Support for the `prefers-reduced-motion` accessibility setting: UI animations and transitions are disabled when the user has set the OS-level `prefers-reduced-motion: reduce` preference
 - New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
 
 ### Changed

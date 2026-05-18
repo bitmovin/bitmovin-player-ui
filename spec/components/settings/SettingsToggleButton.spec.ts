@@ -28,18 +28,19 @@ describe('SettingsToggleButton', () => {
       expect(button.getConfig().role).toBe('button');
     });
 
-    it('sets aria-haspopup, aria-controls, aria-owns, and aria-expanded on the DOM element', () => {
+    it('sets aria-haspopup, aria-controls, and aria-expanded on the DOM element', () => {
       new SettingsToggleButton({ settingsPanel: panel });
       const calls = attrSpy.mock.calls.map(([name, value]: [string, string]) => `${name}=${value}`);
       const panelId = panel.getActivePage().getConfig().id;
       expect(calls).toEqual(
-        expect.arrayContaining([
-          'aria-haspopup=menu',
-          `aria-controls=${panelId}`,
-          `aria-owns=${panelId}`,
-          'aria-expanded=false',
-        ]),
+        expect.arrayContaining(['aria-haspopup=menu', `aria-controls=${panelId}`, 'aria-expanded=false']),
       );
+    });
+
+    it('does not set aria-owns (avoids iOS VoiceOver double-announcement when paired with aria-controls)', () => {
+      new SettingsToggleButton({ settingsPanel: panel });
+      const names = attrSpy.mock.calls.map(([name]: [string]) => name);
+      expect(names).not.toContain('aria-owns');
     });
 
     it('flips aria-expanded when the panel show / hide events fire', () => {
@@ -62,7 +63,7 @@ describe('SettingsToggleButton', () => {
       expect(attrSpy).toHaveBeenCalledWith('aria-expanded', 'true');
     });
 
-    it('refreshes aria-controls / aria-owns when the panel active page changes', () => {
+    it('refreshes aria-controls when the panel active page changes', () => {
       const secondPage = new SettingsPanelPage({});
       panel = new SettingsPanel({
         components: [new SettingsPanelPage({}), secondPage],
@@ -79,7 +80,6 @@ describe('SettingsToggleButton', () => {
       panel.setActivePage(secondPage);
       const newId = secondPage.getConfig().id;
       expect(attrSpy).toHaveBeenCalledWith('aria-controls', newId);
-      expect(attrSpy).toHaveBeenCalledWith('aria-owns', newId);
     });
   });
 });

@@ -59,8 +59,11 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
 
     // The element renders as a native `<button>` (with the explicit `role="button"`
     // inherited from the Button base). aria-haspopup="menu" advertises that activation
-    // reveals a menu, and aria-controls / aria-owns point assistive tech at the panel id.
-    // Both are updated whenever the panel's active page changes (see `configure`).
+    // reveals a menu, and aria-controls points assistive tech at the panel id, which
+    // is refreshed whenever the panel's active page changes (see `configure`).
+    // We intentionally do not set aria-owns: when it points at the same element as
+    // aria-controls, iOS VoiceOver follows both relationships and announces the menu
+    // twice. The WAI-ARIA APG menu button pattern uses aria-controls alone.
     this.getDomElement().attr('aria-haspopup', 'menu');
     this.updateAriaPanelIdRefs();
     this.getDomElement().attr('aria-expanded', 'false');
@@ -71,7 +74,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     if (!settingsPanel) return;
     const settingsPanelId = settingsPanel.getActivePage().getConfig().id;
     this.getDomElement().attr('aria-controls', settingsPanelId);
-    this.getDomElement().attr('aria-owns', settingsPanelId);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
