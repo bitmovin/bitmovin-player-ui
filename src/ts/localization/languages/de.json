@@ -80,5 +80,7 @@
   "quickseek.forward": "{seekSeconds} Sekunden Vor",
   "quickseek.rewind": "{seekSeconds} Sekunden Zurück",
   "ecoMode": "ecoMode",
-  "ecoMode.title": "Eco Mode"
+  "ecoMode.title": "Eco Mode",
+  "persistentPreferences": "Einstellungen merken",
+  "persistentPreferences.title": "Einstellungen merken"
 }

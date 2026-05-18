@@ -47,7 +47,10 @@ import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
 import { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelNavigationGroup';
 import { EcoModeContainer } from './components/EcoModeContainer';
+import { PersistentPreferencesToggleButton } from './components/buttons/PersistentPreferencesToggleButton';
 import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsPanelItem';
+import { SettingsPanelItem } from './components/settings/SettingsPanelItem';
+import { Label, LabelConfig } from './components/labels/Label';
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
@@ -247,7 +250,12 @@ export namespace UIFactory {
     export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
 
-      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
+      const settingsPanel = buildDefaultSettingsPanel(
+        subtitleOverlay,
+        undefined,
+        config.ecoMode === true,
+        config.enablePersistentPreferences === true,
+      );
       const controlBar = new ControlBar({
         components: [
           new Container({
@@ -700,6 +708,7 @@ export namespace UIFactory {
     subtitleOverlay: SubtitleOverlay,
     hideDelay: number | undefined = undefined,
     enableEcoMode: boolean = false,
+    enablePersistentPreferences: boolean = false,
   ): SettingsPanel<SettingsPanelConfig> {
     const settingsPanelConfig: SettingsPanelConfig = {
       components: [],
@@ -744,6 +753,20 @@ export namespace UIFactory {
       });
 
       components.unshift(ecoModeContainer);
+    }
+
+    if (enablePersistentPreferences) {
+      const persistentPreferencesToggle = new PersistentPreferencesToggleButton();
+      const persistentPreferencesLabel = new Label<LabelConfig>({
+        text: i18n.getLocalizer('persistentPreferences.title'),
+        for: persistentPreferencesToggle.getConfig().id,
+      });
+      components.push(
+        new SettingsPanelItem({
+          label: persistentPreferencesLabel,
+          settingComponent: persistentPreferencesToggle,
+        }),
+      );
     }
 
     const mainSettingsPanelPage = new SettingsPanelPage({

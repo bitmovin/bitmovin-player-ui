@@ -160,9 +160,11 @@ export interface UIConfig {
    */
   disableStorageApi?: boolean;
   /**
-   * If set to true, the UI persists volume, mute state, and playback speed across sessions
-   * and reapplies them when a player using this UI is initialized. Has no effect when
-   * `disableStorageApi` is true or `localStorage` is unavailable.
+   * If set to true, the UI exposes the persistent preferences feature: it adds an opt-in
+   * toggle to the settings panel and, when the end-user enables it, persists volume, mute
+   * state, and playback speed across sessions and reapplies them when a player using this
+   * UI is initialized. Has no effect when `disableStorageApi` is true or `localStorage`
+   * is unavailable.
    *
    * Disabled by default so existing integrations (including automated tests and custom
    * persistence layers) are not affected. Opt in explicitly per UI instance.

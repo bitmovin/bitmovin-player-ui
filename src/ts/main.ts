@@ -147,6 +147,7 @@ export { Icon } from './components/Icon';
 export { DismissClickOverlay, DismissClickOverlayConfig } from './components/overlays/DismissClickOverlay';
 export { EcoModeContainer } from './components/EcoModeContainer';
 export { EcoModeToggleButton } from './components/buttons/EcoModeToggleButton';
+export { PersistentPreferencesToggleButton } from './components/buttons/PersistentPreferencesToggleButton';
 export { TvNoiseCanvas } from './components/TvNoiseCanvas';
 export { SmallCenteredPlaybackToggleButton } from './components/buttons/SmallCenteredPlaybackToggleButton';
 export {

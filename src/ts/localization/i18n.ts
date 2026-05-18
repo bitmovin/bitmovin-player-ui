@@ -125,6 +125,8 @@ export interface Vocabulary {
   'quickseek.rewind': string;
   ecoMode: string;
   'ecoMode.title': string;
+  persistentPreferences: string;
+  'persistentPreferences.title': string;
 }
 
 /**
