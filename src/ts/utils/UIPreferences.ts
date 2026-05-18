@@ -46,35 +46,19 @@ export namespace UIPreferences {
   export function apply(player: PlayerAPI): void {
     const volume = readNumber(KEY_VOLUME);
     if (volume !== null && volume >= 0 && volume <= 100) {
-      try {
-        player.setVolume(volume, ISSUER);
-      } catch {
-        // Player may not yet be ready to accept volume changes — best-effort.
-      }
+      player.setVolume(volume, ISSUER);
     }
 
     const muted = readBoolean(KEY_MUTED);
     if (muted === true) {
-      try {
-        player.mute(ISSUER);
-      } catch {
-        // best-effort
-      }
+      player.mute(ISSUER);
     } else if (muted === false) {
-      try {
-        player.unmute(ISSUER);
-      } catch {
-        // best-effort
-      }
+      player.unmute(ISSUER);
     }
 
     const speed = readNumber(KEY_PLAYBACK_SPEED);
     if (speed !== null && speed > 0 && speed <= 4) {
-      try {
-        player.setPlaybackSpeed(speed);
-      } catch {
-        // best-effort
-      }
+      player.setPlaybackSpeed(speed);
     }
   }
 }

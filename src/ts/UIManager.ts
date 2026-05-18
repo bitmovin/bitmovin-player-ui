@@ -249,7 +249,7 @@ export class UIManager {
     }
     this.subtitleSettingsManager.initialize();
 
-    if (uiconfig.enablePersistentPreferences !== false) {
+    if (uiconfig.enablePersistentPreferences === true) {
       UIPreferences.attach(this.player);
       const applyPrefs = () => UIPreferences.apply(this.player);
       this.player.on(this.player.exports.PlayerEvent.Ready, applyPrefs);

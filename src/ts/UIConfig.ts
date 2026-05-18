@@ -164,7 +164,10 @@ export interface UIConfig {
    * and reapplies them when a player using this UI is initialized. Has no effect when
    * `disableStorageApi` is true or `localStorage` is unavailable.
    *
-   * Default: true
+   * Disabled by default so existing integrations (including automated tests and custom
+   * persistence layers) are not affected. Opt in explicitly per UI instance.
+   *
+   * Default: false
    */
   enablePersistentPreferences?: boolean;
   /**
