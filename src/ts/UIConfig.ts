@@ -1,6 +1,27 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
 import { SourceConfig } from 'bitmovin-player';
 import { LocalizationConfig } from './UIManager';
+import { ProductNotification, ProductTrigger } from './components/ProductNotification';
+
+/**
+ * Configuration for the in-video product purchase notification rendered in the top-right
+ * corner of the player.
+ *
+ * @category Configs
+ */
+export interface ProductNotificationUIConfig {
+  /**
+   * Time-driven product entries. Each trigger automatically shows the notification while
+   * the playback position is within `[startTime, endTime)` and hides it afterwards.
+   */
+  triggers?: ProductTrigger[];
+  /**
+   * Invoked with the {@link ProductNotification} instance after it has been created. Use
+   * this to imperatively show/hide notifications and to subscribe to events such as
+   * `onCtaClick`.
+   */
+  onCreate?: (notification: ProductNotification) => void;
+}
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -170,6 +191,12 @@ export interface UIConfig {
    * Default: false
    */
   includeWatermark?: boolean;
+  /**
+   * Configures the in-video product purchase notification rendered in the top-right
+   * corner of the player. Set `triggers` to drive show/hide from playback time, and/or
+   * provide `onCreate` to control the component imperatively.
+   */
+  productNotification?: ProductNotificationUIConfig;
   /**
    * Configure Shadow DOM rendering.
    * Enable it with:

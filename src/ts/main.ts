@@ -57,6 +57,12 @@ export { VideoQualitySelectBox } from './components/settings/VideoQualitySelectB
 export { VolumeToggleButton } from './components/buttons/VolumeToggleButton';
 export { VRToggleButton } from './components/buttons/VRToggleButton';
 export { Watermark, WatermarkConfig } from './components/Watermark';
+export {
+  ProductNotification,
+  ProductNotificationConfig,
+  ProductInfo,
+  ProductTrigger,
+} from './components/ProductNotification';
 export { UIContainer, UIContainerConfig } from './components/UIContainer';
 export { Container, ContainerConfig } from './components/Container';
 export { Label, LabelConfig, LabelStyle } from './components/labels/Label';

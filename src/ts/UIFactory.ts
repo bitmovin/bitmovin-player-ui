@@ -31,6 +31,7 @@ import { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
 import { TitleBar } from './components/TitleBar';
 import { RecommendationOverlay } from './components/overlays/RecommendationOverlay';
 import { Watermark } from './components/Watermark';
+import { ProductNotification } from './components/ProductNotification';
 import { ErrorMessageOverlay } from './components/overlays/ErrorMessageOverlay';
 import { AdClickOverlay } from './components/ads/AdClickOverlay';
 import { AdControlBar } from './components/ads/AdControlBar';
@@ -284,6 +285,13 @@ export namespace UIFactory {
 
       const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
 
+      const productNotification = new ProductNotification({
+        triggers: config.productNotification ? config.productNotification.triggers : [],
+      });
+      if (config.productNotification && config.productNotification.onCreate) {
+        config.productNotification.onCreate(productNotification);
+      }
+
       return new UIContainer({
         components: [
           subtitleOverlay,
@@ -294,6 +302,7 @@ export namespace UIFactory {
           new TitleBar(),
           new RecommendationOverlay(),
           ...conditionalComponents,
+          productNotification,
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
           new ErrorMessageOverlay(),

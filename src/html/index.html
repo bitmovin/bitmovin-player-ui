@@ -279,7 +279,53 @@
           //       ],
         },
         //    seekbarSnappingRange: 0,
-        includeWatermark: true,
+        includeWatermark: false,
+        productNotification: {
+          // Time-driven trigger with a LAZY product resolver. The function is only invoked
+          // when the trigger window opens, so the actual ad payload can come from a CMS,
+          // ad server, GAM/VAST extension, in-band metadata, etc.
+          triggers: [
+            {
+              startTime: 2,
+              endTime: 15,
+              autoExpand: true,
+              expandAfterMs: 1000,
+              // autoCollapseAfterMs: 4000,
+              product: function () {
+                // Simulate an async backend fetch
+                return new Promise(function (resolve) {
+                  setTimeout(function () {
+                    resolve({
+                      title: 'Sintel Hooded Cloak',
+                      description: 'Fetched at runtime — limited edition. Free shipping worldwide.',
+                      price: '$129.00',
+                      imageUrl: 'https://cdn.bitmovin.com/content/assets/sintel/poster.png',
+                      ctaText: 'Buy now',
+                      ctaUrl: 'https://example.com/shop/sintel-cloak',
+                    });
+                  }, 200);
+                });
+              },
+            },
+          ],
+          // Imperative API. Hold on to the instance and call notify()/dismiss() from
+          // any event source: player metadata cues, ad SDK callbacks, websocket pushes, etc.
+          onCreate: function (notification) {
+            // Expose globally so the playground "Actions" buttons / console can drive it
+            window.productNotification = notification;
+
+            notification.onCtaClick.subscribe(function (_, args) {
+              console.log('Product CTA clicked', args.product);
+            });
+
+            // Example: drive a second ad from a player Metadata event at runtime
+            player.on(bitmovin.player.PlayerEvent.Metadata, function (event) {
+              if (event && event.metadata && event.metadata.adProduct) {
+                notification.notify(event.metadata.adProduct, { autoExpand: true });
+              }
+            });
+          },
+        },
       };
 
       var player;
@@ -709,6 +755,28 @@
           const player = uiManager.currentUi.playerWrapper.getPlayer();
 
           player.setViewMode(bitmovin.player.ViewMode.Fullscreen);
+        },
+        'Fire dynamic product notification': function () {
+          if (!window.productNotification) {
+            console.warn('productNotification instance not available yet');
+            return;
+          }
+          window.productNotification.notify(
+            {
+              title: 'Flash Sale!',
+              description: 'Pushed at ' + new Date().toLocaleTimeString() + ' from runtime code.',
+              price: '$' + (10 + Math.floor(Math.random() * 200)) + '.00',
+              imageUrl: 'https://cdn.bitmovin.com/content/assets/sintel/poster.png',
+              ctaText: 'Grab it',
+              ctaUrl: 'https://example.com/flash-sale',
+            },
+            { autoExpand: true, autoCollapseAfterMs: 6000 },
+          );
+        },
+        'Dismiss product notification': function () {
+          if (window.productNotification) {
+            window.productNotification.dismiss();
+          }
         },
       };
       $.each(actions, function (title, handler) {

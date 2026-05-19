@@ -1,0 +1,367 @@
+@import '../variables';
+@import '../mixins';
+
+$product-notification-icon-size: 2.75em;
+$product-notification-card-width: 22em;
+$product-notification-accent: #7b5cff; // poppy purple, used where a single solid color is needed
+$product-notification-accent-glow: rgba(123, 92, 255, 0.55);
+$product-notification-pop-1: #ff6ec7; // hot pink
+$product-notification-pop-2: #ff8a3d; // sunset orange
+$product-notification-pop-3: #ffd84d; // sun yellow
+$product-notification-pop-4: #36d1dc; // cyan
+$product-notification-pop-5: #7b5cff; // purple
+$product-notification-gradient: linear-gradient(
+  135deg,
+  $product-notification-pop-1 0%,
+  $product-notification-pop-2 30%,
+  $product-notification-pop-3 55%,
+  $product-notification-pop-4 80%,
+  $product-notification-pop-5 100%
+);
+
+.#{$prefix}-ui-product-notification {
+  @include hidden-animated(300ms);
+
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  position: absolute;
+  right: 1em;
+  top: 1em;
+  z-index: 5;
+
+  .#{$prefix}-product-notification-icon,
+  .#{$prefix}-product-notification-card {
+    pointer-events: auto;
+  }
+
+  .#{$prefix}-product-notification-icon {
+    animation:
+      bmpui-product-notification-huerotate 6s linear infinite,
+      bmpui-product-notification-wiggle 2.6s ease-in-out infinite;
+    background-image: url('../../assets/images/product-notification.svg'), $product-notification-gradient;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-size:
+      60% 60%,
+      100% 100%;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    height: $product-notification-icon-size;
+    padding: 0;
+    transform-origin: center;
+    width: $product-notification-icon-size;
+
+    &:hover {
+      animation-play-state: running, paused;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow:
+        0 0 0 3px $color-focus,
+        0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  .#{$prefix}-product-notification-card {
+    animation: bmpui-product-notification-hue 6s linear infinite;
+    background:
+      linear-gradient($color-background-text, $color-background-text) padding-box,
+      $product-notification-gradient border-box;
+    background-size:
+      auto,
+      200% 200%;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    box-shadow:
+      0 0 24px $product-notification-accent-glow,
+      0 6px 20px rgba(0, 0, 0, 0.6);
+    box-sizing: border-box;
+    color: $color-primary;
+    margin-top: 0.5em;
+    opacity: 0;
+    padding: 0.85em;
+    pointer-events: none;
+    position: relative;
+    transform: translateY(-6px) scale(0.97);
+    transition:
+      opacity 280ms ease,
+      transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      visibility 0s linear 280ms;
+    visibility: hidden;
+    width: $product-notification-card-width;
+  }
+
+  // Radiating halo behind the card
+  .#{$prefix}-product-notification-card::after {
+    animation: bmpui-product-notification-radiate 1.6s ease-out infinite;
+    background: $product-notification-gradient;
+    border-radius: 10px;
+    content: '';
+    inset: -4px;
+    opacity: 0.7;
+    pointer-events: none;
+    position: absolute;
+    z-index: -1;
+  }
+
+  // Sweeping shine across the card surface
+  .#{$prefix}-product-notification-card::before {
+    animation: bmpui-product-notification-shine 2.4s linear infinite;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+    border-radius: 8px;
+    content: '';
+    height: 100%;
+    left: -100%;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 50%;
+  }
+
+  .#{$prefix}-product-notification-image {
+    border-radius: 4px;
+    display: block;
+    float: left;
+    height: 4em;
+    margin-right: 0.75em;
+    object-fit: cover;
+    width: 4em;
+  }
+
+  .#{$prefix}-product-notification-body {
+    overflow: hidden;
+    position: relative;
+  }
+
+  .#{$prefix}-product-notification-title {
+    color: #fff;
+    font-size: $font-size;
+    font-weight: $font-weight-medium;
+    margin-bottom: 0.25em;
+    text-transform: uppercase;
+
+    &::before {
+      animation: bmpui-product-notification-hue 6s linear infinite;
+      background: $product-notification-gradient;
+      background-size: 200% 200%;
+      border-radius: 2px;
+      color: #fff;
+      content: 'AD';
+      display: inline-block;
+      font-size: 0.65em;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-right: 0.5em;
+      padding: 0.15em 0.4em;
+      vertical-align: middle;
+    }
+  }
+
+  .#{$prefix}-product-notification-description {
+    color: #e8e8e8;
+    font-size: $font-size-small;
+    line-height: 1.35;
+    margin-bottom: 0.5em;
+  }
+
+  .#{$prefix}-product-notification-price {
+    animation: bmpui-product-notification-hue 6s linear infinite;
+    background: $product-notification-gradient;
+    background-clip: text;
+    background-size: 200% 200%;
+    font-size: $font-size;
+    font-weight: 700;
+    margin-bottom: 0.5em;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .#{$prefix}-product-notification-cta {
+    animation:
+      bmpui-product-notification-cta-pulse 1.2s ease-in-out infinite,
+      bmpui-product-notification-hue 6s linear infinite;
+    background: $product-notification-gradient;
+    background-size: 200% 200%;
+    border: 0;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: $font-size-small;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0.6em 1em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+
+    &:hover {
+      animation-play-state: paused, paused;
+      filter: brightness(1.1);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px $color-focus;
+    }
+  }
+
+  .#{$prefix}-product-notification-close {
+    background: transparent;
+    border: 0;
+    color: $color-primary;
+    cursor: pointer;
+    font-size: 1.2em;
+    line-height: 1;
+    opacity: 0.7;
+    padding: 0;
+    position: absolute;
+    right: 0.4em;
+    top: 0.25em;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &.#{$prefix}-expanded {
+    .#{$prefix}-product-notification-card {
+      animation:
+        bmpui-product-notification-shake 2.4s ease-in-out 0.6s infinite,
+        bmpui-product-notification-hue 6s linear infinite;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+      transition:
+        opacity 280ms ease,
+        transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      visibility: visible;
+    }
+
+    .#{$prefix}-product-notification-card:hover {
+      animation-play-state: paused, running;
+    }
+  }
+}
+
+@keyframes bmpui-product-notification-hue {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes bmpui-product-notification-huerotate {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes bmpui-product-notification-cta-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes bmpui-product-notification-shine {
+  0% {
+    left: -50%;
+  }
+
+  100% {
+    left: 150%;
+  }
+}
+
+@keyframes bmpui-product-notification-wiggle {
+  0%,
+  82%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  85% {
+    transform: rotate(-12deg);
+  }
+
+  88% {
+    transform: rotate(10deg);
+  }
+
+  91% {
+    transform: rotate(-8deg);
+  }
+
+  94% {
+    transform: rotate(6deg);
+  }
+
+  97% {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes bmpui-product-notification-radiate {
+  0% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes bmpui-product-notification-shake {
+  0%,
+  72%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  74% {
+    transform: translate3d(-4px, 0, 0) rotate(-1deg);
+  }
+
+  78% {
+    transform: translate3d(4px, 0, 0) rotate(1deg);
+  }
+
+  82% {
+    transform: translate3d(-3px, 1px, 0) rotate(-0.8deg);
+  }
+
+  86% {
+    transform: translate3d(3px, -1px, 0) rotate(0.8deg);
+  }
+
+  90% {
+    transform: translate3d(-2px, 0, 0) rotate(-0.4deg);
+  }
+
+  94% {
+    transform: translate3d(2px, 0, 0) rotate(0.4deg);
+  }
+}
