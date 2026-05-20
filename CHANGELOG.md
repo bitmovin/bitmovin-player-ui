@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Internal
+
+- Webpack dev server uses automatic port selection starting from `9000`, allowing multiple local checkouts to run concurrently
+
 ## [4.14.0] - 2026-05-14
 
 ### Added
