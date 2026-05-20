@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `UIManager.getRecommendations`, `UIManager.addRecommendation`, and `UIManager.removeRecommendation` for dynamically updating recommendation items for the `RecommendationOverlay`
 
+### Internal
+
+- Webpack dev server uses automatic port selection starting from `9000`, allowing multiple local checkouts to run concurrently
+
 ## [4.14.0] - 2026-05-14
 
 ### Added
