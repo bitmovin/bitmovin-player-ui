@@ -108,6 +108,17 @@ export namespace MockHelper {
         getSource: jest.fn(),
         exports: {
           PlayerEvent,
+          PlayerAPINotAvailableError: (function () {
+            class PlayerAPINotAvailableError extends Error {
+              constructor(api: string) {
+                super(`Cannot use the \`${api}\` API: the player has already been destroyed.`);
+                this.name = 'PlayerAPINotAvailableError';
+                // ES5 `extends Error` loses the prototype chain under tsc downleveling, so restore it.
+                Object.setPrototypeOf(this, PlayerAPINotAvailableError.prototype);
+              }
+            }
+            return PlayerAPINotAvailableError;
+          })(),
           ViewMode: {
             Fullscreen: 'fullscreen',
             PictureInPicture: 'pictureinpicture',

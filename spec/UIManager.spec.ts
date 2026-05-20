@@ -6,7 +6,7 @@ import {
   UIManager,
   UIVariant,
 } from '../src/ts/UIManager';
-import { PlayerAPI } from 'bitmovin-player';
+import { PlayerAPI, PlayerEvent } from 'bitmovin-player';
 import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
 import { UIContainer } from '../src/ts/components/UIContainer';
@@ -177,6 +177,81 @@ describe('UIManager', () => {
       playerMock.eventEmitter.fireAdBreakFinishedEvent();
       expect(adUi.ui.isHidden()).toBeTruthy();
       expect(contentUi.ui.isHidden()).toBeFalsy();
+    });
+  });
+
+  describe('auto-release on player Destroy', () => {
+    it('calls release() when the player fires the Destroy event', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      const uiVariant = { ui: new UIContainer({ components: [new Container({})] }) };
+      const uiManager = new UIManager(playerMock, [uiVariant]);
+      const releaseSpy = jest.spyOn(uiManager, 'release');
+
+      playerMock.eventEmitter.fireEvent({ timestamp: Date.now(), type: PlayerEvent.Destroy });
+
+      expect(releaseSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('is idempotent across auto- and manual release calls', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      const uiVariant = { ui: new UIContainer({ components: [new Container({})] }) };
+      const uiManager = new UIManager(playerMock, [uiVariant]);
+      const adBreakTrackerReleaseSpy = jest.spyOn(
+        (uiManager.getConfig() as InternalUIConfig).adBreakTracker,
+        'release',
+      );
+      const wrapperClearSpy = jest.spyOn(
+        (uiManager as any).managerPlayerWrapper as PlayerWrapper,
+        'clearEventHandlers',
+      );
+
+      playerMock.eventEmitter.fireEvent({ timestamp: Date.now(), type: PlayerEvent.Destroy });
+      uiManager.release();
+      uiManager.release();
+      uiManager.release();
+
+      expect(adBreakTrackerReleaseSpy).toHaveBeenCalledTimes(1);
+      expect(wrapperClearSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('swallows PlayerAPINotAvailableError thrown from releaseControls but rethrows other errors', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      const uiVariant1 = { ui: new UIContainer({ components: [new Container({})] }) };
+      const uiManager1 = new UIManager(playerMock, [uiVariant1]);
+      jest.spyOn(uiManager1.activeUi as any, 'releaseControls').mockImplementation(() => {
+        throw new playerMock.exports.PlayerAPINotAvailableError('player.foo');
+      });
+
+      expect(() => uiManager1.release()).not.toThrow();
+
+      const playerMock2 = MockHelper.getPlayerMock();
+      const uiVariant2 = { ui: new UIContainer({ components: [new Container({})] }) };
+      const uiManager2 = new UIManager(playerMock2, [uiVariant2]);
+      jest.spyOn(uiManager2.activeUi as any, 'releaseControls').mockImplementation(() => {
+        throw new TypeError('boom from a custom component');
+      });
+
+      expect(() => uiManager2.release()).toThrow(TypeError);
+    });
+
+    it('forwards .off() calls from both manager-level and per-instance wrappers to the same underlying player', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      const uiVariant = { ui: new UIContainer({ components: [new Container({})] }) };
+      const uiManager = new UIManager(playerMock, [uiVariant]);
+      const offSpy = jest.spyOn(playerMock, 'off');
+
+      const managerWrapped = (uiManager as any).managerPlayerWrapper.getPlayer() as PlayerAPI;
+      const instanceWrapped = uiManager.activeUi.getPlayer();
+
+      const cb = () => {};
+      managerWrapped.on(PlayerEvent.Play, cb);
+      instanceWrapped.on(PlayerEvent.Play, cb);
+      managerWrapped.off(PlayerEvent.Play, cb);
+      instanceWrapped.off(PlayerEvent.Play, cb);
+
+      expect(offSpy).toHaveBeenCalledTimes(2);
+      expect(offSpy).toHaveBeenNthCalledWith(1, PlayerEvent.Play, cb);
+      expect(offSpy).toHaveBeenNthCalledWith(2, PlayerEvent.Play, cb);
     });
   });
 

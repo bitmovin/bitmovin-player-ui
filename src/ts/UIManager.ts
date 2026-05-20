@@ -147,6 +147,7 @@ export class UIManager {
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
   private shadowDomManager: ShadowDomManager;
+  private released: boolean = false;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -257,6 +258,11 @@ export class UIManager {
     const wrappedPlayer = this.managerPlayerWrapper.getPlayer();
 
     wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, updateSource);
+
+    // Auto-release on player destroy so consumers calling only `player.destroy()` do not leak the UI subtree.
+    wrappedPlayer.on(this.player.exports.PlayerEvent.Destroy, () => {
+      this.release();
+    });
 
     // The PlaylistTransition event is only available on Mobile v3 for now.
     // This event is fired when a new source becomes active in the player.
@@ -606,17 +612,40 @@ export class UIManager {
   }
 
   private releaseUi(ui: InternalUIInstanceManager): void {
-    ui.releaseControls();
+    // Component teardown may touch player APIs (e.g. UIContainer.hideUi -> player.isCasting()) that throw on a
+    // destroyed player. Tolerate only that error so DOM removal still runs and real bugs still surface.
+    this.tolerateDestroyedPlayer(() => ui.releaseControls());
 
     const uiContainer = ui.getUI();
     if (uiContainer.hasDomElement()) {
       uiContainer.getDomElement().remove();
     }
 
-    ui.clearEventHandlers();
+    this.tolerateDestroyedPlayer(() => ui.clearEventHandlers());
+  }
+
+  private tolerateDestroyedPlayer(step: () => void): void {
+    try {
+      step();
+    } catch (error) {
+      if (!(error instanceof this.player.exports.PlayerAPINotAvailableError)) {
+        throw error;
+      }
+      // Single debug line keeps field-diagnostic signal without noisy prod logs.
+      console.debug('Tolerating PlayerAPINotAvailableError during UI teardown', error);
+    }
   }
 
   release(): void {
+    if (this.released) {
+      return;
+    }
+    this.released = true;
+
+    // Load-bearing: adBreakTracker.release() and releaseUi() below call player.off via this wrapper before
+    // clearEventHandlers() runs, so the flag must be set explicitly here.
+    this.managerPlayerWrapper.markReleased();
+
     this.config.adBreakTracker.release();
 
     for (const uiInstanceManager of this.uiInstanceManagers) {
@@ -852,6 +881,11 @@ export class UIInstanceManager {
     return this.events.onComponentViewModeChanged;
   }
 
+  /** Marks the wrapped player as released. See {@link PlayerWrapper.markReleased}. */
+  protected markPlayerWrapperReleased(): void {
+    this.playerWrapper.markReleased();
+  }
+
   protected clearEventHandlers(): void {
     this.playerWrapper.clearEventHandlers();
 
@@ -916,6 +950,9 @@ class InternalUIInstanceManager extends UIInstanceManager {
   }
 
   releaseControls(): void {
+    // Component .off() calls during the tree walk below must tolerate a destroyed player.
+    this.markPlayerWrapperReleased();
+
     // Do not call release methods if the components have never been configured; this can result in exceptions
     if (this.configured) {
       this.onRelease.dispatch(this.getUI());
@@ -966,6 +1003,7 @@ export interface WrappedPlayer extends PlayerAPI {
 export class PlayerWrapper {
   private player: PlayerAPI;
   private wrapper: WrappedPlayer;
+  private released: boolean = false;
 
   private eventHandlers: { [eventType: string]: PlayerEventCallback<PlayerEvent>[] } = {};
 
@@ -1041,9 +1079,16 @@ export class PlayerWrapper {
       return wrapper;
     };
 
-    // Explicitly add a wrapper method for 'off' that removes removed event handlers from the event list
+    // Tracks event handlers, then forwards to player.off. After markReleased(), swallows
+    // PlayerAPINotAvailableError only — scopes tolerance to teardown so unrelated post-destroy off() still throws.
     wrapper.off = <T extends PlayerEvent>(eventType: T, callback: PlayerEventCallback<T>) => {
-      player.off(eventType, callback);
+      try {
+        player.off(eventType, callback);
+      } catch (error) {
+        if (!(this.released && error instanceof player.exports.PlayerAPINotAvailableError)) {
+          throw error;
+        }
+      }
 
       if (this.eventHandlers[eventType]) {
         ArrayUtils.remove(this.eventHandlers[eventType], callback);
@@ -1085,10 +1130,16 @@ export class PlayerWrapper {
     return this.wrapper;
   }
 
+  /** Marks the wrapper released — subsequent off() calls tolerate a destroyed underlying player. */
+  markReleased(): void {
+    this.released = true;
+  }
+
   /**
    * Clears all registered event handlers from the player that were added through the wrapped player.
    */
   clearEventHandlers(): void {
+    this.released = true;
     try {
       // Call the player API to check if the instance is still valid or already destroyed.
       // This can be any call throwing the PlayerAPINotAvailableError when the player instance is destroyed.
