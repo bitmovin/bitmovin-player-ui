@@ -214,36 +214,36 @@ describe('UIManager', () => {
       const onUpdatedSpy = jest.fn();
       (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
 
-      uiManager.addRecommendation(recommendation);
+      uiManager.recommendations.add(recommendation);
 
-      expect(uiManager.getRecommendations()).toEqual([recommendation]);
+      expect(uiManager.recommendations.list()).toEqual([recommendation]);
       expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
     });
 
     it('removes recommendations by reference and dispatches config update', () => {
       const recommendation = createRecommendation('recommendation-1');
-      uiManager.addRecommendation(recommendation);
+      uiManager.recommendations.add(recommendation);
       const onUpdatedSpy = jest.fn();
       (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
 
-      const removed = uiManager.removeRecommendation(recommendation);
+      const removed = uiManager.recommendations.remove(recommendation);
 
       expect(removed).toBe(true);
-      expect(uiManager.getRecommendations()).toEqual([]);
+      expect(uiManager.recommendations.list()).toEqual([]);
       expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
     });
 
     it('does not dispatch config update when the recommendation is not present', () => {
       const recommendation = createRecommendation('recommendation-1');
       const otherRecommendation = createRecommendation('recommendation-2');
-      uiManager.addRecommendation(recommendation);
+      uiManager.recommendations.add(recommendation);
       const onUpdatedSpy = jest.fn();
       (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
 
-      const removed = uiManager.removeRecommendation(otherRecommendation);
+      const removed = uiManager.recommendations.remove(otherRecommendation);
 
       expect(removed).toBe(false);
-      expect(uiManager.getRecommendations()).toEqual([recommendation]);
+      expect(uiManager.recommendations.list()).toEqual([recommendation]);
       expect(onUpdatedSpy).not.toHaveBeenCalled();
     });
   });

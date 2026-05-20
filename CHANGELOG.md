@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `UIManager.getRecommendations`, `UIManager.addRecommendation`, and `UIManager.removeRecommendation` for dynamically updating recommendation items for the `RecommendationOverlay`
+- `UIManager.recommendations` API for dynamically updating recommendation items for the `RecommendationOverlay`
 
 ### Internal
 

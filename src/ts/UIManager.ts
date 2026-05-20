@@ -66,6 +66,28 @@ export interface InternalUIConfig extends UIConfig {
 }
 
 /**
+ * API for managing recommendations displayed by the {@link RecommendationOverlay}.
+ */
+export interface RecommendationsApi {
+  /**
+   * Adds a recommendation which will be displayed in the {@link RecommendationOverlay}.
+   */
+  add(recommendation: RecommendationConfig): void;
+
+  /**
+   * Removes a recommendation by reference and returns `true` if the recommendation has
+   * been part of the recommendations and successfully removed, or `false` if the recommendation
+   * could not be found and thus not removed.
+   */
+  remove(recommendation: RecommendationConfig): boolean;
+
+  /**
+   * Returns the list of all added recommendations in display order.
+   */
+  list(): RecommendationConfig[];
+}
+
+/**
  * The context that will be passed to a {@link UIConditionResolver} to determine if it's conditions fulfil the context.
  */
 export interface UIConditionContext {
@@ -147,6 +169,7 @@ export class UIManager {
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
   private shadowDomManager: ShadowDomManager;
+  private recommendationsApi: RecommendationsApi;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -209,6 +232,24 @@ export class UIManager {
       },
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
       adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer()),
+    };
+
+    this.recommendationsApi = {
+      add: (recommendation: RecommendationConfig): void => {
+        this.config.metadata.recommendations.push(recommendation);
+        this.config.events.onUpdated.dispatch(this);
+      },
+      remove: (recommendation: RecommendationConfig): boolean => {
+        if (ArrayUtils.remove(this.config.metadata.recommendations, recommendation) === recommendation) {
+          this.config.events.onUpdated.dispatch(this);
+          return true;
+        }
+
+        return false;
+      },
+      list: (): RecommendationConfig[] => {
+        return this.config.metadata.recommendations;
+      },
     };
 
     /**
@@ -653,6 +694,13 @@ export class UIManager {
   }
 
   /**
+   * API for managing recommendations displayed by the {@link RecommendationOverlay}.
+   */
+  get recommendations(): RecommendationsApi {
+    return this.recommendationsApi;
+  }
+
+  /**
    * Returns the list of all added markers in undefined order.
    */
   getTimelineMarkers(): TimelineMarker[] {
@@ -674,35 +722,6 @@ export class UIManager {
    */
   removeTimelineMarker(timelineMarker: TimelineMarker): boolean {
     if (ArrayUtils.remove(this.config.metadata.markers, timelineMarker) === timelineMarker) {
-      this.config.events.onUpdated.dispatch(this);
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Returns the list of all added recommendations in display order.
-   */
-  getRecommendations(): RecommendationConfig[] {
-    return this.config.metadata.recommendations;
-  }
-
-  /**
-   * Adds a recommendation which will be displayed in the {@link RecommendationOverlay}.
-   */
-  addRecommendation(recommendation: RecommendationConfig): void {
-    this.config.metadata.recommendations.push(recommendation);
-    this.config.events.onUpdated.dispatch(this);
-  }
-
-  /**
-   * Removes a recommendation (by reference) and returns `true` if the recommendation has
-   * been part of the recommendations and successfully removed, or `false` if the recommendation
-   * could not be found and thus not removed.
-   */
-  removeRecommendation(recommendation: RecommendationConfig): boolean {
-    if (ArrayUtils.remove(this.config.metadata.recommendations, recommendation) === recommendation) {
       this.config.events.onUpdated.dispatch(this);
       return true;
     }
