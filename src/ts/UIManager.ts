@@ -7,7 +7,7 @@ import { NoArgs, EventDispatcher, CancelEventArgs } from './EventDispatcher';
 import { UIUtils } from './utils/UIUtils';
 import { ArrayUtils } from './utils/ArrayUtils';
 import { BrowserUtils } from './utils/BrowserUtils';
-import { TimelineMarker, UIConfig } from './UIConfig';
+import { RecommendationConfig, TimelineMarker, UIConfig } from './UIConfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './utils/VolumeController';
 import { i18n, CustomVocabulary, Vocabularies, I18n, LanguageChangedArgument } from './localization/i18n';
@@ -674,6 +674,35 @@ export class UIManager {
    */
   removeTimelineMarker(timelineMarker: TimelineMarker): boolean {
     if (ArrayUtils.remove(this.config.metadata.markers, timelineMarker) === timelineMarker) {
+      this.config.events.onUpdated.dispatch(this);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Returns the list of all added recommendations in display order.
+   */
+  getRecommendations(): RecommendationConfig[] {
+    return this.config.metadata.recommendations;
+  }
+
+  /**
+   * Adds a recommendation.
+   */
+  addRecommendation(recommendation: RecommendationConfig): void {
+    this.config.metadata.recommendations.push(recommendation);
+    this.config.events.onUpdated.dispatch(this);
+  }
+
+  /**
+   * Removes a recommendation (by reference) and returns `true` if the recommendation has
+   * been part of the recommendations and successfully removed, or `false` if the recommendation
+   * could not be found and thus not removed.
+   */
+  removeRecommendation(recommendation: RecommendationConfig): boolean {
+    if (ArrayUtils.remove(this.config.metadata.recommendations, recommendation) === recommendation) {
       this.config.events.onUpdated.dispatch(this);
       return true;
     }

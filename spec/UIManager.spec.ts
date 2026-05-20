@@ -11,6 +11,7 @@ import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
 import { UIContainer } from '../src/ts/components/UIContainer';
 import { Container } from '../src/ts/components/Container';
+import { RecommendationConfig } from '../src/ts/UIConfig';
 
 jest.mock('../src/ts/DOM');
 
@@ -187,6 +188,63 @@ describe('UIManager', () => {
       const uiManager = new UIManager(playerMock, [uiVariant]);
 
       expect(uiManager.activeUi).toBeInstanceOf(UIInstanceManager);
+    });
+  });
+
+  describe('recommendations', () => {
+    const createRecommendation = (title: string): RecommendationConfig => ({
+      title,
+      resource: {
+        url: `https://example.com/${title}`,
+      },
+    });
+
+    let playerMock: TestingPlayerAPI;
+    let uiManager: UIManager;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { recommendations: [] },
+      });
+    });
+
+    it('adds recommendations and dispatches config update', () => {
+      const recommendation = createRecommendation('recommendation-1');
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      uiManager.addRecommendation(recommendation);
+
+      expect(uiManager.getRecommendations()).toEqual([recommendation]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('removes recommendations by reference and dispatches config update', () => {
+      const recommendation = createRecommendation('recommendation-1');
+      uiManager.addRecommendation(recommendation);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.removeRecommendation(recommendation);
+
+      expect(removed).toBe(true);
+      expect(uiManager.getRecommendations()).toEqual([]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('does not dispatch config update when the recommendation is not present', () => {
+      const recommendation = createRecommendation('recommendation-1');
+      const otherRecommendation = createRecommendation('recommendation-2');
+      uiManager.addRecommendation(recommendation);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.removeRecommendation(otherRecommendation);
+
+      expect(removed).toBe(false);
+      expect(uiManager.getRecommendations()).toEqual([recommendation]);
+      expect(onUpdatedSpy).not.toHaveBeenCalled();
     });
   });
 
