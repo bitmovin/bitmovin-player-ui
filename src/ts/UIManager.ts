@@ -689,7 +689,7 @@ export class UIManager {
   }
 
   /**
-   * Adds a recommendation.
+   * Adds a recommendation which will be displayed in the {@link RecommendationOverlay}.
    */
   addRecommendation(recommendation: RecommendationConfig): void {
     this.config.metadata.recommendations.push(recommendation);
