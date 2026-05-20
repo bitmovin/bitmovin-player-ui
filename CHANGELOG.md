@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `UIManager.getRecommendations`, `UIManager.addRecommendation`, and `UIManager.removeRecommendation` for dynamically updating recommendation items for the `RecommendationOverlay`
+
 ## [4.14.0] - 2026-05-14
 
 ### Added
