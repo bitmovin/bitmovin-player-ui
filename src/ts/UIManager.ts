@@ -248,7 +248,7 @@ export class UIManager {
         return false;
       },
       list: (): RecommendationConfig[] => {
-        return this.config.metadata.recommendations;
+        return [...this.config.metadata.recommendations];
       },
     };
 
