@@ -92,7 +92,11 @@ export interface RecommendationsApi {
  */
 export interface TimelineMarkersApi {
   /**
-   * Adds a marker to the timeline. Does not check for duplicates/overlaps at the `time`.
+   * Adds a marker to the timeline.
+   *
+   * Note:
+   * - Does not check for duplicates/overlaps at the `time`.
+   * - Dynamically added timeline markers will be cleared when a new source is loaded into the Player.
    */
   add(timelineMarker: TimelineMarker): void;
 
@@ -104,7 +108,7 @@ export interface TimelineMarkersApi {
   remove(timelineMarker: TimelineMarker): boolean;
 
   /**
-   * Returns the list of all added timeline markers in undefined order.
+   * Returns the list of all added timeline markers in insertion order.
    */
   list(): TimelineMarker[];
 }
