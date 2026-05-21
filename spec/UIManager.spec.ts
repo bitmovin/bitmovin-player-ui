@@ -307,7 +307,7 @@ describe('UIManager', () => {
 
       uiManager.addTimelineMarker(timelineMarker);
 
-      expect(uiManager.getTimelineMarkers()).toBe(uiManager.timelineMarkers.list());
+      expect(uiManager.getTimelineMarkers()).toEqual(uiManager.timelineMarkers.list());
       expect(uiManager.timelineMarkers.list()).toEqual([timelineMarker]);
       expect(uiManager.removeTimelineMarker(timelineMarker)).toBe(true);
       expect(uiManager.timelineMarkers.list()).toEqual([]);

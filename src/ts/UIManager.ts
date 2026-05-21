@@ -289,7 +289,7 @@ export class UIManager {
         return false;
       },
       list: (): TimelineMarker[] => {
-        return this.config.metadata.markers;
+        return [...this.config.metadata.markers];
       },
     };
 
