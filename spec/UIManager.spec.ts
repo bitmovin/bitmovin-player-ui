@@ -11,7 +11,7 @@ import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
 import { UIContainer } from '../src/ts/components/UIContainer';
 import { Container } from '../src/ts/components/Container';
-import { RecommendationConfig } from '../src/ts/UIConfig';
+import { RecommendationConfig, TimelineMarker } from '../src/ts/UIConfig';
 
 jest.mock('../src/ts/DOM');
 
@@ -245,6 +245,72 @@ describe('UIManager', () => {
       expect(removed).toBe(false);
       expect(uiManager.recommendations.list()).toEqual([recommendation]);
       expect(onUpdatedSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('timelineMarkers', () => {
+    const createTimelineMarker = (time: number): TimelineMarker => ({
+      time,
+      title: `marker-${time}`,
+    });
+
+    let playerMock: TestingPlayerAPI;
+    let uiManager: UIManager;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { markers: [] },
+      });
+    });
+
+    it('adds timeline markers and dispatches config update', () => {
+      const timelineMarker = createTimelineMarker(10);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      uiManager.timelineMarkers.add(timelineMarker);
+
+      expect(uiManager.timelineMarkers.list()).toEqual([timelineMarker]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('removes timeline markers by reference and dispatches config update', () => {
+      const timelineMarker = createTimelineMarker(10);
+      uiManager.timelineMarkers.add(timelineMarker);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.timelineMarkers.remove(timelineMarker);
+
+      expect(removed).toBe(true);
+      expect(uiManager.timelineMarkers.list()).toEqual([]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('does not dispatch config update when the timeline marker is not present', () => {
+      const timelineMarker = createTimelineMarker(10);
+      const otherTimelineMarker = createTimelineMarker(20);
+      uiManager.timelineMarkers.add(timelineMarker);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.timelineMarkers.remove(otherTimelineMarker);
+
+      expect(removed).toBe(false);
+      expect(uiManager.timelineMarkers.list()).toEqual([timelineMarker]);
+      expect(onUpdatedSpy).not.toHaveBeenCalled();
+    });
+
+    it('keeps deprecated timeline marker APIs backed by the timelineMarkers namespace', () => {
+      const timelineMarker = createTimelineMarker(10);
+
+      uiManager.addTimelineMarker(timelineMarker);
+
+      expect(uiManager.getTimelineMarkers()).toBe(uiManager.timelineMarkers.list());
+      expect(uiManager.timelineMarkers.list()).toEqual([timelineMarker]);
+      expect(uiManager.removeTimelineMarker(timelineMarker)).toBe(true);
+      expect(uiManager.timelineMarkers.list()).toEqual([]);
     });
   });
 
