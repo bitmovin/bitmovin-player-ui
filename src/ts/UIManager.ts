@@ -71,6 +71,10 @@ export interface InternalUIConfig extends UIConfig {
 export interface RecommendationsApi {
   /**
    * Adds a recommendation which will be displayed in the {@link RecommendationOverlay}.
+   *
+   * Note:
+   * - Does not check for duplicated recommendations.
+   * - Dynamically added recommendations will be cleared when a new source is loaded into the Player.
    */
   add(recommendation: RecommendationConfig): void;
 
