@@ -172,7 +172,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         );
 
         if (this.cea608Enabled && this.ensureCea608GridSizeUpdated && isCea608PushupTransitionEnabled) {
-          awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
+          this.getDomElement().waitForTransitionEnd('bottom').then(this.ensureCea608GridSizeUpdated);
         }
       }
     });
@@ -185,7 +185,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         );
 
         if (this.cea608Enabled && this.ensureCea608GridSizeUpdated && isCea608PushupTransitionEnabled) {
-          awaitTransitionEnd(this.getDomElement()).then(this.ensureCea608GridSizeUpdated);
+          this.getDomElement().waitForTransitionEnd('bottom').then(this.ensureCea608GridSizeUpdated);
         }
       }
     });
@@ -905,22 +905,4 @@ export class SubtitleRegionContainer extends Container<ContainerConfig> {
 
 function isCea608SubtitleCue(cue: SubtitleCueEvent): boolean {
   return cue.position != null;
-}
-
-function awaitTransitionEnd(domElement: DOM) {
-  const hasTransition = getComputedStyle(domElement.get(0)).transitionProperty !== 'none';
-
-  if (!hasTransition) {
-    return Promise.resolve();
-  }
-
-  return new Promise<void>(resolve => {
-    const transitionHandler = () => {
-      domElement.off('transitionend', transitionHandler);
-      domElement.off('transitioncancel', transitionHandler);
-      resolve();
-    };
-    domElement.on('transitionend', transitionHandler);
-    domElement.on('transitioncancel', transitionHandler);
-  });
 }
