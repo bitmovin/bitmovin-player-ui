@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Desktop UI layouts show a player context menu with Bitmovin Player and UI version information
+
 ### Internal
 
 - Webpack dev server uses automatic port selection starting from `9000`, allowing multiple local checkouts to run concurrently
