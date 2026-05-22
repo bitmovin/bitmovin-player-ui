@@ -1,14 +1,12 @@
 import { PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../../UIManager';
 import { i18n } from '../../localization/i18n';
-import { version as UI_VERSION_RAW } from '../../main';
+import { version as UI_VERSION } from '../../main';
 import { Label, LabelConfig } from '../labels/Label';
 import { SettingsPanel, SettingsPanelConfig } from './SettingsPanel';
 import { SettingsPanelItem, SettingsPanelItemConfig } from './SettingsPanelItem';
 import { SettingsPanelPage, SettingsPanelPageConfig } from './SettingsPanelPage';
 import { SettingsPanelPageBackButton } from './SettingsPanelPageBackButton';
-
-const UI_VERSION: string = UI_VERSION_RAW.replace(/^"|"$/g, '');
 
 /**
  * Configuration interface for a {@link PlayerInfoSettingsPanelPage}.
