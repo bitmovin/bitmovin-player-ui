@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- The exported UI `version` (`window.bitmovin.playerui.version`) no longer includes extra quote characters
+
 ### Internal
 
 - Webpack dev server uses automatic port selection starting from `9000`, allowing multiple local checkouts to run concurrently
