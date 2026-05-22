@@ -4,6 +4,7 @@ import { version as UI_VERSION_RAW } from '../../main';
 import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';
+import { Container, ContainerConfig } from '../Container';
 
 // `version` in `main.ts` carries the JSON-stringified package version (i.e. surrounded
 // by quotes from the build-time replacement). Peel them off for display.
@@ -22,17 +23,25 @@ export interface PlayerContextMenuConfig extends ContextMenuConfig {}
  * @category Components
  */
 export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
+  constructor(config: PlayerContextMenuConfig = {}) {
+    super({
+      ...config,
+      cssClasses: ['ui-player-context-menu', ...(config.cssClasses ?? [])],
+      components: [new PlayerInfoContextMenuItem(), ...(config.components ?? [])],
+    });
+  }
+}
+
+class PlayerInfoContextMenuItem extends Container<ContainerConfig> {
   private readonly playerVersionLabel: Label<LabelConfig>;
 
-  constructor(config: PlayerContextMenuConfig = {}) {
+  constructor() {
     const playerVersionLabel = new Label<LabelConfig>({
       text: 'Player: -',
       cssClasses: ['ui-player-context-menu-info'],
     });
 
     super({
-      ...config,
-      cssClasses: ['ui-player-context-menu', ...(config.cssClasses ?? [])],
       components: [
         new Label<LabelConfig>({
           text: i18n.getLocalizer('contextMenu.title'),
@@ -47,8 +56,9 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
           text: `UI: ${UI_VERSION}`,
           cssClasses: ['ui-player-context-menu-info'],
         }),
-        ...(config.components ?? []),
       ],
+      cssClasses: ['ui-player-context-menu-info-item'],
+      role: 'group',
     });
 
     this.playerVersionLabel = playerVersionLabel;
