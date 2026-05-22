@@ -71,6 +71,10 @@ export interface InternalUIConfig extends UIConfig {
 export interface RecommendationsApi {
   /**
    * Adds a recommendation which will be displayed in the {@link RecommendationOverlay}.
+   *
+   * Note:
+   * - Does not check for duplicated recommendations.
+   * - Dynamically added recommendations will be cleared when a new source is loaded into the Player.
    */
   add(recommendation: RecommendationConfig): void;
 
@@ -275,7 +279,7 @@ export class UIManager {
         return false;
       },
       list: (): RecommendationConfig[] => {
-        return this.config.metadata.recommendations;
+        return [...this.config.metadata.recommendations];
       },
     };
 
@@ -303,7 +307,7 @@ export class UIManager {
      */
     const updateConfig = () => {
       const playerSourceConfig = player.getSource() || {};
-      this.config.metadata = JSON.parse(JSON.stringify(uiconfig.metadata || {}));
+      this.config.metadata = { ...uiconfig.metadata };
 
       // Extract the UI-related config properties from the source config
       const playerSourceUiConfig: UIConfig = {
@@ -321,9 +325,10 @@ export class UIManager {
       // lifetime of the player instance.
       this.config.metadata.title = playerSourceUiConfig.metadata.title || uiconfig.metadata.title;
       this.config.metadata.description = playerSourceUiConfig.metadata.description || uiconfig.metadata.description;
-      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [];
-      this.config.metadata.recommendations =
-        playerSourceUiConfig.metadata.recommendations || uiconfig.metadata.recommendations || [];
+      this.config.metadata.markers = [...(playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [])];
+      this.config.metadata.recommendations = [
+        ...(playerSourceUiConfig.metadata.recommendations || uiconfig.metadata.recommendations || []),
+      ];
 
       StorageUtils.setStorageApiDisabled(uiconfig);
     };
