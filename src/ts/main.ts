@@ -171,6 +171,10 @@ export {
   PlayerInsightsPanel,
   PlayerInsightsPanelConfig,
 } from './components/panels/player-insights/PlayerInsightsPanel';
+export {
+  PlayerInfoSettingsPanelPage,
+  PlayerInfoSettingsPanelPageConfig,
+} from './components/settings/PlayerInfoSettingsPanelPage';
 export { InteractiveSettingsPanelItem } from './components/settings/InteractiveSettingsPanelItem';
 export { TouchControlOverlay, TouchControlOverlayConfig } from './components/overlays/TouchControlOverlay';
 export { CharacterEdgeColorSelectBox } from './components/settings/subtitlesettings/CharacterEdgeColorSelectBox';

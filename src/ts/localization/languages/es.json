@@ -49,6 +49,7 @@
   "ads.skippableIn": "Saltar anuncio en {remainingTime}",
   "ads.adNumberOfTotal": "Anuncio {activeAdIndex} de {totalAdsCount}",
   "settings": "Configuración",
+  "settings.more": "Más",
   "fullscreen": "Pantalla Completa",
   "speed": "Velocidad",
   "playPause": "Reproducir/Pausa",

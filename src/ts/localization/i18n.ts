@@ -91,6 +91,7 @@ export interface Vocabulary {
   'colors.magenta': string;
   percent: string;
   settings: string;
+  'settings.more': string;
   'ads.remainingTime': string;
   'ads.skip': string;
   'ads.skippableIn': string;
