@@ -1,0 +1,21 @@
+@import '../../variables';
+
+%ui-settings-panel-page-navigation-item {
+  @extend %ui-settings-panel-item;
+
+  .#{$prefix}-ui-settings-panel-page-navigation-item-trailing-label {
+    align-self: center;
+    margin-left: auto;
+    width: fit-content;
+
+    .#{$prefix}-ui-icon {
+      background-image: svg-load('../../assets/images/angle-right.svg', stroke=$color-icon);
+      min-width: unset;
+      width: 0.8em;
+    }
+  }
+}
+
+.#{$prefix}-ui-settings-panel-page-navigation-item {
+  @extend %ui-settings-panel-page-navigation-item;
+}
