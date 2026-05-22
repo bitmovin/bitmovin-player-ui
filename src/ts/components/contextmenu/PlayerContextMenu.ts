@@ -1,14 +1,10 @@
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
-import { version as UI_VERSION_RAW } from '../../main';
+import { version as UI_VERSION } from '../../main';
 import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';
 import { Container, ContainerConfig } from '../Container';
-
-// `version` in `main.ts` carries the JSON-stringified package version (i.e. surrounded
-// by quotes from the build-time replacement). Peel them off for display.
-const UI_VERSION: string = UI_VERSION_RAW.replace(/^"|"$/g, '');
 
 /**
  * Configuration interface for the {@link PlayerContextMenu}.
