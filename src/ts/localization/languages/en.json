@@ -80,5 +80,7 @@
   "seekBar.timeshift": "Timeshift",
   "seekBar.durationText": "out of",
   "quickseek.forward": "Fast Forward {seekSeconds} seconds",
-  "quickseek.rewind": "Rewind {seekSeconds} seconds"
+  "quickseek.rewind": "Rewind {seekSeconds} seconds",
+  "contextMenu.title": "Bitmovin Player",
+  "contextMenu.subtitle": "Adaptive Streaming for the Web"
 }

@@ -1,0 +1,42 @@
+@import '../../variables';
+
+%ui-player-context-menu-label {
+  display: block;
+  line-height: 1.2;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.#{$prefix}-ui-context-menu {
+  .#{$prefix}-ui-player-context-menu-header {
+    @extend %ui-player-context-menu-label;
+
+    color: $color-primary;
+    font-weight: $font-weight-semi-bold;
+    padding-top: 0.9rem;
+  }
+
+  .#{$prefix}-ui-player-context-menu-subtitle {
+    @extend %ui-player-context-menu-label;
+
+    color: $color-secondary;
+    font-size: $font-size-small;
+    padding-top: 0.15rem;
+  }
+
+  .#{$prefix}-ui-player-context-menu-info {
+    @extend %ui-player-context-menu-label;
+
+    color: transparentize($color-primary, 0.15);
+    font-family: monospace;
+    padding-top: 0.15rem;
+  }
+
+  .#{$prefix}-ui-player-context-menu-subtitle + .#{$prefix}-ui-player-context-menu-info {
+    padding-top: 0.45rem;
+  }
+
+  .#{$prefix}-ui-player-context-menu-info:last-child {
+    padding-bottom: 0.9rem;
+  }
+}
