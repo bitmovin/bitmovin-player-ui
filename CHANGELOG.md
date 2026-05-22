@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Desktop UI layouts show a player context menu with Bitmovin Player and UI version information
+- New `ContextMenu` component to show custom context menus on right-click.
+- Default `PlayerContextMenu` to access player information directly from the UI.
 
 ### Fixed
 
