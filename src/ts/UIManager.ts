@@ -491,6 +491,7 @@ export class UIManager {
 
     // Hide the currently active UI variant
     if (this.currentUi) {
+      this.currentUi.onInactive.dispatch(this.currentUi.getUI());
       this.currentUi.getUI().hide();
     }
 
@@ -514,6 +515,7 @@ export class UIManager {
       onShow();
     }
     this.currentUi.getUI().show();
+    this.currentUi.onActive.dispatch(this.currentUi.getUI());
     this.events.onActiveUiChanged.dispatch(this, { previousUi, currentUi: nextUi });
   }
 
@@ -619,6 +621,11 @@ export class UIManager {
   release(): void {
     this.config.adBreakTracker.release();
 
+    if (this.currentUi) {
+      this.currentUi.onInactive.dispatch(this.currentUi.getUI());
+      this.currentUi = null;
+    }
+
     for (const uiInstanceManager of this.uiInstanceManagers) {
       this.releaseUi(uiInstanceManager);
     }
@@ -706,6 +713,8 @@ export class UIInstanceManager {
 
   private events = {
     onConfigured: new EventDispatcher<UIContainer, NoArgs>(),
+    onActive: new EventDispatcher<UIContainer, NoArgs>(),
+    onInactive: new EventDispatcher<UIContainer, NoArgs>(),
     onSeek: new EventDispatcher<SeekBar, NoArgs>(),
     onSeekPreview: new EventDispatcher<SeekBar, SeekPreviewArgs>(),
     onSeeked: new EventDispatcher<SeekBar, NoArgs>(),
@@ -758,6 +767,22 @@ export class UIInstanceManager {
    */
   get onConfigured(): EventDispatcher<UIContainer, NoArgs> {
     return this.events.onConfigured;
+  }
+
+  /**
+   * Fires when this UI instance becomes the active UI variant.
+   * @returns {EventDispatcher}
+   */
+  get onActive(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onActive;
+  }
+
+  /**
+   * Fires when this UI instance stops being the active UI variant.
+   * @returns {EventDispatcher}
+   */
+  get onInactive(): EventDispatcher<UIContainer, NoArgs> {
+    return this.events.onInactive;
   }
 
   /**
