@@ -34,16 +34,6 @@ export class WindowColorSelectBox extends SubtitleSettingSelectBox {
     this.addItem('yellow', i18n.getLocalizer('colors.yellow'));
     this.addItem('magenta', i18n.getLocalizer('colors.magenta'));
 
-    const setColorAndOpacity = () => {
-      if (this.settingsManager.windowColor.isSet() && this.settingsManager.windowOpacity.isSet()) {
-        this.toggleOverlayClass(
-          'windowcolor-' + this.settingsManager.windowColor.value + this.settingsManager.windowOpacity.value,
-        );
-      } else {
-        this.toggleOverlayClass(null);
-      }
-    };
-
     this.onItemSelectionChanged.subscribe((sender, key: string) => {
       this.settingsManager.windowColor.value = key;
     });
@@ -58,16 +48,30 @@ export class WindowColorSelectBox extends SubtitleSettingSelectBox {
         this.settingsManager.windowOpacity.value = '100';
       }
       this.selectItem(property.value);
-      setColorAndOpacity();
+      this.setColorAndOpacity();
     });
 
     this.settingsManager.windowOpacity.onChanged.subscribe(() => {
-      setColorAndOpacity();
+      this.setColorAndOpacity();
     });
 
-    // Load initial value
+    this.initFromSettings();
+  }
+
+  protected initFromSettings(): void {
     if (this.settingsManager.windowColor.isSet()) {
       this.selectItem(this.settingsManager.windowColor.value);
+      this.setColorAndOpacity();
+    }
+  }
+
+  private setColorAndOpacity(): void {
+    if (this.settingsManager.windowColor.isSet() && this.settingsManager.windowOpacity.isSet()) {
+      this.toggleOverlayClass(
+        'windowcolor-' + this.settingsManager.windowColor.value + this.settingsManager.windowOpacity.value,
+      );
+    } else {
+      this.toggleOverlayClass(null);
     }
   }
 }

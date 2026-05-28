@@ -52,7 +52,10 @@ export class CharacterEdgeColorSelectBox extends SubtitleSettingSelectBox {
       this.selectItem(property.value);
     });
 
-    // Load initial value
+    this.initFromSettings();
+  }
+
+  protected initFromSettings(): void {
     if (this.settingsManager.characterEdgeColor.isSet()) {
       this.selectItem(this.settingsManager.characterEdgeColor.value);
     }

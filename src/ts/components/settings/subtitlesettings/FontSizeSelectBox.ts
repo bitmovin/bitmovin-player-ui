@@ -76,5 +76,12 @@ export class FontSizeSelectBox extends SubtitleSettingSelectBox {
 
     // init
     this.populateItemsWithFilter();
+    this.initFromSettings();
+  }
+
+  protected initFromSettings(): void {
+    if (this.settingsManager.fontSize.isSet()) {
+      this.toggleOverlayClass('fontsize-' + this.settingsManager.fontSize.value);
+    }
   }
 }

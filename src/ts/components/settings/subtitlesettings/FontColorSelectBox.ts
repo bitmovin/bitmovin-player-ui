@@ -34,16 +34,6 @@ export class FontColorSelectBox extends SubtitleSettingSelectBox {
     this.addItem('yellow', i18n.getLocalizer('colors.yellow'));
     this.addItem('magenta', i18n.getLocalizer('colors.magenta'));
 
-    const setColorAndOpacity = () => {
-      if (this.settingsManager.fontColor.isSet() && this.settingsManager.fontOpacity.isSet()) {
-        this.toggleOverlayClass(
-          'fontcolor-' + this.settingsManager.fontColor.value + this.settingsManager.fontOpacity.value,
-        );
-      } else {
-        this.toggleOverlayClass(null);
-      }
-    };
-
     this.onItemSelectionChanged.subscribe((sender, key: string) => {
       this.settingsManager.fontColor.value = key;
     });
@@ -58,16 +48,30 @@ export class FontColorSelectBox extends SubtitleSettingSelectBox {
         this.settingsManager.fontOpacity.value = '100';
       }
       this.selectItem(property.value);
-      setColorAndOpacity();
+      this.setColorAndOpacity();
     });
 
     this.settingsManager.fontOpacity.onChanged.subscribe(() => {
-      setColorAndOpacity();
+      this.setColorAndOpacity();
     });
 
-    // Load initial value
+    this.initFromSettings();
+  }
+
+  protected initFromSettings(): void {
     if (this.settingsManager.fontColor.isSet()) {
       this.selectItem(this.settingsManager.fontColor.value);
+      this.setColorAndOpacity();
+    }
+  }
+
+  private setColorAndOpacity(): void {
+    if (this.settingsManager.fontColor.isSet() && this.settingsManager.fontOpacity.isSet()) {
+      this.toggleOverlayClass(
+        'fontcolor-' + this.settingsManager.fontColor.value + this.settingsManager.fontOpacity.value,
+      );
+    } else {
+      this.toggleOverlayClass(null);
     }
   }
 }

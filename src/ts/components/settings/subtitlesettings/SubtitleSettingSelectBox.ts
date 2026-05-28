@@ -49,4 +49,13 @@ export class SubtitleSettingSelectBox extends SelectBox {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     this.settingsManager = uimanager.getSubtitleSettingsManager();
   }
+
+  /**
+   * Applies the persisted value on init. Subclasses call this at the end of
+   * `configure()`; the `onChanged` events from `SubtitleSettingsManager.load`
+   * fire before subscribers are attached, so each subclass must re-apply.
+   */
+  protected initFromSettings(): void {
+    // no-op; subclasses override
+  }
 }

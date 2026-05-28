@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - The exported UI `version` (`window.bitmovin.playerui.version`) no longer includes extra quote characters
+- Saved subtitle styling preferences are now correctly applied to the rendered subtitles on initial load
 
 ### Internal
 
