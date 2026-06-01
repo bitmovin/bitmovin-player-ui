@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `UIManager.recommendations` namespace for dynamically updating recommendation items for the `RecommendationOverlay`
 - `UIManager.timelineMarkers` namespace for dynamically updating `TimelineMarker`s for the seek bar
 
+### Fixed
+
+- Saved subtitle styling preferences are now correctly applied to the rendered subtitles on initial load
+
+### Deprecated
+
+- `UIManager.getTimelineMarkers`, `UIManager.addTimelineMarker`, and `UIManager.removeTimelineMarker` in favor of the new `UIManager.timelineMarkers` namespace.
+
 ## [4.14.1] - 2026-05-28
 
 ### Fixed
@@ -21,10 +29,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Internal
 
 - Webpack dev server uses automatic port selection starting from `9000`, allowing multiple local checkouts to run concurrently
-
-### Deprecated
-
-- `UIManager.getTimelineMarkers`, `UIManager.addTimelineMarker`, and `UIManager.removeTimelineMarker` in favor of the new `UIManager.timelineMarkers` namespace.
 
 ## [4.14.0] - 2026-05-14
 
