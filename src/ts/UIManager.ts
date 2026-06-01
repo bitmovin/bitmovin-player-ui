@@ -86,7 +86,7 @@ export interface RecommendationsApi {
   remove(recommendation: RecommendationConfig): boolean;
 
   /**
-   * Returns the list of all added recommendations in display order.
+   * Returns the list of all added recommendations in insertion order.
    */
   list(): RecommendationConfig[];
 }
