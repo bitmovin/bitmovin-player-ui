@@ -48,7 +48,7 @@ export class FontStyleSelectBox extends SubtitleSettingSelectBox {
     this.initFromSettings();
   }
 
-  protected initFromSettings(): void {
+  private initFromSettings(): void {
     if (this.settingsManager?.fontStyle.isSet()) {
       this.selectItem(this.settingsManager.fontStyle.value);
       this.toggleOverlayClass('fontstyle-' + this.settingsManager.fontStyle.value);

@@ -51,7 +51,7 @@ export class FontFamilySelectBox extends SubtitleSettingSelectBox {
     this.initFromSettings();
   }
 
-  protected initFromSettings(): void {
+  private initFromSettings(): void {
     if (this.settingsManager.fontFamily.isSet()) {
       this.selectItem(this.settingsManager.fontFamily.value);
       this.toggleOverlayClass('fontfamily-' + this.settingsManager.fontFamily.value);

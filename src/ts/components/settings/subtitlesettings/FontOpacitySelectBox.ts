@@ -51,7 +51,7 @@ export class FontOpacitySelectBox extends SubtitleSettingSelectBox {
     this.initFromSettings();
   }
 
-  protected initFromSettings(): void {
+  private initFromSettings(): void {
     if (this.settingsManager.fontOpacity.isSet()) {
       this.selectItem(this.settingsManager.fontOpacity.value);
     }

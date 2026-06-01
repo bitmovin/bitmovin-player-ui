@@ -126,7 +126,7 @@ const cases: BoxCase[] = [
   },
 ];
 
-describe('SubtitleSettingSelectBox.initFromSettings() (PUI-73)', () => {
+describe('subtitle setting select boxes persisted values', () => {
   let playerMock: PlayerAPI;
   let uiManagerMock: UIInstanceManager;
   let settingsManager: SubtitleSettingsManager;

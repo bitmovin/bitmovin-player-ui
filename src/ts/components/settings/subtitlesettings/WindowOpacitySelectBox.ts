@@ -52,7 +52,7 @@ export class WindowOpacitySelectBox extends SubtitleSettingSelectBox {
     this.initFromSettings();
   }
 
-  protected initFromSettings(): void {
+  private initFromSettings(): void {
     if (this.settingsManager.windowOpacity.isSet()) {
       this.selectItem(this.settingsManager.windowOpacity.value);
     }

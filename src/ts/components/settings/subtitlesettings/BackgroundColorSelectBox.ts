@@ -58,7 +58,7 @@ export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
     this.initFromSettings();
   }
 
-  protected initFromSettings(): void {
+  private initFromSettings(): void {
     if (this.settingsManager.backgroundColor.isSet()) {
       this.selectItem(this.settingsManager.backgroundColor.value);
       this.setColorAndOpacity();

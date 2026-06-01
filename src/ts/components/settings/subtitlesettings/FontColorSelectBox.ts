@@ -58,7 +58,7 @@ export class FontColorSelectBox extends SubtitleSettingSelectBox {
     this.initFromSettings();
   }
 
-  protected initFromSettings(): void {
+  private initFromSettings(): void {
     if (this.settingsManager.fontColor.isSet()) {
       this.selectItem(this.settingsManager.fontColor.value);
       this.setColorAndOpacity();

@@ -54,7 +54,7 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
     this.initFromSettings();
   }
 
-  protected initFromSettings(): void {
+  private initFromSettings(): void {
     if (this.settingsManager.characterEdge.isSet()) {
       this.selectItem(this.settingsManager.characterEdge.value);
       this.setColorAndEdgeType();

@@ -58,7 +58,7 @@ export class WindowColorSelectBox extends SubtitleSettingSelectBox {
     this.initFromSettings();
   }
 
-  protected initFromSettings(): void {
+  private initFromSettings(): void {
     if (this.settingsManager.windowColor.isSet()) {
       this.selectItem(this.settingsManager.windowColor.value);
       this.setColorAndOpacity();
