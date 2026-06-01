@@ -88,10 +88,37 @@ export interface UIConfig {
    * HTMLElement object. By default, the player container will be used ({@link PlayerAPI#getContainer}).
    */
   container?: string | HTMLElement;
+  /**
+   * Specifies UI metadata displayed or used by UI components.
+   */
   metadata?: {
+    /**
+     * Title displayed by {@link MetadataLabel} components configured for title content.
+     *
+     * Values provided via the {@link SourceConfig} `title` override this value.
+     */
     title?: string;
+    /**
+     * Description displayed by {@link MetadataLabel} components configured for description content.
+     *
+     * Values provided via the {@link SourceConfig} `description` override this value.
+     */
     description?: string;
+    /**
+     * Timeline markers rendered on components such as the {@link SeekBar}.
+     *
+     * Values provided via the {@link SourceConfig} `markers` override this array.
+     * Use {@link UIManager.addTimelineMarker} and {@link UIManager.removeTimelineMarker} to update timeline markers
+     * after the UI has been initialized or a Source was loaded.
+     */
     markers?: TimelineMarker[];
+    /**
+     * Recommendations displayed by the {@link RecommendationOverlay} after playback of the current source has ended.
+     *
+     * Values provided via the {@link SourceConfig} `recommendations` override this array.
+     * Use {@link UIManager.recommendations} to update recommendations after the UI has been initialized or
+     * a Source was loaded.
+     */
     recommendations?: RecommendationConfig[];
   };
   /**

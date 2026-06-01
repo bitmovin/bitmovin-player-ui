@@ -48,7 +48,7 @@ module.exports = (env, { mode }) => {
           exclude: /node_modules/,
           options: {
             multiple: [
-              { search: '{{VERSION}}', replace: JSON.stringify(require('./package.json').version), flags: 'g' },
+              { search: '{{VERSION}}', replace: require('./package.json').version, flags: 'g' },
               { search: '{{PREFIX}}', replace: outputnames.cssPrefix, flags: 'g' },
               { search: '{{FILENAME}}', replace: outputnames.filename, flags: 'g' },
             ],
