@@ -92,6 +92,32 @@ export interface RecommendationsApi {
 }
 
 /**
+ * API for managing markers displayed on the playback timeline.
+ */
+export interface TimelineMarkersApi {
+  /**
+   * Adds a marker to the timeline.
+   *
+   * Note:
+   * - Does not check for duplicates/overlaps at the `time`.
+   * - Dynamically added timeline markers will be cleared when a new source is loaded into the Player.
+   */
+  add(timelineMarker: TimelineMarker): void;
+
+  /**
+   * Removes a marker from the timeline by reference and returns `true` if the marker has
+   * been part of the timeline and successfully removed, or `false` if the marker could not
+   * be found and thus not removed.
+   */
+  remove(timelineMarker: TimelineMarker): boolean;
+
+  /**
+   * Returns the list of all added timeline markers in insertion order.
+   */
+  list(): TimelineMarker[];
+}
+
+/**
  * The context that will be passed to a {@link UIConditionResolver} to determine if it's conditions fulfil the context.
  */
 export interface UIConditionContext {
@@ -174,6 +200,7 @@ export class UIManager {
   private subtitleSettingsManager: SubtitleSettingsManager;
   private shadowDomManager: ShadowDomManager;
   private recommendationsApi: RecommendationsApi;
+  private timelineMarkersApi: TimelineMarkersApi;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -253,6 +280,24 @@ export class UIManager {
       },
       list: (): RecommendationConfig[] => {
         return [...this.config.metadata.recommendations];
+      },
+    };
+
+    this.timelineMarkersApi = {
+      add: (timelineMarker: TimelineMarker): void => {
+        this.config.metadata.markers.push(timelineMarker);
+        this.config.events.onUpdated.dispatch(this);
+      },
+      remove: (timelineMarker: TimelineMarker): boolean => {
+        if (ArrayUtils.remove(this.config.metadata.markers, timelineMarker) === timelineMarker) {
+          this.config.events.onUpdated.dispatch(this);
+          return true;
+        }
+
+        return false;
+      },
+      list: (): TimelineMarker[] => {
+        return [...this.config.metadata.markers];
       },
     };
 
@@ -706,32 +751,39 @@ export class UIManager {
   }
 
   /**
+   * API for managing markers displayed on the playback timeline.
+   */
+  get timelineMarkers(): TimelineMarkersApi {
+    return this.timelineMarkersApi;
+  }
+
+  /**
    * Returns the list of all added markers in undefined order.
+   *
+   * @deprecated Use {@link TimelineMarkersApi.list} instead.
    */
   getTimelineMarkers(): TimelineMarker[] {
-    return this.config.metadata.markers;
+    return this.timelineMarkers.list();
   }
 
   /**
    * Adds a marker to the timeline. Does not check for duplicates/overlaps at the `time`.
+   *
+   * @deprecated Use {@link TimelineMarkersApi.add} instead.
    */
   addTimelineMarker(timelineMarker: TimelineMarker): void {
-    this.config.metadata.markers.push(timelineMarker);
-    this.config.events.onUpdated.dispatch(this);
+    this.timelineMarkers.add(timelineMarker);
   }
 
   /**
    * Removes a marker from the timeline (by reference) and returns `true` if the marker has
    * been part of the timeline and successfully removed, or `false` if the marker could not
    * be found and thus not removed.
+   *
+   * @deprecated Use {@link TimelineMarkersApi.remove} instead.
    */
   removeTimelineMarker(timelineMarker: TimelineMarker): boolean {
-    if (ArrayUtils.remove(this.config.metadata.markers, timelineMarker) === timelineMarker) {
-      this.config.events.onUpdated.dispatch(this);
-      return true;
-    }
-
-    return false;
+    return this.timelineMarkers.remove(timelineMarker);
   }
 }
 
