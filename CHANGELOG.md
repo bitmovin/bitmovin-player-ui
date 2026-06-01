@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - The exported UI `version` (`window.bitmovin.playerui.version`) no longer includes extra quote characters
 
+### Added
+
+- `UIManager.recommendations` namespace for dynamically updating recommendation items for the `RecommendationOverlay`
+
 ### Internal
 
 - Webpack dev server uses automatic port selection starting from `9000`, allowing multiple local checkouts to run concurrently

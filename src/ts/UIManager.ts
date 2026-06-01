@@ -7,7 +7,7 @@ import { NoArgs, EventDispatcher, CancelEventArgs } from './EventDispatcher';
 import { UIUtils } from './utils/UIUtils';
 import { ArrayUtils } from './utils/ArrayUtils';
 import { BrowserUtils } from './utils/BrowserUtils';
-import { TimelineMarker, UIConfig } from './UIConfig';
+import { RecommendationConfig, TimelineMarker, UIConfig } from './UIConfig';
 import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
 import { VolumeController } from './utils/VolumeController';
 import { i18n, CustomVocabulary, Vocabularies, I18n, LanguageChangedArgument } from './localization/i18n';
@@ -63,6 +63,32 @@ export interface InternalUIConfig extends UIConfig {
   };
   volumeController: VolumeController;
   adBreakTracker: AdBreakTracker;
+}
+
+/**
+ * API for managing recommendations displayed by the {@link RecommendationOverlay}.
+ */
+export interface RecommendationsApi {
+  /**
+   * Adds a recommendation which will be displayed in the {@link RecommendationOverlay}.
+   *
+   * Note:
+   * - Does not check for duplicated recommendations.
+   * - Dynamically added recommendations will be cleared when a new source is loaded into the Player.
+   */
+  add(recommendation: RecommendationConfig): void;
+
+  /**
+   * Removes a recommendation by reference and returns `true` if the recommendation has
+   * been part of the recommendations and successfully removed, or `false` if the recommendation
+   * could not be found and thus not removed.
+   */
+  remove(recommendation: RecommendationConfig): boolean;
+
+  /**
+   * Returns the list of all added recommendations in insertion order.
+   */
+  list(): RecommendationConfig[];
 }
 
 /**
@@ -147,6 +173,7 @@ export class UIManager {
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
   private shadowDomManager: ShadowDomManager;
+  private recommendationsApi: RecommendationsApi;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -211,13 +238,31 @@ export class UIManager {
       adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer()),
     };
 
+    this.recommendationsApi = {
+      add: (recommendation: RecommendationConfig): void => {
+        this.config.metadata.recommendations.push(recommendation);
+        this.config.events.onUpdated.dispatch(this);
+      },
+      remove: (recommendation: RecommendationConfig): boolean => {
+        if (ArrayUtils.remove(this.config.metadata.recommendations, recommendation) === recommendation) {
+          this.config.events.onUpdated.dispatch(this);
+          return true;
+        }
+
+        return false;
+      },
+      list: (): RecommendationConfig[] => {
+        return [...this.config.metadata.recommendations];
+      },
+    };
+
     /**
      * Gathers configuration data from the UI config and player source config and creates a merged UI config
      * that is used throughout the UI instance.
      */
     const updateConfig = () => {
       const playerSourceConfig = player.getSource() || {};
-      this.config.metadata = JSON.parse(JSON.stringify(uiconfig.metadata || {}));
+      this.config.metadata = { ...uiconfig.metadata };
 
       // Extract the UI-related config properties from the source config
       const playerSourceUiConfig: UIConfig = {
@@ -235,9 +280,10 @@ export class UIManager {
       // lifetime of the player instance.
       this.config.metadata.title = playerSourceUiConfig.metadata.title || uiconfig.metadata.title;
       this.config.metadata.description = playerSourceUiConfig.metadata.description || uiconfig.metadata.description;
-      this.config.metadata.markers = playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [];
-      this.config.metadata.recommendations =
-        playerSourceUiConfig.metadata.recommendations || uiconfig.metadata.recommendations || [];
+      this.config.metadata.markers = [...(playerSourceUiConfig.metadata.markers || uiconfig.metadata.markers || [])];
+      this.config.metadata.recommendations = [
+        ...(playerSourceUiConfig.metadata.recommendations || uiconfig.metadata.recommendations || []),
+      ];
 
       StorageUtils.setStorageApiDisabled(uiconfig);
     };
@@ -650,6 +696,13 @@ export class UIManager {
    */
   get activeUi(): UIInstanceManager {
     return this.currentUi;
+  }
+
+  /**
+   * API for managing recommendations displayed by the {@link RecommendationOverlay}.
+   */
+  get recommendations(): RecommendationsApi {
+    return this.recommendationsApi;
   }
 
   /**

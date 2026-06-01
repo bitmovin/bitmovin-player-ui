@@ -11,6 +11,7 @@ import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
 import { UIContainer } from '../src/ts/components/UIContainer';
 import { Container } from '../src/ts/components/Container';
+import { RecommendationConfig, TimelineMarker } from '../src/ts/UIConfig';
 
 jest.mock('../src/ts/DOM');
 
@@ -187,6 +188,153 @@ describe('UIManager', () => {
       const uiManager = new UIManager(playerMock, [uiVariant]);
 
       expect(uiManager.activeUi).toBeInstanceOf(UIInstanceManager);
+    });
+  });
+
+  describe('recommendations', () => {
+    const createRecommendation = (title: string): RecommendationConfig => ({
+      title,
+      resource: {
+        url: `https://example.com/${title}`,
+      },
+    });
+
+    let playerMock: TestingPlayerAPI;
+    let uiManager: UIManager;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { recommendations: [] },
+      });
+    });
+
+    it('adds recommendations and dispatches config update', () => {
+      const recommendation = createRecommendation('recommendation-1');
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      uiManager.recommendations.add(recommendation);
+
+      expect(uiManager.recommendations.list()).toEqual([recommendation]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('removes recommendations by reference and dispatches config update', () => {
+      const recommendation = createRecommendation('recommendation-1');
+      uiManager.recommendations.add(recommendation);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.recommendations.remove(recommendation);
+
+      expect(removed).toBe(true);
+      expect(uiManager.recommendations.list()).toEqual([]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('does not dispatch config update when the recommendation is not present', () => {
+      const recommendation = createRecommendation('recommendation-1');
+      const otherRecommendation = createRecommendation('recommendation-2');
+      uiManager.recommendations.add(recommendation);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.recommendations.remove(otherRecommendation);
+
+      expect(removed).toBe(false);
+      expect(uiManager.recommendations.list()).toEqual([recommendation]);
+      expect(onUpdatedSpy).not.toHaveBeenCalled();
+    });
+
+    it('clears dynamically added recommendations on source load and restores UI config recommendations', () => {
+      const configuredRecommendation = createRecommendation('configured-recommendation');
+      const dynamicRecommendation = createRecommendation('dynamic-recommendation');
+      const configuredRecommendations = [configuredRecommendation];
+
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { recommendations: configuredRecommendations },
+      });
+
+      uiManager.recommendations.add(dynamicRecommendation);
+      expect(uiManager.recommendations.list()).toEqual([configuredRecommendation, dynamicRecommendation]);
+      expect(configuredRecommendations).toEqual([configuredRecommendation]);
+
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      expect(uiManager.recommendations.list()).toEqual([configuredRecommendation]);
+    });
+
+    it('clears dynamically added recommendations on source load and restores source recommendations', () => {
+      const configuredRecommendation = createRecommendation('configured-recommendation');
+      const sourceRecommendation = createRecommendation('source-recommendation');
+      const dynamicRecommendation = createRecommendation('dynamic-recommendation');
+      const sourceRecommendations = [sourceRecommendation];
+      (playerMock.getSource as jest.Mock).mockReturnValue({ recommendations: sourceRecommendations });
+
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { recommendations: [configuredRecommendation] },
+      });
+
+      uiManager.recommendations.add(dynamicRecommendation);
+      expect(uiManager.recommendations.list()).toEqual([sourceRecommendation, dynamicRecommendation]);
+      expect(sourceRecommendations).toEqual([sourceRecommendation]);
+
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      expect(uiManager.recommendations.list()).toEqual([sourceRecommendation]);
+    });
+
+    it('preserves functions in source recommendation resources when rebuilding the config', () => {
+      const preprocessHttpRequest = jest.fn();
+      const sourceRecommendation: RecommendationConfig = {
+        title: 'source-recommendation',
+        resource: {
+          dash: 'https://example.com/manifest.mpd',
+          network: { preprocessHttpRequest },
+        } as any,
+      };
+      (playerMock.getSource as jest.Mock).mockReturnValue({ recommendations: [sourceRecommendation] });
+
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }]);
+
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      const [recommendation] = uiManager.recommendations.list();
+      expect(recommendation).toBe(sourceRecommendation);
+      expect((recommendation.resource as any).network.preprocessHttpRequest).toBe(preprocessHttpRequest);
+    });
+  });
+
+  describe('timeline markers', () => {
+    const createTimelineMarker = (time: number): TimelineMarker => ({ time });
+
+    let playerMock: TestingPlayerAPI;
+    let uiManager: UIManager;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { markers: [] },
+      });
+    });
+
+    it('clears dynamically added markers on source load and restores UI config markers', () => {
+      const configuredMarker = createTimelineMarker(1);
+      const dynamicMarker = createTimelineMarker(2);
+      const configuredMarkers = [configuredMarker];
+
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { markers: configuredMarkers },
+      });
+
+      uiManager.addTimelineMarker(dynamicMarker);
+      expect(uiManager.getTimelineMarkers()).toEqual([configuredMarker, dynamicMarker]);
+      expect(configuredMarkers).toEqual([configuredMarker]);
+
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      expect(uiManager.getTimelineMarkers()).toEqual([configuredMarker]);
     });
   });
 
