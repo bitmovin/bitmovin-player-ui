@@ -5,16 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.14.1] - 2026-05-28
-
-### Fixed
-
-- The exported UI `version` (`window.bitmovin.playerui.version`) no longer includes extra quote characters
+## [Unreleased]
 
 ### Added
 
 - `UIManager.recommendations` namespace for dynamically updating recommendation items for the `RecommendationOverlay`
 - `UIManager.timelineMarkers` namespace for dynamically updating `TimelineMarker`s for the seek bar
+
+## [4.14.1] - 2026-05-28
+
+### Fixed
+
+- The exported UI `version` (`window.bitmovin.playerui.version`) no longer includes extra quote characters
 
 ### Internal
 
