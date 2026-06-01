@@ -7,10 +7,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `UIManager.recommendations` namespace for dynamically updating recommendation items for the `RecommendationOverlay`
+- `UIManager.timelineMarkers` namespace for dynamically updating `TimelineMarker`s for the seek bar
+
+### Fixed
+
+- Saved subtitle styling preferences are now correctly applied to the rendered subtitles on initial load
+
+### Deprecated
+
+- `UIManager.getTimelineMarkers`, `UIManager.addTimelineMarker`, and `UIManager.removeTimelineMarker` in favor of the new `UIManager.timelineMarkers` namespace.
+
+## [4.14.1] - 2026-05-28
+
 ### Fixed
 
 - The exported UI `version` (`window.bitmovin.playerui.version`) no longer includes extra quote characters
-- Saved subtitle styling preferences are now correctly applied to the rendered subtitles on initial load
 
 ### Internal
 
