@@ -1,6 +1,6 @@
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
-import { version as UI_VERSION } from '../../main';
+import { version as UI_VERSION } from '../../version';
 import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';

@@ -1,4 +1,4 @@
-export const version: string = '{{VERSION}}';
+export { version } from './version';
 // Management
 export * from './UIManager';
 export * from './UIConfig';
