@@ -4,7 +4,8 @@ import { version as UI_VERSION } from '../../main';
 import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';
-import { Container, ContainerConfig } from '../Container';
+import { SettingsPanelItem, SettingsPanelItemConfig } from '../settings/SettingsPanelItem';
+import { SettingsPanelPage } from '../settings/SettingsPanelPage';
 
 /**
  * Configuration interface for the {@link PlayerContextMenu}.
@@ -23,12 +24,16 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
     super({
       ...config,
       cssClasses: ['ui-player-context-menu', ...(config.cssClasses ?? [])],
-      components: [new PlayerInfoContextMenuItem(), ...(config.components ?? [])],
+      components: [
+        new SettingsPanelPage({
+          components: [new PlayerInfoContextMenuItem(), ...(config.components ?? [])],
+        }),
+      ],
     });
   }
 }
 
-class PlayerInfoContextMenuItem extends Container<ContainerConfig> {
+class PlayerInfoContextMenuItem extends SettingsPanelItem<SettingsPanelItemConfig> {
   private readonly playerVersionLabel: Label<LabelConfig>;
 
   constructor() {
@@ -38,6 +43,7 @@ class PlayerInfoContextMenuItem extends Container<ContainerConfig> {
     });
 
     super({
+      label: null,
       components: [
         new Label<LabelConfig>({
           text: i18n.getLocalizer('contextMenu.title'),
@@ -54,6 +60,7 @@ class PlayerInfoContextMenuItem extends Container<ContainerConfig> {
         }),
       ],
       cssClasses: ['ui-player-context-menu-info-item'],
+      isSetting: false,
       role: 'group',
     });
 

@@ -6,7 +6,30 @@
 }
 
 %ui-player-context-menu-info-item {
-  padding: 1rem;
+  // Unset normal SettingsPanelItem styles that don't apply to info items in the context menu
+  cursor: default;
+
+  * {
+    cursor: default;
+  }
+
+  &:active,
+  &:hover {
+    background-color: transparent;
+  }
+
+  > .#{$prefix}-container-wrapper {
+    display: block;
+  }
+
+  .#{$prefix}-ui-label {
+    display: block;
+    min-height: unset;
+  }
+
+  .#{$prefix}-ui-label-text {
+    white-space: normal;
+  }
 }
 
 .#{$prefix}-ui-player-context-menu {

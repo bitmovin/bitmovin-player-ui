@@ -1,4 +1,4 @@
-import { Container, ContainerConfig } from '../Container';
+import { SettingsPanel, SettingsPanelConfig } from '../settings/SettingsPanel';
 import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 
@@ -7,7 +7,7 @@ import { PlayerAPI } from 'bitmovin-player';
  *
  * @category Configs
  */
-export interface ContextMenuConfig extends ContainerConfig {}
+export interface ContextMenuConfig extends SettingsPanelConfig {}
 
 /**
  * A floating context menu shown at the pointer position when the user opens the
@@ -15,7 +15,7 @@ export interface ContextMenuConfig extends ContainerConfig {}
  *
  * @category Components
  */
-export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> extends Container<Config> {
+export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> extends SettingsPanel<Config> {
   constructor(config: Config = {} as Config) {
     super(config);
 
@@ -23,6 +23,7 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
       config,
       {
         cssClass: 'ui-context-menu',
+        hideDelay: -1,
         hidden: true,
         role: 'menu',
       } as Config,
@@ -52,7 +53,7 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
 
       if (this.isShown()) {
         if (!this.isEventTargetInsideContextMenu(event)) {
-          this.hide();
+          this.hideAndReset();
         }
         // Let the browser handle a second contextmenu event while the custom menu is open,
         // so users can still access native actions like Inspect Element.
@@ -69,13 +70,13 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
 
     const documentKeyDownHandler = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && this.isShown()) {
-        this.hide();
+        this.hideAndReset();
       }
     };
 
     const documentClickHandler = (event: MouseEvent) => {
       if (this.isShown() && !this.isEventTargetInsideContextMenu(event)) {
-        this.hide();
+        this.hideAndReset();
       }
     };
 
@@ -93,11 +94,12 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
 
     const deactivateHandler = () => {
       detachDocumentHandlers();
-      this.hide();
+      this.hideAndReset();
     };
 
     uimanager.onActive.subscribe(attachDocumentHandlers);
     uimanager.onInactive.subscribe(deactivateHandler);
+    uimanager.onControlsHide.subscribe(() => this.hideAndReset());
   }
 
   release(): void {
