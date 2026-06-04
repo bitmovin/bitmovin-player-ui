@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Vertical seek bars and volume sliders (`vertical: true`, e.g. the slide-out volume slider of the `VolumeControlButton`) were rendered with a broken horizontal layout.
+  Note for custom skins: the control bar rule sizing the inline volume slider now uses the selector `.bmpui-ui-volumeslider:not(.bmpui-vertical)`, which has a higher specificity than before. Custom styles relying on overriding the previous `.bmpui-ui-volumeslider` rule at equal specificity may need to be adjusted.
+
 ## [4.14.0] - 2026-05-14
 
 ### Added

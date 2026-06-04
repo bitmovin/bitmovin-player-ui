@@ -42,7 +42,9 @@
     margin-top: 0.5em;
 
     > .#{$prefix}-container-wrapper {
-      .#{$prefix}-ui-volumeslider {
+      // Only size the inline (horizontal) volume slider; a vertical slider (e.g. the slide-out slider
+      // of the VolumeControlButton) defines its own dimensions.
+      .#{$prefix}-ui-volumeslider:not(.#{$prefix}-vertical) {
         margin: auto 0.5em;
         width: 8rem;
       }
