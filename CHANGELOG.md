@@ -12,6 +12,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - New `ContextMenu` component to show custom context menus on right-click.
 - Default `PlayerContextMenu` to access player information directly from the UI.
 
+## [4.15.0] - 2026-06-04
+
+### Added
+
+- `UIManager.recommendations` namespace for dynamically updating recommendation items for the `RecommendationOverlay`
+- `UIManager.timelineMarkers` namespace for dynamically updating `TimelineMarker`s for the seek bar
+
+### Fixed
+
+- Saved subtitle styling preferences are now correctly applied to the rendered subtitles on initial load
+
+### Deprecated
+
+- `UIManager.getTimelineMarkers`, `UIManager.addTimelineMarker`, and `UIManager.removeTimelineMarker` in favor of the new `UIManager.timelineMarkers` namespace.
+
+## [4.14.1] - 2026-05-28
+
 ### Fixed
 
 - The exported UI `version` (`window.bitmovin.playerui.version`) no longer includes extra quote characters
