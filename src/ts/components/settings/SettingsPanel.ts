@@ -42,6 +42,12 @@ export interface SettingsPanelConfig extends ContainerConfig {
    * Default: true
    */
   hideOnControlsHide?: boolean;
+
+  /**
+   * Specifies if the settings panel should be hidden when another settings panel is opened.
+   * Default: true
+   */
+  hideWithOtherSettingsPanels?: boolean;
 }
 
 /**
@@ -114,6 +120,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
         pageTransitionAnimation: true,
         stateResetDelay: 5000,
         hideOnControlsHide: true,
+        hideWithOtherSettingsPanels: true,
       } as Config,
       this.config,
     );
