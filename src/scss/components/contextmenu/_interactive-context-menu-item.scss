@@ -1,0 +1,10 @@
+@import '../../variables';
+
+.#{$prefix}-ui-interactive-context-menu-item {
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+
+  &:hover {
+    background-color: transparentize($color-primary, 0.9);
+  }
+}

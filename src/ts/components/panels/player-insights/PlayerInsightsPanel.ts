@@ -3,7 +3,10 @@ import { UIInstanceManager } from '../../../UIManager';
 import { i18n, LocalizableText } from '../../../localization/i18n';
 import { Timeout } from '../../../utils/Timeout';
 import { Button, ButtonConfig } from '../../buttons/Button';
-import { ContextMenuItem, ContextMenuItemConfig } from '../../contextmenu/ContextMenuItem';
+import {
+  InteractiveContextMenuItem,
+  InteractiveContextMenuItemConfig,
+} from '../../contextmenu/InteractiveContextMenuItem';
 import { Label, LabelConfig } from '../../labels/Label';
 import { SettingsPanel, SettingsPanelConfig } from '../../settings/SettingsPanel';
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../../settings/SettingsPanelItem';
@@ -140,20 +143,21 @@ export class PlayerInsightsPanel extends SettingsPanel<PlayerInsightsPanelConfig
     super.release();
   }
 
-  createContextMenuToggleItem(): ContextMenuItem<ContextMenuItemConfig> {
+  createContextMenuToggleItem(): InteractiveContextMenuItem<InteractiveContextMenuItemConfig> {
     const initialText =
       this.getConfig().hidden === true
         ? i18n.getLocalizer('playerInsights.show')
         : i18n.getLocalizer('playerInsights.hide');
-    const item = new ContextMenuItem<ContextMenuItemConfig>({
-      text: initialText,
+    const label = new Label<LabelConfig>({ text: initialText });
+    const item = new InteractiveContextMenuItem({
+      label,
       ariaLabel: initialText,
       closeContextMenuOnAction: true,
     });
     const updateText = () => {
       const text = this.isShown() ? i18n.getLocalizer('playerInsights.hide') : i18n.getLocalizer('playerInsights.show');
 
-      item.setText(text);
+      label.setText(text);
       item.setAriaLabel(text);
     };
 

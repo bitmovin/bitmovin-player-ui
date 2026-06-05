@@ -3,7 +3,7 @@ import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { Component, ComponentConfig } from '../Component';
 import { Container } from '../Container';
-import { ContextMenuItem } from './ContextMenuItem';
+import { InteractiveContextMenuItem } from './InteractiveContextMenuItem';
 
 /**
  * Configuration interface for a generic {@link ContextMenu}.
@@ -181,7 +181,7 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
   }
 
   private setContextMenuForComponent(component: Component<ComponentConfig>): void {
-    if (component instanceof ContextMenuItem) {
+    if (component instanceof InteractiveContextMenuItem) {
       component.setContextMenu(this);
     }
 
@@ -191,7 +191,7 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
   }
 
   private unsetContextMenuForComponent(component: Component<ComponentConfig>): void {
-    if (component instanceof ContextMenuItem) {
+    if (component instanceof InteractiveContextMenuItem) {
       component.setContextMenu(null);
     }
 

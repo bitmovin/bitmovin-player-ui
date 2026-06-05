@@ -95,7 +95,10 @@ export { PlaybackSpeedSelectBox } from './components/settings/PlaybackSpeedSelec
 export { HugeReplayButton } from './components/buttons/HugeReplayButton';
 export { BufferingOverlay, BufferingOverlayConfig } from './components/overlays/BufferingOverlay';
 export { ContextMenu, ContextMenuConfig } from './components/contextmenu/ContextMenu';
-export { ContextMenuItem, ContextMenuItemConfig } from './components/contextmenu/ContextMenuItem';
+export {
+  InteractiveContextMenuItem,
+  InteractiveContextMenuItemConfig,
+} from './components/contextmenu/InteractiveContextMenuItem';
 export { PlayerContextMenu, PlayerContextMenuConfig } from './components/contextmenu/PlayerContextMenu';
 export { CastUIContainer } from './components/CastUIContainer';
 export { PlaybackToggleOverlay, PlaybackToggleOverlayConfig } from './components/overlays/PlaybackToggleOverlay';
