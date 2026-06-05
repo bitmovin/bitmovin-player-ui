@@ -529,6 +529,10 @@ export class DOM {
       const transitionHandler = (event: Event) => {
         const transitionEvent = event as TransitionEvent;
 
+        if (transitionEvent.target !== element) {
+          return;
+        }
+
         if (transitionEvent.propertyName !== propertyName) {
           return;
         }
