@@ -180,8 +180,6 @@ $seekbar-marker-dimension: calc($seekbar-bar-height * 3);
 
       &:after {
         @include invisible-hit-area(0, -$horizontal-margin, 0, -$horizontal-margin);
-        // Uncomment to expose hit area for debugging
-        // background-color: rgba(lime, 0.5);
       }
 
       .#{$prefix}-seekbar-bars,
