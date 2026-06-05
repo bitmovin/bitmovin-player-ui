@@ -1,6 +1,6 @@
 import type { PlayerAPI } from 'bitmovin-player';
 import type { UIInstanceManager } from '../../../UIManager';
-import { i18n, LocalizableText } from '../../../localization/i18n';
+import { i18n } from '../../../localization/i18n';
 import {
   InteractiveContextMenuItem,
   InteractiveContextMenuItemConfig,
@@ -30,13 +30,14 @@ export class PlayerInsightsContextMenuItem extends InteractiveContextMenuItem<Pl
   private readonly playerInsightsPanel: PlayerInsightsPanel;
 
   constructor(config: PlayerInsightsContextMenuItemConfig) {
-    const initialText = PlayerInsightsContextMenuItem.getLabelText(config.playerInsightsPanel);
-    const itemLabel = new Label<LabelConfig>({ text: initialText });
+    const itemLabel = new Label<LabelConfig>({
+      text: i18n.getLocalizer('playerInsights.show'),
+    });
 
     super({
       ...config,
       label: itemLabel,
-      ariaLabel: initialText,
+      ariaLabel: i18n.getLocalizer('playerInsights.show'),
       closeContextMenuOnAction: true,
     });
 
@@ -47,22 +48,18 @@ export class PlayerInsightsContextMenuItem extends InteractiveContextMenuItem<Pl
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    this.playerInsightsPanel.onShow.subscribe(this.updateText);
-    this.playerInsightsPanel.onHide.subscribe(this.updateText);
+    const updateText = () => {
+      const text = this.playerInsightsPanel.isShown()
+        ? i18n.getLocalizer('playerInsights.hide')
+        : i18n.getLocalizer('playerInsights.show');
+
+      this.itemLabel.setText(text);
+      this.setAriaLabel(text);
+    };
+
+    this.playerInsightsPanel.onShow.subscribe(updateText);
+    this.playerInsightsPanel.onHide.subscribe(updateText);
     this.onClick.subscribe(() => this.playerInsightsPanel.toggleHidden());
-    this.updateText();
-  }
-
-  private readonly updateText = (): void => {
-    const text = PlayerInsightsContextMenuItem.getLabelText(this.playerInsightsPanel);
-
-    this.itemLabel.setText(text);
-    this.setAriaLabel(text);
-  };
-
-  private static getLabelText(playerInsightsPanel: PlayerInsightsPanel): LocalizableText {
-    return playerInsightsPanel.isShown()
-      ? i18n.getLocalizer('playerInsights.hide')
-      : i18n.getLocalizer('playerInsights.show');
+    updateText();
   }
 }
