@@ -57,7 +57,6 @@ import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationOverlayNavigationGroup } from './spatialnavigation/RecommendationOverlayNavigationGroup';
 import { PlayerInsightsPanel } from './components/panels/player-insights/PlayerInsightsPanel';
-import { PlayerInsightsContextMenuItem } from './components/panels/player-insights/PlayerInsightsContextMenuItem';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -250,7 +249,7 @@ export namespace UIFactory {
     export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
       const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
-      const playerContextMenu = playerInsightsPanel ? buildPlayerContextMenu(playerInsightsPanel) : null;
+      const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
       const controlBar = new ControlBar({
@@ -371,7 +370,7 @@ export namespace UIFactory {
     export function smallScreen(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
       const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
-      const playerContextMenu = playerInsightsPanel ? buildPlayerContextMenu(playerInsightsPanel) : null;
+      const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1, false);
 
@@ -789,15 +788,5 @@ export namespace UIFactory {
     settingsPanel.addComponent(subtitleSettingsPanelPage);
 
     return settingsPanel;
-  }
-
-  function buildPlayerContextMenu(playerInsightsPanel: PlayerInsightsPanel): PlayerContextMenu {
-    return new PlayerContextMenu({
-      components: [
-        new PlayerInsightsContextMenuItem({
-          playerInsightsPanel,
-        }),
-      ],
-    });
   }
 }

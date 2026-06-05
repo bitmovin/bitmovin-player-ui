@@ -4,6 +4,8 @@ import { version as UI_VERSION } from '../../version';
 import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';
+import { PlayerInsightsContextMenuItem } from '../panels/player-insights/PlayerInsightsContextMenuItem';
+import type { PlayerInsightsPanel } from '../panels/player-insights/PlayerInsightsPanel';
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../settings/SettingsPanelItem';
 import { SettingsPanelPage } from '../settings/SettingsPanelPage';
 import { SettingsPanelSeparator } from '../settings/SettingsPanelSeparator';
@@ -13,7 +15,12 @@ import { SettingsPanelSeparator } from '../settings/SettingsPanelSeparator';
  *
  * @category Configs
  */
-export interface PlayerContextMenuConfig extends ContextMenuConfig {}
+export interface PlayerContextMenuConfig extends ContextMenuConfig {
+  /**
+   * The player insights panel to expose as a default context menu action.
+   */
+  playerInsightsPanel: PlayerInsightsPanel;
+}
 
 /**
  * A player-specific context menu with Bitmovin info and Player/UI versions.
@@ -21,8 +28,13 @@ export interface PlayerContextMenuConfig extends ContextMenuConfig {}
  * @category Components
  */
 export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
-  constructor(config: PlayerContextMenuConfig = {}) {
-    const actionItems = config.components ?? [];
+  constructor(config: PlayerContextMenuConfig) {
+    const actionItems = [
+      new PlayerInsightsContextMenuItem({
+        playerInsightsPanel: config.playerInsightsPanel,
+      }),
+      ...(config.components ?? []),
+    ];
 
     super({
       ...config,
