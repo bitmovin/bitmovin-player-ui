@@ -1,0 +1,108 @@
+@import '../../variables';
+
+$player-insights-label-column-width: 9em;
+$player-insights-column-gap: 0.5em;
+
+.#{$prefix}-ui-player-insights-panel {
+  bottom: unset;
+  font-size: $font-size-small;
+  left: safe-area-max(0.5em, left);
+  line-height: 1.25;
+  max-height: calc(100% - 1em);
+  max-width: calc(100% - 1em);
+  right: unset;
+  top: safe-area-max(0.5em, top);
+  -webkit-user-select: text;
+  user-select: text;
+  width: 32em;
+
+  > .#{$prefix}-container-wrapper {
+    max-height: inherit;
+  }
+
+  .#{$prefix}-ui-player-insights-panel-title-item {
+    cursor: default;
+    min-height: unset;
+    padding: 0.35em 0.5em 0.35em 0.8em;
+    white-space: normal;
+
+    > .#{$prefix}-container-wrapper {
+      column-gap: 0.75em;
+      justify-content: space-between;
+      min-height: $icon-size * 0.55;
+    }
+
+    &:active,
+    &:hover {
+      background-color: $color-background-menu-title-overlay;
+    }
+
+    * {
+      cursor: default;
+    }
+  }
+
+  .#{$prefix}-ui-player-insights-panel-title-label {
+    line-height: 1.2;
+    min-height: unset;
+  }
+
+  .#{$prefix}-ui-player-insights-panel-close-button {
+    align-self: center;
+    cursor: pointer;
+    flex: 0 0 auto;
+    height: $icon-size * 0.55;
+    margin-left: auto;
+    min-width: $icon-size * 0.55;
+    padding: 0.1em;
+
+    .#{$prefix}-ui-icon {
+      cursor: pointer;
+      height: $icon-size * 0.4;
+      min-width: $icon-size * 0.4;
+      width: $icon-size * 0.4;
+    }
+
+    &:hover {
+      animation: none;
+      filter: none;
+    }
+  }
+
+  .#{$prefix}-ui-player-insights-panel-item {
+    cursor: default;
+    min-height: unset;
+    padding: 0.1em 0.8em;
+    white-space: normal;
+
+    * {
+      cursor: text;
+    }
+
+    &:active,
+    &:hover {
+      background-color: transparent;
+    }
+
+    > .#{$prefix}-container-wrapper {
+      display: grid;
+      column-gap: $player-insights-column-gap;
+      grid-template-columns: $player-insights-label-column-width minmax(0, 1fr);
+    }
+  }
+
+  .#{$prefix}-ui-player-insights-panel-item-leading-label {
+    color: transparentize($color-primary, 0.35);
+    justify-self: end;
+    line-height: 1.2;
+    min-height: unset;
+  }
+
+  .#{$prefix}-ui-player-insights-panel-item-trailing-label {
+    font-family: monospace;
+    line-height: 1.2;
+    min-height: unset;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
