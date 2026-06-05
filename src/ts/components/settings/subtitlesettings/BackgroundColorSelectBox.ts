@@ -34,16 +34,6 @@ export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
     this.addItem('yellow', i18n.getLocalizer('colors.yellow'));
     this.addItem('magenta', i18n.getLocalizer('colors.magenta'));
 
-    const setColorAndOpacity = () => {
-      if (this.settingsManager.backgroundColor.isSet() && this.settingsManager.backgroundOpacity.isSet()) {
-        this.toggleOverlayClass(
-          'bgcolor-' + this.settingsManager.backgroundColor.value + this.settingsManager.backgroundOpacity.value,
-        );
-      } else {
-        this.toggleOverlayClass(null);
-      }
-    };
-
     this.onItemSelectionChanged.subscribe((sender, key: string) => {
       this.settingsManager.backgroundColor.value = key;
     });
@@ -58,16 +48,30 @@ export class BackgroundColorSelectBox extends SubtitleSettingSelectBox {
         this.settingsManager.backgroundOpacity.value = '100';
       }
       this.selectItem(property.value);
-      setColorAndOpacity();
+      this.setColorAndOpacity();
     });
 
     this.settingsManager.backgroundOpacity.onChanged.subscribe(() => {
-      setColorAndOpacity();
+      this.setColorAndOpacity();
     });
 
-    // Load initial value
+    this.initFromSettings();
+  }
+
+  private initFromSettings(): void {
     if (this.settingsManager.backgroundColor.isSet()) {
       this.selectItem(this.settingsManager.backgroundColor.value);
+      this.setColorAndOpacity();
+    }
+  }
+
+  private setColorAndOpacity(): void {
+    if (this.settingsManager.backgroundColor.isSet() && this.settingsManager.backgroundOpacity.isSet()) {
+      this.toggleOverlayClass(
+        'bgcolor-' + this.settingsManager.backgroundColor.value + this.settingsManager.backgroundOpacity.value,
+      );
+    } else {
+      this.toggleOverlayClass(null);
     }
   }
 }
