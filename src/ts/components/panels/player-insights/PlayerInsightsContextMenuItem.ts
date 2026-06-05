@@ -30,10 +30,6 @@ export class PlayerInsightsContextMenuItem extends InteractiveContextMenuItem<Pl
   private readonly playerInsightsPanel: PlayerInsightsPanel;
 
   constructor(config: PlayerInsightsContextMenuItemConfig) {
-    if (!config.playerInsightsPanel) {
-      throw new Error('Required PlayerInsightsPanel is missing');
-    }
-
     const initialText = PlayerInsightsContextMenuItem.getLabelText(config.playerInsightsPanel);
     const itemLabel = new Label<LabelConfig>({ text: initialText });
 
