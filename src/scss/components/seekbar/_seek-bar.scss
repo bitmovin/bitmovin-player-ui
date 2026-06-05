@@ -189,17 +189,9 @@ $seekbar-marker-dimension: calc($seekbar-bar-height * 3);
       .#{$prefix}-seekbar-bufferlevel,
       .#{$prefix}-seekbar-seekposition,
       .#{$prefix}-seekbar-playbackposition {
-        // sass-lint:disable no-vendor-prefixes
         -webkit-transform-origin: 0 100%; // required for Android 4.4 WebView
         height: 100%;
         transform-origin: 0 100%;
-      }
-
-      .#{$prefix}-seekbar-backdrop,
-      .#{$prefix}-seekbar-bufferlevel,
-      .#{$prefix}-seekbar-seekposition,
-      .#{$prefix}-seekbar-playbackposition {
-        margin: 0 $bar-inset;
       }
     }
   }
