@@ -6,6 +6,8 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
 const OUTPUT_ROOT_DIRECTORY = 'dist';
+const DEV_SERVER_BASE_PORT = 9000;
+process.env.WEBPACK_DEV_SERVER_BASE_PORT = process.env.WEBPACK_DEV_SERVER_BASE_PORT || String(DEV_SERVER_BASE_PORT);
 
 // You can customize the output names and css prefix by passing environment variables to the build script, e.g.:
 // ```
@@ -46,7 +48,7 @@ module.exports = (env, { mode }) => {
           exclude: /node_modules/,
           options: {
             multiple: [
-              { search: '{{VERSION}}', replace: JSON.stringify(require('./package.json').version), flags: 'g' },
+              { search: '{{VERSION}}', replace: require('./package.json').version, flags: 'g' },
               { search: '{{PREFIX}}', replace: outputnames.cssPrefix, flags: 'g' },
               { search: '{{FILENAME}}', replace: outputnames.filename, flags: 'g' },
             ],
@@ -144,7 +146,7 @@ module.exports = (env, { mode }) => {
       static: {
         directory: path.join(__dirname, OUTPUT_ROOT_DIRECTORY),
       },
-      port: 9000,
+      port: 'auto',
       hot: true,
       client: {
         overlay: {
