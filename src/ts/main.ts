@@ -166,9 +166,11 @@ export { SettingsPanelSeparator, SettingsPanelSeparatorConfig } from './componen
 export {
   PlayerInsightsPanel,
   PlayerInsightsPanelConfig,
-  formatBitrate,
-  formatSeconds,
 } from './components/panels/player-insights/PlayerInsightsPanel';
+export {
+  PlayerInsightsContextMenuItem,
+  PlayerInsightsContextMenuItemConfig,
+} from './components/panels/player-insights/PlayerInsightsContextMenuItem';
 export { InteractiveSettingsPanelItem } from './components/settings/InteractiveSettingsPanelItem';
 export { TouchControlOverlay, TouchControlOverlayConfig } from './components/overlays/TouchControlOverlay';
 export { CharacterEdgeColorSelectBox } from './components/settings/subtitlesettings/CharacterEdgeColorSelectBox';

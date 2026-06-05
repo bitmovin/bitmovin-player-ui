@@ -57,6 +57,7 @@ import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationOverlayNavigationGroup } from './spatialnavigation/RecommendationOverlayNavigationGroup';
 import { PlayerInsightsPanel } from './components/panels/player-insights/PlayerInsightsPanel';
+import { PlayerInsightsContextMenuItem } from './components/panels/player-insights/PlayerInsightsContextMenuItem';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -792,7 +793,11 @@ export namespace UIFactory {
 
   function buildPlayerContextMenu(playerInsightsPanel: PlayerInsightsPanel): PlayerContextMenu {
     return new PlayerContextMenu({
-      components: [playerInsightsPanel.createContextMenuToggleItem()],
+      components: [
+        new PlayerInsightsContextMenuItem({
+          playerInsightsPanel,
+        }),
+      ],
     });
   }
 }
