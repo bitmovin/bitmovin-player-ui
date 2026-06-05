@@ -16,6 +16,8 @@ export interface ContextMenuConfig extends SettingsPanelConfig {}
  * @category Components
  */
 export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> extends SettingsPanel<Config> {
+  private contextMenuHost: HTMLElement;
+
   constructor(config: Config = {} as Config) {
     super(config);
 
@@ -24,6 +26,7 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
       {
         cssClass: 'ui-context-menu',
         hideDelay: -1,
+        hideOnControlsHide: false,
         hidden: true,
         role: 'menu',
       } as Config,
@@ -35,6 +38,7 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
     super.configure(player, uimanager);
 
     const uiContainer = uimanager.getUI();
+    this.contextMenuHost = uiContainer.getDomElement().get(0);
 
     this.onHide.subscribe(() => {
       const contextMenuElement = this.getDomElement();
@@ -99,7 +103,6 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
 
     uimanager.onActive.subscribe(attachDocumentHandlers);
     uimanager.onInactive.subscribe(deactivateHandler);
-    uimanager.onControlsHide.subscribe(() => this.hideAndReset());
   }
 
   release(): void {
@@ -118,14 +121,15 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
     // The element is still laid out while hidden (visibility: hidden, not display: none),
     // so offsetWidth/Height return the real dimensions.
     const { offsetWidth, offsetHeight } = contextMenuRootElement;
-    const maxX = Math.max(0, window.innerWidth - offsetWidth - 4);
-    const maxY = Math.max(0, window.innerHeight - offsetHeight - 4);
-    const clampedX = Math.max(0, Math.min(clientX, maxX));
-    const clampedY = Math.max(0, Math.min(clientY, maxY));
+    const hostRect = this.contextMenuHost.getBoundingClientRect();
+    const maxX = Math.max(0, hostRect.width - offsetWidth - 4);
+    const maxY = Math.max(0, hostRect.height - offsetHeight - 4);
+    const clampedX = Math.max(0, Math.min(clientX - hostRect.left, maxX));
+    const clampedY = Math.max(0, Math.min(clientY - hostRect.top, maxY));
 
     contextMenuElement.css({
-      left: `${clampedX + window.scrollX}px`,
-      top: `${clampedY + window.scrollY}px`,
+      left: `${clampedX}px`,
+      top: `${clampedY}px`,
     });
 
     this.show();
@@ -136,16 +140,16 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
   }
 
   private isEventTargetInsideElement(event: MouseEvent, element: HTMLElement): boolean {
+    const eventPath = event.composedPath?.();
+
+    if (eventPath) {
+      return eventPath.includes(element);
+    }
+
     return event.target instanceof Node && element.contains(event.target);
   }
 
   private attachContextMenuElement(): void {
-    const rootElement = this.getDomElement().get(0) as HTMLElement;
-
-    if (rootElement.parentElement === document.body) {
-      return;
-    }
-
-    document.body.appendChild(rootElement);
+    this.contextMenuHost.appendChild(this.getDomElement().get(0));
   }
 }
