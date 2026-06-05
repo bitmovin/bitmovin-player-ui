@@ -6,6 +6,8 @@
   bottom: unset;
   max-height: unset;
   min-width: 14em;
+  overflow: hidden;
+  position: absolute;
   right: unset;
   width: fit-content;
   z-index: 101;
@@ -17,4 +19,21 @@
 
 .#{$prefix}-ui-context-menu {
   @extend %ui-context-menu;
+}
+
+.#{$prefix}-ui-context-menu-item {
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+
+  &:hover {
+    background-color: transparentize($color-primary, 0.9);
+  }
+
+  &.#{$prefix}-ui-context-menu-item-noninteractive {
+    cursor: default;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
 }

@@ -1,6 +1,9 @@
 import { SettingsPanel, SettingsPanelConfig } from '../settings/SettingsPanel';
 import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
+import { Component, ComponentConfig } from '../Component';
+import { Container } from '../Container';
+import { ContextMenuItem } from './ContextMenuItem';
 
 /**
  * Configuration interface for a generic {@link ContextMenu}.
@@ -32,6 +35,8 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
       } as Config,
       this.config,
     );
+
+    this.getComponents().forEach(component => this.setContextMenuForComponent(component));
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -106,11 +111,33 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
   }
 
   release(): void {
+    this.getComponents().forEach(component => this.unsetContextMenuForComponent(component));
+
     super.release();
 
     if (this.hasDomElement()) {
       this.getDomElement().remove();
     }
+  }
+
+  addComponent(component: Component<ComponentConfig>): void {
+    super.addComponent(component);
+    this.setContextMenuForComponent(component);
+  }
+
+  prependComponent(component: Component<ComponentConfig>): void {
+    super.prependComponent(component);
+    this.setContextMenuForComponent(component);
+  }
+
+  removeComponent(component: Component<ComponentConfig>): boolean {
+    const removed = super.removeComponent(component);
+
+    if (removed) {
+      this.unsetContextMenuForComponent(component);
+    }
+
+    return removed;
   }
 
   public showAt(clientX: number, clientY: number): void {
@@ -151,5 +178,25 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
 
   private attachContextMenuElement(): void {
     this.contextMenuHost.appendChild(this.getDomElement().get(0));
+  }
+
+  private setContextMenuForComponent(component: Component<ComponentConfig>): void {
+    if (component instanceof ContextMenuItem) {
+      component.setContextMenu(this);
+    }
+
+    if (component instanceof Container) {
+      component.getComponents().forEach(childComponent => this.setContextMenuForComponent(childComponent));
+    }
+  }
+
+  private unsetContextMenuForComponent(component: Component<ComponentConfig>): void {
+    if (component instanceof ContextMenuItem) {
+      component.setContextMenu(null);
+    }
+
+    if (component instanceof Container) {
+      component.getComponents().forEach(childComponent => this.unsetContextMenuForComponent(childComponent));
+    }
   }
 }

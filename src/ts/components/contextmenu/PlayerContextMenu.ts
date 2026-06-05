@@ -6,6 +6,7 @@ import { UIInstanceManager } from '../../UIManager';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../settings/SettingsPanelItem';
 import { SettingsPanelPage } from '../settings/SettingsPanelPage';
+import { SettingsPanelSeparator } from '../settings/SettingsPanelSeparator';
 
 /**
  * Configuration interface for the {@link PlayerContextMenu}.
@@ -21,12 +22,18 @@ export interface PlayerContextMenuConfig extends ContextMenuConfig {}
  */
 export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
   constructor(config: PlayerContextMenuConfig = {}) {
+    const actionItems = config.components ?? [];
+
     super({
       ...config,
       cssClasses: ['ui-player-context-menu', ...(config.cssClasses ?? [])],
       components: [
         new SettingsPanelPage({
-          components: [new PlayerInfoContextMenuItem(), ...(config.components ?? [])],
+          components: [
+            new PlayerInfoContextMenuItem(),
+            ...(actionItems.length > 0 ? [new SettingsPanelSeparator()] : []),
+            ...actionItems,
+          ],
         }),
       ],
     });
@@ -62,6 +69,7 @@ class PlayerInfoContextMenuItem extends SettingsPanelItem<SettingsPanelItemConfi
       cssClasses: ['ui-player-context-menu-info-item'],
       isSetting: false,
       role: 'group',
+      tabIndex: -1,
     });
 
     this.playerVersionLabel = playerVersionLabel;
