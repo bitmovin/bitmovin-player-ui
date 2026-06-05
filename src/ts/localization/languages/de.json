@@ -73,6 +73,8 @@
   "watermarkLink": "Link zum Homepage",
   "controlBar": "Videoplayer Kontrollen",
   "player": "Video player",
+  "contextMenu.title": "Bitmovin Player",
+  "contextMenu.subtitle": "Adaptive Streaming for the Web",
   "seekBar": "Video-Timeline",
   "seekBar.value": "Wert",
   "seekBar.timeshift": "Timeshift",
