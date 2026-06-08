@@ -2,9 +2,11 @@
 @import '../../mixins';
 
 .#{$prefix}-ui-player-insights-panel {
+  // We need to unset the default positioning of the settings-panel
   bottom: unset;
   font-size: $font-size-small;
   left: safe-area-max(0.5em, left);
+  // We need to unset the default positioning of the settings-panel
   right: unset;
   top: safe-area-max(0.5em, top);
   min-width: 0;
