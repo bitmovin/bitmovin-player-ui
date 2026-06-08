@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - New `ContextMenu` component to show custom context menus on right-click.
 - Default `PlayerContextMenu` to access player information directly from the UI.
+- `PlayerInsightsPanel` to show detailed player insights and diagnostics.
 
 ## [4.15.0] - 2026-06-04
 
