@@ -1,36 +1,23 @@
 @import '../../variables';
-
-$player-insights-label-column-width: 9em;
-$player-insights-column-gap: 0.5em;
+@import '../../mixins';
 
 .#{$prefix}-ui-player-insights-panel {
   bottom: unset;
   font-size: $font-size-small;
   left: safe-area-max(0.5em, left);
-  line-height: 1.25;
-  max-height: calc(100% - 1em);
-  max-width: calc(100% - 1em);
   right: unset;
   top: safe-area-max(0.5em, top);
-  -webkit-user-select: text;
-  user-select: text;
+  min-width: 0;
+  pointer-events: none;
   width: 32em;
 
-  > .#{$prefix}-container-wrapper {
-    max-height: inherit;
+  * {
+    pointer-events: none;
   }
 
   .#{$prefix}-ui-player-insights-panel-title-item {
     cursor: default;
-    min-height: unset;
-    padding: 0.35em 0.5em 0.35em 0.8em;
-    white-space: normal;
-
-    > .#{$prefix}-container-wrapper {
-      column-gap: 0.75em;
-      justify-content: space-between;
-      min-height: $icon-size * 0.55;
-    }
+    padding: 0.3em 0.5em;
 
     &:active,
     &:hover {
@@ -40,21 +27,24 @@ $player-insights-column-gap: 0.5em;
     * {
       cursor: default;
     }
-  }
 
-  .#{$prefix}-ui-player-insights-panel-title-label {
-    line-height: 1.2;
-    min-height: unset;
+    .#{$prefix}-ui-player-insights-panel-title-label {
+      line-height: 1.2;
+      min-height: unset;
+    }
   }
 
   .#{$prefix}-ui-player-insights-panel-close-button {
-    align-self: center;
     cursor: pointer;
-    flex: 0 0 auto;
     height: $icon-size * 0.55;
     margin-left: auto;
     min-width: $icon-size * 0.55;
     padding: 0.1em;
+    pointer-events: auto;
+
+    * {
+      pointer-events: auto;
+    }
 
     .#{$prefix}-ui-icon {
       cursor: pointer;
@@ -71,9 +61,7 @@ $player-insights-column-gap: 0.5em;
 
   .#{$prefix}-ui-player-insights-panel-item {
     cursor: default;
-    min-height: unset;
     padding: 0.1em 0.8em;
-    white-space: normal;
 
     * {
       cursor: text;
@@ -86,8 +74,8 @@ $player-insights-column-gap: 0.5em;
 
     > .#{$prefix}-container-wrapper {
       display: grid;
-      column-gap: $player-insights-column-gap;
-      grid-template-columns: $player-insights-label-column-width minmax(0, 1fr);
+      column-gap: 0.5em;
+      grid-template-columns: 9em minmax(0, 1fr);
     }
   }
 
@@ -99,10 +87,34 @@ $player-insights-column-gap: 0.5em;
   }
 
   .#{$prefix}-ui-player-insights-panel-item-trailing-label {
-    font-family: monospace;
     line-height: 1.2;
     min-height: unset;
     min-width: 0;
-    overflow-wrap: anywhere;
+
+    .#{$prefix}-ui-label-text {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+  }
+}
+
+.#{$prefix}-ui-uicontainer.#{$prefix}-layout-max-width-400 {
+  .#{$prefix}-ui-player-insights-panel-item {
+    > .#{$prefix}-container-wrapper {
+      column-gap: 0.4em;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+  }
+
+  .#{$prefix}-ui-player-insights-panel-item-leading-label {
+    font-size: calc($font-size-small * 0.85);
+    min-width: 0;
+
+    .#{$prefix}-ui-label-text {
+      overflow-wrap: anywhere;
+      text-align: right;
+      white-space: normal;
+    }
   }
 }

@@ -1,11 +1,5 @@
-import type {
-  AudioQuality,
-  DownloadedAudioData,
-  DownloadedVideoData,
-  PlayerAPI,
-  SourceConfig,
-  VideoQuality,
-} from 'bitmovin-player';
+import { AudioQuality, DownloadedAudioData, DownloadedVideoData, PlayerAPI, VideoQuality } from 'bitmovin-player';
+import type { TimeMode } from 'bitmovin-player';
 
 interface QualityInsight {
   id?: string;
@@ -16,119 +10,126 @@ interface QualityInsight {
   codec?: string;
 }
 
-export function formatVideoQualityInsight(player: PlayerAPI): string | null {
-  const playbackVideo = safe(() => player.getPlaybackVideoData() as QualityInsight);
-  const downloadedVideo = getDownloadedVideoInsight(player);
+export namespace PlayerInsightsUtils {
+  /** Formats the currently playing and downloaded video quality details for the panel row. */
+  export function formatVideoQualityInsight(player: PlayerAPI): string | null {
+    const availableVideoQualities = player.getAvailableVideoQualities();
 
-  return formatCombinedQualityInsight(
-    playbackVideo,
-    downloadedVideo,
-    isSameVideoQuality,
-    formatVideoQualityValue,
-    '\u2193 ',
-  );
-}
+    const playbackVideoQualityInsight = player.getPlaybackVideoData() as QualityInsight;
+    // The downloadVideoQuality does not contain the frame-rate or other quality-related properties.
+    // Therefore, we extract them from the available video qualities by mapping them via their IDs.
+    const downloadedVideo = player.getDownloadedVideoData();
+    const downloadVideoQualityInsight = enrichDownloadedVideoData(downloadedVideo, availableVideoQualities);
 
-export function formatAudioQualityInsight(player: PlayerAPI): string | null {
-  const playbackAudio = safe(() => player.getPlaybackAudioData() as QualityInsight);
-  const downloadedAudio = getDownloadedAudioInsight(player);
+    const playbackValue = formatQualityInsights(playbackVideoQualityInsight);
+    const downloadedValue = formatQualityInsights(downloadVideoQualityInsight);
 
-  return formatCombinedQualityInsight(playbackAudio, downloadedAudio, isSameAudioQuality, formatAudioQualityValue);
-}
+    if (!playbackValue) {
+      return downloadedValue || null;
+    }
+    if (!downloadedValue || downloadVideoQualityInsight.id === playbackVideoQualityInsight.id) {
+      return playbackValue;
+    }
 
-function getDownloadedVideoInsight(player: PlayerAPI): QualityInsight | undefined {
-  const downloadedVideo = safe(() => player.getDownloadedVideoData());
-  const availableVideoQualities = safe(() => player.getAvailableVideoQualities()) ?? [];
-
-  return enrichDownloadedVideoData(downloadedVideo, availableVideoQualities);
-}
-
-function getDownloadedAudioInsight(player: PlayerAPI): QualityInsight | undefined {
-  const downloadedAudio = safe(() => player.getDownloadedAudioData());
-  const availableAudioQualities = safe(() => player.getAvailableAudioQualities()) ?? [];
-
-  return enrichDownloadedAudioData(downloadedAudio, availableAudioQualities);
-}
-
-export function formatViewportFramesInsight(player: PlayerAPI): string | null {
-  const videoElement = getVideoElement(player);
-  const viewport = formatViewport(videoElement);
-  const frames = formatFrames(player);
-  const parts = [];
-
-  if (viewport) {
-    parts.push(viewport);
-  }
-  if (frames) {
-    parts.push(frames);
+    // Only show playback and downloaded quality separately if they differ,
+    // otherwise just show one value to avoid redundancy
+    return `${playbackValue} / \u2193${downloadedValue}`;
   }
 
-  return parts.length > 0 ? parts.join(' / ') : null;
-}
+  /** Formats the currently playing and downloaded audio quality details for the panel row. */
+  export function formatAudioQualityInsight(player: PlayerAPI): string | null {
+    const availableAudioQualities = player.getAvailableAudioQualities();
 
-export function formatManifestUrlInsight(player: PlayerAPI): string | null {
-  const manifestUrl = pickManifestUrl(safe(() => player.getSource()));
+    const playbackAudioQualityInsight = player.getPlaybackAudioData() as QualityInsight;
+    // The downloadAudioQuality does not contain the frame-rate or other quality-related properties.
+    // Therefore, we extract them from the available video qualities by mapping them via their IDs.
+    const downloadedAudio = player.getDownloadedAudioData();
+    const downloadAudioQualityInsight = enrichDownloadedAudioData(downloadedAudio, availableAudioQualities);
 
-  return manifestUrl ? escapeHtml(manifestUrl) : null;
-}
+    const playbackValue = formatQualityInsights(playbackAudioQualityInsight);
+    const downloadedValue = formatQualityInsights(downloadAudioQualityInsight);
 
-export function formatBufferInsight(player: PlayerAPI): string | null {
-  const videoBuffer = formatBufferLength(safe(() => player.getVideoBufferLength()));
-  const audioBuffer = formatBufferLength(safe(() => player.getAudioBufferLength()));
-  const parts = [];
+    if (!playbackValue) {
+      return downloadedValue || null;
+    }
+    if (!downloadedValue || downloadAudioQualityInsight.id === playbackAudioQualityInsight.id) {
+      return playbackValue;
+    }
 
-  if (videoBuffer) {
-    parts.push(videoBuffer);
-  }
-  if (audioBuffer) {
-    parts.push(audioBuffer);
-  }
-
-  return parts.length > 0 ? parts.join(' / ') : null;
-}
-
-export function formatTimeInsight(player: PlayerAPI): string | null {
-  const isLive = safe(() => player.isLive()) === true;
-  const absoluteTimeMode = (player.exports as any).TimeMode?.AbsoluteTime;
-  const currentTime = safe(() => player.getCurrentTime(isLive ? absoluteTimeMode : undefined));
-  const duration = safe(() => player.getDuration());
-  const speed = safe(() => player.getPlaybackSpeed()) ?? 1;
-  const speedText = speed !== 1 ? ` @ ${speed.toFixed(2)}x` : '';
-
-  if (typeof currentTime !== 'number') {
-    return null;
+    // Only show playback and downloaded quality separately if they differ,
+    // otherwise just show one value to avoid redundancy
+    return `${playbackValue} / ${downloadedValue}`;
   }
 
-  if (isLive) {
-    const timeShift = safe(() => player.getTimeShift());
-    const latencyText = typeof timeShift === 'number' ? `, ${(-timeShift).toFixed(2)}s behind live` : '';
-    return `${formatLiveTime(currentTime)}${latencyText}${speedText}`;
+  /** Formats the current video element size together with dropped frame count. */
+  export function formatViewportFramesInsight(player: PlayerAPI): string {
+    const videoElement = player.getContainer().querySelector('video') as HTMLVideoElement;
+    const viewport =
+      videoElement.clientWidth > 0 && videoElement.clientHeight > 0
+        ? `${videoElement.clientWidth}x${videoElement.clientHeight}`
+        : null;
+    const frames = `${player.getDroppedVideoFrames()} dropped`;
+
+    return viewport ? `${viewport} / ${frames}` : frames;
   }
 
-  return typeof duration === 'number' && isFinite(duration)
-    ? `${formatSeconds(currentTime)} / ${formatSeconds(duration)}${speedText}`
-    : `${formatSeconds(currentTime)}${speedText}`;
-}
+  /** Formats forward video and audio buffer levels from the player buffer API. */
+  export function formatBufferInsight(player: PlayerAPI): string | null {
+    const videoBufferLevel = player.buffer.getLevel(
+      player.exports.BufferType.ForwardDuration,
+      player.exports.MediaType.Video,
+    ).level;
+    const audioBufferLevel = player.buffer.getLevel(
+      player.exports.BufferType.ForwardDuration,
+      player.exports.MediaType.Audio,
+    ).level;
 
-export function formatStreamInsight(player: PlayerAPI): string | null {
-  const streamType = safe(() => player.getStreamType());
-  const playerType = safe(() => player.getPlayerType());
+    if (videoBufferLevel == null && videoBufferLevel == null) {
+      return null;
+    }
 
-  if (!streamType && !playerType) {
-    return null;
+    const bufferLevels = [
+      videoBufferLevel != null ? `${videoBufferLevel.toFixed(2)}s` : `-`,
+      audioBufferLevel != null ? `${audioBufferLevel.toFixed(2)}s` : `-`,
+    ];
+
+    return bufferLevels.join(' / ');
   }
 
-  return [streamType, playerType ? `(${playerType})` : null].filter(Boolean).join(' ');
+  /** Formats the current playback time, duration, live latency, and playback speed. */
+  export function formatTimeInsight(player: PlayerAPI): string | null {
+    const isLive = player.isLive();
+
+    if (isLive) {
+      const timeShift = player.getTimeShift();
+      const currentTime = player.getCurrentTime('absolutetime' as TimeMode);
+      return `${formatLiveTime(currentTime)} / TimeShift: ${timeShift.toFixed(2)}s`;
+    }
+
+    const currentTime = player.getCurrentTime();
+    const duration = player.getDuration();
+
+    return `${formatSeconds(currentTime)} / ${formatSeconds(duration)}`;
+  }
+
+  /** Formats the stream technology and active player type for the panel row. */
+  export function formatStreamInsight(player: PlayerAPI): string | null {
+    const streamType = player.getStreamType();
+    const playerType = player.getPlayerType();
+
+    if (!streamType && !playerType) {
+      return null;
+    }
+
+    return [streamType, playerType ? `(${playerType})` : null].filter(Boolean).join(' ');
+  }
 }
 
+/** Adds codec and frame-rate data because downloaded video data does not expose those fields. */
 function enrichDownloadedVideoData(
-  downloadedVideo: DownloadedVideoData | undefined,
+  downloadedVideo: DownloadedVideoData,
   availableVideoQualities: VideoQuality[],
-): QualityInsight | undefined {
-  if (!downloadedVideo) {
-    return undefined;
-  }
-
+): QualityInsight {
   const matchingQuality =
     availableVideoQualities.find(videoQuality => videoQuality.id === downloadedVideo.id) ??
     availableVideoQualities.find(
@@ -145,6 +146,7 @@ function enrichDownloadedVideoData(
   };
 }
 
+/** Adds codec data because downloaded audio data only exposes the downloaded rendition identity. */
 function enrichDownloadedAudioData(
   downloadedAudio: DownloadedAudioData | undefined,
   availableAudioQualities: AudioQuality[],
@@ -163,92 +165,8 @@ function enrichDownloadedAudioData(
   };
 }
 
-function isSameVideoQuality(playbackVideo: QualityInsight | undefined, downloadedVideo: QualityInsight | undefined) {
-  if (!playbackVideo || !downloadedVideo) {
-    return false;
-  }
-
-  if (playbackVideo.id && downloadedVideo.id) {
-    return playbackVideo.id === downloadedVideo.id;
-  }
-
-  const hasComparableRendition =
-    playbackVideo.width != null &&
-    downloadedVideo.width != null &&
-    playbackVideo.height != null &&
-    downloadedVideo.height != null &&
-    playbackVideo.bitrate != null &&
-    downloadedVideo.bitrate != null;
-  const sameRendition =
-    playbackVideo.width === downloadedVideo.width &&
-    playbackVideo.height === downloadedVideo.height &&
-    playbackVideo.bitrate === downloadedVideo.bitrate;
-
-  return hasComparableRendition && sameRendition && isSameCodec(playbackVideo, downloadedVideo);
-}
-
-function isSameAudioQuality(playbackAudio: QualityInsight | undefined, downloadedAudio: QualityInsight | undefined) {
-  if (!playbackAudio || !downloadedAudio) {
-    return false;
-  }
-
-  if (playbackAudio.id && downloadedAudio.id) {
-    return playbackAudio.id === downloadedAudio.id;
-  }
-
-  return (
-    playbackAudio.bitrate != null &&
-    downloadedAudio.bitrate != null &&
-    playbackAudio.bitrate === downloadedAudio.bitrate &&
-    isSameCodec(playbackAudio, downloadedAudio)
-  );
-}
-
-function isSameCodec(playbackQuality: QualityInsight, downloadedQuality: QualityInsight): boolean {
-  return !playbackQuality.codec || !downloadedQuality.codec || playbackQuality.codec === downloadedQuality.codec;
-}
-
-function formatCombinedQualityInsight(
-  playbackQuality: QualityInsight | undefined,
-  downloadedQuality: QualityInsight | undefined,
-  isSameQuality: (
-    playbackQuality: QualityInsight | undefined,
-    downloadedQuality: QualityInsight | undefined,
-  ) => boolean,
-  formatQuality: (quality: QualityInsight | undefined) => string,
-  downloadedPrefix = '',
-): string | null {
-  const playbackValue = formatQuality(playbackQuality);
-  const downloadedValue = formatQuality(downloadedQuality);
-  const prefixedDownloadedValue = downloadedValue ? `${downloadedPrefix}${downloadedValue}` : '';
-
-  if (!playbackValue) {
-    return downloadedValue || null;
-  }
-  if (!downloadedValue || isSameQuality(playbackQuality, downloadedQuality)) {
-    return playbackValue;
-  }
-
-  return `${playbackValue} / ${prefixedDownloadedValue}`;
-}
-
-function formatVideoQualityValue(quality: QualityInsight | undefined): string {
-  if (!quality) {
-    return '';
-  }
-
-  const parts = formatVideoQualityParts(quality);
-
-  return parts.length > 0 ? parts.join(',') : '';
-}
-
-function formatAudioQualityValue(quality: QualityInsight | undefined): string {
-  const parts = formatAudioQualityParts(quality);
-
-  return parts.length > 0 ? parts.join(',') : '';
-}
-
-function formatVideoQualityParts(quality: QualityInsight): string[] {
+/** Builds the display value for a quality value. */
+function formatQualityInsights(quality: QualityInsight): string {
   const parts = [];
   const resolution = formatResolution(quality);
   const bitrate = formatBitrate(quality.bitrate);
@@ -263,92 +181,18 @@ function formatVideoQualityParts(quality: QualityInsight): string[] {
     parts.push(quality.codec);
   }
 
-  return parts;
+  return parts.length > 0 ? parts.join(',') : '';
 }
 
-function formatAudioQualityParts(quality: QualityInsight | undefined): string[] {
-  if (!quality) {
-    return [];
-  }
-
-  const parts = [];
-  const bitrate = formatBitrate(quality.bitrate);
-
-  if (bitrate) {
-    parts.push(bitrate);
-  }
-  if (quality.codec) {
-    parts.push(quality.codec);
-  }
-
-  return parts;
-}
-
+/** Formats resolution and optional frame rate for video quality display. */
 function formatResolution(quality: QualityInsight): string | null {
   return quality.width && quality.height
     ? `${quality.width}x${quality.height}${quality.frameRate ? `@${quality.frameRate}` : ''}`
     : null;
 }
 
-function formatBufferLength(bufferLength: number | undefined): string | null {
-  return typeof bufferLength === 'number' ? `${bufferLength.toFixed(2)}s` : null;
-}
-
-function formatViewport(videoElement: HTMLVideoElement | null): string | null {
-  return videoElement && videoElement.clientWidth > 0 && videoElement.clientHeight > 0
-    ? `${videoElement.clientWidth}x${videoElement.clientHeight}`
-    : null;
-}
-
-function formatFrames(player: PlayerAPI): string | null {
-  const droppedFrames = safe(() => player.getDroppedVideoFrames());
-
-  if (typeof droppedFrames !== 'number') {
-    return null;
-  }
-
-  return `${droppedFrames} dropped`;
-}
-
-function getVideoElement(player: PlayerAPI): HTMLVideoElement | null {
-  return safe(() => player.getContainer().querySelector('video') as HTMLVideoElement | null) ?? null;
-}
-
-function pickManifestUrl(source: SourceConfig | null | undefined): string | null {
-  if (!source) {
-    return null;
-  }
-
-  if (source.dash) {
-    return source.dash;
-  }
-  if (source.hls) {
-    return source.hls;
-  }
-  if (source.smooth) {
-    return source.smooth;
-  }
-  if (typeof source.progressive === 'string') {
-    return source.progressive;
-  }
-
-  const progressiveSource = source.progressive?.find(sourceConfig => sourceConfig.preferred) ?? source.progressive?.[0];
-  return progressiveSource?.url ?? null;
-}
-
-function escapeHtml(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function safe<T>(fn: () => T): T | undefined {
-  try {
-    return fn();
-  } catch {
-    return undefined;
-  }
-}
-
-export function formatBitrate(bitrate: number | undefined): string {
+/** Formats bitrate in Mbps or kbps depending on its size. */
+function formatBitrate(bitrate: number | undefined): string {
   if (!bitrate || !isFinite(bitrate)) {
     return '';
   }
@@ -360,31 +204,32 @@ export function formatBitrate(bitrate: number | undefined): string {
   return `${Math.round(bitrate / 1000)}kbps`;
 }
 
-export function formatSeconds(seconds: number): string {
+/** Formats a duration-like value as h:mm:ss or m:ss. */
+function formatSeconds(seconds: number): string {
   if (!isFinite(seconds)) {
     return 'Infinity';
   }
 
-  const sign = seconds < 0 ? '-' : '';
   const total = Math.floor(Math.abs(seconds));
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const remainingSeconds = total % 60;
   const pad = (value: number) => (value < 10 ? `0${value}` : value.toString());
 
-  return hours > 0
-    ? `${sign}${hours}:${pad(minutes)}:${pad(remainingSeconds)}`
-    : `${sign}${minutes}:${pad(remainingSeconds)}`;
+  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(remainingSeconds)}` : `${minutes}:${pad(remainingSeconds)}`;
 }
 
+/** Formats absolute live time as a clock and relative live time as a duration. */
 function formatLiveTime(seconds: number): string {
   return isUnixTimestamp(seconds) ? formatClockTime(seconds) : formatSeconds(seconds);
 }
 
+/** Detects absolute wall-clock timestamps returned for live playback. */
 function isUnixTimestamp(seconds: number): boolean {
   return seconds >= Date.UTC(2000, 0, 1) / 1000;
 }
 
+/** Formats a Unix timestamp in seconds as a local wall-clock time. */
 function formatClockTime(seconds: number): string {
   const date = new Date(seconds * 1000);
   const pad = (value: number) => (value < 10 ? `0${value}` : value.toString());

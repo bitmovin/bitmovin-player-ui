@@ -3,20 +3,11 @@ import type { UIInstanceManager } from '../UIManager';
 import { Event, EventDispatcher } from '../EventDispatcher';
 import { i18n, LocalizableText } from '../localization/i18n';
 import { Timeout } from './Timeout';
-import {
-  formatAudioQualityInsight,
-  formatBufferInsight,
-  formatManifestUrlInsight,
-  formatStreamInsight,
-  formatTimeInsight,
-  formatVideoQualityInsight,
-  formatViewportFramesInsight,
-} from './PlayerInsightsUtils';
+import { PlayerInsightsUtils } from './PlayerInsightsUtils';
 
 export type PlayerInsightValueProvider = (player: PlayerAPI) => LocalizableText | null | undefined;
 
 interface PlayerInsights {
-  manifestUrl: PlayerInsightProperty;
   video: PlayerInsightProperty;
   viewportFrames: PlayerInsightProperty;
   audio: PlayerInsightProperty;
@@ -37,26 +28,25 @@ export interface PlayerInsightSnapshot {
 
 export class PlayerInsightsProvider {
   private readonly properties: Properties = {
-    manifestUrl: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.manifestUrl'), player =>
-      formatManifestUrlInsight(player),
-    ),
     video: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.video'), player =>
-      formatVideoQualityInsight(player),
+      PlayerInsightsUtils.formatVideoQualityInsight(player),
     ),
     viewportFrames: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.viewportFrames'), player =>
-      formatViewportFramesInsight(player),
+      PlayerInsightsUtils.formatViewportFramesInsight(player),
     ),
     audio: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.audio'), player =>
-      formatAudioQualityInsight(player),
+      PlayerInsightsUtils.formatAudioQualityInsight(player),
     ),
     bufferVideoAudio: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.bufferVideoAudio'), player =>
-      formatBufferInsight(player),
+      PlayerInsightsUtils.formatBufferInsight(player),
     ),
-    time: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.time'), player => formatTimeInsight(player)),
+    time: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.time'), player =>
+      PlayerInsightsUtils.formatTimeInsight(player),
+    ),
     stream: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.stream'), player =>
-      formatStreamInsight(player),
+      PlayerInsightsUtils.formatStreamInsight(player),
     ),
-    player: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.player'), player => player.version),
+    player: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.playerVersion'), player => player.version),
   };
 
   private readonly events = {
