@@ -15,7 +15,7 @@ export class PlayerInsightsPanelTitleItem extends SettingsPanelItem<SettingsPane
 
   constructor() {
     const titleLabel = new Label<LabelConfig>({
-      text: i18n.getLocalizer('playerInsights.title'),
+      text: 'Player Insights',
       cssClasses: ['ui-player-insights-panel-title-label'],
     });
     const closeButton = new Button<ButtonConfig>({

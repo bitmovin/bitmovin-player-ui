@@ -1,7 +1,7 @@
 import type { PlayerAPI } from 'bitmovin-player';
 import type { UIInstanceManager } from '../UIManager';
 import { Event, EventDispatcher } from '../EventDispatcher';
-import { i18n, LocalizableText } from '../localization/i18n';
+import { LocalizableText } from '../localization/i18n';
 import { Timeout } from './Timeout';
 import { PlayerInsightsUtils } from './PlayerInsightsUtils';
 
@@ -28,25 +28,17 @@ export interface PlayerInsightSnapshot {
 
 export class PlayerInsightsProvider {
   private readonly properties: Properties = {
-    video: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.video'), player =>
-      PlayerInsightsUtils.formatVideoQualityInsight(player),
-    ),
-    viewportFrames: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.viewportFrames'), player =>
+    video: new PlayerInsightProperty('Video', player => PlayerInsightsUtils.formatVideoQualityInsight(player)),
+    viewportFrames: new PlayerInsightProperty('Viewport / Frames', player =>
       PlayerInsightsUtils.formatViewportFramesInsight(player),
     ),
-    audio: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.audio'), player =>
-      PlayerInsightsUtils.formatAudioQualityInsight(player),
-    ),
-    bufferVideoAudio: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.bufferVideoAudio'), player =>
+    audio: new PlayerInsightProperty('Audio', player => PlayerInsightsUtils.formatAudioQualityInsight(player)),
+    bufferVideoAudio: new PlayerInsightProperty('Buffer Video / Audio', player =>
       PlayerInsightsUtils.formatBufferInsight(player),
     ),
-    time: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.time'), player =>
-      PlayerInsightsUtils.formatTimeInsight(player),
-    ),
-    stream: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.stream'), player =>
-      PlayerInsightsUtils.formatStreamInsight(player),
-    ),
-    player: new PlayerInsightProperty(i18n.getLocalizer('playerInsights.playerVersion'), player => player.version),
+    time: new PlayerInsightProperty('Time', player => PlayerInsightsUtils.formatTimeInsight(player)),
+    stream: new PlayerInsightProperty('Stream', player => PlayerInsightsUtils.formatStreamInsight(player)),
+    player: new PlayerInsightProperty('Player version', player => player.version),
   };
 
   private readonly events = {
