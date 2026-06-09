@@ -142,22 +142,25 @@ export class SeekBarController {
    * Pauses the player first if necessary so the step lands on a stable frame. The frame
    * duration is derived from the active video quality's `frameRate` and falls back to
    * 30 fps when the player doesn't expose one (e.g. progressive sources).
+   *
+   * Only supported for VOD: on live streams `timeShift` is measured against the constantly
+   * advancing live edge, and `getTimeShift()` is not a stable reference while paused, so a
+   * sub-frame step gets swamped by the edge movement and the position drifts forward instead
+   * of stepping. Live frame stepping needs absolute-time seeking on the player side.
    */
   protected stepFrame(direction: number): void {
+    if (this.player.isLive()) {
+      return;
+    }
     if (!this.player.isPaused()) {
       this.player.pause('ui');
     }
-    const videoData = this.player.getPlaybackVideoData() as { frameRate?: number } | null | undefined;
-    const fps =
-      videoData && typeof videoData.frameRate === 'number' && videoData.frameRate > 0 ? videoData.frameRate : 30;
-    const delta = direction * (1 / fps);
-    if (this.player.isLive()) {
-      const target = this.player.getTimeShift() + delta;
-      const clamped = Math.max(this.player.getMaxTimeShift(), Math.min(0, target));
-      this.player.timeShift(clamped);
-    } else {
-      const target = Math.max(0, this.player.getCurrentTime() + delta);
-      this.player.seek(target);
-    }
+    const target = Math.max(0, this.player.getCurrentTime() + direction / this.getFrameRate());
+    this.player.seek(target);
+  }
+
+  private getFrameRate(): number {
+    const frameRate = this.player.getPlaybackVideoData()?.frameRate;
+    return typeof frameRate === 'number' && frameRate > 0 ? frameRate : 30;
   }
 }
