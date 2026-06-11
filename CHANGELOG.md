@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Vertical seek bars and volume sliders (`vertical: true`, e.g. the slide-out volume slider of the `VolumeControlButton`) were rendered with a broken horizontal layout
+
 ## [4.15.0] - 2026-06-04
 
 ### Added

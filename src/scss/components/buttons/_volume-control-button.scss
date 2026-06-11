@@ -26,5 +26,13 @@
       top: 0.5em;
       width: auto;
     }
+
+    &.#{$prefix}-vertical {
+      .#{$prefix}-seekbar {
+        // The round playback position marker (knob) is wider than the vertical bar
+        // and must not be clipped away
+        overflow: visible;
+      }
+    }
   }
 }
