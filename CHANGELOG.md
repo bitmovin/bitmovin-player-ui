@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - New `ContextMenu` component to show custom context menus on right-click.
+- `UIInstanceManager.onActive` and `UIInstanceManager.onInactive` lifecycle events for UI variant status changes.
 - Default `PlayerContextMenu` to access player information directly from the UI.
 
 ## [4.15.0] - 2026-06-04
