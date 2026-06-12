@@ -5,12 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [4.15.1] - 2026-06-11
+
+### Fixed
+
+- Vertical seek bars and volume sliders (`vertical: true`, e.g. the slide-out volume slider of the `VolumeControlButton`) were rendered with a broken horizontal layout
+
+## [4.15.0] - 2026-06-04
 
 ### Added
 
-- Support for the `prefers-reduced-motion` accessibility setting: UI animations and transitions are disabled when the user has set the OS-level `prefers-reduced-motion: reduce` preference
+- `UIManager.recommendations` namespace for dynamically updating recommendation items for the `RecommendationOverlay`
+- `UIManager.timelineMarkers` namespace for dynamically updating `TimelineMarker`s for the seek bar
+
+### Fixed
+
+- Saved subtitle styling preferences are now correctly applied to the rendered subtitles on initial load
+
+### Deprecated
+
+- `UIManager.getTimelineMarkers`, `UIManager.addTimelineMarker`, and `UIManager.removeTimelineMarker` in favor of the new `UIManager.timelineMarkers` namespace.
+
+## [4.14.1] - 2026-05-28
+
+### Fixed
+
+- The exported UI `version` (`window.bitmovin.playerui.version`) no longer includes extra quote characters
+
+### Internal
+
+- Webpack dev server uses automatic port selection starting from `9000`, allowing multiple local checkouts to run concurrently
+
+## [4.14.0] - 2026-05-14
+
+### Added
+
+- Keyboard frame-by-frame stepping on the seekbar: when the seekbar is focused, `,` steps one frame back and `.` steps one frame forward (matching the YouTube convention). Playback is paused first if needed; frame duration is derived from the active video quality's `frameRate` with a 30 fps fallback. Live streams ignore the keys.
 - New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
+- Support for the `prefers-reduced-motion` accessibility setting: UI animations and transitions are disabled when the user has set the OS-level `prefers-reduced-motion: reduce` preference
 
 ### Changed
 
