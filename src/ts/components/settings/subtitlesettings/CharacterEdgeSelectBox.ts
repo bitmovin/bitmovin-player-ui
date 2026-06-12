@@ -30,19 +30,6 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
     this.addItem('uniform', i18n.getLocalizer('settings.subtitles.characterEdge.uniform'));
     this.addItem('dropshadowed', i18n.getLocalizer('settings.subtitles.characterEdge.dropshadowed'));
 
-    const setColorAndEdgeType = () => {
-      if (this.settingsManager.characterEdge.isSet() && this.settingsManager.characterEdgeColor.isSet()) {
-        this.toggleOverlayClass(
-          'characteredge-' +
-            this.settingsManager.characterEdge.value +
-            '-' +
-            this.settingsManager.characterEdgeColor.value,
-        );
-      } else {
-        this.toggleOverlayClass(null);
-      }
-    };
-
     this.onItemSelectionChanged.subscribe((sender, key: string) => {
       this.settingsManager.characterEdge.value = key;
     });
@@ -57,16 +44,33 @@ export class CharacterEdgeSelectBox extends SubtitleSettingSelectBox {
         this.settingsManager.characterEdgeColor.value = 'black';
       }
       this.selectItem(property.value);
-      setColorAndEdgeType();
+      this.setColorAndEdgeType();
     });
 
     this.settingsManager.characterEdgeColor.onChanged.subscribe(() => {
-      setColorAndEdgeType();
+      this.setColorAndEdgeType();
     });
 
-    // Load initial value
+    this.initFromSettings();
+  }
+
+  private initFromSettings(): void {
     if (this.settingsManager.characterEdge.isSet()) {
       this.selectItem(this.settingsManager.characterEdge.value);
+      this.setColorAndEdgeType();
+    }
+  }
+
+  private setColorAndEdgeType(): void {
+    if (this.settingsManager.characterEdge.isSet() && this.settingsManager.characterEdgeColor.isSet()) {
+      this.toggleOverlayClass(
+        'characteredge-' +
+          this.settingsManager.characterEdge.value +
+          '-' +
+          this.settingsManager.characterEdgeColor.value,
+      );
+    } else {
+      this.toggleOverlayClass(null);
     }
   }
 }
