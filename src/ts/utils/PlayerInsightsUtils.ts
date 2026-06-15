@@ -1,4 +1,4 @@
-import { AudioQuality, DownloadedAudioData, DownloadedVideoData, PlayerAPI, VideoQuality } from 'bitmovin-player';
+import { PlayerAPI } from 'bitmovin-player';
 import type { TimeMode } from 'bitmovin-player';
 
 const DOWN_ARROW_CHARACTER = '\u2193';
@@ -21,7 +21,7 @@ export namespace PlayerInsightsUtils {
     // The downloadVideoQuality does not contain the frame-rate or other quality-related properties.
     // Therefore, we extract them from the available video qualities by mapping them via their IDs.
     const downloadedVideo = player.getDownloadedVideoData();
-    const downloadVideoQualityInsight = enrichDownloadedVideoData(downloadedVideo, availableVideoQualities);
+    const downloadVideoQualityInsight = enrichDownloadedQualityData(downloadedVideo, availableVideoQualities);
 
     return formatPlaybackAndDownloadedQuality(playbackVideoQualityInsight, downloadVideoQualityInsight);
   }
@@ -34,7 +34,7 @@ export namespace PlayerInsightsUtils {
     // The downloadAudioQuality does not contain the frame-rate or other quality-related properties.
     // Therefore, we extract them from the available video qualities by mapping them via their IDs.
     const downloadedAudio = player.getDownloadedAudioData();
-    const downloadAudioQualityInsight = enrichDownloadedAudioData(downloadedAudio, availableAudioQualities);
+    const downloadAudioQualityInsight = enrichDownloadedQualityData(downloadedAudio, availableAudioQualities);
 
     return formatPlaybackAndDownloadedQuality(playbackAudioQualityInsight, downloadAudioQualityInsight);
   }
@@ -103,46 +103,15 @@ export namespace PlayerInsightsUtils {
   }
 }
 
-/** Adds codec and frame-rate data because downloaded video data does not expose those fields. */
-function enrichDownloadedVideoData(
-  downloadedVideo: DownloadedVideoData | undefined,
-  availableVideoQualities: VideoQuality[],
-): QualityInsight | undefined {
-  return enrichDownloadedQualityData(downloadedVideo, downloadedVideo => {
-    return (
-      availableVideoQualities.find(videoQuality => videoQuality.id === downloadedVideo.id) ??
-      availableVideoQualities.find(
-        videoQuality =>
-          videoQuality.bitrate === downloadedVideo.bitrate &&
-          videoQuality.width === downloadedVideo.width &&
-          videoQuality.height === downloadedVideo.height,
-      )
-    );
-  });
-}
-
-/** Adds codec data because downloaded audio data only exposes the downloaded rendition identity. */
-function enrichDownloadedAudioData(
-  downloadedAudio: DownloadedAudioData | undefined,
-  availableAudioQualities: AudioQuality[],
-): QualityInsight | undefined {
-  return enrichDownloadedQualityData(downloadedAudio, downloadedAudio => {
-    return (
-      availableAudioQualities.find(audioQuality => audioQuality.id === downloadedAudio.id) ??
-      availableAudioQualities.find(audioQuality => audioQuality.bitrate === downloadedAudio.bitrate)
-    );
-  });
-}
-
 function enrichDownloadedQualityData(
   downloadedQuality: QualityInsight | undefined,
-  findMatchingQuality: (downloadedQuality: QualityInsight) => QualityInsight | undefined,
+  availableQualities: QualityInsight[],
 ): QualityInsight | undefined {
   if (!downloadedQuality) {
     return undefined;
   }
 
-  const matchingQuality = findMatchingQuality(downloadedQuality);
+  const matchingQuality = availableQualities.find(quality => quality.id === downloadedQuality.id);
 
   return {
     ...downloadedQuality,
