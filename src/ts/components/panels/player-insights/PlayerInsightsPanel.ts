@@ -59,7 +59,7 @@ export class PlayerInsightsPanel extends SettingsPanel<PlayerInsightsPanelConfig
         hidden: true,
         hideDelay: -1,
         hideOnControlsHide: false,
-        hideWithOtherSettingsPanels: false,
+        hideOnOtherSettingsPanelOpening: false,
         refreshIntervalMs: 1000,
       } as PlayerInsightsPanelConfig,
       this.config,

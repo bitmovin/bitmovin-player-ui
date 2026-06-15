@@ -90,7 +90,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
         // due to the subscribeOnce above)
         this.visibleSettingsPanels
           .slice()
-          .filter(settingsPanel => settingsPanel.getConfig().hideWithOtherSettingsPanels)
+          .filter(settingsPanel => settingsPanel.getConfig().hideOnOtherSettingsPanelOpening)
           .forEach(settingsPanel => settingsPanel.hide());
       }
       settingsPanel.toggleHidden();
@@ -117,7 +117,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     // Ensure that only one `SettingPanel` is visible at once
     // Keep track of shown SettingsPanels
     uimanager.onComponentShow.subscribe((sender: Component<ComponentConfig>) => {
-      if (sender instanceof SettingsPanel && sender.getConfig().hideWithOtherSettingsPanels) {
+      if (sender instanceof SettingsPanel && sender.getConfig().hideOnOtherSettingsPanelOpening) {
         this.visibleSettingsPanels.push(sender);
         sender.onHide.subscribeOnce(() => ArrayUtils.remove(this.visibleSettingsPanels, sender));
       }

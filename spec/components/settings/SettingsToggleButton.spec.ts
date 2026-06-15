@@ -40,7 +40,7 @@ describe('SettingsToggleButton', () => {
 
     it('does not hide visible settings panels that opt out when opening its settings panel', () => {
       const settingsPanel = createSettingsPanel({ hidden: true });
-      const persistentSettingsPanel = createSettingsPanel({ hideWithOtherSettingsPanels: false });
+      const persistentSettingsPanel = createSettingsPanel({ hideOnOtherSettingsPanelOpening: false });
       const settingsToggleButton = configureSettingsToggleButton(settingsPanel);
       const onComponentShowHandler = getOnComponentShowHandler();
       const hideSpy = jest.spyOn(persistentSettingsPanel, 'hide');
