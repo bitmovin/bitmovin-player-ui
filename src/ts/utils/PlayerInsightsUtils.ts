@@ -33,8 +33,7 @@ export namespace PlayerInsightsUtils {
       return playbackValue;
     }
 
-    // Only show playback and downloaded quality separately if they differ,
-    // otherwise just show one value to avoid redundancy
+    // Show both values when playback and downloaded renditions differ.
     return `${playbackValue} / ${DOWN_ARROW_CHARACTER}${downloadedValue}`;
   }
 
@@ -58,8 +57,7 @@ export namespace PlayerInsightsUtils {
       return playbackValue;
     }
 
-    // Only show playback and downloaded quality separately if they differ,
-    // otherwise just show one value to avoid redundancy
+    // Show both values when playback and downloaded renditions differ.
     return `${playbackValue} / ${downloadedValue}`;
   }
 
