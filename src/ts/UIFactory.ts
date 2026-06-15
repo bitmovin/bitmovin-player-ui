@@ -26,6 +26,7 @@ import { SettingsToggleButton } from './components/settings/SettingsToggleButton
 import { FullscreenToggleButton } from './components/buttons/FullscreenToggleButton';
 import { UIContainer } from './components/UIContainer';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
+import { PlayerContextMenu } from './components/contextmenu/PlayerContextMenu';
 import { PlaybackToggleOverlay } from './components/overlays/PlaybackToggleOverlay';
 import { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
 import { TitleBar } from './components/TitleBar';
@@ -246,6 +247,7 @@ export namespace UIFactory {
 
     export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
+      const playerContextMenu = BrowserUtils.isMobile ? null : new PlayerContextMenu();
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
       const controlBar = new ControlBar({
@@ -282,7 +284,11 @@ export namespace UIFactory {
         ],
       });
 
-      const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
+      const conditionalComponents = [
+        config.includeWatermark ? new Watermark() : null,
+        playerContextMenu ? new DismissClickOverlay({ target: playerContextMenu }) : null,
+        playerContextMenu,
+      ].filter(e => e);
 
       return new UIContainer({
         components: [
@@ -361,6 +367,7 @@ export namespace UIFactory {
 
     export function smallScreen(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
+      const playerContextMenu = BrowserUtils.isMobile ? null : new PlayerContextMenu();
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
 
@@ -420,6 +427,7 @@ export namespace UIFactory {
           }),
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
+          ...(playerContextMenu ? [new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu] : []),
           new ErrorMessageOverlay(),
         ],
         cssClasses: ['ui-smallscreen'],
