@@ -1,5 +1,4 @@
 import { PlayerAPI } from 'bitmovin-player';
-import type { TimeMode } from 'bitmovin-player';
 
 const DOWN_ARROW_CHARACTER = '\u2193';
 
@@ -80,7 +79,7 @@ export namespace PlayerInsightsUtils {
 
     if (isLive) {
       const timeShift = player.getTimeShift();
-      const currentTime = player.getCurrentTime('absolutetime' as TimeMode);
+      const currentTime = player.getCurrentTime();
       return `${formatLiveTime(currentTime)} / TimeShift: ${timeShift.toFixed(2)}s`;
     }
 
