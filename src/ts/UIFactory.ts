@@ -254,7 +254,7 @@ export namespace UIFactory {
         subtitleOverlay,
         undefined,
         config.ecoMode === true,
-        config.enablePersistentPreferences === true,
+        config.showPersistentPreferencesToggle === true && config.disableStorageApi !== true,
       );
       const controlBar = new ControlBar({
         components: [
@@ -708,7 +708,7 @@ export namespace UIFactory {
     subtitleOverlay: SubtitleOverlay,
     hideDelay: number | undefined = undefined,
     enableEcoMode: boolean = false,
-    enablePersistentPreferences: boolean = false,
+    showPersistentPreferencesToggle: boolean = false,
   ): SettingsPanel<SettingsPanelConfig> {
     const settingsPanelConfig: SettingsPanelConfig = {
       components: [],
@@ -755,20 +755,6 @@ export namespace UIFactory {
       components.unshift(ecoModeContainer);
     }
 
-    if (enablePersistentPreferences) {
-      const persistentPreferencesToggle = new PersistentPreferencesToggleButton();
-      const persistentPreferencesLabel = new Label<LabelConfig>({
-        text: i18n.getLocalizer('persistentPreferences.title'),
-        for: persistentPreferencesToggle.getConfig().id,
-      });
-      components.push(
-        new SettingsPanelItem({
-          label: persistentPreferencesLabel,
-          settingComponent: persistentPreferencesToggle,
-        }),
-      );
-    }
-
     const mainSettingsPanelPage = new SettingsPanelPage({
       components,
     });
@@ -797,6 +783,22 @@ export namespace UIFactory {
     });
     mainSettingsPanelPage.addComponent(subtitleSelectItem);
     settingsPanel.addComponent(subtitleSettingsPanelPage);
+
+    // Added last so the opt-in toggle sits at the bottom of the settings list, out of the
+    // way of the primary playback settings.
+    if (showPersistentPreferencesToggle) {
+      const persistentPreferencesToggle = new PersistentPreferencesToggleButton();
+      const persistentPreferencesLabel = new Label<LabelConfig>({
+        text: i18n.getLocalizer('persistentPreferences.title'),
+        for: persistentPreferencesToggle.getConfig().id,
+      });
+      mainSettingsPanelPage.addComponent(
+        new SettingsPanelItem({
+          label: persistentPreferencesLabel,
+          settingComponent: persistentPreferencesToggle,
+        }),
+      );
+    }
 
     return settingsPanel;
   }

@@ -160,11 +160,12 @@ export interface UIConfig {
    */
   disableStorageApi?: boolean;
   /**
-   * If set to true, the UI exposes the persistent preferences feature: it adds an opt-in
-   * toggle to the settings panel and, when the end-user enables it, persists volume, mute
-   * state, and playback speed across sessions and reapplies them when a player using this
-   * UI is initialized. Has no effect when `disableStorageApi` is true or `localStorage`
-   * is unavailable.
+   * If set to true, the UI persists volume, mute state, and playback speed across sessions
+   * and reapplies them when a player using this UI is initialized — automatically, without
+   * any end-user interaction. Use {@link showPersistentPreferencesToggle} instead (or in
+   * addition) to delegate the decision to the end-user via a settings-panel toggle.
+   *
+   * Has no effect when `disableStorageApi` is true or `localStorage` is unavailable.
    *
    * Disabled by default so existing integrations (including automated tests and custom
    * persistence layers) are not affected. Opt in explicitly per UI instance.
@@ -172,6 +173,17 @@ export interface UIConfig {
    * Default: false
    */
   enablePersistentPreferences?: boolean;
+  /**
+   * If set to true, the settings panel shows an opt-in toggle that lets the end-user decide
+   * whether the UI persists volume, mute state, and playback speed across sessions. The
+   * user's choice is itself persisted; when {@link enablePersistentPreferences} is also set,
+   * it provides the toggle's initial (on) state until the user changes it.
+   *
+   * Has no effect when `disableStorageApi` is true or `localStorage` is unavailable.
+   *
+   * Default: false
+   */
+  showPersistentPreferencesToggle?: boolean;
   /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    */

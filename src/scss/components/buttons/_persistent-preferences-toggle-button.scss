@@ -5,6 +5,9 @@
   @extend %ui-button;
   height: 1em;
   min-width: 5em;
+  // Align the toggle to the right of its settings row, matching the value column of the
+  // other settings entries instead of floating in the middle.
+  margin-left: auto;
 
   &:hover {
     @include svg-icon-shadow;
@@ -15,7 +18,6 @@
       background-image: svg-load('../../assets/images/toggleOn.svg', fill=$color-icon);
       background-position: 20px center;
       background-size: 45% auto;
-      margin-left: 2%;
     }
   }
 

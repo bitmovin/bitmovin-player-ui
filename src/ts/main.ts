@@ -11,7 +11,7 @@ export { PlayerUtils } from './utils/PlayerUtils';
 export { UIUtils } from './utils/UIUtils';
 export { BrowserUtils } from './utils/BrowserUtils';
 export { StorageUtils } from './utils/StorageUtils';
-export { UIPreferences } from './utils/UIPreferences';
+export { UIPreferencesManager } from './utils/UIPreferencesManager';
 export { ErrorUtils } from './utils/ErrorUtils';
 export { ShadowDomManager } from './utils/ShadowDomManager';
 // Localization

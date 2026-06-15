@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `UIPreferences`: persists volume, mute state, and playback speed across sessions and reapplies them on player init (after `Ready`). Configurable via `UIConfig.enablePersistentPreferences` (default `true`). All persistent storage routes through the existing `disableStorageApi` flag and degrades to a no-op when `localStorage` is unavailable (private browsing, restricted WebViews, RDK / set-top boxes).
+- `UIConfig.enablePersistentPreferences` and `UIConfig.showPersistentPreferencesToggle` to configure whether the UI persists volume, mute state, and playback speed across sessions and reapplies them on player init — automatically and/or via an end-user opt-in toggle in the settings panel. Both default to `false`; they have no effect when `disableStorageApi` is set or `localStorage` is unavailable (private browsing, restricted WebViews, RDK / set-top boxes).
 - New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
 
 ### Changed

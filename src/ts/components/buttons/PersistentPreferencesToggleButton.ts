@@ -2,12 +2,12 @@ import { ToggleButton, ToggleButtonConfig } from './ToggleButton';
 import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
-import { UIPreferences } from '../../utils/UIPreferences';
 
 /**
  * A toggle that lets the end-user opt in to having their volume, mute and playback
- * speed remembered across sessions. Only meaningful when the integrator has enabled
- * `UIConfig.enablePersistentPreferences` — otherwise no surrounding UI persists state.
+ * speed remembered across sessions. Reflects and drives the {@link UIPreferencesManager}
+ * `enabled` state. Only added to the UI when the integrator sets
+ * `UIConfig.showPersistentPreferencesToggle`.
  *
  * @category Buttons
  */
@@ -29,7 +29,9 @@ export class PersistentPreferencesToggleButton extends ToggleButton<ToggleButton
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    if (UIPreferences.isEnabled()) {
+    const uiPreferencesManager = uimanager.getUIPreferencesManager();
+
+    if (uiPreferencesManager.isEnabled()) {
       this.on();
     }
 
@@ -38,11 +40,11 @@ export class PersistentPreferencesToggleButton extends ToggleButton<ToggleButton
     });
 
     this.onToggleOn.subscribe(() => {
-      UIPreferences.setEnabled(player, true);
+      uiPreferencesManager.setEnabled(true);
     });
 
     this.onToggleOff.subscribe(() => {
-      UIPreferences.setEnabled(player, false);
+      uiPreferencesManager.setEnabled(false);
     });
   }
 }

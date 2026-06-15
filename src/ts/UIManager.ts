@@ -16,7 +16,7 @@ import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './u
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
-import { UIPreferences } from './utils/UIPreferences';
+import { UIPreferencesManager } from './utils/UIPreferencesManager';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
@@ -147,6 +147,7 @@ export class UIManager {
   private managerPlayerWrapper: PlayerWrapper;
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
+  private uiPreferencesManager: UIPreferencesManager;
   private shadowDomManager: ShadowDomManager;
 
   private events = {
@@ -191,6 +192,7 @@ export class UIManager {
     }
 
     this.subtitleSettingsManager = new SubtitleSettingsManager();
+    this.uiPreferencesManager = new UIPreferencesManager();
     this.shadowDomManager = new ShadowDomManager();
     this.player = player;
     this.managerPlayerWrapper = new PlayerWrapper(player);
@@ -249,11 +251,8 @@ export class UIManager {
     }
     this.subtitleSettingsManager.initialize();
 
-    if (uiconfig.enablePersistentPreferences === true) {
-      UIPreferences.attach(this.player);
-      const applyPrefs = () => UIPreferences.apply(this.player);
-      this.player.on(this.player.exports.PlayerEvent.Ready, applyPrefs);
-      applyPrefs();
+    if (uiconfig.disableStorageApi !== true) {
+      this.uiPreferencesManager.configure(this.player, uiconfig.enablePersistentPreferences === true);
     }
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
@@ -309,6 +308,7 @@ export class UIManager {
           uiVariant.ui,
           this.config,
           this.subtitleSettingsManager,
+          this.uiPreferencesManager,
           this.uiWrapperElement,
           uiVariant.spatialNavigation,
         ),
@@ -465,6 +465,10 @@ export class UIManager {
 
   getSubtitleSettingsManager() {
     return this.subtitleSettingsManager;
+  }
+
+  getUIPreferencesManager() {
+    return this.uiPreferencesManager;
   }
 
   getConfig(): UIConfig {
@@ -631,6 +635,7 @@ export class UIManager {
       this.releaseUi(uiInstanceManager);
     }
     this.managerPlayerWrapper.clearEventHandlers();
+    this.uiPreferencesManager.release();
     this.focusVisibilityTracker.release();
     this.shadowDomManager.release();
   }
@@ -709,6 +714,7 @@ export class UIInstanceManager {
   private ui: UIContainer;
   private config: InternalUIConfig;
   private subtitleSettingsManager: SubtitleSettingsManager;
+  private uiPreferencesManager: UIPreferencesManager;
   protected spatialNavigation?: SpatialNavigation;
   readonly uiWrapperElement: DOM;
 
@@ -733,6 +739,7 @@ export class UIInstanceManager {
     ui: UIContainer,
     config: InternalUIConfig,
     subtitleSettingsManager: SubtitleSettingsManager,
+    uiPreferencesManager: UIPreferencesManager,
     uiWrapperElement: DOM,
     spatialNavigation?: SpatialNavigation,
   ) {
@@ -740,12 +747,17 @@ export class UIInstanceManager {
     this.ui = ui;
     this.config = config;
     this.subtitleSettingsManager = subtitleSettingsManager;
+    this.uiPreferencesManager = uiPreferencesManager;
     this.uiWrapperElement = uiWrapperElement;
     this.spatialNavigation = spatialNavigation;
   }
 
   getSubtitleSettingsManager() {
     return this.subtitleSettingsManager;
+  }
+
+  getUIPreferencesManager() {
+    return this.uiPreferencesManager;
   }
 
   getConfig(): InternalUIConfig {
