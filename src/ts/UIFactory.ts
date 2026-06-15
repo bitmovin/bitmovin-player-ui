@@ -372,7 +372,7 @@ export namespace UIFactory {
       const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
       const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
 
-      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1, false);
+      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
 
       const controlBar = new ControlBar({
         components: [
