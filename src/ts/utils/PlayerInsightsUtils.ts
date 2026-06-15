@@ -1,6 +1,8 @@
 import { PlayerAPI } from 'bitmovin-player';
 
 const DOWN_ARROW_CHARACTER = '\u2193';
+const BITS_PER_KILOBIT = 1000;
+const BITS_PER_MEGABIT = BITS_PER_KILOBIT * 1000;
 
 interface QualityInsight {
   id?: string;
@@ -173,11 +175,11 @@ function formatBitrate(bitrate: number | undefined): string {
     return '';
   }
 
-  if (bitrate >= 1_000_000) {
-    return `${(bitrate / 1_000_000).toFixed(2)}Mbps`;
+  if (bitrate >= BITS_PER_MEGABIT) {
+    return `${(bitrate / BITS_PER_MEGABIT).toFixed(2)}Mbps`;
   }
 
-  return `${Math.round(bitrate / 1000)}kbps`;
+  return `${Math.round(bitrate / BITS_PER_KILOBIT)}kbps`;
 }
 
 /** Formats a duration-like value as h:mm:ss or m:ss. */
