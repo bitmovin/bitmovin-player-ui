@@ -23,18 +23,7 @@ export namespace PlayerInsightsUtils {
     const downloadedVideo = player.getDownloadedVideoData();
     const downloadVideoQualityInsight = enrichDownloadedVideoData(downloadedVideo, availableVideoQualities);
 
-    const playbackValue = formatQualityInsights(playbackVideoQualityInsight);
-    const downloadedValue = formatQualityInsights(downloadVideoQualityInsight);
-
-    if (!playbackValue) {
-      return downloadedValue || null;
-    }
-    if (!downloadedValue || downloadVideoQualityInsight.id === playbackVideoQualityInsight.id) {
-      return playbackValue;
-    }
-
-    // Show both values when playback and downloaded renditions differ.
-    return `${playbackValue} / ${DOWN_ARROW_CHARACTER}${downloadedValue}`;
+    return formatPlaybackAndDownloadedQuality(playbackVideoQualityInsight, downloadVideoQualityInsight);
   }
 
   /** Formats the currently playing and downloaded audio quality details for the panel row. */
@@ -47,18 +36,7 @@ export namespace PlayerInsightsUtils {
     const downloadedAudio = player.getDownloadedAudioData();
     const downloadAudioQualityInsight = enrichDownloadedAudioData(downloadedAudio, availableAudioQualities);
 
-    const playbackValue = formatQualityInsights(playbackAudioQualityInsight);
-    const downloadedValue = formatQualityInsights(downloadAudioQualityInsight);
-
-    if (!playbackValue) {
-      return downloadedValue || null;
-    }
-    if (!downloadedValue || downloadAudioQualityInsight.id === playbackAudioQualityInsight.id) {
-      return playbackValue;
-    }
-
-    // Show both values when playback and downloaded renditions differ.
-    return `${playbackValue} / ${downloadedValue}`;
+    return formatPlaybackAndDownloadedQuality(playbackAudioQualityInsight, downloadAudioQualityInsight);
   }
 
   /** Formats the current video element size together with dropped frame count. */
@@ -165,9 +143,31 @@ function enrichDownloadedAudioData(
   };
 }
 
+function formatPlaybackAndDownloadedQuality(
+  playbackQuality: QualityInsight | undefined,
+  downloadedQuality: QualityInsight | undefined,
+): string | null {
+  const playbackValue = formatQualityInsight(playbackQuality);
+  const downloadedValue = formatQualityInsight(downloadedQuality);
+
+  if (!playbackValue) {
+    return downloadedValue || null;
+  }
+  if (!downloadedValue || playbackQuality?.id === downloadedQuality?.id || playbackValue === downloadedValue) {
+    return playbackValue;
+  }
+
+  // Show both values when playback and downloaded renditions differ.
+  return `${playbackValue} / ${DOWN_ARROW_CHARACTER}${downloadedValue}`;
+}
+
 /** Builds the display value for a quality value. */
-function formatQualityInsights(quality: QualityInsight): string {
-  const parts = [];
+function formatQualityInsight(quality: QualityInsight | undefined): string {
+  if (!quality) {
+    return '';
+  }
+
+  const parts: string[] = [];
   const resolution = formatResolution(quality);
   const bitrate = formatBitrate(quality.bitrate);
 
