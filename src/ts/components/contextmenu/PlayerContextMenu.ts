@@ -41,11 +41,7 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
       cssClasses: ['ui-player-context-menu', ...(config.cssClasses ?? [])],
       components: [
         new SettingsPanelPage({
-          components: [
-            new PlayerInfoContextMenuItem(),
-            ...(actionItems.length > 0 ? [new SettingsPanelSeparator()] : []),
-            ...actionItems,
-          ],
+          components: [new PlayerInfoContextMenuItem(), new SettingsPanelSeparator(), ...actionItems],
         }),
       ],
     });
