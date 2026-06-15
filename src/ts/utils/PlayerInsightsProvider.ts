@@ -81,8 +81,6 @@ export class PlayerInsightsProvider {
     player.on(player.exports.PlayerEvent.Destroy, this.stopTimer);
 
     uimanager.getConfig().events.onUpdated.subscribe(this.dispatchChanged);
-
-    this.dispatchChanged();
   }
 
   activate(): void {
@@ -132,7 +130,7 @@ export class PlayerInsightsProvider {
   };
 
   private readonly dispatchChanged = (): void => {
-    if (!this.playerApi) {
+    if (!this.active || !this.playerApi) {
       return;
     }
 
