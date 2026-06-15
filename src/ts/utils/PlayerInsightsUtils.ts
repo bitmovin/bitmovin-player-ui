@@ -62,7 +62,7 @@ export namespace PlayerInsightsUtils {
       player.exports.MediaType.Audio,
     ).level;
 
-    if (videoBufferLevel == null && videoBufferLevel == null) {
+    if (videoBufferLevel == null && audioBufferLevel == null) {
       return null;
     }
 
