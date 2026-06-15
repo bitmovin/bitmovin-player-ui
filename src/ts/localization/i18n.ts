@@ -123,6 +123,8 @@ export interface Vocabulary {
   'seekBar.durationText': string;
   'quickseek.forward': string;
   'quickseek.rewind': string;
+  'contextMenu.title': string;
+  'contextMenu.subtitle': string;
   ecoMode: string;
   'ecoMode.title': string;
 }
