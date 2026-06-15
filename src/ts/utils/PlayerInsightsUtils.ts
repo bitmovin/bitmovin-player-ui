@@ -1,6 +1,8 @@
 import { AudioQuality, DownloadedAudioData, DownloadedVideoData, PlayerAPI, VideoQuality } from 'bitmovin-player';
 import type { TimeMode } from 'bitmovin-player';
 
+const DOWN_ARROW_CHARACTER = '\u2193';
+
 interface QualityInsight {
   id?: string;
   width?: number;
@@ -33,7 +35,7 @@ export namespace PlayerInsightsUtils {
 
     // Only show playback and downloaded quality separately if they differ,
     // otherwise just show one value to avoid redundancy
-    return `${playbackValue} / \u2193${downloadedValue}`;
+    return `${playbackValue} / ${DOWN_ARROW_CHARACTER}${downloadedValue}`;
   }
 
   /** Formats the currently playing and downloaded audio quality details for the panel row. */
