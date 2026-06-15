@@ -110,7 +110,7 @@
   }
 
   .#{$prefix}-ui-player-insights-panel-item-leading-label {
-    font-size: calc($font-size-small * 0.85);
+    font-size: $font-size-xsmall;
     min-width: 0;
 
     .#{$prefix}-ui-label-text {
