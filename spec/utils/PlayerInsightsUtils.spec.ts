@@ -34,6 +34,23 @@ describe('PlayerInsightsUtils', () => {
         '1920x1080@25,5.00Mbps,avc1 / \u21931280x720@25,2.50Mbps,avc1',
       );
     });
+
+    it('uses the playback video value when downloaded video data is unavailable', () => {
+      const player = {
+        getAvailableVideoQualities: jest.fn().mockReturnValue([]),
+        getPlaybackVideoData: jest.fn().mockReturnValue({
+          id: 'playback',
+          bitrate: 5000000,
+          width: 1920,
+          height: 1080,
+          frameRate: 25,
+          codec: 'avc1',
+        }),
+        getDownloadedVideoData: jest.fn().mockReturnValue(undefined),
+      };
+
+      expect(PlayerInsightsUtils.formatVideoQualityInsight(player as any)).toBe('1920x1080@25,5.00Mbps,avc1');
+    });
   });
 
   describe('formatAudioQualityInsight', () => {

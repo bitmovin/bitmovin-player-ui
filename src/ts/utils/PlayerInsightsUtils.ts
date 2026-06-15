@@ -105,9 +105,13 @@ export namespace PlayerInsightsUtils {
 
 /** Adds codec and frame-rate data because downloaded video data does not expose those fields. */
 function enrichDownloadedVideoData(
-  downloadedVideo: DownloadedVideoData,
+  downloadedVideo: DownloadedVideoData | undefined,
   availableVideoQualities: VideoQuality[],
-): QualityInsight {
+): QualityInsight | undefined {
+  if (!downloadedVideo) {
+    return undefined;
+  }
+
   const matchingQuality =
     availableVideoQualities.find(videoQuality => videoQuality.id === downloadedVideo.id) ??
     availableVideoQualities.find(
