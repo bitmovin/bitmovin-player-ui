@@ -108,24 +108,17 @@ function enrichDownloadedVideoData(
   downloadedVideo: DownloadedVideoData | undefined,
   availableVideoQualities: VideoQuality[],
 ): QualityInsight | undefined {
-  if (!downloadedVideo) {
-    return undefined;
-  }
-
-  const matchingQuality =
-    availableVideoQualities.find(videoQuality => videoQuality.id === downloadedVideo.id) ??
-    availableVideoQualities.find(
-      videoQuality =>
-        videoQuality.bitrate === downloadedVideo.bitrate &&
-        videoQuality.width === downloadedVideo.width &&
-        videoQuality.height === downloadedVideo.height,
+  return enrichDownloadedQualityData(downloadedVideo, downloadedVideo => {
+    return (
+      availableVideoQualities.find(videoQuality => videoQuality.id === downloadedVideo.id) ??
+      availableVideoQualities.find(
+        videoQuality =>
+          videoQuality.bitrate === downloadedVideo.bitrate &&
+          videoQuality.width === downloadedVideo.width &&
+          videoQuality.height === downloadedVideo.height,
+      )
     );
-
-  return {
-    ...downloadedVideo,
-    codec: matchingQuality?.codec,
-    frameRate: matchingQuality?.frameRate,
-  };
+  });
 }
 
 /** Adds codec data because downloaded audio data only exposes the downloaded rendition identity. */
@@ -133,17 +126,28 @@ function enrichDownloadedAudioData(
   downloadedAudio: DownloadedAudioData | undefined,
   availableAudioQualities: AudioQuality[],
 ): QualityInsight | undefined {
-  if (!downloadedAudio) {
+  return enrichDownloadedQualityData(downloadedAudio, downloadedAudio => {
+    return (
+      availableAudioQualities.find(audioQuality => audioQuality.id === downloadedAudio.id) ??
+      availableAudioQualities.find(audioQuality => audioQuality.bitrate === downloadedAudio.bitrate)
+    );
+  });
+}
+
+function enrichDownloadedQualityData(
+  downloadedQuality: QualityInsight | undefined,
+  findMatchingQuality: (downloadedQuality: QualityInsight) => QualityInsight | undefined,
+): QualityInsight | undefined {
+  if (!downloadedQuality) {
     return undefined;
   }
 
-  const matchingQuality =
-    availableAudioQualities.find(audioQuality => audioQuality.id === downloadedAudio.id) ??
-    availableAudioQualities.find(audioQuality => audioQuality.bitrate === downloadedAudio.bitrate);
+  const matchingQuality = findMatchingQuality(downloadedQuality);
 
   return {
-    ...downloadedAudio,
+    ...downloadedQuality,
     codec: matchingQuality?.codec,
+    frameRate: matchingQuality?.frameRate,
   };
 }
 
