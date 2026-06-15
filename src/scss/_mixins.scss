@@ -147,6 +147,16 @@
   }
 }
 
+// Overrides for `seekbar-position-marker` on vertical seek bars: centers the marker horizontally
+// on the bar (it is wider than the bar) and anchors it to the top edge, as the SeekBar component
+// positions it via translateY() from the top. Must be passed the same dimension as the
+// corresponding `seekbar-position-marker` call.
+@mixin seekbar-position-marker-vertical($marker-dimension) {
+  bottom: auto;
+  left: calc(50% - $marker-dimension / 2);
+  top: 0;
+}
+
 @mixin focusable($inset: false, $border-radius: 0.3em, $focus-element-box-shadow: 0 0 0 0.1em rgba($color-focus, 0.4)) {
   &:focus {
     outline: none;

@@ -10,8 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - New `ContextMenu` component to show custom context menus on right-click.
+- `UIInstanceManager.onActive` and `UIInstanceManager.onInactive` lifecycle events for UI variant status changes.
 - Default `PlayerContextMenu` to access player information directly from the UI.
 - `PlayerInsightsPanel` to show detailed player insights and diagnostics.
+
+## [4.15.1] - 2026-06-11
+
+### Fixed
+
+- Vertical seek bars and volume sliders (`vertical: true`, e.g. the slide-out volume slider of the `VolumeControlButton`) were rendered with a broken horizontal layout
 
 ## [4.15.0] - 2026-06-04
 
@@ -42,7 +49,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Keyboard frame-by-frame stepping on the seekbar: when the seekbar is focused, `,` steps one frame back and `.` steps one frame forward (matching the YouTube convention). Playback is paused first if needed; frame duration is derived from the active video quality's `frameRate` with a 30 fps fallback. Live streams ignore the keys.
 - New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
+- Support for the `prefers-reduced-motion` accessibility setting: UI animations and transitions are disabled when the user has set the OS-level `prefers-reduced-motion: reduce` preference
 
 ### Changed
 
@@ -50,6 +59,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- Wrong ARIA semantics on the `SettingsToggleButton`: it now relies on the native `<button>` role (the previous custom `role="pop-up button"` is not a valid ARIA role), advertises the popup via `aria-haspopup="menu"`, links the panel via `aria-controls`, and reflects open / closed state in `aria-expanded`
 - CEA-608 captions could keep stale sizing after CEA subtitle rendering was disabled and re-enabled, causing captions to appear incorrectly scaled or positioned
 
 ## [4.13.0] - 2026-05-07

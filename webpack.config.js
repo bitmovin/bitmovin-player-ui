@@ -146,6 +146,7 @@ module.exports = (env, { mode }) => {
       static: {
         directory: path.join(__dirname, OUTPUT_ROOT_DIRECTORY),
       },
+      allowedHosts: 'all',
       port: 'auto',
       hot: true,
       client: {

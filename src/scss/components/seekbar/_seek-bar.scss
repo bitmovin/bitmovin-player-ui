@@ -3,6 +3,8 @@
 
 // Defines the height of the bars within the seekbar container
 $seekbar-bar-height: calc($font-size / 3);
+// Defines the size of the playback position marker (the knob)
+$seekbar-marker-dimension: calc($seekbar-bar-height * 3);
 
 // sass-lint:disable no-vendor-prefixes
 %bar {
@@ -36,7 +38,7 @@ $seekbar-bar-height: calc($font-size / 3);
   .#{$prefix}-seekbar-playbackposition-marker {
     @extend %bar;
 
-    @include seekbar-position-marker($seekbar-bar-height * 3);
+    @include seekbar-position-marker($seekbar-marker-dimension);
     background-color: $color-highlight;
     border-radius: 50%;
     box-shadow: 0 0 3px 0 transparentize($color: #000, $amount: 0.75);
@@ -151,6 +153,43 @@ $seekbar-bar-height: calc($font-size / 3);
           background-color: $color-primary;
           border-radius: $marker-indicator-border-radius;
         }
+      }
+    }
+  }
+
+  // Vertical orientation (e.g. vertical volume slider): swaps the layout axis of the bars.
+  // The fill bars are scaled with scaleY() instead of scaleX() and grow from the bottom,
+  // matching the transforms applied by the SeekBar component for `vertical: true`.
+  // Note: timeline markers are not supported on vertical seek bars; the TimelineMarkersHandler
+  // positions markers along the horizontal axis only.
+  &.#{$prefix}-vertical {
+    height: 100%;
+    justify-content: center;
+    width: $font-size;
+
+    .#{$prefix}-seekbar-playbackposition-marker {
+      @include seekbar-position-marker-vertical($seekbar-marker-dimension);
+    }
+
+    .#{$prefix}-seekbar {
+      $horizontal-margin: calc((1rem - $seekbar-bar-height) / 2);
+      // Reduce height to leave some padding for the focus indicator on the top and bottom side
+      height: calc(100% - 0.5rem);
+      margin: auto $horizontal-margin;
+      width: $seekbar-bar-height;
+
+      &:after {
+        @include invisible-hit-area(0, -$horizontal-margin, 0, -$horizontal-margin);
+      }
+
+      .#{$prefix}-seekbar-bars,
+      .#{$prefix}-seekbar-backdrop,
+      .#{$prefix}-seekbar-bufferlevel,
+      .#{$prefix}-seekbar-seekposition,
+      .#{$prefix}-seekbar-playbackposition {
+        -webkit-transform-origin: 0 100%; // required for Android 4.4 WebView
+        height: 100%;
+        transform-origin: 0 100%;
       }
     }
   }
