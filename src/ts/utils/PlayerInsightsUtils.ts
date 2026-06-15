@@ -41,7 +41,7 @@ export namespace PlayerInsightsUtils {
 
   /** Formats the current video element size together with dropped frame count. */
   export function formatViewportFramesInsight(player: PlayerAPI): string {
-    const videoElement = player.getContainer().querySelector('video') as HTMLVideoElement;
+    const videoElement = player.getVideoElement();
     const viewport =
       videoElement.clientWidth > 0 && videoElement.clientHeight > 0
         ? `${videoElement.clientWidth}x${videoElement.clientHeight}`
