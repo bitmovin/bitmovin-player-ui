@@ -77,8 +77,6 @@
   "watermarkLink": "Enlace al inicio",
   "controlBar": "Controles del Reproductor",
   "player": "Reproductor de Video",
-  "contextMenu.title": "Bitmovin Player",
-  "contextMenu.subtitle": "Adaptive Streaming for the Web",
   "seekBar": "Línea de Tiempo",
   "seekBar.value": "posición",
   "seekBar.timeshift": "cambio de posición",

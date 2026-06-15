@@ -77,8 +77,6 @@
   "watermarkLink": "Lien vers la page d'accueil",
   "controlBar": "Barre de contrôle",
   "player": "Lecteur vidéo",
-  "contextMenu.title": "Bitmovin Player",
-  "contextMenu.subtitle": "Adaptive Streaming for the Web",
   "seekBar": "Barre de progression",
   "seekBar.value": "Valeur",
   "seekBar.timeshift": "Décalage temporel",
