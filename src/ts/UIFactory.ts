@@ -56,6 +56,7 @@ import { AdMessageLabel } from './components/ads/AdMessageLabel';
 import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationOverlayNavigationGroup } from './spatialnavigation/RecommendationOverlayNavigationGroup';
+import { PlayerInsightsPanel } from './components/panels/player-insights/PlayerInsightsPanel';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -247,7 +248,8 @@ export namespace UIFactory {
 
     export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
-      const playerContextMenu = BrowserUtils.isMobile ? null : new PlayerContextMenu();
+      const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
+      const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
       const controlBar = new ControlBar({
@@ -286,8 +288,8 @@ export namespace UIFactory {
 
       const conditionalComponents = [
         config.includeWatermark ? new Watermark() : null,
-        playerContextMenu ? new DismissClickOverlay({ target: playerContextMenu }) : null,
-        playerContextMenu,
+        ...(playerInsightsPanel ? [playerInsightsPanel] : []),
+        ...(playerContextMenu ? [new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu] : []),
       ].filter(e => e);
 
       return new UIContainer({
@@ -367,7 +369,8 @@ export namespace UIFactory {
 
     export function smallScreen(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
-      const playerContextMenu = BrowserUtils.isMobile ? null : new PlayerContextMenu();
+      const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
+      const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
 
@@ -425,6 +428,7 @@ export namespace UIFactory {
               }),
             ],
           }),
+          ...(playerInsightsPanel ? [playerInsightsPanel] : []),
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
           ...(playerContextMenu ? [new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu] : []),

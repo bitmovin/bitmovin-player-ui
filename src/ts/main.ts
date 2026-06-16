@@ -95,6 +95,10 @@ export { PlaybackSpeedSelectBox } from './components/settings/PlaybackSpeedSelec
 export { HugeReplayButton } from './components/buttons/HugeReplayButton';
 export { BufferingOverlay, BufferingOverlayConfig } from './components/overlays/BufferingOverlay';
 export { ContextMenu, ContextMenuConfig } from './components/contextmenu/ContextMenu';
+export {
+  InteractiveContextMenuItem,
+  InteractiveContextMenuItemConfig,
+} from './components/contextmenu/InteractiveContextMenuItem';
 export { PlayerContextMenu, PlayerContextMenuConfig } from './components/contextmenu/PlayerContextMenu';
 export { CastUIContainer } from './components/CastUIContainer';
 export { PlaybackToggleOverlay, PlaybackToggleOverlayConfig } from './components/overlays/PlaybackToggleOverlay';
@@ -158,6 +162,11 @@ export {
   SettingsPanelPageNavigatorButton,
   SettingsPanelPageNavigatorConfig,
 } from './components/settings/SettingsPanelPageNavigatorButton';
+export { SettingsPanelSeparator, SettingsPanelSeparatorConfig } from './components/settings/SettingsPanelSeparator';
+export {
+  PlayerInsightsPanel,
+  PlayerInsightsPanelConfig,
+} from './components/panels/player-insights/PlayerInsightsPanel';
 export { InteractiveSettingsPanelItem } from './components/settings/InteractiveSettingsPanelItem';
 export { TouchControlOverlay, TouchControlOverlayConfig } from './components/overlays/TouchControlOverlay';
 export { CharacterEdgeColorSelectBox } from './components/settings/subtitlesettings/CharacterEdgeColorSelectBox';

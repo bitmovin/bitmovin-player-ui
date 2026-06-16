@@ -4,15 +4,23 @@ import { version as UI_VERSION } from '../../version';
 import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';
+import { PlayerInsightsContextMenuItem } from '../panels/player-insights/PlayerInsightsContextMenuItem';
+import type { PlayerInsightsPanel } from '../panels/player-insights/PlayerInsightsPanel';
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../settings/SettingsPanelItem';
 import { SettingsPanelPage } from '../settings/SettingsPanelPage';
+import { SettingsPanelSeparator } from '../settings/SettingsPanelSeparator';
 
 /**
  * Configuration interface for the {@link PlayerContextMenu}.
  *
  * @category Configs
  */
-export interface PlayerContextMenuConfig extends ContextMenuConfig {}
+export interface PlayerContextMenuConfig extends ContextMenuConfig {
+  /**
+   * The player insights panel to expose as a default context menu action.
+   */
+  playerInsightsPanel: PlayerInsightsPanel;
+}
 
 /**
  * A player-specific context menu with Bitmovin info and Player/UI versions.
@@ -20,13 +28,20 @@ export interface PlayerContextMenuConfig extends ContextMenuConfig {}
  * @category Components
  */
 export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
-  constructor(config: PlayerContextMenuConfig = {}) {
+  constructor(config: PlayerContextMenuConfig) {
+    const actionItems = [
+      new PlayerInsightsContextMenuItem({
+        playerInsightsPanel: config.playerInsightsPanel,
+      }),
+      ...(config.components ?? []),
+    ];
+
     super({
       ...config,
       cssClasses: ['ui-player-context-menu', ...(config.cssClasses ?? [])],
       components: [
         new SettingsPanelPage({
-          components: [new PlayerInfoContextMenuItem(), ...(config.components ?? [])],
+          components: [new PlayerInfoContextMenuItem(), new SettingsPanelSeparator(), ...actionItems],
         }),
       ],
     });
@@ -62,6 +77,7 @@ class PlayerInfoContextMenuItem extends SettingsPanelItem<SettingsPanelItemConfi
       cssClasses: ['ui-player-context-menu-info-item'],
       isSetting: false,
       role: 'group',
+      tabIndex: -1,
     });
 
     this.playerVersionLabel = playerVersionLabel;

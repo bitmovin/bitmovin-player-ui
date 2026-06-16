@@ -12,6 +12,8 @@
   "settings.subtitles.background.color": "Couleur de fond",
   "settings.subtitles.background.opacity": "Opacité du fond",
   "settings.subtitles.options": "Options",
+  "playerInsights.show": "Afficher Player Insights",
+  "playerInsights.hide": "Masquer Player Insights",
   "colors.white": "blanc",
   "colors.black": "noir",
   "colors.red": "rouge",
@@ -75,12 +77,12 @@
   "watermarkLink": "Lien vers la page d'accueil",
   "controlBar": "Barre de contrôle",
   "player": "Lecteur vidéo",
-  "contextMenu.title": "Bitmovin Player",
-  "contextMenu.subtitle": "Adaptive Streaming for the Web",
   "seekBar": "Barre de progression",
   "seekBar.value": "Valeur",
   "seekBar.timeshift": "Décalage temporel",
   "seekBar.durationText": "de",
   "quickseek.forward": "Avance rapide de {seekSeconds} secondes",
-  "quickseek.rewind": "Retour rapide de {seekSeconds} secondes"
+  "quickseek.rewind": "Retour rapide de {seekSeconds} secondes",
+  "contextMenu.title": "Bitmovin Player",
+  "contextMenu.subtitle": "Streaming adaptatif pour le web"
 }
