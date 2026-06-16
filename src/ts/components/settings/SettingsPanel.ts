@@ -36,6 +36,18 @@ export interface SettingsPanelConfig extends ContainerConfig {
    * Default: 5 seconds (5000)
    */
   stateResetDelay?: number;
+
+  /**
+   * Specifies if the settings panel should hide when the UI controls hide.
+   * Default: true
+   */
+  hideOnControlsHide?: boolean;
+
+  /**
+   * Specifies if the settings panel should be hidden when another settings panel is opened.
+   * Default: true
+   */
+  hideOnOtherSettingsPanelOpening?: boolean;
 }
 
 /**
@@ -107,6 +119,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
         hideDelay: 5000,
         pageTransitionAnimation: true,
         stateResetDelay: 5000,
+        hideOnControlsHide: true,
+        hideOnOtherSettingsPanelOpening: true,
       } as Config,
       this.config,
     );
@@ -222,9 +236,11 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       this.onSettingsStateChangedEvent();
     });
 
-    uimanager.onControlsHide.subscribe(() => {
-      this.hide();
-    });
+    if (config.hideOnControlsHide) {
+      uimanager.onControlsHide.subscribe(() => {
+        this.hide();
+      });
+    }
     uimanager.onControlsShow.subscribe(() => {
       if (this.currentState !== null) {
         this.show();
