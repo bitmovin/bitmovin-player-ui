@@ -150,7 +150,7 @@ export class PlayerInsightsProvider {
   private startTimer(): void {
     this.stopTimer();
 
-    if (!this.playerApi || !this.active || this.refreshIntervalMs === -1 || this.playerApi.isPaused()) {
+    if (!this.playerApi || !this.active || this.refreshIntervalMs === -1) {
       return;
     }
 
