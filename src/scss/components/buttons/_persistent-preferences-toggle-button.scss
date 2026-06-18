@@ -5,8 +5,10 @@
   @extend %ui-button;
   height: 1em;
   min-width: 5em;
-  // Align the toggle to the right of its settings row, matching the value column of the
-  // other settings entries instead of floating in the middle.
+  // Right-align the control within its settings row so it lines up with the trailing value
+  // column of the other entries. `margin-left: auto` pushes the button box to the trailing
+  // edge, and the icon's `background-position: right` puts the toggle graphic itself there
+  // (rather than floating at the left of the box).
   margin-left: auto;
 
   &:hover {
@@ -16,7 +18,7 @@
   &.#{$prefix}-on {
     .#{$prefix}-ui-icon {
       background-image: svg-load('../../assets/images/toggleOn.svg', fill=$color-icon);
-      background-position: 20px center;
+      background-position: right center;
       background-size: 45% auto;
     }
   }
@@ -24,7 +26,7 @@
   &.#{$prefix}-off {
     .#{$prefix}-ui-icon {
       background-image: svg-load('../../assets/images/toggleOff.svg', stroke=$color-icon);
-      background-position: 20px center;
+      background-position: right center;
       background-size: 45% auto;
     }
   }
