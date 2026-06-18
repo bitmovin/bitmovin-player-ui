@@ -43,9 +43,16 @@ export class UIPreferencesManager {
   public configure(player: PlayerAPI, enabledByDefault: boolean): void {
     this.player = player;
     const storedEnabled = readBoolean(KEY_ENABLED);
-    // On configure we want to *apply* the stored preferences, not overwrite them with the
-    // current player state, so captureCurrentState is false.
-    this.setEnabled(storedEnabled !== null ? storedEnabled : enabledByDefault, false);
+    // Apply the resolved enabled state WITHOUT persisting it or touching stored values:
+    // a stored choice wins, otherwise the integrator default applies. Only an explicit
+    // end-user toggle (see `setEnabled`) writes the flag — so toggling
+    // `enablePersistentPreferences` on later is honored instead of being shadowed by a
+    // default we wrote on an earlier load.
+    this.enabled = storedEnabled !== null ? storedEnabled : enabledByDefault;
+    if (this.enabled) {
+      this.startTracking();
+      this.apply();
+    }
   }
 
   /**
@@ -56,25 +63,20 @@ export class UIPreferencesManager {
   }
 
   /**
-   * Enables or disables persistence and stores the choice.
+   * Enables or disables persistence as an explicit end-user choice (via the toggle) and
+   * stores that choice.
    *
-   * Enabling starts tracking the player and applies the stored preferences. When
-   * `captureCurrentState` is `true` — an explicit end-user opt-in via the toggle — the
-   * player's current volume / mute / speed are captured first so the choice takes effect
-   * immediately even if nothing else changes this session.
-   *
-   * Disabling stops tracking and clears the stored preferences so the next session starts
-   * fresh.
+   * Enabling captures the player's current volume / mute / speed right away so it takes
+   * effect immediately, then tracks subsequent changes. Disabling stops tracking and clears
+   * the stored preferences so the next session starts fresh.
    */
-  public setEnabled(enabled: boolean, captureCurrentState: boolean = true): void {
+  public setEnabled(enabled: boolean): void {
     this.enabled = enabled;
     saveBoolean(KEY_ENABLED, enabled);
 
     this.stopTracking();
     if (enabled) {
-      if (captureCurrentState) {
-        this.capture();
-      }
+      this.capture();
       this.startTracking();
       this.apply();
     } else {
