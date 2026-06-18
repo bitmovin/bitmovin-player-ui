@@ -1,0 +1,122 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-player-insights-panel {
+  // We need to unset the default positioning of the settings-panel
+  bottom: unset;
+  font-size: $font-size-small;
+  left: safe-area-max(0.5em, left);
+  // We need to unset the default positioning of the settings-panel
+  right: unset;
+  top: safe-area-max(0.5em, top);
+  min-width: 0;
+  pointer-events: none;
+  width: 32em;
+
+  * {
+    pointer-events: none;
+  }
+
+  .#{$prefix}-ui-player-insights-panel-title-item {
+    cursor: default;
+    padding: 0.3em 0.5em;
+
+    &:active,
+    &:hover {
+      background-color: $color-background-menu-title-overlay;
+    }
+
+    * {
+      cursor: default;
+    }
+
+    .#{$prefix}-ui-player-insights-panel-title-label {
+      line-height: 1.2;
+      min-height: unset;
+    }
+  }
+
+  .#{$prefix}-ui-player-insights-panel-close-button {
+    cursor: pointer;
+    height: $icon-size * 0.55;
+    margin-left: auto;
+    min-width: $icon-size * 0.55;
+    padding: 0.1em;
+    pointer-events: auto;
+
+    * {
+      pointer-events: auto;
+    }
+
+    .#{$prefix}-ui-icon {
+      cursor: pointer;
+      height: $icon-size * 0.4;
+      min-width: $icon-size * 0.4;
+      width: $icon-size * 0.4;
+    }
+
+    &:hover {
+      animation: none;
+      filter: none;
+    }
+  }
+
+  .#{$prefix}-ui-player-insights-panel-item {
+    cursor: default;
+    padding: 0.1em 0.8em;
+
+    * {
+      cursor: text;
+    }
+
+    &:active,
+    &:hover {
+      background-color: transparent;
+    }
+
+    > .#{$prefix}-container-wrapper {
+      display: grid;
+      column-gap: 0.5em;
+      grid-template-columns: 9em minmax(0, 1fr);
+    }
+  }
+
+  .#{$prefix}-ui-player-insights-panel-item-leading-label {
+    color: transparentize($color-primary, 0.35);
+    justify-self: end;
+    line-height: 1.2;
+    min-height: unset;
+  }
+
+  .#{$prefix}-ui-player-insights-panel-item-trailing-label {
+    line-height: 1.2;
+    min-height: unset;
+    min-width: 0;
+
+    .#{$prefix}-ui-label-text {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+  }
+}
+
+.#{$prefix}-ui-uicontainer.#{$prefix}-layout-max-width-400 {
+  .#{$prefix}-ui-player-insights-panel-item {
+    > .#{$prefix}-container-wrapper {
+      column-gap: 0.4em;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+  }
+
+  .#{$prefix}-ui-player-insights-panel-item-leading-label {
+    font-size: $font-size-xsmall;
+    min-width: 0;
+
+    .#{$prefix}-ui-label-text {
+      overflow-wrap: anywhere;
+      text-align: right;
+      white-space: normal;
+    }
+  }
+}

@@ -48,9 +48,13 @@ export class FontFamilySelectBox extends SubtitleSettingSelectBox {
       this.settingsManager.fontFamily.value = key;
     });
 
-    // Load initial value
+    this.initFromSettings();
+  }
+
+  private initFromSettings(): void {
     if (this.settingsManager.fontFamily.isSet()) {
       this.selectItem(this.settingsManager.fontFamily.value);
+      this.toggleOverlayClass('fontfamily-' + this.settingsManager.fontFamily.value);
     }
   }
 }

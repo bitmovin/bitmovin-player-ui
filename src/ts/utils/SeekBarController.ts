@@ -81,7 +81,8 @@ export class SeekBarController {
 
   public setSeekBarControls(domElement: DOM, type: () => SeekBarType) {
     domElement.on('keydown', (e: KeyboardEvent) => {
-      const controls = this.seekBarControls(type());
+      const seekBarType = type();
+      const controls = this.seekBarControls(seekBarType);
       switch (e.keyCode) {
         case UIUtils.KeyCode.LeftArrow: {
           controls.left();
@@ -118,7 +119,48 @@ export class SeekBarController {
           e.preventDefault();
           break;
         }
+        case UIUtils.KeyCode.Comma: {
+          if (seekBarType !== SeekBarType.Volume) {
+            this.stepFrame(-1);
+            e.preventDefault();
+          }
+          break;
+        }
+        case UIUtils.KeyCode.Period: {
+          if (seekBarType !== SeekBarType.Volume) {
+            this.stepFrame(1);
+            e.preventDefault();
+          }
+          break;
+        }
       }
     });
+  }
+
+  /**
+   * Steps the playback position by one frame in the given direction (-1 = back, 1 = forward).
+   * Pauses the player first if necessary so the step lands on a stable frame. The frame
+   * duration is derived from the active video quality's `frameRate` and falls back to
+   * 30 fps when the player doesn't expose one (e.g. progressive sources).
+   *
+   * Only supported for VOD: on live streams `timeShift` is measured against the constantly
+   * advancing live edge, and `getTimeShift()` is not a stable reference while paused, so a
+   * sub-frame step gets swamped by the edge movement and the position drifts forward instead
+   * of stepping. Live frame stepping needs absolute-time seeking on the player side.
+   */
+  protected stepFrame(direction: number): void {
+    if (this.player.isLive()) {
+      return;
+    }
+    if (!this.player.isPaused()) {
+      this.player.pause('ui');
+    }
+    const target = Math.max(0, this.player.getCurrentTime() + direction / this.getFrameRate());
+    this.player.seek(target);
+  }
+
+  private getFrameRate(): number {
+    const frameRate = this.player.getPlaybackVideoData()?.frameRate;
+    return typeof frameRate === 'number' && frameRate > 0 ? frameRate : 30;
   }
 }

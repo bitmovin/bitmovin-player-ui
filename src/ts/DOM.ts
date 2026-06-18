@@ -512,6 +512,42 @@ export class DOM {
   }
 
   /**
+   * Resolves when the next CSS transition on the first element finishes or is canceled.
+   * A transition property is required so unrelated or bubbling transitions do not resolve the promise too early.
+   * @param propertyName CSS transition property to wait for
+   * @returns {Promise<void>}
+   */
+  async waitForTransitionEnd(propertyName: string): Promise<void> {
+    const element = this.get(0);
+    const hasTransition = element && getComputedStyle(element).transitionProperty !== 'none';
+
+    if (!hasTransition) {
+      return;
+    }
+
+    return new Promise<void>(resolve => {
+      const transitionHandler = (event: Event) => {
+        const transitionEvent = event as TransitionEvent;
+
+        if (transitionEvent.target !== element) {
+          return;
+        }
+
+        if (transitionEvent.propertyName !== propertyName) {
+          return;
+        }
+
+        this.off('transitionend', transitionHandler);
+        this.off('transitioncancel', transitionHandler);
+        resolve();
+      };
+
+      this.on('transitionend', transitionHandler);
+      this.on('transitioncancel', transitionHandler);
+    });
+  }
+
+  /**
    * Adds the specified class(es) to all elements.
    * @param className the class(es) to add, multiple classes separated by space
    * @returns {DOM}

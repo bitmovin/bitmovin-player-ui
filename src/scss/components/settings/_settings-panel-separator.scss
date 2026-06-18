@@ -1,0 +1,16 @@
+@import '../../variables';
+
+%ui-settings-panel-separator {
+  @extend %ui-container;
+
+  background-color: transparentize($color-primary, 0.85);
+  height: 1px;
+
+  > .#{$prefix}-container-wrapper {
+    display: none;
+  }
+}
+
+.#{$prefix}-ui-settings-panel-separator {
+  @extend %ui-settings-panel-separator;
+}

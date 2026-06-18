@@ -20,6 +20,8 @@
 @import 'components/settings/settings-panel';
 @import 'components/settings/settings-panel-page';
 @import 'components/settings/settings-panel-item';
+@import 'components/settings/settings-panel-separator';
+@import 'components/panels/player-insights-panel';
 @import 'components/settings/settings-panel-page-open-button';
 @import 'components/settings/settings-panel-page-back-button';
 @import 'components/settings/settings-toggle-button';
@@ -33,6 +35,9 @@
 @import 'components/overlays/cast-status-overlay';
 @import 'components/overlays/error-message-overlay';
 @import 'components/title-bar';
+@import 'components/contextmenu/context-menu';
+@import 'components/contextmenu/interactive-context-menu-item';
+@import 'components/contextmenu/player-context-menu';
 @import 'components/overlays/recommendation-overlay';
 @import 'components/overlays/click-overlay';
 @import 'components/overlays/click-to-dismiss-overlay';
@@ -54,6 +59,22 @@
 @import 'cast-receiver';
 @import 'small-screen';
 @import 'tv';
+
+// Honor the user's OS-level "reduce motion" preference. Disable transitions
+// and animations outright — overriding only durations breaks our show/hide
+// transitions, which depend on `visibility 0s` to flip instantly when a
+// component becomes visible (with a non-zero duration, visibility uses
+// discrete interpolation and stays hidden for one frame, causing a visible
+// pop). `SubtitleOverlay.awaitTransitionEnd` already short-circuits when
+// `transition-property` is `none`, so no listeners are stranded.
+@media (prefers-reduced-motion: reduce) {
+  .#{$prefix}-ui-uicontainer,
+  .#{$prefix}-ui-uicontainer * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 // sass-lint:disable nesting-depth
 .#{$prefix}-ui-uicontainer {

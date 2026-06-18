@@ -50,6 +50,8 @@ export interface Vocabulary {
   'settings.audio.volume': string;
   'settings.subtitles': string;
   'settings.subtitles.options': string;
+  'playerInsights.show': string;
+  'playerInsights.hide': string;
   'settings.subtitles.font.color': string;
   'settings.subtitles.font.opacity': string;
   'settings.subtitles.background.color': string;
@@ -123,6 +125,8 @@ export interface Vocabulary {
   'seekBar.durationText': string;
   'quickseek.forward': string;
   'quickseek.rewind': string;
+  'contextMenu.title': string;
+  'contextMenu.subtitle': string;
   ecoMode: string;
   'ecoMode.title': string;
   persistentPreferences: string;
