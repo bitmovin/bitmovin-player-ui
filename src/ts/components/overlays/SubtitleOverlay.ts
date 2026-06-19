@@ -56,6 +56,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   private cea608FontSizeFactor = 1;
   private ensureCea608GridSizeUpdated: () => void;
   private cea608SmallPlayerHeightThreshold = SubtitleOverlay.DEFAULT_CEA608_SMALL_PLAYER_HEIGHT_THRESHOLD;
+  private treatClosedCaptionsAsSubtitles = false;
 
   constructor(config: SubtitleOverlayConfig = {}) {
     super(config);
@@ -80,6 +81,10 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
     if (uiConfig.cea608SmallPlayerHeightThreshold !== undefined) {
       this.cea608SmallPlayerHeightThreshold = uiConfig.cea608SmallPlayerHeightThreshold;
+    }
+
+    if (uiConfig.treatClosedCaptionsAsSubtitles) {
+      this.treatClosedCaptionsAsSubtitles = true;
     }
 
     const subtitleManager = new ActiveSubtitleManager();
@@ -257,7 +262,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     // We need to keep track of the original row position in case of recalculation.
     const originalRowNumber = event.position?.row || 0;
 
-    if (isCea608SubtitleCue(event)) {
+    if (isCea608SubtitleCue(event) && !this.treatClosedCaptionsAsSubtitles) {
       event.position.row = event.position.row || 0;
       event.position.column = event.position.column || 0;
 
@@ -464,8 +469,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     });
 
     this.preprocessLabelEventCallback.subscribe((event: SubtitleCueEvent, label: SubtitleLabel) => {
-      if (!isCea608SubtitleCue(event)) {
-        // Skip all non-CEA608 cues
+      if (!isCea608SubtitleCue(event) || this.treatClosedCaptionsAsSubtitles) {
+        // Skip all non-CEA608 cues, and skip CEA-608 cues when they should be treated as regular subtitles
         return;
       }
 

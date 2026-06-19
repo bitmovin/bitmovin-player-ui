@@ -215,6 +215,15 @@ export interface UIConfig {
   localization?: LocalizationConfig;
 
   /**
+   * When `true`, closed captions (CEA-608) are treated identically to regular subtitles: no CEA-608-specific
+   * CSS classes (`cea608`, `cea608-formatting`), no grid-based row positioning, and no monospaced/uppercase
+   * formatting are applied. The captions render with the same styles and DOM structure as VTT subtitles.
+   *
+   * Default: `false`
+   */
+  treatClosedCaptionsAsSubtitles?: boolean;
+
+  /**
    * The rendered player height threshold in pixels at or below which small-player adjustments are applied to
    * CEA-608 captions:
    *
