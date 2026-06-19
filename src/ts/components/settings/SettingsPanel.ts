@@ -386,11 +386,15 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   }
 
   protected suspendHideTimeout() {
-    this.hideTimeout.suspend();
+    if (this.hideTimeout) {
+      this.hideTimeout.suspend();
+    }
   }
 
   protected resumeHideTimeout() {
-    this.hideTimeout.resume(true);
+    if (this.hideTimeout) {
+      this.hideTimeout.resume(true);
+    }
   }
 
   private updateActivePageClass(): void {
