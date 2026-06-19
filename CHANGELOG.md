@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- New `UIConfig.treatClosedCaptionsAsSubtitles` flag: when `true`, CEA-608 closed captions are rendered with the same CSS classes, styling, and DOM structure as regular VTT subtitles, with no CEA-608-specific grid positioning or formatting applied.
+- New `UIConfig.treatClosedCaptionsAsSubtitles` flag: by default, the player UI applies specific styling to Closed Captions. When enabled, this flag disables that behaviour and treats 608/708 captions like regular VTT subtitles from a styling perspective.
 
 ## [4.16.0] - 2026-06-18
 
