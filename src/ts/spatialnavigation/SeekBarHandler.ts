@@ -34,10 +34,9 @@ export class SeekBarHandler {
     );
   }
 
-  private getIncrement(direction: Direction, seekBarWrapper: HTMLElement): number {
+  private getIncrement(direction: Direction, seekBarWidth: number): number {
     this.updateScrubSpeedPercentage();
 
-    const seekBarWidth = seekBarWrapper.getBoundingClientRect().width;
     const increment = seekBarWidth * this.scrubSpeedPercentage;
 
     return direction === Direction.RIGHT ? increment : -increment;
@@ -49,10 +48,12 @@ export class SeekBarHandler {
   }
 
   private updateCursorPosition(direction: Direction, seekBarWrapper: HTMLElement): void {
-    const increment = this.getIncrement(direction, seekBarWrapper);
+    // Read the layout once and reuse it for both the increment and the clamp bounds, to avoid two
+    // getBoundingClientRect() reflows per navigation while scrubbing on low-powered TV devices.
     // Use getBoundingRectFromElement (not getBoundingClientRect directly) so that `x` is also
     // populated on older TV browsers that only return `left`/`top` - same as initializeCursorPosition.
     const rect = getBoundingRectFromElement(seekBarWrapper);
+    const increment = this.getIncrement(direction, rect.width);
     const minX = rect.x;
     const maxX = rect.x + rect.width;
 
