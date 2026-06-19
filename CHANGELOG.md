@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- New `UIConfig.treatClosedCaptionsAsSubtitles` flag: when `true`, CEA-608 closed captions are rendered with the same CSS classes, styling, and DOM structure as regular VTT subtitles, with no CEA-608-specific grid positioning or formatting applied.
+
 ## [4.16.0] - 2026-06-18
 
 ### Added
