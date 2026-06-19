@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.16.1] - 2026-06-19
+
+### Fixed
+
+- Settings panels with disabled automatic hiding no longer crash when component view mode changes are dispatched.
+
 ## [4.16.0] - 2026-06-18
 
 ### Added
