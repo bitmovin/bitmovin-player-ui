@@ -107,7 +107,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     onActivePageChanged: new EventDispatcher<SettingsPanel<SettingsPanelConfig>, NoArgs>(),
   };
 
-  private hideTimeout: Timeout;
+  private hideTimeout?: Timeout;
 
   constructor(config: Config) {
     super(config);
