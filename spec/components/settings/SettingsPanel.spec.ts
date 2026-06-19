@@ -122,18 +122,6 @@ describe('SettingsPanel', () => {
       expect(settingsPanel.getActivePage()).toBe(secondPage);
     });
 
-    it('does not crash on component view mode changes when automatic hiding is disabled', () => {
-      const viewModeChanged = new EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs>();
-      Object.defineProperty(uiInstanceManagerMock, 'onComponentViewModeChanged', { value: viewModeChanged });
-      settingsPanel = new SettingsPanel({ components: [rootPage], hideDelay: -1 });
-      settingsPanel.configure(playerMock, uiInstanceManagerMock);
-
-      expect(() => {
-        viewModeChanged.dispatch(settingsPanel as unknown as Component<ComponentConfig>, { mode: ViewMode.Persistent });
-        viewModeChanged.dispatch(settingsPanel as unknown as Component<ComponentConfig>, { mode: ViewMode.Temporary });
-      }).not.toThrow();
-    });
-
     describe('onInactiveEvent', () => {
       it('fires for root page when we navigate to second page', () => {
         const spy = jest.fn();
@@ -209,6 +197,22 @@ describe('SettingsPanel', () => {
     });
 
     describe('onComponentViewModeChanged', () => {
+      it('ignores component view mode changes when automatic hiding is disabled', () => {
+        const viewModeChanged = new EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs>();
+        Object.defineProperty(uiInstanceManagerMock, 'onComponentViewModeChanged', { value: viewModeChanged });
+        settingsPanel = new SettingsPanel({ components: [rootPage], hideDelay: -1 });
+        settingsPanel.configure(playerMock, uiInstanceManagerMock);
+
+        expect(() => {
+          viewModeChanged.dispatch(settingsPanel as unknown as Component<ComponentConfig>, {
+            mode: ViewMode.Persistent,
+          });
+          viewModeChanged.dispatch(settingsPanel as unknown as Component<ComponentConfig>, {
+            mode: ViewMode.Temporary,
+          });
+        }).not.toThrow();
+      });
+
       it('should suspend the hide timeout when a component enters the persistent view mode', () => {
         const suspendTimeoutSpy = jest.spyOn(settingsPanel['hideTimeout'], 'suspend');
 
