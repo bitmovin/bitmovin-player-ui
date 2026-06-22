@@ -34,10 +34,9 @@ export class SeekBarHandler {
     );
   }
 
-  private getIncrement(direction: Direction, seekBarWrapper: HTMLElement): number {
+  private getIncrement(direction: Direction, seekBarWidth: number): number {
     this.updateScrubSpeedPercentage();
 
-    const seekBarWidth = seekBarWrapper.getBoundingClientRect().width;
     const increment = seekBarWidth * this.scrubSpeedPercentage;
 
     return direction === Direction.RIGHT ? increment : -increment;
@@ -49,7 +48,19 @@ export class SeekBarHandler {
   }
 
   private updateCursorPosition(direction: Direction, seekBarWrapper: HTMLElement): void {
-    this.cursorPosition.x += this.getIncrement(direction, seekBarWrapper);
+    // Read the layout once and reuse it for both the increment and the clamp bounds, to avoid two
+    // getBoundingClientRect() reflows per navigation while scrubbing on low-powered TV devices.
+    // Use getBoundingRectFromElement (not getBoundingClientRect directly) so that `x` is also
+    // populated on older TV browsers that only return `left`/`top` - same as initializeCursorPosition.
+    const rect = getBoundingRectFromElement(seekBarWrapper);
+    const increment = this.getIncrement(direction, rect.width);
+    const minX = rect.x;
+    const maxX = rect.x + rect.width;
+
+    // Clamp the cursor position to the seek bar bounds. Without this, holding the remote in one
+    // direction past the start/end keeps moving the (invisible) cursor beyond the seek bar, and the
+    // user then has to "unwind" all that overshoot before scrubbing back the other way has any effect.
+    this.cursorPosition.x = Math.min(Math.max(this.cursorPosition.x + increment, minX), maxX);
   }
 
   private initializeCursorPosition(seekBarWrapper: HTMLElement): void {
