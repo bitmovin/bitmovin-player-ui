@@ -27,6 +27,14 @@ export interface SubtitleOverlayConfig extends ContainerConfig {
    * Defaults to `true` (CEA-608 text formatting is applied, matching historical behavior).
    */
   enableCea608CaptionFormatting?: boolean;
+  /**
+   * When `true`, closed captions (CEA-608/708) are treated identically to regular subtitles: no CEA-608-specific
+   * CSS classes (`cea608`, `cea608-formatting`), no grid-based row positioning, and no monospaced/uppercase
+   * formatting are applied. The captions render with the same styles and DOM structure as VTT subtitles.
+   *
+   * Default: `false`
+   */
+  treatClosedCaptionsAsSubtitles?: boolean;
 }
 
 /**
@@ -83,7 +91,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       this.cea608SmallPlayerHeightThreshold = uiConfig.cea608SmallPlayerHeightThreshold;
     }
 
-    if (uiConfig.treatClosedCaptionsAsSubtitles) {
+    if (this.config.treatClosedCaptionsAsSubtitles) {
       this.treatClosedCaptionsAsSubtitles = true;
     }
 
