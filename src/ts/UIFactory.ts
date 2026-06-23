@@ -38,7 +38,7 @@ import { AdControlBar } from './components/ads/AdControlBar';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
-import { UIConditionContext, UIManager, UIVariant } from './UIManager';
+import { UIConditionContext, UIManager, UIVariant, UIVariantFactory, UIVariantIdentifier } from './UIManager';
 import { UIConfig } from './UIConfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
@@ -83,46 +83,53 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: UIFactory.defaultLayouts.emptyState(),
+          ui: UIFactory.defaultLayouts.emptyState,
           condition: context => {
             return !context.isSourceLoaded;
           },
+          identifier: UIVariantIdentifier.empty,
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreenAds(),
+          ui: UIFactory.defaultLayouts.smallScreenAds,
           condition: (context: UIConditionContext) => {
             return context.documentWidth < smallScreenSwitchWidth && context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.smallScreenAds,
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen,
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
+          identifier: UIVariantIdentifier.smallScreen,
         },
         {
-          ...UIFactory.defaultLayouts.tvAds(),
+          ui: UIFactory.defaultLayouts.tvAds,
           condition: (context: UIConditionContext) => {
             return context.isTv && context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.tvAds,
         },
         {
-          ...UIFactory.defaultLayouts.tv(),
+          ui: UIFactory.defaultLayouts.tv,
           condition: (context: UIConditionContext) => {
             return context.isTv && !context.isAd && !context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.tv,
         },
         {
-          ui: UIFactory.defaultLayouts.ads(),
+          ui: UIFactory.defaultLayouts.ads,
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.ads,
         },
         {
-          ui: UIFactory.defaultLayouts.main(config),
+          ui: () => UIFactory.defaultLayouts.main(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.main,
         },
       ],
       config,
@@ -145,16 +152,18 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: UIFactory.defaultLayouts.smallScreenAds(),
+          ui: UIFactory.defaultLayouts.smallScreenAds,
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.smallScreenAds,
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen,
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.smallScreen,
         },
       ],
       config,
@@ -171,7 +180,16 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, UIFactory.defaultLayouts.castReceiver(config), config);
+    return new UIManager(
+      player,
+      [
+        {
+          ui: UIFactory.defaultLayouts.castReceiver,
+          identifier: UIVariantIdentifier.castReceiver,
+        },
+      ],
+      config,
+    );
   }
 
   /**
@@ -188,16 +206,18 @@ export namespace UIFactory {
       player,
       [
         {
-          ...UIFactory.defaultLayouts.tvAds(),
+          ui: UIFactory.defaultLayouts.tvAds,
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.tvAds,
         },
         {
-          ...UIFactory.defaultLayouts.tv(),
+          ui: UIFactory.defaultLayouts.tv,
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.tv,
         },
       ],
       config,
@@ -215,7 +235,16 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildSubtitleUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, UIFactory.defaultLayouts.subtitle(), config);
+    return new UIManager(
+      player,
+      [
+        {
+          ui: UIFactory.defaultLayouts.subtitle,
+          identifier: UIVariantIdentifier.subtitle,
+        },
+      ],
+      config,
+    );
   }
 
   /**

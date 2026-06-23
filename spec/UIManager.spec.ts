@@ -150,6 +150,22 @@ describe('UIManager', () => {
 
       expect(onUiChanged).not.toHaveBeenCalled();
     });
+
+    it('should resolve lazy UIs with spatial navigation', () => {
+      const ui = new UIContainer({ components: [new Container({})] });
+      const spatialNavigation = { release: jest.fn() };
+      const uiManager = new UIManager(playerMock, [
+        {
+          ui: () => ({
+            ui: ui,
+            spatialNavigation: spatialNavigation as any,
+          }),
+        },
+      ]);
+
+      expect(uiManager.activeUi.getUI()).toBe(ui);
+      expect(uiManager.activeUi['spatialNavigation']).toBe(spatialNavigation);
+    });
   });
 
   describe('ui variant resolution', () => {
