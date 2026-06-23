@@ -668,7 +668,9 @@ export namespace UIFactory {
       );
 
       return {
-        ui: uiContainer,
+        ui: () => {
+          return uiContainer;
+        },
         spatialNavigation: spatialNavigation,
       };
     }
@@ -721,7 +723,9 @@ export namespace UIFactory {
       );
 
       return {
-        ui: uiContainer,
+        ui: () => {
+          return uiContainer;
+        },
         spatialNavigation: spatialNavigation,
       };
     }
