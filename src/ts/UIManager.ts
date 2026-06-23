@@ -185,13 +185,35 @@ export enum UIVariantIdentifier {
 }
 
 /**
+ * Lazily creates a UI variant the first time it is selected.
+ *
+ * Use this when building the UI requires constructor-time context, e.g. lazy `UIComponentsConfig` options from
+ * {@link UIConfig.components}. If the variant also needs {@link SpatialNavigation}, return it together with the created
+ * UI so both are built from the same component instances.
+ */
+export interface UIVariantFactory {
+  /**
+   * Creates the UI container, optionally together with matching spatial navigation.
+   */
+  ui: () => UIContainer | Pick<UIVariant, 'ui' | 'spatialNavigation'>;
+  /**
+   * Determines whether this variant can be displayed for the current player and document state.
+   */
+  condition?: UIConditionResolver;
+  /**
+   * Stable identifier for this variant, used to scope variant-specific component config in {@link UIConfig.components}.
+   */
+  identifier?: UIVariantIdentifier;
+}
+
+/**
  * Associates a UI instance with an optional {@link UIConditionResolver} that determines if the UI should be displayed.
  */
 export interface UIVariant {
   /**
-   * The UI container for this variant, or a factory that creates it lazily when the variant is first resolved.
+   * The UI container for this variant.
    */
-  ui: UIContainer | (() => UIContainer);
+  ui: UIContainer;
   /**
    * Determines whether this variant can be displayed for the current player and document state.
    */
@@ -220,7 +242,7 @@ export interface ActiveUiChangedArgs extends NoArgs {
 export class UIManager {
   private player: PlayerAPI;
   private uiContainerElement: DOM;
-  private uiVariants: UIVariant[];
+  private uiVariants: Array<UIVariant | UIVariantFactory>;
   private uiInstanceManagers: InternalUIInstanceManager[];
   private currentUi: InternalUIInstanceManager;
   private config: InternalUIConfig; // Conjunction of provided uiConfig and sourceConfig from the player
@@ -256,8 +278,12 @@ export class UIManager {
    * @param uiVariants a list of UI variants that will be dynamically switched
    * @param uiconfig optional UI configuration
    */
-  constructor(player: PlayerAPI, uiVariants: UIVariant[], uiconfig?: UIConfig);
-  constructor(player: PlayerAPI, playerUiOrUiVariants: UIContainer | UIVariant[], uiconfig: UIConfig = {}) {
+  constructor(player: PlayerAPI, uiVariants: Array<UIVariant | UIVariantFactory>, uiconfig?: UIConfig);
+  constructor(
+    player: PlayerAPI,
+    playerUiOrUiVariants: UIContainer | Array<UIVariant | UIVariantFactory>,
+    uiconfig: UIConfig = {},
+  ) {
     if (playerUiOrUiVariants instanceof UIContainer) {
       // Single-UI constructor has been called, transform arguments to UIVariant[] signature
       const playerUi = <UIContainer>playerUiOrUiVariants;
@@ -269,7 +295,7 @@ export class UIManager {
       this.uiVariants = uiVariants;
     } else {
       // Default constructor (UIVariant[]) has been called
-      this.uiVariants = <UIVariant[]>playerUiOrUiVariants;
+      this.uiVariants = playerUiOrUiVariants;
     }
 
     this.subtitleSettingsManager = new SubtitleSettingsManager();
@@ -586,7 +612,7 @@ export class UIManager {
    * Returns the list of UI variants as passed into the constructor of {@link UIManager}.
    * @returns {UIVariant[]} the list of available UI variants
    */
-  getUiVariants(): UIVariant[] {
+  getUiVariants(): Array<UIVariant | UIVariantFactory> {
     return this.uiVariants;
   }
 
@@ -595,7 +621,7 @@ export class UIManager {
    * @param {UIVariant} uiVariant the UI variant to switch to
    * @param {() => void} onShow a callback that is executed just before the new UI variant is shown
    */
-  switchToUiVariant(uiVariant: UIVariant, onShow?: () => void): void {
+  switchToUiVariant(uiVariant: UIVariant | UIVariantFactory, onShow?: () => void): void {
     const uiVariantIndex = this.uiVariants.indexOf(uiVariant);
     const nextUi: InternalUIInstanceManager = this.uiInstanceManagers[uiVariantIndex];
     this.switchToUiInstance(nextUi, onShow);
@@ -852,7 +878,7 @@ export interface SeekPreviewArgs extends NoArgs {
  */
 export class UIInstanceManager {
   private playerWrapper: PlayerWrapper;
-  private uiVariant: UIVariant;
+  private uiVariant: UIVariant | UIVariantFactory;
   private uiContainer?: UIContainer;
   private config: InternalUIConfig;
   private subtitleSettingsManager: SubtitleSettingsManager;
@@ -879,17 +905,24 @@ export class UIInstanceManager {
 
   constructor(
     player: PlayerAPI,
-    uiVariant: UIVariant,
+    uiVariant: UIVariant | UIVariantFactory,
     config: InternalUIConfig,
     subtitleSettingsManager: SubtitleSettingsManager,
     uiWrapperElement: DOM,
   ) {
+    if (typeof uiVariant.ui === 'function' && (uiVariant as UIVariant).spatialNavigation) {
+      throw Error('Lazy UI variants must return spatialNavigation from the ui factory');
+    }
+
     this.playerWrapper = new PlayerWrapper(player);
     this.uiVariant = uiVariant;
     this.config = config;
     this.subtitleSettingsManager = subtitleSettingsManager;
     this.uiWrapperElement = uiWrapperElement;
-    this.spatialNavigation = uiVariant.spatialNavigation;
+    if (typeof uiVariant.ui !== 'function') {
+      this.uiContainer = uiVariant.ui;
+      this.spatialNavigation = (uiVariant as UIVariant).spatialNavigation;
+    }
   }
 
   getSubtitleSettingsManager() {
@@ -912,11 +945,14 @@ export class UIInstanceManager {
     if (typeof this.uiVariant.ui === 'function') {
       // Provides the individual ComponentConfig overrides from the UIConfig to the constructors of each
       // individual Component. See documentation of ComponentConfigManager for more details.
-      this.uiContainer = ComponentConfigManager.run(
-        this.config.components,
-        this.uiVariant.identifier,
-        this.uiVariant.ui,
-      );
+      const resolved = ComponentConfigManager.run(this.config.components, this.uiVariant.identifier, this.uiVariant.ui);
+
+      if (resolved instanceof UIContainer) {
+        this.uiContainer = resolved;
+      } else {
+        this.uiContainer = resolved.ui;
+        this.spatialNavigation = resolved.spatialNavigation;
+      }
     } else {
       this.uiContainer = this.uiVariant.ui;
     }

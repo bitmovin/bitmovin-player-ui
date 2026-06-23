@@ -38,7 +38,7 @@ import { AdControlBar } from './components/ads/AdControlBar';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
-import { UIConditionContext, UIManager, UIVariant, UIVariantIdentifier } from './UIManager';
+import { UIConditionContext, UIManager, UIVariant, UIVariantFactory, UIVariantIdentifier } from './UIManager';
 import { UIConfig } from './UIConfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
@@ -104,14 +104,14 @@ export namespace UIFactory {
           identifier: UIVariantIdentifier.smallScreen,
         },
         {
-          ...UIFactory.defaultLayouts.tvAds(),
+          ui: UIFactory.defaultLayouts.tvAds,
           condition: (context: UIConditionContext) => {
             return context.isTv && context.isAd && context.adRequiresUi;
           },
           identifier: UIVariantIdentifier.tvAds,
         },
         {
-          ...UIFactory.defaultLayouts.tv(),
+          ui: UIFactory.defaultLayouts.tv,
           condition: (context: UIConditionContext) => {
             return context.isTv && !context.isAd && !context.adRequiresUi;
           },
@@ -206,14 +206,14 @@ export namespace UIFactory {
       player,
       [
         {
-          ...UIFactory.defaultLayouts.tvAds(),
+          ui: UIFactory.defaultLayouts.tvAds,
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
           identifier: UIVariantIdentifier.tvAds,
         },
         {
-          ...UIFactory.defaultLayouts.tv(),
+          ui: UIFactory.defaultLayouts.tv,
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -668,9 +668,7 @@ export namespace UIFactory {
       );
 
       return {
-        ui: () => {
-          return uiContainer;
-        },
+        ui: uiContainer,
         spatialNavigation: spatialNavigation,
       };
     }
@@ -723,9 +721,7 @@ export namespace UIFactory {
       );
 
       return {
-        ui: () => {
-          return uiContainer;
-        },
+        ui: uiContainer,
         spatialNavigation: spatialNavigation,
       };
     }
