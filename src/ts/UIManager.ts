@@ -19,6 +19,7 @@ import { StorageUtils } from './utils/StorageUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
+import { ComponentConfigManager } from './utils/ComponentConfigManager';
 
 /**
  * @category Configs
@@ -903,7 +904,13 @@ export class UIInstanceManager {
     }
 
     if (typeof this.uiVariant.ui === 'function') {
-      this.uiContainer = this.uiVariant.ui();
+      // Provides the individual ComponentConfig overrides from the UIConfig to the constructors of each
+      // individual Component. See documentation of ComponentConfigManager for more details.
+      this.uiContainer = ComponentConfigManager.run(
+        this.config.components,
+        this.uiVariant.identifier,
+        this.uiVariant.ui,
+      );
     } else {
       this.uiContainer = this.uiVariant.ui;
     }

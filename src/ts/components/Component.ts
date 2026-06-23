@@ -4,6 +4,7 @@ import { EventDispatcher, NoArgs, Event } from '../EventDispatcher';
 import { UIInstanceManager } from '../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../localization/i18n';
+import { ComponentConfigManager } from '../utils/ComponentConfigManager';
 
 /**
  * Base configuration interface for a component.
@@ -384,8 +385,9 @@ export class Component<Config extends ComponentConfig> {
    * @returns {Config}
    */
   protected mergeConfig<Config>(config: Config, defaults: Partial<Config>, base: Config): Config {
+    const componentConfig = ComponentConfigManager.getConfigFor(this.constructor as { prototype: object });
     // Extend default config with supplied config
-    const merged = Object.assign({}, base, defaults, config);
+    const merged = Object.assign({}, base, defaults, config, componentConfig);
 
     // Return the extended config
     return merged;
