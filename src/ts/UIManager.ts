@@ -169,6 +169,21 @@ export interface UIConditionResolver {
 }
 
 /**
+ * Identifier for the different {@link UIVariant}s.
+ */
+export enum UIVariantIdentifier {
+  main = 'main',
+  ads = 'ads',
+  smallScreen = 'smallScreen',
+  smallScreenAds = 'smallScreenAds',
+  tv = 'tv',
+  tvAds = 'tvAds',
+  subtitle = 'subtitle',
+  castReceiver = 'castReceiver',
+  empty = 'empty',
+}
+
+/**
  * Associates a UI instance with an optional {@link UIConditionResolver} that determines if the UI should be displayed.
  */
 export interface UIVariant {
