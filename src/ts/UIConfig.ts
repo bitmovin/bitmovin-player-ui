@@ -1,6 +1,8 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
 import { SourceConfig } from 'bitmovin-player';
-import { LocalizationConfig } from './UIManager';
+import { LocalizationConfig, UIVariantIdentifier } from './UIManager';
+import type { UIComponentsConfig } from './UIComponentsConfig';
+export type { UIComponentConfigMap, UIComponentsConfig } from './UIComponentsConfig';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -235,6 +237,30 @@ export interface UIConfig {
    * Default: `360`
    */
   cea608SmallPlayerHeightThreshold?: number;
+  /**
+   * Allows overriding component-specific config without building a custom UI layout through the UIFactory.
+   * Component-specific config can be specified by the public component class name.
+   *
+   * Top-level entries apply to all UI variants. Entries nested under a {@link UIVariantIdentifier} only apply to that
+   * variant and override top-level component config. Component keys can be any public component class that extends
+   * {@link Component}. Base component keys also apply to subclasses, for example a `ToggleButton` config applies to
+   * `FullscreenToggleButton`, `VolumeToggleButton`, and other toggle buttons unless a more specific component key
+   * overrides it.
+   *
+   * @example
+   * ```ts
+   * components: {
+   *   // Applies to all ToggleButton based components in all UI variants.
+   *   ToggleButton: { buttonStyle: ButtonStyle.Text },
+   *
+   *   // Applies only to the main UI variant.
+   *   main: {
+   *     FullscreenToggleButton: { text: 'Main fullscreen' },
+   *   },
+   * }
+   * ```
+   */
+  components?: UIComponentsConfig;
 }
 
 export interface ShadowDomConfig {
