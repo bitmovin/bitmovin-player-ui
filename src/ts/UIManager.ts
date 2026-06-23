@@ -594,7 +594,13 @@ export class UIManager {
    * @param {UIVariant} uiVariant the UI variant to switch to
    * @param {() => void} onShow a callback that is executed just before the new UI variant is shown
    */
-  switchToUiVariant(nextUi: InternalUIInstanceManager, onShow?: () => void): void {
+  switchToUiVariant(uiVariant: UIVariant, onShow?: () => void): void {
+    const uiVariantIndex = this.uiVariants.indexOf(uiVariant);
+    const nextUi: InternalUIInstanceManager = this.uiInstanceManagers[uiVariantIndex];
+    this.switchToUiInstance(nextUi, onShow);
+  }
+
+  private switchToUiInstance(nextUi: InternalUIInstanceManager, onShow?: () => void): void {
     const previousUi = this.currentUi;
     // Determine if the UI variant is changing
     // Only if the UI variant is changing, we need to do some stuff. Else we just leave everything as-is.
@@ -682,7 +688,7 @@ export class UIManager {
       }
     }
 
-    this.switchToUiVariant(nextUi, () => {
+    this.switchToUiInstance(nextUi, () => {
       if (onShow) {
         onShow(switchingContext);
       }
