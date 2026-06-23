@@ -187,9 +187,22 @@ export enum UIVariantIdentifier {
  * Associates a UI instance with an optional {@link UIConditionResolver} that determines if the UI should be displayed.
  */
 export interface UIVariant {
-  ui: UIContainer;
+  /**
+   * The UI container for this variant, or a factory that creates it lazily when the variant is first resolved.
+   */
+  ui: UIContainer | (() => UIContainer);
+  /**
+   * Determines whether this variant can be displayed for the current player and document state.
+   */
   condition?: UIConditionResolver;
+  /**
+   * Spatial navigation instance used by this variant, if keyboard or remote-control navigation is enabled.
+   */
   spatialNavigation?: SpatialNavigation;
+  /**
+   * Stable identifier for this variant, used to scope variant-specific component config in {@link UIConfig.components}.
+   */
+  identifier?: UIVariantIdentifier;
 }
 
 export interface ActiveUiChangedArgs extends NoArgs {
