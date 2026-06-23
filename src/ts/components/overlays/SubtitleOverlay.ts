@@ -28,13 +28,13 @@ export interface SubtitleOverlayConfig extends ContainerConfig {
    */
   enableCea608CaptionFormatting?: boolean;
   /**
-   * When `true`, closed captions (CEA-608/708) are treated identically to regular subtitles: no CEA-608-specific
-   * CSS classes (`cea608`, `cea608-formatting`), no grid-based row positioning, and no monospaced/uppercase
-   * formatting are applied. The captions render with the same styles and DOM structure as VTT subtitles.
+   * Controls whether the CEA-608 grid-based row/column positioning is used or not.
+   * The formatting (monospaced font, uppercase transform, character letter-spacing) is preserved
+   * and still controlled independently via {@link enableCea608CaptionFormatting}.
    *
-   * Default: `false`
+   * Defaults to `true` (CEA-608 grid is used for positioning, matching historical behavior).
    */
-  treatClosedCaptionsAsSubtitles?: boolean;
+  enableCea608CaptionPositioning?: boolean;
 }
 
 /**
@@ -64,7 +64,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   private cea608FontSizeFactor = 1;
   private ensureCea608GridSizeUpdated: () => void;
   private cea608SmallPlayerHeightThreshold = SubtitleOverlay.DEFAULT_CEA608_SMALL_PLAYER_HEIGHT_THRESHOLD;
-  private treatClosedCaptionsAsSubtitles = false;
 
   constructor(config: SubtitleOverlayConfig = {}) {
     super(config);
@@ -77,6 +76,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       {
         cssClass: 'ui-subtitle-overlay',
         enableCea608CaptionFormatting: true,
+        enableCea608CaptionPositioning: true,
       },
       this.config,
     );
@@ -89,10 +89,6 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
     if (uiConfig.cea608SmallPlayerHeightThreshold !== undefined) {
       this.cea608SmallPlayerHeightThreshold = uiConfig.cea608SmallPlayerHeightThreshold;
-    }
-
-    if (this.config.treatClosedCaptionsAsSubtitles) {
-      this.treatClosedCaptionsAsSubtitles = true;
     }
 
     const subtitleManager = new ActiveSubtitleManager();
@@ -270,7 +266,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     // We need to keep track of the original row position in case of recalculation.
     const originalRowNumber = event.position?.row || 0;
 
-    if (isCea608SubtitleCue(event) && !this.treatClosedCaptionsAsSubtitles) {
+    if (isCea608SubtitleCue(event) && this.isCea608PositioningEnabled()) {
       event.position.row = event.position.row || 0;
       event.position.column = event.position.column || 0;
 
@@ -322,6 +318,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     let windowMargin: number;
     /** Flag telling if the CEA-608 rendering mode is currently enabled */
     this.cea608Enabled = false;
+    let cea608FormattingClassAdded = false;
     /** Track last known grid params to avoid unnecessary recalculations */
     let lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0, fontSizeFactor: 0 };
 
@@ -477,36 +474,40 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     });
 
     this.preprocessLabelEventCallback.subscribe((event: SubtitleCueEvent, label: SubtitleLabel) => {
-      if (!isCea608SubtitleCue(event) || this.treatClosedCaptionsAsSubtitles) {
-        // Skip all non-CEA608 cues, and skip CEA-608 cues when they should be treated as regular subtitles
+      if (!isCea608SubtitleCue(event)) {
         return;
       }
 
-      if (!this.cea608Enabled) {
-        this.cea608Enabled = true;
-        this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
-        if (this.isCea608FormattingEnabled()) {
-          this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608_FORMATTING));
+      if (this.isCea608PositioningEnabled()) {
+        if (!this.cea608Enabled) {
+          this.cea608Enabled = true;
+          this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608));
+          if (this.isCea608FormattingEnabled()) {
+            this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608_FORMATTING));
+          }
         }
-      }
 
-      let leftOffset = event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET + '%';
-      if (leftOffset === '0%') {
-        // ensure that a little of the window still shows for better readability
-        leftOffset = SubtitleOverlay.DEFAULT_CAPTION_LEFT_OFFSET;
-      }
+        let leftOffset = event.position.column * SubtitleOverlay.CEA608_COLUMN_OFFSET + '%';
+        if (leftOffset === '0%') {
+          // ensure that a little of the window still shows for better readability
+          leftOffset = SubtitleOverlay.DEFAULT_CAPTION_LEFT_OFFSET;
+        }
 
-      const labelCss: Record<string, string> = {
-        left: leftOffset,
-        'font-size': `${fontSize}px`,
-        'line-height': `${rowHeight - windowMargin}px`,
-      };
-      if (this.isCea608FormattingEnabled()) {
-        labelCss['letter-spacing'] = `${fontLetterSpacing}px`;
-      }
-      label.getDomElement().css(labelCss);
+        const labelCss: Record<string, string> = {
+          left: leftOffset,
+          'font-size': `${fontSize}px`,
+          'line-height': `${rowHeight - windowMargin}px`,
+        };
+        if (this.isCea608FormattingEnabled()) {
+          labelCss['letter-spacing'] = `${fontLetterSpacing}px`;
+        }
+        label.getDomElement().css(labelCss);
 
-      label.regionStyle = `margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
+        label.regionStyle = `margin: ${windowMargin / 2}px; height: ${rowHeight}px`;
+      } else if (this.isCea608FormattingEnabled() && !cea608FormattingClassAdded) {
+        cea608FormattingClassAdded = true;
+        this.getDomElement().addClass(this.prefixCss(SubtitleOverlay.CLASS_CEA_608_FORMATTING));
+      }
     });
 
     const reset = () => {
@@ -517,6 +518,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
         lastCeaGridRecalculation = { overlayWidth: 0, overlayHeight: 0, fontSizeFactor: 0 };
       }
       this.cea608Enabled = false;
+      cea608FormattingClassAdded = false;
     };
 
     player.on(player.exports.PlayerEvent.CueExit, () => {
@@ -551,6 +553,10 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   private isCea608FormattingEnabled(): boolean {
     return this.config?.enableCea608CaptionFormatting !== false;
+  }
+
+  private isCea608PositioningEnabled(): boolean {
+    return this.config?.enableCea608CaptionPositioning !== false;
   }
 }
 
