@@ -63,7 +63,7 @@ function getPublicComponentExports(): Array<{ exportName: string; componentConst
   return Object.keys(PlayerUI)
     .map(exportName => ({
       exportName,
-      exportValue: (PlayerUI as { [exportName: string]: unknown })[exportName],
+      exportValue: (PlayerUI as { [key: string]: unknown })[exportName],
     }))
     .filter((componentExport): componentExport is { exportName: string; exportValue: typeof Component } =>
       isComponentConstructor(componentExport.exportValue),
