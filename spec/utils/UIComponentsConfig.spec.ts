@@ -1,9 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
+import { FullscreenToggleButton } from '../../src/ts/components/buttons/FullscreenToggleButton';
+import { PlaybackToggleButton } from '../../src/ts/components/buttons/PlaybackToggleButton';
+import { VolumeControlButton } from '../../src/ts/components/buttons/VolumeControlButton';
 import { Component } from '../../src/ts/components/Component';
 import * as PlayerUI from '../../src/ts/main';
 import { UIVariantIdentifier } from '../../src/ts/UIManager';
+import { ComponentConfigManager } from '../../src/ts/utils/ComponentConfigManager';
 
 const UI_COMPONENTS_CONFIG_PATH = path.resolve(__dirname, '../../src/ts/UIComponentsConfig.ts');
 
@@ -56,6 +60,94 @@ describe('UIComponentsConfig', () => {
           .join('\n'),
       );
     }
+  });
+
+  it('applies component config precedence after constructor completion', () => {
+    const { playbackToggleButton, fullscreenToggleButton } = ComponentConfigManager.run(
+      {
+        Button: {
+          cssClass: 'global-button',
+          hidden: false,
+        },
+        ToggleButton: {
+          cssClass: 'global-toggle-button',
+          offClass: 'global-off',
+        },
+        PlaybackToggleButton: {
+          cssClass: 'global-playback-toggle-button',
+          text: 'global playback',
+        },
+        FullscreenToggleButton: {
+          cssClass: 'global-fullscreen-toggle-button',
+          text: 'global fullscreen',
+        },
+        main: {
+          Button: {
+            cssClass: 'main-button',
+            hidden: true,
+          },
+          ToggleButton: {
+            cssClass: 'main-toggle-button',
+            offClass: 'main-off',
+          },
+          PlaybackToggleButton: {
+            cssClass: 'main-playback-toggle-button',
+            text: 'main playback',
+          },
+          FullscreenToggleButton: {
+            cssClass: 'main-fullscreen-toggle-button',
+            text: 'main fullscreen',
+          },
+        },
+      },
+      UIVariantIdentifier.main,
+      () => ({
+        playbackToggleButton: new PlaybackToggleButton({
+          cssClass: 'constructor-playback-toggle-button',
+          offClass: 'constructor-off',
+          text: 'constructor playback',
+          hidden: false,
+        }),
+        fullscreenToggleButton: new FullscreenToggleButton({
+          cssClass: 'constructor-fullscreen-toggle-button',
+          offClass: 'constructor-fullscreen-off',
+          text: 'constructor fullscreen',
+          hidden: false,
+        }),
+      }),
+    );
+
+    expect(playbackToggleButton.getConfig()).toMatchObject({
+      cssClass: 'main-playback-toggle-button',
+      hidden: true,
+      offClass: 'main-off',
+      text: 'main playback',
+    });
+    expect(fullscreenToggleButton.getConfig()).toMatchObject({
+      cssClass: 'main-fullscreen-toggle-button',
+      hidden: true,
+      offClass: 'main-off',
+      text: 'main fullscreen',
+    });
+  });
+
+  it('makes component config available to subclass constructors after super', () => {
+    const volumeControlButton = ComponentConfigManager.run(
+      {
+        main: {
+          VolumeControlButton: {
+            vertical: false,
+          },
+        },
+      },
+      UIVariantIdentifier.main,
+      () => new VolumeControlButton(),
+    );
+
+    expect(volumeControlButton.getVolumeSlider().getConfig()).toMatchObject({
+      vertical: false,
+      hidden: true,
+    });
   });
 });
 
