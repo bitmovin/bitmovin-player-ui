@@ -4,9 +4,9 @@ import type { ComponentConfig } from '../components/Component';
 /**
  * Provides {@link UIComponentsConfig} overrides while a UI variant is being constructed.
  *
- * Components read their final config inside `Component.mergeConfig()`, which runs from component constructors. Passing
- * this state through every component constructor would change the UIFactory and component APIs, so UIManager
- * opens this short-lived context around lazy UI construction instead.
+ * Component applies these overrides to the constructor config object before subclass constructors continue. Passing
+ * this state through every component constructor would change the UIFactory and component APIs, so UIManager opens this
+ * short-lived context around lazy UI construction instead.
  *
  * The context is intentionally synchronous: it is set before the variant factory runs and cleared immediately after.
  * Outside that construction window, components receive no UIConfig component override.
