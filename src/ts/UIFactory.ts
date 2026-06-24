@@ -184,7 +184,7 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: UIFactory.defaultLayouts.castReceiver,
+          ui: () => UIFactory.defaultLayouts.castReceiver(config),
           identifier: UIVariantIdentifier.castReceiver,
         },
       ],
