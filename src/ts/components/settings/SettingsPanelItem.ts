@@ -75,7 +75,7 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
     );
 
     const label = config.label;
-    if (label !== null) {
+    if (label != null) {
       if (label instanceof Component) {
         this.label = label;
       } else {

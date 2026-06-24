@@ -29,58 +29,73 @@ export interface PlayerContextMenuConfig extends ContextMenuConfig {
  */
 export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
   constructor(config: PlayerContextMenuConfig) {
-    const actionItems = [
-      new PlayerInsightsContextMenuItem({
-        playerInsightsPanel: config.playerInsightsPanel,
-      }),
-      ...(config.components ?? []),
-    ];
+    super(config);
 
-    super({
-      ...config,
-      cssClasses: ['ui-player-context-menu', ...(config.cssClasses ?? [])],
-      components: [
-        new SettingsPanelPage({
-          components: [new PlayerInfoContextMenuItem(), new SettingsPanelSeparator(), ...actionItems],
-        }),
-      ],
-    });
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-player-context-menu', ...(config.cssClasses ?? [])],
+      },
+      this.config,
+    );
+
+    this.addComponent(
+      new SettingsPanelPage({
+        components: [
+          new PlayerInfoContextMenuItem(),
+          new SettingsPanelSeparator(),
+          new PlayerInsightsContextMenuItem({
+            playerInsightsPanel: config.playerInsightsPanel,
+          }),
+        ],
+      }),
+    );
   }
 }
 
 class PlayerInfoContextMenuItem extends SettingsPanelItem<SettingsPanelItemConfig> {
   private readonly playerVersionLabel: Label<LabelConfig>;
 
-  constructor() {
+  constructor(config: SettingsPanelItemConfig = {}) {
+    super(config);
+
     const playerVersionLabel = new Label<LabelConfig>({
       text: 'Player: -',
       cssClasses: ['ui-player-context-menu-info'],
     });
 
-    super({
-      label: null,
-      components: [
-        new Label<LabelConfig>({
-          text: i18n.getLocalizer('contextMenu.title'),
-          cssClasses: ['ui-player-context-menu-header'],
-        }),
-        new Label<LabelConfig>({
-          text: i18n.getLocalizer('contextMenu.subtitle'),
-          cssClasses: ['ui-player-context-menu-subtitle'],
-        }),
-        playerVersionLabel,
-        new Label<LabelConfig>({
-          text: `UI: ${UI_VERSION}`,
-          cssClasses: ['ui-player-context-menu-info'],
-        }),
-      ],
-      cssClasses: ['ui-player-context-menu-info-item'],
-      isSetting: false,
-      role: 'group',
-      tabIndex: -1,
-    });
+    this.config = this.mergeConfig(
+      config,
+      {
+        label: null,
+        cssClasses: ['ui-player-context-menu-info-item'],
+        isSetting: false,
+        role: 'group',
+        tabIndex: -1,
+      },
+      this.config,
+    );
 
     this.playerVersionLabel = playerVersionLabel;
+    this.addComponent(
+      new Label<LabelConfig>({
+        text: i18n.getLocalizer('contextMenu.title'),
+        cssClasses: ['ui-player-context-menu-header'],
+      }),
+    );
+    this.addComponent(
+      new Label<LabelConfig>({
+        text: i18n.getLocalizer('contextMenu.subtitle'),
+        cssClasses: ['ui-player-context-menu-subtitle'],
+      }),
+    );
+    this.addComponent(playerVersionLabel);
+    this.addComponent(
+      new Label<LabelConfig>({
+        text: `UI: ${UI_VERSION}`,
+        cssClasses: ['ui-player-context-menu-info'],
+      }),
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
