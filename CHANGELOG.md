@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `UIConfig.components` and `UIComponentsConfig` to configure default UI components by without rebuilding complete UI layouts through the `UIFactory`.
+- `UIVariantIdentifier` to scope component config overrides to individual default UI variants.
+
 ### Fixed
 
 - Seeking with the remote on the TV UI no longer gets stuck at the start or end of the seek bar: after scrubbing all the way to one edge, pressing the opposite direction now moves the playback position immediately instead of requiring multiple presses.
