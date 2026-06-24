@@ -1,6 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const replacer = require('replacer-util').replacer;
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
@@ -136,6 +137,15 @@ module.exports = (env, { mode }) => {
     ],
     resolve: {
       extensions: ['.ts', '.js', '.scss', '.css'],
+    },
+    optimization: {
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            keep_fnames: true,
+          },
+        }),
+      ],
     },
     output: {
       path: path.resolve(__dirname, OUTPUT_ROOT_DIRECTORY),
