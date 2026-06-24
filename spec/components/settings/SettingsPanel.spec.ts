@@ -259,4 +259,10 @@ describe('SettingsPanel', () => {
       });
     });
   });
+
+  describe('items', () => {
+    it('does not create a label for an omitted label config', () => {
+      expect(new SettingsPanelItem({}).getComponents()).toHaveLength(0);
+    });
+  });
 });
