@@ -1,6 +1,6 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
 import { SourceConfig } from 'bitmovin-player';
-import { LocalizationConfig, UIVariantIdentifier } from './UIManager';
+import type { LocalizationConfig, UIVariantIdentifier } from './UIManager';
 import type { UIComponentsConfig } from './UIComponentsConfig';
 export type { UIComponentConfigMap, UIComponentsConfig } from './UIComponentsConfig';
 
