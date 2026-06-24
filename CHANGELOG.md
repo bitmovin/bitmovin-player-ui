@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `UIConfig.components` and `UIComponentsConfig` to configure default UI components by without rebuilding complete UI layouts through the `UIFactory`.
+- `UIConfig.components` and `UIComponentsConfig` to configure default UI components without rebuilding complete UI layouts through the `UIFactory`.
 - `UIVariantIdentifier` to scope component config overrides to individual default UI variants.
 
 ### Fixed
