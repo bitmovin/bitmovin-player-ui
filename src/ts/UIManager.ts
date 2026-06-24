@@ -169,6 +169,21 @@ export interface UIConditionResolver {
 }
 
 /**
+ * Identifier for the different {@link UIVariant}s.
+ */
+export enum UIVariantIdentifier {
+  main = 'main',
+  ads = 'ads',
+  smallScreen = 'smallScreen',
+  smallScreenAds = 'smallScreenAds',
+  tv = 'tv',
+  tvAds = 'tvAds',
+  subtitle = 'subtitle',
+  castReceiver = 'castReceiver',
+  empty = 'empty',
+}
+
+/**
  * Lazily creates a UI variant the first time it is selected.
  *
  * If the variant also needs {@link SpatialNavigation}, return it together with the created UI so both are built from the
@@ -183,6 +198,10 @@ export interface UIVariantFactory {
    * Determines whether this variant can be displayed for the current player and document state.
    */
   condition?: UIConditionResolver;
+  /**
+   * Stable identifier for this variant, used to scope variant-specific component config in {@link UIConfig.components}.
+   */
+  identifier?: UIVariantIdentifier;
 }
 
 /**
@@ -201,6 +220,10 @@ export interface UIVariant {
    * Spatial navigation instance used by this variant, if keyboard or remote-control navigation is enabled.
    */
   spatialNavigation?: SpatialNavigation;
+  /**
+   * Stable identifier for this variant, used to scope variant-specific component config in {@link UIConfig.components}.
+   */
+  identifier?: UIVariantIdentifier;
 }
 
 export interface ActiveUiChangedArgs extends NoArgs {
