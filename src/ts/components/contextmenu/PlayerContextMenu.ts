@@ -34,7 +34,7 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
     this.config = this.mergeConfig(
       config,
       {
-        cssClasses: ['ui-player-context-menu', ...(config.cssClasses ?? [])],
+        cssClasses: ['ui-player-context-menu'],
       },
       this.config,
     );
