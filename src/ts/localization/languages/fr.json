@@ -64,6 +64,8 @@
   "auto": "auto",
   "ecoMode": "Mode éco",
   "ecoMode.title": "Mode Éco",
+  "persistentPreferences": "Mémoriser les préférences",
+  "persistentPreferences.title": "Mémoriser les préférences",
   "back": "Retour",
   "reset": "Réinitialiser",
   "replay": "Rejouer",

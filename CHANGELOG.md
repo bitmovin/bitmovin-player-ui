@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - `ToggleSettingsPanelItem` for settings rows that toggle their nested `ToggleButton` when the row is selected.
+- `UIConfig.enablePersistentPreferences` and `UIConfig.showPersistentPreferencesToggle` to configure whether the UI persists volume, mute state, and playback speed across sessions.
 
 ### Fixed
 

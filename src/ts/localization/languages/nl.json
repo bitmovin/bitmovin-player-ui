@@ -64,6 +64,8 @@
   "auto": "automatisch",
   "ecoMode": "Eco-modus",
   "ecoMode.title": "Eco-modus",
+  "persistentPreferences": "Voorkeuren onthouden",
+  "persistentPreferences.title": "Voorkeuren onthouden",
   "back": "Terug",
   "reset": "Reset",
   "replay": "Opnieuw afspelen",
