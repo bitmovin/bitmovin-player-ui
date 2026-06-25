@@ -100,7 +100,6 @@ export {
   InteractiveContextMenuItemConfig,
 } from './components/contextmenu/InteractiveContextMenuItem';
 export { PlayerContextMenu, PlayerContextMenuConfig } from './components/contextmenu/PlayerContextMenu';
-export { DebugInfoOverlay, DebugInfoOverlayConfig } from './components/overlays/DebugInfoOverlay';
 export { CastUIContainer } from './components/CastUIContainer';
 export { PlaybackToggleOverlay, PlaybackToggleOverlayConfig } from './components/overlays/PlaybackToggleOverlay';
 export { CloseButton, CloseButtonConfig } from './components/buttons/CloseButton';
