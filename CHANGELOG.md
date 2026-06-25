@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `ToggleSettingsPanelItem` for settings rows that toggle their nested `ToggleButton` when the row is selected.
+
 ### Fixed
 
 - Seeking with the remote on the TV UI no longer gets stuck at the start or end of the seek bar: after scrubbing all the way to one edge, pressing the opposite direction now moves the playback position immediately instead of requiring multiple presses.

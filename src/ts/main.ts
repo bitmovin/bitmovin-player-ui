@@ -137,6 +137,7 @@ export {
   DynamicSettingsPanelItem,
   DynamicSettingsPanelItemConfig,
 } from './components/settings/DynamicSettingsPanelItem';
+export { ToggleSettingsPanelItem, ToggleSettingsPanelItemConfig } from './components/settings/ToggleSettingsPanelItem';
 export { ReplayButton } from './components/buttons/ReplayButton';
 export { QuickSeekButton, QuickSeekButtonConfig } from './components/buttons/QuickSeekButton';
 export {
