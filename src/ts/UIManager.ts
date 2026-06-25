@@ -16,6 +16,7 @@ import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './u
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
+import { parseTimestampFromUrl } from './components/contextmenu/PlayerContextMenu';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
@@ -368,6 +369,26 @@ export class UIManager {
       i18n.setConfig(this.config.localization);
     }
     this.subtitleSettingsManager.initialize();
+
+    if (uiconfig.enableTimestampDeepLink !== false) {
+      let consumed = false;
+      const seekFromUrl = () => {
+        if (consumed) return;
+        consumed = true;
+        if (this.player.isLive()) return;
+        const t = parseTimestampFromUrl();
+        if (t !== null && t > 0) {
+          try {
+            this.player.seek(t);
+          } catch {
+            // seek() can fail if the source isn't fully ready yet — best-effort.
+          }
+        }
+      };
+      this.player.on(this.player.exports.PlayerEvent.SourceLoaded, seekFromUrl);
+      // Source may already be loaded by the time the UI is built (e.g. variant switch).
+      if (this.player.getSource() != null) seekFromUrl();
+    }
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
     const updateSource = () => {
