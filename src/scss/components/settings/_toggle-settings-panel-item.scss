@@ -31,10 +31,7 @@
 
 .#{$prefix}-ui-toggle-settings-panel-item {
   button {
+    @extend %ui-button;
     @include toggle-settings-panel-button;
   }
-}
-
-.#{$prefix}-ui-ecomodetogglebutton {
-  @include toggle-settings-panel-button;
 }

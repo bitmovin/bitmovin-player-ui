@@ -1,9 +1,5 @@
 @import '../../variables';
 
-.#{$prefix}-ui-ecomodetogglebutton {
-  @extend %ui-button;
-}
-
 // sass-lint:disable no-ids
 #ecomodelabel {
   &::before {
