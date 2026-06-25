@@ -21,16 +21,21 @@ interface SubtitleCropDetectionResult {
 export interface SubtitleOverlayConfig extends ContainerConfig {
   /**
    * Controls whether CEA-608 caption-specific text formatting (monospaced font, uppercase transform,
-   * and character letter-spacing) is applied. The CEA-608 grid-based row/column positioning is
-   * always preserved so captions still render at their authored on-screen positions.
+   * and character letter-spacing) is applied. Grid-based row/column positioning is controlled
+   * independently via {@link enableCea608CaptionPositioning}.
+   *
+   * Note: character letter-spacing is only applied when positioning is also enabled, as it depends
+   * on the grid size calculations.
    *
    * Defaults to `true` (CEA-608 text formatting is applied, matching historical behavior).
    */
   enableCea608CaptionFormatting?: boolean;
   /**
    * Controls whether the CEA-608 grid-based row/column positioning is used or not.
-   * The formatting (monospaced font, uppercase transform, character letter-spacing) is preserved
-   * and still controlled independently via {@link enableCea608CaptionFormatting}.
+   * When disabled, captions fall back to the default subtitle layout. Text formatting
+   * (monospaced font, uppercase transform) is still controlled independently via
+   * {@link enableCea608CaptionFormatting}, though character letter-spacing will not be applied
+   * as it depends on the grid size calculations.
    *
    * Defaults to `true` (CEA-608 grid is used for positioning, matching historical behavior).
    */
