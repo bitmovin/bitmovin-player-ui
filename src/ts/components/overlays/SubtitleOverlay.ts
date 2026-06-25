@@ -271,11 +271,13 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     // We need to keep track of the original row position in case of recalculation.
     const originalRowNumber = event.position?.row || 0;
 
-    if (isCea608SubtitleCue(event) && this.isCea608PositioningEnabled()) {
+    if (isCea608SubtitleCue(event)) {
       event.position.row = event.position.row || 0;
       event.position.column = event.position.column || 0;
 
-      region = region || `cea608-row-${event.position.row}`;
+      if (this.isCea608PositioningEnabled()) {
+        region = region || `cea608-row-${event.position.row}`;
+      }
     }
 
     const label = new SubtitleLabel({
