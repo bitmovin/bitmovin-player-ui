@@ -84,5 +84,7 @@
   "quickseek.forward": "Adelantar {seekSeconds} segundos",
   "quickseek.rewind": "Rebobinar {seekSeconds} segundos",
   "contextMenu.title": "Bitmovin Player",
-  "contextMenu.subtitle": "Streaming adaptativo para la web"
+  "contextMenu.subtitle": "Streaming adaptativo para la web",
+  "contextMenu.copyTimestampLink": "Copy link at current time",
+  "contextMenu.copied": "Copied!"
 }

@@ -84,5 +84,7 @@
   "contextMenu.title": "Bitmovin Player",
   "contextMenu.subtitle": "Adaptive Streaming für das Web",
   "ecoMode": "ecoMode",
-  "ecoMode.title": "Eco Mode"
+  "ecoMode.title": "Eco Mode",
+  "contextMenu.copyTimestampLink": "Copy link at current time",
+  "contextMenu.copied": "Copied!"
 }
