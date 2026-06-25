@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - New `SubtitleOverlayConfig.enableCea608CaptionPositioning` flag (default `true`): by default, the player UI applies CEA-608 grid-based row/column positioning to Closed Captions. Setting this to `false` disables that positioning so that 608/708 captions are laid out like regular VTT subtitles, while CEA-608-specific text formatting remains independently controlled via `enableCea608CaptionFormatting`.
 
+### Added
+
+- `PlayerContextMenu` can copy a link at the current playback time.
+- Timestamp deep links seek to `t=<seconds>[s]` on the first `SourceLoaded` event, configurable via `UIConfig.enableTimestampDeepLink`. Skipped for live streams, where the corresponding context-menu action is hidden.
+
 ### Fixed
 
 - Seeking with the remote on the TV UI no longer gets stuck at the start or end of the seek bar: after scrubbing all the way to one edge, pressing the opposite direction now moves the playback position immediately instead of requiring multiple presses.
