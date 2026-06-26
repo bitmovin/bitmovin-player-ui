@@ -72,7 +72,15 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
     super.configure(player, uimanager);
 
     this.copyTimestampLinkItem.onClick.subscribe(() => {
-      navigator.clipboard.writeText(TimestampLinkUtils.buildTimestampLink(player.getCurrentTime()));
+      const timestampLink = TimestampLinkUtils.buildTimestampLink(player.getCurrentTime());
+      if (!navigator.clipboard?.writeText) {
+        console.warn('Clipboard API is not available. Timestamp link was not copied.');
+        return;
+      }
+
+      navigator.clipboard
+        .writeText(timestampLink)
+        .catch(() => console.warn('Failed to copy timestamp link to clipboard.'));
     });
 
     const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
