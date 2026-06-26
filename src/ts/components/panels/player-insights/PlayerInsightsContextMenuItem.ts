@@ -30,19 +30,24 @@ export class PlayerInsightsContextMenuItem extends InteractiveContextMenuItem<Pl
   private readonly playerInsightsPanel: PlayerInsightsPanel;
 
   constructor(config: PlayerInsightsContextMenuItemConfig) {
+    super(config);
+
     const itemLabel = new Label<LabelConfig>({
       text: i18n.getLocalizer('playerInsights.show'),
     });
 
-    super({
-      ...config,
-      label: itemLabel,
-      ariaLabel: i18n.getLocalizer('playerInsights.show'),
-      closeContextMenuOnAction: true,
-    });
+    this.config = this.mergeConfig(
+      config,
+      {
+        ariaLabel: i18n.getLocalizer('playerInsights.show'),
+        closeContextMenuOnAction: true,
+      },
+      this.config,
+    );
 
     this.itemLabel = itemLabel;
     this.playerInsightsPanel = config.playerInsightsPanel;
+    this.addComponent(itemLabel);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

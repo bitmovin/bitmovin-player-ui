@@ -585,7 +585,7 @@ export class UIManager {
 
   /**
    * Returns the list of UI variants as passed into the constructor of {@link UIManager}.
-   * @returns {UIVariant[]} the list of available UI variants
+   * @returns {Array<UIVariant | UIVariantFactory>} the list of available UI variants
    */
   getUiVariants(): Array<UIVariant | UIVariantFactory> {
     return this.uiVariants;
@@ -593,7 +593,7 @@ export class UIManager {
 
   /**
    * Switches to a UI variant from the list returned by {@link getUiVariants}.
-   * @param {UIVariant} uiVariant the UI variant to switch to
+   * @param {UIVariant | UIVariantFactory} uiVariant or UIVariantFactory the UI variant to switch to
    * @param {() => void} onShow a callback that is executed just before the new UI variant is shown
    */
   switchToUiVariant(uiVariant: UIVariant | UIVariantFactory, onShow?: () => void): void {

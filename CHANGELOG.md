@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [4.16.1] - 2026-06-25
+
+### Added
+
+- `UIVariantFactory` to lazily resolve UI variants only when they are selected.
 
 ### Changed
 
@@ -15,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Seeking with the remote on the TV UI no longer gets stuck at the start or end of the seek bar: after scrubbing all the way to one edge, pressing the opposite direction now moves the playback position immediately instead of requiring multiple presses.
 - Settings panels with disabled automatic hiding no longer crash when component view mode changes are dispatched.
+- Settings panel items no longer render an empty label when no label config is provided.
 
 ## [4.16.0] - 2026-06-18
 
