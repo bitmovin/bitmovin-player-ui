@@ -49,7 +49,7 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
     const copyTimestampLinkItem = new InteractiveContextMenuItem<InteractiveContextMenuItemConfig>({
       label: copyTimestampLinkLabel,
       ariaLabel: i18n.getLocalizer('contextMenu.copyTimestampLink'),
-      closeContextMenuOnAction: false,
+      closeContextMenuOnAction: true,
     });
 
     this.copyTimestampLinkItem = copyTimestampLinkItem;
@@ -72,7 +72,7 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
     super.configure(player, uimanager);
 
     this.copyTimestampLinkItem.onClick.subscribe(() => {
-      navigator.clipboard.writeText(buildTimestampLink(player.getCurrentTime())).then(() => this.hide());
+      navigator.clipboard.writeText(buildTimestampLink(player.getCurrentTime()));
     });
 
     const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
