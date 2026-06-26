@@ -77,7 +77,7 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
 
     const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
-      if (args.live) {
+      if (!uimanager.getConfig().enableTimestampDeepLink || args.live) {
         this.copyTimestampLinkItem.hide();
       } else {
         this.copyTimestampLinkItem.show();
