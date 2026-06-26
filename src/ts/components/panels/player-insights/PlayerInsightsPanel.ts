@@ -30,6 +30,8 @@ export class PlayerInsightsPanel extends SettingsPanel<PlayerInsightsPanelConfig
   private readonly insightItems: PlayerInsightsPanelItem[];
 
   constructor(config: PlayerInsightsPanelConfig = {}) {
+    super(config);
+
     const insightsProvider = new PlayerInsightsProvider();
     const insightItems = insightsProvider.getInsights().map(
       insight =>
@@ -39,31 +41,26 @@ export class PlayerInsightsPanel extends SettingsPanel<PlayerInsightsPanelConfig
     );
     const titleItem = new PlayerInsightsPanelTitleItem();
     const rootPage = new SettingsPanelPage({
-      components: [titleItem, ...insightItems, ...(config.components ?? [])],
+      components: [titleItem, ...insightItems],
     });
-    const panelConfig = {
-      ...config,
-      cssClasses: ['ui-player-insights-panel', ...(config.cssClasses ?? [])],
-      components: [rootPage],
-    };
-
-    super(panelConfig);
 
     titleItem.setTarget(this);
     this.insightsProvider = insightsProvider;
     this.insightItems = insightItems;
 
     this.config = this.mergeConfig(
-      panelConfig,
+      config,
       {
+        cssClasses: ['ui-player-insights-panel'],
         hidden: true,
         hideDelay: -1,
         hideOnControlsHide: false,
         hideOnOtherSettingsPanelOpening: false,
         refreshIntervalMs: 1000,
-      } as PlayerInsightsPanelConfig,
+      },
       this.config,
     );
+    this.addComponent(rootPage);
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
