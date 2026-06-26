@@ -16,7 +16,7 @@ import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './u
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
-import { parseTimestampFromUrl } from './components/contextmenu/PlayerContextMenu';
+import { TimestampLinkUtils } from './utils/TimestampLinkUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
@@ -287,6 +287,7 @@ export class UIManager {
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
       disableAutoHideWhenHovered: false, // Disable auto hide when UI is hovered
       enableSeekPreview: true,
+      enableTimestampDeepLink: true,
       shadowDom: false,
       ...uiconfig,
       events: {
@@ -370,13 +371,13 @@ export class UIManager {
     }
     this.subtitleSettingsManager.initialize();
 
-    if (uiconfig.enableTimestampDeepLink !== false) {
+    if (this.config.enableTimestampDeepLink) {
       let consumed = false;
       const seekFromUrl = () => {
         if (consumed) return;
         consumed = true;
         if (this.player.isLive()) return;
-        const t = parseTimestampFromUrl();
+        const t = TimestampLinkUtils.parseTimestampFromUrl();
         if (t !== null && t > 0) {
           try {
             this.player.seek(t);
