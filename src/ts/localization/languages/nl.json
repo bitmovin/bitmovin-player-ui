@@ -85,6 +85,5 @@
   "quickseek.rewind": "{seekSeconds} seconden terugspoelen",
   "contextMenu.title": "Bitmovin Player",
   "contextMenu.subtitle": "Adaptive streaming voor het web",
-  "contextMenu.copyTimestampLink": "Copy link at current time",
-  "contextMenu.copied": "Copied!"
+  "contextMenu.copyTimestampLink": "Copy link at current time"
 }

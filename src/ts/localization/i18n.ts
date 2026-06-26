@@ -130,7 +130,6 @@ export interface Vocabulary {
   ecoMode: string;
   'ecoMode.title': string;
   'contextMenu.copyTimestampLink': string;
-  'contextMenu.copied': string;
 }
 
 /**
