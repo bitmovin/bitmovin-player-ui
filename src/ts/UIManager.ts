@@ -371,20 +371,23 @@ export class UIManager {
     }
     this.subtitleSettingsManager.initialize();
 
+    const wrappedPlayer = this.managerPlayerWrapper.getPlayer();
+
     if (this.config.enableTimestampDeepLink) {
       let isTimestampDeepLinkHandled = false;
       const seekToTimestampDeepLink = () => {
         if (isTimestampDeepLinkHandled) return;
         isTimestampDeepLinkHandled = true;
-        if (this.player.isLive()) return;
+        wrappedPlayer.off(this.player.exports.PlayerEvent.SourceLoaded, seekToTimestampDeepLink);
+        if (wrappedPlayer.isLive()) return;
         const targetTime = TimestampLinkUtils.parseTimestampFromUrl();
         if (targetTime != null && targetTime > 0) {
-          this.player.seek(targetTime);
+          wrappedPlayer.seek(targetTime);
         }
       };
-      this.player.on(this.player.exports.PlayerEvent.SourceLoaded, seekToTimestampDeepLink);
+      wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, seekToTimestampDeepLink);
       // Source may already be loaded by the time the UI is built (e.g. variant switch).
-      if (this.player.getSource() != null) seekToTimestampDeepLink();
+      if (wrappedPlayer.getSource() != null) seekToTimestampDeepLink();
     }
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
@@ -392,8 +395,6 @@ export class UIManager {
       updateConfig();
       this.config.events.onUpdated.dispatch(this);
     };
-
-    const wrappedPlayer = this.managerPlayerWrapper.getPlayer();
 
     wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, updateSource);
 
