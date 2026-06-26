@@ -4,6 +4,7 @@ import { version as UI_VERSION } from '../../version';
 import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { PlayerUtils } from '../../utils/PlayerUtils';
+import { TimestampLinkUtils } from '../../utils/TimestampLinkUtils';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';
 import { PlayerInsightsContextMenuItem } from '../panels/player-insights/PlayerInsightsContextMenuItem';
 import type { PlayerInsightsPanel } from '../panels/player-insights/PlayerInsightsPanel';
@@ -43,11 +44,10 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
       this.config,
     );
 
-    const copyTimestampLinkLabel = new Label<LabelConfig>({
-      text: i18n.getLocalizer('contextMenu.copyTimestampLink'),
-    });
     const copyTimestampLinkItem = new InteractiveContextMenuItem<InteractiveContextMenuItemConfig>({
-      label: copyTimestampLinkLabel,
+      label: new Label<LabelConfig>({
+        text: i18n.getLocalizer('contextMenu.copyTimestampLink'),
+      }),
       ariaLabel: i18n.getLocalizer('contextMenu.copyTimestampLink'),
       closeContextMenuOnAction: true,
     });
@@ -72,7 +72,7 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
     super.configure(player, uimanager);
 
     this.copyTimestampLinkItem.onClick.subscribe(() => {
-      navigator.clipboard.writeText(buildTimestampLink(player.getCurrentTime()));
+      navigator.clipboard.writeText(TimestampLinkUtils.buildTimestampLink(player.getCurrentTime()));
     });
 
     const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
@@ -85,37 +85,6 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
     });
     liveStreamDetector.detect();
   }
-}
-
-export function parseTimestampFromUrl(href: string = window.location.href): number | null {
-  const match = href.match(/[?#&]t=([0-9]+(?:\.[0-9]+)?)s?(?:&|$|#)/);
-  if (!match) {
-    return null;
-  }
-
-  const value = parseFloat(match[1]);
-  return isFinite(value) && value >= 0 ? value : null;
-}
-
-export function buildTimestampLink(currentTime: number, href: string = window.location.href): string {
-  const time = Math.max(0, Math.floor(currentTime || 0));
-  const hashIndex = href.indexOf('#');
-  const fragment = hashIndex >= 0 ? href.substring(hashIndex) : '';
-  const beforeFragment = hashIndex >= 0 ? href.substring(0, hashIndex) : href;
-  const stripped = beforeFragment.replace(/([?&])t=[^&]*(&|$)/, (_, before: string, after: string) => {
-    if (before === '?' && after === '') {
-      return '';
-    }
-
-    if (before === '?' && after === '&') {
-      return '?';
-    }
-
-    return after === '&' ? before : '';
-  });
-  const separator = stripped.indexOf('?') === -1 ? '?' : '&';
-
-  return `${stripped}${separator}t=${time}s${fragment}`;
 }
 
 class PlayerInfoContextMenuItem extends SettingsPanelItem<SettingsPanelItemConfig> {
