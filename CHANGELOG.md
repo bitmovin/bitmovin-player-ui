@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- New `SubtitleOverlayConfig.enableCea608CaptionPositioning` flag (default `true`): by default, the player UI applies CEA-608 grid-based row/column positioning to Closed Captions. Setting this to `false` disables that positioning so that 608/708 captions are laid out like regular VTT subtitles, while CEA-608-specific text formatting remains independently controlled via `enableCea608CaptionFormatting`.
+
 ## [4.16.1] - 2026-06-25
 
 ### Added
@@ -14,10 +20,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Production builds now preserve public component class names during minification.
-
-### Added
-
-- New `SubtitleOverlayConfig.enableCea608CaptionPositioning` flag (default `true`): by default, the player UI applies CEA-608 grid-based row/column positioning to Closed Captions. Setting this to `false` disables that positioning so that 608/708 captions are laid out like regular VTT subtitles, while CEA-608-specific text formatting remains independently controlled via `enableCea608CaptionFormatting`.
 
 ### Fixed
 
