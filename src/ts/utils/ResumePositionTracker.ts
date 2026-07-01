@@ -5,7 +5,7 @@ const STORAGE_KEY_PREFIX = 'bitmovin.player.ui.resume.';
 const MIN_RESUME_POSITION = 5;
 
 /**
- * Watches player events and applies resume-from-last-position behavior.
+ * Watches player events and stores the last known playback position for the active source.
  *
  * @category Utils
  */
@@ -32,6 +32,13 @@ export class ResumePositionTracker {
     this.player.off(this.player.exports.PlayerEvent.TimeChanged, this.updatePosition);
     this.player.off(this.player.exports.PlayerEvent.Paused, this.pausePositionTracking);
     this.player.off(this.player.exports.PlayerEvent.PlaybackFinished, this.finishPositionTracking);
+  }
+
+  getStoredPosition(): number | null {
+    if (!this.activeSourceKey) return null;
+
+    const time = Number(StorageUtils.getItem(this.activeSourceKey));
+    return isFinite(time) && time >= MIN_RESUME_POSITION ? time : null;
   }
 
   private readonly refreshKey = () => {
@@ -87,13 +94,6 @@ export class ResumePositionTracker {
   private readonly startPositionTracking = () => {
     this.refreshKey();
     this.lastPosition = null;
-    if (!this.activeSourceKey) return;
-
-    const time = Number(StorageUtils.getItem(this.activeSourceKey));
-    if (!isFinite(time) || time < MIN_RESUME_POSITION) return;
-
-    this.lastPosition = time;
-    this.player.seek(time, 'ui');
   };
 
   private readonly unloadSource = () => {

@@ -21,16 +21,17 @@ describe('ResumePositionTracker', () => {
     tracker?.release();
   });
 
-  it('seeks to a saved position when the source is already loaded', () => {
+  it('returns a saved position when the source is already loaded', () => {
     window.localStorage.setItem(storageKey, '90');
 
     tracker = new ResumePositionTracker(player);
 
     const seekMock = (player as unknown as { seek: jest.Mock }).seek;
-    expect(seekMock).toHaveBeenCalledWith(90, 'ui');
+    expect(seekMock).not.toHaveBeenCalled();
+    expect(tracker.getStoredPosition()).toBe(90);
   });
 
-  it('seeks to a saved position when a matching source is loaded later', () => {
+  it('returns a saved position when a matching source is loaded later', () => {
     (player.getSource as jest.Mock).mockReturnValue(null);
     window.localStorage.setItem(storageKey, '90');
     tracker = new ResumePositionTracker(player);
@@ -39,7 +40,8 @@ describe('ResumePositionTracker', () => {
     player.eventEmitter.fireSourceLoadedEvent();
 
     const seekMock = (player as unknown as { seek: jest.Mock }).seek;
-    expect(seekMock).toHaveBeenCalledWith(90, 'ui');
+    expect(seekMock).not.toHaveBeenCalled();
+    expect(tracker.getStoredPosition()).toBe(90);
   });
 
   it('stores the current position when playback is paused', () => {
@@ -91,7 +93,7 @@ describe('ResumePositionTracker', () => {
     expect(window.localStorage.getItem(storageKey)).toBeNull();
   });
 
-  it('does not resume live sources', () => {
+  it('does not return saved positions for live sources', () => {
     (player.isLive as jest.Mock).mockReturnValue(true);
     window.localStorage.setItem(storageKey, '90');
 
@@ -99,6 +101,7 @@ describe('ResumePositionTracker', () => {
 
     const seekMock = (player as unknown as { seek: jest.Mock }).seek;
     expect(seekMock).not.toHaveBeenCalled();
+    expect(tracker.getStoredPosition()).toBeNull();
   });
 });
 

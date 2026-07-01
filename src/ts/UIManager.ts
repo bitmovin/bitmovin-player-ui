@@ -402,21 +402,35 @@ export class UIManager {
 
     const wrappedPlayer = this.managerPlayerWrapper.getPlayer();
 
-    if (this.config.enableTimestampDeepLink) {
+    // Determine the initial start position.
+    // Either apply the time-deep-link or the resume-position on the player
+    const timestampDeepLinkTargetTime =
+      this.config.enableTimestampDeepLink === true ? TimestampLinkUtils.parseTimestampFromUrl() : null;
+
+    if (this.config.enableResumeFromLastPosition === true) {
+      this.resumePositionTracker = new ResumePositionTracker(wrappedPlayer);
+    }
+
+    if (timestampDeepLinkTargetTime != null || this.resumePositionTracker != null) {
       let isTimestampDeepLinkHandled = false;
-      const seekToTimestampDeepLink = () => {
-        if (isTimestampDeepLinkHandled) return;
-        isTimestampDeepLinkHandled = true;
-        wrappedPlayer.off(this.player.exports.PlayerEvent.SourceLoaded, seekToTimestampDeepLink);
+      const seekToInitialPosition = () => {
         if (wrappedPlayer.isLive()) return;
-        const targetTime = TimestampLinkUtils.parseTimestampFromUrl();
-        if (targetTime != null && targetTime > 0) {
-          wrappedPlayer.seek(targetTime);
+
+        if (timestampDeepLinkTargetTime != null && !isTimestampDeepLinkHandled) {
+          isTimestampDeepLinkHandled = true;
+          if (timestampDeepLinkTargetTime > 0) {
+            wrappedPlayer.seek(timestampDeepLinkTargetTime, 'ui');
+          }
+        } else {
+          const storedPosition = this.resumePositionTracker?.getStoredPosition();
+          if (storedPosition != null) {
+            wrappedPlayer.seek(storedPosition, 'ui');
+          }
         }
       };
-      wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, seekToTimestampDeepLink);
-      // Source may already be loaded by the time the UI is built (e.g. variant switch).
-      if (wrappedPlayer.getSource() != null) seekToTimestampDeepLink();
+      wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, seekToInitialPosition);
+      // Source may already be loaded by the time the UI is built.
+      if (wrappedPlayer.getSource() != null) seekToInitialPosition();
     }
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
@@ -605,10 +619,6 @@ export class UIManager {
 
     // Initialize the UI
     resolveUiVariant(null);
-
-    if (this.config.enableResumeFromLastPosition === true) {
-      this.resumePositionTracker = new ResumePositionTracker(wrappedPlayer);
-    }
   }
 
   /**
