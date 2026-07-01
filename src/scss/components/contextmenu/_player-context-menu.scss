@@ -1,0 +1,67 @@
+@import '../../variables';
+
+%ui-player-context-menu-label {
+  display: block;
+  line-height: 1.2;
+}
+
+%ui-player-context-menu-info-item {
+  // Unset normal SettingsPanelItem styles that don't apply to info items in the context menu
+  cursor: default;
+
+  * {
+    cursor: default;
+  }
+
+  &:active,
+  &:hover {
+    background-color: transparent;
+  }
+
+  > .#{$prefix}-container-wrapper {
+    display: block;
+  }
+
+  .#{$prefix}-ui-label {
+    display: block;
+    min-height: unset;
+  }
+
+  .#{$prefix}-ui-label-text {
+    white-space: normal;
+  }
+}
+
+.#{$prefix}-ui-player-context-menu {
+  .#{$prefix}-ui-player-context-menu-info-item {
+    @extend %ui-player-context-menu-info-item;
+  }
+
+  .#{$prefix}-ui-player-context-menu-header {
+    @extend %ui-player-context-menu-label;
+
+    color: $color-primary;
+    font-weight: $font-weight-semi-bold;
+  }
+
+  .#{$prefix}-ui-player-context-menu-subtitle {
+    @extend %ui-player-context-menu-label;
+
+    color: $color-secondary;
+    font-size: $font-size-small;
+    padding-top: 0.15rem;
+  }
+
+  .#{$prefix}-ui-player-context-menu-info {
+    @extend %ui-player-context-menu-label;
+
+    color: transparentize($color-primary, 0.15);
+    font-family: monospace;
+    font-size: $font-size-small;
+    padding-top: 0.15rem;
+  }
+
+  .#{$prefix}-ui-player-context-menu-subtitle + .#{$prefix}-ui-player-context-menu-info {
+    padding-top: 0.45rem;
+  }
+}

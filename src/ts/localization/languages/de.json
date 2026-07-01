@@ -43,6 +43,8 @@
   "settings.subtitles.window.color": "Hintergrundfarbe",
   "settings.subtitles.window.opacity": "Hintergrunddeckkraft",
   "settings.subtitles.options": "Optionen",
+  "playerInsights.show": "Player Insights anzeigen",
+  "playerInsights.hide": "Player Insights ausblenden",
   "settings.time.hours": "Stunden",
   "settings.time.minutes": "Minuten",
   "settings.time.seconds": "Sekunden",
@@ -79,6 +81,9 @@
   "seekBar.durationText": "aus",
   "quickseek.forward": "{seekSeconds} Sekunden Vor",
   "quickseek.rewind": "{seekSeconds} Sekunden Zurück",
+  "contextMenu.title": "Bitmovin Player",
+  "contextMenu.subtitle": "Adaptive Streaming für das Web",
   "ecoMode": "ecoMode",
-  "ecoMode.title": "Eco Mode"
+  "ecoMode.title": "Eco Mode",
+  "contextMenu.copyTimestampLink": "Copy link at current time"
 }

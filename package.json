@@ -1,6 +1,6 @@
 {
   "name": "bitmovin-player-ui",
-  "version": "4.14.0",
+  "version": "4.16.1",
   "description": "Bitmovin Player UI Framework",
   "main": "./dist/js/framework/main.js",
   "types": "./dist/js/framework/main.d.ts",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
-    "@inrupt/jest-jsdom-polyfills": "^1.6.0",
+    "@inrupt/jest-jsdom-polyfills": "^4.1.4",
     "@types/jest": "^29.5.0",
     "@types/jsdom": "^21.1.0",
     "autoprefixer": "^10.4.21",
@@ -71,6 +71,7 @@
     "semver": "^7.5.4",
     "stream-combiner2": "^1.1.1",
     "string-replace-loader": "^3.2.0",
+    "terser-webpack-plugin": "^5.5.0",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.5.4",
     "typedoc": "^0.28.13",

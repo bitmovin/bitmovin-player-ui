@@ -114,6 +114,54 @@ describe('SeekBarHandler', () => {
     });
   });
 
+  describe('cursor position clamping', () => {
+    let preventDefaultSpy: jest.Mock;
+    let targetComponentMock: AnyComponent;
+
+    beforeEach(() => {
+      preventDefaultSpy = jest.fn();
+      targetComponentMock = createComponentMock();
+      jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockReturnValue(seekBarWrapperMock);
+    });
+
+    it('should not move the cursor position beyond the end of the seek bar', () => {
+      for (let i = 0; i < 50; i++) {
+        rootNavigationGroupMock.onNavigation!(Direction.RIGHT, targetComponentMock, preventDefaultSpy);
+      }
+
+      const positions = clientXPositionsFromMouseEventMock(seekBarMock.dispatchEvent);
+
+      // wrapper rect is { x: 0, width: 100 }, so the cursor must never exceed the right edge (100)
+      expect(Math.max(...positions)).toBeLessThanOrEqual(100);
+    });
+
+    it('should not move the cursor position before the start of the seek bar', () => {
+      for (let i = 0; i < 50; i++) {
+        rootNavigationGroupMock.onNavigation!(Direction.LEFT, targetComponentMock, preventDefaultSpy);
+      }
+
+      const positions = clientXPositionsFromMouseEventMock(seekBarMock.dispatchEvent);
+
+      // the cursor must never move before the left edge (0)
+      expect(Math.min(...positions)).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should immediately move away from the end when reversing direction (ZD #32258)', () => {
+      for (let i = 0; i < 50; i++) {
+        rootNavigationGroupMock.onNavigation!(Direction.RIGHT, targetComponentMock, preventDefaultSpy);
+      }
+      seekBarMock.dispatchEvent.mockClear();
+
+      rootNavigationGroupMock.onNavigation!(Direction.LEFT, targetComponentMock, preventDefaultSpy);
+
+      const [clientXAfterReverse] = clientXPositionsFromMouseEventMock(seekBarMock.dispatchEvent);
+
+      // Because the cursor was clamped at the end instead of overshooting, a single left navigation
+      // must already move it back inside the seek bar rather than first unwinding the overshoot.
+      expect(clientXAfterReverse).toBeLessThan(100);
+    });
+  });
+
   describe('onAction', () => {
     let preventDefaultSpy: jest.Mock;
     let targetComponentMock: AnyComponent;
@@ -230,6 +278,10 @@ function getPlaybackPositionMarker(seekBarWrapperMock: jest.Mocked<HTMLElement>)
 
 function scrubbingPositionsFromMouseEventMock(spy: jest.MockInstance<any, any>): number[] {
   return spy.mock.calls.map(([event]) => Math.abs((event as MouseEvent).clientX));
+}
+
+function clientXPositionsFromMouseEventMock(spy: jest.MockInstance<any, any>): number[] {
+  return spy.mock.calls.map(([event]) => (event as MouseEvent).clientX);
 }
 
 function getScrubbingSpeeds(scrubbingPositions: number[]): number[] {

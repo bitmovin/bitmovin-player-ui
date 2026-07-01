@@ -12,6 +12,8 @@
   "settings.subtitles.background.color": "color de Fondo",
   "settings.subtitles.background.opacity": "opacidad de Fondo",
   "settings.subtitles.options": "Opciones",
+  "playerInsights.show": "Mostrar Player Insights",
+  "playerInsights.hide": "Ocultar Player Insights",
   "colors.white": "blanco",
   "colors.black": "negro",
   "colors.red": "rojo",
@@ -80,5 +82,8 @@
   "seekBar.timeshift": "cambio de posición",
   "seekBar.durationText": "de",
   "quickseek.forward": "Adelantar {seekSeconds} segundos",
-  "quickseek.rewind": "Rebobinar {seekSeconds} segundos"
+  "quickseek.rewind": "Rebobinar {seekSeconds} segundos",
+  "contextMenu.title": "Bitmovin Player",
+  "contextMenu.subtitle": "Streaming adaptativo para la web",
+  "contextMenu.copyTimestampLink": "Copy link at current time"
 }

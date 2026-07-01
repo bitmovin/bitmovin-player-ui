@@ -5,12 +5,81 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- New `SubtitleOverlayConfig.enableCea608CaptionPositioning` flag (default `true`): by default, the player UI applies CEA-608 grid-based row/column positioning to Closed Captions. Setting this to `false` disables that positioning so that 608/708 captions are laid out like regular VTT subtitles, while CEA-608-specific text formatting remains independently controlled via `enableCea608CaptionFormatting`.
+- `UIConfig.enableTimestampDeepLink` to enable sharing of current playback position.
+  - Shows a `PlayerContextMenu` option to copy the current link with the current time.
+  - Applies the timestamp deep link on first `SourceLoaded` and seeks to the target time (`t=<seconds>[s]`).
+- `UIConfig.componentConfigOverrides` and `UIComponentConfigOverrides` to configure default UI components without rebuilding complete UI layouts through the `UIFactory`.
+- `UIVariantIdentifier` to scope component config overrides to individual default UI variants.
+
+## [4.16.1] - 2026-06-25
+
+### Added
+
+- `UIVariantFactory` to lazily resolve UI variants only when they are selected.
+
+### Changed
+
+- Production builds now preserve public component class names during minification.
+
+### Fixed
+
+- Seeking with the remote on the TV UI no longer gets stuck at the start or end of the seek bar: after scrubbing all the way to one edge, pressing the opposite direction now moves the playback position immediately instead of requiring multiple presses.
+- Settings panels with disabled automatic hiding no longer crash when component view mode changes are dispatched.
+- Settings panel items no longer render an empty label when no label config is provided.
+
+## [4.16.0] - 2026-06-18
+
+### Added
+
+- New `ContextMenu` component to show custom context menus on right-click.
+- `UIInstanceManager.onActive` and `UIInstanceManager.onInactive` lifecycle events for UI variant status changes.
+- Default `PlayerContextMenu` to access player information directly from the UI.
+- `PlayerInsightsPanel` to show detailed player insights and diagnostics.
+
+## [4.15.1] - 2026-06-11
+
+### Fixed
+
+- Vertical seek bars and volume sliders (`vertical: true`, e.g. the slide-out volume slider of the `VolumeControlButton`) were rendered with a broken horizontal layout
+
+## [4.15.0] - 2026-06-04
+
+### Added
+
+- `UIManager.recommendations` namespace for dynamically updating recommendation items for the `RecommendationOverlay`
+- `UIManager.timelineMarkers` namespace for dynamically updating `TimelineMarker`s for the seek bar
+
+### Fixed
+
+- Saved subtitle styling preferences are now correctly applied to the rendered subtitles on initial load
+
+### Deprecated
+
+- `UIManager.getTimelineMarkers`, `UIManager.addTimelineMarker`, and `UIManager.removeTimelineMarker` in favor of the new `UIManager.timelineMarkers` namespace.
+
+## [4.14.1] - 2026-05-28
+
+### Fixed
+
+- The exported UI `version` (`window.bitmovin.playerui.version`) no longer includes extra quote characters
+
+### Internal
+
+- Webpack dev server uses automatic port selection starting from `9000`, allowing multiple local checkouts to run concurrently
+
 ## [4.14.0] - 2026-05-14
 
 ### Added
 
 - `UIConfig.enableResumeFromLastPosition` option to store playback progress and resume known sources from the last saved position. Source identity is derived from the loaded source title or URL; sources with no stable identifier are not tracked. Disabled by default.
+- Keyboard frame-by-frame stepping on the seekbar: when the seekbar is focused, `,` steps one frame back and `.` steps one frame forward (matching the YouTube convention). Playback is paused first if needed; frame duration is derived from the active video quality's `frameRate` with a 30 fps fallback. Live streams ignore the keys.
 - New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
+- Support for the `prefers-reduced-motion` accessibility setting: UI animations and transitions are disabled when the user has set the OS-level `prefers-reduced-motion: reduce` preference
 
 ### Changed
 
@@ -18,6 +87,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- Wrong ARIA semantics on the `SettingsToggleButton`: it now relies on the native `<button>` role (the previous custom `role="pop-up button"` is not a valid ARIA role), advertises the popup via `aria-haspopup="menu"`, links the panel via `aria-controls`, and reflects open / closed state in `aria-expanded`
 - CEA-608 captions could keep stale sizing after CEA subtitle rendering was disabled and re-enabled, causing captions to appear incorrectly scaled or positioned
 
 ## [4.13.0] - 2026-05-07

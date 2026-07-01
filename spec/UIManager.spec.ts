@@ -4,6 +4,7 @@ import {
   UIConditionContext,
   UIInstanceManager,
   UIManager,
+  UIVariantIdentifier,
   UIVariant,
 } from '../src/ts/UIManager';
 import { PlayerAPI } from 'bitmovin-player';
@@ -12,6 +13,8 @@ import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
 import { UIContainer } from '../src/ts/components/UIContainer';
 import { Container } from '../src/ts/components/Container';
 import { StorageUtils } from '../src/ts/utils/StorageUtils';
+import { RecommendationConfig, TimelineMarker } from '../src/ts/UIConfig';
+import { FullscreenToggleButton } from '../src/ts/components/buttons/FullscreenToggleButton';
 
 jest.mock('../src/ts/DOM');
 
@@ -153,6 +156,91 @@ describe('UIManager', () => {
 
       expect(onUiChanged).not.toHaveBeenCalled();
     });
+
+    it('should resolve lazy UIs with spatial navigation', () => {
+      const ui = new UIContainer({ components: [new Container({})] });
+      const spatialNavigation = { release: jest.fn() };
+      const uiManager = new UIManager(playerMock, [
+        {
+          ui: () => ({
+            ui: ui,
+            spatialNavigation: spatialNavigation as any,
+          }),
+        },
+      ]);
+
+      expect(uiManager.activeUi.getUI()).toBe(ui);
+      expect(uiManager.activeUi['spatialNavigation']).toBe(spatialNavigation);
+    });
+
+    it('passes component config to components created by lazy UI variants', () => {
+      let fullscreenToggleButton: FullscreenToggleButton | undefined;
+
+      new UIManager(
+        playerMock,
+        [
+          {
+            identifier: UIVariantIdentifier.main,
+            ui: () => {
+              fullscreenToggleButton = new FullscreenToggleButton();
+              return new UIContainer({ components: [fullscreenToggleButton] });
+            },
+          },
+        ],
+        {
+          componentConfigOverrides: {
+            ToggleButton: { offClass: 'global-off' },
+            FullscreenToggleButton: { text: 'global fullscreen' },
+            main: {
+              ToggleButton: { offClass: 'main-off' },
+              FullscreenToggleButton: { text: 'main fullscreen' },
+            },
+          },
+        },
+      );
+
+      expect(fullscreenToggleButton).toBeDefined();
+      expect(fullscreenToggleButton.getConfig()).toMatchObject({
+        offClass: 'main-off',
+        text: 'main fullscreen',
+      });
+    });
+
+    it('should resolve lazy UIs only when selected and reuse resolved UIs', () => {
+      const adUi = new UIContainer({ components: [new Container({})] });
+      const defaultUi = new UIContainer({ components: [new Container({})] });
+      const adFactory = jest.fn(() => adUi);
+      const defaultFactory = jest.fn(() => defaultUi);
+      const uiManager = new UIManager(playerMock, [
+        {
+          ui: adFactory,
+          condition: context => context.isAd,
+        },
+        {
+          ui: defaultFactory,
+        },
+      ]);
+
+      expect(defaultFactory).toHaveBeenCalledTimes(1);
+      expect(adFactory).not.toHaveBeenCalled();
+
+      expect(uiManager.activeUi.getUI()).toBe(defaultUi);
+      expect(defaultFactory).toHaveBeenCalledTimes(1);
+
+      uiManager.resolveUiVariant({ isAd: true });
+
+      expect(adFactory).toHaveBeenCalledTimes(1);
+      expect(uiManager.activeUi.getUI()).toBe(adUi);
+
+      uiManager.resolveUiVariant({ isAd: true });
+
+      expect(adFactory).toHaveBeenCalledTimes(1);
+
+      uiManager.resolveUiVariant();
+
+      expect(defaultFactory).toHaveBeenCalledTimes(1);
+      expect(uiManager.activeUi.getUI()).toBe(defaultUi);
+    });
   });
 
   describe('ui variant resolution', () => {
@@ -224,6 +312,219 @@ describe('UIManager', () => {
       const uiManager = new UIManager(playerMock, [uiVariant]);
 
       expect(uiManager.activeUi).toBeInstanceOf(UIInstanceManager);
+    });
+  });
+
+  describe('recommendations', () => {
+    const createRecommendation = (title: string): RecommendationConfig => ({
+      title,
+      resource: {
+        url: `https://example.com/${title}`,
+      },
+    });
+
+    let playerMock: TestingPlayerAPI;
+    let uiManager: UIManager;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { recommendations: [] },
+      });
+    });
+
+    it('adds recommendations and dispatches config update', () => {
+      const recommendation = createRecommendation('recommendation-1');
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      uiManager.recommendations.add(recommendation);
+
+      expect(uiManager.recommendations.list()).toEqual([recommendation]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('removes recommendations by reference and dispatches config update', () => {
+      const recommendation = createRecommendation('recommendation-1');
+      uiManager.recommendations.add(recommendation);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.recommendations.remove(recommendation);
+
+      expect(removed).toBe(true);
+      expect(uiManager.recommendations.list()).toEqual([]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('does not dispatch config update when the recommendation is not present', () => {
+      const recommendation = createRecommendation('recommendation-1');
+      const otherRecommendation = createRecommendation('recommendation-2');
+      uiManager.recommendations.add(recommendation);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.recommendations.remove(otherRecommendation);
+
+      expect(removed).toBe(false);
+      expect(uiManager.recommendations.list()).toEqual([recommendation]);
+      expect(onUpdatedSpy).not.toHaveBeenCalled();
+    });
+
+    it('clears dynamically added recommendations on source load and restores UI config recommendations', () => {
+      const configuredRecommendation = createRecommendation('configured-recommendation');
+      const dynamicRecommendation = createRecommendation('dynamic-recommendation');
+      const configuredRecommendations = [configuredRecommendation];
+
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { recommendations: configuredRecommendations },
+      });
+
+      uiManager.recommendations.add(dynamicRecommendation);
+      expect(uiManager.recommendations.list()).toEqual([configuredRecommendation, dynamicRecommendation]);
+      expect(configuredRecommendations).toEqual([configuredRecommendation]);
+
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      expect(uiManager.recommendations.list()).toEqual([configuredRecommendation]);
+    });
+
+    it('clears dynamically added recommendations on source load and restores source recommendations', () => {
+      const configuredRecommendation = createRecommendation('configured-recommendation');
+      const sourceRecommendation = createRecommendation('source-recommendation');
+      const dynamicRecommendation = createRecommendation('dynamic-recommendation');
+      const sourceRecommendations = [sourceRecommendation];
+      (playerMock.getSource as jest.Mock).mockReturnValue({ recommendations: sourceRecommendations });
+
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { recommendations: [configuredRecommendation] },
+      });
+
+      uiManager.recommendations.add(dynamicRecommendation);
+      expect(uiManager.recommendations.list()).toEqual([sourceRecommendation, dynamicRecommendation]);
+      expect(sourceRecommendations).toEqual([sourceRecommendation]);
+
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      expect(uiManager.recommendations.list()).toEqual([sourceRecommendation]);
+    });
+
+    it('preserves functions in source recommendation resources when rebuilding the config', () => {
+      const preprocessHttpRequest = jest.fn();
+      const sourceRecommendation: RecommendationConfig = {
+        title: 'source-recommendation',
+        resource: {
+          dash: 'https://example.com/manifest.mpd',
+          network: { preprocessHttpRequest },
+        } as any,
+      };
+      (playerMock.getSource as jest.Mock).mockReturnValue({ recommendations: [sourceRecommendation] });
+
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }]);
+
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      const [recommendation] = uiManager.recommendations.list();
+      expect(recommendation).toBe(sourceRecommendation);
+      expect((recommendation.resource as any).network.preprocessHttpRequest).toBe(preprocessHttpRequest);
+    });
+  });
+
+  describe('timeline markers', () => {
+    const createTimelineMarker = (time: number): TimelineMarker => ({ time });
+
+    let playerMock: TestingPlayerAPI;
+    let uiManager: UIManager;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { markers: [] },
+      });
+    });
+
+    it('clears dynamically added markers on source load and restores UI config markers', () => {
+      const configuredMarker = createTimelineMarker(1);
+      const dynamicMarker = createTimelineMarker(2);
+      const configuredMarkers = [configuredMarker];
+
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { markers: configuredMarkers },
+      });
+
+      uiManager.addTimelineMarker(dynamicMarker);
+      expect(uiManager.getTimelineMarkers()).toEqual([configuredMarker, dynamicMarker]);
+      expect(configuredMarkers).toEqual([configuredMarker]);
+
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      expect(uiManager.getTimelineMarkers()).toEqual([configuredMarker]);
+    });
+  });
+
+  describe('timelineMarkers', () => {
+    const createTimelineMarker = (time: number): TimelineMarker => ({
+      time,
+      title: `marker-${time}`,
+    });
+
+    let playerMock: TestingPlayerAPI;
+    let uiManager: UIManager;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        metadata: { markers: [] },
+      });
+    });
+
+    it('adds timeline markers and dispatches config update', () => {
+      const timelineMarker = createTimelineMarker(10);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      uiManager.timelineMarkers.add(timelineMarker);
+
+      expect(uiManager.timelineMarkers.list()).toEqual([timelineMarker]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('removes timeline markers by reference and dispatches config update', () => {
+      const timelineMarker = createTimelineMarker(10);
+      uiManager.timelineMarkers.add(timelineMarker);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.timelineMarkers.remove(timelineMarker);
+
+      expect(removed).toBe(true);
+      expect(uiManager.timelineMarkers.list()).toEqual([]);
+      expect(onUpdatedSpy).toHaveBeenCalledWith(uiManager, null);
+    });
+
+    it('does not dispatch config update when the timeline marker is not present', () => {
+      const timelineMarker = createTimelineMarker(10);
+      const otherTimelineMarker = createTimelineMarker(20);
+      uiManager.timelineMarkers.add(timelineMarker);
+      const onUpdatedSpy = jest.fn();
+      (uiManager.getConfig() as InternalUIConfig).events.onUpdated.subscribe(onUpdatedSpy);
+
+      const removed = uiManager.timelineMarkers.remove(otherTimelineMarker);
+
+      expect(removed).toBe(false);
+      expect(uiManager.timelineMarkers.list()).toEqual([timelineMarker]);
+      expect(onUpdatedSpy).not.toHaveBeenCalled();
+    });
+
+    it('keeps deprecated timeline marker APIs backed by the timelineMarkers namespace', () => {
+      const timelineMarker = createTimelineMarker(10);
+
+      uiManager.addTimelineMarker(timelineMarker);
+
+      expect(uiManager.getTimelineMarkers()).toEqual(uiManager.timelineMarkers.list());
+      expect(uiManager.timelineMarkers.list()).toEqual([timelineMarker]);
+      expect(uiManager.removeTimelineMarker(timelineMarker)).toBe(true);
+      expect(uiManager.timelineMarkers.list()).toEqual([]);
     });
   });
 
