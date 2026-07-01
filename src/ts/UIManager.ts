@@ -20,6 +20,7 @@ import { TimestampLinkUtils } from './utils/TimestampLinkUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
+import { ComponentConfigManager } from './utils/ComponentConfigManager';
 
 /**
  * @category Configs
@@ -962,7 +963,11 @@ export class UIInstanceManager {
     }
 
     if (typeof this.uiVariant.ui === 'function') {
-      const resolved = this.uiVariant.ui();
+      const resolved = ComponentConfigManager.run(
+        this.config.componentConfigOverrides,
+        this.uiVariant.identifier,
+        this.uiVariant.ui,
+      );
 
       if (resolved instanceof UIContainer) {
         this.uiContainer = resolved;

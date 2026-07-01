@@ -4,6 +4,7 @@ import {
   UIConditionContext,
   UIInstanceManager,
   UIManager,
+  UIVariantIdentifier,
   UIVariant,
 } from '../src/ts/UIManager';
 import { PlayerAPI } from 'bitmovin-player';
@@ -12,6 +13,7 @@ import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
 import { UIContainer } from '../src/ts/components/UIContainer';
 import { Container } from '../src/ts/components/Container';
 import { RecommendationConfig, TimelineMarker } from '../src/ts/UIConfig';
+import { FullscreenToggleButton } from '../src/ts/components/buttons/FullscreenToggleButton';
 
 jest.mock('../src/ts/DOM');
 
@@ -165,6 +167,39 @@ describe('UIManager', () => {
 
       expect(uiManager.activeUi.getUI()).toBe(ui);
       expect(uiManager.activeUi['spatialNavigation']).toBe(spatialNavigation);
+    });
+
+    it('passes component config to components created by lazy UI variants', () => {
+      let fullscreenToggleButton: FullscreenToggleButton | undefined;
+
+      new UIManager(
+        playerMock,
+        [
+          {
+            identifier: UIVariantIdentifier.main,
+            ui: () => {
+              fullscreenToggleButton = new FullscreenToggleButton();
+              return new UIContainer({ components: [fullscreenToggleButton] });
+            },
+          },
+        ],
+        {
+          componentConfigOverrides: {
+            ToggleButton: { offClass: 'global-off' },
+            FullscreenToggleButton: { text: 'global fullscreen' },
+            main: {
+              ToggleButton: { offClass: 'main-off' },
+              FullscreenToggleButton: { text: 'main fullscreen' },
+            },
+          },
+        },
+      );
+
+      expect(fullscreenToggleButton).toBeDefined();
+      expect(fullscreenToggleButton.getConfig()).toMatchObject({
+        offClass: 'main-off',
+        text: 'main fullscreen',
+      });
     });
 
     it('should resolve lazy UIs only when selected and reuse resolved UIs', () => {
