@@ -16,9 +16,11 @@ import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './u
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
+import { TimestampLinkUtils } from './utils/TimestampLinkUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
+import { ComponentConfigManager } from './utils/ComponentConfigManager';
 
 /**
  * @category Configs
@@ -169,6 +171,21 @@ export interface UIConditionResolver {
 }
 
 /**
+ * Identifier for the different {@link UIVariant}s.
+ */
+export enum UIVariantIdentifier {
+  main = 'main',
+  ads = 'ads',
+  smallScreen = 'smallScreen',
+  smallScreenAds = 'smallScreenAds',
+  tv = 'tv',
+  tvAds = 'tvAds',
+  subtitle = 'subtitle',
+  castReceiver = 'castReceiver',
+  empty = 'empty',
+}
+
+/**
  * Lazily creates a UI variant the first time it is selected.
  *
  * If the variant also needs {@link SpatialNavigation}, return it together with the created UI so both are built from the
@@ -183,6 +200,11 @@ export interface UIVariantFactory {
    * Determines whether this variant can be displayed for the current player and document state.
    */
   condition?: UIConditionResolver;
+  /**
+   * Stable identifier for this variant, used to scope variant-specific component config in
+   * {@link UIConfig.componentConfigOverrides}.
+   */
+  identifier?: UIVariantIdentifier;
 }
 
 /**
@@ -201,6 +223,11 @@ export interface UIVariant {
    * Spatial navigation instance used by this variant, if keyboard or remote-control navigation is enabled.
    */
   spatialNavigation?: SpatialNavigation;
+  /**
+   * Stable identifier for this variant, used to scope variant-specific component config in
+   * {@link UIConfig.componentConfigOverrides}.
+   */
+  identifier?: UIVariantIdentifier;
 }
 
 export interface ActiveUiChangedArgs extends NoArgs {
@@ -286,6 +313,7 @@ export class UIManager {
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
       disableAutoHideWhenHovered: false, // Disable auto hide when UI is hovered
       enableSeekPreview: true,
+      enableTimestampDeepLink: true,
       shadowDom: false,
       ...uiconfig,
       events: {
@@ -369,13 +397,30 @@ export class UIManager {
     }
     this.subtitleSettingsManager.initialize();
 
+    const wrappedPlayer = this.managerPlayerWrapper.getPlayer();
+
+    if (this.config.enableTimestampDeepLink) {
+      let isTimestampDeepLinkHandled = false;
+      const seekToTimestampDeepLink = () => {
+        if (isTimestampDeepLinkHandled) return;
+        isTimestampDeepLinkHandled = true;
+        wrappedPlayer.off(this.player.exports.PlayerEvent.SourceLoaded, seekToTimestampDeepLink);
+        if (wrappedPlayer.isLive()) return;
+        const targetTime = TimestampLinkUtils.parseTimestampFromUrl();
+        if (targetTime != null && targetTime > 0) {
+          wrappedPlayer.seek(targetTime);
+        }
+      };
+      wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, seekToTimestampDeepLink);
+      // Source may already be loaded by the time the UI is built (e.g. variant switch).
+      if (wrappedPlayer.getSource() != null) seekToTimestampDeepLink();
+    }
+
     // Update the source configuration when a new source is loaded and dispatch onUpdated
     const updateSource = () => {
       updateConfig();
       this.config.events.onUpdated.dispatch(this);
     };
-
-    const wrappedPlayer = this.managerPlayerWrapper.getPlayer();
 
     wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, updateSource);
 
@@ -918,7 +963,11 @@ export class UIInstanceManager {
     }
 
     if (typeof this.uiVariant.ui === 'function') {
-      const resolved = this.uiVariant.ui();
+      const resolved = ComponentConfigManager.run(
+        this.config.componentConfigOverrides,
+        this.uiVariant.identifier,
+        this.uiVariant.ui,
+      );
 
       if (resolved instanceof UIContainer) {
         this.uiContainer = resolved;

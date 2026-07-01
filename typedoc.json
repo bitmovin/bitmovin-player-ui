@@ -8,5 +8,15 @@
     "includeGroups": true
   },
   "excludeProtected": true,
-  "categoryOrder": ["UI Framework", "Configs", "Components", "Buttons", "Labels", "Containers", "Localization", "Utils"]
+  "categoryOrder": [
+    "UI Framework",
+    "Configs",
+    "UI variants",
+    "Components",
+    "Buttons",
+    "Labels",
+    "Containers",
+    "Localization",
+    "Utils"
+  ]
 }
