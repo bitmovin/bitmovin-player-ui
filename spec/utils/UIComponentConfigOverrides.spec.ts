@@ -24,6 +24,22 @@ describe('UIComponentConfigOverrides', () => {
     }
   });
 
+  it('only contains public component exports', () => {
+    const componentConfigNames = readInterfaceKeys('UIComponentConfigMap');
+    const publicComponentNames = getPublicComponentExports().map(({ exportName }) => exportName);
+
+    const unknownConfigNames = componentConfigNames.filter(
+      componentName => !publicComponentNames.includes(componentName),
+    );
+
+    if (unknownConfigNames.length > 0) {
+      throw new Error(
+        `UIComponentConfigMap entries without public component exports: ${unknownConfigNames.join(', ')}. ` +
+          'Remove them from src/ts/UIComponentConfigOverrides.ts.',
+      );
+    }
+  });
+
   it('contains every UI variant identifier', () => {
     const uiComponentConfigOverrideNames = readInterfaceKeys('UIComponentConfigOverrides');
     const variantIdentifiers = Object.keys(UIVariantIdentifier).map(
