@@ -9,9 +9,9 @@ import * as PlayerUI from '../../src/ts/main';
 import { UIVariantIdentifier } from '../../src/ts/UIManager';
 import { ComponentConfigManager } from '../../src/ts/utils/ComponentConfigManager';
 
-const UI_COMPONENTS_CONFIG_PATH = path.resolve(__dirname, '../../src/ts/UIComponentsConfig.ts');
+const UI_COMPONENT_CONFIG_OVERRIDES_PATH = path.resolve(__dirname, '../../src/ts/UIComponentConfigOverrides.ts');
 
-describe('UIComponentsConfig', () => {
+describe('UIComponentConfigOverrides', () => {
   it('contains every public component export', () => {
     const componentConfigNames = readInterfaceKeys('UIComponentConfigMap');
     const publicComponentNames = getPublicComponentExports().map(({ exportName }) => exportName);
@@ -23,24 +23,41 @@ describe('UIComponentsConfig', () => {
     if (missingConfigNames.length > 0) {
       throw new Error(
         `Missing UIComponentConfigMap entries for public component exports: ${missingConfigNames.join(', ')}. ` +
-          'Add them to src/ts/UIComponentsConfig.ts.',
+          'Add them to src/ts/UIComponentConfigOverrides.ts.',
+      );
+    }
+  });
+
+  it('only contains public component exports', () => {
+    const componentConfigNames = readInterfaceKeys('UIComponentConfigMap');
+    const publicComponentNames = getPublicComponentExports().map(({ exportName }) => exportName);
+
+    const unknownConfigNames = componentConfigNames.filter(
+      componentName => !publicComponentNames.includes(componentName),
+    );
+
+    if (unknownConfigNames.length > 0) {
+      throw new Error(
+        `UIComponentConfigMap entries without public component exports: ${unknownConfigNames.join(', ')}. ` +
+          'Remove them from src/ts/UIComponentConfigOverrides.ts.',
       );
     }
   });
 
   it('contains every UI variant identifier', () => {
-    const uiComponentsConfigNames = readInterfaceKeys('UIComponentsConfig');
+    const uiComponentConfigOverrideNames = readInterfaceKeys('UIComponentConfigOverrides');
     const variantIdentifiers = Object.keys(UIVariantIdentifier).map(
       variantName => UIVariantIdentifier[variantName as keyof typeof UIVariantIdentifier],
     );
     const missingVariantIdentifiers = variantIdentifiers.filter(
-      variantIdentifier => !uiComponentsConfigNames.includes(variantIdentifier),
+      variantIdentifier => !uiComponentConfigOverrideNames.includes(variantIdentifier),
     );
 
     if (missingVariantIdentifiers.length > 0) {
       throw new Error(
-        `Missing UIComponentsConfig entries for UI variant identifiers: ${missingVariantIdentifiers.join(', ')}. ` +
-          'Add them to src/ts/UIComponentsConfig.ts.',
+        `Missing UIComponentConfigOverrides entries for UI variant identifiers: ${missingVariantIdentifiers.join(
+          ', ',
+        )}. ` + 'Add them to src/ts/UIComponentConfigOverrides.ts.',
       );
     }
   });
@@ -155,7 +172,7 @@ function getPublicComponentExports(): Array<{ exportName: string; componentConst
   return Object.keys(PlayerUI)
     .map(exportName => ({
       exportName,
-      exportValue: (PlayerUI as { [exportName: string]: unknown })[exportName],
+      exportValue: (PlayerUI as { [key: string]: unknown })[exportName],
     }))
     .filter((componentExport): componentExport is { exportName: string; exportValue: typeof Component } =>
       isComponentConstructor(componentExport.exportValue),
@@ -165,22 +182,22 @@ function getPublicComponentExports(): Array<{ exportName: string; componentConst
 }
 
 function readInterfaceKeys(interfaceName: string): string[] {
-  const uiComponentsConfigSource = ts.createSourceFile(
-    UI_COMPONENTS_CONFIG_PATH,
-    fs.readFileSync(UI_COMPONENTS_CONFIG_PATH, 'utf8'),
+  const uiComponentConfigOverridesSource = ts.createSourceFile(
+    UI_COMPONENT_CONFIG_OVERRIDES_PATH,
+    fs.readFileSync(UI_COMPONENT_CONFIG_OVERRIDES_PATH, 'utf8'),
     ts.ScriptTarget.Latest,
     true,
   );
-  const componentsConfig = uiComponentsConfigSource.statements.find(
+  const componentConfigOverrides = uiComponentConfigOverridesSource.statements.find(
     (statement): statement is ts.InterfaceDeclaration =>
       ts.isInterfaceDeclaration(statement) && statement.name.text === interfaceName,
   );
 
-  if (!componentsConfig) {
-    throw new Error(`Could not find ${interfaceName} in src/ts/UIComponentsConfig.ts.`);
+  if (!componentConfigOverrides) {
+    throw new Error(`Could not find ${interfaceName} in src/ts/UIComponentConfigOverrides.ts.`);
   }
 
-  return componentsConfig.members
+  return componentConfigOverrides.members
     .map(member => member.name)
     .map(readPropertyName)
     .filter((name): name is string => !!name)

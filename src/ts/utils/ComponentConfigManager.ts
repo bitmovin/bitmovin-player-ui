@@ -1,8 +1,8 @@
-import type { UIComponentsConfig } from '../UIConfig';
+import type { UIComponentConfigOverrides } from '../UIComponentConfigOverrides';
 import type { ComponentConfig } from '../components/Component';
 
 /**
- * Provides {@link UIComponentsConfig} overrides while a UI variant is being constructed.
+ * Provides {@link UIComponentConfigOverrides} overrides while a UI variant is being constructed.
  *
  * Component applies these overrides to the constructor config object before subclass constructors continue. Passing
  * this state through every component constructor would change the UIFactory and component APIs, so UIManager opens this
@@ -12,13 +12,13 @@ import type { ComponentConfig } from '../components/Component';
  * Outside that construction window, components receive no UIConfig component override.
  */
 export class ComponentConfigManager {
-  private static componentConfig: UIComponentsConfig;
+  private static componentConfig: UIComponentConfigOverrides;
   private static variantIdentifier: string;
 
   /**
    * Runs a UI variant factory with component overrides enabled for the given variant.
    */
-  static run<T>(config: UIComponentsConfig, variant: string, build: () => T): T {
+  static run<T>(config: UIComponentConfigOverrides, variant: string, build: () => T): T {
     ComponentConfigManager.componentConfig = config;
     ComponentConfigManager.variantIdentifier = variant;
 

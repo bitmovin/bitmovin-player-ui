@@ -230,9 +230,10 @@ export class Component<Config extends ComponentConfig> {
    * Constructs a component with an optionally supplied config. All subclasses must call the constructor of their
    * superclass and then merge their configuration into the component's configuration.
    *
-   * Side effect: while a {@link UIConfig.components} construction context is active, matching component overrides are
-   * merged into the passed `config` object before subclass constructors continue. This makes constructor-time reads in
-   * subclasses see the same component override values that `mergeConfig()` uses for the final config.
+   * Side effect: while a {@link UIConfig.componentConfigOverrides} construction context is active, matching component
+   * overrides are merged into the passed `config` object before subclass constructors continue. This makes
+   * constructor-time reads in subclasses see the same component override values that `mergeConfig()` uses for the final
+   * config.
    *
    * @param config the configuration for the component
    */

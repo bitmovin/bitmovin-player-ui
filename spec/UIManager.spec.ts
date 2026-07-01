@@ -184,7 +184,7 @@ describe('UIManager', () => {
           },
         ],
         {
-          components: {
+          componentConfigOverrides: {
             ToggleButton: { offClass: 'global-off' },
             FullscreenToggleButton: { text: 'global fullscreen' },
             main: {
@@ -200,6 +200,42 @@ describe('UIManager', () => {
         offClass: 'main-off',
         text: 'main fullscreen',
       });
+    });
+
+    it('should resolve lazy UIs only when selected and reuse resolved UIs', () => {
+      const adUi = new UIContainer({ components: [new Container({})] });
+      const defaultUi = new UIContainer({ components: [new Container({})] });
+      const adFactory = jest.fn(() => adUi);
+      const defaultFactory = jest.fn(() => defaultUi);
+      const uiManager = new UIManager(playerMock, [
+        {
+          ui: adFactory,
+          condition: context => context.isAd,
+        },
+        {
+          ui: defaultFactory,
+        },
+      ]);
+
+      expect(defaultFactory).toHaveBeenCalledTimes(1);
+      expect(adFactory).not.toHaveBeenCalled();
+
+      expect(uiManager.activeUi.getUI()).toBe(defaultUi);
+      expect(defaultFactory).toHaveBeenCalledTimes(1);
+
+      uiManager.resolveUiVariant({ isAd: true });
+
+      expect(adFactory).toHaveBeenCalledTimes(1);
+      expect(uiManager.activeUi.getUI()).toBe(adUi);
+
+      uiManager.resolveUiVariant({ isAd: true });
+
+      expect(adFactory).toHaveBeenCalledTimes(1);
+
+      uiManager.resolveUiVariant();
+
+      expect(defaultFactory).toHaveBeenCalledTimes(1);
+      expect(uiManager.activeUi.getUI()).toBe(defaultUi);
     });
   });
 

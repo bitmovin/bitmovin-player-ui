@@ -1,8 +1,7 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
 import { SourceConfig } from 'bitmovin-player';
-import { LocalizationConfig, UIVariantIdentifier } from './UIManager';
-import type { UIComponentsConfig } from './UIComponentsConfig';
-export type { UIComponentConfigMap, UIComponentsConfig } from './UIComponentsConfig';
+import type { LocalizationConfig, UIVariantIdentifier } from './UIManager';
+import type { UIComponentConfigOverrides } from './UIComponentConfigOverrides';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -189,6 +188,15 @@ export interface UIConfig {
    */
   disableStorageApi?: boolean;
   /**
+   * If set to true, the UI parses a `t=<seconds>[s]` parameter from the page URL (either
+   * the query string or the URL fragment) and seeks to that time on the first
+   * `SourceLoaded` event. This is the consumer side of the "Copy link at current time"
+   * context-menu action. Has no effect on live streams.
+   *
+   * Default: true
+   */
+  enableTimestampDeepLink?: boolean;
+  /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    */
   ecoMode?: boolean;
@@ -249,7 +257,7 @@ export interface UIConfig {
    *
    * @example
    * ```ts
-   * components: {
+   * componentConfigOverrides: {
    *   // Applies to all ToggleButton based components in all UI variants.
    *   ToggleButton: { buttonStyle: ButtonStyle.Text },
    *
@@ -260,7 +268,7 @@ export interface UIConfig {
    * }
    * ```
    */
-  components?: UIComponentsConfig;
+  componentConfigOverrides?: UIComponentConfigOverrides;
 }
 
 export interface ShadowDomConfig {

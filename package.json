@@ -1,6 +1,6 @@
 {
   "name": "bitmovin-player-ui",
-  "version": "4.16.0",
+  "version": "4.16.1",
   "description": "Bitmovin Player UI Framework",
   "main": "./dist/js/framework/main.js",
   "types": "./dist/js/framework/main.d.ts",
@@ -71,6 +71,7 @@
     "semver": "^7.5.4",
     "stream-combiner2": "^1.1.1",
     "string-replace-loader": "^3.2.0",
+    "terser-webpack-plugin": "^5.5.0",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.5.4",
     "typedoc": "^0.28.13",
