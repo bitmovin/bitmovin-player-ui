@@ -49,6 +49,7 @@
   "ads.skippableIn": "Advertentie overslaan over {remainingTime}",
   "ads.adNumberOfTotal": "Advertentie {activeAdIndex} van {totalAdsCount}",
   "settings": "Instellingen",
+  "settings.more": "Meer",
   "fullscreen": "Volledig scherm",
   "speed": "Snelheid",
   "playPause": "Afspelen/Pauzeren",

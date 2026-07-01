@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `UIInstanceManager.onActive` and `UIInstanceManager.onInactive` lifecycle events for UI variant status changes.
 - Default `PlayerContextMenu` to access player information directly from the UI.
 - `PlayerInsightsPanel` to show detailed player insights and diagnostics.
+- `SettingsPanelPageNavigationItem` component to simplify navigating to a different `SettingsPanelPage`
 
 ## [4.15.1] - 2026-06-11
 
