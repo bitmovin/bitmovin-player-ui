@@ -2,6 +2,7 @@ export { version } from './version';
 // Management
 export * from './UIManager';
 export * from './UIConfig';
+export type { UIComponentConfigMap, UIComponentConfigOverrides } from './UIComponentConfigOverrides';
 // Factories
 export { UIFactory } from './UIFactory';
 // Utils

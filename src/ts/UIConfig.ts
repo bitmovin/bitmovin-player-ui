@@ -2,7 +2,6 @@ import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/E
 import { SourceConfig } from 'bitmovin-player';
 import type { LocalizationConfig, UIVariantIdentifier } from './UIManager';
 import type { UIComponentConfigOverrides } from './UIComponentConfigOverrides';
-export type { UIComponentConfigMap, UIComponentConfigOverrides } from './UIComponentConfigOverrides';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
