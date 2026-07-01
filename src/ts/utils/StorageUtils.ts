@@ -39,6 +39,20 @@ export namespace StorageUtils {
   }
 
   /**
+   * Removes an item from localStorage.
+   * @param key the item's key
+   */
+  export function removeItem(key: string): void {
+    if (shouldUseLocalStorage()) {
+      try {
+        window.localStorage.removeItem(key);
+      } catch (e) {
+        console.debug(`Failed to remove storage item ${key}`, e);
+      }
+    }
+  }
+
+  /**
    * Gets an item's string value from the localStorage.
    * @param key the key to look up its associated value
    * @return {string | null} Returns the string if found, null if there is no data stored for the key

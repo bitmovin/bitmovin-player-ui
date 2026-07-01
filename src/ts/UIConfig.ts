@@ -160,13 +160,12 @@ export interface UIConfig {
    */
   disableStorageApi?: boolean;
   /**
-   * If set to true, the UI offers to resume playback from the last saved position via a
-   * small overlay shown when a known source is reloaded. Source identity is derived from
-   * `metadata.title` (preferred) or the manifest URL; sources with no stable identifier
-   * are not tracked. Has no effect when `disableStorageApi` is true or `localStorage` is
-   * unavailable.
+   * If set to true, the UI stores playback progress and resumes known sources from the
+   * last saved position. Source identity is derived from the loaded source title or URL;
+   * sources with no stable identifier are not tracked. Has no effect when
+   * `disableStorageApi` is true or `localStorage` is unavailable.
    *
-   * Default: true
+   * Default: false
    */
   enableResumeFromLastPosition?: boolean;
   /**

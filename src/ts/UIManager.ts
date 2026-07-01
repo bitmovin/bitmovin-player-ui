@@ -19,6 +19,7 @@ import { StorageUtils } from './utils/StorageUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
+import { ResumePositionTracker } from './utils/ResumePositionTracker';
 
 /**
  * @category Configs
@@ -147,6 +148,7 @@ export class UIManager {
   private focusVisibilityTracker: FocusVisibilityTracker;
   private subtitleSettingsManager: SubtitleSettingsManager;
   private shadowDomManager: ShadowDomManager;
+  private resumePositionTracker?: ResumePositionTracker;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -202,6 +204,7 @@ export class UIManager {
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
       disableAutoHideWhenHovered: false, // Disable auto hide when UI is hovered
       enableSeekPreview: true,
+      enableResumeFromLastPosition: false,
       shadowDom: false,
       ...uiconfig,
       events: {
@@ -437,6 +440,10 @@ export class UIManager {
 
     // Initialize the UI
     resolveUiVariant(null);
+
+    if (this.config.enableResumeFromLastPosition === true) {
+      this.resumePositionTracker = new ResumePositionTracker(wrappedPlayer);
+    }
   }
 
   /**
@@ -617,6 +624,7 @@ export class UIManager {
   }
 
   release(): void {
+    this.resumePositionTracker?.release();
     this.config.adBreakTracker.release();
 
     for (const uiInstanceManager of this.uiInstanceManagers) {

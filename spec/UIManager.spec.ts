@@ -11,6 +11,7 @@ import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
 import { UIContainer } from '../src/ts/components/UIContainer';
 import { Container } from '../src/ts/components/Container';
+import { StorageUtils } from '../src/ts/utils/StorageUtils';
 
 jest.mock('../src/ts/DOM');
 
@@ -42,6 +43,9 @@ class C extends B {
 }
 
 describe('UIManager', () => {
+  const resumeSourceUrl = 'https://cdn.example/m.mpd';
+  const resumeStorageKey = resumeStorageKeyForSourceIdentifier(`dash:${resumeSourceUrl}`);
+
   describe('PlayerWrapper', () => {
     let playerWrapper: PlayerWrapper;
 
@@ -49,10 +53,10 @@ describe('UIManager', () => {
       let superClassInstance: A;
 
       beforeEach(() => {
-        const testInstance: PlayerAPI = new A() as any as PlayerAPI;
+        const testInstance = new A() as A & PlayerAPI;
         playerWrapper = new PlayerWrapper(testInstance);
-        (testInstance as any).giveValueAValue(); // Change the value of the actual property to simulate async loaded module
-        superClassInstance = playerWrapper.getPlayer() as any as A;
+        testInstance.giveValueAValue(); // Change the value of the actual property to simulate async loaded module
+        superClassInstance = playerWrapper.getPlayer() as unknown as A;
       });
 
       it('wraps functions', () => {
@@ -64,10 +68,10 @@ describe('UIManager', () => {
       let inheritedClassInstance: C;
 
       beforeEach(() => {
-        const testInstance: PlayerAPI = new C() as any as PlayerAPI;
+        const testInstance = new C() as C & PlayerAPI;
         playerWrapper = new PlayerWrapper(testInstance);
-        (testInstance as any).giveValueAValue(); // Change the value of the actual property to simulate async loaded module
-        inheritedClassInstance = playerWrapper.getPlayer() as any as C;
+        testInstance.giveValueAValue(); // Change the value of the actual property to simulate async loaded module
+        inheritedClassInstance = playerWrapper.getPlayer() as unknown as C;
       });
 
       it('wraps functions of super class', () => {
@@ -180,6 +184,39 @@ describe('UIManager', () => {
     });
   });
 
+  describe('resume from last position', () => {
+    beforeEach(() => {
+      StorageUtils.setStorageApiDisabled({ disableStorageApi: false });
+      window.localStorage.clear();
+    });
+
+    it('does not resume unless enabled', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      window.localStorage.setItem(resumeStorageKey, '90');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }]);
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).not.toHaveBeenCalled();
+    });
+
+    it('resumes when enabled', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      window.localStorage.setItem(resumeStorageKey, '90');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        enableResumeFromLastPosition: true,
+      });
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).toHaveBeenCalledWith(90, 'ui');
+    });
+  });
+
   describe('activeUi', () => {
     it('should return the active UI instance manager', () => {
       const playerMock = MockHelper.getPlayerMock();
@@ -234,3 +271,12 @@ describe('UIManager', () => {
     });
   });
 });
+
+function resumeStorageKeyForSourceIdentifier(sourceIdentifier: string): string {
+  let hash = 0;
+  for (let i = 0; i < sourceIdentifier.length; i++) {
+    hash = (hash << 5) - hash + sourceIdentifier.charCodeAt(i);
+    hash |= 0;
+  }
+  return `bitmovin.player.ui.resume.${(hash >>> 0).toString(36)}`;
+}
