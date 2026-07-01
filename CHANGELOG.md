@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - Applies the timestamp deep link on first `SourceLoaded` and seeks to the target time (`t=<seconds>[s]`).
 - `UIConfig.componentConfigOverrides` and `UIComponentConfigOverrides` to configure default UI components without rebuilding complete UI layouts through the `UIFactory`.
 - `UIVariantIdentifier` to scope component config overrides to individual default UI variants.
+- `UIConfig.enableResumeFromLastPosition` option to enable storing playback progress and resume known sources from the last saved position.
 
 ## [4.16.1] - 2026-06-25
 
@@ -76,7 +77,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `UIConfig.enableResumeFromLastPosition` option to store playback progress and resume known sources from the last saved position. Source identity is derived from the loaded source title or URL; sources with no stable identifier are not tracked. Disabled by default.
 - Keyboard frame-by-frame stepping on the seekbar: when the seekbar is focused, `,` steps one frame back and `.` steps one frame forward (matching the YouTube convention). Playback is paused first if needed; frame duration is derived from the active video quality's `frameRate` with a 30 fps fallback. Live streams ignore the keys.
 - New `UIConfig.cea608SmallPlayerHeightThreshold` option (default `360`) to configure the rendered player height threshold at or below which small-player CEA-608 caption adjustments are applied
 - Support for the `prefers-reduced-motion` accessibility setting: UI animations and transitions are disabled when the user has set the OS-level `prefers-reduced-motion: reduce` preference
