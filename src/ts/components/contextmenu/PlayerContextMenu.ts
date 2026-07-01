@@ -3,9 +3,12 @@ import { i18n } from '../../localization/i18n';
 import { version as UI_VERSION } from '../../version';
 import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
+import { PlayerUtils } from '../../utils/PlayerUtils';
+import { TimestampLinkUtils } from '../../utils/TimestampLinkUtils';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';
 import { PlayerInsightsContextMenuItem } from '../panels/player-insights/PlayerInsightsContextMenuItem';
 import type { PlayerInsightsPanel } from '../panels/player-insights/PlayerInsightsPanel';
+import { InteractiveContextMenuItem, InteractiveContextMenuItemConfig } from './InteractiveContextMenuItem';
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../settings/SettingsPanelItem';
 import { SettingsPanelPage } from '../settings/SettingsPanelPage';
 import { SettingsPanelSeparator } from '../settings/SettingsPanelSeparator';
@@ -28,6 +31,8 @@ export interface PlayerContextMenuConfig extends ContextMenuConfig {
  * @category Components
  */
 export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
+  private readonly copyTimestampLinkItem: InteractiveContextMenuItem<InteractiveContextMenuItemConfig>;
+
   constructor(config: PlayerContextMenuConfig) {
     super(config);
 
@@ -39,6 +44,16 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
       this.config,
     );
 
+    const copyTimestampLinkItem = new InteractiveContextMenuItem<InteractiveContextMenuItemConfig>({
+      label: new Label<LabelConfig>({
+        text: i18n.getLocalizer('contextMenu.copyTimestampLink'),
+      }),
+      ariaLabel: i18n.getLocalizer('contextMenu.copyTimestampLink'),
+      closeContextMenuOnAction: true,
+    });
+
+    this.copyTimestampLinkItem = copyTimestampLinkItem;
+
     this.addComponent(
       new SettingsPanelPage({
         components: [
@@ -47,9 +62,36 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
           new PlayerInsightsContextMenuItem({
             playerInsightsPanel: config.playerInsightsPanel,
           }),
+          copyTimestampLinkItem,
         ],
       }),
     );
+  }
+
+  configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
+    super.configure(player, uimanager);
+
+    this.copyTimestampLinkItem.onClick.subscribe(() => {
+      const timestampLink = TimestampLinkUtils.buildTimestampLink(player.getCurrentTime());
+      if (!navigator.clipboard?.writeText) {
+        console.warn('Clipboard API is not available. Timestamp link was not copied.');
+        return;
+      }
+
+      navigator.clipboard
+        .writeText(timestampLink)
+        .catch(() => console.warn('Failed to copy timestamp link to clipboard.'));
+    });
+
+    const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
+    liveStreamDetector.onLiveChanged.subscribe((sender, args: PlayerUtils.LiveStreamDetectorEventArgs) => {
+      if (!uimanager.getConfig().enableTimestampDeepLink || args.live) {
+        this.copyTimestampLinkItem.hide();
+      } else {
+        this.copyTimestampLinkItem.show();
+      }
+    });
+    liveStreamDetector.detect();
   }
 }
 

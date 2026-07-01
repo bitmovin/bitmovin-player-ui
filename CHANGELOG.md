@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - New `SubtitleOverlayConfig.enableCea608CaptionPositioning` flag (default `true`): by default, the player UI applies CEA-608 grid-based row/column positioning to Closed Captions. Setting this to `false` disables that positioning so that 608/708 captions are laid out like regular VTT subtitles, while CEA-608-specific text formatting remains independently controlled via `enableCea608CaptionFormatting`.
+- `UIConfig.enableTimestampDeepLink` to enable sharing of current playback position.
+  - Shows a `PlayerContextMenu` option to copy the current link with the current time.
+  - Applies the timestamp deep link on first `SourceLoaded` and seeks to the target time (`t=<seconds>[s]`).
 
 ## [4.16.1] - 2026-06-25
 
