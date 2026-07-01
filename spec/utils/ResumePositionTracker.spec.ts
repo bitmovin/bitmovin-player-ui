@@ -63,6 +63,15 @@ describe('ResumePositionTracker', () => {
     expect(window.localStorage.getItem(storageKey)).toBe('120');
   });
 
+  it('does not clear a saved position when no position has been tracked yet', () => {
+    tracker = new ResumePositionTracker(player);
+    window.localStorage.setItem(storageKey, '90');
+
+    window.dispatchEvent(new Event('beforeunload'));
+
+    expect(window.localStorage.getItem(storageKey)).toBe('90');
+  });
+
   it('removes the saved position when playback is near the start', () => {
     window.localStorage.setItem(storageKey, '90');
     (player.getCurrentTime as jest.Mock).mockReturnValue(2);

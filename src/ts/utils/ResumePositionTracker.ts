@@ -60,6 +60,7 @@ export class ResumePositionTracker {
     }
 
     if (!this.activeSourceKey) return;
+    if (time === null) return;
 
     if (!isFinite(time) || time < MIN_RESUME_POSITION) {
       StorageUtils.removeItem(this.activeSourceKey);
