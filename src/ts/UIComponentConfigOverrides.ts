@@ -65,7 +65,7 @@ import type { WatermarkConfig } from './components/Watermark';
  *
  * @example
  * ```ts
- * const components: UIComponentsConfig = {
+ * const componentConfigOverrides: UIComponentConfigOverrides = {
  *   // Scoped by UI variants
  *   main: {
  *     // Any component class name can be used here.
@@ -92,7 +92,7 @@ import type { WatermarkConfig } from './components/Watermark';
  *
  * @category Configs
  */
-export interface UIComponentsConfig extends UIComponentConfigMap {
+export interface UIComponentConfigOverrides extends UIComponentConfigMap {
   /**
    * Component config overrides for the empty UI variant.
    *

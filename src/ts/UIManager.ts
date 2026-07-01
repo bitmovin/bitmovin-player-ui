@@ -199,7 +199,8 @@ export interface UIVariantFactory {
    */
   condition?: UIConditionResolver;
   /**
-   * Stable identifier for this variant, used to scope variant-specific component config in {@link UIConfig.components}.
+   * Stable identifier for this variant, used to scope variant-specific component config in
+   * {@link UIConfig.componentConfigOverrides}.
    */
   identifier?: UIVariantIdentifier;
 }
@@ -221,7 +222,8 @@ export interface UIVariant {
    */
   spatialNavigation?: SpatialNavigation;
   /**
-   * Stable identifier for this variant, used to scope variant-specific component config in {@link UIConfig.components}.
+   * Stable identifier for this variant, used to scope variant-specific component config in
+   * {@link UIConfig.componentConfigOverrides}.
    */
   identifier?: UIVariantIdentifier;
 }

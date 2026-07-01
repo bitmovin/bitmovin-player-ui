@@ -1,8 +1,8 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
 import { SourceConfig } from 'bitmovin-player';
 import type { LocalizationConfig, UIVariantIdentifier } from './UIManager';
-import type { UIComponentsConfig } from './UIComponentsConfig';
-export type { UIComponentConfigMap, UIComponentsConfig } from './UIComponentsConfig';
+import type { UIComponentConfigOverrides } from './UIComponentConfigOverrides';
+export type { UIComponentConfigMap, UIComponentConfigOverrides } from './UIComponentConfigOverrides';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -249,7 +249,7 @@ export interface UIConfig {
    *
    * @example
    * ```ts
-   * components: {
+   * componentConfigOverrides: {
    *   // Applies to all ToggleButton based components in all UI variants.
    *   ToggleButton: { buttonStyle: ButtonStyle.Text },
    *
@@ -260,7 +260,7 @@ export interface UIConfig {
    * }
    * ```
    */
-  components?: UIComponentsConfig;
+  componentConfigOverrides?: UIComponentConfigOverrides;
 }
 
 export interface ShadowDomConfig {

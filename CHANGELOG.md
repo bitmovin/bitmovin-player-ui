@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - New `SubtitleOverlayConfig.enableCea608CaptionPositioning` flag (default `true`): by default, the player UI applies CEA-608 grid-based row/column positioning to Closed Captions. Setting this to `false` disables that positioning so that 608/708 captions are laid out like regular VTT subtitles, while CEA-608-specific text formatting remains independently controlled via `enableCea608CaptionFormatting`.
-- `UIConfig.components` and `UIComponentsConfig` to configure default UI components without rebuilding complete UI layouts through the `UIFactory`.
+- `UIConfig.componentConfigOverrides` and `UIComponentConfigOverrides` to configure default UI components without rebuilding complete UI layouts through the `UIFactory`.
 - `UIVariantIdentifier` to scope component config overrides to individual default UI variants.
 
 ## [4.16.1] - 2026-06-25
