@@ -54,6 +54,10 @@ export class ToggleSettingsPanelItem extends InteractiveSettingsPanelItem<Toggle
       },
       true,
     );
+    // Mirror the disabled state from the ToggleButton to the row
+    const updateDisabledState = () => {
+      this.setAriaAttr('disabled', this.settingComponent.isDisabled() ? 'true' : 'false');
+    };
 
     this.onClick.subscribe(() => {
       if (!this.settingComponent.isDisabled()) {
@@ -62,7 +66,10 @@ export class ToggleSettingsPanelItem extends InteractiveSettingsPanelItem<Toggle
     });
 
     this.settingComponent.onToggle.subscribe(() => this.updateAriaChecked());
+    this.settingComponent.onDisabled.subscribe(updateDisabledState);
+    this.settingComponent.onEnabled.subscribe(updateDisabledState);
     this.updateAriaChecked();
+    updateDisabledState();
   }
 
   private updateAriaChecked(): void {
