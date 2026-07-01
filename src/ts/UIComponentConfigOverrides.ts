@@ -345,10 +345,6 @@ export interface UIComponentConfigMap {
   /**
    * @category Components
    */
-  PersistentPreferencesToggleButton?: Partial<ToggleButtonConfig>;
-  /**
-   * @category Components
-   */
   PictureInPictureToggleButton?: Partial<ToggleButtonConfig>;
   /**
    * @category Components
