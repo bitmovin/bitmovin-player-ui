@@ -9,12 +9,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- New `SubtitleOverlayConfig.enableCea608CaptionPositioning` flag (default `true`): by default, the player UI applies CEA-608 grid-based row/column positioning to Closed Captions. Setting this to `false` disables that positioning so that 608/708 captions are laid out like regular VTT subtitles, while CEA-608-specific text formatting remains independently controlled via `enableCea608CaptionFormatting`.
 - `ToggleSettingsPanelItem` for settings rows that toggle their nested `ToggleButton` when the row is selected.
+
+## [4.16.1] - 2026-06-25
+
+### Added
+
+- `UIVariantFactory` to lazily resolve UI variants only when they are selected.
+
+### Changed
+
+- Production builds now preserve public component class names during minification.
 
 ### Fixed
 
 - Seeking with the remote on the TV UI no longer gets stuck at the start or end of the seek bar: after scrubbing all the way to one edge, pressing the opposite direction now moves the playback position immediately instead of requiring multiple presses.
 - Settings panels with disabled automatic hiding no longer crash when component view mode changes are dispatched.
+- Settings panel items no longer render an empty label when no label config is provided.
 
 ## [4.16.0] - 2026-06-18
 

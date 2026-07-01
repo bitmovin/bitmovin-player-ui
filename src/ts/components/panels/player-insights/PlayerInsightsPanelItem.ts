@@ -10,6 +10,8 @@ export class PlayerInsightsPanelItem extends SettingsPanelItem<PlayerInsightsPan
   private readonly trailingLabel: Label<LabelConfig>;
 
   constructor(config: PlayerInsightsPanelItemConfig) {
+    super(config);
+
     const leadingLabel = new Label<LabelConfig>({
       text: config.leadingLabel,
       cssClasses: ['ui-player-insights-panel-item-leading-label'],
@@ -19,17 +21,20 @@ export class PlayerInsightsPanelItem extends SettingsPanelItem<PlayerInsightsPan
       cssClasses: ['ui-player-insights-panel-item-trailing-label'],
     });
 
-    super({
-      ...config,
-      label: null,
-      components: [leadingLabel, trailingLabel, ...(config.components ?? [])],
-      cssClasses: ['ui-player-insights-panel-item', ...(config.cssClasses ?? [])],
-      isSetting: false,
-      role: 'group',
-      tabIndex: -1,
-    });
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-player-insights-panel-item'],
+        isSetting: false,
+        role: 'group',
+        tabIndex: -1,
+      },
+      this.config,
+    );
 
     this.trailingLabel = trailingLabel;
+    this.addComponent(leadingLabel);
+    this.addComponent(trailingLabel);
   }
 
   setTrailingLabel(text: LocalizableText): void {

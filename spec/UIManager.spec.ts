@@ -150,6 +150,58 @@ describe('UIManager', () => {
 
       expect(onUiChanged).not.toHaveBeenCalled();
     });
+
+    it('should resolve lazy UIs with spatial navigation', () => {
+      const ui = new UIContainer({ components: [new Container({})] });
+      const spatialNavigation = { release: jest.fn() };
+      const uiManager = new UIManager(playerMock, [
+        {
+          ui: () => ({
+            ui: ui,
+            spatialNavigation: spatialNavigation as any,
+          }),
+        },
+      ]);
+
+      expect(uiManager.activeUi.getUI()).toBe(ui);
+      expect(uiManager.activeUi['spatialNavigation']).toBe(spatialNavigation);
+    });
+
+    it('should resolve lazy UIs only when selected and reuse resolved UIs', () => {
+      const adUi = new UIContainer({ components: [new Container({})] });
+      const defaultUi = new UIContainer({ components: [new Container({})] });
+      const adFactory = jest.fn(() => adUi);
+      const defaultFactory = jest.fn(() => defaultUi);
+      const uiManager = new UIManager(playerMock, [
+        {
+          ui: adFactory,
+          condition: context => context.isAd,
+        },
+        {
+          ui: defaultFactory,
+        },
+      ]);
+
+      expect(defaultFactory).toHaveBeenCalledTimes(1);
+      expect(adFactory).not.toHaveBeenCalled();
+
+      expect(uiManager.activeUi.getUI()).toBe(defaultUi);
+      expect(defaultFactory).toHaveBeenCalledTimes(1);
+
+      uiManager.resolveUiVariant({ isAd: true });
+
+      expect(adFactory).toHaveBeenCalledTimes(1);
+      expect(uiManager.activeUi.getUI()).toBe(adUi);
+
+      uiManager.resolveUiVariant({ isAd: true });
+
+      expect(adFactory).toHaveBeenCalledTimes(1);
+
+      uiManager.resolveUiVariant();
+
+      expect(defaultFactory).toHaveBeenCalledTimes(1);
+      expect(uiManager.activeUi.getUI()).toBe(defaultUi);
+    });
   });
 
   describe('ui variant resolution', () => {
