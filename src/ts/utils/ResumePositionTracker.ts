@@ -35,6 +35,7 @@ export class ResumePositionTracker {
   }
 
   getStoredPosition(): number | null {
+    this.refreshKey();
     if (!this.activeSourceKey) return null;
 
     const time = Number(StorageUtils.getItem(this.activeSourceKey));

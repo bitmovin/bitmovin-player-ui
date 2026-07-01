@@ -44,6 +44,18 @@ describe('ResumePositionTracker', () => {
     expect(tracker.getStoredPosition()).toBe(90);
   });
 
+  it('refreshes the source key before reading a saved position', () => {
+    const nextSourceUrl = 'https://cdn.example/next.mpd';
+    const nextStorageKey = resumeStorageKeyForSourceIdentifier(`dash:${nextSourceUrl}`);
+    window.localStorage.setItem(storageKey, '90');
+    window.localStorage.setItem(nextStorageKey, '120');
+    tracker = new ResumePositionTracker(player);
+
+    (player.getSource as jest.Mock).mockReturnValue({ dash: nextSourceUrl });
+
+    expect(tracker.getStoredPosition()).toBe(120);
+  });
+
   it('stores the current position when playback is paused', () => {
     (player.getCurrentTime as jest.Mock).mockReturnValue(120);
     tracker = new ResumePositionTracker(player);
