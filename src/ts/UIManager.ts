@@ -16,6 +16,7 @@ import { isMobileV3PlayerAPI, MobileV3PlayerAPI, MobileV3PlayerEvent } from './u
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { SubtitleSettingsManager } from './utils/SubtitleSettingsManager';
 import { StorageUtils } from './utils/StorageUtils';
+import { TimestampLinkUtils } from './utils/TimestampLinkUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
@@ -311,6 +312,7 @@ export class UIManager {
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
       disableAutoHideWhenHovered: false, // Disable auto hide when UI is hovered
       enableSeekPreview: true,
+      enableTimestampDeepLink: true,
       shadowDom: false,
       ...uiconfig,
       events: {
@@ -394,13 +396,30 @@ export class UIManager {
     }
     this.subtitleSettingsManager.initialize();
 
+    const wrappedPlayer = this.managerPlayerWrapper.getPlayer();
+
+    if (this.config.enableTimestampDeepLink) {
+      let isTimestampDeepLinkHandled = false;
+      const seekToTimestampDeepLink = () => {
+        if (isTimestampDeepLinkHandled) return;
+        isTimestampDeepLinkHandled = true;
+        wrappedPlayer.off(this.player.exports.PlayerEvent.SourceLoaded, seekToTimestampDeepLink);
+        if (wrappedPlayer.isLive()) return;
+        const targetTime = TimestampLinkUtils.parseTimestampFromUrl();
+        if (targetTime != null && targetTime > 0) {
+          wrappedPlayer.seek(targetTime);
+        }
+      };
+      wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, seekToTimestampDeepLink);
+      // Source may already be loaded by the time the UI is built (e.g. variant switch).
+      if (wrappedPlayer.getSource() != null) seekToTimestampDeepLink();
+    }
+
     // Update the source configuration when a new source is loaded and dispatch onUpdated
     const updateSource = () => {
       updateConfig();
       this.config.events.onUpdated.dispatch(this);
     };
-
-    const wrappedPlayer = this.managerPlayerWrapper.getPlayer();
 
     wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, updateSource);
 
