@@ -53,6 +53,7 @@ describe('ToggleSettingsPanelItem', () => {
     configureToggleSettingsPanelItem(toggleButton);
 
     expect(toggleButton.getDomElement().get(0).getAttribute('tabindex')).toBe('-1');
+    expect(toggleButton.getDomElement().get(0).getAttribute('aria-hidden')).toBe('true');
   });
 
   it('adds the toggle settings panel item CSS class', () => {
