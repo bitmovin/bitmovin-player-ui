@@ -42,10 +42,17 @@ export class ToggleSettingsPanelItem extends InteractiveSettingsPanelItem<Toggle
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    // Keyboard selection belongs to the row, otherwise Enter/Space can activate both the button and the row.
+    // Keyboard and click selection belong to the row, otherwise Enter/Space or click can toggle twice.
     this.settingComponent.getDomElement().attr('tabindex', '-1');
-    // The button handles its own click; keep that click from bubbling into the row and toggling twice.
-    this.settingComponent.getDomElement().on('click', event => event.stopPropagation());
+    this.settingComponent.getDomElement().on(
+      'click',
+      event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.onClickEvent();
+      },
+      true,
+    );
 
     this.onClick.subscribe(() => {
       if (!this.settingComponent.isDisabled()) {
