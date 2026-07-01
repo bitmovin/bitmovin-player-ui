@@ -26,7 +26,6 @@ import { SettingsToggleButton } from './components/settings/SettingsToggleButton
 import { FullscreenToggleButton } from './components/buttons/FullscreenToggleButton';
 import { UIContainer } from './components/UIContainer';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
-import { ResumeOverlay } from './components/overlays/ResumeOverlay';
 import { PlaybackToggleOverlay } from './components/overlays/PlaybackToggleOverlay';
 import { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
 import { TitleBar } from './components/TitleBar';
@@ -94,7 +93,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(config),
+          ui: UIFactory.defaultLayouts.smallScreen(),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
@@ -150,7 +149,7 @@ export namespace UIFactory {
           },
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(config),
+          ui: UIFactory.defaultLayouts.smallScreen(),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -284,7 +283,6 @@ export namespace UIFactory {
       });
 
       const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
-      const resumeComponents = config.enableResumeFromLastPosition !== false ? [new ResumeOverlay()] : [];
 
       return new UIContainer({
         components: [
@@ -296,7 +294,6 @@ export namespace UIFactory {
           new TitleBar(),
           new RecommendationOverlay(),
           ...conditionalComponents,
-          ...resumeComponents,
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
           new ErrorMessageOverlay(),
@@ -362,7 +359,7 @@ export namespace UIFactory {
       });
     }
 
-    export function smallScreen(config: UIConfig = {}): UIContainer {
+    export function smallScreen(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
@@ -398,8 +395,6 @@ export namespace UIFactory {
         ],
       });
 
-      const resumeComponents = config.enableResumeFromLastPosition !== false ? [new ResumeOverlay()] : [];
-
       return new UIContainer({
         components: [
           subtitleOverlay,
@@ -408,7 +403,6 @@ export namespace UIFactory {
           // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
           BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
           new RecommendationOverlay(),
-          ...resumeComponents,
           controlBar,
           new TitleBar({
             components: [

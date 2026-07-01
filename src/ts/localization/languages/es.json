@@ -80,8 +80,5 @@
   "seekBar.timeshift": "cambio de posición",
   "seekBar.durationText": "de",
   "quickseek.forward": "Adelantar {seekSeconds} segundos",
-  "quickseek.rewind": "Rebobinar {seekSeconds} segundos",
-  "resume.prompt": "Resume at",
-  "resume.continue": "Resume",
-  "resume.startOver": "Start over"
+  "quickseek.rewind": "Rebobinar {seekSeconds} segundos"
 }
