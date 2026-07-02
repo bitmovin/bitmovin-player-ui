@@ -53,7 +53,7 @@ export class ResumePositionTracker {
   };
 
   private readonly updatePosition = (event: TimeChangedEvent) => {
-    if (this.player.isLive()) return;
+    if (this.shouldSkipPositionTracking()) return;
 
     if (isFinite(event.time)) {
       this.lastPosition = event.time;
@@ -79,7 +79,7 @@ export class ResumePositionTracker {
   };
 
   private readonly pausePositionTracking = () => {
-    if (this.player.isLive()) return;
+    if (this.shouldSkipPositionTracking()) return;
 
     const time = this.player.getCurrentTime();
     if (isFinite(time)) {
@@ -110,6 +110,10 @@ export class ResumePositionTracker {
     }
     this.lastPosition = null;
   };
+
+  private shouldSkipPositionTracking(): boolean {
+    return this.player.ads?.isLinearAdActive?.() === true || this.player.isLive();
+  }
 }
 
 function storageKeyFor(source: SourceConfig | null): string | null {

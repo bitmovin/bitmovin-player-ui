@@ -13,6 +13,7 @@ describe('ResumePositionTracker', () => {
     StorageUtils.setStorageApiDisabled({ disableStorageApi: false });
     window.localStorage.clear();
     player = MockHelper.getPlayerMock();
+    (player.ads as any).isLinearAdActive = jest.fn().mockReturnValue(false);
     (player.getSource as jest.Mock).mockReturnValue({ dash: sourceUrl });
     (player.isLive as jest.Mock).mockReturnValue(false);
   });
@@ -71,6 +72,29 @@ describe('ResumePositionTracker', () => {
     tracker = new ResumePositionTracker(player);
     player.eventEmitter.fireTimeChangedEvent(120);
     (player.getCurrentTime as jest.Mock).mockReturnValue(0);
+
+    player.eventEmitter.fireSourceUnloadedEvent();
+
+    expect(window.localStorage.getItem(storageKey)).toBe('120');
+  });
+
+  it('stores the last content position when the page is unloaded during an ad', () => {
+    tracker = new ResumePositionTracker(player);
+    player.eventEmitter.fireTimeChangedEvent(120);
+    (player.ads.isLinearAdActive as jest.Mock).mockReturnValue(true);
+    player.eventEmitter.fireTimeChangedEvent(30);
+
+    window.dispatchEvent(new Event('beforeunload'));
+
+    expect(window.localStorage.getItem(storageKey)).toBe('120');
+  });
+
+  it('resumes position tracking after an ad finishes', () => {
+    tracker = new ResumePositionTracker(player);
+    (player.ads.isLinearAdActive as jest.Mock).mockReturnValue(true);
+    player.eventEmitter.fireTimeChangedEvent(30);
+    (player.ads.isLinearAdActive as jest.Mock).mockReturnValue(false);
+    player.eventEmitter.fireTimeChangedEvent(120);
 
     player.eventEmitter.fireSourceUnloadedEvent();
 
