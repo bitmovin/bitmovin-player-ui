@@ -46,6 +46,7 @@ import type { SubtitleSettingsPanelPageConfig } from './components/settings/subt
 import type { TitleBarConfig } from './components/TitleBar';
 import type { UIContainerConfig } from './components/UIContainer';
 import type { WatermarkConfig } from './components/Watermark';
+import type { ToggleSettingsPanelItem } from './components/settings/ToggleSettingsPanelItem';
 
 /**
  * Component config overrides keyed by public component class name, optionally scoped by UI variant.
@@ -349,6 +350,10 @@ export interface UIComponentConfigMap {
   /**
    * @category Components
    */
+  PersistentPreferencesToggleButton?: Partial<ToggleButtonConfig>;
+  /**
+   * @category Components
+   */
   PlayerContextMenu?: Partial<PlayerContextMenuConfig>;
   /**
    * @category Components
@@ -474,6 +479,10 @@ export interface UIComponentConfigMap {
    * @category Components
    */
   ToggleButton?: Partial<ToggleButtonConfig>;
+  /**
+   * @category Components
+   */
+  ToggleSettingsPanelItem?: Partial<ToggleSettingsPanelItem>;
   /**
    * @category Components
    */

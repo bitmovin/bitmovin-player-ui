@@ -64,6 +64,7 @@
   "auto": "auto",
   "ecoMode": "ecoMode",
   "ecoMode.title": "Eco Mode",
+  "persistentPreferences": "Remember preferences",
   "back": "Back",
   "reset": "Reset",
   "replay": "Replay",

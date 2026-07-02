@@ -71,6 +71,20 @@ export namespace StorageUtils {
   }
 
   /**
+   * Removes an item from localStorage.
+   * @param key the item's key
+   */
+  export function removeItem(key: string): void {
+    if (shouldUseLocalStorage()) {
+      try {
+        window.localStorage.removeItem(key);
+      } catch (e) {
+        console.debug(`Failed to remove storage item ${key}`, e);
+      }
+    }
+  }
+
+  /**
    * Stores an object into localStorage. The object will be serialized to JSON. The following types are supported
    * in addition to the default types:
    *  - ColorUtils.Color

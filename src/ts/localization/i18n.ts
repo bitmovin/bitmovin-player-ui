@@ -129,6 +129,7 @@ export interface Vocabulary {
   'contextMenu.subtitle': string;
   ecoMode: string;
   'ecoMode.title': string;
+  persistentPreferences: string;
   'contextMenu.copyTimestampLink': string;
 }
 

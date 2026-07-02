@@ -4,6 +4,7 @@ import { Container, ContainerConfig } from './Container';
 import { EcoModeToggleButton } from './buttons/EcoModeToggleButton';
 import { Label, LabelConfig } from './labels/Label';
 import { SettingsPanelItem, SettingsPanelItemConfig } from './settings/SettingsPanelItem';
+import { ToggleSettingsPanelItem } from './settings/ToggleSettingsPanelItem';
 
 /**
  * @category Containers
@@ -29,7 +30,7 @@ export class EcoModeContainer extends Container<ContainerConfig> {
       cssClass: 'ui-label-savedEnergy',
     });
 
-    this.ecoModeToggleButtonItem = new SettingsPanelItem({
+    this.ecoModeToggleButtonItem = new ToggleSettingsPanelItem({
       label: labelEcoMode,
       settingComponent: ecoModeToggleButton,
     });

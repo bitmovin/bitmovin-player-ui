@@ -2,8 +2,7 @@ import { NavigationGroup } from './NavigationGroup';
 import { Action, Focusable } from './types';
 import { SettingsPanel, SettingsPanelConfig } from '../components/settings/SettingsPanel';
 import { resolveAllComponents } from './helper/resolveAllComponents';
-import { SettingsPanelSelectOption } from '../components/settings/SettingsPanelSelectOption';
-import { DynamicSettingsPanelItem } from '../components/settings/DynamicSettingsPanelItem';
+import { InteractiveSettingsPanelItem } from '../components/settings/InteractiveSettingsPanelItem';
 
 export class SettingsPanelNavigationGroupConfig {
   /**
@@ -57,9 +56,7 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
 
     const componentsToConsider: Focusable[] = [];
     pageComponents.forEach(component => {
-      if (component instanceof SettingsPanelSelectOption) {
-        componentsToConsider.push(component);
-      } else if (component instanceof DynamicSettingsPanelItem) {
+      if (component instanceof InteractiveSettingsPanelItem) {
         componentsToConsider.push(component);
       } else {
         componentsToConsider.push(...resolveAllComponents(component));
