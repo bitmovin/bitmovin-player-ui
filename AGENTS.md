@@ -97,7 +97,7 @@ export interface UIComponentConfigMap {
 
 - Follow the existing component layout: component classes under `src/ts/components/...`, matching SCSS partials under `src/scss/components/...` when styling is needed, and exports from `src/ts/main.ts` for public API.
 - Reuse existing primitives before adding a new component family. The repo already has containers, buttons, panels, settings-panel items, context-menu items, overlays, list/select components, and spatial navigation helpers.
-- Grep before adding helper code. Existing utilities such as `Timeout`, `Button`, `DismissClickOverlay`, `LiveStreamDetector`, `BrowserUtils`, `StorageUtils`, exported `version`, and seek-step config should be reused instead of adding parallel implementations.
+- Grep before adding helper code. Existing utilities such as `Timeout`, `Button`, `DismissClickOverlay`, `LiveStreamDetector`, `BrowserUtils`, `StorageUtils`, exported `version` should be reused instead of adding parallel implementations.
 - Prefer repo constructor style: call `super(config)` first, then assign `this.config = this.mergeConfig(config, defaultConfig, this.config)` using an inline/default config object in the same format as nearby components.
 - Config interfaces are for externally supplied config and constructor defaults. Do not use config objects to store internal runtime state.
 - For config-controlled behavior, keep `this.config` as the source of truth. Do not mirror config flags into private fields unless the field represents derived runtime state.
