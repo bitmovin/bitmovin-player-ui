@@ -350,6 +350,10 @@ export interface UIComponentConfigMap {
   /**
    * @category Components
    */
+  PersistentPreferencesToggleButton?: Partial<ToggleButtonConfig>;
+  /**
+   * @category Components
+   */
   PlayerContextMenu?: Partial<PlayerContextMenuConfig>;
   /**
    * @category Components
