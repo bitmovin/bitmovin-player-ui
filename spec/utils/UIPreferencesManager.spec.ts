@@ -1,9 +1,11 @@
 import { PlayerAPI, PlayerEvent } from 'bitmovin-player';
 import { UIPreferencesManager } from '../../src/ts/utils/UIPreferencesManager';
+import { prefixCss } from '../../src/ts/components/DummyComponent';
 
 describe('UIPreferencesManager', () => {
-  const enabledKey = 'bitmovin.player.ui.preferences.enabled';
-  const volumeKey = 'bitmovin.player.ui.preferences.volume';
+  const storageKeyPrefix = `${prefixCss('preferences')}.`;
+  const enabledKey = storageKeyPrefix + 'enabled';
+  const volumeKey = storageKeyPrefix + 'volume';
 
   let playerMock: PlayerAPI;
 

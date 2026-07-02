@@ -1,5 +1,6 @@
 import { ResumePositionTracker } from '../../src/ts/utils/ResumePositionTracker';
 import { StorageUtils } from '../../src/ts/utils/StorageUtils';
+import { prefixCss } from '../../src/ts/components/DummyComponent';
 import { MockHelper, TestingPlayerAPI } from '../helper/MockHelper';
 
 describe('ResumePositionTracker', () => {
@@ -147,5 +148,5 @@ function resumeStorageKeyForSourceIdentifier(sourceIdentifier: string): string {
     hash = (hash << 5) - hash + sourceIdentifier.charCodeAt(i);
     hash |= 0;
   }
-  return `bitmovin.player.ui.resume.${(hash >>> 0).toString(36)}`;
+  return `${prefixCss('resume')}.${(hash >>> 0).toString(36)}`;
 }

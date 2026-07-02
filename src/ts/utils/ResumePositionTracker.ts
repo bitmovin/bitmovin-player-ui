@@ -1,7 +1,8 @@
 import { PlayerAPI, SourceConfig, TimeChangedEvent } from 'bitmovin-player';
 import { StorageUtils } from './StorageUtils';
+import { prefixCss } from '../components/DummyComponent';
 
-const STORAGE_KEY_PREFIX = 'bitmovin.player.ui.resume.';
+const STORAGE_KEY_PREFIX = `${prefixCss('resume')}.`;
 const MIN_RESUME_POSITION = 5;
 
 /**

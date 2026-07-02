@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `UIConfig.enableResumeFromLastPosition` option to enable storing playback progress and resume known sources from the last saved position.
 
+### Changed
+
+- Persisted preferences (enabled via `UIConfig.enablePersistentPreferences`) now use the configured UI prefix instead of a hard-coded bitmovin specific key.
+
 ## [4.17.0] - 2026-07-02
 
 ### Added
