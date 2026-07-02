@@ -5,6 +5,7 @@ import { Container } from './components/Container';
 import { SeekBar, SeekBarMarker } from './components/seekbar/SeekBar';
 import { NoArgs, EventDispatcher, CancelEventArgs } from './EventDispatcher';
 import { UIUtils } from './utils/UIUtils';
+import { PlayerUtils } from './utils/PlayerUtils';
 import { ArrayUtils } from './utils/ArrayUtils';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationConfig, TimelineMarker, UIConfig } from './UIConfig';
@@ -441,7 +442,7 @@ export class UIManager {
       };
       wrappedPlayer.on(this.player.exports.PlayerEvent.SourceLoaded, seekToInitialPosition);
       // Source may already be loaded by the time the UI is built.
-      if (wrappedPlayer.getSource() != null) seekToInitialPosition();
+      if (PlayerUtils.getState(wrappedPlayer) === PlayerUtils.PlayerState.Prepared) seekToInitialPosition();
     }
 
     // Update the source configuration when a new source is loaded and dispatch onUpdated
