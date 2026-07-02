@@ -58,41 +58,6 @@ When the user leaves implementation details open, you choose conservatively and 
 - When code needs mobile-specific player behavior, model that boundary explicitly with `MobileV3PlayerAPI` and `isMobileV3PlayerAPI(...)`. Do not let mobile-only events or error shapes leak into the regular web-player path.
 - Browser and platform APIs can depend on secure context, embedding, or WebView support. Feature-detect APIs such as clipboard access, handle rejected promises, and avoid assuming desktop Chrome behavior applies everywhere.
 
-## Component Config Overrides
-
-- `UIConfig.componentConfigOverrides` is the public way to override component-specific config without rebuilding a full `UIFactory` layout.
-- The override map lives in `src/ts/UIComponentConfigOverrides.ts`. Keep `UIComponentConfigMap` aligned with public component exports from `src/ts/main.ts`; `spec/utils/UIComponentConfigOverrides.spec.ts` is the guard rail.
-- Keys are public component class names. Top-level component keys apply to all variants. Variant keys such as `main`, `smallScreen`, or `tv` scope overrides to that UI variant.
-- Base component keys apply to subclasses. More specific component keys override base keys, and variant-scoped entries override top-level entries.
-
-```ts
-const config: UIConfig = {
-  componentConfigOverrides: {
-    // Applies to every ToggleButton subclass in every UI variant.
-    ToggleButton: { text: 'Global toggle' },
-
-    // Applies only in the main UI variant and wins over the top-level ToggleButton config.
-    main: {
-      FullscreenToggleButton: { text: 'Main fullscreen' },
-    },
-  },
-};
-```
-
-- The mapping type itself is intentionally explicit and should stay readable in TypeDoc:
-
-```ts
-export interface UIComponentConfigMap {
-  ToggleButton?: Partial<ToggleButtonConfig>;
-  FullscreenToggleButton?: Partial<ToggleButtonConfig>;
-  SeekBar?: Partial<SeekBarConfig>;
-}
-```
-
-- Overrides are applied during construction through `ComponentConfigManager.run(...)` and `Component.mergeConfig(...)`. If a config value affects constructor-time child wiring, defaults, or callbacks, it must be available before the child component is created; do not patch it afterward.
-- Constructor/config refactors need semantic checks, not only lint. Verify default merging, subclass/base override order, wrapped callbacks/comparators, and externally supplied child components.
-- If public config behavior has precedence rules, document the exact order near the public type and cover it with a focused spec.
-
 ## Component Construction And Styling
 
 - Follow the existing component layout: component classes under `src/ts/components/...`, matching SCSS partials under `src/scss/components/...` when styling is needed, and exports from `src/ts/main.ts` for public API.
@@ -100,6 +65,8 @@ export interface UIComponentConfigMap {
 - Grep before adding helper code. Existing utilities such as `Timeout`, `Button`, `DismissClickOverlay`, `LiveStreamDetector`, `BrowserUtils`, `StorageUtils`, exported `version` should be reused instead of adding parallel implementations.
 - Prefer repo constructor style: call `super(config)` first, then assign `this.config = this.mergeConfig(config, defaultConfig, this.config)` using an inline/default config object in the same format as nearby components.
 - Config interfaces are for externally supplied config and constructor defaults. Do not use config objects to store internal runtime state.
+- Config that affects constructor-time child wiring, defaults, or callbacks must be available before the child component is created; do not patch constructor-consumed config afterward.
+- Constructor/config refactors need semantic checks, not only lint. Verify default merging, subclass/base precedence, wrapped callbacks/comparators, and externally supplied child components.
 - For config-controlled behavior, keep `this.config` as the source of truth. Do not mirror config flags into private fields unless the field represents derived runtime state.
 - Persistent or stored settings should reuse the same normalization and defaulting rules as user-driven changes. Older stored values can be partial, so initialization paths must handle missing companion values.
 - Public components need the full public path: exported config interface, exported class with the right TypeDoc category, `src/ts/main.ts` export, and a `UIComponentConfigMap` entry when the component config should be overridable through `UIConfig.componentConfigOverrides`.
@@ -113,6 +80,17 @@ export interface UIComponentConfigMap {
 - Treat exported components, config interfaces, `UIFactory` layouts, `UIManager` APIs, and TypeDoc-visible types as stable public API.
 - Public runtime APIs that expose collections should not return mutable internal arrays. Return copies or readonly views, and document ordering, duplicate handling, and whether entries survive source changes.
 - Prefer TypeDoc output that is readable for integrators over clever mapped types that only look good in source.
+- Keep public config mapping types explicit when that produces clearer TypeDoc than a clever mapped type:
+
+```ts
+export interface UIComponentConfigMap {
+  ToggleButton?: Partial<ToggleButtonConfig>;
+  FullscreenToggleButton?: Partial<ToggleButtonConfig>;
+  SeekBar?: Partial<SeekBarConfig>;
+}
+```
+
+- When public config maps reference component exports, keep the map, `src/ts/main.ts`, and the guard spec aligned.
 - If an API depends on runtime class names, verify production/minified output. Exported TypeScript names and runtime constructor names are not the same guarantee.
 - Update the changelog under `[Unreleased]` for public behavior or API changes. Use the existing Keep a Changelog subsections such as `Added`, `Changed`, `Deprecated`, `Removed`, or `Fixed`, and write bullets from the integrator/user-facing effect instead of internal implementation details.
 
