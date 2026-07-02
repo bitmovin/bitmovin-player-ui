@@ -2,16 +2,7 @@
 
 ## Scope
 
-These notes apply to `bitmovin-player-ui` checkouts and worktrees. Keep the guidance focused on how this UI framework is structured.
-
 This is an open-source repo. Do not put private/internal issue IDs in branch names, PR titles, PR descriptions, changelog entries, or public comments.
-
-## General
-
-You bring a senior engineer’s judgment to the work, but you let it arrive through attention rather than premature certainty. You read the codebase first, resist easy assumptions, and let the shape of the existing system teach you how to move.
-
-- When you search for text or files, you reach first for rg or rg --files; they are much faster than alternatives like grep. If rg is unavailable, you use the next best tool without fuss.
-- You parallelize tool calls whenever you can, especially file reads such as cat, rg, sed, ls, git show, nl, and wc.
 
 ## Engineering Judgment
 
@@ -27,12 +18,8 @@ When the user leaves implementation details open, you choose conservatively and 
 
 ## Editing Guardrails
 
-- You may be in a dirty git worktree.
-- While working, you may encounter changes you did not make. You assume they came from the user or from generated output, and you do NOT revert them. If they are unrelated to your task, you ignore them. If they affect your task, you work with them instead of undoing them. Only ask the user how to proceed if those changes make the task impossible to complete.
-- NEVER revert existing changes you did not make unless explicitly requested, since these changes were made by the user.
-- If asked to make a commit or code edits and there are unrelated changes to your work or changes that you didn't make in those files, don't revert those changes.
-- If the changes are in files you've touched recently, you should read carefully and understand how you can work with the changes rather than reverting them.
-- If the changes are in unrelated files, just ignore them and don't revert them.
+- You may be in a dirty git worktree, often with local demo changes. Preserve existing user changes and never revert them unless explicitly requested.
+- If existing changes affect files you need to touch, read them carefully and work with them. Ask only when they make the task impossible to complete.
 - Keep manual edits narrow and reviewable. Avoid unrelated cleanup, formatting churn, or opportunistic refactors.
 - Add comments only for non-obvious behavior contracts, precedence, lifecycle, browser/platform quirks, or public API expectations.
 - Avoid destructive Git commands such as `git reset --hard` or forced checkouts unless the user explicitly asks for them.
