@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - Applies the timestamp deep link on first `SourceLoaded` and seeks to the target time (`t=<seconds>[s]`).
 - `UIConfig.componentConfigOverrides` and `UIComponentConfigOverrides` to configure default UI components without rebuilding complete UI layouts through the `UIFactory`.
 - `UIVariantIdentifier` to scope component config overrides to individual default UI variants.
+- `ToggleSettingsPanelItem` for settings rows that toggle their nested `ToggleButton` when the row is selected.
 
 ## [4.16.1] - 2026-06-25
 
