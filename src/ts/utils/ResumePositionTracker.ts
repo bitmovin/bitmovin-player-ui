@@ -19,7 +19,7 @@ export class ResumePositionTracker {
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.unloadSource);
     player.on(player.exports.PlayerEvent.Play, this.restartPositionTracking);
 
-    if (player.getSource() != null) this.startPositionTracking();
+    if (player.getSource() !== null) this.startPositionTracking();
   }
 
   release(): void {
@@ -91,7 +91,7 @@ export class ResumePositionTracker {
   };
 
   private readonly restartPositionTracking = () => {
-    if (!this.activeSourceKey && this.player.getSource() != null) {
+    if (!this.activeSourceKey && this.player.getSource() !== null) {
       this.startPositionTracking();
     }
   };

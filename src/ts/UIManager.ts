@@ -423,19 +423,19 @@ export class UIManager {
       this.resumePositionTracker = new ResumePositionTracker(wrappedPlayer);
     }
 
-    if (timestampDeepLinkTargetTime != null || this.resumePositionTracker != null) {
+    if (timestampDeepLinkTargetTime !== null || this.resumePositionTracker !== undefined) {
       let isTimestampDeepLinkHandled = false;
       const seekToInitialPosition = () => {
         if (wrappedPlayer.isLive()) return;
 
-        if (timestampDeepLinkTargetTime != null && !isTimestampDeepLinkHandled) {
+        if (timestampDeepLinkTargetTime !== null && !isTimestampDeepLinkHandled) {
           isTimestampDeepLinkHandled = true;
           if (timestampDeepLinkTargetTime > 0) {
             wrappedPlayer.seek(timestampDeepLinkTargetTime, 'ui');
           }
         } else {
-          const storedPosition = this.resumePositionTracker?.getStoredPosition();
-          if (storedPosition != null) {
+          const storedPosition = this.resumePositionTracker?.getStoredPosition() ?? null;
+          if (storedPosition !== null) {
             wrappedPlayer.seek(storedPosition, 'ui');
           }
         }
