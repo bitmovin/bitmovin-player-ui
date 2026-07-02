@@ -130,6 +130,19 @@ describe('ResumePositionTracker', () => {
     expect(window.localStorage.getItem(storageKey)).toBeNull();
   });
 
+  it('stores a new position when playback restarts after finishing', () => {
+    window.localStorage.setItem(storageKey, '90');
+    (player.getCurrentTime as jest.Mock).mockReturnValue(30);
+    tracker = new ResumePositionTracker(player);
+
+    player.eventEmitter.firePlaybackFinishedEvent();
+    player.eventEmitter.firePlayEvent();
+    player.eventEmitter.fireTimeChangedEvent(30);
+    player.eventEmitter.firePauseEvent();
+
+    expect(window.localStorage.getItem(storageKey)).toBe('30');
+  });
+
   it('does not return saved positions for live sources', () => {
     (player.isLive as jest.Mock).mockReturnValue(true);
     window.localStorage.setItem(storageKey, '90');
@@ -139,6 +152,42 @@ describe('ResumePositionTracker', () => {
     const seekMock = (player as unknown as { seek: jest.Mock }).seek;
     expect(seekMock).not.toHaveBeenCalled();
     expect(tracker.getStoredPosition()).toBeNull();
+  });
+
+  it('does not track positions for live sources', () => {
+    (player.isLive as jest.Mock).mockReturnValue(true);
+    (player.getCurrentTime as jest.Mock).mockReturnValue(120);
+    tracker = new ResumePositionTracker(player);
+
+    player.eventEmitter.fireTimeChangedEvent(120);
+    player.eventEmitter.firePauseEvent();
+    window.dispatchEvent(new Event('beforeunload'));
+
+    expect(window.localStorage.getItem(storageKey)).toBeNull();
+  });
+
+  it('starts tracking a later VOD source after a live source', () => {
+    (player.isLive as jest.Mock).mockReturnValue(true);
+    (player.getCurrentTime as jest.Mock).mockReturnValue(120);
+    tracker = new ResumePositionTracker(player);
+
+    (player.isLive as jest.Mock).mockReturnValue(false);
+    player.eventEmitter.fireSourceLoadedEvent();
+    player.eventEmitter.firePauseEvent();
+
+    expect(window.localStorage.getItem(storageKey)).toBe('120');
+  });
+
+  it('unregisters position listeners when a live source is loaded', () => {
+    tracker = new ResumePositionTracker(player);
+
+    (player.isLive as jest.Mock).mockReturnValue(true);
+    player.eventEmitter.fireSourceLoadedEvent();
+
+    const offMock = (player as unknown as { off: jest.Mock }).off;
+    expect(offMock).toHaveBeenCalledWith(player.exports.PlayerEvent.TimeChanged, expect.any(Function));
+    expect(offMock).toHaveBeenCalledWith(player.exports.PlayerEvent.Paused, expect.any(Function));
+    expect(offMock).toHaveBeenCalledWith(player.exports.PlayerEvent.PlaybackFinished, expect.any(Function));
   });
 });
 

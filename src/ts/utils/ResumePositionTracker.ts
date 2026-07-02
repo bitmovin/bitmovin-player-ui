@@ -17,10 +17,7 @@ export class ResumePositionTracker {
   constructor(private readonly player: PlayerAPI) {
     player.on(player.exports.PlayerEvent.SourceLoaded, this.startPositionTracking);
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.unloadSource);
-    player.on(player.exports.PlayerEvent.TimeChanged, this.updatePosition);
-    player.on(player.exports.PlayerEvent.Paused, this.pausePositionTracking);
-    player.on(player.exports.PlayerEvent.PlaybackFinished, this.finishPositionTracking);
-    window.addEventListener('beforeunload', this.storeCurrentPosition);
+    player.on(player.exports.PlayerEvent.Play, this.restartPositionTracking);
 
     if (player.getSource() != null) this.startPositionTracking();
   }
@@ -28,33 +25,22 @@ export class ResumePositionTracker {
   release(): void {
     this.storeCurrentPosition();
     window.removeEventListener('beforeunload', this.storeCurrentPosition);
-    this.player.off(this.player.exports.PlayerEvent.SourceLoaded, this.startPositionTracking);
-    this.player.off(this.player.exports.PlayerEvent.SourceUnloaded, this.unloadSource);
-    this.player.off(this.player.exports.PlayerEvent.TimeChanged, this.updatePosition);
-    this.player.off(this.player.exports.PlayerEvent.Paused, this.pausePositionTracking);
-    this.player.off(this.player.exports.PlayerEvent.PlaybackFinished, this.finishPositionTracking);
+    this.activeSourceKey = null;
+    this.lastPosition = null;
   }
 
   getStoredPosition(): number | null {
-    this.refreshKey();
-    if (!this.activeSourceKey) return null;
+    if (this.player.isLive()) return null;
 
-    const time = Number(StorageUtils.getItem(this.activeSourceKey));
+    const activeSourceKey = storageKeyFor(this.player.getSource());
+    if (!activeSourceKey) return null;
+
+    const time = Number(StorageUtils.getItem(activeSourceKey));
     return isFinite(time) && time >= MIN_RESUME_POSITION ? time : null;
   }
 
-  private readonly refreshKey = () => {
-    if (this.player.isLive()) {
-      this.activeSourceKey = null;
-      this.lastPosition = null;
-      return;
-    }
-
-    this.activeSourceKey = storageKeyFor(this.player.getSource());
-  };
-
   private readonly updatePosition = (event: TimeChangedEvent) => {
-    if (this.shouldSkipPositionTracking()) return;
+    if (this.player.ads?.isLinearAdActive?.() === true) return;
 
     if (isFinite(event.time)) {
       this.lastPosition = event.time;
@@ -62,12 +48,6 @@ export class ResumePositionTracker {
   };
 
   private readonly savePosition = (time: number | null) => {
-    if (this.player.isLive()) {
-      this.activeSourceKey = null;
-      this.lastPosition = null;
-      return;
-    }
-
     if (!this.activeSourceKey) return;
     if (time === null) return;
 
@@ -80,7 +60,7 @@ export class ResumePositionTracker {
   };
 
   private readonly pausePositionTracking = () => {
-    if (this.shouldSkipPositionTracking()) return;
+    if (this.player.ads?.isLinearAdActive?.() === true) return;
 
     const time = this.player.getCurrentTime();
     if (isFinite(time)) {
@@ -94,12 +74,31 @@ export class ResumePositionTracker {
   };
 
   private readonly startPositionTracking = () => {
-    this.refreshKey();
+    this.stopPositionTracking();
+    this.activeSourceKey = null;
     this.lastPosition = null;
+
+    if (this.player.isLive()) return;
+
+    const activeSourceKey = storageKeyFor(this.player.getSource());
+    if (!activeSourceKey) return;
+
+    this.activeSourceKey = activeSourceKey;
+    this.player.on(this.player.exports.PlayerEvent.TimeChanged, this.updatePosition);
+    this.player.on(this.player.exports.PlayerEvent.Paused, this.pausePositionTracking);
+    this.player.on(this.player.exports.PlayerEvent.PlaybackFinished, this.finishPositionTracking);
+    window.addEventListener('beforeunload', this.storeCurrentPosition);
+  };
+
+  private readonly restartPositionTracking = () => {
+    if (!this.activeSourceKey && this.player.getSource() != null) {
+      this.startPositionTracking();
+    }
   };
 
   private readonly unloadSource = () => {
     this.savePosition(this.lastPosition);
+    this.stopPositionTracking();
     this.activeSourceKey = null;
     this.lastPosition = null;
   };
@@ -107,13 +106,17 @@ export class ResumePositionTracker {
   private readonly finishPositionTracking = () => {
     if (this.activeSourceKey) {
       StorageUtils.removeItem(this.activeSourceKey);
-      this.activeSourceKey = null;
     }
+    this.stopPositionTracking();
+    this.activeSourceKey = null;
     this.lastPosition = null;
   };
 
-  private shouldSkipPositionTracking(): boolean {
-    return this.player.ads?.isLinearAdActive?.() === true || this.player.isLive();
+  private stopPositionTracking(): void {
+    this.player.off(this.player.exports.PlayerEvent.TimeChanged, this.updatePosition);
+    this.player.off(this.player.exports.PlayerEvent.Paused, this.pausePositionTracking);
+    this.player.off(this.player.exports.PlayerEvent.PlaybackFinished, this.finishPositionTracking);
+    window.removeEventListener('beforeunload', this.storeCurrentPosition);
   }
 }
 
