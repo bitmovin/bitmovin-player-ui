@@ -26,6 +26,7 @@ import { SettingsToggleButton } from './components/settings/SettingsToggleButton
 import { FullscreenToggleButton } from './components/buttons/FullscreenToggleButton';
 import { UIContainer } from './components/UIContainer';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
+import { PlayerContextMenu } from './components/contextmenu/PlayerContextMenu';
 import { PlaybackToggleOverlay } from './components/overlays/PlaybackToggleOverlay';
 import { CastStatusOverlay } from './components/overlays/CastStatusOverlay';
 import { TitleBar } from './components/TitleBar';
@@ -37,7 +38,7 @@ import { AdControlBar } from './components/ads/AdControlBar';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
-import { UIConditionContext, UIManager, UIVariant } from './UIManager';
+import { UIConditionContext, UIManager, UIVariant, UIVariantFactory, UIVariantIdentifier } from './UIManager';
 import { UIConfig } from './UIConfig';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
@@ -47,7 +48,10 @@ import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
 import { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
 import { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelNavigationGroup';
 import { EcoModeContainer } from './components/EcoModeContainer';
+import { PersistentPreferencesToggleButton } from './components/buttons/PersistentPreferencesToggleButton';
 import { DynamicSettingsPanelItem } from './components/settings/DynamicSettingsPanelItem';
+import { ToggleSettingsPanelItem } from './components/settings/ToggleSettingsPanelItem';
+import { Label, LabelConfig } from './components/labels/Label';
 import { TouchControlOverlay } from './components/overlays/TouchControlOverlay';
 import { AdStatusOverlay } from './components/ads/AdStatusOverlay';
 import { DismissClickOverlay } from './components/overlays/DismissClickOverlay';
@@ -55,6 +59,7 @@ import { AdMessageLabel } from './components/ads/AdMessageLabel';
 import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationOverlayNavigationGroup } from './spatialnavigation/RecommendationOverlayNavigationGroup';
+import { PlayerInsightsPanel } from './components/panels/player-insights/PlayerInsightsPanel';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -81,46 +86,53 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: UIFactory.defaultLayouts.emptyState(),
+          ui: UIFactory.defaultLayouts.emptyState,
           condition: context => {
             return !context.isSourceLoaded;
           },
+          identifier: UIVariantIdentifier.empty,
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreenAds(),
+          ui: UIFactory.defaultLayouts.smallScreenAds,
           condition: (context: UIConditionContext) => {
             return context.documentWidth < smallScreenSwitchWidth && context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.smallScreenAds,
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen,
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
+          identifier: UIVariantIdentifier.smallScreen,
         },
         {
-          ...UIFactory.defaultLayouts.tvAds(),
+          ui: UIFactory.defaultLayouts.tvAds,
           condition: (context: UIConditionContext) => {
             return context.isTv && context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.tvAds,
         },
         {
-          ...UIFactory.defaultLayouts.tv(),
+          ui: UIFactory.defaultLayouts.tv,
           condition: (context: UIConditionContext) => {
             return context.isTv && !context.isAd && !context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.tv,
         },
         {
-          ui: UIFactory.defaultLayouts.ads(),
+          ui: UIFactory.defaultLayouts.ads,
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.ads,
         },
         {
-          ui: UIFactory.defaultLayouts.main(config),
+          ui: () => UIFactory.defaultLayouts.main(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.main,
         },
       ],
       config,
@@ -143,16 +155,18 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: UIFactory.defaultLayouts.smallScreenAds(),
+          ui: UIFactory.defaultLayouts.smallScreenAds,
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.smallScreenAds,
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen(),
+          ui: UIFactory.defaultLayouts.smallScreen,
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.smallScreen,
         },
       ],
       config,
@@ -169,7 +183,16 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildCastReceiverUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, UIFactory.defaultLayouts.castReceiver(config), config);
+    return new UIManager(
+      player,
+      [
+        {
+          ui: () => UIFactory.defaultLayouts.castReceiver(config),
+          identifier: UIVariantIdentifier.castReceiver,
+        },
+      ],
+      config,
+    );
   }
 
   /**
@@ -186,16 +209,18 @@ export namespace UIFactory {
       player,
       [
         {
-          ...UIFactory.defaultLayouts.tvAds(),
+          ui: UIFactory.defaultLayouts.tvAds,
           condition: (context: UIConditionContext) => {
             return context.isAd && context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.tvAds,
         },
         {
-          ...UIFactory.defaultLayouts.tv(),
+          ui: UIFactory.defaultLayouts.tv,
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
+          identifier: UIVariantIdentifier.tv,
         },
       ],
       config,
@@ -213,7 +238,16 @@ export namespace UIFactory {
    * @param config The UIConfig object
    */
   export function buildSubtitleUI(player: PlayerAPI, config: UIConfig = {}): UIManager {
-    return new UIManager(player, UIFactory.defaultLayouts.subtitle(), config);
+    return new UIManager(
+      player,
+      [
+        {
+          ui: UIFactory.defaultLayouts.subtitle,
+          identifier: UIVariantIdentifier.subtitle,
+        },
+      ],
+      config,
+    );
   }
 
   /**
@@ -246,8 +280,15 @@ export namespace UIFactory {
 
     export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
+      const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
+      const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
 
-      const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, undefined, config.ecoMode === true);
+      const settingsPanel = buildDefaultSettingsPanel(
+        subtitleOverlay,
+        undefined,
+        config.ecoMode === true,
+        config.showPersistentPreferencesToggle === true && config.disableStorageApi !== true,
+      );
       const controlBar = new ControlBar({
         components: [
           new Container({
@@ -282,7 +323,11 @@ export namespace UIFactory {
         ],
       });
 
-      const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
+      const conditionalComponents = [
+        config.includeWatermark ? new Watermark() : null,
+        ...(playerInsightsPanel ? [playerInsightsPanel] : []),
+        ...(playerContextMenu ? [new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu] : []),
+      ].filter(e => e);
 
       return new UIContainer({
         components: [
@@ -361,6 +406,8 @@ export namespace UIFactory {
 
     export function smallScreen(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
+      const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
+      const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
 
@@ -418,8 +465,10 @@ export namespace UIFactory {
               }),
             ],
           }),
+          ...(playerInsightsPanel ? [playerInsightsPanel] : []),
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
+          ...(playerContextMenu ? [new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu] : []),
           new ErrorMessageOverlay(),
         ],
         cssClasses: ['ui-smallscreen'],
@@ -700,6 +749,7 @@ export namespace UIFactory {
     subtitleOverlay: SubtitleOverlay,
     hideDelay: number | undefined = undefined,
     enableEcoMode: boolean = false,
+    showPersistentPreferencesToggle: boolean = false,
   ): SettingsPanel<SettingsPanelConfig> {
     const settingsPanelConfig: SettingsPanelConfig = {
       components: [],
@@ -774,6 +824,22 @@ export namespace UIFactory {
     });
     mainSettingsPanelPage.addComponent(subtitleSelectItem);
     settingsPanel.addComponent(subtitleSettingsPanelPage);
+
+    // Added last so the opt-in toggle sits at the bottom of the settings list, out of the
+    // way of the primary playback settings.
+    if (showPersistentPreferencesToggle) {
+      const persistentPreferencesToggle = new PersistentPreferencesToggleButton();
+      const persistentPreferencesLabel = new Label<LabelConfig>({
+        text: i18n.getLocalizer('persistentPreferences'),
+        for: persistentPreferencesToggle.getConfig().id,
+      });
+      mainSettingsPanelPage.addComponent(
+        new ToggleSettingsPanelItem({
+          label: persistentPreferencesLabel,
+          settingComponent: persistentPreferencesToggle,
+        }),
+      );
+    }
 
     return settingsPanel;
   }

@@ -1,6 +1,7 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
 import { SourceConfig } from 'bitmovin-player';
-import { LocalizationConfig } from './UIManager';
+import type { LocalizationConfig, UIVariantIdentifier } from './UIManager';
+import type { UIComponentConfigOverrides } from './UIComponentConfigOverrides';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -88,10 +89,37 @@ export interface UIConfig {
    * HTMLElement object. By default, the player container will be used ({@link PlayerAPI#getContainer}).
    */
   container?: string | HTMLElement;
+  /**
+   * Specifies UI metadata displayed or used by UI components.
+   */
   metadata?: {
+    /**
+     * Title displayed by {@link MetadataLabel} components configured for title content.
+     *
+     * Values provided via the {@link SourceConfig} `title` override this value.
+     */
     title?: string;
+    /**
+     * Description displayed by {@link MetadataLabel} components configured for description content.
+     *
+     * Values provided via the {@link SourceConfig} `description` override this value.
+     */
     description?: string;
+    /**
+     * Timeline markers rendered on components such as the {@link SeekBar}.
+     *
+     * Values provided via the {@link SourceConfig} `markers` override this array.
+     * Use {@link UIManager.addTimelineMarker} and {@link UIManager.removeTimelineMarker} to update timeline markers
+     * after the UI has been initialized or a Source was loaded.
+     */
     markers?: TimelineMarker[];
+    /**
+     * Recommendations displayed by the {@link RecommendationOverlay} after playback of the current source has ended.
+     *
+     * Values provided via the {@link SourceConfig} `recommendations` override this array.
+     * Use {@link UIManager.recommendations} to update recommendations after the UI has been initialized or
+     * a Source was loaded.
+     */
     recommendations?: RecommendationConfig[];
   };
   /**
@@ -160,6 +188,40 @@ export interface UIConfig {
    */
   disableStorageApi?: boolean;
   /**
+   * If set to true, the UI persists volume, mute state, and playback speed across sessions
+   * and reapplies them when a player using this UI is initialized — automatically, without
+   * any end-user interaction. Use {@link showPersistentPreferencesToggle} instead (or in
+   * addition) to delegate the decision to the end-user via a settings-panel toggle.
+   *
+   * Has no effect when `disableStorageApi` is true or `localStorage` is unavailable.
+   *
+   * Disabled by default so existing integrations (including automated tests and custom
+   * persistence layers) are not affected. Opt in explicitly per UI instance.
+   *
+   * Default: false
+   */
+  enablePersistentPreferences?: boolean;
+  /**
+   * If set to true, the settings panel shows an opt-in toggle that lets the end-user decide
+   * whether the UI persists volume, mute state, and playback speed across sessions. The
+   * user's choice is itself persisted; when {@link enablePersistentPreferences} is also set,
+   * it provides the toggle's initial (on) state until the user changes it.
+   *
+   * Has no effect when `disableStorageApi` is true or `localStorage` is unavailable.
+   *
+   * Default: false
+   */
+  showPersistentPreferencesToggle?: boolean;
+  /**
+   * If set to true, the UI parses a `t=<seconds>[s]` parameter from the page URL (either
+   * the query string or the URL fragment) and seeks to that time on the first
+   * `SourceLoaded` event. This is the consumer side of the "Copy link at current time"
+   * context-menu action. Has no effect on live streams.
+   *
+   * Default: true
+   */
+  enableTimestampDeepLink?: boolean;
+  /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    */
   ecoMode?: boolean;
@@ -208,6 +270,30 @@ export interface UIConfig {
    * Default: `360`
    */
   cea608SmallPlayerHeightThreshold?: number;
+  /**
+   * Allows overriding component-specific config without building a custom UI layout through the UIFactory.
+   * Component-specific config can be specified by the public component class name.
+   *
+   * Top-level entries apply to all UI variants. Entries nested under a {@link UIVariantIdentifier} only apply to that
+   * variant and override top-level component config. Component keys can be any public component class that extends
+   * {@link Component}. Base component keys also apply to subclasses, for example a `ToggleButton` config applies to
+   * `FullscreenToggleButton`, `VolumeToggleButton`, and other toggle buttons unless a more specific component key
+   * overrides it.
+   *
+   * @example
+   * ```ts
+   * componentConfigOverrides: {
+   *   // Applies to all ToggleButton based components in all UI variants.
+   *   ToggleButton: { buttonStyle: ButtonStyle.Text },
+   *
+   *   // Applies only to the main UI variant.
+   *   main: {
+   *     FullscreenToggleButton: { text: 'Main fullscreen' },
+   *   },
+   * }
+   * ```
+   */
+  componentConfigOverrides?: UIComponentConfigOverrides;
 }
 
 export interface ShadowDomConfig {

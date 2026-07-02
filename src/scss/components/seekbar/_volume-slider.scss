@@ -2,15 +2,28 @@
 @import '../../mixins';
 @import 'seek-bar';
 
+// Defines the size of the playback position marker (the knob) of the volume slider
+$volume-slider-marker-dimension: calc($seekbar-bar-height * 3 - 0.25rem);
+
 .#{$prefix}-ui-volumeslider {
   @extend %ui-seekbar;
 
   min-width: 50px;
 
   .#{$prefix}-seekbar-playbackposition-marker {
-    @include seekbar-position-marker($seekbar-bar-height * 3 - 0.25rem);
+    @include seekbar-position-marker($volume-slider-marker-dimension);
     background-color: $color-highlight;
     border: 0;
+  }
+
+  &.#{$prefix}-vertical {
+    min-height: 50px;
+    min-width: 0;
+
+    .#{$prefix}-seekbar-playbackposition-marker {
+      // Re-center as the volume slider marker is smaller than the default seek bar marker
+      @include seekbar-position-marker-vertical($volume-slider-marker-dimension);
+    }
   }
 
   .#{$prefix}-seekbar {

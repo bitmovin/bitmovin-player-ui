@@ -197,6 +197,22 @@ describe('SettingsPanel', () => {
     });
 
     describe('onComponentViewModeChanged', () => {
+      it('ignores component view mode changes when automatic hiding is disabled', () => {
+        const viewModeChanged = new EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs>();
+        Object.defineProperty(uiInstanceManagerMock, 'onComponentViewModeChanged', { value: viewModeChanged });
+        settingsPanel = new SettingsPanel({ components: [rootPage], hideDelay: -1 });
+        settingsPanel.configure(playerMock, uiInstanceManagerMock);
+
+        expect(() => {
+          viewModeChanged.dispatch(settingsPanel as unknown as Component<ComponentConfig>, {
+            mode: ViewMode.Persistent,
+          });
+          viewModeChanged.dispatch(settingsPanel as unknown as Component<ComponentConfig>, {
+            mode: ViewMode.Temporary,
+          });
+        }).not.toThrow();
+      });
+
       it('should suspend the hide timeout when a component enters the persistent view mode', () => {
         const suspendTimeoutSpy = jest.spyOn(settingsPanel['hideTimeout'], 'suspend');
 
@@ -241,6 +257,19 @@ describe('SettingsPanel', () => {
 
         expect(closeDropdownSpy).toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('items', () => {
+    it('does not create a label for an omitted label config', () => {
+      expect(new SettingsPanelItem({}).getComponents()).toHaveLength(0);
+    });
+
+    it('creates a label for a defined label config', () => {
+      const components = new SettingsPanelItem({ label: 'Quality' }).getComponents();
+
+      expect(components).toHaveLength(1);
+      expect(components[0]).toBeInstanceOf(Label);
     });
   });
 });

@@ -12,6 +12,8 @@
   "settings.subtitles.background.color": "Achtergrondkleur",
   "settings.subtitles.background.opacity": "Achtergrond doorzichtigheid",
   "settings.subtitles.options": "Opties",
+  "playerInsights.show": "Player Insights tonen",
+  "playerInsights.hide": "Player Insights verbergen",
   "colors.white": "wit",
   "colors.black": "zwart",
   "colors.red": "rood",
@@ -62,6 +64,7 @@
   "auto": "automatisch",
   "ecoMode": "Eco-modus",
   "ecoMode.title": "Eco-modus",
+  "persistentPreferences": "Voorkeuren onthouden",
   "back": "Terug",
   "reset": "Reset",
   "replay": "Opnieuw afspelen",
@@ -80,5 +83,8 @@
   "seekBar.timeshift": "Tijdverschuiving",
   "seekBar.durationText": "van",
   "quickseek.forward": "{seekSeconds} seconden vooruitspoelen",
-  "quickseek.rewind": "{seekSeconds} seconden terugspoelen"
+  "quickseek.rewind": "{seekSeconds} seconden terugspoelen",
+  "contextMenu.title": "Bitmovin Player",
+  "contextMenu.subtitle": "Adaptive streaming voor het web",
+  "contextMenu.copyTimestampLink": "Link naar huidig tijdstip kopiëren"
 }

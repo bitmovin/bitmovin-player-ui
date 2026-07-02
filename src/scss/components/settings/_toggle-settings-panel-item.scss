@@ -1,0 +1,37 @@
+@import '../../variables';
+@import '../../mixins';
+
+@mixin toggle-settings-panel-button {
+  height: 1em;
+  margin-left: auto;
+  min-width: 2.25em;
+  padding-left: 0;
+  padding-right: 0;
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  .#{$prefix}-ui-icon {
+    background-size: 100% auto;
+  }
+
+  &.#{$prefix}-on {
+    .#{$prefix}-ui-icon {
+      background-image: svg-load('../../assets/images/toggleOn.svg', fill=$color-icon);
+    }
+  }
+
+  &.#{$prefix}-off {
+    .#{$prefix}-ui-icon {
+      background-image: svg-load('../../assets/images/toggleOff.svg', stroke=$color-icon);
+    }
+  }
+}
+
+.#{$prefix}-ui-toggle-settings-panel-item {
+  button {
+    @extend %ui-button;
+    @include toggle-settings-panel-button;
+  }
+}

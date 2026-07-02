@@ -1,11 +1,14 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const replacer = require('replacer-util').replacer;
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
 const OUTPUT_ROOT_DIRECTORY = 'dist';
+const DEV_SERVER_BASE_PORT = 9000;
+process.env.WEBPACK_DEV_SERVER_BASE_PORT = process.env.WEBPACK_DEV_SERVER_BASE_PORT || String(DEV_SERVER_BASE_PORT);
 
 // You can customize the output names and css prefix by passing environment variables to the build script, e.g.:
 // ```
@@ -46,7 +49,7 @@ module.exports = (env, { mode }) => {
           exclude: /node_modules/,
           options: {
             multiple: [
-              { search: '{{VERSION}}', replace: JSON.stringify(require('./package.json').version), flags: 'g' },
+              { search: '{{VERSION}}', replace: require('./package.json').version, flags: 'g' },
               { search: '{{PREFIX}}', replace: outputnames.cssPrefix, flags: 'g' },
               { search: '{{FILENAME}}', replace: outputnames.filename, flags: 'g' },
             ],
@@ -135,6 +138,16 @@ module.exports = (env, { mode }) => {
     resolve: {
       extensions: ['.ts', '.js', '.scss', '.css'],
     },
+    optimization: {
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            keep_classnames: true,
+            keep_fnames: true,
+          },
+        }),
+      ],
+    },
     output: {
       path: path.resolve(__dirname, OUTPUT_ROOT_DIRECTORY),
       publicPath: '',
@@ -144,7 +157,8 @@ module.exports = (env, { mode }) => {
       static: {
         directory: path.join(__dirname, OUTPUT_ROOT_DIRECTORY),
       },
-      port: 9000,
+      allowedHosts: 'all',
+      port: 'auto',
       hot: true,
       client: {
         overlay: {

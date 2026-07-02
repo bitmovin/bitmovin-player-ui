@@ -1,0 +1,20 @@
+@import '../../variables';
+
+%ui-context-menu {
+  @extend %ui-settings-panel;
+
+  bottom: unset;
+  max-height: unset;
+  min-width: 14em;
+  right: unset;
+  width: fit-content;
+  z-index: 101;
+
+  &.#{$prefix}-hidden {
+    pointer-events: none;
+  }
+}
+
+.#{$prefix}-ui-context-menu {
+  @extend %ui-context-menu;
+}

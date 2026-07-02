@@ -49,7 +49,10 @@ export class BackgroundOpacitySelectBox extends SubtitleSettingSelectBox {
       this.selectItem(property.value);
     });
 
-    // Load initial value
+    this.initFromSettings();
+  }
+
+  private initFromSettings(): void {
     if (this.settingsManager.backgroundOpacity.isSet()) {
       this.selectItem(this.settingsManager.backgroundOpacity.value);
     }

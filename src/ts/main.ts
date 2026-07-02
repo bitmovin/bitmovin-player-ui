@@ -1,7 +1,8 @@
-export const version: string = '{{VERSION}}';
+export { version } from './version';
 // Management
 export * from './UIManager';
 export * from './UIConfig';
+export type { UIComponentConfigMap, UIComponentConfigOverrides } from './UIComponentConfigOverrides';
 // Factories
 export { UIFactory } from './UIFactory';
 // Utils
@@ -11,6 +12,7 @@ export { PlayerUtils } from './utils/PlayerUtils';
 export { UIUtils } from './utils/UIUtils';
 export { BrowserUtils } from './utils/BrowserUtils';
 export { StorageUtils } from './utils/StorageUtils';
+export { UIPreferencesManager } from './utils/UIPreferencesManager';
 export { ErrorUtils } from './utils/ErrorUtils';
 export { ShadowDomManager } from './utils/ShadowDomManager';
 // Localization
@@ -94,6 +96,12 @@ export { AdCounterLabel } from './components/ads/AdCounterLabel';
 export { PlaybackSpeedSelectBox } from './components/settings/PlaybackSpeedSelectBox';
 export { HugeReplayButton } from './components/buttons/HugeReplayButton';
 export { BufferingOverlay, BufferingOverlayConfig } from './components/overlays/BufferingOverlay';
+export { ContextMenu, ContextMenuConfig } from './components/contextmenu/ContextMenu';
+export {
+  InteractiveContextMenuItem,
+  InteractiveContextMenuItemConfig,
+} from './components/contextmenu/InteractiveContextMenuItem';
+export { PlayerContextMenu, PlayerContextMenuConfig } from './components/contextmenu/PlayerContextMenu';
 export { CastUIContainer } from './components/CastUIContainer';
 export { PlaybackToggleOverlay, PlaybackToggleOverlayConfig } from './components/overlays/PlaybackToggleOverlay';
 export { CloseButton, CloseButtonConfig } from './components/buttons/CloseButton';
@@ -131,6 +139,7 @@ export {
   DynamicSettingsPanelItem,
   DynamicSettingsPanelItemConfig,
 } from './components/settings/DynamicSettingsPanelItem';
+export { ToggleSettingsPanelItem, ToggleSettingsPanelItemConfig } from './components/settings/ToggleSettingsPanelItem';
 export { ReplayButton } from './components/buttons/ReplayButton';
 export { QuickSeekButton, QuickSeekButtonConfig } from './components/buttons/QuickSeekButton';
 export {
@@ -146,6 +155,7 @@ export { Icon } from './components/Icon';
 export { DismissClickOverlay, DismissClickOverlayConfig } from './components/overlays/DismissClickOverlay';
 export { EcoModeContainer } from './components/EcoModeContainer';
 export { EcoModeToggleButton } from './components/buttons/EcoModeToggleButton';
+export { PersistentPreferencesToggleButton } from './components/buttons/PersistentPreferencesToggleButton';
 export { TvNoiseCanvas } from './components/TvNoiseCanvas';
 export { SmallCenteredPlaybackToggleButton } from './components/buttons/SmallCenteredPlaybackToggleButton';
 export {
@@ -156,6 +166,11 @@ export {
   SettingsPanelPageNavigatorButton,
   SettingsPanelPageNavigatorConfig,
 } from './components/settings/SettingsPanelPageNavigatorButton';
+export { SettingsPanelSeparator, SettingsPanelSeparatorConfig } from './components/settings/SettingsPanelSeparator';
+export {
+  PlayerInsightsPanel,
+  PlayerInsightsPanelConfig,
+} from './components/panels/player-insights/PlayerInsightsPanel';
 export { InteractiveSettingsPanelItem } from './components/settings/InteractiveSettingsPanelItem';
 export { TouchControlOverlay, TouchControlOverlayConfig } from './components/overlays/TouchControlOverlay';
 export { CharacterEdgeColorSelectBox } from './components/settings/subtitlesettings/CharacterEdgeColorSelectBox';

@@ -15,6 +15,8 @@ import { i18n } from '../../localization/i18n';
  */
 export class SubtitleSelectBox extends SelectBox {
   constructor(config: ListSelectorConfig = {}) {
+    super(config);
+
     const comparator = config.comparator
       ? (itemA: ListItem, itemB: ListItem) => {
           if (
@@ -33,13 +35,10 @@ export class SubtitleSelectBox extends SelectBox {
         }
       : undefined;
 
-    super({
-      ...config,
-      comparator,
-    });
-
     this.config = this.mergeConfig(
       {
+        // Overriding the comparator from config to ensure the OFF item
+        // is properly pinned to the top
         ...config,
         comparator,
       },

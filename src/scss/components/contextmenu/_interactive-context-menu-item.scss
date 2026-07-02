@@ -1,0 +1,5 @@
+@import '../../variables';
+
+.#{$prefix}-ui-interactive-context-menu-item {
+  @extend %ui-settings-panel-item;
+}
