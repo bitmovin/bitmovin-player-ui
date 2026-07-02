@@ -6,6 +6,37 @@ These notes apply to `bitmovin-player-ui` checkouts and worktrees. Keep the guid
 
 This is an open-source repo. Do not put private/internal issue IDs in branch names, PR titles, PR descriptions, changelog entries, or public comments.
 
+## General
+
+You bring a senior engineer’s judgment to the work, but you let it arrive through attention rather than premature certainty. You read the codebase first, resist easy assumptions, and let the shape of the existing system teach you how to move.
+
+- When you search for text or files, you reach first for rg or rg --files; they are much faster than alternatives like grep. If rg is unavailable, you use the next best tool without fuss.
+- You parallelize tool calls whenever you can, especially file reads such as cat, rg, sed, ls, git show, nl, and wc.
+
+## Engineering Judgment
+
+When the user leaves implementation details open, you choose conservatively and in sympathy with the codebase already in front of you:
+
+- Read the surrounding UI framework before changing it: component, manager, factory, SCSS, and spec patterns usually show where a change belongs.
+- You prefer the repo’s existing patterns, frameworks, and local helper APIs over inventing a new style of abstraction.
+- Use structured APIs, typed helpers, and existing parsers instead of ad hoc string manipulation when the repo or platform already provides them.
+- Keep changes local unless shared behavior already exists or the same rule is repeated in more than one place.
+- Add abstractions only when they remove real duplication, document a stable public surface, or match an established local pattern.
+- Treat exported config, components, `UIFactory` layouts, `UIManager` APIs, and TypeDoc-visible types as public API.
+- Let verification match risk: focused specs and targeted checks for local changes; browser and mobile SDK verification when behavior crosses UI or platform boundaries.
+
+## Editing Guardrails
+
+- You may be in a dirty git worktree.
+- While working, you may encounter changes you did not make. You assume they came from the user or from generated output, and you do NOT revert them. If they are unrelated to your task, you ignore them. If they affect your task, you work with them instead of undoing them. Only ask the user how to proceed if those changes make the task impossible to complete.
+- NEVER revert existing changes you did not make unless explicitly requested, since these changes were made by the user.
+- If asked to make a commit or code edits and there are unrelated changes to your work or changes that you didn't make in those files, don't revert those changes.
+- If the changes are in files you've touched recently, you should read carefully and understand how you can work with the changes rather than reverting them.
+- If the changes are in unrelated files, just ignore them and don't revert them.
+- Keep manual edits narrow and reviewable. Avoid unrelated cleanup, formatting churn, or opportunistic refactors.
+- Add comments only for non-obvious behavior contracts, precedence, lifecycle, browser/platform quirks, or public API expectations.
+- Avoid destructive Git commands such as `git reset --hard` or forced checkouts unless the user explicitly asks for them.
+
 ## UI Structure
 
 - `UIFactory` is the composition layer. Default layouts, variant-specific layout wiring, and feature-to-component wiring should live there instead of making low-level components know about a specific feature.
@@ -21,6 +52,7 @@ This is an open-source repo. Do not put private/internal issue IDs in branch nam
 
 - The player is the source of truth for playback state. UI code should observe the player and recompute from player APIs or events instead of inferring playback state from UI variant, controlbar state, or component internals.
 - For runtime player enums, events, and classes, prefer the active `player.exports.*` surface so the UI uses the same player instance it is attached to. Type-only imports from `bitmovin-player` are common in this repo, but do not add runtime player imports that can duplicate player code in the UI bundle.
+- Use the public [Player Web API reference](https://cdn.bitmovin.com/player/web/8/docs/index.html) as the first source of truth for `player.*` and `player.exports.*` behavior.
 - This UI is also used by the Bitmovin Android and iOS SDKs. Browser automation cannot fully cover those WebView/native-bridge environments, so changes that touch player APIs, platform/browser APIs, input behavior, layout, or generated markup need manual mobile SDK verification.
 - The UI is implemented against the Player Web API. Before using a new `player.*` or `player.exports.*` API, verify that the Android and iOS SDK bridges expose it and that return values, events, timing, error behavior, and `undefined`/`null` cases match the web player closely enough for the UI code.
 - When code needs mobile-specific player behavior, model that boundary explicitly with `MobileV3PlayerAPI` and `isMobileV3PlayerAPI(...)`. Do not let mobile-only events or error shapes leak into the regular web-player path.
@@ -61,7 +93,7 @@ export interface UIComponentConfigMap {
 - Constructor/config refactors need semantic checks, not only lint. Verify default merging, subclass/base override order, wrapped callbacks/comparators, and externally supplied child components.
 - If public config behavior has precedence rules, document the exact order near the public type and cover it with a focused spec.
 
-## Component And SCSS Changes
+## Component Construction And Styling
 
 - Follow the existing component layout: component classes under `src/ts/components/...`, matching SCSS partials under `src/scss/components/...` when styling is needed, and exports from `src/ts/main.ts` for public API.
 - Reuse existing primitives before adding a new component family. The repo already has containers, buttons, panels, settings-panel items, context-menu items, overlays, list/select components, and spatial navigation helpers.
