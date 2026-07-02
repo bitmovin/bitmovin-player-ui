@@ -259,4 +259,17 @@ describe('SettingsPanel', () => {
       });
     });
   });
+
+  describe('items', () => {
+    it('does not create a label for an omitted label config', () => {
+      expect(new SettingsPanelItem({}).getComponents()).toHaveLength(0);
+    });
+
+    it('creates a label for a defined label config', () => {
+      const components = new SettingsPanelItem({ label: 'Quality' }).getComponents();
+
+      expect(components).toHaveLength(1);
+      expect(components[0]).toBeInstanceOf(Label);
+    });
+  });
 });

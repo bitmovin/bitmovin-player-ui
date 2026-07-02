@@ -27,10 +27,22 @@ describe('ToggleSettingsPanelItem', () => {
   it('does not toggle twice when the button itself is clicked', () => {
     const toggleButton = new ToggleButton({});
     const settingsPanelItem = configureToggleSettingsPanelItem(toggleButton);
-    toggleButton.onClick.subscribe(() => toggleButton.toggle());
 
     toggleButton.getDomElement().get(0).click();
 
+    expect(toggleButton.isOn()).toBe(true);
+    expect(settingsPanelItem.getDomElement().get(0).getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('does not dispatch the button click when forwarding to the row', () => {
+    const toggleButton = new ToggleButton({});
+    const settingsPanelItem = configureToggleSettingsPanelItem(toggleButton);
+    const onButtonClick = jest.fn();
+    toggleButton.onClick.subscribe(onButtonClick);
+
+    toggleButton.getDomElement().get(0).click();
+
+    expect(onButtonClick).not.toHaveBeenCalled();
     expect(toggleButton.isOn()).toBe(true);
     expect(settingsPanelItem.getDomElement().get(0).getAttribute('aria-checked')).toBe('true');
   });
@@ -41,6 +53,7 @@ describe('ToggleSettingsPanelItem', () => {
     configureToggleSettingsPanelItem(toggleButton);
 
     expect(toggleButton.getDomElement().get(0).getAttribute('tabindex')).toBe('-1');
+    expect(toggleButton.getDomElement().get(0).getAttribute('aria-hidden')).toBe('true');
   });
 
   it('adds the toggle settings panel item CSS class', () => {

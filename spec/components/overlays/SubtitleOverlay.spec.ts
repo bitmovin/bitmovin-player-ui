@@ -326,7 +326,9 @@ describe('SubtitleOverlay', () => {
       playerMock.eventEmitter.fireSubtitleCueEnterEvent({ position: { row: 5, column: 10 } });
     }
 
-    function setupOverlay(config: { enableCea608CaptionFormatting?: boolean } = {}): {
+    function setupOverlay(
+      config: { enableCea608CaptionFormatting?: boolean; enableCea608CaptionPositioning?: boolean } = {},
+    ): {
       overlay: SubtitleOverlay;
       overlayDom: jest.Mocked<DOM>;
     } {
@@ -452,6 +454,106 @@ describe('SubtitleOverlay', () => {
       const writtenStyles = cssCalls.map((call: unknown[]) => call[0]).filter(arg => arg && typeof arg === 'object');
       const hasLetterSpacingWrite = writtenStyles.some(style => 'letter-spacing' in (style as object));
       expect(hasLetterSpacingWrite).toBe(letterSpacingExpected);
+    });
+  });
+
+  describe('CEA-608 caption positioning config', () => {
+    let RealSubtitleOverlay: typeof SubtitleOverlay;
+    let RealSubtitleRegionContainer: typeof SubtitleRegionContainer;
+
+    beforeAll(() => {
+      jest.isolateModules(() => {
+        jest.unmock('../../../src/ts/components/Container');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const module = require('../../../src/ts/components/overlays/SubtitleOverlay');
+        RealSubtitleOverlay = module.SubtitleOverlay;
+        RealSubtitleRegionContainer = module.SubtitleRegionContainer;
+      });
+    });
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
+      uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    function fireCea608CueEnter() {
+      playerMock.eventEmitter.fireSubtitleCueEnterEvent({ position: { row: 5, column: 10 } });
+    }
+
+    function setupPositioningOverlay(
+      config: { enableCea608CaptionFormatting?: boolean; enableCea608CaptionPositioning?: boolean } = {},
+    ): {
+      overlay: SubtitleOverlay;
+      overlayDom: jest.Mocked<DOM>;
+    } {
+      const overlay = new RealSubtitleOverlay(config);
+      overlay.configure(playerMock, uiInstanceManagerMock);
+      (overlay as any).ensureCea608GridSizeUpdated = (): void => undefined;
+      const overlayDom = MockHelper.generateDOMMock();
+      jest.spyOn(overlay, 'getDomElement').mockReturnValue(overlayDom);
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+      jest.spyOn(overlay, 'updateComponents').mockImplementation(() => undefined);
+      jest.spyOn(RealSubtitleRegionContainer.prototype, 'updateComponents').mockImplementation(() => undefined);
+      return { overlay, overlayDom };
+    }
+
+    it('does not apply the cea608 class when enableCea608CaptionPositioning is false', () => {
+      const { overlayDom } = setupPositioningOverlay({ enableCea608CaptionPositioning: false });
+
+      fireCea608CueEnter();
+
+      expect(overlayDom.addClass).not.toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+    });
+
+    it('does not set left offset or regionStyle on the label when enableCea608CaptionPositioning is false', () => {
+      const { overlay } = setupPositioningOverlay({ enableCea608CaptionPositioning: false });
+      const addLabelSpy = jest.spyOn((overlay as any).subtitleContainerManager, 'addLabel');
+
+      fireCea608CueEnter();
+
+      const label = addLabelSpy.mock.calls[0][0] as SubtitleLabel;
+      const cssCalls = (label.getDomElement().css as jest.Mock).mock.calls;
+      expect(cssCalls).toHaveLength(0);
+      expect((label as any).regionStyle).toBeUndefined();
+    });
+
+    it('still applies cea608-formatting class when positioning is disabled and formatting is enabled', () => {
+      const { overlayDom } = setupPositioningOverlay({ enableCea608CaptionPositioning: false });
+
+      fireCea608CueEnter();
+
+      expect(overlayDom.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+    });
+
+    it('does not apply cea608-formatting class when both positioning and formatting are disabled', () => {
+      const { overlayDom } = setupPositioningOverlay({
+        enableCea608CaptionPositioning: false,
+        enableCea608CaptionFormatting: false,
+      });
+
+      fireCea608CueEnter();
+
+      expect(overlayDom.addClass).not.toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+    });
+
+    it('removes the cea608-formatting class on reset when positioning was disabled', () => {
+      const { overlayDom } = setupPositioningOverlay({ enableCea608CaptionPositioning: false });
+
+      fireCea608CueEnter();
+      playerMock.eventEmitter.fireSourceUnloadedEvent();
+
+      expect(overlayDom.removeClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
+    });
+
+    it('adds both cea608 and cea608-formatting classes when positioning and formatting are both enabled (default)', () => {
+      const { overlayDom } = setupPositioningOverlay();
+
+      fireCea608CueEnter();
+
+      expect(overlayDom.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608$/));
+      expect(overlayDom.addClass).toHaveBeenCalledWith(expect.stringMatching(/cea608-formatting$/));
     });
   });
 

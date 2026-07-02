@@ -42,10 +42,22 @@ export class ToggleSettingsPanelItem extends InteractiveSettingsPanelItem<Toggle
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    // Keyboard selection belongs to the row, otherwise Enter/Space can activate both the button and the row.
+    // Keyboard, click, and accessibility semantics belong to the row. Disabling it on the ToggleButton explicitly.
     this.settingComponent.getDomElement().attr('tabindex', '-1');
-    // The button handles its own click; keep that click from bubbling into the row and toggling twice.
-    this.settingComponent.getDomElement().on('click', event => event.stopPropagation());
+    this.settingComponent.setAriaAttr('hidden', 'true');
+    this.settingComponent.getDomElement().on(
+      'click',
+      event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.onClickEvent();
+      },
+      true,
+    );
+    // Mirror the disabled state from the ToggleButton to the row
+    const updateDisabledState = () => {
+      this.setAriaAttr('disabled', this.settingComponent.isDisabled() ? 'true' : 'false');
+    };
 
     this.onClick.subscribe(() => {
       if (!this.settingComponent.isDisabled()) {
@@ -54,7 +66,10 @@ export class ToggleSettingsPanelItem extends InteractiveSettingsPanelItem<Toggle
     });
 
     this.settingComponent.onToggle.subscribe(() => this.updateAriaChecked());
+    this.settingComponent.onDisabled.subscribe(updateDisabledState);
+    this.settingComponent.onEnabled.subscribe(updateDisabledState);
     this.updateAriaChecked();
+    updateDisabledState();
   }
 
   private updateAriaChecked(): void {

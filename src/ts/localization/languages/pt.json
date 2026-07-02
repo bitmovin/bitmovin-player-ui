@@ -65,7 +65,6 @@
   "ecoMode": "ecoMode",
   "ecoMode.title": "Modo Económico",
   "persistentPreferences": "Lembrar preferências",
-  "persistentPreferences.title": "Lembrar preferências",
   "back": "Voltar atrás",
   "reset": "Reiniciar",
   "replay": "Repetir",
@@ -86,5 +85,6 @@
   "quickseek.forward": "Avançar {seekSeconds} segundos",
   "quickseek.rewind": "Retroceder {seekSeconds} segundos",
   "contextMenu.title": "Bitmovin Player",
-  "contextMenu.subtitle": "Streaming adaptativo para a web"
+  "contextMenu.subtitle": "Streaming adaptativo para a web",
+  "contextMenu.copyTimestampLink": "Copiar ligação no momento atual"
 }
