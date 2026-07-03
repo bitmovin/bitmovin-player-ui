@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `UIVariantIdentifier` to scope component config overrides to individual default UI variants.
 - `ToggleSettingsPanelItem` for settings rows that toggle their nested `ToggleButton` when the row is selected.
 - `UIConfig.enablePersistentPreferences` and `UIConfig.showPersistentPreferencesToggle` to configure whether the UI persists volume, mute state, and playback speed across sessions.
+- `AGENTS.md` and `CLAUDE.md` with repo-specific guidance for working with the UI framework, public APIs, mobile SDK verification, and PR workflow.
 
 ## [4.16.1] - 2026-06-25
 
