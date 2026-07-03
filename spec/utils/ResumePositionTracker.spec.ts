@@ -69,6 +69,14 @@ describe('ResumePositionTracker', () => {
     expect(storageKey).not.toContain(sourceUrl);
   });
 
+  it('stores playback progress as time changes', () => {
+    tracker = new ResumePositionTracker(player);
+
+    player.eventEmitter.fireTimeChangedEvent(120);
+
+    expect(window.localStorage.getItem(storageKey)).toBe('120');
+  });
+
   it('stores the last known position when the source is unloaded', () => {
     tracker = new ResumePositionTracker(player);
     player.eventEmitter.fireTimeChangedEvent(120);

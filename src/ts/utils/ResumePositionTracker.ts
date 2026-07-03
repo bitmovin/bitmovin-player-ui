@@ -44,6 +44,7 @@ export class ResumePositionTracker {
 
     if (isFinite(event.time)) {
       this.lastPosition = event.time;
+      this.savePosition(this.lastPosition);
     }
   };
 
