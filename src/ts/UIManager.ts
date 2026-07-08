@@ -1021,7 +1021,9 @@ export class UIInstanceManager {
       this.uiContainer = this.uiVariant.ui;
     }
 
-    new ComponentLayoutOverrideProcessor(this.config, this.uiVariant.identifier).process(this.uiContainer);
+    if (this.uiVariant.identifier != null) {
+      new ComponentLayoutOverrideProcessor(this.config, this.uiVariant.identifier).process(this.uiContainer);
+    }
     return this.uiContainer;
   }
 
