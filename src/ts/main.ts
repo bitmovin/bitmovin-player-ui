@@ -3,6 +3,8 @@ export { version } from './version';
 export * from './UIManager';
 export * from './UIConfig';
 export type { UIComponentConfigMap, UIComponentConfigOverrides } from './UIComponentConfigOverrides';
+export { UIComponentLayoutOverride } from './UIComponentLayoutOverrides';
+export type { UIComponentLayoutOverrideMap, UIComponentLayoutOverrides } from './UIComponentLayoutOverrides';
 // Factories
 export { UIFactory } from './UIFactory';
 // Utils

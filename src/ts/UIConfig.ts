@@ -2,6 +2,7 @@ import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/E
 import { SourceConfig } from 'bitmovin-player';
 import type { LocalizationConfig, UIVariantIdentifier } from './UIManager';
 import type { UIComponentConfigOverrides } from './UIComponentConfigOverrides';
+import type { UIComponentLayoutOverrides } from './UIComponentLayoutOverrides';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -132,6 +133,8 @@ export interface UIConfig {
   /**
    * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
    * Default: true
+   *
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} with `PlaybackSpeedSelectBox` instead.
    */
   playbackSpeedSelectionEnabled?: boolean;
   /**
@@ -223,6 +226,8 @@ export interface UIConfig {
   enableTimestampDeepLink?: boolean;
   /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
+   *
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} with `EcoModeContainer` instead.
    */
   ecoMode?: boolean;
   /**
@@ -230,8 +235,14 @@ export interface UIConfig {
    * Per default, the Watermark shows the Bitmovin Logo.
    *
    * Default: false
+   *
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} with `Watermark` instead.
    */
   includeWatermark?: boolean;
+  /**
+   * Allows including or excluding supported components from default UIFactory layouts without rebuilding the layout.
+   */
+  componentLayoutOverrides?: UIComponentLayoutOverrides;
   /**
    * Configure Shadow DOM rendering.
    * Enable it with:
