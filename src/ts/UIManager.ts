@@ -22,6 +22,8 @@ import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
 import { ComponentConfigManager } from './utils/ComponentConfigManager';
+import { ComponentLayoutOverrideProcessor } from './utils/ComponentLayoutOverrideProcessor';
+import { UIComponentLayoutOverride } from './UIComponentLayoutOverrides';
 
 /**
  * @category Configs
@@ -319,6 +321,23 @@ export class UIManager {
       enableTimestampDeepLink: true,
       shadowDom: false,
       ...uiconfig,
+      componentLayoutOverrides: {
+        EcoModeContainer: UIComponentLayoutOverride.Exclude,
+        QuickSeekButton: UIComponentLayoutOverride.Exclude,
+        Watermark: UIComponentLayoutOverride.Exclude,
+        ...(uiconfig.ecoMode != null && {
+          EcoModeContainer: uiconfig.ecoMode ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
+        }),
+        ...(uiconfig.includeWatermark != null && {
+          Watermark: uiconfig.includeWatermark ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
+        }),
+        ...(uiconfig.playbackSpeedSelectionEnabled != null && {
+          PlaybackSpeedSelectBox: uiconfig.playbackSpeedSelectionEnabled
+            ? UIComponentLayoutOverride.Include
+            : UIComponentLayoutOverride.Exclude,
+        }),
+        ...uiconfig.componentLayoutOverrides,
+      },
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
@@ -960,7 +979,6 @@ export class UIInstanceManager {
     this.uiPreferencesManager = uiPreferencesManager;
     this.uiWrapperElement = uiWrapperElement;
     if (typeof uiVariant.ui !== 'function') {
-      this.uiContainer = uiVariant.ui;
       this.spatialNavigation = (uiVariant as UIVariant).spatialNavigation;
     }
   }
@@ -1003,6 +1021,7 @@ export class UIInstanceManager {
       this.uiContainer = this.uiVariant.ui;
     }
 
+    new ComponentLayoutOverrideProcessor(this.config, this.uiVariant.identifier).process(this.uiContainer);
     return this.uiContainer;
   }
 
