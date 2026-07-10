@@ -5,6 +5,38 @@ export enum UIComponentLayoutOverride {
   Exclude = 'exclude',
 }
 
+/**
+ * Component layout overrides keyed by public component class name, optionally scoped by UI variant.
+ *
+ * Overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Top-level entries apply to all
+ * identified UI variants. Variant-scoped entries override top-level entries for the matching variant.
+ *
+ * Base component keys also apply to subclasses, and more specific component keys override base component keys. For
+ * example, `ToggleButton` applies to `FullscreenToggleButton`, unless `FullscreenToggleButton` has its own override.
+ *
+ * Default component layout overrides for identified variants:
+ * ```ts
+ * componentLayoutOverrides: {
+ *   EcoModeContainer: UIComponentLayoutOverride.Exclude,
+ *   QuickSeekButton: UIComponentLayoutOverride.Exclude,
+ *   Watermark: UIComponentLayoutOverride.Exclude,
+ * }
+ * ```
+ *
+ * @example
+ * ```ts
+ * componentLayoutOverrides: {
+ *   FullscreenToggleButton: UIComponentLayoutOverride.Exclude,
+ *
+ *   [UIVariantIdentifier.main]: {
+ *     FullscreenToggleButton: UIComponentLayoutOverride.Include,
+ *     Watermark: UIComponentLayoutOverride.Include,
+ *   },
+ * }
+ * ```
+ *
+ * @category Configs
+ */
 export interface UIComponentLayoutOverrides extends UIComponentLayoutOverrideMap {
   /**
    * Component layout overrides for the empty UI variant.
@@ -66,7 +98,8 @@ export interface UIComponentLayoutOverrides extends UIComponentLayoutOverrideMap
  * Component layout overrides keyed by public component class name.
  *
  * Each property matches a public component class name. The value controls whether default layouts keep or remove
- * matching component instances.
+ * matching component instances. Base component keys apply to subclasses, and more specific component keys override base
+ * component keys.
  *
  * @category Configs
  */

@@ -258,6 +258,7 @@ export class UIManager {
   private shadowDomManager: ShadowDomManager;
   private recommendationsApi: RecommendationsApi;
   private timelineMarkersApi: TimelineMarkersApi;
+  private componentLayoutOverrideProcessor: ComponentLayoutOverrideProcessor;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -344,6 +345,7 @@ export class UIManager {
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
       adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer()),
     };
+    this.componentLayoutOverrideProcessor = new ComponentLayoutOverrideProcessor(this.config);
 
     this.recommendationsApi = {
       add: (recommendation: RecommendationConfig): void => {
@@ -788,6 +790,12 @@ export class UIManager {
 
   private addUi(ui: InternalUIInstanceManager): void {
     const uiContainer = ui.resolveUI();
+
+    // Layout overrides target built-in variant identifiers. Variants without identifiers keep their tree unchanged.
+    if (ui.variantIdentifier != null) {
+      this.componentLayoutOverrideProcessor.process(uiContainer, ui.variantIdentifier);
+    }
+
     const dom = uiContainer.getDomElement();
     const player = ui.getWrappedPlayer();
 
@@ -999,6 +1007,10 @@ export class UIInstanceManager {
     return this.uiVariant.condition;
   }
 
+  get variantIdentifier(): UIVariantIdentifier | undefined {
+    return this.uiVariant.identifier;
+  }
+
   resolveUI(): UIContainer {
     if (this.uiContainer) {
       return this.uiContainer;
@@ -1021,9 +1033,6 @@ export class UIInstanceManager {
       this.uiContainer = this.uiVariant.ui;
     }
 
-    if (this.uiVariant.identifier != null) {
-      new ComponentLayoutOverrideProcessor(this.config, this.uiVariant.identifier).process(this.uiContainer);
-    }
     return this.uiContainer;
   }
 

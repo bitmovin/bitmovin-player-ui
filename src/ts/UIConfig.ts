@@ -240,10 +240,6 @@ export interface UIConfig {
    */
   includeWatermark?: boolean;
   /**
-   * Allows including or excluding supported components from default UIFactory layouts without rebuilding the layout.
-   */
-  componentLayoutOverrides?: UIComponentLayoutOverrides;
-  /**
    * Configure Shadow DOM rendering.
    * Enable it with:
    * `shadowDom: true`
@@ -305,6 +301,43 @@ export interface UIConfig {
    * ```
    */
   componentConfigOverrides?: UIComponentConfigOverrides;
+  /**
+   * Allows including or excluding supported components from default UIFactory layouts without rebuilding the layout.
+   *
+   * Component layout overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Variants without an
+   * identifier keep their resolved component tree unchanged.
+   *
+   * Top-level entries apply to all identified UI variants. Entries nested under a {@link UIVariantIdentifier} only
+   * apply to that variant and override top-level layout overrides.
+   *
+   * Base component keys also apply to subclasses, and more specific component keys override base component keys. For
+   * example, `ToggleButton` applies to `FullscreenToggleButton`, unless `FullscreenToggleButton` has its own override.
+   *
+   * Default component layout overrides for identified variants:
+   * ```ts
+   * componentLayoutOverrides: {
+   *   EcoModeContainer: UIComponentLayoutOverride.Exclude,
+   *   QuickSeekButton: UIComponentLayoutOverride.Exclude,
+   *   Watermark: UIComponentLayoutOverride.Exclude,
+   * }
+   * ```
+   *
+   * Legacy aliases (`includeWatermark`, `ecoMode`, and `playbackSpeedSelectionEnabled`) are resolved before
+   * `componentLayoutOverrides`, so explicit layout overrides take precedence.
+   *
+   * @example
+   * ```ts
+   * componentLayoutOverrides: {
+   *   FullscreenToggleButton: UIComponentLayoutOverride.Exclude,
+   *
+   *   [UIVariantIdentifier.main]: {
+   *     FullscreenToggleButton: UIComponentLayoutOverride.Include,
+   *     Watermark: UIComponentLayoutOverride.Include,
+   *   },
+   * }
+   * ```
+   */
+  componentLayoutOverrides?: UIComponentLayoutOverrides;
 }
 
 export interface ShadowDomConfig {
