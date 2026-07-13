@@ -8,8 +8,21 @@ export enum UIComponentLayoutOverride {
 /**
  * Component layout overrides keyed by public component class name, optionally scoped by UI variant.
  *
- * Overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Top-level entries apply to all
- * identified UI variants. Variant-scoped entries override top-level entries for the matching variant.
+ * Overrides are applied after a UI variant has been resolved and before `configureControls()` runs. Excluded components
+ * are removed from the resolved component tree and released before the remaining components are initialized or
+ * configured.
+ *
+ * Overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Variants without an identifier keep
+ * their resolved component tree unchanged.
+ *
+ * Precedence is resolved in this order:
+ * 1. Built-in default layout membership
+ * 2. Legacy aliases (`includeWatermark`, `ecoMode`, and `playbackSpeedSelectionEnabled`)
+ * 3. Top-level `componentLayoutOverrides`
+ * 4. Variant-scoped `componentLayoutOverrides`
+ *
+ * Top-level entries apply to all identified UI variants. Variant-scoped entries override top-level entries for the
+ * matching variant.
  *
  * Base component keys also apply to subclasses, and more specific component keys override base component keys. For
  * example, `ToggleButton` applies to `FullscreenToggleButton`, unless `FullscreenToggleButton` has its own override.

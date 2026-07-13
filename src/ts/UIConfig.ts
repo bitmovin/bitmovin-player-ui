@@ -307,23 +307,7 @@ export interface UIConfig {
    * Component layout overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Variants without an
    * identifier keep their resolved component tree unchanged.
    *
-   * Top-level entries apply to all identified UI variants. Entries nested under a {@link UIVariantIdentifier} only
-   * apply to that variant and override top-level layout overrides.
-   *
-   * Base component keys also apply to subclasses, and more specific component keys override base component keys. For
-   * example, `ToggleButton` applies to `FullscreenToggleButton`, unless `FullscreenToggleButton` has its own override.
-   *
-   * Default component layout overrides for identified variants:
-   * ```ts
-   * componentLayoutOverrides: {
-   *   EcoModeContainer: UIComponentLayoutOverride.Exclude,
-   *   QuickSeekButton: UIComponentLayoutOverride.Exclude,
-   *   Watermark: UIComponentLayoutOverride.Exclude,
-   * }
-   * ```
-   *
-   * Legacy aliases (`includeWatermark`, `ecoMode`, and `playbackSpeedSelectionEnabled`) are resolved before
-   * `componentLayoutOverrides`, so explicit layout overrides take precedence.
+   * See {@link UIComponentLayoutOverrides} for more details.
    *
    * @example
    * ```ts
