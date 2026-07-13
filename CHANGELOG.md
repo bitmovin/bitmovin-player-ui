@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Spatial navigation on the TV UI no longer lets focus escape the active navigation group when pressing a direction at the group's edge on some smart TVs.
+
 ## [4.17.0] - 2026-07-02
 
 ### Added
