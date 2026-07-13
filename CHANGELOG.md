@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `UIConfig.componentLayoutOverrides` and `UIComponentLayoutOverride` to include or exclude default UI components without rebuilding complete UI layouts through the `UIFactory`.
+
 ## [4.17.0] - 2026-07-02
 
 ### Added
