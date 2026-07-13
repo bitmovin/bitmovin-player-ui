@@ -987,6 +987,7 @@ export class UIInstanceManager {
     this.uiPreferencesManager = uiPreferencesManager;
     this.uiWrapperElement = uiWrapperElement;
     if (typeof uiVariant.ui !== 'function') {
+      this.uiContainer = uiVariant.ui;
       this.spatialNavigation = (uiVariant as UIVariant).spatialNavigation;
     }
   }
