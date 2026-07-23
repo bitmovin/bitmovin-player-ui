@@ -140,30 +140,16 @@ export class PlayerEventEmitter {
     });
   }
 
-  fireOverlayAdStartedEvent(adData: object = {}): void {
-    this.fireEvent<AdEvent>({
-      timestamp: Date.now(),
-      type: PlayerEvent.OverlayAdStarted,
-      ad: {
-        isLinear: false,
-        width: null,
-        height: null,
-        ...adData,
-      } as any,
-    });
+  fireNonLinearAdStartedEvent(eventData: object = {}, adData: object = {}): void {
+    this.fireNonLinearAdEvent('nonlinearadstarted', eventData, adData);
   }
 
-  fireOverlayAdFinishedEvent(adData: object = {}): void {
-    this.fireEvent<AdEvent>({
-      timestamp: Date.now(),
-      type: 'overlayadfinished' as any,
-      ad: {
-        isLinear: false,
-        width: null,
-        height: null,
-        ...adData,
-      } as any,
-    });
+  fireNonLinearAdFinishedEvent(eventData: object = {}, adData: object = {}): void {
+    this.fireNonLinearAdEvent('nonlinearadfinished', eventData, adData);
+  }
+
+  fireNonLinearAdSkippedEvent(eventData: object = {}, adData: object = {}): void {
+    this.fireNonLinearAdEvent('nonlinearadskipped', eventData, adData);
   }
 
   fireErrorEvent(): void {
@@ -173,6 +159,20 @@ export class PlayerEventEmitter {
       code: 1000,
       name: 'ErrorEvent',
       troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1000',
+    });
+  }
+
+  private fireNonLinearAdEvent(eventType: string, eventData: object, adData: object): void {
+    this.fireEvent<AdEvent>({
+      timestamp: Date.now(),
+      ...eventData,
+      type: eventType as any,
+      ad: {
+        isLinear: false,
+        width: null,
+        height: null,
+        ...adData,
+      } as any,
     });
   }
 

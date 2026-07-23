@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `OverlayAdStatusOverlay` to show an ad badge for overlay ads and expose a delayed dismiss button.
+- `PauseAdStatusOverlay` to show pause-ad status controls for non-linear ads signaled with `position: 'pause'`.
 
 ## [4.17.0] - 2026-07-02
 

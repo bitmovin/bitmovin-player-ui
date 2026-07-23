@@ -2,7 +2,7 @@ import type { UIVariantIdentifier } from './UIManager';
 import type { AdControlBarConfig } from './components/ads/AdControlBar';
 import type { AdCounterLabelConfig } from './components/ads/AdCounterLabel';
 import type { AdSkipButtonConfig } from './components/ads/AdSkipButton';
-import type { OverlayAdStatusOverlayConfig } from './components/ads/OverlayAdStatusOverlay';
+import type { PauseAdStatusOverlayConfig } from './components/ads/PauseAdStatusOverlay';
 import type { ButtonConfig } from './components/buttons/Button';
 import type { CloseButtonConfig } from './components/buttons/CloseButton';
 import type { PlaybackToggleButtonConfig } from './components/buttons/PlaybackToggleButton';
@@ -187,7 +187,7 @@ export interface UIComponentConfigMap {
   /**
    * @category Components
    */
-  OverlayAdStatusOverlay?: Partial<OverlayAdStatusOverlayConfig>;
+  PauseAdStatusOverlay?: Partial<PauseAdStatusOverlayConfig>;
   /**
    * @category Components
    */

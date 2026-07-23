@@ -35,7 +35,7 @@ import { Watermark } from './components/Watermark';
 import { ErrorMessageOverlay } from './components/overlays/ErrorMessageOverlay';
 import { AdClickOverlay } from './components/ads/AdClickOverlay';
 import { AdControlBar } from './components/ads/AdControlBar';
-import { OverlayAdStatusOverlay } from './components/ads/OverlayAdStatusOverlay';
+import { PauseAdStatusOverlay } from './components/ads/PauseAdStatusOverlay';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
@@ -335,7 +335,7 @@ export namespace UIFactory {
           subtitleOverlay,
           new BufferingOverlay(),
           new PlaybackToggleOverlay(),
-          new OverlayAdStatusOverlay(),
+          new PauseAdStatusOverlay(),
           new CastStatusOverlay(),
           controlBar,
           new TitleBar(),
@@ -451,7 +451,7 @@ export namespace UIFactory {
           new CastStatusOverlay(),
           // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
           BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
-          new OverlayAdStatusOverlay(),
+          new PauseAdStatusOverlay(),
           new RecommendationOverlay(),
           controlBar,
           new TitleBar({
@@ -649,7 +649,7 @@ export namespace UIFactory {
           subtitleOverlay,
           new BufferingOverlay(),
           playbackToggleOverlay,
-          new OverlayAdStatusOverlay(),
+          new PauseAdStatusOverlay(),
           controlBar,
           titleBar,
           settingsPanel,
