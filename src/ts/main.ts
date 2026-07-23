@@ -93,6 +93,7 @@ export { AdControlBar, AdControlBarConfig } from './components/ads/AdControlBar'
 export { AdMessageLabel } from './components/ads/AdMessageLabel';
 export { AdClickOverlay } from './components/ads/AdClickOverlay';
 export { AdCounterLabel } from './components/ads/AdCounterLabel';
+export { OverlayAdStatusOverlay, OverlayAdStatusOverlayConfig } from './components/ads/OverlayAdStatusOverlay';
 export { PlaybackSpeedSelectBox } from './components/settings/PlaybackSpeedSelectBox';
 export { HugeReplayButton } from './components/buttons/HugeReplayButton';
 export { BufferingOverlay, BufferingOverlayConfig } from './components/overlays/BufferingOverlay';

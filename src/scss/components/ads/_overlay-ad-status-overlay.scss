@@ -1,0 +1,67 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-uicontainer.#{$prefix}-overlay-ad-active {
+  .#{$prefix}-ui-playbacktoggle-overlay,
+  .#{$prefix}-ui-touch-control-overlay,
+  .#{$prefix}-controlbar-top,
+  .#{$prefix}-label-metadata-title,
+  .#{$prefix}-label-metadata-description {
+    display: none;
+  }
+}
+
+.#{$prefix}-ui-overlay-ad-status-overlay {
+  @extend %ui-container;
+  @include layout-cover;
+  @include hidden;
+
+  box-sizing: border-box;
+  pointer-events: none;
+
+  * {
+    pointer-events: none;
+  }
+}
+
+.#{$prefix}-ui-overlay-ad-status-badge,
+.#{$prefix}-ui-button-overlay-ad-skip {
+  background-color: transparentize($color-black, 0.25);
+  border-radius: 20px;
+  box-sizing: border-box;
+  color: $color-highlight-ads;
+  font-size: $font-size;
+  min-width: fit-content;
+  padding: 0.5em 1em;
+
+  .#{$prefix}-label,
+  .#{$prefix}-ui-label-text {
+    color: $color-highlight-ads;
+  }
+}
+
+.#{$prefix}-ui-overlay-ad-status-badge {
+  @extend %ui-label;
+
+  left: safe-area-max(1em, left);
+  position: absolute;
+  top: safe-area-max(1em, top);
+}
+
+.#{$prefix}-ui-button-overlay-ad-skip {
+  @extend %ui-button;
+
+  height: auto;
+  pointer-events: auto;
+  position: absolute;
+  right: safe-area-max(1em, right);
+  top: safe-area-max(1em, top);
+
+  .#{$prefix}-ui-icon {
+    background-image: svg-load('../../assets/images/close.svg', stroke=$color-icon-highlight-ads);
+  }
+
+  &:hover {
+    background-color: $color-black;
+  }
+}

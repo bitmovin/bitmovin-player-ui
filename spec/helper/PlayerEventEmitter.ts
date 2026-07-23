@@ -140,6 +140,32 @@ export class PlayerEventEmitter {
     });
   }
 
+  fireOverlayAdStartedEvent(adData: object = {}): void {
+    this.fireEvent<AdEvent>({
+      timestamp: Date.now(),
+      type: PlayerEvent.OverlayAdStarted,
+      ad: {
+        isLinear: false,
+        width: null,
+        height: null,
+        ...adData,
+      } as any,
+    });
+  }
+
+  fireOverlayAdFinishedEvent(adData: object = {}): void {
+    this.fireEvent<AdEvent>({
+      timestamp: Date.now(),
+      type: 'overlayadfinished' as any,
+      ad: {
+        isLinear: false,
+        width: null,
+        height: null,
+        ...adData,
+      } as any,
+    });
+  }
+
   fireErrorEvent(): void {
     this.fireEvent<ErrorEvent>({
       timestamp: Date.now(),
