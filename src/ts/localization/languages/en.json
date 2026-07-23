@@ -48,6 +48,7 @@
   "ads.skip": "Skip",
   "ads.skippableIn": "Skip ad in {remainingTime}",
   "ads.adNumberOfTotal": "Ad {activeAdIndex} of {totalAdsCount}",
+  "ads.adLabelIfOne": "Advertisement",
   "settings": "Settings",
   "fullscreen": "Fullscreen",
   "speed": "Speed",

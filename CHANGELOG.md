@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- New `AdCounterLabelConfig.adLabelIfOneAd` option: message shown while an ad is playing when the ad break contains only a single ad.
+
+### Changed
+
+- `AdCounterLabel` now displays the `adLabelIfOneAd` message ("Advertisement") for single-ad ad breaks instead of the "Ad 1 of 1" count.
+
 ## [4.17.0] - 2026-07-02
 
 ### Added

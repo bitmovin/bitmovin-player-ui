@@ -47,4 +47,20 @@ describe('AdCounterLabel', () => {
     adCountChangedDispatcher.dispatch(null, { currentAdIndex: 0, totalNumberOfAds: 0 });
     expect(adCounterLabel.getText()).toBe('');
   });
+
+  it('shows the single-ad label when the ad break contains only one ad', () => {
+    adCounterLabel = new AdCounterLabel({ adLabelIfOneAd: 'Anzeige' });
+    adCounterLabel.configure(playerMock, uiInstanceManagerMock);
+
+    adCountChangedDispatcher.dispatch(null, { currentAdIndex: 1, totalNumberOfAds: 1 });
+    expect(adCounterLabel.getText()).toBe('Anzeige');
+  });
+
+  it('falls back to the default localized single-ad label', () => {
+    adCounterLabel = new AdCounterLabel();
+    adCounterLabel.configure(playerMock, uiInstanceManagerMock);
+
+    adCountChangedDispatcher.dispatch(null, { currentAdIndex: 1, totalNumberOfAds: 1 });
+    expect(adCounterLabel.getText()).toBe('Advertisement');
+  });
 });

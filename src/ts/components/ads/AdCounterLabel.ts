@@ -12,6 +12,11 @@ export interface AdCounterLabelConfig extends LabelConfig {
    * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
    */
   adCountOutOfTotal?: LocalizableText;
+  /**
+   * Message displayed during an ad if only one ad is in the adbreak.
+   * Supported placeholders: look at {@link StringUtils.replaceAdMessagePlaceholders}
+   */
+  adLabelIfOneAd?: LocalizableText;
 }
 
 /**
@@ -31,6 +36,7 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
       {
         cssClass: 'ui-label-ad-counter',
         adCountOutOfTotal: i18n.getLocalizer('ads.adNumberOfTotal'),
+        adLabelIfOneAd: i18n.getLocalizer('ads.adLabelIfOne'),
       },
       this.config,
     );
@@ -79,14 +85,13 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
       return;
     }
 
+    const message =
+      totalNumberOfAds > 1
+        ? i18n.performLocalization(this.config.adCountOutOfTotal)
+        : i18n.performLocalization(this.config.adLabelIfOneAd);
+
     this.setText(
-      StringUtils.replaceAdMessagePlaceholders(
-        i18n.performLocalization(this.config.adCountOutOfTotal),
-        this.player,
-        undefined,
-        currentAdIndex,
-        totalNumberOfAds,
-      ),
+      StringUtils.replaceAdMessagePlaceholders(message, this.player, undefined, currentAdIndex, totalNumberOfAds),
     );
   }
 }
