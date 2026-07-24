@@ -11,21 +11,26 @@ const NON_LINEAR_AD_STARTED_EVENT = 'nonlinearadstarted';
 const NON_LINEAR_AD_FINISHED_EVENT = 'nonlinearadfinished';
 const NON_LINEAR_AD_SKIPPED_EVENT = 'nonlinearadskipped';
 const PAUSE_AD_POSITION = 'pause';
+const PAUSE_AD_TRIGGER = 'pause';
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
 const SECONDS_TO_MILLISECONDS = 1000;
 
 // Remove the transitional position variants once the Player exposes a typed non-linear ad lifecycle contract.
 interface NonLinearAd extends Ad {
   position?: string;
+  dismissibleAfter?: number;
   skippableAfter?: number;
 }
 
 interface NonLinearAdEvent extends AdEvent {
   position?: string;
+  trigger?: string;
+  dismissibleAfter?: number;
   skippableAfter?: number;
   ad: NonLinearAd;
   adBreak?: {
     position?: string;
+    dismissibleAfter?: number;
     skippableAfter?: number;
   };
 }
@@ -188,7 +193,13 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
   }
 
   private getDismissDelay(event: NonLinearAdEvent): number {
-    const skippableAfter = event.skippableAfter ?? event.ad?.skippableAfter ?? event.adBreak?.skippableAfter;
+    const skippableAfter =
+      event.dismissibleAfter ??
+      event.ad?.dismissibleAfter ??
+      event.adBreak?.dismissibleAfter ??
+      event.skippableAfter ??
+      event.ad?.skippableAfter ??
+      event.adBreak?.skippableAfter;
     if (typeof skippableAfter === 'number' && Number.isFinite(skippableAfter)) {
       return skippableAfter < 0 ? -1 : skippableAfter * SECONDS_TO_MILLISECONDS;
     }
@@ -198,6 +209,6 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
   private isPauseAdEvent(event: NonLinearAdEvent): boolean {
     const position = event.position ?? event.ad?.position ?? event.adBreak?.position;
-    return position === PAUSE_AD_POSITION;
+    return event.trigger === PAUSE_AD_TRIGGER || position === PAUSE_AD_POSITION;
   }
 }

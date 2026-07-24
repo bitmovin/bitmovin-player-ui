@@ -61,6 +61,23 @@ describe('PauseAdStatusOverlay', () => {
     expect(getDismissButton().isShown()).toBe(true);
   });
 
+  it('uses dismissibleAfter from the event instead of the fallback delay', () => {
+    playerMock.eventEmitter.fireNonLinearAdStartedEvent({ trigger: 'pause', dismissibleAfter: 3 });
+
+    jest.advanceTimersByTime(2999);
+    expect(getDismissButton().isHidden()).toBe(true);
+
+    jest.advanceTimersByTime(1);
+    expect(getDismissButton().isShown()).toBe(true);
+  });
+
+  it('shows pause-ad status for non-linear ads triggered by pause', () => {
+    playerMock.eventEmitter.fireNonLinearAdStartedEvent({ trigger: 'pause', dismissibleAfter: 2 });
+
+    expect(pauseAdStatusOverlay.isShown()).toBe(true);
+    expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
+  });
+
   it('shows Dismiss immediately when skippableAfter is zero', () => {
     playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pause' }, { skippableAfter: 0 });
 
