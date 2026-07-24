@@ -78,6 +78,13 @@ describe('PauseAdStatusOverlay', () => {
     expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
   });
 
+  it('shows pause-ad status for native non-linear ad started events', () => {
+    playerMock.eventEmitter.fireNativeNonLinearAdStartedEvent({ trigger: 'pause', dismissibleAfter: 2 });
+
+    expect(pauseAdStatusOverlay.isShown()).toBe(true);
+    expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
+  });
+
   it('shows Dismiss immediately when skippableAfter is zero', () => {
     playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pause' }, { skippableAfter: 0 });
 

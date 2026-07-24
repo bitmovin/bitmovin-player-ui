@@ -10,6 +10,9 @@ import { Label, LabelConfig } from '../labels/Label';
 const NON_LINEAR_AD_STARTED_EVENT = 'nonlinearadstarted';
 const NON_LINEAR_AD_FINISHED_EVENT = 'nonlinearadfinished';
 const NON_LINEAR_AD_SKIPPED_EVENT = 'nonlinearadskipped';
+const NATIVE_NON_LINEAR_AD_STARTED_EVENT = 'onNonLinearAdStarted';
+const NATIVE_NON_LINEAR_AD_FINISHED_EVENT = 'onNonLinearAdFinished';
+const NATIVE_NON_LINEAR_AD_SKIPPED_EVENT = 'onNonLinearAdSkipped';
 const PAUSE_AD_POSITION = 'pause';
 const PAUSE_AD_TRIGGER = 'pause';
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
@@ -112,8 +115,11 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     this.uiContainerElement = uimanager.getUI().getDomElement();
 
     player.on(NON_LINEAR_AD_STARTED_EVENT as any, this.handleNonLinearAdStarted as any);
+    player.on(NATIVE_NON_LINEAR_AD_STARTED_EVENT as any, this.handleNonLinearAdStarted as any);
     player.on(NON_LINEAR_AD_FINISHED_EVENT as any, this.handleNonLinearAdEnded as any);
+    player.on(NATIVE_NON_LINEAR_AD_FINISHED_EVENT as any, this.handleNonLinearAdEnded as any);
     player.on(NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
+    player.on(NATIVE_NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
 
     this.dismissButton.onClick.subscribe(() => {
@@ -126,8 +132,11 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     this.hidePauseAdStatus();
     if (this.player) {
       this.player.off(NON_LINEAR_AD_STARTED_EVENT as any, this.handleNonLinearAdStarted as any);
+      this.player.off(NATIVE_NON_LINEAR_AD_STARTED_EVENT as any, this.handleNonLinearAdStarted as any);
       this.player.off(NON_LINEAR_AD_FINISHED_EVENT as any, this.handleNonLinearAdEnded as any);
+      this.player.off(NATIVE_NON_LINEAR_AD_FINISHED_EVENT as any, this.handleNonLinearAdEnded as any);
       this.player.off(NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
+      this.player.off(NATIVE_NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
       this.player.off(this.player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
     }
     this.player = undefined;
