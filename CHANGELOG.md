@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - `PauseAdStatusOverlay` to show pause-ad status controls for non-linear ads signaled with `position: 'pause'`.
+- TV UI spatial navigation support for the pause-ad dismiss action.
 
 ## [4.17.0] - 2026-07-02
 

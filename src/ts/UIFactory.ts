@@ -644,12 +644,13 @@ export namespace UIFactory {
 
       const playbackToggleOverlay = new PlaybackToggleOverlay();
       const recommendationOverlay = new RecommendationOverlay();
+      const pauseAdStatusOverlay = new PauseAdStatusOverlay({ focusDismissButtonOnShow: true });
       const uiContainer = new UIContainer({
         components: [
           subtitleOverlay,
           new BufferingOverlay(),
           playbackToggleOverlay,
-          new PauseAdStatusOverlay(),
+          pauseAdStatusOverlay,
           controlBar,
           titleBar,
           settingsPanel,
@@ -672,6 +673,7 @@ export namespace UIFactory {
           playbackToggleOverlay,
           seekBar,
           new FocusableContainer(bottomControlBar, playbackToggleButton),
+          pauseAdStatusOverlay,
         ),
         new SettingsPanelNavigationGroup(settingsPanel, { closeOnSelect: false }),
         new SettingsPanelNavigationGroup(subtitleListBox),

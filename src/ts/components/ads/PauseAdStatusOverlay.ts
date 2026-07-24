@@ -49,6 +49,10 @@ export interface PauseAdStatusOverlayConfig extends ContainerConfig {
    * Text displayed on the dismiss button.
    */
   dismissText?: LocalizableText;
+  /**
+   * Focuses the dismiss button when it becomes visible.
+   */
+  focusDismissButtonOnShow?: boolean;
 }
 
 /**
@@ -74,6 +78,7 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
         badgeText: 'Ad',
         dismissDelay: 4000,
         dismissText: 'Dismiss',
+        focusDismissButtonOnShow: false,
         hidden: true,
         cssClass: 'ui-pause-ad-status-overlay',
       },
@@ -139,9 +144,9 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
     const dismissDelay = this.getDismissDelay(event);
     if (dismissDelay === 0) {
-      this.dismissButton.show();
+      this.showDismissButton();
     } else if (dismissDelay > 0) {
-      this.dismissDelayTimeout = new Timeout(dismissDelay, () => this.dismissButton.show()).start();
+      this.dismissDelayTimeout = new Timeout(dismissDelay, () => this.showDismissButton()).start();
     }
   };
 
@@ -173,6 +178,13 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
   private clearDismissDelay(): void {
     this.dismissDelayTimeout?.clear();
     this.dismissDelayTimeout = undefined;
+  }
+
+  private showDismissButton(): void {
+    this.dismissButton.show();
+    if (this.config.focusDismissButtonOnShow) {
+      this.dismissButton.getDomElement().get(0)?.focus();
+    }
   }
 
   private getDismissDelay(event: NonLinearAdEvent): number {

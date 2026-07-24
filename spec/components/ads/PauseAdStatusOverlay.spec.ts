@@ -2,7 +2,7 @@ import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { PauseAdStatusOverlay } from '../../../src/ts/components/ads/PauseAdStatusOverlay';
 import { Button, ButtonConfig, ButtonStyle } from '../../../src/ts/components/buttons/Button';
-import { DOM } from '../../../src/ts/DOM';
+import type { DOM } from '../../../src/ts/DOM';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -90,6 +90,26 @@ describe('PauseAdStatusOverlay', () => {
     expect(getDismissButton().isShown()).toBe(true);
   });
 
+  it('focuses Dismiss when configured and the button becomes visible', () => {
+    setupOverlay({ focusDismissButtonOnShow: true });
+    const dismissDomElement = MockHelper.generateDOMMock();
+    const dismissElement = { focus: jest.fn() } as unknown as HTMLElement;
+    const focusSpy = jest.spyOn(dismissElement, 'focus');
+    dismissDomElement.get.mockReturnValue(dismissElement);
+    const getDomElementSpy = jest.spyOn(getDismissButton(), 'getDomElement').mockReturnValue(dismissDomElement);
+
+    playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pause', skippableAfter: 2 });
+
+    expect(focusSpy).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(2000);
+
+    expect(getDismissButton().isShown()).toBe(true);
+    expect(pauseAdStatusOverlay.getConfig().focusDismissButtonOnShow).toBe(true);
+    expect(getDomElementSpy).toHaveBeenCalled();
+    expect(focusSpy).toHaveBeenCalled();
+  });
+
   it('hides the pause-ad status and skips the ad when Dismiss is clicked', () => {
     firePauseAdStarted();
     jest.advanceTimersByTime(4000);
@@ -149,7 +169,7 @@ describe('PauseAdStatusOverlay', () => {
   });
 });
 
-function setupOverlay(config: { dismissDelay?: number } = {}): void {
+function setupOverlay(config: { dismissDelay?: number; focusDismissButtonOnShow?: boolean } = {}): void {
   playerMock = MockHelper.getPlayerMock();
   (playerMock as any).ads = {
     skip: jest.fn(),
