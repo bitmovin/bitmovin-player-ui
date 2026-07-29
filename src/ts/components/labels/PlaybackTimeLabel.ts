@@ -77,6 +77,29 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       player.timeShift(0);
     };
 
+    const liveKeyDownHandler = (event: KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        liveClickHandler();
+      }
+    };
+
+    const enableLiveInteraction = () => {
+      const domElement = this.getDomElement();
+      domElement.attr('tabindex', '0');
+      domElement.attr('role', 'button');
+      this.setAriaLabel(i18n.getLocalizer('live.jumpToLiveEdge'));
+      domElement.on('keydown', liveKeyDownHandler);
+    };
+
+    const disableLiveInteraction = () => {
+      const domElement = this.getDomElement();
+      domElement.attr('tabindex', config.tabIndex.toString());
+      domElement.removeAttr('role');
+      domElement.removeAttr('aria-label');
+      domElement.off('keydown', liveKeyDownHandler);
+    };
+
     const updateLiveState = () => {
       // Player is playing a live stream when the duration is infinite
       live = player.isLive();
@@ -89,12 +112,14 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
           this.hide();
         }
         this.onClick.subscribe(liveClickHandler);
+        enableLiveInteraction();
         updateLiveTimeshiftState();
       } else {
         this.getDomElement().removeClass(liveCssClass);
         this.getDomElement().removeClass(liveEdgeCssClass);
         this.show();
         this.onClick.unsubscribe(liveClickHandler);
+        disableLiveInteraction();
       }
     };
 

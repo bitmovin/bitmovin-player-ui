@@ -24,6 +24,79 @@ describe('PlaybackTimeLabel', () => {
       playbackTimeLabel = new PlaybackTimeLabel();
     });
 
+    describe('keyboard accessibility', () => {
+      let mockDomElement: ReturnType<typeof MockHelper.generateDOMMock>;
+
+      beforeEach(() => {
+        mockDomElement = MockHelper.generateDOMMock();
+        jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+
+        playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      });
+
+      it('exposes the live indicator as an accessible button', () => {
+        expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '0');
+        expect(mockDomElement.attr).toHaveBeenCalledWith('role', 'button');
+        expect(mockDomElement.attr).toHaveBeenCalledWith('aria-label', 'Jump to live edge');
+      });
+
+      it.each(['Enter', ' '])('jumps to the live edge when pressing %p', key => {
+        const keydownHandler = mockDomElement.on.mock.calls.find(([eventName]) => eventName === 'keydown')?.[1] as (
+          event: KeyboardEvent,
+        ) => void;
+        const keyboardEvent = {
+          key,
+          preventDefault: jest.fn(),
+        } as unknown as KeyboardEvent;
+
+        expect(keydownHandler).toEqual(expect.any(Function));
+        keydownHandler(keyboardEvent);
+
+        expect(keyboardEvent.preventDefault).toHaveBeenCalled();
+        expect(playerMock.timeShift).toHaveBeenCalledWith(0);
+      });
+
+      it('ignores unrelated keys', () => {
+        const keydownHandler = mockDomElement.on.mock.calls.find(([eventName]) => eventName === 'keydown')?.[1] as (
+          event: KeyboardEvent,
+        ) => void;
+        const keyboardEvent = {
+          key: 'ArrowRight',
+          preventDefault: jest.fn(),
+        } as unknown as KeyboardEvent;
+
+        keydownHandler(keyboardEvent);
+
+        expect(keyboardEvent.preventDefault).not.toHaveBeenCalled();
+        expect(playerMock.timeShift).not.toHaveBeenCalled();
+      });
+
+      it('restores non-interactive semantics when switching to VOD', () => {
+        jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+
+        playerMock.eventEmitter.fireDurationChangedEvent();
+
+        expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '-1');
+        expect(mockDomElement.removeAttr).toHaveBeenCalledWith('role');
+        expect(mockDomElement.removeAttr).toHaveBeenCalledWith('aria-label');
+        expect(mockDomElement.off).toHaveBeenCalledWith('keydown', expect.any(Function));
+      });
+    });
+
+    it('restores the configured tab index when switching to VOD', () => {
+      const mockDomElement = MockHelper.generateDOMMock();
+      playbackTimeLabel = new PlaybackTimeLabel({
+        tabIndex: 2,
+      });
+      jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+      playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+
+      playerMock.eventEmitter.fireDurationChangedEvent();
+
+      expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '2');
+    });
+
     describe('switch to inactive', () => {
       let removeClassSpy: any;
       beforeEach(() => {

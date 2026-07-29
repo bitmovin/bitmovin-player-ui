@@ -112,6 +112,7 @@ export interface Vocabulary {
   speed: string;
   playPause: string;
   live: string;
+  'live.jumpToLiveEdge': string;
   'subtitle.example': string;
   'subtitle.select': string;
   playingOn: string;

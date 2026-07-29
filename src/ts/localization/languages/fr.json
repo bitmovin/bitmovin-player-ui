@@ -71,6 +71,7 @@
   "normal": "normale",
   "default": "défaut",
   "live": "En direct",
+  "live.jumpToLiveEdge": "Aller au direct",
   "subtitle.example": "exemple de sous-titre",
   "subtitle.select": "Sélectionner un sous-titre",
   "playingOn": "Lecture sur <strong>{castDeviceName}</strong>",

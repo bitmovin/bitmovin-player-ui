@@ -71,6 +71,7 @@
   "normal": "normaal",
   "default": "standaard",
   "live": "Live",
+  "live.jumpToLiveEdge": "Naar live springen",
   "subtitle.example": "voorbeeld ondertiteling",
   "subtitle.select": "Selecteer ondertiteling",
   "playingOn": "Speelt af op <strong>{castDeviceName}</strong>",

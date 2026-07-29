@@ -71,6 +71,7 @@
   "normal": "normal",
   "default": "predefinição",
   "live": "Ao Vivo",
+  "live.jumpToLiveEdge": "Ir para a transmissão ao vivo",
   "subtitle.example": "exemplo de legenda",
   "subtitle.select": "Selecionar legenda",
   "playingOn": "A reproduzir em <strong>{castDeviceName}</strong>",
