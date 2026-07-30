@@ -88,6 +88,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       const domElement = this.getDomElement();
       domElement.attr('tabindex', '0');
       domElement.attr('role', 'button');
+      // Describe the action rather than the displayed live state for assistive technologies.
       this.setAriaLabel(i18n.getLocalizer('live.jumpToLiveEdge'));
       domElement.on('keydown', liveKeyDownHandler);
     };
