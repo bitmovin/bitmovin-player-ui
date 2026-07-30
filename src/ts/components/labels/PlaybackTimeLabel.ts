@@ -78,9 +78,12 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     };
 
     const liveKeyDownHandler = (event: KeyboardEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
+      const isActivationKey = event.key === 'Enter' || event.key === ' ' || event.code === 'Space';
+      if (isActivationKey) {
         event.preventDefault();
-        liveClickHandler();
+        if (!event.repeat) {
+          liveClickHandler();
+        }
       }
     };
 

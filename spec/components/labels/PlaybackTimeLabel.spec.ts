@@ -56,6 +56,39 @@ describe('PlaybackTimeLabel', () => {
         expect(playerMock.timeShift).toHaveBeenCalledWith(0);
       });
 
+      it('jumps to the live edge when Space is reported through the event code', () => {
+        const keydownHandler = mockDomElement.on.mock.calls.find(([eventName]) => eventName === 'keydown')?.[1] as (
+          event: KeyboardEvent,
+        ) => void;
+        const keyboardEvent = {
+          key: 'Unidentified',
+          code: 'Space',
+          preventDefault: jest.fn(),
+        } as unknown as KeyboardEvent;
+
+        keydownHandler(keyboardEvent);
+
+        expect(keyboardEvent.preventDefault).toHaveBeenCalled();
+        expect(playerMock.timeShift).toHaveBeenCalledWith(0);
+      });
+
+      it('prevents repeated activation keys without jumping to the live edge again', () => {
+        const keydownHandler = mockDomElement.on.mock.calls.find(([eventName]) => eventName === 'keydown')?.[1] as (
+          event: KeyboardEvent,
+        ) => void;
+        const keyboardEvent = {
+          key: ' ',
+          code: 'Space',
+          repeat: true,
+          preventDefault: jest.fn(),
+        } as unknown as KeyboardEvent;
+
+        keydownHandler(keyboardEvent);
+
+        expect(keyboardEvent.preventDefault).toHaveBeenCalled();
+        expect(playerMock.timeShift).not.toHaveBeenCalled();
+      });
+
       it('ignores unrelated keys', () => {
         const keydownHandler = mockDomElement.on.mock.calls.find(([eventName]) => eventName === 'keydown')?.[1] as (
           event: KeyboardEvent,
