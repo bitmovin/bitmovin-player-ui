@@ -1,11 +1,15 @@
-import childProcess = require('child_process');
-import path = require('path');
+import * as childProcess from 'child_process';
+import * as path from 'path';
 
 describe('PlaybackTimeLabel styles', () => {
-  const sassExecutable = path.resolve(path.dirname(require.resolve('sass')), 'sass.js');
+  // Sass's filesystem access is incompatible with this repository's Jest runtime, so compile in a clean Node process.
   const css = childProcess.execFileSync(
     process.execPath,
-    [sassExecutable, '--no-source-map', path.resolve(process.cwd(), 'src/scss/bitmovinplayer-ui.scss')],
+    [
+      '-e',
+      "process.stdout.write(require('sass').compile(process.argv[1]).css)",
+      path.resolve(process.cwd(), 'src/scss/bitmovinplayer-ui.scss'),
+    ],
     { encoding: 'utf8' },
   );
 
