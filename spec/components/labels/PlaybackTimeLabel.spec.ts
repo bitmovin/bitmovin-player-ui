@@ -72,6 +72,7 @@ describe('PlaybackTimeLabel', () => {
       });
 
       it('restores non-interactive semantics when switching to VOD', () => {
+        const keydownHandler = mockDomElement.on.mock.calls.find(([eventName]) => eventName === 'keydown')?.[1];
         jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
 
         playerMock.eventEmitter.fireDurationChangedEvent();
@@ -79,7 +80,7 @@ describe('PlaybackTimeLabel', () => {
         expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '-1');
         expect(mockDomElement.removeAttr).toHaveBeenCalledWith('role');
         expect(mockDomElement.removeAttr).toHaveBeenCalledWith('aria-label');
-        expect(mockDomElement.off).toHaveBeenCalledWith('keydown', expect.any(Function));
+        expect(mockDomElement.off).toHaveBeenCalledWith('keydown', keydownHandler);
       });
     });
 
