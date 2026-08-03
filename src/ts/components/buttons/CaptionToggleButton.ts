@@ -1,6 +1,6 @@
 import { ToggleButton, ToggleButtonConfig } from './ToggleButton';
 import { UIInstanceManager } from '../../UIManager';
-import { PlayerAPI, SubtitleEvent, SubtitleTrack } from 'bitmovin-player';
+import type { PlayerAPI, SubtitleEvent, SubtitleTrack } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 
 /**
