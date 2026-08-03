@@ -256,11 +256,6 @@ export namespace UIFactory {
    *
    * Using these methods enables customization of certain aspects of the default UI without recreating all UI variants.
    * They can be used to recreate the default UI while changing the conditions based on which variant switching happens.
-   *
-   * TODO: `UIConfig.componentLayoutOverrides` are currently processed by UIManager for variants with identifiers.
-   * This skips older copied or forked custom layouts without identifiers, but cannot distinguish built-in default layouts
-   * from custom layouts that reuse default `UIVariantIdentifier` values. Decide whether default layouts need to
-   * explicitly opt in before stabilizing the API.
    */
   export namespace defaultLayouts {
     export function subtitle(): UIContainer {
