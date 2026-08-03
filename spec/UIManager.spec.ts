@@ -385,6 +385,29 @@ describe('UIManager', () => {
       expect(seekMock).toHaveBeenNthCalledWith(2, 120, 'ui');
     });
 
+    it('does not apply timestamp deep links to VOD loaded after a live source', () => {
+      const nextSourceUrl = 'https://cdn.example/next.mpd';
+      const nextStorageKey = resumeStorageKeyForSourceIdentifier(`dash:${nextSourceUrl}`);
+      window.history.replaceState(null, '', `${window.location.origin}/watch?t=30s`);
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(true);
+      window.localStorage.setItem(nextStorageKey, '120');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        enableResumeFromLastPosition: true,
+        enableTimestampDeepLink: true,
+      });
+
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: nextSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).toHaveBeenCalledTimes(1);
+      expect(seekMock).toHaveBeenCalledWith(120, 'ui');
+    });
+
     it('does not fall back to resume when timestamp deep link points to the start', () => {
       window.history.replaceState(null, '', `${window.location.origin}/watch?t=0s`);
       const playerMock = MockHelper.getPlayerMock();

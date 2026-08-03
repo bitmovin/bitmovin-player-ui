@@ -426,7 +426,13 @@ export class UIManager {
     if (timestampDeepLinkTargetTime !== null || this.resumePositionTracker !== undefined) {
       let isTimestampDeepLinkHandled = false;
       const seekToInitialPosition = () => {
-        if (wrappedPlayer.isLive()) return;
+        if (wrappedPlayer.isLive()) {
+          // Consume the timestamp deep link when the first loaded source is live to prevent applying it to a later VOD.
+          if (timestampDeepLinkTargetTime !== null) {
+            isTimestampDeepLinkHandled = true;
+          }
+          return;
+        }
 
         if (timestampDeepLinkTargetTime !== null && !isTimestampDeepLinkHandled) {
           isTimestampDeepLinkHandled = true;
