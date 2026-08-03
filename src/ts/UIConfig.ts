@@ -134,7 +134,8 @@ export interface UIConfig {
    * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
    * Default: true
    *
-   * @deprecated Use {@link UIConfig.componentLayoutOverrides} with `PlaybackSpeedSelectBox` instead.
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default
+   * `PlaybackSpeedSelectBox`.
    */
   playbackSpeedSelectionEnabled?: boolean;
   /**
@@ -227,7 +228,7 @@ export interface UIConfig {
   /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    *
-   * @deprecated Use {@link UIConfig.componentLayoutOverrides} with `EcoModeContainer` instead.
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default `EcoModeContainer`.
    */
   ecoMode?: boolean;
   /**
@@ -236,7 +237,7 @@ export interface UIConfig {
    *
    * Default: false
    *
-   * @deprecated Use {@link UIConfig.componentLayoutOverrides} with `Watermark` instead.
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default `Watermark`.
    */
   includeWatermark?: boolean;
   /**
