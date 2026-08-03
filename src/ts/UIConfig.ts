@@ -192,6 +192,15 @@ export interface UIConfig {
    */
   disableStorageApi?: boolean;
   /**
+   * If set to true, the UI stores playback progress and resumes known sources from the
+   * last saved position. Source identity is derived from the loaded source title or URL;
+   * sources with no stable identifier are not tracked. Has no effect when
+   * `disableStorageApi` is true or `localStorage` is unavailable.
+   *
+   * Default: false
+   */
+  enableResumeFromLastPosition?: boolean;
+  /**
    * If set to true, the UI persists volume, mute state, and playback speed across sessions
    * and reapplies them when a player using this UI is initialized — automatically, without
    * any end-user interaction. Use {@link showPersistentPreferencesToggle} instead (or in
