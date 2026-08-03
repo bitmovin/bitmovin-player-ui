@@ -15,7 +15,7 @@ export class ComponentLayoutOverrideProcessor {
   }
 
   process(uiContainer: Container<ContainerConfig>, variantIdentifier: UIVariantIdentifier): void {
-    if (this.config.componentLayoutOverrides == null) {
+    if (this.config.componentLayoutOverrides === undefined) {
       return;
     }
 

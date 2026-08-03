@@ -792,7 +792,7 @@ export class UIManager {
     const uiContainer = ui.resolveUI();
 
     // Layout overrides target built-in variant identifiers. Variants without identifiers keep their tree unchanged.
-    if (ui.variantIdentifier != null) {
+    if (ui.variantIdentifier !== undefined) {
       this.componentLayoutOverrideProcessor.process(uiContainer, ui.variantIdentifier);
     }
 
