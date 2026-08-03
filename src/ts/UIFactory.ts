@@ -757,7 +757,7 @@ export namespace UIFactory {
       pageTransitionAnimation: true,
     };
 
-    if (hideDelay != undefined) {
+    if (hideDelay !== undefined) {
       settingsPanelConfig.hideDelay = hideDelay;
     }
 
