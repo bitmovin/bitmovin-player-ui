@@ -1,22 +1,28 @@
 import { PlayerAPI, PlayerEvent } from 'bitmovin-player';
 import { UIPreferencesManager } from '../../src/ts/utils/UIPreferencesManager';
+import { prefixCss } from '../../src/ts/components/DummyComponent';
 
 describe('UIPreferencesManager', () => {
-  const enabledKey = 'bitmovin.player.ui.preferences.enabled';
-  const volumeKey = 'bitmovin.player.ui.preferences.volume';
+  const storageKeyPrefix = `${prefixCss('preferences')}.`;
+  const enabledKey = storageKeyPrefix + 'enabled';
+  const volumeKey = storageKeyPrefix + 'volume';
 
   let playerMock: PlayerAPI;
+  let onMock: jest.Mock;
+  let setVolumeMock: jest.Mock;
 
   beforeEach(() => {
     localStorage.clear();
+    onMock = jest.fn();
+    setVolumeMock = jest.fn();
     playerMock = {
       exports: { PlayerEvent },
-      on: jest.fn(),
+      on: onMock,
       off: jest.fn(),
       getVolume: jest.fn(),
       isMuted: jest.fn(),
       getPlaybackSpeed: jest.fn(),
-      setVolume: jest.fn(),
+      setVolume: setVolumeMock,
       mute: jest.fn(),
       unmute: jest.fn(),
       setPlaybackSpeed: jest.fn(),
@@ -29,8 +35,8 @@ describe('UIPreferencesManager', () => {
 
     new UIPreferencesManager().configure(playerMock, false, false);
 
-    expect(playerMock.setVolume).not.toHaveBeenCalled();
-    expect(playerMock.on).not.toHaveBeenCalled();
+    expect(setVolumeMock).not.toHaveBeenCalled();
+    expect(onMock).not.toHaveBeenCalled();
   });
 
   it('respects stored enabled state when the persistent preferences toggle is configured', () => {
@@ -39,7 +45,7 @@ describe('UIPreferencesManager', () => {
 
     new UIPreferencesManager().configure(playerMock, false, true);
 
-    expect(playerMock.setVolume).toHaveBeenCalledWith(30, 'ui-preferences');
-    expect(playerMock.on).toHaveBeenCalled();
+    expect(setVolumeMock).toHaveBeenCalledWith(30, 'ui-preferences');
+    expect(onMock).toHaveBeenCalled();
   });
 });

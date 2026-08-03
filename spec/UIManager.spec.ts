@@ -12,6 +12,8 @@ import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
 import { UIContainer } from '../src/ts/components/UIContainer';
 import { Container } from '../src/ts/components/Container';
+import { StorageUtils } from '../src/ts/utils/StorageUtils';
+import { prefixCss } from '../src/ts/components/DummyComponent';
 import { RecommendationConfig, TimelineMarker } from '../src/ts/UIConfig';
 import { FullscreenToggleButton } from '../src/ts/components/buttons/FullscreenToggleButton';
 
@@ -45,6 +47,9 @@ class C extends B {
 }
 
 describe('UIManager', () => {
+  const resumeSourceUrl = 'https://cdn.example/m.mpd';
+  const resumeStorageKey = resumeStorageKeyForSourceIdentifier(`dash:${resumeSourceUrl}`);
+
   describe('PlayerWrapper', () => {
     let playerWrapper: PlayerWrapper;
 
@@ -52,10 +57,10 @@ describe('UIManager', () => {
       let superClassInstance: A;
 
       beforeEach(() => {
-        const testInstance: PlayerAPI = new A() as any as PlayerAPI;
+        const testInstance = new A() as A & PlayerAPI;
         playerWrapper = new PlayerWrapper(testInstance);
-        (testInstance as any).giveValueAValue(); // Change the value of the actual property to simulate async loaded module
-        superClassInstance = playerWrapper.getPlayer() as any as A;
+        testInstance.giveValueAValue(); // Change the value of the actual property to simulate async loaded module
+        superClassInstance = playerWrapper.getPlayer() as unknown as A;
       });
 
       it('wraps functions', () => {
@@ -67,10 +72,10 @@ describe('UIManager', () => {
       let inheritedClassInstance: C;
 
       beforeEach(() => {
-        const testInstance: PlayerAPI = new C() as any as PlayerAPI;
+        const testInstance = new C() as C & PlayerAPI;
         playerWrapper = new PlayerWrapper(testInstance);
-        (testInstance as any).giveValueAValue(); // Change the value of the actual property to simulate async loaded module
-        inheritedClassInstance = playerWrapper.getPlayer() as any as C;
+        testInstance.giveValueAValue(); // Change the value of the actual property to simulate async loaded module
+        inheritedClassInstance = playerWrapper.getPlayer() as unknown as C;
       });
 
       it('wraps functions of super class', () => {
@@ -265,6 +270,158 @@ describe('UIManager', () => {
       playerMock.eventEmitter.fireAdBreakFinishedEvent();
       expect(adUi.ui.isHidden()).toBeTruthy();
       expect(contentUi.ui.isHidden()).toBeFalsy();
+    });
+  });
+
+  describe('resume from last position', () => {
+    const windowLocation = window.location.href;
+
+    beforeEach(() => {
+      StorageUtils.setStorageApiDisabled({ disableStorageApi: false });
+      window.localStorage.clear();
+      window.history.replaceState(null, '', windowLocation);
+    });
+
+    it('does not resume unless enabled', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      window.localStorage.setItem(resumeStorageKey, '90');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }]);
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).not.toHaveBeenCalled();
+    });
+
+    it('resumes when enabled', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      window.localStorage.setItem(resumeStorageKey, '90');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        enableResumeFromLastPosition: true,
+      });
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).toHaveBeenCalledWith(90, 'ui');
+    });
+
+    it('does not resume when the UI is created during playback', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      (playerMock.isPlaying as jest.Mock).mockReturnValue(true);
+      window.localStorage.setItem(resumeStorageKey, '90');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        enableResumeFromLastPosition: true,
+      });
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).not.toHaveBeenCalled();
+    });
+
+    it('does not apply timestamp deep links when the UI is created during playback', () => {
+      window.history.replaceState(null, '', `${window.location.origin}/watch?t=30s`);
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      (playerMock.isPlaying as jest.Mock).mockReturnValue(true);
+      window.localStorage.setItem(resumeStorageKey, '90');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        enableResumeFromLastPosition: true,
+        enableTimestampDeepLink: true,
+      });
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).not.toHaveBeenCalled();
+    });
+
+    it('lets timestamp deep links take precedence over resume', () => {
+      window.history.replaceState(null, '', `${window.location.origin}/watch?t=30s`);
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      window.localStorage.setItem(resumeStorageKey, '90');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        enableResumeFromLastPosition: true,
+        enableTimestampDeepLink: true,
+      });
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).toHaveBeenCalledTimes(1);
+      expect(seekMock).toHaveBeenCalledWith(30, 'ui');
+
+      playerMock.eventEmitter.fireTimeChangedEvent(45);
+      playerMock.eventEmitter.firePauseEvent();
+      expect(window.localStorage.getItem(resumeStorageKey)).toBe('45');
+    });
+
+    it('uses resume for later source loads after timestamp deep link was handled', () => {
+      const nextSourceUrl = 'https://cdn.example/next.mpd';
+      const nextStorageKey = resumeStorageKeyForSourceIdentifier(`dash:${nextSourceUrl}`);
+      window.history.replaceState(null, '', `${window.location.origin}/watch?t=30s`);
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      window.localStorage.setItem(resumeStorageKey, '90');
+      window.localStorage.setItem(nextStorageKey, '120');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        enableResumeFromLastPosition: true,
+        enableTimestampDeepLink: true,
+      });
+
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: nextSourceUrl });
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).toHaveBeenCalledTimes(2);
+      expect(seekMock).toHaveBeenNthCalledWith(1, 30, 'ui');
+      expect(seekMock).toHaveBeenNthCalledWith(2, 120, 'ui');
+    });
+
+    it('does not apply timestamp deep links to VOD loaded after a live source', () => {
+      const nextSourceUrl = 'https://cdn.example/next.mpd';
+      const nextStorageKey = resumeStorageKeyForSourceIdentifier(`dash:${nextSourceUrl}`);
+      window.history.replaceState(null, '', `${window.location.origin}/watch?t=30s`);
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(true);
+      window.localStorage.setItem(nextStorageKey, '120');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        enableResumeFromLastPosition: true,
+        enableTimestampDeepLink: true,
+      });
+
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: nextSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).toHaveBeenCalledTimes(1);
+      expect(seekMock).toHaveBeenCalledWith(120, 'ui');
+    });
+
+    it('does not fall back to resume when timestamp deep link points to the start', () => {
+      window.history.replaceState(null, '', `${window.location.origin}/watch?t=0s`);
+      const playerMock = MockHelper.getPlayerMock();
+      (playerMock.getSource as jest.Mock).mockReturnValue({ dash: resumeSourceUrl });
+      (playerMock.isLive as jest.Mock).mockReturnValue(false);
+      window.localStorage.setItem(resumeStorageKey, '90');
+
+      new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }], {
+        enableResumeFromLastPosition: true,
+        enableTimestampDeepLink: true,
+      });
+
+      const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
+      expect(seekMock).not.toHaveBeenCalled();
     });
   });
 
@@ -535,3 +692,12 @@ describe('UIManager', () => {
     });
   });
 });
+
+function resumeStorageKeyForSourceIdentifier(sourceIdentifier: string): string {
+  let hash = 0;
+  for (let i = 0; i < sourceIdentifier.length; i++) {
+    hash = (hash << 5) - hash + sourceIdentifier.charCodeAt(i);
+    hash |= 0;
+  }
+  return `${prefixCss('resume')}.${(hash >>> 0).toString(36)}`;
+}
