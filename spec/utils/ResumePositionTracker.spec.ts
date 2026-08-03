@@ -21,6 +21,7 @@ describe('ResumePositionTracker', () => {
 
   afterEach(() => {
     tracker?.release();
+    jest.restoreAllMocks();
   });
 
   it('returns a saved position when the source is already loaded', () => {
@@ -69,12 +70,12 @@ describe('ResumePositionTracker', () => {
     expect(storageKey).not.toContain(sourceUrl);
   });
 
-  it('stores playback progress as time changes', () => {
+  it('does not store playback progress as time changes', () => {
     tracker = new ResumePositionTracker(player);
 
     player.eventEmitter.fireTimeChangedEvent(120);
 
-    expect(window.localStorage.getItem(storageKey)).toBe('120');
+    expect(window.localStorage.getItem(storageKey)).toBeNull();
   });
 
   it('stores the last known position when the source is unloaded', () => {
@@ -87,13 +88,14 @@ describe('ResumePositionTracker', () => {
     expect(window.localStorage.getItem(storageKey)).toBe('120');
   });
 
-  it('stores the last content position when the page is unloaded during an ad', () => {
+  it('stores the last content position when the document is hidden during an ad', () => {
     tracker = new ResumePositionTracker(player);
     player.eventEmitter.fireTimeChangedEvent(120);
     (player.ads.isLinearAdActive as jest.Mock).mockReturnValue(true);
     player.eventEmitter.fireTimeChangedEvent(30);
+    jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
 
-    window.dispatchEvent(new Event('beforeunload'));
+    document.dispatchEvent(new Event('visibilitychange'));
 
     expect(window.localStorage.getItem(storageKey)).toBe('120');
   });
@@ -113,8 +115,9 @@ describe('ResumePositionTracker', () => {
   it('does not clear a saved position when no position has been tracked yet', () => {
     tracker = new ResumePositionTracker(player);
     window.localStorage.setItem(storageKey, '90');
+    jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
 
-    window.dispatchEvent(new Event('beforeunload'));
+    document.dispatchEvent(new Event('visibilitychange'));
 
     expect(window.localStorage.getItem(storageKey)).toBe('90');
   });
@@ -169,7 +172,7 @@ describe('ResumePositionTracker', () => {
 
     player.eventEmitter.fireTimeChangedEvent(120);
     player.eventEmitter.firePauseEvent();
-    window.dispatchEvent(new Event('beforeunload'));
+    document.dispatchEvent(new Event('visibilitychange'));
 
     expect(window.localStorage.getItem(storageKey)).toBeNull();
   });

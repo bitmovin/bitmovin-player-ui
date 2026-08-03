@@ -24,7 +24,7 @@ export class ResumePositionTracker {
 
   release(): void {
     this.storeCurrentPosition();
-    window.removeEventListener('beforeunload', this.storeCurrentPosition);
+    document.removeEventListener('visibilitychange', this.storeCurrentPositionWhenHidden);
     this.activeSourceKey = null;
     this.lastPosition = null;
   }
@@ -44,7 +44,6 @@ export class ResumePositionTracker {
 
     if (isFinite(event.time)) {
       this.lastPosition = event.time;
-      this.savePosition(this.lastPosition);
     }
   };
 
@@ -74,6 +73,12 @@ export class ResumePositionTracker {
     this.savePosition(this.lastPosition);
   };
 
+  private readonly storeCurrentPositionWhenHidden = () => {
+    if (document.visibilityState === 'hidden') {
+      this.storeCurrentPosition();
+    }
+  };
+
   private readonly startPositionTracking = () => {
     this.stopPositionTracking();
     this.activeSourceKey = null;
@@ -88,7 +93,7 @@ export class ResumePositionTracker {
     this.player.on(this.player.exports.PlayerEvent.TimeChanged, this.updatePosition);
     this.player.on(this.player.exports.PlayerEvent.Paused, this.pausePositionTracking);
     this.player.on(this.player.exports.PlayerEvent.PlaybackFinished, this.finishPositionTracking);
-    window.addEventListener('beforeunload', this.storeCurrentPosition);
+    document.addEventListener('visibilitychange', this.storeCurrentPositionWhenHidden);
   };
 
   private readonly restartPositionTracking = () => {
@@ -117,7 +122,7 @@ export class ResumePositionTracker {
     this.player.off(this.player.exports.PlayerEvent.TimeChanged, this.updatePosition);
     this.player.off(this.player.exports.PlayerEvent.Paused, this.pausePositionTracking);
     this.player.off(this.player.exports.PlayerEvent.PlaybackFinished, this.finishPositionTracking);
-    window.removeEventListener('beforeunload', this.storeCurrentPosition);
+    document.removeEventListener('visibilitychange', this.storeCurrentPositionWhenHidden);
   }
 }
 
