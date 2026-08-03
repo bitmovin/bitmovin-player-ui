@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `CaptionToggleButton` to turn captions and subtitles on and off with a single click, without opening the settings panel. The button hides itself while the source provides no caption tracks, and restores the most recently enabled track when captions are switched back on. If no track has been enabled yet, it prefers a track matching the current audio language and falls back to the first available track.
+
 ## [4.17.0] - 2026-07-02
 
 ### Added
