@@ -86,5 +86,7 @@
   "quickseek.rewind": "Rebobinar {seekSeconds} segundos",
   "contextMenu.title": "Bitmovin Player",
   "contextMenu.subtitle": "Streaming adaptativo para la web",
-  "contextMenu.copyTimestampLink": "Copiar enlace en el momento actual"
+  "contextMenu.copyTimestampLink": "Copiar enlace en el momento actual",
+  "captions.enable": "Activar subtítulos",
+  "captions.disable": "Desactivar subtítulos"
 }

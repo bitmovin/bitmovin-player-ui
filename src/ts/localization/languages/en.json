@@ -86,5 +86,7 @@
   "quickseek.rewind": "Rewind {seekSeconds} seconds",
   "contextMenu.title": "Bitmovin Player",
   "contextMenu.subtitle": "Adaptive Streaming for the Web",
-  "contextMenu.copyTimestampLink": "Copy link at current time"
+  "contextMenu.copyTimestampLink": "Copy link at current time",
+  "captions.enable": "Enable captions",
+  "captions.disable": "Disable captions"
 }
