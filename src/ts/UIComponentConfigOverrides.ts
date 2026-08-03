@@ -218,6 +218,10 @@ export interface UIComponentConfigMap {
   /**
    * @category Components
    */
+  CaptionToggleButton?: Partial<ToggleButtonConfig>;
+  /**
+   * @category Components
+   */
   CastStatusOverlay?: Partial<ContainerConfig>;
   /**
    * @category Components
