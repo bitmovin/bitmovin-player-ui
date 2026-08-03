@@ -307,7 +307,7 @@ export interface UIConfig {
    * Component layout overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Variants without an
    * identifier keep their resolved component tree unchanged.
    *
-   * See {@link UIComponentLayoutOverrides} for more details.
+   * @see {@link UIComponentLayoutOverrides} for more details.
    *
    * @example
    * ```ts
