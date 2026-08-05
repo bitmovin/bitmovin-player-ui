@@ -71,7 +71,7 @@
   "normal": "normal",
   "default": "standard",
   "live": "Live",
-  "live.jumpToLiveEdge": "Zum Live-Punkt springen",
+  "live.jumpToLiveEdge": "{liveLabel}, zum Live-Punkt springen",
   "subtitle.example": "Beispiel Untertitel",
   "subtitle.select": "Untertitel auswählen",
   "playingOn": "Spielt auf <strong>{castDeviceName}</strong>",

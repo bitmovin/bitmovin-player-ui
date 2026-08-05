@@ -91,8 +91,10 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       const domElement = this.getDomElement();
       domElement.attr('tabindex', '0');
       domElement.attr('role', 'button');
-      // Describe the action rather than the displayed live state for assistive technologies.
-      this.setAriaLabel(i18n.getLocalizer('live.jumpToLiveEdge'));
+      // Keep the visible label in the accessible name so speech input can target the control.
+      const liveLabel = i18n.performLocalization(i18n.getLocalizer('live'));
+      this.setAriaLabel(i18n.getLocalizer('live.jumpToLiveEdge', { liveLabel }));
+      this.onClick.subscribe(liveClickHandler);
       domElement.on('keydown', liveKeyDownHandler);
     };
 
@@ -101,6 +103,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       domElement.attr('tabindex', config.tabIndex.toString());
       domElement.removeAttr('role');
       domElement.removeAttr('aria-label');
+      this.onClick.unsubscribe(liveClickHandler);
       domElement.off('keydown', liveKeyDownHandler);
     };
 
@@ -114,15 +117,14 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         this.setText(i18n.getLocalizer('live'));
         if (config.hideInLivePlayback) {
           this.hide();
+        } else {
+          enableLiveInteraction();
         }
-        this.onClick.subscribe(liveClickHandler);
-        enableLiveInteraction();
         updateLiveTimeshiftState();
       } else {
         this.getDomElement().removeClass(liveCssClass);
         this.getDomElement().removeClass(liveEdgeCssClass);
         this.show();
-        this.onClick.unsubscribe(liveClickHandler);
         disableLiveInteraction();
       }
     };

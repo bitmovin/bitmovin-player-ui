@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `live.jumpToLiveEdge` localization key for the LIVE indicator's accessible name; interpolates the `live` label via `{liveLabel}`.
+
 ### Fixed
 
 - The LIVE indicator can now be focused and activated with Enter or Space to return to the live edge.
