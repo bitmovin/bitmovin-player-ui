@@ -24,6 +24,124 @@ describe('PlaybackTimeLabel', () => {
       playbackTimeLabel = new PlaybackTimeLabel();
     });
 
+    describe('keyboard accessibility', () => {
+      let mockDomElement: ReturnType<typeof MockHelper.generateDOMMock>;
+
+      const getKeydownHandler = (): ((event: KeyboardEvent) => void) => {
+        const handler = mockDomElement.on.mock.calls.find(([eventName]) => eventName === 'keydown')?.[1];
+        expect(handler).toEqual(expect.any(Function));
+        return handler as (event: KeyboardEvent) => void;
+      };
+
+      beforeEach(() => {
+        mockDomElement = MockHelper.generateDOMMock();
+        jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+
+        playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      });
+
+      it('exposes the live indicator as an accessible button', () => {
+        expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '0');
+        expect(mockDomElement.attr).toHaveBeenCalledWith('role', 'button');
+        expect(mockDomElement.attr).toHaveBeenCalledWith('aria-label', 'Live, jump to live edge');
+      });
+
+      it.each(['Enter', ' '])('jumps to the live edge when pressing %p', key => {
+        const keydownHandler = getKeydownHandler();
+        const keyboardEvent = {
+          key,
+          preventDefault: jest.fn(),
+        } as unknown as KeyboardEvent;
+
+        keydownHandler(keyboardEvent);
+
+        expect(keyboardEvent.preventDefault).toHaveBeenCalled();
+        expect(playerMock.timeShift).toHaveBeenCalledWith(0);
+      });
+
+      it('jumps to the live edge when Space is reported through the event code', () => {
+        const keydownHandler = getKeydownHandler();
+        const keyboardEvent = {
+          key: 'Unidentified',
+          code: 'Space',
+          preventDefault: jest.fn(),
+        } as unknown as KeyboardEvent;
+
+        keydownHandler(keyboardEvent);
+
+        expect(keyboardEvent.preventDefault).toHaveBeenCalled();
+        expect(playerMock.timeShift).toHaveBeenCalledWith(0);
+      });
+
+      it('prevents repeated activation keys without jumping to the live edge again', () => {
+        const keydownHandler = getKeydownHandler();
+        const keyboardEvent = {
+          key: ' ',
+          code: 'Space',
+          repeat: true,
+          preventDefault: jest.fn(),
+        } as unknown as KeyboardEvent;
+
+        keydownHandler(keyboardEvent);
+
+        expect(keyboardEvent.preventDefault).toHaveBeenCalled();
+        expect(playerMock.timeShift).not.toHaveBeenCalled();
+      });
+
+      it('ignores unrelated keys', () => {
+        const keydownHandler = getKeydownHandler();
+        const keyboardEvent = {
+          key: 'ArrowRight',
+          preventDefault: jest.fn(),
+        } as unknown as KeyboardEvent;
+
+        keydownHandler(keyboardEvent);
+
+        expect(keyboardEvent.preventDefault).not.toHaveBeenCalled();
+        expect(playerMock.timeShift).not.toHaveBeenCalled();
+      });
+
+      it('restores non-interactive semantics when switching to VOD', () => {
+        const keydownHandler = getKeydownHandler();
+        jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+
+        playerMock.eventEmitter.fireDurationChangedEvent();
+
+        expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '-1');
+        expect(mockDomElement.removeAttr).toHaveBeenCalledWith('role');
+        expect(mockDomElement.removeAttr).toHaveBeenCalledWith('aria-label');
+        expect(mockDomElement.off).toHaveBeenCalledWith('keydown', keydownHandler);
+      });
+    });
+
+    it('does not enable live interaction when configured to hide during live playback', () => {
+      const mockDomElement = MockHelper.generateDOMMock();
+      playbackTimeLabel = new PlaybackTimeLabel({ hideInLivePlayback: true });
+      const subscribeSpy = jest.spyOn(playbackTimeLabel.onClick, 'subscribe');
+      jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+
+      playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+
+      expect(subscribeSpy).not.toHaveBeenCalled();
+      expect(mockDomElement.attr).not.toHaveBeenCalledWith('tabindex', '0');
+      expect(mockDomElement.attr).not.toHaveBeenCalledWith('role', 'button');
+      expect(mockDomElement.on).not.toHaveBeenCalledWith('keydown', expect.any(Function));
+    });
+
+    it('restores the configured tab index when switching to VOD', () => {
+      const mockDomElement = MockHelper.generateDOMMock();
+      playbackTimeLabel = new PlaybackTimeLabel({
+        tabIndex: 2,
+      });
+      jest.spyOn(playbackTimeLabel, 'getDomElement').mockReturnValue(mockDomElement);
+      playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+
+      playerMock.eventEmitter.fireDurationChangedEvent();
+
+      expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '2');
+    });
+
     describe('switch to inactive', () => {
       let removeClassSpy: any;
       beforeEach(() => {

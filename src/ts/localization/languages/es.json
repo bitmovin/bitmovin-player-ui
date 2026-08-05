@@ -71,6 +71,7 @@
   "normal": "normal",
   "default": "predeterminado",
   "live": "Directo",
+  "live.jumpToLiveEdge": "{liveLabel}, saltar al punto en directo",
   "subtitle.example": "Ejemplo de Subtítulo",
   "subtitle.select": "Seleccionar subtítulo",
   "playingOn": "Reproduciendo en <strong>{castDeviceName}</strong>",

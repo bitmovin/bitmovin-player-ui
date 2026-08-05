@@ -77,6 +77,36 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       player.timeShift(0);
     };
 
+    const liveKeyDownHandler = (event: KeyboardEvent) => {
+      const isActivationKey = event.key === 'Enter' || event.key === ' ' || event.code === 'Space';
+      if (isActivationKey) {
+        event.preventDefault();
+        if (!event.repeat) {
+          liveClickHandler();
+        }
+      }
+    };
+
+    const enableLiveInteraction = () => {
+      const domElement = this.getDomElement();
+      domElement.attr('tabindex', '0');
+      domElement.attr('role', 'button');
+      // Keep the visible label in the accessible name so speech input can target the control.
+      const liveLabel = i18n.performLocalization(i18n.getLocalizer('live'));
+      this.setAriaLabel(i18n.getLocalizer('live.jumpToLiveEdge', { liveLabel }));
+      this.onClick.subscribe(liveClickHandler);
+      domElement.on('keydown', liveKeyDownHandler);
+    };
+
+    const disableLiveInteraction = () => {
+      const domElement = this.getDomElement();
+      domElement.attr('tabindex', config.tabIndex.toString());
+      domElement.removeAttr('role');
+      domElement.removeAttr('aria-label');
+      this.onClick.unsubscribe(liveClickHandler);
+      domElement.off('keydown', liveKeyDownHandler);
+    };
+
     const updateLiveState = () => {
       // Player is playing a live stream when the duration is infinite
       live = player.isLive();
@@ -87,14 +117,15 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
         this.setText(i18n.getLocalizer('live'));
         if (config.hideInLivePlayback) {
           this.hide();
+        } else {
+          enableLiveInteraction();
         }
-        this.onClick.subscribe(liveClickHandler);
         updateLiveTimeshiftState();
       } else {
         this.getDomElement().removeClass(liveCssClass);
         this.getDomElement().removeClass(liveEdgeCssClass);
         this.show();
-        this.onClick.unsubscribe(liveClickHandler);
+        disableLiveInteraction();
       }
     };
 

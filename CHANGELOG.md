@@ -9,11 +9,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- `live.jumpToLiveEdge` localization key for the LIVE indicator's accessible name; interpolates the `live` label via `{liveLabel}`.
 - `UIConfig.enableResumeFromLastPosition` option to enable storing playback progress and resume known sources from the last saved position.
 
 ### Changed
 
 - Persisted preferences (enabled via `UIConfig.enablePersistentPreferences`) now use the configured UI prefix instead of a hard-coded bitmovin specific key.
+
+### Fixed
+
+- The LIVE indicator can now be focused and activated with Enter or Space to return to the live edge.
 
 ## [4.17.0] - 2026-07-02
 
