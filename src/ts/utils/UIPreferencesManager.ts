@@ -1,7 +1,8 @@
 import { StorageUtils } from './StorageUtils';
 import { PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmovin-player';
+import { prefixCss } from '../components/DummyComponent';
 
-const STORAGE_KEY_PREFIX = 'bitmovin.player.ui.preferences.';
+const STORAGE_KEY_PREFIX = `${prefixCss('preferences')}.`;
 const KEY_ENABLED = STORAGE_KEY_PREFIX + 'enabled';
 const KEY_VOLUME = STORAGE_KEY_PREFIX + 'volume';
 const KEY_MUTED = STORAGE_KEY_PREFIX + 'muted';
