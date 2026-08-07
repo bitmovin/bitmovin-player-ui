@@ -134,8 +134,8 @@ export interface UIConfig {
    * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
    * Default: true
    *
-   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default
-   * `PlaybackSpeedSelectBox`.
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default playback-speed settings
+   * row via `PlaybackSpeedSelectBox`.
    */
   playbackSpeedSelectionEnabled?: boolean;
   /**
@@ -237,7 +237,8 @@ export interface UIConfig {
   /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    *
-   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default `EcoModeContainer`.
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default Eco Mode settings group
+   * via `EcoModeContainer`.
    */
   ecoMode?: boolean;
   /**
@@ -317,8 +318,9 @@ export interface UIConfig {
   /**
    * Allows including or excluding supported components from default UIFactory layouts without rebuilding the layout.
    *
-   * Component layout overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Variants without an
-   * identifier keep their resolved component tree unchanged.
+   * UI variants created by the built-in `UIFactory.build*UI()` functions have a {@link UIVariantIdentifier}. Custom
+   * {@link UIManager} variants must provide an identifier to participate in component layout overrides; variants
+   * without one keep their resolved component tree unchanged.
    *
    * Only component types exposed by {@link UIComponentLayoutOverrideMap} are supported. Custom components cannot be
    * overridden.

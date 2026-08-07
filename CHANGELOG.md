@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - `UIConfig.enableResumeFromLastPosition` option to enable storing playback progress and resume known sources from the last saved position.
-- `UIConfig.componentLayoutOverrides` and `UIComponentLayoutOverride` to include or exclude default UI components without rebuilding complete UI layouts through the `UIFactory`.
+- `UIConfig.componentLayoutOverrides` and `UIComponentLayoutOverride` to keep or remove supported components from default UI layouts without rebuilding complete `UIFactory` layouts.
 
 ### Changed
 

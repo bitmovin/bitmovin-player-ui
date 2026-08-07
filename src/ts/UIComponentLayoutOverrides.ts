@@ -12,8 +12,9 @@ export enum UIComponentLayoutOverride {
  * are removed from the resolved component tree and released before the remaining components are initialized or
  * configured.
  *
- * Overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Variants without an identifier keep
- * their resolved component tree unchanged.
+ * UI variants created by the built-in `UIFactory.build*UI()` functions have a {@link UIVariantIdentifier}. Custom
+ * `UIManager` variants must provide an identifier to participate in component layout overrides; variants without one
+ * keep their resolved component tree unchanged.
  *
  * Only component types exposed by {@link UIComponentLayoutOverrideMap} and addressable in the resolved default layout
  * are supported. Custom components, nested components managed outside the container tree, and components created at
