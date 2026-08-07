@@ -28,15 +28,15 @@ import { StringUtils } from '../../utils/StringUtils';
  *
  * @category Labels
  */
-export class AdMessageLabel extends Label<LabelConfig> {
-  constructor(config: LabelConfig = {}) {
+export class AdMessageLabel<Config extends LabelConfig = LabelConfig> extends Label<Config> {
+  constructor(config: Config = {} as Config) {
     super(config);
 
     this.config = this.mergeConfig(
       config,
       {
         cssClass: 'ui-ad-message-label',
-      },
+      } as Config,
       this.config,
     );
   }
@@ -44,16 +44,14 @@ export class AdMessageLabel extends Label<LabelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
-    const config = this.getConfig();
-    let text = config.text || '';
+    let ad: LinearAd;
 
     const updateMessageHandler = () => {
-      this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(text), player));
+      this.setText(this.getAdMessage(player, ad));
     };
 
     const adStartHandler = (event: AdEvent) => {
-      const uiConfig = (event.ad as LinearAd).uiConfig;
-      text = uiConfig?.message || config.text || '';
+      ad = event.ad as LinearAd;
 
       updateMessageHandler();
 
@@ -69,5 +67,10 @@ export class AdMessageLabel extends Label<LabelConfig> {
     player.on(player.exports.PlayerEvent.AdError, adEndHandler);
     player.on(player.exports.PlayerEvent.AdFinished, adEndHandler);
     player.on(player.exports.PlayerEvent.SourceUnloaded, adEndHandler);
+  }
+
+  protected getAdMessage(player: PlayerAPI, ad?: LinearAd): string {
+    const text = ad?.uiConfig?.message || this.config.text || '';
+    return StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(text), player);
   }
 }
