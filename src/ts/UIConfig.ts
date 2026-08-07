@@ -297,6 +297,9 @@ export interface UIConfig {
    * `FullscreenToggleButton`, `VolumeToggleButton`, and other toggle buttons unless a more specific component key
    * overrides it.
    *
+   * This is intended for simple customizations. For extensive customizations, building a full custom layout through
+   * the {@link UIFactory} is preferred.
+   *
    * @example
    * ```ts
    * componentConfigOverrides: {
@@ -316,6 +319,9 @@ export interface UIConfig {
    *
    * Component layout overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Variants without an
    * identifier keep their resolved component tree unchanged.
+   *
+   * This is intended for simple customizations. For extensive customizations, building a full custom layout through
+   * the {@link UIFactory} is preferred.
    *
    * @see {@link UIComponentLayoutOverrides} for more details.
    *
