@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- `AdCounterLabel` now extends `AdMessageLabel` and inherits its ad-message behavior.
+- `AdCounterLabel` now displays its configured `text` for single-ad ad breaks instead of the `Ad 1 of 1` count.
+
 ## [4.18.0] - 2026-08-06
 
 ### Added
