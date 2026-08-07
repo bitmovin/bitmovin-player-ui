@@ -68,12 +68,12 @@ export class AdCounterLabel extends AdMessageLabel<AdCounterLabelConfig> {
     }
   }
 
-  protected getAdMessage(player: PlayerAPI, ad?: LinearAd): string {
-    const currentAdIndex = this.adBreakTracker?.currentAdIndex;
-    const totalNumberOfAds = this.adBreakTracker?.totalNumberOfAds;
+  protected getAdMessage(player: PlayerAPI, ad?: LinearAd, currentAdIndex?: number, totalNumberOfAds?: number): string {
+    const resolvedCurrentAdIndex = currentAdIndex ?? this.adBreakTracker?.currentAdIndex;
+    const resolvedTotalNumberOfAds = totalNumberOfAds ?? this.adBreakTracker?.totalNumberOfAds;
 
-    if (totalNumberOfAds > 1) {
-      return this.getAdCounterMessage(player, currentAdIndex, totalNumberOfAds);
+    if (resolvedCurrentAdIndex > 0 && resolvedTotalNumberOfAds > 1) {
+      return this.getAdCounterMessage(player, resolvedCurrentAdIndex, resolvedTotalNumberOfAds);
     }
 
     return super.getAdMessage(player, ad);
@@ -93,12 +93,9 @@ export class AdCounterLabel extends AdMessageLabel<AdCounterLabelConfig> {
       return;
     }
 
-    if (totalNumberOfAds > 1) {
-      this.setText(this.getAdCounterMessage(this.player, currentAdIndex, totalNumberOfAds));
-      return;
-    }
-
-    this.setText(super.getAdMessage(this.player, this.player.ads?.getActiveAd?.() as LinearAd));
+    this.setText(
+      this.getAdMessage(this.player, this.player.ads?.getActiveAd?.() as LinearAd, currentAdIndex, totalNumberOfAds),
+    );
   }
 
   private getAdCounterMessage(player: PlayerAPI, currentAdIndex?: number, totalNumberOfAds?: number): string {

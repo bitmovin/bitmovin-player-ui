@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `AdCounterLabel` now extends `AdMessageLabel` and inherits its ad-message behavior.
 - `AdCounterLabel` now displays its configured `text` for single-ad ad breaks instead of the `Ad 1 of 1` count.
+- `AdCounterLabel` is now also used in the small-screen ads UI to show the ad counter instead of the `PlaybackLabel`.
 
 ## [4.18.0] - 2026-08-06
 

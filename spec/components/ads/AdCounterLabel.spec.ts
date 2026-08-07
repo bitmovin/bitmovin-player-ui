@@ -84,6 +84,18 @@ describe('AdCounterLabel', () => {
 
     expect(adCounterLabel.getText()).toBe('Ad 1 of 3');
   });
+
+  it('falls back to the ad message when the current ad index is unavailable', () => {
+    configureAdCounterLabel({ text: 'Advertisement' });
+    const adBreakTracker = uiInstanceManagerMock.getConfig().adBreakTracker;
+    Object.assign(adBreakTracker, { currentAdIndex: 0, totalNumberOfAds: 3 });
+
+    adCountChangedDispatcher.dispatch(null, { currentAdIndex: 0, totalNumberOfAds: 3 });
+    expect(adCounterLabel.getText()).toBe('Advertisement');
+
+    playerMock.eventEmitter.fireAdStartedEvent({ uiConfig: { message: 'Sponsor message' } });
+    expect(adCounterLabel.getText()).toBe('Sponsor message');
+  });
 });
 
 function configureAdCounterLabel(config: AdCounterLabelConfig = {}) {
