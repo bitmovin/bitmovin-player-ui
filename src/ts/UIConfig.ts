@@ -2,7 +2,7 @@ import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/E
 import { SourceConfig } from 'bitmovin-player';
 import type { LocalizationConfig, UIVariantIdentifier } from './UIManager';
 import type { UIComponentConfigOverrides } from './UIComponentConfigOverrides';
-import type { UIComponentLayoutOverrides } from './UIComponentLayoutOverrides';
+import type { UIComponentLayoutOverrideMap, UIComponentLayoutOverrides } from './UIComponentLayoutOverrides';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -319,6 +319,9 @@ export interface UIConfig {
    *
    * Component layout overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Variants without an
    * identifier keep their resolved component tree unchanged.
+   *
+   * Only component types exposed by {@link UIComponentLayoutOverrideMap} are supported. Custom components cannot be
+   * overridden.
    *
    * This is intended for simple customizations. For extensive customizations, building a full custom layout through
    * the {@link UIFactory} is preferred.

@@ -15,6 +15,11 @@ export enum UIComponentLayoutOverride {
  * Overrides are only applied to UI variants with a {@link UIVariantIdentifier}. Variants without an identifier keep
  * their resolved component tree unchanged.
  *
+ * Only component types exposed by {@link UIComponentLayoutOverrideMap} and addressable in the resolved default layout
+ * are supported. Custom components, nested components managed outside the container tree, and components created at
+ * runtime cannot be overridden. Setting components owned by a `SettingsPanelItem` are supported by removing the owning
+ * settings row when excluded.
+ *
  * Precedence is resolved in this order:
  * 1. Built-in default layout membership
  * 2. Legacy aliases (`includeWatermark`, `ecoMode`, and `playbackSpeedSelectionEnabled`)
@@ -110,13 +115,14 @@ export interface UIComponentLayoutOverrides extends UIComponentLayoutOverrideMap
 /**
  * Component layout overrides keyed by public component class name.
  *
- * Each property matches a public component class name. The value controls whether default layouts keep or remove
- * matching component instances. Base component keys apply to subclasses, and more specific component keys override base
+ * Each property maps a supported component class name to {@link UIComponentLayoutOverride.Include} or
+ * {@link UIComponentLayoutOverride.Exclude}. `Exclude` removes matching instances from the resolved default layout.
+ * `Include` retains matching instances and can override a lower-precedence exclusion; it does not create components that
+ * are absent from the layout. Base component keys apply to subclasses, and more specific component keys override base
  * component keys.
  *
  * @category Configs
  */
-// Keep this map in sync with UIComponentConfigMap from UIComponentConfigOverrides.ts.
 export interface UIComponentLayoutOverrideMap {
   /**
    * @category Components
@@ -185,10 +191,6 @@ export interface UIComponentLayoutOverrideMap {
   /**
    * @category Components
    */
-  CastUIContainer?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
   CharacterEdgeColorSelectBox?: UIComponentLayoutOverride;
   /**
    * @category Components
@@ -198,10 +200,6 @@ export interface UIComponentLayoutOverrideMap {
    * @category Components
    */
   ClickOverlay?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
-  CloseButton?: UIComponentLayoutOverride;
   /**
    * @category Components
    */
@@ -273,19 +271,11 @@ export interface UIComponentLayoutOverrideMap {
   /**
    * @category Components
    */
-  Icon?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
   InteractiveContextMenuItem?: UIComponentLayoutOverride;
   /**
    * @category Components
    */
   InteractiveSettingsPanelItem?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
-  ItemSelectionList?: UIComponentLayoutOverride;
   /**
    * @category Components
    */
@@ -341,23 +331,11 @@ export interface UIComponentLayoutOverrideMap {
   /**
    * @category Components
    */
-  RecommendationItem?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
   RecommendationOverlay?: UIComponentLayoutOverride;
   /**
    * @category Components
    */
-  ReplayButton?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
   SeekBar?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
-  SeekBarLabel?: UIComponentLayoutOverride;
   /**
    * @category Components
    */
@@ -382,14 +360,6 @@ export interface UIComponentLayoutOverrideMap {
    * @category Components
    */
   SettingsPanelPageNavigatorButton?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
-  SettingsPanelPageOpenButton?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
-  SettingsPanelSelectOption?: UIComponentLayoutOverride;
   /**
    * @category Components
    */
@@ -453,15 +423,7 @@ export interface UIComponentLayoutOverrideMap {
   /**
    * @category Components
    */
-  UIContainer?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
   VideoQualitySelectBox?: UIComponentLayoutOverride;
-  /**
-   * @category Components
-   */
-  VolumeControlButton?: UIComponentLayoutOverride;
   /**
    * @category Components
    */
