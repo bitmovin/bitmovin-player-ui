@@ -1,6 +1,6 @@
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
-import { AdCounterLabel } from '../../../src/ts/components/ads/AdCounterLabel';
+import { AdCounterLabel, AdCounterLabelConfig } from '../../../src/ts/components/ads/AdCounterLabel';
 import { AdBreakTrackerAdCountChangedArgs } from '../../../src/ts/utils/AdBreakTracker';
 import { EventDispatcher } from '../../../src/ts/EventDispatcher';
 
@@ -25,17 +25,18 @@ describe('AdCounterLabel', () => {
 
     const config = uiInstanceManagerMock.getConfig();
     (config as any).adBreakTracker = adBreakTrackerMock;
-
-    adCounterLabel = new AdCounterLabel({ adCountOutOfTotal: 'Ad {activeAdIndex} of {totalAdsCount}' });
-    adCounterLabel.configure(playerMock, uiInstanceManagerMock);
   });
 
   it('shows the ad counter text when onAdCountChanged fires', () => {
+    configureAdCounterLabel();
+
     adCountChangedDispatcher.dispatch(null, { currentAdIndex: 1, totalNumberOfAds: 3 });
     expect(adCounterLabel.getText()).toBe('Ad 1 of 3');
   });
 
   it('updates text when onAdCountChanged fires again with new values', () => {
+    configureAdCounterLabel();
+
     adCountChangedDispatcher.dispatch(null, { currentAdIndex: 1, totalNumberOfAds: 3 });
     expect(adCounterLabel.getText()).toBe('Ad 1 of 3');
 
@@ -44,7 +45,51 @@ describe('AdCounterLabel', () => {
   });
 
   it('shows empty text when tracker reports reset values', () => {
+    configureAdCounterLabel();
+
     adCountChangedDispatcher.dispatch(null, { currentAdIndex: 0, totalNumberOfAds: 0 });
     expect(adCounterLabel.getText()).toBe('');
   });
+
+  it('shows the configured text when the ad break contains only one ad', () => {
+    configureAdCounterLabel({ text: 'Advertisement' });
+
+    adCountChangedDispatcher.dispatch(null, { currentAdIndex: 1, totalNumberOfAds: 1 });
+    expect(adCounterLabel.getText()).toBe('Advertisement');
+  });
+
+  it('falls back to the default localized text for a single-ad ad break', () => {
+    configureAdCounterLabel();
+
+    adCountChangedDispatcher.dispatch(null, { currentAdIndex: 1, totalNumberOfAds: 1 });
+    expect(adCounterLabel.getText()).toBe('Ad');
+  });
+
+  it('uses the ad-specific message for a single-ad ad break', () => {
+    configureAdCounterLabel({ text: 'Advertisement' });
+    const adBreakTracker = uiInstanceManagerMock.getConfig().adBreakTracker;
+    Object.assign(adBreakTracker, { currentAdIndex: 1, totalNumberOfAds: 1 });
+
+    playerMock.eventEmitter.fireAdStartedEvent({ uiConfig: { message: 'Sponsor message' } });
+
+    expect(adCounterLabel.getText()).toBe('Sponsor message');
+  });
+
+  it('keeps showing the counter instead of the ad-specific message when multiple ads remain', () => {
+    configureAdCounterLabel();
+    const adBreakTracker = uiInstanceManagerMock.getConfig().adBreakTracker;
+    Object.assign(adBreakTracker, { currentAdIndex: 1, totalNumberOfAds: 3 });
+
+    playerMock.eventEmitter.fireAdStartedEvent({ uiConfig: { message: 'Sponsor message' } });
+
+    expect(adCounterLabel.getText()).toBe('Ad 1 of 3');
+  });
 });
+
+function configureAdCounterLabel(config: AdCounterLabelConfig = {}) {
+  adCounterLabel = new AdCounterLabel({
+    adCountOutOfTotal: 'Ad {activeAdIndex} of {totalAdsCount}',
+    ...config,
+  });
+  adCounterLabel.configure(playerMock, uiInstanceManagerMock);
+}

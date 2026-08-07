@@ -48,6 +48,7 @@
   "ads.skip": "Passer",
   "ads.skippableIn": "Passer l'annonce dans {remainingTime}",
   "ads.adNumberOfTotal": "Annonce {activeAdIndex} sur {totalAdsCount}",
+  "ad": "Annonce",
   "settings": "Réglages",
   "fullscreen": "Plein écran",
   "speed": "Vitesse",

@@ -48,6 +48,7 @@
   "ads.skip": "Überspringen",
   "ads.skippableIn": "Überspringen in {remainingTime}",
   "ads.adNumberOfTotal": "Anzeige {activeAdIndex} von {totalAdsCount}",
+  "ad": "Anzeige",
   "settings": "Einstellungen",
   "fullscreen": "Vollbild",
   "speed": "Geschwindigkeit",
