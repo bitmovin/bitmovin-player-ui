@@ -15,7 +15,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0, // These must be deterministic. A retry would hide flakiness instead of surfacing it.
-  reporter: process.env.CI ? 'line' : 'list',
+  // On CI also emit the HTML report, which the workflow uploads as an artifact when a run fails.
+  reporter: process.env.CI ? [['line'], ['html', { open: 'never' }]] : [['list']],
   use: {
     ...devices['Desktop Chrome'],
     // Fixed viewport so layout is not a function of the runner's window size.
