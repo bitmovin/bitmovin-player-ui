@@ -417,3 +417,8 @@ jspm_packages
 # Yarn Integrity file
 .yarn-integrity
 docs
+
+### Playwright ###
+test-results
+playwright-report
+.playwright

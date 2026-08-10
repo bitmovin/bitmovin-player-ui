@@ -6,6 +6,7 @@
   "types": "./dist/js/framework/main.d.ts",
   "scripts": {
     "test": "npx jest",
+    "test:browser": "npm run build && npx playwright test",
     "start": "webpack-dev-server --mode development --open",
     "build": "npm run clean; npx webpack --mode development",
     "build:prod": "npm run clean; npm run lint && npx webpack --mode production && npm run docs",
@@ -44,6 +45,7 @@
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@inrupt/jest-jsdom-polyfills": "^4.1.4",
+    "@playwright/test": "^1.62.1",
     "@types/jest": "^29.5.0",
     "@types/jsdom": "^21.1.0",
     "autoprefixer": "^10.4.21",

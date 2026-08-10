@@ -94,6 +94,7 @@ export interface UIComponentConfigMap {
 
 - Use targeted checks while iterating:
   - `npx jest <spec> --runInBand`
+  - `npm run test:browser` for layout/sizing behavior (see below)
   - `npm run lint-ts`
   - `npm run lint-sass`
   - `npx tsc --noEmit`
@@ -103,3 +104,30 @@ export interface UIComponentConfigMap {
 - For Android or iOS SDK impact, record what was manually checked. If mobile SDK verification was needed but not possible in the current environment, say that explicitly and do not treat browser checks as equivalent.
 - Treat `npm run docs` by exit code; TypeDoc warnings can be acceptable when the command exits `0`.
 - For merge conflicts, confirm real unresolved conflicts with `git ls-files -u`; text searches for conflict markers can hit false positives in this repo.
+
+## Layout And Sizing Tests
+
+Jest runs in jsdom, which does no layout: `offsetWidth`, `getBoundingClientRect()` and friends are
+always `0` there. A Jest spec can never catch a sizing bug. Layout belongs in `test/browser/`
+(Playwright, run with `npm run test:browser`), which drives the built bundle in a real browser
+against a stub player.
+
+Rules that keep these tests from becoming flaky. Follow them or the suite gets disabled:
+
+- **Never assert absolute pixel values.** Fonts render differently across operating systems, so
+  `expect(width).toBe(73)` passes locally and fails in CI. Assert relationships instead: unchanged
+  between two measurements, never grew, fits inside the parent, one element wider than another.
+- **Compare a measurement to another measurement**, taken in the same browser in the same run.
+  That is what makes the assertion portable.
+- **No sleeping and no retries.** Time only moves when the test fires an event, so there is nothing
+  to wait for. `retries` is deliberately `0`: a retry hides flakiness instead of surfacing it.
+- **No real streams, no CDN, no video decode.** Those are the actual sources of flake in player
+  testing. The stub player in `test/browser/harness.ts` replaces all of it.
+- **Measure the elements that can actually change.** Container rows are full-width by construction,
+  so comparing only those passes no matter how badly the controls inside them resize. Walk
+  descendants.
+- **Prove a new test can fail.** Break the thing it guards, watch it go red, then fix it again. A
+  layout assertion that was never seen failing is usually asserting nothing.
+- **Cover both host-page worlds** when a change touches sizing: with and without a global
+  `box-sizing: border-box` reset. Most real pages have one, our demo page has one via Bootstrap,
+  and plenty of customer pages do not. `mountUi(page, { hostReset })` switches between them.
