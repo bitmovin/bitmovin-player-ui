@@ -3,8 +3,7 @@
 .#{$prefix}-ui-playbacktimelabel {
   @extend %ui-label;
 
-  // The label sets its own min-width from its offsetWidth. offsetWidth counts padding and
-  // min-width does not, so without border-box the label gets wider on every time update.
+  // PlaybackTimeLabel writes offsetWidth back as min-width, so both must describe the same box.
   box-sizing: border-box;
   font-weight: $font-weight-medium;
   text-transform: uppercase;
