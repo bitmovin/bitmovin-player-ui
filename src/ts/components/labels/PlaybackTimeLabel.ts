@@ -155,6 +155,10 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
 
       // To avoid 'jumping' in the UI by varying label sizes due to non-monospaced fonts,
       // we gradually increase the min-width with the content to reach a stable size.
+      // This only settles while the box we measure matches the box min-width constrains, which is
+      // why the label is border-box (see _playback-time-label.scss). Under content-box, padding
+      // would be counted by offsetWidth but not by min-width, so the label would grow on every
+      // update instead.
       const width = this.getDomElement().width();
       if (width > minWidth) {
         minWidth = width;
