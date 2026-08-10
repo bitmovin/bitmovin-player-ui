@@ -48,6 +48,7 @@
   "ads.skip": "Ignorar",
   "ads.skippableIn": "Ignorar anúncio em {remainingTime}",
   "ads.adNumberOfTotal": "Anúncio {activeAdIndex} de {totalAdsCount}",
+  "ad": "Anúncio",
   "settings": "Definições",
   "fullscreen": "Ecrã inteiro",
   "speed": "Velocidade",

@@ -95,6 +95,7 @@ export interface Vocabulary {
   'ads.skip': string;
   'ads.skippableIn': string;
   'ads.adNumberOfTotal': string;
+  ad: string;
   pictureInPicture: string;
   appleAirplay: string;
   googleCast: string;

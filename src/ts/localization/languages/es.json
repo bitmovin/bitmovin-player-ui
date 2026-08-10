@@ -48,6 +48,7 @@
   "ads.skip": "Saltar",
   "ads.skippableIn": "Saltar anuncio en {remainingTime}",
   "ads.adNumberOfTotal": "Anuncio {activeAdIndex} de {totalAdsCount}",
+  "ad": "Anuncio",
   "settings": "Configuración",
   "fullscreen": "Pantalla Completa",
   "speed": "Velocidad",
