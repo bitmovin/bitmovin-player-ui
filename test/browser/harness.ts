@@ -27,7 +27,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
     <html><head><meta charset="utf-8">${
       hostReset ? '<style>html{box-sizing:border-box}*,::after,::before{box-sizing:inherit}</style>' : ''
     }</head>
-    <body style="margin:0"><div id="player" style="width:1000px;height:562px"></div></body></html>`);
+    <body style="margin:0">
+      <!-- position:relative matters. The UI container is absolutely positioned, so without a
+           positioned ancestor it sizes against the viewport instead of the player. -->
+      <div id="player" style="position:relative;width:1000px;height:562px;background:#000"></div>
+    </body></html>`);
 
   // The player bundle is loaded only for its exported enums (PlayerEvent, ViewMode). No player is
   // instantiated; the UI is driven by the stub below.
@@ -109,7 +113,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
         (handlers[event] || []).forEach(cb => cb({ type: event, timestamp: Date.now(), ...data }));
       };
 
-      (window as any).__ui = (window as any).bitmovin.playerui.UIFactory.buildUI(player as any);
+      (window as any).__ui = (window as any).bitmovin.playerui.UIFactory.buildUI(player as any, {
+        // Auto-hide would leave the control bar at opacity 0. It stays measurable either way, but
+        // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
+        componentConfigOverrides: { UIContainer: { hideDelay: -1 } },
+      });
     },
     { isLive: live },
   );
