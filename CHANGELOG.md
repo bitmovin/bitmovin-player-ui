@@ -16,8 +16,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - `AdCounterLabel` now displays its configured or ad-specific message for single-ad ad breaks and when no valid current ad index is available.
+- The seek bar no longer gets smaller on every time update during live playback. This only affected pages that do not set a global `box-sizing: border-box`.
 
 ## [4.18.0] - 2026-08-06
+
+### Known Issues
+
+- On live streams the seek bar gets smaller on every time update until it disappears from the control bar. Only affects pages that do not set a global `box-sizing: border-box`. To work around it, add `.bmpui-ui-playbacktimelabel { box-sizing: border-box; }` to your page. Fixed in `4.19.0`.
 
 ### Added
 

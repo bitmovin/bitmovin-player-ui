@@ -34,4 +34,10 @@ describe('PlaybackTimeLabel styles', () => {
       getCssProperty('.bmpui-ui-button', 'padding'),
     );
   });
+
+  // Without this the label gets wider on every time update and pushes the seek bar out of the
+  // control bar. We set it ourselves so it does not depend on the page having a CSS reset.
+  it('sizes the playback time label as a border box', () => {
+    expect(getCssProperty('.bmpui-ui-playbacktimelabel', 'box-sizing')).toBe('border-box');
+  });
 });
