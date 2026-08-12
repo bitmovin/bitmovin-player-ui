@@ -197,16 +197,17 @@ describe('CaptionToggleButton', () => {
     });
   });
 
-  describe('on release', () => {
-    it('unregisters all player event handlers', () => {
+  describe('event registration', () => {
+    it('registers all caption related handlers on the player it is configured with', () => {
       setupSubtitles([{ id: 'en', lang: 'en', enabled: false }]);
-      const off = jest.spyOn(playerMock, 'off');
+      const on = jest.spyOn(playerMock, 'on');
 
       captionToggleButton.configure(playerMock, uiInstanceManagerMock);
-      captionToggleButton.release();
 
-      const unregisteredEvents = off.mock.calls.map(([event]) => event);
-      expect(unregisteredEvents).toEqual(
+      // The handlers are registered on the wrapped player of the UI instance, which releases them
+      // again when the UI is released, so the component does not unregister them itself.
+      const registeredEvents = on.mock.calls.map(([event]) => event);
+      expect(registeredEvents).toEqual(
         expect.arrayContaining([
           PlayerEvent.SourceLoaded,
           PlayerEvent.SourceUnloaded,
@@ -219,27 +220,12 @@ describe('CaptionToggleButton', () => {
       );
     });
 
-    it('unsubscribes from the uimanager onUpdated event', () => {
+    it('subscribes to the uimanager onUpdated event', () => {
       setupSubtitles([{ id: 'en', lang: 'en', enabled: false }]);
 
       captionToggleButton.configure(playerMock, uiInstanceManagerMock);
-      captionToggleButton.release();
 
-      expect(uiInstanceManagerMock.getConfig().events.onUpdated.unsubscribe).toHaveBeenCalled();
-    });
-
-    it('stays inert when a late event is still delivered after release', () => {
-      const tracks: Array<Partial<SubtitleTrack>> = [{ id: 'en', lang: 'en', enabled: false }];
-      setupSubtitles(tracks);
-
-      captionToggleButton.configure(playerMock, uiInstanceManagerMock);
-      captionToggleButton.release();
-
-      // The player mock does not actually deregister handlers, which conveniently exercises the
-      // released state: a handler that still fires must not touch the player reference anymore.
-      tracks[0].enabled = true;
-      expect(() => playerMock.eventEmitter.fireSubtitleEnabled({ id: 'en' })).not.toThrow();
-      expect(captionToggleButton.isOff()).toBe(true);
+      expect(uiInstanceManagerMock.getConfig().events.onUpdated.subscribe).toHaveBeenCalled();
     });
   });
 

@@ -16,16 +16,6 @@ import { i18n } from '../../localization/i18n';
  * @category Buttons
  */
 export class CaptionToggleButton extends ToggleButton<ToggleButtonConfig> {
-  private player: PlayerAPI;
-  private uimanager: UIInstanceManager;
-
-  /**
-   * The track to restore when captions are switched back on. Kept up to date for tracks enabled
-   * elsewhere in the UI too, so that the button and e.g. the subtitle list box agree on the
-   * selection.
-   */
-  private lastEnabledTrackId: string | undefined = undefined;
-
   constructor(config: ToggleButtonConfig = {}) {
     super(config);
 
@@ -43,30 +33,67 @@ export class CaptionToggleButton extends ToggleButton<ToggleButtonConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
-    this.player = player;
-    this.uimanager = uimanager;
 
-    player.on(player.exports.PlayerEvent.SourceLoaded, this.onPlayerStateChanged);
-    player.on(player.exports.PlayerEvent.SourceUnloaded, this.onSourceUnloaded);
-    player.on(player.exports.PlayerEvent.SubtitleAdded, this.onPlayerStateChanged);
-    player.on(player.exports.PlayerEvent.SubtitleRemoved, this.onPlayerStateChanged);
-    player.on(player.exports.PlayerEvent.SubtitleEnabled, this.onSubtitleEnabled);
-    player.on(player.exports.PlayerEvent.SubtitleDisabled, this.onPlayerStateChanged);
-    // Tracks can change between periods of the same source.
-    player.on(player.exports.PlayerEvent.PeriodSwitched, this.onPlayerStateChanged);
-    uimanager.getConfig().events.onUpdated.subscribe(this.onPlayerStateChanged);
+    // The track to restore when captions are switched back on. Also updated for tracks enabled
+    // elsewhere in the UI, so that the button and e.g. the subtitle list box agree on the selection.
+    let lastEnabledTrackId: string | undefined;
 
-    this.onClick.subscribe(() => {
-      if (this.availableTracks().length === 0) {
+    // The subtitles API is not available on every player/platform and can still be missing while no
+    // source is loaded, so every access has to be guarded.
+    const availableTracks = (): SubtitleTrack[] => player.subtitles?.list() ?? [];
+    const enabledTracks = (): SubtitleTrack[] => availableTracks().filter(track => track.enabled);
+
+    const trackToEnable = (): SubtitleTrack | undefined => {
+      const tracks = availableTracks();
+      const audioLanguage = player.getAudio()?.lang;
+
+      return (
+        tracks.find(track => track.id === lastEnabledTrackId) ??
+        tracks.find(track => track.lang === audioLanguage) ??
+        tracks[0]
+      );
+    };
+
+    const captionStateHandler = () => {
+      if (availableTracks().length === 0) {
+        this.hide();
         return;
       }
 
-      const enabledTracks = this.enabledTracks();
+      this.show();
+      enabledTracks().length > 0 ? this.on() : this.off();
+    };
 
-      if (enabledTracks.length > 0) {
-        enabledTracks.forEach(track => player.subtitles.disable(track.id));
+    const subtitleEnabledHandler = (event: SubtitleEvent) => {
+      if (event.subtitle) {
+        lastEnabledTrackId = event.subtitle.id;
+      }
+      captionStateHandler();
+    };
+
+    const sourceUnloadedHandler = () => {
+      // The restored track belongs to the previous source, so it must not leak into the next one.
+      lastEnabledTrackId = undefined;
+      captionStateHandler();
+    };
+
+    player.on(player.exports.PlayerEvent.SourceLoaded, captionStateHandler);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, sourceUnloadedHandler);
+    player.on(player.exports.PlayerEvent.SubtitleAdded, captionStateHandler);
+    player.on(player.exports.PlayerEvent.SubtitleRemoved, captionStateHandler);
+    player.on(player.exports.PlayerEvent.SubtitleEnabled, subtitleEnabledHandler);
+    player.on(player.exports.PlayerEvent.SubtitleDisabled, captionStateHandler);
+    // Tracks can change between periods of the same source.
+    player.on(player.exports.PlayerEvent.PeriodSwitched, captionStateHandler);
+    uimanager.getConfig().events.onUpdated.subscribe(captionStateHandler);
+
+    this.onClick.subscribe(() => {
+      const currentlyEnabledTracks = enabledTracks();
+
+      if (currentlyEnabledTracks.length > 0) {
+        currentlyEnabledTracks.forEach(track => player.subtitles.disable(track.id));
       } else {
-        const track = this.trackToEnable();
+        const track = trackToEnable();
 
         if (track) {
           player.subtitles.enable(track.id, true);
@@ -76,78 +103,7 @@ export class CaptionToggleButton extends ToggleButton<ToggleButtonConfig> {
 
     // Startup init. The UI can be built lazily, so the initial state has to be derived from the
     // player instead of waiting for the next event.
-    const initiallyEnabledTrack = this.enabledTracks().pop();
-    if (initiallyEnabledTrack) {
-      this.lastEnabledTrackId = initiallyEnabledTrack.id;
-    }
-    this.updateState();
-  }
-
-  // The subtitles API is not available on every player/platform and can still be missing while no
-  // source is loaded, so every access has to be guarded.
-  private availableTracks(): SubtitleTrack[] {
-    return this.player?.subtitles?.list() ?? [];
-  }
-
-  private enabledTracks(): SubtitleTrack[] {
-    return this.availableTracks().filter(track => track.enabled);
-  }
-
-  private trackToEnable(): SubtitleTrack | undefined {
-    const tracks = this.availableTracks();
-    const audioLanguage = this.player?.getAudio()?.lang;
-
-    return (
-      tracks.find(track => track.id === this.lastEnabledTrackId) ??
-      tracks.find(track => track.lang === audioLanguage) ??
-      tracks[0]
-    );
-  }
-
-  private updateState(): void {
-    if (this.availableTracks().length === 0) {
-      this.hide();
-      return;
-    }
-
-    this.show();
-    this.enabledTracks().length > 0 ? this.on() : this.off();
-  }
-
-  private onPlayerStateChanged = (): void => {
-    this.updateState();
-  };
-
-  private onSubtitleEnabled = (event: SubtitleEvent): void => {
-    if (event.subtitle) {
-      this.lastEnabledTrackId = event.subtitle.id;
-    }
-    this.updateState();
-  };
-
-  private onSourceUnloaded = (): void => {
-    // The restored track belongs to the previous source, so it must not leak into the next one.
-    this.lastEnabledTrackId = undefined;
-    this.updateState();
-  };
-
-  release(): void {
-    super.release();
-
-    if (this.player) {
-      this.player.off(this.player.exports.PlayerEvent.SourceLoaded, this.onPlayerStateChanged);
-      this.player.off(this.player.exports.PlayerEvent.SourceUnloaded, this.onSourceUnloaded);
-      this.player.off(this.player.exports.PlayerEvent.SubtitleAdded, this.onPlayerStateChanged);
-      this.player.off(this.player.exports.PlayerEvent.SubtitleRemoved, this.onPlayerStateChanged);
-      this.player.off(this.player.exports.PlayerEvent.SubtitleEnabled, this.onSubtitleEnabled);
-      this.player.off(this.player.exports.PlayerEvent.SubtitleDisabled, this.onPlayerStateChanged);
-      this.player.off(this.player.exports.PlayerEvent.PeriodSwitched, this.onPlayerStateChanged);
-    }
-
-    this.uimanager?.getConfig().events.onUpdated.unsubscribe(this.onPlayerStateChanged);
-
-    this.lastEnabledTrackId = undefined;
-    this.player = null;
-    this.uimanager = null;
+    lastEnabledTrackId = enabledTracks().pop()?.id;
+    captionStateHandler();
   }
 }
