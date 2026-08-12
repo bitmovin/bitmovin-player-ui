@@ -38,7 +38,11 @@ function withLayout<T>(
  */
 function getDefaultComponentLayoutOverrides(): Record<string, UIComponentLayoutOverride> {
   const uiManagerSource = fs.readFileSync(path.resolve(__dirname, '../../../src/ts/UIManager.ts'), 'utf8');
-  const defaultsBlock = /componentLayoutOverrides: \{\n([\s\S]*?)\n\s*\.\.\.\(/.exec(uiManagerSource);
+  // Match the whole block up to the closing user-config spread, so defaults that are declared after a
+  // conditional spread are covered too.
+  const defaultsBlock = /componentLayoutOverrides: \{\n([\s\S]*?)\n\s*\.\.\.uiconfig\.componentLayoutOverrides,/.exec(
+    uiManagerSource,
+  );
 
   if (!defaultsBlock) {
     throw new Error('Could not read the default componentLayoutOverrides from src/ts/UIManager.ts.');
