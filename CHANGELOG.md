@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- `UIConfig.enableResumeFromLastPosition` option to enable storing playback progress and resume known sources from the last saved position.
+- `UIConfig.componentLayoutOverrides` and `UIComponentLayoutOverride` to keep or remove supported components from default UI layouts without rebuilding complete `UIFactory` layouts.
 - `CaptionToggleButton` to turn captions and subtitles on and off with a single click, without opening the settings panel. The button hides itself while the source provides no caption tracks, and restores the most recently enabled track when captions are switched back on. If no track has been enabled yet, it prefers a track matching the current audio language and falls back to the first available track.
+
+### Changed
+
+- Persisted preferences (enabled via `UIConfig.enablePersistentPreferences`) now use the configured UI prefix instead of a hard-coded bitmovin specific key.
 
 ## [4.17.0] - 2026-07-02
 
