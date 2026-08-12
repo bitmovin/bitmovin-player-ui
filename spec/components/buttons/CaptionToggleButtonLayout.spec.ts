@@ -49,7 +49,10 @@ function getDefaultComponentLayoutOverrides(): Record<string, UIComponentLayoutO
   }
 
   const overrides: Record<string, UIComponentLayoutOverride> = {};
-  const overridePattern = /(\w+): UIComponentLayoutOverride\.(\w+)/g;
+  // Only plain `Key: UIComponentLayoutOverride.Value,` entries are defaults. Keys nested in a
+  // conditional spread are indented deeper and are driven by the supplied config, so they must not
+  // overwrite a base default here.
+  const overridePattern = /^ {8}(\w+): UIComponentLayoutOverride\.(\w+),$/gm;
   let match = overridePattern.exec(defaultsBlock[1]);
 
   while (match) {
