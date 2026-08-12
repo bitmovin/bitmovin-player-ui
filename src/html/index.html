@@ -310,7 +310,9 @@
         if (playgroundConfig.uiOption != null && bitmovin.playerui.UIFactory[playgroundConfig.uiOption] != null) {
           uiManager = bitmovin.playerui.UIFactory[playgroundConfig.uiOption](player, uiConfig);
         } else {
-          localStorage.clear();
+          if (playgroundConfig.uiOption != null) {
+            localStorage.removeItem('bmpui-playground-config');
+          }
           uiManager = bitmovin.playerui.UIFactory.buildUI(player, uiConfig);
         }
 

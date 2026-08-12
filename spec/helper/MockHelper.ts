@@ -87,6 +87,7 @@ export namespace MockHelper {
       empty: jest.fn(),
       append: jest.fn(),
       attr: jest.fn(),
+      removeAttr: jest.fn(),
       get: jest.fn(),
     };
 
@@ -145,6 +146,7 @@ export namespace MockHelper {
         isCasting: jest.fn(),
         isViewModeAvailable: jest.fn(),
         seek: jest.fn(),
+        timeShift: jest.fn(),
         isMuted: jest.fn(),
         mute: jest.fn(),
         unmute: jest.fn(),

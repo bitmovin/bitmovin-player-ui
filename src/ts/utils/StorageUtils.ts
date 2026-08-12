@@ -16,7 +16,8 @@ export namespace StorageUtils {
         !disableStorageApi &&
         window.localStorage &&
         typeof localStorage.getItem === 'function' &&
-        typeof localStorage.setItem === 'function'
+        typeof localStorage.setItem === 'function' &&
+        typeof localStorage.removeItem === 'function'
       );
     } catch (e) {
       return false;

@@ -1,9 +1,10 @@
 import { i18n, LocalizableText } from '../../localization/i18n';
 import { UIInstanceManager } from '../../UIManager';
-import { LabelConfig, Label } from '../labels/Label';
-import { PlayerAPI } from 'bitmovin-player';
+import { LabelConfig } from '../labels/Label';
+import { LinearAd, PlayerAPI } from 'bitmovin-player';
 import { StringUtils } from '../../utils/StringUtils';
 import { AdBreakTracker, AdBreakTrackerAdCountChangedArgs } from '../../utils/AdBreakTracker';
+import { AdMessageLabel } from './AdMessageLabel';
 
 export interface AdCounterLabelConfig extends LabelConfig {
   /**
@@ -15,11 +16,12 @@ export interface AdCounterLabelConfig extends LabelConfig {
 }
 
 /**
- * A label that displays the index of the currently playing ad out of the total number of ads.
+ * A label that displays an ad message for a single ad, or the index of the currently playing ad when multiple ads
+ * are scheduled.
  *
  * @category Labels
  */
-export class AdCounterLabel extends Label<AdCounterLabelConfig> {
+export class AdCounterLabel extends AdMessageLabel<AdCounterLabelConfig> {
   private player?: PlayerAPI;
   private adBreakTracker?: AdBreakTracker;
 
@@ -30,6 +32,7 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
       config,
       {
         cssClass: 'ui-label-ad-counter',
+        text: i18n.getLocalizer('ad'),
         adCountOutOfTotal: i18n.getLocalizer('ads.adNumberOfTotal'),
       },
       this.config,
@@ -65,6 +68,17 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     }
   }
 
+  protected getAdMessage(player: PlayerAPI, ad?: LinearAd, currentAdIndex?: number, totalNumberOfAds?: number): string {
+    const resolvedCurrentAdIndex = currentAdIndex ?? this.adBreakTracker?.currentAdIndex;
+    const resolvedTotalNumberOfAds = totalNumberOfAds ?? this.adBreakTracker?.totalNumberOfAds;
+
+    if (resolvedCurrentAdIndex > 0 && resolvedTotalNumberOfAds > 1) {
+      return this.getAdCounterMessage(player, resolvedCurrentAdIndex, resolvedTotalNumberOfAds);
+    }
+
+    return super.getAdMessage(player, ad);
+  }
+
   private readonly adBreakTrackerAdCountChangedHandler = (
     _: AdBreakTracker,
     adBreakTrackerEvent: AdBreakTrackerAdCountChangedArgs,
@@ -80,13 +94,17 @@ export class AdCounterLabel extends Label<AdCounterLabelConfig> {
     }
 
     this.setText(
-      StringUtils.replaceAdMessagePlaceholders(
-        i18n.performLocalization(this.config.adCountOutOfTotal),
-        this.player,
-        undefined,
-        currentAdIndex,
-        totalNumberOfAds,
-      ),
+      this.getAdMessage(this.player, this.player.ads?.getActiveAd?.() as LinearAd, currentAdIndex, totalNumberOfAds),
+    );
+  }
+
+  private getAdCounterMessage(player: PlayerAPI, currentAdIndex?: number, totalNumberOfAds?: number): string {
+    return StringUtils.replaceAdMessagePlaceholders(
+      i18n.performLocalization(this.config.adCountOutOfTotal),
+      player,
+      undefined,
+      currentAdIndex,
+      totalNumberOfAds,
     );
   }
 }

@@ -485,10 +485,10 @@ export namespace UIFactory {
         components: [
           new Container({
             components: [
-              new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
+              new AdCounterLabel(),
               new SeekBar({ label: new SeekBarLabel() }),
               new PlaybackTimeLabel({
-                timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+                timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
                 cssClasses: ['text-right'],
               }),
             ],
