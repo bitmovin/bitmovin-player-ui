@@ -614,6 +614,7 @@ export namespace UIFactory {
         components: [
           playbackToggleButton,
           new Spacer(),
+          new CaptionToggleButton(),
           subtitleListBoxOpenButton,
           audioListBoxToggleButton,
           new SettingsToggleButton({ settingsPanel: settingsPanel }),

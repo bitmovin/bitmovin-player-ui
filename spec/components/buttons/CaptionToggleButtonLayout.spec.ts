@@ -12,18 +12,22 @@ import { ComponentConfigManager } from '../../../src/ts/utils/ComponentConfigMan
 import { ComponentLayoutOverrideProcessor } from '../../../src/ts/utils/ComponentLayoutOverrideProcessor';
 import { UIUtils } from '../../../src/ts/utils/UIUtils';
 
-const LAYOUT_VARIANTS = [UIVariantIdentifier.main, UIVariantIdentifier.smallScreen];
+// Layouts that render subtitles and own a control bar the button can live in. The ad layouts have no
+// SubtitleOverlay, and emptyState/castReceiver/subtitle have no control bar to put the button in.
+const LAYOUT_VARIANTS = [UIVariantIdentifier.main, UIVariantIdentifier.smallScreen, UIVariantIdentifier.tv];
+
+const LAYOUT_BUILDERS: { [key: string]: () => Container<ContainerConfig> } = {
+  [UIVariantIdentifier.main]: () => UIFactory.defaultLayouts.main(),
+  [UIVariantIdentifier.smallScreen]: () => UIFactory.defaultLayouts.smallScreen(),
+  [UIVariantIdentifier.tv]: () => UIFactory.defaultLayouts.tv().ui,
+};
 
 function withLayout<T>(
   uiVariantIdentifier: UIVariantIdentifier,
   use: (uiContainer: Container<ContainerConfig>) => T,
 ): T {
   return ComponentConfigManager.run({ Component: { cssPrefix: 'ui' } }, uiVariantIdentifier, () =>
-    use(
-      uiVariantIdentifier === UIVariantIdentifier.smallScreen
-        ? UIFactory.defaultLayouts.smallScreen()
-        : UIFactory.defaultLayouts.main(),
-    ),
+    use(LAYOUT_BUILDERS[uiVariantIdentifier]()),
   );
 }
 
