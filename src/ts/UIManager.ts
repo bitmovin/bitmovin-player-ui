@@ -327,6 +327,7 @@ export class UIManager {
       shadowDom: false,
       ...uiconfig,
       componentLayoutOverrides: {
+        CaptionToggleButton: UIComponentLayoutOverride.Exclude,
         EcoModeContainer: UIComponentLayoutOverride.Exclude,
         QuickSeekButton: UIComponentLayoutOverride.Exclude,
         Watermark: UIComponentLayoutOverride.Exclude,

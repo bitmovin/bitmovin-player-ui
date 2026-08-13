@@ -36,6 +36,7 @@ export enum UIComponentLayoutOverride {
  * Default component layout overrides for identified variants:
  * ```ts
  * componentLayoutOverrides: {
+ *   CaptionToggleButton: UIComponentLayoutOverride.Exclude,
  *   EcoModeContainer: UIComponentLayoutOverride.Exclude,
  *   QuickSeekButton: UIComponentLayoutOverride.Exclude,
  *   Watermark: UIComponentLayoutOverride.Exclude,
@@ -181,6 +182,10 @@ export interface UIComponentLayoutOverrideMap {
    * @category Components
    */
   Button?: UIComponentLayoutOverride;
+  /**
+   * @category Components
+   */
+  CaptionToggleButton?: UIComponentLayoutOverride;
   /**
    * @category Components
    */

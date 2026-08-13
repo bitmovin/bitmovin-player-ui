@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - `UIConfig.componentLayoutOverrides` and `UIComponentLayoutOverride` to keep or remove supported components from default UI layouts without rebuilding complete `UIFactory` layouts.
+- `CaptionToggleButton` to turn captions and subtitles on and off with a single click, without opening the settings panel.
+  - Part of the default, small-screen, and TV layouts, as the first component of the right-hand control bar group, but excluded by default so the default UI is unchanged. Enable it with `componentLayoutOverrides: { CaptionToggleButton: UIComponentLayoutOverride.Include }`.
+  - Hidden while the source provides no caption tracks, and kept in sync with captions that are switched elsewhere in the UI.
+  - Restores the most recently enabled track when captions are switched back on. If no track has been enabled yet, it prefers a track matching the current audio language and falls back to the first available track.
 
 ### Fixed
 

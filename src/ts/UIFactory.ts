@@ -61,6 +61,7 @@ import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationOverlayNavigationGroup } from './spatialnavigation/RecommendationOverlayNavigationGroup';
 import { PlayerInsightsPanel } from './components/panels/player-insights/PlayerInsightsPanel';
+import { CaptionToggleButton } from './components/buttons/CaptionToggleButton';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -313,6 +314,7 @@ export namespace UIFactory {
               new VolumeToggleButton(),
               new VolumeSlider(),
               new Spacer(),
+              new CaptionToggleButton(),
               new PictureInPictureToggleButton(),
               new AirPlayToggleButton(),
               new CastToggleButton(),
@@ -433,6 +435,7 @@ export namespace UIFactory {
               new VolumeToggleButton(),
               new VolumeSlider(),
               new Spacer(),
+              new CaptionToggleButton(),
               new PictureInPictureToggleButton(),
               new SettingsToggleButton({ settingsPanel: settingsPanel }),
               new FullscreenToggleButton(),
@@ -611,6 +614,7 @@ export namespace UIFactory {
         components: [
           playbackToggleButton,
           new Spacer(),
+          new CaptionToggleButton(),
           subtitleListBoxOpenButton,
           audioListBoxToggleButton,
           new SettingsToggleButton({ settingsPanel: settingsPanel }),

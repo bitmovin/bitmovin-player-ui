@@ -133,6 +133,8 @@ export interface Vocabulary {
   'ecoMode.title': string;
   persistentPreferences: string;
   'contextMenu.copyTimestampLink': string;
+  'captions.enable': string;
+  'captions.disable': string;
 }
 
 /**

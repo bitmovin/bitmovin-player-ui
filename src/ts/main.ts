@@ -111,6 +111,7 @@ export { MetadataLabel, MetadataLabelContent, MetadataLabelConfig } from './comp
 export { AirPlayToggleButton } from './components/buttons/AirPlayToggleButton';
 export { VolumeSlider, VolumeSliderConfig } from './components/seekbar/VolumeSlider';
 export { PictureInPictureToggleButton } from './components/buttons/PictureInPictureToggleButton';
+export { CaptionToggleButton } from './components/buttons/CaptionToggleButton';
 export { Spacer } from './components/Spacer';
 export { BackgroundColorSelectBox } from './components/settings/subtitlesettings/BackgroundColorSelectBox';
 export { BackgroundOpacitySelectBox } from './components/settings/subtitlesettings/BackgroundOpacitySelectBox';

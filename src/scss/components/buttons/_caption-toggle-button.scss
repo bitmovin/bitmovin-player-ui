@@ -1,0 +1,20 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-captiontogglebutton {
+  @extend %ui-button;
+
+  .#{$prefix}-ui-icon {
+    background-image: svg-load('../../assets/images/closed-captions.svg', fill=$color-icon);
+  }
+
+  &:hover {
+    @include svg-icon-shadow;
+  }
+
+  &.#{$prefix}-on {
+    .#{$prefix}-ui-icon {
+      background-image: svg-load('../../assets/images/closed-captionsX.svg', fill=$color-icon);
+    }
+  }
+}
