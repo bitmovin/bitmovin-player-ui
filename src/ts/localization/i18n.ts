@@ -95,6 +95,7 @@ export interface Vocabulary {
   'ads.skip': string;
   'ads.skippableIn': string;
   'ads.adNumberOfTotal': string;
+  ad: string;
   pictureInPicture: string;
   appleAirplay: string;
   googleCast: string;
@@ -112,6 +113,7 @@ export interface Vocabulary {
   speed: string;
   playPause: string;
   live: string;
+  'live.jumpToLiveEdge': string;
   'subtitle.example': string;
   'subtitle.select': string;
   playingOn: string;

@@ -89,7 +89,6 @@ export class ComponentLayoutOverrideProcessor {
     }
 
     releasedComponents.push(component);
-    component.release();
 
     if (component instanceof SettingsPanelItem) {
       const settingComponent = component.getConfig().settingComponent;
@@ -104,5 +103,7 @@ export class ComponentLayoutOverrideProcessor {
         this.releaseComponentTree(childComponent, releasedComponents);
       }
     }
+
+    component.release();
   }
 }

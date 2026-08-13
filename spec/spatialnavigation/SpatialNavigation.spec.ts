@@ -107,6 +107,21 @@ describe('SpatialNavigation', () => {
       expect(preventDefaultSpy).not.toHaveBeenCalled();
       expect(stopPropagationSpy).not.toHaveBeenCalled();
     });
+
+    it('should prevent default for directional keys even when navigation did not move focus', () => {
+      rootNavigationContainer.show();
+      // Navigation at the edge of a group returns false (no focusable target in that direction), but the key must
+      // still be consumed so the platform does not apply its own native focus handling outside the group.
+      jest.spyOn(rootNavigationGroup, 'handleNavigation').mockReturnValue(false);
+      const event = new KeyboardEvent('keydown', { key: 'Up', keyCode: 38 } as any);
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+      const stopPropagationSpy = jest.spyOn(event, 'stopPropagation');
+
+      spatialNavigation['handleKeyEvent'](event);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+      expect(stopPropagationSpy).toHaveBeenCalled();
+    });
   });
 
   describe('release', () => {
