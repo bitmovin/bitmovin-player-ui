@@ -255,7 +255,9 @@ export class SeekBarLabel extends Container<SeekBarLabelConfig> {
   release(): void {
     super.release();
 
-    this.uiManager.onSeekPreview.unsubscribe(this.handleSeekPreview);
-    this.player.off(this.player.exports.PlayerEvent.DurationChanged, this.initializeTimeFormat);
+    this.uiManager?.onSeekPreview.unsubscribe(this.handleSeekPreview);
+
+    const player = this.player;
+    player?.off(player.exports.PlayerEvent.DurationChanged, this.initializeTimeFormat);
   }
 }

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `UIConfig.componentLayoutOverrides` and `UIComponentLayoutOverride` to keep or remove supported components from default UI layouts without rebuilding complete `UIFactory` layouts.
+
 ### Fixed
 
 - Spatial navigation on the TV UI no longer lets focus escape the active navigation group when pressing a direction at the group's edge on some smart TVs.

@@ -2,6 +2,7 @@ import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/E
 import { SourceConfig } from 'bitmovin-player';
 import type { LocalizationConfig, UIVariantIdentifier } from './UIManager';
 import type { UIComponentConfigOverrides } from './UIComponentConfigOverrides';
+import type { UIComponentLayoutOverrideMap, UIComponentLayoutOverrides } from './UIComponentLayoutOverrides';
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -132,6 +133,9 @@ export interface UIConfig {
   /**
    * Specifies if the `PlaybackSpeedSelectBox` should be displayed within the `SettingsPanel`
    * Default: true
+   *
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default playback-speed settings
+   * row via `PlaybackSpeedSelectBox`.
    */
   playbackSpeedSelectionEnabled?: boolean;
   /**
@@ -232,6 +236,9 @@ export interface UIConfig {
   enableTimestampDeepLink?: boolean;
   /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
+   *
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default Eco Mode settings group
+   * via `EcoModeContainer`.
    */
   ecoMode?: boolean;
   /**
@@ -239,6 +246,8 @@ export interface UIConfig {
    * Per default, the Watermark shows the Bitmovin Logo.
    *
    * Default: false
+   *
+   * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default `Watermark`.
    */
   includeWatermark?: boolean;
   /**
@@ -289,6 +298,9 @@ export interface UIConfig {
    * `FullscreenToggleButton`, `VolumeToggleButton`, and other toggle buttons unless a more specific component key
    * overrides it.
    *
+   * This is intended for simple customizations. For extensive customizations, building a full custom layout through
+   * the {@link UIFactory} is preferred.
+   *
    * @example
    * ```ts
    * componentConfigOverrides: {
@@ -303,6 +315,34 @@ export interface UIConfig {
    * ```
    */
   componentConfigOverrides?: UIComponentConfigOverrides;
+  /**
+   * Allows including or excluding supported components from default UIFactory layouts without rebuilding the layout.
+   *
+   * UI variants created by the built-in `UIFactory.build*UI()` functions have a {@link UIVariantIdentifier}. Custom
+   * {@link UIManager} variants must provide an identifier to participate in component layout overrides; variants
+   * without one keep their resolved component tree unchanged.
+   *
+   * Only component types exposed by {@link UIComponentLayoutOverrideMap} are supported. Custom components cannot be
+   * overridden.
+   *
+   * This is intended for simple customizations. For extensive customizations, building a full custom layout through
+   * the {@link UIFactory} is preferred.
+   *
+   * @see {@link UIComponentLayoutOverrides} for more details.
+   *
+   * @example
+   * ```ts
+   * componentLayoutOverrides: {
+   *   FullscreenToggleButton: UIComponentLayoutOverride.Exclude,
+   *
+   *   [UIVariantIdentifier.main]: {
+   *     FullscreenToggleButton: UIComponentLayoutOverride.Include,
+   *     Watermark: UIComponentLayoutOverride.Include,
+   *   },
+   * }
+   * ```
+   */
+  componentLayoutOverrides?: UIComponentLayoutOverrides;
 }
 
 export interface ShadowDomConfig {

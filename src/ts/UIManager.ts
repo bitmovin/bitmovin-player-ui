@@ -24,6 +24,8 @@ import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
 import { ResumePositionTracker } from './utils/ResumePositionTracker';
 import { ComponentConfigManager } from './utils/ComponentConfigManager';
+import { ComponentLayoutOverrideProcessor } from './utils/ComponentLayoutOverrideProcessor';
+import { UIComponentLayoutOverride } from './UIComponentLayoutOverrides';
 
 /**
  * @category Configs
@@ -259,6 +261,7 @@ export class UIManager {
   private resumePositionTracker?: ResumePositionTracker;
   private recommendationsApi: RecommendationsApi;
   private timelineMarkersApi: TimelineMarkersApi;
+  private componentLayoutOverrideProcessor: ComponentLayoutOverrideProcessor;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -323,12 +326,30 @@ export class UIManager {
       enableTimestampDeepLink: true,
       shadowDom: false,
       ...uiconfig,
+      componentLayoutOverrides: {
+        EcoModeContainer: UIComponentLayoutOverride.Exclude,
+        QuickSeekButton: UIComponentLayoutOverride.Exclude,
+        Watermark: UIComponentLayoutOverride.Exclude,
+        ...(uiconfig.ecoMode != null && {
+          EcoModeContainer: uiconfig.ecoMode ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
+        }),
+        ...(uiconfig.includeWatermark != null && {
+          Watermark: uiconfig.includeWatermark ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
+        }),
+        ...(uiconfig.playbackSpeedSelectionEnabled != null && {
+          PlaybackSpeedSelectBox: uiconfig.playbackSpeedSelectionEnabled
+            ? UIComponentLayoutOverride.Include
+            : UIComponentLayoutOverride.Exclude,
+        }),
+        ...uiconfig.componentLayoutOverrides,
+      },
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
       adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer()),
     };
+    this.componentLayoutOverrideProcessor = new ComponentLayoutOverrideProcessor(this.config);
 
     this.recommendationsApi = {
       add: (recommendation: RecommendationConfig): void => {
@@ -793,6 +814,12 @@ export class UIManager {
 
   private addUi(ui: InternalUIInstanceManager): void {
     const uiContainer = ui.resolveUI();
+
+    // Layout overrides target built-in variant identifiers. Variants without identifiers keep their tree unchanged.
+    if (ui.variantIdentifier !== undefined) {
+      this.componentLayoutOverrideProcessor.process(uiContainer, ui.variantIdentifier);
+    }
+
     const dom = uiContainer.getDomElement();
     const player = ui.getWrappedPlayer();
 
@@ -1004,6 +1031,10 @@ export class UIInstanceManager {
 
   get conditionResolver(): UIConditionResolver {
     return this.uiVariant.condition;
+  }
+
+  get variantIdentifier(): UIVariantIdentifier | undefined {
+    return this.uiVariant.identifier;
   }
 
   resolveUI(): UIContainer {
