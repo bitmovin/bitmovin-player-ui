@@ -9,12 +9,43 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `UIConfig.enableResumeFromLastPosition` option to enable storing playback progress and resume known sources from the last saved position.
 - `UIConfig.componentLayoutOverrides` and `UIComponentLayoutOverride` to keep or remove supported components from default UI layouts without rebuilding complete `UIFactory` layouts.
+
+### Fixed
+
+- Spatial navigation on the TV UI no longer lets focus escape the active navigation group when pressing a direction at the group's edge on some smart TVs.
+
+## [4.19.0] - 2026-08-10
+
+### Changed
+
+- `AdCounterLabel` now extends `AdMessageLabel` and inherits its ad-message behavior.
+- `AdCounterLabel` now displays its configured `text` for single-ad ad breaks instead of the `Ad 1 of 1` count.
+- `AdCounterLabel` is now also used in the small-screen ads UI instead of the current-time `PlaybackTimeLabel`.
+
+### Fixed
+
+- `AdCounterLabel` now displays its configured or ad-specific message for single-ad ad breaks and when no valid current ad index is available.
+- The seek bar no longer gets smaller on every time update during live playback. This only affected pages that do not set a global `box-sizing: border-box`.
+
+## [4.18.0] - 2026-08-06
+
+### Known Issues
+
+- On live streams the seek bar gets smaller on every time update until it disappears from the control bar. Only affects pages that do not set a global `box-sizing: border-box`. To work around it, add `.bmpui-ui-playbacktimelabel { box-sizing: border-box; }` to your page. Fixed in `4.19.0`.
+
+### Added
+
+- `live.jumpToLiveEdge` localization key for the LIVE indicator's accessible name; interpolates the `live` label via `{liveLabel}`.
+- `UIConfig.enableResumeFromLastPosition` option to enable storing playback progress and resume known sources from the last saved position.
 
 ### Changed
 
 - Persisted preferences (enabled via `UIConfig.enablePersistentPreferences`) now use the configured UI prefix instead of a hard-coded bitmovin specific key.
+
+### Fixed
+
+- The LIVE indicator can now be focused and activated with Enter or Space to return to the live edge.
 
 ## [4.17.0] - 2026-07-02
 
