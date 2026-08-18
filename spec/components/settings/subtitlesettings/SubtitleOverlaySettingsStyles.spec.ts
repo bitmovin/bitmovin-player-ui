@@ -106,6 +106,28 @@ describe('Subtitle overlay settings style precedence', () => {
     expect(css).toMatch(descendantRule);
   });
 
+  it('generates a fully transparent step for the subtitle background and the window', () => {
+    const background = declarationsForLabel('bmpui-bgcolor-black0');
+    const window = declarationsForSelector('bmpui-windowcolor-black0');
+
+    expect(background).toContain('background-color: rgba(0, 0, 0, 0) !important');
+    expect(window.length).toBeGreaterThan(0);
+  });
+
+  it('clears cue descendants for the fully transparent step, so it can remove a background set by the cue', () => {
+    const cueDescendantRules = css.match(
+      /\.bmpui-bgcolor-black0[^{}]*\*\s*\{\s*background-color:\s*initial\s*!important;?\s*\}/g,
+    );
+
+    expect(cueDescendantRules).not.toBeNull();
+  });
+
+  it('offers no fully transparent font color, matching the select box options', () => {
+    const fontColor = declarationsForSelector('bmpui-fontcolor-white0');
+
+    expect(fontColor).toHaveLength(0);
+  });
+
   it('leaves the font size on the label unimportant so the CEA-608 grid size stays authoritative', () => {
     const declarations = declarationsForLabel('bmpui-fontsize-150');
 

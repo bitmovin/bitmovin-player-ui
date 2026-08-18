@@ -1,3 +1,4 @@
+@use 'sass:map';
 @import '../../../variables';
 @import '../../../mixins';
 
@@ -23,11 +24,14 @@
     'magenta': #f0f,
   );
 
+  // Steps offered by the opacity settings. Fully transparent is offered for the subtitle
+  // background and the window, but not for the font.
   $opacities: (
     100: 1,
     75: 0.75,
     50: 0.5,
     25: 0.25,
+    0: 0,
   );
 
   $character-edges: (
@@ -51,7 +55,7 @@
 
   // Font color + opacity
   @each $color-name, $color-value in $colors {
-    @each $opacity-name, $opacity-value in $opacities {
+    @each $opacity-name, $opacity-value in map.remove($opacities, 0) {
       &.#{$prefix}-fontcolor-#{$color-name}#{$opacity-name} {
         .#{$prefix}-ui-subtitle-label {
           color: transparentize($color-value, 1 - $opacity-value) !important;

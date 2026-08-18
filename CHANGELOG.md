@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Subtitle settings chosen via the subtitle settings panel are overridden by styling embedded in cues, such as inline styles in WebVTT and TTML
+- The `0%` option of the subtitle background and window opacity settings has no effect
 
 ## [4.20.0] - 2026-08-13
 
