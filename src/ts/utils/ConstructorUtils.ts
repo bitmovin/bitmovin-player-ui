@@ -1,9 +1,40 @@
+let publicExportValues: unknown[];
+let publicExportNames: string[];
+
+// Lazy require to avoid circular deps — main.ts can't be statically imported while Component is initializing.
+
+function getPublicExportName(constructor: object): string | undefined {
+  if (publicExportValues == null) {
+    publicExportValues = [];
+    publicExportNames = [];
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const publicExports = require('../main') as { [exportName: string]: unknown };
+    for (const exportName of Object.keys(publicExports)) {
+      const exportValue = publicExports[exportName];
+      if (typeof exportValue === 'function' && publicExportValues.indexOf(exportValue) === -1) {
+        publicExportValues.push(exportValue);
+        publicExportNames.push(exportName);
+      }
+    }
+  }
+
+  const exportIndex = publicExportValues.indexOf(constructor);
+  return exportIndex === -1 ? undefined : publicExportNames[exportIndex];
+}
+
+// Uses export names from main.ts instead of constructor.name so overrides work in minified builds.
 export function getConstructorNames(constructor: { prototype: object }): string[] {
   const constructorNames: string[] = [];
   let prototype = constructor.prototype;
 
-  while (prototype && prototype.constructor && prototype.constructor.name) {
-    constructorNames.unshift(prototype.constructor.name);
+  while (prototype && prototype.constructor) {
+    const constructorName = getPublicExportName(prototype.constructor) ?? prototype.constructor.name;
+
+    if (!constructorName) {
+      break;
+    }
+
+    constructorNames.unshift(constructorName);
     prototype = Object.getPrototypeOf(prototype);
   }
 
