@@ -14,20 +14,25 @@ describe('getConstructorNames', () => {
     expect(watermarkIndex).toBeGreaterThan(clickOverlayIndex);
   });
 
-  it('returns public class names when a minifier mangled the runtime class names', () => {
-    const restoreClassNames = mangleClassNames([Watermark, Component]);
+  it('returns public class names when a minifier mangled the runtime class names', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const { Component } = await import('../../src/ts/components/Component');
+      const { Watermark } = await import('../../src/ts/components/Watermark');
+      const { getConstructorNames } = await import('../../src/ts/utils/ConstructorUtils');
+      const restoreClassNames = mangleClassNames([Watermark, Component]);
 
-    try {
-      const constructorNames = getConstructorNames(Watermark);
+      try {
+        const constructorNames = getConstructorNames(Watermark);
 
-      expect(constructorNames).not.toContain('r');
-      expect(constructorNames).not.toContain('t');
-      expect(constructorNames).toContain('Component');
-      expect(constructorNames).toContain('ClickOverlay');
-      expect(constructorNames).toContain('Watermark');
-    } finally {
-      restoreClassNames();
-    }
+        expect(constructorNames).not.toContain('r');
+        expect(constructorNames).not.toContain('t');
+        expect(constructorNames).toContain('Component');
+        expect(constructorNames).toContain('ClickOverlay');
+        expect(constructorNames).toContain('Watermark');
+      } finally {
+        restoreClassNames();
+      }
+    });
   });
 
   it('falls back to the runtime class name for non-public classes', () => {
@@ -41,7 +46,7 @@ describe('getConstructorNames', () => {
 });
 
 /** Simulates minifier identifier mangling, which renames classes but leaves export names untouched. */
-function mangleClassNames(constructors: Function[]): () => void {
+function mangleClassNames(constructors: object[]): () => void {
   const mangledNames = ['r', 't', 'n', 'e', 'i'];
   const originalDescriptors = constructors.map(constructor => Object.getOwnPropertyDescriptor(constructor, 'name'));
 
