@@ -1,25 +1,21 @@
-let publicExportValues: unknown[];
-let publicExportNames: string[];
+let publicExportNames: Map<object, string>;
 
 // Lazy require to avoid circular deps — main.ts can't be statically imported while Component is initializing.
 
 function getPublicExportName(constructor: object): string | undefined {
-  if (publicExportValues == null) {
-    publicExportValues = [];
-    publicExportNames = [];
+  if (publicExportNames == null) {
+    publicExportNames = new Map();
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const publicExports = require('../main') as { [exportName: string]: unknown };
     for (const exportName of Object.keys(publicExports)) {
       const exportValue = publicExports[exportName];
-      if (typeof exportValue === 'function' && publicExportValues.indexOf(exportValue) === -1) {
-        publicExportValues.push(exportValue);
-        publicExportNames.push(exportName);
+      if (typeof exportValue === 'function' && !publicExportNames.has(exportValue)) {
+        publicExportNames.set(exportValue, exportName);
       }
     }
   }
 
-  const exportIndex = publicExportValues.indexOf(constructor);
-  return exportIndex === -1 ? undefined : publicExportNames[exportIndex];
+  return publicExportNames.get(constructor);
 }
 
 // Uses export names from main.ts instead of constructor.name so overrides work in minified builds.
