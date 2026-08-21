@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- `UIConfig.componentLayoutOverrides` and `UIConfig.componentConfigOverrides` are now applied in applications whose production build minifies the UI, instead of being silently ignored. Components are matched by their public export name instead of their runtime class name, which minifiers mangle by default.
+
 ## [4.20.0] - 2026-08-13
 
 ### Added

@@ -83,6 +83,36 @@ describe('ComponentLayoutOverrideProcessor', () => {
     expect(playbackSpeedSelectBoxReleaseSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('applies overrides when a minifier mangled the runtime class names', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const { FullscreenToggleButton } = await import('../../src/ts/components/buttons/FullscreenToggleButton');
+      const { PlaybackToggleButton } = await import('../../src/ts/components/buttons/PlaybackToggleButton');
+      const { Container } = await import('../../src/ts/components/Container');
+      const { UIComponentLayoutOverride } = await import('../../src/ts/UIComponentLayoutOverrides');
+      const { UIVariantIdentifier } = await import('../../src/ts/UIManager');
+      const { ComponentLayoutOverrideProcessor } = await import('../../src/ts/utils/ComponentLayoutOverrideProcessor');
+      const playbackToggleButton = new PlaybackToggleButton();
+      const fullscreenToggleButton = new FullscreenToggleButton();
+      const uiContainer = new Container({
+        components: [playbackToggleButton, fullscreenToggleButton],
+      });
+      const originalNameDescriptor = Object.getOwnPropertyDescriptor(FullscreenToggleButton, 'name');
+      Object.defineProperty(FullscreenToggleButton, 'name', { value: 'r', configurable: true });
+
+      try {
+        new ComponentLayoutOverrideProcessor({
+          componentLayoutOverrides: {
+            FullscreenToggleButton: UIComponentLayoutOverride.Exclude,
+          },
+        }).process(uiContainer, UIVariantIdentifier.main);
+      } finally {
+        Object.defineProperty(FullscreenToggleButton, 'name', originalNameDescriptor);
+      }
+
+      expect(uiContainer.getComponents()).toEqual([playbackToggleButton]);
+    });
+  });
+
   it('recursively releases removed component subtrees', () => {
     const fullscreenToggleButton = new FullscreenToggleButton();
     const nestedContainer = new Container<ContainerConfig>({ components: [fullscreenToggleButton] });
