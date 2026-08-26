@@ -23,7 +23,7 @@ bug is invisible to the existing specs: anything about how big things end up on 
 The case that prompted this: `PlaybackTimeLabel` fed its own `offsetWidth` (a border-box value)
 back into `min-width` (content-box by default). Once the LIVE indicator gained padding in 4.18.0,
 every time update wrote back a larger value, so the label grew and the seek bar next to it shrank
-away. Every check in the repo was structurally blind to it, and it reached a customer.
+away. Every check in the repo was structurally blind to it, and it shipped.
 
 ## How it works
 
