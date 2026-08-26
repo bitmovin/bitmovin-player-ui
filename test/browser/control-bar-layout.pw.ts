@@ -1,5 +1,20 @@
-import { expect, test } from '@playwright/test';
-import { controlBarWidths, mountUi, tick } from './harness';
+import { expect } from '@playwright/test';
+import { controlBarFlexRows, controlBarWidths, mountUi, test, tick } from './harness';
+
+/**
+ * The four host/stream combinations every layout invariant here runs against.
+ *
+ * `hostReset` is the bigger axis of the two. Most real pages ship a global `box-sizing: border-box`
+ * reset and plenty do not, and a reset masks exactly the class of bug this suite exists for. Live
+ * and VOD differ because the live label carries padding the VOD one does not.
+ */
+const environments = [false, true].flatMap(hostReset =>
+  [true, false].map(live => ({
+    hostReset,
+    live,
+    name: `${live ? 'live' : 'vod'}, host page ${hostReset ? 'with a global border-box reset' : 'with no CSS reset'}`,
+  })),
+);
 
 /**
  * Time updates must not resize the control bar.
@@ -10,53 +25,49 @@ import { controlBarWidths, mountUi, tick } from './harness';
  *
  * Deliberately not written against `PlaybackTimeLabel`: the invariant is that no control bar child
  * changes size when only the clock moves, which also covers whatever causes this next time.
+ *
+ * The baseline is taken after the first tick, not at mount. `PlaybackTimeLabel` is designed to grow
+ * its `min-width` up to the width of its content once, so the first update legitimately settles the
+ * size; everything after it must not move.
  */
 test.describe('control bar geometry is stable under time updates', () => {
-  for (const hostReset of [false, true]) {
-    const host = hostReset ? 'host page with a global border-box reset' : 'host page with no CSS reset';
-
-    test(`live, ${host}`, async ({ page }) => {
-      await mountUi(page, { live: true, hostReset });
+  for (const { name, live, hostReset } of environments) {
+    test(name, async ({ page }) => {
+      await mountUi(page, { live, hostReset });
 
       await tick(page, 1);
       const before = await controlBarWidths(page);
       expect(Object.keys(before).length).toBeGreaterThan(0);
 
       await tick(page, 50);
-      const after = await controlBarWidths(page);
 
-      expect(after).toEqual(before);
+      expect(await controlBarWidths(page)).toEqual(before);
     });
   }
+});
 
-  test('vod, host page with no CSS reset', async ({ page }) => {
-    await mountUi(page, { live: false, hostReset: false });
+/**
+ * Nothing in the control bar may take more room than the row it sits in.
+ *
+ * The stability test above only says sizes hold still; it is equally happy with a layout that is
+ * broken and stays broken. This one says the layout is not broken in the first place.
+ */
+test.describe('control bar rows contain their children', () => {
+  for (const { name, live, hostReset } of environments) {
+    test(name, async ({ page }) => {
+      await mountUi(page, { live, hostReset });
+      await tick(page, 50);
 
-    await tick(page, 1);
-    const before = await controlBarWidths(page);
-    await tick(page, 50);
+      const rows = await controlBarFlexRows(page);
+      // Without this the test passes when the selectors stop matching anything.
+      expect(rows.length, 'no horizontal flex rows found in the control bar').toBeGreaterThan(0);
 
-    expect(await controlBarWidths(page)).toEqual(before);
-  });
+      // A sub-pixel rounding allowance, not a layout budget: flex distributes fractional space, so
+      // summing the parts can land a hair over the whole through float addition alone. Anything a
+      // human could see is orders of magnitude larger than this.
+      const overflowing = rows.filter(row => row.used > row.available + 0.5);
 
-  test('control bar children never overflow their row', async ({ page }) => {
-    await mountUi(page, { live: true });
-    await tick(page, 50);
-
-    // Only the horizontal control rows, not the wrappers around them: a wrapper stacks its rows
-    // vertically, so summing its children's widths is meaningless.
-    const overflowing = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('.bmpui-controlbar-top, .bmpui-controlbar-bottom'))
-        .map(row => ({
-          row: row.className.split(' ')[0],
-          children: Array.from(row.children)
-            .filter(c => getComputedStyle(c).position !== 'absolute')
-            .reduce((sum, c) => sum + (c as HTMLElement).offsetWidth, 0),
-          available: (row as HTMLElement).clientWidth,
-        }))
-        .filter(r => r.available > 0 && r.children > r.available),
-    );
-
-    expect(overflowing).toEqual([]);
-  });
+      expect(overflowing).toEqual([]);
+    });
+  }
 });

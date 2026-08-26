@@ -1,7 +1,45 @@
+import fs from 'fs';
 import path from 'path';
-import { Page } from '@playwright/test';
+import { expect, Page, test as base } from '@playwright/test';
 
 const DIST = path.resolve(__dirname, '../../dist');
+
+/**
+ * Resolves a file in the built bundle, or explains what to do about it.
+ *
+ * These tests run against `dist/`, not against `src/`. Without this, running `npx playwright test`
+ * on a clean checkout fails with a bare ENOENT from deep inside Playwright.
+ */
+function distFile(relativePath: string): string {
+  const absolute = path.join(DIST, relativePath);
+  if (!fs.existsSync(absolute)) {
+    throw new Error(
+      `${relativePath} is missing from dist/. These tests run against the built bundle: run \`npm run test:browser\`, which builds first.`,
+    );
+  }
+  return absolute;
+}
+
+/**
+ * The `test` these specs must import, instead of the one from `@playwright/test`.
+ *
+ * It fails a test on any uncaught exception in the page. Without this the suite is one player
+ * version bump away from being silently useless: if the stub no longer satisfies the UI, the UI
+ * throws mid-build, the DOM ends up partial, and comparing two partial snapshots still passes.
+ *
+ * Deliberately only `pageerror` (uncaught exceptions), not `console.error`. Console noise is not
+ * evidence of a broken layout, and failing on it would make the suite reject unrelated changes.
+ */
+export const test = base.extend({
+  page: async ({ page }, use) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.stack || error.message));
+
+    await use(page);
+
+    expect(pageErrors, 'the page threw while the UI was running').toEqual([]);
+  },
+});
 
 export interface MountOptions {
   /**
@@ -36,8 +74,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
   // The player bundle is loaded only for its exported enums (PlayerEvent, ViewMode). No player is
   // instantiated; the UI is driven by the stub below.
   await page.addScriptTag({ path: path.resolve(__dirname, '../../node_modules/bitmovin-player/bitmovinplayer.js') });
-  await page.addStyleTag({ path: path.join(DIST, 'css/bitmovinplayer-ui.css') });
-  await page.addScriptTag({ path: path.join(DIST, 'js/bitmovinplayer-ui.js') });
+  await page.addStyleTag({ path: distFile('css/bitmovinplayer-ui.css') });
+  await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
     ({ isLive }) => {
@@ -109,8 +147,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
         setAudio: () => undefined,
       };
 
+      // Monotonic instead of `Date.now()`: nothing about a layout test should depend on wall clock.
+      let timestamp = 0;
       (window as any).__fire = (event: string, data: object = {}) => {
-        (handlers[event] || []).forEach(cb => cb({ type: event, timestamp: Date.now(), ...data }));
+        timestamp += 1000;
+        (handlers[event] || []).forEach(cb => cb({ type: event, timestamp, ...data }));
       };
 
       (window as any).__ui = (window as any).bitmovin.playerui.UIFactory.buildUI(player as any, {
@@ -121,14 +162,44 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
     },
     { isLive: live },
   );
+
+  // Everything below measures the DOM, so an empty or half-built DOM would make every assertion
+  // pass vacuously. Assert the shape we expect to measure before any test gets to look at it.
+  const mounted = await page.evaluate(() => {
+    const containers = Array.from(document.querySelectorAll('.bmpui-ui-uicontainer'));
+    const seekBar = document.querySelector('.bmpui-ui-controlbar .bmpui-ui-seekbar');
+    // Every variant except the main one carries a marker class, so their absence identifies it.
+    const otherVariants = ['ads', 'smallscreen', 'tv', 'cast-receiver'].map(name => `bmpui-ui-${name}`);
+    return {
+      uiVariants: containers.length,
+      variantMarkers: containers.flatMap(c => otherVariants.filter(marker => c.classList.contains(marker))),
+      controlBars: document.querySelectorAll('.bmpui-ui-controlbar').length,
+      controlRows: document.querySelectorAll('.bmpui-controlbar-top, .bmpui-controlbar-bottom').length,
+      seekBarWidth: seekBar ? (seekBar as HTMLElement).offsetWidth : 0,
+    };
+  });
+
+  // Exactly one variant: `buildUI` registers seven, but only the resolved one is added to the DOM.
+  // More than one means a switch left the previous variant behind; zero means nothing mounted.
+  expect(mounted.uiVariants, 'exactly one UI variant should be mounted').toBe(1);
+  expect(mounted.variantMarkers, 'the main layout should be the resolved variant').toEqual([]);
+  expect(mounted.controlBars, 'the mounted variant should contain exactly one control bar').toBe(1);
+  expect(mounted.controlRows, 'the control bar should contain at least one row to measure').toBeGreaterThan(0);
+  expect(mounted.seekBarWidth, 'the UI has to actually lay out, or nothing below asserts anything').toBeGreaterThan(0);
 }
 
-/** Advances the clock the way the player would, without any actual playback. */
+/**
+ * Replays the player's clock, without any actual playback.
+ *
+ * The label renders from `player.getCurrentTime()`, not from the event payload, so the stub holds
+ * the displayed text constant across ticks. That is on purpose: it separates size changes caused by
+ * a component measuring itself from size changes legitimately caused by longer text.
+ */
 export async function tick(page: Page, times: number): Promise<void> {
   await page.evaluate(count => {
     const PlayerEvent = (window as any).bitmovin.player.PlayerEvent;
     for (let i = 0; i < count; i++) {
-      (window as any).__fire(PlayerEvent.TimeChanged, { time: i });
+      (window as any).__fire(PlayerEvent.TimeChanged, { time: 0 });
     }
   }, times);
 }
@@ -138,16 +209,23 @@ export async function tick(page: Page, times: number): Promise<void> {
  *
  * Measures all descendants, not just the rows: the rows are full-width by construction, so
  * comparing only those would pass no matter how badly the controls inside them resized.
+ *
+ * Uses `offsetWidth` deliberately, where {@link controlBarFlexRows} uses `getBoundingClientRect()`.
+ * This is an exact-equality snapshot of two measurements taken from the same layout, so integer
+ * widths are all it needs; a comparison between two *different* quantities needs the sub-pixel
+ * value instead. Do not unify them without re-checking what each assertion can still detect.
  */
 export async function controlBarWidths(page: Page): Promise<Record<string, number>> {
   return page.evaluate(() => {
     const widths: Record<string, number> = {};
     const bar = document.querySelector('.bmpui-ui-controlbar');
-    if (!bar) return widths;
+    // Throw rather than return `{}`: an empty result compares equal to the next empty result, so a
+    // missing control bar would turn a stability assertion into a test that always passes.
+    if (!bar) throw new Error('no .bmpui-ui-controlbar in the document');
 
     const walk = (element: Element, pathPrefix: string) => {
       Array.from(element.children).forEach((child, index) => {
-        const cls = child.className.split(' ')[0] || child.tagName.toLowerCase();
+        const cls = child.classList[0] || child.tagName.toLowerCase();
         const key = `${pathPrefix}${index}:${cls}`;
         widths[key] = (child as HTMLElement).offsetWidth;
         walk(child, `${key} > `);
@@ -155,5 +233,82 @@ export async function controlBarWidths(page: Page): Promise<Record<string, numbe
     };
     walk(bar, '');
     return widths;
+  });
+}
+
+export interface FlexRow {
+  /** First CSS class of the flex container, enough to identify it in a failure message. */
+  row: string;
+  /** Total width its laid-out children occupy, margins included. */
+  used: number;
+  /** Content-box width available to them. */
+  available: number;
+}
+
+/**
+ * Every non-wrapping horizontal flex container inside the control bar, with the space its children
+ * occupy and the space it has.
+ *
+ * Explicitly *not* `.bmpui-controlbar-top` / `.bmpui-controlbar-bottom`: those rows hold a single
+ * full-width `container-wrapper` child, so summing their children can never exceed them no matter
+ * how badly the controls inside resize. The flex containers that actually distribute space are one
+ * level further down, and buttons, the seek bar and the volume slider are flex rows of their own.
+ *
+ * Measured with `getBoundingClientRect()` rather than `offsetWidth`, because `offsetWidth` rounds
+ * to whole pixels and the rounding alone can push a row a pixel over its parent.
+ */
+export async function controlBarFlexRows(page: Page): Promise<FlexRow[]> {
+  return page.evaluate(() => {
+    const bar = document.querySelector('.bmpui-ui-controlbar');
+    if (!bar) throw new Error('no .bmpui-ui-controlbar in the document');
+
+    const rows: FlexRow[] = [];
+
+    // A `NaN` anywhere in the arithmetic below makes every `used > available` comparison false, so
+    // an unparseable length would silently turn this into a test that cannot fail.
+    const px = (value: string) => {
+      const parsed = parseFloat(value);
+      if (!Number.isFinite(parsed)) throw new Error(`expected a pixel length, got "${value}"`);
+      return parsed;
+    };
+
+    const walk = (element: Element) => {
+      const style = getComputedStyle(element);
+      const isHorizontalFlex =
+        (style.display === 'flex' || style.display === 'inline-flex') &&
+        style.flexDirection.startsWith('row') &&
+        style.flexWrap === 'nowrap';
+
+      if (isHorizontalFlex) {
+        // Out-of-flow children (the seek bar label, tooltips) are positioned against the row and are
+        // supposed to be able to exceed it. Only in-flow children compete for the row's width.
+        const inFlow = Array.from(element.children).filter(child => {
+          const childStyle = getComputedStyle(child);
+          return childStyle.display !== 'none' && childStyle.position !== 'absolute' && childStyle.position !== 'fixed';
+        });
+
+        if (inFlow.length > 0) {
+          const used = inFlow.reduce((sum, child) => {
+            const childStyle = getComputedStyle(child);
+            return sum + child.getBoundingClientRect().width + px(childStyle.marginLeft) + px(childStyle.marginRight);
+          }, 0);
+
+          // Children lay out in the content box, so padding is not theirs to use.
+          const available =
+            element.getBoundingClientRect().width -
+            px(style.paddingLeft) -
+            px(style.paddingRight) -
+            px(style.borderLeftWidth) -
+            px(style.borderRightWidth);
+
+          rows.push({ row: element.classList[0] || element.tagName.toLowerCase(), used, available });
+        }
+      }
+
+      Array.from(element.children).forEach(walk);
+    };
+
+    walk(bar);
+    return rows;
   });
 }
