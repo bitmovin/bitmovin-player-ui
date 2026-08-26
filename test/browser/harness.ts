@@ -272,6 +272,10 @@ export async function controlBarFlexRows(page: Page): Promise<FlexRow[]> {
       return parsed;
     };
 
+    // `column-gap` computes to the keyword `normal` when unset, which flexbox resolves to zero.
+    // Every other value is a length, and an unexpected one must still be loud rather than NaN.
+    const gap = (value: string) => (value === 'normal' ? 0 : px(value));
+
     const walk = (element: Element) => {
       const style = getComputedStyle(element);
       const isHorizontalFlex =
@@ -288,10 +292,14 @@ export async function controlBarFlexRows(page: Page): Promise<FlexRow[]> {
         });
 
         if (inFlow.length > 0) {
-          const used = inFlow.reduce((sum, child) => {
-            const childStyle = getComputedStyle(child);
-            return sum + child.getBoundingClientRect().width + px(childStyle.marginLeft) + px(childStyle.marginRight);
-          }, 0);
+          // Gaps occupy the row just as the children do. Omitting them understates `used` by
+          // `(children - 1) * gap`, which is a window in which a row can overflow and still pass.
+          const used =
+            inFlow.reduce((sum, child) => {
+              const childStyle = getComputedStyle(child);
+              return sum + child.getBoundingClientRect().width + px(childStyle.marginLeft) + px(childStyle.marginRight);
+            }, 0) +
+            (inFlow.length - 1) * gap(style.columnGap);
 
           // Children lay out in the content box, so padding is not theirs to use.
           const available =
