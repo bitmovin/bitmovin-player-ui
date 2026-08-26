@@ -421,4 +421,4 @@ docs
 ### Playwright ###
 test-results
 playwright-report
-.playwright
+blob-report

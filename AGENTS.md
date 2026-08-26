@@ -125,7 +125,14 @@ Rules that keep these tests from becoming flaky. Follow them or the suite gets d
   testing. The stub player in `test/browser/harness.ts` replaces all of it.
 - **Measure the elements that can actually change.** Container rows are full-width by construction,
   so comparing only those passes no matter how badly the controls inside them resize. Walk
-  descendants.
+  descendants, and when checking that children fit a row, find the flex container that actually
+  distributes the space rather than the wrapper around it.
+- **An empty measurement must fail, not pass.** A helper that returns `{}` or `[]` when its selector
+  matches nothing makes "nothing is wrong" indistinguishable from "nothing was measured". Throw when
+  the subject is missing, and assert that each test measured something.
+- **Import `test` from `test/browser/harness.ts`**, not from `@playwright/test`. It fails a test on
+  any uncaught page error, so a stub player that has drifted from the real API surfaces as a failure
+  instead of as a half-built DOM whose two snapshots compare equal.
 - **Prove a new test can fail.** Break the thing it guards, watch it go red, then fix it again. A
   layout assertion that was never seen failing is usually asserting nothing.
 - **Cover both host-page worlds** when a change touches sizing: with and without a global
