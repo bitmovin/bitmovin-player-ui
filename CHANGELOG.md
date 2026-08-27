@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `UIConfig.componentLayoutOverrides` and `UIConfig.componentConfigOverrides` are now applied in applications whose production build minifies the UI, instead of being silently ignored. Components are matched by their public export name instead of their runtime class name, which minifiers mangle by default.
 - `SeekBar` showing a stale playback position when a new source is loaded while a seek was still pending.
+- `PlaybackToggleButton` no longer responding to clicks when a new source is loaded after a play attempt that never reached playback, for example because the previous source stalled.
 
 ## [4.20.0] - 2026-08-13
 
