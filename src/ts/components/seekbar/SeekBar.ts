@@ -411,6 +411,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     player.on(player.exports.PlayerEvent.Seeked, onPlayerSeeked);
     player.on(player.exports.PlayerEvent.TimeShift, onPlayerSeek);
     player.on(player.exports.PlayerEvent.TimeShifted, onPlayerSeeked);
+    // Clean up in-flight seek during unload
+    player.on(player.exports.PlayerEvent.SourceUnloaded, onPlayerSeeked);
 
     const isGroupPlaybackAPIAvailable = (player: PlayerAPI): player is ExtendedPlayerAPI => {
       return !!(player as ExtendedPlayerAPI).groupPlayback;
