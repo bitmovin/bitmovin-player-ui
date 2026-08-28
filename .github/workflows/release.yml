@@ -170,12 +170,6 @@ jobs:
         run: npm run prepublishOnly
         shell: bash
 
-      # npm trusted publishing (OIDC) requires npm 11.5.1 or newer, which is not bundled
-      # with the Node.js version pinned in .nvmrc.
-      - name: Update npm for trusted publishing
-        run: npm install -g npm@^11.5.1
-        shell: bash
-
       - name: Publish to NPM
         run: ./publish.sh --version "${{ needs.version_bump.outputs.version_number }}" ${{ inputs.dry_run == true && '--dry-run' || '' }}
         shell: bash
