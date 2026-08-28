@@ -117,13 +117,35 @@ jobs:
               core.setFailed(error.message);
             }
 
+      # Allows re-running a release whose version bump already landed (e.g. after
+      # a failed publish): skip the mutating steps when the tag and package.json
+      # already match the target version, and refuse to overwrite existing tags.
+      - name: Detect already prepared version
+        id: bump_state
+        shell: bash
+        run: |
+          target="${{ steps.version_number.outputs.version_number }}"
+          tag="${{ steps.version_number.outputs.tag_name }}"
+          current=$(node -p "require('./package.json').version")
+
+          if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            echo "already_prepared=false" >> $GITHUB_OUTPUT
+          elif [[ "$current" == "$target" ]]; then
+            echo "INFO $tag already exists and package.json is at $target, resuming release"
+            echo "already_prepared=true" >> $GITHUB_OUTPUT
+          else
+            echo "::error::$tag already exists but this branch is at $current — refusing to re-release an older version"
+            exit 1
+          fi
+
       - name: Bump version in package.json
+        if: steps.bump_state.outputs.already_prepared != 'true'
         run: |
           npm version "${{ steps.version_number.outputs.version_number }}" --no-git-tag-version
         shell: bash
 
       - name: Update changelog
-        if: inputs.release_type == 'final'
+        if: inputs.release_type == 'final' && steps.bump_state.outputs.already_prepared != 'true'
         uses: actions/github-script@v6
         with:
           script: |
@@ -142,7 +164,7 @@ jobs:
             core.info('Changelog updated successfully');
 
       - name: Commit and tag the changes
-        if: inputs.dry_run != true
+        if: inputs.dry_run != true && steps.bump_state.outputs.already_prepared != 'true'
         run: |
           git config --global user.name 'Automated Release'
           git config --global user.email 'release-automation@bitmovin.com'
