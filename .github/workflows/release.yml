@@ -155,7 +155,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      # Required to mint the OIDC token used for npm trusted publishing
       id-token: write
     steps:
       - name: Checkout
