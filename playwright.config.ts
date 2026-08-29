@@ -1,10 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Browser-level layout tests.
+ * Browser integration tests against the built UI and a deterministic stub player.
  *
- * These exist because jsdom does no layout: `offsetWidth` is always 0 there, so no Jest spec can
- * see a sizing regression. Everything here runs against the built bundle in a real browser.
+ * Use these when correctness depends on a real browser rather than behavior jsdom can represent.
  *
  * Run `npm run build` first, or use `npm run test:browser` which does it for you.
  */

@@ -2,6 +2,26 @@ import fs from 'fs';
 import path from 'path';
 import { expect, Page, test as base } from '@playwright/test';
 
+export { expect };
+
+type PlayerEventHandler = (event: Record<string, unknown>) => void;
+
+interface BrowserTestWindow extends Window {
+  bitmovin: {
+    player: {
+      Player: { prototype: object };
+      PlayerEvent: Record<string, string>;
+    };
+    playerui: {
+      UIFactory: {
+        buildUI(player: object, config: object): unknown;
+      };
+    };
+  };
+  __fire(event: string, data?: object): void;
+  __ui?: unknown;
+}
+
 const DIST = path.resolve(__dirname, '../../dist');
 
 /**
@@ -21,7 +41,7 @@ function distFile(relativePath: string): string {
 }
 
 /**
- * The `test` these specs must import, instead of the one from `@playwright/test`.
+ * The `test` and `expect` these specs must import, instead of importing from `@playwright/test`.
  *
  * It fails a test on any uncaught exception in the page. Without this the suite is one player
  * version bump away from being silently useless: if the stub no longer satisfies the UI, the UI
@@ -79,14 +99,26 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
 
   await page.evaluate(
     ({ isLive }) => {
+      const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
-      const handlers: Record<string, Function[]> = {};
+      const handlers: Record<string, PlayerEventHandler[]> = {};
+      const PlayerEvent = browserWindow.bitmovin.player.PlayerEvent;
+
+      // Monotonic instead of `Date.now()`: browser tests must not depend on wall clock.
+      let timestamp = 0;
+      const fire = (event: string, data: object = {}) => {
+        timestamp += 1000;
+        (handlers[event] || []).forEach(cb => cb({ type: event, timestamp, ...data }));
+      };
+      browserWindow.__fire = fire;
+
+      let playing = true;
 
       // `PlayerWrapper` copies the player's API by enumerating property names, so a Proxy `get`
       // trap is not enough: the stub has to really own every key. Take the surface from the real
       // Player prototype (no instance needed) so it tracks the player version we build against,
-      // then override the handful of members that actually influence layout.
-      const apiNames = Object.getOwnPropertyNames((window as any).bitmovin.player.Player.prototype).filter(
+      // then override the handful of members that influence the browser scenarios below.
+      const apiNames = Object.getOwnPropertyNames(browserWindow.bitmovin.player.Player.prototype).filter(
         name => name !== 'constructor',
       );
       const noops: Record<string, unknown> = {};
@@ -98,7 +130,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
 
       const player = {
         ...noops,
-        exports: (window as any).bitmovin.player,
+        exports: browserWindow.bitmovin.player,
         getContainer: () => container,
         getConfig: () => ({}),
         getSource: () => ({}),
@@ -110,8 +142,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
         getSeekableRange: () => ({ start: 0, end: isLive ? 100 : 600 }),
         getVolume: () => 100,
         isMuted: () => false,
-        isPlaying: () => true,
-        isPaused: () => false,
+        isPlaying: () => playing,
+        isPaused: () => !playing,
         isStalled: () => false,
         isCasting: () => false,
         isAirplayActive: () => false,
@@ -131,30 +163,31 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
         getThumbnail: () => null,
         subtitles: { list: () => [] },
         ads: { isLinearAdActive: () => false, getActiveAd: () => null },
-        on: (event: string, cb: Function) => {
+        on: (event: string, cb: PlayerEventHandler) => {
           (handlers[event] = handlers[event] || []).push(cb);
         },
-        off: (event: string, cb: Function) => {
+        off: (event: string, cb: PlayerEventHandler) => {
           handlers[event] = (handlers[event] || []).filter(h => h !== cb);
         },
         seek: () => true,
         timeShift: () => undefined,
-        play: () => Promise.resolve(),
-        pause: () => undefined,
+        play: () => {
+          playing = true;
+          fire(PlayerEvent.Play);
+          fire(PlayerEvent.Playing);
+          return Promise.resolve();
+        },
+        pause: () => {
+          playing = false;
+          fire(PlayerEvent.Paused);
+        },
         mute: () => undefined,
         unmute: () => undefined,
         setVolume: () => undefined,
         setAudio: () => undefined,
       };
 
-      // Monotonic instead of `Date.now()`: nothing about a layout test should depend on wall clock.
-      let timestamp = 0;
-      (window as any).__fire = (event: string, data: object = {}) => {
-        timestamp += 1000;
-        (handlers[event] || []).forEach(cb => cb({ type: event, timestamp, ...data }));
-      };
-
-      (window as any).__ui = (window as any).bitmovin.playerui.UIFactory.buildUI(player as any, {
+      browserWindow.__ui = browserWindow.bitmovin.playerui.UIFactory.buildUI(player, {
         // Auto-hide would leave the control bar at opacity 0. It stays measurable either way, but
         // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
         componentConfigOverrides: { UIContainer: { hideDelay: -1 } },
@@ -197,9 +230,10 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
  */
 export async function tick(page: Page, times: number): Promise<void> {
   await page.evaluate(count => {
-    const PlayerEvent = (window as any).bitmovin.player.PlayerEvent;
+    const browserWindow = window as unknown as BrowserTestWindow;
+    const PlayerEvent = browserWindow.bitmovin.player.PlayerEvent;
     for (let i = 0; i < count; i++) {
-      (window as any).__fire(PlayerEvent.TimeChanged, { time: 0 });
+      browserWindow.__fire(PlayerEvent.TimeChanged, { time: 0 });
     }
   }, times);
 }

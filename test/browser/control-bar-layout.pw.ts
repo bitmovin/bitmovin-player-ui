@@ -1,5 +1,4 @@
-import { expect } from '@playwright/test';
-import { controlBarFlexRows, controlBarWidths, mountUi, test, tick } from './harness';
+import { controlBarFlexRows, controlBarWidths, expect, mountUi, test, tick } from './harness';
 
 /**
  * The four host/stream combinations every layout invariant here runs against.

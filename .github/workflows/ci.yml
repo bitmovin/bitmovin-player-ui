@@ -1,6 +1,6 @@
 name: CI
 
-on: 
+on:
   push:
     branches:
       - '**'
@@ -77,7 +77,7 @@ jobs:
         run: npm run lint
 
   browser-tests:
-    name: Browser Layout Tests
+    name: Browser Integration Tests
     needs: gate
     if: needs.gate.outputs.should_run == 'true'
     runs-on: ubuntu-latest
