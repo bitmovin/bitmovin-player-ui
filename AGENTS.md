@@ -115,8 +115,9 @@ Choose the test level that can observe the behavior being changed:
   focus, keyboard or pointer input, browser APIs, Shadow DOM, generated markup, or multiple UI
   components responding to player events. Do not rely on Jest-only coverage for those changes.
 - The Playwright harness uses the built UI against a deterministic stub player. It does not cover
-  real playback, streams, networking, decoding, or mobile SDK bridges; verify those through the
-  appropriate manual or system-level environment.
+  real playback, streams, networking, decoding, or mobile SDK bridges. Full-player browser system
+  tests may also use Playwright, but exercise those real dependencies instead of this stub; verify
+  mobile SDK bridges in their platform environments.
 
 Run browser integration tests with `npm run test:browser`. Structure scenarios as
 Arrange–Act–Assert when that makes the phases clearer; comments naming the phases are not required.
@@ -133,8 +134,9 @@ Rules that keep these tests deterministic. Follow them or the suite gets disable
   state between tests.
 - **No sleeping and no retries.** Use web-first assertions for observable UI changes and fire
   deterministic player events for state transitions. `retries` remains `0` so flakiness is visible.
-- **No real streams, CDN, or video decode.** Those belong to system-level verification and are the
-  main sources of flake in player browser tests.
+- **No real streams, CDN, or video decode.** Keep those in full-player system tests, which may also
+  use Playwright but do not use this deterministic stub-backed harness. Real media dependencies are
+  the main sources of flake in player browser tests.
 - **Prove every new test can fail.** Break the behavior it guards, observe the expected red result,
   then restore the behavior and watch it pass.
 

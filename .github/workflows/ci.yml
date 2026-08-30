@@ -112,7 +112,7 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
-      - name: Browser layout tests
+      - name: Browser integration tests
         run: npm run test:browser
 
       - name: Upload report on failure

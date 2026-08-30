@@ -16,15 +16,17 @@ result.
 
 ## Choosing a test level
 
-| Test level          | Use it for                                                                                    |
-| ------------------- | --------------------------------------------------------------------------------------------- |
-| Jest                | pure logic and component behavior that jsdom represents faithfully                            |
-| Browser integration | layout, computed styles, input/focus, browser APIs, Shadow DOM, rendered markup and UI wiring |
-| System/manual       | real Player playback, streams, networking, decoding and mobile SDK bridges                    |
+| Test level                            | Use it for                                                                                    |
+| ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Jest                                  | pure logic and component behavior that jsdom represents faithfully                            |
+| Deterministic browser integration     | layout, computed styles, input/focus, browser APIs, Shadow DOM, rendered markup and UI wiring |
+| Full-player browser system            | real Player playback, streams, networking and decoding                                        |
+| Manual/platform-specific verification | mobile SDK bridges and WebView/native integration                                             |
 
-The tests here are browser integration tests, not full end-to-end or system tests. They exercise
-the built UI and CSS in a real browser, but deliberately replace the external Player/media system
-with a deterministic stub.
+Playwright is the browser automation tool, not the test level: both browser integration and
+full-player system tests can use it. The tests in this directory are deterministic browser
+integration tests, not full end-to-end or system tests. They exercise the built UI and CSS in a
+real browser, but deliberately replace the external Player/media system with a deterministic stub.
 
 ## How the harness works
 

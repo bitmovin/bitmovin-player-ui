@@ -125,7 +125,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
       apiNames.forEach(name => {
         // Collection getters must answer with an array: the UI iterates their result directly.
         const returnsList = /^(getAvailable|getSupported)/.test(name);
-        noops[name] = returnsList ? () => [] : () => undefined;
+        noops[name] = returnsList ? (): never[] => [] : (): undefined => undefined;
       });
 
       const player = {
@@ -157,12 +157,12 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
         getAudio: () => ({ id: 'audio-1', label: 'Audio' }),
         getVideoQuality: () => ({ id: 'video-1', label: 'Auto' }),
         getAudioQuality: () => ({ id: 'audio-q-1', label: 'Auto' }),
-        getAvailableAudio: () => [],
+        getAvailableAudio: (): never[] => [],
         getVideoBufferLength: () => 0,
         getAudioBufferLength: () => 0,
-        getThumbnail: () => null,
-        subtitles: { list: () => [] },
-        ads: { isLinearAdActive: () => false, getActiveAd: () => null },
+        getThumbnail: (): null => null,
+        subtitles: { list: (): never[] => [] },
+        ads: { isLinearAdActive: () => false, getActiveAd: (): null => null },
         on: (event: string, cb: PlayerEventHandler) => {
           (handlers[event] = handlers[event] || []).push(cb);
         },
@@ -170,21 +170,21 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<v
           handlers[event] = (handlers[event] || []).filter(h => h !== cb);
         },
         seek: () => true,
-        timeShift: () => undefined,
-        play: () => {
+        timeShift: (): void => undefined,
+        play: (issuer = 'api') => {
           playing = true;
-          fire(PlayerEvent.Play);
-          fire(PlayerEvent.Playing);
+          fire(PlayerEvent.Play, { time: 0, issuer });
+          fire(PlayerEvent.Playing, { time: 0, issuer });
           return Promise.resolve();
         },
-        pause: () => {
+        pause: (issuer = 'api') => {
           playing = false;
-          fire(PlayerEvent.Paused);
+          fire(PlayerEvent.Paused, { time: 0, issuer });
         },
-        mute: () => undefined,
-        unmute: () => undefined,
-        setVolume: () => undefined,
-        setAudio: () => undefined,
+        mute: (): void => undefined,
+        unmute: (): void => undefined,
+        setVolume: (): void => undefined,
+        setAudio: (): void => undefined,
       };
 
       browserWindow.__ui = browserWindow.bitmovin.playerui.UIFactory.buildUI(player, {
