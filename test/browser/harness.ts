@@ -209,10 +209,18 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
         componentConfigOverrides: { UIContainer: { hideDelay: -1 } },
       };
-      browserWindow.__ui =
-        uiFactory === 'smallScreen'
-          ? browserWindow.bitmovin.playerui.UIFactory.buildSmallScreenUI(player, uiConfig)
-          : browserWindow.bitmovin.playerui.UIFactory.buildUI(player, uiConfig);
+      switch (uiFactory) {
+        case 'default':
+          browserWindow.__ui = browserWindow.bitmovin.playerui.UIFactory.buildUI(player, uiConfig);
+          break;
+        case 'smallScreen':
+          browserWindow.__ui = browserWindow.bitmovin.playerui.UIFactory.buildSmallScreenUI(player, uiConfig);
+          break;
+        default: {
+          const unsupportedFactory: never = uiFactory;
+          throw new Error(`unsupported UI factory: ${String(unsupportedFactory)}`);
+        }
+      }
     },
     { isLive: live, uiFactory: factory },
   );
