@@ -1,7 +1,8 @@
-import { expect, mountUi, test } from './harness';
+import { expect, test } from './harness';
+import { mountDefaultControlBarUi } from './helpers/control-bar';
 
 test('playback toggle reflects player state after user interaction', async ({ page }) => {
-  await mountUi(page, { live: false });
+  await mountDefaultControlBarUi(page, { live: false });
   const controls = page.getByRole('region', { name: 'Video player controls' });
   const pauseButton = controls.getByRole('button', { name: 'Pause' });
   await expect(pauseButton).toBeVisible();

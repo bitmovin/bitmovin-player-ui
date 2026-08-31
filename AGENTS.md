@@ -130,6 +130,13 @@ Rules that keep these tests deterministic. Follow them or the suite gets disable
 - **Import `test` and `expect` from `test/browser/harness.ts`**, not from `@playwright/test`. The
   harness fails a test on any uncaught page error, so a stub player that has drifted from the real
   API fails instead of leaving a partial DOM that can produce false positives.
+- **Drive player behavior through the typed controller returned by `mountUi()`.** When a scenario
+  needs a player operation the controller does not expose, add only that operation together with
+  the state changes and events the real player produces. Do not access harness browser globals from
+  specs, and do not add speculative controller APIs for hypothetical future tests.
+- **Keep the generic mount generic.** Layout- or feature-specific readiness assertions and DOM
+  measurement helpers belong in `test/browser/helpers/`; they must not make unrelated UIFactory
+  layouts depend on the default control bar.
 - **Keep every test isolated.** Mount a fresh UI in each test and do not share mutable page or player
   state between tests.
 - **No sleeping and no retries.** Use web-first assertions for observable UI changes and fire

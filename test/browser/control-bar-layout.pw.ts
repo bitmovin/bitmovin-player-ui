@@ -1,4 +1,5 @@
-import { controlBarFlexRows, controlBarWidths, expect, mountUi, test, tick } from './harness';
+import { expect, test } from './harness';
+import { controlBarFlexRows, controlBarWidths, mountDefaultControlBarUi } from './helpers/control-bar';
 
 /**
  * The four host/stream combinations every layout invariant here runs against.
@@ -32,13 +33,13 @@ const environments = [false, true].flatMap(hostReset =>
 test.describe('control bar geometry is stable under time updates', () => {
   for (const { name, live, hostReset } of environments) {
     test(name, async ({ page }) => {
-      await mountUi(page, { live, hostReset });
+      const ui = await mountDefaultControlBarUi(page, { live, hostReset });
 
-      await tick(page, 1);
+      await ui.player.tick();
       const before = await controlBarWidths(page);
       expect(Object.keys(before).length).toBeGreaterThan(0);
 
-      await tick(page, 50);
+      await ui.player.tick(50);
 
       expect(await controlBarWidths(page)).toEqual(before);
     });
@@ -54,8 +55,8 @@ test.describe('control bar geometry is stable under time updates', () => {
 test.describe('control bar rows contain their children', () => {
   for (const { name, live, hostReset } of environments) {
     test(name, async ({ page }) => {
-      await mountUi(page, { live, hostReset });
-      await tick(page, 50);
+      const ui = await mountDefaultControlBarUi(page, { live, hostReset });
+      await ui.player.tick(50);
 
       const rows = await controlBarFlexRows(page);
       // Without this the test passes when the selectors stop matching anything.

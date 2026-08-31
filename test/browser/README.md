@@ -33,7 +33,7 @@ real browser, but deliberately replace the external Player/media system with a d
 `harness.ts` loads the built bundle into a blank page and builds the real UI against a stub player.
 There is no manifest, CDN, or video decode. The stub starts in a known playing state; `play()` and
 `pause()` update that state and emit Player events synchronously. The clock only advances when a
-test calls `tick()`, so browser scenarios are repeatable without sleeps.
+test calls `ui.player.tick()`, so browser scenarios are repeatable without sleeps.
 
 The stub takes its API surface from the real `Player.prototype`, so it tracks the Player version the
 repo builds against instead of maintaining a parallel method list. Members needed by browser
@@ -43,12 +43,20 @@ Import both `test` and `expect` from `./harness`, not from `@playwright/test`. T
 test on any uncaught page exception, so Player API drift cannot leave a half-built DOM that quietly
 passes assertions.
 
+`mountUi()` is the generic entry point and returns a typed controller for driving the stub player.
+The controller intentionally exposes only behavior used by current scenarios. When a new test needs
+another player operation, extend the controller with that operation and its state/event semantics;
+do not reach into browser globals from the spec or add speculative operations for possible future
+tests. Feature-specific mounting assertions and DOM measurement helpers belong under `helpers/`, not
+in the generic harness.
+
 ## Writing tests
 
 - Arrange the mounted UI and initial state, act through the UI or a deterministic Player event,
   then assert the user-observable result. Use Arrange–Act–Assert comments only when they add clarity.
 - Prefer role- and label-based locators plus web-first assertions for interaction tests. See
-  `playback-toggle.pw.ts` for a click → Player event → accessible-name round trip.
+  `playback-toggle.pw.ts` for the ordinary test shape: a click → Player event → accessible-name
+  round trip. `control-bar-layout.pw.ts` is a specialized geometry regression, not a comment template.
 - Use CSS selectors and `page.evaluate()` only when the subject is geometry or another browser
   property without a semantic locator.
 - Mount a fresh UI per test. Do not share mutable page or stub state.
@@ -65,8 +73,8 @@ The regression that introduced this suite fed `PlaybackTimeLabel.offsetWidth` (a
 back into `min-width` (content-box by default). Once the LIVE indicator gained padding, every time
 update grew the label and squeezed the seek bar. Jest was structurally unable to observe it.
 
-`tick()` fires `TimeChanged` without changing `getCurrentTime()`, keeping the label text constant.
-That isolates self-measurement bugs from legitimate size changes caused by longer content.
+`ui.player.tick()` fires `TimeChanged` without changing `getCurrentTime()`, keeping the label text
+constant. That isolates self-measurement bugs from legitimate size changes caused by longer content.
 
 The layout spec checks two complementary invariants across live/VOD and host pages with/without a
 global `box-sizing: border-box` reset:
