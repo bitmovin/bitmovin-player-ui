@@ -126,10 +126,16 @@ export class SpatialNavigation {
       return;
     }
 
-    if (isDirection(event) && active.handleNavigation(event)) {
+    if (isDirection(event)) {
+      // Directional keys are always consumed while a navigation group is active, even when the navigation could
+      // not move focus (e.g. pressing UP at the top edge of the group). Otherwise the platform (e.g. some smart TV
+      // browsers) applies its own native focus handling and moves focus outside of the navigation group.
+      active.handleNavigation(event);
       e.preventDefault();
       e.stopPropagation();
     } else if (isAction(event) && active.handleAction(event)) {
+      // Actions are only consumed when the group actually handled them, so unhandled actions (e.g. BACK when the UI
+      // is already hidden) can still propagate to the platform.
       e.preventDefault();
       e.stopPropagation();
     }

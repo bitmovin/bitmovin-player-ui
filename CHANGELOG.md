@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.20.1] - 2026-08-27
+
+### Fixed
+
+- `UIConfig.componentLayoutOverrides` and `UIConfig.componentConfigOverrides` are now applied in applications whose production build minifies the UI, instead of being silently ignored. Components are matched by their public export name instead of their runtime class name, which minifiers mangle by default.
+
+## [4.20.0] - 2026-08-13
+
+### Added
+
+- `UIConfig.componentLayoutOverrides` and `UIComponentLayoutOverride` to keep or remove supported components from default UI layouts without rebuilding complete `UIFactory` layouts.
+- `CaptionToggleButton` to turn captions and subtitles on and off with a single click, without opening the settings panel.
+  - Part of the default, small-screen, and TV layouts, as the first component of the right-hand control bar group, but excluded by default so the default UI is unchanged. Enable it with `componentLayoutOverrides: { CaptionToggleButton: UIComponentLayoutOverride.Include }`.
+  - Hidden while the source provides no caption tracks, and kept in sync with captions that are switched elsewhere in the UI.
+  - Restores the most recently enabled track when captions are switched back on. If no track has been enabled yet, it prefers a track matching the current audio language and falls back to the first available track.
+
+### Fixed
+
+- Spatial navigation on the TV UI no longer lets focus escape the active navigation group when pressing a direction at the group's edge on some smart TVs.
+
 ## [4.19.0] - 2026-08-10
 
 ### Changed

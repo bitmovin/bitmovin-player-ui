@@ -1,5 +1,6 @@
 import type { UIComponentConfigOverrides } from '../UIComponentConfigOverrides';
 import type { ComponentConfig } from '../components/Component';
+import { getConstructorNames } from './ConstructorUtils';
 
 /**
  * Provides {@link UIComponentConfigOverrides} overrides while a UI variant is being constructed.
@@ -68,16 +69,9 @@ export class ComponentConfigManager {
       return;
     }
 
-    const constructorNames = [];
-    let prototype = componentConstructor.prototype;
-    while (prototype && prototype.constructor && prototype.constructor.name) {
-      constructorNames.unshift(prototype.constructor.name);
-      prototype = Object.getPrototypeOf(prototype);
-    }
-
     // Apply base classes first so a more specific component config can override inherited defaults.
-    for (const constructorName of constructorNames) {
-      Object.assign(config, componentConfigMap[constructorName]);
+    for (const componentTypeName of getConstructorNames(componentConstructor)) {
+      Object.assign(config, componentConfigMap[componentTypeName]);
     }
   }
 }

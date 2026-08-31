@@ -112,7 +112,7 @@ export class VolumeControlButton extends Container<VolumeControlButtonConfig> {
 
   release(): void {
     super.release();
-    this.volumeSliderHideTimeout.clear();
+    this.volumeSliderHideTimeout?.clear();
   }
 
   /**

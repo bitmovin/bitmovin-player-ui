@@ -135,10 +135,14 @@ export class QuickSeekButton extends Button<QuickSeekButtonConfig> {
   };
 
   release(): void {
-    this.player.off(this.player.exports.PlayerEvent.Seek, this.onSeek);
-    this.player.off(this.player.exports.PlayerEvent.Seeked, this.onSeekedOrTimeShifted);
-    this.player.off(this.player.exports.PlayerEvent.TimeShift, this.onTimeShift);
-    this.player.off(this.player.exports.PlayerEvent.TimeShifted, this.onSeekedOrTimeShifted);
+    super.release();
+
+    const player = this.player;
+    player?.off(player.exports.PlayerEvent.Seek, this.onSeek);
+    player?.off(player.exports.PlayerEvent.Seeked, this.onSeekedOrTimeShifted);
+    player?.off(player.exports.PlayerEvent.TimeShift, this.onTimeShift);
+    player?.off(player.exports.PlayerEvent.TimeShifted, this.onSeekedOrTimeShifted);
+
     this.currentSeekTarget = null;
     this.player = null;
   }
