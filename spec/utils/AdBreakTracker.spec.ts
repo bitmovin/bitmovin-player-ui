@@ -2,7 +2,7 @@ import { AdBreak, PlayerEvent } from 'bitmovin-player';
 import { PlayerEventEmitter } from '../helper/PlayerEventEmitter';
 import { AdBreakTracker } from '../../src/ts/utils/AdBreakTracker';
 
-const makeBreak = (id: string, scheduleTime: number, ads: { id: string }[] = []): AdBreak =>
+const makeBreak = (id: string | undefined, scheduleTime: number, ads: { id: string }[] = []): AdBreak =>
   ({ id, scheduleTime, ads }) as unknown as AdBreak;
 
 // Mutable ad state the player mock delegates to.
@@ -346,6 +346,24 @@ describe('AdBreakTracker', () => {
 
       expect(tracker.currentAdIndex).toBe(2);
       expect(tracker.totalNumberOfAds).toBe(3);
+    });
+
+    it('keeps distinct ad breaks when their IDs are missing', () => {
+      const break1 = makeBreak(undefined, 5, [{ id: 'a1' }]);
+      const break2 = makeBreak(undefined, 5, [{ id: 'a2' }]);
+
+      adsState.activeAdBreak = break1;
+      adsState.activeAd = { id: 'a1' };
+      adsState.list = [break2];
+      eventEmitter.fireAdStartedEvent();
+
+      adsState.activeAdBreak = break2;
+      adsState.activeAd = { id: 'a2' };
+      adsState.list = [];
+      eventEmitter.fireAdStartedEvent();
+
+      expect(tracker.currentAdIndex).toBe(2);
+      expect(tracker.totalNumberOfAds).toBe(2);
     });
 
     it('dispatches onAdCountChanged with currentAdIndex and totalNumberOfAds after AdStarted', () => {

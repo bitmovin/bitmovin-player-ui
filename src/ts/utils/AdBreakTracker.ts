@@ -131,7 +131,10 @@ export class AdBreakTracker {
 
       // Player adapters may deserialize a new object for the same break on every event,
       // so use the stable break ID instead of object identity for deduplication.
-      if (!this.groupBreaks.some(adBreak => adBreak.id === activeBreak.id)) {
+      const activeBreakAlreadyRetained = this.groupBreaks.some(adBreak =>
+        activeBreak.id != null && adBreak.id != null ? adBreak.id === activeBreak.id : adBreak === activeBreak,
+      );
+      if (!activeBreakAlreadyRetained) {
         this.groupBreaks.push(activeBreak);
       }
     } else {
