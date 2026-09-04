@@ -330,6 +330,24 @@ describe('AdBreakTracker', () => {
       expect(tracker.totalNumberOfAds).toBe(4);
     });
 
+    it('deduplicates freshly deserialized instances of the same ad break by ID', () => {
+      const break2 = makeBreak('break-2', 5, [{ id: 'a3' }]);
+
+      adsState.activeAdBreak = makeBreak('break-1', 5, [{ id: 'a1' }, { id: 'a2' }]);
+      adsState.activeAd = { id: 'a1' };
+      adsState.list = [break2];
+      eventEmitter.fireAdStartedEvent();
+
+      // A player adapter may deserialize the same ad break again for the next AdStarted event.
+      adsState.activeAdBreak = makeBreak('break-1', 5, [{ id: 'a1' }, { id: 'a2' }]);
+      adsState.activeAd = { id: 'a2' };
+      adsState.list = [break2];
+      eventEmitter.fireAdStartedEvent();
+
+      expect(tracker.currentAdIndex).toBe(2);
+      expect(tracker.totalNumberOfAds).toBe(3);
+    });
+
     it('dispatches onAdCountChanged with currentAdIndex and totalNumberOfAds after AdStarted', () => {
       const break1 = makeBreak('break-1', 5, [{ id: 'a1' }]);
       const break2 = makeBreak('break-2', 5, [{ id: 'a2' }]);
