@@ -129,8 +129,9 @@ export class AdBreakTracker {
 
       this.groupScheduleTime = activeBreak.scheduleTime;
 
-      // Add the active break if it's not already retained (new break in the group)
-      if (!this.groupBreaks.includes(activeBreak)) {
+      // Player adapters may deserialize a new object for the same break on every event,
+      // so use the stable break ID instead of object identity for deduplication.
+      if (!this.groupBreaks.some(adBreak => adBreak.id === activeBreak.id)) {
         this.groupBreaks.push(activeBreak);
       }
     } else {
