@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Ad counts no longer increase incorrectly when player adapters provide freshly deserialized instances of the same ad break.
+- Ad count in `AdCounterLabel` no longer increases incorrectly when used on mobile SDKs.
 
 ## [4.20.2] - 2026-09-03
 
