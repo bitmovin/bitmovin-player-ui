@@ -131,10 +131,10 @@ export class AdBreakTracker {
 
       // On mobile, the Player may deserialize a new object for the same break on every event,
       // so use the stable break ID instead of object identity for deduplication.
-      const activeBreakAlreadyRetained = this.groupBreaks.some(adBreak =>
+      const containsAdBreak = this.groupBreaks.some(adBreak =>
         activeBreak.id != null && adBreak.id != null ? adBreak.id === activeBreak.id : adBreak === activeBreak,
       );
-      if (!activeBreakAlreadyRetained) {
+      if (!containsAdBreak) {
         this.groupBreaks.push(activeBreak);
       }
     } else {
