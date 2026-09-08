@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- Long option names causing settings panels to overflow or setting labels to become unreadable.
 - Ad count in `AdCounterLabel` no longer increases incorrectly when used on mobile SDKs.
 
 ## [4.20.2] - 2026-09-03
