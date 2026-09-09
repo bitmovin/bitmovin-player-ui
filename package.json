@@ -6,6 +6,8 @@
   "types": "./dist/js/framework/main.d.ts",
   "scripts": {
     "test": "npx jest",
+    "test:browser": "npm run build && npm run typecheck:browser && npx playwright test",
+    "typecheck:browser": "npx tsc -p test/browser/tsconfig.json",
     "start": "webpack-dev-server --mode development --open",
     "build": "npm run clean; npx webpack --mode development",
     "build:prod": "npm run clean; npm run lint && npx webpack --mode production && npm run docs",
@@ -13,7 +15,7 @@
     "format": "npx prettier --write *",
     "docs": "npx typedoc",
     "clean": "rm -rf dist; rm -rf docs",
-    "lint-ts": "npx eslint 'src/ts/**/*.ts'",
+    "lint-ts": "npx eslint 'src/ts/**/*.ts' 'test/browser/**/*.ts'",
     "lint-sass": "npx sass-lint",
     "prepublishOnly": "npm run build:prod",
     "prepare": "husky"
@@ -44,6 +46,7 @@
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@inrupt/jest-jsdom-polyfills": "^4.1.4",
+    "@playwright/test": "^1.62.1",
     "@types/jest": "^29.5.0",
     "@types/jsdom": "^21.1.0",
     "autoprefixer": "^10.4.21",
