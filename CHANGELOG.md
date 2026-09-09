@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- The UI no longer fails to load on legacy platforms that lack post-ES5 built-ins (webOS 3.x / LG 2017, Chromium 38). It previously threw while it was still being evaluated, so `bitmovin.playerui` was never assigned and building a UI failed: always for applications that import `dist/js/framework` modules directly, and for the prebuilt bundle unless the web player bundle happened to be evaluated first and installed the missing built-ins itself.
+
 ### Changed
 
 - The selected subtitle track label no longer includes the number of available tracks.

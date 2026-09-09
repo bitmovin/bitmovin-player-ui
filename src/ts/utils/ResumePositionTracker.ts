@@ -2,7 +2,17 @@ import { PlayerAPI, SourceConfig, TimeChangedEvent } from 'bitmovin-player';
 import { StorageUtils } from './StorageUtils';
 import { prefixCss } from '../components/DummyComponent';
 
-const STORAGE_KEY_PREFIX = `${prefixCss('resume')}.`;
+// Resolved lazily — see the note in UIPreferencesManager: prefixCss() instantiates a Component, which
+// must not happen at module-evaluation time on legacy platforms.
+let storageKeyPrefix: string;
+
+function getStorageKeyPrefix(): string {
+  if (storageKeyPrefix == null) {
+    storageKeyPrefix = `${prefixCss('resume')}.`;
+  }
+
+  return storageKeyPrefix;
+}
 const MIN_RESUME_POSITION = 5;
 
 /**
@@ -128,7 +138,7 @@ export class ResumePositionTracker {
 
 function storageKeyFor(source: SourceConfig | null): string | null {
   const id = sourceIdentifier(source);
-  return id ? STORAGE_KEY_PREFIX + hashSourceIdentifier(id) : null;
+  return id ? getStorageKeyPrefix() + hashSourceIdentifier(id) : null;
 }
 
 function sourceIdentifier(source: SourceConfig | null): string | null {

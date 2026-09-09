@@ -2,11 +2,23 @@ import { StorageUtils } from './StorageUtils';
 import { PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmovin-player';
 import { prefixCss } from '../components/DummyComponent';
 
-const STORAGE_KEY_PREFIX = `${prefixCss('preferences')}.`;
-const KEY_ENABLED = STORAGE_KEY_PREFIX + 'enabled';
-const KEY_VOLUME = STORAGE_KEY_PREFIX + 'volume';
-const KEY_MUTED = STORAGE_KEY_PREFIX + 'muted';
-const KEY_PLAYBACK_SPEED = STORAGE_KEY_PREFIX + 'playbackSpeed';
+// Resolved lazily: prefixCss() instantiates a Component, and component construction must not run at
+// module-evaluation time — on legacy platforms (webOS 3.x / Chromium 38) the ES5 polyfills are not
+// installed yet, so Object.assign in the Component constructor would throw while the bundle evaluates.
+let storageKeyPrefix: string;
+
+function storageKey(name: string): string {
+  if (storageKeyPrefix == null) {
+    storageKeyPrefix = `${prefixCss('preferences')}.`;
+  }
+
+  return storageKeyPrefix + name;
+}
+
+const KEY_ENABLED = 'enabled';
+const KEY_VOLUME = 'volume';
+const KEY_MUTED = 'muted';
+const KEY_PLAYBACK_SPEED = 'playbackSpeed';
 
 const ISSUER = 'ui-preferences';
 
@@ -43,7 +55,7 @@ export class UIPreferencesManager {
    */
   public configure(player: PlayerAPI, enabledByDefault: boolean, respectStoredEnabled: boolean): void {
     this.player = player;
-    const localStorageEnabled = respectStoredEnabled ? readBoolean(KEY_ENABLED) : null;
+    const localStorageEnabled = respectStoredEnabled ? readBoolean(storageKey(KEY_ENABLED)) : null;
     // Stored end-user toggle choice wins only when the toggle is configured.
     // otherwise the integrator default is the source of truth.
     this.enabled = localStorageEnabled !== null ? localStorageEnabled : enabledByDefault;
@@ -70,7 +82,7 @@ export class UIPreferencesManager {
    */
   public setEnabled(enabled: boolean): void {
     this.enabled = enabled;
-    saveBoolean(KEY_ENABLED, enabled);
+    saveBoolean(storageKey(KEY_ENABLED), enabled);
 
     this.stopTracking();
     if (enabled) {
@@ -95,10 +107,12 @@ export class UIPreferencesManager {
       return;
     }
     const { PlayerEvent: Event } = this.player.exports;
-    this.track(Event.VolumeChanged, () => saveNumber(KEY_VOLUME, this.player.getVolume()));
-    this.track(Event.Muted, () => saveBoolean(KEY_MUTED, true));
-    this.track(Event.Unmuted, () => saveBoolean(KEY_MUTED, false));
-    this.track(Event.PlaybackSpeedChanged, () => saveNumber(KEY_PLAYBACK_SPEED, this.player.getPlaybackSpeed()));
+    this.track(Event.VolumeChanged, () => saveNumber(storageKey(KEY_VOLUME), this.player.getVolume()));
+    this.track(Event.Muted, () => saveBoolean(storageKey(KEY_MUTED), true));
+    this.track(Event.Unmuted, () => saveBoolean(storageKey(KEY_MUTED), false));
+    this.track(Event.PlaybackSpeedChanged, () =>
+      saveNumber(storageKey(KEY_PLAYBACK_SPEED), this.player.getPlaybackSpeed()),
+    );
     // Reapply the stored preferences whenever a new source becomes ready while enabled.
     this.track(Event.Ready, () => this.apply());
   }
@@ -116,15 +130,15 @@ export class UIPreferencesManager {
   }
 
   private capture(): void {
-    saveNumber(KEY_VOLUME, this.player.getVolume());
-    saveBoolean(KEY_MUTED, this.player.isMuted());
-    saveNumber(KEY_PLAYBACK_SPEED, this.player.getPlaybackSpeed());
+    saveNumber(storageKey(KEY_VOLUME), this.player.getVolume());
+    saveBoolean(storageKey(KEY_MUTED), this.player.isMuted());
+    saveNumber(storageKey(KEY_PLAYBACK_SPEED), this.player.getPlaybackSpeed());
   }
 
   private clear(): void {
-    StorageUtils.removeItem(KEY_VOLUME);
-    StorageUtils.removeItem(KEY_MUTED);
-    StorageUtils.removeItem(KEY_PLAYBACK_SPEED);
+    StorageUtils.removeItem(storageKey(KEY_VOLUME));
+    StorageUtils.removeItem(storageKey(KEY_MUTED));
+    StorageUtils.removeItem(storageKey(KEY_PLAYBACK_SPEED));
   }
 
   private apply(): void {
@@ -132,12 +146,12 @@ export class UIPreferencesManager {
       return;
     }
 
-    const volume = readNumber(KEY_VOLUME);
+    const volume = readNumber(storageKey(KEY_VOLUME));
     if (volume !== null && volume >= 0 && volume <= 100) {
       this.player.setVolume(volume, ISSUER);
     }
 
-    const muted = readBoolean(KEY_MUTED);
+    const muted = readBoolean(storageKey(KEY_MUTED));
     if (muted !== null) {
       if (muted) {
         this.player.mute(ISSUER);
@@ -146,7 +160,7 @@ export class UIPreferencesManager {
       }
     }
 
-    const speed = readNumber(KEY_PLAYBACK_SPEED);
+    const speed = readNumber(storageKey(KEY_PLAYBACK_SPEED));
     if (speed !== null && speed > 0) {
       this.player.setPlaybackSpeed(speed);
     }
