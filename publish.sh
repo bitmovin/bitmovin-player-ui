@@ -127,9 +127,6 @@ else
     echo "INFO ${VERSION_NUMBER} not published yet, publishing now"
 fi
 
-echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
-chmod 0600 ~/.npmrc
-
 NPM_LATEST=$(npm view --json ${PACKAGE_NAME} dist-tags | jq -r ".${NPM_TAG} // empty")
 echo "INFO latest npm version is $NPM_LATEST"
 
