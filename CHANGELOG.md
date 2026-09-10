@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- The UI failing to load on legacy platforms such as webOS 3.x when required polyfills were not yet installed.
+
+## [4.21.0] - 2026-09-10
+
 ### Changed
 
 - The selected subtitle track label no longer includes the number of available tracks.
 
 ### Fixed
 
-- The UI failing to load on legacy platforms such as webOS 3.x when required polyfills were not yet installed.
 - Long option names causing settings panels to overflow or setting labels to become unreadable.
 - Ad count in `AdCounterLabel` no longer increases incorrectly when used on mobile SDKs.
 
