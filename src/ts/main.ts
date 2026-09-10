@@ -1,3 +1,4 @@
+// Install polyfills before evaluating exports that construct components at module scope.
 import './polyfills';
 export { version } from './version';
 // Management

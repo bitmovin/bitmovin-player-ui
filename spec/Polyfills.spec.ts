@@ -2,13 +2,9 @@
  * Guards the two rules that keep the UI loadable on the oldest supported platform
  * (webOS 3.x / LG 2017, Chromium 38):
  *
- * 1. Module bodies must stay on the Chromium 38 baseline. Whatever a module body executes while it
- *    is still being evaluated runs before src/ts/polyfills.ts is installed, and before the web
- *    player bundle — which installs most post-ES5 built-ins itself — has necessarily been
- *    evaluated. Consumers that import `dist/js/framework` modules directly never load
- *    src/ts/polyfills.ts at all.
- * 2. src/ts/polyfills.ts must be installed before anything else in the bundle runs, and what it
- *    installs must behave like the built-ins it replaces.
+ * 1. Direct framework imports must install polyfills before constructing components during module
+ *    evaluation, without relying on main.ts or the player bundle being loaded first.
+ * 2. main.ts must also install the polyfills before evaluating its exports.
  *
  * Rule 1 is exactly how https://github.com/bitmovin/bitmovin-player-ui broke on webOS 3.x: a
  * top-level `const STORAGE_KEY_PREFIX = ` + '`${prefixCss(...)}.`' + ` in UIPreferencesManager and
@@ -20,8 +16,7 @@
  * once the built-ins are back.
  */
 
-// Built-ins that postdate Chromium 38. Module bodies must not rely on any of them, no matter who
-// installs them later.
+// Built-ins removed before loading each entry point to exercise polyfill installation order.
 const postBaselineMembers: Array<[string, string]> = [
   ['Object', 'assign'],
   ['Object', 'values'],
@@ -45,8 +40,7 @@ const polyfilledMembers: Array<[string, string]> = [
   ['Array', 'from'],
 ];
 
-// Modules whose bodies do work at evaluation time. main is covered separately: it installs the
-// polyfills itself, so it cannot show whether the modules behind it stay on the baseline.
+// Direct framework imports must work without going through main.ts.
 const entryPoints = [
   { name: 'UIPreferencesManager', path: '../src/ts/utils/UIPreferencesManager' },
   { name: 'ResumePositionTracker', path: '../src/ts/utils/ResumePositionTracker' },
@@ -124,10 +118,14 @@ describe('ES5 baseline for module evaluation', () => {
 });
 
 describe('polyfill installation', () => {
-  it('main installs the polyfills before any other module is evaluated', () => {
+  it.each([
+    { name: 'main', path: '../src/ts/main' },
+    { name: 'Component', path: '../src/ts/components/Component' },
+    ...entryPoints,
+  ])('$name installs the polyfills before module evaluation completes', ({ path }) => {
     jest.isolateModules(() => {
       const { result, error } = onChromium38Baseline(() => {
-        require('../src/ts/main');
+        require(path);
         // Read inside the baseline window: restoring puts the native built-ins back.
         const installed: string[] = [];
         for (let i = 0; i < polyfilledMembers.length; i++) {

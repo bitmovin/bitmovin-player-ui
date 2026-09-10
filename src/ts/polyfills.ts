@@ -9,10 +9,9 @@
  * is the one the player does not install, and `Object.assign` is kept because this module is loaded
  * first and cannot assume the player bundle was evaluated before it.
  *
- * This does not help code that runs while a module is still being evaluated: module bodies run
- * before this module on the paths that matter (the export barrel in main.ts, and consumers that
- * import `dist/js/framework` modules directly), so they must stay on the Chromium 38 baseline
- * regardless of what is polyfilled here. spec/Polyfills.spec.ts guards both rules.
+ * Both main.ts and Component.ts import this module first, so the polyfills are available during
+ * module evaluation even for direct framework imports that construct a Component via prefixCss().
+ * spec/Polyfills.spec.ts guards both entry paths.
  */
 
 /**
