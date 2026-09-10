@@ -1,3 +1,6 @@
+// Direct framework imports bypass main.ts; prefixCss() can construct a component during module
+// evaluation, so Object.assign must already be available on legacy platforms.
+import '../polyfills';
 import { Guid } from '../utils/Guid';
 import { DOM } from '../DOM';
 import { EventDispatcher, NoArgs, Event } from '../EventDispatcher';

@@ -1,3 +1,5 @@
+// Install polyfills before evaluating exports that construct components at module scope.
+import './polyfills';
 export { version } from './version';
 // Management
 export * from './UIManager';
@@ -178,27 +180,3 @@ export { InteractiveSettingsPanelItem } from './components/settings/InteractiveS
 export { TouchControlOverlay, TouchControlOverlayConfig } from './components/overlays/TouchControlOverlay';
 export { CharacterEdgeColorSelectBox } from './components/settings/subtitlesettings/CharacterEdgeColorSelectBox';
 export { FontStyleSelectBox } from './components/settings/subtitlesettings/FontStyleSelectBox';
-
-// Object.assign polyfill for ES5/IE9
-// https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
-if (typeof Object.assign !== 'function') {
-  Object.assign = function (target: any) {
-    'use strict';
-    if (target == null) {
-      throw new TypeError('Cannot convert undefined or null to object');
-    }
-
-    target = Object(target);
-    for (let index = 1; index < arguments.length; index++) {
-      const source = arguments[index];
-      if (source != null) {
-        for (const key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
-          }
-        }
-      }
-    }
-    return target;
-  };
-}
