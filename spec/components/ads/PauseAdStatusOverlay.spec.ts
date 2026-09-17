@@ -19,15 +19,56 @@ describe('PauseAdStatusOverlay', () => {
     jest.useRealTimers();
   });
 
-  it('ignores non-linear ads that are not positioned as pause ads', () => {
+  it('treats every non-linear ad as a pause ad while iOS is the only producer', () => {
     playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pre' });
 
-    expect(pauseAdStatusOverlay.isHidden()).toBe(true);
-    expect(getDismissButton().isHidden()).toBe(true);
-    expect(uiContainerElementMock.addClass).not.toHaveBeenCalled();
+    expect(pauseAdStatusOverlay.isShown()).toBe(true);
+    expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
+  });
 
-    jest.advanceTimersByTime(4000);
-    expect(getDismissButton().isHidden()).toBe(true);
+  describe('creative click catcher', () => {
+    it('is not focusable and carries no button semantics', () => {
+      const config = getClickCatcher().getConfig();
+
+      expect(config.tabIndex).toBe(-1);
+      expect(config.role).toBeNull();
+    });
+
+    it('stacks below the badge and the dismiss button', () => {
+      const components = pauseAdStatusOverlay.getConfig().components;
+
+      expect(components.indexOf(getClickCatcher())).toBeLessThan(components.indexOf(getDismissButton()));
+    });
+
+    it('routes a click on the creative to the ad exactly once', () => {
+      const clickThroughUrlOpened = jest.fn();
+      firePauseAdStarted({ clickThroughUrl: 'https://example.com', clickThroughUrlOpened });
+
+      expect(getClickCatcher().isShown()).toBe(true);
+
+      (getClickCatcher() as any).onClickEvent();
+
+      expect(clickThroughUrlOpened).toHaveBeenCalledTimes(1);
+    });
+
+    it('stays hidden when the ad carries no click-through destination', () => {
+      const clickThroughUrlOpened = jest.fn();
+      firePauseAdStarted({ clickThroughUrl: null, clickThroughUrlOpened });
+
+      expect(pauseAdStatusOverlay.isShown()).toBe(true);
+      expect(getClickCatcher().isHidden()).toBe(true);
+    });
+
+    it('stops routing clicks once the ad has finished', () => {
+      const clickThroughUrlOpened = jest.fn();
+      firePauseAdStarted({ id: 'pause-ad', clickThroughUrl: 'https://example.com', clickThroughUrlOpened });
+
+      playerMock.eventEmitter.fireNonLinearAdFinishedEvent({}, { id: 'pause-ad' });
+      (getClickCatcher() as any).onClickEvent();
+
+      expect(getClickCatcher().isHidden()).toBe(true);
+      expect(clickThroughUrlOpened).not.toHaveBeenCalled();
+    });
   });
 
   it('shows pause-ad status and uses the four-second dismiss fallback', () => {
@@ -202,6 +243,7 @@ function setupOverlay(config: { dismissDelay?: number; focusDismissButtonOnShow?
   uiContainerElementMock = MockHelper.generateDOMMock();
   (uiInstanceManagerMock.getUI() as any).getDomElement = jest.fn().mockReturnValue(uiContainerElementMock);
   pauseAdStatusOverlay = new PauseAdStatusOverlay(config);
+  getClickCatcher().initialize();
   getDismissButton().initialize();
   pauseAdStatusOverlay.initialize();
   pauseAdStatusOverlay.configure(playerMock, uiInstanceManagerMock);
@@ -211,8 +253,12 @@ function firePauseAdStarted(adData: object = {}): void {
   playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pause' }, adData);
 }
 
+function getClickCatcher(): Button<ButtonConfig> {
+  return pauseAdStatusOverlay.getConfig().components[0] as Button<ButtonConfig>;
+}
+
 function getDismissButton(): Button<ButtonConfig> {
-  return pauseAdStatusOverlay.getConfig().components[1] as Button<ButtonConfig>;
+  return pauseAdStatusOverlay.getConfig().components[2] as Button<ButtonConfig>;
 }
 
 function getPauseAdActiveClass(): string {

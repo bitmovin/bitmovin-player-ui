@@ -13,8 +13,6 @@ const NON_LINEAR_AD_SKIPPED_EVENT = 'nonlinearadskipped';
 const NATIVE_NON_LINEAR_AD_STARTED_EVENT = 'onNonLinearAdStarted';
 const NATIVE_NON_LINEAR_AD_FINISHED_EVENT = 'onNonLinearAdFinished';
 const NATIVE_NON_LINEAR_AD_SKIPPED_EVENT = 'onNonLinearAdSkipped';
-const PAUSE_AD_POSITION = 'pause';
-const PAUSE_AD_TRIGGER = 'pause';
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
 const SECONDS_TO_MILLISECONDS = 1000;
 
@@ -36,6 +34,32 @@ interface NonLinearAdEvent extends AdEvent {
     dismissibleAfter?: number;
     skippableAfter?: number;
   };
+}
+
+/**
+ * Full-bleed click target for the natively rendered pause-ad creative.
+ *
+ * The creative is drawn below the UI, which hit-tests at every point, so a tap on it has to
+ * originate here and be routed back to the ad. It carries no button semantics and is not focusable:
+ * it exists for pointer input only, and the controls stacked above it keep their own hit targets.
+ */
+class PauseAdClickCatcher extends Button<ButtonConfig> {
+  constructor(config: ButtonConfig = {}) {
+    super(config);
+
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClass: 'ui-pause-ad-click-catcher',
+        buttonStyle: ButtonStyle.Text,
+        role: null,
+        tabIndex: -1,
+        hidden: true,
+        acceptsTouchWithUiHidden: true,
+      },
+      this.config,
+    );
+  }
 }
 
 /**
@@ -70,7 +94,9 @@ export interface PauseAdStatusOverlayConfig extends ContainerConfig {
  */
 export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> {
   private readonly badgeLabel: Label<LabelConfig>;
+  private readonly clickCatcher: PauseAdClickCatcher;
   private readonly dismissButton: Button<ButtonConfig>;
+  private clickThroughUrlOpened?: () => void;
   private dismissDelayTimeout?: Timeout;
   private player?: PlayerAPI;
   private uiContainerElement?: DOM;
@@ -97,6 +123,7 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
       cssClass: 'ui-pause-ad-status-badge',
       text: this.config.badgeText,
     });
+    this.clickCatcher = new PauseAdClickCatcher();
     this.dismissButton = new Button({
       cssClass: 'ui-button-pause-ad-dismiss',
       text: this.config.dismissText,
@@ -106,7 +133,9 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
       acceptsTouchWithUiHidden: true,
     });
 
-    this.config.components = [this.badgeLabel, this.dismissButton];
+    // The catcher comes first so the badge, the dismiss button and the control bar all stack above
+    // it and keep receiving their own clicks.
+    this.config.components = [this.clickCatcher, this.badgeLabel, this.dismissButton];
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -121,6 +150,10 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     player.on(NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
     player.on(NATIVE_NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
+
+    this.clickCatcher.onClick.subscribe(() => {
+      this.clickThroughUrlOpened?.();
+    });
 
     this.dismissButton.onClick.subscribe(() => {
       this.hidePauseAdStatus();
@@ -151,10 +184,18 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
     this.clearDismissDelay();
     this.dismissButton.hide();
+    this.clickCatcher.hide();
     this.show();
     this.uiContainerElement?.addClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
     this.pauseAdActive = true;
     this.activePauseAdId = event.ad?.id;
+
+    // Without a click-through destination there is nothing to route, so the whole creative area
+    // stays transparent to pointer input.
+    this.clickThroughUrlOpened = event.ad?.clickThroughUrlOpened;
+    if (event.ad?.clickThroughUrl) {
+      this.clickCatcher.show();
+    }
 
     const dismissDelay = this.getDismissDelay(event);
     if (dismissDelay === 0) {
@@ -183,6 +224,8 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
   private readonly hidePauseAdStatus = (): void => {
     this.clearDismissDelay();
     this.dismissButton.hide();
+    this.clickCatcher.hide();
+    this.clickThroughUrlOpened = undefined;
     this.hide();
     this.uiContainerElement?.removeClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
     this.pauseAdActive = false;
@@ -216,8 +259,15 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     return this.config.dismissDelay;
   }
 
-  private isPauseAdEvent(event: NonLinearAdEvent): boolean {
-    const position = event.position ?? event.ad?.position ?? event.adBreak?.position;
-    return event.trigger === PAUSE_AD_TRIGGER || position === PAUSE_AD_POSITION;
+  /**
+   * Every non-linear ad this UI currently sees is a pause ad: iOS emits these events only for pause
+   * ads, and provides neither `trigger` nor `position` to distinguish them.
+   *
+   * This stops holding as soon as a second producer emits `nonlinearadstarted` for something that is
+   * not a pause ad, which the Web player will do for its existing `OverlayAdManager` banners. Restore
+   * the `trigger`/`position` check then, against whatever the Player settles on.
+   */
+  private isPauseAdEvent(_event: NonLinearAdEvent): boolean {
+    return true;
   }
 }

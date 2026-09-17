@@ -25,6 +25,19 @@
   }
 }
 
+// Covers the natively rendered creative. It sits first inside the overlay, so the badge, the dismiss
+// button and the control bar all stack above it and keep their own hit targets.
+.#{$prefix}-ui-pause-ad-click-catcher {
+  @include layout-cover;
+  @include hidden;
+
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  pointer-events: auto;
+}
+
 .#{$prefix}-ui-pause-ad-status-badge,
 .#{$prefix}-ui-button-pause-ad-dismiss {
   background-color: transparentize($color-black, 0.25);
