@@ -348,7 +348,7 @@ export class UIManager {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
-      adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer()),
+      adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer(), uiconfig.adCountFilter),
     };
     this.componentLayoutOverrideProcessor = new ComponentLayoutOverrideProcessor(this.config);
 

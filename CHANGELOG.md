@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `UIConfig.adCountFilter` to exclude selected ads from the current index and total displayed by `AdCounterLabel`, including across consecutive ad breaks scheduled at the same time.
+
+### Changed
+
+- The `{activeAdIndex}`, `{totalAdsCount}` and `{adBreakRemainingTime}` placeholders in ad message labels, ad-specific messages and the ad skip button now use the same ad break tracking as the ad counter, covering consecutive ad breaks scheduled at the same time and leaving out the ads excluded by `UIConfig.adCountFilter`.
+- `StringUtils.replaceAdMessagePlaceholders` no longer derives ad break data from the player. Its `activeAdIndex` and `totalNumberOfAds` parameters are replaced by an `adBreakTracker` parameter that fills `{activeAdIndex}`, `{totalAdsCount}` and `{adBreakRemainingTime}`
+
 ### Fixed
 
 - The UI failing to load on legacy platforms such as webOS 3.x when required polyfills were not yet installed.

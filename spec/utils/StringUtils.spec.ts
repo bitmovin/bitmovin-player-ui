@@ -1,4 +1,5 @@
 import { StringUtils } from '../../src/ts/utils/StringUtils';
+import { AdBreakTracker } from '../../src/ts/utils/AdBreakTracker';
 import { i18n } from '../../src/ts/localization/i18n';
 
 describe('StringUtils.replaceAdMessagePlaceholders', () => {
@@ -14,6 +15,8 @@ describe('StringUtils.replaceAdMessagePlaceholders', () => {
       ...overrides,
     };
   };
+
+  const createAdBreakTracker = (values: Partial<AdBreakTracker>) => values as AdBreakTracker;
 
   it('replaces remainingTime based on skip offset', () => {
     const playerMock = createPlayer({
@@ -62,141 +65,57 @@ describe('StringUtils.replaceAdMessagePlaceholders', () => {
     expect(result).toBe('Played 12, duration 34');
   });
 
-  it('replaces adBreakRemainingTime when a linear ad is active', () => {
-    const ads = [
-      { id: 'a1', isLinear: true, duration: 5 },
-      { id: 'a2', isLinear: true, duration: 7 },
-      { id: 'a3', isLinear: true, duration: 9 },
-    ];
-    const activeAd = ads[1];
-    const playerMock = createPlayer({
-      getCurrentTime: jest.fn().mockReturnValue(2),
-      ads: {
-        isLinearAdActive: jest.fn().mockReturnValue(true),
-        getActiveAdBreak: jest.fn().mockReturnValue({ ads }),
-        getActiveAd: jest.fn().mockReturnValue(activeAd),
-      },
-    });
+  it('replaces adBreakRemainingTime from the ad break tracker', () => {
+    const getActiveAdBreak = jest.fn();
+    const playerMock = createPlayer({ ads: { isLinearAdActive: jest.fn(), getActiveAdBreak, getActiveAd: jest.fn() } });
 
-    const result = StringUtils.replaceAdMessagePlaceholders('Remaining {adBreakRemainingTime}', playerMock as any);
+    const result = StringUtils.replaceAdMessagePlaceholders(
+      'Remaining {adBreakRemainingTime}',
+      playerMock as any,
+      undefined,
+      createAdBreakTracker({ adBreakRemainingTime: 14 }),
+    );
 
     expect(result).toBe('Remaining 14');
+    expect(getActiveAdBreak).not.toHaveBeenCalled();
   });
 
-  it('returns 0 for adBreakRemainingTime when no linear ad is active', () => {
-    const playerMock = createPlayer({
-      ads: {
-        isLinearAdActive: jest.fn().mockReturnValue(false),
-        getActiveAdBreak: jest.fn(),
-        getActiveAd: jest.fn(),
-      },
-    });
+  it('returns 0 for adBreakRemainingTime when no tracker is provided', () => {
+    const playerMock = createPlayer();
 
     const result = StringUtils.replaceAdMessagePlaceholders('Remaining {adBreakRemainingTime}', playerMock as any);
 
     expect(result).toBe('Remaining 0');
   });
 
-  it('replaces activeAdIndex and totalAdsCount placeholders', () => {
+  it('replaces ad count placeholders from the ad break tracker', () => {
     const ads = [{ id: 'a1' }, { id: 'a2' }, { id: 'a3' }];
-    const playerMock = createPlayer({
-      ads: {
-        getActiveAdBreak: jest.fn().mockReturnValue({ ads }),
-        getActiveAd: jest.fn().mockReturnValue(ads[1]),
-      },
-    });
-
-    const result = StringUtils.replaceAdMessagePlaceholders('Ad {activeAdIndex} of {totalAdsCount}', playerMock as any);
-
-    expect(result).toBe('Ad 2 of 3');
-  });
-
-  it('uses ad id matching for activeAdIndex when ad instances differ', () => {
-    const ads = [{ id: 'a1' }, { id: 'a2' }, { id: 'a3' }];
-    const playerMock = createPlayer({
-      ads: {
-        getActiveAdBreak: jest.fn().mockReturnValue({ ads }),
-        getActiveAd: jest.fn().mockReturnValue({ id: 'a2' }),
-      },
-    });
-
-    const result = StringUtils.replaceAdMessagePlaceholders('Ad {activeAdIndex} of {totalAdsCount}', playerMock as any);
-
-    expect(result).toBe('Ad 2 of 3');
-  });
-
-  it('returns 0 when ad context is missing for ad index placeholders', () => {
-    const playerMock = createPlayer({
-      ads: {
-        getActiveAdBreak: jest.fn().mockReturnValue(null),
-        getActiveAd: jest.fn().mockReturnValue(null),
-      },
-    });
-
-    const result = StringUtils.replaceAdMessagePlaceholders('Ad {activeAdIndex} of {totalAdsCount}', playerMock as any);
-
-    expect(result).toBe('Ad 0 of 0');
-  });
-
-  it('uses provided activeAdIndex directly without calling player API', () => {
-    const getActiveAdBreak = jest.fn();
-    const getActiveAd = jest.fn();
+    const getActiveAdBreak = jest.fn().mockReturnValue({ ads });
+    const getActiveAd = jest.fn().mockReturnValue(ads[1]);
     const playerMock = createPlayer({ ads: { getActiveAdBreak, getActiveAd } });
-
-    const result = StringUtils.replaceAdMessagePlaceholders('Ad {activeAdIndex}', playerMock as any, undefined, 3);
-
-    expect(result).toBe('Ad 3');
-    expect(getActiveAdBreak).not.toHaveBeenCalled();
-    expect(getActiveAd).not.toHaveBeenCalled();
-  });
-
-  it('uses provided totalNumberOfAds directly without calling player API', () => {
-    const getActiveAdBreak = jest.fn();
-    const playerMock = createPlayer({ ads: { getActiveAdBreak, getActiveAd: jest.fn() } });
-
-    const result = StringUtils.replaceAdMessagePlaceholders(
-      'of {totalAdsCount}',
-      playerMock as any,
-      undefined,
-      undefined,
-      5,
-    );
-
-    expect(result).toBe('of 5');
-    expect(getActiveAdBreak).not.toHaveBeenCalled();
-  });
-
-  it('falls back to ads.length for totalAdsCount when not provided but ad break is available', () => {
-    const ads = [{ id: 'a1' }, { id: 'a2' }];
-    const playerMock = createPlayer({
-      ads: {
-        getActiveAdBreak: jest.fn().mockReturnValue({ ads }),
-        getActiveAd: jest.fn().mockReturnValue(null),
-      },
-    });
-
-    const result = StringUtils.replaceAdMessagePlaceholders('of {totalAdsCount}', playerMock as any);
-
-    expect(result).toBe('of 2');
-  });
-
-  it('uses provided activeAdIndex even when player has no active ad context', () => {
-    const playerMock = createPlayer({
-      ads: {
-        getActiveAdBreak: jest.fn().mockReturnValue(null),
-        getActiveAd: jest.fn().mockReturnValue(null),
-      },
-    });
 
     const result = StringUtils.replaceAdMessagePlaceholders(
       'Ad {activeAdIndex} of {totalAdsCount}',
       playerMock as any,
       undefined,
-      2,
-      4,
+      createAdBreakTracker({ currentAdIndex: 1, totalNumberOfAds: 2 }),
     );
 
-    expect(result).toBe('Ad 2 of 4');
+    // The tracker counts across ad breaks and applies UIConfig.adCountFilter, so the player is not consulted
+    expect(result).toBe('Ad 1 of 2');
+    expect(getActiveAdBreak).not.toHaveBeenCalled();
+    expect(getActiveAd).not.toHaveBeenCalled();
+  });
+
+  it('replaces ad count placeholders with 0 when no tracker is provided', () => {
+    const ads = [{ id: 'a1' }, { id: 'a2' }, { id: 'a3' }];
+    const getActiveAdBreak = jest.fn().mockReturnValue({ ads });
+    const playerMock = createPlayer({ ads: { getActiveAdBreak, getActiveAd: jest.fn().mockReturnValue(ads[1]) } });
+
+    const result = StringUtils.replaceAdMessagePlaceholders('Ad {activeAdIndex} of {totalAdsCount}', playerMock as any);
+
+    expect(result).toBe('Ad 0 of 0');
+    expect(getActiveAdBreak).not.toHaveBeenCalled();
   });
 
   it('supports mm:ss formatting for time placeholders', () => {
