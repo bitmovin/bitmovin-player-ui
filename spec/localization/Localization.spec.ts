@@ -85,6 +85,16 @@ describe('Localization', () => {
     it('injects the value to string passed by config', () => {
       expect(i18n.performLocalization(i18n.getLocalizer('variableTest', { value: 1 }))).toEqual('1');
     });
+
+    Object.entries(defaultVocabularies).forEach(([language, vocabulary]) => {
+      it(`includes the visible live label in the ${language} live action label`, () => {
+        i18n.setConfig({ language, vocabularies: defaultVocabularies });
+        const liveLabel = i18n.performLocalization(i18n.getLocalizer('live'));
+        const liveActionLabel = i18n.performLocalization(i18n.getLocalizer('live.jumpToLiveEdge', { liveLabel }));
+
+        expect(liveActionLabel).toContain(liveLabel);
+      });
+    });
   });
 
   describe('setLanguage', () => {

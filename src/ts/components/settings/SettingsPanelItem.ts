@@ -6,7 +6,6 @@ import { UIInstanceManager } from '../../UIManager';
 import { SelectBox } from './SelectBox';
 import { VideoQualitySelectBox } from './VideoQualitySelectBox';
 import { AudioQualitySelectBox } from './AudioQualitySelectBox';
-import { PlaybackSpeedSelectBox } from './PlaybackSpeedSelectBox';
 import { PlayerAPI } from 'bitmovin-player';
 import { LocalizableText } from '../../localization/i18n';
 import { ListSelector } from '../lists/ListSelector';
@@ -113,12 +112,6 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
 
         if (this.settingComponent.itemCount() < minItemsToDisplay) {
           // Hide the setting if no meaningful choice is available
-          this.hide();
-        } else if (
-          this.settingComponent instanceof PlaybackSpeedSelectBox &&
-          !uimanager.getConfig().playbackSpeedSelectionEnabled
-        ) {
-          // Hide the PlaybackSpeedSelectBox if disabled in config
           this.hide();
         } else {
           this.show();

@@ -15,6 +15,7 @@ import { PlaybackTimeLabel, PlaybackTimeLabelMode } from './components/labels/Pl
 import { SeekBar } from './components/seekbar/SeekBar';
 import { SeekBarLabel } from './components/seekbar/SeekBarLabel';
 import { PlaybackToggleButton } from './components/buttons/PlaybackToggleButton';
+import { QuickSeekButton } from './components/buttons/QuickSeekButton';
 import { VolumeToggleButton } from './components/buttons/VolumeToggleButton';
 import { VolumeSlider } from './components/seekbar/VolumeSlider';
 import { Spacer } from './components/Spacer';
@@ -61,6 +62,7 @@ import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationOverlayNavigationGroup } from './spatialnavigation/RecommendationOverlayNavigationGroup';
 import { PlayerInsightsPanel } from './components/panels/player-insights/PlayerInsightsPanel';
+import { CaptionToggleButton } from './components/buttons/CaptionToggleButton';
 
 /**
  * Provides factory methods to create Bitmovin provided UIs.
@@ -188,7 +190,7 @@ export namespace UIFactory {
       player,
       [
         {
-          ui: () => UIFactory.defaultLayouts.castReceiver(config),
+          ui: UIFactory.defaultLayouts.castReceiver,
           identifier: UIVariantIdentifier.castReceiver,
         },
       ],
@@ -287,7 +289,6 @@ export namespace UIFactory {
       const settingsPanel = buildDefaultSettingsPanel(
         subtitleOverlay,
         undefined,
-        config.ecoMode === true,
         config.showPersistentPreferencesToggle === true && config.disableStorageApi !== true,
       );
       const controlBar = new ControlBar({
@@ -308,10 +309,13 @@ export namespace UIFactory {
           }),
           new Container({
             components: [
+              new QuickSeekButton({ seekSeconds: -10 }),
               new PlaybackToggleButton(),
+              new QuickSeekButton({ seekSeconds: 10 }),
               new VolumeToggleButton(),
               new VolumeSlider(),
               new Spacer(),
+              new CaptionToggleButton(),
               new PictureInPictureToggleButton(),
               new AirPlayToggleButton(),
               new CastToggleButton(),
@@ -324,12 +328,6 @@ export namespace UIFactory {
         ],
       });
 
-      const conditionalComponents = [
-        config.includeWatermark ? new Watermark() : null,
-        ...(playerInsightsPanel ? [playerInsightsPanel] : []),
-        ...(playerContextMenu ? [new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu] : []),
-      ].filter(e => e);
-
       return new UIContainer({
         components: [
           subtitleOverlay,
@@ -340,7 +338,9 @@ export namespace UIFactory {
           controlBar,
           new TitleBar(),
           new RecommendationOverlay(),
-          ...conditionalComponents,
+          new Watermark(),
+          ...(playerInsightsPanel ? [playerInsightsPanel] : []),
+          ...(playerContextMenu ? [new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu] : []),
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
           new ErrorMessageOverlay(),
@@ -431,10 +431,13 @@ export namespace UIFactory {
           }),
           new Container({
             components: [
+              new QuickSeekButton({ seekSeconds: -10 }),
               new PlaybackToggleButton(),
+              new QuickSeekButton({ seekSeconds: 10 }),
               new VolumeToggleButton(),
               new VolumeSlider(),
               new Spacer(),
+              new CaptionToggleButton(),
               new PictureInPictureToggleButton(),
               new SettingsToggleButton({ settingsPanel: settingsPanel }),
               new FullscreenToggleButton(),
@@ -488,10 +491,10 @@ export namespace UIFactory {
         components: [
           new Container({
             components: [
-              new PlaybackTimeLabel({ timeLabelMode: PlaybackTimeLabelMode.CurrentTime }),
+              new AdCounterLabel(),
               new SeekBar({ label: new SeekBarLabel() }),
               new PlaybackTimeLabel({
-                timeLabelMode: PlaybackTimeLabelMode.TotalTime,
+                timeLabelMode: PlaybackTimeLabelMode.RemainingTime,
                 cssClasses: ['text-right'],
               }),
             ],
@@ -536,7 +539,7 @@ export namespace UIFactory {
       });
     }
 
-    export function castReceiver(config: UIConfig = {}): UIContainer {
+    export function castReceiver(): UIContainer {
       const controlBar = new ControlBar({
         components: [
           new Container({
@@ -556,8 +559,6 @@ export namespace UIFactory {
         ],
       });
 
-      const conditionalComponents = [config.includeWatermark ? new Watermark() : null].filter(e => e);
-
       return new CastUIContainer({
         components: [
           new SubtitleOverlay(),
@@ -565,7 +566,7 @@ export namespace UIFactory {
           new PlaybackToggleOverlay(),
           controlBar,
           new TitleBar({ keepHiddenWithoutMetadata: true }),
-          ...conditionalComponents,
+          new Watermark(),
           new ErrorMessageOverlay(),
         ],
         cssClasses: ['ui-cast-receiver'],
@@ -616,6 +617,7 @@ export namespace UIFactory {
         components: [
           playbackToggleButton,
           new Spacer(),
+          new CaptionToggleButton(),
           subtitleListBoxOpenButton,
           audioListBoxToggleButton,
           new SettingsToggleButton({ settingsPanel: settingsPanel }),
@@ -754,7 +756,6 @@ export namespace UIFactory {
   function buildDefaultSettingsPanel(
     subtitleOverlay: SubtitleOverlay,
     hideDelay: number | undefined = undefined,
-    enableEcoMode: boolean = false,
     showPersistentPreferencesToggle: boolean = false,
   ): SettingsPanel<SettingsPanelConfig> {
     const settingsPanelConfig: SettingsPanelConfig = {
@@ -791,16 +792,14 @@ export namespace UIFactory {
       }),
     ];
 
-    if (enableEcoMode) {
-      const ecoModeContainer = new EcoModeContainer();
+    const ecoModeContainer = new EcoModeContainer();
 
-      ecoModeContainer.setOnToggleCallback(() => {
-        // forces the browser to re-calculate the height of the settings panel when adding/removing elements
-        settingsPanel.getDomElement().css({ width: '', height: '' });
-      });
+    ecoModeContainer.setOnToggleCallback(() => {
+      // forces the browser to re-calculate the height of the settings panel when adding/removing elements
+      settingsPanel.getDomElement().css({ width: '', height: '' });
+    });
 
-      components.unshift(ecoModeContainer);
-    }
+    components.unshift(ecoModeContainer);
 
     const mainSettingsPanelPage = new SettingsPanelPage({
       components,

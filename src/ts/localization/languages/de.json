@@ -48,6 +48,7 @@
   "ads.skip": "Überspringen",
   "ads.skippableIn": "Überspringen in {remainingTime}",
   "ads.adNumberOfTotal": "Anzeige {activeAdIndex} von {totalAdsCount}",
+  "ad": "Anzeige",
   "settings": "Einstellungen",
   "fullscreen": "Vollbild",
   "speed": "Geschwindigkeit",
@@ -71,6 +72,7 @@
   "normal": "normal",
   "default": "standard",
   "live": "Live",
+  "live.jumpToLiveEdge": "{liveLabel}, zum Live-Punkt springen",
   "subtitle.example": "Beispiel Untertitel",
   "subtitle.select": "Untertitel auswählen",
   "playingOn": "Spielt auf <strong>{castDeviceName}</strong>",
@@ -86,5 +88,7 @@
   "quickseek.rewind": "{seekSeconds} Sekunden Zurück",
   "contextMenu.title": "Bitmovin Player",
   "contextMenu.subtitle": "Adaptive Streaming für das Web",
-  "contextMenu.copyTimestampLink": "Link zur aktuellen Zeit kopieren"
+  "contextMenu.copyTimestampLink": "Link zur aktuellen Zeit kopieren",
+  "captions.enable": "Untertitel einschalten",
+  "captions.disable": "Untertitel ausschalten"
 }

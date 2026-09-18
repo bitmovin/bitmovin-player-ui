@@ -13,6 +13,82 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - TV UI spatial navigation support for the pause-ad dismiss action.
 - Pause-ad creatives that carry a click-through destination are now clickable while the UI is on top of them. The click target covers the whole player, matching linear ads, so clicks beside the creative open the click-through too. The playback controls and the dismiss button keep priority over it, and creatives without a destination let every click through to the UI.
 
+## [4.21.1] - 2026-09-17
+
+### Fixed
+
+- The UI failing to load on legacy platforms such as webOS 3.x when required polyfills were not yet installed.
+
+## [4.21.0] - 2026-09-10
+
+### Changed
+
+- The selected subtitle track label no longer includes the number of available tracks.
+
+### Fixed
+
+- Long option names causing settings panels to overflow or setting labels to become unreadable.
+- Ad count in `AdCounterLabel` no longer increases incorrectly when used on mobile SDKs.
+
+## [4.20.2] - 2026-09-03
+
+### Fixed
+
+- `SeekBar` showing a stale playback position when a new source is loaded while a seek was still pending.
+- `PlaybackToggleButton` no longer responding to clicks when a new source is loaded after a play attempt that never reached playback, for example because the previous source stalled.
+
+## [4.20.1] - 2026-08-27
+
+### Fixed
+
+- `UIConfig.componentLayoutOverrides` and `UIConfig.componentConfigOverrides` are now applied in applications whose production build minifies the UI, instead of being silently ignored. Components are matched by their public export name instead of their runtime class name, which minifiers mangle by default.
+
+## [4.20.0] - 2026-08-13
+
+### Added
+
+- `UIConfig.componentLayoutOverrides` and `UIComponentLayoutOverride` to keep or remove supported components from default UI layouts without rebuilding complete `UIFactory` layouts.
+- `CaptionToggleButton` to turn captions and subtitles on and off with a single click, without opening the settings panel.
+  - Part of the default, small-screen, and TV layouts, as the first component of the right-hand control bar group, but excluded by default so the default UI is unchanged. Enable it with `componentLayoutOverrides: { CaptionToggleButton: UIComponentLayoutOverride.Include }`.
+  - Hidden while the source provides no caption tracks, and kept in sync with captions that are switched elsewhere in the UI.
+  - Restores the most recently enabled track when captions are switched back on. If no track has been enabled yet, it prefers a track matching the current audio language and falls back to the first available track.
+
+### Fixed
+
+- Spatial navigation on the TV UI no longer lets focus escape the active navigation group when pressing a direction at the group's edge on some smart TVs.
+
+## [4.19.0] - 2026-08-10
+
+### Changed
+
+- `AdCounterLabel` now extends `AdMessageLabel` and inherits its ad-message behavior.
+- `AdCounterLabel` now displays its configured `text` for single-ad ad breaks instead of the `Ad 1 of 1` count.
+- `AdCounterLabel` is now also used in the small-screen ads UI instead of the current-time `PlaybackTimeLabel`.
+
+### Fixed
+
+- `AdCounterLabel` now displays its configured or ad-specific message for single-ad ad breaks and when no valid current ad index is available.
+- The seek bar no longer gets smaller on every time update during live playback. This only affected pages that do not set a global `box-sizing: border-box`.
+
+## [4.18.0] - 2026-08-06
+
+### Known Issues
+
+- On live streams the seek bar gets smaller on every time update until it disappears from the control bar. Only affects pages that do not set a global `box-sizing: border-box`. To work around it, add `.bmpui-ui-playbacktimelabel { box-sizing: border-box; }` to your page. Fixed in `4.19.0`.
+
+### Added
+
+- `live.jumpToLiveEdge` localization key for the LIVE indicator's accessible name; interpolates the `live` label via `{liveLabel}`.
+- `UIConfig.enableResumeFromLastPosition` option to enable storing playback progress and resume known sources from the last saved position.
+
+### Changed
+
+- Persisted preferences (enabled via `UIConfig.enablePersistentPreferences`) now use the configured UI prefix instead of a hard-coded bitmovin specific key.
+
+### Fixed
+
+- The LIVE indicator can now be focused and activated with Enter or Space to return to the live edge.
+
 ## [4.17.0] - 2026-07-02
 
 ### Added

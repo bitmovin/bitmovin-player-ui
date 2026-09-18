@@ -9,14 +9,14 @@ import prettier from 'eslint-config-prettier';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default tseslint.config({
-  files: ['src/**/*.ts', 'spec/**/*.ts'],
+  files: ['src/**/*.ts', 'spec/**/*.ts', 'test/browser/**/*.ts'],
   extends: [
     eslint.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     {
       languageOptions: {
         parserOptions: {
-          project: 'eslint-tsconfig.json',
+          project: ['eslint-tsconfig.json', 'test/browser/tsconfig.json'],
           tsconfigRootDir: __dirname,
         },
       },

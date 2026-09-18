@@ -48,6 +48,7 @@
   "ads.skip": "Skip",
   "ads.skippableIn": "Skip ad in {remainingTime}",
   "ads.adNumberOfTotal": "Ad {activeAdIndex} of {totalAdsCount}",
+  "ad": "Ad",
   "settings": "Settings",
   "fullscreen": "Fullscreen",
   "speed": "Speed",
@@ -71,6 +72,7 @@
   "normal": "normal",
   "default": "default",
   "live": "Live",
+  "live.jumpToLiveEdge": "{liveLabel}, jump to live edge",
   "subtitle.example": "example subtitle",
   "subtitle.select": "Select subtitle",
   "playingOn": "Playing on <strong>{castDeviceName}</strong>",
@@ -86,5 +88,7 @@
   "quickseek.rewind": "Rewind {seekSeconds} seconds",
   "contextMenu.title": "Bitmovin Player",
   "contextMenu.subtitle": "Adaptive Streaming for the Web",
-  "contextMenu.copyTimestampLink": "Copy link at current time"
+  "contextMenu.copyTimestampLink": "Copy link at current time",
+  "captions.enable": "Enable captions",
+  "captions.disable": "Disable captions"
 }

@@ -94,6 +94,8 @@ export interface UIComponentConfigMap {
 
 - Use targeted checks while iterating:
   - `npx jest <spec> --runInBand`
+  - `npm run test:browser` for browser-dependent UI behavior (see below)
+  - `npm run typecheck:browser` while iterating on the Playwright harness or specs
   - `npm run lint-ts`
   - `npm run lint-sass`
   - `npx tsc --noEmit`
@@ -103,3 +105,62 @@ export interface UIComponentConfigMap {
 - For Android or iOS SDK impact, record what was manually checked. If mobile SDK verification was needed but not possible in the current environment, say that explicitly and do not treat browser checks as equivalent.
 - Treat `npm run docs` by exit code; TypeDoc warnings can be acceptable when the command exits `0`.
 - For merge conflicts, confirm real unresolved conflicts with `git ls-files -u`; text searches for conflict markers can hit false positives in this repo.
+
+## Browser Integration Tests
+
+Choose the test level that can observe the behavior being changed:
+
+- Use Jest for pure logic and component behavior that jsdom models faithfully.
+- Use Playwright in `test/browser/` when correctness depends on real layout or computed styles,
+  focus, keyboard or pointer input, browser APIs, Shadow DOM, generated markup, or multiple UI
+  components responding to player events. Do not rely on Jest-only coverage for those changes.
+- The Playwright harness uses the built UI against a deterministic stub player. It does not cover
+  real playback, streams, networking, decoding, or mobile SDK bridges. Full-player browser system
+  tests may also use Playwright, but exercise those real dependencies instead of this stub; verify
+  mobile SDK bridges in their platform environments.
+
+Run browser integration tests with `npm run test:browser`. Structure scenarios as
+Arrange–Act–Assert when that makes the phases clearer; comments naming the phases are not required.
+Use role- or label-based locators and Playwright's web-first assertions for interactive behavior.
+Raw CSS selectors and `page.evaluate()` are appropriate when measuring geometry or another browser
+property that has no user-facing locator.
+
+Rules that keep these tests deterministic. Follow them or the suite gets disabled:
+
+- **Import `test` and `expect` from `test/browser/harness.ts`**, not from `@playwright/test`. The
+  harness fails a test on any uncaught page error, so a stub player that has drifted from the real
+  API fails instead of leaving a partial DOM that can produce false positives.
+- **Drive player behavior through the typed controller returned by `mountUi()`.** When a scenario
+  needs a player operation the controller does not expose, add only that operation together with
+  the state changes and events the real player produces. Do not access harness browser globals from
+  specs, and do not add speculative controller APIs for hypothetical future tests.
+- **Keep the generic mount generic.** Layout- or feature-specific readiness assertions and DOM
+  measurement helpers belong in `test/browser/helpers/`; they must not make unrelated UIFactory
+  layouts depend on the default control bar.
+- **Keep every test isolated.** Mount a fresh UI in each test and do not share mutable page or player
+  state between tests.
+- **No sleeping and no retries.** Use web-first assertions for observable UI changes and fire
+  deterministic player events for state transitions. `retries` remains `0` so flakiness is visible.
+- **No real streams, CDN, or video decode.** Keep those in full-player system tests, which may also
+  use Playwright but do not use this deterministic stub-backed harness. Real media dependencies are
+  the main sources of flake in player browser tests.
+- **Prove every new test can fail.** Break the behavior it guards, observe the expected red result,
+  then restore the behavior and watch it pass.
+
+Additional rules for layout and sizing tests:
+
+- **Never assert absolute pixel values.** Fonts render differently across operating systems, so
+  `expect(width).toBe(73)` passes locally and fails in CI. Assert relationships instead: unchanged
+  between two measurements, never grew, fits inside the parent, one element wider than another.
+- **Compare a measurement to another measurement**, taken in the same browser in the same run.
+  That is what makes the assertion portable.
+- **Measure the elements that can actually change.** Container rows are full-width by construction,
+  so comparing only those passes no matter how badly the controls inside them resize. Walk
+  descendants, and when checking that children fit a row, find the flex container that actually
+  distributes the space rather than the wrapper around it.
+- **An empty measurement must fail, not pass.** A helper that returns `{}` or `[]` when its selector
+  matches nothing makes "nothing is wrong" indistinguishable from "nothing was measured". Throw when
+  the subject is missing, and assert that each test measured something.
+- **Cover both host-page worlds** when a change touches sizing: with and without a global
+  `box-sizing: border-box` reset. Most real pages have one, our demo page has one via Bootstrap,
+  and plenty of customer pages do not. `mountUi(page, { hostReset })` switches between them.

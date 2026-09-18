@@ -75,6 +75,6 @@ export class CastUIContainer extends UIContainer {
 
   release(): void {
     super.release();
-    this.castUiHideTimeout.clear();
+    this.castUiHideTimeout?.clear();
   }
 }
