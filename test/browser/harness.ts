@@ -21,6 +21,8 @@ interface BrowserTestWindow extends Window {
   };
   __fire(event: string, data?: object): void;
   __ui?: unknown;
+  /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
+  __clickThroughCount?: number;
 }
 
 const DIST = path.resolve(__dirname, '../../dist');
@@ -75,6 +77,14 @@ export interface MountOptions {
   factory?: 'default' | 'smallScreen';
 }
 
+export interface PauseAdOptions {
+  /**
+   * Click-through destination carried by the creative. Omitted means a creative without one, which
+   * the UI must leave fully transparent to pointer input.
+   */
+  clickThroughUrl?: string;
+}
+
 export interface BrowserPlayerController {
   /**
    * Replays deterministic player clock updates without actual playback.
@@ -83,6 +93,18 @@ export interface BrowserPlayerController {
    * from legitimate size changes caused by longer time-label content.
    */
   tick(times?: number): Promise<void>;
+
+  /**
+   * Starts a non-linear pause ad, the way the iOS SDK bridge reports one.
+   *
+   * The ad carries the producer-assigned `clickThroughUrlOpened` callback the UI invokes when the
+   * user clicks the creative; {@link BrowserPlayerController.clickThroughCount} reports how often it
+   * ran. The dismiss delay is switched off, so no scenario depends on a timer.
+   */
+  startPauseAd(options?: PauseAdOptions): Promise<void>;
+
+  /** How often the active pause ad's click-through has been opened since it started. */
+  clickThroughCount(): Promise<number>;
 }
 
 export interface MountedUi {
@@ -229,6 +251,29 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
 
   return {
     player: {
+      startPauseAd: async ({ clickThroughUrl }: PauseAdOptions = {}) => {
+        await page.evaluate(url => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__clickThroughCount = 0;
+          // The native event name, not the web one: the iOS bridge forwards `onNonLinearAdStarted`
+          // unmapped, and the UI subscribes to both spellings.
+          browserWindow.__fire('onNonLinearAdStarted', {
+            ad: {
+              id: 'pause-ad-1',
+              clickThroughUrl: url,
+              clickThroughUrlOpened: () => {
+                browserWindow.__clickThroughCount = (browserWindow.__clickThroughCount || 0) + 1;
+              },
+            },
+            // Negative disables the dismiss button entirely, so the overlay arms no timer and these
+            // tests stay free of wall-clock behavior.
+            dismissibleAfter: -1,
+          });
+        }, clickThroughUrl);
+      },
+      clickThroughCount: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__clickThroughCount || 0);
+      },
       tick: async (times = 1) => {
         await page.evaluate(count => {
           const browserWindow = window as unknown as BrowserTestWindow;
