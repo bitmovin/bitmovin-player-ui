@@ -42,6 +42,10 @@ interface NonLinearAdEvent extends AdEvent {
  * The creative is drawn below the UI, which hit-tests at every point, so a tap on it has to
  * originate here and be routed back to the ad. It carries no button semantics and is not focusable:
  * it exists for pointer input only, and the controls stacked above it keep their own hit targets.
+ *
+ * It covers the whole player, so clicks in the letterbox area outside the creative open the
+ * click-through too. That matches {@link AdClickOverlay} for linear ads, and is deliberately more
+ * permissive than the iOS System UI, which hit-tests only the creative's rendered rectangle.
  */
 class PauseAdClickCatcher extends Button<ButtonConfig> {
   constructor(config: ButtonConfig = {}) {
