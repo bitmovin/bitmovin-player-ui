@@ -19,8 +19,8 @@ describe('PauseAdStatusOverlay', () => {
     jest.useRealTimers();
   });
 
-  it('treats every non-linear ad as a pause ad while iOS is the only producer', () => {
-    playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pre' });
+  it('treats every non-linear ad as a pause ad while it is the only non-linear format', () => {
+    playerMock.eventEmitter.fireNonLinearAdStartedEvent();
 
     expect(pauseAdStatusOverlay.isShown()).toBe(true);
     expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
@@ -71,7 +71,7 @@ describe('PauseAdStatusOverlay', () => {
     });
   });
 
-  it('shows pause-ad status and uses the four-second dismiss fallback', () => {
+  it('shows pause-ad status with Dismiss available immediately', () => {
     const dismissButton = getDismissButton();
 
     expect(dismissButton.getConfig().text).toBe('Dismiss');
@@ -82,80 +82,19 @@ describe('PauseAdStatusOverlay', () => {
     firePauseAdStarted();
 
     expect(pauseAdStatusOverlay.isShown()).toBe(true);
-    expect(dismissButton.isHidden()).toBe(true);
-    expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
-
-    jest.advanceTimersByTime(3999);
-    expect(dismissButton.isHidden()).toBe(true);
-
-    jest.advanceTimersByTime(1);
     expect(dismissButton.isShown()).toBe(true);
-  });
-
-  it('uses skippableAfter from the event instead of the fallback delay', () => {
-    playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pause', skippableAfter: 2 });
-
-    jest.advanceTimersByTime(1999);
-    expect(getDismissButton().isHidden()).toBe(true);
-
-    jest.advanceTimersByTime(1);
-    expect(getDismissButton().isShown()).toBe(true);
-  });
-
-  it('uses dismissibleAfter from the event instead of the fallback delay', () => {
-    playerMock.eventEmitter.fireNonLinearAdStartedEvent({ trigger: 'pause', dismissibleAfter: 3 });
-
-    jest.advanceTimersByTime(2999);
-    expect(getDismissButton().isHidden()).toBe(true);
-
-    jest.advanceTimersByTime(1);
-    expect(getDismissButton().isShown()).toBe(true);
-  });
-
-  it('shows pause-ad status for non-linear ads triggered by pause', () => {
-    playerMock.eventEmitter.fireNonLinearAdStartedEvent({ trigger: 'pause', dismissibleAfter: 2 });
-
-    expect(pauseAdStatusOverlay.isShown()).toBe(true);
     expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
   });
 
   it('shows pause-ad status for native non-linear ad started events', () => {
-    playerMock.eventEmitter.fireNativeNonLinearAdStartedEvent({ trigger: 'pause', dismissibleAfter: 2 });
+    playerMock.eventEmitter.fireNativeNonLinearAdStartedEvent();
 
     expect(pauseAdStatusOverlay.isShown()).toBe(true);
+    expect(getDismissButton().isShown()).toBe(true);
     expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
   });
 
-  it('shows Dismiss immediately when skippableAfter is zero', () => {
-    playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pause' }, { skippableAfter: 0 });
-
-    expect(getDismissButton().isShown()).toBe(true);
-  });
-
-  it('does not show Dismiss when skippableAfter is negative', () => {
-    playerMock.eventEmitter.fireNonLinearAdStartedEvent(
-      { adBreak: { position: 'pause', skippableAfter: -1 } },
-      { id: 'pause-ad' },
-    );
-
-    jest.advanceTimersByTime(4000);
-
-    expect(pauseAdStatusOverlay.isShown()).toBe(true);
-    expect(getDismissButton().isHidden()).toBe(true);
-  });
-
-  it('uses the configured dismiss fallback when skippableAfter is missing', () => {
-    setupOverlay({ dismissDelay: 2500 });
-
-    firePauseAdStarted();
-    jest.advanceTimersByTime(2499);
-    expect(getDismissButton().isHidden()).toBe(true);
-
-    jest.advanceTimersByTime(1);
-    expect(getDismissButton().isShown()).toBe(true);
-  });
-
-  it('focuses Dismiss when configured and the button becomes visible', () => {
+  it('focuses Dismiss when configured', () => {
     setupOverlay({ focusDismissButtonOnShow: true });
     const dismissDomElement = MockHelper.generateDOMMock();
     const dismissElement = { focus: jest.fn() } as unknown as HTMLElement;
@@ -163,11 +102,9 @@ describe('PauseAdStatusOverlay', () => {
     dismissDomElement.get.mockReturnValue(dismissElement);
     const getDomElementSpy = jest.spyOn(getDismissButton(), 'getDomElement').mockReturnValue(dismissDomElement);
 
-    playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pause', skippableAfter: 2 });
-
     expect(focusSpy).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(2000);
+    firePauseAdStarted();
 
     expect(getDismissButton().isShown()).toBe(true);
     expect(pauseAdStatusOverlay.getConfig().focusDismissButtonOnShow).toBe(true);
@@ -177,7 +114,6 @@ describe('PauseAdStatusOverlay', () => {
 
   it('hides the pause-ad status and skips the ad when Dismiss is clicked', () => {
     firePauseAdStarted();
-    jest.advanceTimersByTime(4000);
 
     (getDismissButton() as any).onClickEvent();
 
@@ -190,7 +126,7 @@ describe('PauseAdStatusOverlay', () => {
   it('hides the pause-ad status on NonLinearAdFinished', () => {
     firePauseAdStarted({ id: 'pause-ad' });
 
-    playerMock.eventEmitter.fireNonLinearAdFinishedEvent({ position: 'pause' }, { id: 'pause-ad' });
+    playerMock.eventEmitter.fireNonLinearAdFinishedEvent({}, { id: 'pause-ad' });
 
     expect(pauseAdStatusOverlay.isHidden()).toBe(true);
     expect(getDismissButton().isHidden()).toBe(true);
@@ -210,7 +146,7 @@ describe('PauseAdStatusOverlay', () => {
   it('ignores a terminal event for a different non-linear ad', () => {
     firePauseAdStarted({ id: 'pause-ad' });
 
-    playerMock.eventEmitter.fireNonLinearAdFinishedEvent({ position: 'pause' }, { id: 'other-ad' });
+    playerMock.eventEmitter.fireNonLinearAdFinishedEvent({}, { id: 'other-ad' });
 
     expect(pauseAdStatusOverlay.isShown()).toBe(true);
   });
@@ -234,7 +170,7 @@ describe('PauseAdStatusOverlay', () => {
   });
 });
 
-function setupOverlay(config: { dismissDelay?: number; focusDismissButtonOnShow?: boolean } = {}): void {
+function setupOverlay(config: { focusDismissButtonOnShow?: boolean } = {}): void {
   playerMock = MockHelper.getPlayerMock();
   (playerMock as any).ads = {
     skip: jest.fn(),
@@ -250,7 +186,7 @@ function setupOverlay(config: { dismissDelay?: number; focusDismissButtonOnShow?
 }
 
 function firePauseAdStarted(adData: object = {}): void {
-  playerMock.eventEmitter.fireNonLinearAdStartedEvent({ position: 'pause' }, adData);
+  playerMock.eventEmitter.fireNonLinearAdStartedEvent({}, adData);
 }
 
 function getClickCatcher(): Button<ButtonConfig> {

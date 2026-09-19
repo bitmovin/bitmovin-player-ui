@@ -265,9 +265,6 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
                 browserWindow.__clickThroughCount = (browserWindow.__clickThroughCount || 0) + 1;
               },
             },
-            // Negative disables the dismiss button entirely, so the overlay arms no timer and these
-            // tests stay free of wall-clock behavior.
-            dismissibleAfter: -1,
           });
         }, clickThroughUrl);
       },

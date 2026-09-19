@@ -1,40 +1,23 @@
-import { Ad, AdEvent, PlayerAPI } from 'bitmovin-player';
+import { AdEvent, PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmovin-player';
 import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
 import { LocalizableText } from '../../localization/i18n';
-import { Timeout } from '../../utils/Timeout';
 import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
 import { Container, ContainerConfig } from '../Container';
 import { Label, LabelConfig } from '../labels/Label';
 
-const NON_LINEAR_AD_STARTED_EVENT = 'nonlinearadstarted';
-const NON_LINEAR_AD_FINISHED_EVENT = 'nonlinearadfinished';
-const NON_LINEAR_AD_SKIPPED_EVENT = 'nonlinearadskipped';
-const NATIVE_NON_LINEAR_AD_STARTED_EVENT = 'onNonLinearAdStarted';
-const NATIVE_NON_LINEAR_AD_FINISHED_EVENT = 'onNonLinearAdFinished';
-const NATIVE_NON_LINEAR_AD_SKIPPED_EVENT = 'onNonLinearAdSkipped';
+// The producers spell these events differently: the web-style name and the name the mobile SDKs
+// emit, which reaches the UI unmapped.
+const NON_LINEAR_AD_STARTED_EVENTS = ['nonlinearadstarted', 'onNonLinearAdStarted'];
+const NON_LINEAR_AD_ENDED_EVENTS = [
+  'nonlinearadfinished',
+  'onNonLinearAdFinished',
+  'nonlinearadskipped',
+  'onNonLinearAdSkipped',
+];
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
-const SECONDS_TO_MILLISECONDS = 1000;
 
-// Remove the transitional position variants once the Player exposes a typed non-linear ad lifecycle contract.
-interface NonLinearAd extends Ad {
-  position?: string;
-  dismissibleAfter?: number;
-  skippableAfter?: number;
-}
-
-interface NonLinearAdEvent extends AdEvent {
-  position?: string;
-  trigger?: string;
-  dismissibleAfter?: number;
-  skippableAfter?: number;
-  ad: NonLinearAd;
-  adBreak?: {
-    position?: string;
-    dismissibleAfter?: number;
-    skippableAfter?: number;
-  };
-}
+type NonLinearAdEventHandler = (event: AdEvent) => void;
 
 /**
  * Full-bleed click target for the natively rendered pause-ad creative.
@@ -77,16 +60,11 @@ export interface PauseAdStatusOverlayConfig extends ContainerConfig {
    */
   badgeText?: LocalizableText;
   /**
-   * Fallback delay in milliseconds before showing the dismiss button when the ad does not provide `skippableAfter`.
-   * Set to a negative value to disable the dismiss button.
-   */
-  dismissDelay?: number;
-  /**
    * Text displayed on the dismiss button.
    */
   dismissText?: LocalizableText;
   /**
-   * Focuses the dismiss button when it becomes visible.
+   * Focuses the dismiss button when the pause ad appears.
    */
   focusDismissButtonOnShow?: boolean;
 }
@@ -101,7 +79,6 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
   private readonly clickCatcher: PauseAdClickCatcher;
   private readonly dismissButton: Button<ButtonConfig>;
   private clickThroughUrlOpened?: () => void;
-  private dismissDelayTimeout?: Timeout;
   private player?: PlayerAPI;
   private uiContainerElement?: DOM;
   private pauseAdActive = false;
@@ -114,7 +91,6 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
       config,
       {
         badgeText: 'Ad',
-        dismissDelay: 4000,
         dismissText: 'Dismiss',
         focusDismissButtonOnShow: false,
         hidden: true,
@@ -147,12 +123,7 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     this.player = player;
     this.uiContainerElement = uimanager.getUI().getDomElement();
 
-    player.on(NON_LINEAR_AD_STARTED_EVENT as any, this.handleNonLinearAdStarted as any);
-    player.on(NATIVE_NON_LINEAR_AD_STARTED_EVENT as any, this.handleNonLinearAdStarted as any);
-    player.on(NON_LINEAR_AD_FINISHED_EVENT as any, this.handleNonLinearAdEnded as any);
-    player.on(NATIVE_NON_LINEAR_AD_FINISHED_EVENT as any, this.handleNonLinearAdEnded as any);
-    player.on(NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
-    player.on(NATIVE_NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
+    this.eachNonLinearSubscription((eventType, handler) => player.on(eventType, handler));
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
 
     this.clickCatcher.onClick.subscribe(() => {
@@ -167,26 +138,21 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
   release(): void {
     this.hidePauseAdStatus();
-    if (this.player) {
-      this.player.off(NON_LINEAR_AD_STARTED_EVENT as any, this.handleNonLinearAdStarted as any);
-      this.player.off(NATIVE_NON_LINEAR_AD_STARTED_EVENT as any, this.handleNonLinearAdStarted as any);
-      this.player.off(NON_LINEAR_AD_FINISHED_EVENT as any, this.handleNonLinearAdEnded as any);
-      this.player.off(NATIVE_NON_LINEAR_AD_FINISHED_EVENT as any, this.handleNonLinearAdEnded as any);
-      this.player.off(NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
-      this.player.off(NATIVE_NON_LINEAR_AD_SKIPPED_EVENT as any, this.handleNonLinearAdEnded as any);
-      this.player.off(this.player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
+    const player = this.player;
+    if (player) {
+      this.eachNonLinearSubscription((eventType, handler) => player.off(eventType, handler));
+      player.off(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
     }
     this.player = undefined;
     this.uiContainerElement = undefined;
     super.release();
   }
 
-  private readonly handleNonLinearAdStarted = (event: NonLinearAdEvent): void => {
+  private readonly handleNonLinearAdStarted = (event: AdEvent): void => {
     if (!this.isPauseAdEvent(event)) {
       return;
     }
 
-    this.clearDismissDelay();
     this.dismissButton.hide();
     this.clickCatcher.hide();
     this.show();
@@ -201,15 +167,10 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
       this.clickCatcher.show();
     }
 
-    const dismissDelay = this.getDismissDelay(event);
-    if (dismissDelay === 0) {
-      this.showDismissButton();
-    } else if (dismissDelay > 0) {
-      this.dismissDelayTimeout = new Timeout(dismissDelay, () => this.showDismissButton()).start();
-    }
+    this.showDismissButton();
   };
 
-  private readonly handleNonLinearAdEnded = (event: NonLinearAdEvent): void => {
+  private readonly handleNonLinearAdEnded = (event: AdEvent): void => {
     if (!this.pauseAdActive) {
       return;
     }
@@ -226,7 +187,6 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
   };
 
   private readonly hidePauseAdStatus = (): void => {
-    this.clearDismissDelay();
     this.dismissButton.hide();
     this.clickCatcher.hide();
     this.clickThroughUrlOpened = undefined;
@@ -236,11 +196,6 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     this.activePauseAdId = undefined;
   };
 
-  private clearDismissDelay(): void {
-    this.dismissDelayTimeout?.clear();
-    this.dismissDelayTimeout = undefined;
-  }
-
   private showDismissButton(): void {
     this.dismissButton.show();
     if (this.config.focusDismissButtonOnShow) {
@@ -248,30 +203,36 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     }
   }
 
-  private getDismissDelay(event: NonLinearAdEvent): number {
-    const skippableAfter =
-      event.dismissibleAfter ??
-      event.ad?.dismissibleAfter ??
-      event.adBreak?.dismissibleAfter ??
-      event.skippableAfter ??
-      event.ad?.skippableAfter ??
-      event.adBreak?.skippableAfter;
-    if (typeof skippableAfter === 'number' && Number.isFinite(skippableAfter)) {
-      return skippableAfter < 0 ? -1 : skippableAfter * SECONDS_TO_MILLISECONDS;
-    }
+  /**
+   * Applies `apply` to every non-linear subscription this component owns.
+   *
+   * The non-linear ad lifecycle is not part of the Player Web API, so `PlayerEvent` has no member
+   * for these names and `on`/`off` cannot be called without a cast. Routing both through here keeps
+   * the cast in one place and makes it impossible for `release()` to unsubscribe a different set
+   * than `configure()` subscribed.
+   */
+  private eachNonLinearSubscription(
+    apply: (eventType: PlayerEvent, handler: PlayerEventCallback<PlayerEvent>) => void,
+  ): void {
+    const applyAll = (eventTypes: string[], handler: NonLinearAdEventHandler) => {
+      eventTypes.forEach(eventType =>
+        apply(eventType as PlayerEvent, handler as PlayerEventCallback<PlayerEvent>),
+      );
+    };
 
-    return this.config.dismissDelay;
+    applyAll(NON_LINEAR_AD_STARTED_EVENTS, this.handleNonLinearAdStarted);
+    applyAll(NON_LINEAR_AD_ENDED_EVENTS, this.handleNonLinearAdEnded);
   }
 
   /**
-   * Every non-linear ad this UI currently sees is a pause ad: iOS emits these events only for pause
-   * ads, and provides neither `trigger` nor `position` to distinguish them.
+   * Every non-linear ad this UI currently sees is a pause ad: the only producer emits these events
+   * solely for pause ads, and the payload carries nothing that would discriminate one kind from
+   * another.
    *
-   * This stops holding as soon as a second producer emits `nonlinearadstarted` for something that is
-   * not a pause ad, which the Web player will do for its existing `OverlayAdManager` banners. Restore
-   * the `trigger`/`position` check then, against whatever the Player settles on.
+   * This stops holding as soon as a second non-linear format emits the same events. Reintroduce a
+   * discriminator then, against whatever the Player settles on.
    */
-  private isPauseAdEvent(_event: NonLinearAdEvent): boolean {
+  private isPauseAdEvent(_event: AdEvent): boolean {
     return true;
   }
 }
