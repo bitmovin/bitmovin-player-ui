@@ -48,6 +48,10 @@ for (const hostReset of [false, true]) {
 
     await page.locator(CLICK_CATCHER).click();
 
+    expect(
+      await page.locator(CLICK_CATCHER).evaluate(element => document.activeElement === element),
+      'the pointer-only catcher must not take browser focus',
+    ).toBe(false);
     expect(await ui.player.clickThroughCount(), 'a click on the creative must open the click-through').toBe(1);
   });
 

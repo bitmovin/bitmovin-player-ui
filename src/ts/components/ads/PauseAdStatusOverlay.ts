@@ -44,6 +44,7 @@ class PauseAdClickCatcher extends Button<ButtonConfig> {
   protected toDomElement(): DOM {
     const element = super.toDomElement();
     element.attr('aria-hidden', 'true');
+    element.on('mousedown', event => event.preventDefault());
     return element;
   }
 }

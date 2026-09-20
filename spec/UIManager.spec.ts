@@ -435,6 +435,28 @@ describe('UIManager', () => {
     });
   });
 
+  describe('release', () => {
+    it('unsubscribes the source lifecycle listeners registered by the manager', () => {
+      const playerMock = MockHelper.getPlayerMock();
+      const originalOn = playerMock.on.bind(playerMock);
+      const onSpy = jest.fn(originalOn);
+      playerMock.on = onSpy as typeof playerMock.on;
+      const uiManager = new UIManager(playerMock, [{ ui: new UIContainer({ components: [new Container({})] }) }]);
+      const sourceLifecycleRegistrations = onSpy.mock.calls.filter(([eventType]) =>
+        [playerMock.exports.PlayerEvent.SourceLoaded, playerMock.exports.PlayerEvent.SourceUnloaded].includes(
+          eventType,
+        ),
+      );
+
+      uiManager.release();
+
+      expect(sourceLifecycleRegistrations).not.toHaveLength(0);
+      sourceLifecycleRegistrations.forEach(([eventType, callback]) => {
+        expect(playerMock.off).toHaveBeenCalledWith(eventType, callback);
+      });
+    });
+  });
+
   describe('recommendations', () => {
     const createRecommendation = (title: string): RecommendationConfig => ({
       title,

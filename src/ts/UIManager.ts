@@ -569,10 +569,10 @@ export class UIManager {
     });
 
     let isSourceLoaded = player.getSource() != null;
-    player.on(player.exports.PlayerEvent.SourceLoaded, () => {
+    this.managerPlayerWrapper.getPlayer().on(player.exports.PlayerEvent.SourceLoaded, () => {
       isSourceLoaded = true;
     });
-    player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
+    this.managerPlayerWrapper.getPlayer().on(player.exports.PlayerEvent.SourceUnloaded, () => {
       isSourceLoaded = false;
       this.activeNonLinearAdStartedEvent = undefined;
     });
