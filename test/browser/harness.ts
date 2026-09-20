@@ -103,6 +103,15 @@ export interface BrowserPlayerController {
    */
   startPauseAd(options?: PauseAdOptions): Promise<void>;
 
+  /** Ends a pause ad with the native event spelling used by the iOS SDK bridge. */
+  finishPauseAd(id?: string): Promise<void>;
+
+  /** Emits the source-unloaded lifecycle event. */
+  unloadSource(): Promise<void>;
+
+  /** Emits the source-loaded lifecycle event. */
+  loadSource(): Promise<void>;
+
   /** Resizes the player viewport and emits the event that makes the UI resolve its active variant again. */
   resize(width: number): Promise<void>;
 
@@ -270,6 +279,25 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
             },
           });
         }, clickThroughUrl);
+      },
+      finishPauseAd: async (id = 'pause-ad-1') => {
+        await page.evaluate(adId => {
+          (window as unknown as BrowserTestWindow).__fire('onNonLinearAdFinished', {
+            ad: { id: adId },
+          });
+        }, id);
+      },
+      unloadSource: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.SourceUnloaded);
+        });
+      },
+      loadSource: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.SourceLoaded);
+        });
       },
       clickThroughCount: async () => {
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__clickThroughCount || 0);

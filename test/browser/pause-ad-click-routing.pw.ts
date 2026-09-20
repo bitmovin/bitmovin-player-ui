@@ -77,3 +77,43 @@ test('an active pause ad survives the first switch to the small-screen variant',
   await smallScreenClickCatcher.click();
   expect(await ui.player.clickThroughCount(), 'the switched variant should retain the click-through callback').toBe(1);
 });
+
+test('a finished pause ad is not replayed into a newly configured variant', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  await ui.player.finishPauseAd();
+
+  await ui.player.resize(640);
+
+  const smallScreenVariant = page.locator('.bmpui-ui-smallscreen');
+  await expect(smallScreenVariant, 'the small-screen variant should become active').toBeVisible();
+  await expect(smallScreenVariant.locator(CLICK_CATCHER), 'a finished pause ad must not be replayed').toBeHidden();
+});
+
+test('a terminal event for another ad does not clear the pause ad replay state', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  await ui.player.finishPauseAd('other-ad');
+
+  await ui.player.resize(640);
+
+  const smallScreenVariant = page.locator('.bmpui-ui-smallscreen');
+  await expect(smallScreenVariant, 'the small-screen variant should become active').toBeVisible();
+  await expect(
+    smallScreenVariant.locator(CLICK_CATCHER),
+    'an unrelated terminal event must not clear the active pause ad',
+  ).toBeVisible();
+});
+
+test('source unload prevents replaying a pause ad into a newly configured variant', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  await ui.player.unloadSource();
+  await ui.player.loadSource();
+
+  await ui.player.resize(640);
+
+  const smallScreenVariant = page.locator('.bmpui-ui-smallscreen');
+  await expect(smallScreenVariant, 'the small-screen variant should become active').toBeVisible();
+  await expect(smallScreenVariant.locator(CLICK_CATCHER), 'an unloaded pause ad must not be replayed').toBeHidden();
+});
