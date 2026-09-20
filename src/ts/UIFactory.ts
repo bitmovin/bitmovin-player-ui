@@ -646,7 +646,7 @@ export namespace UIFactory {
 
       const playbackToggleOverlay = new PlaybackToggleOverlay();
       const recommendationOverlay = new RecommendationOverlay();
-      const pauseAdStatusOverlay = new PauseAdStatusOverlay({ focusDismissButtonOnShow: true });
+      const pauseAdStatusOverlay = new PauseAdStatusOverlay();
       const uiContainer = new UIContainer({
         components: [
           subtitleOverlay,

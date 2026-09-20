@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - `PauseAdStatusOverlay` to show pause-ad status controls for non-linear ads.
-- TV UI spatial navigation support for the pause-ad dismiss action.
 - Pause-ad creatives that carry a click-through destination are now clickable while the UI is on top of them. The click target covers the whole player, matching linear ads, so clicks beside the creative open the click-through too. The playback controls and the dismiss button keep priority over it, and creatives without a destination let every click through to the UI.
 
 ## [4.21.1] - 2026-09-17

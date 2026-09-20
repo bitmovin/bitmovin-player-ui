@@ -41,6 +41,11 @@ for (const hostReset of [false, true]) {
     const ui = await mountDefaultControlBarUi(page, { hostReset, live: false });
     await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 
+    await expect(
+      page.getByRole('button').and(page.locator(CLICK_CATCHER)),
+      'the pointer-only catcher must stay out of the accessibility tree',
+    ).toHaveCount(0);
+
     await page.locator(CLICK_CATCHER).click();
 
     expect(await ui.player.clickThroughCount(), 'a click on the creative must open the click-through').toBe(1);
@@ -57,3 +62,18 @@ for (const hostReset of [false, true]) {
     expect(await ui.player.clickThroughCount(), 'no destination means no click-through').toBe(0);
   });
 }
+
+test('an active pause ad survives the first switch to the small-screen variant', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  await expect(page.locator(CLICK_CATCHER), 'the main variant should show the active pause ad').toBeVisible();
+
+  await ui.player.resize(640);
+
+  const smallScreenVariant = page.locator('.bmpui-ui-smallscreen');
+  const smallScreenClickCatcher = smallScreenVariant.locator(CLICK_CATCHER);
+  await expect(smallScreenVariant, 'the small-screen variant should become active').toBeVisible();
+  await expect(smallScreenClickCatcher, 'the active pause ad should survive the variant switch').toBeVisible();
+  await smallScreenClickCatcher.click();
+  expect(await ui.player.clickThroughCount(), 'the switched variant should retain the click-through callback').toBe(1);
+});

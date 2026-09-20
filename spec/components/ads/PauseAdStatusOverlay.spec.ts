@@ -1,8 +1,10 @@
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
-import { PauseAdStatusOverlay } from '../../../src/ts/components/ads/PauseAdStatusOverlay';
+import { PauseAdStatusOverlay, PauseAdStatusOverlayConfig } from '../../../src/ts/components/ads/PauseAdStatusOverlay';
 import { Button, ButtonConfig, ButtonStyle } from '../../../src/ts/components/buttons/Button';
+import { Label, LabelConfig } from '../../../src/ts/components/labels/Label';
 import type { DOM } from '../../../src/ts/DOM';
+import { defaultVocabularies, i18n } from '../../../src/ts/localization/i18n';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -17,6 +19,7 @@ describe('PauseAdStatusOverlay', () => {
 
   afterEach(() => {
     jest.useRealTimers();
+    i18n.setConfig({ language: 'en', vocabularies: defaultVocabularies });
   });
 
   it('treats every non-linear ad as a pause ad while it is the only non-linear format', () => {
@@ -27,15 +30,15 @@ describe('PauseAdStatusOverlay', () => {
   });
 
   describe('creative click catcher', () => {
-    it('is not focusable and carries no button semantics', () => {
+    it('is not focusable and is hidden from assistive technology', () => {
       const config = getClickCatcher().getConfig();
 
       expect(config.tabIndex).toBe(-1);
-      expect(config.role).toBeNull();
+      expect(getClickCatcher().getDomElement().attr).toHaveBeenCalledWith('aria-hidden', 'true');
     });
 
     it('stacks below the badge and the dismiss button', () => {
-      const components = pauseAdStatusOverlay.getConfig().components;
+      const components = pauseAdStatusOverlay.getComponents();
 
       expect(components.indexOf(getClickCatcher())).toBeLessThan(components.indexOf(getDismissButton()));
     });
@@ -71,10 +74,10 @@ describe('PauseAdStatusOverlay', () => {
     });
   });
 
-  it('shows pause-ad status with Dismiss available immediately', () => {
+  it('shows pause-ad status with the dismiss action available immediately', () => {
     const dismissButton = getDismissButton();
 
-    expect(dismissButton.getConfig().text).toBe('Dismiss');
+    expect(i18n.performLocalization(dismissButton.getConfig().text)).toBe('Close');
     expect(dismissButton.getConfig().buttonStyle).toBe(ButtonStyle.TextWithTrailingIcon);
     expect(pauseAdStatusOverlay.isHidden()).toBe(true);
     expect(dismissButton.isHidden()).toBe(true);
@@ -86,30 +89,19 @@ describe('PauseAdStatusOverlay', () => {
     expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
   });
 
+  it('localizes the default badge and dismiss text', () => {
+    i18n.setConfig({ language: 'de', vocabularies: defaultVocabularies });
+
+    expect(i18n.performLocalization(getBadgeLabel().getConfig().text)).toBe('Anzeige');
+    expect(i18n.performLocalization(getDismissButton().getConfig().text)).toBe('Schließen');
+  });
+
   it('shows pause-ad status for native non-linear ad started events', () => {
     playerMock.eventEmitter.fireNativeNonLinearAdStartedEvent();
 
     expect(pauseAdStatusOverlay.isShown()).toBe(true);
     expect(getDismissButton().isShown()).toBe(true);
     expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
-  });
-
-  it('focuses Dismiss when configured', () => {
-    setupOverlay({ focusDismissButtonOnShow: true });
-    const dismissDomElement = MockHelper.generateDOMMock();
-    const dismissElement = { focus: jest.fn() } as unknown as HTMLElement;
-    const focusSpy = jest.spyOn(dismissElement, 'focus');
-    dismissDomElement.get.mockReturnValue(dismissElement);
-    const getDomElementSpy = jest.spyOn(getDismissButton(), 'getDomElement').mockReturnValue(dismissDomElement);
-
-    expect(focusSpy).not.toHaveBeenCalled();
-
-    firePauseAdStarted();
-
-    expect(getDismissButton().isShown()).toBe(true);
-    expect(pauseAdStatusOverlay.getConfig().focusDismissButtonOnShow).toBe(true);
-    expect(getDomElementSpy).toHaveBeenCalled();
-    expect(focusSpy).toHaveBeenCalled();
   });
 
   it('hides the pause-ad status and skips the ad when Dismiss is clicked', () => {
@@ -143,6 +135,19 @@ describe('PauseAdStatusOverlay', () => {
     expect(uiContainerElementMock.removeClass).toHaveBeenCalledWith(getPauseAdActiveClass());
   });
 
+  it.each([
+    ['finished', () => playerMock.eventEmitter.fireNativeNonLinearAdFinishedEvent({}, { id: 'pause-ad' })],
+    ['skipped', () => playerMock.eventEmitter.fireNativeNonLinearAdSkippedEvent({}, { id: 'pause-ad' })],
+  ])('hides the pause-ad status on native non-linear ad %s events', (_eventName, fireEvent) => {
+    firePauseAdStarted({ id: 'pause-ad' });
+
+    fireEvent();
+
+    expect(pauseAdStatusOverlay.isHidden()).toBe(true);
+    expect(getDismissButton().isHidden()).toBe(true);
+    expect(uiContainerElementMock.removeClass).toHaveBeenCalledWith(getPauseAdActiveClass());
+  });
+
   it('ignores a terminal event for a different non-linear ad', () => {
     firePauseAdStarted({ id: 'pause-ad' });
 
@@ -170,7 +175,7 @@ describe('PauseAdStatusOverlay', () => {
   });
 });
 
-function setupOverlay(config: { focusDismissButtonOnShow?: boolean } = {}): void {
+function setupOverlay(config: PauseAdStatusOverlayConfig = {}): void {
   playerMock = MockHelper.getPlayerMock();
   (playerMock as any).ads = {
     skip: jest.fn(),
@@ -190,11 +195,15 @@ function firePauseAdStarted(adData: object = {}): void {
 }
 
 function getClickCatcher(): Button<ButtonConfig> {
-  return pauseAdStatusOverlay.getConfig().components[0] as Button<ButtonConfig>;
+  return pauseAdStatusOverlay.getComponents()[0] as Button<ButtonConfig>;
+}
+
+function getBadgeLabel(): Label<LabelConfig> {
+  return pauseAdStatusOverlay.getComponents()[1] as Label<LabelConfig>;
 }
 
 function getDismissButton(): Button<ButtonConfig> {
-  return pauseAdStatusOverlay.getConfig().components[2] as Button<ButtonConfig>;
+  return pauseAdStatusOverlay.getComponents()[2] as Button<ButtonConfig>;
 }
 
 function getPauseAdActiveClass(): string {

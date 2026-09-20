@@ -103,6 +103,9 @@ export interface BrowserPlayerController {
    */
   startPauseAd(options?: PauseAdOptions): Promise<void>;
 
+  /** Resizes the player viewport and emits the event that makes the UI resolve its active variant again. */
+  resize(width: number): Promise<void>;
+
   /** How often the active pause ad's click-through has been opened since it started. */
   clickThroughCount(): Promise<number>;
 }
@@ -270,6 +273,15 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       },
       clickThroughCount: async () => {
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__clickThroughCount || 0);
+      },
+      resize: async (width: number) => {
+        await page.setViewportSize({ width, height: 720 });
+        await page.evaluate(playerWidth => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          const PlayerEvent = browserWindow.bitmovin.player.PlayerEvent;
+          document.getElementById('player')!.style.width = `${playerWidth}px`;
+          browserWindow.__fire(PlayerEvent.PlayerResized, { width: `${playerWidth}px`, height: '720px' });
+        }, width);
       },
       tick: async (times = 1) => {
         await page.evaluate(count => {

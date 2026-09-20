@@ -1,20 +1,13 @@
 import { AdEvent, PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmovin-player';
 import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
-import { LocalizableText } from '../../localization/i18n';
+import { i18n, LocalizableText } from '../../localization/i18n';
+import { NON_LINEAR_AD_ENDED_EVENTS, NON_LINEAR_AD_STARTED_EVENTS } from '../../utils/NonLinearAdEvents';
 import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
+import { ComponentConfig } from '../Component';
 import { Container, ContainerConfig } from '../Container';
 import { Label, LabelConfig } from '../labels/Label';
 
-// The producers spell these events differently: the web-style name and the name the mobile SDKs
-// emit, which reaches the UI unmapped.
-const NON_LINEAR_AD_STARTED_EVENTS = ['nonlinearadstarted', 'onNonLinearAdStarted'];
-const NON_LINEAR_AD_ENDED_EVENTS = [
-  'nonlinearadfinished',
-  'onNonLinearAdFinished',
-  'nonlinearadskipped',
-  'onNonLinearAdSkipped',
-];
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
 
 type NonLinearAdEventHandler = (event: AdEvent) => void;
@@ -47,6 +40,12 @@ class PauseAdClickCatcher extends Button<ButtonConfig> {
       this.config,
     );
   }
+
+  protected toDomElement(): DOM {
+    const element = super.toDomElement();
+    element.attr('aria-hidden', 'true');
+    return element;
+  }
 }
 
 /**
@@ -54,7 +53,7 @@ class PauseAdClickCatcher extends Button<ButtonConfig> {
  *
  * @category Configs
  */
-export interface PauseAdStatusOverlayConfig extends ContainerConfig {
+export interface PauseAdStatusOverlayConfig extends ComponentConfig {
   /**
    * Text displayed while a pause ad is active.
    */
@@ -63,10 +62,6 @@ export interface PauseAdStatusOverlayConfig extends ContainerConfig {
    * Text displayed on the dismiss button.
    */
   dismissText?: LocalizableText;
-  /**
-   * Focuses the dismiss button when the pause ad appears.
-   */
-  focusDismissButtonOnShow?: boolean;
 }
 
 /**
@@ -90,9 +85,8 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     this.config = this.mergeConfig(
       config,
       {
-        badgeText: 'Ad',
-        dismissText: 'Dismiss',
-        focusDismissButtonOnShow: false,
+        badgeText: i18n.getLocalizer('ad'),
+        dismissText: i18n.getLocalizer('close'),
         hidden: true,
         cssClass: 'ui-pause-ad-status-overlay',
       },
@@ -115,7 +109,7 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
     // The catcher comes first so the badge, the dismiss button and the control bar all stack above
     // it and keep receiving their own clicks.
-    this.config.components = [this.clickCatcher, this.badgeLabel, this.dismissButton];
+    (this.config as ContainerConfig).components = [this.clickCatcher, this.badgeLabel, this.dismissButton];
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -167,7 +161,7 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
       this.clickCatcher.show();
     }
 
-    this.showDismissButton();
+    this.dismissButton.show();
   };
 
   private readonly handleNonLinearAdEnded = (event: AdEvent): void => {
@@ -196,13 +190,6 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     this.activePauseAdId = undefined;
   };
 
-  private showDismissButton(): void {
-    this.dismissButton.show();
-    if (this.config.focusDismissButtonOnShow) {
-      this.dismissButton.getDomElement().get(0)?.focus();
-    }
-  }
-
   /**
    * Applies `apply` to every non-linear subscription this component owns.
    *
@@ -214,10 +201,8 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
   private eachNonLinearSubscription(
     apply: (eventType: PlayerEvent, handler: PlayerEventCallback<PlayerEvent>) => void,
   ): void {
-    const applyAll = (eventTypes: string[], handler: NonLinearAdEventHandler) => {
-      eventTypes.forEach(eventType =>
-        apply(eventType as PlayerEvent, handler as PlayerEventCallback<PlayerEvent>),
-      );
+    const applyAll = (eventTypes: ReadonlyArray<string>, handler: NonLinearAdEventHandler) => {
+      eventTypes.forEach(eventType => apply(eventType as PlayerEvent, handler as PlayerEventCallback<PlayerEvent>));
     };
 
     applyAll(NON_LINEAR_AD_STARTED_EVENTS, this.handleNonLinearAdStarted);
