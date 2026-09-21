@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- WebVTT subtitles and closed captions were rendered flush against the edges of the video instead of within the title-safe area, so long cues ran edge to edge and sat directly on the bottom of the picture. Most visible on narrow players such as phones held in portrait.
+
 ## [4.21.1] - 2026-09-17
 
 ### Fixed
