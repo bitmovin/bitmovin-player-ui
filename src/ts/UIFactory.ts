@@ -47,6 +47,7 @@ import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/lists/SubtitleListBox';
 import { AudioTrackListBox } from './components/lists/AudioTrackListBox';
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
+import { PauseAdNavigationGroup } from './spatialnavigation/PauseAdNavigationGroup';
 import { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
 import { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelNavigationGroup';
 import { EcoModeContainer } from './components/EcoModeContainer';
@@ -675,7 +676,13 @@ export namespace UIFactory {
           playbackToggleOverlay,
           seekBar,
           new FocusableContainer(bottomControlBar, playbackToggleButton),
+        ),
+        // While a pause ad shows, the centered playback control is suppressed and therefore left out
+        // of this group; the seek bar and the bottom control bar stay reachable by remote.
+        new PauseAdNavigationGroup(
           pauseAdStatusOverlay,
+          seekBar,
+          new FocusableContainer(bottomControlBar, playbackToggleButton),
         ),
         new SettingsPanelNavigationGroup(settingsPanel, { closeOnSelect: false }),
         new SettingsPanelNavigationGroup(subtitleListBox),

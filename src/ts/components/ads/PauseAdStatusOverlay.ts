@@ -66,8 +66,12 @@ export interface PauseAdStatusOverlayConfig extends ComponentConfig {
  * @category Components
  */
 export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> {
+  /**
+   * Button that ends the pause ad. Exposed so a navigation group can make it the first focus target
+   * for remote-controlled platforms.
+   */
+  public readonly dismissButton: Button<ButtonConfig>;
   private readonly clickCatcher: PauseAdClickCatcher;
-  private readonly dismissButton: Button<ButtonConfig>;
   private uiContainerElement?: DOM;
   private activePauseAd?: Ad;
 
@@ -136,18 +140,21 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
       return;
     }
 
-    this.dismissButton.hide();
-    this.clickCatcher.hide();
-    this.show();
-    this.uiContainerElement?.addClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
     this.activePauseAd = event.ad;
 
     // Without a destination, clicks continue to reach the controls below.
     if (event.ad.clickThroughUrl) {
       this.clickCatcher.show();
+    } else {
+      this.clickCatcher.hide();
     }
 
+    // Both controls have to be in their final state before the overlay becomes visible: showing the
+    // overlay activates the pause-ad navigation group, which focuses the first component it finds
+    // focusable at that moment.
     this.dismissButton.show();
+    this.show();
+    this.uiContainerElement?.addClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
   };
 
   private readonly handleNonLinearAdEnded = (event: AdEvent): void => {
