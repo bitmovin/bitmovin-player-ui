@@ -39,12 +39,13 @@ test('a pause ad moves remote focus to Dismiss and keeps the centered playback c
   await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 
   const dismiss = page.getByRole('button', { name: 'Close' });
+  const settings = page.getByRole('button', { name: 'Settings' });
   await expect(dismiss, 'the dismiss button should receive focus when the pause ad starts').toBeFocused();
 
-  // Walk the group with the remote. The centered playback control is suppressed, so no amount of
-  // navigating may land on it, while the seek bar and the settings button must both be reachable.
+  // Walk from the dismiss button through the controls to Settings. The centered playback control
+  // is suppressed, so it must not become part of this path.
   const visited: string[] = [];
-  for (const key of ['ArrowDown', 'ArrowDown', 'ArrowRight', 'ArrowRight', 'ArrowUp', 'ArrowUp']) {
+  for (const key of ['ArrowDown', 'ArrowDown', 'ArrowRight']) {
     await page.keyboard.press(key);
     visited.push(await focusedControlName(page));
   }
@@ -57,6 +58,47 @@ test('a pause ad moves remote focus to Dismiss and keeps the centered playback c
     'the centered playback control must not hold focus during a pause ad',
   ).not.toBeFocused();
   expect(visited.join(' '), 'the seek bar must be reachable by remote during a pause ad').toContain('bmpui-ui-seekbar');
+  expect(visited.join(' '), 'settings must be reachable by remote during a pause ad').toContain(
+    'bmpui-ui-settingstogglebutton',
+  );
+  await expect(settings, 'the remote should finish on Settings').toBeFocused();
+
+  await page.keyboard.press('Enter');
+
+  await expect(
+    page.locator('.bmpui-ui-settings-panel:not(.bmpui-ui-listbox)'),
+    'Settings must open during a pause ad',
+  ).toBeVisible();
+});
+
+test('a pause ad restores the focused settings item after temporarily taking remote focus', async ({ page }) => {
+  const ui = await mountTvUi(page, { live: false });
+  const settings = page.getByRole('button', { name: 'Settings' });
+  const settingsPanel = page.locator('.bmpui-ui-settings-panel:not(.bmpui-ui-listbox)');
+
+  for (const key of ['ArrowDown', 'ArrowDown', 'ArrowRight']) {
+    await page.keyboard.press(key);
+  }
+  await expect(settings, 'the remote should reach Settings before the ad starts').toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(settingsPanel, 'Settings should be open before the ad starts').toBeVisible();
+
+  // Open playback speed and focus an option. If restoration regresses, focus returns to the back button.
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('ArrowDown');
+  const focusedSettingsItemId = await page.evaluate(() => document.activeElement?.id);
+  expect(focusedSettingsItemId, 'a playback-speed option should be focused').toBeTruthy();
+  const focusedSettingsItem = page.locator(`#${focusedSettingsItemId}`);
+  await expect(focusedSettingsItem).toHaveClass(/bmpui-ui-settings-panel-item-select-option/);
+
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  await expect(page.getByRole('button', { name: 'Close' }), 'the pause ad should temporarily take focus').toBeFocused();
+
+  await ui.player.finishPauseAd();
+
+  await expect(settingsPanel, 'the open Settings panel must stay open').toBeVisible();
+  await expect(focusedSettingsItem, 'focus must return to the settings item the viewer left').toBeFocused();
 });
 
 test('dismissing a pause ad by remote ends it and returns focus where it was', async ({ page }) => {
