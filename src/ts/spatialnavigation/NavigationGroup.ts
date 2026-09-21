@@ -294,10 +294,13 @@ export class NavigationGroup {
    * Enable navigation group
    *
    * Sets active element to either element that was active before disable, or first element of tracked elements.
-   * If it is settings panel, it will always focus first element in the list.
+   * A settings panel that was closed focuses its first element when it is reopened.
    */
   public enable(): void {
-    if (this.activeComponentBeforeDisable && !isSettingsPanel(this.container)) {
+    const restorePreviousComponent =
+      this.activeComponentBeforeDisable && (!isSettingsPanel(this.container) || this.container.isShown());
+
+    if (restorePreviousComponent) {
       this.focusComponent(this.activeComponentBeforeDisable);
       this.activeComponentBeforeDisable = undefined;
     } else {

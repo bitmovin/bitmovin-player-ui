@@ -65,6 +65,36 @@ describe('NavigationGroup', () => {
       rootNavigationGroup.enable();
       expect(playbackToggleButtonHtmlMock.focus).toHaveBeenCalled();
     });
+
+    it('should restore the last active component when a visible settings panel is temporarily disabled', () => {
+      const subtitleToggleButtonHtmlMock = getFirstDomElement(subtitleToggleButtonMock);
+      jest.spyOn(TypeGuards, 'isSettingsPanel').mockReturnValue(true);
+      rootContainerMock.isShown.mockReturnValue(true);
+      jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockImplementation(component => {
+        if (component === playbackToggleButtonMock) {
+          return playbackToggleButtonHtmlMock;
+        }
+        if (component === subtitleToggleButtonMock) {
+          return subtitleToggleButtonHtmlMock;
+        }
+        return undefined;
+      });
+      rootNavigationGroup['activeComponentBeforeDisable'] = subtitleToggleButtonMock;
+
+      rootNavigationGroup.enable();
+
+      expect(subtitleToggleButtonHtmlMock.focus).toHaveBeenCalled();
+    });
+
+    it('should focus the first component when a hidden settings panel is reopened', () => {
+      jest.spyOn(TypeGuards, 'isSettingsPanel').mockReturnValue(true);
+      rootContainerMock.isShown.mockReturnValue(false);
+      rootNavigationGroup['activeComponentBeforeDisable'] = subtitleToggleButtonMock;
+
+      rootNavigationGroup.enable();
+
+      expect(playbackToggleButtonHtmlMock.focus).toHaveBeenCalled();
+    });
   });
 
   describe('disable', () => {
