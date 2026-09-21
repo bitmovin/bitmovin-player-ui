@@ -16,6 +16,7 @@ interface BrowserTestWindow extends Window {
       UIFactory: {
         buildUI(player: object, config: object): unknown;
         buildSmallScreenUI(player: object, config: object): unknown;
+        buildTvUI(player: object, config: object): unknown;
       };
     };
   };
@@ -24,6 +25,8 @@ interface BrowserTestWindow extends Window {
   __ui?: unknown;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
+  /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
+  __activePauseAdId?: string;
 }
 
 const DIST = path.resolve(__dirname, '../../dist');
@@ -75,7 +78,12 @@ export interface MountOptions {
   /** Live stream (`true`) or VOD. */
   live?: boolean;
   /** UI factory to exercise. Add another value only when a browser scenario needs it. */
-  factory?: 'default' | 'smallScreen';
+  factory?: 'default' | 'smallScreen' | 'tv';
+  /**
+   * Source metadata the UI renders in the title bar. Without it the metadata labels stay empty and
+   * occupy no space, so a scenario about title-bar layout has to supply it.
+   */
+  metadata?: { title?: string; description?: string };
 }
 
 export interface PauseAdOptions {
@@ -100,7 +108,7 @@ export interface BrowserPlayerController {
    *
    * The ad carries the producer-assigned `clickThroughUrlOpened` callback the UI invokes when the
    * user clicks the creative; {@link BrowserPlayerController.clickThroughCount} reports how often it
-   * ran.
+   * ran. The stub also remembers the ad as active, so `player.ads.skip()` ends this ad.
    */
   startPauseAd(options?: PauseAdOptions): Promise<void>;
 
@@ -131,7 +139,7 @@ export interface MountedUi {
  * what makes these tests fast and deterministic, and it is why they can assert on geometry at all.
  */
 export async function mountUi(page: Page, options: MountOptions = {}): Promise<MountedUi> {
-  const { hostReset = false, live = true, factory = 'default' } = options;
+  const { hostReset = false, live = true, factory = 'default', metadata = {} } = options;
 
   await page.setContent(`<!doctype html>
     <html><head><meta charset="utf-8">${
@@ -150,7 +158,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory }) => {
+    ({ isLive, uiFactory, uiMetadata }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -218,7 +226,18 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         getAudioBufferLength: () => 0,
         getThumbnail: (): null => null,
         subtitles: { list: (): never[] => [] },
-        ads: { isLinearAdActive: () => false, getActiveAd: (): null => null },
+        ads: {
+          isLinearAdActive: () => false,
+          getActiveAd: (): null => null,
+          // The real player ends the active ad, which is what the pause-ad dismiss button relies
+          // on: it calls `ads.skip()` and expects the ad's terminal event to follow.
+          skip: () => {
+            const activeAdId = browserWindow.__activePauseAdId;
+            if (activeAdId) {
+              fire('onNonLinearAdFinished', { ad: { id: activeAdId } });
+            }
+          },
+        },
         on: (event: string, cb: PlayerEventHandler) => {
           (handlers[event] = handlers[event] || []).push(cb);
         },
@@ -247,6 +266,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         // Auto-hide would leave the control bar at opacity 0. It stays measurable either way, but
         // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
         componentConfigOverrides: { UIContainer: { hideDelay: -1 } },
+        metadata: uiMetadata,
       };
       switch (uiFactory) {
         case 'default':
@@ -255,13 +275,16 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         case 'smallScreen':
           browserWindow.__ui = browserWindow.bitmovin.playerui.UIFactory.buildSmallScreenUI(player, uiConfig);
           break;
+        case 'tv':
+          browserWindow.__ui = browserWindow.bitmovin.playerui.UIFactory.buildTvUI(player, uiConfig);
+          break;
         default: {
           const unsupportedFactory: never = uiFactory;
           throw new Error(`unsupported UI factory: ${String(unsupportedFactory)}`);
         }
       }
     },
-    { isLive: live, uiFactory: factory },
+    { isLive: live, uiFactory: factory, uiMetadata: metadata },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);
@@ -272,6 +295,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         await page.evaluate(url => {
           const browserWindow = window as unknown as BrowserTestWindow;
           browserWindow.__clickThroughCount = 0;
+          browserWindow.__activePauseAdId = 'pause-ad-1';
           // Exercise the alternate event name because the UI supports both spellings.
           browserWindow.__fire('onNonLinearAdStarted', {
             ad: {
@@ -286,9 +310,12 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       },
       finishPauseAd: async (id = 'pause-ad-1') => {
         await page.evaluate(adId => {
-          (window as unknown as BrowserTestWindow).__fire('onNonLinearAdFinished', {
-            ad: { id: adId },
-          });
+          const browserWindow = window as unknown as BrowserTestWindow;
+          // A terminal event for a different ad leaves this one active, exactly as it does in the UI.
+          if (browserWindow.__activePauseAdId === adId) {
+            browserWindow.__activePauseAdId = undefined;
+          }
+          browserWindow.__fire('onNonLinearAdFinished', { ad: { id: adId } });
         }, id);
       },
       unloadSource: async () => {
