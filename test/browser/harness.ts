@@ -79,6 +79,8 @@ export interface MountOptions {
   live?: boolean;
   /** UI factory to exercise. Add another value only when a browser scenario needs it. */
   factory?: 'default' | 'smallScreen' | 'tv';
+  /** Use a mobile user agent so the UI factory selects touch controls. */
+  mobile?: boolean;
   /**
    * Source metadata the UI renders in the title bar. Without it the metadata labels stay empty and
    * occupy no space, so a scenario about title-bar layout has to supply it.
@@ -142,7 +144,7 @@ export interface MountedUi {
  * what makes these tests fast and deterministic, and it is why they can assert on geometry at all.
  */
 export async function mountUi(page: Page, options: MountOptions = {}): Promise<MountedUi> {
-  const { hostReset = false, live = true, factory = 'default', metadata = {} } = options;
+  const { hostReset = false, live = true, factory = 'default', metadata = {}, mobile = false } = options;
 
   await page.setContent(`<!doctype html>
     <html><head><meta charset="utf-8">${
@@ -153,6 +155,13 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
            positioned ancestor it sizes against the viewport instead of the player. -->
       <div id="player" style="position:relative;width:1000px;height:562px;background:#000"></div>
     </body></html>`);
+
+  if (mobile) {
+    const mobileUserAgent = `${await page.evaluate(() => navigator.userAgent)} Mobi`;
+    await page.evaluate(userAgent => {
+      Object.defineProperty(navigator, 'userAgent', { configurable: true, value: userAgent });
+    }, mobileUserAgent);
+  }
 
   // The player bundle is loaded only for its exported enums (PlayerEvent, ViewMode). No player is
   // instantiated; the UI is driven by the stub below.

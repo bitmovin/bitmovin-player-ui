@@ -10,7 +10,7 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   // Only the large centered playback control is suppressed. It would cover the creative, while
   // every other control stays visible and usable.
   .#{$prefix}-ui-playbacktoggle-overlay,
-  .#{$prefix}-ui-touch-control-overlay {
+  .#{$prefix}-ui-touch-control-overlay .#{$prefix}-ui-smallcenteredplaybacktogglebutton {
     display: none;
   }
 
