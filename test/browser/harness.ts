@@ -20,6 +20,7 @@ interface BrowserTestWindow extends Window {
     };
   };
   __fire(event: string, data?: object): void;
+  __setSourceLoaded(sourceLoaded: boolean): void;
   __ui?: unknown;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
@@ -95,15 +96,15 @@ export interface BrowserPlayerController {
   tick(times?: number): Promise<void>;
 
   /**
-   * Starts a non-linear pause ad, the way the iOS SDK bridge reports one.
+   * Starts a non-linear pause ad using the alternate supported event name.
    *
    * The ad carries the producer-assigned `clickThroughUrlOpened` callback the UI invokes when the
    * user clicks the creative; {@link BrowserPlayerController.clickThroughCount} reports how often it
-   * ran. The dismiss delay is switched off, so no scenario depends on a timer.
+   * ran.
    */
   startPauseAd(options?: PauseAdOptions): Promise<void>;
 
-  /** Ends a pause ad with the native event spelling used by the iOS SDK bridge. */
+  /** Ends a pause ad using the alternate supported event name. */
   finishPauseAd(id?: string): Promise<void>;
 
   /** Emits the source-unloaded lifecycle event. */
@@ -164,6 +165,10 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       browserWindow.__fire = fire;
 
       let playing = true;
+      let sourceLoaded = true;
+      browserWindow.__setSourceLoaded = loaded => {
+        sourceLoaded = loaded;
+      };
 
       // `PlayerWrapper` copies the player's API by enumerating property names, so a Proxy `get`
       // trap is not enough: the stub has to really own every key. Take the surface from the real
@@ -184,7 +189,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         exports: browserWindow.bitmovin.player,
         getContainer: () => container,
         getConfig: () => ({}),
-        getSource: () => ({}),
+        getSource: () => (sourceLoaded ? {} : null),
         isLive: () => isLive,
         getDuration: () => (isLive ? Infinity : 600),
         getCurrentTime: () => 0,
@@ -267,8 +272,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         await page.evaluate(url => {
           const browserWindow = window as unknown as BrowserTestWindow;
           browserWindow.__clickThroughCount = 0;
-          // The native event name, not the web one: the iOS bridge forwards `onNonLinearAdStarted`
-          // unmapped, and the UI subscribes to both spellings.
+          // Exercise the alternate event name because the UI supports both spellings.
           browserWindow.__fire('onNonLinearAdStarted', {
             ad: {
               id: 'pause-ad-1',
@@ -290,12 +294,14 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       unloadSource: async () => {
         await page.evaluate(() => {
           const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__setSourceLoaded(false);
           browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.SourceUnloaded);
         });
       },
       loadSource: async () => {
         await page.evaluate(() => {
           const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__setSourceLoaded(true);
           browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.SourceLoaded);
         });
       },

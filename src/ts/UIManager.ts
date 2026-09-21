@@ -549,8 +549,7 @@ export class UIManager {
 
     let adStartedEvent: AdEvent = null; // keep the event stored here during ad playback
 
-    // Non-linear pause ads are not exposed by an active-ad getter. Keep the start event so a UI variant that is
-    // configured after presentation began can initialize itself from the same payload and callback.
+    // Save the start event so a lazily created UI variant can initialize while the pause ad is active.
     const updateActiveNonLinearAd = (event: AdEvent) => {
       if (NON_LINEAR_AD_STARTED_EVENTS.indexOf(event.type) !== -1) {
         this.activeNonLinearAdStartedEvent = event;
@@ -563,16 +562,14 @@ export class UIManager {
       }
     };
     NON_LINEAR_AD_EVENTS.forEach(eventType => {
-      this.managerPlayerWrapper
-        .getPlayer()
-        .on(eventType as PlayerEvent, updateActiveNonLinearAd as PlayerEventCallback<PlayerEvent>);
+      wrappedPlayer.on(eventType as PlayerEvent, updateActiveNonLinearAd as PlayerEventCallback<PlayerEvent>);
     });
 
     let isSourceLoaded = player.getSource() != null;
-    this.managerPlayerWrapper.getPlayer().on(player.exports.PlayerEvent.SourceLoaded, () => {
+    wrappedPlayer.on(player.exports.PlayerEvent.SourceLoaded, () => {
       isSourceLoaded = true;
     });
-    this.managerPlayerWrapper.getPlayer().on(player.exports.PlayerEvent.SourceUnloaded, () => {
+    wrappedPlayer.on(player.exports.PlayerEvent.SourceUnloaded, () => {
       isSourceLoaded = false;
       this.activeNonLinearAdStartedEvent = undefined;
     });
