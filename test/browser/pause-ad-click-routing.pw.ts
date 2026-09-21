@@ -2,9 +2,8 @@ import { expect, test } from './harness';
 import { mountDefaultControlBarUi } from './helpers/control-bar';
 
 /**
- * Pause-ad creatives are rendered natively, below the web UI, which hit-tests at every point. The UI
- * therefore carries a full-bleed click catcher that routes a click back to the ad, stacked *under*
- * the controls so they keep their own hit targets.
+ * Pause-ad creatives are rendered below the web UI. The UI therefore covers the player with a click
+ * target that routes clicks back to the ad while remaining below the visible controls.
  *
  * That ordering is a property of the composed DOM and the stylesheet, so jsdom cannot observe it: a
  * Jest spec can only assert the component order, never that a click at a given point reaches the
@@ -29,8 +28,7 @@ for (const hostReset of [false, true]) {
     await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
     await expect(page.locator(CLICK_CATCHER), 'a creative with a destination must be clickable').toBeVisible();
 
-    // Playwright's hit-target check is half the assertion: if the catcher stacked above the control
-    // bar, the click would be intercepted here instead of reaching the button.
+    // Playwright fails this click if the pause-ad target covers the control bar.
     await controls.getByRole('button', { name: 'Play', exact: true }).click();
 
     await expect(controls.getByRole('button', { name: 'Pause' }), 'the control must still work').toBeVisible();

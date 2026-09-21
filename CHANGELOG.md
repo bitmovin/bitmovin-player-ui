@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `PauseAdStatusOverlay` to show pause-ad status controls for non-linear ads.
+- `PauseAdStatusOverlay` to show pause-ad status controls in the default, small-screen, and TV layouts. Its badge and dismiss text can be customized through `PauseAdStatusOverlayConfig` or `UIConfig.componentConfigOverrides`.
 - Pause-ad creatives that carry a click-through destination are now clickable while the UI is on top of them. The click target covers the whole player, matching linear ads, so clicks beside the creative open the click-through too. The playback controls and the dismiss button keep priority over it, and creatives without a destination let every click through to the UI.
 
 ## [4.21.1] - 2026-09-17

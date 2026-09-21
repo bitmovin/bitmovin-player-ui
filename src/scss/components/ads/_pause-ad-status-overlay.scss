@@ -25,11 +25,7 @@
   }
 }
 
-// Covers the natively rendered creative. It sits first inside the overlay, so the badge, the dismiss
-// button and the control bar all stack above it and keep their own hit targets.
-//
-// Like `ui-clickoverlay` for linear ads, this covers the whole player rather than just the
-// creative, so letterbox clicks open the click-through as well.
+// Covers the player while remaining below the visible controls.
 .#{$prefix}-ui-pause-ad-click-catcher {
   @include layout-cover;
   @include hidden;
