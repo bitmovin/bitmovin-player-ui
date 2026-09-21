@@ -1,14 +1,23 @@
 @import '../../variables';
 @import '../../mixins';
 
+// Vertical space the pause status row occupies: its top inset, one line of text and its own
+// vertical padding. Expressed in the status row's own font size rather than in `em`, so it does not
+// change meaning when applied to an element with a different font size.
+$pause-ad-status-row-height: calc(#{$font-size} * 3);
+
 .#{$prefix}-ui-uicontainer.#{$prefix}-pause-ad-active {
+  // Only the large centered playback control is suppressed. It would cover the creative, while
+  // every other control stays visible and usable.
   .#{$prefix}-ui-playbacktoggle-overlay,
-  .#{$prefix}-ui-touch-control-overlay,
-  .#{$prefix}-controlbar-top,
-  .#{$prefix}-ui-titlebar .#{$prefix}-titlebar-row,
-  .#{$prefix}-label-metadata-title,
-  .#{$prefix}-label-metadata-description {
+  .#{$prefix}-ui-touch-control-overlay {
     display: none;
+  }
+
+  // The pause status row owns the top edge, so title-bar content and its actions move below it
+  // instead of sharing the corners with the badge and the dismiss button.
+  .#{$prefix}-ui-titlebar > .#{$prefix}-container-wrapper {
+    margin-top: $pause-ad-status-row-height;
   }
 }
 
