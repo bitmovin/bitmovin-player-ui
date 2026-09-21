@@ -1,4 +1,4 @@
-import { AdEvent, PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmovin-player';
+import { Ad, AdEvent, PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmovin-player';
 import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
 import { i18n, LocalizableText } from '../../localization/i18n';
@@ -10,18 +10,9 @@ import { Label, LabelConfig } from '../labels/Label';
 
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
 
-type NonLinearAdEventHandler = (event: AdEvent) => void;
-
 /**
- * Full-bleed click target for the natively rendered pause-ad creative.
- *
- * The creative is drawn below the UI, which hit-tests at every point, so a tap on it has to
- * originate here and be routed back to the ad. It carries no button semantics and is not focusable:
- * it exists for pointer input only, and the controls stacked above it keep their own hit targets.
- *
- * It covers the whole player, so clicks in the letterbox area outside the creative open the
- * click-through too. That matches {@link AdClickOverlay} for linear ads, and is deliberately more
- * permissive than the iOS System UI, which hit-tests only the creative's rendered rectangle.
+ * Player-sized click target for a pause ad rendered below the UI.
+ * It supports pointer input only; visible controls remain above it and receive their own clicks.
  */
 class PauseAdClickCatcher extends Button<ButtonConfig> {
   constructor(config: ButtonConfig = {}) {
@@ -39,6 +30,10 @@ class PauseAdClickCatcher extends Button<ButtonConfig> {
       },
       this.config,
     );
+
+    // Base Button overrides must not turn this pointer-only target into a focusable control.
+    this.config.role = null;
+    this.config.tabIndex = -1;
   }
 
   protected toDomElement(): DOM {
@@ -71,14 +66,10 @@ export interface PauseAdStatusOverlayConfig extends ComponentConfig {
  * @category Components
  */
 export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> {
-  private readonly badgeLabel: Label<LabelConfig>;
   private readonly clickCatcher: PauseAdClickCatcher;
   private readonly dismissButton: Button<ButtonConfig>;
-  private clickThroughUrlOpened?: () => void;
-  private player?: PlayerAPI;
   private uiContainerElement?: DOM;
-  private pauseAdActive = false;
-  private activePauseAdId?: string;
+  private activePauseAd?: Ad;
 
   constructor(config: PauseAdStatusOverlayConfig = {}) {
     super(config);
@@ -94,7 +85,7 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
       this.config,
     );
 
-    this.badgeLabel = new Label({
+    const badgeLabel = new Label({
       cssClass: 'ui-pause-ad-status-badge',
       text: this.config.badgeText,
     });
@@ -108,21 +99,24 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
       acceptsTouchWithUiHidden: true,
     });
 
-    // The catcher comes first so the badge, the dismiss button and the control bar all stack above
-    // it and keep receiving their own clicks.
-    (this.config as ContainerConfig).components = [this.clickCatcher, this.badgeLabel, this.dismissButton];
+    // The catcher comes first so visible controls remain above it.
+    (this.config as ContainerConfig).components = [this.clickCatcher, badgeLabel, this.dismissButton];
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
-    this.player = player;
     this.uiContainerElement = uimanager.getUI().getDomElement();
 
-    this.eachNonLinearSubscription((eventType, handler) => player.on(eventType, handler));
+    NON_LINEAR_AD_STARTED_EVENTS.forEach(eventType => {
+      player.on(eventType as PlayerEvent, this.handleNonLinearAdStarted as PlayerEventCallback<PlayerEvent>);
+    });
+    NON_LINEAR_AD_ENDED_EVENTS.forEach(eventType => {
+      player.on(eventType as PlayerEvent, this.handleNonLinearAdEnded as PlayerEventCallback<PlayerEvent>);
+    });
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
 
     this.clickCatcher.onClick.subscribe(() => {
-      this.clickThroughUrlOpened?.();
+      this.activePauseAd?.clickThroughUrlOpened?.();
     });
 
     this.dismissButton.onClick.subscribe(() => {
@@ -133,18 +127,12 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
   release(): void {
     this.hidePauseAdStatus();
-    const player = this.player;
-    if (player) {
-      this.eachNonLinearSubscription((eventType, handler) => player.off(eventType, handler));
-      player.off(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
-    }
-    this.player = undefined;
     this.uiContainerElement = undefined;
     super.release();
   }
 
   private readonly handleNonLinearAdStarted = (event: AdEvent): void => {
-    if (!this.isPauseAdEvent(event)) {
+    if (!event.ad) {
       return;
     }
 
@@ -152,13 +140,10 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     this.clickCatcher.hide();
     this.show();
     this.uiContainerElement?.addClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
-    this.pauseAdActive = true;
-    this.activePauseAdId = event.ad?.id;
+    this.activePauseAd = event.ad;
 
-    // Without a click-through destination there is nothing to route, so the whole creative area
-    // stays transparent to pointer input.
-    this.clickThroughUrlOpened = event.ad?.clickThroughUrlOpened;
-    if (event.ad?.clickThroughUrl) {
+    // Without a destination, clicks continue to reach the controls below.
+    if (event.ad.clickThroughUrl) {
       this.clickCatcher.show();
     }
 
@@ -166,59 +151,23 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
   };
 
   private readonly handleNonLinearAdEnded = (event: AdEvent): void => {
-    if (!this.pauseAdActive) {
+    if (!this.activePauseAd) {
       return;
     }
 
     const eventAdId = event.ad?.id;
-    if (this.activePauseAdId && eventAdId && this.activePauseAdId !== eventAdId) {
+    if (this.activePauseAd.id && eventAdId && this.activePauseAd.id !== eventAdId) {
       return;
     }
 
-    const matchesActiveAd = this.activePauseAdId && eventAdId === this.activePauseAdId;
-    if (this.isPauseAdEvent(event) || matchesActiveAd) {
-      this.hidePauseAdStatus();
-    }
+    this.hidePauseAdStatus();
   };
 
   private readonly hidePauseAdStatus = (): void => {
     this.dismissButton.hide();
     this.clickCatcher.hide();
-    this.clickThroughUrlOpened = undefined;
+    this.activePauseAd = undefined;
     this.hide();
     this.uiContainerElement?.removeClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
-    this.pauseAdActive = false;
-    this.activePauseAdId = undefined;
   };
-
-  /**
-   * Applies `apply` to every non-linear subscription this component owns.
-   *
-   * The non-linear ad lifecycle is not part of the Player Web API, so `PlayerEvent` has no member
-   * for these names and `on`/`off` cannot be called without a cast. Routing both through here keeps
-   * the cast in one place and makes it impossible for `release()` to unsubscribe a different set
-   * than `configure()` subscribed.
-   */
-  private eachNonLinearSubscription(
-    apply: (eventType: PlayerEvent, handler: PlayerEventCallback<PlayerEvent>) => void,
-  ): void {
-    const applyAll = (eventTypes: ReadonlyArray<string>, handler: NonLinearAdEventHandler) => {
-      eventTypes.forEach(eventType => apply(eventType as PlayerEvent, handler as PlayerEventCallback<PlayerEvent>));
-    };
-
-    applyAll(NON_LINEAR_AD_STARTED_EVENTS, this.handleNonLinearAdStarted);
-    applyAll(NON_LINEAR_AD_ENDED_EVENTS, this.handleNonLinearAdEnded);
-  }
-
-  /**
-   * Every non-linear ad this UI currently sees is a pause ad: the only producer emits these events
-   * solely for pause ads, and the payload carries nothing that would discriminate one kind from
-   * another.
-   *
-   * This stops holding as soon as a second non-linear format emits the same events. Reintroduce a
-   * discriminator then, against whatever the Player settles on.
-   */
-  private isPauseAdEvent(_event: AdEvent): boolean {
-    return true;
-  }
 }

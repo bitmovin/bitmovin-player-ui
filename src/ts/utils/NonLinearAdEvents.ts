@@ -1,4 +1,4 @@
-// The web player and mobile SDK bridges expose the same non-linear lifecycle with different spellings.
+// These event names are currently emitted only for pause ads.
 export const NON_LINEAR_AD_STARTED_EVENTS: ReadonlyArray<string> = ['nonlinearadstarted', 'onNonLinearAdStarted'];
 
 export const NON_LINEAR_AD_ENDED_EVENTS: ReadonlyArray<string> = [

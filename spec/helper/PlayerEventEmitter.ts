@@ -140,28 +140,28 @@ export class PlayerEventEmitter {
     });
   }
 
-  fireNonLinearAdStartedEvent(eventData: object = {}, adData: object = {}): void {
-    this.fireNonLinearAdEvent('nonlinearadstarted', eventData, adData);
+  fireNonLinearAdStartedEvent(adData: object = {}): void {
+    this.fireNonLinearAdEvent('nonlinearadstarted', adData);
   }
 
-  fireNativeNonLinearAdStartedEvent(eventData: object = {}, adData: object = {}): void {
-    this.fireNonLinearAdEvent('onNonLinearAdStarted', eventData, adData);
+  fireNativeNonLinearAdStartedEvent(adData: object = {}): void {
+    this.fireNonLinearAdEvent('onNonLinearAdStarted', adData);
   }
 
-  fireNonLinearAdFinishedEvent(eventData: object = {}, adData: object = {}): void {
-    this.fireNonLinearAdEvent('nonlinearadfinished', eventData, adData);
+  fireNonLinearAdFinishedEvent(adData: object = {}): void {
+    this.fireNonLinearAdEvent('nonlinearadfinished', adData);
   }
 
-  fireNativeNonLinearAdFinishedEvent(eventData: object = {}, adData: object = {}): void {
-    this.fireNonLinearAdEvent('onNonLinearAdFinished', eventData, adData);
+  fireNativeNonLinearAdFinishedEvent(adData: object = {}): void {
+    this.fireNonLinearAdEvent('onNonLinearAdFinished', adData);
   }
 
-  fireNonLinearAdSkippedEvent(eventData: object = {}, adData: object = {}): void {
-    this.fireNonLinearAdEvent('nonlinearadskipped', eventData, adData);
+  fireNonLinearAdSkippedEvent(adData: object = {}): void {
+    this.fireNonLinearAdEvent('nonlinearadskipped', adData);
   }
 
-  fireNativeNonLinearAdSkippedEvent(eventData: object = {}, adData: object = {}): void {
-    this.fireNonLinearAdEvent('onNonLinearAdSkipped', eventData, adData);
+  fireNativeNonLinearAdSkippedEvent(adData: object = {}): void {
+    this.fireNonLinearAdEvent('onNonLinearAdSkipped', adData);
   }
 
   fireErrorEvent(): void {
@@ -174,10 +174,9 @@ export class PlayerEventEmitter {
     });
   }
 
-  private fireNonLinearAdEvent(eventType: string, eventData: object, adData: object): void {
+  private fireNonLinearAdEvent(eventType: string, adData: object): void {
     this.fireEvent<AdEvent>({
       timestamp: Date.now(),
-      ...eventData,
       type: eventType as any,
       ad: {
         isLinear: false,
