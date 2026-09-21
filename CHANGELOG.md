@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `PauseAdStatusOverlay` to show pause-ad status controls in the default, small-screen, and TV layouts. Its badge and dismiss text can be customized through `PauseAdStatusOverlayConfig` or `UIConfig.componentConfigOverrides`.
 - Pause-ad creatives that carry a click-through destination are now clickable while the UI is on top of them. The click target covers the whole player, matching linear ads, so clicks beside the creative open the click-through too. The playback controls and the dismiss button keep priority over it, and creatives without a destination let every click through to the UI.
+- While a pause ad is showing, only the large centered playback control is hidden. The control bar, the seek bar, the settings and the title bar stay visible, and the pause-ad status controls no longer cover title-bar content.
+- On the TV layout, a remote can still seek and open settings while a pause ad is showing. Focus moves to the dismiss button when the ad starts and returns to the previously focused control when it ends. The centered playback control cannot be focused while the ad is showing, and BACK no longer hides the pause-ad controls while the creative is still on screen.
 
 ## [4.21.1] - 2026-09-17
 
