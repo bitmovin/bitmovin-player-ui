@@ -75,6 +75,7 @@ test('dismissing a pause ad by remote ends it and returns focus where it was', a
 
   await expect(dismiss, 'dismissing must end the pause ad').toBeHidden();
   await expect(page.locator('.bmpui-ui-pause-ad-click-catcher'), 'the click target must go with it').toBeHidden();
+  expect(await ui.player.pauseAdActive(), 'dismissing must end the player-side ad').toBe(false);
   await expect(seekBar, 'focus must return to the control the viewer left').toBeFocused();
 });
 

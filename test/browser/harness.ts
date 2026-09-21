@@ -126,6 +126,9 @@ export interface BrowserPlayerController {
 
   /** How often the active pause ad's click-through has been opened since it started. */
   clickThroughCount(): Promise<number>;
+
+  /** Whether the stub player still considers a pause ad active. */
+  pauseAdActive(): Promise<boolean>;
 }
 
 export interface MountedUi {
@@ -234,6 +237,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           skip: () => {
             const activeAdId = browserWindow.__activePauseAdId;
             if (activeAdId) {
+              browserWindow.__activePauseAdId = undefined;
               fire('onNonLinearAdFinished', { ad: { id: activeAdId } });
             }
           },
@@ -334,6 +338,9 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       },
       clickThroughCount: async () => {
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__clickThroughCount || 0);
+      },
+      pauseAdActive: async () => {
+        return page.evaluate(() => Boolean((window as unknown as BrowserTestWindow).__activePauseAdId));
       },
       resize: async (width: number) => {
         await page.setViewportSize({ width, height: 720 });
