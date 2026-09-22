@@ -288,6 +288,13 @@ export class NavigationGroup {
       this.blurActiveComponent();
       this.activeComponent = undefined;
     }
+
+    // A settings panel that is actually hidden must start from its first item when it is reopened.
+    // Keep the saved component while the visible panel is only interrupted by another group (e.g. a pause ad),
+    // including when the panel was already disabled before its hide event arrives.
+    if (isSettingsPanel(this.container) && !this.container.isShown()) {
+      this.activeComponentBeforeDisable = undefined;
+    }
   }
 
   /**
@@ -297,10 +304,7 @@ export class NavigationGroup {
    * A settings panel that was closed focuses its first element when it is reopened.
    */
   public enable(): void {
-    const restorePreviousComponent =
-      this.activeComponentBeforeDisable && (!isSettingsPanel(this.container) || this.container.isShown());
-
-    if (restorePreviousComponent) {
+    if (this.activeComponentBeforeDisable) {
       this.focusComponent(this.activeComponentBeforeDisable);
       this.activeComponentBeforeDisable = undefined;
     } else {

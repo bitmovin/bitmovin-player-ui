@@ -126,6 +126,42 @@ test('a pause ad restores the focused settings item after temporarily taking rem
   await expect(focusedSettingsItem, 'focus must return to the settings item the viewer left').toBeFocused();
 });
 
+test('closing and reopening Settings focuses its first item', async ({ page }) => {
+  await mountTvUi(page, {
+    live: false,
+    videoQualities: [
+      { id: 'video-1', label: 'HD' },
+      { id: 'video-2', label: 'SD' },
+    ],
+  });
+  const settings = page.getByRole('button', { name: 'Settings' });
+  const settingsPanel = page.locator('.bmpui-ui-settings-panel:not(.bmpui-ui-listbox)');
+  const visibleSettingsItems = settingsPanel.locator('.bmpui-ui-settings-panel-item:visible');
+  const firstSettingsItem = visibleSettingsItems.first();
+  const secondSettingsItem = visibleSettingsItems.nth(1);
+
+  for (const key of ['ArrowDown', 'ArrowDown', 'ArrowRight']) {
+    await page.keyboard.press(key);
+  }
+  await expect(settings).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(settingsPanel).toBeVisible();
+  await expect(firstSettingsItem, 'the initial Settings page should focus its first item').toBeFocused();
+
+  await page.keyboard.press('ArrowDown');
+  await expect(secondSettingsItem, 'close Settings from a distinct item').toBeFocused();
+  await settings.click();
+  await expect(settingsPanel, 'the Settings toggle should hide the open panel').toBeHidden();
+  await page.keyboard.press('Enter');
+  await expect(settingsPanel).toBeVisible();
+  await expect(firstSettingsItem, 'reopening Settings should focus its first item').toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(
+    secondSettingsItem,
+    'remote navigation should continue from the visibly focused first item',
+  ).toBeFocused();
+});
+
 test('dismissing a pause ad by remote ends it and returns focus where it was', async ({ page }) => {
   const ui = await mountTvUi(page, { live: false });
 

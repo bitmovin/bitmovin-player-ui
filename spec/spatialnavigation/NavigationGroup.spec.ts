@@ -27,6 +27,7 @@ describe('NavigationGroup', () => {
     jest.spyOn(TypeGuards, 'isFocusable').mockReturnValue(true);
     jest.spyOn(TypeGuards, 'isComponent').mockReturnValue(true);
     jest.spyOn(TypeGuards, 'isContainer').mockReturnValue(false);
+    jest.spyOn(TypeGuards, 'isSettingsPanel').mockReturnValue(false);
 
     rootContainerMock = mockComponent(UIContainer);
     playbackToggleButtonMock = mockComponent(PlaybackToggleButton);
@@ -86,14 +87,33 @@ describe('NavigationGroup', () => {
       expect(subtitleToggleButtonHtmlMock.focus).toHaveBeenCalled();
     });
 
-    it('should focus the first component when a hidden settings panel is reopened', () => {
+    it('should clear the saved component when a settings panel is hidden before disable', () => {
+      jest.spyOn(TypeGuards, 'isSettingsPanel').mockReturnValue(true);
+      rootContainerMock.isShown.mockReturnValue(false);
+      const subtitleToggleButtonHtmlMock = getFirstDomElement(subtitleToggleButtonMock);
+      jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockImplementation(component => {
+        if (component === subtitleToggleButtonMock) {
+          return subtitleToggleButtonHtmlMock;
+        }
+        return playbackToggleButtonHtmlMock;
+      });
+      rootNavigationGroup['activeComponent'] = subtitleToggleButtonMock;
+
+      rootNavigationGroup.disable();
+
+      expect(rootNavigationGroup['activeComponentBeforeDisable']).toBeUndefined();
+      rootNavigationGroup.enable();
+      expect(playbackToggleButtonHtmlMock.focus).toHaveBeenCalled();
+    });
+
+    it('should clear the saved component when a settings panel is hidden while already disabled', () => {
       jest.spyOn(TypeGuards, 'isSettingsPanel').mockReturnValue(true);
       rootContainerMock.isShown.mockReturnValue(false);
       rootNavigationGroup['activeComponentBeforeDisable'] = subtitleToggleButtonMock;
 
-      rootNavigationGroup.enable();
+      rootNavigationGroup.disable();
 
-      expect(playbackToggleButtonHtmlMock.focus).toHaveBeenCalled();
+      expect(rootNavigationGroup['activeComponentBeforeDisable']).toBeUndefined();
     });
   });
 

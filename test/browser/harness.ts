@@ -82,6 +82,8 @@ export interface MountOptions {
   factory?: 'default' | 'smallScreen' | 'tv';
   /** Use a mobile user agent so the UI factory selects touch controls. */
   mobile?: boolean;
+  /** Available video qualities for scenarios that need a quality Settings row. */
+  videoQualities?: { id: string; label: string }[];
   /**
    * Source metadata the UI renders in the title bar. Without it the metadata labels stay empty and
    * occupy no space, so a scenario about title-bar layout has to supply it.
@@ -148,7 +150,14 @@ export interface MountedUi {
  * what makes these tests fast and deterministic, and it is why they can assert on geometry at all.
  */
 export async function mountUi(page: Page, options: MountOptions = {}): Promise<MountedUi> {
-  const { hostReset = false, live = true, factory = 'default', metadata = {}, mobile = false } = options;
+  const {
+    hostReset = false,
+    live = true,
+    factory = 'default',
+    metadata = {},
+    mobile = false,
+    videoQualities = [],
+  } = options;
 
   await page.setContent(`<!doctype html>
     <html><head><meta charset="utf-8">${
@@ -174,7 +183,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -236,6 +245,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         // Quality/track getters are dereferenced without a null check by the settings panels.
         getAudio: () => ({ id: 'audio-1', label: 'Audio' }),
         getVideoQuality: () => ({ id: 'video-1', label: 'Auto' }),
+        getAvailableVideoQualities: () => availableVideoQualities,
         getAudioQuality: () => ({ id: 'audio-q-1', label: 'Auto' }),
         getAvailableAudio: (): never[] => [],
         getVideoBufferLength: () => 0,
@@ -307,7 +317,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         }
       }
     },
-    { isLive: live, uiFactory: factory, uiMetadata: metadata },
+    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);
