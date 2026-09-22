@@ -71,6 +71,31 @@ test('a pause ad moves remote focus to Dismiss and keeps the centered playback c
   ).toBeVisible();
 });
 
+test('a pause ad lets the remote scrub the seek bar, commit with Enter, and cancel with BACK', async ({ page }) => {
+  const ui = await mountTvUi(page, { live: false });
+
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  const seekBar = page.getByRole('slider');
+  await page.keyboard.press('ArrowDown');
+  await expect(seekBar, 'the pause-ad navigation group should focus the seek bar').toBeFocused();
+
+  const beforeSeek = await ui.player.currentTime();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('Enter');
+  await expect
+    .poll(() => ui.player.currentTime(), { message: 'Enter should commit the remote seek' })
+    .toBeGreaterThan(beforeSeek);
+
+  const afterSeek = await ui.player.currentTime();
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('Escape');
+  await expect
+    .poll(() => ui.player.currentTime(), { message: 'BACK should cancel an in-progress remote seek' })
+    .toBe(afterSeek);
+});
+
 test('a pause ad restores the focused settings item after temporarily taking remote focus', async ({ page }) => {
   const ui = await mountTvUi(page, { live: false });
   const settings = page.getByRole('button', { name: 'Settings' });

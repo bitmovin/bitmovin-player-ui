@@ -27,6 +27,7 @@ interface BrowserTestWindow extends Window {
   __clickThroughCount?: number;
   /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
   __activePauseAdId?: string;
+  __currentTime?: number;
 }
 
 const DIST = path.resolve(__dirname, '../../dist');
@@ -131,6 +132,9 @@ export interface BrowserPlayerController {
 
   /** Whether the stub player still considers a pause ad active. */
   pauseAdActive(): Promise<boolean>;
+
+  /** Current playback position, including seeks made through the UI. */
+  currentTime(): Promise<number>;
 }
 
 export interface MountedUi {
@@ -212,7 +216,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         getSource: () => (sourceLoaded ? {} : null),
         isLive: () => isLive,
         getDuration: () => (isLive ? Infinity : 600),
-        getCurrentTime: () => 0,
+        getCurrentTime: () => browserWindow.__currentTime || 0,
         getTimeShift: () => 0,
         getMaxTimeShift: () => (isLive ? -100 : 0),
         getSeekableRange: () => ({ start: 0, end: isLive ? 100 : 600 }),
@@ -257,7 +261,13 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         off: (event: string, cb: PlayerEventHandler) => {
           handlers[event] = (handlers[event] || []).filter(h => h !== cb);
         },
-        seek: () => true,
+        seek: (time: number) => {
+          fire(PlayerEvent.Seek, { position: browserWindow.__currentTime || 0, seekTarget: time });
+          browserWindow.__currentTime = time;
+          fire(PlayerEvent.TimeChanged, { time });
+          fire(PlayerEvent.Seeked);
+          return true;
+        },
         timeShift: (): void => undefined,
         play: (issuer = 'api') => {
           playing = true;
@@ -350,6 +360,9 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       },
       pauseAdActive: async () => {
         return page.evaluate(() => Boolean((window as unknown as BrowserTestWindow).__activePauseAdId));
+      },
+      currentTime: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__currentTime || 0);
       },
       resize: async (width: number) => {
         await page.setViewportSize({ width, height: 720 });

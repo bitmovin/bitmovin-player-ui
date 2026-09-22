@@ -1,4 +1,4 @@
-import { RootNavigationGroup } from './RootNavigationGroup';
+import { NavigationGroup } from './NavigationGroup';
 import { NodeEventSubscriber } from './NodeEventSubscriber';
 import { Action, AnyComponent, Direction } from './types';
 import { getBoundingRectFromElement } from './NavigationAlgorithm';
@@ -19,10 +19,10 @@ export class SeekBarHandler {
   private scrubSpeedResetTimeout: number;
   private scrubSpeedPercentage = DefaultScrubSpeedPercentage;
 
-  constructor(private readonly rootNavigationGroup: RootNavigationGroup) {
-    this.rootNavigationGroup.onAction = this.onAction;
+  constructor(private readonly navigationGroup: NavigationGroup) {
+    this.navigationGroup.onAction = this.onAction;
     this.eventSubscriber = new NodeEventSubscriber();
-    this.rootNavigationGroup.onNavigation = this.onNavigation;
+    this.navigationGroup.onNavigation = this.onNavigation;
   }
 
   private updateScrubSpeedPercentage(): void {
@@ -164,8 +164,8 @@ export class SeekBarHandler {
    */
   public release(): void {
     this.eventSubscriber.release();
-    this.rootNavigationGroup.onAction = undefined;
-    this.rootNavigationGroup.onNavigation = undefined;
+    this.navigationGroup.onAction = undefined;
+    this.navigationGroup.onNavigation = undefined;
   }
 }
 

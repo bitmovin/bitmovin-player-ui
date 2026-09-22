@@ -1,4 +1,5 @@
 import { NavigationGroup } from './NavigationGroup';
+import { SeekBarHandler } from './SeekBarHandler';
 import { PauseAdStatusOverlay } from '../components/ads/PauseAdStatusOverlay';
 import { Action, Focusable } from './types';
 
@@ -13,8 +14,11 @@ import { Action, Focusable } from './types';
  * The dismiss button is always the first focus target, so the remote lands on the way out of the ad.
  */
 export class PauseAdNavigationGroup extends NavigationGroup {
+  private readonly seekBarHandler: SeekBarHandler;
+
   constructor(pauseAdStatusOverlay: PauseAdStatusOverlay, ...components: Focusable[]) {
     super(pauseAdStatusOverlay, pauseAdStatusOverlay.dismissButton, ...components);
+    this.seekBarHandler = new SeekBarHandler(this);
   }
 
   protected defaultActionHandler(action: Action): boolean {
@@ -26,5 +30,10 @@ export class PauseAdNavigationGroup extends NavigationGroup {
     }
 
     return super.defaultActionHandler(action);
+  }
+
+  public release(): void {
+    this.seekBarHandler.release();
+    super.release();
   }
 }
