@@ -120,7 +120,7 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
 
     this.clickCatcher.onClick.subscribe(() => {
-      this.activePauseAd?.clickThroughUrlOpened?.();
+      this.getClickThroughAction()?.();
     });
 
     this.dismissButton.onClick.subscribe(() => {
@@ -133,6 +133,24 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
     this.hidePauseAdStatus();
     this.uiContainerElement = undefined;
     super.release();
+  }
+
+  /**
+   * Captures the active creative's click-through action for an external input surface.
+   * The action becomes a no-op when this ad ends or is replaced, or this overlay becomes hidden.
+   * Returns `undefined` when there is no click-through destination.
+   */
+  getClickThroughAction(): (() => void) | undefined {
+    const ad = this.activePauseAd;
+    if (!ad?.clickThroughUrl) {
+      return undefined;
+    }
+
+    return () => {
+      if (this.activePauseAd === ad && this.isShown()) {
+        ad.clickThroughUrlOpened?.();
+      }
+    };
   }
 
   private readonly handleNonLinearAdStarted = (event: AdEvent): void => {

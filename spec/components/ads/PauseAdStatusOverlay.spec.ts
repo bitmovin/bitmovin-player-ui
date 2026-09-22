@@ -89,6 +89,18 @@ describe('PauseAdStatusOverlay', () => {
       expect(getClickCatcher().isHidden()).toBe(true);
       expect(clickThroughUrlOpened).not.toHaveBeenCalled();
     });
+
+    it('does not run a captured click-through action after its ad is replaced', () => {
+      const clickThroughUrlOpened = jest.fn();
+      firePauseAdStarted({ clickThroughUrl: 'https://example.com', clickThroughUrlOpened });
+      const action = pauseAdStatusOverlay.getClickThroughAction();
+      expect(action).toBeDefined();
+
+      firePauseAdStarted({ clickThroughUrl: 'https://example.com/next' });
+      action();
+
+      expect(clickThroughUrlOpened).not.toHaveBeenCalled();
+    });
   });
 
   it('shows pause-ad status with the dismiss action available immediately', () => {

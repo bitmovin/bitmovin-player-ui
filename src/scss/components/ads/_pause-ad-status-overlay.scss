@@ -46,6 +46,13 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   pointer-events: auto;
 }
 
+// The mobile gesture surface routes confirmed single taps and keeps double-tap seeking.
+.#{$prefix}-ui-pause-ad-status-overlay.#{$prefix}-touch-click-through {
+  .#{$prefix}-ui-pause-ad-click-catcher {
+    pointer-events: none;
+  }
+}
+
 .#{$prefix}-ui-pause-ad-status-badge,
 .#{$prefix}-ui-button-pause-ad-dismiss {
   background-color: transparentize($color-black, 0.25);

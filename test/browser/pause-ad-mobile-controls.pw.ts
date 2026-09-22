@@ -1,5 +1,9 @@
 import { expect, mountUi, test } from './harness';
 
+test.use({ hasTouch: true });
+
+const CLICK_THROUGH_URL = 'https://example.com/pause-ad';
+
 test('a mobile pause ad keeps touch seeking available and hides only its centered playback button', async ({
   page,
 }) => {
@@ -9,8 +13,84 @@ test('a mobile pause ad keeps touch seeking available and hides only its centere
 
   await expect(touchOverlay, 'the mobile layout should use the touch overlay').toBeVisible();
 
-  await ui.player.startPauseAd();
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 
   await expect(touchOverlay, 'touch seeking must remain available during a pause ad').toBeVisible();
   await expect(centeredPlaybackButton, 'only the centered playback button should be suppressed').toBeHidden();
+});
+
+test('double taps seek in both directions during a clickable mobile pause ad without opening it', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
+  const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+
+  const bounds = await page.locator('.bmpui-ui-touch-control-overlay').boundingBox();
+  if (!bounds) {
+    throw new Error('the mobile gesture surface must be laid out');
+  }
+  const y = bounds.y + bounds.height / 2;
+  const initialTime = await ui.player.currentTime();
+
+  await page.touchscreen.tap(bounds.x + bounds.width * 0.8, y);
+  await page.touchscreen.tap(bounds.x + bounds.width * 0.8, y);
+  await expect.poll(() => ui.player.currentTime()).toBeGreaterThan(initialTime);
+  await page.clock.runFor(250);
+  expect(await ui.player.clickThroughCount(), 'a seek gesture must not also open the ad').toBe(0);
+
+  await page.touchscreen.tap(bounds.x + bounds.width * 0.2, y);
+  await page.touchscreen.tap(bounds.x + bounds.width * 0.2, y);
+  await expect.poll(() => ui.player.currentTime()).toBe(initialTime);
+  await page.clock.runFor(250);
+  expect(await ui.player.clickThroughCount()).toBe(0);
+});
+
+test('a single mobile tap opens the creative once after the double-tap window', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
+  const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+
+  await page.locator('.bmpui-ui-touch-control-overlay').tap();
+  expect(await ui.player.clickThroughCount(), 'wait for a possible second tap').toBe(0);
+  await page.clock.runFor(250);
+
+  expect(await ui.player.clickThroughCount()).toBe(1);
+  expect(await ui.player.currentTime()).toBe(0);
+});
+
+for (const lifecycle of ['finish', 'unload', 'replace'] as const) {
+  test(`a pending mobile click-through is cancelled on ad ${lifecycle}`, async ({ page }) => {
+    await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+    await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
+    const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true });
+    await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+
+    await page.locator('.bmpui-ui-touch-control-overlay').tap();
+    if (lifecycle === 'finish') {
+      await ui.player.finishPauseAd();
+    } else if (lifecycle === 'unload') {
+      await ui.player.unloadSource();
+    } else {
+      await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+    }
+    await page.clock.runFor(250);
+
+    expect(await ui.player.clickThroughCount()).toBe(0);
+    expect(await ui.player.currentTime()).toBe(0);
+  });
+}
+
+test('switching away from the mobile UI cancels a pending click-through', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
+  const ui = await mountUi(page, { live: false, mobile: true });
+  await ui.player.resize(640);
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+
+  await page.locator('.bmpui-ui-touch-control-overlay').tap();
+  await ui.player.resize(1000);
+  await page.clock.runFor(250);
+
+  expect(await ui.player.clickThroughCount()).toBe(0);
 });

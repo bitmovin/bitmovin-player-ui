@@ -409,6 +409,9 @@ export namespace UIFactory {
 
     export function smallScreen(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
+      const pauseAdStatusOverlay = new PauseAdStatusOverlay({
+        cssClasses: BrowserUtils.isMobile ? ['touch-click-through'] : [],
+      });
       const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
       const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
 
@@ -454,8 +457,10 @@ export namespace UIFactory {
           new BufferingOverlay(),
           new CastStatusOverlay(),
           // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
-          BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
-          new PauseAdStatusOverlay(),
+          BrowserUtils.isMobile
+            ? new TouchControlOverlay({ singleTapAction: () => pauseAdStatusOverlay.getClickThroughAction() })
+            : new PlaybackToggleOverlay(),
+          pauseAdStatusOverlay,
           new RecommendationOverlay(),
           controlBar,
           new TitleBar({
