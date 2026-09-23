@@ -36,14 +36,34 @@
   }
 
   .#{$prefix}-ui-label {
+    flex-shrink: 0;
     line-height: $icon-size;
+    max-width: 100%;
     min-height: $icon-size;
+    min-width: 0;
+
+    .#{$prefix}-ui-icon {
+      flex: 0 0 auto;
+      width: $icon-size;
+    }
+
+    .#{$prefix}-ui-label-text {
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
   }
 
   .#{$prefix}-ui-label-setting-selected-option {
     align-self: center;
+    flex-shrink: 1;
     margin-left: auto;
     width: fit-content;
+
+    .#{$prefix}-ui-label-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     .#{$prefix}-ui-icon {
       background-image: svg-load('../../assets/images/angle-right.svg', stroke=$color-icon);

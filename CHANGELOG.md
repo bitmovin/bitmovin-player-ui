@@ -11,6 +11,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Subtitle settings chosen via the subtitle settings panel are overridden by styling embedded in cues, such as inline styles in WebVTT and TTML
 
+## [4.21.1] - 2026-09-17
+
+### Fixed
+
+- The UI failing to load on legacy platforms such as webOS 3.x when required polyfills were not yet installed.
+
+## [4.21.0] - 2026-09-10
+
+### Changed
+
+- The selected subtitle track label no longer includes the number of available tracks.
+
+### Fixed
+
+- Long option names causing settings panels to overflow or setting labels to become unreadable.
+- Ad count in `AdCounterLabel` no longer increases incorrectly when used on mobile SDKs.
+
+## [4.20.2] - 2026-09-03
+
+### Fixed
+
+- `SeekBar` showing a stale playback position when a new source is loaded while a seek was still pending.
+- `PlaybackToggleButton` no longer responding to clicks when a new source is loaded after a play attempt that never reached playback, for example because the previous source stalled.
+
+## [4.20.1] - 2026-08-27
+
+### Fixed
+
+- `UIConfig.componentLayoutOverrides` and `UIConfig.componentConfigOverrides` are now applied in applications whose production build minifies the UI, instead of being silently ignored. Components are matched by their public export name instead of their runtime class name, which minifiers mangle by default.
+
 ## [4.20.0] - 2026-08-13
 
 ### Added

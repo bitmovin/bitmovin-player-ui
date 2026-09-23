@@ -1,9 +1,8 @@
 import { Label, LabelConfig, LabelStyle } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { PlayerAPI } from 'bitmovin-player';
-import { i18n, LocalizableText } from '../../localization/i18n';
+import { LocalizableText } from '../../localization/i18n';
 import { ListSelector, ListSelectorConfig } from '../lists/ListSelector';
-import { SubtitleSelectBox } from './SubtitleSelectBox';
 import { SettingsPanelItem, SettingsPanelItemConfig } from './SettingsPanelItem';
 import { SettingsPanelSelectOption } from './SettingsPanelSelectOption';
 import { SettingsPanelPage } from './SettingsPanelPage';
@@ -110,13 +109,7 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
       return;
     }
 
-    let selectedOptionLabelText = selectedItem.label;
-    if (this.settingComponent instanceof SubtitleSelectBox) {
-      const availableSettings = this.settingComponent.getItems().length;
-      selectedOptionLabelText =
-        i18n.performLocalization(selectedOptionLabelText) + ' (' + (availableSettings - 1) + ')';
-    }
-    this.selectedOptionLabel.setText(selectedOptionLabelText);
+    this.selectedOptionLabel.setText(selectedItem.label);
   };
 
   private buildSubPanelPage(): SettingsPanelPage {
