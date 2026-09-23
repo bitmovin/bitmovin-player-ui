@@ -16,6 +16,10 @@ test('a mobile pause ad keeps touch seeking available and hides only its centere
   await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 
   await expect(touchOverlay, 'touch seeking must remain available during a pause ad').toBeVisible();
+  await expect(touchOverlay, 'the creative must not be dimmed by visible touch controls').toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
   await expect(centeredPlaybackButton, 'only the centered playback button should be suppressed').toBeHidden();
 });
 

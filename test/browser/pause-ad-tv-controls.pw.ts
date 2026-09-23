@@ -1,5 +1,4 @@
 import { expect, test } from './harness';
-import { pauseAdStatusTitleBarOverlaps } from './helpers/pause-ad';
 import { focusedControlName, mountTvUi } from './helpers/tv';
 
 /**
@@ -182,16 +181,27 @@ test('dismissing a pause ad by remote ends it and returns focus where it was', a
   await expect(seekBar, 'focus must return to the control the viewer left').toBeFocused();
 });
 
-test('the pause status controls share the top edge with the title bar without covering it', async ({ page }) => {
+test('pause status controls replace source metadata while an ad is showing', async ({ page }) => {
   const ui = await mountTvUi(page, {
     live: false,
     metadata: { title: 'A title long enough to reach across the player', description: 'And a description below it' },
   });
 
+  const title = page.locator('.bmpui-label-metadata-title');
+  const description = page.locator('.bmpui-label-metadata-description');
+  await expect(title).toBeVisible();
+  await expect(description).toBeVisible();
+
   await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 
-  const overlaps = await pauseAdStatusTitleBarOverlaps(page);
-  expect(overlaps, 'the pause status row must not cover title-bar content').toEqual([]);
+  await expect(page.getByRole('button', { name: 'Close' })).toBeVisible();
+  await expect(page.locator('.bmpui-ui-pause-ad-status-badge')).toBeVisible();
+  await expect(title).toBeHidden();
+  await expect(description).toBeHidden();
+
+  await ui.player.finishPauseAd();
+  await expect(title).toBeVisible();
+  await expect(description).toBeVisible();
 });
 
 test('BACK cannot make a pause ad disappear while the creative is still showing', async ({ page }) => {

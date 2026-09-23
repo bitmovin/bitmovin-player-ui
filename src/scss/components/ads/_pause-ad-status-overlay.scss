@@ -19,6 +19,16 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   .#{$prefix}-ui-titlebar > .#{$prefix}-container-wrapper {
     margin-top: $pause-ad-status-row-height;
   }
+
+  // Source metadata describes the content behind the ad and competes with the ad message.
+  // Keep the title bar itself so its cast and AirPlay actions remain available.
+  .#{$prefix}-ui-titlebar .#{$prefix}-label-metadata {
+    display: none;
+  }
+
+  &.#{$prefix}-controls-shown .#{$prefix}-ui-touch-control-overlay {
+    background-color: transparent;
+  }
 }
 
 .#{$prefix}-ui-pause-ad-status-overlay {

@@ -38,6 +38,10 @@ module.exports = (env, { mode }) => {
         },
       },
       demo: './src/scss/demo.scss',
+      'pause-ad-demo': {
+        import: './src/html/pause-ad-demo.js',
+        filename: './js/pause-ad-demo.js',
+      },
     },
     devtool: 'source-map',
     module: {
@@ -117,6 +121,18 @@ module.exports = (env, { mode }) => {
       new HtmlWebpackPlugin({
         template: './src/html/simple.html',
         filename: './simple.html',
+        inject: false,
+        minify: false,
+      }),
+      new HtmlWebpackPlugin({
+        template: './src/html/pause-ad-demo.html',
+        filename: './pause-ad-demo.html',
+        inject: false,
+        minify: false,
+      }),
+      new HtmlWebpackPlugin({
+        template: './src/html/pause-ad-clickthrough.html',
+        filename: './pause-ad-clickthrough.html',
         inject: false,
         minify: false,
       }),
