@@ -6,6 +6,31 @@ export { expect };
 
 type PlayerEventHandler = (event: Record<string, unknown>) => void;
 
+/**
+ * Subtitle appearance settings, named as the subtitle settings panel stores them.
+ *
+ * Colors and their opacities are applied as a pair, so setting a color without its opacity
+ * leaves the overlay unstyled.
+ */
+export interface SubtitleSettings {
+  fontColor?: string;
+  fontOpacity?: string;
+  fontFamily?: string;
+  fontSize?: string;
+  fontStyle?: string;
+  characterEdge?: string;
+  characterEdgeColor?: string;
+  backgroundColor?: string;
+  backgroundOpacity?: string;
+  windowColor?: string;
+  windowOpacity?: string;
+}
+
+/** The part of the built UI the browser scenarios drive directly. */
+interface UiHandle {
+  getSubtitleSettingsManager(): Record<keyof SubtitleSettings, { value: string }>;
+}
+
 interface BrowserTestWindow extends Window {
   bitmovin: {
     player: {
@@ -14,13 +39,13 @@ interface BrowserTestWindow extends Window {
     };
     playerui: {
       UIFactory: {
-        buildUI(player: object, config: object): unknown;
-        buildSmallScreenUI(player: object, config: object): unknown;
+        buildUI(player: object, config: object): UiHandle;
+        buildSmallScreenUI(player: object, config: object): UiHandle;
       };
     };
   };
   __fire(event: string, data?: object): void;
-  __ui?: unknown;
+  __ui?: UiHandle;
 }
 
 const DIST = path.resolve(__dirname, '../../dist');
@@ -75,6 +100,14 @@ export interface MountOptions {
   factory?: 'default' | 'smallScreen';
 }
 
+/** A subtitle cue, as the player hands it to the UI. */
+export interface SubtitleCue {
+  /** Cue content markup, carrying the styling the player resolved from the cue itself. */
+  html: string;
+  /** Character grid position. Present only on CEA-608 cues, and what selects that render path. */
+  position?: { row: number; column: number };
+}
+
 export interface BrowserPlayerController {
   /**
    * Replays deterministic player clock updates without actual playback.
@@ -83,10 +116,16 @@ export interface BrowserPlayerController {
    * from legitimate size changes caused by longer time-label content.
    */
   tick(times?: number): Promise<void>;
+
+  /** Displays a subtitle cue, as `CueEnter` does during playback. */
+  enterSubtitleCue(cue: SubtitleCue): Promise<void>;
 }
 
 export interface MountedUi {
   player: BrowserPlayerController;
+
+  /** Applies subtitle settings through the manager the settings panel writes to. */
+  applySubtitleSettings(settings: SubtitleSettings): Promise<void>;
 }
 
 /**
@@ -227,6 +266,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);
 
+  let cueStart = 0;
+
   return {
     player: {
       tick: async (times = 1) => {
@@ -238,6 +279,31 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           }
         }, times);
       },
+      enterSubtitleCue: async cue => {
+        // The overlay identifies a cue by its start time and text, so consecutive cues need
+        // distinct start times to be shown side by side instead of replacing one another.
+        cueStart += 1;
+        await page.evaluate(
+          ({ entered, start }) => {
+            const browserWindow = window as unknown as BrowserTestWindow;
+            browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.CueEnter, {
+              start,
+              end: start + 1,
+              text: '',
+              ...entered,
+            });
+          },
+          { entered: cue, start: cueStart },
+        );
+      },
+    },
+    applySubtitleSettings: async settings => {
+      await page.evaluate(applied => {
+        const manager = (window as unknown as BrowserTestWindow).__ui!.getSubtitleSettingsManager();
+        Object.entries(applied).forEach(([setting, value]) => {
+          manager[setting as keyof SubtitleSettings].value = value;
+        });
+      }, settings);
     },
   };
 }

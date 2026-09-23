@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Subtitle settings chosen in the settings panel being overridden by cue-embedded styling, for example WebVTT cue classes or TTML inline styles
+
 ## [4.21.1] - 2026-09-17
 
 ### Fixed
