@@ -7,9 +7,12 @@
 // The declarations are `!important` so an explicit user choice outranks the inline styles the
 // player derives from cue-embedded styling (WebVTT cue classes and `STYLE` blocks, TTML
 // inline styles). The player renders that cue content as elements inside the subtitle label,
-// so the styling sits on descendants and every setting has to reach them as well:
-// - inherited properties are made to inherit from the label
-// - non-inherited ones are cleared, because inheriting would repeat the label's value
+// so the styling sits on descendants, which `reset-in-descendants` drops the property from.
+// `_subtitle-overlay.scss` already resets those descendants with `* { all: unset }` against
+// host-page styling, but that reset is a normal declaration and inline styles outrank it.
+//
+// A setting whose value is expanded in a loop matches its descendants through the class prefix
+// instead, so the one rule they share is emitted once rather than once per value.
 
 .#{$prefix}-ui-subtitle-overlay {
   $colors: (
@@ -57,10 +60,14 @@
           color: transparentize($color-value, 1 - $opacity-value) !important;
           // sass-lint:disable no-vendor-prefixes
           -webkit-text-fill-color: transparentize($color-value, 1 - $opacity-value) !important;
-
-          @include inherit-in-descendants(color, -webkit-text-fill-color);
         }
       }
+    }
+  }
+
+  &[class*='#{$prefix}-fontcolor-'] {
+    .#{$prefix}-ui-subtitle-label {
+      @include reset-in-descendants(color, -webkit-text-fill-color);
     }
   }
 
@@ -73,8 +80,6 @@
           ) {
           .#{$prefix}-ui-subtitle-label {
             background-color: transparentize($color-value, 1 - $opacity-value) !important;
-
-            @include reset-in-descendants(background-color);
           }
         }
 
@@ -83,10 +88,27 @@
           .#{$prefix}-ui-subtitle-label {
             .#{$prefix}-ui-label-text {
               background-color: transparentize($color-value, 1 - $opacity-value) !important;
-
-              @include reset-in-descendants(background-color);
             }
           }
+        }
+      }
+    }
+  }
+
+  &[class*='#{$prefix}-bgcolor-'] {
+    .#{$prefix}-subtitle-region-container:not(.#{$prefix}-subtitle-vtt-region-container):not(
+        .#{$prefix}-subtitle-vtt-cue-container
+      ) {
+      .#{$prefix}-ui-subtitle-label {
+        @include reset-in-descendants(background-color);
+      }
+    }
+
+    .#{$prefix}-subtitle-region-container.#{$prefix}-subtitle-vtt-region-container,
+    .#{$prefix}-subtitle-region-container.#{$prefix}-subtitle-vtt-cue-container {
+      .#{$prefix}-ui-subtitle-label {
+        .#{$prefix}-ui-label-text {
+          @include reset-in-descendants(background-color);
         }
       }
     }
@@ -96,8 +118,8 @@
   @each $color-name, $color-value in $colors {
     @each $opacity-name, $opacity-value in $opacities {
       &.#{$prefix}-windowcolor-#{$color-name}#{$opacity-name} {
-        // The window sits behind the subtitle, so a background set on the cue itself
-        // is left in place and keeps painting on top.
+        // The window sits behind the subtitle, so backgrounds on the cue descendants are left
+        // in place and keep painting on top of it.
         .#{$prefix}-subtitle-region-container:not(.#{$prefix}-subtitle-vtt-cue-container) {
           background-color: transparentize($color-value, 1 - $opacity-value) !important;
         }
@@ -113,14 +135,18 @@
 
   // Font size. Not `!important` on the label: CEA-608 rendering depends on the calculated px
   // size it applies inline, which this must not override. Not needed for WebVTT and TTML
-  // either, whose cue styling sits on descendants and is overridden by the inherit below.
+  // either, whose cue styling sits on descendants and is dropped by the reset below.
   @each $name, $value in $font-sizes {
     &.#{$prefix}-fontsize-#{$name} {
       .#{$prefix}-ui-subtitle-label {
         font-size: $value + em;
-
-        @include inherit-in-descendants(font-size);
       }
+    }
+  }
+
+  &[class*='#{$prefix}-fontsize-'] {
+    .#{$prefix}-ui-subtitle-label {
+      @include reset-in-descendants(font-size);
     }
   }
 
@@ -130,10 +156,14 @@
       &.#{$prefix}-characteredge-#{$name}-#{$color-name} {
         .#{$prefix}-ui-subtitle-label {
           text-shadow: unquote(str-replace($value, '$COLOR$', $color-value)) !important;
-
-          @include inherit-in-descendants(text-shadow);
         }
       }
+    }
+  }
+
+  &[class*='#{$prefix}-characteredge-'] {
+    .#{$prefix}-ui-subtitle-label {
+      @include reset-in-descendants(text-shadow);
     }
   }
 
@@ -142,7 +172,7 @@
     .#{$prefix}-ui-subtitle-label {
       font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace !important;
 
-      @include inherit-in-descendants(font-family);
+      @include reset-in-descendants(font-family);
     }
   }
 
@@ -150,7 +180,7 @@
     .#{$prefix}-ui-subtitle-label {
       font-family: 'Times New Roman', Times, Georgia, Cambria, 'PT Serif Caption', serif !important;
 
-      @include inherit-in-descendants(font-family);
+      @include reset-in-descendants(font-family);
     }
   }
 
@@ -158,7 +188,7 @@
     .#{$prefix}-ui-subtitle-label {
       font-family: 'Deja Vu Sans Mono', 'Lucida Console', Monaco, Consolas, 'PT Mono', monospace !important;
 
-      @include inherit-in-descendants(font-family);
+      @include reset-in-descendants(font-family);
     }
   }
 
@@ -166,7 +196,7 @@
     .#{$prefix}-ui-subtitle-label {
       font-family: Roboto, 'Arial Unicode Ms', Arial, Helvetica, Verdana, 'PT Sans Caption', sans-serif !important;
 
-      @include inherit-in-descendants(font-family);
+      @include reset-in-descendants(font-family);
     }
   }
 
@@ -174,7 +204,7 @@
     .#{$prefix}-ui-subtitle-label {
       font-family: 'Comic Sans MS', Impact, Handlee, fantasy !important;
 
-      @include inherit-in-descendants(font-family);
+      @include reset-in-descendants(font-family);
     }
   }
 
@@ -183,7 +213,7 @@
       font-family: 'Monotype Corsiva', 'URW Chancery L', 'Apple Chancery', 'Dancing Script', cursive !important;
       font-style: italic !important;
 
-      @include inherit-in-descendants(font-family, font-style);
+      @include reset-in-descendants(font-family, font-style);
     }
   }
 
@@ -191,7 +221,7 @@
     .#{$prefix}-ui-subtitle-label {
       font-variant: small-caps !important;
 
-      @include inherit-in-descendants(font-variant);
+      @include reset-in-descendants(font-variant);
     }
   }
 
@@ -200,7 +230,7 @@
     .#{$prefix}-ui-subtitle-label {
       font-style: italic !important;
 
-      @include inherit-in-descendants(font-style);
+      @include reset-in-descendants(font-style);
     }
   }
 
@@ -208,7 +238,7 @@
     .#{$prefix}-ui-subtitle-label {
       font-weight: bold !important;
 
-      @include inherit-in-descendants(font-weight);
+      @include reset-in-descendants(font-weight);
     }
   }
 }

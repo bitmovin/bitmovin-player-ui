@@ -199,24 +199,15 @@
   @return $string;
 }
 
-/// Makes descendants inherit the given properties. Declared `!important`, so it also
-/// overrides values set on them directly, including inline styles.
-/// @param {String...} $properties - The properties to inherit
-@mixin inherit-in-descendants($properties...) {
-  * {
-    @each $property in $properties {
-      #{$property}: inherit !important;
-    }
-  }
-}
-
-/// Resets the given properties on descendants to their initial value. Declared `!important`,
-/// so it also overrides values set on them directly, including inline styles.
-/// @param {String...} $properties - The properties to reset
+/// Drops the given properties from every descendant, so they resolve as if unset there:
+/// inherited properties fall back to the parent's value, the others to their initial value.
+/// Declared `!important`, so it outranks values set on the descendants directly, including
+/// inline styles.
+/// @param {String...} $properties - The properties to drop
 @mixin reset-in-descendants($properties...) {
   * {
     @each $property in $properties {
-      #{$property}: initial !important;
+      #{$property}: unset !important;
     }
   }
 }
