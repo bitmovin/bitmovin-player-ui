@@ -14,6 +14,11 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
     display: none;
   }
 
+  // The titlebar gradient darkens the pause-ad badge and dismiss button above its content.
+  .#{$prefix}-ui-titlebar {
+    background: none;
+  }
+
   // The pause status row owns the top edge, so title-bar content and its actions move below it
   // instead of sharing the corners with the badge and the dismiss button.
   .#{$prefix}-ui-titlebar > .#{$prefix}-container-wrapper {

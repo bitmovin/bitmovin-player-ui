@@ -191,6 +191,8 @@ test('pause status controls replace source metadata while an ad is showing', asy
   const description = page.locator('.bmpui-label-metadata-description');
   await expect(title).toBeVisible();
   await expect(description).toBeVisible();
+  const titlebar = page.locator('.bmpui-ui-titlebar');
+  await expect(titlebar).not.toHaveCSS('background-image', 'none');
 
   await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 
@@ -198,10 +200,15 @@ test('pause status controls replace source metadata while an ad is showing', asy
   await expect(page.locator('.bmpui-ui-pause-ad-status-badge')).toBeVisible();
   await expect(title).toBeHidden();
   await expect(description).toBeHidden();
+  await expect(titlebar, 'the titlebar shade must not cover the ad badge or dismiss button').toHaveCSS(
+    'background-image',
+    'none',
+  );
 
   await ui.player.finishPauseAd();
   await expect(title).toBeVisible();
   await expect(description).toBeVisible();
+  await expect(titlebar).not.toHaveCSS('background-image', 'none');
 });
 
 test('BACK cannot make a pause ad disappear while the creative is still showing', async ({ page }) => {
