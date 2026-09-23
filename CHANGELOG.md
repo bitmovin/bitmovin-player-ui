@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Subtitle settings chosen via the subtitle settings panel are overridden by styling embedded in cues, such as inline styles in WebVTT and TTML
+- Subtitle settings chosen in the settings panel being overridden by cue-embedded styling, for example WebVTT cue classes or TTML inline styles
 
 ## [4.21.1] - 2026-09-17
 
