@@ -9,12 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `PauseAdStatusOverlay` to show pause-ad status controls in the default, small-screen, and TV layouts. Its badge and dismiss text can be customized through `PauseAdStatusOverlayConfig` or `UIConfig.componentConfigOverrides`.
-- Pause-ad creatives that carry a click-through destination are now clickable while the UI is on top of them. The click target covers the whole player, matching linear ads, so clicks beside the creative open the click-through too. The playback controls and the dismiss button keep priority over it, and creatives without a destination let every click through to the UI.
-- While a pause ad is showing, only the large centered playback control is hidden. The control bar, the seek bar, the settings and the title bar stay visible, and the pause-ad status controls no longer cover title-bar content.
-- On the TV layout, a remote can still seek and open settings while a pause ad is showing. Focus moves to the dismiss button when the ad starts and returns to the previously focused control when it ends. The centered playback control cannot be focused while the ad is showing, and BACK no longer hides the pause-ad controls while the creative is still on screen.
-- Mobile pause ads preserve double-tap seeking without opening the creative. A single tap opens the click-through after the double-tap window expires.
-- `TouchControlOverlayConfig.singleTapAction` can supply a custom action for a confirmed single tap while preserving double-tap seeking. `PauseAdStatusOverlay.getClickThroughAction()` captures an action that expires when its ad ends or is replaced.
+- `PauseAdStatusOverlay` to show an Ad badge and a Close button over pause ads in the default, small-screen, and TV layouts. Clicking the creative opens its click-through while the player controls stay usable.
+- `TouchControlOverlayConfig.singleTapAction` and `PauseAdStatusOverlay.getClickThroughAction()` to open a pause-ad click-through on a single tap without breaking double-tap seeking.
 
 ## [4.21.1] - 2026-09-17
 
