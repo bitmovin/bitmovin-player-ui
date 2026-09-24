@@ -262,7 +262,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
             const activeAdId = browserWindow.__activePauseAdId;
             if (activeAdId) {
               browserWindow.__activePauseAdId = undefined;
-              fire('onNonLinearAdFinished', { ad: { id: activeAdId } });
+              fire('onNonLinearAdSkipped', { ad: { id: activeAdId } });
             }
           },
         },

@@ -141,12 +141,17 @@ describe('PauseAdStatusOverlay', () => {
     expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
   });
 
-  it('hides the pause-ad status and skips the ad when Dismiss is clicked', () => {
-    firePauseAdStarted();
+  it('skips the ad when Dismiss is clicked and hides the status once the skip is confirmed', () => {
+    firePauseAdStarted({ id: 'pause-ad' });
 
     getDismissButton()['onClickEvent']();
 
     expect(playerMock.ads.skip).toHaveBeenCalled();
+    expect(pauseAdStatusOverlay.isShown()).toBe(true);
+    expect(getDismissButton().isShown()).toBe(true);
+
+    playerMock.eventEmitter.fireNativeNonLinearAdSkippedEvent({ id: 'pause-ad' });
+
     expect(pauseAdStatusOverlay.isHidden()).toBe(true);
     expect(getDismissButton().isHidden()).toBe(true);
     expect(uiContainerElementMock.removeClass).toHaveBeenCalledWith(getPauseAdActiveClass());

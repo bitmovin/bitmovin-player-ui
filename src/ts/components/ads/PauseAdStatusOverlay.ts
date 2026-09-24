@@ -123,8 +123,9 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
       this.getClickThroughAction()?.();
     });
 
+    // The player may decline the skip, e.g. before the ad becomes dismissible, so the status stays
+    // visible until the ad's terminal event arrives.
     this.dismissButton.onClick.subscribe(() => {
-      this.hidePauseAdStatus();
       player.ads.skip();
     });
   }
