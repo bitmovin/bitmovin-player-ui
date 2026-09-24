@@ -1,12 +1,11 @@
 import { Ad, AdEvent, PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmovin-player';
 import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
-import { i18n, LocalizableText } from '../../localization/i18n';
+import { i18n } from '../../localization/i18n';
 import { NON_LINEAR_AD_ENDED_EVENTS, NON_LINEAR_AD_STARTED_EVENTS } from '../../utils/NonLinearAdEvents';
 import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
-import { ComponentConfig } from '../Component';
 import { Container, ContainerConfig } from '../Container';
-import { Label, LabelConfig } from '../labels/Label';
+import { Label } from '../labels/Label';
 
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
 
@@ -47,27 +46,11 @@ class PauseAdClickCatcher extends Button<ButtonConfig> {
 }
 
 /**
- * Configuration interface for the {@link PauseAdStatusOverlay}.
- *
- * @category Configs
- */
-export interface PauseAdStatusOverlayConfig extends ComponentConfig {
-  /**
-   * Text displayed while a pause ad is active.
-   */
-  badgeText?: LocalizableText;
-  /**
-   * Text displayed on the dismiss button.
-   */
-  dismissText?: LocalizableText;
-}
-
-/**
  * An overlay holding status controls for pause ads.
  *
  * @category Components
  */
-export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> {
+export class PauseAdStatusOverlay extends Container<ContainerConfig> {
   /**
    * Button that ends the pause ad. Exposed so a navigation group can make it the first focus target
    * for remote-controlled platforms.
@@ -77,14 +60,12 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
   private uiContainerElement?: DOM;
   private activePauseAd?: Ad;
 
-  constructor(config: PauseAdStatusOverlayConfig = {}) {
+  constructor(config: ContainerConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(
       config,
       {
-        badgeText: i18n.getLocalizer('ad'),
-        dismissText: i18n.getLocalizer('close'),
         hidden: true,
         cssClass: 'ui-pause-ad-status-overlay',
       },
@@ -93,20 +74,20 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
     const badgeLabel = new Label({
       cssClass: 'ui-pause-ad-status-badge',
-      text: this.config.badgeText,
+      text: i18n.getLocalizer('ad'),
     });
     this.clickCatcher = new PauseAdClickCatcher();
     this.dismissButton = new Button({
       cssClass: 'ui-button-pause-ad-dismiss',
-      text: this.config.dismissText,
-      ariaLabel: this.config.dismissText,
+      text: i18n.getLocalizer('close'),
+      ariaLabel: i18n.getLocalizer('close'),
       buttonStyle: ButtonStyle.TextWithTrailingIcon,
       hidden: true,
       acceptsTouchWithUiHidden: true,
     });
 
     // The catcher comes first so visible controls remain above it.
-    (this.config as ContainerConfig).components = [this.clickCatcher, badgeLabel, this.dismissButton];
+    this.config.components = [this.clickCatcher, badgeLabel, this.dismissButton];
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

@@ -1,6 +1,6 @@
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager, UIVariantIdentifier } from '../../../src/ts/UIManager';
-import { PauseAdStatusOverlay, PauseAdStatusOverlayConfig } from '../../../src/ts/components/ads/PauseAdStatusOverlay';
+import { PauseAdStatusOverlay } from '../../../src/ts/components/ads/PauseAdStatusOverlay';
 import { Button, ButtonConfig, ButtonStyle } from '../../../src/ts/components/buttons/Button';
 import { Label, LabelConfig } from '../../../src/ts/components/labels/Label';
 import type { DOM } from '../../../src/ts/DOM';
@@ -38,15 +38,12 @@ describe('PauseAdStatusOverlay', () => {
     });
 
     it('stays pointer-only when the base Button config is overridden', () => {
-      setupOverlay(
-        {},
-        {
-          Button: {
-            role: 'button',
-            tabIndex: 0,
-          },
+      setupOverlay({
+        Button: {
+          role: 'button',
+          tabIndex: 0,
         },
-      );
+      });
 
       const config = getClickCatcher().getConfig();
       expect(config.role).toBeNull();
@@ -123,14 +120,6 @@ describe('PauseAdStatusOverlay', () => {
 
     expect(i18n.performLocalization(getBadgeLabel().getConfig().text)).toBe('Anzeige');
     expect(i18n.performLocalization(getDismissButton().getConfig().text)).toBe('Schließen');
-  });
-
-  it('uses configured badge and dismiss text', () => {
-    setupOverlay({ badgeText: 'Sponsored', dismissText: 'Dismiss ad' });
-
-    expect(i18n.performLocalization(getBadgeLabel().getConfig().text)).toBe('Sponsored');
-    expect(i18n.performLocalization(getDismissButton().getConfig().text)).toBe('Dismiss ad');
-    expect(i18n.performLocalization(getDismissButton().getConfig().ariaLabel)).toBe('Dismiss ad');
   });
 
   it('shows pause-ad status for native non-linear ad started events', () => {
@@ -217,10 +206,7 @@ describe('PauseAdStatusOverlay', () => {
   });
 });
 
-function setupOverlay(
-  config: PauseAdStatusOverlayConfig = {},
-  componentConfigOverrides: UIComponentConfigOverrides = {},
-): void {
+function setupOverlay(componentConfigOverrides: UIComponentConfigOverrides = {}): void {
   playerMock = MockHelper.getPlayerMock();
   (playerMock as any).ads = {
     skip: jest.fn(),
@@ -229,7 +215,7 @@ function setupOverlay(
   uiContainerElementMock = MockHelper.generateDOMMock();
   (uiInstanceManagerMock.getUI() as any).getDomElement = jest.fn().mockReturnValue(uiContainerElementMock);
   pauseAdStatusOverlay = ComponentConfigManager.run(componentConfigOverrides, UIVariantIdentifier.main, () => {
-    return new PauseAdStatusOverlay(config);
+    return new PauseAdStatusOverlay();
   });
   getClickCatcher().initialize();
   getDismissButton().initialize();
