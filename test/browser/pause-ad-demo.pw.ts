@@ -41,9 +41,13 @@ test('clicking the creative opens the demo destination', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Start clickable ad' }).click();
   await expect(page.locator('.bmpui-ui-pause-ad-status-overlay')).toBeVisible();
-  await page.locator('.bmpui-ui-pause-ad-click-catcher').click();
-  await expect(page).toHaveURL(/pause-ad-clickthrough\.html/);
-  await expect(page.getByRole('heading', { name: 'Clickthrough opened' })).toBeVisible();
+  const [destination] = await Promise.all([
+    page.waitForEvent('popup'),
+    page.locator('.bmpui-ui-pause-ad-click-catcher').click(),
+  ]);
+  await expect(destination).toHaveURL(/pause-ad-clickthrough\.html/);
+  await expect(destination.getByRole('heading', { name: 'Clickthrough opened' })).toBeVisible();
+  await expect(page.getByRole('status')).toContainText('Clickthroughs: 1');
 });
 
 test('mobile layout gives the pause ad a portrait player view', async ({ page }) => {

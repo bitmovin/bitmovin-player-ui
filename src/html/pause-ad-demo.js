@@ -53,7 +53,7 @@
     const ad = activeAd;
     activeAd = undefined;
     creative.hidden = true;
-    fire('onNonLinearAdFinished', { ad: { id: ad.id } });
+    fire('nonlinearadfinished', { ad: { id: ad.id } });
     record('Pause ad finished');
     updateStatus();
   };
@@ -166,17 +166,17 @@
     clickThroughCount = 0;
     const ad = { id: `pause-ad-${++nextAdId}` };
     if (clickable) {
-      ad.clickThroughUrl = 'https://example.com/pause-ad';
+      // The UI opens this URL itself; the callback only tracks the click, as the player does.
+      ad.clickThroughUrl = new URL('pause-ad-clickthrough.html', window.location.href).href;
       ad.clickThroughUrlOpened = () => {
         clickThroughCount += 1;
         record('Creative clickthrough opened');
         updateStatus();
-        window.location.assign(new URL('pause-ad-clickthrough.html', window.location.href).href);
       };
     }
     activeAd = ad;
     creative.hidden = false;
-    fire('onNonLinearAdStarted', { ad });
+    fire('nonlinearadstarted', { ad });
     record(clickable ? 'Clickable pause ad started' : 'Pause ad without link started');
     updateStatus();
   };
