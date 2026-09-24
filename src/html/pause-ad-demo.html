@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pause-ad UI demo</title>
+    <link rel="stylesheet" href="css/bitmovinplayer-ui.css" />
+    <style>
+      body {
+        margin: 0;
+        background: #17212d;
+        color: #f7f9fc;
+        font:
+          15px system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1360px;
+        margin: auto;
+        padding: 24px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 25px;
+      }
+      a {
+        color: #b6d8ff;
+      }
+      p {
+        line-height: 1.5;
+      }
+      .workspace {
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      #player {
+        position: relative;
+        width: min(100%, 1000px);
+        aspect-ratio: 16 / 9;
+        flex: 1 1 640px;
+        background: #080c12;
+        box-shadow: 0 16px 48px #0008;
+        overflow: hidden;
+      }
+      body.mobile #player {
+        width: auto;
+        height: min(70vh, 690px);
+        aspect-ratio: 9 / 16;
+        flex: 0 0 auto;
+        max-width: 100%;
+      }
+      body.mobile #creative {
+        font-size: 24px;
+      }
+      body.mobile #creative span {
+        font-size: 13px;
+      }
+      #creative {
+        position: absolute;
+        inset: 14% 12% 25%;
+        display: grid;
+        place-content: center;
+        gap: 12px;
+        text-align: center;
+        background: linear-gradient(135deg, #d75a25, #7032aa);
+        color: white;
+        font-size: clamp(18px, 3vw, 36px);
+        font-weight: 700;
+        pointer-events: none;
+      }
+      #creative[hidden] {
+        display: none;
+      }
+      #creative span {
+        font-size: 16px;
+        font-weight: 400;
+      }
+      aside {
+        box-sizing: border-box;
+        width: 230px;
+        padding: 18px;
+        background: #263546;
+        border-radius: 12px;
+      }
+      aside label {
+        display: block;
+        margin-bottom: 12px;
+      }
+      aside select,
+      aside button {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 9px;
+        border: 0;
+        border-radius: 6px;
+        background: #dbe8f8;
+        color: #16202c;
+        font: inherit;
+      }
+      aside button {
+        margin: 5px 0;
+        cursor: pointer;
+      }
+      aside button:hover {
+        background: white;
+      }
+      #demo-status {
+        font-variant-numeric: tabular-nums;
+      }
+      #demo-log {
+        min-height: 60px;
+        max-height: 160px;
+        overflow: auto;
+        padding-left: 20px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Pause-ad UI demo</h1>
+        <a href="index.html">Back to playground</a>
+      </header>
+      <p>
+        This uses the built Player UI with simulated pause-ad events. No video, ad request, or Web Player license is
+        needed.
+      </p>
+      <div class="workspace">
+        <div id="player">
+          <div id="creative" hidden>PAUSE AD CREATIVE<span>Click here to test clickthrough</span></div>
+        </div>
+        <aside>
+          <label for="layout">Layout</label>
+          <select id="layout">
+            <option value="desktop">Desktop</option>
+            <option value="mobile">Mobile touch</option>
+            <option value="tv">TV remote</option>
+          </select>
+          <button type="button" id="start-clickable">Start clickable ad</button>
+          <button type="button" id="start-no-link">Start ad without link</button>
+          <button type="button" id="finish">Finish ad</button>
+          <button type="button" id="unload">Unload source</button>
+          <button type="button" id="load">Load source</button>
+          <p id="demo-status" role="status"></p>
+          <ol id="demo-log" aria-label="Demo events"></ol>
+        </aside>
+      </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bitmovin-player@8.18.2/bitmovinplayer.js"></script>
+    <script src="js/bitmovinplayer-ui.js"></script>
+    <script src="js/pause-ad-demo.js"></script>
+  </body>
+</html>
