@@ -65,6 +65,23 @@ test('a single mobile tap opens the creative once after the double-tap window', 
   expect(await ui.player.currentTime()).toBe(0);
 });
 
+test('tapping Close ends a clickable mobile pause ad without opening it', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
+  const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  const dismiss = page.getByRole('button', { name: 'Close', exact: true });
+
+  await dismiss.tap();
+  // Let a wrongly started single-tap action run out its double-tap window.
+  await page.clock.runFor(250);
+
+  await expect(dismiss, 'Close must end the pause ad').toBeHidden();
+  expect(await ui.player.pauseAdActive(), 'Close must end the player-side ad').toBe(false);
+  expect(await ui.player.openedUrls(), 'Close must not open the click-through').toEqual([]);
+  expect(await ui.player.clickThroughCount()).toBe(0);
+});
+
 for (const lifecycle of ['finish', 'unload', 'replace'] as const) {
   test(`a pending mobile click-through is cancelled on ad ${lifecycle}`, async ({ page }) => {
     await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });

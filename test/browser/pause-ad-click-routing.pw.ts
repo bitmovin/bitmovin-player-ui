@@ -124,3 +124,17 @@ test('source unload prevents replaying a pause ad into a newly configured varian
   await expect(smallScreenVariant, 'the small-screen variant should become active').toBeVisible();
   await expect(smallScreenVariant.locator(CLICK_CATCHER), 'an unloaded pause ad must not be replayed').toBeHidden();
 });
+
+test('clicking Close ends a clickable pause ad without opening it', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  const dismiss = page.getByRole('button', { name: 'Close', exact: true });
+
+  // Playwright fails this click if the click target covers the dismiss button.
+  await dismiss.click();
+
+  await expect(dismiss, 'Close must end the pause ad').toBeHidden();
+  expect(await ui.player.pauseAdActive(), 'Close must end the player-side ad').toBe(false);
+  expect(await ui.player.openedUrls(), 'Close must not open the click-through').toEqual([]);
+  expect(await ui.player.clickThroughCount()).toBe(0);
+});
