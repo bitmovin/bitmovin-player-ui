@@ -13,6 +13,8 @@ const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
 /**
  * Player-sized click target for a pause ad rendered below the UI.
  * It supports pointer input only; visible controls remain above it and receive their own clicks.
+ * Unlike `ClickOverlay`, it does not open the URL itself: the player opens it when notified
+ * through `clickThroughUrlOpened`.
  */
 class PauseAdClickCatcher extends Button<ButtonConfig> {
   constructor(config: ButtonConfig = {}) {
