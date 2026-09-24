@@ -267,6 +267,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     this.couldBeDoubleTapping = false;
     this.doubleTapTimeout?.clear();
     clearTimeout(this.hideSeekAnimationTimeout);
+    this.hideSeekAnimationElements();
   };
 
   release(): void {
