@@ -49,7 +49,7 @@ test('a pause ad moves remote focus to Dismiss and keeps the centered playback c
     visited.push(await focusedControlName(page));
   }
 
-  expect(visited, 'remote navigation must never reach the centered playback control').not.toContain(
+  expect(visited.join(' '), 'remote navigation must never reach the centered playback control').not.toContain(
     'bmpui-ui-hugeplaybacktogglebutton',
   );
   await expect(
