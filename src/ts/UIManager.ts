@@ -564,14 +564,16 @@ export class UIManager {
     NON_LINEAR_AD_EVENTS.forEach(eventType => {
       wrappedPlayer.on(eventType as PlayerEvent, updateActiveNonLinearAd as PlayerEventCallback<PlayerEvent>);
     });
+    wrappedPlayer.on(player.exports.PlayerEvent.SourceUnloaded, () => {
+      this.activeNonLinearAdStartedEvent = undefined;
+    });
 
     let isSourceLoaded = player.getSource() != null;
-    wrappedPlayer.on(player.exports.PlayerEvent.SourceLoaded, () => {
+    player.on(player.exports.PlayerEvent.SourceLoaded, () => {
       isSourceLoaded = true;
     });
-    wrappedPlayer.on(player.exports.PlayerEvent.SourceUnloaded, () => {
+    player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
       isSourceLoaded = false;
-      this.activeNonLinearAdStartedEvent = undefined;
     });
 
     // Dynamically select a UI variant that matches the current UI condition.
