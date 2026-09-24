@@ -1,20 +1,17 @@
 import { Ad, AdEvent, PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmovin-player';
 import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
-import { i18n, LocalizableText } from '../../localization/i18n';
-import { NON_LINEAR_AD_ENDED_EVENTS, NON_LINEAR_AD_STARTED_EVENTS } from '../../utils/NonLinearAdEvents';
+import { i18n } from '../../localization/i18n';
+import { NON_LINEAR_AD_ENDED_EVENTS, NON_LINEAR_AD_STARTED_EVENT } from '../../utils/NonLinearAdEvents';
 import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
-import { ComponentConfig } from '../Component';
 import { Container, ContainerConfig } from '../Container';
-import { Label, LabelConfig } from '../labels/Label';
+import { Label } from '../labels/Label';
 
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
 
 /**
  * Player-sized click target for a pause ad rendered below the UI.
  * It supports pointer input only; visible controls remain above it and receive their own clicks.
- * Unlike `ClickOverlay`, it does not open the URL itself: the player opens it when notified
- * through `clickThroughUrlOpened`.
  */
 class PauseAdClickCatcher extends Button<ButtonConfig> {
   constructor(config: ButtonConfig = {}) {
@@ -47,27 +44,11 @@ class PauseAdClickCatcher extends Button<ButtonConfig> {
 }
 
 /**
- * Configuration interface for the {@link PauseAdStatusOverlay}.
- *
- * @category Configs
- */
-export interface PauseAdStatusOverlayConfig extends ComponentConfig {
-  /**
-   * Text displayed while a pause ad is active.
-   */
-  badgeText?: LocalizableText;
-  /**
-   * Text displayed on the dismiss button.
-   */
-  dismissText?: LocalizableText;
-}
-
-/**
  * An overlay holding status controls for pause ads.
  *
  * @category Components
  */
-export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> {
+export class PauseAdStatusOverlay extends Container<ContainerConfig> {
   /**
    * Button that ends the pause ad. Exposed so a navigation group can make it the first focus target
    * for remote-controlled platforms.
@@ -77,14 +58,12 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
   private uiContainerElement?: DOM;
   private activePauseAd?: Ad;
 
-  constructor(config: PauseAdStatusOverlayConfig = {}) {
+  constructor(config: ContainerConfig = {}) {
     super(config);
 
     this.config = this.mergeConfig(
       config,
       {
-        badgeText: i18n.getLocalizer('ad'),
-        dismissText: i18n.getLocalizer('close'),
         hidden: true,
         cssClass: 'ui-pause-ad-status-overlay',
       },
@@ -93,29 +72,30 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
     const badgeLabel = new Label({
       cssClass: 'ui-pause-ad-status-badge',
-      text: this.config.badgeText,
+      text: i18n.getLocalizer('ad'),
     });
     this.clickCatcher = new PauseAdClickCatcher();
     this.dismissButton = new Button({
       cssClass: 'ui-button-pause-ad-dismiss',
-      text: this.config.dismissText,
-      ariaLabel: this.config.dismissText,
+      text: i18n.getLocalizer('close'),
+      ariaLabel: i18n.getLocalizer('close'),
       buttonStyle: ButtonStyle.TextWithTrailingIcon,
       hidden: true,
       acceptsTouchWithUiHidden: true,
     });
 
     // The catcher comes first so visible controls remain above it.
-    (this.config as ContainerConfig).components = [this.clickCatcher, badgeLabel, this.dismissButton];
+    this.config.components = [this.clickCatcher, badgeLabel, this.dismissButton];
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
     this.uiContainerElement = uimanager.getUI().getDomElement();
 
-    NON_LINEAR_AD_STARTED_EVENTS.forEach(eventType => {
-      player.on(eventType as PlayerEvent, this.handleNonLinearAdStarted as PlayerEventCallback<PlayerEvent>);
-    });
+    player.on(
+      NON_LINEAR_AD_STARTED_EVENT as PlayerEvent,
+      this.handleNonLinearAdStarted as PlayerEventCallback<PlayerEvent>,
+    );
     NON_LINEAR_AD_ENDED_EVENTS.forEach(eventType => {
       player.on(eventType as PlayerEvent, this.handleNonLinearAdEnded as PlayerEventCallback<PlayerEvent>);
     });
@@ -140,6 +120,8 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
   /**
    * Captures the active creative's click-through action for an external input surface.
+   * Like linear ads (see `AdClickOverlay`), the action opens the destination and then reports it
+   * through `clickThroughUrlOpened`, which only tracks the click.
    * The action becomes a no-op when this ad ends or is replaced, or this overlay becomes hidden.
    * Returns `undefined` when there is no click-through destination.
    */
@@ -151,6 +133,7 @@ export class PauseAdStatusOverlay extends Container<PauseAdStatusOverlayConfig> 
 
     return () => {
       if (this.activePauseAd === ad && this.isShown()) {
+        window.open(ad.clickThroughUrl, '_blank');
         ad.clickThroughUrlOpened?.();
       }
     };

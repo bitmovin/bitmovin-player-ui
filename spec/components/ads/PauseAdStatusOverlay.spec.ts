@@ -1,6 +1,6 @@
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager, UIVariantIdentifier } from '../../../src/ts/UIManager';
-import { PauseAdStatusOverlay, PauseAdStatusOverlayConfig } from '../../../src/ts/components/ads/PauseAdStatusOverlay';
+import { PauseAdStatusOverlay } from '../../../src/ts/components/ads/PauseAdStatusOverlay';
 import { Button, ButtonConfig, ButtonStyle } from '../../../src/ts/components/buttons/Button';
 import { Label, LabelConfig } from '../../../src/ts/components/labels/Label';
 import type { DOM } from '../../../src/ts/DOM';
@@ -30,6 +30,16 @@ describe('PauseAdStatusOverlay', () => {
   });
 
   describe('creative click catcher', () => {
+    let windowOpen: jest.SpyInstance;
+
+    beforeEach(() => {
+      windowOpen = jest.spyOn(window, 'open').mockImplementation(() => null);
+    });
+
+    afterEach(() => {
+      windowOpen.mockRestore();
+    });
+
     it('is not focusable and is hidden from assistive technology', () => {
       const config = getClickCatcher().getConfig();
 
@@ -38,15 +48,12 @@ describe('PauseAdStatusOverlay', () => {
     });
 
     it('stays pointer-only when the base Button config is overridden', () => {
-      setupOverlay(
-        {},
-        {
-          Button: {
-            role: 'button',
-            tabIndex: 0,
-          },
+      setupOverlay({
+        Button: {
+          role: 'button',
+          tabIndex: 0,
         },
-      );
+      });
 
       const config = getClickCatcher().getConfig();
       expect(config.role).toBeNull();
@@ -60,7 +67,7 @@ describe('PauseAdStatusOverlay', () => {
       expect(components.indexOf(getClickCatcher())).toBeLessThan(components.indexOf(getDismissButton()));
     });
 
-    it('routes a click on the creative to the ad exactly once', () => {
+    it('opens the click-through and reports it to the ad exactly once', () => {
       const clickThroughUrlOpened = jest.fn();
       firePauseAdStarted({ clickThroughUrl: 'https://example.com', clickThroughUrlOpened });
 
@@ -68,6 +75,8 @@ describe('PauseAdStatusOverlay', () => {
 
       getClickCatcher()['onClickEvent']();
 
+      expect(windowOpen).toHaveBeenCalledTimes(1);
+      expect(windowOpen).toHaveBeenCalledWith('https://example.com', '_blank');
       expect(clickThroughUrlOpened).toHaveBeenCalledTimes(1);
     });
 
@@ -87,6 +96,7 @@ describe('PauseAdStatusOverlay', () => {
       getClickCatcher()['onClickEvent']();
 
       expect(getClickCatcher().isHidden()).toBe(true);
+      expect(windowOpen).not.toHaveBeenCalled();
       expect(clickThroughUrlOpened).not.toHaveBeenCalled();
     });
 
@@ -99,6 +109,7 @@ describe('PauseAdStatusOverlay', () => {
       firePauseAdStarted({ clickThroughUrl: 'https://example.com/next' });
       action();
 
+      expect(windowOpen).not.toHaveBeenCalled();
       expect(clickThroughUrlOpened).not.toHaveBeenCalled();
     });
   });
@@ -125,22 +136,6 @@ describe('PauseAdStatusOverlay', () => {
     expect(i18n.performLocalization(getDismissButton().getConfig().text)).toBe('Schließen');
   });
 
-  it('uses configured badge and dismiss text', () => {
-    setupOverlay({ badgeText: 'Sponsored', dismissText: 'Dismiss ad' });
-
-    expect(i18n.performLocalization(getBadgeLabel().getConfig().text)).toBe('Sponsored');
-    expect(i18n.performLocalization(getDismissButton().getConfig().text)).toBe('Dismiss ad');
-    expect(i18n.performLocalization(getDismissButton().getConfig().ariaLabel)).toBe('Dismiss ad');
-  });
-
-  it('shows pause-ad status for native non-linear ad started events', () => {
-    playerMock.eventEmitter.fireNativeNonLinearAdStartedEvent();
-
-    expect(pauseAdStatusOverlay.isShown()).toBe(true);
-    expect(getDismissButton().isShown()).toBe(true);
-    expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
-  });
-
   it('skips the ad when Dismiss is clicked and hides the status once the skip is confirmed', () => {
     firePauseAdStarted({ id: 'pause-ad' });
 
@@ -150,7 +145,7 @@ describe('PauseAdStatusOverlay', () => {
     expect(pauseAdStatusOverlay.isShown()).toBe(true);
     expect(getDismissButton().isShown()).toBe(true);
 
-    playerMock.eventEmitter.fireNativeNonLinearAdSkippedEvent({ id: 'pause-ad' });
+    playerMock.eventEmitter.fireNonLinearAdSkippedEvent({ id: 'pause-ad' });
 
     expect(pauseAdStatusOverlay.isHidden()).toBe(true);
     expect(getDismissButton().isHidden()).toBe(true);
@@ -171,19 +166,6 @@ describe('PauseAdStatusOverlay', () => {
     firePauseAdStarted({ id: 'pause-ad' });
 
     playerMock.eventEmitter.fireNonLinearAdSkippedEvent({ id: 'pause-ad' });
-
-    expect(pauseAdStatusOverlay.isHidden()).toBe(true);
-    expect(getDismissButton().isHidden()).toBe(true);
-    expect(uiContainerElementMock.removeClass).toHaveBeenCalledWith(getPauseAdActiveClass());
-  });
-
-  it.each([
-    ['finished', () => playerMock.eventEmitter.fireNativeNonLinearAdFinishedEvent({ id: 'pause-ad' })],
-    ['skipped', () => playerMock.eventEmitter.fireNativeNonLinearAdSkippedEvent({ id: 'pause-ad' })],
-  ])('hides the pause-ad status on native non-linear ad %s events', (_eventName, fireEvent) => {
-    firePauseAdStarted({ id: 'pause-ad' });
-
-    fireEvent();
 
     expect(pauseAdStatusOverlay.isHidden()).toBe(true);
     expect(getDismissButton().isHidden()).toBe(true);
@@ -217,10 +199,7 @@ describe('PauseAdStatusOverlay', () => {
   });
 });
 
-function setupOverlay(
-  config: PauseAdStatusOverlayConfig = {},
-  componentConfigOverrides: UIComponentConfigOverrides = {},
-): void {
+function setupOverlay(componentConfigOverrides: UIComponentConfigOverrides = {}): void {
   playerMock = MockHelper.getPlayerMock();
   (playerMock as any).ads = {
     skip: jest.fn(),
@@ -229,7 +208,7 @@ function setupOverlay(
   uiContainerElementMock = MockHelper.generateDOMMock();
   (uiInstanceManagerMock.getUI() as any).getDomElement = jest.fn().mockReturnValue(uiContainerElementMock);
   pauseAdStatusOverlay = ComponentConfigManager.run(componentConfigOverrides, UIVariantIdentifier.main, () => {
-    return new PauseAdStatusOverlay(config);
+    return new PauseAdStatusOverlay();
   });
   getClickCatcher().initialize();
   getDismissButton().initialize();

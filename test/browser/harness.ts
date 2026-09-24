@@ -26,6 +26,8 @@ interface BrowserTestWindow extends Window {
   __ui?: unknown;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
+  /** URLs passed to `window.open`, which the harness records instead of opening. */
+  __openedUrls: string[];
   /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
   __activePauseAdId?: string;
   __currentTime?: number;
@@ -110,7 +112,7 @@ export interface BrowserPlayerController {
   tick(times?: number): Promise<void>;
 
   /**
-   * Pauses playback if needed, then starts a non-linear pause ad using the alternate supported event name.
+   * Pauses playback if needed, then starts a non-linear pause ad.
    *
    * The ad carries the producer-assigned `clickThroughUrlOpened` callback the UI invokes when the
    * user clicks the creative; {@link BrowserPlayerController.clickThroughCount} reports how often it
@@ -118,7 +120,7 @@ export interface BrowserPlayerController {
    */
   startPauseAd(options?: PauseAdOptions): Promise<void>;
 
-  /** Ends a pause ad using the alternate supported event name. */
+  /** Ends a pause ad. */
   finishPauseAd(id?: string): Promise<void>;
 
   /** Emits the source-unloaded lifecycle event. */
@@ -130,8 +132,11 @@ export interface BrowserPlayerController {
   /** Resizes the player viewport and emits the event that makes the UI resolve its active variant again. */
   resize(width: number): Promise<void>;
 
-  /** How often the active pause ad's click-through has been opened since it started. */
+  /** How often the active pause ad's click-through has been reported since it started. */
   clickThroughCount(): Promise<number>;
+
+  /** URLs the UI passed to `window.open` since mounting. */
+  openedUrls(): Promise<string[]>;
 
   /** Whether the stub player still considers a pause ad active. */
   pauseAdActive(): Promise<boolean>;
@@ -198,6 +203,13 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       };
       browserWindow.__fire = fire;
 
+      // Record click-through navigation instead of opening real popups.
+      browserWindow.__openedUrls = [];
+      window.open = (url?: string | URL) => {
+        browserWindow.__openedUrls.push(String(url));
+        return null;
+      };
+
       let playing = true;
       let sourceLoaded = true;
       browserWindow.__setSourceLoaded = loaded => {
@@ -262,7 +274,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
             const activeAdId = browserWindow.__activePauseAdId;
             if (activeAdId) {
               browserWindow.__activePauseAdId = undefined;
-              fire('onNonLinearAdSkipped', { ad: { id: activeAdId } });
+              fire('nonlinearadskipped', { ad: { id: activeAdId } });
             }
           },
         },
@@ -337,8 +349,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           browserWindow.__pausePlayback();
           browserWindow.__clickThroughCount = 0;
           browserWindow.__activePauseAdId = 'pause-ad-1';
-          // Exercise the alternate event name because the UI supports both spellings.
-          browserWindow.__fire('onNonLinearAdStarted', {
+          browserWindow.__fire('nonlinearadstarted', {
             ad: {
               id: 'pause-ad-1',
               clickThroughUrl: url,
@@ -356,7 +367,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           if (browserWindow.__activePauseAdId === adId) {
             browserWindow.__activePauseAdId = undefined;
           }
-          browserWindow.__fire('onNonLinearAdFinished', { ad: { id: adId } });
+          browserWindow.__fire('nonlinearadfinished', { ad: { id: adId } });
         }, id);
       },
       unloadSource: async () => {
@@ -375,6 +386,9 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       },
       clickThroughCount: async () => {
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__clickThroughCount || 0);
+      },
+      openedUrls: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__openedUrls);
       },
       pauseAdActive: async () => {
         return page.evaluate(() => Boolean((window as unknown as BrowserTestWindow).__activePauseAdId));

@@ -19,10 +19,10 @@ export class SeekBarHandler {
   private scrubSpeedResetTimeout: number;
   private scrubSpeedPercentage = DefaultScrubSpeedPercentage;
 
-  constructor(private readonly navigationGroup: NavigationGroup) {
-    this.navigationGroup.onAction = this.onAction;
+  constructor(private readonly rootNavigationGroup: NavigationGroup) {
+    this.rootNavigationGroup.onAction = this.onAction;
     this.eventSubscriber = new NodeEventSubscriber();
-    this.navigationGroup.onNavigation = this.onNavigation;
+    this.rootNavigationGroup.onNavigation = this.onNavigation;
   }
 
   private updateScrubSpeedPercentage(): void {
@@ -164,8 +164,8 @@ export class SeekBarHandler {
    */
   public release(): void {
     this.eventSubscriber.release();
-    this.navigationGroup.onAction = undefined;
-    this.navigationGroup.onNavigation = undefined;
+    this.rootNavigationGroup.onAction = undefined;
+    this.rootNavigationGroup.onNavigation = undefined;
   }
 }
 

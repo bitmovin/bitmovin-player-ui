@@ -33,6 +33,7 @@ for (const hostReset of [false, true]) {
 
     await expect(controls.getByRole('button', { name: 'Pause' }), 'the control must still work').toBeVisible();
     expect(await ui.player.clickThroughCount(), 'a control bar click must not open the click-through').toBe(0);
+    expect(await ui.player.openedUrls()).toEqual([]);
   });
 
   test(`a click beside the controls opens the click-through, ${hostPage}`, async ({ page }) => {
@@ -50,7 +51,10 @@ for (const hostReset of [false, true]) {
       await page.locator(CLICK_CATCHER).evaluate(element => document.activeElement === element),
       'the pointer-only catcher must not take browser focus',
     ).toBe(false);
-    expect(await ui.player.clickThroughCount(), 'a click on the creative must open the click-through').toBe(1);
+    expect(await ui.player.openedUrls(), 'a click on the creative must open the click-through').toEqual([
+      CLICK_THROUGH_URL,
+    ]);
+    expect(await ui.player.clickThroughCount(), 'the opened click-through must be reported to the ad').toBe(1);
   });
 
   test(`a creative without a destination stays transparent to clicks, ${hostPage}`, async ({ page }) => {
@@ -62,6 +66,7 @@ for (const hostReset of [false, true]) {
     await page.locator('#player').click();
 
     expect(await ui.player.clickThroughCount(), 'no destination means no click-through').toBe(0);
+    expect(await ui.player.openedUrls()).toEqual([]);
   });
 }
 
@@ -118,4 +123,18 @@ test('source unload prevents replaying a pause ad into a newly configured varian
   const smallScreenVariant = page.locator('.bmpui-ui-smallscreen');
   await expect(smallScreenVariant, 'the small-screen variant should become active').toBeVisible();
   await expect(smallScreenVariant.locator(CLICK_CATCHER), 'an unloaded pause ad must not be replayed').toBeHidden();
+});
+
+test('clicking Close ends a clickable pause ad without opening it', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  const dismiss = page.getByRole('button', { name: 'Close', exact: true });
+
+  // Playwright fails this click if the click target covers the dismiss button.
+  await dismiss.click();
+
+  await expect(dismiss, 'Close must end the pause ad').toBeHidden();
+  expect(await ui.player.pauseAdActive(), 'Close must end the player-side ad').toBe(false);
+  expect(await ui.player.openedUrls(), 'Close must not open the click-through').toEqual([]);
+  expect(await ui.player.clickThroughCount()).toBe(0);
 });

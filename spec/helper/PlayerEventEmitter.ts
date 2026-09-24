@@ -144,24 +144,12 @@ export class PlayerEventEmitter {
     this.fireNonLinearAdEvent('nonlinearadstarted', adData);
   }
 
-  fireNativeNonLinearAdStartedEvent(adData: object = {}): void {
-    this.fireNonLinearAdEvent('onNonLinearAdStarted', adData);
-  }
-
   fireNonLinearAdFinishedEvent(adData: object = {}): void {
     this.fireNonLinearAdEvent('nonlinearadfinished', adData);
   }
 
-  fireNativeNonLinearAdFinishedEvent(adData: object = {}): void {
-    this.fireNonLinearAdEvent('onNonLinearAdFinished', adData);
-  }
-
   fireNonLinearAdSkippedEvent(adData: object = {}): void {
     this.fireNonLinearAdEvent('nonlinearadskipped', adData);
-  }
-
-  fireNativeNonLinearAdSkippedEvent(adData: object = {}): void {
-    this.fireNonLinearAdEvent('onNonLinearAdSkipped', adData);
   }
 
   fireErrorEvent(): void {
