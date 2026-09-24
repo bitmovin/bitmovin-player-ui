@@ -12,8 +12,6 @@ const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
 /**
  * Player-sized click target for a pause ad rendered below the UI.
  * It supports pointer input only; visible controls remain above it and receive their own clicks.
- * Unlike `ClickOverlay`, it does not open the URL itself: the player opens it when notified
- * through `clickThroughUrlOpened`.
  */
 class PauseAdClickCatcher extends Button<ButtonConfig> {
   constructor(config: ButtonConfig = {}) {
@@ -121,6 +119,8 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
 
   /**
    * Captures the active creative's click-through action for an external input surface.
+   * Like linear ads (see `AdClickOverlay`), the action opens the destination and then reports it
+   * through `clickThroughUrlOpened`, which only tracks the click.
    * The action becomes a no-op when this ad ends or is replaced, or this overlay becomes hidden.
    * Returns `undefined` when there is no click-through destination.
    */
@@ -132,6 +132,7 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
 
     return () => {
       if (this.activePauseAd === ad && this.isShown()) {
+        window.open(ad.clickThroughUrl, '_blank');
         ad.clickThroughUrlOpened?.();
       }
     };

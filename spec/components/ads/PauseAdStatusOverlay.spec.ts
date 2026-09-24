@@ -30,6 +30,16 @@ describe('PauseAdStatusOverlay', () => {
   });
 
   describe('creative click catcher', () => {
+    let windowOpen: jest.SpyInstance;
+
+    beforeEach(() => {
+      windowOpen = jest.spyOn(window, 'open').mockImplementation(() => null);
+    });
+
+    afterEach(() => {
+      windowOpen.mockRestore();
+    });
+
     it('is not focusable and is hidden from assistive technology', () => {
       const config = getClickCatcher().getConfig();
 
@@ -57,7 +67,7 @@ describe('PauseAdStatusOverlay', () => {
       expect(components.indexOf(getClickCatcher())).toBeLessThan(components.indexOf(getDismissButton()));
     });
 
-    it('routes a click on the creative to the ad exactly once', () => {
+    it('opens the click-through and reports it to the ad exactly once', () => {
       const clickThroughUrlOpened = jest.fn();
       firePauseAdStarted({ clickThroughUrl: 'https://example.com', clickThroughUrlOpened });
 
@@ -65,6 +75,8 @@ describe('PauseAdStatusOverlay', () => {
 
       getClickCatcher()['onClickEvent']();
 
+      expect(windowOpen).toHaveBeenCalledTimes(1);
+      expect(windowOpen).toHaveBeenCalledWith('https://example.com', '_blank');
       expect(clickThroughUrlOpened).toHaveBeenCalledTimes(1);
     });
 
@@ -84,6 +96,7 @@ describe('PauseAdStatusOverlay', () => {
       getClickCatcher()['onClickEvent']();
 
       expect(getClickCatcher().isHidden()).toBe(true);
+      expect(windowOpen).not.toHaveBeenCalled();
       expect(clickThroughUrlOpened).not.toHaveBeenCalled();
     });
 
@@ -96,6 +109,7 @@ describe('PauseAdStatusOverlay', () => {
       firePauseAdStarted({ clickThroughUrl: 'https://example.com/next' });
       action();
 
+      expect(windowOpen).not.toHaveBeenCalled();
       expect(clickThroughUrlOpened).not.toHaveBeenCalled();
     });
   });

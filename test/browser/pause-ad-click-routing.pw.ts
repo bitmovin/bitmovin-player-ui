@@ -33,6 +33,7 @@ for (const hostReset of [false, true]) {
 
     await expect(controls.getByRole('button', { name: 'Pause' }), 'the control must still work').toBeVisible();
     expect(await ui.player.clickThroughCount(), 'a control bar click must not open the click-through').toBe(0);
+    expect(await ui.player.openedUrls()).toEqual([]);
   });
 
   test(`a click beside the controls opens the click-through, ${hostPage}`, async ({ page }) => {
@@ -50,7 +51,10 @@ for (const hostReset of [false, true]) {
       await page.locator(CLICK_CATCHER).evaluate(element => document.activeElement === element),
       'the pointer-only catcher must not take browser focus',
     ).toBe(false);
-    expect(await ui.player.clickThroughCount(), 'a click on the creative must open the click-through').toBe(1);
+    expect(await ui.player.openedUrls(), 'a click on the creative must open the click-through').toEqual([
+      CLICK_THROUGH_URL,
+    ]);
+    expect(await ui.player.clickThroughCount(), 'the opened click-through must be reported to the ad').toBe(1);
   });
 
   test(`a creative without a destination stays transparent to clicks, ${hostPage}`, async ({ page }) => {
@@ -62,6 +66,7 @@ for (const hostReset of [false, true]) {
     await page.locator('#player').click();
 
     expect(await ui.player.clickThroughCount(), 'no destination means no click-through').toBe(0);
+    expect(await ui.player.openedUrls()).toEqual([]);
   });
 }
 

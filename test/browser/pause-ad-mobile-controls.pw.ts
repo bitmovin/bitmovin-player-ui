@@ -47,6 +47,7 @@ test('double taps seek in both directions during a clickable mobile pause ad wit
   await expect.poll(() => ui.player.currentTime()).toBe(initialTime);
   await page.clock.runFor(250);
   expect(await ui.player.clickThroughCount()).toBe(0);
+  expect(await ui.player.openedUrls()).toEqual([]);
 });
 
 test('a single mobile tap opens the creative once after the double-tap window', async ({ page }) => {
@@ -59,6 +60,7 @@ test('a single mobile tap opens the creative once after the double-tap window', 
   expect(await ui.player.clickThroughCount(), 'wait for a possible second tap').toBe(0);
   await page.clock.runFor(250);
 
+  expect(await ui.player.openedUrls()).toEqual([CLICK_THROUGH_URL]);
   expect(await ui.player.clickThroughCount()).toBe(1);
   expect(await ui.player.currentTime()).toBe(0);
 });
@@ -81,6 +83,7 @@ for (const lifecycle of ['finish', 'unload', 'replace'] as const) {
     await page.clock.runFor(250);
 
     expect(await ui.player.clickThroughCount()).toBe(0);
+    expect(await ui.player.openedUrls()).toEqual([]);
     expect(await ui.player.currentTime()).toBe(0);
   });
 }
@@ -97,4 +100,5 @@ test('switching away from the mobile UI cancels a pending click-through', async 
   await page.clock.runFor(250);
 
   expect(await ui.player.clickThroughCount()).toBe(0);
+  expect(await ui.player.openedUrls()).toEqual([]);
 });
