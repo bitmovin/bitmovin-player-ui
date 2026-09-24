@@ -2,7 +2,7 @@ import { Ad, AdEvent, PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmov
 import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
 import { i18n } from '../../localization/i18n';
-import { NON_LINEAR_AD_ENDED_EVENTS, NON_LINEAR_AD_STARTED_EVENTS } from '../../utils/NonLinearAdEvents';
+import { NON_LINEAR_AD_ENDED_EVENTS, NON_LINEAR_AD_STARTED_EVENT } from '../../utils/NonLinearAdEvents';
 import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
 import { Container, ContainerConfig } from '../Container';
 import { Label } from '../labels/Label';
@@ -92,9 +92,10 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
     super.configure(player, uimanager);
     this.uiContainerElement = uimanager.getUI().getDomElement();
 
-    NON_LINEAR_AD_STARTED_EVENTS.forEach(eventType => {
-      player.on(eventType as PlayerEvent, this.handleNonLinearAdStarted as PlayerEventCallback<PlayerEvent>);
-    });
+    player.on(
+      NON_LINEAR_AD_STARTED_EVENT as PlayerEvent,
+      this.handleNonLinearAdStarted as PlayerEventCallback<PlayerEvent>,
+    );
     NON_LINEAR_AD_ENDED_EVENTS.forEach(eventType => {
       player.on(eventType as PlayerEvent, this.handleNonLinearAdEnded as PlayerEventCallback<PlayerEvent>);
     });

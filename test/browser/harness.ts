@@ -112,7 +112,7 @@ export interface BrowserPlayerController {
   tick(times?: number): Promise<void>;
 
   /**
-   * Pauses playback if needed, then starts a non-linear pause ad using the alternate supported event name.
+   * Pauses playback if needed, then starts a non-linear pause ad.
    *
    * The ad carries the producer-assigned `clickThroughUrlOpened` callback the UI invokes when the
    * user clicks the creative; {@link BrowserPlayerController.clickThroughCount} reports how often it
@@ -120,7 +120,7 @@ export interface BrowserPlayerController {
    */
   startPauseAd(options?: PauseAdOptions): Promise<void>;
 
-  /** Ends a pause ad using the alternate supported event name. */
+  /** Ends a pause ad. */
   finishPauseAd(id?: string): Promise<void>;
 
   /** Emits the source-unloaded lifecycle event. */
@@ -274,7 +274,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
             const activeAdId = browserWindow.__activePauseAdId;
             if (activeAdId) {
               browserWindow.__activePauseAdId = undefined;
-              fire('onNonLinearAdSkipped', { ad: { id: activeAdId } });
+              fire('nonlinearadskipped', { ad: { id: activeAdId } });
             }
           },
         },
@@ -349,8 +349,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           browserWindow.__pausePlayback();
           browserWindow.__clickThroughCount = 0;
           browserWindow.__activePauseAdId = 'pause-ad-1';
-          // Exercise the alternate event name because the UI supports both spellings.
-          browserWindow.__fire('onNonLinearAdStarted', {
+          browserWindow.__fire('nonlinearadstarted', {
             ad: {
               id: 'pause-ad-1',
               clickThroughUrl: url,
@@ -368,7 +367,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           if (browserWindow.__activePauseAdId === adId) {
             browserWindow.__activePauseAdId = undefined;
           }
-          browserWindow.__fire('onNonLinearAdFinished', { ad: { id: adId } });
+          browserWindow.__fire('nonlinearadfinished', { ad: { id: adId } });
         }, id);
       },
       unloadSource: async () => {

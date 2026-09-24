@@ -136,14 +136,6 @@ describe('PauseAdStatusOverlay', () => {
     expect(i18n.performLocalization(getDismissButton().getConfig().text)).toBe('Schließen');
   });
 
-  it('shows pause-ad status for native non-linear ad started events', () => {
-    playerMock.eventEmitter.fireNativeNonLinearAdStartedEvent();
-
-    expect(pauseAdStatusOverlay.isShown()).toBe(true);
-    expect(getDismissButton().isShown()).toBe(true);
-    expect(uiContainerElementMock.addClass).toHaveBeenCalledWith(getPauseAdActiveClass());
-  });
-
   it('skips the ad when Dismiss is clicked and hides the status once the skip is confirmed', () => {
     firePauseAdStarted({ id: 'pause-ad' });
 
@@ -153,7 +145,7 @@ describe('PauseAdStatusOverlay', () => {
     expect(pauseAdStatusOverlay.isShown()).toBe(true);
     expect(getDismissButton().isShown()).toBe(true);
 
-    playerMock.eventEmitter.fireNativeNonLinearAdSkippedEvent({ id: 'pause-ad' });
+    playerMock.eventEmitter.fireNonLinearAdSkippedEvent({ id: 'pause-ad' });
 
     expect(pauseAdStatusOverlay.isHidden()).toBe(true);
     expect(getDismissButton().isHidden()).toBe(true);
@@ -174,19 +166,6 @@ describe('PauseAdStatusOverlay', () => {
     firePauseAdStarted({ id: 'pause-ad' });
 
     playerMock.eventEmitter.fireNonLinearAdSkippedEvent({ id: 'pause-ad' });
-
-    expect(pauseAdStatusOverlay.isHidden()).toBe(true);
-    expect(getDismissButton().isHidden()).toBe(true);
-    expect(uiContainerElementMock.removeClass).toHaveBeenCalledWith(getPauseAdActiveClass());
-  });
-
-  it.each([
-    ['finished', () => playerMock.eventEmitter.fireNativeNonLinearAdFinishedEvent({ id: 'pause-ad' })],
-    ['skipped', () => playerMock.eventEmitter.fireNativeNonLinearAdSkippedEvent({ id: 'pause-ad' })],
-  ])('hides the pause-ad status on native non-linear ad %s events', (_eventName, fireEvent) => {
-    firePauseAdStarted({ id: 'pause-ad' });
-
-    fireEvent();
 
     expect(pauseAdStatusOverlay.isHidden()).toBe(true);
     expect(getDismissButton().isHidden()).toBe(true);

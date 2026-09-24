@@ -26,7 +26,7 @@ import { ResumePositionTracker } from './utils/ResumePositionTracker';
 import { ComponentConfigManager } from './utils/ComponentConfigManager';
 import { ComponentLayoutOverrideProcessor } from './utils/ComponentLayoutOverrideProcessor';
 import { UIComponentLayoutOverride } from './UIComponentLayoutOverrides';
-import { NON_LINEAR_AD_EVENTS, NON_LINEAR_AD_STARTED_EVENTS } from './utils/NonLinearAdEvents';
+import { NON_LINEAR_AD_EVENTS, NON_LINEAR_AD_STARTED_EVENT } from './utils/NonLinearAdEvents';
 
 /**
  * @category Configs
@@ -551,7 +551,7 @@ export class UIManager {
 
     // Save the start event so a lazily created UI variant can initialize while the pause ad is active.
     const updateActiveNonLinearAd = (event: AdEvent) => {
-      if (NON_LINEAR_AD_STARTED_EVENTS.indexOf(event.type) !== -1) {
+      if (event.type === NON_LINEAR_AD_STARTED_EVENT) {
         this.activeNonLinearAdStartedEvent = event;
       } else {
         const activeAdId = this.activeNonLinearAdStartedEvent?.ad?.id;
