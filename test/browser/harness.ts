@@ -22,6 +22,7 @@ interface BrowserTestWindow extends Window {
   };
   __fire(event: string, data?: object): void;
   __setSourceLoaded(sourceLoaded: boolean): void;
+  __pausePlayback(): void;
   __ui?: unknown;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
@@ -103,13 +104,13 @@ export interface BrowserPlayerController {
   /**
    * Replays deterministic player clock updates without actual playback.
    *
-   * The stub holds `getCurrentTime()` constant so layout tests can separate self-measurement bugs
-   * from legitimate size changes caused by longer time-label content.
+   * Always reports time 0, and `getCurrentTime()` only changes through `seek()`, so layout tests can
+   * separate self-measurement bugs from legitimate size changes caused by longer time-label content.
    */
   tick(times?: number): Promise<void>;
 
   /**
-   * Starts a non-linear pause ad using the alternate supported event name.
+   * Pauses playback if needed, then starts a non-linear pause ad using the alternate supported event name.
    *
    * The ad carries the producer-assigned `clickThroughUrlOpened` callback the UI invokes when the
    * user clicks the creative; {@link BrowserPlayerController.clickThroughCount} reports how often it
@@ -294,6 +295,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         setVolume: (): void => undefined,
         setAudio: (): void => undefined,
       };
+      browserWindow.__pausePlayback = () => {
+        if (playing) {
+          player.pause();
+        }
+      };
 
       const uiConfig = {
         // Auto-hide would leave the control bar at opacity 0. It stays measurable either way, but
@@ -327,6 +333,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       startPauseAd: async ({ clickThroughUrl }: PauseAdOptions = {}) => {
         await page.evaluate(url => {
           const browserWindow = window as unknown as BrowserTestWindow;
+          // A pause ad only starts once playback is paused.
+          browserWindow.__pausePlayback();
           browserWindow.__clickThroughCount = 0;
           browserWindow.__activePauseAdId = 'pause-ad-1';
           // Exercise the alternate event name because the UI supports both spellings.
