@@ -7,13 +7,14 @@
 
     @include hidden;
 
-    // Cue boxes are positioned against this element, so the title-safe inset has
-    // to live here to reach WebVTT cues and not just default-region subtitles.
-    bottom: calc(2em + env(safe-area-inset-bottom, 0px));
-    left: calc(3em + env(safe-area-inset-left, 0px));
+    bottom: env(safe-area-inset-bottom, 0);
+    left: env(safe-area-inset-left, 0);
+    // Title-safe margins keep subtitles clear of the picture edges. They sit on the overlay because every
+    // subtitle box positions against it, and overriding the overlay's offsets leaves them in place.
+    margin: 0 3em 2em;
     pointer-events: none;
     position: absolute;
-    right: calc(3em + env(safe-area-inset-right, 0px));
+    right: env(safe-area-inset-right, 0);
     text-align: center;
     top: env(safe-area-inset-top, 0);
     transition: bottom $animation-duration-short ease-out;
@@ -108,7 +109,7 @@
 
     // Move the subtitle up above the controlbar when it appears to avoid them overlapping
     &.#{$prefix}-controlbar-visible {
-      bottom: calc(7em + env(safe-area-inset-bottom, 0px));
+      bottom: 5em;
       transition: bottom $animation-duration-short ease-in;
     }
   }
