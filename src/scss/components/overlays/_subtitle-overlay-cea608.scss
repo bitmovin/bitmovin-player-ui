@@ -6,6 +6,8 @@
   &.#{$prefix}-cea608 {
     bottom: 2em;
     left: 3em;
+    // CEA-608 positions captions with these offsets instead of the overlay's title-safe margins.
+    margin: 0;
     right: 3em;
     top: 2em;
 
