@@ -70,6 +70,19 @@ test('a pause ad moves remote focus to Dismiss and keeps the centered playback c
   ).toBeVisible();
 });
 
+test('finishing a pause ad restores focus to the centered playback control', async ({ page }) => {
+  const ui = await mountTvUi(page, { live: false });
+  const centeredPlaybackButton = page.locator(CENTERED_PLAYBACK_BUTTON);
+
+  await expect(centeredPlaybackButton, 'the centered playback control should start focused').toBeFocused();
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  await expect(page.getByRole('button', { name: 'Close' })).toBeFocused();
+
+  await ui.player.finishPauseAd();
+
+  await expect(centeredPlaybackButton, 'focus should return after the control becomes visible again').toBeFocused();
+});
+
 test('a pause ad lets the remote scrub the seek bar, commit with Enter, and cancel with BACK', async ({ page }) => {
   const ui = await mountTvUi(page, { live: false });
 

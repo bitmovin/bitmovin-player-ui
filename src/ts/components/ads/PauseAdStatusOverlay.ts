@@ -178,7 +178,7 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
     this.dismissButton.hide();
     this.clickCatcher.hide();
     this.activePauseAd = undefined;
-    this.hide();
     this.uiContainerElement?.removeClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
+    this.hide();
   };
 }
