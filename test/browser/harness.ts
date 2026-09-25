@@ -85,6 +85,8 @@ export interface MountOptions {
   factory?: 'default' | 'smallScreen' | 'tv';
   /** Use a mobile user agent so the UI factory selects touch controls. */
   mobile?: boolean;
+  /** UI control auto-hide delay. Defaults to disabled so layout tests stay visible while debugging. */
+  hideDelay?: number;
   /** Available video qualities for scenarios that need a quality Settings row. */
   videoQualities?: { id: string; label: string }[];
   /**
@@ -162,6 +164,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     factory = 'default',
     metadata = {},
     mobile = false,
+    hideDelay = -1,
     videoQualities = [],
   } = options;
 
@@ -189,7 +192,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -316,7 +319,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       const uiConfig = {
         // Auto-hide would leave the control bar at opacity 0. It stays measurable either way, but
         // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
-        componentConfigOverrides: { UIContainer: { hideDelay: -1 } },
+        componentConfigOverrides: { UIContainer: { hideDelay } },
         metadata: uiMetadata,
       };
       switch (uiFactory) {
@@ -335,7 +338,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         }
       }
     },
-    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities },
+    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities, hideDelay },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);

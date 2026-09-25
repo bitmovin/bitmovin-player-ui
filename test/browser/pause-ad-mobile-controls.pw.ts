@@ -27,6 +27,7 @@ test('double taps seek in both directions during a clickable mobile pause ad wit
   await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
   const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true });
+  await page.clock.runFor(20);
   await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 
   const bounds = await page.locator('.bmpui-ui-touch-control-overlay').boundingBox();
@@ -50,10 +51,55 @@ test('double taps seek in both directions during a clickable mobile pause ad wit
   expect(await ui.player.openedUrls()).toEqual([]);
 });
 
+test('a tap restores controls hidden by a center double tap before a later tap opens the ad', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
+  const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true, hideDelay: 60_000 });
+  await page.clock.runFor(20);
+
+  const touchOverlay = page.locator('.bmpui-ui-touch-control-overlay');
+  const uiContainer = page.locator('.bmpui-ui-uicontainer');
+  const bounds = await touchOverlay.boundingBox();
+  if (!bounds) {
+    throw new Error('the mobile gesture surface must be laid out');
+  }
+  const center = {
+    x: bounds.x + bounds.width / 2,
+    y: bounds.y + bounds.height / 2,
+  };
+
+  await page.touchscreen.tap(center.x, center.y);
+  await page.clock.runFor(250);
+  await expect(uiContainer, 'controls should start visible').toHaveClass(/bmpui-controls-shown/);
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  await page.touchscreen.tap(center.x, center.y);
+  await page.touchscreen.tap(center.x, center.y);
+  await page.clock.runFor(250);
+  await expect(uiContainer, 'a center double tap should hide the controls').toHaveClass(/bmpui-controls-hidden/);
+
+  await page.touchscreen.tap(center.x, center.y);
+  await page.clock.runFor(250);
+
+  await expect(uiContainer, 'the first tap with hidden controls should reveal them').toHaveClass(
+    /bmpui-controls-shown/,
+  );
+  expect(await ui.player.openedUrls(), 'revealing controls must not open the ad').toEqual([]);
+  expect(await ui.player.clickThroughCount(), 'revealing controls must not track a click').toBe(0);
+
+  await page.touchscreen.tap(center.x, center.y);
+  await page.clock.runFor(250);
+
+  expect(await ui.player.openedUrls(), 'a later tap with visible controls should still open the ad').toEqual([
+    CLICK_THROUGH_URL,
+  ]);
+  expect(await ui.player.clickThroughCount()).toBe(1);
+});
+
 test('a single mobile tap opens the creative once after the double-tap window', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
   const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true });
+  await page.clock.runFor(20);
   await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 
   await page.locator('.bmpui-ui-touch-control-overlay').tap();
@@ -69,6 +115,7 @@ test('tapping Close ends a clickable mobile pause ad without opening it', async 
   await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
   const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true });
+  await page.clock.runFor(20);
   await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
   const dismiss = page.getByRole('button', { name: 'Close', exact: true });
 
@@ -87,6 +134,7 @@ for (const lifecycle of ['finish', 'unload', 'replace'] as const) {
     await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
     await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
     const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true });
+    await page.clock.runFor(20);
     await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 
     await page.locator('.bmpui-ui-touch-control-overlay').tap();
@@ -109,6 +157,7 @@ test('switching away from the mobile UI cancels a pending click-through', async 
   await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
   const ui = await mountUi(page, { live: false, mobile: true });
+  await page.clock.runFor(20);
   await ui.player.resize(640);
   await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
 

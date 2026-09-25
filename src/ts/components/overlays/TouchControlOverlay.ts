@@ -47,7 +47,8 @@ export interface TouchControlOverlayConfig extends ContainerConfig {
   /**
    * Supplies an optional action for a single tap instead of toggling the controls. Called on the first tap;
    * the returned action runs after `seekDoubleTapTimeout` unless another tap cancels it. Return `undefined`
-   * to use the normal controls toggle. Double-tap seeking is unchanged.
+   * to use the normal controls toggle. A tap always reveals hidden controls before this action can run.
+   * Double-tap seeking is unchanged.
    */
   singleTapAction?: () => (() => void) | undefined;
 }
@@ -254,7 +255,7 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
         this.pendingSingleTapAction = undefined;
         this.onDoubleClickEvent(e);
       } else {
-        this.pendingSingleTapAction = this.config.singleTapAction?.();
+        this.pendingSingleTapAction = areControlsVisible ? this.config.singleTapAction?.() : undefined;
         this.onSingleClickEvent(e);
       }
       this.couldBeDoubleTapping = true;
