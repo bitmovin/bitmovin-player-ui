@@ -43,6 +43,14 @@ export interface TouchControlOverlayConfig extends ContainerConfig {
    * Default: 200ms
    */
   seekDoubleTapTimeout?: number;
+
+  /**
+   * Supplies an optional action for a single tap instead of toggling the controls. Called on the first tap;
+   * the returned action runs after `seekDoubleTapTimeout` unless another tap cancels it. Return `undefined`
+   * to use the normal controls toggle. A tap always reveals hidden controls before this action can run.
+   * Double-tap seeking is unchanged.
+   */
+  singleTapAction?: () => (() => void) | undefined;
 }
 
 interface ClickPosition {
@@ -71,6 +79,9 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
   // true if the last tap on the overlay was less than 500msec ago
   private couldBeDoubleTapping: Boolean;
   private doubleTapTimeout: Timeout;
+  private pendingSingleTapAction?: () => void;
+  private hideSeekAnimationTimeout?: ReturnType<typeof setTimeout>;
+  private unsubscribeInactive?: () => void;
 
   private latestTapPosition: ClickPosition;
 
@@ -115,10 +126,17 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     let startSeekTime = 0;
 
     this.doubleTapTimeout = new Timeout(this.config.seekDoubleTapTimeout, () => {
+      const singleTapAction = this.pendingSingleTapAction;
+      this.pendingSingleTapAction = undefined;
       this.couldBeDoubleTapping = false;
       startSeekTime = 0;
-      setTimeout(() => this.hideSeekAnimationElements(), 150);
+      this.hideSeekAnimationTimeout = setTimeout(() => this.hideSeekAnimationElements(), 150);
+      singleTapAction?.();
     });
+
+    player.on(player.exports.PlayerEvent.SourceUnloaded, this.cancelPendingTap);
+    uimanager.onInactive.subscribe(this.cancelPendingTap);
+    this.unsubscribeInactive = () => uimanager.onInactive.unsubscribe(this.cancelPendingTap);
 
     let isBufferingOverlayVisible = false;
     let areControlsVisible = false;
@@ -186,7 +204,9 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
     });
 
     this.touchControlEvents.onSingleClick.subscribe((_, e) => {
-      uimanager.getUI().toggleUiShown();
+      if (!this.pendingSingleTapAction) {
+        uimanager.getUI().toggleUiShown();
+      }
       playerSeekTime = player.getCurrentTime();
       startSeekTime = playerSeekTime;
 
@@ -232,13 +252,29 @@ export class TouchControlOverlay extends Container<TouchControlOverlayConfig> {
 
     const clickEventDispatcher = (e: Event): void => {
       if (this.couldBeDoubleTapping) {
+        this.pendingSingleTapAction = undefined;
         this.onDoubleClickEvent(e);
       } else {
+        this.pendingSingleTapAction = areControlsVisible ? this.config.singleTapAction?.() : undefined;
         this.onSingleClickEvent(e);
       }
       this.couldBeDoubleTapping = true;
       this.doubleTapTimeout.start();
     };
+  }
+
+  private readonly cancelPendingTap = (): void => {
+    this.pendingSingleTapAction = undefined;
+    this.couldBeDoubleTapping = false;
+    this.doubleTapTimeout?.clear();
+    clearTimeout(this.hideSeekAnimationTimeout);
+    this.hideSeekAnimationElements();
+  };
+
+  release(): void {
+    this.cancelPendingTap();
+    this.unsubscribeInactive?.();
+    super.release();
   }
 
   private hideSeekAnimationElements(): void {

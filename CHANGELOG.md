@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `PauseAdStatusOverlay` to show an Ad badge and a Close button over pause ads in the default, small-screen, and TV layouts. Clicking the creative opens its click-through while the player controls stay usable.
+- `TouchControlOverlayConfig.singleTapAction` and `PauseAdStatusOverlay.getClickThroughAction()` to open a pause-ad click-through on a single tap without breaking double-tap seeking.
+
 ## [4.21.1] - 2026-09-17
 
 ### Fixed
