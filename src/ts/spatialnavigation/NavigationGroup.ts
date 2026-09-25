@@ -293,8 +293,12 @@ export class NavigationGroup {
     // Keep the saved component while the visible panel is only interrupted by another group (e.g. a pause ad),
     // including when the panel was already disabled before its hide event arrives.
     if (isSettingsPanel(this.container) && !this.container.isShown()) {
-      this.activeComponentBeforeDisable = undefined;
+      this.clearActiveComponentBeforeDisable();
     }
+  }
+
+  protected clearActiveComponentBeforeDisable(): void {
+    this.activeComponentBeforeDisable = undefined;
   }
 
   /**

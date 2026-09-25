@@ -32,6 +32,16 @@ export class PauseAdNavigationGroup extends NavigationGroup {
     return super.defaultActionHandler(action);
   }
 
+  public disable(): void {
+    super.disable();
+
+    // Keep the saved target while another visible group (such as Settings) interrupts this ad.
+    // Once the ad overlay itself closes, the next ad must start at its Close action again.
+    if (!this.container.isShown()) {
+      this.clearActiveComponentBeforeDisable();
+    }
+  }
+
   public release(): void {
     this.seekBarHandler.release();
     super.release();

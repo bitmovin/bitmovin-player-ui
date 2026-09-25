@@ -83,6 +83,21 @@ test('finishing a pause ad restores focus to the centered playback control', asy
   await expect(centeredPlaybackButton, 'focus should return after the control becomes visible again').toBeFocused();
 });
 
+test('each pause ad initially focuses Close instead of a control remembered from the previous ad', async ({ page }) => {
+  const ui = await mountTvUi(page, { live: false });
+  const dismiss = page.getByRole('button', { name: 'Close' });
+  const seekBar = page.getByRole('slider');
+
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  await page.keyboard.press('ArrowDown');
+  await expect(seekBar, 'the first ad should remember a non-default focus target').toBeFocused();
+  await ui.player.finishPauseAd();
+
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+
+  await expect(dismiss, 'a new ad should start at its Close action').toBeFocused();
+});
+
 test('a pause ad lets the remote scrub the seek bar, commit with Enter, and cancel with BACK', async ({ page }) => {
   const ui = await mountTvUi(page, { live: false });
 

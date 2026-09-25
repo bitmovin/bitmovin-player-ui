@@ -10,6 +10,7 @@ import { mockClass } from '../helper/mockClass';
 describe('PauseAdNavigationGroup', () => {
   let pauseAdStatusOverlayMock: jest.Mocked<PauseAdStatusOverlay>;
   let dismissButton: Button<ButtonConfig>;
+  let secondaryButton: Button<ButtonConfig>;
   let pauseAdNavigationGroup: PauseAdNavigationGroup;
 
   beforeEach(() => {
@@ -17,14 +18,35 @@ describe('PauseAdNavigationGroup', () => {
     pauseAdStatusOverlayMock = mockClass(PauseAdStatusOverlay);
     (pauseAdStatusOverlayMock as { dismissButton: Button<ButtonConfig> }).dismissButton = dismissButton;
     pauseAdStatusOverlayMock.hide = jest.fn();
+    secondaryButton = new Button({});
 
-    pauseAdNavigationGroup = new PauseAdNavigationGroup(pauseAdStatusOverlayMock);
+    pauseAdNavigationGroup = new PauseAdNavigationGroup(pauseAdStatusOverlayMock, secondaryButton);
   });
 
   it('should make the dismiss button the first focus target', () => {
     pauseAdNavigationGroup.focusFirstComponent();
 
     expect(pauseAdNavigationGroup.getActiveComponent()).toBe(dismissButton);
+  });
+
+  it('should forget the previous ad focus when its overlay is hidden', () => {
+    pauseAdStatusOverlayMock.isShown.mockReturnValue(false);
+    pauseAdNavigationGroup['activeComponent'] = secondaryButton;
+
+    pauseAdNavigationGroup.disable();
+    pauseAdNavigationGroup.enable();
+
+    expect(pauseAdNavigationGroup.getActiveComponent()).toBe(dismissButton);
+  });
+
+  it('should restore focus when temporarily disabled during the same ad', () => {
+    pauseAdStatusOverlayMock.isShown.mockReturnValue(true);
+    pauseAdNavigationGroup['activeComponent'] = secondaryButton;
+
+    pauseAdNavigationGroup.disable();
+    pauseAdNavigationGroup.enable();
+
+    expect(pauseAdNavigationGroup.getActiveComponent()).toBe(secondaryButton);
   });
 
   describe('defaultActionHandler', () => {
