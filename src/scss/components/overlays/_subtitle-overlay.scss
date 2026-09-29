@@ -9,6 +9,9 @@
 
     bottom: env(safe-area-inset-bottom, 0);
     left: env(safe-area-inset-left, 0);
+    // Title-safe margins keep subtitles clear of the picture edges. They sit on the overlay because every
+    // subtitle box positions against it, and overriding the overlay's offsets leaves them in place.
+    margin: 0 3em 2em;
     pointer-events: none;
     position: absolute;
     right: env(safe-area-inset-right, 0);
@@ -49,9 +52,9 @@
       position: absolute;
 
       &.#{$prefix}-subtitle-position-default {
-        bottom: 2em;
-        left: 3em;
-        right: 3em;
+        bottom: 0;
+        left: 0;
+        right: 0;
         top: initial;
       }
 
