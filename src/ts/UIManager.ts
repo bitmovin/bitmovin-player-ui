@@ -26,6 +26,7 @@ import { ResumePositionTracker } from './utils/ResumePositionTracker';
 import { ComponentConfigManager } from './utils/ComponentConfigManager';
 import { ComponentLayoutOverrideProcessor } from './utils/ComponentLayoutOverrideProcessor';
 import { UIComponentLayoutOverride } from './UIComponentLayoutOverrides';
+import { NON_LINEAR_AD_EVENTS, NON_LINEAR_AD_STARTED_EVENT } from './utils/NonLinearAdEvents';
 
 /**
  * @category Configs
@@ -262,6 +263,7 @@ export class UIManager {
   private recommendationsApi: RecommendationsApi;
   private timelineMarkersApi: TimelineMarkersApi;
   private componentLayoutOverrideProcessor: ComponentLayoutOverrideProcessor;
+  private activeNonLinearAdStartedEvent?: AdEvent;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -547,6 +549,25 @@ export class UIManager {
 
     let adStartedEvent: AdEvent = null; // keep the event stored here during ad playback
 
+    // Save the start event so a lazily created UI variant can initialize while the pause ad is active.
+    const updateActiveNonLinearAd = (event: AdEvent) => {
+      if (event.type === NON_LINEAR_AD_STARTED_EVENT) {
+        this.activeNonLinearAdStartedEvent = event;
+      } else {
+        const activeAdId = this.activeNonLinearAdStartedEvent?.ad?.id;
+        const eventAdId = event.ad?.id;
+        if (!activeAdId || !eventAdId || activeAdId === eventAdId) {
+          this.activeNonLinearAdStartedEvent = undefined;
+        }
+      }
+    };
+    NON_LINEAR_AD_EVENTS.forEach(eventType => {
+      wrappedPlayer.on(eventType as PlayerEvent, updateActiveNonLinearAd as PlayerEventCallback<PlayerEvent>);
+    });
+    wrappedPlayer.on(player.exports.PlayerEvent.SourceUnloaded, () => {
+      this.activeNonLinearAdStartedEvent = undefined;
+    });
+
     let isSourceLoaded = player.getSource() != null;
     player.on(player.exports.PlayerEvent.SourceLoaded, () => {
       isSourceLoaded = true;
@@ -743,6 +764,11 @@ export class UIManager {
       if (!currentUiContainer.isHidden()) {
         currentUiContainer.hide();
       }
+      if (this.activeNonLinearAdStartedEvent) {
+        this.currentUi
+          .getWrappedPlayer()
+          .fireEventInUI(this.activeNonLinearAdStartedEvent.type as PlayerEvent, this.activeNonLinearAdStartedEvent);
+      }
     }
     if (onShow) {
       onShow();
@@ -877,6 +903,7 @@ export class UIManager {
     for (const uiInstanceManager of this.uiInstanceManagers) {
       this.releaseUi(uiInstanceManager);
     }
+    this.activeNonLinearAdStartedEvent = undefined;
     this.managerPlayerWrapper.clearEventHandlers();
     this.uiPreferencesManager.release();
     this.focusVisibilityTracker.release();
