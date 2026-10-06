@@ -15,8 +15,8 @@ const HIDE_DELAY = 600_000;
 // to the ads UI so a measurement can never pick up the hidden main layout's overlay.
 const ADS_UI = '.bmpui-ui-uicontainer.bmpui-ui-ads';
 
-async function mountAdUi(page: Page, factory: NonNullable<MountOptions['factory']>): Promise<void> {
-  const ui = await mountUi(page, { factory, live: false, hideDelay: HIDE_DELAY });
+async function mountAdUi(page: Page, factory: NonNullable<MountOptions['factory']>, hostReset: boolean): Promise<void> {
+  const ui = await mountUi(page, { factory, live: false, hideDelay: HIDE_DELAY, hostReset });
   await ui.player.startLinearAd();
   await ui.player.enterCue('Ad subtitle');
   await expect(page.locator(ADS_UI)).toBeVisible();
@@ -51,33 +51,39 @@ async function clearanceAboveControls(page: Page): Promise<number> {
   return seekBarRow.y - (await subtitleBottom(page));
 }
 
-for (const { name, factory } of VARIANTS) {
-  test.describe(name, () => {
-    test('shows the ad subtitle clear of the controls while they are hidden', async ({ page }) => {
-      await mountAdUi(page, factory);
+// Most host pages ship a global `box-sizing: border-box` reset and plenty do not, and it changes the measured
+// clearance, so cover both.
+for (const hostReset of [false, true]) {
+  test.describe(`with${hostReset ? '' : 'out'} a global border-box reset`, () => {
+    for (const { name, factory } of VARIANTS) {
+      test.describe(name, () => {
+        test('shows the ad subtitle clear of the controls while they are hidden', async ({ page }) => {
+          await mountAdUi(page, factory, hostReset);
 
+          await hideControls(page);
+
+          await expect.poll(() => clearanceAboveControls(page)).toBeGreaterThanOrEqual(0);
+        });
+
+        test('keeps the ad subtitle clear of the controls while they are shown', async ({ page }) => {
+          await mountAdUi(page, factory, hostReset);
+
+          await showControls(page);
+
+          await expect.poll(() => clearanceAboveControls(page)).toBeGreaterThanOrEqual(0);
+        });
+      });
+    }
+
+    test('lifts the ad subtitle when the remaining ad controls appear', async ({ page }) => {
+      await mountAdUi(page, 'default', hostReset);
       await hideControls(page);
-
       await expect.poll(() => clearanceAboveControls(page)).toBeGreaterThanOrEqual(0);
-    });
-
-    test('keeps the ad subtitle clear of the controls while they are shown', async ({ page }) => {
-      await mountAdUi(page, factory);
+      const bottomWhileHidden = await subtitleBottom(page);
 
       await showControls(page);
 
-      await expect.poll(() => clearanceAboveControls(page)).toBeGreaterThanOrEqual(0);
+      await expect.poll(() => subtitleBottom(page)).toBeLessThan(bottomWhileHidden);
     });
   });
 }
-
-test('lifts the ad subtitle when the remaining ad controls appear', async ({ page }) => {
-  await mountAdUi(page, 'default');
-  await hideControls(page);
-  await expect.poll(() => clearanceAboveControls(page)).toBeGreaterThanOrEqual(0);
-  const bottomWhileHidden = await subtitleBottom(page);
-
-  await showControls(page);
-
-  await expect.poll(() => subtitleBottom(page)).toBeLessThan(bottomWhileHidden);
-});
