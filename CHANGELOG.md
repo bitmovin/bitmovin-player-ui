@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `SubtitleOverlay` to the `ads`, `smallScreenAds`, and `tvAds` layouts, so subtitles of an ad are displayed during linear ads. They are positioned above the ad seek bar and above the remaining ad controls while those are shown.
+
 ## [4.22.1] - 2026-10-01
 
 ### Fixed
