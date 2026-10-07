@@ -4,6 +4,25 @@ test.use({ hasTouch: true });
 
 const CLICK_THROUGH_URL = 'https://example.com/pause-ad';
 
+test('tapping the Ad badge does not open or dismiss the creative', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
+  const ui = await mountUi(page, { factory: 'smallScreen', live: false, mobile: true });
+  await page.clock.runFor(20);
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  const badge = page.locator('.bmpui-ui-pause-ad-status-badge');
+  await expect(badge).toBeVisible();
+  const bounds = await badge.boundingBox();
+  if (!bounds) throw new Error('the Ad badge must be laid out');
+
+  await page.touchscreen.tap(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.clock.runFor(250);
+
+  expect(await ui.player.openedUrls()).toEqual([]);
+  expect(await ui.player.clickThroughCount()).toBe(0);
+  expect(await ui.player.pauseAdActive()).toBe(true);
+});
+
 test('a mobile pause ad keeps touch seeking available and hides only its centered playback button', async ({
   page,
 }) => {

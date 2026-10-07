@@ -16,6 +16,21 @@ const CLICK_CATCHER = '.bmpui-ui-pause-ad-click-catcher';
 
 const CLICK_THROUGH_URL = 'https://example.com/pause-ad';
 
+test('clicking the Ad badge does not open or dismiss the creative', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  const badge = page.locator('.bmpui-ui-pause-ad-status-badge');
+  await expect(badge).toBeVisible();
+  const bounds = await badge.boundingBox();
+  if (!bounds) throw new Error('the Ad badge must be laid out');
+
+  await page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+
+  expect(await ui.player.openedUrls()).toEqual([]);
+  expect(await ui.player.clickThroughCount()).toBe(0);
+  expect(await ui.player.pauseAdActive()).toBe(true);
+});
+
 for (const hostReset of [false, true]) {
   const hostPage = hostReset ? 'host page with a global border-box reset' : 'host page with no CSS reset';
 

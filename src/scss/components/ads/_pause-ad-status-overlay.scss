@@ -75,6 +75,7 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   box-sizing: border-box;
   color: $color-highlight-ads;
   font-size: $font-size;
+  min-height: calc(#{$icon-size} + 1em);
   min-width: fit-content;
   padding: 0.5em 1em;
 
@@ -87,6 +88,7 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
 .#{$prefix}-ui-pause-ad-status-badge {
   @extend %ui-label;
 
+  pointer-events: auto;
   left: safe-area-max(1em, left);
   position: absolute;
   top: safe-area-max(1em, top);
