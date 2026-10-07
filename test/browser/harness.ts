@@ -125,6 +125,17 @@ export interface BrowserPlayerController {
   /** Ends a pause ad. */
   finishPauseAd(id?: string): Promise<void>;
 
+  /**
+   * Starts a linear ad that requests the UI, which makes the UI manager switch to its ads variant.
+   *
+   * Only emits the event the UI manager resolves its variant from. The stub still reports no active
+   * linear ad, because nothing in the browser scenarios reads it.
+   */
+  startLinearAd(): Promise<void>;
+
+  /** Emits a subtitle cue the way the player does while a subtitle track is active. */
+  enterCue(text: string): Promise<void>;
+
   /** Emits the source-unloaded lifecycle event. */
   unloadSource(): Promise<void>;
 
@@ -372,6 +383,24 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           }
           browserWindow.__fire('nonlinearadfinished', { ad: { id: adId } });
         }, id);
+      },
+      startLinearAd: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdStarted, {
+            ad: { id: 'linear-ad-1', isLinear: true, uiConfig: { requestsUi: true } },
+          });
+        });
+      },
+      enterCue: async (text: string) => {
+        await page.evaluate(cueText => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.CueEnter, {
+            text: cueText,
+            start: 0,
+            end: 10,
+          });
+        }, text);
       },
       unloadSource: async () => {
         await page.evaluate(() => {

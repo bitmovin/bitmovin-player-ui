@@ -382,6 +382,7 @@ export namespace UIFactory {
 
       return new UIContainer({
         components: [
+          new SubtitleOverlay(),
           new BufferingOverlay(),
           new AdClickOverlay(),
           new PlaybackToggleOverlay(),
@@ -520,6 +521,7 @@ export namespace UIFactory {
 
       return new UIContainer({
         components: [
+          new SubtitleOverlay(),
           new BufferingOverlay(),
           new AdClickOverlay(),
           new PlaybackToggleOverlay(),
@@ -706,6 +708,7 @@ export namespace UIFactory {
       const adStatusOverlay = new AdStatusOverlay();
       const uiContainer = new UIContainer({
         components: [
+          new SubtitleOverlay(),
           new BufferingOverlay(),
           new AdClickOverlay(),
           playbackToggleOverlay,

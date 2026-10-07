@@ -113,4 +113,18 @@
       transition: bottom $animation-duration-short ease-in;
     }
   }
+
+  // The ad control bar keeps its seek bar row visible while the remaining controls hide, and never reports itself
+  // as hidden or shown, so the pushup above does not apply. Follow the controls state of the ad UI instead.
+  &.#{$prefix}-ui-ads {
+    .#{$prefix}-ui-subtitle-overlay {
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 3em);
+    }
+
+    &:not(.#{$prefix}-ui-tv).#{$prefix}-controls-shown
+      .#{$prefix}-ui-subtitle-overlay:not(.#{$prefix}-cea608-pushup-disabled) {
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 5em);
+      transition: bottom $animation-duration-short ease-in;
+    }
+  }
 }
