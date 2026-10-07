@@ -2,8 +2,6 @@ import { i18n, LocalizableText } from '../../localization/i18n';
 import { UIInstanceManager } from '../../UIManager';
 import { LabelConfig } from '../labels/Label';
 import { LinearAd, PlayerAPI } from 'bitmovin-player';
-import { StringUtils } from '../../utils/StringUtils';
-import { AdBreakTracker, AdBreakTrackerAdCountChangedArgs } from '../../utils/AdBreakTracker';
 import { AdMessageLabel } from './AdMessageLabel';
 
 export interface AdCounterLabelConfig extends LabelConfig {
@@ -23,7 +21,6 @@ export interface AdCounterLabelConfig extends LabelConfig {
  */
 export class AdCounterLabel extends AdMessageLabel<AdCounterLabelConfig> {
   private player?: PlayerAPI;
-  private adBreakTracker?: AdBreakTracker;
 
   constructor(config: AdCounterLabelConfig = {}) {
     super(config);
@@ -43,20 +40,18 @@ export class AdCounterLabel extends AdMessageLabel<AdCounterLabelConfig> {
     super.configure(player, uimanager);
     this.player = player;
 
-    this.adBreakTracker = uimanager.getConfig().adBreakTracker;
-    this.adBreakTracker.onAdCountChanged.subscribe(this.adBreakTrackerAdCountChangedHandler);
+    this.adBreakTracker.onAdCountChanged.subscribe(this.adCountChangedHandler);
 
     // An ad break may already be ongoing when configure is called, in this case the onAdCountChanged event was missed
     // and the label is set here
     if (this.adBreakTracker.currentAdIndex > 0 && this.adBreakTracker.totalNumberOfAds > 0) {
-      this.setAdCounterFromAdBreakTracker(this.adBreakTracker.currentAdIndex, this.adBreakTracker.totalNumberOfAds);
+      this.updateAdMessage();
     }
   }
 
   release(): void {
-    this.adBreakTracker?.onAdCountChanged.unsubscribe(this.adBreakTrackerAdCountChangedHandler);
+    this.adBreakTracker?.onAdCountChanged.unsubscribe(this.adCountChangedHandler);
 
-    this.adBreakTracker = undefined;
     this.player = undefined;
 
     super.release();
@@ -64,47 +59,32 @@ export class AdCounterLabel extends AdMessageLabel<AdCounterLabelConfig> {
 
   protected onLanguageChanged(): void {
     if (this.adBreakTracker?.currentAdIndex > 0 || this.player?.ads?.isLinearAdActive?.()) {
-      this.setAdCounterFromAdBreakTracker(this.adBreakTracker?.currentAdIndex, this.adBreakTracker?.totalNumberOfAds);
+      this.updateAdMessage();
     }
   }
 
-  protected getAdMessage(player: PlayerAPI, ad?: LinearAd, currentAdIndex?: number, totalNumberOfAds?: number): string {
-    const resolvedCurrentAdIndex = currentAdIndex ?? this.adBreakTracker?.currentAdIndex;
-    const resolvedTotalNumberOfAds = totalNumberOfAds ?? this.adBreakTracker?.totalNumberOfAds;
-
-    if (resolvedCurrentAdIndex > 0 && resolvedTotalNumberOfAds > 1) {
-      return this.getAdCounterMessage(player, resolvedCurrentAdIndex, resolvedTotalNumberOfAds);
+  protected getMessageText(ad?: LinearAd): LocalizableText {
+    if (this.adBreakTracker?.currentAdIndex > 0 && this.adBreakTracker?.totalNumberOfAds > 1) {
+      return this.config.adCountOutOfTotal;
     }
 
-    return super.getAdMessage(player, ad);
+    return super.getMessageText(ad);
   }
 
-  private readonly adBreakTrackerAdCountChangedHandler = (
-    _: AdBreakTracker,
-    adBreakTrackerEvent: AdBreakTrackerAdCountChangedArgs,
-  ) => {
-    this.setAdCounterFromAdBreakTracker(adBreakTrackerEvent.currentAdIndex, adBreakTrackerEvent.totalNumberOfAds);
+  // The event only signals that the counts changed; the message is rendered from the tracker itself, like the
+  // language change and the ad time updates of the base class.
+  private readonly adCountChangedHandler = () => {
+    this.updateAdMessage();
   };
 
-  private setAdCounterFromAdBreakTracker(currentAdIndex?: number, totalNumberOfAds?: number) {
-    if (currentAdIndex === 0 && totalNumberOfAds === 0) {
+  private updateAdMessage(): void {
+    const activeAd = this.player.ads?.getActiveAd?.() as LinearAd;
+    if (this.adBreakTracker?.currentAdIndex === 0 && this.adBreakTracker?.totalNumberOfAds === 0 && !activeAd) {
       // No ad break active and no subsequent ad breaks
       this.setText('');
       return;
     }
 
-    this.setText(
-      this.getAdMessage(this.player, this.player.ads?.getActiveAd?.() as LinearAd, currentAdIndex, totalNumberOfAds),
-    );
-  }
-
-  private getAdCounterMessage(player: PlayerAPI, currentAdIndex?: number, totalNumberOfAds?: number): string {
-    return StringUtils.replaceAdMessagePlaceholders(
-      i18n.performLocalization(this.config.adCountOutOfTotal),
-      player,
-      undefined,
-      currentAdIndex,
-      totalNumberOfAds,
-    );
+    this.setText(this.getAdMessage(this.player, activeAd));
   }
 }
