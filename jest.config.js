@@ -5,6 +5,9 @@ module.exports = {
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
 
+  // Automatically restore prototype spy implementations back to their original value between every test
+  restoreMocks: true,
+
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
 
