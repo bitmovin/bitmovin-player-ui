@@ -40,26 +40,24 @@ describe('AdMessageLabel', () => {
     });
   });
 
-  describe('ad count placeholders', () => {
-    beforeEach(() => {
-      adMessageLabel = new AdMessageLabel({ text: 'Ad {activeAdIndex} of {totalAdsCount}' });
+  it('filters the break countdown without changing ordinary counts or per-ad timing', () => {
+    const ads = [
+      { id: 'ad-1', isLinear: true, duration: 10 },
+      { id: 'bumper', isLinear: true, duration: 2 },
+    ];
+    uiInstanceManagerMock.getConfig().adCountFilter = ad => ad?.id !== 'bumper';
+    playerMock.ads.getActiveAd = jest.fn().mockReturnValue(ads[0]);
+    playerMock.ads.getActiveAdBreak = jest.fn().mockReturnValue({ ads });
+    playerMock.ads.isLinearAdActive = jest.fn().mockReturnValue(true);
+    (playerMock.getCurrentTime as jest.Mock).mockReturnValue(3);
+    (playerMock.getDuration as jest.Mock).mockReturnValue(10);
+    adMessageLabel = new AdMessageLabel({
+      text: 'Ad {activeAdIndex} of {totalAdsCount}: {adBreakRemainingTime}, ad {remainingTime}',
     });
+    adMessageLabel.configure(playerMock, uiInstanceManagerMock);
 
-    it('fills the placeholders from the ad break tracker', () => {
-      (uiInstanceManagerMock.getConfig() as any).adBreakTracker = { currentAdIndex: 2, totalNumberOfAds: 5 };
-      adMessageLabel.configure(playerMock, uiInstanceManagerMock);
+    playerMock.eventEmitter.fireAdStartedEvent(ads[0]);
 
-      playerMock.eventEmitter.fireAdStartedEvent({});
-
-      expect(adMessageLabel.getText()).toEqual('Ad 2 of 5');
-    });
-
-    it('renders zero counts when no tracker is available', () => {
-      adMessageLabel.configure(playerMock, uiInstanceManagerMock);
-
-      playerMock.eventEmitter.fireAdStartedEvent({});
-
-      expect(adMessageLabel.getText()).toEqual('Ad 0 of 0');
-    });
+    expect(adMessageLabel.getText()).toEqual('Ad 1 of 2: 7, ad 7');
   });
 });

@@ -1,9 +1,9 @@
 import { Label, LabelConfig } from '../labels/Label';
-import { i18n, LocalizableText } from '../../localization/i18n';
+import { i18n } from '../../localization/i18n';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
 import { UIInstanceManager } from '../../UIManager';
 import { StringUtils } from '../../utils/StringUtils';
-import { AdBreakTracker } from '../../utils/AdBreakTracker';
+import type { AdCountFilter } from '../../UIConfig';
 
 /**
  * A label that displays a message about a running ad, optionally with a countdown.
@@ -12,12 +12,9 @@ import { AdBreakTracker } from '../../utils/AdBreakTracker';
  * - `{remainingTime[formatString]}` - Remaining time until the ad ends
  * - `{playedTime[formatString]}` - Current playback time of the ad
  * - `{adDuration[formatString]}` - Total duration of the current ad
- * - `{adBreakRemainingTime[formatString]}` - Remaining time for the entire ad break (including all remaining ads)
- * - `{activeAdIndex}` - Index of the currently playing ad
- * - `{totalAdsCount}` - Total number of ads
+ * - `{adBreakRemainingTime[formatString]}` - Remaining time for the current ad break
  *
- * The ad break placeholders are provided by the {@link AdBreakTracker}, which counts across ad breaks scheduled for
- * the same time and applies {@link UIConfig.adCountFilter}.
+ * Remaining break time applies {@link UIConfig.adCountFilter}.
  *
  * Format string options (optional):
  * - `%d` - Integer (e.g., `{remainingTime%d}` → `100`)
@@ -35,9 +32,7 @@ import { AdBreakTracker } from '../../utils/AdBreakTracker';
  * @category Labels
  */
 export class AdMessageLabel<Config extends LabelConfig = LabelConfig> extends Label<Config> {
-  // The ad counts of all messages come from the tracker, so that they stay consistent across ad UI components and
-  // honor UIConfig.adCountFilter and ad breaks scheduled at the same time.
-  protected adBreakTracker?: AdBreakTracker;
+  protected adCountFilter?: AdCountFilter;
 
   constructor(config: Config = {} as Config) {
     super(config);
@@ -53,7 +48,7 @@ export class AdMessageLabel<Config extends LabelConfig = LabelConfig> extends La
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
-    this.adBreakTracker = uimanager.getConfig().adBreakTracker;
+    this.adCountFilter = uimanager.getConfig().adCountFilter;
 
     let ad: LinearAd;
 
@@ -80,23 +75,15 @@ export class AdMessageLabel<Config extends LabelConfig = LabelConfig> extends La
     player.on(player.exports.PlayerEvent.SourceUnloaded, adEndHandler);
   }
 
-  release(): void {
-    this.adBreakTracker = undefined;
-
-    super.release();
-  }
-
-  /** The message to display for the given ad, before placeholders are filled in. */
-  protected getMessageText(ad?: LinearAd): LocalizableText {
-    return ad?.uiConfig?.message || this.config.text || '';
-  }
-
   protected getAdMessage(player: PlayerAPI, ad?: LinearAd): string {
+    const text = ad?.uiConfig?.message || this.config.text || '';
     return StringUtils.replaceAdMessagePlaceholders(
-      i18n.performLocalization(this.getMessageText(ad)),
+      i18n.performLocalization(text),
       player,
       undefined,
-      this.adBreakTracker,
+      undefined,
+      undefined,
+      this.adCountFilter,
     );
   }
 }

@@ -1,67 +1,6 @@
-import { Ad, AdBreak, AdBreakEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
+import { Ad, AdBreak, AdBreakEvent, PlayerAPI } from 'bitmovin-player';
 import { Event, EventDispatcher } from '../EventDispatcher';
 import type { AdCountFilter } from '../UIConfig';
-
-/**
- * An ad break retained by {@link AdBreakTracker}, reduced to the ads that the ad count filter includes.
- */
-class TrackedAdBreak {
-  constructor(
-    readonly adBreak: AdBreak,
-    private readonly shouldCountAd: AdCountFilter,
-    // IF ads not yet populated — if this is the active break, the active ad is its first ad
-    private readonly lastActiveAd?: Ad,
-  ) {}
-
-  get hasAds(): boolean {
-    return this.ads.length > 0;
-  }
-
-  get countedAds(): number {
-    if (!this.hasAds) {
-      return this.counts(this.lastActiveAd) ? 1 : 0;
-    }
-
-    return this.countAdsUpTo(this.ads.length - 1);
-  }
-
-  countAdsUpTo(index: number): number {
-    return this.countedAdsOf(this.ads.slice(0, index + 1)).length;
-  }
-
-  /** Total duration of the counted ads of this break, starting at `index`. */
-  countedDurationFrom(index: number = 0): number {
-    return this.countedAdsOf(this.ads.slice(index)).reduce((total, ad) => total + adDuration(ad), 0);
-  }
-
-  counts(ad: Ad): boolean {
-    return this.shouldCountAd(ad, this.adBreak);
-  }
-
-  indexOfAd(ad: Ad): number {
-    return this.ads.findIndex(breakAd => (breakAd.id != null && ad.id != null ? breakAd.id === ad.id : breakAd === ad));
-  }
-
-  /**
-   * On mobile, the Player may deserialize a new object for the same break on
-   * every event, so the stable break ID takes precedence over object identity.
-   */
-  isBreak(adBreak: AdBreak): boolean {
-    return adBreak.id != null && this.adBreak.id != null ? this.adBreak.id === adBreak.id : this.adBreak === adBreak;
-  }
-
-  private get ads(): Ad[] {
-    return this.adBreak.ads ?? [];
-  }
-
-  private countedAdsOf(ads: Ad[]): Ad[] {
-    return ads.filter(ad => this.shouldCountAd(ad, this.adBreak));
-  }
-}
-
-function adDuration(ad: Ad): number {
-  return ad.isLinear ? (ad as LinearAd).duration : 0;
-}
 
 export interface AdBreakTrackerAdCountChangedArgs {
   currentAdIndex: number;
@@ -83,7 +22,7 @@ export interface AdBreakTrackerAdCountChangedArgs {
 export class AdBreakTracker {
   // Ad breaks belonging to the current group, captured as each break starts.
   // The player removes finished breaks from `list()`, so we retain them here.
-  private groupBreaks: TrackedAdBreak[] = [];
+  private groupBreaks: { adBreak: AdBreak; lastActiveAd?: Ad }[] = [];
   // scheduleTime shared by the current group, or undefined when not in a group.
   private groupScheduleTime: number | undefined = undefined;
 
@@ -91,14 +30,10 @@ export class AdBreakTracker {
     onAdCountChanged: new EventDispatcher<AdBreakTracker, AdBreakTrackerAdCountChangedArgs>(),
   };
 
-  private readonly shouldCountAd: AdCountFilter;
-
   constructor(
     private readonly player: PlayerAPI,
-    adCountFilter: AdCountFilter = () => true,
+    private readonly shouldCountAd: AdCountFilter = () => true,
   ) {
-    this.shouldCountAd = adCountFilter;
-
     // Subsequent ad break detection is done in `AdStarted` because the ad UI variant is not yet configured when
     // the `AdBreakStarted` event fires
     player.on(player.exports.PlayerEvent.AdStarted, this.handleAdStarted);
@@ -125,18 +60,24 @@ export class AdBreakTracker {
     }
 
     let offset = 0;
-    for (const trackedBreak of this.groupBreaks) {
-      const activeAdIndex = trackedBreak.indexOfAd(activeAd);
-      if (activeAdIndex >= 0) {
-        return offset + trackedBreak.countAdsUpTo(activeAdIndex);
-      }
+    for (const { adBreak, lastActiveAd } of this.groupBreaks) {
+      const ads = adBreak.ads ?? [];
 
-      // ads not yet populated — if this is the active break, the active ad is its first ad
-      if (!trackedBreak.hasAds && activeBreak && trackedBreak.isBreak(activeBreak)) {
+      if (ads.length > 0) {
+        // ad.id/activeAd.id may be null/undefined, in which case we fall back to object reference comparison
+        const activeAdIndex = ads.findIndex(ad =>
+          activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd,
+        );
+
+        if (activeAdIndex >= 0) {
+          return offset + ads.slice(0, activeAdIndex + 1).filter(ad => this.shouldCountAd(ad, adBreak)).length;
+        }
+      } else if (activeBreak === adBreak || (activeBreak?.id != null && activeBreak.id === adBreak.id)) {
+        // Ads not yet populated — the active ad is the first ad of its break.
         return offset + 1;
       }
 
-      offset += trackedBreak.countedAds;
+      offset += this.countAds(adBreak, lastActiveAd);
     }
 
     // Active ad not found in any retained break — fall back to offset + 1
@@ -149,50 +90,16 @@ export class AdBreakTracker {
       return 0;
     }
 
-    const retainedCount = this.groupBreaks.reduce((sum, trackedBreak) => sum + trackedBreak.countedAds, 0);
-
-    const remainingScheduledCount = this.scheduledBreaksOfGroup().reduce(
-      (sum, adBreak) => sum + this.track(adBreak).countedAds,
+    const retainedCount = this.groupBreaks.reduce(
+      (sum, { adBreak, lastActiveAd }) => sum + this.countAds(adBreak, lastActiveAd),
       0,
     );
+
+    const remainingScheduledCount = (this.player.ads?.list?.() ?? [])
+      .filter(b => b.scheduleTime === this.groupScheduleTime)
+      .reduce((sum, adBreak) => sum + this.countAds(adBreak), 0);
 
     return retainedCount + remainingScheduledCount;
-  }
-
-  /**
-   * Remaining playback time of the counted ads, including the ad breaks of the group that have not started yet, or 0
-   * when no linear ad is active.
-   *
-   * Ads rejected by the filter are left out.
-   */
-  get adBreakRemainingTime(): number {
-    const activeAd = this.player.ads?.getActiveAd?.();
-    const activeBreak = this.player.ads?.getActiveAdBreak?.();
-    if (!this.player.ads?.isLinearAdActive?.() || !activeAd || !activeBreak) {
-      return 0;
-    }
-
-    const trackedActiveBreak = this.track(activeBreak);
-    const activeAdIndex = trackedActiveBreak.indexOfAd(activeAd);
-    const activeAdIsCounted = trackedActiveBreak.counts(activeAd);
-
-    // When the active ad cannot be located in its break, only its own remaining time is known
-    const remainingTimeOfActiveBreak =
-      activeAdIndex >= 0
-        ? trackedActiveBreak.countedDurationFrom(activeAdIndex)
-        : activeAdIsCounted
-          ? adDuration(activeAd)
-          : 0;
-
-    const remainingTimeOfScheduledBreaks = this.scheduledBreaksOfGroup().reduce(
-      (total, adBreak) => total + this.track(adBreak).countedDurationFrom(),
-      0,
-    );
-
-    // The played time is part of the active ad's duration, so it is only subtracted when that ad is counted
-    const playedTimeOfActiveAd = activeAdIsCounted ? this.player.getCurrentTime() : 0;
-
-    return remainingTimeOfActiveBreak + remainingTimeOfScheduledBreaks - playedTimeOfActiveAd;
   }
 
   /** Unsubscribes all player events and resets state. Call when the tracker is no longer needed. */
@@ -203,13 +110,13 @@ export class AdBreakTracker {
     this.events.onAdCountChanged.unsubscribeAll();
   }
 
-  private track(adBreak: AdBreak, lastActiveAd?: Ad): TrackedAdBreak {
-    return new TrackedAdBreak(adBreak, this.shouldCountAd, lastActiveAd);
-  }
+  private countAds(adBreak: AdBreak, lastActiveAd?: Ad): number {
+    if (adBreak.ads?.length > 0) {
+      return adBreak.ads.filter(ad => this.shouldCountAd(ad, adBreak)).length;
+    }
 
-  /** Ad breaks of the current group that have not started yet */
-  private scheduledBreaksOfGroup(): AdBreak[] {
-    return (this.player.ads?.list?.() ?? []).filter(adBreak => adBreak.scheduleTime === this.groupScheduleTime);
+    // Unloaded breaks provisionally count as one ad; retain the active ad for later offsets.
+    return this.shouldCountAd(lastActiveAd, adBreak) ? 1 : 0;
   }
 
   private readonly handleAdStarted = (): void => {
@@ -224,7 +131,7 @@ export class AdBreakTracker {
       b => b.scheduleTime === activeBreak.scheduleTime,
     );
     const isPartOfExistingGroup = this.groupBreaks.length > 0 && activeBreak.scheduleTime === this.groupScheduleTime;
-    const trackedBreak = this.track(activeBreak, this.player.ads?.getActiveAd?.());
+    const trackedBreak = { adBreak: activeBreak, lastActiveAd: this.player.ads?.getActiveAd?.() };
 
     if (isPartOfExistingGroup || hasSubsequentBreaks) {
       if (!isPartOfExistingGroup && this.groupBreaks.length > 0) {
@@ -234,7 +141,11 @@ export class AdBreakTracker {
 
       this.groupScheduleTime = activeBreak.scheduleTime;
 
-      const existingBreakIndex = this.groupBreaks.findIndex(b => b.isBreak(activeBreak));
+      // On mobile, the Player may deserialize a new object for the same break on every event,
+      // so use the stable break ID instead of object identity for deduplication.
+      const existingBreakIndex = this.groupBreaks.findIndex(({ adBreak }) =>
+        activeBreak.id != null && adBreak.id != null ? adBreak.id === activeBreak.id : adBreak === activeBreak,
+      );
       if (existingBreakIndex < 0) {
         this.groupBreaks.push(trackedBreak);
       } else {

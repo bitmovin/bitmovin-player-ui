@@ -1,6 +1,6 @@
-import { PlayerAPI } from 'bitmovin-player';
+import { Ad, LinearAd, PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../localization/i18n';
-import type { AdBreakTracker } from './AdBreakTracker';
+import type { AdCountFilter } from '../UIConfig';
 
 /**
  * @category Utils
@@ -83,12 +83,8 @@ export namespace StringUtils {
    *   - '{playedTime[formatString]}': the current time
    *   - '{adDuration[formatString]}': the ad duration
    *   - '{adBreakRemainingTime[formatString]}': the total remaining time of all ads in the ad break
-   *   - '{activeAdIndex[formatString]}': the number of the currently played ad
-   *   - '{totalAdsCount[formatString]}': the total number of ads
-   *
-   * The ad break placeholders are taken from the passed {@link AdBreakTracker}, which counts across ad breaks
-   * scheduled for the same time and applies {@link UIConfig.adCountFilter}. Without a tracker they are replaced
-   * with 0.
+   *   - '{activeAdIndex[formatString]}': the number of the currently played ad within the current ad break by default, or `activeAdIndex` if provided. `activeAdIndex` can be used to show the index of the current ad across multiple ad breaks with the same schedule time.
+   *   - '{totalAdsCount[formatString]}': the total number of ads in the current ad break by default, or `totalNumberOfAds` if provided. `totalNumberOfAds` can be used to show the number of ads across multiple ad breaks with the same schedule time.
    *
    * The format string is optional. If not specified, the placeholder is replaced by the time
    * in seconds. If specified, it must be of the following format:
@@ -112,16 +108,24 @@ export namespace StringUtils {
    * @param adMessage an ad message with optional placeholders to fill
    * @param player the player to get the time data from
    * @param skipOffset if specified, {remainingTime} will be filled with the remaining time until the ad can be skipped
-   * @param adBreakTracker fills {activeAdIndex}, {totalAdsCount} and {adBreakRemainingTime}. Without it they are
-   *   replaced with 0.
+   * @param activeAdIndex if specified, {activeAdIndex} will be set to this value. Can be used to calculate the ad index
+   *   across multiple ad breaks which are scheduled for the same time. If not provided, the value will be calculated
+   *   for the current ad break only from the player API.
+   * @param totalNumberOfAds if specified, {totalAdsCount} will be set to this value. Can be used to calculate the total
+   *   number of ads across multiple ad breaks which are scheduled for the same time. If not provided, the value will
+   *   be calculated for the current ad break only from the player API.
+   * @param adCountFilter selects ads included in the current break's remaining duration.
+   *   Other placeholders are unaffected.
    * @returns {string} the ad message with filled placeholders
    */
   export function replaceAdMessagePlaceholders(
     adMessage: string,
     player: PlayerAPI,
     skipOffset?: number,
-    adBreakTracker?: AdBreakTracker,
-  ): string {
+    activeAdIndex?: number,
+    totalNumberOfAds?: number,
+    adCountFilter?: AdCountFilter,
+  ) {
     const adMessagePlaceholderRegex = new RegExp(
       '\\{(remainingTime|playedTime|adDuration|adBreakRemainingTime|activeAdIndex|totalAdsCount)(}|%((0[1-9]\\d*(\\.\\d+(d|f)|d|f)|\\.\\d+f|d|f)|hh:mm:ss|mm:ss)})',
       'g',
@@ -141,11 +145,50 @@ export namespace StringUtils {
         time = player.getDuration();
       } else if (formatString.indexOf('adBreakRemainingTime') > -1) {
         // To display the remaining time in the ad break as opposed to in the ad
-        time = adBreakTracker?.adBreakRemainingTime ?? 0;
-      } else if (formatString.indexOf('activeAdIndex') > -1) {
-        return formatNumber(adBreakTracker?.currentAdIndex ?? 0, formatString);
-      } else if (formatString.indexOf('totalAdsCount') > -1) {
-        return formatNumber(adBreakTracker?.totalNumberOfAds ?? 0, formatString);
+        time = 0;
+
+        // compute list of ads and calculate duration of remaining ads based on index of active ad
+        if (player.ads?.isLinearAdActive?.()) {
+          const activeAdBreak = player.ads.getActiveAdBreak();
+          const activeAd = player.ads.getActiveAd();
+          const isActiveAd = (ad: Ad) => activeAd.id === ad.id;
+          const indexOfActiveAd = activeAdBreak.ads.findIndex(isActiveAd);
+          const duration = activeAdBreak.ads
+            .slice(indexOfActiveAd)
+            .filter(ad => !adCountFilter || adCountFilter(ad, activeAdBreak))
+            .reduce((total, ad) => total + (ad.isLinear ? (ad as LinearAd).duration : 0), 0);
+
+          // Only subtract elapsed playback when the active ad contributes to the remaining duration.
+          time = duration - (!adCountFilter || adCountFilter(activeAd, activeAdBreak) ? player.getCurrentTime() : 0);
+        }
+      } else if (formatString.indexOf('activeAdIndex') > -1 || formatString.indexOf('totalAdsCount') > -1) {
+        if (formatString.includes('activeAdIndex')) {
+          if (activeAdIndex != null) {
+            return formatNumber(activeAdIndex, formatString);
+          }
+
+          const activeAdBreak = player.ads?.getActiveAdBreak?.();
+          const activeAd = player.ads?.getActiveAd?.();
+          const ads = activeAdBreak?.ads;
+
+          if (!activeAdBreak || !activeAd || !Array.isArray(ads) || ads.length === 0) {
+            return formatNumber(0, formatString);
+          }
+
+          return formatNumber(
+            ads.findIndex(ad => (activeAd.id != null && ad.id != null ? ad.id === activeAd.id : ad === activeAd)) + 1,
+            formatString,
+          );
+        }
+
+        if (totalNumberOfAds != null) {
+          return formatNumber(totalNumberOfAds, formatString);
+        }
+
+        const activeAdBreak = player.ads?.getActiveAdBreak?.();
+        const ads = activeAdBreak?.ads;
+
+        return formatNumber(Array.isArray(ads) ? ads.length : 0, formatString);
       }
 
       return formatNumber(Math.round(time), formatString);

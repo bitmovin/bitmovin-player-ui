@@ -1,4 +1,4 @@
-import { Ad, AdBreak, PlayerEvent } from 'bitmovin-player';
+import { AdBreak, PlayerEvent } from 'bitmovin-player';
 import { PlayerEventEmitter } from '../helper/PlayerEventEmitter';
 import { AdBreakTracker } from '../../src/ts/utils/AdBreakTracker';
 
@@ -13,8 +13,6 @@ let adsState: {
   list: ReturnType<typeof makeBreak>[];
 };
 
-// Playback time within the active ad.
-let currentTime: number;
 let eventEmitter: PlayerEventEmitter;
 let player: any;
 let tracker: AdBreakTracker;
@@ -22,19 +20,16 @@ let tracker: AdBreakTracker;
 describe('AdBreakTracker', () => {
   beforeEach(() => {
     adsState = { activeAdBreak: null, activeAd: null, list: [] };
-    currentTime = 0;
     eventEmitter = new PlayerEventEmitter();
 
     player = {
       exports: { PlayerEvent },
       on: eventEmitter.on.bind(eventEmitter),
       off: jest.fn(),
-      getCurrentTime: () => currentTime,
       ads: {
         getActiveAdBreak: () => adsState.activeAdBreak,
         getActiveAd: () => adsState.activeAd,
         list: () => adsState.list,
-        isLinearAdActive: () => adsState.activeAd != null,
       },
     };
 
@@ -181,100 +176,6 @@ describe('AdBreakTracker', () => {
 
       expect(tracker.currentAdIndex).toBe(1);
       expect(tracker.totalNumberOfAds).toBe(1);
-    });
-  });
-
-  describe('adBreakRemainingTime', () => {
-    const makeLinearBreak = (id: string, scheduleTime: number, durations: number[]): AdBreak =>
-      ({
-        id,
-        scheduleTime,
-        ads: durations.map((duration, index) => ({ id: `${id}-ad-${index}`, isLinear: true, duration })),
-      }) as unknown as AdBreak;
-
-    const startAd = (adBreak: AdBreak, adIndex: number, upcomingBreaks: AdBreak[] = []) => {
-      adsState.activeAdBreak = adBreak as ReturnType<typeof makeBreak>;
-      adsState.activeAd = adBreak.ads[adIndex] as { id: string };
-      adsState.list = upcomingBreaks as ReturnType<typeof makeBreak>[];
-      eventEmitter.fireAdStartedEvent();
-    };
-
-    it('returns 0 when no ad is active', () => {
-      expect(tracker.adBreakRemainingTime).toBe(0);
-    });
-
-    it('sums the active ad and the ads after it, minus the played time', () => {
-      currentTime = 2;
-      startAd(makeLinearBreak('break-1', 5, [5, 7, 9]), 1);
-
-      expect(tracker.adBreakRemainingTime).toBe(14);
-    });
-
-    it('includes the ad breaks of the group that have not started yet', () => {
-      const firstBreak = makeLinearBreak('break-1', 5, [5, 7]);
-      const secondBreak = makeLinearBreak('break-2', 5, [9]);
-      currentTime = 2;
-
-      startAd(firstBreak, 0, [secondBreak]);
-      expect(tracker.adBreakRemainingTime).toBe(19);
-
-      startAd(secondBreak, 0);
-      expect(tracker.adBreakRemainingTime).toBe(7);
-    });
-
-    it('ignores ad breaks scheduled for another time', () => {
-      currentTime = 0;
-      startAd(makeLinearBreak('break-1', 5, [5]), 0, [makeLinearBreak('break-2', 30, [9])]);
-
-      expect(tracker.adBreakRemainingTime).toBe(5);
-    });
-
-    it('falls back to the active ad when it cannot be located in its break', () => {
-      const adBreak = makeLinearBreak('break-1', 5, [5, 7, 9]);
-      currentTime = 2;
-      startAd(adBreak, 1);
-      adsState.activeAd = { id: 'unknown-ad', isLinear: true, duration: 4 } as unknown as { id: string };
-
-      expect(tracker.adBreakRemainingTime).toBe(2);
-    });
-
-    describe('with an ad count filter', () => {
-      // Excludes the first ad of every break
-      const excludeFirstAdOfBreak = (ad: Ad) => !ad?.id?.endsWith('-ad-0');
-
-      beforeEach(() => {
-        tracker.release();
-        tracker = new AdBreakTracker(player, excludeFirstAdOfBreak);
-      });
-
-      it('leaves out the time of excluded ads that follow the active ad', () => {
-        currentTime = 2;
-        startAd(makeLinearBreak('break-1', 5, [5, 7, 9]), 1);
-
-        expect(tracker.adBreakRemainingTime).toBe(14);
-
-        tracker.release();
-        tracker = new AdBreakTracker(player, ad => ad?.id !== 'break-1-ad-2');
-        startAd(makeLinearBreak('break-1', 5, [5, 7, 9]), 1);
-
-        expect(tracker.adBreakRemainingTime).toBe(5);
-      });
-
-      it('covers the counted ads that follow while an excluded ad plays', () => {
-        currentTime = 3;
-        startAd(makeLinearBreak('break-1', 5, [5, 7]), 0);
-
-        expect(tracker.currentAdIndex).toBe(0);
-        // The excluded ad's own duration and played time are both left out
-        expect(tracker.adBreakRemainingTime).toBe(7);
-      });
-
-      it('leaves out excluded ads of the ad breaks that have not started yet', () => {
-        currentTime = 0;
-        startAd(makeLinearBreak('break-1', 5, [5]), 0, [makeLinearBreak('break-2', 5, [9, 4])]);
-
-        expect(tracker.adBreakRemainingTime).toBe(4);
-      });
     });
   });
 

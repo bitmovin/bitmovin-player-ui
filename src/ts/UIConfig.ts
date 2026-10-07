@@ -5,7 +5,7 @@ import type { UIComponentConfigOverrides } from './UIComponentConfigOverrides';
 import type { UIComponentLayoutOverrideMap, UIComponentLayoutOverrides } from './UIComponentLayoutOverrides';
 
 /**
- * Selects ads to include in the ad counter. Return `true` to count an ad, or `false` to exclude it.
+ * Selects ads to include in the ad counter and label break countdowns. Return `true` to include an ad.
  *
  * @category Configs
  */
@@ -180,7 +180,8 @@ export interface UIConfig {
   errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
   /**
    * Selects the ads included in {@link AdCounterLabel}'s current index and total, including subsequent ad breaks
-   * scheduled at the same time. By default, all ads are counted.
+   * scheduled at the same time, and in label `{adBreakRemainingTime}` countdowns for the current break.
+   * By default, all ads are included.
    *
    * @example
    * ```ts

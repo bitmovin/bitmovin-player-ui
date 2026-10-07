@@ -5,16 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.21.1] - 2026-09-17
+## [Unreleased]
 
 ### Added
 
-- `UIConfig.adCountFilter` to exclude selected ads from the current index and total displayed by `AdCounterLabel`, including across consecutive ad breaks scheduled at the same time.
+- `UIConfig.adCountFilter` to exclude selected ads from `AdCounterLabel` counts and label countdowns for the remaining time in the current ad break.
 
-### Changed
-
-- The `{activeAdIndex}`, `{totalAdsCount}` and `{adBreakRemainingTime}` placeholders in ad message labels, ad-specific messages and the ad skip button now use the same ad break tracking as the ad counter, covering consecutive ad breaks scheduled at the same time and leaving out the ads excluded by `UIConfig.adCountFilter`.
-- `StringUtils.replaceAdMessagePlaceholders` no longer derives ad break data from the player. Its `activeAdIndex` and `totalNumberOfAds` parameters are replaced by an `adBreakTracker` parameter that fills `{activeAdIndex}`, `{totalAdsCount}` and `{adBreakRemainingTime}`
+## [4.21.1] - 2026-09-17
 
 ### Fixed
 

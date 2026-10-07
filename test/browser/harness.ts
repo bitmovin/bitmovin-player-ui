@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { expect, Page, test as base } from '@playwright/test';
+import type { Ad, AdBreak, LinearAd } from 'bitmovin-player';
 
 export { expect };
 
@@ -20,6 +21,8 @@ interface BrowserTestWindow extends Window {
     };
   };
   __fire(event: string, data?: object): void;
+  __startAd(options: StartAdOptions): void;
+  __setCurrentTime(time: number): void;
   __ui?: unknown;
 }
 
@@ -73,6 +76,15 @@ export interface MountOptions {
   live?: boolean;
   /** UI factory to exercise. Add another value only when a browser scenario needs it. */
   factory?: 'default' | 'smallScreen';
+  /** IDs excluded by UIConfig.adCountFilter. Omit to use the default counts. */
+  excludedAdIds?: string[];
+}
+
+export interface StartAdOptions {
+  adBreak: AdBreak;
+  adId: string;
+  /** Upcoming breaks returned by ads.list(), which does not include the active break. */
+  scheduledBreaks?: AdBreak[];
 }
 
 export interface BrowserPlayerController {
@@ -83,6 +95,10 @@ export interface BrowserPlayerController {
    * from legitimate size changes caused by longer time-label content.
    */
   tick(times?: number): Promise<void>;
+  /** Starts a linear ad break at the selected ad, with the supplied upcoming schedule. */
+  startAd(options: StartAdOptions): Promise<void>;
+  /** Updates the player's clock and emits TimeChanged without actual playback. */
+  setCurrentTime(time: number): Promise<void>;
 }
 
 export interface MountedUi {
@@ -92,11 +108,11 @@ export interface MountedUi {
 /**
  * Builds the real UI, in a real browser, against a stub player.
  *
- * No manifest, no CDN, no video decode: time only advances when a test calls `ui.player.tick()`. That is
- * what makes these tests fast and deterministic, and it is why they can assert on geometry at all.
+ * No manifest, no CDN, no video decode: clock updates only happen through the typed controller. That
+ * makes these tests fast and deterministic, and it is why they can assert on geometry at all.
  */
 export async function mountUi(page: Page, options: MountOptions = {}): Promise<MountedUi> {
-  const { hostReset = false, live = true, factory = 'default' } = options;
+  const { hostReset = false, live = true, factory = 'default', excludedAdIds } = options;
 
   await page.setContent(`<!doctype html>
     <html><head><meta charset="utf-8">${
@@ -115,7 +131,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory }) => {
+    ({ isLive, uiFactory, excludedAdIds }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -130,6 +146,27 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       browserWindow.__fire = fire;
 
       let playing = true;
+      let currentTime = 0;
+      let activeAd: LinearAd | null = null;
+      let activeAdBreak: AdBreak | null = null;
+      let scheduledBreaks: AdBreak[] = [];
+
+      browserWindow.__startAd = options => {
+        const ad = options.adBreak.ads?.find(candidate => candidate.id === options.adId);
+        if (!ad?.isLinear) {
+          throw new Error(`linear ad ${options.adId} is missing from break ${options.adBreak.id}`);
+        }
+        activeAdBreak = options.adBreak;
+        activeAd = ad as LinearAd;
+        scheduledBreaks = options.scheduledBreaks ?? [];
+        currentTime = 0;
+        fire(PlayerEvent.AdBreakStarted, { adBreak: activeAdBreak });
+        fire(PlayerEvent.AdStarted, { ad: activeAd });
+      };
+      browserWindow.__setCurrentTime = time => {
+        currentTime = time;
+        fire(PlayerEvent.TimeChanged, { time });
+      };
 
       // `PlayerWrapper` copies the player's API by enumerating property names, so a Proxy `get`
       // trap is not enough: the stub has to really own every key. Take the surface from the real
@@ -152,8 +189,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         getConfig: () => ({}),
         getSource: () => ({}),
         isLive: () => isLive,
-        getDuration: () => (isLive ? Infinity : 600),
-        getCurrentTime: () => 0,
+        getDuration: () => activeAd?.duration ?? (isLive ? Infinity : 600),
+        getCurrentTime: () => currentTime,
         getTimeShift: () => 0,
         getMaxTimeShift: () => (isLive ? -100 : 0),
         getSeekableRange: () => ({ start: 0, end: isLive ? 100 : 600 }),
@@ -179,7 +216,12 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         getAudioBufferLength: () => 0,
         getThumbnail: (): null => null,
         subtitles: { list: (): never[] => [] },
-        ads: { isLinearAdActive: () => false, getActiveAd: (): null => null },
+        ads: {
+          isLinearAdActive: () => activeAd !== null,
+          getActiveAd: () => activeAd,
+          getActiveAdBreak: () => activeAdBreak,
+          list: () => scheduledBreaks,
+        },
         on: (event: string, cb: PlayerEventHandler) => {
           (handlers[event] = handlers[event] || []).push(cb);
         },
@@ -208,6 +250,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         // Auto-hide would leave the control bar at opacity 0. It stays measurable either way, but
         // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
         componentConfigOverrides: { UIContainer: { hideDelay: -1 } },
+        adCountFilter: excludedAdIds ? (ad: Ad | undefined) => !excludedAdIds.includes(ad?.id) : undefined,
       };
       switch (uiFactory) {
         case 'default':
@@ -222,7 +265,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         }
       }
     },
-    { isLive: live, uiFactory: factory },
+    { isLive: live, uiFactory: factory, excludedAdIds },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);
@@ -237,6 +280,12 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
             browserWindow.__fire(PlayerEvent.TimeChanged, { time: 0 });
           }
         }, times);
+      },
+      startAd: async options => {
+        await page.evaluate(options => (window as unknown as BrowserTestWindow).__startAd(options), options);
+      },
+      setCurrentTime: async time => {
+        await page.evaluate(time => (window as unknown as BrowserTestWindow).__setCurrentTime(time), time);
       },
     },
   };
