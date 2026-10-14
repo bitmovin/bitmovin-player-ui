@@ -43,9 +43,6 @@ on:
         type: boolean
         default: false
     secrets:
-      NPM_AUTH_TOKEN:
-        description: 'NPM authentication token for publishing'
-        required: true
       GCS_CREDENTIALS:
         description: 'Google Cloud Storage credentials for uploading docs'
         required: true
@@ -156,6 +153,9 @@ jobs:
     name: Publish Release
     needs: [test, version_bump]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -172,8 +172,6 @@ jobs:
       - name: Publish to NPM
         run: ./publish.sh --version "${{ needs.version_bump.outputs.version_number }}" ${{ inputs.dry_run == true && '--dry-run' || '' }}
         shell: bash
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
   github_release:
     name: Create GitHub Release
