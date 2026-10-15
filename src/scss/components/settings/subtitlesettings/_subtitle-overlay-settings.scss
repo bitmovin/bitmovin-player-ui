@@ -73,6 +73,8 @@
   @each $color-name, $color-value in $colors {
     @each $opacity-name, $opacity-value in $opacities {
       &.#{$prefix}-bgcolor-#{$color-name}#{$opacity-name} {
+        --subtitle-background-color: #{transparentize($color-value, 1 - $opacity-value)};
+
         .#{$prefix}-subtitle-region-container:not(.#{$prefix}-subtitle-vtt-region-container):not(
             .#{$prefix}-subtitle-vtt-cue-container
           ) {
@@ -99,6 +101,12 @@
       ) {
       .#{$prefix}-ui-subtitle-label {
         @include reset-in-descendants(background-color);
+
+        // The label is inline, and an inline element's background does not extend behind a
+        // block child such as `p`. The paragraph therefore carries the chosen color itself.
+        p {
+          background-color: var(--subtitle-background-color) !important;
+        }
       }
     }
 

@@ -97,6 +97,19 @@ for (const scenario of scenarios) {
   });
 }
 
+// A TTML cue without a region arrives as its `p` element. The inline label's background does not
+// cover that block, so the paragraph has to carry the chosen color itself.
+test('a background color setting paints behind a cue paragraph', async ({ page }) => {
+  const ui = await mountUi(page);
+  await ui.applySubtitleSettings({ backgroundColor: 'black', backgroundOpacity: '100' });
+
+  await ui.player.enterCue({
+    html: '<p id="cue-paragraph" style="background-color:#0000ff">- The most memorable,</p>',
+  });
+
+  expect(await computedStyles(page, '#cue-paragraph', ['background-color'])).toEqual(['rgb(0, 0, 0)']);
+});
+
 test('a font size setting outranks the size set inside the cue', async ({ page }) => {
   const ui = await mountUi(page);
   await ui.applySubtitleSettings({ fontSize: '150' });
