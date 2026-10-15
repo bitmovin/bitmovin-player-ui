@@ -1,18 +1,16 @@
 @import '../../../variables';
 @import '../../../mixins';
 
-// Every rule below is keyed on a class that the overlay carries only while the corresponding
-// subtitle setting is explicitly set.
+// Every rule below is keyed on a CSS class that the overlay carries only while the corresponding
+// subtitle setting is set, from the subtitle settings panel or through `SubtitleSettingsManager`.
 //
-// The declarations are `!important` so an explicit user choice outranks the inline styles the
-// player derives from cue-embedded styling (WebVTT cue classes and `STYLE` blocks, TTML
-// inline styles). The player renders that cue content as elements inside the subtitle label,
-// so the styling sits on descendants, which `reset-in-descendants` drops the property from.
-// `_subtitle-overlay.scss` already resets those descendants with `* { all: unset }` against
-// host-page styling, but that reset is a normal declaration and inline styles outrank it.
+// The player renders cue content as elements inside the subtitle label and writes cue-embedded
+// styling (WebVTT cue classes and `STYLE` blocks, TTML inline styles) onto them as inline styles.
+// A setting therefore sets its value on the label and drops the property from every descendant
+// with `unset !important`, the only way a stylesheet rule outranks an inline style.
 //
-// A setting whose value is expanded in a loop matches its descendants through the class prefix
-// instead, so the one rule they share is emitted once rather than once per value.
+// For the looped settings the descendant reset is the same for every value, so it is emitted once
+// per setting through the class prefix, `[class*='…-fontcolor-']`, instead of once per class.
 
 .#{$prefix}-ui-subtitle-overlay {
   $colors: (
