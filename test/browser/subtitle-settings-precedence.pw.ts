@@ -1,3 +1,4 @@
+import type { VTTProperties, VTTRegionProperties } from 'bitmovin-player/types/subtitles/vtt/API';
 import { SubtitleSettings, expect, mountUi, test } from './harness';
 import { computedStyles, inlineStyle } from './helpers/styles';
 
@@ -108,6 +109,74 @@ test('a background color setting paints behind a cue paragraph', async ({ page }
   });
 
   expect(await computedStyles(page, '#cue-paragraph', ['background-color'])).toEqual(['rgb(0, 0, 0)']);
+});
+
+const VTT_CUE: VTTProperties = {
+  vertical: '',
+  line: 'auto',
+  lineAlign: 'start',
+  snapToLines: true,
+  size: 100,
+  align: 'center',
+  position: 'auto',
+  positionAlign: 'auto',
+};
+
+const VTT_REGION: VTTRegionProperties = {
+  id: 'region',
+  width: 50,
+  lines: 3,
+  regionAnchorX: 0,
+  regionAnchorY: 100,
+  viewportAnchorX: 10,
+  viewportAnchorY: 90,
+  scroll: '',
+};
+
+// A WebVTT cue takes the chosen background on the label's text element instead of the label, in
+// either kind of region container, so the cue's own backgrounds are cleared below that element.
+for (const { placement, vtt } of [
+  { placement: 'outside a region', vtt: VTT_CUE },
+  { placement: 'inside a region', vtt: { ...VTT_CUE, region: VTT_REGION } },
+]) {
+  test(`a background color setting outranks the background set inside a WebVTT cue ${placement}`, async ({ page }) => {
+    const ui = await mountUi(page);
+    await ui.applySubtitleSettings({ backgroundColor: 'black', backgroundOpacity: '100' });
+
+    await ui.player.enterCue({ html: CUE_HTML, vtt });
+
+    expect(await computedStyles(page, '.bmpui-ui-label-text', ['background-color'])).toEqual(['rgb(0, 0, 0)']);
+    expect(await computedStyles(page, INNER, ['background-color'])).toEqual(['rgba(0, 0, 0, 0)']);
+  });
+}
+
+// A TTML cue's region styling lands on the region container, the box the window color colors.
+test('a window color setting outranks the background set on the cue region', async ({ page }) => {
+  const ui = await mountUi(page);
+  await ui.applySubtitleSettings({ windowColor: 'black', windowOpacity: '100' });
+
+  await ui.player.enterCue({
+    text: 'In the authored region',
+    region: 'authored',
+    regionStyle: 'background-color:#0000ff',
+  });
+
+  expect(await computedStyles(page, '.bmpui-subtitle-position-authored', ['background-color'])).toEqual([
+    'rgb(0, 0, 0)',
+  ]);
+});
+
+// The window color sits behind the text, so the cue's own text background stays on top of it.
+test('a window color setting keeps the background set inside the cue', async ({ page }) => {
+  const ui = await mountUi(page);
+  await ui.applySubtitleSettings({ windowColor: 'black', windowOpacity: '100' });
+
+  await ui.player.enterCue({ html: CUE_HTML });
+
+  expect(await computedStyles(page, '.bmpui-subtitle-position-default', ['background-color'])).toEqual([
+    'rgb(0, 0, 0)',
+  ]);
+  expect(await computedStyles(page, INNER, ['background-color'])).toEqual(['rgb(0, 0, 255)']);
 });
 
 test('a font size setting outranks the size set inside the cue', async ({ page }) => {
