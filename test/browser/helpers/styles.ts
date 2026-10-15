@@ -1,10 +1,10 @@
 import { Page } from '@playwright/test';
 
 /**
- * Resolved values of the given properties on the element the selector matches.
+ * Resolved values of the given properties on the first element the selector matches, in the
+ * order requested.
  *
- * Throws when the selector matches nothing, so a scenario that renders no cue fails instead of
- * comparing two empty results and passing.
+ * Throws when the selector matches nothing.
  */
 export async function computedStyles(page: Page, selector: string, properties: string[]): Promise<string[]> {
   return page.evaluate(
@@ -22,10 +22,10 @@ export async function computedStyles(page: Page, selector: string, properties: s
 }
 
 /**
- * Inline value of a property, as opposed to the value the cascade resolves for it.
+ * Inline value of a property on the first element the selector matches, as opposed to the value
+ * the cascade resolves for it.
  *
- * Throws when the selector matches nothing, or when the element carries no inline value, so an
- * assertion cannot pass against an element the player never styled.
+ * Throws when the selector matches nothing or the element has no inline value for the property.
  */
 export async function inlineStyle(page: Page, selector: string, property: string): Promise<string> {
   return page.evaluate(

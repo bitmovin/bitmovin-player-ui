@@ -1,5 +1,5 @@
 import { SubtitleSettings, expect, mountUi, test } from './harness';
-import { computedStyles, inlineStyle } from './helpers/subtitles';
+import { computedStyles, inlineStyle } from './helpers/styles';
 
 // The player resolves cue-embedded styling (WebVTT cue classes and `STYLE` blocks, TTML inline
 // styles) onto the elements it renders inside the subtitle label, as inline styles. That places it
