@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { expect, Page, test as base } from '@playwright/test';
+import type { SubtitleCueEvent } from 'bitmovin-player';
 
 export { expect };
 
@@ -129,19 +130,8 @@ export interface PauseAdOptions {
   clickThroughUrl?: string;
 }
 
-/** A subtitle cue, as the player hands it to the UI. */
-export interface SubtitleCue {
-  /** Plain cue text, shown when there is no `html`. */
-  text?: string;
-  /** Cue content markup, carrying the styling the player resolved from the cue itself. */
-  html?: string;
-  /** Character grid position. Present only on CEA-608 cues, and what selects that render path. */
-  position?: { row: number; column: number };
-  /** Name of the region the cue renders in. Cues without one share the default region. */
-  region?: string;
-  /** Styling of the cue's region, as inline CSS declarations. */
-  regionStyle?: string;
-}
+/** A subtitle cue, as the player hands it to the UI, minus the fields the harness assigns. */
+export type SubtitleCue = Partial<Omit<SubtitleCueEvent, 'type' | 'timestamp' | 'start' | 'end'>>;
 
 export interface BrowserPlayerController {
   /**
