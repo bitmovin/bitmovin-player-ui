@@ -150,6 +150,32 @@ for (const { placement, vtt } of [
   });
 }
 
+// A WebVTT cue's window is the label outside a region and the region container inside one, both
+// separate from the label's text element that takes the background.
+for (const { placement, vtt, windowElement } of [
+  { placement: 'outside a region', vtt: VTT_CUE, windowElement: '.bmpui-ui-subtitle-label' },
+  {
+    placement: 'inside a region',
+    vtt: { ...VTT_CUE, region: VTT_REGION },
+    windowElement: '.bmpui-subtitle-vtt-region-container',
+  },
+]) {
+  test(`window and background color land on separate elements of a WebVTT cue ${placement}`, async ({ page }) => {
+    const ui = await mountUi(page);
+    await ui.applySubtitleSettings({
+      windowColor: 'black',
+      windowOpacity: '100',
+      backgroundColor: 'white',
+      backgroundOpacity: '100',
+    });
+
+    await ui.player.enterCue({ html: CUE_HTML, vtt });
+
+    expect(await computedStyles(page, windowElement, ['background-color'])).toEqual(['rgb(0, 0, 0)']);
+    expect(await computedStyles(page, '.bmpui-ui-label-text', ['background-color'])).toEqual(['rgb(255, 255, 255)']);
+  });
+}
+
 // A TTML cue's region styling lands on the region container, the box the window color colors.
 test('a window color setting outranks the background set on the cue region', async ({ page }) => {
   const ui = await mountUi(page);
