@@ -18,7 +18,7 @@ const ADS_UI = '.bmpui-ui-uicontainer.bmpui-ui-ads';
 async function mountAdUi(page: Page, factory: NonNullable<MountOptions['factory']>, hostReset: boolean): Promise<void> {
   const ui = await mountUi(page, { factory, live: false, hideDelay: HIDE_DELAY, hostReset });
   await ui.player.startLinearAd();
-  await ui.player.enterCue('Ad subtitle');
+  await ui.player.enterCue({ text: 'Ad subtitle' });
   await expect(page.locator(ADS_UI)).toBeVisible();
   await expect(page.locator(`${ADS_UI} .bmpui-ui-subtitle-label`)).toHaveText('Ad subtitle');
 }
