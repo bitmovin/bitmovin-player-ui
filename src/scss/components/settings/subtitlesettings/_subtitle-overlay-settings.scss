@@ -141,7 +141,8 @@
 
   // Font size. Not `!important` on the label: CEA-608 rendering depends on the calculated px
   // size it applies inline, which this must not override. Not needed for WebVTT and TTML
-  // either, whose cue styling sits on descendants and is dropped by the reset below.
+  // either, whose styling sits on the region container or on descendants, where the resets
+  // below drop it.
   @each $name, $value in $font-sizes {
     &.#{$prefix}-fontsize-#{$name} {
       .#{$prefix}-ui-subtitle-label {
@@ -151,6 +152,12 @@
   }
 
   &[class*='#{$prefix}-fontsize-'] {
+    // Drop the size set on the cue's region. The label's size is relative to it, so the chosen
+    // size would scale the region's size instead of replacing it.
+    .#{$prefix}-subtitle-region-container {
+      font-size: unset !important;
+    }
+
     .#{$prefix}-ui-subtitle-label {
       @include reset-in-descendants(font-size);
     }

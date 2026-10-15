@@ -137,6 +137,10 @@ export interface SubtitleCue {
   html?: string;
   /** Character grid position. Present only on CEA-608 cues, and what selects that render path. */
   position?: { row: number; column: number };
+  /** Name of the region the cue renders in. Cues without one share the default region. */
+  region?: string;
+  /** Styling of the cue's region, as inline CSS declarations. */
+  regionStyle?: string;
 }
 
 export interface BrowserPlayerController {
