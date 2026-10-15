@@ -36,6 +36,7 @@ import { Watermark } from './components/Watermark';
 import { ErrorMessageOverlay } from './components/overlays/ErrorMessageOverlay';
 import { AdClickOverlay } from './components/ads/AdClickOverlay';
 import { AdControlBar } from './components/ads/AdControlBar';
+import { PauseAdStatusOverlay } from './components/ads/PauseAdStatusOverlay';
 import { MetadataLabel, MetadataLabelContent } from './components/labels/MetadataLabel';
 import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
@@ -46,6 +47,7 @@ import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/lists/SubtitleListBox';
 import { AudioTrackListBox } from './components/lists/AudioTrackListBox';
 import { SpatialNavigation } from './spatialnavigation/SpatialNavigation';
+import { PauseAdNavigationGroup } from './spatialnavigation/PauseAdNavigationGroup';
 import { RootNavigationGroup } from './spatialnavigation/RootNavigationGroup';
 import { SettingsPanelNavigationGroup } from './spatialnavigation/SettingsPanelNavigationGroup';
 import { EcoModeContainer } from './components/EcoModeContainer';
@@ -332,6 +334,7 @@ export namespace UIFactory {
           subtitleOverlay,
           new BufferingOverlay(),
           new PlaybackToggleOverlay(),
+          new PauseAdStatusOverlay(),
           new CastStatusOverlay(),
           controlBar,
           new TitleBar(),
@@ -379,6 +382,7 @@ export namespace UIFactory {
 
       return new UIContainer({
         components: [
+          new SubtitleOverlay(),
           new BufferingOverlay(),
           new AdClickOverlay(),
           new PlaybackToggleOverlay(),
@@ -406,6 +410,9 @@ export namespace UIFactory {
 
     export function smallScreen(): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
+      const pauseAdStatusOverlay = new PauseAdStatusOverlay({
+        cssClasses: BrowserUtils.isMobile ? ['touch-click-through'] : [],
+      });
       const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
       const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
 
@@ -451,7 +458,10 @@ export namespace UIFactory {
           new BufferingOverlay(),
           new CastStatusOverlay(),
           // Use the touch overlay on mobile devices and the regular playback toggle overlay on desktop browsers
-          BrowserUtils.isMobile ? new TouchControlOverlay() : new PlaybackToggleOverlay(),
+          BrowserUtils.isMobile
+            ? new TouchControlOverlay({ singleTapAction: () => pauseAdStatusOverlay.getClickThroughAction() })
+            : new PlaybackToggleOverlay(),
+          pauseAdStatusOverlay,
           new RecommendationOverlay(),
           controlBar,
           new TitleBar({
@@ -511,6 +521,7 @@ export namespace UIFactory {
 
       return new UIContainer({
         components: [
+          new SubtitleOverlay(),
           new BufferingOverlay(),
           new AdClickOverlay(),
           new PlaybackToggleOverlay(),
@@ -643,11 +654,13 @@ export namespace UIFactory {
 
       const playbackToggleOverlay = new PlaybackToggleOverlay();
       const recommendationOverlay = new RecommendationOverlay();
+      const pauseAdStatusOverlay = new PauseAdStatusOverlay();
       const uiContainer = new UIContainer({
         components: [
           subtitleOverlay,
           new BufferingOverlay(),
           playbackToggleOverlay,
+          pauseAdStatusOverlay,
           controlBar,
           titleBar,
           settingsPanel,
@@ -671,6 +684,13 @@ export namespace UIFactory {
           seekBar,
           new FocusableContainer(bottomControlBar, playbackToggleButton),
         ),
+        // While a pause ad shows, the centered playback control is suppressed and therefore left out
+        // of this group; the seek bar and the bottom control bar stay reachable by remote.
+        new PauseAdNavigationGroup(
+          pauseAdStatusOverlay,
+          seekBar,
+          new FocusableContainer(bottomControlBar, playbackToggleButton),
+        ),
         new SettingsPanelNavigationGroup(settingsPanel, { closeOnSelect: false }),
         new SettingsPanelNavigationGroup(subtitleListBox),
         new SettingsPanelNavigationGroup(audioListBox),
@@ -688,6 +708,7 @@ export namespace UIFactory {
       const adStatusOverlay = new AdStatusOverlay();
       const uiContainer = new UIContainer({
         components: [
+          new SubtitleOverlay(),
           new BufferingOverlay(),
           new AdClickOverlay(),
           playbackToggleOverlay,

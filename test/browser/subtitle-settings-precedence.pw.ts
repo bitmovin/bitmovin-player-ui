@@ -16,7 +16,7 @@ const INNER = '#cue-inner';
 test('cue-embedded styling survives when no subtitle setting is chosen', async ({ page }) => {
   const ui = await mountUi(page);
 
-  await ui.player.enterSubtitleCue({ html: CUE_HTML });
+  await ui.player.enterCue({ html: CUE_HTML });
 
   expect(await computedStyles(page, OUTER, ['color', 'font-family', 'font-size'])).toEqual([
     'rgb(170, 170, 170)',
@@ -90,7 +90,7 @@ for (const scenario of scenarios) {
     const ui = await mountUi(page);
     await ui.applySubtitleSettings(scenario.settings);
 
-    await ui.player.enterSubtitleCue({ html: CUE_HTML });
+    await ui.player.enterCue({ html: CUE_HTML });
 
     expect(await computedStyles(page, OUTER, [scenario.property])).toEqual([scenario.expected]);
     expect(await computedStyles(page, INNER, [scenario.property])).toEqual([scenario.expected]);
@@ -101,7 +101,7 @@ test('a font size setting outranks the size set inside the cue', async ({ page }
   const ui = await mountUi(page);
   await ui.applySubtitleSettings({ fontSize: '150' });
 
-  await ui.player.enterSubtitleCue({ html: CUE_HTML });
+  await ui.player.enterCue({ html: CUE_HTML });
 
   const [labelSize] = await computedStyles(page, '.bmpui-ui-subtitle-label', ['font-size']);
   expect(await computedStyles(page, OUTER, ['font-size'])).toEqual([labelSize]);
@@ -114,8 +114,8 @@ test('the font size CEA-608 rendering applies to the label stays authoritative',
 
   // The first CEA-608 cue is what switches the overlay into the grid rendering that measures the
   // row height, so the size below is only applied from the second cue onwards.
-  await ui.player.enterSubtitleCue({ html: '<span>first</span>', position: { row: 1, column: 0 } });
-  await ui.player.enterSubtitleCue({ html: CUE_HTML, position: { row: 2, column: 0 } });
+  await ui.player.enterCue({ html: '<span>first</span>', position: { row: 1, column: 0 } });
+  await ui.player.enterCue({ html: CUE_HTML, position: { row: 2, column: 0 } });
 
   const gridSize = await inlineStyle(page, `.bmpui-ui-subtitle-label:has(${OUTER})`, 'font-size');
   expect(gridSize, 'a zero grid size would make the assertions below meaningless').not.toBe('0px');

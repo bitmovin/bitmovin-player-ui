@@ -11,6 +11,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Subtitle settings chosen in the settings panel being overridden by cue-embedded styling, for example WebVTT cue classes or TTML inline styles
 
+## [4.23.0] - 2026-10-08
+
+### Added
+
+- `SubtitleOverlay` to the `ads`, `smallScreenAds`, and `tvAds` layouts, so subtitles of an ad are displayed during linear ads. They are positioned above the ad seek bar and above the remaining ad controls while those are shown.
+
+### Fixed
+
+- Unequal heights of the pause-ad badge and Close button.
+- Clicking or tapping the pause-ad badge opening the ad click-through.
+
+## [4.22.1] - 2026-10-01
+
+### Fixed
+
+- WebVTT subtitles running edge to edge and sitting directly on the bottom of the video instead of within the title-safe area.
+
+## [4.22.0] - 2026-09-25
+
+### Added
+
+- `PauseAdStatusOverlay` to show an Ad badge and a Close button over pause ads in the default, small-screen, and TV layouts. Clicking the creative opens its click-through while the player controls stay usable.
+- `TouchControlOverlayConfig.singleTapAction` and `PauseAdStatusOverlay.getClickThroughAction()` to open a pause-ad click-through on a single tap without breaking double-tap seeking.
+
 ## [4.21.1] - 2026-09-17
 
 ### Fixed

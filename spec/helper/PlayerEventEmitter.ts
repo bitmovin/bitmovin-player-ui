@@ -140,6 +140,18 @@ export class PlayerEventEmitter {
     });
   }
 
+  fireNonLinearAdStartedEvent(adData: object = {}): void {
+    this.fireNonLinearAdEvent('nonlinearadstarted', adData);
+  }
+
+  fireNonLinearAdFinishedEvent(adData: object = {}): void {
+    this.fireNonLinearAdEvent('nonlinearadfinished', adData);
+  }
+
+  fireNonLinearAdSkippedEvent(adData: object = {}): void {
+    this.fireNonLinearAdEvent('nonlinearadskipped', adData);
+  }
+
   fireErrorEvent(): void {
     this.fireEvent<ErrorEvent>({
       timestamp: Date.now(),
@@ -147,6 +159,19 @@ export class PlayerEventEmitter {
       code: 1000,
       name: 'ErrorEvent',
       troubleShootLink: 'https://bitmovin.com/docs/player/web/errors/1000',
+    });
+  }
+
+  private fireNonLinearAdEvent(eventType: string, adData: object): void {
+    this.fireEvent<AdEvent>({
+      timestamp: Date.now(),
+      type: eventType as any,
+      ad: {
+        isLinear: false,
+        width: null,
+        height: null,
+        ...adData,
+      } as any,
     });
   }
 
