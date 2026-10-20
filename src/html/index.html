@@ -19,6 +19,9 @@
         <div class="player" id="player"></div>
       </div>
 
+      <!-- The player graphs panel is moved here, so the video stays visible while the graphs are read. -->
+      <div id="player-graphs-host"></div>
+
       <br />
 
       <div class="card">
@@ -284,10 +287,37 @@
         },
         //    seekbarSnappingRange: 0,
         includeWatermark: true,
+        playerGraphs: true,
       };
 
       var player;
       var uiManager;
+      var hostedGraphs = null;
+
+      // Moves the player graphs panel of the active UI below the player, and back into the player for
+      // fullscreen, where nothing outside the player is visible. The panel of a released UI is removed.
+      function hostPlayerGraphs() {
+        var panel = document.querySelector('#player .bmpui-ui-player-graphs-panel');
+        if (hostedGraphs && (panel || !hostedGraphs.parent.isConnected) && hostedGraphs.panel !== panel) {
+          hostedGraphs.panel.remove();
+          hostedGraphs = null;
+        }
+        if (panel && !hostedGraphs) {
+          hostedGraphs = { panel: panel, parent: panel.parentElement };
+        }
+        if (hostedGraphs) {
+          var fullscreen = player.getViewMode() === bitmovin.player.ViewMode.Fullscreen;
+          (fullscreen ? hostedGraphs.parent : document.getElementById('player-graphs-host')).appendChild(
+            hostedGraphs.panel,
+          );
+        }
+      }
+
+      function buildUi(factoryMethod) {
+        uiManager = bitmovin.playerui.UIFactory[factoryMethod](player, uiConfig);
+        uiManager.onActiveUiChanged.subscribe(hostPlayerGraphs);
+        hostPlayerGraphs();
+      }
       bitmovin.playerui.UIManager.setLocalizationConfig({
         language: 'en',
         browserLanguageDetection: false,
@@ -298,6 +328,7 @@
 
       var playerSetup = function (config) {
         player = new bitmovin.player.Player(document.getElementById('player'), config);
+        player.on(bitmovin.player.PlayerEvent.ViewModeChanged, hostPlayerGraphs);
 
         // Update API methods when a module namespace becomes available
         player.on(bitmovin.player.PlayerEvent.ModuleReady, function () {
@@ -308,12 +339,12 @@
 
         // Add UI
         if (playgroundConfig.uiOption != null && bitmovin.playerui.UIFactory[playgroundConfig.uiOption] != null) {
-          uiManager = bitmovin.playerui.UIFactory[playgroundConfig.uiOption](player, uiConfig);
+          buildUi(playgroundConfig.uiOption);
         } else {
           if (playgroundConfig.uiOption != null) {
             localStorage.removeItem('bmpui-playground-config');
           }
-          uiManager = bitmovin.playerui.UIFactory.buildUI(player, uiConfig);
+          buildUi('buildUI');
         }
 
         player.load(sources[playgroundConfig.source || 'fullyFeatured']).then(
@@ -904,7 +935,7 @@
       configUISelect.change(function () {
         uiManager.release();
         var factoryMethod = $(this).val();
-        uiManager = bitmovin.playerui.UIFactory[factoryMethod](player, uiConfig);
+        buildUi(factoryMethod);
         storeConfigInStorage();
       });
 
