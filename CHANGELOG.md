@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `PlayerGraphsPanel`, a diagnostics panel with two graphs on one time axis, opened from the context menu entry `PlayerGraphsContextMenuItem`. Both are excluded from the default layouts. Enable them with `UIConfig.playerGraphs` or `componentLayoutOverrides`.
   - A segment timeline with one lane per video and audio rendition, which shows each segment as downloaded, played or failed, marks retried segments with their number of failed attempts, and marks the playhead and the live edge.
   - A download speed graph with one bar per segment, in one band per media type with its own scale.
+  - `Export` and `Import` buttons, `PlayerGraphsPanel.exportSnapshot()` and `PlayerGraphsPanel.loadSnapshot()` to save the recorded session as a JSON file (`PlayerGraphsSnapshot`) and draw it again elsewhere, with a scrubber to move through it. A snapshot names the Bitmovin Analytics impression ID where Analytics is enabled.
+  - A `Pause` button, `PlayerGraphsPanel.pause()` and `PlayerGraphsPanel.resume()` to stop the graphs at an instant and scrub through everything recorded so far, while playback and recording continue.
+  - At a player error, the panel takes a snapshot of the session, writes it to the console and keeps it for `PlayerGraphsPanel.getErrorSnapshot()`. When the source unloads after the error, the graphs stay on that snapshot until the next source loads.
   - Needs a player that reports `startTime`, `representationId`, `attempts`, `cancelReason` and `wasPrefetched` on `SegmentRequestFinished`, a `uid` that is unique per segment, and `AudioTrack.isMuxedIntoVideo`.
 
 ## [4.24.0] - 2026-11-19

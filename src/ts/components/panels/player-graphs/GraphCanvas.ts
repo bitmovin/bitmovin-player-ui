@@ -7,6 +7,13 @@ import { Component, ComponentConfig } from '../../Component';
  * The player state the graphs are drawn for.
  */
 export interface PlayerGraphsPlayerState {
+  /** The player version. */
+  version?: string;
+  /** The manifest URL of the source. */
+  source?: string;
+  streamType?: string;
+  /** The Bitmovin Analytics impression ID of the session, where Analytics is enabled. */
+  impressionId?: string;
   currentTime: number;
   seekableStart: number;
   seekableEnd: number;

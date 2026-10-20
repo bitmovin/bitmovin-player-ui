@@ -1,7 +1,8 @@
-import type { PlayerAPI } from 'bitmovin-player';
+import type { Bitmovin8Adapter, ErrorEvent, PlayerAPI, SourceConfig } from 'bitmovin-player';
 import { UIInstanceManager } from '../../../UIManager';
-import { PlayerGraphsRendition, SegmentHistory } from '../../../utils/SegmentHistory';
+import { PlayerGraphsRendition, SegmentHistory, SegmentRecord } from '../../../utils/SegmentHistory';
 import { Timeout } from '../../../utils/Timeout';
+import { version } from '../../../version';
 import { Component, ComponentConfig } from '../../Component';
 import { Label, LabelConfig } from '../../labels/Label';
 import { SettingsPanel, SettingsPanelConfig } from '../../settings/SettingsPanel';
@@ -10,14 +11,55 @@ import { SettingsPanelPage } from '../../settings/SettingsPanelPage';
 import { DownloadSpeedGraph } from './DownloadSpeedGraph';
 import { GraphFrame, PlayerGraphsPlayerState } from './GraphCanvas';
 import { PlayerGraphsPanelTitleItem } from './PlayerGraphsPanelTitleItem';
+import { PlayerGraphsScrubber } from './PlayerGraphsScrubber';
 import { SegmentTimelineGraph } from './SegmentTimelineGraph';
 
+/**
+ * Everything the graphs are drawn from, as plain JSON, so a session can be attached to a support
+ * ticket and drawn again elsewhere with {@link PlayerGraphsPanel.loadSnapshot}.
+ */
+export interface PlayerGraphsSnapshot {
+  format: 'bitmovin-player-graphs';
+  version: 1;
+  /** When it was exported, ISO 8601. */
+  exportedAt: string;
+  /** The UI version that exported it. */
+  uiVersion: string;
+  player: PlayerGraphsPlayerState;
+  /** The lanes, in lane order. */
+  renditions: PlayerGraphsRendition[];
+  segments: SegmentRecord[];
+}
+
+const SNAPSHOT_FORMAT = 'bitmovin-player-graphs';
+const SNAPSHOT_VERSION = 1;
+const EMPTY_STATE: PlayerGraphsPlayerState = {
+  currentTime: 0,
+  seekableStart: 0,
+  seekableEnd: 0,
+  isLive: false,
+  activeRenditionIds: [],
+  muxedAudio: false,
+};
 const TIMELINE_CAPTION = 'Segment timeline';
 const SPEED_CAPTION = 'Download speed';
 const SPEED_NOTE =
   'Each bar is one segment: its size divided by its download time. Audio segments are a few tens of kB, ' +
   'so request set-up dominates them and audio reads well below video on the same connection. Read each ' +
   'band on its own, not against the other band.';
+const ANALYTICS_HINT =
+  '[player-graphs] No Bitmovin Analytics session is linked to this player. With Analytics, each graphs ' +
+  'snapshot names its impression ID, which opens the same session in the Bitmovin Dashboard. ' +
+  'See https://developer.bitmovin.com/playback/docs/setup-analytics-web.';
+
+/**
+ * What the graphs show: the attached player as it plays, the recording so far at a paused instant
+ * while recording continues, or a snapshot.
+ */
+type GraphsView =
+  | { mode: 'live' }
+  | { mode: 'paused'; state: PlayerGraphsPlayerState; time: number }
+  | { mode: 'snapshot'; snapshot: PlayerGraphsSnapshot; time: number; atError: boolean };
 
 /**
  * Configuration interface for a {@link PlayerGraphsPanel}.
@@ -46,28 +88,54 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
   private readonly history = new SegmentHistory();
   private readonly timeline: SegmentTimelineGraph;
   private readonly speed: DownloadSpeedGraph;
+  private readonly timelineCaption: Label<LabelConfig>;
+  private readonly titleItem: PlayerGraphsPanelTitleItem;
+  private readonly scrubber: PlayerGraphsScrubber;
+  private readonly scrubberItem: SettingsPanelItem<SettingsPanelItemConfig>;
   private player: PlayerAPI | null = null;
   private refreshTimer: Timeout | null = null;
-  /** The last player state read, which stands in while an ad plays and the player reports the ad's. */
+  private view: GraphsView = { mode: 'live' };
+  /**
+   * The last player state read while live. It stands in while an ad plays, and for a snapshot at a
+   * player error, because the player has dropped the source by the time the error event fires.
+   */
   private lastLiveState: PlayerGraphsPlayerState | null = null;
+  private errorSnapshot: PlayerGraphsSnapshot | null = null;
+  /** Set by a player error, so the source unload that follows shows the error snapshot instead of empty graphs. */
+  private freezeOnUnload = false;
+  private analyticsHintLogged = false;
 
   constructor(config: PlayerGraphsPanelConfig = {}) {
     super(config);
 
     const timeline = new SegmentTimelineGraph();
     const speed = new DownloadSpeedGraph();
+    const timelineCaption = buildCaption(TIMELINE_CAPTION);
     const titleItem = new PlayerGraphsPanelTitleItem();
+    const scrubber = new PlayerGraphsScrubber();
+    const scrubberItem = buildItem([scrubber], { hidden: true });
     const rootPage = new SettingsPanelPage({
       components: [
         titleItem,
-        buildGraphItem([buildCaption(TIMELINE_CAPTION)], timeline),
-        buildGraphItem([buildCaption(SPEED_CAPTION), buildHint(SPEED_NOTE)], speed),
+        scrubberItem,
+        buildItem([timelineCaption, timeline]),
+        buildItem([buildCaption(SPEED_CAPTION), buildHint(SPEED_NOTE), speed]),
       ],
     });
 
     titleItem.setTarget(this);
+    scrubber.onScrub.subscribe((_, time) => {
+      if (this.view.mode !== 'live') {
+        this.view.time = time;
+        this.render();
+      }
+    });
     this.timeline = timeline;
     this.speed = speed;
+    this.timelineCaption = timelineCaption;
+    this.titleItem = titleItem;
+    this.scrubber = scrubber;
+    this.scrubberItem = scrubberItem;
 
     this.config = this.mergeConfig(
       config,
@@ -87,8 +155,13 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 
+    const events = player.exports.PlayerEvent;
     this.player = player;
     this.history.initialize(player);
+    player.on(events.SourceLoaded, this.onSourceLoaded);
+    player.on(events.SourceUnloaded, this.onSourceUnloaded);
+    player.on(events.SegmentPlayback, this.onSegmentPlayback);
+    player.on(events.Error, this.onError);
     this.onShow.subscribe(this.startRendering);
     this.onHide.subscribe(this.stopTimer);
     // A panel configured visible is never shown, so `onShow` does not fire for it.
@@ -100,8 +173,87 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
   release(): void {
     this.stopTimer();
     this.history.release();
+    const player = this.player;
+    if (player) {
+      const events = player.exports.PlayerEvent;
+      player.off(events.SourceLoaded, this.onSourceLoaded);
+      player.off(events.SourceUnloaded, this.onSourceUnloaded);
+      player.off(events.SegmentPlayback, this.onSegmentPlayback);
+      player.off(events.Error, this.onError);
+    }
     this.player = null;
     super.release();
+  }
+
+  isPaused(): boolean {
+    return this.view.mode === 'paused';
+  }
+
+  isShowingSnapshot(): boolean {
+    return this.view.mode === 'snapshot';
+  }
+
+  /**
+   * Freezes the graphs at this instant, with a scrubber over everything recorded so far. Recording
+   * continues. Does nothing while a snapshot is shown.
+   */
+  pause(): void {
+    const state = this.readLiveState();
+    if (this.view.mode === 'live' && state) {
+      this.setView({ mode: 'paused', state, time: state.currentTime });
+    }
+  }
+
+  /** Returns a paused view to following the player. */
+  resume(): void {
+    if (this.view.mode === 'paused') {
+      this.setView({ mode: 'live' });
+    }
+  }
+
+  /** Everything the graphs show now, as plain data. */
+  exportSnapshot(): PlayerGraphsSnapshot {
+    if (this.view.mode === 'snapshot') {
+      return { ...this.view.snapshot, exportedAt: new Date().toISOString() };
+    }
+
+    return this.buildSnapshot(this.view.mode === 'paused' ? this.view.state : (this.readLiveState() ?? EMPTY_STATE));
+  }
+
+  /**
+   * Draws a snapshot exported earlier, with a scrubber over its whole recording, until the next
+   * source unloads. Throws on data that is not a snapshot of this version.
+   */
+  loadSnapshot(snapshot: PlayerGraphsSnapshot): void {
+    if (snapshot?.format !== SNAPSHOT_FORMAT || snapshot.version !== SNAPSHOT_VERSION) {
+      throw new Error(`Not a ${SNAPSHOT_FORMAT} version ${SNAPSHOT_VERSION} snapshot`);
+    }
+
+    this.setView({ mode: 'snapshot', snapshot, time: snapshot.player.currentTime, atError: false });
+  }
+
+  /**
+   * The snapshot taken at the most recent player error, or null. It survives the source unload that
+   * follows the error. A copy.
+   */
+  getErrorSnapshot(): PlayerGraphsSnapshot | null {
+    return this.errorSnapshot ? JSON.parse(JSON.stringify(this.errorSnapshot)) : null;
+  }
+
+  private setView(view: GraphsView): void {
+    this.view = view;
+    if (view.mode === 'live') {
+      this.scrubberItem.hide();
+    } else {
+      const records = view.mode === 'snapshot' ? view.snapshot.segments : this.history.getRecords();
+      const { start, end } = resolveRecordedSpan(records, view.time);
+      this.scrubber.setRange(start, end, view.time);
+      this.scrubberItem.show();
+    }
+    this.titleItem.refresh();
+    if (this.isShown()) {
+      this.render();
+    }
   }
 
   private readonly startRendering = (): void => {
@@ -118,21 +270,48 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
   };
 
   private readonly render = (): void => {
-    const state = this.readLiveState();
-    if (!state) {
+    const frame = this.buildFrame();
+    if (!frame) {
       return;
     }
 
-    const frame: GraphFrame = {
+    this.speed.render(frame, this.timeline.render(frame));
+    const status = {
+      live: this.history.isAdPlaying() ? 'ad break' : '',
+      paused: 'paused',
+      snapshot: 'snapshot',
+    }[this.view.mode];
+    this.timelineCaption.setText(status ? `${TIMELINE_CAPTION} — ${status}` : TIMELINE_CAPTION);
+  };
+
+  private buildFrame(): GraphFrame | null {
+    const view = this.view;
+    if (view.mode === 'snapshot') {
+      const { snapshot } = view;
+      return {
+        records: snapshot.segments,
+        renditions: snapshot.renditions,
+        state: snapshot.player,
+        currentTime: view.time,
+        stillView: true,
+        unsized: {},
+      };
+    }
+
+    const state = view.mode === 'paused' ? view.state : this.readLiveState();
+    if (!state) {
+      return null;
+    }
+
+    return {
       records: this.history.getRecords(),
       renditions: this.history.getRenditions(),
       state,
-      currentTime: state.currentTime,
-      stillView: false,
+      currentTime: view.mode === 'paused' ? view.time : state.currentTime,
+      stillView: view.mode === 'paused',
       unsized: { video: this.history.getUnsizedCount('video'), audio: this.history.getUnsizedCount('audio') },
     };
-    this.speed.render(frame, this.timeline.render(frame));
-  };
+  }
 
   private readLiveState(): PlayerGraphsPlayerState | null {
     if (!this.player) {
@@ -146,6 +325,59 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
 
     return this.lastLiveState;
   }
+
+  private buildSnapshot(state: PlayerGraphsPlayerState): PlayerGraphsSnapshot {
+    return {
+      format: SNAPSHOT_FORMAT,
+      version: SNAPSHOT_VERSION,
+      exportedAt: new Date().toISOString(),
+      uiVersion: version,
+      player: state,
+      renditions: this.history.getRenditions(),
+      segments: this.history.getRecords().map(record => ({ ...record })),
+    };
+  }
+
+  /** Keeps the live state current while the panel is closed, for a snapshot at a player error. */
+  private readonly onSegmentPlayback = (): void => {
+    const state = this.readLiveState();
+    if (state && !state.impressionId && !this.analyticsHintLogged) {
+      this.analyticsHintLogged = true;
+      console.info(ANALYTICS_HINT);
+    }
+  };
+
+  /** Takes a snapshot of the session at a player error and writes it to the console. */
+  private readonly onError = (event: ErrorEvent): void => {
+    if (this.view.mode === 'snapshot') {
+      return;
+    }
+
+    this.errorSnapshot = this.buildSnapshot(this.lastLiveState ?? this.readLiveState() ?? EMPTY_STATE);
+    this.freezeOnUnload = true;
+    console.warn(
+      `[player-graphs] Snapshot at player error ${event.code}; load it with the graphs panel's Import:\n` +
+        JSON.stringify(this.errorSnapshot),
+    );
+  };
+
+  private readonly onSourceUnloaded = (): void => {
+    this.lastLiveState = null;
+    if (this.freezeOnUnload && this.errorSnapshot) {
+      this.freezeOnUnload = false;
+      const snapshot = this.errorSnapshot;
+      this.setView({ mode: 'snapshot', snapshot, time: snapshot.player.currentTime, atError: true });
+    } else if (this.view.mode !== 'live') {
+      this.setView({ mode: 'live' });
+    }
+  };
+
+  private readonly onSourceLoaded = (): void => {
+    this.freezeOnUnload = false;
+    if (this.view.mode === 'snapshot' && this.view.atError) {
+      this.setView({ mode: 'live' });
+    }
+  };
 }
 
 function readPlayerState(player: PlayerAPI, renditions: PlayerGraphsRendition[]): PlayerGraphsPlayerState {
@@ -162,6 +394,10 @@ function readPlayerState(player: PlayerAPI, renditions: PlayerGraphsRendition[])
   const knownIds = renditions.map(rendition => rendition.id);
 
   return {
+    version: player.version,
+    source: resolveSourceUrl(player.getSource()),
+    streamType: player.getStreamType(),
+    impressionId: readImpressionId(player),
     currentTime,
     seekableStart,
     seekableEnd,
@@ -171,6 +407,33 @@ function readPlayerState(player: PlayerAPI, renditions: PlayerGraphsRendition[])
       knownIds.includes(id),
     ),
     muxedAudio: player.getAudio()?.isMuxedIntoVideo === true,
+  };
+}
+
+function resolveSourceUrl(source: SourceConfig | null): string | undefined {
+  return [source?.dash, source?.hls, source?.smooth, source?.progressive].find(
+    (url): url is string => typeof url === 'string' && url.length > 0,
+  );
+}
+
+/** `player.analytics` is absent without the analytics module, and the collector can throw before it is set up. */
+function readImpressionId(player: PlayerAPI): string | undefined {
+  try {
+    return (player.analytics as Bitmovin8Adapter | undefined)?.getCurrentImpressionId() || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** From the earliest to the latest recorded time, widened to include `at`. */
+function resolveRecordedSpan(records: readonly SegmentRecord[], at: number): { start: number; end: number } {
+  if (records.length === 0) {
+    return { start: at - 30, end: at + 30 };
+  }
+
+  return {
+    start: Math.min(at, ...records.map(record => record.start)),
+    end: Math.max(at, ...records.map(record => record.end)),
   };
 }
 
@@ -187,10 +450,10 @@ function buildHint(text: string): Label<LabelConfig> {
   return hint;
 }
 
-/** A row with the caption above the graph. A configured `label` would be placed after the graph. */
-function buildGraphItem(
-  captions: Label<LabelConfig>[],
-  graph: Component<ComponentConfig>,
+/** A row that stacks its components. A configured `label` would be placed after them. */
+function buildItem(
+  components: Component<ComponentConfig>[],
+  config: SettingsPanelItemConfig = {},
 ): SettingsPanelItem<SettingsPanelItemConfig> {
   const item = new SettingsPanelItem({
     label: null,
@@ -198,9 +461,9 @@ function buildGraphItem(
     isSetting: false,
     role: 'group',
     tabIndex: -1,
+    ...config,
   });
-  captions.forEach(caption => item.addComponent(caption));
-  item.addComponent(graph);
+  components.forEach(component => item.addComponent(component));
 
   return item;
 }

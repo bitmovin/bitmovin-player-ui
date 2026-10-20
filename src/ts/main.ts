@@ -177,7 +177,13 @@ export {
   PlayerInsightsPanel,
   PlayerInsightsPanelConfig,
 } from './components/panels/player-insights/PlayerInsightsPanel';
-export { PlayerGraphsPanel, PlayerGraphsPanelConfig } from './components/panels/player-graphs/PlayerGraphsPanel';
+export {
+  PlayerGraphsPanel,
+  PlayerGraphsPanelConfig,
+  PlayerGraphsSnapshot,
+} from './components/panels/player-graphs/PlayerGraphsPanel';
+export { PlayerGraphsPlayerState } from './components/panels/player-graphs/GraphCanvas';
+export { PlayerGraphsRendition, SegmentMediaType, SegmentRecord } from './utils/SegmentHistory';
 export {
   PlayerGraphsContextMenuItem,
   PlayerGraphsContextMenuItemConfig,

@@ -112,4 +112,83 @@ describe('PlayerGraphsPanel', () => {
     expect(Array.from(player.handlers.keys())).toEqual([PLAYER_EVENTS.PlayerResized]);
     expect(renderSpy).toHaveBeenCalledTimes(1);
   });
+
+  describe('pause', () => {
+    it('stands still at the paused instant while recording continues, and resumes following the player', () => {
+      const panel = buildPanel();
+      panel.show();
+      panel.pause();
+      (player as any).getCurrentTime = () => 20;
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 18));
+      jest.advanceTimersByTime(1000);
+
+      expect(panel.isPaused()).toBe(true);
+      expect(lastFrame()).toEqual(expect.objectContaining({ currentTime: 10, stillView: true }));
+      expect(lastFrame().records).toHaveLength(1);
+
+      panel.resume();
+      expect(lastFrame()).toEqual(expect.objectContaining({ currentTime: 20, stillView: false }));
+    });
+  });
+
+  describe('snapshots', () => {
+    it('exports what the graphs show and draws it again in another panel', () => {
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4));
+      const snapshot = buildPanel().exportSnapshot();
+      const other = buildPanel();
+      other.show();
+      other.loadSnapshot(JSON.parse(JSON.stringify(snapshot)));
+
+      expect(snapshot).toEqual(
+        expect.objectContaining({
+          format: 'bitmovin-player-graphs',
+          version: 1,
+          player: expect.objectContaining({ currentTime: 10, source: 'https://example.com/manifest.mpd' }),
+        }),
+      );
+      expect(other.isShowingSnapshot()).toBe(true);
+      expect(lastFrame()).toEqual(expect.objectContaining({ stillView: true, records: snapshot.segments }));
+    });
+
+    it('rejects data that is not a snapshot', () => {
+      expect(() => buildPanel().loadSnapshot({ format: 'other' } as any)).toThrow();
+    });
+
+    it('returns to the player when the next source unloads', () => {
+      const panel = buildPanel();
+      panel.loadSnapshot(panel.exportSnapshot());
+      player.fire(PLAYER_EVENTS.SourceUnloaded);
+
+      expect(panel.isShowingSnapshot()).toBe(false);
+    });
+  });
+
+  describe('at a player error', () => {
+    beforeEach(() => jest.spyOn(console, 'warn').mockImplementation(() => undefined));
+
+    it('freezes on the session before the error when the source unloads, until the next source loads', () => {
+      const panel = buildPanel();
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4));
+      player.fire(PLAYER_EVENTS.Error, { code: 1201 });
+      player.fire(PLAYER_EVENTS.SourceUnloaded);
+      panel.show();
+
+      expect(panel.isShowingSnapshot()).toBe(true);
+      expect(lastFrame().records).toEqual([expect.objectContaining({ uid: 's1' })]);
+      expect(panel.getErrorSnapshot()?.segments).toHaveLength(1);
+      expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('player error 1201'));
+
+      player.fire(PLAYER_EVENTS.SourceLoaded);
+      expect(panel.isShowingSnapshot()).toBe(false);
+    });
+  });
+
+  it('logs once that no Analytics session is linked', () => {
+    jest.spyOn(console, 'info').mockImplementation(() => undefined);
+    buildPanel();
+    player.fire(PLAYER_EVENTS.SegmentPlayback, {});
+    player.fire(PLAYER_EVENTS.SegmentPlayback, {});
+
+    expect(console.info).toHaveBeenCalledTimes(1);
+  });
 });

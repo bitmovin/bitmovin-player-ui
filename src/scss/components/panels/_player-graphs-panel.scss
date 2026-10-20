@@ -32,10 +32,37 @@
     }
   }
 
+  // Pause, export, import and close, as one group at the right of the title.
+  .#{$prefix}-ui-player-graphs-panel-actions {
+    margin-left: auto;
+
+    > .#{$prefix}-container-wrapper {
+      align-items: center;
+      display: flex;
+      gap: 0.4em;
+    }
+  }
+
+  .#{$prefix}-ui-player-graphs-panel-action-button {
+    border: 1px solid transparentize($color-primary, 0.6);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 0.85em;
+    height: auto;
+    line-height: 1.4;
+    min-width: 0;
+    padding: 0 0.5em;
+
+    &:hover {
+      animation: none;
+      background-color: transparentize($color-primary, 0.85);
+      filter: none;
+    }
+  }
+
   .#{$prefix}-ui-player-graphs-panel-close-button {
     cursor: pointer;
     height: $icon-size * 0.55;
-    margin-left: auto;
     min-width: $icon-size * 0.55;
     padding: 0.1em;
 
@@ -52,6 +79,9 @@
   }
 
   .#{$prefix}-ui-player-graphs-panel-item {
+    // The settings-panel row display outranks the framework's hidden rule.
+    @include hidden;
+
     cursor: default;
     padding: 0.1em 0.8em 0.8em;
 
@@ -63,6 +93,26 @@
     // The caption above the graph, instead of the settings-panel row layout side by side.
     > .#{$prefix}-container-wrapper {
       display: block;
+    }
+  }
+
+  .#{$prefix}-ui-player-graphs-panel-scrubber {
+    align-items: center;
+    display: flex;
+    gap: 0.6em;
+    width: 100%;
+
+    input {
+      cursor: pointer;
+      flex: 1;
+      margin: 0;
+      min-width: 0;
+    }
+
+    span {
+      color: transparentize($color-primary, 0.35);
+      font-family: monospace;
+      white-space: nowrap;
     }
   }
 
