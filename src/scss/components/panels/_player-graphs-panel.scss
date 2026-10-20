@@ -118,6 +118,9 @@
 
   // Selectable, unlike the rest of the panel, so a finding can be copied into a ticket.
   .#{$prefix}-ui-player-graphs-panel-insights {
+    // The display of a list outranks the framework's hidden rule.
+    @include hidden;
+
     color: transparentize($color-primary, 0.15);
     line-height: 1.4;
     margin: 0.3em 0 0;
@@ -132,6 +135,11 @@
     display: inline-flex;
     line-height: 1.2;
     min-height: unset;
+  }
+
+  // A caption folds and unfolds the graph below it.
+  .#{$prefix}-ui-player-graphs-panel-item-label {
+    cursor: pointer;
   }
 
   .#{$prefix}-ui-player-graphs-panel-item-hint {

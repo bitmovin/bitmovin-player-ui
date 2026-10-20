@@ -25,6 +25,8 @@ const BAND_GAP = 12;
 const MIN_BAND_HEIGHT = 80;
 const MAX_BAND_HEIGHT = 360;
 const BAND_HEIGHT_PER_RUNG = 24;
+/** Rungs move closer, down to this spacing, to fit a height budget. */
+const MIN_BAND_HEIGHT_PER_RUNG = 14;
 const Y_LABEL_INSET = 4;
 const Y_LABEL_BACKING_HALF_HEIGHT = 6;
 const MIN_TICK_SPACING = 18;
@@ -110,6 +112,7 @@ export class DownloadSpeedGraph extends GraphCanvas {
   private lastRender: { frame: GraphFrame; geometry: PlotGeometry | null } | null = null;
   private rungHits: RungHit[] = [];
   private hoverY: number | null = null;
+  private fullHeight = 0;
 
   constructor(config: ComponentConfig = {}) {
     super(config);
@@ -140,15 +143,19 @@ export class DownloadSpeedGraph extends GraphCanvas {
     const samples = frame.records.filter((record): record is Sample => record.mbps != null);
     const bands = BANDS.filter(band => isBandShown(band, frame, samples));
     const ladders = bands.map(band => resolveLadder(frame, band.mediaType));
-    const bandHeights = ladders.map(ladder =>
-      Math.min(MAX_BAND_HEIGHT, Math.max(MIN_BAND_HEIGHT, ladder.length * BAND_HEIGHT_PER_RUNG)),
-    );
+    const fixedHeight = PADDING * 2 + bands.length * BAND_CAPTION_HEIGHT + Math.max(0, bands.length - 1) * BAND_GAP;
+    const bandHeightsAt = (spacing: number) =>
+      ladders.map(ladder => Math.min(MAX_BAND_HEIGHT, Math.max(MIN_BAND_HEIGHT, ladder.length * spacing)));
+    const totalAt = (spacing: number) => fixedHeight + bandHeightsAt(spacing).reduce((sum, value) => sum + value, 0);
+    let spacing = BAND_HEIGHT_PER_RUNG;
+    const budget = frame.heightBudget?.speed;
+    while (budget != null && spacing > MIN_BAND_HEIGHT_PER_RUNG && totalAt(spacing) > budget) {
+      spacing--;
+    }
+    const bandHeights = bandHeightsAt(spacing);
     const width = this.getCssWidth();
-    const height =
-      PADDING * 2 +
-      bands.length * BAND_CAPTION_HEIGHT +
-      Math.max(0, bands.length - 1) * BAND_GAP +
-      bandHeights.reduce((sum, bandHeight) => sum + bandHeight, 0);
+    const height = totalAt(spacing);
+    this.fullHeight = totalAt(BAND_HEIGHT_PER_RUNG);
     this.resize(context, width, height);
     if (!geometry) {
       return;
@@ -170,6 +177,11 @@ export class DownloadSpeedGraph extends GraphCanvas {
       drawVerticalLine(context, toX(geometry, liveEdge), PADDING, height - PADDING, LIVE_EDGE_COLOR, LIVE_EDGE_DASH);
     }
     this.drawTooltip(context, geometry, height);
+  }
+
+  /** The height at full rung spacing, as of the last repaint. */
+  naturalHeight(): number {
+    return this.fullHeight;
   }
 
   private setHover(y: number | null): void {

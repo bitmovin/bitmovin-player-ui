@@ -24,6 +24,17 @@ export interface PlayerGraphsPlayerState {
   activeRenditionIds: string[];
   /** Whether the audio being played is muxed into the video segments, so it has no lanes of its own. */
   muxedAudio: boolean;
+  /** The forward buffer, in seconds, the player tries to keep ahead of the playhead. */
+  bufferTargets?: Partial<Record<PlayerGraphsRendition['mediaType'], number>>;
+  /** The media types without a download for longer than a download should take, while their buffer has room. */
+  downloadWaits?: Partial<Record<PlayerGraphsRendition['mediaType'], DownloadWait>>;
+}
+
+export interface DownloadWait {
+  /** How long since the last download. */
+  seconds: number;
+  /** Where the forward buffer ends on the playback timeline. */
+  bufferEnd: number;
 }
 
 /**
@@ -41,6 +52,8 @@ export interface GraphFrame {
   unsized: Partial<Record<PlayerGraphsRendition['mediaType'], number>>;
   /** The renditions whose segments drift from the times their manifest declares. */
   driftingIds?: readonly string[];
+  /** The height a graph may take before the panel scrolls, where the panel is capped. */
+  heightBudget?: { timeline: number; speed: number };
 }
 
 /**

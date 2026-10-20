@@ -96,7 +96,12 @@ export function buildPlayer(overrides: Partial<Record<keyof PlayerAPI, unknown>>
     off: jest.fn((eventType: string) => handlers.delete(eventType)),
     handlers,
     fire: (eventType: string, event: unknown = {}) => handlers.get(eventType)?.(event),
-    exports: { PlayerEvent: PLAYER_EVENTS },
+    exports: {
+      PlayerEvent: PLAYER_EVENTS,
+      MediaType: { Video: 'video', Audio: 'audio' },
+      BufferType: { ForwardDuration: 'forwardduration' },
+    },
+    buffer: { getLevel: () => ({ level: 20, targetLevel: 40 }) },
     getAvailableVideoQualities: () => [VIDEO_720, VIDEO_1080],
     getAvailableAudio: () => [{ id: 'en', lang: 'en', label: 'English', getQualities: () => [AUDIO_EN] }],
     getAudio: () => ({ id: 'en', lang: 'en', label: 'English' }),

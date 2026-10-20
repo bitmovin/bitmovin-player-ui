@@ -109,4 +109,29 @@ describe('SegmentTimelineGraph', () => {
 
     expect(texts.find(text => text.text.startsWith('e'))?.fill).toBe('#ffb347');
   });
+
+  it('marks the buffer target, and where the buffer ends while a media type waits for a download', () => {
+    graph.render(
+      frame([], {
+        currentTime: 10,
+        bufferTargets: { video: 40, audio: 40 },
+        downloadWaits: { video: { seconds: 12.7, bufferEnd: 14 } },
+      }),
+    );
+
+    expect(texts.map(text => text.text)).toEqual(
+      expect.arrayContaining(['buffer target 40.0s', 'no video download 12s']),
+    );
+  });
+
+  it('shrinks lanes to fit a height budget, and collapses lanes without segments past that', () => {
+    const fits = graph.render({ ...frame([record('s', 20)]), heightBudget: { timeline: 1000, speed: 0 } });
+    const fullHeight = graph.naturalHeight();
+    graph.render({ ...frame([record('s', 20)], { activeRenditionIds: [] }), heightBudget: { timeline: 10, speed: 0 } });
+
+    expect(fits).not.toBeNull();
+    expect(rects.find(rect => rect.fill === '#c28744' && rect.h > 3)?.h).toBe(10);
+    expect(texts.map(text => text.text)).toContain('en');
+    expect(fullHeight).toBeGreaterThan(0);
+  });
 });

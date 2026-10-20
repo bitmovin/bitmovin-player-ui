@@ -9,10 +9,11 @@ export interface PlayerGraphsInsight {
   /**
    * What it is about: segments that needed retries, a rendition whose declared segment times drift
    * from its media, audio muxed into the video segments, segments refilled from the player's own
-   * segment cache, or the player error a snapshot was taken at.
+   * segment cache, the player error a snapshot was taken at, or a media type without downloads while its
+   * buffer has room.
    */
-  kind: 'retries' | 'timing' | 'muxed' | 'reuse' | 'error';
-  /** How many segments, renditions or errors it covers. */
+  kind: 'retries' | 'timing' | 'muxed' | 'reuse' | 'error' | 'wait';
+  /** How many segments, renditions, errors or media types it covers. */
   count: number;
   text: string;
 }
@@ -57,6 +58,18 @@ export function findTimingDrifts(frame: GraphFrame): TimingDrift[] {
 /** The findings for a frame whose timeline window starts at `windowStart`. */
 export function collectInsights(frame: GraphFrame, drifts: TimingDrift[], windowStart: number): PlayerGraphsInsight[] {
   const insights: PlayerGraphsInsight[] = [];
+  (['video', 'audio'] as const).forEach(mediaType => {
+    const wait = frame.state.downloadWaits?.[mediaType];
+    if (wait) {
+      insights.push({
+        kind: 'wait',
+        count: 1,
+        text:
+          `No ${mediaType} segment has downloaded for ${Math.floor(wait.seconds)} s although the buffer has room, ` +
+          'marked where the buffer ends: the server may hold a request open, or the player may have stopped requesting.',
+      });
+    }
+  });
   const laneIds = frame.renditions.map(rendition => rendition.id);
   const retried = frame.records.filter(
     record => record.failures > 0 && laneIds.includes(record.representationId) && mediaSpan(record).end >= windowStart,

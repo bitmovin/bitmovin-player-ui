@@ -1,7 +1,7 @@
 import type { Bitmovin8Adapter, ErrorEvent, PlayerAPI, SourceConfig } from 'bitmovin-player';
 import { DOM } from '../../../DOM';
 import { UIInstanceManager } from '../../../UIManager';
-import { PlayerGraphsRendition, SegmentHistory, SegmentRecord } from '../../../utils/SegmentHistory';
+import { PlayerGraphsRendition, SegmentHistory, SegmentMediaType, SegmentRecord } from '../../../utils/SegmentHistory';
 import { Timeout } from '../../../utils/Timeout';
 import { version } from '../../../version';
 import { Component, ComponentConfig } from '../../Component';
@@ -10,7 +10,7 @@ import { SettingsPanel, SettingsPanelConfig } from '../../settings/SettingsPanel
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../../settings/SettingsPanelItem';
 import { SettingsPanelPage } from '../../settings/SettingsPanelPage';
 import { DownloadSpeedGraph } from './DownloadSpeedGraph';
-import { formatPlayheadTime, GraphFrame, PlayerGraphsPlayerState } from './GraphCanvas';
+import { DownloadWait, formatPlayheadTime, GraphFrame, PlayerGraphsPlayerState } from './GraphCanvas';
 import { collectInsights, describeError, findTimingDrifts, PlayerGraphsInsight } from './playerGraphsInsights';
 import { PlayerGraphsPanelTitleItem } from './PlayerGraphsPanelTitleItem';
 import { PlayerGraphsScrubber } from './PlayerGraphsScrubber';
@@ -48,6 +48,14 @@ const EMPTY_STATE: PlayerGraphsPlayerState = {
 const TIMELINE_CAPTION = 'Segment timeline';
 const SPEED_CAPTION = 'Download speed';
 const INSIGHTS_CAPTION = 'Insights';
+/**
+ * The height the panel leaves free inside the player, in its own em: the control bar below and the
+ * title bar above. Matches `max-height: calc(100% - 12.5em)` in `_player-graphs-panel.scss`.
+ */
+const PANEL_INSET_EM = 12.5;
+/** A media type without a download for this many segment durations, and at least this long, waits for one. */
+const DOWNLOAD_WAIT_SEGMENTS = 2;
+const MIN_DOWNLOAD_WAIT_SECONDS = 4;
 const SPEED_NOTE =
   'Each bar is one segment: its size divided by its download time. Audio segments are a few tens of kB, ' +
   'so request set-up dominates them and audio reads well below video on the same connection. Read each ' +
@@ -93,7 +101,8 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
   private readonly history = new SegmentHistory();
   private readonly timeline: SegmentTimelineGraph;
   private readonly speed: DownloadSpeedGraph;
-  private readonly timelineCaption: Label<LabelConfig>;
+  private readonly timelineSection: GraphSection;
+  private readonly insightsSection: GraphSection;
   private readonly insightsList: PlayerGraphsInsightsList;
   private readonly titleItem: PlayerGraphsPanelTitleItem;
   private readonly scrubber: PlayerGraphsScrubber;
@@ -117,17 +126,20 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
     const timeline = new SegmentTimelineGraph();
     const speed = new DownloadSpeedGraph();
     const timelineCaption = buildCaption(TIMELINE_CAPTION);
+    const speedCaption = buildCaption(SPEED_CAPTION);
+    const insightsCaption = buildCaption(INSIGHTS_CAPTION);
     const titleItem = new PlayerGraphsPanelTitleItem();
     const scrubber = new PlayerGraphsScrubber();
     const scrubberItem = buildItem([scrubber], { hidden: true });
-    const insightsList = new PlayerGraphsInsightsList();
+    // Folded until it has something to say. Hidden through its config, because `initialize()` resets an earlier `hide()`.
+    const insightsList = new PlayerGraphsInsightsList({ hidden: true });
     const rootPage = new SettingsPanelPage({
       components: [
         titleItem,
         scrubberItem,
         buildItem([timelineCaption, timeline]),
-        buildItem([buildCaption(SPEED_CAPTION), buildHint(SPEED_NOTE), speed]),
-        buildItem([buildCaption(INSIGHTS_CAPTION), insightsList]),
+        buildItem([speedCaption, buildHint(SPEED_NOTE), speed]),
+        buildItem([insightsCaption, insightsList]),
       ],
     });
 
@@ -140,7 +152,9 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
     });
     this.timeline = timeline;
     this.speed = speed;
-    this.timelineCaption = timelineCaption;
+    this.timelineSection = new GraphSection(timelineCaption, timeline, TIMELINE_CAPTION, false);
+    new GraphSection(speedCaption, speed, SPEED_CAPTION, false);
+    this.insightsSection = new GraphSection(insightsCaption, insightsList, INSIGHTS_CAPTION, true);
     this.insightsList = insightsList;
     this.titleItem = titleItem;
     this.scrubber = scrubber;
@@ -286,6 +300,7 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
 
     const drifts = findTimingDrifts(frame);
     frame.driftingIds = drifts.map(drift => drift.rendition.id);
+    frame.heightBudget = this.resolveHeightBudget();
     const geometry = this.timeline.render(frame);
     this.speed.render(frame, geometry);
 
@@ -318,18 +333,21 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
       };
     }
 
-    this.timelineCaption.setText(
+    this.timelineSection.setCaption(
       [
         TIMELINE_CAPTION,
         retried > 0 ? `${retried} with retries` : '',
         timingNotes > 0 ? `${timingNotes} timing ${timingNotes === 1 ? 'note' : 'notes'}` : '',
         countOf('error') > 0 ? 'error' : '',
+        countOf('wait') > 0 ? 'no downloads' : '',
         status?.word ?? '',
       ]
         .filter(part => part !== '')
         .join(' — '),
     );
     const impressionId = frame.state.impressionId;
+    // The impression ID names the session rather than reporting on it, so it does not unfold the section.
+    this.insightsSection.suggestCollapsed(insights.length === 0 && !status);
     this.insightsList.setItems([
       ...insights.map(insight => insight.text),
       ...(status ? [status.line] : []),
@@ -368,6 +386,38 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
     };
   }
 
+  /**
+   * How tall each graph may be so the panel fits inside the player without scrolling, shared in
+   * proportion to their full heights. None where the panel has no height cap or the graphs fit.
+   */
+  private resolveHeightBudget(): GraphFrame['heightBudget'] {
+    const element = this.getDomElement().get(0);
+    // The positioned UI container, which the `max-height` of the panel resolves against.
+    const container = element.offsetParent as HTMLElement | null;
+    const style = getComputedStyle(element);
+    const fontSize = parseFloat(style.fontSize);
+    if (style.maxHeight === 'none' || !container || !(container.clientHeight > 0) || !(fontSize > 0)) {
+      return undefined;
+    }
+
+    const timelineHeight = this.timeline.isShown() ? this.timeline.naturalHeight() : 0;
+    const speedHeight = this.speed.isShown() ? this.speed.naturalHeight() : 0;
+    const overhead =
+      element.scrollHeight -
+      this.timeline.getDomElement().get(0).offsetHeight -
+      this.speed.getDomElement().get(0).offsetHeight;
+    const budget = container.clientHeight - PANEL_INSET_EM * fontSize - overhead;
+    const natural = timelineHeight + speedHeight;
+    if (natural === 0 || natural <= budget) {
+      return undefined;
+    }
+
+    return {
+      timeline: Math.floor((budget * timelineHeight) / natural),
+      speed: Math.floor((budget * speedHeight) / natural),
+    };
+  }
+
   private readLiveState(): PlayerGraphsPlayerState | null {
     if (!this.player) {
       return null;
@@ -376,7 +426,7 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
       return this.lastLiveState;
     }
 
-    this.lastLiveState = readPlayerState(this.player, this.history.getRenditions());
+    this.lastLiveState = readPlayerState(this.player, this.history);
 
     return this.lastLiveState;
   }
@@ -448,7 +498,7 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
   };
 }
 
-function readPlayerState(player: PlayerAPI, renditions: PlayerGraphsRendition[]): PlayerGraphsPlayerState {
+function readPlayerState(player: PlayerAPI, history: SegmentHistory): PlayerGraphsPlayerState {
   const isLive = player.isLive();
   const currentTime = player.getCurrentTime();
   const liveEdge = isLive ? currentTime - player.getTimeShift() : undefined;
@@ -459,7 +509,28 @@ function readPlayerState(player: PlayerAPI, renditions: PlayerGraphsRendition[])
     seekableStart = liveEdge + Math.min(0, player.getMaxTimeShift());
   }
   // Before the first frame of a media type is decoded, the player reports a placeholder that is no known rendition.
-  const knownIds = renditions.map(rendition => rendition.id);
+  const knownIds = history.getRenditions().map(rendition => rendition.id);
+  const bufferLevel = (mediaType: SegmentMediaType) =>
+    player.buffer.getLevel(
+      player.exports.BufferType.ForwardDuration,
+      mediaType === 'video' ? player.exports.MediaType.Video : player.exports.MediaType.Audio,
+    );
+  const bufferTargets: PlayerGraphsPlayerState['bufferTargets'] = {};
+  const downloadWaits: PlayerGraphsPlayerState['downloadWaits'] = {};
+  (['video', 'audio'] as const).forEach(mediaType => {
+    const { level, targetLevel } = bufferLevel(mediaType);
+    bufferTargets[mediaType] = targetLevel;
+    const wait = readDownloadWait(
+      history,
+      mediaType,
+      level,
+      targetLevel,
+      isLive ? Infinity : player.getDuration() - currentTime,
+    );
+    if (wait) {
+      downloadWaits[mediaType] = { ...wait, bufferEnd: currentTime + level };
+    }
+  });
 
   return {
     version: player.version,
@@ -475,7 +546,37 @@ function readPlayerState(player: PlayerAPI, renditions: PlayerGraphsRendition[])
       knownIds.includes(id),
     ),
     muxedAudio: player.getAudio()?.isMuxedIntoVideo === true,
+    bufferTargets,
+    downloadWaits,
   };
+}
+
+/**
+ * How long a media type has gone without a downloaded segment, where that is longer than a download
+ * should take while the buffer has room for another segment. The room reaches up to the buffer
+ * target, or up to the end of a stream that ends sooner. The player reports a request only when it
+ * ends, so this is the only sign of a request the server holds open, and the same sign a player
+ * gives that has stopped requesting.
+ */
+function readDownloadWait(
+  history: SegmentHistory,
+  mediaType: SegmentMediaType,
+  level: number,
+  targetLevel: number,
+  remaining: number,
+): Pick<DownloadWait, 'seconds'> | undefined {
+  const last = history.getLastDownload(mediaType);
+  if (!last || !Number.isFinite(level) || !Number.isFinite(targetLevel)) {
+    return undefined;
+  }
+
+  const seconds = (Date.now() - last.at) / 1000;
+  const segment = last.duration > 0 ? last.duration : 0;
+  const room = Math.min(targetLevel, remaining) - level;
+
+  return seconds >= Math.max(MIN_DOWNLOAD_WAIT_SECONDS, DOWNLOAD_WAIT_SEGMENTS * segment) && room > segment
+    ? { seconds }
+    : undefined;
 }
 
 function resolveSourceUrl(source: SourceConfig | null): string | undefined {
@@ -567,5 +668,63 @@ class PlayerGraphsInsightsList extends Component<ComponentConfig> {
       item.textContent = text;
       list.appendChild(item);
     });
+  }
+}
+
+/**
+ * Makes a caption fold and unfold the component below it, with a chevron that shows which.
+ */
+class GraphSection {
+  private toggledByUser = false;
+
+  constructor(
+    private readonly caption: Label<LabelConfig>,
+    private readonly content: Component<ComponentConfig>,
+    private text: string,
+    // Matches the `hidden` config of the content, which hides it at initialization.
+    private collapsed: boolean,
+  ) {
+    const element = caption.getDomElement();
+    element.attr('role', 'button');
+    element.attr('tabindex', '0');
+    element.on('click', () => this.toggleByUser());
+    element.on('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        this.toggleByUser();
+      }
+    });
+    this.paint();
+  }
+
+  setCaption(text: string): void {
+    this.text = text;
+    this.paint();
+  }
+
+  /** Folds or unfolds the section to suit its content, until the user folds or unfolds it. */
+  suggestCollapsed(collapsed: boolean): void {
+    if (!this.toggledByUser && collapsed !== this.collapsed) {
+      this.toggle();
+    }
+  }
+
+  private toggleByUser(): void {
+    this.toggledByUser = true;
+    this.toggle();
+  }
+
+  private toggle(): void {
+    this.collapsed = !this.collapsed;
+    if (this.collapsed) {
+      this.content.hide();
+    } else {
+      this.content.show();
+    }
+    this.paint();
+  }
+
+  private paint(): void {
+    this.caption.setText(`${this.collapsed ? '▶' : '▼'} ${this.text}`);
   }
 }

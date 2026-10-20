@@ -220,4 +220,41 @@ describe('PlayerGraphsPanel', () => {
       expect(panel.getErrorSnapshot().insights[0].text).toBe('Player error 1201 SOURCE_ERROR: gone, at 00:10.00.');
     });
   });
+
+  describe('buffer', () => {
+    it('reads the forward buffer target of each media type', () => {
+      buildPanel().show();
+
+      expect(lastFrame().state.bufferTargets).toEqual({ video: 40, audio: 40 });
+    });
+
+    it('reports a media type without a download for two segment durations while its buffer has room', () => {
+      const panel = buildPanel();
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { duration: 4 }));
+      jest.advanceTimersByTime(7000);
+      panel.show();
+      expect(lastFrame().state.downloadWaits).toEqual({});
+
+      jest.advanceTimersByTime(1000);
+      expect(lastFrame().state.downloadWaits).toEqual({ video: { seconds: 8, bufferEnd: 30 } });
+      expect(panel.getDomElement().get(0).textContent).toContain('no downloads');
+    });
+  });
+
+  it('folds and unfolds a graph from its caption, and unfolds the insights when they have something to say', () => {
+    const panel = buildPanel();
+    panel.show();
+    const captions = panel.getDomElement().get(0).querySelectorAll('.bmpui-ui-player-graphs-panel-item-label');
+    const timeline = panel.getDomElement().get(0).querySelector('.bmpui-ui-player-graphs-segment-timeline');
+    const insights = panel.getDomElement().get(0).querySelector('.bmpui-ui-player-graphs-panel-insights');
+    expect(insights.classList).toContain('bmpui-hidden');
+
+    (captions[0] as HTMLElement).click();
+    expect(timeline.classList).toContain('bmpui-hidden');
+    expect(captions[0].textContent).toContain('▶ Segment timeline');
+
+    player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 12, { attempts: 2 }));
+    jest.advanceTimersByTime(1000);
+    expect(insights.classList).not.toContain('bmpui-hidden');
+  });
 });

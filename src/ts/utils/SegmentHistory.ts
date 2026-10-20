@@ -47,6 +47,11 @@ export interface SegmentRecord {
   url?: string;
 }
 
+export interface LastDownload {
+  at: number;
+  duration: number;
+}
+
 /** Where a record sits on the playback timeline: its parsed span where the player reported one. */
 export function mediaSpan(record: SegmentRecord): { start: number; end: number } {
   return { start: record.mediaStart ?? record.start, end: record.mediaEnd ?? record.end };
@@ -66,6 +71,7 @@ export class SegmentHistory {
   private renditions: PlayerGraphsRendition[] = [];
   private readonly records = new Map<string, SegmentRecord>();
   private readonly unsized: Partial<Record<SegmentMediaType, number>> = {};
+  private readonly lastDownloads: Partial<Record<SegmentMediaType, LastDownload>> = {};
   private adBreakActive = false;
 
   initialize(player: PlayerAPI): void {
@@ -114,6 +120,11 @@ export class SegmentHistory {
     return this.unsized[mediaType] ?? 0;
   }
 
+  /** When, by `Date.now()`, the last media segment of a media type downloaded, and its duration. */
+  getLastDownload(mediaType: SegmentMediaType): LastDownload | undefined {
+    return this.lastDownloads[mediaType];
+  }
+
   /**
    * Whether a linear ad plays in place of the content. The player then reports the ad's position and
    * downloads as its own.
@@ -135,6 +146,8 @@ export class SegmentHistory {
     this.records.clear();
     delete this.unsized.video;
     delete this.unsized.audio;
+    delete this.lastDownloads.video;
+    delete this.lastDownloads.audio;
     this.adBreakActive = false;
   };
 
@@ -190,6 +203,11 @@ export class SegmentHistory {
     }
 
     const mediaType = toMediaType(event.mimeType);
+    // Ahead of the checks below: a TS segment reports no start time until the timing is established,
+    // and its download still shows that downloads go on.
+    if (event.success && !event.isInit && mediaType != null) {
+      this.lastDownloads[mediaType] = { at: Date.now(), duration: event.duration };
+    }
     if (
       event.isInit ||
       event.uid == null ||
