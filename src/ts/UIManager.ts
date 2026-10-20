@@ -331,8 +331,18 @@ export class UIManager {
       componentLayoutOverrides: {
         CaptionToggleButton: UIComponentLayoutOverride.Exclude,
         EcoModeContainer: UIComponentLayoutOverride.Exclude,
+        PlayerGraphsContextMenuItem: UIComponentLayoutOverride.Exclude,
+        PlayerGraphsPanel: UIComponentLayoutOverride.Exclude,
         QuickSeekButton: UIComponentLayoutOverride.Exclude,
         Watermark: UIComponentLayoutOverride.Exclude,
+        ...(uiconfig.playerGraphs != null && {
+          PlayerGraphsContextMenuItem: uiconfig.playerGraphs
+            ? UIComponentLayoutOverride.Include
+            : UIComponentLayoutOverride.Exclude,
+          PlayerGraphsPanel: uiconfig.playerGraphs
+            ? UIComponentLayoutOverride.Include
+            : UIComponentLayoutOverride.Exclude,
+        }),
         ...(uiconfig.ecoMode != null && {
           EcoModeContainer: uiconfig.ecoMode ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
         }),

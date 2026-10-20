@@ -235,6 +235,16 @@ export interface UIConfig {
    */
   enableTimestampDeepLink?: boolean;
   /**
+   * Specifies if the `PlayerGraphsPanel` and the context menu entry that toggles it should be included in the UI.
+   * The panel draws playback data as graphs to diagnose playback issues, so it is excluded by default.
+   *
+   * Equivalent to including `PlayerGraphsPanel` and `PlayerGraphsContextMenuItem` through
+   * {@link UIConfig.componentLayoutOverrides}.
+   *
+   * Default: false
+   */
+  playerGraphs?: boolean;
+  /**
    * Specifies if the `EcoModeToggleButton` should be displayed within the `SettingsPanel`
    *
    * @deprecated Use {@link UIConfig.componentLayoutOverrides} to include or exclude the default Eco Mode settings group

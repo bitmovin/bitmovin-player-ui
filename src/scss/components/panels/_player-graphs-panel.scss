@@ -1,0 +1,92 @@
+@import '../../variables';
+@import '../../mixins';
+
+.#{$prefix}-ui-player-graphs-panel {
+  // Full width above the control bar and below the title bar, so the seek bar stays usable and the
+  // lanes are wide enough to read single segments. The offsets resolve against the smaller font size
+  // of the panel: (5.5em control bar) / 0.75 and (5.5em + 3.5em title bar) / 0.75.
+  bottom: safe-area-max(7.4em, bottom);
+  font-size: $font-size-small;
+  left: safe-area-max(0.5em, left);
+  max-height: calc(100% - 12.5em);
+  min-width: 0;
+  overscroll-behavior: contain;
+  // Interactive, unlike the player insights panel: the panel scrolls and its controls take clicks.
+  pointer-events: auto;
+  right: safe-area-max(0.5em, right);
+  top: unset;
+  width: auto;
+
+  .#{$prefix}-ui-player-graphs-panel-title-item {
+    cursor: default;
+    padding: 0.3em 0.5em;
+
+    &:active,
+    &:hover {
+      background-color: $color-background-menu-title-overlay;
+    }
+
+    .#{$prefix}-ui-player-graphs-panel-title-label {
+      line-height: 1.2;
+      min-height: unset;
+    }
+  }
+
+  .#{$prefix}-ui-player-graphs-panel-close-button {
+    cursor: pointer;
+    height: $icon-size * 0.55;
+    margin-left: auto;
+    min-width: $icon-size * 0.55;
+    padding: 0.1em;
+
+    .#{$prefix}-ui-icon {
+      height: $icon-size * 0.4;
+      min-width: $icon-size * 0.4;
+      width: $icon-size * 0.4;
+    }
+
+    &:hover {
+      animation: none;
+      filter: none;
+    }
+  }
+
+  .#{$prefix}-ui-player-graphs-panel-item {
+    cursor: default;
+    padding: 0.1em 0.8em 0.8em;
+
+    &:active,
+    &:hover {
+      background-color: transparent;
+    }
+
+    // The caption above the graph, instead of the settings-panel row layout side by side.
+    > .#{$prefix}-container-wrapper {
+      display: block;
+    }
+  }
+
+  .#{$prefix}-ui-player-graphs-panel-item-label,
+  .#{$prefix}-ui-player-graphs-panel-item-hint {
+    color: transparentize($color-primary, 0.35);
+    display: inline-flex;
+    line-height: 1.2;
+    min-height: unset;
+  }
+
+  .#{$prefix}-ui-player-graphs-panel-item-hint {
+    cursor: help;
+    margin-left: 0.4em;
+  }
+
+  .#{$prefix}-ui-player-graphs-segment-timeline,
+  .#{$prefix}-ui-player-graphs-download-speed {
+    // The display below outranks the framework's hidden rule.
+    @include hidden;
+
+    background: transparentize($color-primary, 0.97);
+    // A canvas is inline by default, which leaves a baseline gap under it.
+    display: block;
+    max-width: 100%;
+  }
+}

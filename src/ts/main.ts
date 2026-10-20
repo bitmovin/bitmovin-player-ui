@@ -177,6 +177,11 @@ export {
   PlayerInsightsPanel,
   PlayerInsightsPanelConfig,
 } from './components/panels/player-insights/PlayerInsightsPanel';
+export { PlayerGraphsPanel, PlayerGraphsPanelConfig } from './components/panels/player-graphs/PlayerGraphsPanel';
+export {
+  PlayerGraphsContextMenuItem,
+  PlayerGraphsContextMenuItemConfig,
+} from './components/panels/player-graphs/PlayerGraphsContextMenuItem';
 export { InteractiveSettingsPanelItem } from './components/settings/InteractiveSettingsPanelItem';
 export { TouchControlOverlay, TouchControlOverlayConfig } from './components/overlays/TouchControlOverlay';
 export { CharacterEdgeColorSelectBox } from './components/settings/subtitlesettings/CharacterEdgeColorSelectBox';

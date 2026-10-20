@@ -6,6 +6,8 @@ import { UIInstanceManager } from '../../UIManager';
 import { PlayerUtils } from '../../utils/PlayerUtils';
 import { TimestampLinkUtils } from '../../utils/TimestampLinkUtils';
 import { ContextMenu, ContextMenuConfig } from './ContextMenu';
+import { PlayerGraphsContextMenuItem } from '../panels/player-graphs/PlayerGraphsContextMenuItem';
+import type { PlayerGraphsPanel } from '../panels/player-graphs/PlayerGraphsPanel';
 import { PlayerInsightsContextMenuItem } from '../panels/player-insights/PlayerInsightsContextMenuItem';
 import type { PlayerInsightsPanel } from '../panels/player-insights/PlayerInsightsPanel';
 import { InteractiveContextMenuItem, InteractiveContextMenuItemConfig } from './InteractiveContextMenuItem';
@@ -23,6 +25,10 @@ export interface PlayerContextMenuConfig extends ContextMenuConfig {
    * The player insights panel to expose as a default context menu action.
    */
   playerInsightsPanel: PlayerInsightsPanel;
+  /**
+   * The player graphs panel to expose as a context menu action.
+   */
+  playerGraphsPanel?: PlayerGraphsPanel;
 }
 
 /**
@@ -62,6 +68,9 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
           new PlayerInsightsContextMenuItem({
             playerInsightsPanel: config.playerInsightsPanel,
           }),
+          ...(config.playerGraphsPanel
+            ? [new PlayerGraphsContextMenuItem({ playerGraphsPanel: config.playerGraphsPanel })]
+            : []),
           copyTimestampLinkItem,
         ],
       }),

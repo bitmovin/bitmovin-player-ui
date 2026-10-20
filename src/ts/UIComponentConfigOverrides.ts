@@ -28,6 +28,8 @@ import type { ErrorMessageOverlayConfig } from './components/overlays/ErrorMessa
 import type { PlaybackToggleOverlayConfig } from './components/overlays/PlaybackToggleOverlay';
 import type { SubtitleOverlayConfig } from './components/overlays/SubtitleOverlay';
 import type { TouchControlOverlayConfig } from './components/overlays/TouchControlOverlay';
+import type { PlayerGraphsContextMenuItemConfig } from './components/panels/player-graphs/PlayerGraphsContextMenuItem';
+import type { PlayerGraphsPanelConfig } from './components/panels/player-graphs/PlayerGraphsPanel';
 import type { PlayerInsightsPanelConfig } from './components/panels/player-insights/PlayerInsightsPanel';
 import type { RecommendationItemConfig } from './components/RecommendationItem';
 import type { SeekBarConfig } from './components/seekbar/SeekBar';
@@ -383,6 +385,14 @@ export interface UIComponentConfigMap {
    * @category Components
    */
   PlayerInsightsPanel?: Partial<PlayerInsightsPanelConfig>;
+  /**
+   * @category Components
+   */
+  PlayerGraphsPanel?: Partial<PlayerGraphsPanelConfig>;
+  /**
+   * @category Components
+   */
+  PlayerGraphsContextMenuItem?: Partial<PlayerGraphsContextMenuItemConfig>;
   /**
    * @category Components
    */

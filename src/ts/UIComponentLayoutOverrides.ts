@@ -23,7 +23,7 @@ export enum UIComponentLayoutOverride {
  *
  * Precedence is resolved in this order:
  * 1. Built-in default layout membership
- * 2. Legacy aliases (`includeWatermark`, `ecoMode`, and `playbackSpeedSelectionEnabled`)
+ * 2. Config aliases (`playerGraphs`, `includeWatermark`, `ecoMode`, and `playbackSpeedSelectionEnabled`)
  * 3. Top-level `componentLayoutOverrides`
  * 4. Variant-scoped `componentLayoutOverrides`
  *
@@ -38,6 +38,8 @@ export enum UIComponentLayoutOverride {
  * componentLayoutOverrides: {
  *   CaptionToggleButton: UIComponentLayoutOverride.Exclude,
  *   EcoModeContainer: UIComponentLayoutOverride.Exclude,
+ *   PlayerGraphsContextMenuItem: UIComponentLayoutOverride.Exclude,
+ *   PlayerGraphsPanel: UIComponentLayoutOverride.Exclude,
  *   QuickSeekButton: UIComponentLayoutOverride.Exclude,
  *   Watermark: UIComponentLayoutOverride.Exclude,
  * }
@@ -334,6 +336,14 @@ export interface UIComponentLayoutOverrideMap {
    * @category Components
    */
   PlayerInsightsPanel?: UIComponentLayoutOverride;
+  /**
+   * @category Components
+   */
+  PlayerGraphsPanel?: UIComponentLayoutOverride;
+  /**
+   * @category Components
+   */
+  PlayerGraphsContextMenuItem?: UIComponentLayoutOverride;
   /**
    * @category Components
    */

@@ -62,6 +62,7 @@ import { AdMessageLabel } from './components/ads/AdMessageLabel';
 import { FocusableContainer } from './spatialnavigation/FocusableContainer';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationOverlayNavigationGroup } from './spatialnavigation/RecommendationOverlayNavigationGroup';
+import { PlayerGraphsPanel } from './components/panels/player-graphs/PlayerGraphsPanel';
 import { PlayerInsightsPanel } from './components/panels/player-insights/PlayerInsightsPanel';
 import { CaptionToggleButton } from './components/buttons/CaptionToggleButton';
 
@@ -285,7 +286,10 @@ export namespace UIFactory {
     export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
       const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
-      const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
+      const playerGraphsPanel = BrowserUtils.isMobile ? null : new PlayerGraphsPanel({ hidden: true });
+      const playerContextMenu = playerInsightsPanel
+        ? new PlayerContextMenu({ playerInsightsPanel, playerGraphsPanel })
+        : null;
 
       const settingsPanel = buildDefaultSettingsPanel(
         subtitleOverlay,
@@ -341,6 +345,7 @@ export namespace UIFactory {
           new RecommendationOverlay(),
           new Watermark(),
           ...(playerInsightsPanel ? [playerInsightsPanel] : []),
+          ...(playerGraphsPanel ? [playerGraphsPanel] : []),
           ...(playerContextMenu ? [new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu] : []),
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
@@ -414,7 +419,10 @@ export namespace UIFactory {
         cssClasses: BrowserUtils.isMobile ? ['touch-click-through'] : [],
       });
       const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
-      const playerContextMenu = playerInsightsPanel ? new PlayerContextMenu({ playerInsightsPanel }) : null;
+      const playerGraphsPanel = BrowserUtils.isMobile ? null : new PlayerGraphsPanel({ hidden: true });
+      const playerContextMenu = playerInsightsPanel
+        ? new PlayerContextMenu({ playerInsightsPanel, playerGraphsPanel })
+        : null;
 
       const settingsPanel = buildDefaultSettingsPanel(subtitleOverlay, -1);
 
@@ -479,6 +487,7 @@ export namespace UIFactory {
             ],
           }),
           ...(playerInsightsPanel ? [playerInsightsPanel] : []),
+          ...(playerGraphsPanel ? [playerGraphsPanel] : []),
           new DismissClickOverlay({ target: settingsPanel }),
           settingsPanel,
           ...(playerContextMenu ? [new DismissClickOverlay({ target: playerContextMenu }), playerContextMenu] : []),

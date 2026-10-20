@@ -14,6 +14,8 @@
   "settings.subtitles.options": "Opciones",
   "playerInsights.show": "Mostrar Player Insights",
   "playerInsights.hide": "Ocultar Player Insights",
+  "playerGraphs.show": "Mostrar Player Graphs",
+  "playerGraphs.hide": "Ocultar Player Graphs",
   "colors.white": "blanco",
   "colors.black": "negro",
   "colors.red": "rojo",

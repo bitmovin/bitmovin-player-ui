@@ -1,5 +1,6 @@
 {
-  "files": ["src/ts/main.ts"],
+  // The augmentation file declares player fields that are not in the released typings yet. Nothing imports it.
+  "files": ["src/ts/main.ts", "src/ts/bitmovin-player-augmentations.d.ts"],
   "compilerOptions": {
     "noImplicitAny": true,
     "target": "es5",
