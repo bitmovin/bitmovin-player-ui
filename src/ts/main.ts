@@ -183,6 +183,7 @@ export {
   PlayerGraphsSnapshot,
 } from './components/panels/player-graphs/PlayerGraphsPanel';
 export { PlayerGraphsPlayerState } from './components/panels/player-graphs/GraphCanvas';
+export { PlayerGraphsInsight } from './components/panels/player-graphs/playerGraphsInsights';
 export { PlayerGraphsRendition, SegmentMediaType, SegmentRecord } from './utils/SegmentHistory';
 export {
   PlayerGraphsContextMenuItem,

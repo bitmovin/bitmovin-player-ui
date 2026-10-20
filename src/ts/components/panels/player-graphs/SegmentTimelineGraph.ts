@@ -1,4 +1,4 @@
-import type { PlayerGraphsRendition, SegmentMediaType, SegmentRecord } from '../../../utils/SegmentHistory';
+import { mediaSpan, PlayerGraphsRendition, SegmentMediaType, SegmentRecord } from '../../../utils/SegmentHistory';
 import { ComponentConfig } from '../../Component';
 import {
   activeRenditionOf,
@@ -65,6 +65,11 @@ const LANE_BORDER_COLOR = 'rgba(255, 255, 255, 0.22)';
 const AXIS_COLOR = 'rgba(255, 255, 255, 0.30)';
 const PLAYHEAD_COLOR = '#ffffff';
 const RETRY_COUNT_COLOR = '#ffffff';
+const DRIFT_LABEL_COLOR = '#ffb347';
+const HTTP_CACHE_COLOR = '#7fb2ff';
+const PREFETCH_COLOR = '#b98cff';
+const PLAYER_CACHE_COLOR = '#4fd1c5';
+const ORIGIN_MARK_HEIGHT = 3;
 
 interface LegendEntry {
   label: string;
@@ -80,6 +85,19 @@ const LEGEND_ENTRIES: LegendEntry[] = [
   { label: 'played earlier', color: PLAYED_AHEAD_COLOR },
   { label: 'failed', color: FAILED_COLOR },
   { label: 'retried', color: DOWNLOADED_COLOR, topBar: FAILED_COLOR },
+  { label: 'HTTP cache', color: HTTP_CACHE_COLOR },
+  { label: 'prefetched', color: PREFETCH_COLOR },
+  { label: 'player cache', color: PLAYER_CACHE_COLOR },
+];
+
+/**
+ * The marks along the bottom of a segment: answered by the browser's HTTP cache, downloaded ahead of
+ * playback by the prefetching loader, or refilled from the player's own segment cache without a request.
+ */
+const ORIGIN_MARKS: { field: 'httpCache' | 'prefetched' | 'reused'; color: string }[] = [
+  { field: 'httpCache', color: HTTP_CACHE_COLOR },
+  { field: 'prefetched', color: PREFETCH_COLOR },
+  { field: 'reused', color: PLAYER_CACHE_COLOR },
 ];
 
 /** Where a label was drawn along x, so later labels can keep clear of it. */
@@ -155,7 +173,10 @@ export class SegmentTimelineGraph extends GraphCanvas {
       windowStart: timelineWindow.start,
       windowSeconds: timelineWindow.seconds,
     };
-    const visible = frame.records.filter(record => record.end > timelineWindow.start && record.start < windowEnd);
+    const visible = frame.records.filter(record => {
+      const span = mediaSpan(record);
+      return span.end > timelineWindow.start && span.start < windowEnd;
+    });
 
     let rowY = lanesTop;
     renditions.forEach((rendition, index) => {
@@ -213,7 +234,12 @@ export class SegmentTimelineGraph extends GraphCanvas {
     }
 
     context.font = active ? FONT_BOLD : FONT;
-    context.fillStyle = active ? ACTIVE_LABEL_COLOR : LABEL_COLOR;
+    // A drifting lane is amber, so the rendition the insights name can be found among the others.
+    if (frame.driftingIds?.includes(rendition.id)) {
+      context.fillStyle = DRIFT_LABEL_COLOR;
+    } else {
+      context.fillStyle = active ? ACTIVE_LABEL_COLOR : LABEL_COLOR;
+    }
     const measure = (text: string) => context.measureText(text).width;
     context.fillText(
       truncateToWidth(measure, rendition.label, geometry.labelWidth, ELLIPSIS),
@@ -231,8 +257,9 @@ export class SegmentTimelineGraph extends GraphCanvas {
       }
 
       // Whole pixels, so neighbours do not anti-alias into dark seams, and a pixel apart, so they stay countable.
-      const startX = Math.round(Math.max(geometry.plotLeft + 1, toX(geometry, record.start)));
-      const endX = Math.round(Math.min(plotRight - 1, toX(geometry, record.end)));
+      const span = mediaSpan(record);
+      const startX = Math.round(Math.max(geometry.plotLeft + 1, toX(geometry, span.start)));
+      const endX = Math.round(Math.min(plotRight - 1, toX(geometry, span.end)));
       if (endX <= startX) {
         return;
       }
@@ -240,13 +267,20 @@ export class SegmentTimelineGraph extends GraphCanvas {
 
       // The segment under the playhead of the rendition being decoded plays now, whether or not its
       // `SegmentPlayback` has arrived, so the video and audio lanes agree across boundaries their grids do not share.
-      const playingNow = active && frame.currentTime >= record.start && frame.currentTime < record.end;
-      context.fillStyle = resolveSegmentColor(record, playingNow, record.start > frame.currentTime);
+      const playingNow = active && frame.currentTime >= span.start && frame.currentTime < span.end;
+      context.fillStyle = resolveSegmentColor(record, playingNow, span.start > frame.currentTime);
       context.fillRect(startX, laneY + 1, segmentWidth, LANE_RECT_HEIGHT - 2);
 
       if (record.failures > 0) {
         this.drawRetryMark(context, record.failures, startX, segmentWidth, laneY);
       }
+      // Where the segment came from, stacked upwards from its bottom edge.
+      let markBottom = laneY + LANE_RECT_HEIGHT - 1;
+      ORIGIN_MARKS.filter(mark => record[mark.field]).forEach(mark => {
+        markBottom -= ORIGIN_MARK_HEIGHT;
+        context.fillStyle = mark.color;
+        context.fillRect(startX, markBottom, segmentWidth, ORIGIN_MARK_HEIGHT);
+      });
     });
   }
 

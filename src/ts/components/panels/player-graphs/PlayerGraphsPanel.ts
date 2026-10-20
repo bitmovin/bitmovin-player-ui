@@ -1,4 +1,5 @@
 import type { Bitmovin8Adapter, ErrorEvent, PlayerAPI, SourceConfig } from 'bitmovin-player';
+import { DOM } from '../../../DOM';
 import { UIInstanceManager } from '../../../UIManager';
 import { PlayerGraphsRendition, SegmentHistory, SegmentRecord } from '../../../utils/SegmentHistory';
 import { Timeout } from '../../../utils/Timeout';
@@ -9,7 +10,8 @@ import { SettingsPanel, SettingsPanelConfig } from '../../settings/SettingsPanel
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../../settings/SettingsPanelItem';
 import { SettingsPanelPage } from '../../settings/SettingsPanelPage';
 import { DownloadSpeedGraph } from './DownloadSpeedGraph';
-import { GraphFrame, PlayerGraphsPlayerState } from './GraphCanvas';
+import { formatPlayheadTime, GraphFrame, PlayerGraphsPlayerState } from './GraphCanvas';
+import { collectInsights, describeError, findTimingDrifts, PlayerGraphsInsight } from './playerGraphsInsights';
 import { PlayerGraphsPanelTitleItem } from './PlayerGraphsPanelTitleItem';
 import { PlayerGraphsScrubber } from './PlayerGraphsScrubber';
 import { SegmentTimelineGraph } from './SegmentTimelineGraph';
@@ -25,6 +27,8 @@ export interface PlayerGraphsSnapshot {
   exportedAt: string;
   /** The UI version that exported it. */
   uiVersion: string;
+  /** The findings at export, ahead of the bulk data so they are the first thing read in the file. */
+  insights: PlayerGraphsInsight[];
   player: PlayerGraphsPlayerState;
   /** The lanes, in lane order. */
   renditions: PlayerGraphsRendition[];
@@ -43,6 +47,7 @@ const EMPTY_STATE: PlayerGraphsPlayerState = {
 };
 const TIMELINE_CAPTION = 'Segment timeline';
 const SPEED_CAPTION = 'Download speed';
+const INSIGHTS_CAPTION = 'Insights';
 const SPEED_NOTE =
   'Each bar is one segment: its size divided by its download time. Audio segments are a few tens of kB, ' +
   'so request set-up dominates them and audio reads well below video on the same connection. Read each ' +
@@ -89,6 +94,7 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
   private readonly timeline: SegmentTimelineGraph;
   private readonly speed: DownloadSpeedGraph;
   private readonly timelineCaption: Label<LabelConfig>;
+  private readonly insightsList: PlayerGraphsInsightsList;
   private readonly titleItem: PlayerGraphsPanelTitleItem;
   private readonly scrubber: PlayerGraphsScrubber;
   private readonly scrubberItem: SettingsPanelItem<SettingsPanelItemConfig>;
@@ -114,12 +120,14 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
     const titleItem = new PlayerGraphsPanelTitleItem();
     const scrubber = new PlayerGraphsScrubber();
     const scrubberItem = buildItem([scrubber], { hidden: true });
+    const insightsList = new PlayerGraphsInsightsList();
     const rootPage = new SettingsPanelPage({
       components: [
         titleItem,
         scrubberItem,
         buildItem([timelineCaption, timeline]),
         buildItem([buildCaption(SPEED_CAPTION), buildHint(SPEED_NOTE), speed]),
+        buildItem([buildCaption(INSIGHTS_CAPTION), insightsList]),
       ],
     });
 
@@ -133,6 +141,7 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
     this.timeline = timeline;
     this.speed = speed;
     this.timelineCaption = timelineCaption;
+    this.insightsList = insightsList;
     this.titleItem = titleItem;
     this.scrubber = scrubber;
     this.scrubberItem = scrubberItem;
@@ -275,13 +284,59 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
       return;
     }
 
-    this.speed.render(frame, this.timeline.render(frame));
-    const status = {
-      live: this.history.isAdPlaying() ? 'ad break' : '',
-      paused: 'paused',
-      snapshot: 'snapshot',
-    }[this.view.mode];
-    this.timelineCaption.setText(status ? `${TIMELINE_CAPTION} — ${status}` : TIMELINE_CAPTION);
+    const drifts = findTimingDrifts(frame);
+    frame.driftingIds = drifts.map(drift => drift.rendition.id);
+    const geometry = this.timeline.render(frame);
+    this.speed.render(frame, geometry);
+
+    const view = this.view;
+    const insights =
+      view.mode === 'snapshot'
+        ? view.snapshot.insights
+        : collectInsights(frame, drifts, geometry?.windowStart ?? -Infinity);
+    const countOf = (kind: PlayerGraphsInsight['kind']) =>
+      insights.filter(insight => insight.kind === kind).reduce((sum, insight) => sum + insight.count, 0);
+    const retried = countOf('retries');
+    const timingNotes = countOf('timing');
+    let status: { word: string; line: string } | undefined;
+    if (view.mode === 'snapshot') {
+      status = {
+        word: 'snapshot',
+        line: view.atError
+          ? 'Frozen at the player error after the source unloaded. The next source returns the graphs to the player.'
+          : `Snapshot exported ${view.snapshot.exportedAt}. The graphs return to the player when its source unloads.`,
+      };
+    } else if (view.mode === 'paused') {
+      status = {
+        word: 'paused',
+        line: `Paused at ${formatPlayheadTime(view.state.currentTime, true)}. Recording continues.`,
+      };
+    } else if (this.history.isAdPlaying()) {
+      status = {
+        word: 'ad break',
+        line: 'An ad break plays. The graphs show the content as it was when the break started.',
+      };
+    }
+
+    this.timelineCaption.setText(
+      [
+        TIMELINE_CAPTION,
+        retried > 0 ? `${retried} with retries` : '',
+        timingNotes > 0 ? `${timingNotes} timing ${timingNotes === 1 ? 'note' : 'notes'}` : '',
+        countOf('error') > 0 ? 'error' : '',
+        status?.word ?? '',
+      ]
+        .filter(part => part !== '')
+        .join(' — '),
+    );
+    const impressionId = frame.state.impressionId;
+    this.insightsList.setItems([
+      ...insights.map(insight => insight.text),
+      ...(status ? [status.line] : []),
+      ...(impressionId
+        ? [`Bitmovin Analytics impression ${impressionId}: the same session in the Bitmovin Dashboard.`]
+        : []),
+    ]);
   };
 
   private buildFrame(): GraphFrame | null {
@@ -327,14 +382,24 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
   }
 
   private buildSnapshot(state: PlayerGraphsPlayerState): PlayerGraphsSnapshot {
+    const frame: GraphFrame = {
+      records: this.history.getRecords().map(record => ({ ...record })),
+      renditions: this.history.getRenditions(),
+      state,
+      currentTime: state.currentTime,
+      stillView: true,
+      unsized: {},
+    };
+
     return {
       format: SNAPSHOT_FORMAT,
       version: SNAPSHOT_VERSION,
       exportedAt: new Date().toISOString(),
       uiVersion: version,
+      insights: collectInsights(frame, findTimingDrifts(frame), -Infinity),
       player: state,
-      renditions: this.history.getRenditions(),
-      segments: this.history.getRecords().map(record => ({ ...record })),
+      renditions: frame.renditions.slice(),
+      segments: frame.records.slice(),
     };
   }
 
@@ -353,7 +418,10 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
       return;
     }
 
-    this.errorSnapshot = this.buildSnapshot(this.lastLiveState ?? this.readLiveState() ?? EMPTY_STATE);
+    const snapshot = this.buildSnapshot(this.lastLiveState ?? this.readLiveState() ?? EMPTY_STATE);
+    const at = formatPlayheadTime(snapshot.player.currentTime, true);
+    snapshot.insights.unshift(describeError(event.code, event.name, event.message, at));
+    this.errorSnapshot = snapshot;
     this.freezeOnUnload = true;
     console.warn(
       `[player-graphs] Snapshot at player error ${event.code}; load it with the graphs panel's Import:\n` +
@@ -466,4 +534,38 @@ function buildItem(
   components.forEach(component => item.addComponent(component));
 
   return item;
+}
+
+/**
+ * The findings as a list of sentences. Text, so it wraps and can be copied into a ticket.
+ */
+class PlayerGraphsInsightsList extends Component<ComponentConfig> {
+  private items: string[] | null = null;
+
+  constructor(config: ComponentConfig = {}) {
+    super(config);
+
+    this.config = this.mergeConfig(config, { cssClass: 'ui-player-graphs-panel-insights' }, this.config);
+  }
+
+  protected toDomElement(): DOM {
+    return new DOM('ul', { class: this.getCssClasses() }, this);
+  }
+
+  /** Leaves the list alone when nothing changed, so a text selection survives the repaint. */
+  setItems(items: string[]): void {
+    if (this.items?.length === items.length && items.every((item, index) => item === this.items[index])) {
+      return;
+    }
+
+    this.items = items;
+    const list = this.getDomElement().get(0);
+    list.textContent = '';
+    (items.length > 0 ? items : ['Nothing to report.']).forEach(text => {
+      const item = document.createElement('li');
+      // Text, never markup: rendition names come from the manifest.
+      item.textContent = text;
+      list.appendChild(item);
+    });
+  }
 }

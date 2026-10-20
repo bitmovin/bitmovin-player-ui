@@ -133,6 +133,22 @@ export function segmentRequest(uid: string, startTime: number, overrides: Record
   };
 }
 
+/** The parse of the video segment `uid`, playing at `playbackTime`. */
+export function segmentParsed(uid: string, playbackTime: number, overrides: Record<string, unknown> = {}): unknown {
+  return {
+    uid,
+    url: `https://example.com/${uid}.m4s`,
+    mimeType: 'video/mp4',
+    representationId: 'v1080',
+    startTime: 4,
+    playbackTime,
+    presentationTimestamp: playbackTime,
+    duration: 2,
+    loadedFrom: 'network',
+    ...overrides,
+  };
+}
+
 export const RENDITIONS: PlayerGraphsRendition[] = [
   { id: 'v1080', mediaType: 'video', label: '1080p', bitrate: 5000000 },
   { id: 'a-en', mediaType: 'audio', label: 'en', bitrate: 128000 },

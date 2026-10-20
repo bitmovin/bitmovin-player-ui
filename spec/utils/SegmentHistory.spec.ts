@@ -4,6 +4,7 @@ import {
   buildPlayer,
   PLAYER_EVENTS,
   PlayerStub,
+  segmentParsed,
   segmentRequest,
 } from '../components/panels/player-graphs/graphTestHelpers';
 
@@ -148,6 +149,64 @@ describe('SegmentHistory', () => {
     player.fire(PLAYER_EVENTS.SegmentPlayback, { uid: 's2' });
 
     expect(history.getRecords().map(record => record.played)).toEqual([false, true]);
+  });
+
+  describe('where a segment came from', () => {
+    it('marks a segment the HTTP cache answered and leaves it unmeasured', () => {
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { loadedFrom: 'httpCache' }));
+
+      expect(history.getRecords()).toEqual([expect.objectContaining({ httpCache: true })]);
+      expect(history.getRecords()[0].mbps).toBeUndefined();
+    });
+
+    it('keeps a network download unmarked when the HTTP cache answers it again', () => {
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { wasPrefetched: true }));
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { loadedFrom: 'httpCache' }));
+
+      expect(history.getRecords()).toEqual([expect.objectContaining({ httpCache: false, prefetched: true, mbps: 8 })]);
+    });
+
+    it('counts the refills from the player cache', () => {
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4));
+      player.fire(PLAYER_EVENTS.SegmentParsed, segmentParsed('s1', 4, { loadedFrom: 'cache' }));
+      player.fire(PLAYER_EVENTS.SegmentParsed, segmentParsed('s1', 4, { loadedFrom: 'cache' }));
+
+      expect(history.getRecords()[0].reused).toBe(2);
+    });
+  });
+
+  describe('parsed timing', () => {
+    it('places a segment where its media plays', () => {
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4));
+      player.fire(PLAYER_EVENTS.SegmentParsed, segmentParsed('s1', 3.9, { duration: 1.5 }));
+
+      expect(history.getRecords()).toEqual([
+        expect.objectContaining({ start: 4, end: 6, mediaStart: 3.9, mediaEnd: 5.4 }),
+      ]);
+    });
+
+    it('spans all chunks of a chunked CMAF segment, which are parsed before its request finishes', () => {
+      player.fire(PLAYER_EVENTS.SegmentParsed, segmentParsed('s1', 4, { duration: 0.5 }));
+      player.fire(PLAYER_EVENTS.SegmentParsed, segmentParsed('s1', 4.5, { duration: 0.5 }));
+      expect(history.getRecords()).toEqual([expect.objectContaining({ start: 4, end: 4 })]);
+
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4));
+      expect(history.getRecords()).toEqual([expect.objectContaining({ start: 4, end: 6, mediaStart: 4, mediaEnd: 5 })]);
+    });
+
+    it('takes the timing of a muxed TS segment from its video part', () => {
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { mimeType: 'video/mp2t' }));
+      player.fire(PLAYER_EVENTS.SegmentParsed, segmentParsed('s1', 4, { duration: 2 }));
+      player.fire(PLAYER_EVENTS.SegmentParsed, segmentParsed('s1', 4.02, { duration: 2.03, mimeType: 'audio/mp4' }));
+
+      expect(history.getRecords()).toEqual([expect.objectContaining({ mediaStart: 4, mediaEnd: 6 })]);
+    });
+
+    it('falls back to the presentation timestamp before transmuxed TS knows its playback time', () => {
+      player.fire(PLAYER_EVENTS.SegmentParsed, segmentParsed('s1', NaN, { presentationTimestamp: 8 }));
+
+      expect(history.getRecords()[0].mediaStart).toBe(8);
+    });
   });
 
   it('stops recording when released', () => {

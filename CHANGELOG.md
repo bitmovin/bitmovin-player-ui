@@ -15,7 +15,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - `Export` and `Import` buttons, `PlayerGraphsPanel.exportSnapshot()` and `PlayerGraphsPanel.loadSnapshot()` to save the recorded session as a JSON file (`PlayerGraphsSnapshot`) and draw it again elsewhere, with a scrubber to move through it. A snapshot names the Bitmovin Analytics impression ID where Analytics is enabled.
   - A `Pause` button, `PlayerGraphsPanel.pause()` and `PlayerGraphsPanel.resume()` to stop the graphs at an instant and scrub through everything recorded so far, while playback and recording continue.
   - At a player error, the panel takes a snapshot of the session, writes it to the console and keeps it for `PlayerGraphsPanel.getErrorSnapshot()`. When the source unloads after the error, the graphs stay on that snapshot until the next source loads.
-  - Needs a player that reports `startTime`, `representationId`, `attempts`, `cancelReason` and `wasPrefetched` on `SegmentRequestFinished`, a `uid` that is unique per segment, and `AudioTrack.isMuxedIntoVideo`.
+  - Segments are drawn where their media plays, from `SegmentParsed`, and marked where the browser's HTTP cache answered them, where the player prefetched them, and where it refilled them from its own segment cache.
+  - An `Insights` section states the findings in words: retried segments, renditions whose segment times drift from their manifest, audio muxed into the video segments, refills from the player cache, and the session's Bitmovin Analytics impression ID. A snapshot carries the findings (`PlayerGraphsInsight`).
+  - Needs a player that reports `startTime`, `representationId`, `attempts`, `cancelReason`, `wasPrefetched` and `loadedFrom` on `SegmentRequestFinished`, the `SegmentParsed` event, a `uid` that is unique per segment, and `AudioTrack.isMuxedIntoVideo`.
 
 ## [4.24.0] - 2026-11-19
 

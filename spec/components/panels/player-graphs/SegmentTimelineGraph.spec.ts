@@ -90,4 +90,23 @@ describe('SegmentTimelineGraph', () => {
 
     expect(texts.map(text => text.text)).toContain('muxed into the video segments');
   });
+
+  it('draws a segment where its media plays, with a mark for where it came from', () => {
+    const geometry = graph.render(
+      frame([record('s', 20, { mediaStart: 30, mediaEnd: 32, httpCache: true, prefetched: true })]),
+    )!;
+
+    const body = rects.find(rect => rect.h === 16)!;
+    expect(body.x).toBe(Math.round(geometry.plotLeft + 30 * (geometry.plotWidth / 60)));
+    expect(rects.filter(rect => rect.h === 3 && rect.x === body.x).map(rect => rect.fill)).toEqual([
+      '#7fb2ff',
+      '#b98cff',
+    ]);
+  });
+
+  it('draws the label of a drifting lane in amber', () => {
+    graph.render({ ...frame([]), driftingIds: ['a-en'] });
+
+    expect(texts.find(text => text.text.startsWith('e'))?.fill).toBe('#ffb347');
+  });
 });

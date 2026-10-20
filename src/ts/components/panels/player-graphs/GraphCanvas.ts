@@ -39,6 +39,8 @@ export interface GraphFrame {
   stillView: boolean;
   /** How many downloads of a media type reported no size. */
   unsized: Partial<Record<PlayerGraphsRendition['mediaType'], number>>;
+  /** The renditions whose segments drift from the times their manifest declares. */
+  driftingIds?: readonly string[];
 }
 
 /**

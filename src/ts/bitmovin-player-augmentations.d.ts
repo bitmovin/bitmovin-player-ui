@@ -17,6 +17,26 @@ declare module 'bitmovin-player/types/core/Events' {
     attempts?: number;
     /** Why the player cancelled the request. On such an event, `size` is the bytes received, `-1` for none. */
     cancelReason?: 'timeout' | 'abr' | 'cancel';
+    /** Whether the network or the browser's HTTP cache answered a successful request. */
+    loadedFrom?: 'network' | 'httpCache';
+  }
+
+  /** Reported once a media segment has been downloaded and parsed, with the timing read from the segment. */
+  interface SegmentParsedEvent extends PlayerEventBase {
+    url: string;
+    /** Matches the `uid` of the request that loaded the segment. */
+    uid: string;
+    mimeType: string;
+    /** Start of the segment on the playback timeline, read from the segment. */
+    playbackTime: number;
+    /** The time encoded in the segment, without the presentation time offset applied. */
+    presentationTimestamp: number;
+    duration: number;
+    /** Start of the segment as declared by the manifest. */
+    startTime?: number;
+    representationId?: string;
+    /** Where the segment data came from. `cache` is a player-internal segment cache, reused without a request. */
+    loadedFrom: 'network' | 'httpCache' | 'prefetch' | 'cache';
   }
 }
 

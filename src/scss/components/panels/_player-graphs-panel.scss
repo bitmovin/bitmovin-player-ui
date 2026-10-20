@@ -116,6 +116,16 @@
     }
   }
 
+  // Selectable, unlike the rest of the panel, so a finding can be copied into a ticket.
+  .#{$prefix}-ui-player-graphs-panel-insights {
+    color: transparentize($color-primary, 0.15);
+    line-height: 1.4;
+    margin: 0.3em 0 0;
+    padding-left: 1.4em;
+    user-select: text;
+    white-space: normal;
+  }
+
   .#{$prefix}-ui-player-graphs-panel-item-label,
   .#{$prefix}-ui-player-graphs-panel-item-hint {
     color: transparentize($color-primary, 0.35);

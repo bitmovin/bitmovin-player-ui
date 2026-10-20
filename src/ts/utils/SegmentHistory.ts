@@ -1,4 +1,5 @@
-import type { PlayerAPI, SegmentPlaybackEvent, SegmentRequestFinishedEvent } from 'bitmovin-player';
+import type { PlayerAPI, PlayerEvent, SegmentPlaybackEvent, SegmentRequestFinishedEvent } from 'bitmovin-player';
+import type { SegmentParsedEvent } from 'bitmovin-player/types/core/Events';
 
 export type SegmentMediaType = 'video' | 'audio';
 
@@ -24,16 +25,31 @@ export interface SegmentRecord {
   mediaType: SegmentMediaType;
   /** Start in seconds as declared by the manifest. */
   start: number;
-  /** End in seconds as declared by the manifest. */
+  /** End in seconds as declared by the manifest. Equal to `start` until a request for the segment is reported. */
   end: number;
+  /** Start in seconds on the playback timeline, read from the segment itself. */
+  mediaStart?: number;
+  /** End in seconds on the playback timeline, read from the segment itself. */
+  mediaEnd?: number;
   /** The outcome of the latest request for the segment. */
   outcome: 'downloaded' | 'failed';
   /** Failed HTTP attempts over every request for the segment. */
   failures: number;
   played: boolean;
-  /** Throughput of the first download that measured one, in Mbps. */
+  /** Throughput of the first network download that measured one, in Mbps. */
   mbps?: number;
+  /** Whether the browser's HTTP cache answered every request for the segment. */
+  httpCache?: boolean;
+  /** Whether the prefetching loader downloaded the segment ahead of playback. */
+  prefetched?: boolean;
+  /** How many times the player refilled the segment from its own segment cache, without a request. */
+  reused?: number;
   url?: string;
+}
+
+/** Where a record sits on the playback timeline: its parsed span where the player reported one. */
+export function mediaSpan(record: SegmentRecord): { start: number; end: number } {
+  return { start: record.mediaStart ?? record.start, end: record.mediaEnd ?? record.end };
 }
 
 /**
@@ -59,6 +75,7 @@ export class SegmentHistory {
     player.on(events.SourceUnloaded, this.reset);
     player.on(events.SegmentRequestFinished, this.onSegmentRequestFinished);
     player.on(events.SegmentPlayback, this.onSegmentPlayback);
+    player.on(segmentParsedEvent(player), this.onSegmentParsed);
     player.on(events.AdBreakStarted, this.onAdBreakStarted);
     player.on(events.AdBreakFinished, this.onAdBreakFinished);
     // A UI built after `Ready`, as after a UI variant switch, gets its lanes without waiting for the next source.
@@ -76,6 +93,7 @@ export class SegmentHistory {
     player.off(events.SourceUnloaded, this.reset);
     player.off(events.SegmentRequestFinished, this.onSegmentRequestFinished);
     player.off(events.SegmentPlayback, this.onSegmentPlayback);
+    player.off(segmentParsedEvent(player), this.onSegmentParsed);
     player.off(events.AdBreakStarted, this.onAdBreakStarted);
     player.off(events.AdBreakFinished, this.onAdBreakFinished);
     this.player = null;
@@ -174,6 +192,7 @@ export class SegmentHistory {
     const mediaType = toMediaType(event.mimeType);
     if (
       event.isInit ||
+      event.uid == null ||
       mediaType == null ||
       event.representationId == null ||
       !Number.isFinite(event.startTime) ||
@@ -183,17 +202,23 @@ export class SegmentHistory {
       return;
     }
 
-    const record = this.recordFor(event.uid ?? `${event.url}@${event.startTime}`, {
+    const httpCache = event.success && event.loadedFrom === 'httpCache';
+    const isNew = !this.records.has(event.uid);
+    const record = this.recordFor(event.uid, {
       representationId: event.representationId,
       mediaType,
       start: event.startTime,
-      end: event.startTime + event.duration,
       url: event.url,
     });
+    // A record created from a parsed chunk of chunked CMAF gets its declared span from the request.
+    record.end = event.startTime + event.duration;
     record.outcome = event.success ? 'downloaded' : 'failed';
     record.failures += countFailures(event);
+    // A segment re-requested from the HTTP cache after a network download, as after an ad break, stays a network download.
+    record.httpCache = (isNew || record.httpCache) && httpCache;
+    record.prefetched = record.prefetched || event.wasPrefetched === true;
 
-    if (event.success && record.mbps == null) {
+    if (event.success && !httpCache && record.mbps == null) {
       if (event.size > 0 && event.downloadTime > 0) {
         record.mbps = (event.size * 8) / event.downloadTime / 1e6;
       } else {
@@ -209,6 +234,34 @@ export class SegmentHistory {
     }
   };
 
+  private readonly onSegmentParsed = (event: SegmentParsedEvent): void => {
+    const mediaType = toMediaType(event.mimeType);
+    if (this.isAdPlaying() || mediaType == null || event.representationId == null || !Number.isFinite(event.duration)) {
+      return;
+    }
+    const existing = this.records.get(event.uid);
+    // A muxed TS segment is parsed into a video and an audio part, both under the video rendition.
+    // The part of the record's own media type describes it.
+    if (existing ? existing.mediaType !== mediaType : !Number.isFinite(event.startTime)) {
+      return;
+    }
+
+    const record = this.recordFor(event.uid, {
+      representationId: event.representationId,
+      mediaType,
+      start: event.startTime,
+      url: event.url,
+    });
+    // `playbackTime` is unknown for transmuxed TS until the timing is established, and that has no offset to subtract.
+    const start = Number.isFinite(event.playbackTime) ? event.playbackTime : event.presentationTimestamp;
+    // Chunked CMAF reports each chunk of a segment, so the segment spans all of them.
+    record.mediaStart = Math.min(record.mediaStart ?? start, start);
+    record.mediaEnd = Math.max(record.mediaEnd ?? start, start + event.duration);
+    if (event.loadedFrom === 'cache') {
+      record.reused = (record.reused ?? 0) + 1;
+    }
+  };
+
   private readonly onAdBreakStarted = (): void => {
     this.adBreakActive = true;
   };
@@ -219,14 +272,21 @@ export class SegmentHistory {
 
   private recordFor(
     uid: string,
-    fields: Pick<SegmentRecord, 'representationId' | 'mediaType' | 'start' | 'end' | 'url'>,
+    fields: Pick<SegmentRecord, 'representationId' | 'mediaType' | 'start' | 'url'>,
   ): SegmentRecord {
     const existing = this.records.get(uid);
     if (existing) {
       return existing;
     }
 
-    const record: SegmentRecord = { uid, ...fields, outcome: 'downloaded', failures: 0, played: false };
+    const record: SegmentRecord = {
+      uid,
+      ...fields,
+      end: fields.start,
+      outcome: 'downloaded',
+      failures: 0,
+      played: false,
+    };
     this.records.set(uid, record);
     if (this.records.size > MAX_RECORDS) {
       this.records.delete(this.records.keys().next().value);
@@ -234,6 +294,11 @@ export class SegmentHistory {
 
     return record;
   }
+}
+
+/** `PlayerEvent` is an enum and cannot be augmented until the typings carry the event. */
+function segmentParsedEvent(player: PlayerAPI): PlayerEvent {
+  return (player.exports.PlayerEvent as unknown as Record<string, PlayerEvent>).SegmentParsed;
 }
 
 /** The media type of a segment the graphs plot, or null for subtitle and metadata segments. */

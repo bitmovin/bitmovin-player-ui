@@ -191,4 +191,33 @@ describe('PlayerGraphsPanel', () => {
 
     expect(console.info).toHaveBeenCalledTimes(1);
   });
+
+  describe('insights', () => {
+    function insightTexts(panel: PlayerGraphsPanel): string[] {
+      return Array.from(panel.getDomElement().get(0).querySelectorAll('li')).map(item => item.textContent);
+    }
+
+    it('states the findings, counts them in the timeline caption and names the Analytics session', () => {
+      (player as any).analytics = { getCurrentImpressionId: () => 'impression-1' };
+      const panel = buildPanel();
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 12, { attempts: 3 }));
+      panel.show();
+
+      expect(insightTexts(panel)).toEqual([
+        expect.stringContaining('1 segment on the timeline needed retries'),
+        'Bitmovin Analytics impression impression-1: the same session in the Bitmovin Dashboard.',
+      ]);
+      expect(panel.getDomElement().get(0).textContent).toContain('Segment timeline — 1 with retries');
+    });
+
+    it('carries the findings in a snapshot, with the error first in a snapshot at a player error', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const panel = buildPanel();
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 12, { attempts: 3 }));
+      player.fire(PLAYER_EVENTS.Error, { code: 1201, name: 'SOURCE_ERROR', message: 'gone' });
+
+      expect(panel.getErrorSnapshot().insights.map(insight => insight.kind)).toEqual(['error', 'retries']);
+      expect(panel.getErrorSnapshot().insights[0].text).toBe('Player error 1201 SOURCE_ERROR: gone, at 00:10.00.');
+    });
+  });
 });

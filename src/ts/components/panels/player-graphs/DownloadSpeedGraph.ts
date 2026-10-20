@@ -1,4 +1,4 @@
-import type { SegmentMediaType, SegmentRecord } from '../../../utils/SegmentHistory';
+import { mediaSpan, SegmentMediaType, SegmentRecord } from '../../../utils/SegmentHistory';
 import { ComponentConfig } from '../../Component';
 import {
   drawVerticalLine,
@@ -111,7 +111,10 @@ export class DownloadSpeedGraph extends GraphCanvas {
     const bottom = top + BAND_HEIGHT;
     const plotRight = geometry.plotLeft + geometry.plotWidth;
     const windowEnd = geometry.windowStart + geometry.windowSeconds;
-    const visible = samples.filter(sample => sample.end > geometry.windowStart && sample.start < windowEnd);
+    const visible = samples.filter(sample => {
+      const span = mediaSpan(sample);
+      return span.end > geometry.windowStart && span.start < windowEnd;
+    });
     const topMbps = Math.max(0, ...visible.map(sample => sample.mbps)) || 1;
     const toY = (mbps: number) => bottom - (Math.min(mbps, topMbps) / topMbps) * BAND_HEIGHT;
 
@@ -128,8 +131,9 @@ export class DownloadSpeedGraph extends GraphCanvas {
     fill.addColorStop(0, band.fillTop);
     fill.addColorStop(1, band.fillBottom);
     visible.forEach(sample => {
-      const startX = Math.round(Math.max(geometry.plotLeft, toX(geometry, sample.start)));
-      const barWidth = Math.max(1, Math.round(Math.min(plotRight, toX(geometry, sample.end))) - startX);
+      const span = mediaSpan(sample);
+      const startX = Math.round(Math.max(geometry.plotLeft, toX(geometry, span.start)));
+      const barWidth = Math.max(1, Math.round(Math.min(plotRight, toX(geometry, span.end))) - startX);
       const y = Math.round(toY(sample.mbps));
       context.fillStyle = fill;
       context.fillRect(startX, y, barWidth, bottom - y);
