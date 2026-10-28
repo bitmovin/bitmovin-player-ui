@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- UI failing to initialise with `ReferenceError: Can't find variable: ShadowRoot` on platforms without Shadow DOM support (e.g. PS4) since 4.6.0.
+
 ## [4.23.0] - 2026-10-08
 
 ### Added

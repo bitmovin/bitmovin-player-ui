@@ -21,6 +21,11 @@ export interface HTMLElementWithComponent extends HTMLElement {
   component?: Component<ComponentConfig>;
 }
 
+// Platforms without Shadow DOM support (e.g. PS4) do not define the ShadowRoot global at all
+function isDocumentOrShadowRoot(something: unknown): something is Document | ShadowRoot {
+  return something instanceof Document || (typeof ShadowRoot !== 'undefined' && something instanceof ShadowRoot);
+}
+
 /**
  * Simple DOM manipulation and DOM element event handling modeled after jQuery (as replacement for jQuery).
  *
@@ -86,7 +91,7 @@ export class DOM {
     } else if (something instanceof HTMLElement) {
       const element = something as HTMLElementWithComponent;
       this.elements = [element];
-    } else if (something instanceof Document || something instanceof ShadowRoot) {
+    } else if (isDocumentOrShadowRoot(something)) {
       // When a document or the ShadowRoot is passed in, we do not do anything with it, but by setting
       // this.elements to null we give the event handling method a means to detect if the events should be
       // registered on the document or ShadowRoot instead of elements.
