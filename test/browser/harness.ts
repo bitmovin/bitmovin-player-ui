@@ -83,6 +83,11 @@ export interface MountOptions {
   live?: boolean;
   /** UI factory to exercise. Add another value only when a browser scenario needs it. */
   factory?: 'default' | 'smallScreen' | 'tv';
+  /**
+   * Remove the `ShadowRoot` global before the UI loads, emulating engines without Shadow DOM support
+   * such as the PS4 browser.
+   */
+  withoutShadowRoot?: boolean;
   /** Use a mobile user agent so the UI factory selects touch controls. */
   mobile?: boolean;
   /** UI control auto-hide delay. Defaults to disabled so layout tests stay visible while debugging. */
@@ -175,6 +180,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     factory = 'default',
     metadata = {},
     mobile = false,
+    withoutShadowRoot = false,
     hideDelay = -1,
     videoQualities = [],
   } = options;
@@ -199,6 +205,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   // The player bundle is loaded only for its exported enums (PlayerEvent, ViewMode). No player is
   // instantiated; the UI is driven by the stub below.
   await page.addScriptTag({ path: path.resolve(__dirname, '../../node_modules/bitmovin-player/bitmovinplayer.js') });
+  if (withoutShadowRoot) {
+    await page.evaluate(() => {
+      delete (window as { ShadowRoot?: unknown }).ShadowRoot;
+    });
+  }
   await page.addStyleTag({ path: distFile('css/bitmovinplayer-ui.css') });
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
