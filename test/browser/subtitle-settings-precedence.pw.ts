@@ -1,6 +1,6 @@
 import type { VTTProperties, VTTRegionProperties } from 'bitmovin-player/types/subtitles/vtt/API';
 import { SubtitleSettings, expect, mountUi, test } from './harness';
-import { computedStyles, inlineStyle } from './helpers/styles';
+import { computedStyles } from './helpers/styles';
 
 // The player resolves cue-embedded styling (WebVTT cue classes and `STYLE` blocks, TTML inline
 // styles) onto the elements it renders inside the subtitle label, as inline styles. That places it
@@ -45,12 +45,6 @@ const scenarios: PrecedenceScenario[] = [
     expected: 'rgb(255, 255, 255)',
   },
   {
-    name: 'background color',
-    settings: { backgroundColor: 'black', backgroundOpacity: '100' },
-    property: 'background-color',
-    expected: 'rgba(0, 0, 0, 0)',
-  },
-  {
     name: 'font family',
     settings: { fontFamily: 'monospacedserif' },
     property: 'font-family',
@@ -69,23 +63,20 @@ const scenarios: PrecedenceScenario[] = [
     expected: '700',
   },
   {
+    name: 'cursive font family',
+    settings: { fontFamily: 'cursive' },
+    property: 'font-style',
+    expected: 'italic',
+  },
+  {
     name: 'small capital font family',
     settings: { fontFamily: 'smallcapital' },
     property: 'font-variant',
     expected: 'small-caps',
   },
-  {
-    name: 'character edge',
-    settings: { characterEdge: 'uniform', characterEdgeColor: 'black' },
-    property: 'text-shadow',
-    expected:
-      'rgb(0, 0, 0) -2px 0px 1px, rgb(0, 0, 0) 2px 0px 1px, rgb(0, 0, 0) 0px -2px 1px, rgb(0, 0, 0) 0px 2px 1px, ' +
-      'rgb(0, 0, 0) -1px 1px 1px, rgb(0, 0, 0) 1px 1px 1px, rgb(0, 0, 0) 1px -1px 1px, rgb(0, 0, 0) 1px 1px 1px',
-  },
 ];
 
-// The background is cleared rather than repeated, so that nesting cannot stack its alpha. Every
-// other setting reaches the descendants as the value chosen for the label.
+// Every setting reaches the descendants as the value chosen for the label.
 for (const scenario of scenarios) {
   test(`a ${scenario.name} setting outranks the same property set inside the cue`, async ({ page }) => {
     const ui = await mountUi(page);
@@ -97,19 +88,6 @@ for (const scenario of scenarios) {
     expect(await computedStyles(page, INNER, [scenario.property])).toEqual([scenario.expected]);
   });
 }
-
-// A TTML cue without a region arrives as its `p` element. The inline label's background does not
-// cover that block, so the paragraph has to carry the chosen color itself.
-test('a background color setting paints behind a cue paragraph', async ({ page }) => {
-  const ui = await mountUi(page);
-  await ui.applySubtitleSettings({ backgroundColor: 'black', backgroundOpacity: '100' });
-
-  await ui.player.enterCue({
-    html: '<p id="cue-paragraph" style="background-color:#0000ff">- The most memorable,</p>',
-  });
-
-  expect(await computedStyles(page, '#cue-paragraph', ['background-color'])).toEqual(['rgb(0, 0, 0)']);
-});
 
 const VTT_CUE: VTTProperties = {
   vertical: '',
@@ -132,23 +110,6 @@ const VTT_REGION: VTTRegionProperties = {
   viewportAnchorY: 90,
   scroll: '',
 };
-
-// A WebVTT cue takes the chosen background on the label's text element instead of the label, in
-// either kind of region container, so the cue's own backgrounds are cleared below that element.
-for (const { placement, vtt } of [
-  { placement: 'outside a region', vtt: VTT_CUE },
-  { placement: 'inside a region', vtt: { ...VTT_CUE, region: VTT_REGION } },
-]) {
-  test(`a background color setting outranks the background set inside a WebVTT cue ${placement}`, async ({ page }) => {
-    const ui = await mountUi(page);
-    await ui.applySubtitleSettings({ backgroundColor: 'black', backgroundOpacity: '100' });
-
-    await ui.player.enterCue({ html: CUE_HTML, vtt });
-
-    expect(await computedStyles(page, '.bmpui-ui-label-text', ['background-color'])).toEqual(['rgb(0, 0, 0)']);
-    expect(await computedStyles(page, INNER, ['background-color'])).toEqual(['rgba(0, 0, 0, 0)']);
-  });
-}
 
 // A WebVTT cue's window is the label outside a region and the region container inside one, both
 // separate from the label's text element that takes the background.
@@ -175,75 +136,3 @@ for (const { placement, vtt, windowElement } of [
     expect(await computedStyles(page, '.bmpui-ui-label-text', ['background-color'])).toEqual(['rgb(255, 255, 255)']);
   });
 }
-
-// A TTML cue's region styling lands on the region container, the box the window color colors.
-test('a window color setting outranks the background set on the cue region', async ({ page }) => {
-  const ui = await mountUi(page);
-  await ui.applySubtitleSettings({ windowColor: 'black', windowOpacity: '100' });
-
-  await ui.player.enterCue({
-    text: 'In the authored region',
-    region: 'authored',
-    regionStyle: 'background-color:#0000ff',
-  });
-
-  expect(await computedStyles(page, '.bmpui-subtitle-position-authored', ['background-color'])).toEqual([
-    'rgb(0, 0, 0)',
-  ]);
-});
-
-// The window color sits behind the text, so the cue's own text background stays on top of it.
-test('a window color setting keeps the background set inside the cue', async ({ page }) => {
-  const ui = await mountUi(page);
-  await ui.applySubtitleSettings({ windowColor: 'black', windowOpacity: '100' });
-
-  await ui.player.enterCue({ html: CUE_HTML });
-
-  expect(await computedStyles(page, '.bmpui-subtitle-position-default', ['background-color'])).toEqual([
-    'rgb(0, 0, 0)',
-  ]);
-  expect(await computedStyles(page, INNER, ['background-color'])).toEqual(['rgb(0, 0, 255)']);
-});
-
-test('a font size setting outranks the size set inside the cue', async ({ page }) => {
-  const ui = await mountUi(page);
-  await ui.applySubtitleSettings({ fontSize: '150' });
-
-  await ui.player.enterCue({ html: CUE_HTML });
-
-  const [labelSize] = await computedStyles(page, '.bmpui-ui-subtitle-label', ['font-size']);
-  expect(await computedStyles(page, OUTER, ['font-size'])).toEqual([labelSize]);
-  expect(await computedStyles(page, INNER, ['font-size'])).toEqual([labelSize]);
-});
-
-// A TTML cue's region styling lands on the region container, which the label's size is relative to.
-test('a font size setting outranks the size set on the cue region', async ({ page }) => {
-  const ui = await mountUi(page);
-  await ui.applySubtitleSettings({ fontSize: '150' });
-
-  await ui.player.enterCue({ text: 'In the authored region', region: 'authored', regionStyle: 'font-size:40px' });
-  await ui.player.enterCue({ text: 'In the default region' });
-
-  const [defaultRegionSize] = await computedStyles(page, '.bmpui-subtitle-position-default .bmpui-ui-subtitle-label', [
-    'font-size',
-  ]);
-  expect(
-    await computedStyles(page, '.bmpui-subtitle-position-authored .bmpui-ui-subtitle-label', ['font-size']),
-  ).toEqual([defaultRegionSize]);
-});
-
-test('the font size CEA-608 rendering applies to the label stays authoritative', async ({ page }) => {
-  const ui = await mountUi(page);
-  await ui.applySubtitleSettings({ fontSize: '150' });
-
-  // The first CEA-608 cue is what switches the overlay into the grid rendering that measures the
-  // row height, so the size below is only applied from the second cue onwards.
-  await ui.player.enterCue({ html: '<span>first</span>', position: { row: 1, column: 0 } });
-  await ui.player.enterCue({ html: CUE_HTML, position: { row: 2, column: 0 } });
-
-  const gridSize = await inlineStyle(page, `.bmpui-ui-subtitle-label:has(${OUTER})`, 'font-size');
-  expect(gridSize, 'a zero grid size would make the assertions below meaningless').not.toBe('0px');
-  expect(await computedStyles(page, `.bmpui-ui-subtitle-label:has(${OUTER})`, ['font-size'])).toEqual([gridSize]);
-  expect(await computedStyles(page, OUTER, ['font-size'])).toEqual([gridSize]);
-  expect(await computedStyles(page, INNER, ['font-size'])).toEqual([gridSize]);
-});

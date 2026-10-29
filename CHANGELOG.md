@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Subtitle settings chosen in the settings panel being overridden by cue-embedded styling, for example WebVTT cue classes or TTML inline styles
+- Subtitle font color, font family and font style chosen in the settings panel being overridden by cue-embedded styling, for example WebVTT cue classes or TTML inline styles. A chosen setting now also takes precedence over custom CSS for the subtitle text.
 
 ## [4.23.0] - 2026-10-08
 
