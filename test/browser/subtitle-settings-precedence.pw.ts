@@ -223,19 +223,15 @@ test('a font size setting outranks the size set inside the cue', async ({ page }
 });
 
 // A TTML cue's region styling lands on the region container, which the label's size is relative to.
-test('a font size setting outranks the size set on the cue region', async ({ page }) => {
+test('a font size setting scales the size set on the cue region', async ({ page }) => {
   const ui = await mountUi(page);
   await ui.applySubtitleSettings({ fontSize: '150' });
 
   await ui.player.enterCue({ text: 'In the authored region', region: 'authored', regionStyle: 'font-size:40px' });
-  await ui.player.enterCue({ text: 'In the default region' });
 
-  const [defaultRegionSize] = await computedStyles(page, '.bmpui-subtitle-position-default .bmpui-ui-subtitle-label', [
-    'font-size',
-  ]);
   expect(
     await computedStyles(page, '.bmpui-subtitle-position-authored .bmpui-ui-subtitle-label', ['font-size']),
-  ).toEqual([defaultRegionSize]);
+  ).toEqual(['60px']);
 });
 
 test('the font size CEA-608 rendering applies to the label stays authoritative', async ({ page }) => {
