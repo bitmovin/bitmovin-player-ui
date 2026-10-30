@@ -1,6 +1,18 @@
 @import '../../../variables';
 @import '../../../mixins';
 
+// Every rule below is keyed on a CSS class that the overlay carries only while the corresponding
+// subtitle setting is set, from the subtitle settings panel or through `SubtitleSettingsManager`.
+//
+// The player renders cue content as elements inside the subtitle label and writes cue-embedded
+// styling (WebVTT cue classes and `STYLE` blocks, TTML inline styles) onto them as inline styles.
+// A setting therefore sets its value on the label and drops the property from every descendant
+// with `unset !important`, the only way a stylesheet rule outranks an inline style.
+//
+// For the looped settings the descendant reset is the same for every value, so it is emitted once
+// per setting through the class prefix, `[class*='…-fontcolor-']`, instead of once per class.
+
+// sass-lint:disable no-important
 .#{$prefix}-ui-subtitle-overlay {
   $colors: (
     'white': #fff,
@@ -44,11 +56,17 @@
     @each $opacity-name, $opacity-value in $opacities {
       &.#{$prefix}-fontcolor-#{$color-name}#{$opacity-name} {
         .#{$prefix}-ui-subtitle-label {
-          color: transparentize($color-value, 1 - $opacity-value);
+          color: transparentize($color-value, 1 - $opacity-value) !important;
           // sass-lint:disable no-vendor-prefixes
-          -webkit-text-fill-color: transparentize($color-value, 1 - $opacity-value);
+          -webkit-text-fill-color: transparentize($color-value, 1 - $opacity-value) !important;
         }
       }
+    }
+  }
+
+  &[class*='#{$prefix}-fontcolor-'] {
+    .#{$prefix}-ui-subtitle-label {
+      @include reset-in-descendants(color, -webkit-text-fill-color);
     }
   }
 
@@ -56,11 +74,13 @@
   @each $color-name, $color-value in $colors {
     @each $opacity-name, $opacity-value in $opacities {
       &.#{$prefix}-bgcolor-#{$color-name}#{$opacity-name} {
+        --subtitle-background-color: #{transparentize($color-value, 1 - $opacity-value)};
+
         .#{$prefix}-subtitle-region-container:not(.#{$prefix}-subtitle-vtt-region-container):not(
             .#{$prefix}-subtitle-vtt-cue-container
           ) {
           .#{$prefix}-ui-subtitle-label {
-            background-color: transparentize($color-value, 1 - $opacity-value);
+            background-color: transparentize($color-value, 1 - $opacity-value) !important;
           }
         }
 
@@ -68,9 +88,34 @@
         .#{$prefix}-subtitle-region-container.#{$prefix}-subtitle-vtt-cue-container {
           .#{$prefix}-ui-subtitle-label {
             .#{$prefix}-ui-label-text {
-              background-color: transparentize($color-value, 1 - $opacity-value);
+              background-color: transparentize($color-value, 1 - $opacity-value) !important;
             }
           }
+        }
+      }
+    }
+  }
+
+  &[class*='#{$prefix}-bgcolor-'] {
+    .#{$prefix}-subtitle-region-container:not(.#{$prefix}-subtitle-vtt-region-container):not(
+        .#{$prefix}-subtitle-vtt-cue-container
+      ) {
+      .#{$prefix}-ui-subtitle-label {
+        @include reset-in-descendants(background-color);
+
+        // The label is inline, and an inline element's background does not extend behind a
+        // block child such as `p`. The paragraph therefore carries the chosen color itself.
+        p {
+          background-color: var(--subtitle-background-color) !important;
+        }
+      }
+    }
+
+    .#{$prefix}-subtitle-region-container.#{$prefix}-subtitle-vtt-region-container,
+    .#{$prefix}-subtitle-region-container.#{$prefix}-subtitle-vtt-cue-container {
+      .#{$prefix}-ui-subtitle-label {
+        .#{$prefix}-ui-label-text {
+          @include reset-in-descendants(background-color);
         }
       }
     }
@@ -80,20 +125,24 @@
   @each $color-name, $color-value in $colors {
     @each $opacity-name, $opacity-value in $opacities {
       &.#{$prefix}-windowcolor-#{$color-name}#{$opacity-name} {
+        // The window sits behind the subtitle, so backgrounds on the cue descendants are left
+        // in place and keep painting on top of it.
         .#{$prefix}-subtitle-region-container:not(.#{$prefix}-subtitle-vtt-cue-container) {
-          background-color: transparentize($color-value, 1 - $opacity-value);
+          background-color: transparentize($color-value, 1 - $opacity-value) !important;
         }
 
         .#{$prefix}-subtitle-region-container.#{$prefix}-subtitle-vtt-cue-container {
           .#{$prefix}-ui-subtitle-label.#{$prefix}-subtitle-vtt-cue {
-            background-color: transparentize($color-value, 1 - $opacity-value);
+            background-color: transparentize($color-value, 1 - $opacity-value) !important;
           }
         }
       }
     }
   }
 
-  // Font size
+  // Font size. Not `!important` on the label: CEA-608 rendering depends on the calculated px
+  // size it applies inline, which this must not override. The label's size is relative to the
+  // cue region, so the chosen size scales a size a TTML region sets instead of replacing it.
   @each $name, $value in $font-sizes {
     &.#{$prefix}-fontsize-#{$name} {
       .#{$prefix}-ui-subtitle-label {
@@ -102,71 +151,101 @@
     }
   }
 
+  &[class*='#{$prefix}-fontsize-'] {
+    .#{$prefix}-ui-subtitle-label {
+      @include reset-in-descendants(font-size);
+    }
+  }
+
   // Font character edge and character edge color
   @each $color-name, $color-value in $colors {
     @each $name, $value in $character-edges {
       &.#{$prefix}-characteredge-#{$name}-#{$color-name} {
         .#{$prefix}-ui-subtitle-label {
-          text-shadow: unquote(str-replace($value, '$COLOR$', $color-value));
+          text-shadow: unquote(str-replace($value, '$COLOR$', $color-value)) !important;
         }
       }
+    }
+  }
+
+  &[class*='#{$prefix}-characteredge-'] {
+    .#{$prefix}-ui-subtitle-label {
+      @include reset-in-descendants(text-shadow);
     }
   }
 
   // Font family
   &.#{$prefix}-fontfamily-monospacedserif {
     .#{$prefix}-ui-subtitle-label {
-      font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace;
+      @include reset-in-descendants(font-family);
+
+      font-family: 'Courier New', Courier, 'Nimbus Mono L', 'Cutive Mono', monospace !important;
     }
   }
 
   &.#{$prefix}-fontfamily-proportionalserif {
     .#{$prefix}-ui-subtitle-label {
-      font-family: 'Times New Roman', Times, Georgia, Cambria, 'PT Serif Caption', serif;
+      @include reset-in-descendants(font-family);
+
+      font-family: 'Times New Roman', Times, Georgia, Cambria, 'PT Serif Caption', serif !important;
     }
   }
 
   &.#{$prefix}-fontfamily-monospacedsansserif {
     .#{$prefix}-ui-subtitle-label {
-      font-family: 'Deja Vu Sans Mono', 'Lucida Console', Monaco, Consolas, 'PT Mono', monospace;
+      @include reset-in-descendants(font-family);
+
+      font-family: 'Deja Vu Sans Mono', 'Lucida Console', Monaco, Consolas, 'PT Mono', monospace !important;
     }
   }
 
   &.#{$prefix}-fontfamily-proportionalsansserif {
     .#{$prefix}-ui-subtitle-label {
-      font-family: Roboto, 'Arial Unicode Ms', Arial, Helvetica, Verdana, 'PT Sans Caption', sans-serif;
+      @include reset-in-descendants(font-family);
+
+      font-family: Roboto, 'Arial Unicode Ms', Arial, Helvetica, Verdana, 'PT Sans Caption', sans-serif !important;
     }
   }
 
   &.#{$prefix}-fontfamily-casual {
     .#{$prefix}-ui-subtitle-label {
-      font-family: 'Comic Sans MS', Impact, Handlee, fantasy;
+      @include reset-in-descendants(font-family);
+
+      font-family: 'Comic Sans MS', Impact, Handlee, fantasy !important;
     }
   }
 
   &.#{$prefix}-fontfamily-cursive {
     .#{$prefix}-ui-subtitle-label {
-      font-family: 'Monotype Corsiva', 'URW Chancery L', 'Apple Chancery', 'Dancing Script', cursive;
-      font-style: italic;
+      @include reset-in-descendants(font-family, font-style);
+
+      font-family: 'Monotype Corsiva', 'URW Chancery L', 'Apple Chancery', 'Dancing Script', cursive !important;
+      font-style: italic !important;
     }
   }
 
   &.#{$prefix}-fontfamily-smallcapital {
     .#{$prefix}-ui-subtitle-label {
-      font-variant: small-caps;
+      @include reset-in-descendants(font-variant);
+
+      font-variant: small-caps !important;
     }
   }
 
   // Font Style
   &.#{$prefix}-fontstyle-italic {
     .#{$prefix}-ui-subtitle-label {
-      font-style: italic;
+      @include reset-in-descendants(font-style);
+
+      font-style: italic !important;
     }
   }
 
   &.#{$prefix}-fontstyle-bold {
     .#{$prefix}-ui-subtitle-label {
-      font-weight: bold;
+      @include reset-in-descendants(font-weight);
+
+      font-weight: bold !important;
     }
   }
 }
