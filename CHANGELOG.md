@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Subtitle settings chosen in the settings panel being overridden by cue-embedded styling, for example WebVTT cue classes or TTML inline styles. A chosen setting now also takes precedence over custom CSS for the subtitle text.
+- UI failing to initialise with `ReferenceError: Can't find variable: ShadowRoot` on platforms without Shadow DOM support (e.g. PS4) since 4.6.0.
 
 ## [4.23.0] - 2026-10-08
 
