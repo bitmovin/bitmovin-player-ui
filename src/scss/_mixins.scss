@@ -198,3 +198,16 @@
 
   @return $string;
 }
+
+/// Drops the given properties from every descendant, so they resolve as if unset there:
+/// inherited properties fall back to the parent's value, the others to their initial value.
+/// Declared `!important`, so it outranks values set on the descendants directly, including
+/// inline styles.
+/// @param {String...} $properties - The properties to drop
+@mixin reset-in-descendants($properties...) {
+  * {
+    @each $property in $properties {
+      #{$property}: unset !important;
+    }
+  }
+}
