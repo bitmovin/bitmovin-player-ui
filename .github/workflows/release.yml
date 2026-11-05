@@ -167,6 +167,12 @@ jobs:
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
 
+      # A dry run does not push the version bump, so the checked out package.json still has the last released version
+      - name: Bump version for dry run
+        if: inputs.dry_run == true
+        run: npm version "${{ needs.version_bump.outputs.version_number }}" --no-git-tag-version --ignore-scripts
+        shell: bash
+
       - name: Build Release
         run: npm run prepublishOnly
         shell: bash
