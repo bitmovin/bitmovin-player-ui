@@ -142,7 +142,7 @@ else
     echo "INFO ${VERSION_NUMBER} not published yet, publishing now"
 fi
 
-NPM_LATEST=$(npm view --json ${PACKAGE_NAME} dist-tags | jq -r ".${NPM_TAG} // empty")
+NPM_LATEST=$(npm view "${PACKAGE_NAME}" "dist-tags.${NPM_TAG}")
 echo "INFO latest npm version is $NPM_LATEST"
 
 # We always publish the package with the channel/latest tag because there is no way to publish a package without
