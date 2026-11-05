@@ -78,11 +78,7 @@ export class BrowserUtils {
     if (!this.windowExists()) {
       return false;
     }
-    return (
-      navigator &&
-      navigator.userAgent &&
-      (navigator.userAgent.includes('Web0S') || navigator.userAgent.includes('NetCast'))
-    );
+    return navigator && navigator.userAgent && /Web0S|NetCast/.test(navigator.userAgent);
   }
 
   static get isTizen(): boolean {

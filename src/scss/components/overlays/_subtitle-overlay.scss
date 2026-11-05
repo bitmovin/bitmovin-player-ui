@@ -9,6 +9,9 @@
 
     bottom: env(safe-area-inset-bottom, 0);
     left: env(safe-area-inset-left, 0);
+    // Title-safe margins keep subtitles clear of the picture edges. They sit on the overlay because every
+    // subtitle box positions against it, and overriding the overlay's offsets leaves them in place.
+    margin: 0 3em 2em;
     pointer-events: none;
     position: absolute;
     right: env(safe-area-inset-right, 0);
@@ -49,9 +52,9 @@
       position: absolute;
 
       &.#{$prefix}-subtitle-position-default {
-        bottom: 2em;
-        left: 3em;
-        right: 3em;
+        bottom: 0;
+        left: 0;
+        right: 0;
         top: initial;
       }
 
@@ -107,6 +110,20 @@
     // Move the subtitle up above the controlbar when it appears to avoid them overlapping
     &.#{$prefix}-controlbar-visible {
       bottom: 5em;
+      transition: bottom $animation-duration-short ease-in;
+    }
+  }
+
+  // The ad control bar keeps its seek bar row visible while the remaining controls hide, and never reports itself
+  // as hidden or shown, so the pushup above does not apply. Follow the controls state of the ad UI instead.
+  &.#{$prefix}-ui-ads {
+    .#{$prefix}-ui-subtitle-overlay {
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 3em);
+    }
+
+    &:not(.#{$prefix}-ui-tv).#{$prefix}-controls-shown
+      .#{$prefix}-ui-subtitle-overlay:not(.#{$prefix}-cea608-pushup-disabled) {
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 5em);
       transition: bottom $animation-duration-short ease-in;
     }
   }

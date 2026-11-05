@@ -5,6 +5,61 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Subtitle settings chosen in the settings panel being overridden by cue-embedded styling, for example WebVTT cue classes or TTML inline styles. A chosen setting now also takes precedence over custom CSS for the subtitle text.
+- UI failing to initialise with `ReferenceError: Can't find variable: ShadowRoot` on platforms without Shadow DOM support (e.g. PS4) since 4.6.0.
+
+## [4.23.0] - 2026-10-08
+
+### Added
+
+- `SubtitleOverlay` to the `ads`, `smallScreenAds`, and `tvAds` layouts, so subtitles of an ad are displayed during linear ads. They are positioned above the ad seek bar and above the remaining ad controls while those are shown.
+
+### Fixed
+
+- Unequal heights of the pause-ad badge and Close button.
+- Clicking or tapping the pause-ad badge opening the ad click-through.
+
+## [4.22.1] - 2026-10-01
+
+### Fixed
+
+- WebVTT subtitles running edge to edge and sitting directly on the bottom of the video instead of within the title-safe area.
+
+## [4.22.0] - 2026-09-25
+
+### Added
+
+- `PauseAdStatusOverlay` to show an Ad badge and a Close button over pause ads in the default, small-screen, and TV layouts. Clicking the creative opens its click-through while the player controls stay usable.
+- `TouchControlOverlayConfig.singleTapAction` and `PauseAdStatusOverlay.getClickThroughAction()` to open a pause-ad click-through on a single tap without breaking double-tap seeking.
+
+## [4.21.1] - 2026-09-17
+
+### Fixed
+
+- The UI failing to load on legacy platforms such as webOS 3.x when required polyfills were not yet installed.
+
+## [4.21.0] - 2026-09-10
+
+### Changed
+
+- The selected subtitle track label no longer includes the number of available tracks.
+
+### Fixed
+
+- Long option names causing settings panels to overflow or setting labels to become unreadable.
+- Ad count in `AdCounterLabel` no longer increases incorrectly when used on mobile SDKs.
+
+## [4.20.2] - 2026-09-03
+
+### Fixed
+
+- `SeekBar` showing a stale playback position when a new source is loaded while a seek was still pending.
+- `PlaybackToggleButton` no longer responding to clicks when a new source is loaded after a play attempt that never reached playback, for example because the previous source stalled.
+
 ## [4.20.1] - 2026-08-27
 
 ### Fixed

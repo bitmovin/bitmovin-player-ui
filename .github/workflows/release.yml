@@ -200,7 +200,9 @@ jobs:
         with:
           ref: ${{ inputs.dry_run == true && github.ref || needs.version_bump.outputs.tag_name }}
           persist-credentials: false
-          sparse-checkout: publish.sh
+          sparse-checkout: |
+            publish.sh
+            .nvmrc
           sparse-checkout-cone-mode: false
 
       - name: Download Package
@@ -211,7 +213,8 @@ jobs:
       - name: Set up node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 24
+          node-version-file: .nvmrc
+          check-latest: true
 
       # npm trusted publishing (OIDC) covers `npm dist-tag` from npm 12.2.0 on
       - name: Install npm with OIDC dist-tag support

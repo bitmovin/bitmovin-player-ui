@@ -141,6 +141,37 @@ describe('SeekBar', () => {
     });
   });
 
+  describe('pending seek when the source is unloaded', () => {
+    // The DOM is mocked, so the seeking state cannot be read back from the CSS class and is tracked here instead.
+    let isSeekingState: boolean;
+
+    beforeEach(() => {
+      isSeekingState = false;
+      jest.spyOn(seekbar, 'setSeeking').mockImplementation(seeking => {
+        isSeekingState = seeking;
+      });
+      jest.spyOn(seekbar, 'isSeeking').mockImplementation(() => isSeekingState);
+
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(20);
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+    });
+
+    it('leaves the seeking state so playback positions of the next source are applied again', () => {
+      playerMock.eventEmitter.fireSeekEvent();
+      expect(isSeekingState).toBe(true);
+
+      // The seek never finishes, so no Seeked event is fired before the source goes away.
+      playerMock.eventEmitter.fireSourceUnloadedEvent();
+      expect(isSeekingState).toBe(false);
+
+      const setPlaybackPositionSpy = jest.spyOn(seekbar, 'setPlaybackPosition');
+      playerMock.eventEmitter.fireSourceLoadedEvent();
+      playerMock.eventEmitter.fireStallEndedEvent();
+
+      expect(setPlaybackPositionSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('group playback', () => {
     beforeEach(() => {
       jest.spyOn(playerMock, 'getDuration').mockReturnValue(0);

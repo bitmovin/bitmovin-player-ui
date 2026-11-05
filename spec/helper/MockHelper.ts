@@ -152,6 +152,8 @@ export namespace MockHelper {
         unmute: jest.fn(),
         setVolume: jest.fn(),
         setAudio: jest.fn(),
+        play: jest.fn(),
+        pause: jest.fn(),
 
         // Event faker
         eventEmitter: eventHelper,

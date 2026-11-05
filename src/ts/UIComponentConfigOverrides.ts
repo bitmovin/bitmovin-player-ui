@@ -186,6 +186,10 @@ export interface UIComponentConfigMap {
   /**
    * @category Components
    */
+  PauseAdStatusOverlay?: Partial<ContainerConfig>;
+  /**
+   * @category Components
+   */
   AirPlayToggleButton?: Partial<ToggleButtonConfig>;
   /**
    * @category Components

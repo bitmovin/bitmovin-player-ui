@@ -153,6 +153,10 @@ export interface UIComponentLayoutOverrideMap {
   /**
    * @category Components
    */
+  PauseAdStatusOverlay?: UIComponentLayoutOverride;
+  /**
+   * @category Components
+   */
   AirPlayToggleButton?: UIComponentLayoutOverride;
   /**
    * @category Components

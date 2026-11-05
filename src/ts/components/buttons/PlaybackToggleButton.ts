@@ -87,7 +87,10 @@ export class PlaybackToggleButton extends ToggleButton<PlaybackToggleButtonConfi
     // after unloading + loading a new source, the player might be in a different playing state (from playing into stopped)
     player.on(player.exports.PlayerEvent.SourceLoaded, playbackStateHandler);
     uimanager.getConfig().events.onUpdated.subscribe(playbackStateHandler);
-    player.on(player.exports.PlayerEvent.SourceUnloaded, playbackStateHandler);
+    player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
+      this.isPlayInitiated = false;
+      playbackStateHandler();
+    });
     // when playback finishes, player turns to paused mode
     player.on(player.exports.PlayerEvent.PlaybackFinished, playbackStateHandler);
     player.on(player.exports.PlayerEvent.CastStarted, playbackStateHandler);
