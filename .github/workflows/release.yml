@@ -60,6 +60,11 @@ concurrency:
   group: release-${{ inputs.version_number }}-${{ inputs.release_type }}
   cancel-in-progress: true
 
+# A caller may grant id-token: write to this whole workflow. Jobs that need more than reading the repository
+# raise it themselves, so only the publish job can mint an npm token.
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Test, Build and Lint
@@ -149,13 +154,10 @@ jobs:
           git push origin ${{ inputs.branch_name || github.ref_name }}
           git push origin "${{ steps.version_number.outputs.tag_name }}"
 
-  release:
-    name: Publish Release
+  build_package:
+    name: Build Package
     needs: [test, version_bump]
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -169,8 +171,55 @@ jobs:
         run: npm run prepublishOnly
         shell: bash
 
+      # The build already ran above, so the lifecycle scripts are not needed again
+      - name: Pack Release
+        run: |
+          mkdir package
+          npm pack --ignore-scripts --pack-destination package
+          mv package/*.tgz package/bitmovin-player-ui.tgz
+        shell: bash
+
+      - name: Upload Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: package/bitmovin-player-ui.tgz
+
+  # The only job that can mint an npm token through OIDC. It must never install dependencies or run lifecycle
+  # scripts, so no third-party code runs while the id-token is available.
+  release:
+    name: Publish Release
+    needs: [version_bump, build_package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout publish script
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.dry_run == true && github.ref || needs.version_bump.outputs.tag_name }}
+          persist-credentials: false
+          sparse-checkout: publish.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Download Package
+        uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+
+      - name: Set up node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      # npm trusted publishing (OIDC) covers `npm dist-tag` from npm 12.2.0 on
+      - name: Install npm with OIDC dist-tag support
+        run: npm install -g npm@12.2.2 --ignore-scripts
+        shell: bash
+
       - name: Publish to NPM
-        run: ./publish.sh --version "${{ needs.version_bump.outputs.version_number }}" ${{ inputs.dry_run == true && '--dry-run' || '' }}
+        run: ./publish.sh --version "${{ needs.version_bump.outputs.version_number }}" --package bitmovin-player-ui.tgz ${{ inputs.dry_run == true && '--dry-run' || '' }}
         shell: bash
 
   github_release:
@@ -178,6 +227,8 @@ jobs:
     needs: [version_bump, release]
     if: inputs.release_type == 'final' && inputs.dry_run != true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
