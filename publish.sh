@@ -7,20 +7,21 @@ set -o pipefail
 
 show_usage() {
   cat <<EOF
-  Usage: $(basename "$0") --version "Version Number" [options]
+  Usage: $(basename "$0") --version "Version Number" --package "Package Tarball" [options]
 
-  This script publishes the UI to npm.js using the provided Version Number
+  This script publishes the packed UI tarball to npm.js using the provided Version Number
 
   Options:
     --version "SDK_VERSION"           The Version Number for the release (required).
+    --package "PACKAGE_TARBALL"       The tarball created by \`npm pack\` (required).
     --dry-run                         Executes a dry run NPM publish without actually
                                       publishing the package.
 
     -h, --help                        Display this help message.
 
   Examples:
-    $(basename "$0") --version "3.71.0"
-    $(basename "$0") --version "3.71.0-beta.3" --dry-run
+    $(basename "$0") --version "3.71.0" --package bitmovin-player-ui.tgz
+    $(basename "$0") --version "3.71.0-beta.3" --package bitmovin-player-ui.tgz --dry-run
 EOF
 }
 
@@ -38,6 +39,7 @@ PACKAGE_NAME="bitmovin-player-ui"
 NPM_TAG=-1
 NPM_DRY_RUN=
 VERSION_NUMBER=
+PACKAGE_TARBALL=
 NPM_DRY_RUN_CMD=""
 
 while test $# -gt 0; do
@@ -54,6 +56,14 @@ while test $# -gt 0; do
             VERSION_NUMBER="$2"
             shift 2
             ;;
+        --package)
+            if [[ -z "$2" || "$2" =~ ^- ]]; then
+                show_error "--package requires an argument!"
+                exit 1
+            fi
+            PACKAGE_TARBALL="$2"
+            shift 2
+            ;;
         -h|--help)
             show_usage
             exit 0
@@ -67,6 +77,11 @@ done
 
 if [ -z "$VERSION_NUMBER" ]; then
   show_error "Please provide a version number using --version."
+  exit 1
+fi
+
+if [ ! -f "$PACKAGE_TARBALL" ]; then
+  show_error "Please provide an existing package tarball using --package."
   exit 1
 fi
 
@@ -127,17 +142,14 @@ else
     echo "INFO ${VERSION_NUMBER} not published yet, publishing now"
 fi
 
-echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
-chmod 0600 ~/.npmrc
-
-NPM_LATEST=$(npm view --json ${PACKAGE_NAME} dist-tags | jq -r ".${NPM_TAG} // empty")
+NPM_LATEST=$(npm view "${PACKAGE_NAME}" "dist-tags.${NPM_TAG}")
 echo "INFO latest npm version is $NPM_LATEST"
 
 # We always publish the package with the channel/latest tag because there is no way to publish a package without
 # a tag (the default tag is always "latest"). If the published version is older that the currently tagged version,
 # we have to revert the tag afterwards to avoid version regressions.
 echo "INFO publishing ${VERSION_NUMBER} to npm with tag '${NPM_TAG}' (current tagged version is ${NPM_LATEST:-"none"})"
-npm publish --tag ${NPM_TAG} ${NPM_DRY_RUN_CMD}
+npm publish "${PACKAGE_TARBALL}" --ignore-scripts --tag ${NPM_TAG} ${NPM_DRY_RUN_CMD}
 
 # If there is no previously tagged version (e.g. for alpha/beta/rc releases) we don't need to do anything
 if [[ -z "$NPM_LATEST" ]]; then
