@@ -24,6 +24,10 @@ export default tseslint.config({
     prettier, // needs to be last in the extends array
   ],
   rules: {
+    // Enforce strict equality, but keep the `x == null` nullish idiom allowed: this project compiles without
+    // `strictNullChecks`, so `== null` is the intentional way to test for null and undefined at once. Narrowing
+    // those sites to `=== null` would silently change behavior.
+    eqeqeq: ['error', 'always', { null: 'ignore' }],
     'no-prototype-builtins': 'off',
     'prefer-rest-params': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
