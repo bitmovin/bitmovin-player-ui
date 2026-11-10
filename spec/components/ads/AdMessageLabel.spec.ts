@@ -39,4 +39,27 @@ describe('AdMessageLabel', () => {
       expect(adMessageLabel.getText()).toEqual(configText);
     });
   });
+
+  describe('ad count placeholders', () => {
+    beforeEach(() => {
+      adMessageLabel = new AdMessageLabel({ text: 'Ad {activeAdIndex} of {totalAdsCount}' });
+    });
+
+    it('fills the placeholders from the ad break tracker', () => {
+      (uiInstanceManagerMock.getConfig() as any).adBreakTracker = { currentAdIndex: 2, totalNumberOfAds: 5 };
+      adMessageLabel.configure(playerMock, uiInstanceManagerMock);
+
+      playerMock.eventEmitter.fireAdStartedEvent({});
+
+      expect(adMessageLabel.getText()).toEqual('Ad 2 of 5');
+    });
+
+    it('renders zero counts when no tracker is available', () => {
+      adMessageLabel.configure(playerMock, uiInstanceManagerMock);
+
+      playerMock.eventEmitter.fireAdStartedEvent({});
+
+      expect(adMessageLabel.getText()).toEqual('Ad 0 of 0');
+    });
+  });
 });

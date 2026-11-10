@@ -1,8 +1,15 @@
 import { ErrorMessageMap, ErrorMessageTranslator } from './components/overlays/ErrorMessageOverlay';
-import { SourceConfig } from 'bitmovin-player';
+import { Ad, AdBreak, SourceConfig } from 'bitmovin-player';
 import type { LocalizationConfig, UIVariantIdentifier } from './UIManager';
 import type { UIComponentConfigOverrides } from './UIComponentConfigOverrides';
 import type { UIComponentLayoutOverrideMap, UIComponentLayoutOverrides } from './UIComponentLayoutOverrides';
+
+/**
+ * Selects ads to include in the ad counter. Return `true` to count an ad, or `false` to exclude it.
+ *
+ * @category Configs
+ */
+export type AdCountFilter = (ad: Ad | undefined, adBreak: AdBreak) => boolean;
 
 /**
  * A link to an external recommended video that can be shown in the {@link RecommendationOverlay} after the
@@ -171,6 +178,17 @@ export interface UIConfig {
    * For an example have a look at {@link ErrorMessageOverlayConfig.messages}
    */
   errorMessages?: ErrorMessageMap | ErrorMessageTranslator;
+  /**
+   * Selects the ads included in {@link AdCounterLabel}'s current index and total, including subsequent ad breaks
+   * scheduled at the same time. By default, all ads are counted.
+   *
+   * @example
+   * ```ts
+   * adCountFilter: (ad, adBreak) =>
+   *   !ad?.id?.startsWith('public-notice-') && !adBreak.id?.startsWith('public-notice-')
+   * ```
+   */
+  adCountFilter?: AdCountFilter;
   /**
    * Toggles the seek preview feature.
    * Default: true
