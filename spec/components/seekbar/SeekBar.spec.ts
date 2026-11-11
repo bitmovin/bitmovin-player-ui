@@ -4,6 +4,7 @@ import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { Timeout } from '../../../src/ts/utils/Timeout';
 import { DOM } from '../../../src/ts/DOM';
 import type { SeekBarLabel } from '../../../src/ts/components/seekbar/SeekBarLabel';
+import { ViewMode } from '../../../src/ts/components/Component';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -376,6 +377,49 @@ describe('SeekBar', () => {
       pressKey('Escape');
 
       expect(label.isHidden()).toBe(true);
+    });
+
+    describe('auto-hide of the UI', () => {
+      let viewModes: string[];
+
+      const hoverLabel = () => {
+        hoverSeekBar();
+        dispatchMouseEvent(seekBarElement, 'mouseleave');
+        dispatchMouseEvent(labelElement, 'mouseenter');
+      };
+
+      beforeEach(() => {
+        viewModes = [];
+        seekbar.onViewModeChanged.subscribe((_, { mode }) => viewModes.push(mode));
+      });
+
+      it('should not prevent the UI from hiding while only the seek bar is hovered', () => {
+        hoverSeekBar();
+        dispatchMouseEvent(seekBarElement, 'mouseleave');
+        jest.advanceTimersByTime(hideDelayMs);
+
+        expect(viewModes).toEqual([]);
+      });
+
+      it('should prevent the UI from hiding while the label is hovered', () => {
+        hoverLabel();
+        jest.advanceTimersByTime(hideDelayMs * 10);
+
+        expect(viewModes).toEqual([ViewMode.Persistent]);
+      });
+
+      it.each([
+        ['the pointer leaves the label', () => dispatchMouseEvent(labelElement, 'mouseleave')],
+        ['Escape is pressed', () => pressKey('Escape')],
+        ['the seek bar is released', () => seekbar.release()],
+      ])('should let the UI hide again when %s', (_, endHover) => {
+        hoverLabel();
+
+        endHover();
+        jest.advanceTimersByTime(hideDelayMs);
+
+        expect(viewModes).toEqual([ViewMode.Persistent, ViewMode.Temporary]);
+      });
     });
 
     it('should not react to Escape after being released', () => {

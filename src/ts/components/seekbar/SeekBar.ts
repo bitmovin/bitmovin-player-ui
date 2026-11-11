@@ -3,7 +3,7 @@ import {
   GroupPlaybackSuspension,
   GroupPlaybackSuspensionReason,
 } from '../../utils/GroupPlaybackAPI';
-import { Component, ComponentConfig } from '../Component';
+import { Component, ComponentConfig, ViewMode } from '../Component';
 import { DOM } from '../../DOM';
 import { Event, EventDispatcher, NoArgs } from '../../EventDispatcher';
 import { SeekBarLabel } from './SeekBarLabel';
@@ -723,6 +723,9 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   release(): void {
+    // Let the UI resume its auto-hide in case the seek preview was hovered (before the events are released)
+    this.onViewModeChangedEvent(ViewMode.Temporary);
+
     super.release();
 
     if (this.smoothPlaybackPositionUpdater) {
@@ -926,9 +929,15 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     if (this.label) {
       const labelElement = this.label.getDomElement();
-      // Keep the seek preview visible while the pointer is on the label
-      labelElement.on('mouseenter', () => this.seekPreviewHideTimeout.clear());
-      labelElement.on('mouseleave', () => this.seekPreviewHideTimeout.start());
+      // Keep the seek preview visible while the pointer is on the label, and keep the UI from auto-hiding it
+      labelElement.on('mouseenter', () => {
+        this.seekPreviewHideTimeout.clear();
+        this.onViewModeChangedEvent(ViewMode.Persistent);
+      });
+      labelElement.on('mouseleave', () => {
+        this.onViewModeChangedEvent(ViewMode.Temporary);
+        this.seekPreviewHideTimeout.start();
+      });
       seekBarContainer.append(labelElement);
     }
 
@@ -937,6 +946,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private hideSeekPreview(): void {
     this.seekPreviewHideTimeout.clear();
+    this.onViewModeChangedEvent(ViewMode.Temporary);
     this.setSeekPosition(0);
 
     if (this.hasLabel()) {
