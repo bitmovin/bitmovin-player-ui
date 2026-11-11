@@ -42,15 +42,17 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     // Setting both ariaLabels on the parent ToggleButton suppresses its default
     // `aria-pressed` attribute (see the ToggleButtonConfig.ariaLabel doc) so we don't end
     // up announcing both pressed/unpressed *and* expanded/collapsed for the same widget.
-    // Using the same localizer for both states keeps the announced name stable.
+    // Using the same label for both states keeps the announced name stable. It defaults to the configured
+    // `ariaLabel` or `text`, so e.g. a toggle labelled "Subtitles" is not announced as "Settings".
     const settingsLabel = i18n.getLocalizer('settings');
+    const ariaLabel = config.ariaLabel || config.text || settingsLabel;
     this.config = this.mergeConfig(
       config,
       {
         cssClass: 'ui-settingstogglebutton',
         text: settingsLabel,
-        onAriaLabel: settingsLabel,
-        offAriaLabel: settingsLabel,
+        onAriaLabel: ariaLabel,
+        offAriaLabel: ariaLabel,
         settingsPanel: null,
         autoHideWhenNoActiveSettings: true,
       },

@@ -149,4 +149,29 @@ describe('SettingsToggleButton', () => {
       expect(attrSpy).toHaveBeenCalledWith('aria-controls', newId);
     });
   });
+
+  describe('accessible name', () => {
+    it.each`
+      config                             | expectedName
+      ${{}}                              | ${'Settings'}
+      ${{ text: 'Subtitles' }}           | ${'Subtitles'}
+      ${{ ariaLabel: 'Audio' }}          | ${'Audio'}
+      ${{ text: 'A', ariaLabel: 'B' }}   | ${'B'}
+      ${{ text: 'A', onAriaLabel: 'B' }} | ${'B'}
+    `('should be named "$expectedName" in both states for config $config', ({ config, expectedName }) => {
+      const panel = new SettingsPanel({ components: [new SettingsPanelPage({})], hidden: true });
+      const button = new SettingsToggleButton({ settingsPanel: panel, ...config });
+      const playerMock = MockHelper.getPlayerMock();
+      const uiManagerMock = MockHelper.getUiInstanceManagerMock();
+      panel.configure(playerMock, uiManagerMock);
+      button.configure(playerMock, uiManagerMock);
+      const element = button.getDomElement().get(0);
+
+      expect(element.getAttribute('aria-label')).toBe(expectedName);
+
+      panel.show();
+
+      expect(element.getAttribute('aria-label')).toBe(expectedName);
+    });
+  });
 });

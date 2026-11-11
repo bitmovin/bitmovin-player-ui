@@ -1,6 +1,7 @@
 import { ClickOverlay, ClickOverlayConfig } from '../overlays/ClickOverlay';
 import { UIInstanceManager } from '../../UIManager';
 import { Ad, AdEvent, PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../../localization/i18n';
 
 /**
  * A simple click capture overlay for clickThroughUrls of ads.
@@ -15,9 +16,25 @@ export class AdClickOverlay extends ClickOverlay {
       config,
       {
         acceptsTouchWithUiHidden: true,
+        ariaLabel: i18n.getLocalizer('ads.clickThrough'),
       },
       this.config,
     );
+  }
+
+  setUrl(url: string): void {
+    super.setUrl(url);
+
+    // Without a click-through URL there is nothing to open, so keep the overlay out of the tab order and hide it from
+    // assistive technologies. Pointer input still reaches it.
+    const element = this.getDomElement();
+    if (this.getUrl()) {
+      element.attr('tabindex', String(this.config.tabIndex));
+      element.removeAttr('aria-hidden');
+    } else {
+      element.attr('tabindex', '-1');
+      element.attr('aria-hidden', 'true');
+    }
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

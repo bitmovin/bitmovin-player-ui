@@ -26,7 +26,8 @@ export class Watermark extends ClickOverlay {
         url: 'http://bitmovin.com',
         role: 'link',
         text: 'logo',
-        ariaLabel: i18n.getLocalizer('watermarkLink'),
+        // The Bitmovin-specific name only fits the default URL
+        ariaLabel: i18n.getLocalizer(config.url ? 'watermarkLink' : 'watermarkLink.bitmovin'),
       },
       <WatermarkConfig>this.config,
     );

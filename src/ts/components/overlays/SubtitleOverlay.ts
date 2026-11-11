@@ -283,7 +283,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     const label = new SubtitleLabel({
       // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
       // else use the plain text
-      text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
+      text: event.html || ActiveSubtitleManager.generateImageTagText(event.image, event.text) || event.text,
       cssClasses: event.vtt && !event.vtt.region ? ['subtitle-vtt-cue'] : [],
       vtt: event.vtt,
       region: region,
@@ -714,13 +714,15 @@ class ActiveSubtitleManager {
     return removedCues;
   }
 
-  static generateImageTagText(imageData: string): string | undefined {
+  static generateImageTagText(imageData: string, altText?: string): string | undefined {
     if (!imageData) {
       return;
     }
 
     const imgTag = new DOM('img', {
       src: imageData,
+      // Use the cue text as text alternative if available, else mark the image as having none
+      alt: altText || '',
     });
     imgTag.css('width', '100%');
     return imgTag.get(0).outerHTML; // return the html as string
