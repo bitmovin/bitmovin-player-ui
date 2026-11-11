@@ -49,6 +49,7 @@ interface BrowserTestWindow extends Window {
   __fire(event: string, data?: object): void;
   __setSourceLoaded(sourceLoaded: boolean): void;
   __pausePlayback(): void;
+  __timeShift(offset: number): void;
   __ui?: UiHandle;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
@@ -167,6 +168,12 @@ export interface BrowserPlayerController {
    */
   startLinearAd(): Promise<void>;
 
+  /**
+   * Shifts live playback to `offset` seconds relative to the live edge (0 is the live edge, negative is behind it),
+   * emitting the timeshift events the player emits. The UI's own `player.timeShift()` calls behave the same way.
+   */
+  timeShift(offset: number): Promise<void>;
+
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
 
@@ -269,6 +276,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
 
       let playing = true;
       let sourceLoaded = true;
+      let timeShiftOffset = 0;
       browserWindow.__setSourceLoaded = loaded => {
         sourceLoaded = loaded;
       };
@@ -296,7 +304,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         isLive: () => isLive,
         getDuration: () => (isLive ? Infinity : 600),
         getCurrentTime: () => browserWindow.__currentTime || 0,
-        getTimeShift: () => 0,
+        getTimeShift: () => timeShiftOffset,
         getMaxTimeShift: () => (isLive ? -100 : 0),
         getSeekableRange: () => ({ start: 0, end: isLive ? 100 : 600 }),
         getVolume: () => 100,
@@ -348,7 +356,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           fire(PlayerEvent.Seeked);
           return true;
         },
-        timeShift: (): void => undefined,
+        timeShift: (offset: number) => {
+          fire(PlayerEvent.TimeShift, { position: timeShiftOffset, target: offset });
+          timeShiftOffset = offset;
+          fire(PlayerEvent.TimeShifted);
+        },
         play: (issuer = 'api') => {
           playing = true;
           fire(PlayerEvent.Play, { time: 0, issuer });
@@ -364,6 +376,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         setVolume: (): void => undefined,
         setAudio: (): void => undefined,
       };
+      browserWindow.__timeShift = offset => player.timeShift(offset);
       browserWindow.__pausePlayback = () => {
         if (playing) {
           player.pause();
@@ -436,6 +449,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
             ad: { id: 'linear-ad-1', isLinear: true, uiConfig: { requestsUi: true } },
           });
         });
+      },
+      timeShift: async (offset: number) => {
+        await page.evaluate(timeShiftOffset => {
+          (window as unknown as BrowserTestWindow).__timeShift(timeShiftOffset);
+        }, offset);
       },
       enterCue: async (cue: SubtitleCue) => {
         // The overlay identifies a cue by its start time and text, so consecutive cues need
