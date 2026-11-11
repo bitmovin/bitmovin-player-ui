@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Animated TV noise behind the error message running until a new source is loaded. It now stops after 5 seconds and is shown as a still image when the user prefers reduced motion, so moving content no longer distracts users with attention or vestibular disorders.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed
