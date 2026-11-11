@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `lang` attribute on the UI container matching the active UI language, updated when the language changes, and on subtitle text matching the language of its subtitle track, so screen readers pronounce UI texts and subtitles in the correct language. The active UI language is available through `i18n.getLanguage()`.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed

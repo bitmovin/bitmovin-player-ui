@@ -179,6 +179,13 @@ export class I18n {
     return this.config;
   }
 
+  /**
+   * Returns the language of the active vocabulary, e.g. `en` or `de`.
+   */
+  public getLanguage(): string {
+    return this.language;
+  }
+
   public setLanguage(language: string): void {
     const oldLanguage = this.language;
 

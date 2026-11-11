@@ -69,6 +69,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   private cea608FontSizeFactor = 1;
   private ensureCea608GridSizeUpdated: () => void;
   private cea608SmallPlayerHeightThreshold = SubtitleOverlay.DEFAULT_CEA608_SMALL_PLAYER_HEIGHT_THRESHOLD;
+  private player: PlayerAPI;
 
   constructor(config: SubtitleOverlayConfig = {}) {
     super(config);
@@ -89,6 +90,8 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    this.player = player;
 
     const uiConfig = uimanager.getConfig();
 
@@ -289,9 +292,21 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
       region: region,
       regionStyle: event.regionStyle,
       originalRowPosition: originalRowNumber,
+      lang: this.getSubtitleTrackLanguage(event.subtitleId),
     });
 
     return label;
+  }
+
+  /**
+   * Returns the language of the subtitle track a cue belongs to, or `undefined` if it is unknown.
+   */
+  private getSubtitleTrackLanguage(subtitleId: string): string | undefined {
+    const track = this.player?.subtitles?.list().find(subtitle => subtitle.id === subtitleId);
+    const lang = typeof track?.lang === 'string' ? track.lang.trim() : '';
+
+    // `und` is the ISO 639 code for an undetermined language and must not be exposed as the language of the text
+    return lang && lang.toLowerCase() !== 'und' ? lang : undefined;
   }
 
   filterFontSizeOptions: ListItemFilter = listItem => {
@@ -581,6 +596,10 @@ interface SubtitleLabelConfig extends LabelConfig {
   region?: string;
   regionStyle?: string;
   originalRowPosition?: number;
+  /**
+   * The language of the subtitle text, set as `lang` attribute so that assistive technologies pronounce it correctly.
+   */
+  lang?: string;
 }
 
 export class SubtitleLabel extends Label<SubtitleLabelConfig> {
@@ -612,12 +631,26 @@ export class SubtitleLabel extends Label<SubtitleLabelConfig> {
     return this.config.originalRowPosition;
   }
 
+  get lang(): string | undefined {
+    return this.config.lang;
+  }
+
   set regionStyle(style: string) {
     this.config.regionStyle = style;
   }
 
   set originalRowPosition(row: number) {
     this.config.originalRowPosition = row;
+  }
+
+  protected toDomElement(): DOM {
+    const element = super.toDomElement();
+
+    if (this.config.lang) {
+      element.attr('lang', this.config.lang);
+    }
+
+    return element;
   }
 }
 

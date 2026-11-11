@@ -701,6 +701,72 @@ describe('SubtitleOverlay', () => {
       expect(updateComponentsSpy).toHaveBeenCalled();
     });
   });
+
+  describe('subtitle language', () => {
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
+      uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+
+      subtitleOverlay = new SubtitleOverlay();
+      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    function configureWithSubtitleTracks(tracks: Array<Record<string, unknown>>): void {
+      (playerMock as any).subtitles = { list: jest.fn().mockReturnValue(tracks) };
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+    }
+
+    it.each([
+      ['de', 'de'],
+      [' pt-BR ', 'pt-BR'],
+      ['und', undefined],
+      ['UND', undefined],
+      ['', undefined],
+      [undefined, undefined],
+    ])('should set the label language for a cue of a track with language %p to %p', (trackLang, expectedLang) => {
+      configureWithSubtitleTracks([
+        { id: 'other', lang: 'fr' },
+        { id: 'subtitleId', lang: trackLang },
+      ]);
+
+      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent());
+
+      expect(label.lang).toBe(expectedLang);
+    });
+
+    it('should not set a label language when the cue track is not in the subtitle list', () => {
+      configureWithSubtitleTracks([{ id: 'other', lang: 'fr' }]);
+
+      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent());
+
+      expect(label.lang).toBeUndefined();
+    });
+
+    it('should not set a label language when the subtitles API is not available', () => {
+      (playerMock as any).subtitles = undefined;
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+
+      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent());
+
+      expect(label.lang).toBeUndefined();
+    });
+  });
+
+  describe('SubtitleLabel language', () => {
+    it('should render the lang attribute when the label has a language', () => {
+      const label = new SubtitleLabel({ text: 'Test Subtitle', lang: 'de' });
+
+      expect(label.getDomElement().attr).toHaveBeenCalledWith('lang', 'de');
+    });
+
+    it('should not render a lang attribute when the label language is unknown', () => {
+      const label = new SubtitleLabel({ text: 'Test Subtitle' });
+
+      expect(label.getDomElement().attr).not.toHaveBeenCalledWith('lang', expect.anything());
+    });
+  });
 });
 
 function getMergedCssClasses(mergeConfigMock: jest.Mock): string[] {

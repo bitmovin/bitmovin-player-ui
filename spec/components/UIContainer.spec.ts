@@ -1,4 +1,6 @@
 import { UIContainer } from '../../src/ts/components/UIContainer';
+import { Container } from '../../src/ts/components/Container';
+import { i18n } from '../../src/ts/localization/i18n';
 import { PlayerUtils } from '../../src/ts/utils/PlayerUtils';
 import type { UIInstanceManager } from '../../src/ts/UIManager';
 import type { TestingPlayerAPI } from '../helper/MockHelper';
@@ -65,6 +67,53 @@ describe('UIContainer', () => {
       uiContainer.configure(playerMock, uiInstanceManagerMock);
 
       expect(uiInstanceManagerMock.onComponentViewModeChanged.subscribe).toHaveBeenCalled();
+    });
+  });
+
+  describe('language attribute', () => {
+    beforeEach(() => {
+      uiContainer = new UIContainer({ components: [] });
+    });
+
+    afterEach(() => {
+      uiContainer.release();
+      i18n.setConfig({ language: 'en' });
+      jest.restoreAllMocks();
+    });
+
+    it.each(['en', 'de', 'fr'])('should set the lang attribute to the active UI language %p', language => {
+      i18n.setConfig({ language });
+      const domMock = generateDOMMock();
+      jest.spyOn(Container.prototype as any, 'toDomElement').mockReturnValue(domMock);
+
+      uiContainer['toDomElement']();
+
+      expect(domMock.attr).toHaveBeenCalledWith('lang', language);
+    });
+
+    it.each([
+      ['de', 'de'],
+      ['es-ES', 'es'],
+    ])('should update the lang attribute when the UI language changes to %p', (newLanguage, expectedLanguage) => {
+      i18n.setConfig({ language: 'nl' });
+      const domMock = generateDOMMock();
+      jest.spyOn(uiContainer, 'hasDomElement').mockReturnValue(true);
+      jest.spyOn(uiContainer, 'getDomElement').mockReturnValue(domMock);
+
+      i18n.setLanguage(newLanguage);
+
+      expect(domMock.attr).toHaveBeenCalledWith('lang', expectedLanguage);
+    });
+
+    it('should not update the lang attribute after the UI has been released', () => {
+      const domMock = generateDOMMock();
+      jest.spyOn(uiContainer, 'hasDomElement').mockReturnValue(true);
+      jest.spyOn(uiContainer, 'getDomElement').mockReturnValue(domMock);
+      uiContainer.release();
+
+      i18n.setLanguage('de');
+
+      expect(domMock.attr).not.toHaveBeenCalledWith('lang', expect.anything());
     });
   });
 
