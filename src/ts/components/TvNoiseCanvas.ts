@@ -87,6 +87,14 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
   private renderFrame(): void {
     // This code has been copied from the player controls.js and simplified
 
+    // The first frame is always rendered. Later frames are only rendered before the animation has ended, also when
+    // their callback was scheduled before but runs after the end (e.g. when the browser delayed it).
+    const isFirstFrame = this.lastFrameUpdate === 0;
+    if (!isFirstFrame && this.hasAnimationEnded()) {
+      this.frameUpdateHandlerId = undefined;
+      return;
+    }
+
     if (this.lastFrameUpdate + this.frameInterval > new Date().getTime()) {
       // It's too early to render the next frame
       this.scheduleNextRender();
@@ -126,8 +134,12 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
     this.scheduleNextRender();
   }
 
+  private hasAnimationEnded(): boolean {
+    return new Date().getTime() >= this.animationEndTime;
+  }
+
   private scheduleNextRender(): void {
-    if (new Date().getTime() >= this.animationEndTime) {
+    if (this.hasAnimationEnded()) {
       // Stop animating and leave the last rendered frame visible
       this.frameUpdateHandlerId = undefined;
       return;

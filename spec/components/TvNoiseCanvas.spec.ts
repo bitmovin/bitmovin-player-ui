@@ -106,6 +106,58 @@ describe('TvNoiseCanvas', () => {
       expect(renderedFrameCount()).toBeGreaterThan(framesOfFirstAnimation + 1);
     });
 
+    describe('when a scheduled frame runs', () => {
+      const startTime = 1_000_000;
+      let pendingFrame: () => void;
+
+      const runPendingFrameAt = (time: number) => {
+        const frame = pendingFrame;
+        pendingFrame = undefined;
+        jest.setSystemTime(time);
+        frame();
+      };
+
+      beforeEach(() => {
+        pendingFrame = undefined;
+        const captureFrame = (callback: () => void): number => {
+          pendingFrame = callback;
+          return 1;
+        };
+        if (useAnimationFrame) {
+          jest.spyOn(window, 'requestAnimationFrame').mockImplementation(captureFrame);
+        } else {
+          jest.spyOn(window, 'setTimeout').mockImplementation(captureFrame as unknown as typeof window.setTimeout);
+        }
+
+        jest.setSystemTime(startTime);
+        tvNoiseCanvas.start();
+      });
+
+      it.each([
+        ['just before the end of the animation', TvNoiseCanvas.MAX_ANIMATION_DURATION_MS - 1, 2],
+        ['exactly at the end of the animation', TvNoiseCanvas.MAX_ANIMATION_DURATION_MS, 1],
+        ['delayed after the end of the animation', TvNoiseCanvas.MAX_ANIMATION_DURATION_MS + 2000, 1],
+      ])('should render the expected frames when it runs %s', (_, runAfterMs, expectedFrameCount) => {
+        runPendingFrameAt(startTime + runAfterMs);
+
+        expect(renderedFrameCount()).toBe(expectedFrameCount);
+      });
+
+      it.each([
+        ['exactly at the end of the animation', TvNoiseCanvas.MAX_ANIMATION_DURATION_MS],
+        ['delayed after the end of the animation', TvNoiseCanvas.MAX_ANIMATION_DURATION_MS + 2000],
+      ])('should not render a frame %s after rendering earlier frames', (_, runAfterMs) => {
+        runPendingFrameAt(startTime + 100);
+        const framesBeforeEnd = renderedFrameCount();
+
+        runPendingFrameAt(startTime + runAfterMs);
+
+        expect(framesBeforeEnd).toBe(2);
+        expect(renderedFrameCount()).toBe(framesBeforeEnd);
+        expect(pendingFrame).toBeUndefined();
+      });
+    });
+
     it('should stop rendering frames when released', () => {
       tvNoiseCanvas.start();
       tvNoiseCanvas.release();
