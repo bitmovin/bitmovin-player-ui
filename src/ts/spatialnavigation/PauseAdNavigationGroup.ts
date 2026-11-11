@@ -12,12 +12,18 @@ import { Action, Focusable } from './types';
  * group membership, not from the stylesheet.
  *
  * The dismiss button is always the first focus target, so the remote lands on the way out of the ad.
+ * The click-through button follows it, so the remote can also open the advertiser's page.
  */
 export class PauseAdNavigationGroup extends NavigationGroup {
   private readonly seekBarHandler: SeekBarHandler;
 
   constructor(pauseAdStatusOverlay: PauseAdStatusOverlay, ...components: Focusable[]) {
-    super(pauseAdStatusOverlay, pauseAdStatusOverlay.dismissButton, ...components);
+    super(
+      pauseAdStatusOverlay,
+      pauseAdStatusOverlay.dismissButton,
+      pauseAdStatusOverlay.clickThroughButton,
+      ...components,
+    );
     this.seekBarHandler = new SeekBarHandler(this);
   }
 

@@ -48,6 +48,8 @@
   "ads.skip": "Saltar",
   "ads.skippableIn": "Saltar anuncio en {remainingTime}",
   "ads.adNumberOfTotal": "Anuncio {activeAdIndex} de {totalAdsCount}",
+  "ads.learnMore": "Más información",
+  "ads.learnMore.newTab": "Más información, se abre en una pestaña nueva",
   "ad": "Anuncio",
   "settings": "Configuración",
   "fullscreen": "Pantalla Completa",

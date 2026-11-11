@@ -20,3 +20,22 @@ for (const factory of ['default', 'smallScreen', 'tv'] as const) {
     });
   }
 }
+
+for (const factory of ['default', 'smallScreen', 'tv'] as const) {
+  test(`the Learn more pill sits beside Close with an equal height in ${factory}`, async ({ page }) => {
+    const ui = await mountUi(page, { factory, mobile: factory === 'smallScreen', live: false });
+    await ui.player.startPauseAd({ clickThroughUrl: 'https://example.com/pause-ad' });
+    const learnMore = page.getByRole('button', { name: 'Learn more, opens in a new tab', exact: true });
+    const close = page.getByRole('button', { name: 'Close', exact: true });
+    await expect(learnMore).toBeVisible();
+    await expect(close).toBeVisible();
+
+    const learnMoreBounds = await learnMore.boundingBox();
+    const closeBounds = await close.boundingBox();
+    if (!learnMoreBounds || !closeBounds) throw new Error('both pause-ad buttons must be laid out');
+
+    expect(learnMoreBounds.height).toBeCloseTo(closeBounds.height, 2);
+    expect(learnMoreBounds.y).toBeCloseTo(closeBounds.y, 2);
+    expect(learnMoreBounds.x + learnMoreBounds.width, 'the pills must not overlap').toBeLessThan(closeBounds.x);
+  });
+}

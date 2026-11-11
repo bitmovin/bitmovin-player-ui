@@ -48,6 +48,8 @@
   "ads.skip": "Skip",
   "ads.skippableIn": "Skip ad in {remainingTime}",
   "ads.adNumberOfTotal": "Ad {activeAdIndex} of {totalAdsCount}",
+  "ads.learnMore": "Learn more",
+  "ads.learnMore.newTab": "Learn more, opens in a new tab",
   "ad": "Ad",
   "settings": "Settings",
   "fullscreen": "Fullscreen",

@@ -70,6 +70,23 @@ test('a pause ad moves remote focus to Dismiss and keeps the centered playback c
   ).toBeVisible();
 });
 
+test('a pause ad lets the remote open the click-through from its Learn more button', async ({ page }) => {
+  const ui = await mountTvUi(page, { live: false });
+
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  const dismiss = page.getByRole('button', { name: 'Close' });
+  const learnMore = page.getByRole('button', { name: 'Learn more, opens in a new tab' });
+  await expect(dismiss, 'the dismiss button should receive focus when the pause ad starts').toBeFocused();
+
+  await page.keyboard.press('ArrowLeft');
+  await expect(learnMore, 'the remote should reach the click-through button next to Close').toBeFocused();
+  await page.keyboard.press('Enter');
+
+  expect(await ui.player.openedUrls(), 'the button must open the click-through').toEqual([CLICK_THROUGH_URL]);
+  expect(await ui.player.clickThroughCount(), 'the opened click-through must be reported to the ad').toBe(1);
+  expect(await ui.player.pauseAdActive(), 'opening the click-through must not end the ad').toBe(true);
+});
+
 test('finishing a pause ad restores focus to the centered playback control', async ({ page }) => {
   const ui = await mountTvUi(page, { live: false });
   const centeredPlaybackButton = page.locator(CENTERED_PLAYBACK_BUTTON);

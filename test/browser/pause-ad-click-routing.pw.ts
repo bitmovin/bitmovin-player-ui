@@ -85,6 +85,27 @@ for (const hostReset of [false, true]) {
   });
 }
 
+test('the Learn more button opens the click-through by keyboard', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });
+  const learnMore = page.getByRole('button', { name: 'Learn more, opens in a new tab', exact: true });
+
+  await learnMore.focus();
+  await page.keyboard.press('Enter');
+
+  expect(await ui.player.openedUrls(), 'the button must open the click-through').toEqual([CLICK_THROUGH_URL]);
+  expect(await ui.player.clickThroughCount(), 'the opened click-through must be reported to the ad').toBe(1);
+  expect(await ui.player.pauseAdActive(), 'opening the click-through must not end the ad').toBe(true);
+});
+
+test('a creative without a destination has no Learn more button', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd();
+
+  await expect(page.getByRole('button', { name: 'Close', exact: true })).toBeVisible();
+  await expect(page.locator('.bmpui-ui-button-pause-ad-click-through')).toBeHidden();
+});
+
 test('an active pause ad survives the first switch to the small-screen variant', async ({ page }) => {
   const ui = await mountDefaultControlBarUi(page, { live: false });
   await ui.player.startPauseAd({ clickThroughUrl: CLICK_THROUGH_URL });

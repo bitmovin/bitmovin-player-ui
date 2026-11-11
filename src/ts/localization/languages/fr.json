@@ -48,6 +48,8 @@
   "ads.skip": "Passer",
   "ads.skippableIn": "Passer l'annonce dans {remainingTime}",
   "ads.adNumberOfTotal": "Annonce {activeAdIndex} sur {totalAdsCount}",
+  "ads.learnMore": "En savoir plus",
+  "ads.learnMore.newTab": "En savoir plus, s'ouvre dans un nouvel onglet",
   "ad": "Annonce",
   "settings": "Réglages",
   "fullscreen": "Plein écran",

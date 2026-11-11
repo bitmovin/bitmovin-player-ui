@@ -100,6 +100,12 @@ describe('PauseAdStatusOverlay', () => {
       expect(clickThroughUrlOpened).not.toHaveBeenCalled();
     });
 
+    it('should stack below the click-through button', () => {
+      const components = pauseAdStatusOverlay.getComponents();
+
+      expect(components.indexOf(getClickCatcher())).toBeLessThan(components.indexOf(getClickThroughButton()));
+    });
+
     it('does not run a captured click-through action after its ad is replaced', () => {
       const clickThroughUrlOpened = jest.fn();
       firePauseAdStarted({ clickThroughUrl: 'https://example.com', clickThroughUrlOpened });
@@ -111,6 +117,72 @@ describe('PauseAdStatusOverlay', () => {
 
       expect(windowOpen).not.toHaveBeenCalled();
       expect(clickThroughUrlOpened).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('click-through button', () => {
+    let windowOpen: jest.SpyInstance;
+
+    beforeEach(() => {
+      windowOpen = jest.spyOn(window, 'open').mockImplementation(() => null);
+    });
+
+    afterEach(() => {
+      windowOpen.mockRestore();
+    });
+
+    it('should be a focusable, labelled button', () => {
+      const config = getClickThroughButton().getConfig();
+
+      expect(config.tabIndex).toBe(0);
+      expect(config.role).not.toBeNull();
+      expect(i18n.performLocalization(config.text)).toBe('Learn more');
+      expect(i18n.performLocalization(config.ariaLabel)).toBe('Learn more, opens in a new tab');
+    });
+
+    it.each([
+      ['https://example.com', true],
+      [null, false],
+      [undefined, false],
+    ])('should be shown for a click-through URL %p: %p', (clickThroughUrl, expectedShown) => {
+      expect(getClickThroughButton().isHidden()).toBe(true);
+
+      firePauseAdStarted({ clickThroughUrl });
+
+      expect(getClickThroughButton().isShown()).toBe(expectedShown);
+    });
+
+    it('should open the click-through and report it to the ad exactly once when activated', () => {
+      const clickThroughUrlOpened = jest.fn();
+      firePauseAdStarted({ clickThroughUrl: 'https://example.com', clickThroughUrlOpened });
+
+      getClickThroughButton()['onClickEvent']();
+
+      expect(windowOpen).toHaveBeenCalledTimes(1);
+      expect(windowOpen).toHaveBeenCalledWith('https://example.com', '_blank');
+      expect(clickThroughUrlOpened).toHaveBeenCalledTimes(1);
+      expect(playerMock.ads.skip).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['NonLinearAdFinished', () => playerMock.eventEmitter.fireNonLinearAdFinishedEvent({ id: 'pause-ad' })],
+      ['NonLinearAdSkipped', () => playerMock.eventEmitter.fireNonLinearAdSkippedEvent({ id: 'pause-ad' })],
+      ['SourceUnloaded', () => playerMock.eventEmitter.fireSourceUnloadedEvent()],
+    ])('should be hidden and stop opening the click-through on %s', (_, endPauseAd) => {
+      firePauseAdStarted({ id: 'pause-ad', clickThroughUrl: 'https://example.com' });
+
+      endPauseAd();
+      getClickThroughButton()['onClickEvent']();
+
+      expect(getClickThroughButton().isHidden()).toBe(true);
+      expect(windowOpen).not.toHaveBeenCalled();
+    });
+
+    it('should be hidden when a following ad has no click-through destination', () => {
+      firePauseAdStarted({ clickThroughUrl: 'https://example.com' });
+      firePauseAdStarted({ clickThroughUrl: null });
+
+      expect(getClickThroughButton().isHidden()).toBe(true);
     });
   });
 
@@ -134,6 +206,10 @@ describe('PauseAdStatusOverlay', () => {
 
     expect(i18n.performLocalization(getBadgeLabel().getConfig().text)).toBe('Anzeige');
     expect(i18n.performLocalization(getDismissButton().getConfig().text)).toBe('Schließen');
+    expect(i18n.performLocalization(getClickThroughButton().getConfig().text)).toBe('Mehr erfahren');
+    expect(i18n.performLocalization(getClickThroughButton().getConfig().ariaLabel)).toBe(
+      'Mehr erfahren, öffnet in einem neuen Tab',
+    );
   });
 
   it('skips the ad when Dismiss is clicked and hides the status once the skip is confirmed', () => {
@@ -211,6 +287,7 @@ function setupOverlay(componentConfigOverrides: UIComponentConfigOverrides = {})
     return new PauseAdStatusOverlay();
   });
   getClickCatcher().initialize();
+  getClickThroughButton().initialize();
   getDismissButton().initialize();
   pauseAdStatusOverlay.initialize();
   pauseAdStatusOverlay.configure(playerMock, uiInstanceManagerMock);
@@ -228,8 +305,12 @@ function getBadgeLabel(): Label<LabelConfig> {
   return pauseAdStatusOverlay.getComponents()[1] as Label<LabelConfig>;
 }
 
+function getClickThroughButton(): Button<ButtonConfig> {
+  return pauseAdStatusOverlay.clickThroughButton;
+}
+
 function getDismissButton(): Button<ButtonConfig> {
-  return pauseAdStatusOverlay.getComponents()[2] as Button<ButtonConfig>;
+  return pauseAdStatusOverlay.dismissButton;
 }
 
 function getPauseAdActiveClass(): string {

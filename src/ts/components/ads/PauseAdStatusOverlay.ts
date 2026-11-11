@@ -54,6 +54,11 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
    * for remote-controlled platforms.
    */
   public readonly dismissButton: Button<ButtonConfig>;
+  /**
+   * Button that opens the pause ad's click-through. It is the keyboard and assistive technology equivalent of
+   * clicking the creative, and is only shown when the ad has a click-through destination.
+   */
+  public readonly clickThroughButton: Button<ButtonConfig>;
   private readonly clickCatcher: PauseAdClickCatcher;
   private uiContainerElement?: DOM;
   private activePauseAd?: Ad;
@@ -83,9 +88,17 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
       hidden: true,
       acceptsTouchWithUiHidden: true,
     });
+    this.clickThroughButton = new Button({
+      cssClass: 'ui-button-pause-ad-click-through',
+      text: i18n.getLocalizer('ads.learnMore'),
+      ariaLabel: i18n.getLocalizer('ads.learnMore.newTab'),
+      buttonStyle: ButtonStyle.Text,
+      hidden: true,
+      acceptsTouchWithUiHidden: true,
+    });
 
     // The catcher comes first so visible controls remain above it.
-    this.config.components = [this.clickCatcher, badgeLabel, this.dismissButton];
+    this.config.components = [this.clickCatcher, badgeLabel, this.clickThroughButton, this.dismissButton];
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -102,6 +115,9 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
 
     this.clickCatcher.onClick.subscribe(() => {
+      this.getClickThroughAction()?.();
+    });
+    this.clickThroughButton.onClick.subscribe(() => {
       this.getClickThroughAction()?.();
     });
 
@@ -149,11 +165,13 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
     // Without a destination, clicks continue to reach the controls below.
     if (event.ad.clickThroughUrl) {
       this.clickCatcher.show();
+      this.clickThroughButton.show();
     } else {
       this.clickCatcher.hide();
+      this.clickThroughButton.hide();
     }
 
-    // Both controls have to be in their final state before the overlay becomes visible: showing the
+    // All controls have to be in their final state before the overlay becomes visible: showing the
     // overlay activates the pause-ad navigation group, which focuses the first component it finds
     // focusable at that moment.
     this.dismissButton.show();
@@ -176,6 +194,7 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
 
   private readonly hidePauseAdStatus = (): void => {
     this.dismissButton.hide();
+    this.clickThroughButton.hide();
     this.clickCatcher.hide();
     this.activePauseAd = undefined;
     this.uiContainerElement?.removeClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));

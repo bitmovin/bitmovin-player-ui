@@ -10,13 +10,16 @@ import { mockClass } from '../helper/mockClass';
 describe('PauseAdNavigationGroup', () => {
   let pauseAdStatusOverlayMock: jest.Mocked<PauseAdStatusOverlay>;
   let dismissButton: Button<ButtonConfig>;
+  let clickThroughButton: Button<ButtonConfig>;
   let secondaryButton: Button<ButtonConfig>;
   let pauseAdNavigationGroup: PauseAdNavigationGroup;
 
   beforeEach(() => {
     dismissButton = new Button({});
     pauseAdStatusOverlayMock = mockClass(PauseAdStatusOverlay);
+    clickThroughButton = new Button({});
     (pauseAdStatusOverlayMock as { dismissButton: Button<ButtonConfig> }).dismissButton = dismissButton;
+    (pauseAdStatusOverlayMock as { clickThroughButton: Button<ButtonConfig> }).clickThroughButton = clickThroughButton;
     pauseAdStatusOverlayMock.hide = jest.fn();
     secondaryButton = new Button({});
 
@@ -24,6 +27,23 @@ describe('PauseAdNavigationGroup', () => {
   });
 
   it('should make the dismiss button the first focus target', () => {
+    pauseAdNavigationGroup.focusFirstComponent();
+
+    expect(pauseAdNavigationGroup.getActiveComponent()).toBe(dismissButton);
+  });
+
+  it.each([
+    ['shown', true],
+    ['hidden', false],
+  ])('should include the click-through button as a focus target only while it is %s', (_, shown) => {
+    jest.spyOn(clickThroughButton, 'isShown').mockReturnValue(shown);
+
+    expect(pauseAdNavigationGroup['getComponents']().includes(clickThroughButton)).toBe(shown);
+  });
+
+  it('should keep the dismiss button as the first focus target when the click-through button is shown', () => {
+    jest.spyOn(clickThroughButton, 'isShown').mockReturnValue(true);
+
     pauseAdNavigationGroup.focusFirstComponent();
 
     expect(pauseAdNavigationGroup.getActiveComponent()).toBe(dismissButton);

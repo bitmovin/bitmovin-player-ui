@@ -47,6 +47,13 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   * {
     pointer-events: none;
   }
+
+  // The click-through and dismiss buttons share the top-right corner, so they are laid out in a row.
+  > .#{$prefix}-container-wrapper {
+    align-items: flex-start;
+    display: flex;
+    justify-content: flex-end;
+  }
 }
 
 // Covers the player while remaining below the visible controls.
@@ -69,6 +76,7 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
 }
 
 .#{$prefix}-ui-pause-ad-status-badge,
+.#{$prefix}-ui-button-pause-ad-click-through,
 .#{$prefix}-ui-button-pause-ad-dismiss {
   background-color: transparentize($color-black, 0.25);
   border-radius: 20px;
@@ -94,20 +102,29 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   top: safe-area-max(1em, top);
 }
 
+.#{$prefix}-ui-button-pause-ad-click-through,
 .#{$prefix}-ui-button-pause-ad-dismiss {
   @extend %ui-button;
 
   height: auto;
+  margin-top: safe-area-max(1em, top);
   pointer-events: auto;
-  position: absolute;
-  right: safe-area-max(1em, right);
-  top: safe-area-max(1em, top);
-
-  .#{$prefix}-ui-icon {
-    background-image: svg-load('../../assets/images/close.svg', stroke=$color-icon-highlight-ads);
-  }
+  // Positioned so that both buttons stack above the click catcher, which precedes them in the DOM.
+  position: relative;
 
   &:hover {
     background-color: $color-black;
+  }
+}
+
+.#{$prefix}-ui-button-pause-ad-click-through {
+  margin-right: 0.5em;
+}
+
+.#{$prefix}-ui-button-pause-ad-dismiss {
+  margin-right: safe-area-max(1em, right);
+
+  .#{$prefix}-ui-icon {
+    background-image: svg-load('../../assets/images/close.svg', stroke=$color-icon-highlight-ads);
   }
 }

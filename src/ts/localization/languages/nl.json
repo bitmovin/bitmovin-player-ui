@@ -48,6 +48,8 @@
   "ads.skip": "Overslaan",
   "ads.skippableIn": "Advertentie overslaan over {remainingTime}",
   "ads.adNumberOfTotal": "Advertentie {activeAdIndex} van {totalAdsCount}",
+  "ads.learnMore": "Meer informatie",
+  "ads.learnMore.newTab": "Meer informatie, opent in een nieuw tabblad",
   "ad": "Advertentie",
   "settings": "Instellingen",
   "fullscreen": "Volledig scherm",

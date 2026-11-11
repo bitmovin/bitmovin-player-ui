@@ -48,6 +48,8 @@
   "ads.skip": "Ignorar",
   "ads.skippableIn": "Ignorar anúncio em {remainingTime}",
   "ads.adNumberOfTotal": "Anúncio {activeAdIndex} de {totalAdsCount}",
+  "ads.learnMore": "Saiba mais",
+  "ads.learnMore.newTab": "Saiba mais, abre num novo separador",
   "ad": "Anúncio",
   "settings": "Definições",
   "fullscreen": "Ecrã inteiro",
