@@ -17,6 +17,9 @@ export const defaultVocabularies: Vocabularies = {
   pt: vocabularyPt,
 };
 
+/**
+ * @category Localization
+ */
 export interface LanguageChangedArgument {
   newLanguage: string;
   oldLanguage: string;
@@ -192,16 +195,20 @@ export class I18n {
   }
 
   /**
-   * Fires when the UI language changes, independent of the configured `events.onLanguageChanged` dispatcher. UI
-   * components subscribe to this event.
+   * Fires when the UI language changes. Unlike the `events.onLanguageChanged` dispatcher of the localization config,
+   * this event stays the same when the localization config is replaced, so a subscription made once keeps receiving
+   * language changes and can always be removed again. UI components use it to update their texts.
    */
   public get onUiLanguageChanged(): Event<I18n, LanguageChangedArgument> {
     return this.uiLanguageChanged.getEvent();
   }
 
   /**
-   * Notifies UI components and the configured `events.onLanguageChanged` dispatcher if the active language differs
-   * from `oldLanguage`.
+   * Fires {@link onUiLanguageChanged} and the configured `events.onLanguageChanged` dispatcher if the active language
+   * differs from `oldLanguage`. {@link setLanguage} and `UIManager.setLocalizationConfig` call it, so it is only needed
+   * after changing the language through {@link setConfig}.
+   *
+   * @param oldLanguage the language that was active before the change
    */
   public notifyLanguageChanged(oldLanguage: string): void {
     if (this.language === oldLanguage) {
