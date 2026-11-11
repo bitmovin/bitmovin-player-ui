@@ -43,7 +43,7 @@ describe('PlaybackTimeLabel', () => {
       it('exposes the live indicator as an accessible button', () => {
         expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '0');
         expect(mockDomElement.attr).toHaveBeenCalledWith('role', 'button');
-        expect(mockDomElement.attr).toHaveBeenCalledWith('aria-label', 'Live, jump to live edge');
+        expect(mockDomElement.attr).toHaveBeenCalledWith('aria-label', 'Live, at live edge');
       });
 
       it.each(['Enter', ' '])('jumps to the live edge when pressing %p', key => {
@@ -140,6 +140,99 @@ describe('PlaybackTimeLabel', () => {
       playerMock.eventEmitter.fireDurationChangedEvent();
 
       expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '2');
+    });
+
+    describe('live edge state', () => {
+      const atLiveEdgeLabel = 'Live, at live edge';
+      const behindLiveEdgeLabel = 'Live, behind live, jump to live edge';
+
+      let attributes: Map<string, string>;
+      let cssClasses: Set<string>;
+
+      const getAriaLabel = () => attributes.get('aria-label');
+      const isLiveEdgeClassSet = () =>
+        Array.from(cssClasses).some(cssClass => cssClass.endsWith(liveEdgeActiveCssClassName));
+
+      // Track attributes and classes on the DOM mock so the resulting accessible state can be asserted
+      const mockDomElementOf = (label: PlaybackTimeLabel) => {
+        const mockDomElement = MockHelper.generateDOMMock();
+        mockDomElement.attr.mockImplementation((name: string, value: string) => {
+          attributes.set(name, value);
+          return mockDomElement;
+        });
+        mockDomElement.removeAttr.mockImplementation((name: string) => attributes.delete(name));
+        mockDomElement.addClass.mockImplementation((cssClass: string) => {
+          cssClasses.add(cssClass);
+          return mockDomElement;
+        });
+        mockDomElement.removeClass.mockImplementation((cssClass: string) => {
+          cssClasses.delete(cssClass);
+          return mockDomElement;
+        });
+        jest.spyOn(label, 'getDomElement').mockReturnValue(mockDomElement);
+      };
+
+      beforeEach(() => {
+        attributes = new Map<string, string>();
+        cssClasses = new Set<string>();
+        mockDomElementOf(playbackTimeLabel);
+      });
+
+      it.each([
+        { state: 'playing at the live edge', timeShift: 0, maxTimeShift: -20, paused: false, atLiveEdge: true },
+        { state: 'playing behind the live edge', timeShift: -10, maxTimeShift: -20, paused: false, atLiveEdge: false },
+        { state: 'paused with a timeshift window', timeShift: 0, maxTimeShift: -20, paused: true, atLiveEdge: false },
+        { state: 'paused without a timeshift window', timeShift: 0, maxTimeShift: 0, paused: true, atLiveEdge: true },
+      ])(
+        'should expose the live edge state in the accessible name when $state',
+        ({ timeShift, maxTimeShift, paused, atLiveEdge }) => {
+          jest.spyOn(playerMock, 'getTimeShift').mockReturnValue(timeShift);
+          jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(maxTimeShift);
+          jest.spyOn(playerMock, 'isPaused').mockReturnValue(paused);
+
+          playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+
+          expect(isLiveEdgeClassSet()).toBe(atLiveEdge);
+          expect(getAriaLabel()).toBe(atLiveEdge ? atLiveEdgeLabel : behindLiveEdgeLabel);
+        },
+      );
+
+      it('should update the accessible name whenever the live edge state changes', () => {
+        const getTimeShiftSpy = jest.spyOn(playerMock, 'getTimeShift').mockReturnValue(0);
+        playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+        expect(getAriaLabel()).toBe(atLiveEdgeLabel);
+
+        getTimeShiftSpy.mockReturnValue(-10);
+        playerMock.eventEmitter.fireTimeShiftedEvent();
+        expect(getAriaLabel()).toBe(behindLiveEdgeLabel);
+
+        getTimeShiftSpy.mockReturnValue(0);
+        playerMock.eventEmitter.fireTimeShiftedEvent();
+        expect(getAriaLabel()).toBe(atLiveEdgeLabel);
+      });
+
+      it('should not set an accessible name when configured to hide during live playback', () => {
+        playbackTimeLabel = new PlaybackTimeLabel({ hideInLivePlayback: true });
+        mockDomElementOf(playbackTimeLabel);
+        const getTimeShiftSpy = jest.spyOn(playerMock, 'getTimeShift').mockReturnValue(0);
+        playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+
+        getTimeShiftSpy.mockReturnValue(-10);
+        playerMock.eventEmitter.fireTimeShiftedEvent();
+
+        expect(getAriaLabel()).toBeUndefined();
+      });
+
+      it('should remove the accessible name when switching to VOD', () => {
+        jest.spyOn(playerMock, 'getTimeShift').mockReturnValue(0);
+        playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+        jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+
+        playerMock.eventEmitter.fireDurationChangedEvent();
+
+        expect(getAriaLabel()).toBeUndefined();
+        expect(isLiveEdgeClassSet()).toBe(false);
+      });
     });
 
     describe('switch to inactive', () => {

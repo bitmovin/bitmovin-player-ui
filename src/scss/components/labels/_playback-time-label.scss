@@ -15,15 +15,18 @@
     cursor: pointer;
     padding: calc($icon-size * 0.25);
 
+    // Behind the live edge the indicator is a hollow ring, at the live edge a filled dot. The shape, not only the
+    // color, tells the two states apart.
     &::before {
       color: $color-secondary;
-      content: '●';
+      content: '○';
       padding-right: 0.2em;
     }
 
     &.#{$prefix}-ui-playbacktimelabel-live-edge {
       &::before {
         color: $color-red;
+        content: '●';
       }
     }
   }

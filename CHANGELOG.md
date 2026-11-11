@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `live.atLiveEdge` localization key for the accessible name of the LIVE indicator while playback is at the live edge.
+
+### Fixed
+
+- The LIVE indicator showing whether playback is at the live edge only by the color of its dot. Behind the live edge the dot is now a hollow ring, and its accessible name tells screen reader users whether playback is at the live edge or behind it. The default `live.jumpToLiveEdge` text now reads "Live, behind live, jump to live edge".
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed
