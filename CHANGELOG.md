@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Disabled controls not being announced as unavailable by screen readers. Disabled components now set `aria-disabled="true"`, e.g. the ad skip button during its countdown, and the seek bar is exposed as disabled while a linear ad is playing.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed

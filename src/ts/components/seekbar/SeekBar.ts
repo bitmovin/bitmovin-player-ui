@@ -13,7 +13,7 @@ import { PlayerUtils } from '../../utils/PlayerUtils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import { TimelineMarker } from '../../UIConfig';
-import { PlayerAPI, PlayerEventBase } from 'bitmovin-player';
+import { AdEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import { StringUtils } from '../../utils/StringUtils';
 import { SeekBarType, SeekBarController } from '../../utils/SeekBarController';
 import { i18n } from '../../localization/i18n';
@@ -146,6 +146,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   private isUserSeeking = false;
   // We need to track the current ad state manually since our mobile SDKs don't expose an API to check if an ad is active.
   private isAdPlaying: boolean = false;
+  // Tracks whether the seek bar was disabled by a linear ad, so that only this state is restored after the ad break.
+  private isDisabledForLinearAd: boolean = false;
 
   private seekBarEvents = {
     /**
@@ -284,15 +286,36 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     };
 
-    player.on(player.exports.PlayerEvent.AdStarted, () => {
+    // The player rejects seeks during linear ads, so the seek bar is exposed as disabled to assistive technologies
+    // while one is playing. It stays focusable so that the ad progress can still be read.
+    const disableForLinearAd = () => {
+      if (this.isEnabled()) {
+        this.isDisabledForLinearAd = true;
+        this.disable();
+      }
+    };
+
+    const restoreAfterLinearAd = () => {
+      if (this.isDisabledForLinearAd) {
+        this.isDisabledForLinearAd = false;
+        this.enable();
+      }
+    };
+
+    player.on(player.exports.PlayerEvent.AdStarted, (event: AdEvent) => {
       this.isAdPlaying = true;
+      if (event.ad?.isLinear) {
+        disableForLinearAd();
+      }
       resumeSeekBarUpdates();
     });
     player.on(player.exports.PlayerEvent.AdBreakFinished, () => {
       this.isAdPlaying = false;
+      restoreAfterLinearAd();
     });
     player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
       this.isAdPlaying = false;
+      restoreAfterLinearAd();
     });
 
     uimanager.onControlsShow.subscribe(resumeSeekBarUpdates);

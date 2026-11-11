@@ -55,6 +55,60 @@ describe('SeekBar', () => {
     });
   });
 
+  describe('disabled state during ads', () => {
+    let attributes: Map<string, string>;
+
+    beforeEach(() => {
+      // Track attributes on the DOM mock so the resulting accessible state can be asserted
+      attributes = new Map<string, string>([['role', 'slider']]);
+      const mockDomElement = MockHelper.generateDOMMock();
+      mockDomElement.attr.mockImplementation((name: string, value: string) => {
+        attributes.set(name, value);
+        return mockDomElement;
+      });
+      mockDomElement.removeAttr.mockImplementation((name: string) => attributes.delete(name));
+      jest.spyOn(seekbar, 'getDomElement').mockReturnValue(mockDomElement);
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(100);
+
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+    });
+
+    it.each([
+      { adType: 'linear', isLinear: true, expectedAriaDisabled: 'true' },
+      { adType: 'non-linear', isLinear: false, expectedAriaDisabled: undefined },
+    ])(
+      'should set aria-disabled to $expectedAriaDisabled while a $adType ad is playing',
+      ({ isLinear, expectedAriaDisabled }) => {
+        playerMock.eventEmitter.fireAdStartedEvent({ isLinear });
+
+        expect(attributes.get('aria-disabled')).toBe(expectedAriaDisabled);
+        expect(attributes.get('role')).toBe('slider');
+      },
+    );
+
+    it.each([
+      { endEvent: 'AdBreakFinished', fireEndEvent: () => playerMock.eventEmitter.fireAdBreakFinishedEvent() },
+      { endEvent: 'SourceUnloaded', fireEndEvent: () => playerMock.eventEmitter.fireSourceUnloadedEvent() },
+    ])('should enable the seek bar again on $endEvent after a linear ad', ({ fireEndEvent }) => {
+      playerMock.eventEmitter.fireAdStartedEvent({ isLinear: true });
+
+      fireEndEvent();
+
+      expect(seekbar.isEnabled()).toBe(true);
+      expect(attributes.has('aria-disabled')).toBe(false);
+    });
+
+    it('should keep a seek bar that was disabled before the linear ad disabled afterwards', () => {
+      seekbar.disable();
+      playerMock.eventEmitter.fireAdStartedEvent({ isLinear: true });
+
+      playerMock.eventEmitter.fireAdBreakFinishedEvent();
+
+      expect(seekbar.isDisabled()).toBe(true);
+      expect(attributes.get('aria-disabled')).toBe('true');
+    });
+  });
+
   describe('playback position', () => {
     let setPlaybackPositionSpy: jest.SpyInstance;
 

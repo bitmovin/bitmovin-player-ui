@@ -487,11 +487,15 @@ export class Component<Config extends ComponentConfig> {
    * Disables the component.
    * This method basically transfers the component into the disabled state. Actual disabling is done via CSS or child
    * components. (e.g. Button needs to unsubscribe click listeners)
+   * The disabled state is exposed to assistive technologies via `aria-disabled`. The native `disabled` attribute is
+   * not used because it removes the element from the focus order, which would break spatial navigation and keep
+   * screen reader users from reaching the content of a temporarily disabled control, e.g. a skip countdown.
    */
   disable(): void {
     if (!this.disabled) {
       this.disabled = true;
       this.getDomElement().addClass(this.prefixCss(Component.CLASS_DISABLED));
+      this.setAriaAttr('disabled', 'true');
       this.onDisabledEvent();
     }
   }
@@ -504,6 +508,7 @@ export class Component<Config extends ComponentConfig> {
   enable(): void {
     if (this.disabled) {
       this.getDomElement().removeClass(this.prefixCss(Component.CLASS_DISABLED));
+      this.getDomElement().removeAttr('aria-disabled');
       this.disabled = false;
       this.onEnabledEvent();
     }
