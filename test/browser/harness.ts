@@ -49,6 +49,7 @@ interface BrowserTestWindow extends Window {
   };
   __fire(event: string, data?: object): void;
   __setSourceLoaded(sourceLoaded: boolean): void;
+  __setCastAndAirPlayAvailable(available: boolean): void;
   __pausePlayback(): void;
   __ui?: UiHandle;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
@@ -176,6 +177,9 @@ export interface BrowserPlayerController {
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
 
+  /** Makes Cast and AirPlay available and emits the events that make the UI show their buttons. */
+  makeCastAndAirPlayAvailable(): Promise<void>;
+
   /** Emits the source-unloaded lifecycle event. */
   unloadSource(): Promise<void>;
 
@@ -279,6 +283,10 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
 
       let playing = true;
       let sourceLoaded = true;
+      let castAndAirPlayAvailable = false;
+      browserWindow.__setCastAndAirPlayAvailable = available => {
+        castAndAirPlayAvailable = available;
+      };
       browserWindow.__setSourceLoaded = loaded => {
         sourceLoaded = loaded;
       };
@@ -316,7 +324,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         isStalled: () => false,
         isCasting: () => false,
         isAirplayActive: () => false,
-        isAirplayAvailable: () => false,
+        isAirplayAvailable: () => castAndAirPlayAvailable,
+        isCastAvailable: () => castAndAirPlayAvailable,
         isViewModeAvailable: () => false,
         hasEnded: () => false,
         getViewMode: () => 'inline',
@@ -472,6 +481,15 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           },
           { entered: cue, cueStartTime: start },
         );
+      },
+      makeCastAndAirPlayAvailable: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          const PlayerEvent = browserWindow.bitmovin.player.PlayerEvent;
+          browserWindow.__setCastAndAirPlayAvailable(true);
+          browserWindow.__fire(PlayerEvent.CastAvailable);
+          browserWindow.__fire(PlayerEvent.AirplayAvailable);
+        });
       },
       unloadSource: async () => {
         await page.evaluate(() => {

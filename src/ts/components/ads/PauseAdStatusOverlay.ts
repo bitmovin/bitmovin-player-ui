@@ -8,6 +8,9 @@ import { Container, ContainerConfig } from '../Container';
 import { Label } from '../labels/Label';
 
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
+// Custom property on the UI container that tells sibling components, such as the title bar, how much
+// space the status row occupies at the top of the player.
+const STATUS_ROW_HEIGHT_PROPERTY = 'pause-ad-status-row-height';
 
 /**
  * Player-sized click target for a pause ad rendered below the UI.
@@ -62,6 +65,7 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
   private readonly clickCatcher: PauseAdClickCatcher;
   private uiContainerElement?: DOM;
   private activePauseAd?: Ad;
+  private statusRowResizeObserver?: ResizeObserver;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -113,6 +117,8 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
       player.on(eventType as PlayerEvent, this.handleNonLinearAdEnded as PlayerEventCallback<PlayerEvent>);
     });
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
+    // Fallback for platforms without ResizeObserver, where the row height is only measured at these points.
+    player.on(player.exports.PlayerEvent.PlayerResized, this.updateStatusRowHeight);
 
     this.clickCatcher.onClick.subscribe(() => {
       this.getClickThroughAction()?.();
@@ -187,7 +193,38 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
     this.dismissButton.show();
     this.show();
     this.uiContainerElement?.addClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
+    this.trackStatusRowHeight();
   };
+
+  /**
+   * The status row wraps onto further rows in narrow players or with long translations, so the space it needs is only
+   * known after layout. It is published on the UI container, so that other components can keep clear of it.
+   */
+  private trackStatusRowHeight(): void {
+    this.updateStatusRowHeight();
+
+    const statusRow = this.innerContainerElement.get(0);
+    if (!this.statusRowResizeObserver && statusRow && typeof ResizeObserver !== 'undefined') {
+      this.statusRowResizeObserver = new ResizeObserver(this.updateStatusRowHeight);
+      this.statusRowResizeObserver.observe(statusRow);
+    }
+  }
+
+  private readonly updateStatusRowHeight = (): void => {
+    const uiContainer = this.uiContainerElement?.get(0);
+    const statusRow = this.innerContainerElement?.get(0);
+    if (!this.activePauseAd || !uiContainer || !statusRow) {
+      return;
+    }
+
+    uiContainer.style.setProperty(`--${this.prefixCss(STATUS_ROW_HEIGHT_PROPERTY)}`, `${statusRow.offsetHeight}px`);
+  };
+
+  private stopTrackingStatusRowHeight(): void {
+    this.statusRowResizeObserver?.disconnect();
+    this.statusRowResizeObserver = undefined;
+    this.uiContainerElement?.get(0)?.style.removeProperty(`--${this.prefixCss(STATUS_ROW_HEIGHT_PROPERTY)}`);
+  }
 
   private readonly handleNonLinearAdEnded = (event: AdEvent): void => {
     if (!this.activePauseAd) {
@@ -207,6 +244,7 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
     this.clickThroughButton.hide();
     this.clickCatcher.hide();
     this.activePauseAd = undefined;
+    this.stopTrackingStatusRowHeight();
     this.uiContainerElement?.removeClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
     this.hide();
   };

@@ -20,9 +20,14 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   }
 
   // The pause status row owns the top edge, so title-bar content and its actions move below it
-  // instead of sharing the corners with the badge and the dismiss button.
+  // instead of sharing the corners with the badge and the dismiss button. When the row wraps, the
+  // `PauseAdStatusOverlay` publishes its measured height, so the title bar keeps clear of every row.
+  // Browsers without custom properties or `max()` keep the single-row clearance.
   .#{$prefix}-ui-titlebar > .#{$prefix}-container-wrapper {
+    // The duplicate is the fallback, and the fallback of `var()` needs a unit to be valid inside `max()`.
+    // sass-lint:disable-block no-duplicate-properties, zero-unit
     margin-top: $pause-ad-status-row-height;
+    margin-top: max(#{$pause-ad-status-row-height}, var(--#{$prefix}-pause-ad-status-row-height, 0px));
   }
 
   // Source metadata describes the content behind the ad and competes with the ad message.

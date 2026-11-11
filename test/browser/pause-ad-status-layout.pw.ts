@@ -97,3 +97,62 @@ test('the Learn more accessible name follows a UI language change together with 
   await expect(learnMore, 'the accessible name must be in the new language').toBeVisible();
   await expect(learnMore, 'the accessible name must contain the visible text').toHaveText('Mehr erfahren');
 });
+
+test('wrapped pause-ad buttons and the title-bar actions keep clear of each other in a narrow small-screen player', async ({
+  page,
+}) => {
+  const ui = await mountUi(page, {
+    factory: 'smallScreen',
+    mobile: true,
+    live: false,
+    vocabularies: {
+      en: {
+        ad: 'Sponsored advertisement',
+        'ads.learnMore': 'Discover more about this offer',
+        'ads.learnMore.newTab': 'Discover more about this offer, opens in a new tab',
+        close: 'Close the advertisement',
+      },
+    },
+  });
+  await ui.player.resize(360);
+  await ui.player.makeCastAndAirPlayAvailable();
+  await ui.player.startPauseAd({ clickThroughUrl: 'https://example.com/pause-ad' });
+
+  const pauseAdButtons = [
+    page.getByRole('button', { name: 'Discover more about this offer, opens in a new tab' }),
+    page.getByRole('button', { name: 'Close the advertisement' }),
+  ];
+  const titleBarActions = [
+    page.getByRole('button', { name: 'Google Cast' }),
+    page.getByRole('button', { name: 'Apple AirPlay' }),
+  ];
+  for (const control of [...pauseAdButtons, ...titleBarActions]) {
+    await expect(control).toBeVisible();
+  }
+  const pauseAdBounds = await Promise.all(pauseAdButtons.map(button => button.boundingBox()));
+  expect(pauseAdBounds[1]!.y, 'this scenario needs the pause-ad buttons to wrap onto a second row').toBeGreaterThan(
+    pauseAdBounds[0]!.y,
+  );
+
+  for (const action of titleBarActions) {
+    const actionBounds = (await action.boundingBox())!;
+    pauseAdBounds.forEach((buttonBounds, index) => {
+      const overlapping =
+        actionBounds.x < buttonBounds!.x + buttonBounds!.width &&
+        buttonBounds!.x < actionBounds.x + actionBounds.width &&
+        actionBounds.y < buttonBounds!.y + buttonBounds!.height &&
+        buttonBounds!.y < actionBounds.y + actionBounds.height;
+      expect(overlapping, `a title-bar action must not overlap pause-ad button ${index}`).toBe(false);
+    });
+  }
+
+  // Each control has to be the topmost element at its own center, or a tap would reach another control.
+  for (const control of [...pauseAdButtons, ...titleBarActions]) {
+    const receivesClicks = await control.evaluate(element => {
+      const bounds = element.getBoundingClientRect();
+      const hit = document.elementFromPoint(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+      return hit !== null && element.contains(hit);
+    });
+    expect(receivesClicks, `${await control.getAttribute('aria-label')} must stay clickable`).toBe(true);
+  }
+});

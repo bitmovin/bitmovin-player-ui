@@ -1,3 +1,4 @@
+import { PlayerEvent } from 'bitmovin-player';
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager, UIVariantIdentifier } from '../../../src/ts/UIManager';
 import { PauseAdStatusOverlay } from '../../../src/ts/components/ads/PauseAdStatusOverlay';
@@ -282,6 +283,51 @@ describe('PauseAdStatusOverlay', () => {
     expect(uiContainerElementMock.removeClass).toHaveBeenCalledWith(getPauseAdActiveClass());
   });
 
+  describe('status row height', () => {
+    let uiContainer: HTMLDivElement;
+    let statusRowHeight: number;
+
+    beforeEach(() => {
+      uiContainer = document.createElement('div');
+      statusRowHeight = 48;
+      const statusRow = document.createElement('div');
+      Object.defineProperty(statusRow, 'offsetHeight', { get: () => statusRowHeight });
+      (uiContainerElementMock.get as jest.Mock).mockReturnValue(uiContainer);
+      pauseAdStatusOverlay['innerContainerElement'] = { get: () => statusRow } as unknown as DOM;
+    });
+
+    function getPublishedHeight(): string {
+      return uiContainer.style.getPropertyValue(`--${getPrefix()}-pause-ad-status-row-height`);
+    }
+
+    it('should publish the measured status row height on the UI container while a pause ad shows', () => {
+      firePauseAdStarted({ clickThroughUrl: 'https://example.com' });
+
+      expect(getPublishedHeight()).toBe('48px');
+    });
+
+    it('should measure the status row again when the player is resized', () => {
+      firePauseAdStarted({ clickThroughUrl: 'https://example.com' });
+      statusRowHeight = 96;
+
+      playerMock.eventEmitter.fireEvent({ type: PlayerEvent.PlayerResized, width: '360px', height: '640px' } as any);
+
+      expect(getPublishedHeight()).toBe('96px');
+    });
+
+    it.each([
+      ['NonLinearAdFinished', () => playerMock.eventEmitter.fireNonLinearAdFinishedEvent({ id: 'pause-ad' })],
+      ['SourceUnloaded', () => playerMock.eventEmitter.fireSourceUnloadedEvent()],
+    ])('should remove the published height on %s', (_, endPauseAd) => {
+      firePauseAdStarted({ id: 'pause-ad' });
+
+      endPauseAd();
+      playerMock.eventEmitter.fireEvent({ type: PlayerEvent.PlayerResized, width: '360px', height: '640px' } as any);
+
+      expect(getPublishedHeight()).toBe('');
+    });
+  });
+
   it('clears pause-ad UI suppression on release', () => {
     firePauseAdStarted();
 
@@ -327,6 +373,10 @@ function getClickThroughButton(): Button<ButtonConfig> {
 
 function getDismissButton(): Button<ButtonConfig> {
   return pauseAdStatusOverlay.dismissButton;
+}
+
+function getPrefix(): string {
+  return getPauseAdActiveClass().replace(/-pause-ad-active$/, '');
 }
 
 function getPauseAdActiveClass(): string {
