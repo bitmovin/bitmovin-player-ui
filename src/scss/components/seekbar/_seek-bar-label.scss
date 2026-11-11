@@ -12,14 +12,6 @@
   position: absolute;
   text-align: center;
 
-  // Let the pointer move onto the visible content of the shown label so it can be hovered (WCAG 1.4.13 Content on
-  // Hover or Focus). The hidden label must not catch the pointer while it fades out.
-  &:not(.#{$prefix}-hidden) {
-    .#{$prefix}-seekbar-label-inner {
-      pointer-events: auto;
-    }
-  }
-
   // Center container on left edge to get it centered over timeline position
   %center-on-left-edge {
     margin-left: -50%;
