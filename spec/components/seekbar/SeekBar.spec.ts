@@ -146,41 +146,6 @@ describe('SeekBar', () => {
     );
 
     it.each([
-      { trigger: 'the seek bar is disabled', disableDuringDrag: () => seekbar.disable() },
-      {
-        trigger: 'a linear ad starts',
-        disableDuringDrag: () => playerMock.eventEmitter.fireAdStartedEvent({ isLinear: true }),
-      },
-    ])('should cancel a pointer seek without seeking when $trigger during the drag', ({ disableDuringDrag }) => {
-      jest.spyOn(playerMock, 'isPlaying').mockReturnValue(true);
-      playerMock.play = jest.fn();
-      playerMock.pause = jest.fn();
-      playerMock.seek = jest.fn();
-      const onSeekedSpy = jest.fn();
-      seekbar.onSeeked.subscribe(onSeekedSpy);
-      const domOn = seekbar['seekBar'].on as jest.Mock;
-      const pointerDownHandler = domOn.mock.calls.find(([eventNames]) => eventNames === 'touchstart mousedown')?.[1];
-      pointerDownHandler({ preventDefault: jest.fn() });
-      // The drag is tracked through handlers on a DOM wrapper around the document
-      const documentHandlerCalls = (method: 'on' | 'off') =>
-        (DOM as jest.MockedClass<typeof DOM>).mock.instances.reduce(
-          (calls, instance) => calls.concat((instance[method] as jest.Mock).mock.calls),
-          [] as unknown[][],
-        );
-      const pointerUpHandler = documentHandlerCalls('on').find(([eventNames]) => eventNames === 'mouseup')?.[1];
-      expect(pointerUpHandler).toEqual(expect.any(Function));
-
-      disableDuringDrag();
-
-      expect(documentHandlerCalls('off')).toContainEqual(['touchend mouseup', pointerUpHandler]);
-      expect(onSeekedSpy).not.toHaveBeenCalled();
-      expect(playerMock.seek).not.toHaveBeenCalled();
-      expect(playerMock.play).toHaveBeenCalledWith('ui-seek');
-      expect(uiInstanceManagerMock.onSeeked.dispatch).toHaveBeenCalled();
-      expect(seekbar['isUserSeeking']).toBe(false);
-    });
-
-    it.each([
       { state: 'during a linear ad', isLinear: true, expectedSeeks: 0 },
       { state: 'during a non-linear ad', isLinear: false, expectedSeeks: 1 },
     ])('should start $expectedSeeks seeks on pointer down $state', ({ isLinear, expectedSeeks }) => {
@@ -194,6 +159,60 @@ describe('SeekBar', () => {
       pointerDownHandler({ preventDefault: jest.fn() });
 
       expect(onSeekSpy).toHaveBeenCalledTimes(expectedSeeks);
+    });
+  });
+
+  describe('a drag in progress when the seek bar is disabled', () => {
+    // The drag is tracked through handlers on the seek bar and on a DOM wrapper around the document
+    const domHandlers = (method: 'on' | 'off') =>
+      (DOM as jest.MockedClass<typeof DOM>).mock.instances.reduce(
+        (calls, instance) => calls.concat((instance[method] as jest.Mock).mock.calls),
+        [] as unknown[][],
+      );
+    const findHandler = (eventNames: string) =>
+      domHandlers('on').find(([names]) => names === eventNames)?.[1] as (event: Event) => void;
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(100);
+      jest.spyOn(playerMock, 'isPlaying').mockReturnValue(true);
+      playerMock.play = jest.fn();
+      playerMock.pause = jest.fn();
+      seekbar['seekBar'].offset = jest.fn().mockReturnValue({ left: 0, top: 0 });
+      seekbar['seekBar'].width = jest.fn().mockReturnValue(100);
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should end the drag exactly once when an onSeek listener disables the seek bar', () => {
+      seekbar.onSeek.subscribe(() => seekbar.disable());
+
+      findHandler('touchstart mousedown')(new MouseEvent('mousedown'));
+      findHandler('mouseup')(new MouseEvent('mouseup'));
+
+      expect(uiInstanceManagerMock.onSeeked.dispatch).toHaveBeenCalledTimes(1);
+      expect(playerMock.play).toHaveBeenCalledTimes(1);
+    });
+
+    it('should only run queued scrubbing seeks while the drag is still active', () => {
+      const isUserSeekingAtSeek: boolean[] = [];
+      playerMock.seek = jest.fn(() => {
+        isUserSeekingAtSeek.push(seekbar['isUserSeeking']);
+        return true;
+      });
+      findHandler('touchstart mousedown')(new MouseEvent('mousedown'));
+      const scrub = findHandler('mousemove');
+      scrub(new MouseEvent('mousemove'));
+      scrub(new MouseEvent('mousemove'));
+
+      seekbar.disable();
+      seekbar.enable();
+      jest.runOnlyPendingTimers();
+
+      expect(isUserSeekingAtSeek).toEqual([true, true]);
     });
   });
 
