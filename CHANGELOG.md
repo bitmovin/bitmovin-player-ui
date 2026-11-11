@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `lang` attribute on the UI container matching the active UI language, updated when the language changes, and on subtitle text matching the language of its subtitle track, so screen readers pronounce UI texts and subtitles in the correct language. The active UI language is available through `i18n.getLanguage()`.
+- `lang` attribute on the UI container matching the active UI language, updated when the language changes, and on subtitle text matching the language of its subtitle track, so screen readers pronounce UI texts and subtitles in the correct language. Subtitle text whose language is unknown, for example of forced subtitles, is marked as such instead of taking the UI language. The accessible names of the UI container and control bar now also follow UI language changes. The active UI language is available through `i18n.getLanguage()`.
 
 ## [4.23.1] - 2026-11-05
 

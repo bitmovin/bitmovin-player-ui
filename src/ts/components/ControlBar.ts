@@ -39,6 +39,11 @@ export class ControlBar extends Container<ControlBarConfig> {
     );
   }
 
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+    this.refreshLocalizedAriaLabel();
+  }
+
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
 

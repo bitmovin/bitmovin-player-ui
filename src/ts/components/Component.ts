@@ -379,6 +379,16 @@ export class Component<Config extends ComponentConfig> {
     return Boolean(this.element);
   }
 
+  /**
+   * Re-applies a localized {@link ComponentConfig.ariaLabel} to the DOM element, e.g. after the UI language changed.
+   * Only call this from components that do not change their `aria-label` at runtime.
+   */
+  protected refreshLocalizedAriaLabel(): void {
+    if (this.hasDomElement() && typeof this.config.ariaLabel === 'function') {
+      this.setAriaLabel(this.config.ariaLabel);
+    }
+  }
+
   setAriaLabel(label: LocalizableText): void {
     this.setAriaAttr('label', i18n.performLocalization(label));
   }

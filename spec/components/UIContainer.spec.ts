@@ -105,6 +105,17 @@ describe('UIContainer', () => {
       expect(domMock.attr).toHaveBeenCalledWith('lang', expectedLanguage);
     });
 
+    it('should update the localized aria-label together with the lang attribute', () => {
+      const domMock = generateDOMMock();
+      jest.spyOn(uiContainer, 'hasDomElement').mockReturnValue(true);
+      jest.spyOn(uiContainer, 'getDomElement').mockReturnValue(domMock);
+
+      i18n.setLanguage('fr');
+
+      expect(domMock.attr).toHaveBeenCalledWith('lang', 'fr');
+      expect(domMock.attr).toHaveBeenCalledWith('aria-label', 'Lecteur vidéo');
+    });
+
     it('should not update the lang attribute after the UI has been released', () => {
       const domMock = generateDOMMock();
       jest.spyOn(uiContainer, 'hasDomElement').mockReturnValue(true);

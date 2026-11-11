@@ -547,6 +547,8 @@ export class UIContainer extends Container<UIContainerConfig> {
     if (this.hasDomElement()) {
       this.updateLanguageAttribute(this.getDomElement());
     }
+    // The accessible name has to be in the language that the `lang` attribute announces
+    this.refreshLocalizedAriaLabel();
   }
 
   /**

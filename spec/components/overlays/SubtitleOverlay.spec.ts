@@ -721,10 +721,10 @@ describe('SubtitleOverlay', () => {
     it.each([
       ['de', 'de'],
       [' pt-BR ', 'pt-BR'],
-      ['und', undefined],
-      ['UND', undefined],
-      ['', undefined],
-      [undefined, undefined],
+      ['und', ''],
+      ['UND', ''],
+      ['', ''],
+      [undefined, ''],
     ])('should set the label language for a cue of a track with language %p to %p', (trackLang, expectedLang) => {
       configureWithSubtitleTracks([
         { id: 'other', lang: 'fr' },
@@ -736,32 +736,35 @@ describe('SubtitleOverlay', () => {
       expect(label.lang).toBe(expectedLang);
     });
 
-    it('should not set a label language when the cue track is not in the subtitle list', () => {
-      configureWithSubtitleTracks([{ id: 'other', lang: 'fr' }]);
+    it('should mark the label language as unknown for a forced track, which the subtitle list does not contain', () => {
+      // The player lists only selectable tracks, so the language of a forced track cannot be resolved and must not
+      // fall back to the UI language.
+      configureWithSubtitleTracks([{ id: 'subtitle-de', lang: 'de' }]);
 
-      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent());
+      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent({ subtitleId: 'forced-es' }));
 
-      expect(label.lang).toBeUndefined();
+      expect(label.lang).toBe('');
+      expect(label.getDomElement().attr).toHaveBeenCalledWith('lang', '');
     });
 
-    it('should not set a label language when the subtitles API is not available', () => {
+    it('should mark the label language as unknown when the subtitles API is not available', () => {
       (playerMock as any).subtitles = undefined;
       subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
 
       const label = subtitleOverlay.generateLabel(createSubtitleCueEvent());
 
-      expect(label.lang).toBeUndefined();
+      expect(label.lang).toBe('');
     });
   });
 
   describe('SubtitleLabel language', () => {
-    it('should render the lang attribute when the label has a language', () => {
-      const label = new SubtitleLabel({ text: 'Test Subtitle', lang: 'de' });
+    it.each(['de', ''])('should render the lang attribute %p when the label has a language', lang => {
+      const label = new SubtitleLabel({ text: 'Test Subtitle', lang });
 
-      expect(label.getDomElement().attr).toHaveBeenCalledWith('lang', 'de');
+      expect(label.getDomElement().attr).toHaveBeenCalledWith('lang', lang);
     });
 
-    it('should not render a lang attribute when the label language is unknown', () => {
+    it('should not render a lang attribute when the label has no language, so that it inherits the UI language', () => {
       const label = new SubtitleLabel({ text: 'Test Subtitle' });
 
       expect(label.getDomElement().attr).not.toHaveBeenCalledWith('lang', expect.anything());

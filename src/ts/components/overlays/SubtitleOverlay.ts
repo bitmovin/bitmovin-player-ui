@@ -299,14 +299,18 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
   }
 
   /**
-   * Returns the language of the subtitle track a cue belongs to, or `undefined` if it is unknown.
+   * Returns the language of the subtitle track a cue belongs to, or an empty string if it is unknown.
+   *
+   * An unknown language must not fall back to the UI language inherited from the UI container, because the cue
+   * text can be in any language. This is the case, for example, for forced subtitle tracks, which the player does
+   * not list in `player.subtitles.list()`.
    */
-  private getSubtitleTrackLanguage(subtitleId: string): string | undefined {
+  private getSubtitleTrackLanguage(subtitleId: string): string {
     const track = this.player?.subtitles?.list().find(subtitle => subtitle.id === subtitleId);
     const lang = typeof track?.lang === 'string' ? track.lang.trim() : '';
 
     // `und` is the ISO 639 code for an undetermined language and must not be exposed as the language of the text
-    return lang && lang.toLowerCase() !== 'und' ? lang : undefined;
+    return lang.toLowerCase() === 'und' ? '' : lang;
   }
 
   filterFontSizeOptions: ListItemFilter = listItem => {
@@ -598,6 +602,7 @@ interface SubtitleLabelConfig extends LabelConfig {
   originalRowPosition?: number;
   /**
    * The language of the subtitle text, set as `lang` attribute so that assistive technologies pronounce it correctly.
+   * An empty string marks the language as unknown. When not set, the label inherits the language of the UI.
    */
   lang?: string;
 }
@@ -646,7 +651,7 @@ export class SubtitleLabel extends Label<SubtitleLabelConfig> {
   protected toDomElement(): DOM {
     const element = super.toDomElement();
 
-    if (this.config.lang) {
+    if (this.config.lang != null) {
       element.attr('lang', this.config.lang);
     }
 
