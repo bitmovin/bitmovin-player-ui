@@ -4,9 +4,18 @@ import { DOM } from '../DOM';
 /**
  * Animated analog TV static noise.
  *
+ * To avoid indefinitely moving content (WCAG 2.2.2 Pause, Stop, Hide), the animation stops after
+ * {@link TvNoiseCanvas.MAX_ANIMATION_DURATION_MS} and leaves the last frame visible. When the user prefers reduced motion,
+ * only a single static frame is rendered.
+ *
  * @category Components
  */
 export class TvNoiseCanvas extends Component<ComponentConfig> {
+  /**
+   * The maximum duration of the animation in milliseconds, after which the last rendered frame stays visible.
+   */
+  static readonly MAX_ANIMATION_DURATION_MS = 5000;
+
   private canvas: DOM;
 
   private canvasElement: HTMLCanvasElement;
@@ -19,6 +28,7 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
   private useAnimationFrame: boolean = !!window.requestAnimationFrame;
   private noiseAnimationWindowPos: number;
   private frameUpdateHandlerId: number;
+  private animationEndTime: number;
 
   constructor(config: ComponentConfig = {}) {
     super(config);
@@ -37,6 +47,9 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
   }
 
   start(): void {
+    // Make sure an animation from a previous start does not keep running in parallel
+    this.stop();
+
     this.canvasElement = <HTMLCanvasElement>this.canvas.get(0);
     this.canvasContext = this.canvasElement.getContext('2d');
     this.noiseAnimationWindowPos = -this.canvasHeight;
@@ -44,6 +57,10 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
 
     this.canvasElement.width = this.canvasWidth;
     this.canvasElement.height = this.canvasHeight;
+
+    // With reduced motion, the animation ends right after the first frame has been rendered
+    const animationDuration = this.prefersReducedMotion() ? 0 : TvNoiseCanvas.MAX_ANIMATION_DURATION_MS;
+    this.animationEndTime = new Date().getTime() + animationDuration;
 
     this.renderFrame();
   }
@@ -54,6 +71,17 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
     } else {
       clearTimeout(this.frameUpdateHandlerId);
     }
+    this.frameUpdateHandlerId = undefined;
+  }
+
+  release(): void {
+    super.release();
+    this.stop();
+  }
+
+  private prefersReducedMotion(): boolean {
+    // matchMedia is not available on some legacy platforms
+    return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
   private renderFrame(): void {
@@ -99,6 +127,12 @@ export class TvNoiseCanvas extends Component<ComponentConfig> {
   }
 
   private scheduleNextRender(): void {
+    if (new Date().getTime() >= this.animationEndTime) {
+      // Stop animating and leave the last rendered frame visible
+      this.frameUpdateHandlerId = undefined;
+      return;
+    }
+
     if (this.useAnimationFrame) {
       this.frameUpdateHandlerId = window.requestAnimationFrame(this.renderFrame.bind(this));
     } else {
