@@ -86,15 +86,21 @@ describe('Localization', () => {
       expect(i18n.performLocalization(i18n.getLocalizer('variableTest', { value: 1 }))).toEqual('1');
     });
 
-    Object.entries(defaultVocabularies).forEach(([language, vocabulary]) => {
-      it(`includes the visible live label in the ${language} live action label`, () => {
+    const liveActionLabelCases = Object.keys(defaultVocabularies)
+      .map(language => ['live.atLiveEdge', 'live.jumpToLiveEdge'].map(key => ({ language, key })))
+      .reduce<{ language: string; key: string }[]>((allCases, cases) => allCases.concat(cases), []);
+
+    it.each(liveActionLabelCases)(
+      'should include the visible live label in the $language $key label',
+      ({ language, key }) => {
         i18n.setConfig({ language, vocabularies: defaultVocabularies });
         const liveLabel = i18n.performLocalization(i18n.getLocalizer('live'));
-        const liveActionLabel = i18n.performLocalization(i18n.getLocalizer('live.jumpToLiveEdge', { liveLabel }));
+        const liveActionLabel = i18n.performLocalization(i18n.getLocalizer(key, { liveLabel }));
 
         expect(liveActionLabel).toContain(liveLabel);
-      });
-    });
+        expect(liveActionLabel).not.toEqual(key);
+      },
+    );
   });
 
   describe('setLanguage', () => {

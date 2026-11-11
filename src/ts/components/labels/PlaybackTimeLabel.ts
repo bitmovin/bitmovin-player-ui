@@ -49,6 +49,7 @@ export interface PlaybackTimeLabelConfig extends LabelConfig {
  */
 export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
   private timeFormat: string;
+  private refreshLiveText?: () => void;
 
   constructor(config: PlaybackTimeLabelConfig = {}) {
     super(config);
@@ -71,6 +72,8 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     let live = false;
     const liveCssClass = this.prefixCss('ui-playbacktimelabel-live');
     const liveEdgeCssClass = this.prefixCss('ui-playbacktimelabel-live-edge');
+    let isLiveInteractionEnabled = false;
+    let isAtLiveEdge = false;
     let minWidth = 0;
 
     const liveClickHandler = () => {
@@ -87,24 +90,44 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       }
     };
 
-    const enableLiveInteraction = () => {
-      const domElement = this.getDomElement();
-      domElement.attr('tabindex', '0');
-      domElement.attr('role', 'button');
+    const updateLiveAriaLabel = () => {
       // Keep the visible label in the accessible name so speech input can target the control.
       const liveLabel = i18n.performLocalization(i18n.getLocalizer('live'));
-      this.setAriaLabel(i18n.getLocalizer('live.jumpToLiveEdge', { liveLabel }));
+      // Whether playback is at the live edge is otherwise only conveyed visually by the indicator.
+      const liveEdgeStateKey = isAtLiveEdge ? 'live.atLiveEdge' : 'live.jumpToLiveEdge';
+      this.setAriaLabel(i18n.getLocalizer(liveEdgeStateKey, { liveLabel }));
+    };
+
+    const enableLiveInteraction = () => {
+      const domElement = this.getDomElement();
+      isLiveInteractionEnabled = true;
+      domElement.attr('tabindex', '0');
+      domElement.attr('role', 'button');
+      updateLiveAriaLabel();
       this.onClick.subscribe(liveClickHandler);
       domElement.on('keydown', liveKeyDownHandler);
     };
 
     const disableLiveInteraction = () => {
       const domElement = this.getDomElement();
+      isLiveInteractionEnabled = false;
       domElement.attr('tabindex', config.tabIndex.toString());
       domElement.removeAttr('role');
       domElement.removeAttr('aria-label');
       this.onClick.unsubscribe(liveClickHandler);
       domElement.off('keydown', liveKeyDownHandler);
+    };
+
+    // The accessible name must keep containing the visible label, so both are localized again together
+    this.refreshLiveText = () => {
+      if (!live) {
+        return;
+      }
+
+      this.setText(i18n.getLocalizer('live'));
+      if (isLiveInteractionEnabled) {
+        updateLiveAriaLabel();
+      }
     };
 
     const updateLiveState = () => {
@@ -124,6 +147,7 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       } else {
         this.getDomElement().removeClass(liveCssClass);
         this.getDomElement().removeClass(liveEdgeCssClass);
+        isAtLiveEdge = false;
         this.show();
         disableLiveInteraction();
       }
@@ -141,10 +165,16 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       // resume at the live edge.
       const isTimeshifted = player.getTimeShift() < 0;
       const isTimeshiftAvailable = player.getMaxTimeShift() < 0;
-      if (!isTimeshifted && (!player.isPaused() || !isTimeshiftAvailable)) {
+      const wasAtLiveEdge = isAtLiveEdge;
+      isAtLiveEdge = !isTimeshifted && (!player.isPaused() || !isTimeshiftAvailable);
+      if (isAtLiveEdge) {
         this.getDomElement().addClass(liveEdgeCssClass);
       } else {
         this.getDomElement().removeClass(liveEdgeCssClass);
+      }
+
+      if (isLiveInteractionEnabled && isAtLiveEdge !== wasAtLiveEdge) {
+        updateLiveAriaLabel();
       }
     };
 
@@ -212,6 +242,11 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     uimanager.getConfig().events.onUpdated.subscribe(init);
 
     init();
+  }
+
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+    this.refreshLiveText?.();
   }
 
   /**
