@@ -45,6 +45,7 @@ interface BrowserTestWindow extends Window {
         buildTvUI(player: object, config: object): UiHandle;
       };
       i18n: { setLanguage(language: string): void };
+      UIManager: { setLocalizationConfig(config: { language: string }): void };
     };
   };
   __fire(event: string, data?: object): void;
@@ -173,6 +174,12 @@ export interface BrowserPlayerController {
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
 
+  /**
+   * Emits an update of the most recently entered cue, e.g. a changed HTML rendering. The player identifies the cue by
+   * its start time and text, so keep `text` as entered.
+   */
+  updateCue(cue: SubtitleCue): Promise<void>;
+
   /** Emits the source-unloaded lifecycle event. */
   unloadSource(): Promise<void>;
 
@@ -203,6 +210,9 @@ export interface MountedUi {
 
   /** Switches the UI language at runtime, the way an integrator or the subtitle language adaptation does. */
   setLanguage(language: string): Promise<void>;
+
+  /** Applies a localization config at runtime through the public `UIManager.setLocalizationConfig`. */
+  setLocalizationConfig(config: { language: string }): Promise<void>;
 }
 
 /**
@@ -469,6 +479,20 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           { entered: cue, cueStartTime: start },
         );
       },
+      updateCue: async (cue: SubtitleCue) => {
+        await page.evaluate(
+          ({ updated, cueStartTime }) => {
+            const browserWindow = window as unknown as BrowserTestWindow;
+            browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.CueUpdate, {
+              start: cueStartTime,
+              end: cueStartTime + 1,
+              text: '',
+              ...updated,
+            });
+          },
+          { updated: cue, cueStartTime: cueStart - 1 },
+        );
+      },
       unloadSource: async () => {
         await page.evaluate(() => {
           const browserWindow = window as unknown as BrowserTestWindow;
@@ -526,6 +550,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       await page.evaluate(newLanguage => {
         (window as unknown as BrowserTestWindow).bitmovin.playerui.i18n.setLanguage(newLanguage);
       }, language);
+    },
+    setLocalizationConfig: async config => {
+      await page.evaluate(localizationConfig => {
+        (window as unknown as BrowserTestWindow).bitmovin.playerui.UIManager.setLocalizationConfig(localizationConfig);
+      }, config);
     },
   };
 }

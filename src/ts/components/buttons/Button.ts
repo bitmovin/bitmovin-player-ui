@@ -69,6 +69,13 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     onClick: new EventDispatcher<Button<Config>, NoArgs>(),
   };
 
+  /**
+   * The accessible name that is currently applied, and the text it was localized to. For a toggle button, this is the
+   * name of its current state. It is localized again when the UI language changes.
+   */
+  private appliedAriaLabel?: LocalizableText;
+  private appliedAriaLabelText?: string;
+
   constructor(config: Config) {
     super(config);
 
@@ -89,12 +96,40 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     if (typeof this.config.text === 'function') {
       this.setText(this.config.text);
     }
+
+    this.localizeAppliedAriaLabel();
+  }
+
+  setAriaLabel(label: LocalizableText): void {
+    // Applied first, because it creates the DOM element on first use, which records the configured name
+    super.setAriaLabel(label);
+    this.appliedAriaLabel = label;
+    this.appliedAriaLabelText = i18n.performLocalization(label);
+  }
+
+  /**
+   * Localizes the applied accessible name again, so that it matches the UI language. Plain strings are not localized,
+   * and a name that was changed directly on the DOM element is kept.
+   */
+  private localizeAppliedAriaLabel(): void {
+    if (!this.hasDomElement() || typeof this.appliedAriaLabel !== 'function') {
+      return;
+    }
+
+    if (this.getDomElement().attr('aria-label') !== this.appliedAriaLabelText) {
+      return;
+    }
+
+    this.setAriaLabel(this.appliedAriaLabel);
   }
 
   protected toDomElement(): DOM {
+    this.appliedAriaLabel = this.config.ariaLabel || this.config.text;
+    this.appliedAriaLabelText = i18n.performLocalization(this.appliedAriaLabel);
+
     const buttonElementAttributes: { [name: string]: string } = {
       id: this.config.id,
-      'aria-label': i18n.performLocalization(this.config.ariaLabel || this.config.text),
+      'aria-label': this.appliedAriaLabelText,
       class: this.getCssClasses(),
       type: 'button',
       tabindex: this.config.tabIndex.toString(),

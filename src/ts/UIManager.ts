@@ -248,6 +248,12 @@ export interface ActiveUiChangedArgs extends NoArgs {
 }
 
 export class UIManager {
+  /**
+   * UI managers that have not been released. Their components listen for language changes, so a runtime localization
+   * change has to notify them.
+   */
+  private static activeInstances: UIManager[] = [];
+
   private player: PlayerAPI;
   private uiContainerElement: DOM;
   private uiVariants: Array<UIVariant | UIVariantFactory>;
@@ -426,6 +432,7 @@ export class UIManager {
     if (this.config.localization) {
       i18n.setConfig(this.config.localization);
     }
+    UIManager.activeInstances.push(this);
     this.subtitleSettingsManager.initialize();
 
     if (uiconfig.disableStorageApi !== true) {
@@ -694,9 +701,31 @@ export class UIManager {
   /**
    * Provide configuration to support Custom UI languages
    * default language: 'en'
+   *
+   * When this changes the UI language while a UI exists, the UI is updated to the new language and
+   * the `events.onLanguageChanged` event of the localization config fires. Components keep listening on the `onLanguageChanged`
+   * dispatcher that was configured when they were created, so if the new configuration brings a different dispatcher,
+   * both the previous and the new one are notified.
    */
   static setLocalizationConfig(localizationConfig: LocalizationConfig) {
+    const oldLanguage = i18n.getLanguage();
+    const previousLanguageChangedDispatcher = i18n.getConfig().events?.onLanguageChanged;
+
     i18n.setConfig(localizationConfig);
+
+    const newLanguage = i18n.getLanguage();
+    // Before a UI exists, there is nothing to update. The UIManager constructor applies its own localization
+    // config silently through `i18n.setConfig`, before its components are added to the page.
+    if (UIManager.activeInstances.length === 0 || newLanguage === oldLanguage) {
+      return;
+    }
+
+    const languageChangedArgs = { newLanguage, oldLanguage };
+    const languageChangedDispatcher = i18n.getConfig().events?.onLanguageChanged;
+    previousLanguageChangedDispatcher?.dispatch(i18n, languageChangedArgs);
+    if (languageChangedDispatcher !== previousLanguageChangedDispatcher) {
+      languageChangedDispatcher?.dispatch(i18n, languageChangedArgs);
+    }
   }
 
   getSubtitleSettingsManager() {
@@ -892,6 +921,11 @@ export class UIManager {
   }
 
   release(): void {
+    const activeInstanceIndex = UIManager.activeInstances.indexOf(this);
+    if (activeInstanceIndex >= 0) {
+      UIManager.activeInstances.splice(activeInstanceIndex, 1);
+    }
+
     this.resumePositionTracker?.release();
     this.config.adBreakTracker.release();
 
