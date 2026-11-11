@@ -2,6 +2,7 @@ import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { PlaybackTimeLabel, PlaybackTimeLabelMode } from '../../../src/ts/components/labels/PlaybackTimeLabel';
 import { PlayerEvent, PlayerEventBase } from 'bitmovin-player';
+import { i18n } from '../../../src/ts/localization/i18n';
 
 const liveEdgeActiveCssClassName = 'ui-playbacktimelabel-live-edge';
 
@@ -221,6 +222,44 @@ describe('PlaybackTimeLabel', () => {
         playerMock.eventEmitter.fireTimeShiftedEvent();
 
         expect(getAriaLabel()).toBeUndefined();
+      });
+
+      describe('after a language change', () => {
+        afterEach(() => {
+          i18n.setLanguage('en');
+        });
+
+        it.each([
+          {
+            language: 'es',
+            atLiveEdgeName: 'Directo, sin retraso',
+            behindLiveName: 'Directo, con retraso, saltar al punto en directo',
+          },
+          {
+            language: 'fr',
+            atLiveEdgeName: 'En direct, sans décalage',
+            behindLiveName: 'En direct, en différé, aller au direct',
+          },
+        ])(
+          'should keep the visible live label in the accessible name in $language',
+          ({ language, atLiveEdgeName, behindLiveName }) => {
+            const getTimeShiftSpy = jest.spyOn(playerMock, 'getTimeShift').mockReturnValue(0);
+            const visibleTexts: string[] = [];
+            playbackTimeLabel.onTextChanged.subscribe((_, text) => visibleTexts.push(text));
+            playbackTimeLabel.configure(playerMock, uiInstanceManagerMock);
+
+            i18n.setLanguage(language);
+
+            expect(getAriaLabel()).toBe(atLiveEdgeName);
+
+            getTimeShiftSpy.mockReturnValue(-10);
+            playerMock.eventEmitter.fireTimeShiftedEvent();
+
+            const visibleText = visibleTexts[visibleTexts.length - 1];
+            expect(getAriaLabel()).toBe(behindLiveName);
+            expect(getAriaLabel().startsWith(visibleText)).toBe(true);
+          },
+        );
       });
 
       it('should remove the accessible name when switching to VOD', () => {

@@ -49,6 +49,7 @@ export interface PlaybackTimeLabelConfig extends LabelConfig {
  */
 export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
   private timeFormat: string;
+  private refreshLiveText?: () => void;
 
   constructor(config: PlaybackTimeLabelConfig = {}) {
     super(config);
@@ -115,6 +116,18 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       domElement.removeAttr('aria-label');
       this.onClick.unsubscribe(liveClickHandler);
       domElement.off('keydown', liveKeyDownHandler);
+    };
+
+    // The accessible name must keep containing the visible label, so both are localized again together
+    this.refreshLiveText = () => {
+      if (!live) {
+        return;
+      }
+
+      this.setText(i18n.getLocalizer('live'));
+      if (isLiveInteractionEnabled) {
+        updateLiveAriaLabel();
+      }
     };
 
     const updateLiveState = () => {
@@ -229,6 +242,11 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
     uimanager.getConfig().events.onUpdated.subscribe(init);
 
     init();
+  }
+
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+    this.refreshLiveText?.();
   }
 
   /**
