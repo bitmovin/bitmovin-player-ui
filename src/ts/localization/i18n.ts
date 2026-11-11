@@ -6,7 +6,7 @@ import * as vocabularyNl from './languages/nl.json';
 import * as vocabularyPt from './languages/pt.json';
 
 import { LocalizationConfig } from '../UIManager';
-import { EventDispatcher } from '../EventDispatcher';
+import { Event, EventDispatcher } from '../EventDispatcher';
 
 export const defaultVocabularies: Vocabularies = {
   de: vocabularyDe,
@@ -158,6 +158,11 @@ export class I18n {
   private vocabulary: CustomVocabulary<Record<string, string>>;
   private vocabularies: Vocabularies;
   private config: LocalizationConfig;
+  /**
+   * Notifies UI components about language changes. Unlike the configurable `events.onLanguageChanged`, it is never
+   * replaced, so components always unsubscribe from the dispatcher they subscribed to.
+   */
+  private readonly uiLanguageChanged = new EventDispatcher<I18n, LanguageChangedArgument>();
 
   constructor(config: LocalizationConfig) {
     this.setConfig(config);
@@ -186,6 +191,28 @@ export class I18n {
     return this.language;
   }
 
+  /**
+   * Fires when the UI language changes, independent of the configured `events.onLanguageChanged` dispatcher. UI
+   * components subscribe to this event.
+   */
+  public get onUiLanguageChanged(): Event<I18n, LanguageChangedArgument> {
+    return this.uiLanguageChanged.getEvent();
+  }
+
+  /**
+   * Notifies UI components and the configured `events.onLanguageChanged` dispatcher if the active language differs
+   * from `oldLanguage`.
+   */
+  public notifyLanguageChanged(oldLanguage: string): void {
+    if (this.language === oldLanguage) {
+      return;
+    }
+
+    const args = { newLanguage: this.language, oldLanguage };
+    this.uiLanguageChanged.dispatch(this, args);
+    this.config.events?.onLanguageChanged?.dispatch(this, args);
+  }
+
   public setLanguage(language: string): void {
     const oldLanguage = this.language;
 
@@ -198,10 +225,7 @@ export class I18n {
     }
 
     this.initializeVocabulary(this.vocabularies);
-
-    if (this.language !== oldLanguage) {
-      this.config.events.onLanguageChanged.dispatch(this, { newLanguage: this.language, oldLanguage: oldLanguage });
-    }
+    this.notifyLanguageChanged(oldLanguage);
   }
 
   private static containsLanguage(vocabularies: Vocabularies, language: string) {

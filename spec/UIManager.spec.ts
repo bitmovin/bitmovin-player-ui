@@ -744,7 +744,7 @@ describe('UIManager', () => {
       expect(languageChangedListener).not.toHaveBeenCalled();
     });
 
-    it('should notify both the previous and a replacing language-changed dispatcher', () => {
+    it('should notify a replacing language-changed dispatcher', () => {
       createUiManager();
       const replacingDispatcher = new EventDispatcher<I18n, LanguageChangedArgument>();
       const replacingListener = jest.fn();
@@ -752,8 +752,29 @@ describe('UIManager', () => {
 
       UIManager.setLocalizationConfig({ language: 'fr', events: { onLanguageChanged: replacingDispatcher } });
 
-      expect(languageChangedListener).toHaveBeenCalledTimes(1);
       expect(replacingListener).toHaveBeenCalledWith(i18n, { newLanguage: 'fr', oldLanguage: 'en' });
+    });
+
+    it('should keep updating mounted components after the dispatcher was replaced, and stop on release', () => {
+      const uiListenerCount = i18n['uiLanguageChanged']['listeners'].length;
+      const uiContainer = new UIContainer({ components: [] });
+      const onLanguageChangedSpy = jest.spyOn(uiContainer as any, 'onLanguageChanged');
+      const uiManager = new UIManager(MockHelper.getPlayerMock(), [{ ui: uiContainer }]);
+
+      UIManager.setLocalizationConfig({
+        language: 'fr',
+        events: { onLanguageChanged: new EventDispatcher<I18n, LanguageChangedArgument>() },
+      });
+      i18n.setLanguage('nl');
+      UIManager.setLocalizationConfig({ language: 'de' });
+
+      expect(onLanguageChangedSpy).toHaveBeenCalledTimes(3);
+
+      uiManager.release();
+      i18n.setLanguage('es');
+
+      expect(onLanguageChangedSpy).toHaveBeenCalledTimes(3);
+      expect(i18n['uiLanguageChanged']['listeners']).toHaveLength(uiListenerCount);
     });
   });
 });

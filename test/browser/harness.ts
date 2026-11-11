@@ -45,7 +45,7 @@ interface BrowserTestWindow extends Window {
         buildTvUI(player: object, config: object): UiHandle;
       };
       i18n: { setLanguage(language: string): void };
-      UIManager: { setLocalizationConfig(config: { language: string }): void };
+      UIManager: { setLocalizationConfig(config: { language: string; events?: object }): void };
     };
   };
   __fire(event: string, data?: object): void;
@@ -211,8 +211,15 @@ export interface MountedUi {
   /** Switches the UI language at runtime, the way an integrator or the subtitle language adaptation does. */
   setLanguage(language: string): Promise<void>;
 
-  /** Applies a localization config at runtime through the public `UIManager.setLocalizationConfig`. */
-  setLocalizationConfig(config: { language: string }): Promise<void>;
+  /**
+   * Applies a localization config at runtime through the public `UIManager.setLocalizationConfig`. With
+   * `withOwnLanguageChangedDispatcher`, the config brings an integrator dispatcher that records the language
+   * changes it receives, see {@link MountedUi.languageChangesSeenByOwnDispatcher}.
+   */
+  setLocalizationConfig(config: { language: string }, withOwnLanguageChangedDispatcher?: boolean): Promise<void>;
+
+  /** New languages that integrator dispatchers passed to `setLocalizationConfig` have received. */
+  languageChangesSeenByOwnDispatcher(): Promise<string[]>;
 }
 
 /**
@@ -551,10 +558,30 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         (window as unknown as BrowserTestWindow).bitmovin.playerui.i18n.setLanguage(newLanguage);
       }, language);
     },
-    setLocalizationConfig: async config => {
-      await page.evaluate(localizationConfig => {
-        (window as unknown as BrowserTestWindow).bitmovin.playerui.UIManager.setLocalizationConfig(localizationConfig);
-      }, config);
+    setLocalizationConfig: async (config, withOwnLanguageChangedDispatcher = false) => {
+      await page.evaluate(
+        ({ localizationConfig, withOwnDispatcher }) => {
+          const browserWindow = window as unknown as BrowserTestWindow & { __ownDispatcherLanguages?: string[] };
+          browserWindow.__ownDispatcherLanguages = browserWindow.__ownDispatcherLanguages || [];
+          const ownDispatcher = {
+            dispatch: (_: unknown, args: { newLanguage: string }) => {
+              browserWindow.__ownDispatcherLanguages!.push(args.newLanguage);
+            },
+            subscribe: (): void => undefined,
+            unsubscribe: (): boolean => true,
+          };
+          browserWindow.bitmovin.playerui.UIManager.setLocalizationConfig({
+            ...localizationConfig,
+            ...(withOwnDispatcher ? { events: { onLanguageChanged: ownDispatcher } } : {}),
+          });
+        },
+        { localizationConfig: config, withOwnDispatcher: withOwnLanguageChangedDispatcher },
+      );
+    },
+    languageChangesSeenByOwnDispatcher: async () => {
+      return page.evaluate(
+        () => (window as unknown as { __ownDispatcherLanguages?: string[] }).__ownDispatcherLanguages || [],
+      );
     },
   };
 }

@@ -260,7 +260,7 @@ export class Component<Config extends ComponentConfig> {
     );
     this.viewMode = ViewMode.Temporary;
 
-    i18n.getConfig().events.onLanguageChanged.subscribe(this.languageChangedHandler);
+    i18n.onUiLanguageChanged.subscribe(this.languageChangedHandler);
   }
 
   /**
@@ -321,7 +321,7 @@ export class Component<Config extends ComponentConfig> {
    * Subclasses that need to release resources should override this method and call super.release().
    */
   release(): void {
-    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.languageChangedHandler);
+    i18n.onUiLanguageChanged.unsubscribe(this.languageChangedHandler);
   }
 
   /**

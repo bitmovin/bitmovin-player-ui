@@ -702,29 +702,18 @@ export class UIManager {
    * Provide configuration to support Custom UI languages
    * default language: 'en'
    *
-   * When this changes the UI language while a UI exists, the UI is updated to the new language and
-   * the `events.onLanguageChanged` event of the localization config fires. Components keep listening on the `onLanguageChanged`
-   * dispatcher that was configured when they were created, so if the new configuration brings a different dispatcher,
-   * both the previous and the new one are notified.
+   * When this changes the UI language while a UI exists, the UI is updated to the new language and the
+   * `events.onLanguageChanged` dispatcher of the new localization config fires.
    */
   static setLocalizationConfig(localizationConfig: LocalizationConfig) {
     const oldLanguage = i18n.getLanguage();
-    const previousLanguageChangedDispatcher = i18n.getConfig().events?.onLanguageChanged;
 
     i18n.setConfig(localizationConfig);
 
-    const newLanguage = i18n.getLanguage();
     // Before a UI exists, there is nothing to update. The UIManager constructor applies its own localization
     // config silently through `i18n.setConfig`, before its components are added to the page.
-    if (UIManager.activeInstances.length === 0 || newLanguage === oldLanguage) {
-      return;
-    }
-
-    const languageChangedArgs = { newLanguage, oldLanguage };
-    const languageChangedDispatcher = i18n.getConfig().events?.onLanguageChanged;
-    previousLanguageChangedDispatcher?.dispatch(i18n, languageChangedArgs);
-    if (languageChangedDispatcher !== previousLanguageChangedDispatcher) {
-      languageChangedDispatcher?.dispatch(i18n, languageChangedArgs);
+    if (UIManager.activeInstances.length > 0) {
+      i18n.notifyLanguageChanged(oldLanguage);
     }
   }
 

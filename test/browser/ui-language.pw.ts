@@ -66,6 +66,30 @@ test('a localization config applied at runtime updates the mounted UI', async ({
   ).toBeVisible();
 });
 
+test('the mounted UI keeps following language changes after the language-changed dispatcher was replaced', async ({
+  page,
+}) => {
+  const ui = await mountUi(page, { live: false });
+  const root = page.locator('.bmpui-ui-uicontainer');
+  const controlBar = page.locator('.bmpui-ui-controlbar');
+
+  await ui.setLocalizationConfig({ language: 'fr' }, true);
+  await expect(root).toHaveAttribute('lang', 'fr');
+  await expect(controlBar.getByRole('button', { name: 'Réglages', exact: true })).toBeVisible();
+
+  await ui.setLanguage('nl');
+
+  await expect(root, 'the root must follow a later language change').toHaveAttribute('lang', 'nl');
+  await expect(
+    controlBar.getByRole('button', { name: 'Instellingen', exact: true }),
+    'mounted buttons must follow a later language change',
+  ).toBeVisible();
+  expect(await ui.languageChangesSeenByOwnDispatcher(), 'the integrator dispatcher must be notified').toEqual([
+    'fr',
+    'nl',
+  ]);
+});
+
 for (const initialState of ['on', 'off'] as const) {
   test(`buttons and a toggle in its ${initialState} state get accessible names in the new UI language`, async ({
     page,
