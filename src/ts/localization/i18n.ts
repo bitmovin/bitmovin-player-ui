@@ -118,6 +118,7 @@ export interface Vocabulary {
   'live.jumpToLiveEdge': string;
   'subtitle.example': string;
   'subtitle.select': string;
+  'subtitle.image': string;
   playingOn: string;
   connectingTo: string;
   watermarkLink: string;

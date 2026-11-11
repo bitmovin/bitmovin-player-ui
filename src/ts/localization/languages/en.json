@@ -77,6 +77,7 @@
   "live.jumpToLiveEdge": "{liveLabel}, jump to live edge",
   "subtitle.example": "example subtitle",
   "subtitle.select": "Select subtitle",
+  "subtitle.image": "Subtitle image",
   "playingOn": "Playing on <strong>{castDeviceName}</strong>",
   "connectingTo": "Connecting to <strong>{castDeviceName}</strong>...",
   "watermarkLink": "Link to Homepage",

@@ -77,6 +77,7 @@
   "live.jumpToLiveEdge": "{liveLabel}, naar live springen",
   "subtitle.example": "voorbeeld ondertiteling",
   "subtitle.select": "Selecteer ondertiteling",
+  "subtitle.image": "Ondertitelingsafbeelding",
   "playingOn": "Speelt af op <strong>{castDeviceName}</strong>",
   "connectingTo": "Verbinden met <strong>{castDeviceName}</strong>...",
   "watermarkLink": "Link naar homepage",

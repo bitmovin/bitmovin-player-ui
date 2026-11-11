@@ -77,6 +77,7 @@
   "live.jumpToLiveEdge": "{liveLabel}, zum Live-Punkt springen",
   "subtitle.example": "Beispiel Untertitel",
   "subtitle.select": "Untertitel auswählen",
+  "subtitle.image": "Untertitelbild",
   "playingOn": "Spielt auf <strong>{castDeviceName}</strong>",
   "connectingTo": "Verbindung mit <strong>{castDeviceName}</strong> wird hergestellt...",
   "watermarkLink": "Link zum Homepage",

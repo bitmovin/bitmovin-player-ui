@@ -721,8 +721,8 @@ class ActiveSubtitleManager {
 
     const imgTag = new DOM('img', {
       src: imageData,
-      // Use the cue text as text alternative if available, else mark the image as having none
-      alt: altText || '',
+      // Image cues carry subtitle content, so they always need a text alternative
+      alt: altText || i18n.performLocalization(i18n.getLocalizer('subtitle.image')),
     });
     imgTag.css('width', '100%');
     return imgTag.get(0).outerHTML; // return the html as string

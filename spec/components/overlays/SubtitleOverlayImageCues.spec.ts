@@ -8,8 +8,8 @@ describe('SubtitleOverlay image cues', () => {
   it.each`
     text               | expectedAlt
     ${'Hello world'}   | ${'Hello world'}
-    ${undefined}       | ${''}
-    ${''}              | ${''}
+    ${undefined}       | ${'Subtitle image'}
+    ${''}              | ${'Subtitle image'}
     ${'"quoted" <b>&'} | ${'"quoted" <b>&'}
   `('should render the image with alt "$expectedAlt" when the cue text is "$text"', ({ text, expectedAlt }) => {
     const label = new SubtitleOverlay().generateLabel({

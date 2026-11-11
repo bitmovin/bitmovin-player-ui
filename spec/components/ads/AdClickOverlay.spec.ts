@@ -1,4 +1,6 @@
 import { AdClickOverlay } from '../../../src/ts/components/ads/AdClickOverlay';
+import { UIContainer } from '../../../src/ts/components/UIContainer';
+import { isFocusable } from '../../../src/ts/spatialnavigation/TypeGuards';
 import type { UIInstanceManager } from '../../../src/ts/UIManager';
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 
@@ -52,6 +54,74 @@ describe('AdClickOverlay', () => {
       expectHiddenFromKeyboardAndAssistiveTechnology();
     },
   );
+
+  it.each`
+    adStartedWith                                 | expectedFocusable
+    ${undefined}                                  | ${false}
+    ${{ clickThroughUrl: 'https://example.com' }} | ${true}
+    ${{ clickThroughUrl: undefined }}             | ${false}
+  `(
+    'should report focusable as $expectedFocusable to spatial navigation for ad $adStartedWith',
+    ({ adStartedWith, expectedFocusable }) => {
+      if (adStartedWith) {
+        playerMock.eventEmitter.fireAdStartedEvent(adStartedWith);
+      }
+
+      expect(isFocusable(adClickOverlay)).toBe(expectedFocusable);
+    },
+  );
+
+  it('should become focusable for spatial navigation again when a later ad has a click-through URL', () => {
+    playerMock.eventEmitter.fireAdStartedEvent({ clickThroughUrl: undefined });
+    playerMock.eventEmitter.fireAdStartedEvent({ clickThroughUrl: 'https://example.com' });
+
+    expect(isFocusable(adClickOverlay)).toBe(true);
+    expect(getElement().getAttribute('tabindex')).toBe('0');
+  });
+
+  it('should still pause the ad on pointer click when there is no click-through URL', () => {
+    const pauseSpy = jest.spyOn(playerMock, 'pause');
+    playerMock.eventEmitter.fireAdStartedEvent({ clickThroughUrl: undefined });
+
+    getElement().click();
+
+    expect(pauseSpy).toHaveBeenCalledWith('ui-ad-click-overlay');
+  });
+
+  describe('when focused and the next ad has no click-through URL', () => {
+    let uiContainer: UIContainer;
+
+    beforeEach(() => {
+      uiContainer = new UIContainer({ components: [] });
+      jest.spyOn(uiInstanceManagerMock, 'getUI').mockReturnValue(uiContainer);
+      document.body.appendChild(getElement());
+
+      playerMock.eventEmitter.fireAdStartedEvent({ clickThroughUrl: 'https://example.com' });
+      getElement().focus();
+      expect(document.activeElement).toBe(getElement());
+    });
+
+    afterEach(() => {
+      document.body.innerHTML = '';
+    });
+
+    it('should move the focus to the UI container', () => {
+      document.body.appendChild(uiContainer.getDomElement().get(0));
+
+      playerMock.eventEmitter.fireAdStartedEvent({ clickThroughUrl: undefined });
+
+      expect(document.activeElement).toBe(uiContainer.getDomElement().get(0));
+      expectHiddenFromKeyboardAndAssistiveTechnology();
+    });
+
+    it('should blur the overlay if the UI container cannot take the focus', () => {
+      // The UI container is not attached to the document, so it cannot be focused
+      playerMock.eventEmitter.fireAdStartedEvent({ clickThroughUrl: undefined });
+
+      expect(document.activeElement).not.toBe(getElement());
+      expectHiddenFromKeyboardAndAssistiveTechnology();
+    });
+  });
 
   function getElement(): HTMLElement {
     return adClickOverlay.getDomElement().get(0);
