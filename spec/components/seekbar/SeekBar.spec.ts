@@ -3,6 +3,7 @@ import { SeekBar } from '../../../src/ts/components/seekbar/SeekBar';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { Timeout } from '../../../src/ts/utils/Timeout';
 import { DOM } from '../../../src/ts/DOM';
+import type { SeekBarLabel } from '../../../src/ts/components/seekbar/SeekBarLabel';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -215,6 +216,175 @@ describe('SeekBar', () => {
 
       expect(setBufferPositionSpy).toHaveBeenCalledTimes(1);
       expect(setBufferPositionSpy).toHaveBeenCalledWith(isLive ? 100 : 25);
+    });
+  });
+
+  describe('seek preview label', () => {
+    // This block uses the real DOM implementation (via jest.isolateModules + jest.unmock), so that mouse and keyboard
+    // events dispatched on the elements reach the handlers of the seek bar and its label.
+    const hideDelayMs = 300;
+    let RealSeekBar: typeof SeekBar;
+    let RealSeekBarLabel: typeof SeekBarLabel;
+    let label: SeekBarLabel;
+    let seekBarElement: HTMLElement;
+    let labelElement: HTMLElement;
+
+    const dispatchMouseEvent = (element: HTMLElement, type: string) => {
+      element.dispatchEvent(new MouseEvent(type, { cancelable: true }));
+    };
+
+    const pressKey = (key: string): KeyboardEvent => {
+      const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+      document.dispatchEvent(event);
+      return event;
+    };
+
+    const hoverSeekBar = () => {
+      dispatchMouseEvent(seekBarElement, 'mouseenter');
+      dispatchMouseEvent(seekBarElement, 'mousemove');
+    };
+
+    beforeAll(() => {
+      jest.isolateModules(() => {
+        jest.unmock('../../../src/ts/DOM');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        RealSeekBar = require('../../../src/ts/components/seekbar/SeekBar').SeekBar;
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        RealSeekBarLabel = require('../../../src/ts/components/seekbar/SeekBarLabel').SeekBarLabel;
+      });
+    });
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(20);
+
+      label = new RealSeekBarLabel();
+      seekbar = new RealSeekBar({ label });
+      // Label positioning requires a rendered UI, which is not relevant for showing and hiding the label
+      jest.spyOn(seekbar as any, 'onSeekPreviewEvent').mockImplementation(() => {});
+      seekbar.getDomElement();
+      seekbar.initialize();
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+
+      seekBarElement = seekbar['seekBar'].get(0);
+      labelElement = label.getDomElement().get(0);
+    });
+
+    afterEach(() => {
+      seekbar.release();
+      jest.useRealTimers();
+    });
+
+    it('should show the label when the pointer hovers the seek bar', () => {
+      expect(label.isHidden()).toBe(true);
+
+      hoverSeekBar();
+
+      expect(label.isShown()).toBe(true);
+    });
+
+    it('should hide the label after a delay when the pointer leaves the seek bar', () => {
+      hoverSeekBar();
+      dispatchMouseEvent(seekBarElement, 'mouseleave');
+
+      jest.advanceTimersByTime(hideDelayMs - 1);
+      expect(label.isShown()).toBe(true);
+
+      jest.advanceTimersByTime(1);
+      expect(label.isHidden()).toBe(true);
+    });
+
+    it('should keep the label visible while the pointer is on the label', () => {
+      hoverSeekBar();
+      dispatchMouseEvent(seekBarElement, 'mouseleave');
+      dispatchMouseEvent(labelElement, 'mouseenter');
+      jest.advanceTimersByTime(hideDelayMs * 10);
+
+      expect(label.isShown()).toBe(true);
+    });
+
+    it('should hide the label after a delay when the pointer leaves the label', () => {
+      hoverSeekBar();
+      dispatchMouseEvent(seekBarElement, 'mouseleave');
+      dispatchMouseEvent(labelElement, 'mouseenter');
+      dispatchMouseEvent(labelElement, 'mouseleave');
+
+      jest.advanceTimersByTime(hideDelayMs - 1);
+      expect(label.isShown()).toBe(true);
+
+      jest.advanceTimersByTime(1);
+      expect(label.isHidden()).toBe(true);
+    });
+
+    it('should keep the label visible when the pointer returns to the seek bar within the delay', () => {
+      hoverSeekBar();
+      dispatchMouseEvent(seekBarElement, 'mouseleave');
+      jest.advanceTimersByTime(hideDelayMs / 2);
+      hoverSeekBar();
+      jest.advanceTimersByTime(hideDelayMs * 10);
+
+      expect(label.isShown()).toBe(true);
+    });
+
+    it('should hide the label immediately when a touch ends', () => {
+      hoverSeekBar();
+      seekBarElement.dispatchEvent(new Event('touchend', { cancelable: true }));
+
+      expect(label.isHidden()).toBe(true);
+    });
+
+    it('should hide the label when Escape is pressed without consuming the key event', () => {
+      const otherEscapeHandler = jest.fn();
+      document.addEventListener('keydown', otherEscapeHandler);
+      hoverSeekBar();
+
+      const event = pressKey('Escape');
+      document.removeEventListener('keydown', otherEscapeHandler);
+
+      expect(label.isHidden()).toBe(true);
+      expect(event.defaultPrevented).toBe(false);
+      expect(otherEscapeHandler).toHaveBeenCalledWith(event);
+    });
+
+    it.each(['Enter', 'ArrowLeft', ' '])('should keep the label visible when %p is pressed', key => {
+      hoverSeekBar();
+
+      pressKey(key);
+
+      expect(label.isShown()).toBe(true);
+    });
+
+    it('should not show the label again after Escape until the pointer re-enters the seek bar', () => {
+      hoverSeekBar();
+      pressKey('Escape');
+
+      dispatchMouseEvent(seekBarElement, 'mousemove');
+      expect(label.isHidden()).toBe(true);
+
+      dispatchMouseEvent(seekBarElement, 'mouseleave');
+      hoverSeekBar();
+      expect(label.isShown()).toBe(true);
+    });
+
+    it('should hide the label when Escape is pressed while the pointer is on the label', () => {
+      hoverSeekBar();
+      dispatchMouseEvent(seekBarElement, 'mouseleave');
+      dispatchMouseEvent(labelElement, 'mouseenter');
+      jest.advanceTimersByTime(hideDelayMs);
+      expect(label.isShown()).toBe(true);
+
+      pressKey('Escape');
+
+      expect(label.isHidden()).toBe(true);
+    });
+
+    it('should not react to Escape after being released', () => {
+      hoverSeekBar();
+      seekbar.release();
+
+      pressKey('Escape');
+
+      expect(label.isShown()).toBe(true);
     });
   });
 });
