@@ -150,6 +150,10 @@ export class SeekBar extends Component<SeekBarConfig> {
   // separately so that the end of an ad break does not override the integrator's choice and vice versa.
   private isDisabledByCaller: boolean = false;
   private isDisabledForLinearAd: boolean = false;
+  // Cancels a pointer seek in progress without seeking, e.g. when the seek bar is disabled during a drag
+  private cancelPointerSeek?: () => void;
+  // Ends the seek state started by a pointer seek without seeking
+  private endCanceledSeek?: () => void;
 
   private seekBarEvents = {
     /**
@@ -457,6 +461,19 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     });
 
+    this.endCanceledSeek = () => {
+      this.isUserSeeking = false;
+      scrubbing = false;
+      uimanager.onSeeked.dispatch(this);
+      restorePlayingState();
+      playbackPositionHandler(null, true);
+
+      if (isGroupPlaybackAPIAvailable(player) && player.groupPlayback.hasJoined() && suspension) {
+        player.groupPlayback.endSuspension(suspension);
+        suspension = undefined;
+      }
+    };
+
     this.onSeekPreview.subscribe((sender: SeekBar, args: SeekPreviewEventArgs) => {
       // Notify UI manager of seek preview
       uimanager.onSeekPreview.dispatch(sender, args);
@@ -584,7 +601,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   private seekWhileScrubbing = (sender: SeekBar, args: SeekPreviewEventArgs) => {
-    if (args.scrubbing) {
+    // A rate-limited preview can still arrive after the seek bar was disabled during scrubbing
+    if (args.scrubbing && this.isEnabled()) {
       this.seek(args.position);
     }
   };
@@ -753,6 +771,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   disable(): void {
     this.isDisabledByCaller = true;
     super.disable();
+    this.cancelPointerSeek?.();
   }
 
   /**
@@ -774,6 +793,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.isDisabledForLinearAd = disabledForLinearAd;
     if (disabledForLinearAd) {
       super.disable();
+      this.cancelPointerSeek?.();
     } else if (!this.isDisabledByCaller) {
       super.enable();
     }
@@ -891,6 +911,20 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Fire seeked event
       this.onSeekedEvent(targetPercentage);
+    };
+
+    this.cancelPointerSeek = () => {
+      if (!seeking) {
+        return;
+      }
+
+      new DOM(document).off('touchmove mousemove', mouseTouchMoveHandler);
+      new DOM(document).off('touchend mouseup', mouseTouchUpHandler);
+      this.setSeeking(false);
+      seeking = false;
+      this.setSeekPosition(0);
+      this.clearAllThickenedMarkers();
+      this.endCanceledSeek?.();
     };
 
     // A seek always start with a touchstart or mousedown directly on the seekbar.

@@ -146,6 +146,41 @@ describe('SeekBar', () => {
     );
 
     it.each([
+      { trigger: 'the seek bar is disabled', disableDuringDrag: () => seekbar.disable() },
+      {
+        trigger: 'a linear ad starts',
+        disableDuringDrag: () => playerMock.eventEmitter.fireAdStartedEvent({ isLinear: true }),
+      },
+    ])('should cancel a pointer seek without seeking when $trigger during the drag', ({ disableDuringDrag }) => {
+      jest.spyOn(playerMock, 'isPlaying').mockReturnValue(true);
+      playerMock.play = jest.fn();
+      playerMock.pause = jest.fn();
+      playerMock.seek = jest.fn();
+      const onSeekedSpy = jest.fn();
+      seekbar.onSeeked.subscribe(onSeekedSpy);
+      const domOn = seekbar['seekBar'].on as jest.Mock;
+      const pointerDownHandler = domOn.mock.calls.find(([eventNames]) => eventNames === 'touchstart mousedown')?.[1];
+      pointerDownHandler({ preventDefault: jest.fn() });
+      // The drag is tracked through handlers on a DOM wrapper around the document
+      const documentHandlerCalls = (method: 'on' | 'off') =>
+        (DOM as jest.MockedClass<typeof DOM>).mock.instances.reduce(
+          (calls, instance) => calls.concat((instance[method] as jest.Mock).mock.calls),
+          [] as unknown[][],
+        );
+      const pointerUpHandler = documentHandlerCalls('on').find(([eventNames]) => eventNames === 'mouseup')?.[1];
+      expect(pointerUpHandler).toEqual(expect.any(Function));
+
+      disableDuringDrag();
+
+      expect(documentHandlerCalls('off')).toContainEqual(['touchend mouseup', pointerUpHandler]);
+      expect(onSeekedSpy).not.toHaveBeenCalled();
+      expect(playerMock.seek).not.toHaveBeenCalled();
+      expect(playerMock.play).toHaveBeenCalledWith('ui-seek');
+      expect(uiInstanceManagerMock.onSeeked.dispatch).toHaveBeenCalled();
+      expect(seekbar['isUserSeeking']).toBe(false);
+    });
+
+    it.each([
       { state: 'during a linear ad', isLinear: true, expectedSeeks: 0 },
       { state: 'during a non-linear ad', isLinear: false, expectedSeeks: 1 },
     ])('should start $expectedSeeks seeks on pointer down $state', ({ isLinear, expectedSeeks }) => {

@@ -9,7 +9,15 @@ import { PlayerUtils } from './utils/PlayerUtils';
 import { ArrayUtils } from './utils/ArrayUtils';
 import { BrowserUtils } from './utils/BrowserUtils';
 import { RecommendationConfig, TimelineMarker, UIConfig } from './UIConfig';
-import { PlayerAPI, PlayerEventCallback, PlayerEventBase, PlayerEvent, AdEvent, LinearAd } from 'bitmovin-player';
+import {
+  PlayerAPI,
+  PlayerEventCallback,
+  PlayerEventBase,
+  PlayerEvent,
+  AdEvent,
+  AdLinearityChangedEvent,
+  LinearAd,
+} from 'bitmovin-player';
 import { VolumeController } from './utils/VolumeController';
 import { i18n, CustomVocabulary, Vocabularies, I18n, LanguageChangedArgument } from './localization/i18n';
 import { FocusVisibilityTracker } from './utils/FocusVisibilityTracker';
@@ -673,6 +681,15 @@ export class UIManager {
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.Playing, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdStarted, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.AdBreakFinished, resolveUiVariant);
+      // VPAID ads can change their linearity without a new AdStarted event. Keep the stored ad data current, so a
+      // UI variant that is switched to later is initialized with the current linearity.
+      this.managerPlayerWrapper
+        .getPlayer()
+        .on(this.player.exports.PlayerEvent.AdLinearityChanged, (event: AdLinearityChangedEvent) => {
+          if (adStartedEvent != null) {
+            adStartedEvent = { ...adStartedEvent, ad: { ...adStartedEvent.ad, isLinear: event.isLinear } };
+          }
+        });
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.PlayerResized, resolveUiVariant);
       this.managerPlayerWrapper.getPlayer().on(this.player.exports.PlayerEvent.ViewModeChanged, resolveUiVariant);
     }

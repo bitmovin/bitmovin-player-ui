@@ -138,6 +138,10 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     // Listen for the click event on the button element and trigger the corresponding event on the button component
     buttonElement.on('click', e => {
       e.preventDefault();
+      // A disabled button stays focusable, so keyboard and spatial navigation can still generate clicks on it
+      if (this.isDisabled()) {
+        return;
+      }
       this.onClickEvent();
     });
 
