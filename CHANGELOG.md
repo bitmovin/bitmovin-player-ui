@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Missing or misleading accessible names for screen reader and speech input users: the ad click-through overlay is now named and, while the ad has no click-through URL, gives up the focus and is removed from the tab order, TV navigation and the accessibility tree, the TV subtitle and audio track list buttons are no longer announced as "Settings", the subtitle "Options" button and the back buttons of settings sub-pages are named after their visible label, the Eco Mode toggle and the watermark have descriptive localized names, the buffering indicator dots are hidden from assistive technologies, and image subtitles use the cue text as text alternative, or a generic "Subtitle image" when the source provides none (a text equivalent of the dialogue has to come from the source).
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed

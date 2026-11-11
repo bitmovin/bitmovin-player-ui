@@ -45,6 +45,10 @@ export interface SubtitleOverlayConfig extends ContainerConfig {
 /**
  * Overlays the player to display subtitles.
  *
+ * Image subtitle cues are rendered as images whose text alternative is the cue's `text`. Without it they only get a
+ * generic "Subtitle image" alternative, so a text equivalent of the dialogue has to come from the source (or be added
+ * to the cue by the integrator).
+ *
  * @category Components
  */
 export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
@@ -283,7 +287,7 @@ export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
     const label = new SubtitleLabel({
       // Prefer the HTML subtitle text if set, else try generating a image tag as string from the image attribute,
       // else use the plain text
-      text: event.html || ActiveSubtitleManager.generateImageTagText(event.image) || event.text,
+      text: event.html || ActiveSubtitleManager.generateImageTagText(event.image, event.text) || event.text,
       cssClasses: event.vtt && !event.vtt.region ? ['subtitle-vtt-cue'] : [],
       vtt: event.vtt,
       region: region,
@@ -714,13 +718,19 @@ class ActiveSubtitleManager {
     return removedCues;
   }
 
-  static generateImageTagText(imageData: string): string | undefined {
+  /**
+   * Builds the image tag of an image subtitle cue. `altText` should be the cue's text; without it the image only gets a
+   * generic alternative, as the dialogue in the image is unknown to the UI.
+   */
+  static generateImageTagText(imageData: string, altText?: string): string | undefined {
     if (!imageData) {
       return;
     }
 
     const imgTag = new DOM('img', {
       src: imageData,
+      // Image cues carry subtitle content, so they always need a text alternative
+      alt: altText || i18n.performLocalization(i18n.getLocalizer('subtitle.image')),
     });
     imgTag.css('width', '100%');
     return imgTag.get(0).outerHTML; // return the html as string

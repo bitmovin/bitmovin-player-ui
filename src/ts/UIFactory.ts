@@ -831,7 +831,6 @@ export namespace UIFactory {
     const subtitleSettingsOpenButton = new SettingsPanelPageOpenButton({
       targetPage: subtitleSettingsPanelPage,
       container: settingsPanel,
-      ariaLabel: i18n.getLocalizer('settings.subtitles'),
       text: i18n.getLocalizer('settings.subtitles.options'),
     });
 

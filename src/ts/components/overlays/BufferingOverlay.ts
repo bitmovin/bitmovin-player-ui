@@ -30,10 +30,12 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     super(config);
 
     this.indicators = [
-      new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator', role: 'img' }),
-      new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator', role: 'img' }),
-      new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator', role: 'img' }),
+      new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator' }),
+      new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator' }),
+      new Component<ComponentConfig>({ tag: 'div', cssClass: 'ui-buffering-overlay-indicator' }),
     ];
+    // The indicator dots are decorative and have no meaningful name for assistive technologies
+    this.indicators.forEach(indicator => indicator.getDomElement().attr('aria-hidden', 'true'));
 
     this.config = this.mergeConfig(
       config,

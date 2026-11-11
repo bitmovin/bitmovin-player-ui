@@ -135,6 +135,11 @@ export interface PauseAdOptions {
   clickThroughUrl?: string;
 }
 
+export interface LinearAdOptions {
+  /** Click-through destination of the ad. Omitted means an ad without one. */
+  clickThroughUrl?: string;
+}
+
 /** A subtitle cue, as the player hands it to the UI, minus the fields the harness assigns. */
 export type SubtitleCue = Partial<Omit<SubtitleCueEvent, 'type' | 'timestamp' | 'start' | 'end'>>;
 
@@ -164,8 +169,14 @@ export interface BrowserPlayerController {
    *
    * Only emits the event the UI manager resolves its variant from. The stub still reports no active
    * linear ad, because nothing in the browser scenarios reads it.
+   *
+   * Starting another linear ad after {@link BrowserPlayerController.finishLinearAd} plays the next ad of the same
+   * break: the UI keeps its ads variant until the break ends.
    */
-  startLinearAd(): Promise<void>;
+  startLinearAd(options?: LinearAdOptions): Promise<void>;
+
+  /** Ends the active linear ad, without ending its ad break. */
+  finishLinearAd(): Promise<void>;
 
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
@@ -429,11 +440,19 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           browserWindow.__fire('nonlinearadfinished', { ad: { id: adId } });
         }, id);
       },
-      startLinearAd: async () => {
-        await page.evaluate(() => {
+      startLinearAd: async ({ clickThroughUrl }: LinearAdOptions = {}) => {
+        await page.evaluate(url => {
           const browserWindow = window as unknown as BrowserTestWindow;
           browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdStarted, {
-            ad: { id: 'linear-ad-1', isLinear: true, uiConfig: { requestsUi: true } },
+            ad: { id: 'linear-ad-1', isLinear: true, uiConfig: { requestsUi: true }, clickThroughUrl: url },
+          });
+        }, clickThroughUrl);
+      },
+      finishLinearAd: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdFinished, {
+            ad: { id: 'linear-ad-1', isLinear: true },
           });
         });
       },
