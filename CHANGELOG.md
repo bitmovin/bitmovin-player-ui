@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- `Learn more` button on pause ads with a click-through destination, so keyboard, screen reader, and TV remote users can open the advertiser's page in a new tab. The button is reachable through the TV pause-ad navigation group.
+- `Learn more` button on pause ads with a click-through destination, so keyboard, screen reader, and TV remote users can open the advertiser's page in a new tab. The button is reachable through the TV pause-ad navigation group. In narrow players or with long translations, the pause-ad badge and buttons wrap onto further rows instead of overlapping.
 
 ## [4.23.1] - 2026-11-05
 

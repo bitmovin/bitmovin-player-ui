@@ -69,6 +69,64 @@ describe('PauseAdNavigationGroup', () => {
     expect(pauseAdNavigationGroup.getActiveComponent()).toBe(secondaryButton);
   });
 
+  describe('when the click-through button is hidden', () => {
+    it('should move the selection from the click-through button to the dismiss button', () => {
+      const dismissClick = jest.fn();
+      const clickThroughClick = jest.fn();
+      dismissButton.onClick.subscribe(dismissClick);
+      clickThroughButton.onClick.subscribe(clickThroughClick);
+      pauseAdNavigationGroup['focusComponent'](clickThroughButton);
+
+      clickThroughButton.hide();
+      pauseAdNavigationGroup.handleAction(Action.SELECT);
+
+      expect(pauseAdNavigationGroup.getActiveComponent()).toBe(dismissButton);
+      expect(clickThroughClick).not.toHaveBeenCalled();
+      expect(dismissClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not move the selection to a dismiss button that is hidden as well', () => {
+      pauseAdNavigationGroup['focusComponent'](clickThroughButton);
+      dismissButton.hide();
+
+      clickThroughButton.hide();
+
+      expect(pauseAdNavigationGroup.getActiveComponent()).toBe(clickThroughButton);
+    });
+
+    it('should restore the dismiss button instead of a click-through button saved while another group was active', () => {
+      pauseAdStatusOverlayMock.isShown.mockReturnValue(true);
+      pauseAdNavigationGroup['focusComponent'](clickThroughButton);
+      pauseAdNavigationGroup.disable();
+
+      clickThroughButton.hide();
+      pauseAdNavigationGroup.enable();
+
+      expect(pauseAdNavigationGroup.getActiveComponent()).toBe(dismissButton);
+    });
+
+    it('should keep a different saved target', () => {
+      pauseAdStatusOverlayMock.isShown.mockReturnValue(true);
+      pauseAdNavigationGroup['activeComponent'] = secondaryButton;
+      pauseAdNavigationGroup.disable();
+
+      clickThroughButton.hide();
+      pauseAdNavigationGroup.enable();
+
+      expect(pauseAdNavigationGroup.getActiveComponent()).toBe(secondaryButton);
+    });
+
+    it('should stop reacting once the group is released', () => {
+      pauseAdNavigationGroup['focusComponent'](clickThroughButton);
+      pauseAdNavigationGroup.release();
+      const focusSpy = jest.spyOn(pauseAdNavigationGroup as any, 'focusComponent');
+
+      clickThroughButton.hide();
+
+      expect(focusSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('defaultActionHandler', () => {
     it('should not handle Action.BACK, so the overlay stays while the creative is showing', () => {
       const handled = pauseAdNavigationGroup['defaultActionHandler'](Action.BACK);

@@ -301,6 +301,10 @@ export class NavigationGroup {
     this.activeComponentBeforeDisable = undefined;
   }
 
+  protected getActiveComponentBeforeDisable(): AnyComponent | undefined {
+    return this.activeComponentBeforeDisable;
+  }
+
   /**
    * Enable navigation group
    *

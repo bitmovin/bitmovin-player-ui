@@ -128,6 +128,16 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
     });
   }
 
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+
+    // Buttons only update their visible text on a language change. The accessible name has to follow, so that it
+    // still contains the visible text, e.g. for speech input users.
+    if (this.clickThroughButton.hasDomElement()) {
+      this.clickThroughButton.setAriaLabel(this.clickThroughButton.getConfig().ariaLabel);
+    }
+  }
+
   release(): void {
     this.hidePauseAdStatus();
     this.uiContainerElement = undefined;

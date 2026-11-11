@@ -44,6 +44,7 @@ interface BrowserTestWindow extends Window {
         buildSmallScreenUI(player: object, config: object): UiHandle;
         buildTvUI(player: object, config: object): UiHandle;
       };
+      i18n: { setLanguage(language: string): void };
     };
   };
   __fire(event: string, data?: object): void;
@@ -125,6 +126,11 @@ export interface MountOptions {
    * occupy no space, so a scenario about title-bar layout has to supply it.
    */
   metadata?: { title?: string; description?: string };
+  /**
+   * Custom translations, keyed by language and vocabulary key, for scenarios that depend on the
+   * length or language of UI texts. They are merged into the built-in vocabularies.
+   */
+  vocabularies?: Record<string, Record<string, string>>;
 }
 
 export interface PauseAdOptions {
@@ -197,6 +203,9 @@ export interface MountedUi {
 
   /** Applies subtitle settings through the manager the settings panel writes to. */
   applySubtitleSettings(settings: SubtitleSettings): Promise<void>;
+
+  /** Switches the UI language at runtime, the way an integrator or the subtitle language adaptation does. */
+  setLanguage(language: string): Promise<void>;
 }
 
 /**
@@ -215,6 +224,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     withoutShadowRoot = false,
     hideDelay = -1,
     videoQualities = [],
+    vocabularies,
   } = options;
 
   await page.setContent(`<!doctype html>
@@ -246,7 +256,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay, customVocabularies }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -375,6 +385,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
         componentConfigOverrides: { UIContainer: { hideDelay } },
         metadata: uiMetadata,
+        ...(customVocabularies ? { localization: { language: 'en', vocabularies: customVocabularies } } : {}),
       };
       switch (uiFactory) {
         case 'default':
@@ -392,7 +403,14 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         }
       }
     },
-    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities, hideDelay },
+    {
+      isLive: live,
+      uiFactory: factory,
+      uiMetadata: metadata,
+      availableVideoQualities: videoQualities,
+      hideDelay,
+      customVocabularies: vocabularies,
+    },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);
@@ -507,6 +525,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           manager[setting as keyof SubtitleSettings].value = value;
         });
       }, settings);
+    },
+    setLanguage: async language => {
+      await page.evaluate(newLanguage => {
+        (window as unknown as BrowserTestWindow).bitmovin.playerui.i18n.setLanguage(newLanguage);
+      }, language);
     },
   };
 }

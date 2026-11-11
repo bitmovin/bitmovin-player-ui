@@ -48,11 +48,18 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
     pointer-events: none;
   }
 
-  // The click-through and dismiss buttons share the top-right corner, so they are laid out in a row.
+  // The badge starts the status row on the left and the buttons end it on the right. When the row
+  // does not fit, e.g. in a narrow player or with long translations, the buttons wrap below instead
+  // of overlapping the badge. Spacing uses margins on the items because older TV browsers do not
+  // support `gap` in flex layouts.
   > .#{$prefix}-container-wrapper {
     align-items: flex-start;
+    box-sizing: border-box;
     display: flex;
+    flex-wrap: wrap;
+    font-size: $font-size;
     justify-content: flex-end;
+    padding: safe-area-max(0.5em, top) safe-area-max(1em, right) 0 safe-area-max(0.5em, left);
   }
 }
 
@@ -83,9 +90,12 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   box-sizing: border-box;
   color: $color-highlight-ads;
   font-size: $font-size;
+  margin: 0.5em 0 0 0.5em;
+  max-width: 100%;
   min-height: calc(#{$icon-size} + 1em);
-  min-width: fit-content;
   padding: 0.5em 1em;
+  // Positioned so that the status controls stack above the click catcher, which precedes them in the DOM.
+  position: relative;
 
   .#{$prefix}-label,
   .#{$prefix}-ui-label-text {
@@ -96,10 +106,9 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
 .#{$prefix}-ui-pause-ad-status-badge {
   @extend %ui-label;
 
+  // Pushes the buttons to the right edge of the row.
+  margin-right: auto;
   pointer-events: auto;
-  left: safe-area-max(1em, left);
-  position: absolute;
-  top: safe-area-max(1em, top);
 }
 
 .#{$prefix}-ui-button-pause-ad-click-through,
@@ -107,23 +116,14 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   @extend %ui-button;
 
   height: auto;
-  margin-top: safe-area-max(1em, top);
   pointer-events: auto;
-  // Positioned so that both buttons stack above the click catcher, which precedes them in the DOM.
-  position: relative;
 
   &:hover {
     background-color: $color-black;
   }
 }
 
-.#{$prefix}-ui-button-pause-ad-click-through {
-  margin-right: 0.5em;
-}
-
 .#{$prefix}-ui-button-pause-ad-dismiss {
-  margin-right: safe-area-max(1em, right);
-
   .#{$prefix}-ui-icon {
     background-image: svg-load('../../assets/images/close.svg', stroke=$color-icon-highlight-ads);
   }

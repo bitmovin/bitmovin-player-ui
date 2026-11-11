@@ -178,6 +178,22 @@ describe('PauseAdStatusOverlay', () => {
       expect(windowOpen).not.toHaveBeenCalled();
     });
 
+    it('should update its accessible name together with its text when the language changes', () => {
+      // The DOM is mocked in this spec, so the visible text update of all buttons is skipped here.
+      const setTextSpy = jest.spyOn(Button.prototype, 'setText').mockImplementation(() => undefined);
+      const button = getClickThroughButton();
+      jest.spyOn(button, 'hasDomElement').mockReturnValue(true);
+      const setAriaLabelSpy = jest.spyOn(button, 'setAriaLabel').mockImplementation(() => undefined);
+
+      i18n.setLanguage('de');
+
+      expect(setAriaLabelSpy).toHaveBeenCalledTimes(1);
+      expect(i18n.performLocalization(setAriaLabelSpy.mock.calls[0][0])).toBe(
+        'Mehr erfahren, öffnet in einem neuen Tab',
+      );
+      setTextSpy.mockRestore();
+    });
+
     it('should be hidden when a following ad has no click-through destination', () => {
       firePauseAdStarted({ clickThroughUrl: 'https://example.com' });
       firePauseAdStarted({ clickThroughUrl: null });
