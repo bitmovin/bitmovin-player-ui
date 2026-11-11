@@ -487,6 +487,8 @@ export class SeekBar extends Component<SeekBarConfig> {
       // Configure a seekbar label that is internal to the seekbar)
       this.getLabel().configure(player, uimanager);
       document.addEventListener('keydown', this.dismissSeekPreviewOnEscape);
+      // Let the UI auto-hide again when it is switched to another variant while the seek preview is shown
+      uimanager.onInactive.subscribe(this.hideSeekPreview);
     }
 
     // Hide seekbar for live sources without timeshift
@@ -743,6 +745,7 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     this.seekPreviewHideTimeout.clear();
     document.removeEventListener('keydown', this.dismissSeekPreviewOnEscape);
+    this.uiManager?.onInactive.unsubscribe(this.hideSeekPreview);
   }
 
   protected toDomElement(): DOM {
@@ -887,8 +890,10 @@ export class SeekBar extends Component<SeekBarConfig> {
       new DOM(document).on(isTouchEvent ? 'touchend' : 'mouseup', mouseTouchUpHandler);
     });
 
-    // A new hover or touch on the seekbar shows the seek preview again after it was dismissed with Escape
-    seekBar.on('touchstart mouseenter', () => {
+    // A new hover or touch on the seekbar shows the seek preview again after it was dismissed with Escape. Leaving the
+    // seekbar also resets it, because spatial navigation scrubs with mousemove and ends with mouseleave, but never
+    // dispatches mouseenter.
+    seekBar.on('touchstart mouseenter mouseleave', () => {
       this.isSeekPreviewDismissed = false;
     });
 
@@ -908,8 +913,14 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.setSeekPosition(seekPositionPercentage);
       this.onSeekPreviewEvent(seekPositionPercentage, seekPositionPx, false);
 
-      if (this.hasLabel() && this.getLabel().isHidden() && !this.isSeekPreviewDismissed) {
-        this.getLabel().show();
+      if (this.hasLabel() && !this.isSeekPreviewDismissed) {
+        // Keep the UI from auto-hiding the seek preview and its trigger while the seekbar is hovered
+        // (WCAG 1.4.13 Content on Hover or Focus)
+        this.onViewModeChangedEvent(ViewMode.Persistent);
+
+        if (this.getLabel().isHidden()) {
+          this.getLabel().show();
+        }
       }
     });
 
@@ -929,22 +940,21 @@ export class SeekBar extends Component<SeekBarConfig> {
 
     if (this.label) {
       const labelElement = this.label.getDomElement();
-      // Keep the seek preview visible while the pointer is on the label, and keep the UI from auto-hiding it
+      // Keep the seek preview visible while the pointer is on the label, and keep the UI from auto-hiding it. The
+      // UI may auto-hide again only once the hide delay has passed, so moving between the seekbar and the label does
+      // not toggle it.
       labelElement.on('mouseenter', () => {
         this.seekPreviewHideTimeout.clear();
         this.onViewModeChangedEvent(ViewMode.Persistent);
       });
-      labelElement.on('mouseleave', () => {
-        this.onViewModeChangedEvent(ViewMode.Temporary);
-        this.seekPreviewHideTimeout.start();
-      });
+      labelElement.on('mouseleave', () => this.seekPreviewHideTimeout.start());
       seekBarContainer.append(labelElement);
     }
 
     return seekBarContainer;
   }
 
-  private hideSeekPreview(): void {
+  private hideSeekPreview = (): void => {
     this.seekPreviewHideTimeout.clear();
     this.onViewModeChangedEvent(ViewMode.Temporary);
     this.setSeekPosition(0);
@@ -952,7 +962,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.hasLabel()) {
       this.getLabel().hide();
     }
-  }
+  };
 
   // Lets users dismiss the seek preview without moving the pointer or focus (WCAG 1.4.13 Content on Hover or Focus).
   // The event is neither prevented nor stopped, so other Escape handlers (e.g. closing a menu) still run.

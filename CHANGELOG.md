@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Seek preview above the seek bar disappearing as soon as the pointer left the seek bar, and not being dismissible. It now stays visible while the pointer moves onto it, so magnified content and long chapter titles can be read, and it can be dismissed with Escape, e.g. when it covers subtitles.
+- Seek preview above the seek bar disappearing as soon as the pointer left the seek bar, and not being dismissible. It now stays visible, and the controls no longer auto-hide, while the pointer is on the seek bar or on the preview, so magnified content and long chapter titles can be read. It can be dismissed with Escape, e.g. when it covers subtitles.
 
 ## [4.23.1] - 2026-11-05
 

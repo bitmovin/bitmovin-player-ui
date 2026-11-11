@@ -70,23 +70,44 @@ async function moveSlowlyOntoPreview(page: Page, from: { x: number; y: number })
   }
 }
 
+// The controls fade out through opacity, which Playwright still counts as visible, so their shown state is read from
+// the UI container.
+function uiContainer(page: Page): Locator {
+  return page.locator('.bmpui-ui-uicontainer');
+}
+
+// A preview that is fading out still counts as visible, so also check that it was not hidden.
+async function expectPreviewShown(page: Page, message: string): Promise<void> {
+  await expect(seekPreview(page), message).not.toHaveClass(/bmpui-hidden/);
+  await expect(seekPreview(page), message).toBeVisible();
+}
+
 for (const { name, mount } of LAYOUTS) {
+  test(`${name} layout keeps the seek preview and controls visible while the pointer rests on the seek bar`, async ({
+    page,
+  }) => {
+    await mountPlayingUi(page, mount);
+    await hoverSeekBar(page, 0.5);
+
+    await page.clock.runFor(HIDE_DELAY * 2);
+
+    await expectPreviewShown(page, 'the preview must stay while the seek bar is hovered');
+    await expect(uiContainer(page), 'the controls must not auto-hide the hovered seek bar').toHaveClass(
+      /bmpui-controls-shown/,
+    );
+  });
+
   test(`${name} layout keeps the seek preview and controls visible while the pointer rests on the preview`, async ({
     page,
   }) => {
     await mountPlayingUi(page, mount);
-    // The controls fade out through opacity, which Playwright still counts as visible, so their shown state is read
-    // from the UI container.
-    const uiContainer = page.locator('.bmpui-ui-uicontainer');
     const start = await hoverSeekBar(page, 0.5);
 
     await moveSlowlyOntoPreview(page, start);
     await page.clock.runFor(HIDE_DELAY * 2);
 
-    // A preview that is fading out still counts as visible, so also check that it was not hidden.
-    await expect(seekPreview(page), 'the preview must stay while it is hovered').not.toHaveClass(/bmpui-hidden/);
-    await expect(seekPreview(page)).toBeVisible();
-    await expect(uiContainer, 'the controls must not auto-hide the hovered preview').toHaveClass(
+    await expectPreviewShown(page, 'the preview must stay while it is hovered');
+    await expect(uiContainer(page), 'the controls must not auto-hide the hovered preview').toHaveClass(
       /bmpui-controls-shown/,
     );
 
@@ -95,7 +116,7 @@ for (const { name, mount } of LAYOUTS) {
     await page.clock.runFor(HIDE_DELAY * 2);
 
     await expect(seekPreview(page)).toBeHidden();
-    await expect(uiContainer).toHaveClass(/bmpui-controls-hidden/);
+    await expect(uiContainer(page)).toHaveClass(/bmpui-controls-hidden/);
   });
 }
 
@@ -124,4 +145,87 @@ test('scrubbing seeks to where the pointer is released, also when released over 
   await page.mouse.up();
 
   await expect.poll(() => ui.player.currentTime()).toBeCloseTo(DURATION * 0.75, -1);
+});
+
+test('default layout seeks with the arrow keys on the focused seek bar', async ({ page }) => {
+  const ui = await mountPlayingUi(page, mountDefaultControlBarUi);
+  const slider = seekBar(page);
+  await slider.focus();
+  const initialTime = await ui.player.currentTime();
+
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  await expect.poll(() => ui.player.currentTime()).toBeGreaterThan(initialTime);
+  const forwardTime = await ui.player.currentTime();
+
+  await page.keyboard.press('ArrowLeft');
+  await expect.poll(() => ui.player.currentTime()).toBeLessThan(forwardTime);
+  await expect(slider).toBeFocused();
+});
+
+test('default layout hides the preview with Escape on the focused seek bar and keeps seeking with the arrow keys', async ({
+  page,
+}) => {
+  const ui = await mountPlayingUi(page, mountDefaultControlBarUi);
+  const slider = seekBar(page);
+  await hoverSeekBar(page, 0.5);
+  await slider.focus();
+  const initialTime = await ui.player.currentTime();
+
+  await page.keyboard.press('Escape');
+
+  await expect(seekPreview(page)).toBeHidden();
+  await expect(slider).toBeFocused();
+
+  await page.keyboard.press('ArrowRight');
+  await expect.poll(() => ui.player.currentTime()).toBeGreaterThan(initialTime);
+});
+
+async function focusSeekBarWithRemote(page: Page): Promise<void> {
+  // Focus starts on the centered playback control, the seek bar is the next control below it.
+  await page.keyboard.press('ArrowDown');
+  await expect(seekBar(page), 'the remote should reach the seek bar').toBeFocused();
+}
+
+// On TV, the arrow keys scrub with the preview shown and Enter seeks to the previewed position.
+async function scrubWithRemote(page: Page, key: 'ArrowLeft' | 'ArrowRight'): Promise<void> {
+  // The first press starts scrubbing at the playback position, the following ones move away from it.
+  for (let i = 0; i < 4; i++) {
+    await page.keyboard.press(key);
+  }
+  await expectPreviewShown(page, 'scrubbing with the remote should show the preview');
+}
+
+test('TV layout seeks with the remote on the focused seek bar', async ({ page }) => {
+  const ui = await mountPlayingUi(page, mountTvUi);
+  await focusSeekBarWithRemote(page);
+  const initialTime = await ui.player.currentTime();
+
+  await scrubWithRemote(page, 'ArrowRight');
+  await page.keyboard.press('Enter');
+  await expect.poll(() => ui.player.currentTime()).toBeGreaterThan(initialTime);
+  const forwardTime = await ui.player.currentTime();
+
+  await scrubWithRemote(page, 'ArrowLeft');
+  await page.keyboard.press('Enter');
+  await expect.poll(() => ui.player.currentTime()).toBeLessThan(forwardTime);
+});
+
+test('TV layout hides the preview with Escape on the focused seek bar and keeps seeking with the remote', async ({
+  page,
+}) => {
+  const ui = await mountPlayingUi(page, mountTvUi);
+  await focusSeekBarWithRemote(page);
+  const initialTime = await ui.player.currentTime();
+  await scrubWithRemote(page, 'ArrowRight');
+
+  await page.keyboard.press('Escape');
+  await page.clock.runFor(HIDE_DELAY);
+
+  await expect(seekPreview(page)).toBeHidden();
+  expect(await ui.player.currentTime(), 'cancelling the scrub must not seek').toBe(initialTime);
+
+  await scrubWithRemote(page, 'ArrowRight');
+  await page.keyboard.press('Enter');
+  await expect.poll(() => ui.player.currentTime()).toBeGreaterThan(initialTime);
 });

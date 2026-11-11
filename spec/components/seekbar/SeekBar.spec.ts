@@ -393,32 +393,80 @@ describe('SeekBar', () => {
         seekbar.onViewModeChanged.subscribe((_, { mode }) => viewModes.push(mode));
       });
 
-      it('should not prevent the UI from hiding while only the seek bar is hovered', () => {
-        hoverSeekBar();
-        dispatchMouseEvent(seekBarElement, 'mouseleave');
-        jest.advanceTimersByTime(hideDelayMs);
-
-        expect(viewModes).toEqual([]);
-      });
-
-      it('should prevent the UI from hiding while the label is hovered', () => {
-        hoverLabel();
+      it.each([
+        ['the seek bar', hoverSeekBar],
+        ['the label', hoverLabel],
+      ])('should prevent the UI from hiding while %s is hovered', (_, hover) => {
+        hover();
         jest.advanceTimersByTime(hideDelayMs * 10);
 
         expect(viewModes).toEqual([ViewMode.Persistent]);
       });
 
+      it('should keep preventing the UI from hiding while the pointer moves between the seek bar and the label', () => {
+        hoverLabel();
+        dispatchMouseEvent(labelElement, 'mouseleave');
+        hoverSeekBar();
+        dispatchMouseEvent(seekBarElement, 'mouseleave');
+        dispatchMouseEvent(labelElement, 'mouseenter');
+        jest.advanceTimersByTime(hideDelayMs * 10);
+
+        expect(viewModes).toEqual([ViewMode.Persistent]);
+      });
+
+      it('should not prevent the UI from hiding after Escape while the seek bar is still hovered', () => {
+        hoverSeekBar();
+        pressKey('Escape');
+        dispatchMouseEvent(seekBarElement, 'mousemove');
+
+        expect(viewModes).toEqual([ViewMode.Persistent, ViewMode.Temporary]);
+      });
+
       it.each([
-        ['the pointer leaves the label', () => dispatchMouseEvent(labelElement, 'mouseleave')],
+        ['the pointer leaves the seek bar', () => dispatchMouseEvent(seekBarElement, 'mouseleave')],
+        [
+          'the pointer leaves the label',
+          () => {
+            dispatchMouseEvent(seekBarElement, 'mouseleave');
+            dispatchMouseEvent(labelElement, 'mouseenter');
+            dispatchMouseEvent(labelElement, 'mouseleave');
+          },
+        ],
         ['Escape is pressed', () => pressKey('Escape')],
         ['the seek bar is released', () => seekbar.release()],
+        [
+          'the UI becomes inactive',
+          () => {
+            const onInactiveMock = uiInstanceManagerMock.onInactive as unknown as { subscribe: jest.Mock };
+            const [onInactive] = MockHelper.getMockCall(onInactiveMock.subscribe);
+            (onInactive as () => void)();
+          },
+        ],
       ])('should let the UI hide again when %s', (_, endHover) => {
-        hoverLabel();
+        hoverSeekBar();
 
         endHover();
         jest.advanceTimersByTime(hideDelayMs);
 
         expect(viewModes).toEqual([ViewMode.Persistent, ViewMode.Temporary]);
+      });
+
+      it('should keep preventing the UI from hiding until the hide delay has passed after the pointer left', () => {
+        hoverSeekBar();
+        dispatchMouseEvent(seekBarElement, 'mouseleave');
+        jest.advanceTimersByTime(hideDelayMs - 1);
+
+        expect(viewModes).toEqual([ViewMode.Persistent]);
+      });
+
+      it('should show the preview again during keyboard scrubbing after Escape, which ends with mouseleave', () => {
+        hoverSeekBar();
+        pressKey('Escape');
+        // Spatial navigation scrubs with mousemove and stops with mouseleave, without a mouseenter in between
+        dispatchMouseEvent(seekBarElement, 'mouseleave');
+        dispatchMouseEvent(seekBarElement, 'mousemove');
+
+        expect(label.isShown()).toBe(true);
       });
     });
 
