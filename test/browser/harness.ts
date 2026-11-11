@@ -167,6 +167,12 @@ export interface BrowserPlayerController {
    */
   startLinearAd(): Promise<void>;
 
+  /**
+   * Ends the linear ad started by {@link BrowserPlayerController.startLinearAd} and its ad break, which makes the UI
+   * manager switch back to the content variant.
+   */
+  finishLinearAd(): Promise<void>;
+
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
 
@@ -435,6 +441,14 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdStarted, {
             ad: { id: 'linear-ad-1', isLinear: true, uiConfig: { requestsUi: true } },
           });
+        });
+      },
+      finishLinearAd: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          const PlayerEvent = browserWindow.bitmovin.player.PlayerEvent;
+          browserWindow.__fire(PlayerEvent.AdFinished, { ad: { id: 'linear-ad-1', isLinear: true } });
+          browserWindow.__fire(PlayerEvent.AdBreakFinished, { adBreak: { id: 'linear-ad-break-1', scheduleTime: 0 } });
         });
       },
       enterCue: async (cue: SubtitleCue) => {

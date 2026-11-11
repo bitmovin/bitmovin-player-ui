@@ -3,6 +3,7 @@ import { SeekBar } from '../../../src/ts/components/seekbar/SeekBar';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { Timeout } from '../../../src/ts/utils/Timeout';
 import { DOM } from '../../../src/ts/DOM';
+import { AdLinearityChangedEvent, PlayerEvent } from 'bitmovin-player';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -98,14 +99,66 @@ describe('SeekBar', () => {
       expect(attributes.has('aria-disabled')).toBe(false);
     });
 
-    it('should keep a seek bar that was disabled before the linear ad disabled afterwards', () => {
-      seekbar.disable();
+    it.each([
+      { moment: 'before', disableBeforeAd: true },
+      { moment: 'during', disableBeforeAd: false },
+    ])('should keep a seek bar that was disabled $moment the linear ad disabled afterwards', ({ disableBeforeAd }) => {
+      if (disableBeforeAd) {
+        seekbar.disable();
+      }
       playerMock.eventEmitter.fireAdStartedEvent({ isLinear: true });
+      if (!disableBeforeAd) {
+        seekbar.disable();
+      }
 
       playerMock.eventEmitter.fireAdBreakFinishedEvent();
 
       expect(seekbar.isDisabled()).toBe(true);
       expect(attributes.get('aria-disabled')).toBe('true');
+    });
+
+    it('should keep the seek bar disabled until the ad break finishes when it is enabled during a linear ad', () => {
+      playerMock.eventEmitter.fireAdStartedEvent({ isLinear: true });
+
+      seekbar.enable();
+      expect(seekbar.isDisabled()).toBe(true);
+
+      playerMock.eventEmitter.fireAdBreakFinishedEvent();
+      expect(seekbar.isEnabled()).toBe(true);
+    });
+
+    it.each([
+      { from: 'linear', to: 'non-linear', startsLinear: true, isLinear: false, expectedAriaDisabled: undefined },
+      { from: 'non-linear', to: 'linear', startsLinear: false, isLinear: true, expectedAriaDisabled: 'true' },
+    ])(
+      'should update aria-disabled when an ad switches from $from to $to',
+      ({ startsLinear, isLinear, expectedAriaDisabled }) => {
+        playerMock.eventEmitter.fireAdStartedEvent({ isLinear: startsLinear });
+
+        playerMock.eventEmitter.fireEvent<AdLinearityChangedEvent>({
+          type: PlayerEvent.AdLinearityChanged,
+          timestamp: Date.now(),
+          isLinear,
+        });
+
+        expect(attributes.get('aria-disabled')).toBe(expectedAriaDisabled);
+      },
+    );
+
+    it.each([
+      { state: 'during a linear ad', isLinear: true, expectedSeeks: 0 },
+      { state: 'during a non-linear ad', isLinear: false, expectedSeeks: 1 },
+    ])('should start $expectedSeeks seeks on pointer down $state', ({ isLinear, expectedSeeks }) => {
+      const onSeekSpy = jest.fn();
+      seekbar.onSeek.subscribe(onSeekSpy);
+      const pointerDownHandler = (seekbar['seekBar'].on as jest.Mock).mock.calls.find(
+        ([eventNames]) => eventNames === 'touchstart mousedown',
+      )?.[1] as (event: Partial<MouseEvent>) => void;
+      playerMock.eventEmitter.fireAdStartedEvent({ isLinear });
+
+      pointerDownHandler({ preventDefault: jest.fn() });
+
+      expect(onSeekSpy).toHaveBeenCalledTimes(expectedSeeks);
     });
   });
 

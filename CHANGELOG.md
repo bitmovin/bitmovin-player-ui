@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Disabled controls not being announced as unavailable by screen readers. Disabled components now set `aria-disabled="true"`, e.g. the ad skip button during its countdown, and the seek bar is exposed as disabled while a linear ad is playing.
+- Disabled controls not being announced as unavailable by screen readers. Disabled components now set `aria-disabled="true"`, e.g. the ad skip button during its countdown. The seek bar is disabled while a linear ad is playing, and a disabled seek bar no longer seeks on keyboard or pointer input but stays focusable.
 
 ## [4.23.1] - 2026-11-05
 

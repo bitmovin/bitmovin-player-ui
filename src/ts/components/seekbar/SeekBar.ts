@@ -13,7 +13,7 @@ import { PlayerUtils } from '../../utils/PlayerUtils';
 import TimeShiftAvailabilityChangedArgs = PlayerUtils.TimeShiftAvailabilityChangedArgs;
 import LiveStreamDetectorEventArgs = PlayerUtils.LiveStreamDetectorEventArgs;
 import { TimelineMarker } from '../../UIConfig';
-import { AdEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
+import { AdEvent, AdLinearityChangedEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import { StringUtils } from '../../utils/StringUtils';
 import { SeekBarType, SeekBarController } from '../../utils/SeekBarController';
 import { i18n } from '../../localization/i18n';
@@ -146,7 +146,9 @@ export class SeekBar extends Component<SeekBarConfig> {
   private isUserSeeking = false;
   // We need to track the current ad state manually since our mobile SDKs don't expose an API to check if an ad is active.
   private isAdPlaying: boolean = false;
-  // Tracks whether the seek bar was disabled by a linear ad, so that only this state is restored after the ad break.
+  // The seek bar is disabled while either the integrator disabled it or a linear ad is playing. Both are tracked
+  // separately so that the end of an ad break does not override the integrator's choice and vice versa.
+  private isDisabledByCaller: boolean = false;
   private isDisabledForLinearAd: boolean = false;
 
   private seekBarEvents = {
@@ -266,7 +268,11 @@ export class SeekBar extends Component<SeekBarConfig> {
       uimanager.getConfig().volumeController,
     );
 
-    seekBarController.setSeekBarControls(this.getDomElement(), () => this.seekBarType);
+    seekBarController.setSeekBarControls(
+      this.getDomElement(),
+      () => this.seekBarType,
+      () => this.isEnabled(),
+    );
 
     // The configureSeek flag can be used by subclasses to disable configuration as seek bar. E.g. the volume
     // slider is reusing this component but adds its own functionality, and does not need the seek functionality.
@@ -286,36 +292,24 @@ export class SeekBar extends Component<SeekBarConfig> {
       }
     };
 
-    // The player rejects seeks during linear ads, so the seek bar is exposed as disabled to assistive technologies
-    // while one is playing. It stays focusable so that the ad progress can still be read.
-    const disableForLinearAd = () => {
-      if (this.isEnabled()) {
-        this.isDisabledForLinearAd = true;
-        this.disable();
-      }
-    };
-
-    const restoreAfterLinearAd = () => {
-      if (this.isDisabledForLinearAd) {
-        this.isDisabledForLinearAd = false;
-        this.enable();
-      }
-    };
-
     player.on(player.exports.PlayerEvent.AdStarted, (event: AdEvent) => {
       this.isAdPlaying = true;
-      if (event.ad?.isLinear) {
-        disableForLinearAd();
-      }
+      this.setDisabledForLinearAd(Boolean(event.ad?.isLinear));
       resumeSeekBarUpdates();
+    });
+    // VPAID ads can switch between linear and non-linear without starting a new ad
+    player.on(player.exports.PlayerEvent.AdLinearityChanged, (event: AdLinearityChangedEvent) => {
+      if (this.isAdPlaying) {
+        this.setDisabledForLinearAd(event.isLinear);
+      }
     });
     player.on(player.exports.PlayerEvent.AdBreakFinished, () => {
       this.isAdPlaying = false;
-      restoreAfterLinearAd();
+      this.setDisabledForLinearAd(false);
     });
     player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
       this.isAdPlaying = false;
-      restoreAfterLinearAd();
+      this.setDisabledForLinearAd(false);
     });
 
     uimanager.onControlsShow.subscribe(resumeSeekBarUpdates);
@@ -753,6 +747,38 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
+  /**
+   * Disables the seek bar. It stays disabled until {@link enable} is called, also across ad breaks.
+   */
+  disable(): void {
+    this.isDisabledByCaller = true;
+    super.disable();
+  }
+
+  /**
+   * Enables the seek bar. While a linear ad is playing, the seek bar stays disabled until the ad break has finished,
+   * because the player rejects seeks during linear ads.
+   */
+  enable(): void {
+    this.isDisabledByCaller = false;
+    if (!this.isDisabledForLinearAd) {
+      super.enable();
+    }
+  }
+
+  /**
+   * The player rejects seeks during linear ads, so the seek bar is disabled while one is playing. It stays focusable
+   * so that the ad progress can still be read.
+   */
+  private setDisabledForLinearAd(disabledForLinearAd: boolean): void {
+    this.isDisabledForLinearAd = disabledForLinearAd;
+    if (disabledForLinearAd) {
+      super.disable();
+    } else if (!this.isDisabledByCaller) {
+      super.enable();
+    }
+  }
+
   protected toDomElement(): DOM {
     if (this.config.vertical) {
       this.config.cssClasses.push('vertical');
@@ -877,6 +903,12 @@ export class SeekBar extends Component<SeekBarConfig> {
 
       // Prevent selection of DOM elements (also prevents mousedown if current event is touchstart)
       e.preventDefault();
+
+      // A disabled seek bar must not start a seek. This also covers the mouse events that spatial navigation
+      // dispatches, which CSS `pointer-events` does not block.
+      if (this.isDisabled()) {
+        return;
+      }
       // Avoid propagation to VR handler
       if (this.player.vr != null) {
         e.stopPropagation();

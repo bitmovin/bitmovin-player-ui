@@ -79,8 +79,19 @@ export class SeekBarController {
     }
   }
 
-  public setSeekBarControls(domElement: DOM, type: () => SeekBarType) {
+  /**
+   * Adds keyboard controls to a seek bar element.
+   * @param domElement the seek bar element
+   * @param type returns the current type of the seek bar
+   * @param isEnabled returns whether the seek bar is enabled. A disabled seek bar ignores all keys that would change
+   *   its value or the playback position, while Space still toggles playback.
+   */
+  public setSeekBarControls(domElement: DOM, type: () => SeekBarType, isEnabled: () => boolean = () => true) {
     domElement.on('keydown', (e: KeyboardEvent) => {
+      if (!isEnabled() && e.keyCode !== UIUtils.KeyCode.Space) {
+        return;
+      }
+
       const seekBarType = type();
       const controls = this.seekBarControls(seekBarType);
       switch (e.keyCode) {
