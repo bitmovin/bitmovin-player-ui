@@ -172,6 +172,20 @@ export class NavigationGroup {
     }
   }
 
+  /**
+   * Focuses the given component if it can still take the focus, else the first component that can.
+   *
+   * A component remembered by this group can become unavailable in the meantime, e.g. hidden or removed from the
+   * tab order like an ad click-through overlay without a URL.
+   */
+  private focusComponentOrFirst(component: AnyComponent | undefined): void {
+    if (component && isFocusable(component)) {
+      this.focusComponent(component);
+    } else {
+      this.focusFirstComponent();
+    }
+  }
+
   protected defaultNavigationHandler(direction: Direction): boolean {
     if (!this.activeComponent) {
       return false;
@@ -216,6 +230,12 @@ export class NavigationGroup {
   protected defaultActionHandler(action: Action): boolean {
     switch (action) {
       case Action.SELECT:
+        if (this.activeComponent && !isFocusable(this.activeComponent)) {
+          // Never activate a component that became unavailable while focused. Move the focus to one the viewer can
+          // see and act on instead; activating that one is left to the next SELECT.
+          this.focusFirstComponent();
+          return true;
+        }
         if (this.activeComponent) {
           toHtmlElement(this.activeComponent).click();
         }
@@ -255,11 +275,7 @@ export class NavigationGroup {
     if (!this.activeComponent) {
       // If we do not have an active element, the active element has been disabled by a mouseleave
       // event. We should continue the navigation at the exact place where we left off.
-      if (this.activeComponentBeforeDisable) {
-        this.focusComponent(this.activeComponentBeforeDisable);
-      } else {
-        this.focusFirstComponent();
-      }
+      this.focusComponentOrFirst(this.activeComponentBeforeDisable);
       return Boolean(this.activeComponent);
     }
 
@@ -305,15 +321,12 @@ export class NavigationGroup {
    * Enable navigation group
    *
    * Sets active element to either element that was active before disable, or first element of tracked elements.
-   * A settings panel that was closed focuses its first element when it is reopened.
+   * A settings panel that was closed focuses its first element when it is reopened. An element that can no longer take
+   * the focus is not restored.
    */
   public enable(): void {
-    if (this.activeComponentBeforeDisable) {
-      this.focusComponent(this.activeComponentBeforeDisable);
-      this.activeComponentBeforeDisable = undefined;
-    } else {
-      this.focusFirstComponent();
-    }
+    this.focusComponentOrFirst(this.activeComponentBeforeDisable);
+    this.activeComponentBeforeDisable = undefined;
 
     this.trackElementHover();
   }

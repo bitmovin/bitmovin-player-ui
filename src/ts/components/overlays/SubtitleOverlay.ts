@@ -45,6 +45,10 @@ export interface SubtitleOverlayConfig extends ContainerConfig {
 /**
  * Overlays the player to display subtitles.
  *
+ * Image subtitle cues are rendered as images whose text alternative is the cue's `text`. Without it they only get a
+ * generic "Subtitle image" alternative, so a text equivalent of the dialogue has to come from the source (or be added
+ * to the cue by the integrator).
+ *
  * @category Components
  */
 export class SubtitleOverlay extends Container<SubtitleOverlayConfig> {
@@ -714,6 +718,10 @@ class ActiveSubtitleManager {
     return removedCues;
   }
 
+  /**
+   * Builds the image tag of an image subtitle cue. `altText` should be the cue's text; without it the image only gets a
+   * generic alternative, as the dialogue in the image is unknown to the UI.
+   */
   static generateImageTagText(imageData: string, altText?: string): string | undefined {
     if (!imageData) {
       return;

@@ -285,6 +285,67 @@ describe('NavigationGroup', () => {
     });
   });
 
+  describe('components that became unavailable', () => {
+    let subtitleToggleButtonHtmlMock: HTMLElement;
+    let subtitleFocusSpy: jest.SpyInstance;
+    let subtitleClickSpy: jest.SpyInstance;
+    let playbackFocusSpy: jest.SpyInstance;
+    let playbackClickSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      subtitleToggleButtonHtmlMock = getFirstDomElement(subtitleToggleButtonMock);
+      subtitleFocusSpy = jest.spyOn(subtitleToggleButtonHtmlMock, 'focus');
+      subtitleClickSpy = jest.spyOn(subtitleToggleButtonHtmlMock, 'click');
+      playbackFocusSpy = jest.spyOn(playbackToggleButtonHtmlMock, 'focus');
+      playbackClickSpy = jest.spyOn(playbackToggleButtonHtmlMock, 'click');
+      jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockImplementation(component => {
+        if (component === playbackToggleButtonMock) {
+          return playbackToggleButtonHtmlMock;
+        }
+        if (component === subtitleToggleButtonMock) {
+          return subtitleToggleButtonHtmlMock;
+        }
+        return undefined;
+      });
+      // The subtitle toggle stays remembered by the group, but can no longer take the focus
+      jest.spyOn(TypeGuards, 'isFocusable').mockImplementation(component => component !== subtitleToggleButtonMock);
+    });
+
+    it('should not activate an unavailable active component on SELECT but focus the first available one', () => {
+      rootNavigationGroup['activeComponent'] = subtitleToggleButtonMock;
+
+      const handled = rootNavigationGroup.handleAction(Action.SELECT);
+
+      expect(handled).toBe(true);
+      expect(subtitleClickSpy).not.toHaveBeenCalled();
+      expect(playbackClickSpy).not.toHaveBeenCalled();
+      expect(playbackFocusSpy).toHaveBeenCalled();
+      expect(rootNavigationGroup.getActiveComponent()).toBe(playbackToggleButtonMock);
+    });
+
+    it.each`
+      restoredBy
+      ${'enable'}
+      ${'handleNavigation'}
+    `(
+      'should focus the first available component instead of an unavailable saved one on $restoredBy',
+      ({ restoredBy }) => {
+        rootNavigationGroup['activeComponentBeforeDisable'] = subtitleToggleButtonMock;
+        rootNavigationGroup['activeComponent'] = undefined;
+
+        if (restoredBy === 'enable') {
+          rootNavigationGroup.enable();
+        } else {
+          rootNavigationGroup.handleNavigation(Direction.LEFT);
+        }
+
+        expect(subtitleFocusSpy).not.toHaveBeenCalled();
+        expect(playbackFocusSpy).toHaveBeenCalled();
+        expect(rootNavigationGroup.getActiveComponent()).toBe(playbackToggleButtonMock);
+      },
+    );
+  });
+
   describe('trackElementHover', () => {
     let subtitleButtonHtml: HTMLElement;
     let playbackButtonHtml: HTMLElement;
