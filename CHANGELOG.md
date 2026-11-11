@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Screen readers not announcing which option is selected in the settings sub-pages (e.g. quality, speed, audio, subtitles and subtitle style) and in the TV list boxes. The options are now exposed as `menuitemradio` with `aria-checked`, which is kept in sync with the selection.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed
