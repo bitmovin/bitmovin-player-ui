@@ -152,6 +152,11 @@ export class NavigationGroup {
       targetComponent = component;
     }
 
+    // A focusable container without any focusable component has nothing to focus
+    if (!targetComponent) {
+      return;
+    }
+
     this.blurActiveComponent();
     this.activeComponent = targetComponent;
     toHtmlElement(this.activeComponent).focus();
@@ -166,21 +171,41 @@ export class NavigationGroup {
   }
 
   public focusFirstComponent(): void {
-    const component = this.getComponents()[0];
-    if (component) {
-      this.focusComponent(component);
+    for (const component of this.getComponents()) {
+      const target = this.resolveFocusTarget(component);
+      if (target) {
+        this.focusComponent(target);
+        return;
+      }
     }
   }
 
   /**
-   * Focuses the given component if it can still take the focus, else the first component that can.
+   * Resolves the component that focusing the given one would focus, if it can take the focus.
+   *
+   * A focusable container resolves to its primary component, or to its first focusable component when the primary
+   * one cannot take the focus. An empty container resolves to nothing.
+   */
+  private resolveFocusTarget(component: Focusable | undefined): AnyComponent | undefined {
+    if (component instanceof FocusableContainer) {
+      const primaryComponent = component.primaryComponent;
+      return primaryComponent && isFocusable(primaryComponent) ? primaryComponent : component.components[0];
+    }
+
+    return component && isFocusable(component) ? component : undefined;
+  }
+
+  /**
+   * Focuses the given component if it can still take the focus, else the first component that can. Does nothing when
+   * no component can take the focus.
    *
    * A component remembered by this group can become unavailable in the meantime, e.g. hidden or removed from the
    * tab order like an ad click-through overlay without a URL.
    */
   private focusComponentOrFirst(component: AnyComponent | undefined): void {
-    if (component && isFocusable(component)) {
-      this.focusComponent(component);
+    const target = this.resolveFocusTarget(component);
+    if (target) {
+      this.focusComponent(target);
     } else {
       this.focusFirstComponent();
     }
