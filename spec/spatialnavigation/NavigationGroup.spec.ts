@@ -431,6 +431,51 @@ describe('NavigationGroup', () => {
       },
     );
 
+    it.each`
+      primary        | explicitPrimary
+      ${'explicit'}  | ${true}
+      ${'automatic'} | ${false}
+    `(
+      'should navigate past a focusable container without an available target with an $primary primary component',
+      ({ explicitPrimary }) => {
+        const subtitleHtmlMock = getFirstDomElement(subtitleToggleButtonMock);
+        const subtitleFocusSpy = jest.spyOn(subtitleHtmlMock, 'focus');
+        const toHtmlElementMock = toHtmlElementModule.toHtmlElement as jest.Mock;
+        const toOverlayOrPlaybackElement = toHtmlElementMock.getMockImplementation();
+        toHtmlElementMock.mockImplementation(component =>
+          component === subtitleToggleButtonMock ? subtitleHtmlMock : toOverlayOrPlaybackElement(component),
+        );
+        // Picks the first candidate in the group after the active component
+        (navigationAlgorithm.getComponentInDirection as jest.Mock).mockImplementation(
+          (activeComponent, components: unknown[]) => components.find(component => component !== activeComponent),
+        );
+        const afterNavigationMock = jest.fn();
+
+        const wrapperMock = mockComponent(Container);
+        wrapperMock.getComponents.mockReturnValue([wrappedOverlayMock]);
+        const focusableContainer = new FocusableContainer(
+          wrapperMock,
+          explicitPrimary ? wrappedOverlayMock : undefined,
+        );
+        const navigationGroup = new NavigationGroup(
+          rootContainerMock,
+          playbackToggleButtonMock,
+          focusableContainer,
+          subtitleToggleButtonMock,
+        );
+        navigationGroup.afterNavigation = afterNavigationMock;
+        navigationGroup['activeComponent'] = playbackToggleButtonMock;
+        overlayAvailable = false;
+
+        expect(navigationGroup.handleNavigation(Direction.RIGHT)).toBe(true);
+
+        expect(overlayFocusSpy).not.toHaveBeenCalled();
+        expect(subtitleFocusSpy).toHaveBeenCalled();
+        expect(navigationGroup.getActiveComponent()).toBe(subtitleToggleButtonMock);
+        expect(afterNavigationMock).toHaveBeenCalledWith(Direction.RIGHT, subtitleToggleButtonMock);
+      },
+    );
+
     it('should do nothing on SELECT when no component can take the focus', () => {
       const wrapperMock = mockComponent(Container);
       wrapperMock.getComponents.mockReturnValue([wrappedOverlayMock]);

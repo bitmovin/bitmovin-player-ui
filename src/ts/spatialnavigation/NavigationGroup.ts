@@ -239,8 +239,12 @@ export class NavigationGroup {
       }
     }
 
-    // If no component was found within the container itself, check all components within the group
-    const targetComponent = getComponentInDirection(this.activeComponent, this.getComponents(), direction);
+    // If no component was found within the container itself, check all components within the group. Focusable
+    // containers without an available focus target are left out, so navigation continues past them.
+    const candidates = this.getComponents().filter(component => this.resolveFocusTarget(component));
+    const targetComponent = this.resolveFocusTarget(
+      getComponentInDirection(this.activeComponent, candidates, direction),
+    );
 
     if (targetComponent) {
       this.focusComponent(targetComponent);
