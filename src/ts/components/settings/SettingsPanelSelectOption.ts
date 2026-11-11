@@ -39,7 +39,7 @@ export class SettingsPanelSelectOption extends InteractiveSettingsPanelItem<Sett
       config,
       {
         cssClasses: ['ui-settings-panel-item-select-option'],
-        role: 'menuitem',
+        role: 'menuitemradio',
         tabIndex: 0,
       } as SettingsPanelSelectOptionConfig,
       this.config,
@@ -50,13 +50,15 @@ export class SettingsPanelSelectOption extends InteractiveSettingsPanelItem<Sett
     super.configure(player, uimanager);
 
     const handleSelectedOptionChanged = () => {
-      const selectedItem = this.settingComponent.getSelectedItem();
+      const isSelected = this.settingsValue === this.settingComponent.getSelectedItem();
 
-      if (this.settingsValue === selectedItem) {
+      if (isSelected) {
         this.getDomElement().addClass(this.prefixCss('selected'));
       } else {
         this.getDomElement().removeClass(this.prefixCss('selected'));
       }
+      // Expose the selected state to assistive technologies, not only through the CSS class / checkmark
+      this.getDomElement().attr('aria-checked', isSelected ? 'true' : 'false');
     };
     this.settingComponent.onItemSelected.subscribe(handleSelectedOptionChanged);
 
