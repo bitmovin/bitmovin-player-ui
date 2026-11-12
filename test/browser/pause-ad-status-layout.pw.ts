@@ -20,3 +20,146 @@ for (const factory of ['default', 'smallScreen', 'tv'] as const) {
     });
   }
 }
+
+for (const factory of ['default', 'smallScreen', 'tv'] as const) {
+  test(`the Learn more pill sits beside Close with an equal height in ${factory}`, async ({ page }) => {
+    const ui = await mountUi(page, { factory, mobile: factory === 'smallScreen', live: false });
+    await ui.player.startPauseAd({ clickThroughUrl: 'https://example.com/pause-ad' });
+    const learnMore = page.getByRole('button', { name: 'Learn more, opens in a new tab', exact: true });
+    const close = page.getByRole('button', { name: 'Close', exact: true });
+    await expect(learnMore).toBeVisible();
+    await expect(close).toBeVisible();
+
+    const learnMoreBounds = await learnMore.boundingBox();
+    const closeBounds = await close.boundingBox();
+    if (!learnMoreBounds || !closeBounds) throw new Error('both pause-ad buttons must be laid out');
+
+    expect(learnMoreBounds.height).toBeCloseTo(closeBounds.height, 2);
+    expect(learnMoreBounds.y).toBeCloseTo(closeBounds.y, 2);
+    expect(learnMoreBounds.x + learnMoreBounds.width, 'the pills must not overlap').toBeLessThan(closeBounds.x);
+  });
+}
+
+for (const factory of ['default', 'smallScreen', 'tv'] as const) {
+  test(`the pause-ad status row fits a narrow player with long translations in ${factory}`, async ({ page }) => {
+    const ui = await mountUi(page, {
+      factory,
+      mobile: factory === 'smallScreen',
+      live: false,
+      vocabularies: {
+        en: {
+          ad: 'Sponsored advertisement',
+          'ads.learnMore': 'Discover more about this offer',
+          'ads.learnMore.newTab': 'Discover more about this offer, opens in a new tab',
+          close: 'Close the advertisement',
+        },
+      },
+    });
+    await ui.player.resize(360);
+    await ui.player.startPauseAd({ clickThroughUrl: 'https://example.com/pause-ad' });
+
+    const overlay = page.locator('.bmpui-ui-pause-ad-status-overlay:visible');
+    const badge = overlay.locator('.bmpui-ui-pause-ad-status-badge');
+    const learnMore = overlay.getByRole('button', { name: 'Discover more about this offer, opens in a new tab' });
+    const close = overlay.getByRole('button', { name: 'Close the advertisement' });
+    await expect(badge).toBeVisible();
+    await expect(learnMore).toBeVisible();
+    await expect(close).toBeVisible();
+
+    const overlayBounds = await overlay.boundingBox();
+    const pills = await Promise.all([badge, learnMore, close].map(pill => pill.boundingBox()));
+    if (!overlayBounds || pills.some(bounds => !bounds)) throw new Error('the pause-ad status row must be laid out');
+
+    pills.forEach((bounds, index) => {
+      expect(bounds!.x, `pill ${index} must start inside the player`).toBeGreaterThanOrEqual(overlayBounds.x);
+      expect(bounds!.x + bounds!.width, `pill ${index} must end inside the player`).toBeLessThanOrEqual(
+        overlayBounds.x + overlayBounds.width,
+      );
+    });
+    for (let first = 0; first < pills.length; first++) {
+      for (let second = first + 1; second < pills.length; second++) {
+        const a = pills[first]!;
+        const b = pills[second]!;
+        const overlapping = a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+        expect(overlapping, `pills ${first} and ${second} must not overlap`).toBe(false);
+      }
+    }
+  });
+}
+
+test('the Learn more accessible name follows a UI language change together with its text', async ({ page }) => {
+  const ui = await mountUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: 'https://example.com/pause-ad' });
+
+  await ui.setLanguage('de');
+
+  const learnMore = page.getByRole('button', { name: 'Mehr erfahren, öffnet in einem neuen Tab', exact: true });
+  await expect(learnMore, 'the accessible name must be in the new language').toBeVisible();
+  await expect(learnMore, 'the accessible name must contain the visible text').toHaveText('Mehr erfahren');
+});
+
+// Engines without CSS `max()`, such as older webOS and Tizen TVs, still have to keep the title-bar actions clear.
+for (const withoutCssMax of [false, true]) {
+  const engine = withoutCssMax ? ', on an engine without CSS max()' : '';
+
+  test(`the title-bar actions move below wrapped pause-ad buttons in a narrow small-screen player${engine}`, async ({
+    page,
+  }) => {
+    const ui = await mountUi(page, {
+      factory: 'smallScreen',
+      mobile: true,
+      live: false,
+      withoutCssMax,
+      vocabularies: {
+        en: {
+          ad: 'Sponsored advertisement',
+          'ads.learnMore': 'Discover more about this offer',
+          'ads.learnMore.newTab': 'Discover more about this offer, opens in a new tab',
+          close: 'Close the advertisement',
+        },
+      },
+    });
+    await ui.player.resize(360);
+    await ui.player.makeCastAndAirPlayAvailable();
+    await ui.player.startPauseAd({ clickThroughUrl: 'https://example.com/pause-ad' });
+
+    const badge = page.locator('.bmpui-ui-pause-ad-status-badge:visible');
+    const pauseAdButtons = [
+      page.getByRole('button', { name: 'Discover more about this offer, opens in a new tab' }),
+      page.getByRole('button', { name: 'Close the advertisement' }),
+    ];
+    const titleBarActions = [
+      page.getByRole('button', { name: 'Google Cast' }),
+      page.getByRole('button', { name: 'Apple AirPlay' }),
+    ];
+    for (const control of [...pauseAdButtons, ...titleBarActions]) {
+      await expect(control).toBeVisible();
+    }
+    const pauseAdBounds = await Promise.all(pauseAdButtons.map(button => button.boundingBox()));
+    expect(pauseAdBounds[1]!.y, 'this scenario needs the pause-ad buttons to wrap onto a second row').toBeGreaterThan(
+      pauseAdBounds[0]!.y,
+    );
+
+    // The title bar moves below the whole status row, the badge included, instead of sharing its rows.
+    const statusRowBottom = Math.max(
+      ...[...pauseAdBounds, await badge.boundingBox()].map(bounds => bounds!.y + bounds!.height),
+    );
+    for (const action of titleBarActions) {
+      const actionBounds = (await action.boundingBox())!;
+      expect(
+        actionBounds.y,
+        `${await action.getAttribute('aria-label')} must sit below the pause-ad status row`,
+      ).toBeGreaterThanOrEqual(statusRowBottom);
+    }
+
+    // Each control has to be the topmost element at its own center, or a tap would reach another control.
+    for (const control of [...pauseAdButtons, ...titleBarActions]) {
+      const receivesClicks = await control.evaluate(element => {
+        const bounds = element.getBoundingClientRect();
+        const hit = document.elementFromPoint(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+        return hit !== null && element.contains(hit);
+      });
+      expect(receivesClicks, `${await control.getAttribute('aria-label')} must stay clickable`).toBe(true);
+    }
+  });
+}

@@ -20,9 +20,17 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   }
 
   // The pause status row owns the top edge, so title-bar content and its actions move below it
-  // instead of sharing the corners with the badge and the dismiss button.
+  // instead of sharing the corners with the badge and the dismiss button. When the row wraps, the
+  // `PauseAdStatusOverlay` publishes its measured height, so the title bar keeps clear of every row.
+  // The measured height is used as is, without `max()`: engines with custom properties but without
+  // `max()`, e.g. older webOS and Tizen TVs, would otherwise reset the margin to 0, because a
+  // declaration with `var()` is only found invalid after it replaced the fallback above it.
+  // Browsers without custom properties keep the single-row clearance.
   .#{$prefix}-ui-titlebar > .#{$prefix}-container-wrapper {
+    // The duplicate is the fallback for browsers without custom properties.
+    // sass-lint:disable-block no-duplicate-properties
     margin-top: $pause-ad-status-row-height;
+    margin-top: var(--#{$prefix}-pause-ad-status-row-height, #{$pause-ad-status-row-height});
   }
 
   // Source metadata describes the content behind the ad and competes with the ad message.
@@ -47,6 +55,20 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
   * {
     pointer-events: none;
   }
+
+  // The badge starts the status row on the left and the buttons end it on the right. When the row
+  // does not fit, e.g. in a narrow player or with long translations, the buttons wrap below instead
+  // of overlapping the badge. Spacing uses margins on the items because older TV browsers do not
+  // support `gap` in flex layouts.
+  > .#{$prefix}-container-wrapper {
+    align-items: flex-start;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: $font-size;
+    justify-content: flex-end;
+    padding: safe-area-max(0.5em, top) safe-area-max(1em, right) 0 safe-area-max(0.5em, left);
+  }
 }
 
 // Covers the player while remaining below the visible controls.
@@ -69,15 +91,19 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
 }
 
 .#{$prefix}-ui-pause-ad-status-badge,
+.#{$prefix}-ui-button-pause-ad-click-through,
 .#{$prefix}-ui-button-pause-ad-dismiss {
   background-color: transparentize($color-black, 0.25);
   border-radius: 20px;
   box-sizing: border-box;
   color: $color-highlight-ads;
   font-size: $font-size;
+  margin: 0.5em 0 0 0.5em;
+  max-width: 100%;
   min-height: calc(#{$icon-size} + 1em);
-  min-width: fit-content;
   padding: 0.5em 1em;
+  // Positioned so that the status controls stack above the click catcher, which precedes them in the DOM.
+  position: relative;
 
   .#{$prefix}-label,
   .#{$prefix}-ui-label-text {
@@ -88,26 +114,25 @@ $pause-ad-status-row-height: calc(#{$font-size} * 3);
 .#{$prefix}-ui-pause-ad-status-badge {
   @extend %ui-label;
 
+  // Pushes the buttons to the right edge of the row.
+  margin-right: auto;
   pointer-events: auto;
-  left: safe-area-max(1em, left);
-  position: absolute;
-  top: safe-area-max(1em, top);
 }
 
+.#{$prefix}-ui-button-pause-ad-click-through,
 .#{$prefix}-ui-button-pause-ad-dismiss {
   @extend %ui-button;
 
   height: auto;
   pointer-events: auto;
-  position: absolute;
-  right: safe-area-max(1em, right);
-  top: safe-area-max(1em, top);
-
-  .#{$prefix}-ui-icon {
-    background-image: svg-load('../../assets/images/close.svg', stroke=$color-icon-highlight-ads);
-  }
 
   &:hover {
     background-color: $color-black;
+  }
+}
+
+.#{$prefix}-ui-button-pause-ad-dismiss {
+  .#{$prefix}-ui-icon {
+    background-image: svg-load('../../assets/images/close.svg', stroke=$color-icon-highlight-ads);
   }
 }

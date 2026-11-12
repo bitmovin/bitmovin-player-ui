@@ -2,12 +2,16 @@ import { Ad, AdEvent, PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmov
 import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
 import { i18n } from '../../localization/i18n';
+import { ClickThroughUtils } from '../../utils/ClickThroughUtils';
 import { NON_LINEAR_AD_ENDED_EVENTS, NON_LINEAR_AD_STARTED_EVENT } from '../../utils/NonLinearAdEvents';
 import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
 import { Container, ContainerConfig } from '../Container';
 import { Label } from '../labels/Label';
 
 const PAUSE_AD_ACTIVE_CLASS = 'pause-ad-active';
+// Custom property on the UI container that tells sibling components, such as the title bar, how much
+// space the status row occupies at the top of the player.
+const STATUS_ROW_HEIGHT_PROPERTY = 'pause-ad-status-row-height';
 
 /**
  * Player-sized click target for a pause ad rendered below the UI.
@@ -54,9 +58,15 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
    * for remote-controlled platforms.
    */
   public readonly dismissButton: Button<ButtonConfig>;
+  /**
+   * Button that opens the pause ad's click-through. It is the keyboard and assistive technology equivalent of
+   * clicking the creative, and is only shown when the ad has an http or https click-through destination.
+   */
+  public readonly clickThroughButton: Button<ButtonConfig>;
   private readonly clickCatcher: PauseAdClickCatcher;
   private uiContainerElement?: DOM;
   private activePauseAd?: Ad;
+  private statusRowResizeObserver?: ResizeObserver;
 
   constructor(config: ContainerConfig = {}) {
     super(config);
@@ -83,9 +93,17 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
       hidden: true,
       acceptsTouchWithUiHidden: true,
     });
+    this.clickThroughButton = new Button({
+      cssClass: 'ui-button-pause-ad-click-through',
+      text: i18n.getLocalizer('ads.learnMore'),
+      ariaLabel: i18n.getLocalizer('ads.learnMore.newTab'),
+      buttonStyle: ButtonStyle.Text,
+      hidden: true,
+      acceptsTouchWithUiHidden: true,
+    });
 
     // The catcher comes first so visible controls remain above it.
-    this.config.components = [this.clickCatcher, badgeLabel, this.dismissButton];
+    this.config.components = [this.clickCatcher, badgeLabel, this.clickThroughButton, this.dismissButton];
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -100,8 +118,13 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
       player.on(eventType as PlayerEvent, this.handleNonLinearAdEnded as PlayerEventCallback<PlayerEvent>);
     });
     player.on(player.exports.PlayerEvent.SourceUnloaded, this.hidePauseAdStatus);
+    // Fallback for platforms without ResizeObserver, where the row height is only measured at these points.
+    player.on(player.exports.PlayerEvent.PlayerResized, this.updateStatusRowHeight);
 
     this.clickCatcher.onClick.subscribe(() => {
+      this.getClickThroughAction()?.();
+    });
+    this.clickThroughButton.onClick.subscribe(() => {
       this.getClickThroughAction()?.();
     });
 
@@ -110,6 +133,16 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
     this.dismissButton.onClick.subscribe(() => {
       player.ads.skip();
     });
+  }
+
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+
+    // Buttons only update their visible text on a language change. The accessible name has to follow, so that it
+    // still contains the visible text, e.g. for speech input users.
+    if (this.clickThroughButton.hasDomElement()) {
+      this.clickThroughButton.setAriaLabel(this.clickThroughButton.getConfig().ariaLabel);
+    }
   }
 
   release(): void {
@@ -123,17 +156,17 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
    * Like linear ads (see `AdClickOverlay`), the action opens the destination and then reports it
    * through `clickThroughUrlOpened`, which only tracks the click.
    * The action becomes a no-op when this ad ends or is replaced, or this overlay becomes hidden.
-   * Returns `undefined` when there is no click-through destination.
+   * Returns `undefined` when there is no click-through destination. A destination other than an http or https URL
+   * counts as none: it is neither opened nor reported.
    */
   getClickThroughAction(): (() => void) | undefined {
     const ad = this.activePauseAd;
-    if (!ad?.clickThroughUrl) {
+    if (!ClickThroughUtils.getSafeUrl(ad?.clickThroughUrl)) {
       return undefined;
     }
 
     return () => {
-      if (this.activePauseAd === ad && this.isShown()) {
-        window.open(ad.clickThroughUrl, '_blank');
+      if (this.activePauseAd === ad && this.isShown() && ClickThroughUtils.open(ad.clickThroughUrl)) {
         ad.clickThroughUrlOpened?.();
       }
     };
@@ -146,20 +179,60 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
 
     this.activePauseAd = event.ad;
 
-    // Without a destination, clicks continue to reach the controls below.
-    if (event.ad.clickThroughUrl) {
+    // Without a destination that can be opened, clicks continue to reach the controls below.
+    if (ClickThroughUtils.getSafeUrl(event.ad.clickThroughUrl)) {
       this.clickCatcher.show();
+      this.clickThroughButton.show();
     } else {
       this.clickCatcher.hide();
+      this.clickThroughButton.hide();
     }
 
-    // Both controls have to be in their final state before the overlay becomes visible: showing the
+    // All controls have to be in their final state before the overlay becomes visible: showing the
     // overlay activates the pause-ad navigation group, which focuses the first component it finds
     // focusable at that moment.
     this.dismissButton.show();
     this.show();
     this.uiContainerElement?.addClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
+    this.trackStatusRowHeight();
   };
+
+  /**
+   * The status row wraps onto further rows in narrow players or with long translations, so the space it needs is only
+   * known after layout. It is published on the UI container, so that other components can keep clear of it.
+   */
+  private trackStatusRowHeight(): void {
+    this.updateStatusRowHeight();
+
+    const statusRow = this.innerContainerElement.get(0);
+    if (!this.statusRowResizeObserver && statusRow && typeof ResizeObserver !== 'undefined') {
+      this.statusRowResizeObserver = new ResizeObserver(this.updateStatusRowHeight);
+      this.statusRowResizeObserver.observe(statusRow);
+    }
+  }
+
+  private readonly updateStatusRowHeight = (): void => {
+    const uiContainer = this.uiContainerElement?.get(0);
+    const statusRow = this.innerContainerElement?.get(0);
+    if (!this.activePauseAd || !uiContainer || !statusRow) {
+      return;
+    }
+
+    // A row that is not laid out, e.g. in an inactive UI variant, measures 0. The stylesheet's single-row
+    // clearance applies until it is measured again.
+    const property = `--${this.prefixCss(STATUS_ROW_HEIGHT_PROPERTY)}`;
+    if (statusRow.offsetHeight > 0) {
+      uiContainer.style.setProperty(property, `${statusRow.offsetHeight}px`);
+    } else {
+      uiContainer.style.removeProperty(property);
+    }
+  };
+
+  private stopTrackingStatusRowHeight(): void {
+    this.statusRowResizeObserver?.disconnect();
+    this.statusRowResizeObserver = undefined;
+    this.uiContainerElement?.get(0)?.style.removeProperty(`--${this.prefixCss(STATUS_ROW_HEIGHT_PROPERTY)}`);
+  }
 
   private readonly handleNonLinearAdEnded = (event: AdEvent): void => {
     if (!this.activePauseAd) {
@@ -176,8 +249,10 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
 
   private readonly hidePauseAdStatus = (): void => {
     this.dismissButton.hide();
+    this.clickThroughButton.hide();
     this.clickCatcher.hide();
     this.activePauseAd = undefined;
+    this.stopTrackingStatusRowHeight();
     this.uiContainerElement?.removeClass(this.prefixCss(PAUSE_AD_ACTIVE_CLASS));
     this.hide();
   };

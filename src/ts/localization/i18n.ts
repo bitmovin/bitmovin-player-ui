@@ -95,6 +95,8 @@ export interface Vocabulary {
   'ads.skip': string;
   'ads.skippableIn': string;
   'ads.adNumberOfTotal': string;
+  'ads.learnMore': string;
+  'ads.learnMore.newTab': string;
   ad: string;
   pictureInPicture: string;
   appleAirplay: string;

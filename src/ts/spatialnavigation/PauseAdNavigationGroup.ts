@@ -2,6 +2,7 @@ import { NavigationGroup } from './NavigationGroup';
 import { SeekBarHandler } from './SeekBarHandler';
 import { PauseAdStatusOverlay } from '../components/ads/PauseAdStatusOverlay';
 import { Action, Focusable } from './types';
+import { Button, ButtonConfig } from '../components/buttons/Button';
 
 /**
  * Navigation group that becomes active while a pause ad is showing.
@@ -12,14 +13,39 @@ import { Action, Focusable } from './types';
  * group membership, not from the stylesheet.
  *
  * The dismiss button is always the first focus target, so the remote lands on the way out of the ad.
+ * The click-through button follows it, so the remote can also open the advertiser's page. When the
+ * click-through button disappears, e.g. because the next ad has no destination, the remote moves to
+ * the dismiss button so that a hidden button can never be selected.
  */
 export class PauseAdNavigationGroup extends NavigationGroup {
   private readonly seekBarHandler: SeekBarHandler;
+  private readonly dismissButton: Button<ButtonConfig>;
+  private readonly clickThroughButton: Button<ButtonConfig>;
 
   constructor(pauseAdStatusOverlay: PauseAdStatusOverlay, ...components: Focusable[]) {
-    super(pauseAdStatusOverlay, pauseAdStatusOverlay.dismissButton, ...components);
+    super(
+      pauseAdStatusOverlay,
+      pauseAdStatusOverlay.dismissButton,
+      pauseAdStatusOverlay.clickThroughButton,
+      ...components,
+    );
     this.seekBarHandler = new SeekBarHandler(this);
+    this.dismissButton = pauseAdStatusOverlay.dismissButton;
+    this.clickThroughButton = pauseAdStatusOverlay.clickThroughButton;
+    this.clickThroughButton.onHide.subscribe(this.handleClickThroughButtonHidden);
   }
+
+  private readonly handleClickThroughButtonHidden = (): void => {
+    // A target saved while another group (such as Settings) interrupts this ad is restored on enable.
+    if (this.getActiveComponentBeforeDisable() === this.clickThroughButton) {
+      this.clearActiveComponentBeforeDisable();
+    }
+
+    // When the whole overlay closes, the dismiss button is hidden as well and this group is disabled.
+    if (this.activeComponent === this.clickThroughButton && this.dismissButton.isShown()) {
+      this.focusComponent(this.dismissButton);
+    }
+  };
 
   protected defaultActionHandler(action: Action): boolean {
     if (action === Action.BACK) {
@@ -43,6 +69,7 @@ export class PauseAdNavigationGroup extends NavigationGroup {
   }
 
   public release(): void {
+    this.clickThroughButton.onHide.unsubscribe(this.handleClickThroughButtonHidden);
     this.seekBarHandler.release();
     super.release();
   }

@@ -44,16 +44,18 @@ interface BrowserTestWindow extends Window {
         buildSmallScreenUI(player: object, config: object): UiHandle;
         buildTvUI(player: object, config: object): UiHandle;
       };
+      i18n: { setLanguage(language: string): void };
     };
   };
   __fire(event: string, data?: object): void;
   __setSourceLoaded(sourceLoaded: boolean): void;
+  __setCastAndAirPlayAvailable(available: boolean): void;
   __pausePlayback(): void;
   __ui?: UiHandle;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
-  /** URLs passed to `window.open`, which the harness records instead of opening. */
-  __openedUrls: string[];
+  /** Calls of `window.open`, which the harness records instead of opening, unless mounted with `realWindowOpen`. */
+  __openedWindows: OpenedWindow[];
   /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
   __activePauseAdId?: string;
   __currentTime?: number;
@@ -75,6 +77,22 @@ function distFile(relativePath: string): string {
     );
   }
   return absolute;
+}
+
+/**
+ * Rewrites a stylesheet the way an engine without CSS `max()` reads it.
+ *
+ * Such an engine skips `@supports` blocks that test for `max()`, and drops a declaration that uses `max()` while
+ * parsing, so an earlier declaration of the same property applies instead. A declaration that also uses `var()`
+ * is only validated after substituting the variables, though: it is kept while parsing, and once found invalid
+ * its property falls back to its initial value, as if set to `unset`.
+ */
+function withoutCssMax(css: string): string {
+  return css
+    .replace(/@supports[^{]*\bmax\([^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, '')
+    .replace(/([\w-]+)\s*:([^;{}]*\bmax\([^;{}]*)(;|(?=\}))/g, (_declaration, property: string, value: string, end) =>
+      /\bvar\(/.test(value) ? `${property}: unset${end}` : '',
+    );
 }
 
 /**
@@ -125,6 +143,22 @@ export interface MountOptions {
    * occupy no space, so a scenario about title-bar layout has to supply it.
    */
   metadata?: { title?: string; description?: string };
+  /**
+   * Custom translations, keyed by language and vocabulary key, for scenarios that depend on the
+   * length or language of UI texts. They are merged into the built-in vocabularies.
+   */
+  vocabularies?: Record<string, Record<string, string>>;
+  /**
+   * Load the stylesheet the way an engine without CSS `max()` reads it, such as Chromium before 79 on older
+   * webOS and Tizen TVs. See {@link withoutCssMax}.
+   */
+  withoutCssMax?: boolean;
+  /**
+   * Keep the browser's own `window.open`, so click-throughs open real popups. By default the harness records
+   * the calls instead, see {@link BrowserPlayerController.openedWindows}. A scenario using this must route
+   * every URL it opens, so that no request leaves the machine.
+   */
+  realWindowOpen?: boolean;
 }
 
 export interface PauseAdOptions {
@@ -133,6 +167,13 @@ export interface PauseAdOptions {
    * the UI must leave fully transparent to pointer input.
    */
   clickThroughUrl?: string;
+}
+
+/** The arguments of a `window.open` call. */
+export interface OpenedWindow {
+  url: string;
+  target?: string;
+  features?: string;
 }
 
 /** A subtitle cue, as the player hands it to the UI, minus the fields the harness assigns. */
@@ -170,6 +211,9 @@ export interface BrowserPlayerController {
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
 
+  /** Makes Cast and AirPlay available and emits the events that make the UI show their buttons. */
+  makeCastAndAirPlayAvailable(): Promise<void>;
+
   /** Emits the source-unloaded lifecycle event. */
   unloadSource(): Promise<void>;
 
@@ -185,6 +229,9 @@ export interface BrowserPlayerController {
   /** URLs the UI passed to `window.open` since mounting. */
   openedUrls(): Promise<string[]>;
 
+  /** All arguments the UI passed to `window.open` since mounting. */
+  openedWindows(): Promise<OpenedWindow[]>;
+
   /** Whether the stub player still considers a pause ad active. */
   pauseAdActive(): Promise<boolean>;
 
@@ -197,6 +244,9 @@ export interface MountedUi {
 
   /** Applies subtitle settings through the manager the settings panel writes to. */
   applySubtitleSettings(settings: SubtitleSettings): Promise<void>;
+
+  /** Switches the UI language at runtime, the way an integrator or the subtitle language adaptation does. */
+  setLanguage(language: string): Promise<void>;
 }
 
 /**
@@ -215,6 +265,9 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     withoutShadowRoot = false,
     hideDelay = -1,
     videoQualities = [],
+    vocabularies,
+    withoutCssMax: emulateWithoutCssMax = false,
+    realWindowOpen = false,
   } = options;
 
   await page.setContent(`<!doctype html>
@@ -242,11 +295,14 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       delete (window as { ShadowRoot?: unknown }).ShadowRoot;
     });
   }
-  await page.addStyleTag({ path: distFile('css/bitmovinplayer-ui.css') });
+  const stylesheet = distFile('css/bitmovinplayer-ui.css');
+  await page.addStyleTag(
+    emulateWithoutCssMax ? { content: withoutCssMax(fs.readFileSync(stylesheet, 'utf8')) } : { path: stylesheet },
+  );
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay, customVocabularies, recordWindowOpen }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -261,14 +317,20 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       browserWindow.__fire = fire;
 
       // Record click-through navigation instead of opening real popups.
-      browserWindow.__openedUrls = [];
-      window.open = (url?: string | URL) => {
-        browserWindow.__openedUrls.push(String(url));
-        return null;
-      };
+      browserWindow.__openedWindows = [];
+      if (recordWindowOpen) {
+        window.open = (url?: string | URL, target?: string, features?: string) => {
+          browserWindow.__openedWindows.push({ url: String(url), target, features });
+          return null;
+        };
+      }
 
       let playing = true;
       let sourceLoaded = true;
+      let castAndAirPlayAvailable = false;
+      browserWindow.__setCastAndAirPlayAvailable = available => {
+        castAndAirPlayAvailable = available;
+      };
       browserWindow.__setSourceLoaded = loaded => {
         sourceLoaded = loaded;
       };
@@ -306,7 +368,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         isStalled: () => false,
         isCasting: () => false,
         isAirplayActive: () => false,
-        isAirplayAvailable: () => false,
+        isAirplayAvailable: () => castAndAirPlayAvailable,
+        isCastAvailable: () => castAndAirPlayAvailable,
         isViewModeAvailable: () => false,
         hasEnded: () => false,
         getViewMode: () => 'inline',
@@ -375,6 +438,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
         componentConfigOverrides: { UIContainer: { hideDelay } },
         metadata: uiMetadata,
+        ...(customVocabularies ? { localization: { language: 'en', vocabularies: customVocabularies } } : {}),
       };
       switch (uiFactory) {
         case 'default':
@@ -392,7 +456,15 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         }
       }
     },
-    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities, hideDelay },
+    {
+      isLive: live,
+      uiFactory: factory,
+      uiMetadata: metadata,
+      availableVideoQualities: videoQualities,
+      hideDelay,
+      customVocabularies: vocabularies,
+      recordWindowOpen: !realWindowOpen,
+    },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);
@@ -455,6 +527,15 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           { entered: cue, cueStartTime: start },
         );
       },
+      makeCastAndAirPlayAvailable: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          const PlayerEvent = browserWindow.bitmovin.player.PlayerEvent;
+          browserWindow.__setCastAndAirPlayAvailable(true);
+          browserWindow.__fire(PlayerEvent.CastAvailable);
+          browserWindow.__fire(PlayerEvent.AirplayAvailable);
+        });
+      },
       unloadSource: async () => {
         await page.evaluate(() => {
           const browserWindow = window as unknown as BrowserTestWindow;
@@ -473,7 +554,10 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__clickThroughCount || 0);
       },
       openedUrls: async () => {
-        return page.evaluate(() => (window as unknown as BrowserTestWindow).__openedUrls);
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__openedWindows.map(opened => opened.url));
+      },
+      openedWindows: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__openedWindows);
       },
       pauseAdActive: async () => {
         return page.evaluate(() => Boolean((window as unknown as BrowserTestWindow).__activePauseAdId));
@@ -507,6 +591,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           manager[setting as keyof SubtitleSettings].value = value;
         });
       }, settings);
+    },
+    setLanguage: async language => {
+      await page.evaluate(newLanguage => {
+        (window as unknown as BrowserTestWindow).bitmovin.playerui.i18n.setLanguage(newLanguage);
+      }, language);
     },
   };
 }
