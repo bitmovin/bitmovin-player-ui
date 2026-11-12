@@ -72,6 +72,7 @@ export interface InternalUIConfig extends UIConfig {
   };
   volumeController: VolumeController;
   adBreakTracker: AdBreakTracker;
+  /** @hidden */
   statusAnnouncer: StatusAnnouncer;
 }
 
@@ -353,7 +354,8 @@ export class UIManager {
       },
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
       adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer()),
-      statusAnnouncer: new StatusAnnouncer(),
+      // The live regions are outside the UI variants, so they take the language from the active one
+      statusAnnouncer: new StatusAnnouncer(() => this.getActiveUiLanguage()),
     };
     this.componentLayoutOverrideProcessor = new ComponentLayoutOverrideProcessor(this.config);
 
@@ -945,6 +947,15 @@ export class UIManager {
    */
   announce(message: string, options?: AnnounceOptions): void {
     this.config.statusAnnouncer.announce(message, options);
+  }
+
+  /**
+   * The language that the active UI variant declares on its root element, which is the language its messages are
+   * localized in.
+   */
+  private getActiveUiLanguage(): string | undefined {
+    const uiElement = this.currentUi?.getUI()?.getDomElement()?.get(0);
+    return uiElement?.getAttribute('lang') || undefined;
   }
 
   /**

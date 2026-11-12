@@ -17,6 +17,64 @@ describe('StatusAnnouncer', () => {
     jest.useRealTimers();
   });
 
+  describe('language', () => {
+    let language: string | undefined;
+    let localizedAnnouncer: StatusAnnouncer;
+    let localizedRegion: HTMLElement;
+    let localizedAlertRegion: HTMLElement;
+
+    beforeEach(() => {
+      language = 'de';
+      localizedAnnouncer = new StatusAnnouncer(() => language);
+      [localizedRegion, localizedAlertRegion] = localizedAnnouncer.getDomElement().get() as HTMLElement[];
+    });
+
+    afterEach(() => {
+      localizedAnnouncer.release();
+    });
+
+    it.each([
+      ['status', false],
+      ['alert', true],
+    ])('should mark the %s region with the UI language when it writes a message', (_, assertive) => {
+      localizedAnnouncer.announce('Wiedergabe beendet', { assertive });
+      jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
+
+      const written = assertive ? localizedAlertRegion : localizedRegion;
+      expect(written.textContent).toBe('Wiedergabe beendet');
+      expect(written.getAttribute('lang')).toBe('de');
+    });
+
+    it('should take the language that is active when the message is written', () => {
+      localizedAnnouncer.announce('Wiedergabe beendet');
+      jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
+      language = 'fr';
+
+      localizedAnnouncer.announce('Lecture terminée');
+      jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
+
+      expect(localizedRegion.getAttribute('lang')).toBe('fr');
+    });
+
+    it('should leave the language to the page when the UI declares none', () => {
+      localizedAnnouncer.announce('Wiedergabe beendet');
+      jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
+      language = undefined;
+
+      localizedAnnouncer.announce('Playback finished');
+      jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
+
+      expect(localizedRegion.hasAttribute('lang')).toBe(false);
+    });
+  });
+
+  it('should not mark the regions with a language without a language source', () => {
+    announcer.announce('Buffering');
+    jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
+
+    expect(region.hasAttribute('lang')).toBe(false);
+  });
+
   it('should create one empty polite atomic status region', () => {
     expect(region.getAttribute('role')).toBe('status');
     expect(region.getAttribute('aria-live')).toBe('polite');

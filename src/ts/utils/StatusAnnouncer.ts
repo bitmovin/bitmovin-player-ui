@@ -34,9 +34,11 @@ class LiveRegion {
   readonly element: HTMLElement;
   private readonly writeTimeout: Timeout;
   private readonly clearTextTimeout: Timeout;
+  private readonly getLanguage: () => string | undefined;
   private pendingMessages: string[] = [];
 
-  constructor(role: 'status' | 'alert') {
+  constructor(role: 'status' | 'alert', getLanguage: () => string | undefined) {
+    this.getLanguage = getLanguage;
     this.element = document.createElement('div');
     this.element.className = '{{PREFIX}}-ui-status-announcer';
     this.element.setAttribute('role', role);
@@ -73,6 +75,13 @@ class LiveRegion {
   }
 
   private readonly flush = (): void => {
+    // The region is outside the UI, so it does not inherit the language of the UI that localized the message
+    const language = this.getLanguage();
+    if (language) {
+      this.element.setAttribute('lang', language);
+    } else {
+      this.element.removeAttribute('lang');
+    }
     // textContent, never innerHTML: messages can contain player or integrator supplied text such as device names.
     this.element.textContent = this.pendingMessages.join(' ');
     this.pendingMessages = [];
@@ -104,10 +113,20 @@ export class StatusAnnouncer {
    */
   static readonly CLEAR_DELAY_MS = 5000;
 
-  private readonly statusRegion = new LiveRegion('status');
-  private readonly alertRegion = new LiveRegion('alert');
+  private readonly statusRegion: LiveRegion;
+  private readonly alertRegion: LiveRegion;
   // A Map, so a topic can never collide with an Object.prototype member such as `__proto__`
   private readonly announcedSubjects = new Map<string, unknown>();
+
+  /**
+   * @param getLanguage returns the language of the UI that localizes the messages. The regions live outside that UI,
+   *   so each message marks its region with this language for screen readers to pronounce it correctly (WCAG 3.1.2).
+   *   Without a language the regions inherit the language of the page.
+   */
+  constructor(getLanguage: () => string | undefined = () => undefined) {
+    this.statusRegion = new LiveRegion('status', getLanguage);
+    this.alertRegion = new LiveRegion('alert', getLanguage);
+  }
 
   /**
    * Returns both live regions, which the owner has to attach to the DOM before the first announcement.

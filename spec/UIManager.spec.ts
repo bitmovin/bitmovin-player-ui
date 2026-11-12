@@ -460,6 +460,23 @@ describe('UIManager', () => {
       expect(append.mock.calls[0][0]).toBe(liveRegion);
     });
 
+    it('should mark the live regions with the language of the active UI variant', () => {
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+      const declareLanguage = (ui: UIContainer, language: string | null) =>
+        (ui.getDomElement().get as jest.Mock).mockReturnValue({
+          getAttribute: (name: string) => (name === 'lang' ? language : null),
+        });
+      declareLanguage(adUi.ui, 'de');
+      declareLanguage(defaultUi.ui, null);
+      const statusAnnouncerLanguage = () => uiManager['config'].statusAnnouncer['statusRegion']['getLanguage']();
+
+      uiManager.resolveUiVariant({ isAd: true });
+      expect(statusAnnouncerLanguage()).toBe('de');
+
+      uiManager.resolveUiVariant({ isAd: false });
+      expect(statusAnnouncerLanguage()).toBeUndefined();
+    });
+
     it('should announce messages of the integration', () => {
       const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
 
