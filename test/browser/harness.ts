@@ -44,6 +44,8 @@ interface BrowserTestWindow extends Window {
         buildSmallScreenUI(player: object, config: object): UiHandle;
         buildTvUI(player: object, config: object): UiHandle;
       };
+      i18n: { setLanguage(language: string): void };
+      UIManager: { setLocalizationConfig(config: { language: string; events?: object }): void };
     };
   };
   __fire(event: string, data?: object): void;
@@ -125,6 +127,8 @@ export interface MountOptions {
    * occupy no space, so a scenario about title-bar layout has to supply it.
    */
   metadata?: { title?: string; description?: string };
+  /** Subtitle tracks the player lists. Forced tracks are not listed by the player, so leave them out here too. */
+  subtitleTracks?: { id: string; label: string; lang?: string }[];
 }
 
 export interface PauseAdOptions {
@@ -170,6 +174,12 @@ export interface BrowserPlayerController {
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
 
+  /**
+   * Emits an update of the most recently entered cue, e.g. a changed HTML rendering. The player identifies the cue by
+   * its start time and text, so keep `text` as entered.
+   */
+  updateCue(cue: SubtitleCue): Promise<void>;
+
   /** Emits the source-unloaded lifecycle event. */
   unloadSource(): Promise<void>;
 
@@ -197,6 +207,19 @@ export interface MountedUi {
 
   /** Applies subtitle settings through the manager the settings panel writes to. */
   applySubtitleSettings(settings: SubtitleSettings): Promise<void>;
+
+  /** Switches the UI language at runtime, the way an integrator or the subtitle language adaptation does. */
+  setLanguage(language: string): Promise<void>;
+
+  /**
+   * Applies a localization config at runtime through the public `UIManager.setLocalizationConfig`. With
+   * `withOwnLanguageChangedDispatcher`, the config brings an integrator dispatcher that records the language
+   * changes it receives, see {@link MountedUi.languageChangesSeenByOwnDispatcher}.
+   */
+  setLocalizationConfig(config: { language: string }, withOwnLanguageChangedDispatcher?: boolean): Promise<void>;
+
+  /** New languages that integrator dispatchers passed to `setLocalizationConfig` have received. */
+  languageChangesSeenByOwnDispatcher(): Promise<string[]>;
 }
 
 /**
@@ -215,6 +238,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     withoutShadowRoot = false,
     hideDelay = -1,
     videoQualities = [],
+    subtitleTracks = [],
   } = options;
 
   await page.setContent(`<!doctype html>
@@ -246,7 +270,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay, listedSubtitleTracks }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -268,6 +292,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       };
 
       let playing = true;
+      let playbackSpeed = 1;
       let sourceLoaded = true;
       browserWindow.__setSourceLoaded = loaded => {
         sourceLoaded = loaded;
@@ -321,7 +346,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         getVideoBufferLength: () => 0,
         getAudioBufferLength: () => 0,
         getThumbnail: (): null => null,
-        subtitles: { list: (): never[] => [] },
+        subtitles: { list: () => listedSubtitleTracks },
         ads: {
           isLinearAdActive: () => false,
           getActiveAd: (): null => null,
@@ -349,6 +374,15 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           return true;
         },
         timeShift: (): void => undefined,
+        getPlaybackSpeed: () => playbackSpeed,
+        setPlaybackSpeed: (speed: number) => {
+          if (speed === playbackSpeed) {
+            return;
+          }
+          const from = playbackSpeed;
+          playbackSpeed = speed;
+          fire(PlayerEvent.PlaybackSpeedChanged, { from, to: speed });
+        },
         play: (issuer = 'api') => {
           playing = true;
           fire(PlayerEvent.Play, { time: 0, issuer });
@@ -392,7 +426,14 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         }
       }
     },
-    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities, hideDelay },
+    {
+      isLive: live,
+      uiFactory: factory,
+      uiMetadata: metadata,
+      availableVideoQualities: videoQualities,
+      hideDelay,
+      listedSubtitleTracks: subtitleTracks,
+    },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);
@@ -455,6 +496,20 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           { entered: cue, cueStartTime: start },
         );
       },
+      updateCue: async (cue: SubtitleCue) => {
+        await page.evaluate(
+          ({ updated, cueStartTime }) => {
+            const browserWindow = window as unknown as BrowserTestWindow;
+            browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.CueUpdate, {
+              start: cueStartTime,
+              end: cueStartTime + 1,
+              text: '',
+              ...updated,
+            });
+          },
+          { updated: cue, cueStartTime: cueStart - 1 },
+        );
+      },
       unloadSource: async () => {
         await page.evaluate(() => {
           const browserWindow = window as unknown as BrowserTestWindow;
@@ -507,6 +562,36 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           manager[setting as keyof SubtitleSettings].value = value;
         });
       }, settings);
+    },
+    setLanguage: async language => {
+      await page.evaluate(newLanguage => {
+        (window as unknown as BrowserTestWindow).bitmovin.playerui.i18n.setLanguage(newLanguage);
+      }, language);
+    },
+    setLocalizationConfig: async (config, withOwnLanguageChangedDispatcher = false) => {
+      await page.evaluate(
+        ({ localizationConfig, withOwnDispatcher }) => {
+          const browserWindow = window as unknown as BrowserTestWindow & { __ownDispatcherLanguages?: string[] };
+          browserWindow.__ownDispatcherLanguages = browserWindow.__ownDispatcherLanguages || [];
+          const ownDispatcher = {
+            dispatch: (_: unknown, args: { newLanguage: string }) => {
+              browserWindow.__ownDispatcherLanguages!.push(args.newLanguage);
+            },
+            subscribe: (): void => undefined,
+            unsubscribe: (): boolean => true,
+          };
+          browserWindow.bitmovin.playerui.UIManager.setLocalizationConfig({
+            ...localizationConfig,
+            ...(withOwnDispatcher ? { events: { onLanguageChanged: ownDispatcher } } : {}),
+          });
+        },
+        { localizationConfig: config, withOwnDispatcher: withOwnLanguageChangedDispatcher },
+      );
+    },
+    languageChangesSeenByOwnDispatcher: async () => {
+      return page.evaluate(
+        () => (window as unknown as { __ownDispatcherLanguages?: string[] }).__ownDispatcherLanguages || [],
+      );
     },
   };
 }

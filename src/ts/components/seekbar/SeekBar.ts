@@ -130,6 +130,11 @@ export class SeekBar extends Component<SeekBarConfig> {
   private uiManager: UIInstanceManager;
 
   protected seekBarType: SeekBarType;
+  /**
+   * The accessible name with the current time that the seek bar applied last, see
+   * {@link SeekBarConfig.addCurrentTimeToAriaLabel}.
+   */
+  private generatedAriaLabelText?: string;
 
   protected isUiShown: boolean;
 
@@ -210,20 +215,43 @@ export class SeekBar extends Component<SeekBarConfig> {
       this.getDomElement().attr('aria-valuenow', timeshiftValue);
       this.getDomElement().attr('aria-valuetext', timeShiftText);
 
-      if (this.config.addCurrentTimeToAriaLabel) {
-        this.getDomElement().attr('aria-label', `${i18n.performLocalization(this.config.ariaLabel)}: ${timeShiftText}`);
-      }
+      this.setAriaLabelWithCurrentTime(timeShiftText);
     } else if (this.seekBarType === SeekBarType.Vod) {
       const ariaValueText = `${StringUtils.secondsToText(this.player.getCurrentTime())} ${i18n.performLocalization(i18n.getLocalizer('seekBar.durationText'))} ${StringUtils.secondsToText(this.player.getDuration())}`;
       this.getDomElement().attr('aria-valuenow', Math.floor(this.player.getCurrentTime()).toString());
       this.getDomElement().attr('aria-valuetext', ariaValueText);
 
-      if (this.config.addCurrentTimeToAriaLabel) {
-        this.getDomElement().attr(
-          'aria-label',
-          `${i18n.performLocalization(this.config.ariaLabel)}: ${StringUtils.secondsToText(this.player.getCurrentTime())}`,
-        );
-      }
+      this.setAriaLabelWithCurrentTime(StringUtils.secondsToText(this.player.getCurrentTime()));
+    }
+  }
+
+  /**
+   * Adds the current time to the configured accessible name if {@link SeekBarConfig.addCurrentTimeToAriaLabel} is
+   * enabled. A name that replaced the configured one, through {@link setAriaLabel} or directly on the element, is kept.
+   */
+  private setAriaLabelWithCurrentTime(currentTimeText: string): void {
+    if (!this.config.addCurrentTimeToAriaLabel) {
+      return;
+    }
+
+    const element = this.getDomElement();
+    const ownsAriaLabel =
+      this.isAppliedAriaLabel(this.config.ariaLabel) ||
+      (this.generatedAriaLabelText !== undefined && element.attr('aria-label') === this.generatedAriaLabelText);
+    if (!ownsAriaLabel) {
+      return;
+    }
+
+    this.generatedAriaLabelText = `${i18n.performLocalization(this.config.ariaLabel)}: ${currentTimeText}`;
+    element.attr('aria-label', this.generatedAriaLabelText);
+  }
+
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+
+    // The value text, e.g. "5 seconds of 10 minutes", and a name that contains the current time are localized too
+    if (this.hasDomElement()) {
+      this.setAriaSliderValues();
     }
   }
 
@@ -741,7 +769,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         id: this.config.id,
         class: this.getCssClasses(),
         role: 'slider',
-        'aria-label': i18n.performLocalization(this.config.ariaLabel),
+        'aria-label': this.localizeAriaLabel(this.config.ariaLabel),
         tabindex: this.config.tabIndex.toString(),
       },
       this,

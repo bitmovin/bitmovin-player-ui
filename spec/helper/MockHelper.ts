@@ -1,4 +1,4 @@
-import { PlayerAPI, PlayerEvent } from 'bitmovin-player';
+import { PlayerAPI, PlayerEvent, SubtitleTrack } from 'bitmovin-player';
 import { UIInstanceManager } from '../../src/ts/UIManager';
 import { DOM } from '../../src/ts/DOM';
 import { PlayerEventEmitter } from './PlayerEventEmitter';
@@ -105,7 +105,9 @@ export namespace MockHelper {
     const PlayerMockClass: jest.Mock<TestingPlayerAPI> = jest.fn().mockImplementation(() => {
       return {
         ads: jest.fn(),
-        subtitles: jest.fn(),
+        subtitles: {
+          list: jest.fn((): SubtitleTrack[] => []),
+        },
         getSource: jest.fn(),
         exports: {
           PlayerEvent,

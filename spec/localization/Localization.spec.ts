@@ -97,6 +97,18 @@ describe('Localization', () => {
     });
   });
 
+  describe('getLanguage', () => {
+    it.each([
+      ['de', 'de'],
+      ['pt-BR', 'pt'],
+      ['xx', 'en'],
+    ])('should return the active language after setting the language to %p', (language, expectedLanguage) => {
+      i18n.setLanguage(language);
+
+      expect(i18n.getLanguage()).toEqual(expectedLanguage);
+    });
+  });
+
   describe('setLanguage', () => {
     it('changes language when a valid language is provided', () => {
       i18n.setLanguage('de');

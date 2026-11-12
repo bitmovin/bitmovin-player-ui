@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `lang` attribute on the UI container matching the active UI language, updated when the language changes, and on subtitle text matching the language of its subtitle track, so screen readers pronounce UI texts and subtitles in the correct language. Subtitle text whose language is unknown, for example of forced subtitles, is marked as such instead of taking the UI language. The accessible names of the UI container, the control bar, buttons, including the current state of toggle buttons, the seek bar, the volume slider, the live indicator, select boxes, and settings panel and context menu items now also follow UI language changes, as do the value texts of the seek bar and the volume slider, the options of select boxes and item selection lists, and localized texts that labels show. Accessible names that are plain strings, for example custom ones, and names that were changed directly on the element are kept, also by a seek bar that adds the current time to its name, and `UIManager.setLocalizationConfig` updates an already mounted UI when it changes the language. The active UI language is available through `i18n.getLanguage()`, and `i18n.onUiLanguageChanged` fires on every UI language change with a `LanguageChangedArgument`, also after the `events.onLanguageChanged` dispatcher has been replaced. After changing the language through `i18n.setConfig()`, call `i18n.notifyLanguageChanged(oldLanguage)` with the language that was active before to fire both.
+
+### Fixed
+
+- Untranslated vocabulary entries: the German name of the player, the German, Spanish and Portuguese names of the eco mode, and the Spanish `off` and `auto` options and subtitle font family names.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed

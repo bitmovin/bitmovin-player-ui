@@ -86,6 +86,8 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
   }
 
   protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+
     if (typeof this.config.text === 'function') {
       this.setText(this.config.text);
     }
@@ -94,7 +96,7 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
   protected toDomElement(): DOM {
     const buttonElementAttributes: { [name: string]: string } = {
       id: this.config.id,
-      'aria-label': i18n.performLocalization(this.config.ariaLabel || this.config.text),
+      'aria-label': this.localizeAriaLabel(this.config.ariaLabel || this.config.text),
       class: this.getCssClasses(),
       type: 'button',
       tabindex: this.config.tabIndex.toString(),
