@@ -95,12 +95,17 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
           .forEach(settingsPanel => settingsPanel.hide());
       }
       settingsPanel.toggleHidden();
+
+      // Only the button that opened the panel continues the tab sequence from it, also when several buttons share
+      // the panel. The listener is removed again when the panel hides.
+      if (settingsPanel.isShown()) {
+        settingsPanel.getDomElement().on('keydown', this.handleSettingsPanelKeyDown);
+      }
     });
     settingsPanel.onShow.subscribe(() => {
       // Set toggle status to on when the settings panel shows
       this.on();
       this.getDomElement().attr('aria-expanded', 'true');
-      settingsPanel.getDomElement().on('keydown', this.handleSettingsPanelKeyDown);
     });
     settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides
@@ -108,9 +113,6 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       this.getDomElement().attr('aria-expanded', 'false');
       settingsPanel.getDomElement().off('keydown', this.handleSettingsPanelKeyDown);
     });
-    if (settingsPanel.isShown()) {
-      settingsPanel.getDomElement().on('keydown', this.handleSettingsPanelKeyDown);
-    }
 
     // Keep aria-controls / aria-owns pointing at the *currently* active page id —
     // the user may navigate into sub-pages while the panel is open.

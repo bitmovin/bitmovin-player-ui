@@ -39,6 +39,38 @@ export namespace FocusUtils {
     return candidates.filter(isTabbable);
   }
 
+  /**
+   * Returns true if the browser supports the `inert` attribute, which older TV and WebView engines lack.
+   */
+  export function isInertSupported(element: HTMLElement): boolean {
+    return 'inert' in element;
+  }
+
+  /**
+   * Takes all focusable elements inside the container out of the tab sequence right away, without depending on
+   * layout or `inert`. They stay focusable from script. Returns a function that restores their previous `tabindex`.
+   */
+  export function removeFromTabSequence(container: HTMLElement): () => void {
+    const elements: HTMLElement[] = Array.prototype.slice.call(container.querySelectorAll(FOCUSABLE_SELECTOR));
+    const previousTabIndices = elements
+      .filter(element => element.tabIndex >= 0)
+      .map(element => {
+        const previousTabIndex = element.getAttribute('tabindex');
+        element.setAttribute('tabindex', '-1');
+        return { element, previousTabIndex };
+      });
+
+    return () => {
+      previousTabIndices.forEach(({ element, previousTabIndex }) => {
+        if (previousTabIndex === null) {
+          element.removeAttribute('tabindex');
+        } else {
+          element.setAttribute('tabindex', previousTabIndex);
+        }
+      });
+    };
+  }
+
   function isTabbable(element: HTMLElement): boolean {
     if (element.tabIndex < 0 || (element as HTMLButtonElement).disabled) {
       return false;

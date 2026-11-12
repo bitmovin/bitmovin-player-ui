@@ -102,6 +102,9 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
   // The element that had focus before the panel was shown, so hiding the panel can return focus to it
   private focusReturnTarget: HTMLElement | null = null;
+  private isReturningFocus = false;
+  // Restores the tab sequence of a hidden panel on platforms without `inert`
+  private restoreTabSequence: (() => void) | null = null;
 
   private currentState: SettingsPanelState = null;
 
@@ -248,7 +251,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       });
     }
     uimanager.onControlsShow.subscribe(() => {
-      if (this.currentState !== null) {
+      // Returning focus to the opener can show the controls (focusin), which must not reopen the closing panel
+      if (this.currentState !== null && !this.isReturningFocus) {
         this.show();
       }
     });
@@ -393,6 +397,10 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
   protected onShowEvent(): void {
     this.getDomElement().removeAttr('inert');
+    if (this.restoreTabSequence) {
+      this.restoreTabSequence();
+      this.restoreTabSequence = null;
+    }
     // Capture the opener before the onShow subscribers move focus into the panel
     this.focusReturnTarget = this.getFocusedElementOutsidePanel();
     super.onShowEvent();
@@ -412,12 +420,24 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       focusReturnTarget.isConnected !== false &&
       FocusUtils.containsFocus(this.getDomElement().get(0))
     ) {
-      FocusUtils.focusWithoutScrolling(focusReturnTarget);
+      this.isReturningFocus = true;
+      try {
+        FocusUtils.focusWithoutScrolling(focusReturnTarget);
+      } finally {
+        this.isReturningFocus = false;
+      }
     }
 
     // The panel stays visible while it fades out. Keep its items out of the tab sequence and away from the pointer
-    // during that time, so Tab from the opener does not land in a closing panel.
-    this.getDomElement().attr('inert', '');
+    // during that time, so Tab from the opener does not land in a closing panel. A subscriber may have shown the
+    // panel again in the meantime.
+    if (this.isHidden()) {
+      const panelElement = this.getDomElement().get(0);
+      this.getDomElement().attr('inert', '');
+      if (!FocusUtils.isInertSupported(panelElement) && !this.restoreTabSequence) {
+        this.restoreTabSequence = FocusUtils.removeFromTabSequence(panelElement);
+      }
+    }
   }
 
   private getFocusedElementOutsidePanel(): HTMLElement | null {

@@ -52,6 +52,7 @@ describe('SettingsPanel focus management', () => {
   let rootPage: SettingsPanelPage;
   let subPage: SettingsPanelPage;
   let settingsPanel: SettingsPanel<SettingsPanelConfig>;
+  let uiManager: UIInstanceManager;
 
   beforeEach(() => {
     opener = button();
@@ -64,11 +65,13 @@ describe('SettingsPanel focus management', () => {
 
     const ui = new UIContainer({ components: [opener, settingsPanel] });
     document.body.appendChild(element(ui));
+    uiManager = createUiManager(ui);
     settingsPanel.initialize();
-    settingsPanel.configure(createPlayer(), createUiManager(ui));
+    settingsPanel.configure(createPlayer(), uiManager);
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     document.body.innerHTML = '';
   });
 
@@ -116,6 +119,46 @@ describe('SettingsPanel focus management', () => {
     expect(document.activeElement).toBe(element(opener));
   });
 
+  it('should stay closed when returning focus shows the auto-hidden controls', () => {
+    jest.useFakeTimers();
+    const autoHidingPanel = new SettingsPanel({ components: [rootPage, subPage], hidden: true, hideDelay: 1000 });
+    element(opener).parentElement.appendChild(element(autoHidingPanel));
+    autoHidingPanel.initialize();
+    autoHidingPanel.configure(createPlayer(), uiManager);
+    // Like the UIContainer, which shows the controls again when focus moves into them
+    element(opener).addEventListener('focusin', () => uiManager.onControlsShow.dispatch(null));
+    element(opener).focus();
+    autoHidingPanel.show();
+    element(secondItem).focus();
+    // An open sub-page is saved on hide, which makes showing the controls restore the panel
+    autoHidingPanel.setActivePage(subPage);
+    element(autoHidingPanel).dispatchEvent(new Event('focusout'));
+
+    jest.advanceTimersByTime(1000);
+
+    expect(document.activeElement).toBe(element(opener));
+    expect(autoHidingPanel.isHidden()).toBe(true);
+    expect(element(autoHidingPanel).hasAttribute('inert')).toBe(true);
+    jest.useRealTimers();
+  });
+
+  it('should take a hidden panel out of the tab sequence where inert is not supported', () => {
+    jest.spyOn(FocusUtils, 'isInertSupported').mockReturnValue(false);
+    settingsPanel.show();
+    element(firstItem).setAttribute('tabindex', '2');
+    element(secondItem).removeAttribute('tabindex');
+
+    settingsPanel.hide();
+
+    expect(element(firstItem).getAttribute('tabindex')).toBe('-1');
+    expect(element(secondItem).getAttribute('tabindex')).toBe('-1');
+
+    settingsPanel.show();
+
+    expect(element(firstItem).getAttribute('tabindex')).toBe('2');
+    expect(element(secondItem).hasAttribute('tabindex')).toBe(false);
+  });
+
   it('should keep a hidden panel out of the tab sequence', () => {
     expect(element(settingsPanel).hasAttribute('inert')).toBe(true);
 
@@ -136,7 +179,7 @@ describe('SettingsPanel focus management', () => {
       // jsdom does no layout, so it cannot tell which elements are rendered and therefore tabbable.
       jest.spyOn(FocusUtils, 'getTabbableElements').mockImplementation(() => [element(firstItem), element(secondItem)]);
       element(toggleButton).focus();
-      settingsPanel.show();
+      toggleButton['onClickEvent']();
     });
 
     afterEach(() => {
@@ -178,6 +221,22 @@ describe('SettingsPanel focus management', () => {
       expect(event.defaultPrevented).toBe(false);
       expect(settingsPanel.isShown()).toBe(true);
       expect(document.activeElement).toBe(element(firstItem));
+    });
+
+    it('should leave the panel towards the button that opened it when buttons share the panel', () => {
+      const otherToggleButton = new SettingsToggleButton({ settingsPanel, autoHideWhenNoActiveSettings: false });
+      element(opener).parentElement.insertBefore(element(otherToggleButton), element(toggleButton));
+      otherToggleButton.configure(createPlayer(), createUiManager(null));
+      settingsPanel.hide();
+      // Opened by the button configured last, whose listener would run after the other button's one
+      element(otherToggleButton).focus();
+      otherToggleButton['onClickEvent']();
+      element(firstItem).focus();
+
+      pressTab(element(firstItem), true);
+
+      expect(document.activeElement).toBe(element(otherToggleButton));
+      otherToggleButton.release();
     });
 
     it('should stop handling Tab once the panel is hidden', () => {
