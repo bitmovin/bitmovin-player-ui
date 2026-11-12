@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 import { expect, MountOptions, mountUi, test } from './harness';
 import { mountDefaultControlBarUi } from './helpers/control-bar';
 import { mountTvUi } from './helpers/tv';
@@ -24,6 +24,22 @@ const layouts: { name: string; mount: (page: Page) => Promise<unknown> }[] = [
 
 function settingsPanel(page: Page) {
   return page.locator('.bmpui-ui-settings-panel:not(.bmpui-ui-context-menu):not(.bmpui-ui-player-insights-panel)');
+}
+
+/**
+ * The back button of the active sub-page, located by its class and visible title: its role and accessible name are
+ * not what these scenarios are about, and other changes may refine them.
+ */
+function backButtonOf(panel: Locator, title: string) {
+  return panel.locator('.bmpui-ui-settingspanelpagebackbutton').filter({ hasText: title });
+}
+
+/** The last option of the active page, whichever menu item role the options have. */
+function lastOptionOf(panel: Locator) {
+  return panel
+    .locator('.bmpui-ui-settings-panel-page.bmpui-active')
+    .locator('[role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"]')
+    .last();
 }
 
 async function openSettingsWithKeyboard(page: Page) {
@@ -85,7 +101,7 @@ test('going back from a Settings sub-page focuses the item that opened it', asyn
   await page.keyboard.press('Tab');
   await expect(speedItem).toBeFocused();
   await page.keyboard.press('Enter');
-  const backButton = settingsPanel(page).getByRole('button', { name: 'Speed' });
+  const backButton = backButtonOf(settingsPanel(page), 'Speed');
   await expect(backButton, 'the Speed sub-page should be open').toBeVisible();
 
   await backButton.focus();
@@ -163,7 +179,7 @@ test('TV: going back from a Settings sub-page focuses the item that opened it', 
   await expect(speedItem).toBeFocused();
   await page.keyboard.press('Enter');
   // The remote lands on the back button of the sub-page.
-  await expect(tvSettingsPanel.getByRole('button', { name: 'Speed' })).toBeFocused();
+  await expect(backButtonOf(tvSettingsPanel, 'Speed')).toBeFocused();
 
   await page.keyboard.press('Enter');
 
@@ -188,10 +204,12 @@ for (const { direction, key } of [
     const insidePlayer = { x: 300, y: 200 };
     const belowPlayer = { x: 300, y: 650 };
     await page.mouse.move(insidePlayer.x, insidePlayer.y);
-    const settingsButton = await openSettingsWithKeyboard(page);
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Enter');
-    const backButton = settingsPanel(page).getByRole('button', { name: 'Speed' });
+    // Open the sub-page with the pointer: only then may the controls hide when the pointer leaves the player, keyboard
+    // focus inside the panel can keep them shown.
+    const settingsButton = page.getByRole('button', { name: 'Settings' });
+    await settingsButton.click();
+    await settingsPanel(page).getByRole('menuitem', { name: /Speed/ }).click();
+    const backButton = backButtonOf(settingsPanel(page), 'Speed');
     await expect(backButton, 'the Speed sub-page should be open').toBeVisible();
 
     // Hiding the controls closes the panel and keeps its sub-page for when the controls show again.
@@ -205,7 +223,7 @@ for (const { direction, key } of [
     await expect(backButton, 'showing the controls should restore the sub-page').toBeVisible();
 
     // The back button opens the sub-page's tab sequence, and its last option closes it.
-    const edgeItem = key === 'Tab' ? settingsPanel(page).getByRole('menuitem').last() : backButton;
+    const edgeItem = key === 'Tab' ? lastOptionOf(settingsPanel(page)) : backButton;
     await edgeItem.focus();
     await page.keyboard.press(key);
 

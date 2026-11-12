@@ -26,6 +26,7 @@ function createUiManager(ui: UIContainer): UIInstanceManager {
   return {
     getUI: () => ui,
     getConfig: () => ({}),
+    hasSpatialNavigation: () => false,
     onControlsShow: new EventDispatcher<UIContainer, NoArgs>(),
     onControlsHide: new EventDispatcher<UIContainer, NoArgs>(),
     onComponentShow: new EventDispatcher<Component<ComponentConfig>, NoArgs>(),
