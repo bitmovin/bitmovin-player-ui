@@ -346,6 +346,15 @@ describe('PauseAdStatusOverlay', () => {
       expect(getPublishedHeight()).toBe('96px');
     });
 
+    it('should not publish a height while the status row is not laid out', () => {
+      firePauseAdStarted({ clickThroughUrl: 'https://example.com' });
+      statusRowHeight = 0;
+
+      playerMock.eventEmitter.fireEvent({ type: PlayerEvent.PlayerResized, width: '360px', height: '640px' } as any);
+
+      expect(getPublishedHeight()).toBe('');
+    });
+
     it.each([
       ['NonLinearAdFinished', () => playerMock.eventEmitter.fireNonLinearAdFinishedEvent({ id: 'pause-ad' })],
       ['SourceUnloaded', () => playerMock.eventEmitter.fireSourceUnloadedEvent()],

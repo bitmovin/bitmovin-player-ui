@@ -36,7 +36,17 @@ export namespace ClickThroughUtils {
     }
 
     // With these features, `window.open` returns null instead of the new window.
-    window.open(safeUrl, '_blank', 'noopener,noreferrer');
+    const openedWindow = window.open(safeUrl, '_blank', 'noopener,noreferrer');
+
+    // Engines that ignore these features, such as older TV browsers, return the new window with an `opener` instead.
+    // Clearing it keeps the advertiser page from navigating the player page. The referrer cannot be withdrawn anymore.
+    if (openedWindow) {
+      try {
+        openedWindow.opener = null;
+      } catch {
+        // The engine does not let the opener be cleared, so there is nothing else to do.
+      }
+    }
     return true;
   }
 }

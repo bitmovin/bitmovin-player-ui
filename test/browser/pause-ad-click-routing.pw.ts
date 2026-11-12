@@ -103,6 +103,43 @@ test('the Learn more button opens the click-through by keyboard', async ({ page 
   expect(await ui.player.pauseAdActive(), 'opening the click-through must not end the ad').toBe(true);
 });
 
+/**
+ * The other scenarios record `window.open` calls, which proves the arguments but not what the browser makes of
+ * them. This one opens a real tab. Every request is answered locally, and anything not routed here is aborted, so
+ * no request leaves the machine.
+ */
+test('the Learn more button opens the click-through in a real tab without access to the player page or its URL', async ({
+  context,
+  page,
+}) => {
+  // An https page, because a page sends its URL as referrer by default, unlike the harness's blank page.
+  const playerPageUrl = 'https://player.test/';
+  const landingUrl = 'https://example.com/ad-landing';
+  await context.route('**/*', route => route.abort());
+  for (const url of [playerPageUrl, landingUrl]) {
+    await context.route(url, route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><p>test</p>' }));
+  }
+  await page.goto(playerPageUrl);
+
+  const ui = await mountDefaultControlBarUi(page, { live: false, realWindowOpen: true });
+  expect(page.url(), 'the player page must have a URL it could send as referrer').toBe(playerPageUrl);
+  await ui.player.startPauseAd({ clickThroughUrl: landingUrl });
+  await page.getByRole('button', { name: 'Learn more, opens in a new tab', exact: true }).focus();
+
+  const newTab = context.waitForEvent('page');
+  await page.keyboard.press('Enter');
+  const landingPage = await newTab;
+  await landingPage.waitForLoadState();
+
+  expect(landingPage.url()).toBe(landingUrl);
+  expect(
+    await landingPage.evaluate(() => window.opener === null),
+    'the advertiser page must not be able to navigate the player page',
+  ).toBe(true);
+  expect(await landingPage.evaluate(() => document.referrer), 'the player page URL must not leak').toBe('');
+  expect(await ui.player.clickThroughCount(), 'the opened click-through must be reported to the ad').toBe(1);
+});
+
 test('a javascript: click-through is not offered, opened or run', async ({ page }) => {
   const ui = await mountDefaultControlBarUi(page, { live: false });
   await ui.player.startPauseAd({ clickThroughUrl: 'javascript:void(window.__clickThroughScriptRan=true)' });

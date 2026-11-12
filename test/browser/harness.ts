@@ -54,7 +54,7 @@ interface BrowserTestWindow extends Window {
   __ui?: UiHandle;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
-  /** Calls of `window.open`, which the harness records instead of opening. */
+  /** Calls of `window.open`, which the harness records instead of opening, unless mounted with `realWindowOpen`. */
   __openedWindows: OpenedWindow[];
   /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
   __activePauseAdId?: string;
@@ -77,6 +77,22 @@ function distFile(relativePath: string): string {
     );
   }
   return absolute;
+}
+
+/**
+ * Rewrites a stylesheet the way an engine without CSS `max()` reads it.
+ *
+ * Such an engine skips `@supports` blocks that test for `max()`, and drops a declaration that uses `max()` while
+ * parsing, so an earlier declaration of the same property applies instead. A declaration that also uses `var()`
+ * is only validated after substituting the variables, though: it is kept while parsing, and once found invalid
+ * its property falls back to its initial value, as if set to `unset`.
+ */
+function withoutCssMax(css: string): string {
+  return css
+    .replace(/@supports[^{]*\bmax\([^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, '')
+    .replace(/([\w-]+)\s*:([^;{}]*\bmax\([^;{}]*)(;|(?=\}))/g, (_declaration, property: string, value: string, end) =>
+      /\bvar\(/.test(value) ? `${property}: unset${end}` : '',
+    );
 }
 
 /**
@@ -132,6 +148,17 @@ export interface MountOptions {
    * length or language of UI texts. They are merged into the built-in vocabularies.
    */
   vocabularies?: Record<string, Record<string, string>>;
+  /**
+   * Load the stylesheet the way an engine without CSS `max()` reads it, such as Chromium before 79 on older
+   * webOS and Tizen TVs. See {@link withoutCssMax}.
+   */
+  withoutCssMax?: boolean;
+  /**
+   * Keep the browser's own `window.open`, so click-throughs open real popups. By default the harness records
+   * the calls instead, see {@link BrowserPlayerController.openedWindows}. A scenario using this must route
+   * every URL it opens, so that no request leaves the machine.
+   */
+  realWindowOpen?: boolean;
 }
 
 export interface PauseAdOptions {
@@ -239,6 +266,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     hideDelay = -1,
     videoQualities = [],
     vocabularies,
+    withoutCssMax: emulateWithoutCssMax = false,
+    realWindowOpen = false,
   } = options;
 
   await page.setContent(`<!doctype html>
@@ -266,11 +295,14 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       delete (window as { ShadowRoot?: unknown }).ShadowRoot;
     });
   }
-  await page.addStyleTag({ path: distFile('css/bitmovinplayer-ui.css') });
+  const stylesheet = distFile('css/bitmovinplayer-ui.css');
+  await page.addStyleTag(
+    emulateWithoutCssMax ? { content: withoutCssMax(fs.readFileSync(stylesheet, 'utf8')) } : { path: stylesheet },
+  );
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay, customVocabularies }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay, customVocabularies, recordWindowOpen }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -286,10 +318,12 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
 
       // Record click-through navigation instead of opening real popups.
       browserWindow.__openedWindows = [];
-      window.open = (url?: string | URL, target?: string, features?: string) => {
-        browserWindow.__openedWindows.push({ url: String(url), target, features });
-        return null;
-      };
+      if (recordWindowOpen) {
+        window.open = (url?: string | URL, target?: string, features?: string) => {
+          browserWindow.__openedWindows.push({ url: String(url), target, features });
+          return null;
+        };
+      }
 
       let playing = true;
       let sourceLoaded = true;
@@ -429,6 +463,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       availableVideoQualities: videoQualities,
       hideDelay,
       customVocabularies: vocabularies,
+      recordWindowOpen: !realWindowOpen,
     },
   );
 

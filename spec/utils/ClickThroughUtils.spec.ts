@@ -50,4 +50,36 @@ describe('ClickThroughUtils', () => {
 
     expect(windowOpen).not.toHaveBeenCalled();
   });
+
+  describe('on engines that ignore the noopener feature', () => {
+    it('should clear the opener of the returned window', () => {
+      const openedWindow = { opener: window } as unknown as Window;
+      windowOpen.mockImplementation(() => openedWindow);
+
+      expect(ClickThroughUtils.open('https://example.com/ad')).toBe(true);
+
+      expect(openedWindow.opener).toBeNull();
+    });
+
+    it('should still report the click-through as opened when the opener cannot be cleared', () => {
+      const openedWindow = {} as Window;
+      Object.defineProperty(openedWindow, 'opener', {
+        get: () => window,
+        set: () => {
+          throw new Error('opener is read-only');
+        },
+      });
+      windowOpen.mockImplementation(() => openedWindow);
+
+      expect(ClickThroughUtils.open('https://example.com/ad')).toBe(true);
+
+      expect(windowOpen).toHaveBeenCalledWith('https://example.com/ad', '_blank', 'noopener,noreferrer');
+    });
+  });
+
+  it('should report the click-through as opened when window.open returns no window', () => {
+    expect(ClickThroughUtils.open('https://example.com/ad')).toBe(true);
+
+    expect(windowOpen).toHaveReturnedWith(null);
+  });
 });

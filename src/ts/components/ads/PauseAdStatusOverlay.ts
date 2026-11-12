@@ -218,7 +218,14 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
       return;
     }
 
-    uiContainer.style.setProperty(`--${this.prefixCss(STATUS_ROW_HEIGHT_PROPERTY)}`, `${statusRow.offsetHeight}px`);
+    // A row that is not laid out, e.g. in an inactive UI variant, measures 0. The stylesheet's single-row
+    // clearance applies until it is measured again.
+    const property = `--${this.prefixCss(STATUS_ROW_HEIGHT_PROPERTY)}`;
+    if (statusRow.offsetHeight > 0) {
+      uiContainer.style.setProperty(property, `${statusRow.offsetHeight}px`);
+    } else {
+      uiContainer.style.removeProperty(property);
+    }
   };
 
   private stopTrackingStatusRowHeight(): void {
