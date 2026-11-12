@@ -16,6 +16,8 @@ import { StorageUtils } from '../src/ts/utils/StorageUtils';
 import { prefixCss } from '../src/ts/components/DummyComponent';
 import { RecommendationConfig, TimelineMarker } from '../src/ts/UIConfig';
 import { FullscreenToggleButton } from '../src/ts/components/buttons/FullscreenToggleButton';
+import { StatusAnnouncer } from '../src/ts/utils/StatusAnnouncer';
+import { DOM } from '../src/ts/DOM';
 
 jest.mock('../src/ts/DOM');
 
@@ -422,6 +424,125 @@ describe('UIManager', () => {
 
       const seekMock = (playerMock as unknown as { seek: jest.Mock }).seek;
       expect(seekMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('status announcements', () => {
+    let playerMock: TestingPlayerAPI;
+    let adUi: UIVariant;
+    let defaultUi: UIVariant;
+    let announceSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock();
+      adUi = {
+        ui: new UIContainer({ components: [new Container({})] }),
+        condition: context => context.isAd,
+      };
+      defaultUi = { ui: new UIContainer({ components: [new Container({})] }) };
+      announceSpy = jest.spyOn(StatusAnnouncer.prototype, 'announce');
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should add one live region to the UI wrapper before the first UI variant', () => {
+      const liveRegion = { live: 'region' } as unknown as DOM;
+      jest.spyOn(StatusAnnouncer.prototype, 'getDomElement').mockReturnValue(liveRegion);
+
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+      uiManager.resolveUiVariant({ isAd: true });
+
+      const { append } = uiManager['uiContainerElement'] as unknown as { append: jest.Mock };
+      const appendedLiveRegions = append.mock.calls.filter(([element]) => element === liveRegion);
+      expect(appendedLiveRegions).toHaveLength(1);
+      expect(append.mock.calls[0][0]).toBe(liveRegion);
+    });
+
+    it('should mark the live regions with the language of the active UI variant', () => {
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+      const declareLanguage = (ui: UIContainer, language: string | null) =>
+        (ui.getDomElement().get as jest.Mock).mockReturnValue({
+          getAttribute: (name: string) => (name === 'lang' ? language : null),
+        });
+      declareLanguage(adUi.ui, 'de');
+      declareLanguage(defaultUi.ui, null);
+      const statusAnnouncerLanguage = () => uiManager['config'].statusAnnouncer['statusRegion']['getLanguage']();
+
+      uiManager.resolveUiVariant({ isAd: true });
+      expect(statusAnnouncerLanguage()).toBe('de');
+
+      uiManager.resolveUiVariant({ isAd: false });
+      expect(statusAnnouncerLanguage()).toBeUndefined();
+    });
+
+    it('should announce messages of the integration', () => {
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+
+      uiManager.announce('Added to watchlist');
+      uiManager.announce('Upload failed', { assertive: true });
+
+      expect(announceSpy.mock.calls).toEqual([
+        ['Added to watchlist', undefined],
+        ['Upload failed', { assertive: true }],
+      ]);
+    });
+
+    it('should let inactive UI variants forget an announced topic', () => {
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+      const [adUiManager, defaultUiManager] = uiManager['uiInstanceManagers'];
+      const regionAnnounce = jest.spyOn(uiManager['config'].statusAnnouncer['statusRegion'], 'announce');
+      const announceBuffering = () =>
+        defaultUiManager.announce('Buffering', { oncePer: { topic: 'buffering', subject: 'ongoing' } });
+
+      announceBuffering();
+      adUiManager.forgetAnnounced('buffering');
+      announceBuffering();
+
+      expect(regionAnnounce).toHaveBeenCalledTimes(2);
+    });
+
+    it.each([
+      ['an ad break finishes', (player: TestingPlayerAPI) => player.eventEmitter.fireAdBreakFinishedEvent()],
+      ['the source is unloaded', (player: TestingPlayerAPI) => player.eventEmitter.fireSourceUnloadedEvent()],
+    ])('should announce the same ad again after %s', (_, endAds) => {
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+      const regionAnnounce = jest.spyOn(uiManager['config'].statusAnnouncer['statusRegion'], 'announce');
+      const announceAdStarted = () =>
+        uiManager.announce('Ad started', { oncePer: { topic: 'adStarted', subject: 'ad-1' } });
+
+      announceAdStarted();
+      announceAdStarted();
+      endAds(playerMock);
+      announceAdStarted();
+
+      expect(regionAnnounce).toHaveBeenCalledTimes(2);
+    });
+
+    it('should only announce messages of the active UI variant', () => {
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+      const [adUiManager, defaultUiManager] = uiManager['uiInstanceManagers'];
+
+      adUiManager.announce('from inactive ad UI');
+      defaultUiManager.announce('from active default UI');
+      uiManager.resolveUiVariant({ isAd: true });
+      adUiManager.announce('from active ad UI');
+      defaultUiManager.announce('from inactive default UI');
+
+      expect(announceSpy.mock.calls).toEqual([['from active default UI'], ['from active ad UI']]);
+    });
+
+    it('should stop announcing and release the live region on release', () => {
+      const releaseSpy = jest.spyOn(StatusAnnouncer.prototype, 'release');
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+      const defaultUiManager = uiManager.activeUi;
+
+      uiManager.release();
+      defaultUiManager.announce('after release');
+
+      expect(releaseSpy).toHaveBeenCalledTimes(1);
+      expect(announceSpy).not.toHaveBeenCalled();
     });
   });
 

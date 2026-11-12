@@ -135,6 +135,14 @@ export interface Vocabulary {
   'contextMenu.copyTimestampLink': string;
   'captions.enable': string;
   'captions.disable': string;
+  'announcements.buffering': string;
+  'announcements.adStarted': string;
+  'announcements.adNumberOfTotalStarted': string;
+  'announcements.adSkippable': string;
+  'announcements.castStarted': string;
+  'announcements.castStartedUnknownDevice': string;
+  'announcements.castStopped': string;
+  'announcements.playbackFinished': string;
 }
 
 /**

@@ -3,6 +3,7 @@ import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { TvNoiseCanvas } from '../TvNoiseCanvas';
 import { ErrorUtils } from '../../utils/ErrorUtils';
+import { BrowserUtils } from '../../utils/BrowserUtils';
 import { ErrorEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import {
   isMobileV3PlayerAPI,
@@ -86,11 +87,20 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
 /**
  * Overlays the player and displays error messages.
  *
+ * A displayed error is also announced to screen readers through the assertive alert region of
+ * {@link UIInstanceManager.announce}. That region is already rendered and empty before the error, which is what
+ * makes screen readers announce it reliably. The overlay itself has no live region role, so the error is
+ * announced once.
+ *
+ * On Tizen, the overlay keeps the `status` role instead and the alert region is not used, because Tizen's
+ * text-to-speech does not support `alert` (2.4) or only partly (3.0), but reads the overlay as a status.
+ *
  * @category Components
  */
 export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
   private errorLabel: Label<LabelConfig>;
   private tvNoiseBackground: TvNoiseCanvas;
+  private uimanager?: UIInstanceManager;
 
   constructor(config: ErrorMessageOverlayConfig = {}) {
     super(config);
@@ -104,7 +114,8 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
         cssClass: 'ui-errormessage-overlay',
         components: [this.tvNoiseBackground, this.errorLabel],
         hidden: true,
-        role: 'status',
+        // Tizen reads the error through this role, see the class description
+        role: BrowserUtils.isTizen ? 'status' : undefined,
       },
       this.config,
     );
@@ -112,6 +123,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
   configure(player: PlayerAPI | MobileV3PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+    this.uimanager = uimanager;
 
     const config = this.getConfig();
 
@@ -153,6 +165,31 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     this.errorLabel.setText(errorMessage);
     this.tvNoiseBackground.start();
     this.show();
+    // An error stops playback and needs the user's attention, so it interrupts the screen reader (WCAG 4.1.3).
+    // Tizen reads the overlay itself through its status role, and would otherwise read the error twice.
+    if (!BrowserUtils.isTizen) {
+      this.uimanager?.announce(this.getRenderedErrorText() || errorMessage, { assertive: true });
+    }
+  }
+
+  /**
+   * Returns the text the label renders, one line per paragraph, list item or line break. Custom messages can
+   * contain markup, e.g. a list, which must neither be read out as tags nor run its items together.
+   */
+  private getRenderedErrorText(): string | undefined {
+    if (!this.errorLabel.hasDomElement()) {
+      return undefined;
+    }
+    const labelElement = this.errorLabel.getDomElement().get(0) as HTMLElement | undefined;
+    if (!labelElement) {
+      return undefined;
+    }
+
+    return textWithLineBreaks(labelElement)
+      .split('\n')
+      .map(line => line.replace(/\s+/g, ' ').trim())
+      .filter(line => line !== '')
+      .join('\n');
   }
 
   private clear(): void {
@@ -167,7 +204,60 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     super.release();
 
     this.clear();
+    this.uimanager = undefined;
   }
+}
+
+const BLOCK_ELEMENT_TAGS = [
+  'ADDRESS',
+  'BLOCKQUOTE',
+  'DD',
+  'DIV',
+  'DL',
+  'DT',
+  'FIGCAPTION',
+  'FIGURE',
+  'FOOTER',
+  'H1',
+  'H2',
+  'H3',
+  'H4',
+  'H5',
+  'H6',
+  'HEADER',
+  'HR',
+  'LI',
+  'OL',
+  'P',
+  'PRE',
+  'SECTION',
+  'TABLE',
+  'TR',
+  'UL',
+];
+
+/**
+ * Like `textContent`, but with a line break around block elements and for `<br>`. `innerText` would do the same,
+ * but only for rendered elements, and it forces a layout.
+ */
+function textWithLineBreaks(node: Node): string {
+  let text = '';
+  for (let i = 0; i < node.childNodes.length; i++) {
+    const child = node.childNodes[i];
+    if (child.nodeType === Node.TEXT_NODE) {
+      text += child.textContent;
+    } else if (child.nodeType === Node.ELEMENT_NODE) {
+      const tagName = (child as Element).tagName.toUpperCase();
+      if (tagName === 'BR') {
+        text += '\n';
+      } else if (BLOCK_ELEMENT_TAGS.indexOf(tagName) !== -1) {
+        text += '\n' + textWithLineBreaks(child) + '\n';
+      } else {
+        text += textWithLineBreaks(child);
+      }
+    }
+  }
+  return text;
 }
 
 function customizeErrorMessage(

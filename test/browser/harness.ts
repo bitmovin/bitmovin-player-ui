@@ -48,7 +48,9 @@ interface BrowserTestWindow extends Window {
   };
   __fire(event: string, data?: object): void;
   __setSourceLoaded(sourceLoaded: boolean): void;
+  __setStalled(stalled: boolean): void;
   __pausePlayback(): void;
+  __finishPlayback(): void;
   __ui?: UiHandle;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
@@ -135,6 +137,14 @@ export interface PauseAdOptions {
   clickThroughUrl?: string;
 }
 
+export interface LinearAdOptions {
+  /**
+   * Seconds after which the ad can be skipped. Omitted means an ad that cannot be skipped, so the UI
+   * hides its skip button.
+   */
+  skippableAfter?: number;
+}
+
 /** A subtitle cue, as the player hands it to the UI, minus the fields the harness assigns. */
 export type SubtitleCue = Partial<Omit<SubtitleCueEvent, 'type' | 'timestamp' | 'start' | 'end'>>;
 
@@ -165,7 +175,25 @@ export interface BrowserPlayerController {
    * Only emits the event the UI manager resolves its variant from. The stub still reports no active
    * linear ad, because nothing in the browser scenarios reads it.
    */
-  startLinearAd(): Promise<void>;
+  startLinearAd(options?: LinearAdOptions): Promise<void>;
+
+  /**
+   * Moves the playback position to `time` and emits the time update the player emits while playing,
+   * e.g. to let an ad reach its skip offset.
+   */
+  playTo(time: number): Promise<void>;
+
+  /** Starts a playback stall, as the player does when its buffer runs empty. */
+  startStall(): Promise<void>;
+
+  /** Ends a playback stall. */
+  endStall(): Promise<void>;
+
+  /** Plays the source to its end, as the player does when playback finishes. */
+  finishPlayback(): Promise<void>;
+
+  /** Emits a fatal player error. */
+  raiseError(code: number, name: string): Promise<void>;
 
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
@@ -269,8 +297,13 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
 
       let playing = true;
       let sourceLoaded = true;
+      let stalled = false;
+      let ended = false;
       browserWindow.__setSourceLoaded = loaded => {
         sourceLoaded = loaded;
+      };
+      browserWindow.__setStalled = isStalled => {
+        stalled = isStalled;
       };
 
       // `PlayerWrapper` copies the player's API by enumerating property names, so a Proxy `get`
@@ -303,12 +336,12 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         isMuted: () => false,
         isPlaying: () => playing,
         isPaused: () => !playing,
-        isStalled: () => false,
+        isStalled: () => stalled,
         isCasting: () => false,
         isAirplayActive: () => false,
         isAirplayAvailable: () => false,
         isViewModeAvailable: () => false,
-        hasEnded: () => false,
+        hasEnded: () => ended,
         getViewMode: () => 'inline',
         getPlayerType: () => 'html5',
         getStreamType: () => 'hls',
@@ -368,6 +401,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         if (playing) {
           player.pause();
         }
+      };
+      browserWindow.__finishPlayback = () => {
+        playing = false;
+        ended = true;
+        fire(PlayerEvent.PlaybackFinished);
       };
 
       const uiConfig = {
@@ -429,13 +467,49 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           browserWindow.__fire('nonlinearadfinished', { ad: { id: adId } });
         }, id);
       },
-      startLinearAd: async () => {
-        await page.evaluate(() => {
+      startLinearAd: async ({ skippableAfter }: LinearAdOptions = {}) => {
+        await page.evaluate(skipOffset => {
           const browserWindow = window as unknown as BrowserTestWindow;
           browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdStarted, {
-            ad: { id: 'linear-ad-1', isLinear: true, uiConfig: { requestsUi: true } },
+            ad: { id: 'linear-ad-1', isLinear: true, skippableAfter: skipOffset, uiConfig: { requestsUi: true } },
           });
+        }, skippableAfter);
+      },
+      playTo: async (time: number) => {
+        await page.evaluate(position => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__currentTime = position;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.TimeChanged, { time: position });
+        }, time);
+      },
+      startStall: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__setStalled(true);
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.StallStarted);
         });
+      },
+      endStall: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__setStalled(false);
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.StallEnded);
+        });
+      },
+      finishPlayback: async () => {
+        await page.evaluate(() => (window as unknown as BrowserTestWindow).__finishPlayback());
+      },
+      raiseError: async (code: number, name: string) => {
+        await page.evaluate(
+          ({ errorCode, errorName }) => {
+            const browserWindow = window as unknown as BrowserTestWindow;
+            browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.Error, {
+              code: errorCode,
+              name: errorName,
+            });
+          },
+          { errorCode: code, errorName: name },
+        );
       },
       enterCue: async (cue: SubtitleCue) => {
         // The overlay identifies a cue by its start time and text, so consecutive cues need

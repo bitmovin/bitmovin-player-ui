@@ -3,6 +3,7 @@ import { UIInstanceManager } from '../../UIManager';
 import { Component, ComponentConfig } from '../Component';
 import { Timeout } from '../../utils/Timeout';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../../localization/i18n';
 
 /**
  * Configuration interface for the {@link BufferingOverlay} component.
@@ -21,10 +22,20 @@ export interface BufferingOverlayConfig extends ContainerConfig {
 /**
  * Overlays the player and displays a buffering indicator.
  *
+ * When the indicator appears, it is also announced to screen readers through {@link UIInstanceManager.announce}.
+ * Stalls shorter than {@link BufferingOverlayConfig.showDelayMs} are neither shown nor announced.
+ *
  * @category Components
  */
 export class BufferingOverlay extends Container<BufferingOverlayConfig> {
+  /**
+   * One stall is announced once, also when a UI variant that is set up during the stall shows its own overlay.
+   * The episode ends when the overlay hides, which every UI variant observes.
+   */
+  private static readonly ANNOUNCEMENT_TOPIC = 'buffering';
+
   private indicators: Component<ComponentConfig>[];
+  private overlayShowTimeout?: Timeout;
 
   constructor(config: BufferingOverlayConfig = {}) {
     super(config);
@@ -55,7 +66,11 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     const overlayShowTimeout = new Timeout(config.showDelayMs, () => {
       uimanager.onBufferingShow.dispatch(this);
       this.show();
+      uimanager.announce(i18n.performLocalization(i18n.getLocalizer('announcements.buffering')), {
+        oncePer: { topic: BufferingOverlay.ANNOUNCEMENT_TOPIC, subject: 'ongoing' },
+      });
     });
+    this.overlayShowTimeout = overlayShowTimeout;
 
     const showOverlay = () => {
       overlayShowTimeout.start();
@@ -70,6 +85,7 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
 
     const hideOverlay = () => {
       overlayShowTimeout.clear();
+      uimanager.forgetAnnounced(BufferingOverlay.ANNOUNCEMENT_TOPIC);
       uimanager.onBufferingHide.dispatch(this);
       this.hide();
     };
@@ -85,9 +101,14 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     player.on(player.exports.PlayerEvent.TimeShifted, hideOverlay);
     player.on(player.exports.PlayerEvent.SourceUnloaded, hideOverlay);
 
-    // Show overlay if player is already stalled at init
+    // A stall that is already ongoing at init takes the same delayed path, so it is shown and announced once
     if (player.isStalled()) {
-      this.show();
+      showOverlay();
     }
+  }
+
+  release(): void {
+    this.overlayShowTimeout?.clear();
+    super.release();
   }
 }

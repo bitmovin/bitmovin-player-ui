@@ -59,6 +59,34 @@ describe('UIContainer', () => {
     });
   });
 
+  describe('status announcements', () => {
+    let announceMock: jest.Mock;
+
+    beforeEach(() => {
+      announceMock = jest.fn();
+      uiInstanceManagerMock.announce = announceMock;
+    });
+
+    it('should announce the end of playback', () => {
+      uiContainer = new UIContainer({ hideDelay: -1, components: [] });
+      uiContainer.configure(playerMock, uiInstanceManagerMock);
+
+      playerMock.eventEmitter.fireEvent({ type: playerMock.exports.PlayerEvent.PlaybackFinished, timestamp: 0 });
+
+      expect(announceMock).toHaveBeenCalledWith('Playback finished');
+    });
+
+    it('should not announce playback state changes the playback toggle already conveys', () => {
+      uiContainer = new UIContainer({ hideDelay: -1, components: [] });
+      uiContainer.configure(playerMock, uiInstanceManagerMock);
+
+      playerMock.eventEmitter.firePlayEvent();
+      playerMock.eventEmitter.firePauseEvent();
+
+      expect(announceMock).not.toHaveBeenCalled();
+    });
+  });
+
   describe('configure', () => {
     it('should subscribe to the onComponentViewModeChanged event', () => {
       uiContainer = new UIContainer({ hideDelay: 3000, components: [] });

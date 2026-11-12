@@ -1,0 +1,7 @@
+@import '../variables';
+@import '../mixins';
+
+// The live region of the UIManager. It sits next to the UI variants instead of inside a UI container.
+.#{$prefix}-ui-status-announcer {
+  @include visually-hidden;
+}

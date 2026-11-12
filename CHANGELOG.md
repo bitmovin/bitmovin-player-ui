@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Screen reader announcements for status changes that were only shown visually: buffering that lasts longer than the `BufferingOverlay` show delay, the start of a linear ad (with its position in the ad break, e.g. "Ad 1 of 2 started"), an ad becoming skippable, the start and end of a Cast session, and the end of playback. Each is announced once, also when the UI switches layout during an ad. They are read from a visually hidden live region that the `UIManager` adds next to the UI, so custom layouts get it without changes.
+- `UIManager.announce()` to announce custom status messages to screen reader users, and `UIInstanceManager.announce()` for custom components to do the same. `AnnounceOptions` select the assertive alert region or announce a message only once per subject, and `UIInstanceManager.forgetAnnounced()` ends such a subject, e.g. when the status it describes is over.
+- `announcements.*` localization keys for these messages in all bundled languages.
+
+### Changed
+
+- `ErrorMessageOverlay` no longer has the `status` role, except on Tizen. Playback errors are announced immediately through an alert region that the `UIManager` keeps ready next to the UI, which screen readers announce more reliably. Tizen keeps the previous behavior, where text-to-speech reads the overlay through its `status` role, because Tizen does not fully support `alert`.
+- `BufferingOverlay` shows a stall that is already ongoing when the UI is created after `showDelayMs`, like any other stall, instead of immediately.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed

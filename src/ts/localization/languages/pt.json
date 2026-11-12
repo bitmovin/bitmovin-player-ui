@@ -90,5 +90,13 @@
   "contextMenu.subtitle": "Streaming adaptativo para a web",
   "contextMenu.copyTimestampLink": "Copiar ligação no momento atual",
   "captions.enable": "Ativar legendas",
-  "captions.disable": "Desativar legendas"
+  "captions.disable": "Desativar legendas",
+  "announcements.buffering": "A carregar",
+  "announcements.adStarted": "Anúncio iniciado",
+  "announcements.adNumberOfTotalStarted": "Anúncio {activeAdIndex} de {totalAdsCount} iniciado",
+  "announcements.adSkippable": "Já pode ignorar o anúncio",
+  "announcements.castStarted": "A transmitir para {castDeviceName}",
+  "announcements.castStartedUnknownDevice": "Transmissão iniciada",
+  "announcements.castStopped": "Transmissão terminada",
+  "announcements.playbackFinished": "Reprodução concluída"
 }

@@ -90,5 +90,13 @@
   "contextMenu.subtitle": "Adaptive streaming voor het web",
   "contextMenu.copyTimestampLink": "Link naar huidig tijdstip kopiëren",
   "captions.enable": "Ondertiteling aanzetten",
-  "captions.disable": "Ondertiteling uitzetten"
+  "captions.disable": "Ondertiteling uitzetten",
+  "announcements.buffering": "Bufferen",
+  "announcements.adStarted": "Advertentie gestart",
+  "announcements.adNumberOfTotalStarted": "Advertentie {activeAdIndex} van {totalAdsCount} gestart",
+  "announcements.adSkippable": "Je kunt de advertentie nu overslaan",
+  "announcements.castStarted": "Casten naar {castDeviceName}",
+  "announcements.castStartedUnknownDevice": "Casten gestart",
+  "announcements.castStopped": "Casten gestopt",
+  "announcements.playbackFinished": "Afspelen voltooid"
 }

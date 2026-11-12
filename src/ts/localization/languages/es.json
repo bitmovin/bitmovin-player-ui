@@ -90,5 +90,13 @@
   "contextMenu.subtitle": "Streaming adaptativo para la web",
   "contextMenu.copyTimestampLink": "Copiar enlace en el momento actual",
   "captions.enable": "Activar subtítulos",
-  "captions.disable": "Desactivar subtítulos"
+  "captions.disable": "Desactivar subtítulos",
+  "announcements.buffering": "Cargando",
+  "announcements.adStarted": "Anuncio iniciado",
+  "announcements.adNumberOfTotalStarted": "Anuncio {activeAdIndex} de {totalAdsCount} iniciado",
+  "announcements.adSkippable": "Ya puedes saltar el anuncio",
+  "announcements.castStarted": "Transmitiendo a {castDeviceName}",
+  "announcements.castStartedUnknownDevice": "Transmisión iniciada",
+  "announcements.castStopped": "Transmisión detenida",
+  "announcements.playbackFinished": "Reproducción finalizada"
 }
