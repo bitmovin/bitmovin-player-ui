@@ -5,6 +5,7 @@ import { Component, ComponentConfig } from '../Component';
 import { ArrayUtils } from '../../utils/ArrayUtils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
+import { FocusUtils } from '../../utils/FocusUtils';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -99,12 +100,17 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       // Set toggle status to on when the settings panel shows
       this.on();
       this.getDomElement().attr('aria-expanded', 'true');
+      settingsPanel.getDomElement().on('keydown', this.handleSettingsPanelKeyDown);
     });
     settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides
       this.off();
       this.getDomElement().attr('aria-expanded', 'false');
+      settingsPanel.getDomElement().off('keydown', this.handleSettingsPanelKeyDown);
     });
+    if (settingsPanel.isShown()) {
+      settingsPanel.getDomElement().on('keydown', this.handleSettingsPanelKeyDown);
+    }
 
     // Keep aria-controls / aria-owns pointing at the *currently* active page id —
     // the user may navigate into sub-pages while the panel is open.
@@ -143,4 +149,37 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
       settingsPanelItemsChangedHandler();
     }
   }
+
+  release(): void {
+    super.release();
+    this.getConfig().settingsPanel.getDomElement().off('keydown', this.handleSettingsPanelKeyDown);
+  }
+
+  /**
+   * The settings panel is rendered at the end of the UI, but for keyboard users it follows this button in the tab
+   * sequence, as in the menu button pattern: Shift+Tab on its first item returns to this button, and Tab on its last
+   * item continues with the control after this button. Leaving the panel this way closes it.
+   */
+  private handleSettingsPanelKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) {
+      return;
+    }
+
+    const settingsPanel = this.getConfig().settingsPanel;
+    const settingsPanelElement = settingsPanel.getDomElement().get(0);
+    const tabbableElements = FocusUtils.getTabbableElements(settingsPanelElement);
+    const edgeElement = event.shiftKey ? tabbableElements[0] : tabbableElements[tabbableElements.length - 1];
+
+    if (!edgeElement || FocusUtils.getFocusedElement(settingsPanelElement) !== edgeElement) {
+      return;
+    }
+
+    if (event.shiftKey) {
+      event.preventDefault();
+    }
+    // Focus the button before hiding the panel, so the panel does not restore focus itself. For Tab, the browser's
+    // default action then moves on from the button to the next control.
+    FocusUtils.focusWithoutScrolling(this.getDomElement().get(0));
+    settingsPanel.hide();
+  };
 }
